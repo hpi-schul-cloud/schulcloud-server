@@ -46,24 +46,28 @@ export class KeycloakConfigurationService {
 			path: '/{realmName}/authentication/flows/{flowAlias}/executions',
 			urlParamKeys: ['realmName', 'flowAlias'],
 		});
-		const addExecutionRequest = kc.realms.makeRequest<{ provider: string }, void>({
-			method: 'POST',
-			path: `/${kc.realmName}/authentication/flows/${flowAlias}/executions/execution`,
-		});
+		const addExecutionRequest = kc.realms.makeRequest<{ realmName: string; flowAlias: string; provider: string }, void>(
+			{
+				method: 'POST',
+				path: '/{realmName}/authentication/flows/{flowAlias}/executions/execution',
+				urlParamKeys: ['realmName', 'flowAlias'],
+			}
+		);
 		const updateExecutionRequest = kc.realms.makeRequest<AuthenticationExecutionInfoRepresentation, void>({
 			method: 'PUT',
-			path: `/${kc.realmName}/authentication/flows/${flowAlias}/executions`,
+			path: '/{realmName}/authentication/flows/{flowAlias}/executions',
+			urlParamKeys: ['realmName', 'flowAlias'],
 		});
 
 		const flows = await getFlowsRequest({ realmName: kc.realmName });
 		const flow = flows.find((tempFlow) => tempFlow.alias === flowAlias);
 		if (flow && flow.id) {
-			const deleteFlowRequest = kc.realms.makeRequest<{ id: string }, void>({
+			const deleteFlowRequest = kc.realms.makeRequest<{ realmName: string; id: string }, void>({
 				method: 'DELETE',
-				path: `/${kc.realmName}/authentication/flows/{id}`,
-				urlParamKeys: ['id'],
+				path: '/{realmName}/authentication/flows/{id}',
+				urlParamKeys: ['realmName', 'id'],
 			});
-			await deleteFlowRequest({ id: flow.id });
+			await deleteFlowRequest({ realmName: kc.realmName, id: flow.id });
 		}
 		await createFlowRequest({
 			realmName: kc.realmName,
@@ -77,6 +81,8 @@ export class KeycloakConfigurationService {
 		for (const executionProvider of executionProviders) {
 			// eslint-disable-next-line no-await-in-loop
 			await addExecutionRequest({
+				realmName: kc.realmName,
+				flowAlias,
 				provider: executionProvider,
 			});
 		}
