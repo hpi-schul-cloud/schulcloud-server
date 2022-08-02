@@ -102,7 +102,7 @@ export class OAuthService {
 		return verifiedJWT as IJwt;
 	}
 
-	async findUser(decodedJwt: IJwt, system: System): Promise<User> {
+	async findUser(accessToken: string,decodedJwt: IJwt, system: System): Promise<User> {
 		// iserv strategy
 		if (system.oauthConfig && system.oauthConfig.provider === 'iserv') {
 			return this.iservOauthService.findUserById(system.id, decodedJwt);
@@ -147,7 +147,7 @@ export class OAuthService {
 			this.logger.debug('Done. Next up: validateToken().');
 			const decodedToken: IJwt = await this.validateToken(queryToken.id_token, oauthConfig);
 			this.logger.debug('Done. Next up: findUser().');
-			const user: User = await this.findUser(decodedToken, system);
+			const user: User = await this.findUser(queryToken.access_token, decodedToken, system);
 			this.logger.debug('Done. Next up: getJWTForUser().');
 			const jwtResponse: string = await this.getJwtForUser(user);
 			this.logger.debug('Done. Next up: buildResponse().');
