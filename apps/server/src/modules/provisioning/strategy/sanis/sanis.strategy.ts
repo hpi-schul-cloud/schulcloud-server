@@ -1,20 +1,16 @@
 import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
-import { Injectable, NotImplementedException } from '@nestjs/common';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SanisResponse } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { HttpService } from '@nestjs/axios';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { UserUc } from '@src/modules/user/uc';
-import {firstValueFrom, Observable} from "rxjs";
-import {AxiosRequestConfig, AxiosResponse} from "axios";
+import { firstValueFrom } from "rxjs";
+import { AxiosResponse } from "axios";
+import {SanisResponseMapper} from "@src/modules/provisioning/strategy/sanis/sanis-response.mapper";
 
 @Injectable()
 export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisResponse> {
-
-	private readonly provisioningUrl: string;
-
-	private config: AxiosRequestConfig;
 
 	constructor(
 		responseMapper: SanisResponseMapper,
@@ -24,15 +20,10 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisRespons
 	) {
 		super(responseMapper, schoolUc, userUc);
 		this.config = {};
-		this.provisioningUrl = Configuration.get("SANIS_PROVISIONING_URL") as string;
 	}
 
 	initAuth(token: string) {
 		this.config = { headers: { Authorization: `Bearer ${token}` }};
-	}
-
-	override async apply(system: System): Promise<ProvisioningDto> {
-		return super.apply(system);
 	}
 
 	override getProvisioningData(): Promise<SanisResponse> {

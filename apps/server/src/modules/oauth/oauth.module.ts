@@ -10,6 +10,7 @@ import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { AuthorizationModule } from '../authorization';
 import { OauthSSOController } from './controller/oauth-sso.controller';
 import { OauthUc } from './uc/oauth.uc';
+import {ProvisioningModule} from "@src/modules/provisioning/provisioning.module";
 
 const key = Configuration.get('AES_KEY') as string;
 

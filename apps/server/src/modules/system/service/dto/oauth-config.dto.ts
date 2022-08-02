@@ -12,6 +12,7 @@ export class OauthConfigDto {
 		this.logoutEndpoint = oauthConfigDto.logoutEndpoint;
 		this.issuer = oauthConfigDto.issuer;
 		this.jwksEndpoint = oauthConfigDto.jwksEndpoint;
+		this.provisioningUrl = oauthConfigDto.provisioningUrl
 	}
 
 	clientId: string;
@@ -37,4 +38,6 @@ export class OauthConfigDto {
 	issuer: string;
 
 	jwksEndpoint: string;
+
+	provisioningUrl: string;
 }

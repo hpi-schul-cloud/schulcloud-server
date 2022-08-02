@@ -15,7 +15,7 @@ export enum SchoolFeatures {
 }
 
 export interface ISchoolProperties {
-	ldapSchoolIdentifier?: string;
+	externalIdentifier?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
 	name: string;
@@ -49,7 +49,7 @@ export class SchoolRoles {
 export class School extends BaseEntity {
 	constructor(props: ISchoolProperties) {
 		super();
-		if (props.ldapSchoolIdentifier) this.ldapSchoolIdentifier = props.ldapSchoolIdentifier;
+		if (props.externalIdentifier) this.externalIdentifier = props.externalIdentifier;
 		if (props.inMaintenanceSince) this.inMaintenanceSince = props.inMaintenanceSince;
 		if (props.inUserMigration !== null) this.inUserMigration = props.inUserMigration;
 		this.name = props.name;
@@ -68,8 +68,8 @@ export class School extends BaseEntity {
 	@Property({ nullable: true })
 	inUserMigration?: boolean;
 
-	@Property({ nullable: true })
-	ldapSchoolIdentifier?: string;
+	@Property({ nullable: true, fieldName: 'ldapSchoolIdentifier' })
+	externalIdentifier?: string;
 
 	@Property()
 	name: string;

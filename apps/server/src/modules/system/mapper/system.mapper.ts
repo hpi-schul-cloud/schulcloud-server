@@ -30,6 +30,7 @@ export class SystemMapper {
 			logoutEndpoint: oauthConfig.logoutEndpoint,
 			issuer: oauthConfig.issuer,
 			jwksEndpoint: oauthConfig.jwksEndpoint,
+			provisioningUrl: oauthConfig.provisioningUrl,
 		});
 	}
 

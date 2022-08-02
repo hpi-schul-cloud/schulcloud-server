@@ -1,5 +1,10 @@
 import {UUID} from "bson";
 
+export enum SanisRole{
+	LEHR = "LEHR",
+	LERN = "LERN",
+}
+
 export class SanisResponseName {
 	constructor(sanisResponseName: SanisResponseName){
 		this.familienname = sanisResponseName.familienname;
@@ -19,7 +24,7 @@ export class SanisResponsePersonenkontext {
 	}
 
 	ktid: UUID;
-	rolle: string;
+	rolle: SanisRole;
 	organisation: SanisResponseOrganisation;
 	personenstatus: string;
 }

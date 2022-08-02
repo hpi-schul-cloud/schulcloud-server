@@ -31,6 +31,7 @@ export class ProvisioningUc {
 		switch (system.provisioningStrategy) {
 			case SystemProvisioningStrategy.SANIS:
 				strategy = this.sanisStrategy;
+				strategy.init(system.provisioningUrl??'', {headers: { Authorization: `Bearer ${accessToken}` }});
 				break;
 			default:
 				this.logger.error(`Missing provisioning strategy for system with id ${systemId}`);
