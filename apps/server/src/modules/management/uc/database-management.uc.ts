@@ -253,13 +253,18 @@ export class DatabaseManagementUc {
 
 	private removeSecretsFromSystems(systems: System[]) {
 		systems.forEach((system) => {
+			// The system's alias needs to be set otherwise the export will fail here, but that is acceptable.
 			if (system.oauthConfig) {
-				system.oauthConfig.clientSecret = `${system.alias?.toLocaleUpperCase() || ''}_CLIENTSECRET`;
-				system.oauthConfig.clientId = `${system.alias?.toLocaleUpperCase() || ''}_CLIENTID`;
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				system.oauthConfig.clientSecret = `${system.alias!.toLocaleUpperCase()}_CLIENTSECRET`;
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				system.oauthConfig.clientId = `${system.alias!.toLocaleUpperCase()}_CLIENTID`;
 			}
 			if (system.type === SysType.OIDC && system.config) {
-				system.config.clientSecret = `${system.alias?.toLocaleUpperCase() || ''}_CLIENTSECRET`;
-				system.config.clientId = `${system.alias?.toLocaleUpperCase() || ''}_CLIENTID`;
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				system.config.clientSecret = `${system.alias!.toLocaleUpperCase()}_CLIENTSECRET`;
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				system.config.clientId = `${system.alias!.toLocaleUpperCase()}_CLIENTID`;
 			}
 		});
 		return systems;
