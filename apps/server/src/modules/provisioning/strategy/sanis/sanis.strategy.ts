@@ -4,7 +4,6 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SanisResponse } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { HttpService } from '@nestjs/axios';
-import { IProviderResponseMapper } from '@src/modules/provisioning/interface/provider-response.mapper.interface';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { UserUc } from '@src/modules/user/uc';
 import {firstValueFrom, Observable} from "rxjs";
@@ -18,7 +17,7 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisRespons
 	private config: AxiosRequestConfig;
 
 	constructor(
-		responseMapper: IProviderResponseMapper<SanisResponse>,
+		responseMapper: SanisResponseMapper,
 		schoolUc: SchoolUc,
 		userUc: UserUc,
 		private readonly httpService: HttpService
