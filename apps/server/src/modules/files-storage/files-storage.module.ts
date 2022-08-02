@@ -2,6 +2,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
@@ -39,6 +40,7 @@ const imports = [
 		isGlobal: true,
 		load: [fileStorageConfig],
 	}),
+	HttpModule,
 	AuthorizationModule,
 	AuthModule,
 	CoreModule,

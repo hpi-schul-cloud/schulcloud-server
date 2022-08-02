@@ -21,7 +21,7 @@ import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger
 import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
 import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
@@ -33,15 +33,77 @@ import {
 	FileRecordListResponse,
 	FileRecordParams,
 	FileRecordResponse,
+	FileUrlParams,
 	RenameFileParams,
 	SingleFileParams,
 } from './dto';
+
+import { HttpService } from '@nestjs/axios';
+import { catchError, lastValueFrom } from 'rxjs';
 
 @ApiTags('file')
 @Authenticate('jwt')
 @Controller('file')
 export class FilesStorageController {
-	constructor(private readonly filesStorageUC: FilesStorageUC, private readonly fileRecordUC: FileRecordUC) {}
+	constructor(
+		private readonly filesStorageUC: FilesStorageUC,
+		private readonly fileRecordUC: FileRecordUC,
+		private readonly httpService: HttpService
+	) {}
+
+	@ApiOperation({ summary: 'Upload file from url' })
+	@ApiResponse({ status: 201, type: FileRecordResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 400, type: BadRequestException })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@Post('/upload-from-url/:schoolId/:parentType/:parentId')
+	async uploadFromUrl(
+		@Body() _: FileUrlParams,
+		@Param() params: FileRecordParams,
+		@CurrentUser() currentUser: ICurrentUser, //:Promise<FileRecordResponse>
+		@JWT() authToken: string
+	) {
+		console.log('body', _);
+		console.log('params', params);
+
+		try {
+			const response = await lastValueFrom(
+				this.httpService
+					// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+					.get(_.url, {
+						headers: {
+							Authorization: authToken,
+						},
+					})
+					.pipe(
+						catchError((e) => {
+							throw e;
+						})
+					)
+			);
+
+			if (response?.data.url) {
+				const responseImg = await lastValueFrom(
+					this.httpService
+						// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+						.get(response.data.url)
+				);
+
+				const res = await this.filesStorageUC.upload(
+					currentUser.userId,
+					params,
+					responseImg.request as unknown as Request
+				);
+
+				const res1 = new FileRecordResponse(res);
+
+				return res1;
+			}
+		} catch (error) {
+			console.log('error', error);
+		}
+	}
 
 	@ApiOperation({ summary: 'Streamable upload of a binary file.' })
 	@ApiResponse({ status: 201, type: FileRecordResponse })

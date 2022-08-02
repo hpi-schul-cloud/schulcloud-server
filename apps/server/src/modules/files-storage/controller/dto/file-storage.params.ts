@@ -17,6 +17,12 @@ export class FileRecordParams {
 	parentType!: FileRecordParentType;
 }
 
+export class FileUrlParams {
+	@ApiProperty({ type: 'string' })
+	@IsString()
+	url!: string;
+}
+
 export class FileParams {
 	@ApiProperty({ type: 'string', format: 'binary' })
 	@Allow()
