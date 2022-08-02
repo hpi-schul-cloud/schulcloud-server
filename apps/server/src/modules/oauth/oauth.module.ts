@@ -14,7 +14,7 @@ import { OauthUc } from './uc/oauth.uc';
 const key = Configuration.get('AES_KEY') as string;
 
 @Module({
-	imports: [LoggerModule, AuthorizationModule, HttpModule],
+	imports: [LoggerModule, AuthorizationModule, HttpModule, ProvisioningModule],
 	controllers: [OauthSSOController],
 	providers: [
 		OauthUc,

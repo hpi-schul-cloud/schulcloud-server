@@ -10,7 +10,6 @@ import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/
 import { CoreModule } from '@src/core';
 import { UserModule } from '@src/modules/user';
 import { SchoolModule } from '@src/modules/school/school.module';
-import { ProvisioningModule } from '@src/modules/provisioning';
 import { RoleModule } from '@src/modules/role/role.module';
 // todo: MUST BE CHECKED BEFORE MERGE
 // import { FilesModule } from '@src/modules/files';
@@ -25,6 +24,7 @@ import {
 	RocketChatModule,
 	SystemModule,
 	TaskModule,
+	ProvisioningModule,
 } from '@src/modules';
 
 import { VideoConferenceModule } from '@src/modules/video-conference';

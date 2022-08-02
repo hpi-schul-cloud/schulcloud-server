@@ -9,23 +9,20 @@ import { UserModule } from '@src/modules';
 import { SchoolModule } from '@src/modules/school/school.module';
 import { RoleModule } from '@src/modules/role/role.module';
 import { SystemModule } from '@src/modules/system/system.module';
-import { PlaceholderResponseMapper } from '@src/modules/provisioning/strategy/placeholder/placeholder-response.mapper';
-import { PlaceholderProvisioningStrategy } from '@src/modules/provisioning/strategy/placeholder/placeholder.strategy';
 import { UserRepo } from '@shared/repo';
 import { PermissionService } from '@shared/domain';
+import {SanisProvisioningStrategy} from "@src/modules/provisioning/strategy/sanis/sanis.strategy";
+import {SanisResponseMapper} from "@src/modules/provisioning/strategy/sanis/sanis-response.mapper";
+import {HttpModule} from "@nestjs/axios";
 
 @Module({
-	imports: [UserModule, SchoolModule, RoleModule, SystemModule, LoggerModule],
+	imports: [UserModule, SchoolModule, RoleModule, SystemModule, LoggerModule, HttpModule],
 	controllers: [],
 	providers: [
 		ProvisioningUc,
-		UserUc,
-		SchoolUc,
-		RoleUc,
-		SystemUc,
-		PlaceholderProvisioningStrategy,
+		SanisProvisioningStrategy,
 		Logger,
-		PlaceholderResponseMapper,
+		SanisResponseMapper,
 		UserRepo,
 		PermissionService,
 	],
