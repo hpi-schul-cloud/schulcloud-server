@@ -38,6 +38,9 @@ describe('KeycloakManagementUc', () => {
 						configureIdentityProviders: jest.fn().mockImplementation(async (): Promise<number> => {
 							return Promise.resolve(3);
 						}),
+						configureBrokerFlows: jest.fn().mockImplementation(async (): Promise<void> => {
+							return Promise.resolve();
+						}),
 					},
 				},
 				{
@@ -89,6 +92,7 @@ describe('KeycloakManagementUc', () => {
 	describe('configure', () => {
 		it('should call services', async () => {
 			await uc.configure();
+			expect(keycloakConfigurationService.configureBrokerFlows).toBeCalledTimes(1);
 			expect(keycloakConfigurationService.configureIdentityProviders).toBeCalledTimes(1);
 			expect(keycloakAdministrationService.setPasswordPolicy).toBeCalledTimes(1);
 		});

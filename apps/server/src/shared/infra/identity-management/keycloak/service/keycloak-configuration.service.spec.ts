@@ -12,6 +12,7 @@ import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { v1 } from 'uuid';
+import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { SysType } from '../../sys.type';
 import {
 	IKeycloakSettings,
@@ -33,6 +34,7 @@ describe('configureIdentityProviders', () => {
 
 	const kcApiClientIdentityProvidersMock = createMock<IdentityProviders>();
 	const kcApiAuthenticationManagementMock = createMock<AuthenticationManagement>();
+	const kcApiRealmsMock = createMock<Realms>();
 	const adminUsername = 'admin';
 
 	const adminUser: UserRepresentation = {
@@ -124,6 +126,7 @@ describe('configureIdentityProviders', () => {
 						setConfig: () => {},
 						identityProviders: kcApiClientIdentityProvidersMock,
 						authenticationManagement: kcApiAuthenticationManagementMock,
+						realms: kcApiRealmsMock,
 					}),
 				},
 				{
@@ -225,5 +228,103 @@ describe('configureIdentityProviders', () => {
 		expect(kcApiClientIdentityProvidersMock.del).toBeCalledTimes(1);
 
 		repo.findAll.mockRestore();
+	});
+
+	describe('configureBrokerFlows', () => {
+		beforeAll(() => {
+			kcApiRealmsMock.makeRequest.mockImplementation(() => async () => Promise.resolve([]));
+		});
+
+		beforeEach(() => {
+			kcApiRealmsMock.makeRequest.mockClear();
+		});
+
+		it('should create flow', async () => {
+			await expect(service.configureBrokerFlows()).resolves.not.toThrow();
+			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+				expect.objectContaining({
+					method: 'POST',
+					path: '/{realmName}/authentication/flows',
+					urlParamKeys: ['realmName'],
+				})
+			);
+			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+				expect.objectContaining({
+					method: 'GET',
+					path: '/{realmName}/authentication/flows',
+					urlParamKeys: ['realmName'],
+				})
+			);
+			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+				expect.objectContaining({
+					method: 'GET',
+					path: '/{realmName}/authentication/flows/{flowAlias}/executions',
+					urlParamKeys: ['realmName', 'flowAlias'],
+				})
+			);
+			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+				expect.objectContaining({
+					method: 'POST',
+					path: '/{realmName}/authentication/flows/{flowAlias}/executions/execution',
+					urlParamKeys: ['realmName', 'flowAlias'],
+				})
+			);
+			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+				expect.objectContaining({
+					method: 'PUT',
+					path: '/{realmName}/authentication/flows/{flowAlias}/executions',
+					urlParamKeys: ['realmName', 'flowAlias'],
+				})
+			);
+		});
+		it('should delete and create flow', async () => {
+			kcApiRealmsMock.makeRequest.mockImplementation(
+				() => async () => Promise.resolve([{ alias: 'Direct Broker Flow', id: 'id' }])
+			);
+
+			await expect(service.configureBrokerFlows()).resolves.not.toThrow();
+			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+				expect.objectContaining({
+					method: 'POST',
+					path: '/{realmName}/authentication/flows',
+					urlParamKeys: ['realmName'],
+				})
+			);
+			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+				expect.objectContaining({
+					method: 'GET',
+					path: '/{realmName}/authentication/flows',
+					urlParamKeys: ['realmName'],
+				})
+			);
+			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+				expect.objectContaining({
+					method: 'GET',
+					path: '/{realmName}/authentication/flows/{flowAlias}/executions',
+					urlParamKeys: ['realmName', 'flowAlias'],
+				})
+			);
+			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+				expect.objectContaining({
+					method: 'POST',
+					path: '/{realmName}/authentication/flows/{flowAlias}/executions/execution',
+					urlParamKeys: ['realmName', 'flowAlias'],
+				})
+			);
+			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+				expect.objectContaining({
+					method: 'PUT',
+					path: '/{realmName}/authentication/flows/{flowAlias}/executions',
+					urlParamKeys: ['realmName', 'flowAlias'],
+				})
+			);
+			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+				expect.objectContaining({
+					method: 'DELETE',
+					path: '/{realmName}/authentication/flows/{id}',
+					urlParamKeys: ['realmName', 'id'],
+				})
+			);
+		});
 	});
 });
