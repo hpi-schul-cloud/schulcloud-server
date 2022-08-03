@@ -51,9 +51,7 @@ export class FileCopyAppendService {
 			elements: this.createFileStatuses(files),
 		};
 		taskCopyStatus.status = this.copyHelperService.deriveStatusFromElements(taskCopyStatus.elements as CopyStatus[]);
-		taskCopyStatus.elements = taskCopyStatus.elements
-			? this.replaceFileGroup(taskCopyStatus.elements, fileGroupStatus)
-			: undefined;
+		taskCopyStatus.elements = this.replaceFileGroup(taskCopyStatus.elements, fileGroupStatus);
 		return taskCopyStatus;
 	}
 
@@ -78,9 +76,7 @@ export class FileCopyAppendService {
 			elements,
 		};
 		taskCopyStatus.status = this.copyHelperService.deriveStatusFromElements(taskCopyStatus.elements as CopyStatus[]);
-		taskCopyStatus.elements = taskCopyStatus.elements
-			? this.replaceFileGroup(taskCopyStatus.elements, updatedFileGroupStatus)
-			: undefined;
+		taskCopyStatus.elements = this.replaceFileGroup(taskCopyStatus.elements, updatedFileGroupStatus);
 		return taskCopyStatus;
 	}
 
@@ -88,7 +84,7 @@ export class FileCopyAppendService {
 		return elements.find((el) => el.type === CopyElementType.FILE_GROUP) as CopyStatus;
 	}
 
-	private replaceFileGroup(elements: CopyStatus[], fileGroupStatus: CopyStatus): CopyStatus[] {
+	private replaceFileGroup(elements: CopyStatus[] = [], fileGroupStatus: CopyStatus): CopyStatus[] {
 		return elements.map((el) => (el.type === CopyElementType.FILE_GROUP ? fileGroupStatus : el));
 	}
 
