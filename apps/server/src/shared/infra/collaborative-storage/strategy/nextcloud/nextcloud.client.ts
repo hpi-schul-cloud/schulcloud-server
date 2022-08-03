@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
+import {
+	Inject,
+	Injectable,
+	NotFoundException,
+	NotImplementedException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { firstValueFrom, Observable } from 'rxjs';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { parseInt } from 'lodash';
@@ -19,13 +25,14 @@ import {
 export class NextcloudClient {
 	private readonly baseURL: string;
 
-	private readonly oidcInternalName: string;
-
 	config: AxiosRequestConfig;
 
-	constructor(private readonly logger: Logger, private readonly httpService: HttpService) {
+	constructor(
+		private readonly logger: Logger,
+		private readonly httpService: HttpService,
+		@Inject('oidcInternalName') readonly oidcInternalName: string
+	) {
 		this.baseURL = Configuration.get('NEXTCLOUD_BASE_URL') as string;
-		this.oidcInternalName = Configuration.get('NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME') as string;
 		this.config = {
 			auth: {
 				username: Configuration.get('NEXTCLOUD_ADMIN_USER') as string,

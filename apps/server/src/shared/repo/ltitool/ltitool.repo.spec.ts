@@ -5,40 +5,39 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
-import { PseudonymDO } from '@shared/domain/domainobject/pseudonym.do';
-import { PseudonymsRepo } from '@shared/repo/pseudonyms/pseudonyms.repo';
-import { v4 as uuidv4 } from 'uuid';
 import { NotFoundError } from '@mikro-orm/core';
-import { pseudonymFactory } from '@shared/testing/factory/pseudonym.factory';
-import { IPseudonymProperties, Pseudonym } from '@shared/domain';
+import { ILtiToolProperties, LtiTool } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
+import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';
 
-class PseudonymsRepoSpec extends PseudonymsRepo {
-	mapEntityToDOSpec(entity: Pseudonym): PseudonymDO {
+class LtiToolRepoSpec extends LtiToolRepo {
+	mapEntityToDOSpec(entity: LtiTool): LtiToolDO {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntitySpec(entityDO: PseudonymDO): EntityProperties<IPseudonymProperties> {
+	mapDOToEntitySpec(entityDO: LtiToolDO): EntityProperties<ILtiToolProperties> {
 		return super.mapDOToEntity(entityDO);
 	}
 }
 
-describe('Pseudonym Repo', () => {
+describe('LtiTool Repo', () => {
 	let module: TestingModule;
-	let repo: PseudonymsRepoSpec;
+	let repo: LtiToolRepoSpec;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
-				PseudonymsRepoSpec,
+				LtiToolRepoSpec,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
-		repo = module.get(PseudonymsRepoSpec);
+		repo = module.get(LtiToolRepoSpec);
 		em = module.get(EntityManager);
 	});
 
@@ -56,31 +55,29 @@ describe('Pseudonym Repo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(Pseudonym);
+		expect(repo.entityName).toBe(LtiTool);
 	});
 
 	it('should implement getConstructor', () => {
-		expect(repo.getConstructor()).toBe(Pseudonym);
+		expect(repo.getConstructor()).toBe(LtiTool);
 	});
 
 	describe('findByUserAndTool', () => {
 		it('should find a pseudonym by userId and toolId', async () => {
 			// Arrange
-			const entity: Pseudonym = pseudonymFactory.buildWithId();
+			const entity: LtiTool = ltiToolFactory.buildWithId();
 			await em.persistAndFlush(entity);
 
 			// Act
-			const result = await repo.findByUserIdAndToolId(entity.userId.toHexString(), entity.toolId.toHexString());
+			const result = await repo.findByName(entity.name);
 
 			// Assert
 			expect(result.id).toEqual(entity.id);
 		});
 
 		it('should throw an Error if the scope mismatches the idtype', async () => {
-			const entity: Pseudonym = pseudonymFactory.buildWithId();
-			await expect(
-				repo.findByUserIdAndToolId(entity.userId.toHexString(), entity.toolId.toHexString())
-			).rejects.toThrow(NotFoundError);
+			const entity: LtiTool = ltiToolFactory.buildWithId();
+			await expect(repo.findByName(entity.name)).rejects.toThrow(NotFoundError);
 		});
 	});
 
@@ -88,47 +85,39 @@ describe('Pseudonym Repo', () => {
 		it('should return a domain object', () => {
 			// Arrange
 			const id = new ObjectId();
-			const testEntity: Pseudonym = {
+			const testEntity: LtiTool = {
 				id: id.toHexString(),
 				_id: id,
 				updatedAt: new Date('2022-07-20'),
 				createdAt: new Date('2022-07-20'),
-				pseudonym: uuidv4(),
-				toolId: new ObjectId(),
-				userId: new ObjectId(),
+				name: 'toolName',
 			};
 
 			// Act
-			const pseudonymDO: PseudonymDO = repo.mapEntityToDOSpec(testEntity);
+			const ltiToolDO: LtiToolDO = repo.mapEntityToDOSpec(testEntity);
 
 			// Assert
-			expect(pseudonymDO.id).toEqual(testEntity.id);
-			expect(pseudonymDO.pseudonym).toEqual(testEntity.pseudonym);
-			expect(pseudonymDO.toolId).toEqual(testEntity.toolId.toHexString());
-			expect(pseudonymDO.userId).toEqual(testEntity.userId.toHexString());
+			expect(ltiToolDO.id).toEqual(testEntity.id);
+			expect(ltiToolDO.name).toEqual(testEntity.name);
 		});
 	});
 
 	describe('mapDOToEntity', () => {
 		it('should map DO to Entity', () => {
 			// Arrange
-			const testDO: PseudonymDO = new PseudonymDO({
+			const testDO: LtiToolDO = new LtiToolDO({
 				id: 'testId',
 				updatedAt: new Date('2022-07-20'),
 				createdAt: new Date('2022-07-20'),
-				pseudonym: uuidv4(),
-				toolId: new ObjectId().toHexString(),
-				userId: new ObjectId().toHexString(),
+				name: 'toolName',
 			});
 
 			// Act
-			const result: EntityProperties<IPseudonymProperties> = repo.mapDOToEntitySpec(testDO);
+			const result: EntityProperties<ILtiToolProperties> = repo.mapDOToEntitySpec(testDO);
 
 			// Assert
 			expect(result.id).toEqual(testDO.id);
-			expect(result.pseudonym).toEqual(testDO.pseudonym);
-			expect(result.toolId.toHexString()).toEqual(testDO.toolId);
-			expect(result.userId.toHexString()).toEqual(testDO.userId);
+			expect(result.name).toEqual(testDO.name);
 		});
 	});
 });

@@ -15,7 +15,7 @@ export class PseudonymsRepo extends BaseDORepo<PseudonymDO, Pseudonym, IPseudony
 		return Pseudonym;
 	}
 
-	async findByUserAndTool(userId: EntityId, toolId: EntityId): Promise<PseudonymDO> {
+	async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise<PseudonymDO> {
 		const entity = await this._em.findOneOrFail(Pseudonym, {
 			userId: new ObjectId(userId),
 			toolId: new ObjectId(toolId),

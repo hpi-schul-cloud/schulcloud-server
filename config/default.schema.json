@@ -639,11 +639,6 @@
 			"default": "SchulcloudNextcloud",
 			"description": "Internal name of schulcloud oidc provider of nextcloud's social login app"
 		},
-		"NEXTCLOUD_SHD_LTI_TOOL_ID": {
-			"type:": "string",
-			"default": "SchulcloudNextcloud",
-			"description": "Id of the nextcloud lti tool"
-		},
 		"SKIP_CONDITIONS_CONSENT": {
 			"type": "string",
 			"default": "",

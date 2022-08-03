@@ -5,6 +5,8 @@ import { HttpModule } from '@nestjs/axios';
 import { LoggerModule } from '@src/core/logger';
 import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
 import { PseudonymsRepo } from '@shared/repo/index';
+import { LtiToolRepo } from '@shared/repo/ltitool/index';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
 
 const storageStrategy = {
@@ -18,9 +20,14 @@ const storageStrategy = {
 		CollaborativeStorageAdapter,
 		CollaborativeStorageAdapterMapper,
 		PseudonymsRepo,
+		LtiToolRepo,
 		NextcloudStrategy,
 		NextcloudClient,
 		storageStrategy,
+		{
+			provide: 'oidcInternalName',
+			useValue: Configuration.get('NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME') as string,
+		},
 	],
 	exports: [CollaborativeStorageAdapter],
 })

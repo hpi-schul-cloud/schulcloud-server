@@ -763,7 +763,7 @@ const keys = {
 /**
  * @beforeHook
  */
-const deleteNextcloudTeam = (hook) => {
+const deleteTeamInCollaborativeStorage = (hook) => {
 	const service = hook.app.service('/nest-collaborative-storage-uc');
 	service.deleteTeam(hook.id);
 };
@@ -771,7 +771,7 @@ const deleteNextcloudTeam = (hook) => {
 /**
  * @afterHook
  */
-const createNextcloudTeam = (hook) => {
+const createTeamInCollaborativeStorage = (hook) => {
 	const teamId = hook.id || (hook.result || {})._id.toHexString() || hook.teamId;
 	const teamName = hook.data.name;
 	const userIds = hook.result.userIds || hook.data.userIds;
@@ -787,7 +787,7 @@ const createNextcloudTeam = (hook) => {
 /**
  * @afterHook
  */
-const updateNextcloudTeam = (hook) => {
+const updateTeamInCollaborativeStorage = (hook) => {
 	const teamId = hook.id || (hook.result || {})._id.toHexString() || hook.teamId;
 	const teamName = hook.data.name;
 	const userIds = hook.result.userIds || hook.data.userIds;
@@ -825,7 +825,7 @@ exports.before = {
 		teamMainHook,
 		hasTeamPermission('RENAME_TEAM'),
 	], // todo: filterToRelated(keys.data,'data')
-	remove: [teamMainHook, hasTeamPermission('DELETE_TEAM'), deleteNextcloudTeam],
+	remove: [teamMainHook, hasTeamPermission('DELETE_TEAM'), deleteTeamInCollaborativeStorage],
 };
 
 // todo:clear unused values
@@ -834,9 +834,9 @@ exports.after = {
 	all: [],
 	find: [filterToRelated(keys.resFind, 'result.data')], // filterFindResult
 	get: [addCurrentUser], // see before (?)
-	create: [filterToRelated(keys.resId, 'result'), createNextcloudTeam],
-	update: [updateNextcloudTeam], // test schoolId remove
-	patch: [isUserIsEmpty, addCurrentUser, pushUserChangedEvent, updateNextcloudTeam], // test schoolId remove
+	create: [filterToRelated(keys.resId, 'result'), createTeamInCollaborativeStorage],
+	update: [updateTeamInCollaborativeStorage], // test schoolId remove
+	patch: [isUserIsEmpty, addCurrentUser, pushUserChangedEvent, updateTeamInCollaborativeStorage], // test schoolId remove
 	remove: [filterToRelated(keys.resId, 'result')],
 };
 

@@ -11,6 +11,7 @@ export * from './file.entity';
 export * from './filerecord.entity';
 export * from './import-user.entity';
 export * from './lesson.entity';
+export * from './ltitool.entity';
 export * from './materials.entity';
 export * from './news.entity';
 export * from './pseudonym.entity';

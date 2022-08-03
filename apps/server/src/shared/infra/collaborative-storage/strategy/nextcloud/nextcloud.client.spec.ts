@@ -6,7 +6,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
 import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
 import { NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	GroupfoldersCreated,
@@ -81,11 +80,13 @@ describe('NextCloud Adapter Strategy', () => {
 	const prefix = 'prefix';
 
 	beforeAll(async () => {
-		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => prefix);
-
 		module = await Test.createTestingModule({
 			providers: [
 				NextcloudClientSpec,
+				{
+					provide: 'oidcInternalName',
+					useValue: prefix,
+				},
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
@@ -107,7 +108,6 @@ describe('NextCloud Adapter Strategy', () => {
 
 	afterAll(async () => {
 		await module.close();
-		jest.clearAllMocks();
 	});
 
 	describe('handleOcsRequest', () => {

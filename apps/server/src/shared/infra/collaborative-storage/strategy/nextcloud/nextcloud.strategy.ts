@@ -1,9 +1,10 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { PseudonymsRepo } from '@shared/repo/index';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymDO } from '@shared/domain/index';
+import { LtiToolRepo } from '@shared/repo/ltitool/index';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { ICollaborativeStorageStrategy } from '../base.interface.strategy';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { NextcloudClient } from './nextcloud.client';
@@ -16,23 +17,19 @@ import { NextcloudClient } from './nextcloud.client';
  */
 @Injectable()
 export class NextcloudStrategy implements ICollaborativeStorageStrategy {
-	private readonly nextcloudToolId: string;
-
 	constructor(
 		private readonly logger: Logger,
 		private readonly client: NextcloudClient,
-		private readonly pseudonymsRepo: PseudonymsRepo
+		private readonly pseudonymsRepo: PseudonymsRepo,
+		private readonly ltiToolRepo: LtiToolRepo
 	) {
 		this.logger.setContext(NextcloudStrategy.name);
-
-		// TODO get toolId from ltiTools repo
-		this.nextcloudToolId = Configuration.get('NEXTCLOUD_SHD_LTI_TOOL_ID') as string;
 	}
 
 	async updateTeamPermissionsForRole(dto: TeamRolePermissionsDto) {
 		const groupId: string = await this.client.findGroupId(NextcloudStrategy.generateGroupId(dto));
 		let folderId: number;
-		// TODO discuss
+
 		try {
 			folderId = await this.client.findGroupFolderIdForGroupId(groupId);
 			await this.client.setGroupPermissions(groupId, folderId, dto.permissions);
@@ -100,12 +97,13 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	 */
 	protected async updateTeamUsersInGroup(groupId: string, teamUsers: TeamUserDto[]): Promise<void[][]> {
 		const groupUserIds: string[] = await this.client.getGroupUsers(groupId);
+		const nextcloudLtiTool: LtiToolDO = await this.ltiToolRepo.findByName(this.client.oidcInternalName);
 
 		let convertedTeamUserIds: string[] = await Promise.all<Promise<string>[]>(
 			teamUsers.map(async (teamUser: TeamUserDto): Promise<string> => {
 				// The Oauth authentication generates a pseudonym which will be used from external systems as identifier
 				return this.pseudonymsRepo
-					.findByUserAndTool(teamUser.userId, this.nextcloudToolId)
+					.findByUserIdAndToolId(teamUser.userId, nextcloudLtiTool.id as string)
 					.then((pseudonymDO: PseudonymDO) => this.client.getNameWithPrefix(pseudonymDO.pseudonym))
 					.catch(() => '');
 			})
