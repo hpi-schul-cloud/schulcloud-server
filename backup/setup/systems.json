@@ -22,8 +22,8 @@
 		"type": "oauthIserv",
 		"__v": 0,
 		"oauthConfig": {
-			"clientId": "SCHULSERVER_CLIENTID",
-			"clientSecret": "SCHULSERVER_CLIENTSECRET",
+			"clientId": "SCHULSERVER_CLIENT_ID",
+			"clientSecret": "SCHULSERVER_CLIENT_SECRET",
 			"tokenEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
 			"grantType": "authorization_code",
 			"scope": "openid uuid",
@@ -47,8 +47,8 @@
 		"type": "oauthSanis",
 		"__v": 0,
 		"oauthConfig": {
-			"clientId": "SANIS_CLIENTID",
-			"clientSecret": "SANIS_CLIENTSECRET",
+			"clientId": "SANIS_CLIENT_ID",
+			"clientSecret": "SANIS_CLIENT_SECRET",
 			"tokenEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/token",
 			"grantType": "authorization_code",
 			"scope": "openid",
@@ -75,8 +75,8 @@
 		"type": "oidc",
 		"alias": "iserv",
 		"config": {
-			"clientId": "ISERV_CLIENTID",
-			"clientSecret": "ISERV_CLIENTSECRET",
+			"clientId": "ISERV_CLIENT_ID",
+			"clientSecret": "ISERV_CLIENT_SECRET",
 			"authorizationUrl": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
 			"tokenUrl": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
 			"logoutUrl": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout"

@@ -27,8 +27,8 @@ describe('DatabaseManagementService', () => {
 		type: 'oauthSanis',
 		__v: 0,
 		oauthConfig: {
-			clientId: 'SANIS_CLIENTID',
-			clientSecret: 'SANIS_CLIENTSECRET',
+			clientId: 'SANIS_CLIENT_ID',
+			clientSecret: 'SANIS_CLIENT_SECRET',
 		},
 	};
 	const oauthSystemWithSecrets = {
@@ -55,8 +55,8 @@ describe('DatabaseManagementService', () => {
 		type: 'oidc',
 		alias: 'iserv',
 		config: {
-			clientId: 'ISERV_CLIENTID',
-			clientSecret: 'ISERV_CLIENTSECRET',
+			clientId: 'ISERV_CLIENT_ID',
+			clientSecret: 'ISERV_CLIENT_SECRET',
 		},
 	};
 	const oidcSystemWithSecrets = {
@@ -371,12 +371,12 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
-						clientId: 'SANIS_CLIENTID',
-						clientSecret: 'SANIS_CLIENTSECRET',
+						clientId: 'SANIS_CLIENT_ID',
+						clientSecret: 'SANIS_CLIENT_SECRET',
 					});
 					expect((importedSystems[1] as System).config).toMatchObject({
-						clientId: 'ISERV_CLIENTID',
-						clientSecret: 'ISERV_CLIENTSECRET',
+						clientId: 'ISERV_CLIENT_ID',
+						clientSecret: 'ISERV_CLIENT_SECRET',
 					});
 				});
 				it('should encrypt secrets if AES key is available', async () => {
@@ -389,12 +389,12 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
-						clientId: 'SANIS_CLIENTID_encrypted',
-						clientSecret: 'SANIS_CLIENTSECRET_encrypted',
+						clientId: 'SANIS_CLIENT_ID_encrypted',
+						clientSecret: 'SANIS_CLIENT_SECRET_encrypted',
 					});
 					expect((importedSystems[1] as System).config).toMatchObject({
-						clientId: 'ISERV_CLIENTID_encrypted',
-						clientSecret: 'ISERV_CLIENTSECRET_encrypted',
+						clientId: 'ISERV_CLIENT_ID_encrypted',
+						clientSecret: 'ISERV_CLIENT_SECRET_encrypted',
 					});
 				});
 			});

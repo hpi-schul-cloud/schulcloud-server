@@ -21,7 +21,7 @@ import {
 	KeycloakSettings,
 } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
-import { KeycloakConfigurationService } from './keycloak-configuration.service';
+import { flowAlias, KeycloakConfigurationService } from './keycloak-configuration.service';
 
 describe('configureIdentityProviders', () => {
 	let module: TestingModule;
@@ -279,7 +279,7 @@ describe('configureIdentityProviders', () => {
 		});
 		it('should delete and create flow', async () => {
 			kcApiRealmsMock.makeRequest.mockImplementation(
-				() => async () => Promise.resolve([{ alias: 'Direct Broker Flow', id: 'id' }])
+				() => async () => Promise.resolve([{ alias: flowAlias, id: 'id' }])
 			);
 
 			await expect(service.configureBrokerFlows()).resolves.not.toThrow();

@@ -256,15 +256,15 @@ export class DatabaseManagementUc {
 			// The system's alias needs to be set otherwise the export will fail here, but that is acceptable.
 			if (system.oauthConfig) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.oauthConfig.clientSecret = `${system.alias!.toLocaleUpperCase()}_CLIENTSECRET`;
+				system.oauthConfig.clientSecret = `${system.alias!.toLocaleUpperCase()}_CLIENT_SECRET`;
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.oauthConfig.clientId = `${system.alias!.toLocaleUpperCase()}_CLIENTID`;
+				system.oauthConfig.clientId = `${system.alias!.toLocaleUpperCase()}_CLIENT_ID`;
 			}
 			if (system.type === SysType.OIDC && system.config) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.config.clientSecret = `${system.alias!.toLocaleUpperCase()}_CLIENTSECRET`;
+				system.config.clientSecret = `${system.alias!.toLocaleUpperCase()}_CLIENT_SECRET`;
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.config.clientId = `${system.alias!.toLocaleUpperCase()}_CLIENTID`;
+				system.config.clientId = `${system.alias!.toLocaleUpperCase()}_CLIENT_ID`;
 			}
 		});
 		return systems;
