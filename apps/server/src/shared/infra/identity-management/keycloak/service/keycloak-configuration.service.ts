@@ -28,13 +28,18 @@ export class KeycloakConfigurationService {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const flowAlias = 'Direct Broker Flow';
 		const executionProviders = ['idp-create-user-if-unique', 'idp-auto-link'];
-		const createFlowRequest = kc.realms.makeRequest<AuthenticationFlowRepresentation & { realmName: string }, void>({
-			method: 'POST',
+		const getFlowsRequest = kc.realms.makeRequest<{ realmName: string }, AuthenticationFlowRepresentation[]>({
+			method: 'GET',
 			path: '/{realmName}/authentication/flows',
 			urlParamKeys: ['realmName'],
 		});
-		const getFlowsRequest = kc.realms.makeRequest<{ realmName: string }, AuthenticationFlowRepresentation[]>({
-			method: 'GET',
+		const flows = await getFlowsRequest({ realmName: kc.realmName });
+		const flow = flows.find((tempFlow) => tempFlow.alias === flowAlias);
+		if (flow && flow.id) {
+			return;
+		}
+		const createFlowRequest = kc.realms.makeRequest<AuthenticationFlowRepresentation & { realmName: string }, void>({
+			method: 'POST',
 			path: '/{realmName}/authentication/flows',
 			urlParamKeys: ['realmName'],
 		});
@@ -61,17 +66,6 @@ export class KeycloakConfigurationService {
 			path: '/{realmName}/authentication/flows/{flowAlias}/executions',
 			urlParamKeys: ['realmName', 'flowAlias'],
 		});
-
-		const flows = await getFlowsRequest({ realmName: kc.realmName });
-		const flow = flows.find((tempFlow) => tempFlow.alias === flowAlias);
-		if (flow && flow.id) {
-			const deleteFlowRequest = kc.realms.makeRequest<{ realmName: string; id: string }, void>({
-				method: 'DELETE',
-				path: '/{realmName}/authentication/flows/{id}',
-				urlParamKeys: ['realmName', 'id'],
-			});
-			await deleteFlowRequest({ realmName: kc.realmName, id: flow.id });
-		}
 		await createFlowRequest({
 			realmName: kc.realmName,
 			alias: flowAlias,
