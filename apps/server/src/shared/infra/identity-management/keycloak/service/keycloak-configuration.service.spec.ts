@@ -225,7 +225,7 @@ describe('configureIdentityProviders', () => {
 
 	describe('configureBrokerFlows', () => {
 		beforeAll(() => {
-			kcApiRealmsMock.makeRequest.mockImplementation(() => async () => Promise.resolve([]));
+			kcApiRealmsMock.makeRequest.mockImplementation(() => async () => Promise.resolve([{ id: 'id' }]));
 		});
 
 		beforeEach(() => {
@@ -270,7 +270,7 @@ describe('configureIdentityProviders', () => {
 				})
 			);
 		});
-		it('should delete and create flow', async () => {
+		it('should skip flow creation', async () => {
 			kcApiRealmsMock.makeRequest.mockImplementation(
 				() => async () => Promise.resolve([{ alias: 'Direct Broker Flow', id: 'id' }])
 			);
@@ -278,44 +278,30 @@ describe('configureIdentityProviders', () => {
 			await expect(service.configureBrokerFlows()).resolves.not.toThrow();
 			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
 				expect.objectContaining({
-					method: 'POST',
-					path: '/{realmName}/authentication/flows',
-					urlParamKeys: ['realmName'],
-				})
-			);
-			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
-				expect.objectContaining({
 					method: 'GET',
 					path: '/{realmName}/authentication/flows',
 					urlParamKeys: ['realmName'],
 				})
 			);
-			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+			expect(kcApiRealmsMock.makeRequest).not.toBeCalledWith(
 				expect.objectContaining({
 					method: 'GET',
 					path: '/{realmName}/authentication/flows/{flowAlias}/executions',
 					urlParamKeys: ['realmName', 'flowAlias'],
 				})
 			);
-			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+			expect(kcApiRealmsMock.makeRequest).not.toBeCalledWith(
 				expect.objectContaining({
 					method: 'POST',
 					path: '/{realmName}/authentication/flows/{flowAlias}/executions/execution',
 					urlParamKeys: ['realmName', 'flowAlias'],
 				})
 			);
-			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
+			expect(kcApiRealmsMock.makeRequest).not.toBeCalledWith(
 				expect.objectContaining({
 					method: 'PUT',
 					path: '/{realmName}/authentication/flows/{flowAlias}/executions',
 					urlParamKeys: ['realmName', 'flowAlias'],
-				})
-			);
-			expect(kcApiRealmsMock.makeRequest).toBeCalledWith(
-				expect.objectContaining({
-					method: 'DELETE',
-					path: '/{realmName}/authentication/flows/{id}',
-					urlParamKeys: ['realmName', 'id'],
 				})
 			);
 		});
