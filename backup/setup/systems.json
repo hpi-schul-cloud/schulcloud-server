@@ -73,13 +73,13 @@
 			"$date": "2022-07-12T14:01:58.588Z"
 		},
 		"type": "oidc",
-		"alias": "iserv",
+		"alias": "oidcmock",
 		"config": {
-			"clientId": "IDENTITY_MANAGEMENT__DBC_IS_CLIENTID",
-			"clientSecret": "IDENTITY_MANAGEMENT__DBC_IS_CLIENTSECRET",
-			"authorizationUrl": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
-			"tokenUrl": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
-			"logoutUrl": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout"
+			"clientId": "erwin-credentials-mock-client",
+			"clientSecret": "Ierwin-credentials-mock-client-secret",
+			"authorizationUrl": "http://localhost:4011/connect/authorize",
+			"tokenUrl": "http://oidc-server-mock/connect/token",
+			"logoutUrl": "http://oidc-server-mock/connect/endsession"
 		}
 	}
 ]

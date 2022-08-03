@@ -30,6 +30,7 @@ data:
     ISERV_SYSTEM_ID=0000d186816abba584714c92
     SANIS_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $SANIS_CLIENT_SECRET)
     SANIS_SYSTEM_ID=0000d186816abba584714c93
+    OIDCMOCK_SYSTEM_ID=0000d186816abba584714c94
     mongo $DATABASE__URL --eval 'db.systems.remove( { } );'
     mongo $DATABASE__URL --eval 'db.systems.insert([
     {
@@ -82,6 +83,18 @@ data:
         "logoutEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/logout",
         "jwksEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/certs",
         "issuer": "https://auth.niedersachsen-login.schule/auth/realms/SANIS"
+      }
+    },
+    {
+      "_id": ObjectId("'$OIDCMOCK_SYSTEM_ID'"),
+      "alias" : "oidcmock",
+      "type" : "oidc",
+      "config": {
+        "clientId": "'$OIDCMOCK__CLIENT_ID'",
+        "clientSecret": "'$OIDCMOCK__CLIENT_SECRET'",
+        "authEndpoint": "'$OIDCMOCK__BASE_URL'/connect/token",
+        "tokenEndpoint": "'$OIDCMOCK__BASE_URL'/connect/authorize",
+        "logoutEndpoint": "'$OIDCMOCK__BASE_URL'/connect/endsession",
       }
     },
     {

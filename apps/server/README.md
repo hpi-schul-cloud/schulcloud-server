@@ -36,12 +36,14 @@ docker run \
   --name erwinidm \
   -p 8080:8080 \
   -p 8443:8443 \
-  -v "$PWD/backup/keycloak:/tmp/realms" \
+  -v "$PWD/backup/idm/keycloak:/tmp/realms" \
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest \
   "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
 ```
 
 To add seed data into ErWIn-IDM, use `npm run setup:idm` to reset and apply seed data.
+
+See [ErWIn-IDM specific documentation](./nestjs-application/keycloak.html) to learn how to add the ErWIn-IDM identity broker feature.
 
 ## How to start the application
 

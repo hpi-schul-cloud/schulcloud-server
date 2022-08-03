@@ -342,6 +342,18 @@
 				}
 			}
 		},
+		"OIDCMOCK": {
+			"type": "object",
+			"description": "OpenID Connect Identity Provider mock server.",
+			"required": ["BASE_URL"],
+			"properties": {
+				"BASE_URL": {
+					"type": "string",
+					"default": null,
+					"description": "The mock server base path."
+				}
+			}
+		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -591,9 +603,7 @@
 		"ETHERPAD": {
 			"type": "object",
 			"description": "Etherpad settings",
-			"required": [
-				"PAD_URI"
-			],
+			"required": ["PAD_URI"],
 			"properties": {
 				"PAD_URI": {
 					"type": "string",
