@@ -7,5 +7,6 @@ export class ProvisioningSystemInputDto {
 	}
 
 	provisioningStrategy: SystemProvisioningStrategy;
+
 	provisioningUrl?: string;
 }
