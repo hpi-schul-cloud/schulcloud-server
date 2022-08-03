@@ -79,7 +79,7 @@ export class System extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	url?: string;
 
-	@Property({ nullable: true, unique: true })
+	@Property({ nullable: true })
 	alias?: string;
 
 	@Property({ nullable: true })
