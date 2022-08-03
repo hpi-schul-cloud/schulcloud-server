@@ -15,25 +15,6 @@ import {
 	SuccessfulRes,
 } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.interface';
 
-function handleOcsRequest<T = unknown, R = void>(
-	source: Observable<AxiosResponse<OcsResponse<T>>>,
-	success: (data: T, meta: Meta) => R,
-	error: (err: unknown) => void
-): Promise<R> {
-	return firstValueFrom(source)
-		.then((resp: AxiosResponse<OcsResponse<T>>) => {
-			const { data, meta } = resp.data.ocs;
-			if (meta.statuscode === 100) {
-				return success(data, meta);
-			}
-			throw Error(meta.statuscode.toString());
-		})
-		.catch((err) => {
-			error(err);
-			throw new NotImplementedException();
-		});
-}
-
 @Injectable()
 export class NextcloudClient {
 	private readonly baseURL: string;
@@ -57,7 +38,7 @@ export class NextcloudClient {
 	public async findGroupId(groupName: string): Promise<string> {
 		const request = this.get<OcsResponse<NextcloudGroups>>(`/ocs/v1.php/cloud/groups?search=${groupName}`);
 
-		return handleOcsRequest<NextcloudGroups, string>(
+		return this.handleOcsRequest<NextcloudGroups, string>(
 			request,
 			(data: NextcloudGroups) => {
 				return data.groups[0];
@@ -71,7 +52,7 @@ export class NextcloudClient {
 	public async findGroupIdByTeamId(teamId: string): Promise<string> {
 		const request = this.get<OcsResponse<NextcloudGroups>>(`/ocs/v1.php/cloud/groups?search=${teamId}`);
 
-		return handleOcsRequest<NextcloudGroups, string>(
+		return this.handleOcsRequest<NextcloudGroups, string>(
 			request,
 			(data: NextcloudGroups) => {
 				if (data.groups.length > 0) {
@@ -91,7 +72,7 @@ export class NextcloudClient {
 			displayname: groupName,
 		});
 
-		return handleOcsRequest(
+		return this.handleOcsRequest(
 			request,
 			() => {
 				return this.logger.log(`Successfully created group with group id: ${groupId} in Nextcloud`);
@@ -102,19 +83,16 @@ export class NextcloudClient {
 		);
 	}
 
-	public removeGroup(groupId: string): Promise<void> {
+	public deleteGroup(groupId: string): Promise<void> {
 		const request = this.delete<OcsResponse<Meta>>(`/ocs/v1.php/cloud/groups/${groupId}`);
 
-		return handleOcsRequest<Meta, void>(
+		return this.handleOcsRequest<Meta, void>(
 			request,
-			(meta: Meta) => {
-				if (meta.statuscode === 100) {
-					return this.logger.log(`Successfully removed group with group id: ${groupId} in Nextcloud`);
-				}
-				throw Error();
+			() => {
+				return this.logger.log(`Successfully removed group with group id: ${groupId} in Nextcloud`);
 			},
 			(error) => {
-				throw new NotFoundException(error, `Group "${groupId}" could not be deleted in Nextcloud!`);
+				throw new UnprocessableEntityException(error, `Group "${groupId}" could not be deleted in Nextcloud!`);
 			}
 		);
 	}
@@ -125,7 +103,7 @@ export class NextcloudClient {
 			value: groupName,
 		});
 
-		return handleOcsRequest(
+		return this.handleOcsRequest(
 			request,
 			() => {
 				return this.logger.log(`Successfully renamed group with group id: ${groupId} in Nextcloud`);
@@ -136,13 +114,28 @@ export class NextcloudClient {
 		);
 	}
 
-	// TODO do we still need this, if we use teamIdToGroupId
+	public setGroupPermissions(groupId: string, folderId: number, permissions: boolean[]): Promise<void> {
+		const request = this.post<OcsResponse>(`/apps/groupfolders/folders/${folderId}/groups/${groupId}`, {
+			permissions: this.boolArrToNumber(permissions),
+		});
+
+		return this.handleOcsRequest(
+			request,
+			() => {
+				throw new NotImplementedException();
+			},
+			(error) => {
+				throw new NotImplementedException(error);
+			}
+		);
+	}
+
 	public async findGroupFolderIdForGroupId(groupId: string): Promise<number> {
 		const request = this.get<OcsResponse<GroupfoldersFolder[]>>(
 			`/apps/schulcloud/groupfolders/folders/group/${groupId}`
 		);
 
-		return handleOcsRequest<GroupfoldersFolder[], number>(
+		return this.handleOcsRequest<GroupfoldersFolder[], number>(
 			request,
 			(data: GroupfoldersFolder[]) => {
 				return data[0].folder_id;
@@ -156,7 +149,7 @@ export class NextcloudClient {
 	public deleteGroupFolder(folderId: number): Promise<void> {
 		const request = this.delete<OcsResponse<SuccessfulRes>>(`/apps/groupfolders/folders/${folderId}`);
 
-		return handleOcsRequest<SuccessfulRes>(
+		return this.handleOcsRequest<SuccessfulRes>(
 			request,
 			(data: SuccessfulRes) => {
 				if (data.success) {
@@ -170,28 +163,12 @@ export class NextcloudClient {
 		);
 	}
 
-	public setGroupPermissions(groupId: string, folderId: number, permissions: boolean[]): Promise<void> {
-		const request = this.post<OcsResponse>(`/apps/groupfolders/folders/${folderId}/groups/${groupId}`, {
-			permissions: this.boolArrToNumber(permissions),
-		});
-
-		return handleOcsRequest(
-			request,
-			() => {
-				throw new NotImplementedException();
-			},
-			(error) => {
-				throw new NotImplementedException(error);
-			}
-		);
-	}
-
 	public createGroupFolder(folderName: string): Promise<number> {
 		const request = this.post<OcsResponse<GroupfoldersCreated>>(`/apps/groupfolders/folders`, {
 			mountpoint: folderName,
 		});
 
-		return handleOcsRequest<GroupfoldersCreated, number>(
+		return this.handleOcsRequest<GroupfoldersCreated, number>(
 			request,
 			(data: GroupfoldersCreated) => {
 				const folderId = data.id;
@@ -214,7 +191,7 @@ export class NextcloudClient {
 			group: groupId,
 		});
 
-		return handleOcsRequest(
+		return this.handleOcsRequest(
 			request,
 			() => {
 				this.logger.log(`Successfully added group: ${groupId} to folder with folder id: ${folderId} in Nextcloud`);
@@ -228,7 +205,7 @@ export class NextcloudClient {
 	public getGroupUsers(groupId: string): Promise<string[]> {
 		const request = this.get<OcsResponse<GroupUsers>>(`/ocs/v1.php/cloud/groups/${groupId}/users`);
 
-		return handleOcsRequest<GroupUsers, string[]>(
+		return this.handleOcsRequest<GroupUsers, string[]>(
 			request,
 			(data: GroupUsers) => {
 				this.logger.log(`Successfully fetched all users in group: ${groupId} in Nextcloud`);
@@ -245,7 +222,7 @@ export class NextcloudClient {
 			groupid: groupId,
 		});
 
-		return handleOcsRequest<unknown, void>(
+		return this.handleOcsRequest(
 			request,
 			() => {
 				this.logger.log(`Successfully added user: ${userId} to group: ${groupId} in Nextcloud`);
@@ -262,7 +239,7 @@ export class NextcloudClient {
 	public removeUserFromGroup(userId: string, groupId: string): Promise<void> {
 		const request = this.delete<OcsResponse>(`/ocs/v1.php/cloud/users/${userId}/groups?groupid=${groupId}`);
 
-		return handleOcsRequest<unknown, void>(
+		return this.handleOcsRequest(
 			request,
 			() => {
 				this.logger.log(`Successfully remove user: ${userId} from group: ${groupId} in Nextcloud`);
@@ -281,7 +258,7 @@ export class NextcloudClient {
 			mountpoint: folderName,
 		});
 
-		return handleOcsRequest<unknown /* resp: AxiosResponse<OcsResponse<SuccessfulRes>> */, void>(
+		return this.handleOcsRequest(
 			request,
 			() => {
 				this.logger.log(`Successfully renamed folder with folder id: ${folderId} in Nextcloud`);
@@ -314,5 +291,24 @@ export class NextcloudClient {
 
 	public getNameWithPrefix(teamId: string): string {
 		return `${this.oidcInternalName}-${teamId}`;
+	}
+
+	protected handleOcsRequest<T = unknown, R = void>(
+		source: Observable<AxiosResponse<OcsResponse<T>>>,
+		success: (data: T, meta: Meta) => R,
+		error: (err: unknown) => void
+	): Promise<R> {
+		return firstValueFrom(source)
+			.then((resp: AxiosResponse<OcsResponse<T>>) => {
+				const { data, meta } = resp.data.ocs;
+				if (meta.statuscode === 100) {
+					return success(data, meta);
+				}
+				throw new Error(meta.statuscode.toString());
+			})
+			.catch((err) => {
+				error(err);
+				throw new NotImplementedException();
+			});
 	}
 }

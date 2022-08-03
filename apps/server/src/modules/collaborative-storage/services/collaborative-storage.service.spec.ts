@@ -14,6 +14,7 @@ import { Logger } from '@src/core/logger';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { TeamDto } from './dto/team.dto';
 
 describe('Collaborative Storage Service', () => {
 	let orm: MikroORM;
@@ -94,8 +95,9 @@ describe('Collaborative Storage Service', () => {
 	describe('Update TeamPermissions For Role', () => {
 		it('should call the adapter', async () => {
 			jest.spyOn(service, 'findTeamById').mockResolvedValue({
+				id: 'testId',
 				name: 'testTeam',
-				userIds: [{ userId: 'testUser', schoolId: 'testSchool', role: 'testRoleId' }],
+				teamUsers: [{ userId: 'testUser', schoolId: 'testSchool', roleId: 'testRoleId' }],
 			});
 			await service.updateTeamPermissionsForRole(mockId, mockId, mockId, {
 				read: false,
@@ -121,14 +123,32 @@ describe('Collaborative Storage Service', () => {
 				})
 			).rejects.toThrow(ForbiddenException);
 		});
+	});
 
-		describe('delete Team in the Nextcloud', () => {
-			const teamIdMock = 'teamIdMock';
+	describe('Delete team in the nextcloud', () => {
+		const teamIdMock = 'teamIdMock';
 
-			it('should call the adapter', () => {
-				service.deleteTeam(teamIdMock);
-				expect(adapter.deleteTeam).toHaveBeenCalled();
-			});
+		it('should call the adapter', async () => {
+			await service.deleteTeam(teamIdMock);
+			expect(adapter.deleteTeam).toHaveBeenCalledWith(teamIdMock);
+		});
+	});
+
+	describe('Create team in the nextcloud', () => {
+		const teamDto: TeamDto = { id: 'id', name: 'name', teamUsers: [] };
+
+		it('should call the adapter', async () => {
+			await service.createTeam(teamDto);
+			expect(adapter.createTeam).toHaveBeenCalledWith(teamDto);
+		});
+	});
+
+	describe('Update team in the nextcloud', () => {
+		const teamDto: TeamDto = { id: 'id', name: 'name', teamUsers: [] };
+
+		it('should call the adapter', async () => {
+			await service.updateTeam(teamDto);
+			expect(adapter.updateTeam).toHaveBeenCalledWith(teamDto);
 		});
 	});
 });

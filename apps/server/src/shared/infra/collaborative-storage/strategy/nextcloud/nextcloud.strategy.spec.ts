@@ -1,52 +1,58 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	GroupfoldersFolder,
-	Meta,
-	NextcloudGroups,
-	NextcloudStrategy,
-	OcsResponse,
-	SuccessfulRes,
-} from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
-import { HttpService } from '@nestjs/axios';
-import { AxiosResponse } from 'axios';
-import { Observable, of } from 'rxjs';
-import { NotFoundException } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
+import { PseudonymsRepo } from '@shared/repo/index';
+import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
+import { TeamRolePermissionsDto } from '@shared/infra/collaborative-storage/dto/team-role-permissions.dto';
+import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
+import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
+import { setupEntities, userFactory } from '@shared/testing/index';
+import { PseudonymDO, RoleName, User } from '@shared/domain/index';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { MikroORM } from '@mikro-orm/core';
+import { UnprocessableEntityException } from '@nestjs/common';
 
-const createAxiosResponse = (
-	data: OcsResponse<NextcloudGroups | GroupfoldersFolder[] | SuccessfulRes | []> | Record<string, unknown>
-): AxiosResponse<
-	OcsResponse<NextcloudGroups | GroupfoldersFolder[] | SuccessfulRes | []> | OcsResponse<Meta> | Record<string, unknown>
-> => ({
-	data: data ?? {},
-	status: 0,
-	statusText: '',
-	headers: {},
-	config: {},
-});
+class NextcloudStrategySpec extends NextcloudStrategy {
+	static specGenerateGroupId(dto: TeamRolePermissionsDto): string {
+		return super.generateGroupId(dto);
+	}
 
-const createOcsResponse = (
-	data: NextcloudGroups | GroupfoldersFolder[] | SuccessfulRes | [],
-	meta?: Meta
-): OcsResponse<NextcloudGroups | GroupfoldersFolder[] | SuccessfulRes | []> => ({ ocs: { data, meta } });
+	static specGenerateGroupFolderName(teamId: string, teamName: string): string {
+		return super.generateGroupFolderName(teamId, teamName);
+	}
+
+	specUpdateTeamUsersInGroup(groupId: string, teamUsers: TeamUserDto[]): Promise<void[][]> {
+		return super.updateTeamUsersInGroup(groupId, teamUsers);
+	}
+}
 
 describe('NextCloud Adapter Strategy', () => {
 	let module: TestingModule;
-	let strategy: NextcloudStrategy;
+	let orm: MikroORM;
+	let strategy: NextcloudStrategySpec;
+	let client: DeepMocked<NextcloudClient>;
+	let pseudonymsRepo: DeepMocked<PseudonymsRepo>;
+	const toolId = 'toolId';
 
-	let httpService: DeepMocked<HttpService>;
-
-	const groupfoldersFolders: GroupfoldersFolder[] = [{ folder_id: 'testFolderId' }];
-	const nextcloudGroups: NextcloudGroups = { groups: ['testGroupId'] };
+	afterAll(async () => {
+		jest.clearAllMocks();
+		await orm.close();
+		await module.close();
+	});
 
 	beforeAll(async () => {
+		jest.spyOn(Configuration, 'get').mockImplementation(() => toolId);
+
 		module = await Test.createTestingModule({
 			providers: [
-				NextcloudStrategy,
+				NextcloudStrategySpec,
 				{
-					provide: HttpService,
-					useValue: createMock<HttpService>(),
+					provide: NextcloudClient,
+					useValue: createMock<NextcloudClient>(),
+				},
+				{
+					provide: PseudonymsRepo,
+					useValue: createMock<PseudonymsRepo>(),
 				},
 				{
 					provide: Logger,
@@ -54,191 +60,260 @@ describe('NextCloud Adapter Strategy', () => {
 				},
 			],
 		}).compile();
-		strategy = module.get(NextcloudStrategy);
-		httpService = module.get(HttpService);
+		strategy = module.get(NextcloudStrategySpec);
+		client = module.get(NextcloudClient);
+		pseudonymsRepo = module.get(PseudonymsRepo);
+		orm = await setupEntities();
 	});
 
-	describe('Update TeamPermissions For Role', () => {
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
+	describe('updateTeamPermissionsForRole', () => {
+		let teamRolePermissionsDto: TeamRolePermissionsDto;
+
 		beforeEach(() => {
-			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
-				const resp: AxiosResponse = createAxiosResponse({});
-				if (url.endsWith('folders/group/testGroupId')) {
-					resp.data = createOcsResponse(groupfoldersFolders);
-				}
-				if (url.endsWith('cloud/groups?search=TeamName-TeamId-RoleName')) {
-					resp.data = createOcsResponse(nextcloudGroups);
-				}
-				return of(resp);
-			});
-			httpService.post.mockImplementation((): Observable<AxiosResponse> => {
-				return of(createAxiosResponse(createOcsResponse({ groups: [] })));
-			});
+			teamRolePermissionsDto = {
+				teamId: 'teamId',
+				teamName: 'teamName',
+				roleName: 'roleName',
+				permissions: [],
+			};
 		});
 
-		afterAll(() => {
-			jest.clearAllMocks();
+		it('update team permissions if nextcloud group can be found', async () => {
+			// Arrange
+			const groupId = 'groupId';
+			const folderId = 1;
+
+			client.findGroupId.mockResolvedValueOnce(groupId);
+			client.findGroupFolderIdForGroupId.mockResolvedValueOnce(folderId);
+
+			// Act
+			await strategy.updateTeamPermissionsForRole(teamRolePermissionsDto);
+
+			// Assert
+			expect(client.findGroupId).toHaveBeenCalledWith(
+				NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto)
+			);
+			expect(client.findGroupFolderIdForGroupId).toHaveBeenCalledWith(groupId);
 		});
 
-		it('should call the setGroupPermissions method', async () => {
-			await strategy.updateTeamPermissionsForRole({
-				permissions: [false, true, false, true, false],
-				roleName: 'RoleName',
-				teamId: 'TeamId',
-				teamName: 'TeamName',
-			});
-			expect(httpService.get).toBeCalledTimes(2);
-			expect(httpService.post).toBeCalledTimes(1);
-		});
+		it('does not update team permissions if nextcloud group can not be found', async () => {
+			// Arrange
+			const groupId = NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto);
 
-		it('should not find the group and throw a NotFoundException', async () => {
-			httpService.get.mockImplementation((): Observable<AxiosResponse> => {
-				return of(createAxiosResponse({}));
-			});
-			await expect(
-				strategy.updateTeamPermissionsForRole({
-					permissions: [false, false, false, false, false],
-					roleName: 'RoleName',
-					teamId: 'TeamId',
-					teamName: 'noName',
-				})
-			).rejects.toThrow(NotFoundException);
-		});
+			client.findGroupId.mockResolvedValueOnce(groupId);
+			client.findGroupFolderIdForGroupId.mockRejectedValueOnce(new Error('some nextcloud error'));
 
-		it('should not find the folder and throw a NotFoundException', async () => {
-			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
-				const resp: AxiosResponse = createAxiosResponse({});
-				if (url.endsWith('groupfolders/folders')) {
-					resp.data = [];
-				}
-				if (url.endsWith('cloud/groups?search=TeamName-TeamId-RoleName')) {
-					resp.data = createOcsResponse(nextcloudGroups);
-				}
-				return of(resp);
-			});
-			await expect(
-				strategy.updateTeamPermissionsForRole({
-					permissions: [false, false, false, false, false],
-					roleName: 'RoleName',
-					teamId: 'TeamId',
-					teamName: 'TeamName',
-				})
-			).rejects.toThrow(NotFoundException);
+			// Act
+			await strategy.updateTeamPermissionsForRole(teamRolePermissionsDto);
+
+			// Assert
+			expect(client.findGroupId).toHaveBeenCalledWith(groupId);
+			expect(client.findGroupFolderIdForGroupId).toHaveBeenCalledWith(groupId);
 		});
 	});
 
-	const teamIdMock = 'teamIdMock';
-	describe('Delete Team from Nextcloud', () => {
+	describe('deleteTeam', () => {
+		it('delete team if nextcloud group exists', async () => {
+			// Arrange
+			const groupId = 'groupId';
+			const teamId = 'teamId';
+			const folderId = 1;
+
+			client.findGroupFolderIdForGroupId.mockResolvedValue(folderId);
+
+			// Act
+			await strategy.deleteTeam(teamId);
+
+			// Assert
+			expect(client.findGroupFolderIdForGroupId).toHaveBeenCalledWith(groupId);
+			expect(client.deleteGroup).toHaveBeenCalledWith(groupId);
+			expect(client.deleteGroupFolder).toHaveBeenCalledWith(folderId);
+		});
+	});
+
+	describe('createTeam', () => {
+		it('should call client to create nextcloud group', async () => {
+			// Arrange
+			const groupdId = 'groupdId';
+			const teamDto: TeamDto = {
+				teamUsers: [{ userId: 'userId', schoolId: 'schoolId', roleId: 'roleId' }],
+				id: 'id',
+				name: 'name',
+			};
+
+			client.getNameWithPrefix.mockReturnValue(groupdId);
+			pseudonymsRepo.findByUserAndTool.mockRejectedValueOnce(undefined);
+
+			// Act
+			await strategy.createTeam(teamDto);
+
+			// Assert
+			expect(client.createGroup).toHaveBeenCalledWith(groupdId, teamDto.name);
+		});
+	});
+
+	describe('updateTeam', () => {
+		let teamDto: TeamDto;
+		let nextCloudUserId: string;
+
 		beforeEach(() => {
-			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
-				const resp: AxiosResponse = createAxiosResponse({});
-				if (url.endsWith('cloud/groups?search=teamIdMock')) {
-					resp.data = createOcsResponse(nextcloudGroups);
-				}
-				if (url.endsWith('cloud/groups?search=teamIdNoGroups')) {
-					resp.data = createOcsResponse({ groups: [] });
-				}
-				if (url.endsWith('apps/schulcloud/groupfolders/folders/group/testGroupId')) {
-					resp.data = createOcsResponse(groupfoldersFolders);
-				}
-				return of(resp);
-			});
-			httpService.delete.mockImplementation((url: string): Observable<AxiosResponse> => {
-				const resp: AxiosResponse = createAxiosResponse({});
-				if (url.endsWith('/groups/testGroupId')) {
-					resp.data = createOcsResponse([], { statuscode: 100 });
-				}
-				if (url.endsWith('/groupfolders/folders/testFolderId')) {
-					resp.data = createOcsResponse({ success: true });
-				}
-				return of(resp);
-			});
+			teamDto = {
+				teamUsers: [{ userId: 'userId', schoolId: 'schoolId', roleId: 'roleId' }],
+				id: 'id',
+				name: 'name',
+			};
+			nextCloudUserId = 'nextcloudUserId';
 		});
 
-		afterEach(() => {
-			jest.clearAllMocks();
-			jest.resetAllMocks();
+		it('should throw error when teamId is missing', async () => {
+			// Arrange
+			teamDto.id = '';
+
+			// Act & Assert
+			await expect(strategy.updateTeam(teamDto)).rejects.toThrow(UnprocessableEntityException);
 		});
 
-		it('should remove the groups and delete the groupfolder ', async () => {
-			await strategy.deleteTeam(teamIdMock);
-			expect(httpService.get).toBeCalledTimes(2);
-			expect(httpService.delete).toBeCalledTimes(2);
+		it('should update team user and name if those exist', async () => {
+			// Arrange
+			const folderId = 1;
+			const groupId = 'groupId';
+			client.getNameWithPrefix.mockReturnValue(groupId);
+			client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
+			pseudonymsRepo.findByUserAndTool.mockRejectedValueOnce(undefined);
+			client.findGroupFolderIdForGroupId.mockResolvedValueOnce(folderId);
+
+			// Act
+			await strategy.updateTeam(teamDto);
+
+			// Assert
+			expect(client.renameGroup).toHaveBeenCalledWith(groupId, teamDto.name);
+			const expectedFolderName: string = NextcloudStrategySpec.specGenerateGroupFolderName(teamDto.id, teamDto.name);
+			expect(client.changeGroupFolderName).toHaveBeenCalledWith(folderId, expectedFolderName);
 		});
 
-		it('should throw a NotFoundException when folderId is not found', async () => {
-			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
-				const resp: AxiosResponse = createAxiosResponse({});
-				if (url.endsWith('groupfolders/folders')) {
-					resp.data = {};
-				}
-				if (url.endsWith('cloud/groups?search=TeamName-TeamId-RoleName')) {
-					resp.data = createOcsResponse(nextcloudGroups);
-				}
-				return of(resp);
+		it('should not update team user and name if do not exist', async () => {
+			// Arrange
+			const groupId = 'groupId';
+			teamDto.teamUsers = [];
+			teamDto.name = '';
+			client.getNameWithPrefix.mockReturnValue(groupId);
+
+			// Act
+			await strategy.updateTeam(teamDto);
+
+			// Assert
+			expect(client.getGroupUsers).not.toHaveBeenCalled();
+			expect(client.findGroupFolderIdForGroupId).not.toHaveBeenCalled();
+			expect(client.renameGroup).not.toHaveBeenCalled();
+			expect(client.changeGroupFolderName).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('updateTeamUsersInGroup', () => {
+		let user: User;
+		let teamUsers: TeamUserDto[];
+		let pseudonymDo: PseudonymDO;
+		let nextCloudUserId: string;
+		let groupId: string;
+
+		beforeEach(() => {
+			user = userFactory.withRole(RoleName.TEAMMEMBER).buildWithId();
+			teamUsers = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
+
+			pseudonymDo = new PseudonymDO({
+				userId: user.id,
+				toolId,
+				pseudonym: `ps${user.id}`,
 			});
-			await expect(strategy.deleteTeam(teamIdMock)).rejects.toThrow(NotFoundException);
+
+			nextCloudUserId = `prefix-${pseudonymDo.pseudonym}`;
+			groupId = 'groupId';
 		});
 
-		it('should throw a NotFoundException when groupId is not found', async () => {
-			jest.resetAllMocks();
-			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
-				const resp: AxiosResponse = createAxiosResponse({});
-				if (url.endsWith('cloud/groups?search=teamIdNoGroups')) {
-					resp.data = createOcsResponse({ groups: [] });
-				}
-				return of(resp);
-			});
-			await expect(strategy.deleteTeam('teamIdNoGroups')).rejects.toThrowError();
-			await expect(strategy.deleteTeam('teamIdNoGroups')).rejects.toThrow(NotFoundException);
+		it('should add one user to group in nextcloud if added in sc team', async () => {
+			// Arrange
+			client.getGroupUsers.mockResolvedValue([]);
+			pseudonymsRepo.findByUserAndTool.mockResolvedValue(pseudonymDo);
+			client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
+
+			// Act
+			await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+			// Assert
+			expect(client.getGroupUsers).toHaveBeenCalledWith(groupId);
+			expect(pseudonymsRepo.findByUserAndTool).toHaveBeenCalledWith(teamUsers[0].userId, toolId);
+			expect(client.getNameWithPrefix).toHaveBeenCalledWith(pseudonymDo.pseudonym);
+			expect(client.removeUserFromGroup).not.toHaveBeenCalled();
+			expect(client.addUserToGroup).toHaveBeenCalledWith(nextCloudUserId, groupId);
 		});
 
-		it('should throw a NotFoundException when group could not be removed', async () => {
-			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
-				const resp: AxiosResponse = createAxiosResponse({});
-				if (url.endsWith('cloud/groups?search=teamIdMock')) {
-					resp.data = createOcsResponse(nextcloudGroups);
-				}
-				if (url.endsWith('apps/schulcloud/groupfolders/folders/group/testGroupId')) {
-					resp.data = createOcsResponse(groupfoldersFolders);
-				}
-				return of(resp);
-			});
-			httpService.delete.mockImplementation((url: string): Observable<AxiosResponse> => {
-				const resp: AxiosResponse = createAxiosResponse({});
-				if (url.endsWith('/groups/testGroupId')) {
-					resp.data = createOcsResponse([], { statuscode: 101 });
-				}
-				if (url.endsWith('/groupfolders/folders/testFolderId')) {
-					resp.data = createOcsResponse({ success: true });
-				}
-				return of(resp);
-			});
-			await expect(strategy.deleteTeam(teamIdMock)).rejects.toThrowError();
-			await expect(strategy.deleteTeam(teamIdMock)).rejects.toThrow(NotFoundException);
+		it('should remove one user from group in nextcloud if not exist in sc team', async () => {
+			// Arrange
+			client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
+			teamUsers = [];
+
+			// Act
+			await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+			// Assert
+			expect(client.getGroupUsers).toHaveBeenCalledWith(groupId);
+			expect(pseudonymsRepo.findByUserAndTool).not.toHaveBeenCalled();
+			expect(client.getNameWithPrefix).not.toHaveBeenCalled();
+			expect(client.removeUserFromGroup).toHaveBeenCalledWith(nextCloudUserId, groupId);
+			expect(client.addUserToGroup).not.toHaveBeenCalled();
 		});
 
-		it.skip('should throw a NotFoundException when folder could not be deleted', async () => {
-			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
-				const resp: AxiosResponse = createAxiosResponse({});
-				if (url.endsWith('cloud/groups?search=teamIdMock')) {
-					resp.data = createOcsResponse(nextcloudGroups);
-				}
-				if (url.endsWith('apps/schulcloud/groupfolders/folders/group/testGroupId')) {
-					resp.data = createOcsResponse(groupfoldersFolders);
-				}
-				return of(resp);
-			});
-			httpService.delete.mockImplementation((url: string): Observable<AxiosResponse> => {
-				const resp: AxiosResponse = createAxiosResponse({});
-				if (url.endsWith('/groups/testGroupId')) {
-					resp.data = createOcsResponse([], { statuscode: 100 });
-				}
-				if (url.endsWith('/groupfolders/folders/testFolderId')) {
-					resp.data = createOcsResponse([]);
-				}
-				return of(resp);
-			});
-			await expect(strategy.deleteTeam(teamIdMock)).rejects.toThrow(NotFoundException);
+		it('should not add or remove if no pseudonym found', async () => {
+			// Arrange
+			teamUsers = [
+				{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id },
+				{ userId: 'invalidId', schoolId: 'someSchool', roleId: 'someRole' },
+			];
+
+			client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
+			pseudonymsRepo.findByUserAndTool.mockResolvedValueOnce(pseudonymDo).mockRejectedValueOnce(undefined);
+			client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
+
+			// Act
+			await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+			// Assert
+			expect(client.addUserToGroup).not.toHaveBeenCalled();
+			expect(client.removeUserFromGroup).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('generateGroupFolderName', () => {
+		// Arrange
+		const teamId = 'teamId';
+		const teamName = 'teamName';
+
+		// Act
+		const folderName: string = NextcloudStrategySpec.specGenerateGroupFolderName(teamId, teamName);
+
+		// Assert
+		expect(folderName).toEqual(`${teamName} (${teamId})`);
+	});
+
+	describe('generateGroupId', () => {
+		it('should return concatenated groupId', () => {
+			// Arrange
+			const dto: TeamRolePermissionsDto = {
+				teamId: 'teamId',
+				teamName: 'teamName',
+				roleName: 'roleName',
+				permissions: [],
+			};
+
+			// Act
+			const groupId: string = NextcloudStrategySpec.specGenerateGroupId(dto);
+
+			// Assert
+			expect(groupId).toEqual(`${dto.teamName}-${dto.teamId}-${dto.roleName}`);
 		});
 	});
 });

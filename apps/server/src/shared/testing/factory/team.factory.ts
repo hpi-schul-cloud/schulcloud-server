@@ -9,22 +9,22 @@ import { roleFactory } from '@shared/testing/factory/role.factory';
 class TeamFactory extends BaseFactory<Team, ITeamProperties> {
 	withRoleAndUserId(role: Role, userId: string): this {
 		const params: DeepPartial<ITeamProperties> = {
-			userIds: [teamUserFactory.withRoleAndUserId(role, userId).buildWithId()],
+			teamUsers: [teamUserFactory.withRoleAndUserId(role, userId).buildWithId()],
 		};
 		return this.params(params);
 	}
 }
 
 export const teamFactory = TeamFactory.define(Team, ({ sequence }) => {
-	const role = roleFactory.build();
-	const schoolId = schoolFactory.build();
-	const userId = userFactory.build({ roles: [role] });
+	const role = roleFactory.buildWithId();
+	const schoolId = schoolFactory.buildWithId();
+	const userId = userFactory.buildWithId({ roles: [role] });
 	return {
 		name: `team #${sequence}`,
-		userIds: [
+		teamUsers: [
 			{
-				userId,
-				schoolId,
+				user: userId,
+				school: schoolId,
 				role,
 			},
 		],

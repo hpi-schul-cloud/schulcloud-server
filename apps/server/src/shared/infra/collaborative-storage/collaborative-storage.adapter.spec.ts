@@ -5,6 +5,8 @@ import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-s
 import { RoleName } from '@shared/domain';
 import { createMock } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
+import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 class TestStrategy implements ICollaborativeStorageStrategy {
 	baseURL: string;
@@ -16,7 +18,19 @@ class TestStrategy implements ICollaborativeStorageStrategy {
 	updateTeamPermissionsForRole(): void {}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	deleteTeam(teamId: string): void {}
+	deleteTeam(teamId: string): Promise<void> {
+		return Promise.resolve();
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	createTeam(team: TeamDto): Promise<void> {
+		return Promise.resolve();
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	updateTeam(team: TeamDto): Promise<void> {
+		return Promise.resolve();
+	}
 }
 
 describe('CollaborativeStorage Adapter', () => {
@@ -43,7 +57,7 @@ describe('CollaborativeStorage Adapter', () => {
 		strat = adapter.strategy;
 	});
 
-	describe('Set Strategy', () => {
+	describe('setStrategy', () => {
 		it('should set a new strategy', () => {
 			const testStrat = new TestStrategy();
 			adapter.setStrategy(testStrat);
@@ -54,7 +68,7 @@ describe('CollaborativeStorage Adapter', () => {
 		});
 	});
 
-	describe('Update Team Permissions For Role', () => {
+	describe('updateTeamPermissionsForRole', () => {
 		it('should call the strategy', () => {
 			adapter.updateTeamPermissionsForRole(
 				{
@@ -75,11 +89,27 @@ describe('CollaborativeStorage Adapter', () => {
 		});
 	});
 
-	describe('Delete Team from Nextcloud', () => {
-		it('should call the strategy', () => {
-			const teamIdMock = 'teamIdMock';
-			adapter.deleteTeam(teamIdMock);
+	describe('deleteTeam', () => {
+		it('should call the strategy', async () => {
+			const teamIdMock = new ObjectId().toHexString();
+			await adapter.deleteTeam(teamIdMock);
 			expect(strat.deleteTeam).toHaveBeenCalled();
+		});
+	});
+
+	describe('createTeam', () => {
+		it('should call the strategy', async () => {
+			const teamDto: TeamDto = { id: 'id', name: 'name', teamUsers: [] };
+			await adapter.createTeam(teamDto);
+			expect(strat.deleteTeam).toHaveBeenCalled();
+		});
+	});
+
+	describe('updateTeam', () => {
+		it('should call the strategy', async () => {
+			const teamDto: TeamDto = { id: 'id', name: 'name', teamUsers: [] };
+			await adapter.updateTeam(teamDto);
+			expect(strat.updateTeam).toHaveBeenCalled();
 		});
 	});
 });

@@ -5,7 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 export const pseudonymFactory = BaseFactory.define<Pseudonym, IPseudonymProperties>(Pseudonym, ({ sequence }) => {
 	return {
 		pseudonym: `pseudonym-${sequence}`,
-		toolId: new ObjectId(`toolId-${sequence}`),
-		userId: new ObjectId(`userId-${sequence}`),
+		toolId: new ObjectId(),
+		userId: new ObjectId(),
 	};
 });

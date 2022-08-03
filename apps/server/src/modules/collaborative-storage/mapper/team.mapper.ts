@@ -10,14 +10,14 @@ export class TeamMapper {
 	 * @return The Dto
 	 */
 	public mapEntityToDto(teamEntity: Team): TeamDto {
-		const userIdDto: TeamUserDto[] = teamEntity.userIds.map(
+		const teamUsers: TeamUserDto[] = teamEntity.teamUsers.map(
 			(teamUser) =>
 				new TeamUserDto({
-					userId: teamUser.userId.id,
+					userId: teamUser.user.id,
 					roleId: teamUser.role.id,
-					schoolId: teamUser.schoolId.id,
+					schoolId: teamUser.school.id,
 				})
 		);
-		return new TeamDto({ id: teamEntity.id, name: teamEntity.name, teamUsers: userIdDto });
+		return new TeamDto({ id: teamEntity.id, name: teamEntity.name, teamUsers });
 	}
 }

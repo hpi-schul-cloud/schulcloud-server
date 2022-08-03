@@ -31,15 +31,23 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 
 	async updateTeamPermissionsForRole(dto: TeamRolePermissionsDto) {
 		const groupId: string = await this.client.findGroupId(NextcloudStrategy.generateGroupId(dto));
-		const folderId: number = await this.client.findGroupFolderIdForGroupId(groupId);
-		this.client.setGroupPermissions(groupId, folderId, dto.permissions);
+		let folderId: number;
+		// TODO discuss
+		try {
+			folderId = await this.client.findGroupFolderIdForGroupId(groupId);
+			await this.client.setGroupPermissions(groupId, folderId, dto.permissions);
+		} catch (e) {
+			this.logger.log(
+				`Permissions in nextcloud were not set because of missing groupId or folderId for teamId ${dto.teamId}`
+			);
+		}
 	}
 
 	async deleteTeam(teamId: string): Promise<void> {
-		const groupId: string = await this.client.findGroupIdByTeamId(teamId);
+		const groupId: string = this.client.getNameWithPrefix(teamId);
 		if (groupId) {
 			const folderId: number = await this.client.findGroupFolderIdForGroupId(groupId);
-			await this.client.removeGroup(groupId);
+			await this.client.deleteGroup(groupId);
 			await this.client.deleteGroupFolder(folderId);
 		}
 	}
@@ -66,7 +74,7 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 
 		const groupId: string = this.client.getNameWithPrefix(team.id);
 
-		if (team.teamUsers) {
+		if (team.teamUsers && team.teamUsers.length > 0) {
 			await this.updateTeamUsersInGroup(groupId, team.teamUsers);
 		}
 

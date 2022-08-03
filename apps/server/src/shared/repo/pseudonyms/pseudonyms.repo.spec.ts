@@ -70,7 +70,7 @@ describe('Pseudonym Repo', () => {
 			await em.persistAndFlush(entity);
 
 			// Act
-			const result = await repo.findByUserAndTool(entity.userId, entity.toolId);
+			const result = await repo.findByUserAndTool(entity.userId.toHexString(), entity.toolId.toHexString());
 
 			// Assert
 			expect(result.id).toEqual(entity.id);
@@ -78,7 +78,9 @@ describe('Pseudonym Repo', () => {
 
 		it('should throw an Error if the scope mismatches the idtype', async () => {
 			const entity: Pseudonym = pseudonymFactory.buildWithId();
-			await expect(repo.findByUserAndTool(entity.userId, entity.toolId)).rejects.toThrow(NotFoundError);
+			await expect(repo.findByUserAndTool(entity.userId.toHexString(), entity.toolId.toHexString())).rejects.toThrow(
+				NotFoundError
+			);
 		});
 	});
 
@@ -92,8 +94,8 @@ describe('Pseudonym Repo', () => {
 				updatedAt: new Date('2022-07-20'),
 				createdAt: new Date('2022-07-20'),
 				pseudonym: uuidv4(),
-				toolId: new ObjectId().toHexString(),
-				userId: new ObjectId().toHexString(),
+				toolId: new ObjectId(),
+				userId: new ObjectId(),
 			};
 
 			// Act
