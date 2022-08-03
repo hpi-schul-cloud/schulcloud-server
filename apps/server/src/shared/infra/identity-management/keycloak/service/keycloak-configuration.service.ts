@@ -17,6 +17,8 @@ enum ConfigureAction {
 	DELETE = 'delete',
 }
 
+export const flowAlias = 'Direct Broker Flow';
+
 export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
@@ -28,7 +30,6 @@ export class KeycloakConfigurationService {
 
 	public async configureBrokerFlows(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		const flowAlias = 'Direct Broker Flow';
 		const executionProviders = ['idp-create-user-if-unique', 'idp-auto-link'];
 		const createFlowRequest = kc.realms.makeRequest<AuthenticationFlowRepresentation & { realmName: string }, void>({
 			method: 'POST',
@@ -171,6 +172,7 @@ export class KeycloakConfigurationService {
 				providerId: system.type,
 				alias: system.alias,
 				enabled: true,
+				firstBrokerLoginFlowAlias: flowAlias,
 				config: {
 					clientId: system.config.clientId,
 					clientSecret: system.config.clientSecret,
@@ -191,6 +193,7 @@ export class KeycloakConfigurationService {
 					providerId: system.type,
 					alias: system.alias,
 					enabled: true,
+					firstBrokerLoginFlowAlias: flowAlias,
 					config: {
 						clientId: system.config.clientId,
 						clientSecret: system.config.clientSecret,
