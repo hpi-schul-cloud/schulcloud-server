@@ -271,8 +271,13 @@ class EduSharingConnector {
 				`contentType=FILES`,
 				`skipCount=${skipCount}`,
 				`maxItems=${maxItems}`,
+<<<<<<< HEAD
 				`sortProperties=${sortProperties}`,
 				`sortAscending=${sortAscending}`,
+=======
+				`sortProperties=cclom:title`,
+				`sortAscending=false`,
+>>>>>>> lern-store change sortProperties to title
 				`propertyFilter=-all-`,
 			].join('&')}`;
 
