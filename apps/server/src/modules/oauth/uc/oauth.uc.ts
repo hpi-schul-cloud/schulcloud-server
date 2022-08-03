@@ -13,8 +13,6 @@ export class OauthUc {
 	async startOauth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
 		this.logger.debug('starting oauth process...');
 		const promise: Promise<OAuthResponse> = this.oauthService.processOAuth(query, systemId);
-		const oAuthResponse: OAuthResponse = await promise;
-
 		return promise;
 	}
 }
