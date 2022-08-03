@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios';
 import {
 	BadRequestException,
 	Body,
@@ -23,6 +24,7 @@ import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
+import { catchError, lastValueFrom } from 'rxjs';
 import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
 import {
@@ -37,9 +39,7 @@ import {
 	RenameFileParams,
 	SingleFileParams,
 } from './dto';
-
-import { HttpService } from '@nestjs/axios';
-import { catchError, lastValueFrom } from 'rxjs';
+import FormData = require('form-data');
 
 @ApiTags('file')
 @Authenticate('jwt')
@@ -61,7 +61,7 @@ export class FilesStorageController {
 	async uploadFromUrl(
 		@Body() _: FileUrlParams,
 		@Param() params: FileRecordParams,
-		@CurrentUser() currentUser: ICurrentUser, //:Promise<FileRecordResponse>
+		@CurrentUser() currentUser: ICurrentUser, // :Promise<FileRecordResponse>
 		@JWT() authToken: string
 	) {
 		console.log('body', _);
@@ -87,18 +87,30 @@ export class FilesStorageController {
 				const responseImg = await lastValueFrom(
 					this.httpService
 						// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-						.get(response.data.url)
+						.get(response.data.url, { responseType: 'stream' })
 				);
 
-				const res = await this.filesStorageUC.upload(
-					currentUser.userId,
-					params,
-					responseImg.request as unknown as Request
+				// console.log((responseImg.headers['content-type'] = 'multipart/form-data'));
+
+				const form = new FormData();
+				form.append('file', responseImg.data);
+
+				const formHeaders = form.getHeaders();
+
+				const r = await lastValueFrom(
+					this.httpService.post(
+						`http://localhost:4444/api/v3/file/upload/${params.schoolId}/${params.parentType}/${params.parentId}`,
+						form,
+						{
+							headers: {
+								Authorization: `Bearer ${authToken}`,
+								...formHeaders,
+							},
+						}
+					)
 				);
 
-				const res1 = new FileRecordResponse(res);
-
-				return res1;
+				return r.data;
 			}
 		} catch (error) {
 			console.log('error', error);

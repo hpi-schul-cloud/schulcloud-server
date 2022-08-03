@@ -71,7 +71,6 @@ export class FilesStorageUC {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 
 		const result = await this.addRequestStreamToRequestPipe(userId, params, req);
-		console.log(result);
 
 		return result;
 	}
