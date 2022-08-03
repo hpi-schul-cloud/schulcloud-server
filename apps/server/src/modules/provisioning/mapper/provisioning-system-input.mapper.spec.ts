@@ -6,7 +6,7 @@ describe('SchoolUcMapper', () => {
 	describe('mapToInternal', () => {
 		it('should map provisioningStrategy', () => {
 			// Arrange
-			const dto: SystemDto = new SystemDto({ type: '', provisioningStrategy: SystemProvisioningStrategy.PLACEHOLDER });
+			const dto: SystemDto = new SystemDto({ type: '', provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
 			// Act
 			const result = ProvisioningSystemInputMapper.mapToInternal(dto);

@@ -1,4 +1,4 @@
-import {forwardRef, HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { SystemUc } from '@src/modules/system/uc/system.uc';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
@@ -6,7 +6,7 @@ import { Logger } from '@src/core/logger';
 import { ProvisioningSystemInputDto } from '@src/modules/provisioning/dto/provisioning-system-input.dto';
 import { ProvisioningSystemInputMapper } from '@src/modules/provisioning/mapper/provisioning-system-input.mapper';
 import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
-import {ProvisioningDto} from "@src/modules/provisioning/dto/provisioning.dto";
+import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 
 @Injectable()
 export class ProvisioningUc {
@@ -31,14 +31,14 @@ export class ProvisioningUc {
 		switch (system.provisioningStrategy) {
 			case SystemProvisioningStrategy.SANIS:
 				strategy = this.sanisStrategy;
-				strategy.init(system.provisioningUrl??'', {headers: { Authorization: `Bearer ${accessToken}` }});
+				strategy.init(system.provisioningUrl ?? '', { headers: { Authorization: `Bearer ${accessToken}` } });
 				break;
 			default:
 				this.logger.error(`Missing provisioning strategy for system with id ${systemId}`);
 				throw new HttpException(`Provisioning Strategy is not defined.`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		const provisioningDto = await strategy.apply(system);
+		const provisioningDto = await strategy.apply();
 		return provisioningDto;
 	}
 }

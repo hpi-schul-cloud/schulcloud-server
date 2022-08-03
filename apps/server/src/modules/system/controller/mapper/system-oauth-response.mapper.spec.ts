@@ -38,6 +38,7 @@ describe('oauth-response mapper', () => {
 		issuer: 'mock_issuer',
 		jwksEndpoint: 'mock_jwksEndpoint',
 		redirectUri: 'mock_codeRedirectUri',
+		provisioningUrl: 'mock_provisioning_url',
 	});
 	const systemDtoOauth = new SystemDto({
 		type: 'oauth',

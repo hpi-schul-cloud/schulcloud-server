@@ -19,7 +19,7 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 				logoutEndpoint: 'mock_logoutEndpoint',
 				issuer: 'mock_issuer',
 				jwksEndpoint: 'mock_jwksEndpoint',
-				provisioningUrl: 'mock_provisioningUrl'
+				provisioningUrl: 'mock_provisioningUrl',
 			},
 		};
 		return this.params(params);
@@ -32,5 +32,6 @@ export const systemFactory = SystemFactory.define(System, ({ sequence }) => {
 		url: 'http://mock.de',
 		alias: `system #${sequence}`,
 		provisioningStrategy: SystemProvisioningStrategy.UNDEFINED,
+		provisioningUrl: 'provisioningUrl',
 	};
 });
