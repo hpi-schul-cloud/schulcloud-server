@@ -54,7 +54,7 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 	@Index()
 	ldapDn?: string;
 
-	@Property({ nullable: true, fieldName: 'ldapId'})
+	@Property({ nullable: true, fieldName: 'ldapId' })
 	@Index()
 	ldapId?: string;
 

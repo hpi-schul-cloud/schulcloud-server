@@ -1,32 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class OauthConfigResponse {
-	constructor(oauthConfigResponse: {
-		redirectUri: string;
-		tokenEndpoint: string;
-		responseType: string;
-		clientId: string;
-		provider: string;
-		jwksEndpoint: string;
-		authEndpoint: string;
-		scope: string;
-		logoutEndpoint: string;
-		grantType: string;
-		issuer: string;
-	}) {
-		this.clientId = oauthConfigResponse.clientId;
-		this.redirectUri = oauthConfigResponse.redirectUri;
-		this.grantType = oauthConfigResponse.grantType;
-		this.tokenEndpoint = oauthConfigResponse.tokenEndpoint;
-		this.authEndpoint = oauthConfigResponse.authEndpoint;
-		this.responseType = oauthConfigResponse.responseType;
-		this.scope = oauthConfigResponse.scope;
-		this.provider = oauthConfigResponse.provider;
-		this.logoutEndpoint = oauthConfigResponse.logoutEndpoint;
-		this.issuer = oauthConfigResponse.issuer;
-		this.jwksEndpoint = oauthConfigResponse.jwksEndpoint;
-	}
-
 	@ApiProperty({
 		description: 'Client id',
 		required: true,
@@ -103,4 +77,30 @@ export class OauthConfigResponse {
 		nullable: false,
 	})
 	jwksEndpoint: string;
+
+	constructor(oauthConfigResponse: {
+		redirectUri: string;
+		tokenEndpoint: string;
+		responseType: string;
+		clientId: string;
+		provider: string;
+		jwksEndpoint: string;
+		authEndpoint: string;
+		scope: string;
+		logoutEndpoint: string;
+		grantType: string;
+		issuer: string;
+	}) {
+		this.clientId = oauthConfigResponse.clientId;
+		this.redirectUri = oauthConfigResponse.redirectUri;
+		this.grantType = oauthConfigResponse.grantType;
+		this.tokenEndpoint = oauthConfigResponse.tokenEndpoint;
+		this.authEndpoint = oauthConfigResponse.authEndpoint;
+		this.responseType = oauthConfigResponse.responseType;
+		this.scope = oauthConfigResponse.scope;
+		this.provider = oauthConfigResponse.provider;
+		this.logoutEndpoint = oauthConfigResponse.logoutEndpoint;
+		this.issuer = oauthConfigResponse.issuer;
+		this.jwksEndpoint = oauthConfigResponse.jwksEndpoint;
+	}
 }

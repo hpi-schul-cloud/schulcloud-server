@@ -6,10 +6,7 @@ import { OAuthService } from '../service/oauth.service';
 
 @Injectable()
 export class OauthUc {
-	constructor(
-		private readonly oauthService: OAuthService,
-		private logger: Logger
-	) {
+	constructor(private readonly oauthService: OAuthService, private logger: Logger) {
 		this.logger.setContext(OauthUc.name);
 	}
 

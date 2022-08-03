@@ -2,13 +2,6 @@ import { OauthConfigResponse } from '@src/modules/system/controller/dto/oauth-co
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SystemResponse {
-	constructor(system: SystemResponse) {
-		this.type = system.type;
-		this.url = system.url;
-		this.alias = system.alias;
-		this.oauthConfig = system.oauthConfig;
-	}
-
 	@ApiProperty({
 		description: 'Flag to request only systems with oauth-config.',
 		required: false,
@@ -37,4 +30,11 @@ export class SystemResponse {
 		nullable: true,
 	})
 	oauthConfig?: OauthConfigResponse;
+
+	constructor(system: SystemResponse) {
+		this.type = system.type;
+		this.url = system.url;
+		this.alias = system.alias;
+		this.oauthConfig = system.oauthConfig;
+	}
 }
