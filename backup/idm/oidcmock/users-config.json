@@ -1,0 +1,25 @@
+[
+  {
+    "SubjectId":"1",
+    "Username":"emil.extern",
+    "Password":"Extern1!",
+    "Claims": [
+      {
+        "Type": "name",
+        "Value": "Emil Extern"
+      },
+      {
+        "Type": "given_name",
+        "Value": "Emil"
+      },
+      {
+        "Type": "family_name",
+        "Value": "Extern"
+      },
+      {
+        "Type": "email",
+        "Value": "emil.extern@not.amail"
+      }
+    ]
+  }
+]

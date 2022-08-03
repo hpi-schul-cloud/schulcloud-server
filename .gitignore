@@ -42,6 +42,7 @@ data/
 # Backup
 backup/*
 !backup/setup/
+!backup/idm
 
 # IDEs and editors
 /.idea
