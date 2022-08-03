@@ -14,5 +14,5 @@ export class ProvisioningSchoolOutputDto {
 
 	name: string;
 
-	externalIdentifier: string;
+	externalIdentifier?: string;
 }

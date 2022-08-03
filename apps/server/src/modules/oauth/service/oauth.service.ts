@@ -10,6 +10,7 @@ import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AxiosResponse } from 'axios';
+import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -19,7 +20,6 @@ import { IservOAuthService } from './iserv-oauth.service';
 import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthResponse } from './dto/oauth.response';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
-import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
 
 @Injectable()
 export class OAuthService {
@@ -31,7 +31,7 @@ export class OAuthService {
 		private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
 		private readonly iservOauthService: IservOAuthService,
 		private readonly logger: Logger,
-		private readonly provisioningService: ProvisioningUc,
+		private readonly provisioningService: ProvisioningUc
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
@@ -104,14 +104,14 @@ export class OAuthService {
 		return verifiedJWT as IJwt;
 	}
 
-	async findUser(accessToken: string,decodedJwt: IJwt, system: System): Promise<User> {
-		// iserv strategy
-		if (system.oauthConfig && system.oauthConfig.provider === 'iserv') {
-			return this.iservOauthService.findUserById(system.id, decodedJwt);
-		}
+	async findUser(accessToken: string, decodedJwt: IJwt, system: System): Promise<User> {
 		try {
+			// iserv strategy
+			if (system.oauthConfig && system.oauthConfig.provider === 'iserv') {
+				return await this.iservOauthService.findUserById(system.id, decodedJwt);
+			}
 			this.logger.debug('provisioning is running...');
-			const provisioningDto = await this.provisioningService.process( accessToken, system.id);
+			const provisioningDto = await this.provisioningService.process(accessToken, system.id);
 			const user = await this.userRepo.findByLdapIdOrFail(provisioningDto.userDto.id as string, system.id);
 			return user;
 		} catch (error) {

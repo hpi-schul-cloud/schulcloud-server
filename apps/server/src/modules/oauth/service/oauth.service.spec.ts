@@ -16,6 +16,8 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { schoolFactory } from '@shared/testing';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
+import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
+import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 import { IservOAuthService } from './iserv-oauth.service';
 import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
@@ -71,6 +73,7 @@ describe('OAuthService', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let feathersJwtProvider: DeepMocked<FeathersJwtProvider>;
 	let iservOAuthService: DeepMocked<IservOAuthService>;
+	let provisioningService: DeepMocked<ProvisioningUc>;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -84,6 +87,10 @@ describe('OAuthService', () => {
 				{
 					provide: SymetricKeyEncryptionService,
 					useValue: createMock<SymetricKeyEncryptionService>(),
+				},
+				{
+					provide: ProvisioningUc,
+					useValue: createMock<ProvisioningUc>(),
 				},
 				{
 					provide: HttpService,
@@ -121,6 +128,7 @@ describe('OAuthService', () => {
 		userRepo = module.get(UserRepo);
 		feathersJwtProvider = module.get(FeathersJwtProvider);
 		iservOAuthService = module.get(IservOAuthService);
+		provisioningService = module.get(ProvisioningUc);
 
 		jest.mock('axios', () =>
 			jest.fn(() => {
@@ -205,6 +213,7 @@ describe('OAuthService', () => {
 				issuer: 'mock_issuer',
 				jwksEndpoint: 'mock_jwksEndpoint',
 				redirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId',
+				provisioningUrl: 'mock_provisioning_url',
 			},
 			_id: new ObjectId(),
 			id: '',
@@ -324,7 +333,7 @@ describe('OAuthService', () => {
 			oauthConfig.provider = 'iserv';
 
 			// Act
-			const user: User = await service.findUser(defaultDecodedJWT, {
+			const user: User = await service.findUser(defaultTokenResponse.access_token, defaultDecodedJWT, {
 				_id: new ObjectId(defaultIservSystemId),
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -337,14 +346,29 @@ describe('OAuthService', () => {
 			expect(iservOAuthService.findUserById).toHaveBeenCalled();
 			expect(user).toBe(defaultIservUser);
 		});
-		it('should return the user according to the id', async () => {
-			const user = await service.findUser(defaultDecodedJWT, defaultSystem);
-			expect(userRepo.findById).toHaveBeenCalled();
-			expect(user).toBe(defaultUser);
-		});
 		it('should return an error if no User is found by this Id', async () => {
-			defaultDecodedJWT.sub = '';
-			await expect(service.findUser(defaultDecodedJWT, defaultSystem)).rejects.toThrow(OAuthSSOError);
+			userRepo.findByLdapIdOrFail.mockRejectedValueOnce(new Error('User not found'));
+			await expect(
+				service.findUser(defaultTokenResponse.access_token, defaultDecodedJWT, defaultSystem)
+			).rejects.toThrow(OAuthSSOError);
+		});
+		it('should return the user according to the id', async () => {
+			const provisioning: ProvisioningDto = new ProvisioningDto({
+				userDto: {
+					id: defaultUserId,
+					firstName: 'firstName',
+					lastName: 'lastName',
+					roleNames: [],
+					schoolId: new ObjectId().toString(),
+					externalId: 'sanisId',
+				},
+				schoolDto: { name: 'testSchool' },
+			});
+			provisioningService.process.mockResolvedValue(provisioning);
+			userRepo.findByLdapIdOrFail.mockResolvedValue(defaultUser);
+			const user = await service.findUser(defaultTokenResponse.access_token, defaultDecodedJWT, defaultSystem);
+			expect(userRepo.findByLdapIdOrFail).toHaveBeenCalled();
+			expect(user).toBe(defaultUser);
 		});
 	});
 

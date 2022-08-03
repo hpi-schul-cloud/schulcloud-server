@@ -101,18 +101,18 @@ describe('system repo', () => {
 			expect(result).toEqual([]);
 		});
 
-		it('should return all systems with type iserv', async () => {
+		it('should return all systems with type oauth', async () => {
 			// Act
-			const result = await repo.findByFilter('iserv');
+			const result = await repo.findByFilter('oauth');
 
 			// Assert
 			expect(result.length).toEqual(systems.length);
 			expect(result).toEqual(systems);
 		});
 
-		it('should return all systems with type iserv and oauthConfig', async () => {
+		it('should return all systems with type oauth and oauthConfig', async () => {
 			// Act
-			const result = await repo.findByFilter('iserv', true);
+			const result = await repo.findByFilter('oauth', true);
 
 			// Assert
 			expect(result.length).toEqual(1);

@@ -1,4 +1,3 @@
-import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
 import { IProviderResponseMapper } from '@src/modules/provisioning/interface/provider-response.mapper.interface';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
@@ -6,36 +5,40 @@ import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provi
 import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
 import { UserUc } from '@src/modules/user/uc';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
+import { HttpService } from '@nestjs/axios';
+import { AxiosResponse } from 'axios';
+import {
+	SanisResponse,
+	SanisResponseName,
+	SanisResponseOrganisation,
+	SanisResponsePersonenkontext,
+	SanisRole,
+} from '@src/modules/provisioning/strategy/sanis/sanis.response';
+import { of } from 'rxjs';
+import { UUID } from 'bson';
 
-class MockResponse {}
-
-const mapper: DeepMocked<IProviderResponseMapper<MockResponse>> = createMock<IProviderResponseMapper<MockResponse>>();
+const mapper: DeepMocked<IProviderResponseMapper<SanisResponse>> = createMock<IProviderResponseMapper<SanisResponse>>();
 
 const schoolUc: DeepMocked<SchoolUc> = createMock<SchoolUc>();
 
 const userUc: DeepMocked<UserUc> = createMock<UserUc>();
 
-const mockResponse: MockResponse = {};
+const httpService: DeepMocked<HttpService> = createMock<HttpService>();
 
-class MockStrategy extends ProvisioningStrategy<MockResponse> {
-	constructor() {
-		super(mapper, schoolUc, userUc);
-	}
+const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> => ({
+	data: data ?? {},
+	status: 0,
+	statusText: '',
+	headers: {},
+	config: {},
+});
 
-	override getProvisioningData(): Promise<MockResponse> {
-		return Promise.resolve(mockResponse);
-	}
-
-	getType(): SystemProvisioningStrategy {
-		return SystemProvisioningStrategy.UNDEFINED;
-	}
-}
-
-describe('BaseStrategy', () => {
-	let baseStrategy: MockStrategy;
+describe('SanisStrategy', () => {
+	let sanisStrategy: SanisProvisioningStrategy;
 
 	beforeEach(() => {
-		baseStrategy = new MockStrategy();
+		sanisStrategy = new SanisProvisioningStrategy(mapper, schoolUc, userUc, httpService);
 	});
 
 	afterEach(() => {
@@ -44,24 +47,51 @@ describe('BaseStrategy', () => {
 
 	describe('init', () => {
 		it('should initialize the strategy', () => {
-			baseStrategy.init('testURL', {
+			sanisStrategy.init('testURL', {
 				headers: { Authorization: `Testtoken` },
 			});
 		});
 	});
 
 	describe('apply', () => {
+		const userUUID: UUID = new UUID('aef1f4fd-c323-466e-962b-a84354c0e713');
+		const schoolUUID: UUID = new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e');
 		const schoolDto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({
-			id: 'id',
+			id: 'schoolId',
 			name: 'schoolName',
-			externalIdentifier: 'externalIdentifier',
+			externalIdentifier: userUUID.toString(),
 		});
 		const userDto: ProvisioningUserOutputDto = new ProvisioningUserOutputDto({
 			firstName: 'firstName',
 			lastName: 'lastame',
 			roleNames: [],
 			schoolId: 'schoolId',
-			externalId: 'externalId',
+			externalId: schoolUUID.toString(),
+		});
+
+		const mockResponse: SanisResponse = new SanisResponse({
+			pid: userUUID.toString(),
+			person: {
+				name: new SanisResponseName({
+					vorname: 'firstName',
+					familienname: 'lastName',
+				}),
+				geschlecht: 'x',
+				lokalisierung: 'de-de',
+				vertrauensstufe: '',
+			},
+			personenkontexte: [
+				new SanisResponsePersonenkontext({
+					ktid: new UUID(),
+					rolle: SanisRole.LERN,
+					organisation: new SanisResponseOrganisation({
+						orgid: schoolUUID,
+						name: 'schoolName',
+						typ: 'SCHULE',
+					}),
+					personenstatus: '',
+				}),
+			],
 		});
 		beforeEach(() => {
 			schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDto);
@@ -69,13 +99,12 @@ describe('BaseStrategy', () => {
 
 		it('should apply strategy', async () => {
 			// Arrange
-
+			httpService.get.mockReturnValue(of(createAxiosResponse(mockResponse)));
 			mapper.mapToSchoolDto.mockReturnValue(schoolDto);
 			mapper.mapToUserDto.mockReturnValue(userDto);
 
 			// Act
-
-			const result = await baseStrategy.apply();
+			const result = await sanisStrategy.apply();
 
 			// Assert
 			expect(mapper.mapToSchoolDto).toHaveBeenCalledWith(mockResponse);
@@ -88,11 +117,12 @@ describe('BaseStrategy', () => {
 
 		it('should not save school', async () => {
 			// Arrange
+			httpService.get.mockReturnValue(of(createAxiosResponse(mockResponse)));
 			mapper.mapToSchoolDto.mockReturnValue(undefined);
 			mapper.mapToUserDto.mockReturnValue(userDto);
 
 			// Act
-			const result = await baseStrategy.apply();
+			const result = await sanisStrategy.apply();
 
 			// Assert
 			expect(mapper.mapToSchoolDto).toHaveBeenCalledWith(mockResponse);
@@ -101,6 +131,13 @@ describe('BaseStrategy', () => {
 			expect(userUc.saveProvisioningUserOutputDto).toHaveBeenCalled();
 			expect(result.userDto).toEqual(userDto);
 			expect(result.schoolDto).toEqual(undefined);
+		});
+	});
+
+	describe('getType', () => {
+		it('should return type SANIS', () => {
+			const retType: SystemProvisioningStrategy = sanisStrategy.getType();
+			expect(retType).toEqual(SystemProvisioningStrategy.SANIS);
 		});
 	});
 });

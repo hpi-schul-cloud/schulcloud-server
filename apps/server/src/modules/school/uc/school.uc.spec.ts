@@ -31,7 +31,7 @@ describe('SchoolUc', () => {
 	});
 
 	beforeEach(() => {
-		schoolDto = new SchoolDto({ name: 'schule1234' });
+		schoolDto = new SchoolDto({ name: 'schule1234', externalIdentifier: 'externeSchule1234' });
 
 		schoolService.createOrUpdateSchool.mockImplementation((): Promise<SchoolDto> => {
 			return Promise.resolve(schoolDto);
@@ -57,7 +57,10 @@ describe('SchoolUc', () => {
 
 		it('should call save', async () => {
 			// Arrange
-			const dto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({ name: schoolDto.name });
+			const dto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({
+				name: schoolDto.name,
+				externalIdentifier: schoolDto.externalIdentifier,
+			});
 			schoolUc.createOrUpdate = jest.fn();
 
 			// Act

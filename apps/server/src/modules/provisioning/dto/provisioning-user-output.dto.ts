@@ -6,6 +6,7 @@ import { EntityId, RoleName } from '@shared/domain';
 export class ProvisioningUserOutputDto {
 	constructor(user: ProvisioningUserOutputDto) {
 		this.id = user.id;
+		this.email = user.email;
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
 		this.roleNames = user.roleNames;
@@ -14,6 +15,8 @@ export class ProvisioningUserOutputDto {
 	}
 
 	id?: EntityId;
+
+	email?: string;
 
 	firstName: string;
 

@@ -6,14 +6,14 @@ import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
 import { HttpException } from '@nestjs/common';
-import { PlaceholderProvisioningStrategy } from '@src/modules/provisioning/strategy/placeholder/placeholder.strategy';
+import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
 
 describe('ProvisioningUc', () => {
 	let module: TestingModule;
 	let provisioningUc: ProvisioningUc;
 
 	let systemUc: DeepMocked<SystemUc>;
-	let unknownStrategy: DeepMocked<PlaceholderProvisioningStrategy>;
+	let sanisProvisioningStrategy: DeepMocked<SanisProvisioningStrategy>;
 	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
@@ -25,8 +25,8 @@ describe('ProvisioningUc', () => {
 					useValue: createMock<SystemUc>(),
 				},
 				{
-					provide: PlaceholderProvisioningStrategy,
-					useValue: createMock<PlaceholderProvisioningStrategy>(),
+					provide: SanisProvisioningStrategy,
+					useValue: createMock<SanisProvisioningStrategy>(),
 				},
 				{
 					provide: Logger,
@@ -37,7 +37,7 @@ describe('ProvisioningUc', () => {
 		provisioningUc = module.get(ProvisioningUc);
 
 		systemUc = module.get(SystemUc);
-		unknownStrategy = module.get(PlaceholderProvisioningStrategy);
+		sanisProvisioningStrategy = module.get(SanisProvisioningStrategy);
 		logger = module.get(Logger);
 	});
 
@@ -50,16 +50,16 @@ describe('ProvisioningUc', () => {
 	});
 
 	describe('process', () => {
-		const unknownSystemStrategyId = 'unknownSystemId';
-		const unknownStrategySystem: SystemDto = new SystemDto({
-			type: 'unknown',
-			provisioningStrategy: SystemProvisioningStrategy.PLACEHOLDER,
+		const sanisSystemStrategyId = 'sanisSystemId';
+		const sanisStrategySystem: SystemDto = new SystemDto({
+			type: 'sanis',
+			provisioningStrategy: SystemProvisioningStrategy.SANIS,
 		});
 
 		beforeEach(() => {
 			systemUc.findById.mockImplementationOnce((id: string): Promise<SystemDto> => {
-				if (id === unknownSystemStrategyId) {
-					return Promise.resolve(unknownStrategySystem);
+				if (id === sanisSystemStrategyId) {
+					return Promise.resolve(sanisStrategySystem);
 				}
 				return Promise.reject();
 			});
@@ -67,15 +67,15 @@ describe('ProvisioningUc', () => {
 
 		it('should throw error when system does not exists', async () => {
 			// Act & Assert
-			await expect(provisioningUc.process('sub', 'no system found')).rejects.toThrow(HttpException);
+			await expect(provisioningUc.process('accessToken', 'no system found')).rejects.toThrow(HttpException);
 		});
 
-		it('should apply "unknown" provisioning strategy', async () => {
+		it('should apply sanis provisioning strategy', async () => {
 			// Act
-			await provisioningUc.process('sub', unknownSystemStrategyId);
+			await provisioningUc.process('accessToken', sanisSystemStrategyId);
 
 			// Assert
-			expect(unknownStrategy.apply).toHaveBeenCalled();
+			expect(sanisProvisioningStrategy.apply).toHaveBeenCalled();
 		});
 
 		it('should throw error for missing provisioning stratgey', async () => {
@@ -88,7 +88,7 @@ describe('ProvisioningUc', () => {
 			systemUc.findById.mockResolvedValueOnce(missingStrategySystem);
 
 			// Act & Assert
-			await expect(provisioningUc.process('sub', 'missingStrategySystemId')).rejects.toThrow(HttpException);
+			await expect(provisioningUc.process('accessToken', 'missingStrategySystemId')).rejects.toThrow(HttpException);
 			expect(logger.error).toHaveBeenCalled();
 		});
 	});

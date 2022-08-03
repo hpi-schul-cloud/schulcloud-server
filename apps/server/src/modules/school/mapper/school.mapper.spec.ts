@@ -14,11 +14,16 @@ describe('SchoolMapper', () => {
 		// Assert
 		expect(schoolDto.id).toEqual(schoolEntity.id);
 		expect(schoolDto.name).toEqual(schoolEntity.name);
+		expect(schoolDto.externalIdentifier).toEqual(schoolEntity.externalIdentifier);
 	});
 
 	it('mapToEntity', () => {
 		// Arrange
-		const schoolDto: SchoolDto = new SchoolDto({ id: 'id445894', name: 'schoolName' });
+		const schoolDto: SchoolDto = new SchoolDto({
+			id: 'id445894',
+			name: 'schoolName',
+			externalIdentifier: 'externalIdentifier',
+		});
 
 		// Act
 		const entity = SchoolMapper.mapToEntity(schoolDto);
@@ -26,6 +31,7 @@ describe('SchoolMapper', () => {
 		// Assert
 		expect(entity.id).toEqual(schoolDto.id);
 		expect(entity.name).toEqual(schoolDto.name);
+		expect(entity.externalIdentifier).toBeUndefined();
 	});
 
 	it('mapEntityToEntity', () => {
@@ -39,5 +45,6 @@ describe('SchoolMapper', () => {
 		// Assert
 		expect(entity.id).toEqual(targetEntity.id);
 		expect(entity.name).toEqual(sourceEntity.name);
+		expect(entity.externalIdentifier).toEqual(sourceEntity.externalIdentifier);
 	});
 });
