@@ -362,7 +362,7 @@ describe('DatabaseManagementService', () => {
 				);
 			});
 			describe('when importing systems', () => {
-				it('should not encrypt secrets if no AES key is available', async () => {
+				it('should not replace secret if secret does not exist in env vars', async () => {
 					configService.get.mockReturnValue(null);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
@@ -379,7 +379,7 @@ describe('DatabaseManagementService', () => {
 						clientSecret: 'ISERV_CLIENT_SECRET',
 					});
 				});
-				it('should encrypt secrets if AES key is available', async () => {
+				it('should encrypt secrets if secret is configured in env var', async () => {
 					configService.get.mockImplementation((data) => data);
 					encryptionService.encrypt.mockImplementation((data) => `${data}_encrypted`);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
