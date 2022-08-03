@@ -55,7 +55,10 @@ export class KeycloakConfigurationService {
 				urlParamKeys: ['realmName', 'flowAlias'],
 			}
 		);
-		const updateExecutionRequest = kc.realms.makeRequest<AuthenticationExecutionInfoRepresentation, void>({
+		const updateExecutionRequest = kc.realms.makeRequest<
+			AuthenticationExecutionInfoRepresentation & { realmName: string; flowAlias: string },
+			void
+		>({
 			method: 'PUT',
 			path: '/{realmName}/authentication/flows/{flowAlias}/executions',
 			urlParamKeys: ['realmName', 'flowAlias'],
@@ -96,6 +99,8 @@ export class KeycloakConfigurationService {
 		for (const execution of executions) {
 			// eslint-disable-next-line no-await-in-loop
 			await updateExecutionRequest({
+				realmName: kc.realmName,
+				flowAlias,
 				id: execution.id,
 				requirement: 'ALTERNATIVE',
 			});
