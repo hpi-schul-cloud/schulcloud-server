@@ -267,7 +267,7 @@ class EduSharingConnector {
 				`contentType=FILES`,
 				`skipCount=${skipCount}`,
 				`maxItems=${maxItems}`,
-				`sortProperties=score`,
+				`sortProperties=cclom:title`,
 				`sortAscending=false`,
 				`propertyFilter=-all-`,
 			].join('&')}`;
