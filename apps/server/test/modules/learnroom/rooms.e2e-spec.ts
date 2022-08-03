@@ -7,7 +7,6 @@ import {
 	boardFactory,
 	cleanupCollections,
 	courseFactory,
-	fileFactory,
 	lessonFactory,
 	mapUserToCurrentUser,
 	roleFactory,
@@ -152,7 +151,10 @@ describe('Rooms Controller (e2e)', () => {
 				elements: [tasks[2], lessons[1], tasks[0], lessons[2], tasks[1], lessons[0]].map((el) => el.id),
 			};
 
-			const response = await request(app.getHttpServer()).patch(`/rooms/${course.id}/board/order`).send(params);
+			const response = await request(app.getHttpServer())
+				.patch(`/rooms/${course.id}/board/order`)
+				.set('Authorization', 'jwt')
+				.send(params);
 
 			expect(response.status).toEqual(200);
 		});
@@ -169,7 +171,10 @@ describe('Rooms Controller (e2e)', () => {
 
 			currentUser = mapUserToCurrentUser(teacher);
 
-			const response = await request(app.getHttpServer()).post(`/rooms/${course.id}/copy`).send();
+			const response = await request(app.getHttpServer())
+				.post(`/rooms/${course.id}/copy`)
+				.set('Authorization', 'jwt')
+				.send();
 
 			expect(response.status).toEqual(201);
 		});
@@ -184,7 +189,10 @@ describe('Rooms Controller (e2e)', () => {
 
 			currentUser = mapUserToCurrentUser(teacher);
 
-			const response = await request(app.getHttpServer()).post(`/rooms/${course.id}/copy`).send();
+			const response = await request(app.getHttpServer())
+				.post(`/rooms/${course.id}/copy`)
+				.set('Authorization', 'jwt')
+				.send();
 			const body = response.body as CopyApiResponse;
 			expect(body.id).toBeDefined();
 
@@ -202,7 +210,10 @@ describe('Rooms Controller (e2e)', () => {
 
 			currentUser = mapUserToCurrentUser(teacher);
 
-			const response = await request(app.getHttpServer()).post(`/rooms/${course.id}/copy`).send();
+			const response = await request(app.getHttpServer())
+				.post(`/rooms/${course.id}/copy`)
+				.set('Authorization', 'jwt')
+				.send();
 			const body = response.body as CopyApiResponse;
 			expect(body.id).toBeDefined();
 
@@ -215,7 +226,7 @@ describe('Rooms Controller (e2e)', () => {
 			const course = courseFactory.build({ teachers: [teacher] });
 
 			const board = boardFactory.buildWithId({ course });
-			const tasks = taskFactory.buildList(3, { course, files: fileFactory.buildList(3) });
+			const tasks = taskFactory.buildList(3, { course });
 			const lessons = lessonFactory.buildList(3, { course });
 			board.syncTasksFromList(tasks);
 			board.syncLessonsFromList(lessons);
@@ -225,7 +236,10 @@ describe('Rooms Controller (e2e)', () => {
 
 			currentUser = mapUserToCurrentUser(teacher);
 
-			const response = await request(app.getHttpServer()).post(`/rooms/${course.id}/copy`).send();
+			const response = await request(app.getHttpServer())
+				.post(`/rooms/${course.id}/copy`)
+				.set('Authorization', 'jwt')
+				.send();
 
 			expect(response.status).toEqual(201);
 		});

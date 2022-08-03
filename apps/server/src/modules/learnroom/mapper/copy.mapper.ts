@@ -22,9 +22,10 @@ export class CopyMapper {
 		return dto;
 	}
 
-	static mapLessonCopyToDomain(params: LessonCopyApiParams): LessonCopyParentParams {
+	static mapLessonCopyToDomain(params: LessonCopyApiParams, jwt: string): LessonCopyParentParams {
 		const dto = {
 			courseId: params.courseId,
+			jwt,
 		};
 
 		return dto;

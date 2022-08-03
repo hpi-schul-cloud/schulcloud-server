@@ -2,17 +2,19 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import {
+	BaseEntity,
 	ComponentType,
 	Course,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
+	IComponentInternalProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
 	Lesson,
 	Material,
 	User,
 } from '../entity';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
+import { CopyElementType, CopyStatus, CopyStatusEnum, EntityId } from '../types';
 import { CopyHelperService } from './copy-helper.service';
 import { EtherpadService } from './etherpad.service';
 import { NexboardService } from './nexboard.service';
@@ -46,12 +48,7 @@ export class LessonCopyService {
 			materials: copiedMaterials,
 		});
 
-		const copiedTasksStatus: CopyStatus[] = this.copyLinkedTasks(
-			params.originalLesson,
-			params.destinationCourse,
-			copy,
-			params.user
-		);
+		const copiedTasksStatus: CopyStatus[] = this.copyLinkedTasks(copy, params);
 
 		const elements = [
 			...LessonCopyService.lessonStatusMetadata(),
@@ -65,11 +62,58 @@ export class LessonCopyService {
 			type: CopyElementType.LESSON,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
+			originalEntity: params.originalLesson,
 			elements,
 		};
 
 		return status;
 	}
+
+	updateCopiedEmbeddedTasks(status: CopyStatus): CopyStatus {
+		const copyDict = this.copyHelperService.buildCopyEntityDict(status);
+		return this.updateCopiedEmbeddedTasksRecursive(status, copyDict);
+	}
+
+	private updateCopiedEmbeddedTasksRecursive(status: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
+		if (status.type === CopyElementType.LESSON) {
+			status = this.updateCopiedEmbeddedTasksOfLesson(status, copyDict);
+		}
+		if (status.elements) {
+			status.elements = status.elements.map((element) => {
+				return this.updateCopiedEmbeddedTasksRecursive(element, copyDict);
+			});
+		}
+		return status;
+	}
+
+	private updateCopiedEmbeddedTasksOfLesson(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
+		const copiedLesson = lessonStatus.copyEntity as Lesson;
+
+		copiedLesson.contents = copiedLesson.contents.map((value: IComponentProperties) =>
+			this.updateCopiedEmbeddedTasksMapContent(value, copyDict)
+		);
+		lessonStatus.copyEntity = copiedLesson;
+
+		return lessonStatus;
+	}
+
+	private updateCopiedEmbeddedTasksMapContent = (
+		value: IComponentProperties,
+		copyDict: Map<EntityId, BaseEntity>
+	): IComponentProperties => {
+		if (value.component !== ComponentType.INTERNAL) {
+			return value;
+		}
+		const content = value.content as IComponentInternalProperties;
+		const url = new URL(content.url);
+		const originalTaskId = url.pathname.split('/')[2];
+		const finalTask = copyDict.get(originalTaskId);
+		if (!finalTask) {
+			return value;
+		}
+		const newEmbedded = { ...value, content: { url: content.url.replace(originalTaskId, finalTask.id) } };
+		return newEmbedded;
+	};
 
 	private async copyLessonContent(
 		content: IComponentProperties[],
@@ -115,6 +159,16 @@ export class LessonCopyService {
 					etherpadStatus.status = CopyStatusEnum.FAIL;
 				}
 				copiedContentStatus.push(etherpadStatus);
+			}
+			if (element.component === ComponentType.INTERNAL) {
+				const linkContent = this.copyEmbeddedTaskLink(element);
+				const embeddedTaskStatus = {
+					title: element.title,
+					type: CopyElementType.LESSON_CONTENT,
+					status: CopyStatusEnum.SUCCESS,
+				};
+				copiedContent.push(linkContent);
+				copiedContentStatus.push(embeddedTaskStatus);
 			}
 			if (element.component === ComponentType.NEXBOARD && nexboardEnabled) {
 				// eslint-disable-next-line no-await-in-loop
@@ -181,16 +235,16 @@ export class LessonCopyService {
 		return false;
 	}
 
-	private copyLinkedTasks(originalLesson: Lesson, destinationCourse: Course, destinationLesson: Lesson, user: User) {
-		const linkedTasks = originalLesson.getLessonLinkedTasks();
+	private copyLinkedTasks(destinationLesson: Lesson, params: LessonCopyParams) {
+		const linkedTasks = params.originalLesson.getLessonLinkedTasks();
 		const copiedTasksStatus: CopyStatus[] = [];
 		if (linkedTasks.length > 0) {
 			linkedTasks.forEach((element) => {
 				const taskStatus = this.taskCopyService.copyTaskMetadata({
 					originalTask: element,
-					destinationCourse,
+					destinationCourse: params.destinationCourse,
 					destinationLesson,
-					user,
+					user: params.user,
 				});
 				copiedTasksStatus.push(taskStatus);
 			});
@@ -232,6 +286,11 @@ export class LessonCopyService {
 			materialsStatus.push(materialGroupStatus);
 		}
 		return { copiedMaterials, materialsStatus };
+	}
+
+	private copyEmbeddedTaskLink(originalElement: IComponentProperties) {
+		const copy = JSON.parse(JSON.stringify(originalElement)) as IComponentProperties;
+		return copy;
 	}
 
 	private static lessonStatusMetadata(): CopyStatus[] {
