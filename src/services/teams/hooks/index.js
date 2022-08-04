@@ -772,6 +772,8 @@ const deleteTeamInCollaborativeStorage = (hook) => {
  * @afterHook
  */
 const createTeamInCollaborativeStorage = (hook) => {
+	if (!Configuration.has('COLLABORATIVE_STORAGE_PROVIDER')) return;
+
 	const teamId = hook.id || (hook.result || {})._id.toHexString() || hook.teamId;
 	const teamName = hook.data.name;
 	const userIds = hook.result.userIds || hook.data.userIds;
