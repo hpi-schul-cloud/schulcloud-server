@@ -25,7 +25,7 @@ export class UserDto {
 
 	roleIds: string[] = [];
 
-	schoolId: string;
+	schoolId?: string;
 
 	ldapDn?: string;
 
