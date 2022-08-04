@@ -1,20 +1,20 @@
+import CryptoJs from 'crypto-js';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Type, Platform } from '@mikro-orm/core';
-import { SymetricKeyEncryptionService } from '../../infra/encryption';
 
 /**
  * Serialization type to transparent encrypt string values in database.
  */
-export class EncryptedStringType extends Type<string, string> {
+export class StorageProviderEncryptedStringType extends Type<string, string> {
 	// TODO modularize service?
-	private encryptionService: SymetricKeyEncryptionService;
+	private key: string;
 
 	constructor(customKey?: string) {
 		super();
 		if (customKey) {
-			this.encryptionService = new SymetricKeyEncryptionService(customKey);
+			this.key = customKey;
 		} else {
-			this.encryptionService = new SymetricKeyEncryptionService(Configuration.get('S3_KEY') as string);
+			this.key = Configuration.get('S3_KEY') as string;
 		}
 	}
 
@@ -28,7 +28,7 @@ export class EncryptedStringType extends Type<string, string> {
 		if (value.length === 0) {
 			return '';
 		}
-		const encryptedString = this.encryptionService.encrypt(value);
+		const encryptedString = CryptoJs.AES.encrypt(value, this.key).toString();
 
 		return encryptedString;
 	}
@@ -45,7 +45,7 @@ export class EncryptedStringType extends Type<string, string> {
 		}
 
 		// decrypt only non-empty strings
-		const decryptedString: string = this.encryptionService.decrypt(value);
+		const decryptedString: string = CryptoJs.AES.decrypt(value, this.key).toString(CryptoJs.enc.Utf8);
 
 		return decryptedString;
 	}

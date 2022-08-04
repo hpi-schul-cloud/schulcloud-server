@@ -1,20 +1,20 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Platform } from '@mikro-orm/core';
-import { EncryptedStringType } from './EncryptedString.type';
+import { StorageProviderEncryptedStringType } from './StorageProviderEncryptedString.type';
 
 describe('EncryptedString type', () => {
 	describe('constructor', () => {
 		it('should load cipher key from configuration when no key is given', () => {
 			const configBefore = Configuration.toObject({ plainSecrets: true });
 			Configuration.set('S3_KEY', 'ANY_KEY_OF_MIN_LENGTH_16');
-			const test = () => new EncryptedStringType();
+			const test = () => new StorageProviderEncryptedStringType();
 			expect(test).not.toThrow();
 			Configuration.reset(configBefore);
 		});
 	});
 	describe('serialization', () => {
 		const S3_KEY = 'custom_cipher_key';
-		const serializer = new EncryptedStringType(S3_KEY);
+		const serializer = new StorageProviderEncryptedStringType(S3_KEY);
 		const text = 'sample text input';
 		const textEncrypted = 'U2FsdGVkX18XgTi2IeaC/EA6vE9N4bf/0oDEz7WuIH8RGMcVm1Yw7I+2PHGBTAxF'; // depends on S3_KEY
 
