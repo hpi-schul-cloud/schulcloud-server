@@ -160,15 +160,19 @@ describe('NextCloud Adapter Strategy', () => {
 				id: 'id',
 				name: 'name',
 			};
+			const folderId = 1;
 
 			client.getNameWithPrefix.mockReturnValue(groupdId);
 			pseudonymsRepo.findByUserIdAndToolId.mockRejectedValueOnce(undefined);
+			client.findGroupFolderIdForGroupId.mockResolvedValue(folderId);
 
 			// Act
 			await strategy.createTeam(teamDto);
 
 			// Assert
 			expect(client.createGroup).toHaveBeenCalledWith(groupdId, teamDto.name);
+			expect(client.findGroupFolderIdForGroupId).toHaveBeenCalledWith(groupdId);
+			expect(client.changeGroupFolderName).toHaveBeenCalledWith(folderId, `${teamDto.name} (${teamDto.id})`);
 		});
 	});
 

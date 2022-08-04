@@ -9,7 +9,7 @@ export interface ICollaborativeStorageStrategy {
 	 * Updates The Permissions for the given Role in the given Team
 	 * @param dto The DTO to be processed
 	 */
-	updateTeamPermissionsForRole(dto: TeamRolePermissionsDto): void;
+	updateTeamPermissionsForRole(dto: TeamRolePermissionsDto): Promise<void>;
 
 	deleteTeam(teamId: string): Promise<void>;
 

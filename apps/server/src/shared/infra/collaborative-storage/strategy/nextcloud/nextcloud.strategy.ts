@@ -12,8 +12,7 @@ import { NextcloudClient } from './nextcloud.client';
 /**
  * Nextcloud Strategy Implementation for Collaborative Storage
  *
- * @implements ICollaborativeStorageStrategy
- *
+ * @implements {ICollaborativeStorageStrategy}
  */
 @Injectable()
 export class NextcloudStrategy implements ICollaborativeStorageStrategy {
@@ -26,7 +25,12 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		this.logger.setContext(NextcloudStrategy.name);
 	}
 
-	async updateTeamPermissionsForRole(dto: TeamRolePermissionsDto) {
+	/**
+	 * At the moment unused.
+	 *
+	 * @param dto
+	 */
+	async updateTeamPermissionsForRole(dto: TeamRolePermissionsDto): Promise<void> {
 		const groupId: string = await this.client.findGroupId(NextcloudStrategy.generateGroupId(dto));
 		let folderId: number;
 
@@ -40,6 +44,13 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		}
 	}
 
+	/**
+	 * Deletes a whole team in nextcloud.
+	 *
+	 * This includes the related group in nextcloud and the groupfolder of the group.
+	 *
+	 * @param teamId id of the schulcloud team
+	 */
 	async deleteTeam(teamId: string): Promise<void> {
 		const groupId: string = this.client.getNameWithPrefix(teamId);
 		if (groupId) {
@@ -49,22 +60,36 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		}
 	}
 
+	/**
+	 * Creates a team in nextcloud.
+	 *
+	 * This includes the creation of the related group, its groupfolder and the adding of the {@link TeamUserDto teamUsers} (the creator).
+	 *
+	 * @param team schulcloud team
+	 */
 	async createTeam(team: TeamDto): Promise<void> {
 		const groupId: string = this.client.getNameWithPrefix(team.id);
 
-		// Due to the schulcloud-nextcloud-app, the group folder is created, when the group is created
 		await this.client.createGroup(groupId, team.name);
 
-		// TODO N21-124: use ad-hoc creation of group folders, when all existing teams are migrated to the nextcloud
-		// The update is ne
-		await this.updateTeam(team);
-		// await this.updateTeamUsersInGroup(groupId, team.teamUsers);
+		await this.updateTeamUsersInGroup(groupId, team.teamUsers);
 
-		// const folderName: string = NextcloudStrategy.generateGroupFolderName(team.id, team.name);
+		const folderName: string = NextcloudStrategy.generateGroupFolderName(team.id, team.name);
+		// TODO N21-124: move the creation of group folders from the schulcloud-nextcloud-app to here, when all existing teams are migrated to the nextcloud
+		// Due to the schulcloud-nextcloud-app creating the group folder, when the group is created, it only needs to be renamed here
+		const folderId: number = await this.client.findGroupFolderIdForGroupId(groupId);
+		await this.client.changeGroupFolderName(folderId, folderName);
 		// const folderId: number = await this.client.createGroupFolder(folderName);
 		// await this.client.addAccessToGroupFolder(folderId, groupId);
 	}
 
+	/**
+	 * Updates a team in nextcloud.
+	 *
+	 * This includes the {@link TeamUserDto teamuser} and the displayname of the team.
+	 *
+	 * @param team schulcloud team
+	 */
 	async updateTeam(team: TeamDto): Promise<void> {
 		if (!team.id) {
 			throw new UnprocessableEntityException('Cannot update team without id');
@@ -92,8 +117,8 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	 * To do this, we have to get the link between the school cloud user ID and the Nextcloud user ID from the
 	 * pseudonym table and distinguish between added and deleted users.
 	 *
-	 * @param groupId, nextclouds groupId
-	 * @param teamUsers, all users of a {@link TeamDto}
+	 * @param groupId nextclouds groupId
+	 * @param teamUsers all users of a {@link TeamDto}
 	 * @protected
 	 */
 	protected async updateTeamUsersInGroup(groupId: string, teamUsers: TeamUserDto[]): Promise<void[][]> {
@@ -122,10 +147,23 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		]);
 	}
 
+	/**
+	 * Generates the groupfolder name by concatenating the teamId and teamName.
+	 *
+	 * @param teamId id of the team
+	 * @param teamName name of the team
+	 * @protected
+	 */
 	protected static generateGroupFolderName(teamId: string, teamName: string): string {
 		return `${teamName} (${teamId})`;
 	}
 
+	/**
+	 * Generates groupId of the nextcloud group by concatenating some {@link TeamRolePermissionsDto} properties.
+	 *
+	 * @param dto
+	 * @protected
+	 */
 	protected static generateGroupId(dto: TeamRolePermissionsDto): string {
 		return `${dto.teamName}-${dto.teamId}-${dto.roleName}`;
 	}

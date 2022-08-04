@@ -8,7 +8,7 @@ import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 
 /**
  * Provides an Adapter to an external collaborative storage.
- * It loads an appropritate strategy and applies that to the given data.
+ * It loads an appropriate strategy and applies that to the given data.
  */
 @Injectable()
 export class CollaborativeStorageAdapter {
@@ -37,18 +37,33 @@ export class CollaborativeStorageAdapter {
 	 * @param role The Role DTO
 	 * @param permissions The permissions to set
 	 */
-	updateTeamPermissionsForRole(team: TeamDto, role: RoleDto, permissions: TeamPermissionsDto) {
-		this.strategy.updateTeamPermissionsForRole(this.mapper.mapDomainToAdapter(team, role, permissions));
+	updateTeamPermissionsForRole(team: TeamDto, role: RoleDto, permissions: TeamPermissionsDto): Promise<void> {
+		return this.strategy.updateTeamPermissionsForRole(this.mapper.mapDomainToAdapter(team, role, permissions));
 	}
 
+	/**
+	 * Deletes a team in the collaborative storage
+	 *
+	 * @param teamId The team id
+	 */
 	deleteTeam(teamId: string): Promise<void> {
 		return this.strategy.deleteTeam(teamId);
 	}
 
+	/**
+	 * Creates a team in the collaborative storage
+	 *
+	 * @param team The team DTO
+	 */
 	createTeam(team: TeamDto): Promise<void> {
 		return this.strategy.createTeam(team);
 	}
 
+	/**
+	 * Updates a team in the collaborative storage
+	 *
+	 * @param team The team DTO
+	 */
 	updateTeam(team: TeamDto): Promise<void> {
 		return this.strategy.updateTeam(team);
 	}

@@ -42,6 +42,12 @@ export class NextcloudClient {
 		};
 	}
 
+	/**
+	 * Calls nextcloud to get the group id by the group name.
+	 *
+	 * @param groupName Name of the group in nextcloud
+	 * @returns The groupId for the given groupName of the nextcloud group
+	 */
 	public async findGroupId(groupName: string): Promise<string> {
 		const request = this.get<OcsResponse<NextcloudGroups>>(`/ocs/v1.php/cloud/groups?search=${groupName}`);
 
@@ -56,6 +62,12 @@ export class NextcloudClient {
 		);
 	}
 
+	/**
+	 * Calls nextcloud to get the groupId for a specific schulcloud team.
+	 *
+	 * @param teamId Id of the schulcloud {@link TeamDto team}
+	 * @returns The groupId of the given teamId in nextcloud
+	 */
 	public async findGroupIdByTeamId(teamId: string): Promise<string> {
 		const request = this.get<OcsResponse<NextcloudGroups>>(`/ocs/v1.php/cloud/groups?search=${teamId}`);
 
@@ -73,6 +85,12 @@ export class NextcloudClient {
 		);
 	}
 
+	/**
+	 * Calls nextcloud to create a new group.
+	 *
+	 * @param groupId New group id in nextcloud
+	 * @param groupName New group name in nextcloud
+	 */
 	public createGroup(groupId: string, groupName: string): Promise<void> {
 		const request = this.post<OcsResponse>(`/ocs/v1.php/cloud/groups`, {
 			groupid: groupId,
@@ -90,6 +108,11 @@ export class NextcloudClient {
 		);
 	}
 
+	/**
+	 * Calls nextcloud to delete a group.
+	 *
+	 * @param groupId Id of the group in nextcloud
+	 */
 	public deleteGroup(groupId: string): Promise<void> {
 		const request = this.delete<OcsResponse<Meta>>(`/ocs/v1.php/cloud/groups/${groupId}`);
 
@@ -104,6 +127,12 @@ export class NextcloudClient {
 		);
 	}
 
+	/**
+	 * Calls nextcloud to rename an existing group.
+	 *
+	 * @param groupId Id of the group in nextcloud
+	 * @param groupName New group name
+	 */
 	public renameGroup(groupId: string, groupName: string): Promise<void> {
 		const request = this.put<OcsResponse>(`/ocs/v1.php/cloud/groups/${groupId}`, {
 			key: 'displayname',
@@ -121,6 +150,13 @@ export class NextcloudClient {
 		);
 	}
 
+	/**
+	 * Unused.
+	 *
+	 * @param groupId
+	 * @param folderId
+	 * @param permissions
+	 */
 	public setGroupPermissions(groupId: string, folderId: number, permissions: boolean[]): Promise<void> {
 		const request = this.post<OcsResponse>(`/apps/groupfolders/folders/${folderId}/groups/${groupId}`, {
 			permissions: this.boolArrToNumber(permissions),
@@ -137,6 +173,12 @@ export class NextcloudClient {
 		);
 	}
 
+	/**
+	 * Calls nextcloud to find the groupfolder id from its related group
+	 *
+	 * @param groupId Id of the related group in nextcloud
+	 * @returns The folderId of the group in nextcloud
+	 */
 	public async findGroupFolderIdForGroupId(groupId: string): Promise<number> {
 		const request = this.get<OcsResponse<GroupfoldersFolder[]>>(
 			`/apps/schulcloud/groupfolders/folders/group/${groupId}`
@@ -153,6 +195,11 @@ export class NextcloudClient {
 		);
 	}
 
+	/**
+	 * Calls nextcloud to delete a groupfolder.
+	 *
+	 * @param folderId Id of the folder which should be deleted in nextcloud
+	 */
 	public deleteGroupFolder(folderId: number): Promise<void> {
 		const request = this.delete<OcsResponse<SuccessfulRes>>(`/apps/groupfolders/folders/${folderId}`);
 
@@ -170,6 +217,12 @@ export class NextcloudClient {
 		);
 	}
 
+	/**
+	 * Calls nextcloud to create a groupfolder.
+	 *
+	 * @param folderName The name of the groupfolder
+	 * @returns The folderId of the created groupfolder
+	 */
 	public createGroupFolder(folderName: string): Promise<number> {
 		const request = this.post<OcsResponse<GroupfoldersCreated>>(`/apps/groupfolders/folders`, {
 			mountpoint: folderName,
@@ -189,9 +242,10 @@ export class NextcloudClient {
 	}
 
 	/**
+	 * Calls nextcloud to give a group access to a groupfolder.
 	 *
-	 * @param folderId
-	 * @param groupId
+	 * @param folderId Id of the groupfolder in nextcloud
+	 * @param groupId Id of the group in nextcloud
 	 */
 	public addAccessToGroupFolder(folderId: number, groupId: string): Promise<void> {
 		const request = this.post<OcsResponse>(`/apps/groupfolders/folders/${folderId}/groups`, {
@@ -209,6 +263,12 @@ export class NextcloudClient {
 		);
 	}
 
+	/**
+	 * Calls nextcloud to get all users in a group.
+	 *
+	 * @param groupId Id of the group in nextcloud
+	 * @returns List of the nextcloud user ids
+	 */
 	public getGroupUsers(groupId: string): Promise<string[]> {
 		const request = this.get<OcsResponse<GroupUsers>>(`/ocs/v1.php/cloud/groups/${groupId}/users`);
 
@@ -224,6 +284,12 @@ export class NextcloudClient {
 		);
 	}
 
+	/**
+	 * Calls nextcloud to add a user to a group.
+	 *
+	 * @param userId Id of the user in nextcloud
+	 * @param groupId Id of the group in nextcloud
+	 */
 	public addUserToGroup(userId: string, groupId: string): Promise<void> {
 		const request = this.post<OcsResponse>(`/ocs/v1.php/cloud/users/${userId}/groups`, {
 			groupid: groupId,
@@ -243,6 +309,13 @@ export class NextcloudClient {
 		);
 	}
 
+	/**
+	 * Calls nextcloud to remove a user from a group.
+	 *
+	 * @param userId Id of the user in nextcloud
+	 * @param groupId Id of the group in nextcloud
+	 *
+	 */
 	public removeUserFromGroup(userId: string, groupId: string): Promise<void> {
 		const request = this.delete<OcsResponse>(`/ocs/v1.php/cloud/users/${userId}/groups?groupid=${groupId}`);
 
@@ -260,6 +333,12 @@ export class NextcloudClient {
 		);
 	}
 
+	/**
+	 * Calls nexcloud to change the name of a groupfolder.
+	 *
+	 * @param folderId Id of the folder in nextcloud
+	 * @param folderName New folder name
+	 */
 	public changeGroupFolderName(folderId: number, folderName: string): Promise<void> {
 		const request = this.post<OcsResponse>(`/apps/groupfolders/folders/${folderId}/mountpoint`, {
 			mountpoint: folderName,
@@ -292,14 +371,35 @@ export class NextcloudClient {
 		return this.httpService.delete<T>(`${this.baseURL}${apiPath}`, this.config);
 	}
 
+	/**
+	 * Creates a bitmask from an array of boolean
+	 *
+	 * @param arr
+	 * @returns An integer bitmask
+	 * @private
+	 */
 	private boolArrToNumber(arr: Array<boolean>): number {
 		return parseInt(arr.map((r) => (r ? '1' : '0')).join(''), 2);
 	}
 
-	public getNameWithPrefix(teamId: string): string {
-		return `${this.oidcInternalName}-${teamId}`;
+	/**
+	 * Generates a string with the oidcInternalName as a prefix for the input value.
+	 *
+	 * @param value
+	 * @returns String of format: prefix-value
+	 */
+	public getNameWithPrefix(value: string): string {
+		return `${this.oidcInternalName}-${value}`;
 	}
 
+	/**
+	 * Helper function to handle nextcloud request for the ocs protocol.
+	 *
+	 * @param source observable generated from {@link HttpService}
+	 * @param success function that gets called, if the {@link OcsResponse} has a {@link Meta#statuscode statuscode} of 100
+	 * @param error function that gets called, if an error occurs during execution or an {@link OcsResponse} with a {@link Meta#statuscode statuscode} that is not 100
+	 * @protected
+	 */
 	protected handleOcsRequest<T = unknown, R = void>(
 		source: Observable<AxiosResponse<OcsResponse<T>>>,
 		success: (data: T, meta: Meta) => R,

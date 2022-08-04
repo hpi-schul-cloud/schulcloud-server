@@ -15,7 +15,9 @@ class TestStrategy implements ICollaborativeStorageStrategy {
 		this.baseURL = 'mocked';
 	}
 
-	updateTeamPermissionsForRole(): void {}
+	updateTeamPermissionsForRole(): Promise<void> {
+		return Promise.resolve();
+	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	deleteTeam(teamId: string): Promise<void> {
@@ -69,8 +71,8 @@ describe('CollaborativeStorage Adapter', () => {
 	});
 
 	describe('updateTeamPermissionsForRole', () => {
-		it('should call the strategy', () => {
-			adapter.updateTeamPermissionsForRole(
+		it('should call the strategy', async () => {
+			await adapter.updateTeamPermissionsForRole(
 				{
 					id: 'teamId',
 					name: 'teamName',
@@ -93,7 +95,7 @@ describe('CollaborativeStorage Adapter', () => {
 		it('should call the strategy', async () => {
 			const teamIdMock = new ObjectId().toHexString();
 			await adapter.deleteTeam(teamIdMock);
-			expect(strat.deleteTeam).toHaveBeenCalled();
+			expect(strat.deleteTeam).toHaveBeenCalledWith(teamIdMock);
 		});
 	});
 
@@ -101,7 +103,7 @@ describe('CollaborativeStorage Adapter', () => {
 		it('should call the strategy', async () => {
 			const teamDto: TeamDto = { id: 'id', name: 'name', teamUsers: [] };
 			await adapter.createTeam(teamDto);
-			expect(strat.deleteTeam).toHaveBeenCalled();
+			expect(strat.deleteTeam).toHaveBeenCalledWith(teamDto);
 		});
 	});
 
@@ -109,7 +111,7 @@ describe('CollaborativeStorage Adapter', () => {
 		it('should call the strategy', async () => {
 			const teamDto: TeamDto = { id: 'id', name: 'name', teamUsers: [] };
 			await adapter.updateTeam(teamDto);
-			expect(strat.updateTeam).toHaveBeenCalled();
+			expect(strat.deleteTeam).toHaveBeenCalledWith(teamDto);
 		});
 	});
 });
