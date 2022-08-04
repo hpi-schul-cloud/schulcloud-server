@@ -56,10 +56,10 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		await this.client.createGroup(groupId, team.name);
 
 		// TODO N21-124: use ad-hoc creation of group folders, when all existing teams are migrated to the nextcloud
-		// The update 
+		// The update is ne
 		await this.updateTeam(team);
-
 		// await this.updateTeamUsersInGroup(groupId, team.teamUsers);
+
 		// const folderName: string = NextcloudStrategy.generateGroupFolderName(team.id, team.name);
 		// const folderId: number = await this.client.createGroupFolder(folderName);
 		// await this.client.addAccessToGroupFolder(folderId, groupId);
