@@ -77,9 +77,9 @@
 		"config": {
 			"clientId": "erwin-credentials-mock-client",
 			"clientSecret": "erwin-credentials-mock-client-secret",
-			"authorizationUrl": "http://localhost:4011/connect/authorize",
-			"tokenUrl": "http://oidc-server-mock/connect/token",
-			"logoutUrl": "http://oidc-server-mock/connect/endsession"
+			"authorizationUrl": "https://oidc-server-mock/connect/authorize",
+			"tokenUrl": "https://oidc-server-mock/connect/token",
+			"logoutUrl": "https://oidc-server-mock/connect/endsession"
 		}
 	}
 ]
