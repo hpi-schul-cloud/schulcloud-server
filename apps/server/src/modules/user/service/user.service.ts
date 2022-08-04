@@ -40,7 +40,7 @@ export class UserService {
 
 	async createOrUpdate(user: UserDto): Promise<void> {
 		const userRoles: Role[] = await this.roleRepo.findByIds(user.roleIds);
-		const school: School = await this.schoolRepo.findById(user.schoolId);
+		const school: School = await this.schoolRepo.findById(user.schoolId as string);
 
 		let saveEntity: User;
 		if (user.id) {
