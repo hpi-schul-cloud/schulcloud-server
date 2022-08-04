@@ -48,10 +48,10 @@ docker run \
   --name oidc-server-mock \
   -p 4011:80 \
   -e ASPNETCORE_ENVIRONMENT='Development' \
-  -e SERVER_OPTIONS_INLINE='/tmp/config/server-config.json' \
+  -e SERVER_OPTIONS_PATH='/tmp/config/server-config.json' \
   -e USERS_CONFIGURATION_PATH='/tmp/config/users-config.json' \
   -e CLIENTS_CONFIGURATION_PATH='/tmp/config/clients-config.json' \
-  -v "$PWD/backup/idm/oidcmock:/tmp/config"
+  -v "$PWD/backup/idm/oidcmock:/tmp/config" \
   ghcr.io/soluto/oidc-server-mock:0.6.0
 ```
 
