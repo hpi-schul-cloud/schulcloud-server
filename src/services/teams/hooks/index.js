@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const {
 	Forbidden,
 	NotFound,
@@ -764,6 +764,8 @@ const keys = {
  * @beforeHook
  */
 const deleteTeamInCollaborativeStorage = (hook) => {
+	if (!Configuration.has('COLLABORATIVE_STORAGE_PROVIDER')) return;
+
 	const service = hook.app.service('/nest-collaborative-storage-uc');
 	service.deleteTeam(hook.id);
 };
@@ -790,6 +792,8 @@ const createTeamInCollaborativeStorage = (hook) => {
  * @afterHook
  */
 const updateTeamInCollaborativeStorage = (hook) => {
+	if (!Configuration.has('COLLABORATIVE_STORAGE_PROVIDER')) return;
+
 	const teamId = hook.id || (hook.result || {})._id.toHexString() || hook.teamId;
 	const teamName = hook.data.name;
 	const userIds = hook.result.userIds || hook.data.userIds;

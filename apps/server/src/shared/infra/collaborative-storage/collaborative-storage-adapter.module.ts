@@ -9,7 +9,7 @@ import { LtiToolRepo } from '@shared/repo/ltitool/index';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
 
-const storageStrategy = {
+const storageStrategy: Provider = {
 	provide: 'ICollaborativeStorageStrategy',
 	useExisting: NextcloudStrategy,
 };
