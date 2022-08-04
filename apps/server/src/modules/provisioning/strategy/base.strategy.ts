@@ -6,7 +6,6 @@ import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisi
 import { UserUc } from '@src/modules/user/uc';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ProvisioningSystemInputDto } from '@src/modules/provisioning/dto/provisioning-system-input.dto';
 import { AxiosRequestConfig } from 'axios';
 
 export abstract class ProvisioningStrategy<T> {
