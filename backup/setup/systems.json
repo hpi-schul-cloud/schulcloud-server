@@ -22,8 +22,8 @@
 		"type": "oauthIserv",
 		"__v": 0,
 		"oauthConfig": {
-			"clientId": "insert clientId",
-			"clientSecret": "insert clientSecret",
+			"clientId": "SCHULSERVER_CLIENT_ID",
+			"clientSecret": "SCHULSERVER_CLIENT_SECRET",
 			"tokenEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
 			"grantType": "authorization_code",
 			"scope": "openid uuid",
@@ -47,8 +47,8 @@
 		"type": "oauthSanis",
 		"__v": 0,
 		"oauthConfig": {
-			"clientId": "insert clientId",
-			"clientSecret": "insert clientSecret",
+			"clientId": "SANIS_CLIENT_ID",
+			"clientSecret": "SANIS_CLIENT_SECRET",
 			"tokenEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/token",
 			"grantType": "authorization_code",
 			"scope": "openid",
@@ -76,7 +76,7 @@
 		"alias": "oidcmock",
 		"config": {
 			"clientId": "erwin-credentials-mock-client",
-			"clientSecret": "Ierwin-credentials-mock-client-secret",
+			"clientSecret": "erwin-credentials-mock-client-secret",
 			"authorizationUrl": "http://localhost:4011/connect/authorize",
 			"tokenUrl": "http://oidc-server-mock/connect/token",
 			"logoutUrl": "http://oidc-server-mock/connect/endsession"
