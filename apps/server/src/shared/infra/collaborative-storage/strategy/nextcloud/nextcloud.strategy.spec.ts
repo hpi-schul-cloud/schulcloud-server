@@ -215,7 +215,7 @@ describe('NextCloud Adapter Strategy', () => {
 			expect(client.changeGroupFolderName).toHaveBeenCalledWith(folderId, expectedFolderName);
 		});
 
-		it('should not update team user and name if do not exist', async () => {
+		it('should not update team user and name if those do not exist', async () => {
 			// Arrange
 			const groupId = 'groupId';
 			teamDto.teamUsers = [];
