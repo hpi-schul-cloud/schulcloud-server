@@ -1,3 +1,4 @@
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EncryptionModule, SymetricKeyEncryptionService } from '.';
 
@@ -7,7 +8,7 @@ describe('EncryptionModule', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [EncryptionModule.forRoot({ SymmetricCipherKey: 'sampleEncryptionKey' })],
+			imports: [EncryptionModule, ConfigModule.forRoot({ isGlobal: true })],
 		}).compile();
 		service = module.get(SymetricKeyEncryptionService);
 	});

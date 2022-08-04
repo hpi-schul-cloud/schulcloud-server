@@ -7,7 +7,7 @@ import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/li
 import AuthenticationExecutionExportRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionExportRepresentation';
 import { KeycloakModule } from '../keycloak.module';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
-import { KeycloakConfigurationService } from './keycloak-configuration.service';
+import { flowAlias, KeycloakConfigurationService } from './keycloak-configuration.service';
 
 describe('KeycloakConfigurationService Integration', () => {
 	let module: TestingModule;
@@ -56,12 +56,12 @@ describe('KeycloakConfigurationService Integration', () => {
 
 			await keycloakConfigurationService.configureBrokerFlows();
 			const flow = (await getFlowsRequest({ realmName: kc.realmName })).find(
-				(tempFlow) => tempFlow.alias === 'Direct Broker Flow'
+				(tempFlow) => tempFlow.alias === flowAlias
 			);
 			expect(flow).toEqual(
 				expect.objectContaining<AuthenticationFlowRepresentation>({
 					providerId: 'basic-flow',
-					alias: 'Direct Broker Flow',
+					alias: flowAlias,
 					description: 'First broker login which automatically creates or maps accounts.',
 					topLevel: true,
 					builtIn: false,
