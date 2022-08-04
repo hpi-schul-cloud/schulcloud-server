@@ -110,9 +110,11 @@ export class OAuthService {
 			if (system.oauthConfig && system.oauthConfig.provider === 'iserv') {
 				return await this.iservOauthService.findUserById(system.id, decodedJwt);
 			}
-			this.logger.debug('provisioning is running...');
+			this.logger.debug(
+				`provisioning is running for user with sub: ${decodedJwt.sub} and system with id: ${system.id}`
+			);
 			const provisioningDto = await this.provisioningUc.process(accessToken, system.id);
-			const user = await this.userRepo.findByLdapIdOrFail(provisioningDto.userDto.id as string, system.id);
+			const user = await this.userRepo.findByLdapIdOrFail(provisioningDto.userDto.externalId, system.id);
 			return user;
 		} catch (error) {
 			throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');

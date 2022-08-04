@@ -11,7 +11,7 @@ export class OauthUc {
 	}
 
 	async startOauth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
-		this.logger.debug('starting oauth process...');
+		this.logger.debug(`starting oauth process for system with id: ${systemId}`);
 		const promise: Promise<OAuthResponse> = this.oauthService.processOAuth(query, systemId);
 		return promise;
 	}

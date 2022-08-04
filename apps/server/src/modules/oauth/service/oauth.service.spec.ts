@@ -346,7 +346,7 @@ describe('OAuthService', () => {
 			expect(iservOAuthService.findUserById).toHaveBeenCalled();
 			expect(user).toBe(defaultIservUser);
 		});
-		it('should return an error if no User is found by this Id', async () => {
+		it('should return an error if no User is found with this Id', async () => {
 			userRepo.findByLdapIdOrFail.mockRejectedValueOnce(new Error('User not found'));
 			await expect(
 				service.findUser(defaultTokenResponse.access_token, defaultDecodedJWT, defaultSystem)
