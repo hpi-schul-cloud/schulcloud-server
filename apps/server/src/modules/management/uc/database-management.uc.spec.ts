@@ -362,7 +362,7 @@ describe('DatabaseManagementService', () => {
 				);
 			});
 			describe('when importing systems', () => {
-				it('should not replace secret if secret does not exist in env vars', async () => {
+				it('should should replace placeholders if no AES_KEY is given', async () => {
 					configService.get.mockReturnValue(null);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
@@ -378,6 +378,24 @@ describe('DatabaseManagementService', () => {
 						clientId: 'ISERV_CLIENT_ID',
 						clientSecret: 'ISERV_CLIENT_SECRET',
 					});
+				});
+				it('should not replace secret if secret does not exist in env vars', async () => {
+					configService.get.mockImplementation((data) => (data === 'AES_KEY' ? 'asdffaf' : null));
+					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
+					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
+					expect(dbService.collectionExists).toBeCalledTimes(1);
+					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
+					expect(dbService.clearCollection).not.toBeCalled();
+					const importedSystems = dbService.importCollection.mock.calls[0][1];
+					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+						clientId: 'SANIS_CLIENT_ID',
+						clientSecret: 'SANIS_CLIENT_SECRET',
+					});
+					expect((importedSystems[1] as System).config).toMatchObject({
+						clientId: 'ISERV_CLIENT_ID',
+						clientSecret: 'ISERV_CLIENT_SECRET',
+					});
+					expect(encryptionService.encrypt).not.toHaveBeenCalled();
 				});
 				it('should encrypt secrets if secret is configured in env var', async () => {
 					configService.get.mockImplementation((data) => data);
