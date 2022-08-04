@@ -50,7 +50,7 @@ export class CollaborativeStorageService {
 			await this.teamsRepo.findById(teamId, true),
 			PermissionContextBuilder.permissionOnly([Permission.CHANGE_TEAM_ROLES])
 		);
-		this.adapter.updateTeamPermissionsForRole(
+		return this.adapter.updateTeamPermissionsForRole(
 			await this.findTeamById(teamId, true),
 			await this.roleService.findById(roleId),
 			teamPermissions

@@ -38,7 +38,7 @@ class TestStrategy implements ICollaborativeStorageStrategy {
 describe('CollaborativeStorage Adapter', () => {
 	let module: TestingModule;
 	let adapter: CollaborativeStorageAdapter;
-	let strat: ICollaborativeStorageStrategy;
+	let strategy: ICollaborativeStorageStrategy;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -56,7 +56,15 @@ describe('CollaborativeStorage Adapter', () => {
 			],
 		}).compile();
 		adapter = module.get(CollaborativeStorageAdapter);
-		strat = adapter.strategy;
+		strategy = adapter.strategy;
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('setStrategy', () => {
@@ -66,7 +74,7 @@ describe('CollaborativeStorage Adapter', () => {
 			expect(adapter.strategy).toEqual(testStrat);
 		});
 		afterAll(() => {
-			adapter.setStrategy(strat);
+			adapter.setStrategy(strategy);
 		});
 	});
 
@@ -87,7 +95,7 @@ describe('CollaborativeStorage Adapter', () => {
 					share: false,
 				}
 			);
-			expect(strat.updateTeamPermissionsForRole).toHaveBeenCalled();
+			expect(strategy.updateTeamPermissionsForRole).toHaveBeenCalled();
 		});
 	});
 
@@ -95,7 +103,7 @@ describe('CollaborativeStorage Adapter', () => {
 		it('should call the strategy', async () => {
 			const teamIdMock = new ObjectId().toHexString();
 			await adapter.deleteTeam(teamIdMock);
-			expect(strat.deleteTeam).toHaveBeenCalledWith(teamIdMock);
+			expect(strategy.deleteTeam).toHaveBeenCalledWith(teamIdMock);
 		});
 	});
 
@@ -103,7 +111,7 @@ describe('CollaborativeStorage Adapter', () => {
 		it('should call the strategy', async () => {
 			const teamDto: TeamDto = { id: 'id', name: 'name', teamUsers: [] };
 			await adapter.createTeam(teamDto);
-			expect(strat.deleteTeam).toHaveBeenCalledWith(teamDto);
+			expect(strategy.createTeam).toHaveBeenCalledWith(teamDto);
 		});
 	});
 
@@ -111,7 +119,7 @@ describe('CollaborativeStorage Adapter', () => {
 		it('should call the strategy', async () => {
 			const teamDto: TeamDto = { id: 'id', name: 'name', teamUsers: [] };
 			await adapter.updateTeam(teamDto);
-			expect(strat.deleteTeam).toHaveBeenCalledWith(teamDto);
+			expect(strategy.updateTeam).toHaveBeenCalledWith(teamDto);
 		});
 	});
 });
