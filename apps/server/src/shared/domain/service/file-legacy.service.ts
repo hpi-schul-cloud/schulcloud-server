@@ -9,7 +9,7 @@ type FileLegacyParams = {
 	userId: EntityId;
 };
 
-type FileLegacyResponse = {
+export type FileLegacyResponse = {
 	oldFileId: EntityId;
 	fileId?: EntityId;
 	filename?: string;

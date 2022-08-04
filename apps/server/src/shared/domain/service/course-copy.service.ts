@@ -41,10 +41,6 @@ export class CourseCopyService {
 				status: CopyStatusEnum.NOT_DOING,
 			},
 			{
-				type: CopyElementType.FILE_GROUP,
-				status: CopyStatusEnum.NOT_IMPLEMENTED,
-			},
-			{
 				type: CopyElementType.COURSEGROUP_GROUP,
 				status: CopyStatusEnum.NOT_IMPLEMENTED,
 			},
