@@ -4,6 +4,9 @@ import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
+import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
+import AuthenticationExecutionInfoRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionInfoRepresentation';
 import { IdentityProviderConfig, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { SysType } from '../../sys.type';
@@ -14,15 +17,92 @@ enum ConfigureAction {
 	DELETE = 'delete',
 }
 
+export const flowAlias = 'Direct Broker Flow';
+
 export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly systemRepo: SystemRepo,
-		private readonly configService: ConfigService<unknown, true>,
+		private readonly encryptionService: SymetricKeyEncryptionService,
+		private readonly configService: ConfigService,
 		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles
 	) {}
 
-	public async configureIdentityProviders(loadFromJson = false) {
+	public async configureBrokerFlows(): Promise<void> {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		const executionProviders = ['idp-create-user-if-unique', 'idp-auto-link'];
+		const getFlowsRequest = kc.realms.makeRequest<{ realmName: string }, AuthenticationFlowRepresentation[]>({
+			method: 'GET',
+			path: '/{realmName}/authentication/flows',
+			urlParamKeys: ['realmName'],
+		});
+		const flows = await getFlowsRequest({ realmName: kc.realmName });
+		const flow = flows.find((tempFlow) => tempFlow.alias === flowAlias);
+		if (flow && flow.id) {
+			return;
+		}
+		const createFlowRequest = kc.realms.makeRequest<AuthenticationFlowRepresentation & { realmName: string }, void>({
+			method: 'POST',
+			path: '/{realmName}/authentication/flows',
+			urlParamKeys: ['realmName'],
+		});
+		const getFlowExecutionsRequest = kc.realms.makeRequest<
+			{ realmName: string; flowAlias: string },
+			AuthenticationExecutionInfoRepresentation[]
+		>({
+			method: 'GET',
+			path: '/{realmName}/authentication/flows/{flowAlias}/executions',
+			urlParamKeys: ['realmName', 'flowAlias'],
+		});
+		const addExecutionRequest = kc.realms.makeRequest<{ realmName: string; flowAlias: string; provider: string }, void>(
+			{
+				method: 'POST',
+				path: '/{realmName}/authentication/flows/{flowAlias}/executions/execution',
+				urlParamKeys: ['realmName', 'flowAlias'],
+			}
+		);
+		const updateExecutionRequest = kc.realms.makeRequest<
+			AuthenticationExecutionInfoRepresentation & { realmName: string; flowAlias: string },
+			void
+		>({
+			method: 'PUT',
+			path: '/{realmName}/authentication/flows/{flowAlias}/executions',
+			urlParamKeys: ['realmName', 'flowAlias'],
+		});
+		await createFlowRequest({
+			realmName: kc.realmName,
+			alias: flowAlias,
+			description: 'First broker login which automatically creates or maps accounts.',
+			providerId: 'basic-flow',
+			topLevel: true,
+			builtIn: false,
+		});
+		// eslint-disable-next-line no-restricted-syntax
+		for (const executionProvider of executionProviders) {
+			// eslint-disable-next-line no-await-in-loop
+			await addExecutionRequest({
+				realmName: kc.realmName,
+				flowAlias,
+				provider: executionProvider,
+			});
+		}
+		const executions = await getFlowExecutionsRequest({
+			realmName: kc.realmName,
+			flowAlias,
+		});
+		// eslint-disable-next-line no-restricted-syntax
+		for (const execution of executions) {
+			// eslint-disable-next-line no-await-in-loop
+			await updateExecutionRequest({
+				realmName: kc.realmName,
+				flowAlias,
+				id: execution.id,
+				requirement: 'ALTERNATIVE',
+			});
+		}
+	}
+
+	public async configureIdentityProviders(loadFromJson = false): Promise<number> {
 		let count = 0;
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const oldConfigs = await kc.identityProviders.find();
@@ -86,9 +166,10 @@ export class KeycloakConfigurationService {
 				providerId: system.type,
 				alias: system.alias,
 				enabled: true,
+				firstBrokerLoginFlowAlias: flowAlias,
 				config: {
-					clientId: this.configService.get<string>(system.config.clientId),
-					clientSecret: this.configService.get<string>(system.config.clientSecret),
+					clientId: system.config.clientId,
+					clientSecret: system.config.clientSecret,
 					authorizationUrl: system.config.authorizationUrl,
 					tokenUrl: system.config.tokenUrl,
 					logoutUrl: system.config.logoutUrl,
@@ -106,9 +187,10 @@ export class KeycloakConfigurationService {
 					providerId: system.type,
 					alias: system.alias,
 					enabled: true,
+					firstBrokerLoginFlowAlias: flowAlias,
 					config: {
-						clientId: this.configService.get<string>(system.config.clientId),
-						clientSecret: this.configService.get<string>(system.config.clientSecret),
+						clientId: system.config.clientId,
+						clientSecret: system.config.clientSecret,
 						authorizationUrl: system.config.authorizationUrl,
 						tokenUrl: system.config.tokenUrl,
 						logoutUrl: system.config.logoutUrl,
@@ -121,12 +203,30 @@ export class KeycloakConfigurationService {
 	private async loadConfigs(sysTypes: SysType[], loadFromJson = false): Promise<IdentityProviderConfig[]> {
 		if (loadFromJson) {
 			const data: string = await fs.readFile(this.inputFiles.systemsFile, { encoding: 'utf-8' });
-			const systems = JSON.parse(data) as IdentityProviderConfig[];
-			return systems.filter((system) => sysTypes.includes(system.type as SysType));
+			let systems = JSON.parse(data) as IdentityProviderConfig[];
+			systems = systems.filter((system) => sysTypes.includes(system.type as SysType));
+			systems.forEach((system) => {
+				if (system.type === SysType.OIDC && system.config) {
+					const clientId = this.configService.get<string>(system.config.clientId);
+					const clientSecret = this.configService.get<string>(system.config.clientSecret);
+					if (clientId && clientSecret) {
+						system.config.clientId = clientId;
+						system.config.clientSecret = clientSecret;
+					}
+				}
+			});
+			return systems;
 		}
-		return (await this.systemRepo.findAll()).filter((system) =>
+		const systems = (await this.systemRepo.findAll()).filter((system) =>
 			sysTypes.includes(system.type as SysType)
 		) as IdentityProviderConfig[];
+		systems.forEach((system) => {
+			if (system.type === SysType.OIDC && system.config) {
+				system.config.clientId = this.encryptionService.decrypt(system.config.clientId);
+				system.config.clientSecret = this.encryptionService.decrypt(system.config.clientSecret);
+			}
+		});
+		return systems;
 	}
 
 	private async deleteIdentityProvider(alias: string): Promise<void> {
