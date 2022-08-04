@@ -31,7 +31,7 @@ export class OAuthService {
 		private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
 		private readonly iservOauthService: IservOAuthService,
 		private readonly logger: Logger,
-		private readonly provisioningService: ProvisioningUc
+		private readonly provisioningUc: ProvisioningUc
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
@@ -111,7 +111,7 @@ export class OAuthService {
 				return await this.iservOauthService.findUserById(system.id, decodedJwt);
 			}
 			this.logger.debug('provisioning is running...');
-			const provisioningDto = await this.provisioningService.process(accessToken, system.id);
+			const provisioningDto = await this.provisioningUc.process(accessToken, system.id);
 			const user = await this.userRepo.findByLdapIdOrFail(provisioningDto.userDto.id as string, system.id);
 			return user;
 		} catch (error) {
