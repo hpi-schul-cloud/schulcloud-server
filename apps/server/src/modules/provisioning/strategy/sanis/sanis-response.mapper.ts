@@ -25,7 +25,7 @@ export class SanisResponseMapper implements IProviderResponseMapper<SanisRespons
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
 			roleNames: [RoleMapping[source.personenkontexte[0].rolle]],
-			schoolId: (schoolId as string) ?? undefined,
+			schoolId,
 			externalId: source.pid,
 		});
 	}

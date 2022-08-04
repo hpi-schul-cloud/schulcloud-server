@@ -24,7 +24,7 @@ export class ProvisioningUserOutputDto {
 
 	roleNames: RoleName[];
 
-	schoolId: EntityId;
+	schoolId?: EntityId;
 
 	externalId: string;
 }
