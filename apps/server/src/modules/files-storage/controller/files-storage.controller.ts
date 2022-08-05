@@ -1,4 +1,3 @@
-import { HttpService } from '@nestjs/axios';
 import {
 	BadRequestException,
 	Body,
@@ -22,9 +21,8 @@ import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger
 import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
-import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
-import { catchError, lastValueFrom } from 'rxjs';
 import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
 import {
@@ -39,17 +37,12 @@ import {
 	RenameFileParams,
 	SingleFileParams,
 } from './dto';
-import FormData = require('form-data');
 
 @ApiTags('file')
 @Authenticate('jwt')
 @Controller('file')
 export class FilesStorageController {
-	constructor(
-		private readonly filesStorageUC: FilesStorageUC,
-		private readonly fileRecordUC: FileRecordUC,
-		private readonly httpService: HttpService
-	) {}
+	constructor(private readonly filesStorageUC: FilesStorageUC, private readonly fileRecordUC: FileRecordUC) {}
 
 	@ApiOperation({ summary: 'Upload file from url' })
 	@ApiResponse({ status: 201, type: FileRecordResponse })
@@ -59,45 +52,16 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post('/upload-from-url/:schoolId/:parentType/:parentId')
 	async uploadFromUrl(
-		@Body() _: FileUrlParams,
+		@Body() body: FileUrlParams,
 		@Param() params: FileRecordParams,
-		@CurrentUser() currentUser: ICurrentUser, // :Promise<FileRecordResponse>
-		@JWT() authToken: string
-	) {
-		console.log('body', _);
-		console.log('params', params);
+		@CurrentUser() currentUser: ICurrentUser,
+		@Req() req: Request
+	): Promise<FileRecordResponse> {
+		const res = await this.filesStorageUC.uploadFromUrl(currentUser.userId, { ...body, ...params }, req);
 
-		try {
-			const responseImg = await lastValueFrom(
-				this.httpService
-					// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-					.get(_.url, { responseType: 'stream' })
-			);
+		const response = new FileRecordResponse(res);
 
-			// console.log((responseImg.headers['content-type'] = 'multipart/form-data'));
-
-			const form = new FormData();
-			form.append('file', responseImg.data);
-
-			const formHeaders = form.getHeaders();
-
-			const r = await lastValueFrom(
-				this.httpService.post(
-					`http://localhost:4444/api/v3/file/upload/${params.schoolId}/${params.parentType}/${params.parentId}`,
-					form,
-					{
-						headers: {
-							Authorization: `Bearer ${authToken}`,
-							...formHeaders,
-						},
-					}
-				)
-			);
-
-			return r.data;
-		} catch (error) {
-			console.log('error', error);
-		}
+		return response;
 	}
 
 	@ApiOperation({ summary: 'Streamable upload of a binary file.' })
