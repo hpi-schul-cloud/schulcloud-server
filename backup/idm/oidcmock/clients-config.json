@@ -6,6 +6,6 @@
 		"AllowedGrantTypes": ["client_credentials", "authorization_code"],
 		"RequirePkce": false,
 		"RedirectUris": ["http://localhost:8080/realms/dBildungscloud/broker/oidcmock/endpoint"],
-		"AllowedScopes": ["openid"]
+		"AllowedScopes": ["openid", "profile", "email"]
 	}
 ]
