@@ -39,7 +39,7 @@ docker run `
 
 To add ErWIn-IDM identity broker feature via OpenID Connect (OIDC) Identity Provider (IdP) mock:
 
-- adjust 'schulcloud-server/config/development.json' and set 'OIDC\_\_BASE_URL' to your local ip address.
+- adjust 'schulcloud-server/backup/setup/systems.json' and set 'OIDCMOCK\_\_BASE_URL' to your local ip address.
 - re-trigger `npm run setup:idm` to reset and apply seed data.
 - start the 'oidc-server-mock' as follows:
 
@@ -96,7 +96,7 @@ and testing. In the table below you can see the username and password combinatio
 In order to re-apply the seeding data for a running keycloak container, you may run following commands (to be executed in the repository root):
 
 1. `docker cp ./backup/idm/keycloak keycloak:/tmp/realms`
-2. `docker exec keycloak /opt/keycloak/bin/kc.sh import --dir /tmp/realms`
+2. `docker exec erwinidm /opt/keycloak/bin/kc.sh import --dir /tmp/realms`
 
 ## NPM Commands
 
