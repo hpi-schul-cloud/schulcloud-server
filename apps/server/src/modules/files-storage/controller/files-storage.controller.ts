@@ -68,50 +68,33 @@ export class FilesStorageController {
 		console.log('params', params);
 
 		try {
-			const response = await lastValueFrom(
+			const responseImg = await lastValueFrom(
 				this.httpService
 					// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-					.get(_.url, {
-						headers: {
-							Authorization: authToken,
-						},
-					})
-					.pipe(
-						catchError((e) => {
-							throw e;
-						})
-					)
+					.get(_.url, { responseType: 'stream' })
 			);
 
-			if (response?.data.url) {
-				const responseImg = await lastValueFrom(
-					this.httpService
-						// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-						.get(response.data.url, { responseType: 'stream' })
-				);
+			// console.log((responseImg.headers['content-type'] = 'multipart/form-data'));
 
-				// console.log((responseImg.headers['content-type'] = 'multipart/form-data'));
+			const form = new FormData();
+			form.append('file', responseImg.data);
 
-				const form = new FormData();
-				form.append('file', responseImg.data);
+			const formHeaders = form.getHeaders();
 
-				const formHeaders = form.getHeaders();
+			const r = await lastValueFrom(
+				this.httpService.post(
+					`http://localhost:4444/api/v3/file/upload/${params.schoolId}/${params.parentType}/${params.parentId}`,
+					form,
+					{
+						headers: {
+							Authorization: `Bearer ${authToken}`,
+							...formHeaders,
+						},
+					}
+				)
+			);
 
-				const r = await lastValueFrom(
-					this.httpService.post(
-						`http://localhost:4444/api/v3/file/upload/${params.schoolId}/${params.parentType}/${params.parentId}`,
-						form,
-						{
-							headers: {
-								Authorization: `Bearer ${authToken}`,
-								...formHeaders,
-							},
-						}
-					)
-				);
-
-				return r.data;
-			}
+			return r.data;
 		} catch (error) {
 			console.log('error', error);
 		}
