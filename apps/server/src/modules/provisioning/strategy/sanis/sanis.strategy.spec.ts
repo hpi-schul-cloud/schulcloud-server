@@ -59,11 +59,12 @@ describe('SanisStrategy', () => {
 		const schoolDto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({
 			id: 'schoolId',
 			name: 'schoolName',
-			externalIdentifier: userUUID.toString(),
+			externalSchoolId: userUUID.toString(),
 		});
 		const userDto: ProvisioningUserOutputDto = new ProvisioningUserOutputDto({
 			firstName: 'firstName',
 			lastName: 'lastame',
+			email: '',
 			roleNames: [],
 			schoolId: 'schoolId',
 			externalId: schoolUUID.toString(),
@@ -118,7 +119,6 @@ describe('SanisStrategy', () => {
 		it('should not save school', async () => {
 			// Arrange
 			httpService.get.mockReturnValue(of(createAxiosResponse(mockResponse)));
-			mapper.mapToSchoolDto.mockReturnValue(undefined);
 			mapper.mapToUserDto.mockReturnValue(userDto);
 
 			// Act

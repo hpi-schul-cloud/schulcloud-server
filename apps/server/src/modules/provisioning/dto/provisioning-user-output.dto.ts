@@ -16,7 +16,7 @@ export class ProvisioningUserOutputDto {
 
 	id?: EntityId;
 
-	email?: string;
+	email: string;
 
 	firstName: string;
 
@@ -24,7 +24,7 @@ export class ProvisioningUserOutputDto {
 
 	roleNames: RoleName[];
 
-	schoolId?: EntityId;
+	schoolId: EntityId;
 
 	externalId: string;
 }

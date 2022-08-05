@@ -7,12 +7,12 @@ export class ProvisioningSchoolOutputDto {
 	constructor(schoolDto: ProvisioningSchoolOutputDto) {
 		this.id = schoolDto.id;
 		this.name = schoolDto.name;
-		this.externalIdentifier = schoolDto.externalIdentifier;
+		this.externalSchoolId = schoolDto.externalSchoolId;
 	}
 
 	id?: EntityId;
 
 	name: string;
 
-	externalIdentifier?: string;
+	externalSchoolId: string;
 }

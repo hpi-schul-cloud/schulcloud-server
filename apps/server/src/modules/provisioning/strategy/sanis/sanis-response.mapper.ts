@@ -13,19 +13,20 @@ const RoleMapping = {
 
 @Injectable()
 export class SanisResponseMapper implements IProviderResponseMapper<SanisResponse> {
-	mapToSchoolDto(source: SanisResponse): ProvisioningSchoolOutputDto | undefined {
+	mapToSchoolDto(source: SanisResponse): ProvisioningSchoolOutputDto {
 		return new ProvisioningSchoolOutputDto({
 			name: source.personenkontexte[0].organisation.name,
-			externalIdentifier: source.personenkontexte[0].organisation.orgid.toString(),
+			externalSchoolId: source.personenkontexte[0].organisation.orgid.toString(),
 		});
 	}
 
-	mapToUserDto(source: SanisResponse, schoolId?: EntityId): ProvisioningUserOutputDto {
+	mapToUserDto(source: SanisResponse, externalSchoolId: EntityId): ProvisioningUserOutputDto {
 		return new ProvisioningUserOutputDto({
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
+			email: '',
 			roleNames: [RoleMapping[source.personenkontexte[0].rolle]],
-			schoolId,
+			schoolId: externalSchoolId,
 			externalId: source.pid,
 		});
 	}

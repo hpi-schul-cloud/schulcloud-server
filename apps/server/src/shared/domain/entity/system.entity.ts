@@ -8,6 +8,7 @@ export interface ISystemProperties {
 	alias?: string;
 	oauthConfig?: OauthConfig;
 	provisioningStrategy?: SystemProvisioningStrategy;
+	provisioningUrl?: string;
 }
 
 export class OauthConfig {
@@ -24,7 +25,6 @@ export class OauthConfig {
 		this.logoutEndpoint = oauthConfig.logoutEndpoint;
 		this.issuer = oauthConfig.issuer;
 		this.jwksEndpoint = oauthConfig.jwksEndpoint;
-		this.provisioningUrl = oauthConfig.provisioningUrl;
 	}
 
 	@Property()
@@ -62,9 +62,6 @@ export class OauthConfig {
 
 	@Property()
 	jwksEndpoint: string;
-
-	@Property()
-	provisioningUrl: string;
 }
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {
@@ -75,6 +72,7 @@ export class System extends BaseEntityWithTimestamps {
 		this.alias = props.alias;
 		this.oauthConfig = props.oauthConfig;
 		this.provisioningStrategy = props.provisioningStrategy;
+		this.provisioningUrl = props.provisioningUrl;
 	}
 
 	@Property({ nullable: false })
@@ -95,4 +93,7 @@ export class System extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	config?: Record<string, unknown>;
+
+	@Property()
+	provisioningUrl?: string;
 }

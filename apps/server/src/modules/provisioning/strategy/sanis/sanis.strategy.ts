@@ -22,6 +22,7 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisRespons
 	}
 
 	override getProvisioningData(): Promise<SanisResponse> {
+		if (!this.provisioningUrl || !this.config) throw new Error('Provisioning not initialized');
 		return firstValueFrom(this.httpService.get(`${this.provisioningUrl}`, this.config)).then(
 			(r: AxiosResponse<SanisResponse>) => {
 				return r.data;

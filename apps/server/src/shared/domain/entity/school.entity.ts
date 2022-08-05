@@ -15,7 +15,7 @@ export enum SchoolFeatures {
 }
 
 export interface ISchoolProperties {
-	externalIdentifier?: string;
+	externalSchoolId?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
 	name: string;
@@ -45,11 +45,11 @@ export class SchoolRoles {
 
 @Entity({ tableName: 'schools' })
 // TODO create index ldapSchoolIdentifier
-@Index({ properties: ['externalIdentifier', 'systems'] })
+@Index({ properties: ['externalSchoolId', 'systems'] })
 export class School extends BaseEntity {
 	constructor(props: ISchoolProperties) {
 		super();
-		if (props.externalIdentifier) this.externalIdentifier = props.externalIdentifier;
+		if (props.externalSchoolId) this.externalSchoolId = props.externalSchoolId;
 		if (props.inMaintenanceSince) this.inMaintenanceSince = props.inMaintenanceSince;
 		if (props.inUserMigration !== null) this.inUserMigration = props.inUserMigration;
 		this.name = props.name;
@@ -69,7 +69,7 @@ export class School extends BaseEntity {
 	inUserMigration?: boolean;
 
 	@Property({ nullable: true, fieldName: 'ldapSchoolIdentifier' })
-	externalIdentifier?: string;
+	externalSchoolId?: string;
 
 	@Property()
 	name: string;

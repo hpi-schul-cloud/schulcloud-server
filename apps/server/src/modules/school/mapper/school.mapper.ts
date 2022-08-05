@@ -21,7 +21,7 @@ export class SchoolMapper {
 		return new SchoolDto({
 			name: entity.name,
 			id: entity.id,
-			externalIdentifier: entity.externalIdentifier ?? undefined,
+			externalSchoolId: entity.externalSchoolId,
 		});
 	}
 }

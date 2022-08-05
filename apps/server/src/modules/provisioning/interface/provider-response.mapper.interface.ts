@@ -3,7 +3,7 @@ import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisi
 import { EntityId } from '@shared/domain';
 
 export interface IProviderResponseMapper<T> {
-	mapToSchoolDto(source: T): ProvisioningSchoolOutputDto | undefined;
+	mapToSchoolDto(source: T): ProvisioningSchoolOutputDto;
 
 	mapToUserDto(source: T, schoolId?: EntityId): ProvisioningUserOutputDto;
 }

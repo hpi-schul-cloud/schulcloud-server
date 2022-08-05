@@ -9,9 +9,9 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { AxiosRequestConfig } from 'axios';
 
 export abstract class ProvisioningStrategy<T> {
-	protected config: AxiosRequestConfig;
+	protected config?: AxiosRequestConfig;
 
-	protected provisioningUrl: string;
+	protected provisioningUrl?: string;
 
 	constructor(
 		private readonly responseMapper: IProviderResponseMapper<T>,
@@ -19,7 +19,6 @@ export abstract class ProvisioningStrategy<T> {
 		private readonly userUc: UserUc
 	) {
 		this.config = {};
-		this.provisioningUrl = '';
 	}
 
 	abstract getProvisioningData(): Promise<T>;
@@ -39,13 +38,11 @@ export abstract class ProvisioningStrategy<T> {
 
 		if (schoolDto) {
 			const savedSchoolDto: SchoolDto = await this.schoolUc.saveProvisioningSchoolOutputDto(schoolDto);
-			userDto = this.responseMapper.mapToUserDto(provisioningData, savedSchoolDto.id);
+			userDto = this.responseMapper.mapToUserDto(provisioningData, savedSchoolDto.externalSchoolId);
 		} else {
-			userDto = this.responseMapper.mapToUserDto(provisioningData);
+			throw new Error('');
 		}
-
 		await this.userUc.saveProvisioningUserOutputDto(userDto);
-
 		const provisioningDto: ProvisioningDto = new ProvisioningDto({ schoolDto, userDto });
 		return provisioningDto;
 	}
