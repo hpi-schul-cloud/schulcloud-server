@@ -26,7 +26,7 @@ export class FileUrlParams {
 	@ApiProperty({ type: 'string' })
 	@IsString()
 	@IsNotEmpty()
-	filename!: string;
+	fileName!: string;
 }
 
 export class FileParams {
