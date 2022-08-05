@@ -248,6 +248,7 @@ class EduSharingConnector {
 				values: ['1'],
 			});
 		} else if (collection) {
+			sortProperties = 'cclom:title';
 			criterias.push({ property: 'ngsearchword', values: ['*'] });
 			criterias.push({
 				property: 'ccm:hpi_lom_relation',
@@ -257,18 +258,18 @@ class EduSharingConnector {
 			criterias.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
 		}
 
-		const response = await this.searchEduSharing(criterias, skipCount, maxItems);
+		const response = await this.searchEduSharing(criterias, skipCount, maxItems, sortProperties);
 		return response;
 	}
 
-	async searchEduSharing(criterias, skipCount, maxItems) {
+	async searchEduSharing(criterias, skipCount, maxItems, sortProperties = 'score') {
 		try {
 			const url = `${ES_ENDPOINTS.SEARCH}?${[
 				`contentType=FILES`,
 				`skipCount=${skipCount}`,
 				`maxItems=${maxItems}`,
-				`sortProperties=cclom:title`,
-				`sortAscending=false`,
+				`sortProperties=${sortProperties}`,
+				`sortAscending=true`,
 				`propertyFilter=-all-`,
 			].join('&')}`;
 
