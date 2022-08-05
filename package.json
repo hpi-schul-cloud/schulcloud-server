@@ -141,7 +141,6 @@
 		"feathers-mongoose": "^6.3.0",
 		"feathers-swagger": "^1.1.0",
 		"file-type": "^16.2.0",
-		"form-data": "^4.0.0",
 		"freeport": "^1.0.5",
 		"html-entities": "^2.3.2",
 		"jose": "^1.28.1",
