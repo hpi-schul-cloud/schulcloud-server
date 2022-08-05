@@ -55,13 +55,6 @@ docker run \
   ghcr.io/soluto/oidc-server-mock:0.6.0
 ```
 
-Alternatively, instead of setting your local ip, you may create a private network for IDM and IdP as follows:
-
-- Create a new docker network for the IDM and IdP:
-  `docker network create --driver bridge idm-net`
-- (Re-)create the 'erwinidm' and 'oidc-server-mock' docker container with the network set:
-  `--network idm-net`
-
 ## Test local environment
 
 You may test your local setup executing 'keycloak-identity-management.integration.spec.ts':
