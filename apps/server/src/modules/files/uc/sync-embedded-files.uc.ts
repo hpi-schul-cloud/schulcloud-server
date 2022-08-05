@@ -1,9 +1,9 @@
 /* istanbul ignore file */
 
-import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger/logger.service';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
 import { FileRecordParentType, IComponentProperties, Lesson } from '@shared/domain';
+import { Logger } from '@src/core/logger/logger.service';
 import _ from 'lodash';
 import { EmbeddedFilesRepo, fileUrlRegex } from '../repo/embedded-files.repo';
 import { SyncFileItem } from '../types';
@@ -55,20 +55,25 @@ export class SyncEmbeddedFilesUc {
 	}
 
 	private async syncFiles(files: SyncFileItem[]) {
-		let promises;
+		// eslint-disable-next-line no-await-in-loop
+		const promises = files.map((file) => {
+			return this.sync(file);
+		});
+		await Promise.all(promises);
+	}
 
+	private async sync(file: SyncFileItem) {
 		try {
-			// eslint-disable-next-line no-await-in-loop
-			promises = files.map(async (file) => {
-				await this.syncFilesMetaDataService.prepareMetaData(file);
-				await this.syncFilesStorageService.syncS3File(file);
-				await this.syncFilesMetaDataService.persistMetaData(file);
-				await this.updateLessonsLinks(file);
-				this.logger.log(`Synced file ${file.source.id}`);
-			});
-			await Promise.all(promises);
-		} catch (err) {
-			this.logger.error(err);
+			await this.syncFilesMetaDataService.prepareMetaData(file);
+			await this.syncFilesStorageService.syncS3File(file);
+			await this.syncFilesMetaDataService.persistMetaData(file);
+			await this.updateLessonsLinks(file);
+			this.logger.log(`Synced file ${file.source.id}`);
+		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const stack: string = 'stack' in error ? (error as Error).stack : error;
+			this.logger.error(file, stack);
+			await this.syncFilesMetaDataService.persistError(file, stack);
 		}
 	}
 
@@ -78,7 +83,7 @@ export class SyncEmbeddedFilesUc {
 		if (lesson) {
 			lesson.contents = lesson.contents.map((item: IComponentProperties) => {
 				const regex = new RegExp(`${fileUrlRegex}${file.source.id}.+?"`, 'g');
-				const newUrl = `/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}`;
+				const newUrl = `"/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}"`;
 
 				if ('text' in item.content) {
 					item.content.text = item.content.text.replace(regex, newUrl);
