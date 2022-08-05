@@ -159,7 +159,7 @@ describe('OAuthService', () => {
 			id: '4444',
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			ldapId: '1111',
+			externalId: '1111',
 			firstName: 'Test',
 			lastName: 'Testmann',
 		};
@@ -171,7 +171,7 @@ describe('OAuthService', () => {
 			id: defaultUserId,
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			ldapId: '3333',
+			externalId: '3333',
 			firstName: 'iservTest',
 			lastName: 'Test',
 		};
@@ -327,7 +327,7 @@ describe('OAuthService', () => {
 	});
 
 	describe('findUser', () => {
-		it('should return the user according to the uuid(LdapId)', async () => {
+		it('should return the user according to the uuid(externalId)', async () => {
 			// Arrange
 			const oauthConfig = new OauthConfig(defaultSystem.oauthConfig as OauthConfig);
 			oauthConfig.provider = 'iserv';
@@ -347,7 +347,7 @@ describe('OAuthService', () => {
 			expect(user).toBe(defaultIservUser);
 		});
 		it('should return an error if no User is found with this Id', async () => {
-			userRepo.findByLdapIdOrFail.mockRejectedValueOnce(new Error('User not found'));
+			userRepo.findByExternalIdOrFail.mockRejectedValueOnce(new Error('User not found'));
 			await expect(
 				service.findUser(defaultTokenResponse.access_token, defaultDecodedJWT, defaultSystem)
 			).rejects.toThrow(OAuthSSOError);
@@ -365,9 +365,9 @@ describe('OAuthService', () => {
 				schoolDto: { name: 'testSchool' },
 			});
 			provisioningService.process.mockResolvedValue(provisioning);
-			userRepo.findByLdapIdOrFail.mockResolvedValue(defaultUser);
+			userRepo.findByExternalIdOrFail.mockResolvedValue(defaultUser);
 			const user = await service.findUser(defaultTokenResponse.access_token, defaultDecodedJWT, defaultSystem);
-			expect(userRepo.findByLdapIdOrFail).toHaveBeenCalled();
+			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});
 	});

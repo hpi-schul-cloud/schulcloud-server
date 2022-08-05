@@ -114,7 +114,7 @@ export class OAuthService {
 				`provisioning is running for user with sub: ${decodedJwt.sub} and system with id: ${system.id}`
 			);
 			const provisioningDto = await this.provisioningUc.process(accessToken, system.id);
-			const user = await this.userRepo.findByLdapIdOrFail(provisioningDto.userDto.externalId, system.id);
+			const user = await this.userRepo.findByExternalIdOrFail(provisioningDto.userDto.externalId, system.id);
 			return user;
 		} catch (error) {
 			throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');

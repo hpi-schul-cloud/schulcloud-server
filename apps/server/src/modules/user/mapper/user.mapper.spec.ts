@@ -42,7 +42,7 @@ describe('UserMapper', () => {
 		expect(resultDto.schoolId).toEqual(userEntity.school.id);
 		expect(resultDto.roleIds).toEqual(userEntity.roles.getItems().map((role) => role.id));
 		expect(resultDto.ldapDn).toEqual(userEntity.ldapDn);
-		expect(resultDto.ldapId).toEqual(userEntity.ldapId);
+		expect(resultDto.externalId).toEqual(userEntity.externalId);
 		expect(resultDto.language).toEqual(userEntity.language);
 		expect(resultDto.forcePasswordChange).toEqual(userEntity.forcePasswordChange);
 		expect(resultDto.preferences).toEqual(userEntity.preferences);
@@ -64,7 +64,7 @@ describe('UserMapper', () => {
 		expect(resultEntity.school.id).toEqual(userDto.schoolId);
 		expect(resultEntity.roles[0].id).toEqual(userDto.roleIds[0]);
 		expect(resultEntity.ldapDn).toEqual(userDto.ldapDn);
-		expect(resultEntity.ldapId).toEqual(userDto.ldapId);
+		expect(resultEntity.externalId).toEqual(userDto.externalId);
 		expect(resultEntity.language).toEqual(userDto.language);
 		expect(resultEntity.forcePasswordChange).toEqual(userDto.forcePasswordChange);
 		expect(resultEntity.preferences).toEqual(userDto.preferences);
@@ -94,7 +94,7 @@ describe('UserMapper', () => {
 			expect(resultEntity.school).toEqual(patch.school);
 			expect(resultEntity.roles).toEqual(patch.roles);
 			expect(resultEntity.ldapDn).toEqual(userEntity.ldapDn);
-			expect(resultEntity.ldapId).toEqual(userEntity.ldapId);
+			expect(resultEntity.externalId).toEqual(userEntity.externalId);
 			expect(resultEntity.language).toEqual(userEntity.language);
 			expect(resultEntity.forcePasswordChange).toEqual(userEntity.forcePasswordChange);
 			expect(resultEntity.preferences).toEqual(userEntity.preferences);
@@ -113,7 +113,7 @@ describe('UserMapper', () => {
 			});
 
 			patch.ldapDn = 'ldapDn';
-			patch.ldapId = 'ldapId';
+			patch.externalId = 'externalId';
 			patch.language = LanguageType.DE;
 			patch.forcePasswordChange = true;
 			patch.preferences = { key: 'value' };
@@ -129,7 +129,7 @@ describe('UserMapper', () => {
 			expect(resultEntity.school).toEqual(patch.school);
 			expect(resultEntity.roles).toEqual(patch.roles);
 			expect(resultEntity.ldapDn).toEqual(patch.ldapDn);
-			expect(resultEntity.ldapId).toEqual(patch.ldapId);
+			expect(resultEntity.externalId).toEqual(patch.externalId);
 			expect(resultEntity.language).toEqual(patch.language);
 			expect(resultEntity.forcePasswordChange).toEqual(patch.forcePasswordChange);
 			expect(resultEntity.preferences).toEqual(patch.preferences);

@@ -28,7 +28,7 @@ describe('IservOAuthService', () => {
 		id: '',
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		ldapId: '1111',
+		externalId: '1111',
 		firstName: '',
 		lastName: '',
 	};
@@ -77,25 +77,25 @@ describe('IservOAuthService', () => {
 	});
 
 	describe('findUserById', () => {
-		it('should return the user according to the uuid(LdapId)', async () => {
-			userRepo.findByLdapIdOrFail.mockImplementation((ldapId: string): Promise<User> => {
-				if (ldapId === '') {
+		it('should return the user according to the uuid(externalId)', async () => {
+			userRepo.findByExternalIdOrFail.mockImplementation((externalId: string): Promise<User> => {
+				if (externalId === '') {
 					throw new OAuthSSOError();
 				}
 				return Promise.resolve(defaultUser);
 			});
 			const user = await service.findUserById(defaultUserId, defaultDecodedJWT);
-			expect(userRepo.findByLdapIdOrFail).toHaveBeenCalled();
+			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});
 
-		it('should return an error if no User is found by this ldapId', async () => {
+		it('should return an error if no User is found by this externalId', async () => {
 			await expect(
 				service.findUserById('', {
 					uuid: '',
 					sub: '',
 				})
-			).rejects.toEqual(new OAuthSSOError('Failed to find user with this ldapId', 'sso_user_notfound'));
+			).rejects.toEqual(new OAuthSSOError('Failed to find user with this externalId', 'sso_user_notfound'));
 		});
 	});
 });

@@ -13,7 +13,7 @@ export class UserUcMapper {
 			lastName: provUserOutput.lastName,
 			roleIds,
 			schoolId: provUserOutput.schoolId,
-			ldapId: provUserOutput.externalId,
+			externalId: provUserOutput.externalId,
 		});
 	}
 }

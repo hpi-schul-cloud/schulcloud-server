@@ -19,9 +19,9 @@ export class IservOAuthService {
 
 	async findUserById(systemId: string, decodedJwt: IJwt): Promise<User> {
 		try {
-			return await this.userRepo.findByLdapIdOrFail(this.extractUUID(decodedJwt), systemId);
+			return await this.userRepo.findByExternalIdOrFail(this.extractUUID(decodedJwt), systemId);
 		} catch (error) {
-			throw new OAuthSSOError('Failed to find user with this ldapId', 'sso_user_notfound');
+			throw new OAuthSSOError('Failed to find user with this externalId', 'sso_user_notfound');
 		}
 	}
 }

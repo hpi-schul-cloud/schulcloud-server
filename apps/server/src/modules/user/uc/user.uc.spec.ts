@@ -156,7 +156,7 @@ describe('UserUc', () => {
 					lastName: userDto.lastName,
 					roleNames: [RoleName.DEMO],
 					schoolId: userDto.schoolId,
-					externalId: userDto.ldapId as string,
+					externalId: userDto.externalId as string,
 				})
 			);
 
