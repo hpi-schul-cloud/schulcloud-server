@@ -23,8 +23,6 @@ export class OauthConfigDto {
 
 	jwksEndpoint: string;
 
-	provisioningUrl: string;
-
 	constructor(oauthConfigDto: OauthConfigDto) {
 		this.clientId = oauthConfigDto.clientId;
 		this.clientSecret = oauthConfigDto.clientSecret;
@@ -38,6 +36,5 @@ export class OauthConfigDto {
 		this.logoutEndpoint = oauthConfigDto.logoutEndpoint;
 		this.issuer = oauthConfigDto.issuer;
 		this.jwksEndpoint = oauthConfigDto.jwksEndpoint;
-		this.provisioningUrl = oauthConfigDto.provisioningUrl;
 	}
 }

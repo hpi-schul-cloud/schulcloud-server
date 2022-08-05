@@ -9,6 +9,7 @@ export class SystemMapper {
 			url: entity.url,
 			alias: entity.alias,
 			provisioningStrategy: entity.provisioningStrategy,
+			provisioningUrl: entity.provisioningUrl,
 			oauthConfig: SystemMapper.mapFromOauthConfigEntityToDto(entity.oauthConfig),
 		});
 	}
@@ -30,7 +31,6 @@ export class SystemMapper {
 			logoutEndpoint: oauthConfig.logoutEndpoint,
 			issuer: oauthConfig.issuer,
 			jwksEndpoint: oauthConfig.jwksEndpoint,
-			provisioningUrl: oauthConfig.provisioningUrl,
 		});
 	}
 

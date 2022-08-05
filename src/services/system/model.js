@@ -29,6 +29,7 @@ const systemSchema = new Schema(
 		alias: { type: String },
 		oaClientId: { type: String }, // just for oauth2-systems
 		oaClientSecret: { type: String }, // just for oauth2-systems
+		provisioningUrl: { type: String, required: false },
 		oauthConfig: {
 			type: {
 				clientId: { type: String, required: true },

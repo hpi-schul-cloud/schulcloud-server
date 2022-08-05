@@ -10,6 +10,8 @@ export class SystemDto {
 
 	provisioningStrategy?: SystemProvisioningStrategy;
 
+	provisioningUrl?: string;
+
 	oauthConfig?: OauthConfigDto;
 
 	constructor(system: SystemDto) {
@@ -17,6 +19,7 @@ export class SystemDto {
 		this.url = system.url;
 		this.alias = system.alias;
 		this.provisioningStrategy = system.provisioningStrategy;
+		this.provisioningUrl = system.provisioningUrl;
 		this.oauthConfig = system.oauthConfig;
 	}
 }
