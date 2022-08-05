@@ -20,7 +20,13 @@ export class FileRecordParams {
 export class FileUrlParams {
 	@ApiProperty({ type: 'string' })
 	@IsString()
+	@IsNotEmpty()
 	url!: string;
+
+	@ApiProperty({ type: 'string' })
+	@IsString()
+	@IsNotEmpty()
+	filename!: string;
 }
 
 export class FileParams {

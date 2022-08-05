@@ -97,7 +97,7 @@ export class FilesStorageUC {
 		);
 
 		const fileDescription: IFile = {
-			name: 'info.filename',
+			name: params.filename,
 			buffer: response.data as internal.Readable,
 			size: Number(response.headers['content-length']),
 			mimeType: response.headers['content-type'],
