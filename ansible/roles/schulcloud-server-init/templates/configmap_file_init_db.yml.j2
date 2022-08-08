@@ -92,8 +92,8 @@ data:
       "config": {
         "clientId": "'$OIDCMOCK__CLIENT_ID'",
         "clientSecret": "'$OIDCMOCK__CLIENT_SECRET'",
-        "authEndpoint": "'$OIDCMOCK__BASE_URL'/connect/token",
-        "tokenEndpoint": "'$OIDCMOCK__BASE_URL'/connect/authorize",
+        "authEndpoint": "'$OIDCMOCK__BASE_URL'/connect/authorize",
+        "tokenEndpoint": "'$OIDCMOCK__BASE_URL'/connect/token",
         "logoutEndpoint": "'$OIDCMOCK__BASE_URL'/connect/endsession",
       }
     },
@@ -185,3 +185,10 @@ data:
                                        "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
                                      } );'
     npm run syncIndexes
+    IDM_ACTIVE={{ WITH_ERWINIDM }}
+    if [[ ${IDM_ACTIVE,,} == true ]]
+    then
+        curl --retry 90 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/idm/seed'
+    else
+        echo "Skipped IDM initialization"
+    fi

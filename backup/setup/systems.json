@@ -77,9 +77,9 @@
 		"config": {
 			"clientId": "erwin-credentials-mock-client",
 			"clientSecret": "erwin-credentials-mock-client-secret",
-			"authorizationUrl": "http://OIDCMOCK__BASE_URL:4011/connect/authorize",
-			"tokenUrl": "http://OIDCMOCK__BASE_URL:4011/connect/token",
-			"logoutUrl": "http://OIDCMOCK__BASE_URL:4011/connect/endsession"
+			"authorizationUrl": "$OIDCMOCK__BASE_URL/connect/authorize",
+			"tokenUrl": "$OIDCMOCK__BASE_URL/connect/token",
+			"logoutUrl": "$OIDCMOCK__BASE_URL/connect/endsession"
 		}
 	}
 ]
