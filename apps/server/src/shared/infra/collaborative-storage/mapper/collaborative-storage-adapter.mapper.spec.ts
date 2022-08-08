@@ -19,7 +19,7 @@ describe('TeamStorage Mapper', () => {
 				{
 					id: 'teamId',
 					name: 'teamName',
-					userIds: [{ userId: 'testUser', role: 'testRole', schoolId: 'testschool' }],
+					teamUsers: [{ userId: 'testUser', roleId: 'testRole', schoolId: 'testschool' }],
 				},
 				{ id: 'testRole', name: RoleName.DEMO },
 				{

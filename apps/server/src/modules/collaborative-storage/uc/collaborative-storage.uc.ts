@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CollaborativeStorageService } from '@src/modules/collaborative-storage/services/collaborative-storage.service';
 import { TeamPermissionsMapper } from '@src/modules/collaborative-storage/mapper/team-permissions.mapper';
+import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 import { TeamPermissionsBody } from '../controller/dto/team-permissions.body.params';
 import { TeamRoleDto } from '../controller/dto/team-role.params';
 
@@ -30,7 +31,15 @@ export class CollaborativeStorageUc {
 		);
 	}
 
-	deleteTeam(teamId: string) {
-		this.service.deleteTeam(teamId);
+	deleteTeam(teamId: string): Promise<void> {
+		return this.service.deleteTeam(teamId);
+	}
+
+	createTeam(team: TeamDto): Promise<void> {
+		return this.service.createTeam(team);
+	}
+
+	updateTeam(team: TeamDto): Promise<void> {
+		return this.service.updateTeam(team);
 	}
 }
