@@ -193,6 +193,7 @@ class EduSharingConnector {
 	}
 
 	async FIND({ searchQuery = '', $skip, $limit, sortProperties = 'score', collection = '' }, schoolId) {
+		let sortAscending = 'false';
 		if (!schoolId) {
 			throw new Forbidden('Missing school');
 		}
@@ -250,6 +251,7 @@ class EduSharingConnector {
 			});
 		} else if (collection) {
 			sortProperties = 'cclom:title';
+			sortAscending = 'false';
 			criterias.push({ property: 'ngsearchword', values: ['*'] });
 			criterias.push({
 				property: 'ccm:hpi_lom_relation',
@@ -259,18 +261,18 @@ class EduSharingConnector {
 			criterias.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
 		}
 
-		const response = await this.searchEduSharing(criterias, skipCount, maxItems, sortProperties);
+		const response = await this.searchEduSharing(criterias, skipCount, maxItems, sortProperties, sortAscending);
 		return response;
 	}
 
-	async searchEduSharing(criterias, skipCount, maxItems, sortProperties = 'score') {
+	async searchEduSharing(criterias, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
 		try {
 			const url = `${ES_ENDPOINTS.SEARCH}?${[
 				`contentType=FILES`,
 				`skipCount=${skipCount}`,
 				`maxItems=${maxItems}`,
 				`sortProperties=${sortProperties}`,
-				`sortAscending=true`,
+				`sortAscending=${sortAscending}`,
 				`propertyFilter=-all-`,
 			].join('&')}`;
 
