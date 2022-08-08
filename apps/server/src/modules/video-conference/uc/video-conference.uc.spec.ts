@@ -97,7 +97,7 @@ describe('VideoConferenceUc', () => {
 	let expertRoleTeam: Role;
 
 	const setTeamRole = (role: Role) => {
-		team.userIds[0].role = role;
+		team.teamUsers[0].role = role;
 		user.roles.set([role]);
 		defaultCurrentUser.roles = [role.name];
 	};
@@ -189,7 +189,7 @@ describe('VideoConferenceUc', () => {
 		expertRoleTeam = roleFactory.build({ name: RoleName.TEAMEXPERT, permissions: [Permission.JOIN_MEETING] });
 
 		team = teamFactory.withRoleAndUserId(defaultRole, defaultCurrentUser.userId).build();
-		user = team.userIds[0].userId;
+		user = team.teamUsers[0].user;
 		user.firstName = 'firstName';
 		user.lastName = 'lastName';
 
@@ -566,7 +566,7 @@ describe('VideoConferenceUc', () => {
 
 		it('should throw on unknown team user', async () => {
 			// Arrange
-			team.userIds = [];
+			team.teamUsers = [];
 
 			// Act & Assert
 			await expect(useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId)).rejects.toThrow(

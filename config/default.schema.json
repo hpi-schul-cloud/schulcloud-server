@@ -634,6 +634,15 @@
 			"default": "admin",
 			"description": "Admin-password for Nextcloud-API"
 		},
+		"NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME": {
+			"type:": "string",
+			"default": "SchulcloudNextcloud",
+			"description": "Internal name of schulcloud oidc provider of nextcloud's social login app"
+		},
+		"COLLABORATIVE_STORAGE_PROVIDER": {
+			"type:": "string",
+			"description": "Selects the storage provider strategy for the collaborative storage"
+		},
 		"SKIP_CONDITIONS_CONSENT": {
 			"type": "string",
 			"default": "",

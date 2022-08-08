@@ -4,7 +4,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
 import { storageProviderFactory } from '@shared/testing';
 import { Platform } from '@mikro-orm/core';
-import { EncryptedStringType } from '@shared/repo/types/EncryptedString.type';
+import { StorageProviderEncryptedStringType } from '@shared/repo/types/StorageProviderEncryptedString.type';
 import { StorageProvider } from '@shared/domain';
 import { StorageProviderRepo } from '.';
 
@@ -43,7 +43,7 @@ describe('StorageProviderRepo', () => {
 
 	it('should encrypt property secretAccessKey in persistence', async () => {
 		const secretAccessKey = 'toBeEncrypted';
-		const encryptedStringType = new EncryptedStringType();
+		const encryptedStringType = new StorageProviderEncryptedStringType();
 
 		const storageProvider = storageProviderFactory.build({ secretAccessKey });
 		await repo.save(storageProvider);

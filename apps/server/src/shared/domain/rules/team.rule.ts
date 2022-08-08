@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { BasePermission } from '@shared/domain/rules/base-permission';
-import { TeamUser, Team, User } from '@shared/domain/entity';
+import { Team, TeamUser, User } from '@shared/domain/entity';
 import { IPermissionContext } from '@shared/domain/interface';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class TeamRule extends BasePermission<Team> {
 	}
 
 	public hasPermission(user: User, entity: Team, context: IPermissionContext): boolean {
-		const resultTeamUser: TeamUser | undefined = entity.userIds.find((teamUser) => teamUser.userId.id === user.id);
+		const resultTeamUser: TeamUser | undefined = entity.teamUsers.find((teamUser) => teamUser.user.id === user.id);
 
 		if (!resultTeamUser) {
 			throw new InternalServerErrorException('Cannot find user in team');

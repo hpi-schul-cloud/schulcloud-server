@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { IBaseEntityProps, IVideoConferenceProperties, VideoConferenceDO } from '@shared/domain';
+import { IVideoConferenceProperties, VideoConferenceDO } from '@shared/domain';
 import { TargetModels, VideoConference } from '@shared/domain/entity/video-conference.entity';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
-import { BaseDORepo } from '@shared/repo/base.do.repo';
+import { BaseDORepo, EntityProperties } from '@shared/repo/base.do.repo';
 import { EntityName } from '@mikro-orm/core';
 
 const TargetModelsMapping = {
@@ -49,7 +49,7 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		});
 	}
 
-	protected mapDOToEntity(entityDO: VideoConferenceDO): IVideoConferenceProperties & IBaseEntityProps {
+	protected mapDOToEntity(entityDO: VideoConferenceDO): EntityProperties<IVideoConferenceProperties> {
 		return {
 			id: entityDO.id,
 			target: entityDO.target,
