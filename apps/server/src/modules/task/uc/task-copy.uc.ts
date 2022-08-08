@@ -46,7 +46,7 @@ export class TaskCopyUC {
 		if (parentParams.courseId) {
 			destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
 			const [existingTasks] = await this.taskRepo.findBySingleParent('', parentParams.courseId);
-			existingNames = (existingTasks || []).map((t) => t.name);
+			existingNames = existingTasks.map((t) => t.name);
 		}
 
 		const copyName = this.copyHelperService.deriveCopyName(originalTask.name, existingNames);
