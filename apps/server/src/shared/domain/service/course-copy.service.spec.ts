@@ -271,19 +271,6 @@ describe('course copy service', () => {
 				expect(timesStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			});
 
-			it('should set status of files', () => {
-				const { originalCourse, user } = setup();
-
-				const status = copyService.copyCourse({
-					originalCourse,
-					user,
-				});
-
-				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
-				expect(fileGroup).toBeDefined();
-				expect(fileGroup?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
-			});
-
 			it('should set status of coursegroups', () => {
 				const { originalCourse, user } = setup();
 
