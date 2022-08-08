@@ -1,11 +1,11 @@
 export class TeamRolePermissionsDto {
-	teamId?: string;
+	teamId: string;
 
-	teamName?: string;
+	teamName: string;
 
-	roleName?: string;
+	roleName: string;
 
-	permissions!: boolean[];
+	permissions: boolean[];
 
 	constructor(props: TeamRolePermissionsDto) {
 		this.teamId = props.teamId;

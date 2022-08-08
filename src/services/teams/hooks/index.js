@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const {
 	Forbidden,
 	NotFound,
@@ -759,9 +759,51 @@ const keys = {
 		'schoolId',
 	],
 };
-const deleteNextcloudTeam = (hook) => {
+
+/**
+ * @beforeHook
+ */
+const deleteTeamInCollaborativeStorage = (hook) => {
+	if (!Configuration.has('COLLABORATIVE_STORAGE_PROVIDER')) return;
+
 	const service = hook.app.service('/nest-collaborative-storage-uc');
 	service.deleteTeam(hook.id);
+};
+
+/**
+ * @afterHook
+ */
+const createTeamInCollaborativeStorage = (hook) => {
+	if (!Configuration.has('COLLABORATIVE_STORAGE_PROVIDER')) return;
+
+	const teamId = hook.id || (hook.result || {})._id.toHexString() || hook.teamId;
+	const teamName = hook.data.name;
+	const userIds = hook.result.userIds || hook.data.userIds;
+
+	const service = hook.app.service('/nest-collaborative-storage-uc');
+	service.createTeam({
+		id: teamId,
+		name: teamName,
+		teamUsers: userIds.map((user) => ({ userId: user.userId })),
+	});
+};
+
+/**
+ * @afterHook
+ */
+const updateTeamInCollaborativeStorage = (hook) => {
+	if (!Configuration.has('COLLABORATIVE_STORAGE_PROVIDER')) return;
+
+	const teamId = hook.id || (hook.result || {})._id.toHexString() || hook.teamId;
+	const teamName = hook.data.name;
+	const userIds = hook.result.userIds || hook.data.userIds;
+
+	const service = hook.app.service('/nest-collaborative-storage-uc');
+	service.updateTeam({
+		id: teamId,
+		name: teamName,
+		teamUsers: userIds.map((user) => ({ userId: user.userId.toHexString() })),
+	});
 };
 
 exports.before = {
@@ -789,7 +831,7 @@ exports.before = {
 		teamMainHook,
 		hasTeamPermission('RENAME_TEAM'),
 	], // todo: filterToRelated(keys.data,'data')
-	remove: [teamMainHook, hasTeamPermission('DELETE_TEAM'), deleteNextcloudTeam],
+	remove: [teamMainHook, hasTeamPermission('DELETE_TEAM'), deleteTeamInCollaborativeStorage],
 };
 
 // todo:clear unused values
@@ -798,9 +840,9 @@ exports.after = {
 	all: [],
 	find: [filterToRelated(keys.resFind, 'result.data')], // filterFindResult
 	get: [addCurrentUser], // see before (?)
-	create: [filterToRelated(keys.resId, 'result')],
-	update: [], // test schoolId remove
-	patch: [isUserIsEmpty, addCurrentUser, pushUserChangedEvent], // test schoolId remove
+	create: [filterToRelated(keys.resId, 'result'), createTeamInCollaborativeStorage],
+	update: [updateTeamInCollaborativeStorage], // test schoolId remove
+	patch: [isUserIsEmpty, addCurrentUser, pushUserChangedEvent, updateTeamInCollaborativeStorage], // test schoolId remove
 	remove: [filterToRelated(keys.resId, 'result')],
 };
 
