@@ -408,7 +408,7 @@ describe('[ImportUserModule]', () => {
 			beforeEach(() => {
 				system = systemFactory.buildWithId();
 				school = schoolFactory.buildWithId({ systems: [system] });
-				school.externalSchoolId = 'foo';
+				school.externalId = 'foo';
 				school.inMaintenanceSince = new Date();
 				school.inUserMigration = true;
 				school.officialSchoolNumber = 'foo';
@@ -497,7 +497,7 @@ describe('[ImportUserModule]', () => {
 				expect(importUserRepoDeleteImportUsersBySchoolSpy).toHaveBeenCalledWith(school);
 			});
 			it('should throw if school data is inconsistent', async () => {
-				school.externalSchoolId = undefined;
+				school.externalId = undefined;
 				currentUser = userFactory.buildWithId({ school });
 				const result2 = () => uc.saveAllUsersMatches(currentUser.id);
 				await expect(result2).rejects.toThrowError(BadRequestException);
@@ -561,7 +561,7 @@ describe('[ImportUserModule]', () => {
 
 				const schoolParams = { ...school };
 				schoolParams.inUserMigration = true;
-				schoolParams.externalSchoolId = 'foo';
+				schoolParams.externalId = 'foo';
 				schoolParams.inMaintenanceSince = currentDate;
 				schoolParams.systems.add(system);
 				expect(schoolRepoSaveSpy).toHaveBeenCalledWith(schoolParams);
@@ -591,7 +591,7 @@ describe('[ImportUserModule]', () => {
 			let schoolRepoSaveSpy: jest.SpyInstance;
 			beforeEach(() => {
 				school = schoolFactory.buildWithId();
-				school.externalSchoolId = 'foo';
+				school.externalId = 'foo';
 				school.inMaintenanceSince = new Date();
 				school.inUserMigration = false;
 				school.officialSchoolNumber = 'foo';
@@ -618,7 +618,7 @@ describe('[ImportUserModule]', () => {
 				expect(schoolRepoSaveSpy).toHaveBeenCalledWith(school2);
 			});
 			it('should throw if school is missing ldapSchoolIdenfitier', async () => {
-				school.externalSchoolId = undefined;
+				school.externalId = undefined;
 				currentUser = userFactory.buildWithId({ school });
 				const result1 = () => uc.endSchoolInMaintenance(currentUser.id);
 				await expect(result1).rejects.toThrowError(BadRequestException);

@@ -59,7 +59,7 @@ describe('SanisStrategy', () => {
 		const schoolDto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({
 			id: 'schoolId',
 			name: 'schoolName',
-			externalSchoolId: userUUID.toString(),
+			externalId: userUUID.toString(),
 		});
 		const userDto: ProvisioningUserOutputDto = new ProvisioningUserOutputDto({
 			firstName: 'firstName',

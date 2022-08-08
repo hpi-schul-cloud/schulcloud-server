@@ -16,17 +16,17 @@ export class SanisResponseMapper implements IProviderResponseMapper<SanisRespons
 	mapToSchoolDto(source: SanisResponse): ProvisioningSchoolOutputDto {
 		return new ProvisioningSchoolOutputDto({
 			name: source.personenkontexte[0].organisation.name,
-			externalSchoolId: source.personenkontexte[0].organisation.orgid.toString(),
+			externalId: source.personenkontexte[0].organisation.orgid.toString(),
 		});
 	}
 
-	mapToUserDto(source: SanisResponse, externalSchoolId: EntityId): ProvisioningUserOutputDto {
+	mapToUserDto(source: SanisResponse, externalId: EntityId): ProvisioningUserOutputDto {
 		return new ProvisioningUserOutputDto({
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
 			email: '',
 			roleNames: [RoleMapping[source.personenkontexte[0].rolle]],
-			schoolId: externalSchoolId,
+			schoolId: externalId,
 			externalId: source.pid,
 		});
 	}

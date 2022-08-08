@@ -5,7 +5,7 @@ describe('SchoolUcMapper', () => {
 	describe('mapFromProvisioningSchoolOutputDtoToSchoolDto', () => {
 		it('should map all fields', () => {
 			// Arrange
-			const dto: SchoolDto = new SchoolDto({ name: '123', externalIdentifier: 'external1234' });
+			const dto: SchoolDto = new SchoolDto({ name: '123', externalId: 'external1234' });
 
 			// Act
 			const result = SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDto(dto);
@@ -13,7 +13,7 @@ describe('SchoolUcMapper', () => {
 			// Assert
 			expect(result.id).toEqual(dto.id);
 			expect(result.name).toEqual(dto.name);
-			expect(result.externalIdentifier).toEqual(dto.externalIdentifier);
+			expect(result.externalId).toEqual(dto.externalId);
 		});
 		it('should map all fields without external identifier', () => {
 			// Arrange
@@ -25,7 +25,7 @@ describe('SchoolUcMapper', () => {
 			// Assert
 			expect(result.id).toEqual(dto.id);
 			expect(result.name).toEqual(dto.name);
-			expect(result.externalIdentifier).toBeUndefined();
+			expect(result.externalId).toBeUndefined();
 		});
 	});
 });

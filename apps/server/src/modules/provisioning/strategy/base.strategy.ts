@@ -38,7 +38,7 @@ export abstract class ProvisioningStrategy<T> {
 
 		if (schoolDto) {
 			const savedSchoolDto: SchoolDto = await this.schoolUc.saveProvisioningSchoolOutputDto(schoolDto);
-			userDto = this.responseMapper.mapToUserDto(provisioningData, savedSchoolDto.externalSchoolId);
+			userDto = this.responseMapper.mapToUserDto(provisioningData, savedSchoolDto.externalId);
 		} else {
 			throw new Error('');
 		}

@@ -47,7 +47,7 @@ describe('SanisResponseMapper', () => {
 		it('should map a school to Dto', () => {
 			const dto = mapper.mapToSchoolDto(sanisResponse);
 			expect(dto?.name).toEqual(sanisResponse.personenkontexte[0].organisation.name);
-			expect(dto?.externalIdentifier).toEqual(sanisResponse.personenkontexte[0].organisation.orgid.toString());
+			expect(dto?.externalId).toEqual(sanisResponse.personenkontexte[0].organisation.orgid.toString());
 		});
 	});
 

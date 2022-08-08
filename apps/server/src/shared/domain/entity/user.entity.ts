@@ -27,7 +27,7 @@ export interface IUserProperties {
 @Entity({ tableName: 'users' })
 @Index({ properties: ['id', 'email'] })
 @Index({ properties: ['firstName', 'lastName'] })
-@Index({ properties: ['ldapId', 'school'] })
+@Index({ properties: ['externalId', 'school'] })
 @Index({ properties: ['school', 'ldapDn'] })
 @Index({ properties: ['school', 'roles'] })
 export class User extends BaseEntityWithTimestamps implements IEntityWithSchool {
@@ -55,7 +55,6 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 	ldapDn?: string;
 
 	@Property({ nullable: true, fieldName: 'ldapId' })
-	@Index()
 	externalId?: string;
 
 	@Property({ nullable: true })

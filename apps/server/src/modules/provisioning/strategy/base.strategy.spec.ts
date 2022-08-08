@@ -54,7 +54,7 @@ describe('BaseStrategy', () => {
 		const schoolDto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({
 			id: 'id',
 			name: 'schoolName',
-			externalSchoolId: 'externalIdentifier',
+			externalId: 'externalId',
 		});
 		const userDto: ProvisioningUserOutputDto = new ProvisioningUserOutputDto({
 			firstName: 'firstName',

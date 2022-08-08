@@ -6,7 +6,7 @@ export class SchoolUcMapper {
 		return new SchoolDto({
 			id: dto.id,
 			name: dto.name,
-			externalSchoolId: dto.externalSchoolId,
+			externalId: dto.externalId,
 		});
 	}
 }

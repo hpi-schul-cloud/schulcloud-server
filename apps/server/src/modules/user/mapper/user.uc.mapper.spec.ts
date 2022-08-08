@@ -24,6 +24,7 @@ describe('UserUcMapper', () => {
 		roleIds = ['roleId1', 'roleId2'];
 		provisioningUserOutputDto = new ProvisioningUserOutputDto({
 			id: 'asdhjasd',
+			email: '',
 			externalId: 'external1234',
 			lastName: 'lastName',
 			firstName: 'firstName',

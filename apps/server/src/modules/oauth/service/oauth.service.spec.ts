@@ -49,7 +49,7 @@ describe('OAuthService', () => {
 	let defaultQuery: AuthorizationParams;
 	let defaultErrorQuery: AuthorizationParams;
 	let defaultUserId: string;
-	let defaultScool: School;
+	let defaultSchool: School;
 	let defaultDecodedJWT: IJwt;
 
 	let defaultUser: User;
@@ -145,7 +145,8 @@ describe('OAuthService', () => {
 		defaultQuery = { code: defaultAuthCode };
 		defaultErrorQuery = { error: 'oauth_login_failed' };
 		defaultUserId = '123456789';
-		defaultScool = schoolFactory.build();
+		defaultSchool = schoolFactory.build();
+		// defaultSchool.externalId = '9999';
 		defaultDecodedJWT = {
 			sub: '4444',
 			uuid: '1111',
@@ -154,7 +155,7 @@ describe('OAuthService', () => {
 		defaultUser = {
 			email: '',
 			roles: new Collection<Role>([]),
-			school: defaultScool,
+			school: defaultSchool,
 			_id: new ObjectId(),
 			id: '4444',
 			createdAt: new Date(),
@@ -166,7 +167,7 @@ describe('OAuthService', () => {
 		defaultIservUser = {
 			email: '',
 			roles: new Collection<Role>([]),
-			school: defaultScool,
+			school: defaultSchool,
 			_id: new ObjectId(),
 			id: defaultUserId,
 			createdAt: new Date(),
@@ -199,6 +200,7 @@ describe('OAuthService', () => {
 		defaultIservSystem = {
 			type: 'iserv',
 			url: 'http://mock.de',
+			provisioningUrl: 'mock_provisioning_url',
 			alias: `system`,
 			oauthConfig: {
 				clientId: '12345',
@@ -213,7 +215,6 @@ describe('OAuthService', () => {
 				issuer: 'mock_issuer',
 				jwksEndpoint: 'mock_jwksEndpoint',
 				redirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId',
-				provisioningUrl: 'mock_provisioning_url',
 			},
 			_id: new ObjectId(),
 			id: '',
@@ -356,13 +357,17 @@ describe('OAuthService', () => {
 			const provisioning: ProvisioningDto = new ProvisioningDto({
 				userDto: {
 					id: defaultUserId,
+					email: '',
 					firstName: 'firstName',
 					lastName: 'lastName',
 					roleNames: [],
 					schoolId: new ObjectId().toString(),
 					externalId: 'sanisId',
 				},
-				schoolDto: { name: 'testSchool' },
+				schoolDto: {
+					name: 'testSchool',
+					externalId: defaultSchool.externalId as string,
+				},
 			});
 			provisioningService.process.mockResolvedValue(provisioning);
 			userRepo.findByExternalIdOrFail.mockResolvedValue(defaultUser);

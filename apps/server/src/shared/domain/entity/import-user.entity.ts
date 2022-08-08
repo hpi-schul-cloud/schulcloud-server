@@ -31,7 +31,7 @@ export enum MatchCreator {
 }
 
 @Entity({ tableName: 'importusers' })
-@Unique({ properties: ['school', 'ldapId'] })
+@Unique({ properties: ['school', 'externalId'] })
 @Unique({ properties: ['school', 'ldapDn'] })
 @Unique({ properties: ['school', 'email'] })
 export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithSchool {
@@ -72,7 +72,7 @@ export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithS
 		return null;
 	}
 
-	@Property()
+	@Property({ fieldName: 'ldapId' })
 	externalId: string;
 
 	@Property()
