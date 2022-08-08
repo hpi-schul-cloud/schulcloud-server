@@ -250,7 +250,7 @@ class EduSharingConnector {
 			});
 		} else if (collection) {
 			sortProperties = 'cclom:title';
-			sortAscending = 'false';
+			sortAscending = 'true';
 			criterias.push({ property: 'ngsearchword', values: ['*'] });
 			criterias.push({
 				property: 'ccm:hpi_lom_relation',
