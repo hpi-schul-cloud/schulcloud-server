@@ -252,9 +252,13 @@ class EduSharingConnector {
 		} else if (collection) {
 			sortProperties = 'cclom:title';
 <<<<<<< HEAD
+<<<<<<< HEAD
 			sortAscending = 'true';
 =======
 >>>>>>> lern-store change sortProperties to title for collections
+=======
+			sortAscending = 'false';
+>>>>>>> lern-store sortAscending true for collections
 			criterias.push({ property: 'ngsearchword', values: ['*'] });
 			criterias.push({
 				property: 'ccm:hpi_lom_relation',
@@ -264,6 +268,7 @@ class EduSharingConnector {
 			criterias.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
 		}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 		const response = await this.searchEduSharing(criterias, skipCount, maxItems, sortProperties, sortAscending);
 		return response;
@@ -277,6 +282,13 @@ class EduSharingConnector {
 
 	async searchEduSharing(criterias, skipCount, maxItems, sortProperties = 'score') {
 >>>>>>> lern-store change sortProperties to title for collections
+=======
+		const response = await this.searchEduSharing(criterias, skipCount, maxItems, sortProperties, sortAscending);
+		return response;
+	}
+
+	async searchEduSharing(criterias, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
+>>>>>>> lern-store sortAscending true for collections
 		try {
 			const url = `${ES_ENDPOINTS.SEARCH}?${[
 				`contentType=FILES`,
@@ -292,8 +304,12 @@ class EduSharingConnector {
 >>>>>>> lern-store change sortProperties to title
 =======
 				`sortProperties=${sortProperties}`,
+<<<<<<< HEAD
 				`sortAscending=true`,
 >>>>>>> lern-store change sortProperties to title for collections
+=======
+				`sortAscending=${sortAscending}`,
+>>>>>>> lern-store sortAscending true for collections
 				`propertyFilter=-all-`,
 			].join('&')}`;
 
