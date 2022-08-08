@@ -253,12 +253,16 @@ class EduSharingConnector {
 			sortProperties = 'cclom:title';
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			sortAscending = 'true';
 =======
 >>>>>>> lern-store change sortProperties to title for collections
 =======
 			sortAscending = 'false';
 >>>>>>> lern-store sortAscending true for collections
+=======
+			sortAscending = 'true';
+>>>>>>> lern-store collection sortAscending true
 			criterias.push({ property: 'ngsearchword', values: ['*'] });
 			criterias.push({
 				property: 'ccm:hpi_lom_relation',
