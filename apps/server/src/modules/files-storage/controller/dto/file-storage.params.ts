@@ -29,6 +29,7 @@ export class FileUrlParams {
 	fileName!: string;
 
 	@ApiProperty({ type: 'string' })
+	@Allow()
 	headers?: Record<string, string>;
 }
 
