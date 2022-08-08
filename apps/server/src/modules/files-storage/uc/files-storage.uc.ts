@@ -84,14 +84,11 @@ export class FilesStorageUC {
 		return result;
 	}
 
-	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams, req: Request) {
+	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 		const response = await firstValueFrom(
 			this.httpService.get(params.url, {
-				headers: {
-					Authorization: req.headers.authorization || '',
-					cookie: req.headers.cookie || '',
-				},
+				headers: params.headers,
 				responseType: 'stream',
 			})
 		);
