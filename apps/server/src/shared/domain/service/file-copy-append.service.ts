@@ -122,7 +122,7 @@ export class FileCopyAppendService {
 			);
 			copyStatus.status = this.copyHelperService.deriveStatusFromElements(copyStatus.elements);
 		}
-		return Promise.resolve(copyStatus);
+		return copyStatus;
 	}
 
 	async copyEmbeddedFilesOfLessons(
