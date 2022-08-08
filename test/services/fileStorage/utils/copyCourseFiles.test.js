@@ -27,7 +27,7 @@ describe('copy course files', () => {
 		const course = await testObjects.createTestCourse();
 		const storageProvider = await testObjects.createTestStorageProvider();
 
-		const file = await testObjects.createTestFile({
+		const data = {
 			owner: teacher._id,
 			refOwnerModel: 'user',
 			permissions: [
@@ -47,29 +47,11 @@ describe('copy course files', () => {
 			name: 'sample',
 			bucket: 'bucket-test',
 			storageProviderId: storageProvider._id,
-		});
+		};
 
-		const copy = await testObjects.createTestFile({
-			owner: teacher._id,
-			refOwnerModel: 'user',
-			permissions: [
-				{
-					write: true,
-					read: true,
-					create: true,
-					delete: true,
-					refId: teacher._id,
-					refPermModel: 'user',
-				},
-			],
-			isDirectory: false,
-			storageFileName: 'undefined',
-			type: 'any/type',
-			size: 123,
-			name: 'sample',
-			bucket: 'bucket-test',
-			storageProviderId: storageProvider._id,
-		});
+		const file = await testObjects.createTestFile(data);
+
+		const copy = await testObjects.createTestFile(data);
 
 		const strategy = {
 			copyFile: (_) => copy,
