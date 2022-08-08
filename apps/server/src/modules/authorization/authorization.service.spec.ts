@@ -114,7 +114,7 @@ describe('authorization.service', () => {
 			const user = userFactory.build({ roles: [role] });
 			const team = teamFactory.withRoleAndUserId(role, user.id).build();
 
-			const response = service.hasPermission(team.userIds[0].userId, team, {
+			const response = service.hasPermission(team.teamUsers[0].user, team, {
 				requiredPermissions: [Permission.CHANGE_TEAM_ROLES],
 			});
 			expect(response).toBe(true);

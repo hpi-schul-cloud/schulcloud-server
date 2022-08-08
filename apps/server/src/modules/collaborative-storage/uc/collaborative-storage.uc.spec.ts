@@ -5,6 +5,7 @@ import { CollaborativeStorageService } from '@src/modules/collaborative-storage/
 import { TeamPermissionsMapper } from '@src/modules/collaborative-storage/mapper/team-permissions.mapper';
 import { TeamRoleDto } from '@src/modules/collaborative-storage/controller/dto/team-role.params';
 import { TeamPermissionsBody } from '@src/modules/collaborative-storage/controller/dto/team-permissions.body.params';
+import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 
 describe('TeamStorageUc', () => {
 	let module: TestingModule;
@@ -50,12 +51,27 @@ describe('TeamStorageUc', () => {
 		});
 	});
 
-	describe('delete Team in Nextcloud', () => {
-		it('should call the service', () => {
+	describe('Delete team in nextcloud', () => {
+		it('should call the service', async () => {
 			const teamIdMock = 'teamIdMock';
-			uc.deleteTeam(teamIdMock);
-			expect(service.deleteTeam).toHaveBeenCalled();
+			await uc.deleteTeam(teamIdMock);
 			expect(service.deleteTeam).toHaveBeenCalledWith(teamIdMock);
+		});
+	});
+
+	describe('Create team in nextcloud', () => {
+		it('should call the service', async () => {
+			const teamDto: TeamDto = { id: 'id', name: 'name', teamUsers: [] };
+			await uc.createTeam(teamDto);
+			expect(service.createTeam).toHaveBeenCalledWith(teamDto);
+		});
+	});
+
+	describe('Update team in nextcloud', () => {
+		it('should call the service', async () => {
+			const teamDto: TeamDto = { id: 'id', name: 'name', teamUsers: [] };
+			await uc.updateTeam(teamDto);
+			expect(service.updateTeam).toHaveBeenCalledWith(teamDto);
 		});
 	});
 });
