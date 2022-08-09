@@ -244,14 +244,17 @@ export class DatabaseManagementUc {
 		let start = 0;
 		while (start >= 0) {
 			start = json.indexOf('${', start);
-			if (start > 0 && json.charAt(start - 1) === '\\') {
-				start += 2;
-			} else {
-				const end = json.indexOf('}', start);
-				const placeholder = json.substring(start + 2, end - 1).trim();
-				const placeholderContent = this.configService.get<string>(placeholder) ?? '';
-				json = json.concat(json.slice(0, start), placeholderContent, json.slice(end + 1));
-				start += placeholderContent.length + 1;
+			if (start > 0) {
+				// skip escaped indicator
+				if (json.charAt(start - 1) === '\\') {
+					start += 2;
+				} else {
+					const end = json.indexOf('}', start);
+					const placeholder = json.slice(start + 2, end).trim();
+					const placeholderContent = this.configService.get<string>(placeholder) ?? '';
+					json = json.slice(0, start) + placeholderContent + json.slice(end + 1);
+					start += placeholderContent.length + 1;
+				}
 			}
 		}
 		return json;
