@@ -1,14 +1,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: api-idm-init-job
+  name: api-init-job
   labels:
     app: api
 spec:
   template:
     spec:
       containers:
-      - name: api-idm-init
+      - name: api-init
         image: schulcloud/infra-tools:latest
         envFrom:
         - configMapRef:
@@ -17,16 +17,16 @@ spec:
             name: api-secret
         volumeMounts:
         - name: script
-          mountPath: /init-idm.sh
-          subPath: init-idm.sh
+          mountPath: /update.sh
+          subPath: update.sh
         command: ['/bin/sh','-c']
-        args: ['cp /init-idm.sh /init-idm.run.sh && chmod +x /init-idm.run.sh && ./init-idm.run.sh']
+        args: ['cp /update.sh /update.run.sh && chmod +x /update.run.sh &&./update.run.sh']
       volumes:
       - name: script
         configMap:
-          name: api-idm-init-file
+          name: api-init-file
           items:
-          - key: init-idm.sh
-            path: init-idm.sh
+          - key: update.sh
+            path: update.sh
       restartPolicy: Never
   backoffLimit: 4

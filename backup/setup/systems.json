@@ -21,14 +21,30 @@
 		"alias": "Schulserver",
 		"type": "oauthIserv",
 		"__v": 0,
+		"ldapConfig" : {
+			"active" : true,
+			"federalState": {
+				"$oid": "0000b186816abba584714c58"
+			},
+			"url" : "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
+			"rootPath" : "dc=de,dc=example,dc=org",
+			"searchUser" : "cn=admin,dc=example,dc=org",
+			"searchUserPassword" : "${SEARCH_USER_PASSWORD}",
+			"provider" : "iserv-idm",
+			"providerOptions" : {
+			  "userAttributeNameMapping" : {},
+			  "roleAttributeNameMapping" : {},
+			  "classAttributeNameMapping" : {}
+			}
+		},
 		"oauthConfig": {
-			"clientId": "SCHULSERVER_CLIENT_ID",
-			"clientSecret": "SCHULSERVER_CLIENT_SECRET",
+			"clientId": "${ISERV_CLIENT_ID}",
+			"clientSecret": "${SCHULSERVER_CLIENT_SECRET}",
 			"tokenEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
 			"grantType": "authorization_code",
 			"scope": "openid uuid",
 			"responseType": "code",
-			"redirectUri": "http://localhost:3030/api/v3/sso/oauth/0000d186816abba584714c92",
+			"redirectUri": "https://${DOMAIN}/api/v3/sso/oauth/${ISERV_SYSTEM_ID}",
 			"authEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
 			"provider": "iserv",
 			"logoutEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout",
@@ -44,16 +60,16 @@
 			"$oid": "0000d186816abba584714c93"
 		},
 		"alias": "SANIS",
-		"type": "oauthSanis",
+		"type": "oauth",
 		"__v": 0,
 		"oauthConfig": {
-			"clientId": "SANIS_CLIENT_ID",
-			"clientSecret": "SANIS_CLIENT_SECRET",
+			"clientId": "${SANIS_CLIENT_ID}",
+			"clientSecret": "${SANIS_CLIENT_SECRET}",
 			"tokenEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/token",
 			"grantType": "authorization_code",
 			"scope": "openid",
 			"responseType": "code",
-			"redirectUri": "http://localhost:3030/api/v3/sso/oauth/0000d186816abba584714c92",
+			"redirectUri": "https://${DOMAIN}/api/v3/sso/oauth/${SANIS_SYSTEM_ID}",
 			"authEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/auth",
 			"provider": "sanis",
 			"logoutEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/logout",
@@ -75,11 +91,89 @@
 		"type": "oidc",
 		"alias": "oidcmock",
 		"config": {
-			"clientId": "erwin-credentials-mock-client",
-			"clientSecret": "erwin-credentials-mock-client-secret",
-			"authorizationUrl": "$OIDCMOCK__BASE_URL/connect/authorize",
-			"tokenUrl": "$OIDCMOCK__BASE_URL/connect/token",
-			"logoutUrl": "$OIDCMOCK__BASE_URL/connect/endsession"
+			"clientId": "${ OIDCMOCK__CLIENT_ID }",
+			"clientSecret": "${ OIDCMOCK__CLIENT_SECRET }",
+			"authorizationUrl": "${ OIDCMOCK__BASE_URL }/connect/authorize",
+			"tokenUrl": "${ OIDCMOCK__BASE_URL }/connect/token",
+			"logoutUrl": "${ OIDCMOCK__BASE_URL }/connect/endsession"
 		}
-	}
+	},
+	{
+		"type" : "ldap",
+		"alias" : "schoolOne0",
+		"ldapConfig" : {
+		  "active" : true,
+		  "federalState": {
+			"$oid": "0000b186816abba584714c56"
+		  },
+		  "url" : "ldap://sc-openldap-single-svc.sc-common.svc.cluster.local:389",
+		  "rootPath" : "o=schoolOne0,dc=de,dc=example,dc=org",
+		  "searchUser" : "cn=admin,dc=example,dc=org",
+		  "searchUserPassword" : "${SC_COMMON_LDAP_PASSWORD}",
+		  "provider" : "general",
+		  "providerOptions" : {
+			"schoolName" : "School One 0",
+			"userPathAdditions" : "ou=users",
+			"classPathAdditions" : "ou=groups",
+			"roleType" : "group",
+			"userAttributeNameMapping" : {
+			  "givenName" : "givenName",
+			  "sn" : "sn",
+			  "uuid" : "uuid",
+			  "dn" : "dn",
+			  "uid" : "uid",
+			  "mail" : "mail",
+			  "role" : "memberOf"
+			},
+			"roleAttributeNameMapping" : {
+			  "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+			  "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+			  "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+			  "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org"
+			},
+			"classAttributeNameMapping" : {
+			  "description" : "description",
+			  "dn" : "dn",
+			  "uniqueMember" : "member"
+			}
+		  }
+		}
+	  },
+	  {
+		"type" : "ldap",
+		"alias" : "schoolOne1",
+		"ldapConfig" : {
+		  "active" : true,
+		  "federalState": {
+			"$oid": "0000b186816abba584714c54"
+		  },
+		  "url" : "ldap://sc-openldap-single-svc.sc-common.svc.cluster.local:389",
+		  "rootPath" : "o=schoolOne1,dc=de,dc=example,dc=org",
+		  "searchUser" : "cn=admin,dc=example,dc=org",
+		  "searchUserPassword" : "${SC_COMMON_LDAP_PASSWORD}",
+		  "provider" : "general",
+		  "providerOptions" : {
+			"schoolName" : "School One 1",
+			"userPathAdditions" : "ou=users",
+			"roleType" : "group",
+			"userAttributeNameMapping" : {
+			  "givenName" : "givenName",
+			  "sn" : "sn",
+			  "uuid" : "uuid",
+			  "dn" : "dn",
+			  "uid" : "uid",
+			  "mail" : "mail",
+			  "role" : "memberOf"
+			},
+			"roleAttributeNameMapping" : {
+			  "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+			  "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+			  "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+			  "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org"
+			},
+			"classAttributeNameMapping" : {
+			  "dn" : "dn"
+			}
+		  }
+		}
 ]

@@ -1,11 +1,11 @@
 /* eslint-disable no-await-in-loop */
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { orderBy } from 'lodash';
 import { FileSystemAdapter } from '@shared/infra/file-system';
 import { DatabaseManagementService } from '@shared/infra/database';
 import { ConfigService } from '@nestjs/config';
-import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
 import { System } from '@shared/domain';
 import { SysType } from '@shared/infra/identity-management';
 import { BsonConverter } from '../converter/bson.converter';
@@ -16,6 +16,7 @@ export interface ICollectionFilePath {
 }
 
 const systemsCollectionName = 'systems';
+const storageprovidersCollectionName = 'storageproviders';
 
 @Injectable()
 export class DatabaseManagementUc {
@@ -29,7 +30,8 @@ export class DatabaseManagementUc {
 		private databaseManagementService: DatabaseManagementService,
 		private bsonConverter: BsonConverter,
 		private readonly configService: ConfigService,
-		private readonly encryptionService: SymetricKeyEncryptionService
+		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
+		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
 	) {}
 
 	/**
@@ -153,9 +155,14 @@ export class DatabaseManagementUc {
 		await Promise.all(
 			collectionsToSeed.map(async ({ filePath, collectionName }) => {
 				// load text from backup file
-				const text = await this.fileSystemAdapter.readFile(filePath);
+				let fileContent = await this.fileSystemAdapter.readFile(filePath);
+
+				if (collectionName === systemsCollectionName || collectionName === storageprovidersCollectionName) {
+					fileContent = this.injectEnvVars(fileContent);
+				}
+
 				// create bson-objects from text
-				const bsonDocuments = JSON.parse(text) as unknown[];
+				const bsonDocuments = JSON.parse(fileContent) as unknown[];
 				// deserialize bson (format of mongoexport) to json documents we can import to mongo
 				const jsonDocuments = this.bsonConverter.deserialize(bsonDocuments);
 
@@ -170,10 +177,10 @@ export class DatabaseManagementUc {
 				}
 
 				if (collectionName === systemsCollectionName) {
-					this.injectSecretsToSystems(jsonDocuments as System[]);
+					this.encryptSecretsInSystems(jsonDocuments as System[]);
 				}
 
-				// import backuop data into database collection
+				// import backup data into database collection
 				const importedDocumentsAmount = await this.databaseManagementService.importCollection(
 					collectionName,
 					jsonDocuments
@@ -216,9 +223,9 @@ export class DatabaseManagementUc {
 				const sortedBsonDocuments = orderBy(bsonDocuments, ['_id.$oid', 'createdAt.$date'], ['asc', 'asc']);
 				// convert to text
 				const TAB = '	';
-				const text = JSON.stringify(sortedBsonDocuments, undefined, TAB);
+				const json = JSON.stringify(sortedBsonDocuments, undefined, TAB);
 				// persist to filesystem
-				await this.fileSystemAdapter.writeFile(filePath, text + this.fileSystemAdapter.EOL);
+				await this.fileSystemAdapter.writeFile(filePath, json + this.fileSystemAdapter.EOL);
 				// keep collection name and number of exported documents
 				exportedCollections.push(`${collectionName}:${sortedBsonDocuments.length}`);
 			})
@@ -233,19 +240,37 @@ export class DatabaseManagementUc {
 		return this.databaseManagementService.syncIndexes();
 	}
 
-	private injectSecretsToSystems(systems: System[]) {
-		if (!this.configService.get<string>('AES_KEY')) {
-			return systems;
+	private injectEnvVars(json: string): string {
+		let start = 0;
+		while (start >= 0) {
+			start = json.indexOf('${', start);
+			if (start > 0 && json.charAt(start - 1) === '\\') {
+				start += 2;
+			} else {
+				const end = json.indexOf('}', start);
+				const placeholder = json.substring(start + 2, end - 1).trim();
+				const placeholderContent = this.configService.get<string>(placeholder) ?? '';
+				json = json.concat(json.slice(0, start), placeholderContent, json.slice(end + 1));
+				start += placeholderContent.length + 1;
+			}
 		}
-		// this.configService.get<string>();
+		return json;
+	}
+
+	private encryptSecretsInSystems(systems: System[]) {
 		systems.forEach((system) => {
 			if (system.oauthConfig) {
-				system.oauthConfig.clientSecret = this.getEncryptedSecret(system.oauthConfig.clientSecret);
-				system.oauthConfig.clientId = this.getEncryptedSecret(system.oauthConfig.clientId);
+				system.oauthConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oauthConfig.clientSecret);
+				system.oauthConfig.clientId = this.defaultEncryptionService.encrypt(system.oauthConfig.clientId);
 			}
 			if (system.type === SysType.OIDC && system.config) {
-				system.config.clientSecret = this.getEncryptedSecret(system.config.clientSecret as string);
-				system.config.clientId = this.getEncryptedSecret(system.config.clientId as string);
+				system.config.clientSecret = this.defaultEncryptionService.encrypt(system.config.clientSecret as string);
+				system.config.clientId = this.defaultEncryptionService.encrypt(system.config.clientId as string);
+			}
+			if (system.type === SysType.LDAP && system.ldapConfig) {
+				system.ldapConfig.searchUserPassword = this.ldapEncryptionService.encrypt(
+					system.ldapConfig.searchUserPassword as string
+				);
 			}
 		});
 		return systems;
@@ -256,25 +281,17 @@ export class DatabaseManagementUc {
 			// The system's alias needs to be set otherwise the export will fail here, but that is acceptable.
 			if (system.oauthConfig) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.oauthConfig.clientSecret = `${system.alias!.toLocaleUpperCase()}_CLIENT_SECRET`;
+				system.oauthConfig.clientSecret = `\${${system.alias!.toLocaleUpperCase()}_CLIENT_SECRET}`;
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.oauthConfig.clientId = `${system.alias!.toLocaleUpperCase()}_CLIENT_ID`;
+				system.oauthConfig.clientId = `\${${system.alias!.toLocaleUpperCase()}_CLIENT_ID}`;
 			}
 			if (system.type === SysType.OIDC && system.config) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.config.clientSecret = `${system.alias!.toLocaleUpperCase()}_CLIENT_SECRET`;
+				system.config.clientSecret = `\${${system.alias!.toLocaleUpperCase()}_CLIENT_SECRET}`;
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.config.clientId = `${system.alias!.toLocaleUpperCase()}_CLIENT_ID`;
+				system.config.clientId = `\${${system.alias!.toLocaleUpperCase()}_CLIENT_ID}`;
 			}
 		});
 		return systems;
-	}
-
-	private getEncryptedSecret(secretVarName: string) {
-		const secret = this.configService.get<string>(secretVarName);
-		if (secret) {
-			return this.encryptionService.encrypt(secret);
-		}
-		return secretVarName;
 	}
 }

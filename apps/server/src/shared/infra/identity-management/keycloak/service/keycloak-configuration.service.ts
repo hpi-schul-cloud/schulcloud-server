@@ -1,10 +1,7 @@
-import fs from 'node:fs/promises';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Inject } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
-import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
 import AuthenticationExecutionInfoRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionInfoRepresentation';
 import { IdentityProviderConfig, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
@@ -23,8 +20,6 @@ export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly systemRepo: SystemRepo,
-		private readonly encryptionService: SymetricKeyEncryptionService,
-		private readonly configService: ConfigService,
 		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles
 	) {}
 
@@ -102,11 +97,11 @@ export class KeycloakConfigurationService {
 		}
 	}
 
-	public async configureIdentityProviders(loadFromJson = false): Promise<number> {
+	public async configureIdentityProviders(): Promise<number> {
 		let count = 0;
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const oldConfigs = await kc.identityProviders.find();
-		const newConfigs = await this.loadConfigs([SysType.OIDC], loadFromJson);
+		const newConfigs = await this.loadConfigs([SysType.OIDC]);
 		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const configureAction of configureActions) {
@@ -200,32 +195,10 @@ export class KeycloakConfigurationService {
 		}
 	}
 
-	private async loadConfigs(sysTypes: SysType[], loadFromJson = false): Promise<IdentityProviderConfig[]> {
-		if (loadFromJson) {
-			const data: string = await fs.readFile(this.inputFiles.systemsFile, { encoding: 'utf-8' });
-			let systems = JSON.parse(data) as IdentityProviderConfig[];
-			systems = systems.filter((system) => sysTypes.includes(system.type as SysType));
-			systems.forEach((system) => {
-				if (system.type === SysType.OIDC && system.config) {
-					const clientId = this.configService.get<string>(system.config.clientId);
-					const clientSecret = this.configService.get<string>(system.config.clientSecret);
-					if (clientId && clientSecret) {
-						system.config.clientId = clientId;
-						system.config.clientSecret = clientSecret;
-					}
-				}
-			});
-			return systems;
-		}
+	private async loadConfigs(sysTypes: SysType[]): Promise<IdentityProviderConfig[]> {
 		const systems = (await this.systemRepo.findAll()).filter((system) =>
 			sysTypes.includes(system.type as SysType)
 		) as IdentityProviderConfig[];
-		systems.forEach((system) => {
-			if (system.type === SysType.OIDC && system.config) {
-				system.config.clientId = this.encryptionService.decrypt(system.config.clientId);
-				system.config.clientSecret = this.encryptionService.decrypt(system.config.clientSecret);
-			}
-		});
 		return systems;
 	}
 
