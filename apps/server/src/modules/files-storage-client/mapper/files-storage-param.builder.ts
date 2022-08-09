@@ -26,4 +26,10 @@ export class FileParamBuilder {
 
 		return fileRequestInfo;
 	}
+
+	static buildForLesson(jwt: string, schoolId: EntityId, parentId: EntityId): FileRequestInfo {
+		const fileRequestInfo = FileParamBuilder.build(jwt, schoolId, 'lessons', parentId);
+
+		return fileRequestInfo;
+	}
 }

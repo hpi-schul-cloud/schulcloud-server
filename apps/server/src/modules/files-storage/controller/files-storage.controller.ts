@@ -27,6 +27,7 @@ import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
 import {
 	CopyFileParams,
+	CopyFileResponse,
 	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileParams,
@@ -224,18 +225,8 @@ export class FilesStorageController {
 		@Param() params: FileRecordParams,
 		@Body() copyFilesParam: CopyFilesOfParentParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<FileRecordListResponse> {
-		const [fileRecords, total] = await this.filesStorageUC.copyFilesOfParent(
-			currentUser.userId,
-			params,
-			copyFilesParam
-		);
-
-		const responseFileRecords = fileRecords.map((fileRecord) => {
-			return new FileRecordResponse(fileRecord);
-		});
-
-		const response = new FileRecordListResponse(responseFileRecords, total);
+	): Promise<CopyFileResponse[]> {
+		const response = await this.filesStorageUC.copyFilesOfParent(currentUser.userId, params, copyFilesParam);
 
 		return response;
 	}
@@ -251,10 +242,8 @@ export class FilesStorageController {
 		@Param() params: SingleFileParams,
 		@Body() copyFileParam: CopyFileParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<FileRecordResponse> {
-		const fileRecord = await this.filesStorageUC.copyOneFile(currentUser.userId, params, copyFileParam);
-
-		const response = new FileRecordResponse(fileRecord);
+	): Promise<CopyFileResponse> {
+		const response = await this.filesStorageUC.copyOneFile(currentUser.userId, params, copyFileParam);
 
 		return response;
 	}
