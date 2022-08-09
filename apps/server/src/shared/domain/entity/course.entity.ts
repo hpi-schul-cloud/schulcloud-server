@@ -1,7 +1,9 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
+import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
 import { LearnroomMetadata, LearnroomTypes } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
+import { CourseGroup } from './coursegroup.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
 
@@ -50,6 +52,9 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 	@ManyToMany('User', undefined, { fieldName: 'substitutionIds' })
 	substitutionTeachers = new Collection<User>(this);
 
+	@OneToMany('CourseGroup', 'course', { orphanRemoval: true })
+	courseGroups = new Collection<CourseGroup>(this);
+
 	// TODO: string color format
 	@Property()
 	color: string = DEFAULT.color;
@@ -78,17 +83,24 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 		if (props.startDate) this.startDate = props.startDate;
 	}
 
-	getNumberOfStudents(): number {
-		return this.students.length;
+	private getShortTitle(): string {
+		if (this.name.length === 1) {
+			return this.name;
+		}
+		const [firstChar, secondChar] = [...this.name];
+		const pattern = /\p{Extended_Pictographic}/u;
+		if (pattern.test(firstChar)) {
+			return firstChar;
+		}
+		return firstChar + secondChar;
 	}
 
-	isFinished(): boolean {
-		if (!this.untilDate) {
-			return false;
+	private getCourseGroupItems(): CourseGroup[] {
+		if (!this.courseGroups.isInitialized(true)) {
+			throw new InternalServerErrorException('Courses trying to access their course groups that are not loaded.');
 		}
-		const isFinished = this.untilDate < new Date();
-
-		return isFinished;
+		const courseGroups = this.courseGroups.getItems();
+		return courseGroups;
 	}
 
 	getMetadata(): LearnroomMetadata {
@@ -103,15 +115,21 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 		};
 	}
 
-	private getShortTitle(): string {
-		if (this.name.length === 1) {
-			return this.name;
+	getNumberOfStudents(): number {
+		return this.students.length;
+	}
+
+	isFinished(): boolean {
+		if (!this.untilDate) {
+			return false;
 		}
-		const [firstChar, secondChar] = [...this.name];
-		const pattern = /\p{Extended_Pictographic}/u;
-		if (pattern.test(firstChar)) {
-			return firstChar;
-		}
-		return firstChar + secondChar;
+		const isFinished = this.untilDate < new Date();
+
+		return isFinished;
+	}
+
+	getCourseLinkedCourseGroups(): CourseGroup[] {
+		const courseGroups = this.getCourseGroupItems();
+		return courseGroups;
 	}
 }
