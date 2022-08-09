@@ -69,9 +69,9 @@ describe('team repo', () => {
 			const result = await repo.findById(team.id, true);
 
 			// Assert
-			expect(result.userIds[0].role.roles).toBeDefined();
-			expect(result.userIds[0].role.roles.getItems()).toEqual(roles2);
-			expect(result.userIds[0].role.roles[0].roles.getItems()).toEqual(roles3);
+			expect(result.teamUsers[0].role.roles).toBeDefined();
+			expect(result.teamUsers[0].role.roles.getItems()).toEqual(roles2);
+			expect(result.teamUsers[0].role.roles[0].roles.getItems()).toEqual(roles3);
 		});
 
 		it('should return one role that matched by id', async () => {
