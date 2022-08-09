@@ -12,7 +12,9 @@ export class TeamRule extends BasePermission<Team> {
 	}
 
 	public hasPermission(user: User, entity: Team, context: IPermissionContext): boolean {
-		const resultTeamUser: TeamUser | undefined = entity.teamUsers.find((teamUser) => teamUser.user.id === user.id);
+		const resultTeamUser: TeamUser | undefined = entity.teamUsers.find(
+			(teamUser: TeamUser) => teamUser.user.id === user.id
+		);
 
 		if (!resultTeamUser) {
 			throw new InternalServerErrorException('Cannot find user in team');
