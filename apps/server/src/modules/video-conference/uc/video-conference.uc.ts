@@ -327,7 +327,7 @@ export class VideoConferenceUc {
 			case VideoConferenceScope.EVENT: {
 				const team: Team = await this.teamsRepo.findById(scopeId);
 				const teamUser: TeamUser | undefined = team.teamUsers.find(
-					(userInTeam: TeamUser) => userInTeam.userId.id === currentUser.userId
+					(userInTeam: TeamUser) => userInTeam.user.id === currentUser.userId
 				);
 
 				if (teamUser === undefined) {

@@ -35,9 +35,9 @@ describe('TeamMapper', () => {
 			expect(ret.id).toEqual(teamEntity.id);
 			expect(ret.teamUsers.length).toEqual(1);
 			const teamUser = teamEntity.teamUsers[0];
-			expect(ret.teamUsers[0].userId).toEqual(teamUser.userId.id);
+			expect(ret.teamUsers[0].userId).toEqual(teamUser.user.id);
 			expect(ret.teamUsers[0].roleId).toEqual(teamUser.role.id);
-			expect(ret.teamUsers[0].schoolId).toEqual(teamUser.schoolId.id);
+			expect(ret.teamUsers[0].schoolId).toEqual(teamUser.school.id);
 		});
 	});
 });
