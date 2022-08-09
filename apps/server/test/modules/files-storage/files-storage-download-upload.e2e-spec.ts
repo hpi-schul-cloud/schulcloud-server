@@ -71,9 +71,11 @@ describe('files-storage controller (e2e)', () => {
 	let api: API;
 	let s3instance: S3rver;
 	let validId: EntityId;
+	let appPort: number;
 
 	beforeAll(async () => {
 		const port = 10000 + createRndInt(10000);
+		appPort = 10000 + createRndInt(10000);
 		const overridetS3Config = Object.assign(config, { endpoint: `http://localhost:${port}` });
 
 		s3instance = new S3rver({
@@ -105,7 +107,9 @@ describe('files-storage controller (e2e)', () => {
 			.compile();
 
 		app = module.createNestApplication();
-		await app.init();
+		const a = await app.init();
+		await a.listen(appPort);
+
 		orm = app.get(MikroORM);
 		em = module.get(EntityManager);
 		api = new API(app);
@@ -256,19 +260,19 @@ describe('files-storage controller (e2e)', () => {
 			});
 		});
 
-		describe.skip(`with valid request data`, () => {
-			it('should return status 201 for successful upload', async () => {
+		describe(`with valid request data`, () => {
+			beforeEach(async () => {
 				const uploadResponse = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
-				const { status, result } = uploadResponse;
+				const { result } = uploadResponse;
 				body = {
-					url: `/file/download/${result.id}/${result.name}`,
+					url: `http://localhost:${appPort}/file/download/${result.id}/${result.name}`,
 					fileName: 'test.txt',
 				};
+			});
 
+			it('should return status 201 for successful upload', async () => {
 				const response = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
-				console.log(response);
-
-				//expect(response.status).toEqual(201);
+				expect(response.status).toEqual(201);
 			});
 
 			it('should return the new created file record', async () => {
@@ -276,13 +280,12 @@ describe('files-storage controller (e2e)', () => {
 				expect(result).toStrictEqual(
 					expect.objectContaining({
 						id: expect.any(String) as string,
-						name: 'test.txt',
+						name: 'test (1).txt',
 						parentId: validId,
 						creatorId: currentUser.userId,
 						type: 'text/plain',
 						parentType: 'schools',
 						securityCheckStatus: 'pending',
-						size: expect.any(Number) as number,
 					})
 				);
 			});
@@ -290,14 +293,14 @@ describe('files-storage controller (e2e)', () => {
 			it('should read file name from upload stream', async () => {
 				const { result } = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
 
-				expect(result.name).toEqual('test.txt');
+				expect(result.name).toEqual('test (1).txt');
 			});
 
 			it('should set iterator number to file name if file already exist', async () => {
 				await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
 				const { result } = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
 
-				expect(result.name).toEqual('test (1).txt');
+				expect(result.name).toEqual('test (2).txt');
 			});
 		});
 	});

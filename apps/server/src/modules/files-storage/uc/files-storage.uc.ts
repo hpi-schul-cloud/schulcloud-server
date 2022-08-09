@@ -86,22 +86,27 @@ export class FilesStorageUC {
 
 	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
-		const response = await firstValueFrom(
-			this.httpService.get(params.url, {
-				headers: params.headers,
-				responseType: 'stream',
-			})
-		);
+		try {
+			const response = await firstValueFrom(
+				this.httpService.get(params.url, {
+					headers: params.headers,
+					responseType: 'stream',
+				})
+			);
 
-		const fileDescription: IFile = {
-			name: decodeURI(params.fileName),
-			buffer: response.data as internal.Readable,
-			size: Number(response.headers['content-length']),
-			mimeType: response.headers['content-type'],
-		};
-		const result = await this.uploadFile(userId, params, fileDescription);
+			const fileDescription: IFile = {
+				name: decodeURI(params.fileName),
+				buffer: response.data as internal.Readable,
+				size: Number(response.headers['content-length']),
+				mimeType: response.headers['content-type'],
+			};
+			const result = await this.uploadFile(userId, params, fileDescription);
 
-		return result;
+			return result;
+		} catch (error) {
+			this.logger.warn(`could not find file by url: ${params.url}`);
+			throw new NotFoundException('FILE_NOT_FOUND');
+		}
 	}
 
 	private async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: IFile) {
