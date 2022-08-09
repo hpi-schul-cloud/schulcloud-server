@@ -189,7 +189,7 @@ describe('VideoConferenceUc', () => {
 		expertRoleTeam = roleFactory.build({ name: RoleName.TEAMEXPERT, permissions: [Permission.JOIN_MEETING] });
 
 		team = teamFactory.withRoleAndUserId(defaultRole, defaultCurrentUser.userId).build();
-		user = team.teamUsers[0].user;
+		user = team.teamUsers[0].userId;
 		user.firstName = 'firstName';
 		user.lastName = 'lastName';
 

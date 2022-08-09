@@ -12,19 +12,21 @@ export interface ITeamProperties {
 @Embeddable()
 export class TeamUser {
 	constructor(teamUser: TeamUser) {
-		this.user = teamUser.user;
+		this.userId = teamUser.userId;
 		this.role = teamUser.role;
-		this.school = teamUser.school;
+		this.schoolId = teamUser.schoolId;
 	}
 
-	@ManyToOne(() => User, { fieldName: 'userId' })
-	user: User;
+	// TODO rename field name to 'user' and 'school' to understand the variables better
+	// fieldName cannot be used in ManyToOne on Embeddable due to a mikro-orm bug (https://github.com/mikro-orm/mikro-orm/issues/2165)
+	@ManyToOne(() => User)
+	userId: User;
 
 	@ManyToOne(() => Role)
 	role: Role;
 
-	@ManyToOne(() => School, { fieldName: 'schoolId' })
-	school: School;
+	@ManyToOne(() => School)
+	schoolId: School;
 }
 
 @Entity({ tableName: 'teams' })

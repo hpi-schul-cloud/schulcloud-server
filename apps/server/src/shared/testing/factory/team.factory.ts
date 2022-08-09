@@ -23,8 +23,8 @@ export const teamFactory = TeamFactory.define(Team, ({ sequence }) => {
 		name: `team #${sequence}`,
 		teamUsers: [
 			{
-				user: userId,
-				school: schoolId,
+				userId,
+				schoolId,
 				role,
 			},
 		],

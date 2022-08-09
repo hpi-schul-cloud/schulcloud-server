@@ -39,19 +39,19 @@ describe('TeamRule', () => {
 	describe('isApplicable', () => {
 		it('should return truthy', () => {
 			expect(() =>
-				service.isApplicable(entity.teamUsers[0].user, entity, { requiredPermissions: [permissionA] })
+				service.isApplicable(entity.teamUsers[0].userId, entity, { requiredPermissions: [permissionA] })
 			).toBeTruthy();
 		});
 	});
 
 	describe('hasPermission', () => {
 		it('should return "true" if user in scope', () => {
-			const res = service.hasPermission(entity.teamUsers[0].user, entity, { requiredPermissions: [permissionA] });
+			const res = service.hasPermission(entity.teamUsers[0].userId, entity, { requiredPermissions: [permissionA] });
 			expect(res).toBe(true);
 		});
 
 		it('should return "false" if user has not permission', () => {
-			const res = service.hasPermission(entity.teamUsers[0].user, entity, { requiredPermissions: [permissionC] });
+			const res = service.hasPermission(entity.teamUsers[0].userId, entity, { requiredPermissions: [permissionC] });
 			expect(res).toBe(false);
 		});
 
