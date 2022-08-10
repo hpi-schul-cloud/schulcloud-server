@@ -9,22 +9,45 @@ export interface ITeamProperties {
 	teamUsers?: TeamUser[];
 }
 
+export interface ITeamUserProperties {
+	user: User;
+	role: Role;
+	school: School;
+}
+
 @Embeddable()
 export class TeamUser {
-	constructor(teamUser: TeamUser) {
-		this.user = teamUser.user;
-		this.role = teamUser.role;
-		this.school = teamUser.school;
+	constructor(props: ITeamUserProperties) {
+		this.userId = props.user;
+		this.role = props.role;
+		this.schoolId = props.school;
 	}
 
-	@ManyToOne(() => User, { fieldName: 'userId' })
-	user: User;
+	@ManyToOne(() => User)
+	private userId: User;
 
 	@ManyToOne(() => Role)
 	role: Role;
 
-	@ManyToOne(() => School, { fieldName: 'schoolId' })
-	school: School;
+	@ManyToOne(() => School)
+	private schoolId: School;
+
+	// fieldName cannot be used in ManyToOne on Embeddable due to a mikro-orm bug (https://github.com/mikro-orm/mikro-orm/issues/2165)
+	get user(): User {
+		return this.userId;
+	}
+
+	set user(value: User) {
+		this.userId = value;
+	}
+
+	get school(): School {
+		return this.schoolId;
+	}
+
+	set school(value: School) {
+		this.schoolId = value;
+	}
 }
 
 @Entity({ tableName: 'teams' })

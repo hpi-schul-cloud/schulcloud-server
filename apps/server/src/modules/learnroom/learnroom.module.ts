@@ -9,6 +9,7 @@ import {
 	TaskCopyService,
 } from '@shared/domain';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
+import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import {
 	BoardRepo,
@@ -65,6 +66,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		RoomsService,
 		EtherpadService,
 		NexboardService,
+		FileLegacyService,
 		FeathersServiceProvider,
 		Logger,
 		FileCopyAppendService,
