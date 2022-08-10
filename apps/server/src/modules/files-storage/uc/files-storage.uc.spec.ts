@@ -192,6 +192,21 @@ describe('FilesStorageUC', () => {
 			);
 		});
 
+		it('should throw Error', async () => {
+			httpService.get.mockResolvedValue(
+				createObservable({
+					isAxiosError: true,
+					code: '404',
+					response: {},
+					name: 'errorText',
+					message: 'errorText',
+					toJSON: () => ({}),
+				}) as never
+			);
+
+			await expect(service.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow(NotFoundException);
+		});
+
 		describe('Tests of permission handling', () => {
 			it('should call authorizationService.hasPermissionByReferences', async () => {
 				authorizationService.checkPermissionByReferences.mockResolvedValue();
