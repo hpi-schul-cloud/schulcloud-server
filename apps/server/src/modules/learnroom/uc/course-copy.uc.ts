@@ -56,7 +56,7 @@ export class CourseCopyUC {
 			const boardCopy = statusBoard.copyEntity as Board;
 			await this.boardRepo.save(boardCopy);
 			statusBoard = this.lessonCopyService.updateCopiedEmbeddedTasks(statusBoard);
-			statusBoard = await this.fileCopyAppendService.copyFiles(statusBoard, courseCopy.id, userId, jwt);
+			statusBoard = await this.fileCopyAppendService.copyFiles(statusBoard, courseCopy.id, userId, user.school.id, jwt);
 			const updatedBoardCopy = statusBoard.copyEntity as Board;
 			await this.boardRepo.save(updatedBoardCopy);
 		}

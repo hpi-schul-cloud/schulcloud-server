@@ -38,7 +38,7 @@ export class FilesStorageClientMapper {
 
 	static mapStringToParentType(input: string): FileRecordParamsParentTypeEnum {
 		let response: FileRecordParamsParentTypeEnum;
-		const allowedStrings = ['users', 'courses', 'tasks', 'schools'];
+		const allowedStrings = ['users', 'courses', 'tasks', 'schools', 'lessons'];
 
 		if (allowedStrings.includes(input)) {
 			response = input as FileRecordParamsParentTypeEnum;
