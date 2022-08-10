@@ -1,3 +1,5 @@
+import { LtiTool } from './ltitool.entity';
+import { Pseudonym } from './pseudonym.entity';
 import { VideoConference } from './video-conference.entity';
 import { Account } from './account.entity';
 import { Board } from './board.entity';
@@ -34,6 +36,7 @@ export const ALL_ENTITIES = [
 	File,
 	StorageProvider,
 	Lesson,
+	LtiTool,
 	Material,
 	Role,
 	School,
@@ -47,6 +50,7 @@ export const ALL_ENTITIES = [
 	User,
 	CourseNews,
 	News,
+	Pseudonym,
 	SchoolNews,
 	TeamNews,
 	System,

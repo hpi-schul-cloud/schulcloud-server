@@ -1,5 +1,5 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { EncryptedStringType } from '@shared/repo/types/EncryptedString.type';
+import { StorageProviderEncryptedStringType } from '@shared/repo/types/StorageProviderEncryptedString.type';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface IStorageProviderProperties {
@@ -17,7 +17,7 @@ export class StorageProvider extends BaseEntityWithTimestamps {
 	@Property()
 	accessKeyId: string;
 
-	@Property({ fieldName: 'secretAccessKey', type: EncryptedStringType })
+	@Property({ fieldName: 'secretAccessKey', type: StorageProviderEncryptedStringType })
 	secretAccessKey: string;
 
 	@Property({ nullable: true })

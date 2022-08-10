@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseDO, BaseEntity, baseEntityProperties, EntityId, IBaseEntityProps } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 
-type EntityProperties<P> = P & IBaseEntityProps;
+export type EntityProperties<P> = P & IBaseEntityProps;
 
 @Injectable()
 export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity, P> {
@@ -14,8 +14,8 @@ export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity, P> {
 
 	abstract getConstructor(): new (I) => E;
 
-	protected abstract mapDOToEntity(T): EntityProperties<P>;
-	protected abstract mapEntityToDO(E): T;
+	protected abstract mapDOToEntity(entityDO: T): EntityProperties<P>;
+	protected abstract mapEntityToDO(entity: E): T;
 
 	protected mapDOToEntityWithId(edo: T): EntityProperties<P> {
 		const entity: EntityProperties<P> = this.mapDOToEntity(edo);

@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ConsoleWriterService } from '@shared/infra/console';
 import { DatabaseManagementModule, DatabaseManagementService } from '@shared/infra/database';
+import { EncryptionModule } from '@shared/infra/encryption';
 import { FileSystemModule } from '@shared/infra/file-system';
 import { KeycloakControllerModule } from '@shared/infra/identity-management/keycloak/controller/keycloak.controller.module';
 import serverConfig from '@src/server.config';
@@ -19,6 +20,7 @@ const baseImports = [
 		validationOptions: { infer: true },
 		load: [serverConfig],
 	}),
+	EncryptionModule,
 ];
 
 const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
