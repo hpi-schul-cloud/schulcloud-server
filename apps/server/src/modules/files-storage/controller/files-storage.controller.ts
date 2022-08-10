@@ -216,7 +216,7 @@ export class FilesStorageController {
 	}
 
 	@ApiOperation({ summary: 'Copy all files of a parent entityId to a target entitId' })
-	@ApiResponse({ status: 201, type: FileRecordListResponse })
+	@ApiResponse({ status: 201, type: [CopyFileResponse] })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
