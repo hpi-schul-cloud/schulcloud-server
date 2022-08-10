@@ -2,8 +2,8 @@
 
 import { FileRecordParentType } from '@shared/domain';
 import { Command, Console } from 'nestjs-console';
-import { SyncFilesUc } from '../uc/sync-files.uc';
 import { SyncEmbeddedFilesUc } from '../uc/sync-embedded-files.uc';
+import { SyncFilesUc } from '../uc/sync-files.uc';
 
 // Temporary functionality for migration to new fileservice
 // TODO: Remove when BC-1496 is done!
@@ -16,8 +16,13 @@ export class SyncFilesConsole {
 		await this.syncFilesUc.syncFilesForParentType(FileRecordParentType.Task, aggregationSize, numParallelPromises);
 	}
 
-	@Command({ command: 'lessons' })
+	@Command({ command: 'lessons-embedded' })
 	async syncFilesForLessons() {
 		await this.syncEmbeddedFilesUc.syncEmbeddedFilesForLesson();
+	}
+
+	@Command({ command: 'tasks-embedded' })
+	async syncFilesForTask() {
+		await this.syncEmbeddedFilesUc.syncEmbeddedFilesForTasks();
 	}
 }

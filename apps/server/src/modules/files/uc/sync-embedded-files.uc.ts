@@ -2,7 +2,7 @@
 
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { FileRecordParentType, IComponentProperties, Lesson } from '@shared/domain';
+import { FileRecordParentType, IComponentProperties, Lesson, Task } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
 import _ from 'lodash';
 import { EmbeddedFilesRepo, fileUrlRegex } from '../repo/embedded-files.repo';
@@ -18,6 +18,22 @@ export class SyncEmbeddedFilesUc {
 		private syncFilesMetaDataService: SyncFilesMetadataService,
 		private syncFilesStorageService: SyncFilesStorageService
 	) {}
+
+	async syncEmbeddedFilesForTasks() {
+		await this.embeddedFilesRepo.createTaskBackUpCollection();
+
+		const tasks = await this.embeddedFilesRepo.findEmbeddedFilesForTasks();
+		this.logger.log(`Found ${tasks.length} tasks descriptions with embedded files.`);
+
+		const promises = tasks.map(async (task) => {
+			const fileIds = this.extractFileIds(task);
+
+			const files = await this.embeddedFilesRepo.findFiles(fileIds, task._id, FileRecordParentType.Task);
+			return this.syncFiles(files);
+		});
+
+		await Promise.all(promises);
+	}
 
 	async syncEmbeddedFilesForLesson() {
 		await this.embeddedFilesRepo.createLessonBackUpCollection();
@@ -35,23 +51,38 @@ export class SyncEmbeddedFilesUc {
 		await Promise.all(promises);
 	}
 
-	private extractFileIds(lesson: Lesson): ObjectId[] {
-		const lessonFileIds: string[] = [];
+	private extractFileIds(entity: Lesson | Task): ObjectId[] {
+		const fileIds: string[] = [];
 
-		lesson.contents.forEach((item: IComponentProperties) => {
-			if (item.content === undefined || !('text' in item.content)) {
-				return;
-			}
+		if (entity instanceof Lesson) {
+			entity.contents.forEach((item: IComponentProperties) => {
+				if (item.content === undefined || !('text' in item.content)) {
+					return;
+				}
 
-			const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
-			const contentFileIds = item.content.text.match(regEx);
+				const contentFileIds = this.extractFileId(item.content.text);
+
+				if (contentFileIds !== null) {
+					fileIds.push(...contentFileIds);
+				}
+			});
+		}
+		if (entity instanceof Task) {
+			const contentFileIds = this.extractFileId(entity.description);
 
 			if (contentFileIds !== null) {
-				lessonFileIds.push(...contentFileIds);
+				fileIds.push(...contentFileIds);
 			}
-		});
+		}
 
-		return _.uniq(lessonFileIds).map((id) => new ObjectId(id));
+		return _.uniq(fileIds).map((id) => new ObjectId(id));
+	}
+
+	private extractFileId(text: string) {
+		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
+		const contentFileIds = text.match(regEx);
+
+		return contentFileIds;
 	}
 
 	private async syncFiles(files: SyncFileItem[]) {
@@ -67,7 +98,14 @@ export class SyncEmbeddedFilesUc {
 			await this.syncFilesMetaDataService.prepareMetaData(file);
 			await this.syncFilesStorageService.syncS3File(file);
 			await this.syncFilesMetaDataService.persistMetaData(file);
-			await this.updateLessonsLinks(file);
+
+			if (file.parentType === FileRecordParentType.Lesson) {
+				await this.updateLessonsLinks(file);
+			}
+
+			if (file.parentType === FileRecordParentType.Task) {
+				await this.updateTaskLinks(file);
+			}
 			this.logger.log(`Synced file ${file.source.id}`);
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -77,21 +115,33 @@ export class SyncEmbeddedFilesUc {
 		}
 	}
 
+	private async updateTaskLinks(file: SyncFileItem) {
+		const task = await this.embeddedFilesRepo.findTask(new ObjectId(file.parentId));
+
+		if (task) {
+			task.description = this.replaceLink(task.description, file);
+			await this.embeddedFilesRepo.updateTask(task);
+		}
+	}
+
 	private async updateLessonsLinks(file: SyncFileItem) {
 		const lesson = await this.embeddedFilesRepo.findLesson(new ObjectId(file.parentId));
 
 		if (lesson) {
 			lesson.contents = lesson.contents.map((item: IComponentProperties) => {
-				const regex = new RegExp(`${fileUrlRegex}${file.source.id}.+?"`, 'g');
-				const newUrl = `"/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}"`;
-
 				if ('text' in item.content) {
-					item.content.text = item.content.text.replace(regex, newUrl);
+					item.content.text = this.replaceLink(item.content.text, file);
 				}
 
 				return item;
 			});
 			await this.embeddedFilesRepo.updateLesson(lesson);
 		}
+	}
+
+	private replaceLink(text: string, file: SyncFileItem) {
+		const regex = new RegExp(`${fileUrlRegex}${file.source.id}.+?"`, 'g');
+		const newUrl = `"/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}"`;
+		return text.replace(regex, newUrl);
 	}
 }
