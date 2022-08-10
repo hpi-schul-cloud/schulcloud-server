@@ -43,7 +43,17 @@ describe('system repo', () => {
 			await em.persistAndFlush([system]);
 			const result = await repo.findById(system.id);
 			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'type', 'url', 'alias', 'oauthConfig', '_id', 'provisioningStrategy'].sort()
+				[
+					'createdAt',
+					'updatedAt',
+					'type',
+					'url',
+					'alias',
+					'oauthConfig',
+					'_id',
+					'provisioningStrategy',
+					'provisioningUrl',
+				].sort()
 			);
 		});
 

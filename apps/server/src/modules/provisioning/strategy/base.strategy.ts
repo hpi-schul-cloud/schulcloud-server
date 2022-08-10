@@ -38,9 +38,9 @@ export abstract class ProvisioningStrategy<T> {
 
 		if (schoolDto) {
 			const savedSchoolDto: SchoolDto = await this.schoolUc.saveProvisioningSchoolOutputDto(schoolDto);
-			userDto = this.responseMapper.mapToUserDto(provisioningData, savedSchoolDto.externalId);
+			userDto = this.responseMapper.mapToUserDto(provisioningData, savedSchoolDto.id);
 		} else {
-			throw new Error('');
+			throw new Error('No school found during provisioning process.');
 		}
 		await this.userUc.saveProvisioningUserOutputDto(userDto);
 		const provisioningDto: ProvisioningDto = new ProvisioningDto({ schoolDto, userDto });

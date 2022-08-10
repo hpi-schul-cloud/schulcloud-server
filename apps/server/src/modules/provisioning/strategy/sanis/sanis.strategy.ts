@@ -1,5 +1,5 @@
 import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SanisResponse } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { HttpService } from '@nestjs/axios';
@@ -22,7 +22,9 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisRespons
 	}
 
 	override getProvisioningData(): Promise<SanisResponse> {
-		if (!this.provisioningUrl || !this.config) throw new Error('Provisioning not initialized');
+		if (!this.provisioningUrl || !this.config) {
+			throw new UnprocessableEntityException('Provisioning not initialized');
+		}
 		return firstValueFrom(this.httpService.get(`${this.provisioningUrl}`, this.config)).then(
 			(r: AxiosResponse<SanisResponse>) => {
 				return r.data;

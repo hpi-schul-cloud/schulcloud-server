@@ -87,21 +87,22 @@ describe('BaseStrategy', () => {
 			expect(result.schoolDto).toEqual(schoolDto);
 		});
 
-		it('should not save school', async () => {
+		it('should throw error when there is no school', async () => {
 			// Arrange
 			mapper.mapToSchoolDto.mockReturnValue(undefined);
 			mapper.mapToUserDto.mockReturnValue(userDto);
 
 			// Act
-			const result = await baseStrategy.apply();
+			// const result = await baseStrategy.apply();
 
 			// Assert
-			expect(mapper.mapToSchoolDto).toHaveBeenCalledWith(mockResponse);
-			expect(schoolUc.saveProvisioningSchoolOutputDto).not.toHaveBeenCalled();
-			expect(mapper.mapToUserDto).not.toHaveBeenCalledWith(mockResponse, schoolDto.id);
-			expect(userUc.saveProvisioningUserOutputDto).toHaveBeenCalled();
-			expect(result.userDto).toEqual(userDto);
-			expect(result.schoolDto).toEqual(undefined);
+			await expect(baseStrategy.apply()).rejects.toThrow();
+			// expect(mapper.mapToSchoolDto).toHaveBeenCalledWith(mockResponse);
+			// expect(schoolUc.saveProvisioningSchoolOutputDto).not.toHaveBeenCalled();
+			// expect(mapper.mapToUserDto).not.toHaveBeenCalledWith(mockResponse, schoolDto.id);
+			// expect(userUc.saveProvisioningUserOutputDto).toHaveBeenCalled();
+			// expect(result.userDto).toEqual(userDto);
+			// expect(result.schoolDto).toEqual(undefined);
 		});
 	});
 });

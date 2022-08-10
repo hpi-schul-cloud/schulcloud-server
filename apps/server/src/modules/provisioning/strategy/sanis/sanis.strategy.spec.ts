@@ -17,6 +17,7 @@ import {
 } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { of } from 'rxjs';
 import { UUID } from 'bson';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 const mapper: DeepMocked<IProviderResponseMapper<SanisResponse>> = createMock<IProviderResponseMapper<SanisResponse>>();
 
@@ -96,6 +97,10 @@ describe('SanisStrategy', () => {
 		});
 		beforeEach(() => {
 			schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDto);
+
+			sanisStrategy.init('testURL', {
+				headers: { Authorization: `Testtoken` },
+			});
 		});
 
 		it('should apply strategy', async () => {
@@ -116,21 +121,23 @@ describe('SanisStrategy', () => {
 			expect(result.schoolDto).toEqual(schoolDto);
 		});
 
-		it('should not save school', async () => {
+		it('should throw error when there is no school', async () => {
 			// Arrange
 			httpService.get.mockReturnValue(of(createAxiosResponse(mockResponse)));
 			mapper.mapToUserDto.mockReturnValue(userDto);
+			mapper.mapToSchoolDto.mockReturnValue(undefined);
 
 			// Act
-			const result = await sanisStrategy.apply();
+			// const result = await sanisStrategy.apply();
 
 			// Assert
-			expect(mapper.mapToSchoolDto).toHaveBeenCalledWith(mockResponse);
-			expect(schoolUc.saveProvisioningSchoolOutputDto).not.toHaveBeenCalled();
-			expect(mapper.mapToUserDto).not.toHaveBeenCalledWith(mockResponse, schoolDto.id);
-			expect(userUc.saveProvisioningUserOutputDto).toHaveBeenCalled();
-			expect(result.userDto).toEqual(userDto);
-			expect(result.schoolDto).toEqual(undefined);
+			await expect(sanisStrategy.apply()).rejects.toThrow();
+			// expect(mapper.mapToSchoolDto).toHaveBeenCalledWith(mockResponse);
+			// expect(schoolUc.saveProvisioningSchoolOutputDto).not.toHaveBeenCalled();
+			// expect(mapper.mapToUserDto).not.toHaveBeenCalledWith(mockResponse, schoolDto.id);
+			// expect(userUc.saveProvisioningUserOutputDto).toHaveBeenCalled();
+			// expect(result.userDto).toEqual(userDto);
+			// expect(result.schoolDto).toEqual(undefined);
 		});
 	});
 
@@ -138,6 +145,20 @@ describe('SanisStrategy', () => {
 		it('should return type SANIS', () => {
 			const retType: SystemProvisioningStrategy = sanisStrategy.getType();
 			expect(retType).toEqual(SystemProvisioningStrategy.SANIS);
+		});
+	});
+
+	describe('getProvisioningData', () => {
+		it('should throw an error when initialization fails', async () => {
+			let message = '';
+			try {
+				await sanisStrategy.getProvisioningData();
+			} catch (e) {
+				if (e instanceof UnprocessableEntityException) {
+					message = e.message;
+				}
+			}
+			expect(message).toEqual('Provisioning not initialized');
 		});
 	});
 });
