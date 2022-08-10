@@ -88,7 +88,7 @@ export class FilesStorageUC {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 		try {
 			const response = await firstValueFrom(
-				this.httpService.get(params.url, {
+				this.httpService.get<internal.Readable>(params.url, {
 					headers: params.headers,
 					responseType: 'stream',
 				})
@@ -96,7 +96,7 @@ export class FilesStorageUC {
 
 			const fileDescription: IFile = {
 				name: decodeURI(params.fileName),
-				buffer: response.data as internal.Readable,
+				buffer: response.data,
 				size: Number(response.headers['content-length']),
 				mimeType: response.headers['content-type'],
 			};
