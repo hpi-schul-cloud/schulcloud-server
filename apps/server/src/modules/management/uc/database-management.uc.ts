@@ -245,9 +245,10 @@ export class DatabaseManagementUc {
 		while (start >= 0) {
 			start = json.indexOf('${', start);
 			if (start > 0) {
-				// skip escaped indicator
 				if (json.charAt(start - 1) === '\\') {
-					start += 2;
+					// skip and remove escape indicator
+					json = json.slice(0, start - 1) + json.slice(start);
+					start += 1;
 				} else {
 					const end = json.indexOf('}', start);
 					const placeholder = json.slice(start + 2, end).trim();
@@ -293,6 +294,10 @@ export class DatabaseManagementUc {
 				system.config.clientSecret = `\${${system.alias!.toLocaleUpperCase()}_CLIENT_SECRET}`;
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				system.config.clientId = `\${${system.alias!.toLocaleUpperCase()}_CLIENT_ID}`;
+			}
+			if (system.type === SysType.LDAP && system.ldapConfig) {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				system.ldapConfig.searchUserPassword = `\${${system.alias!.toLocaleUpperCase()}_SEARCHUSER_PASSWORD}`;
 			}
 		});
 		return systems;

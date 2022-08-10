@@ -19,10 +19,12 @@ describe('DatabaseManagementService', () => {
 	let fileSystemAdapter: DeepMocked<FileSystemAdapter>;
 	let dbService: DeepMocked<DatabaseManagementService>;
 	let configService: DeepMocked<ConfigService>;
-	let encryptionService: DeepMocked<SymetricKeyEncryptionService>;
+	let defaultEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
+	let ldapEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let bsonConverter: BsonConverter;
 	const systemsCollectionName = 'systems';
-	const collectionNames = ['collectionName1', 'collectionName2', systemsCollectionName];
+	const storageprovidersCollectionName = 'storageproviders';
+	const collectionNames = ['collectionName1', 'collectionName2', systemsCollectionName, storageprovidersCollectionName];
 	const oauthSystem = {
 		_id: {
 			$oid: '0000d186816abba584714c93',
@@ -31,8 +33,10 @@ describe('DatabaseManagementService', () => {
 		type: 'oauthSanis',
 		__v: 0,
 		oauthConfig: {
-			clientId: 'SANIS_CLIENT_ID',
-			clientSecret: 'SANIS_CLIENT_SECRET',
+			// eslint-disable-next-line no-template-curly-in-string
+			clientId: '${SANIS_CLIENT_ID}',
+			// eslint-disable-next-line no-template-curly-in-string
+			clientSecret: '${SANIS_CLIENT_SECRET}',
 		},
 	};
 	const oauthSystemWithSecrets = {
@@ -59,10 +63,13 @@ describe('DatabaseManagementService', () => {
 		type: 'oidc',
 		alias: 'iserv',
 		config: {
-			clientId: 'ISERV_CLIENT_ID',
-			clientSecret: 'ISERV_CLIENT_SECRET',
+			// eslint-disable-next-line no-template-curly-in-string
+			clientId: '${ISERV_CLIENT_ID}',
+			// eslint-disable-next-line no-template-curly-in-string
+			clientSecret: '${ISERV_CLIENT_SECRET}',
 		},
 	};
+
 	const oidcSystemWithSecrets = {
 		_id: {
 			$oid: '62c7f233f35a554ba3ed42f1',
@@ -79,6 +86,49 @@ describe('DatabaseManagementService', () => {
 		},
 	};
 
+	const ldapSystem = {
+		_id: {
+			$oid: '62c7f233f35a554ba3ed42f1',
+		},
+		__v: 0,
+		updatedAt: {
+			$date: '2022-07-12T14:01:58.588Z',
+		},
+		type: 'ldap',
+		alias: 'ldap',
+		ldapConfig: {
+			// eslint-disable-next-line no-template-curly-in-string
+			searchUserPassword: '${LDAP_SEARCHUSER_PASSWORD}',
+		},
+	};
+	const ldapSystemWithSecret = {
+		_id: {
+			$oid: '62c7f233f35a554ba3ed42f1',
+		},
+		__v: 0,
+		updatedAt: {
+			$date: '2022-07-12T14:01:58.588Z',
+		},
+		type: 'ldap',
+		alias: 'ldap',
+		ldapConfig: {
+			searchUserPassword: 'encryptedSearchuserPassword',
+		},
+	};
+
+	const collection1Name = 'collectionName1';
+	// eslint-disable-next-line no-template-curly-in-string
+	const collection1Data = [{ first: 'foo1' }, { second: 'bar1' }, { third: '${aVar}' }];
+
+	const collection2Name = 'collectionName2';
+	// eslint-disable-next-line no-template-curly-in-string
+	const collection2Data = [{ first: 'foo2' }];
+
+	// eslint-disable-next-line no-template-curly-in-string
+	const storageProviderData = [{ parseMe: '${DoNotIgnore}', ignoreMe: '\\${Ignore}' }];
+	// eslint-disable-next-line no-template-curly-in-string
+	const storageProviderJsonString = '[{"parseMe": "${DoNotIgnore}", "ignoreMe": "\\${Ignore}"}]';
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -87,7 +137,6 @@ describe('DatabaseManagementService', () => {
 				{ provide: ConfigService, useValue: createMock<ConfigService>() },
 				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{ provide: LdapEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
-				{ provide: SymetricKeyEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{
 					provide: FileSystemAdapter,
 					useValue: createMock<FileSystemAdapter>({
@@ -101,14 +150,18 @@ describe('DatabaseManagementService', () => {
 							return Promise.resolve(collectionNames.map((name) => `${name}.json`));
 						},
 						readFile: jest.fn().mockImplementation((fileName: string) => {
-							if (fileName === 'collectionName1.json') {
-								return '[{"foo":"bar1"},{"foo":"bar2"}]';
+							if (fileName === `${collection1Name}.json`) {
+								return JSON.stringify(collection1Data);
 							}
-							if (fileName === 'collectionName2.json') {
-								return '[{"foo":"bar1"},{"foo":"bar2"}]';
+							if (fileName === `${collection2Name}.json`) {
+								return JSON.stringify(collection2Data);
 							}
 							if (fileName === `${systemsCollectionName}.json`) {
-								return JSON.stringify([oauthSystem, oidcSystem]);
+								return JSON.stringify([oauthSystem, oidcSystem, ldapSystem]);
+							}
+							if (fileName === `${storageprovidersCollectionName}.json`) {
+								// eslint-disable-next-line no-template-curly-in-string
+								return storageProviderJsonString;
 							}
 							return '[]';
 						}),
@@ -125,16 +178,23 @@ describe('DatabaseManagementService', () => {
 							return Promise.resolve(collectionNames);
 						},
 						findDocumentsOfCollection(collectionName) {
-							if (collectionName === 'collectionName1') {
-								return Promise.resolve([{ first: 'foo1' }, { first: 'bar1' }]);
+							if (collectionName === collection1Name) {
+								return Promise.resolve(collection1Data);
 							}
-							if (collectionName === 'collectionName2') {
-								return Promise.resolve([{ first: 'foo2' }]);
+							if (collectionName === collection2Name) {
+								return Promise.resolve(collection2Data);
 							}
 							if (collectionName === systemsCollectionName) {
 								// JSON used for cloning, so that oauthSystemWithSecrets' values can't be changed
 								// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-								return Promise.resolve(JSON.parse(JSON.stringify([oauthSystemWithSecrets, oidcSystemWithSecrets])));
+								return Promise.resolve(
+									JSON.parse(JSON.stringify([oauthSystemWithSecrets, oidcSystemWithSecrets, ldapSystemWithSecret]))
+								);
+							}
+							if (collectionName === storageprovidersCollectionName) {
+								// JSON used for cloning, so that oauthSystemWithSecrets' values can't be changed
+								// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+								return Promise.resolve(storageProviderData);
 							}
 							return Promise.resolve([]);
 						},
@@ -153,7 +213,8 @@ describe('DatabaseManagementService', () => {
 		dbService = module.get(DatabaseManagementService);
 		bsonConverter = module.get(BsonConverter);
 		configService = module.get(ConfigService);
-		encryptionService = module.get(SymetricKeyEncryptionService);
+		defaultEncryptionService = module.get(DefaultEncryptionService);
+		ldapEncryptionService = module.get(LdapEncryptionService);
 	});
 
 	afterAll(async () => {
@@ -184,7 +245,10 @@ describe('DatabaseManagementService', () => {
 		"first": "foo1"
 	},
 	{
-		"first": "bar1"
+		"second": "bar1"
+	},
+	{
+		"third": "\${aVar}"
 	}
 ]<EOL>`,
 		];
@@ -199,21 +263,21 @@ describe('DatabaseManagementService', () => {
 
 		it('should persist all database collections for undefined filter', async () => {
 			const collections = await uc.exportCollectionsToFileSystem();
-			expect(collections).toEqual(['collectionName1:2', 'collectionName2:1', 'systems:2']);
-			expect(fileSystemAdapter.writeFile).toBeCalledTimes(3);
+			expect(collections).toEqual(['collectionName1:3', 'collectionName2:1', 'systems:3', 'storageproviders:1']);
+			expect(fileSystemAdapter.writeFile).toBeCalledTimes(4);
 			expect(fileSystemAdapter.writeFile).toBeCalledWith(...collection1Export);
 			expect(fileSystemAdapter.writeFile).toBeCalledWith(...collection2Export);
 		});
 		it('should persist all database collections for empty filter', async () => {
 			const collections = await uc.exportCollectionsToFileSystem([]);
-			expect(collections).toEqual(['collectionName1:2', 'collectionName2:1', 'systems:2']);
-			expect(fileSystemAdapter.writeFile).toBeCalledTimes(3);
+			expect(collections).toEqual(['collectionName1:3', 'collectionName2:1', 'systems:3', 'storageproviders:1']);
+			expect(fileSystemAdapter.writeFile).toBeCalledTimes(4);
 			expect(fileSystemAdapter.writeFile).toBeCalledWith(...collection1Export);
 			expect(fileSystemAdapter.writeFile).toBeCalledWith(...collection2Export);
 		});
 		it('should persist a given database collection when it exists', async () => {
 			const collections = await uc.exportCollectionsToFileSystem(['collectionName1']);
-			expect(collections).toEqual(['collectionName1:2']);
+			expect(collections).toEqual(['collectionName1:3']);
 			expect(fileSystemAdapter.writeFile).toBeCalledTimes(1);
 			expect(fileSystemAdapter.writeFile).toBeCalledWith(...collection1Export);
 		});
@@ -224,7 +288,7 @@ describe('DatabaseManagementService', () => {
 		});
 		it('should return names and document counts', async () => {
 			const collections1 = await uc.exportCollectionsToFileSystem(['collectionName1']);
-			expect(collections1).toEqual(['collectionName1:2']);
+			expect(collections1).toEqual(['collectionName1:3']);
 			const collections2 = await uc.exportCollectionsToFileSystem(['collectionName2']);
 			expect(collections2).toEqual(['collectionName2:1']);
 		});
@@ -306,17 +370,24 @@ describe('DatabaseManagementService', () => {
 	});
 
 	describe('When import some collections from filesystem', () => {
+		beforeAll(() => {
+			configService.get.mockReturnValue(undefined);
+		});
+		afterAll(() => {
+			configService.get.mockReset();
+		});
+
 		it('should seed all collections from filesystem and return collectionnames with document counts', async () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem();
-			expect(collections).toEqual(['collectionName1:2', 'collectionName2:2', 'systems:2']);
+			expect(collections).toEqual(['collectionName1:3', 'collectionName2:1', 'systems:3', 'storageproviders:1']);
 		});
 		it('should seed all collections from filesystem for empty filter and return collectionnames with document counts', async () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem([]);
-			expect(collections).toEqual(['collectionName1:2', 'collectionName2:2', 'systems:2']);
+			expect(collections).toEqual(['collectionName1:3', 'collectionName2:1', 'systems:3', 'storageproviders:1']);
 		});
 		it('should seed a given database collection when it exists and return collectionnames with document counts', async () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem(['collectionName1']);
-			expect(collections).toEqual(['collectionName1:2']);
+			expect(collections).toEqual(['collectionName1:3']);
 		});
 		it('should fail when seed a database collection which does not exist', async () => {
 			await expect(async () => {
@@ -326,11 +397,6 @@ describe('DatabaseManagementService', () => {
 
 		describe('When import a collection', () => {
 			const collectionName = 'collectionName1';
-
-			afterEach(() => {
-				configService.get.mockReset();
-				encryptionService.encrypt.mockReset();
-			});
 			it('should clear existing collection if documents already exists', async () => {
 				dbService.collectionExists.mockReturnValue(Promise.resolve(true));
 				await uc.seedDatabaseCollectionsFromFileSystem([collectionName]);
@@ -368,8 +434,9 @@ describe('DatabaseManagementService', () => {
 				);
 			});
 			describe('when importing systems', () => {
-				it('should should replace placeholders if no AES_KEY is given', async () => {
-					configService.get.mockReturnValue(null);
+				it('should replace placeholders', async () => {
+					// return the placeholder name per default, but handle AES_KEY as undefined placeholder
+					configService.get.mockImplementation((data) => (data === 'AES_KEY' ? null : data));
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					expect(dbService.collectionExists).toBeCalledTimes(1);
@@ -385,8 +452,8 @@ describe('DatabaseManagementService', () => {
 						clientSecret: 'ISERV_CLIENT_SECRET',
 					});
 				});
-				it('should not replace secret if secret does not exist in env vars', async () => {
-					configService.get.mockImplementation((data) => (data === 'AES_KEY' ? 'asdffaf' : null));
+				it('should replace placeholder with empty value, if key does not exists', async () => {
+					configService.get.mockReturnValue(undefined);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					expect(dbService.collectionExists).toBeCalledTimes(1);
@@ -394,18 +461,31 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
-						clientId: 'SANIS_CLIENT_ID',
-						clientSecret: 'SANIS_CLIENT_SECRET',
+						clientId: '',
+						clientSecret: '',
 					});
 					expect((importedSystems[1] as System).config).toMatchObject({
-						clientId: 'ISERV_CLIENT_ID',
-						clientSecret: 'ISERV_CLIENT_SECRET',
+						clientId: '',
+						clientSecret: '',
 					});
-					expect(encryptionService.encrypt).not.toHaveBeenCalled();
+				});
+				it('should keep ignore escaped placeholder', async () => {
+					configService.get.mockImplementation((data) => data);
+					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
+					await uc.seedDatabaseCollectionsFromFileSystem([storageprovidersCollectionName]);
+					expect(dbService.collectionExists).toBeCalledTimes(1);
+					expect(dbService.createCollection).toBeCalledWith(storageprovidersCollectionName);
+					expect(dbService.clearCollection).not.toBeCalled();
+					const importedObject = dbService.importCollection.mock.calls[0][1];
+					expect(importedObject[0]).toMatchObject({
+						parseMe: 'DoNotIgnore',
+						// eslint-disable-next-line no-template-curly-in-string
+						ignoreMe: '${Ignore}',
+					});
 				});
 				it('should encrypt secrets if secret is configured in env var', async () => {
 					configService.get.mockImplementation((data) => data);
-					encryptionService.encrypt.mockImplementation((data) => `${data}_encrypted`);
+					defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_encrypted`);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					expect(dbService.collectionExists).toBeCalledTimes(1);
@@ -420,6 +500,26 @@ describe('DatabaseManagementService', () => {
 						clientId: 'ISERV_CLIENT_ID_encrypted',
 						clientSecret: 'ISERV_CLIENT_SECRET_encrypted',
 					});
+				});
+				it('should encrypt ldap secrets with ldap encryption service if key is configured in env var', async () => {
+					configService.get.mockImplementation((data) => data);
+					defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_encrypted`);
+					ldapEncryptionService.encrypt.mockImplementation((data) => `${data}_encryptedLdap`);
+					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
+					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
+					expect(dbService.collectionExists).toBeCalledTimes(1);
+					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
+					expect(dbService.clearCollection).not.toBeCalled();
+					const importedSystems = dbService.importCollection.mock.calls[0][1];
+					expect(importedSystems as System[]).toEqual(
+						expect.arrayContaining([
+							expect.objectContaining({
+								ldapConfig: {
+									searchUserPassword: 'LDAP_SEARCHUSER_PASSWORD_encryptedLdap',
+								},
+							}),
+						])
+					);
 				});
 			});
 		});
