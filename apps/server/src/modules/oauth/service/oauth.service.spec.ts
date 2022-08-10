@@ -14,7 +14,7 @@ import jwt from 'jsonwebtoken';
 import { of } from 'rxjs';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { schoolFactory } from '@shared/testing';
-import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { IservOAuthService } from './iserv-oauth.service';
 import { OAuthService } from './oauth.service';
@@ -111,6 +111,10 @@ describe('OAuthService', () => {
 				{
 					provide: IservOAuthService,
 					useValue: createMock<IservOAuthService>(),
+				},
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<SymetricKeyEncryptionService>(),
 				},
 			],
 		}).compile();

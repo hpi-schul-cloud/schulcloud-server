@@ -3,7 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FileSystemAdapter } from '@shared/infra/file-system';
 import { DatabaseManagementService } from '@shared/infra/database';
 import { ConfigService } from '@nestjs/config';
-import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import {
+	DefaultEncryptionService,
+	LdapEncryptionService,
+	SymetricKeyEncryptionService,
+} from '@shared/infra/encryption';
 import { System } from '@shared/domain';
 import { ObjectId } from 'mongodb';
 import { DatabaseManagementUc } from './database-management.uc';
@@ -81,6 +85,8 @@ describe('DatabaseManagementService', () => {
 				DatabaseManagementUc,
 				BsonConverter,
 				{ provide: ConfigService, useValue: createMock<ConfigService>() },
+				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
+				{ provide: LdapEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{ provide: SymetricKeyEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{
 					provide: FileSystemAdapter,

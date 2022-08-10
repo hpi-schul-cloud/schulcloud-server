@@ -187,14 +187,14 @@ describe('configureIdentityProviders', () => {
 		fsReadFile.mockRestore();
 	});
 
-	it('should read configs from file system in development', async () => {
-		const result = await service.configureIdentityProviders(true);
+	it('should read configs from database in development', async () => {
+		const result = await service.configureIdentityProviders();
 		expect(result).toBeGreaterThan(0);
-		expect(repo.findAll).not.toBeCalled();
-		expect(fsReadFile).toBeCalled();
+		expect(repo.findAll).toBeCalled();
+		expect(fsReadFile).not.toBeCalled();
 	});
 	it('should read configs from database in production', async () => {
-		const result = await service.configureIdentityProviders(false);
+		const result = await service.configureIdentityProviders();
 		expect(result).toBeGreaterThan(0);
 		expect(repo.findAll).toBeCalled();
 		expect(fsReadFile).not.toBeCalled();
