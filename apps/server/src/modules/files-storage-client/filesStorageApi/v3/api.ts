@@ -80,6 +80,31 @@ export interface CopyFileParams {
 /**
  * 
  * @export
+ * @interface CopyFileResponse
+ */
+export interface CopyFileResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof CopyFileResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CopyFileResponse
+     */
+    'sourceId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CopyFileResponse
+     */
+    'name': string;
+}
+/**
+ * 
+ * @export
  * @interface CopyFilesOfParentParams
  */
 export interface CopyFilesOfParentParams {
@@ -721,7 +746,7 @@ export const FileApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async filesStorageControllerCopy(schoolId: string, parentId: string, parentType: 'users' | 'schools' | 'courses' | 'tasks' | 'lessons', copyFilesOfParentParams: CopyFilesOfParentParams, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileRecordListResponse>> {
+        async filesStorageControllerCopy(schoolId: string, parentId: string, parentType: 'users' | 'schools' | 'courses' | 'tasks' | 'lessons', copyFilesOfParentParams: CopyFilesOfParentParams, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CopyFileResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.filesStorageControllerCopy(schoolId, parentId, parentType, copyFilesOfParentParams, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -858,7 +883,7 @@ export const FileApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        filesStorageControllerCopy(schoolId: string, parentId: string, parentType: 'users' | 'schools' | 'courses' | 'tasks' | 'lessons', copyFilesOfParentParams: CopyFilesOfParentParams, options?: any): AxiosPromise<FileRecordListResponse> {
+        filesStorageControllerCopy(schoolId: string, parentId: string, parentType: 'users' | 'schools' | 'courses' | 'tasks' | 'lessons', copyFilesOfParentParams: CopyFilesOfParentParams, options?: any): AxiosPromise<Array<CopyFileResponse>> {
             return localVarFp.filesStorageControllerCopy(schoolId, parentId, parentType, copyFilesOfParentParams, options).then((request) => request(axios, basePath));
         },
         /**
@@ -985,7 +1010,7 @@ export interface FileApiInterface {
      * @throws {RequiredError}
      * @memberof FileApiInterface
      */
-    filesStorageControllerCopy(schoolId: string, parentId: string, parentType: 'users' | 'schools' | 'courses' | 'tasks' | 'lessons', copyFilesOfParentParams: CopyFilesOfParentParams, options?: AxiosRequestConfig): AxiosPromise<FileRecordListResponse>;
+    filesStorageControllerCopy(schoolId: string, parentId: string, parentType: 'users' | 'schools' | 'courses' | 'tasks' | 'lessons', copyFilesOfParentParams: CopyFilesOfParentParams, options?: AxiosRequestConfig): AxiosPromise<Array<CopyFileResponse>>;
 
     /**
      * 
