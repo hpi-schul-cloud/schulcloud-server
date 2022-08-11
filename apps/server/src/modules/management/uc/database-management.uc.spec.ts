@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileSystemAdapter } from '@shared/infra/file-system';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DatabaseManagementService } from '@shared/infra/database';
-import { ConfigService } from '@nestjs/config';
 import {
 	DefaultEncryptionService,
 	LdapEncryptionService,
@@ -18,10 +18,11 @@ describe('DatabaseManagementService', () => {
 	let uc: DatabaseManagementUc;
 	let fileSystemAdapter: DeepMocked<FileSystemAdapter>;
 	let dbService: DeepMocked<DatabaseManagementService>;
-	let configService: DeepMocked<ConfigService>;
 	let defaultEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let ldapEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let bsonConverter: BsonConverter;
+	const configGetSpy = jest.spyOn(Configuration, 'get');
+	const configHasSpy = jest.spyOn(Configuration, 'has');
 	const systemsCollectionName = 'systems';
 	const storageprovidersCollectionName = 'storageproviders';
 	const collectionNames = ['collectionName1', 'collectionName2', systemsCollectionName, storageprovidersCollectionName];
@@ -134,7 +135,6 @@ describe('DatabaseManagementService', () => {
 			providers: [
 				DatabaseManagementUc,
 				BsonConverter,
-				{ provide: ConfigService, useValue: createMock<ConfigService>() },
 				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{ provide: LdapEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{
@@ -212,7 +212,6 @@ describe('DatabaseManagementService', () => {
 		fileSystemAdapter = module.get(FileSystemAdapter);
 		dbService = module.get(DatabaseManagementService);
 		bsonConverter = module.get(BsonConverter);
-		configService = module.get(ConfigService);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		ldapEncryptionService = module.get(LdapEncryptionService);
 	});
@@ -231,6 +230,8 @@ describe('DatabaseManagementService', () => {
 		dbService.createCollection.mockClear();
 		dbService.clearCollection.mockClear();
 		dbService.importCollection.mockClear();
+		configGetSpy.mockClear();
+		configHasSpy.mockClear();
 	});
 
 	it('should be defined', () => {
@@ -370,13 +371,6 @@ describe('DatabaseManagementService', () => {
 	});
 
 	describe('When import some collections from filesystem', () => {
-		beforeAll(() => {
-			configService.get.mockReturnValue(undefined);
-		});
-		afterAll(() => {
-			configService.get.mockReset();
-		});
-
 		it('should seed all collections from filesystem and return collectionnames with document counts', async () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem();
 			expect(collections).toEqual(['collectionName1:3', 'collectionName2:1', 'systems:3', 'storageproviders:1']);
@@ -436,7 +430,8 @@ describe('DatabaseManagementService', () => {
 			describe('when importing systems', () => {
 				it('should replace placeholders', async () => {
 					// return the placeholder name per default, but handle AES_KEY as undefined placeholder
-					configService.get.mockImplementation((data) => (data === 'AES_KEY' ? null : data));
+					configGetSpy.mockImplementation((data) => (data === 'AES_KEY' ? null : data));
+					configHasSpy.mockImplementation((data) => data !== 'AES_KEY');
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					expect(dbService.collectionExists).toBeCalledTimes(1);
@@ -453,7 +448,6 @@ describe('DatabaseManagementService', () => {
 					});
 				});
 				it('should replace placeholder with empty value, if key does not exists', async () => {
-					configService.get.mockReturnValue(undefined);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					expect(dbService.collectionExists).toBeCalledTimes(1);
@@ -469,8 +463,9 @@ describe('DatabaseManagementService', () => {
 						clientSecret: '',
 					});
 				});
-				it('should keep ignore escaped placeholder', async () => {
-					configService.get.mockImplementation((data) => data);
+				it('should keep escaped placeholder', async () => {
+					configGetSpy.mockImplementation((data) => data);
+					configHasSpy.mockReturnValue(true);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([storageprovidersCollectionName]);
 					expect(dbService.collectionExists).toBeCalledTimes(1);
@@ -484,7 +479,8 @@ describe('DatabaseManagementService', () => {
 					});
 				});
 				it('should encrypt secrets if secret is configured in env var', async () => {
-					configService.get.mockImplementation((data) => data);
+					configGetSpy.mockImplementation((data) => data);
+					configHasSpy.mockReturnValue(true);
 					defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_encrypted`);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
@@ -502,7 +498,8 @@ describe('DatabaseManagementService', () => {
 					});
 				});
 				it('should encrypt ldap secrets with ldap encryption service if key is configured in env var', async () => {
-					configService.get.mockImplementation((data) => data);
+					configGetSpy.mockImplementation((data) => data);
+					configHasSpy.mockReturnValue(true);
 					defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_encrypted`);
 					ldapEncryptionService.encrypt.mockImplementation((data) => `${data}_encryptedLdap`);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));

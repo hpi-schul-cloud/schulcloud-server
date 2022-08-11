@@ -4,7 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { orderBy } from 'lodash';
 import { FileSystemAdapter } from '@shared/infra/file-system';
 import { DatabaseManagementService } from '@shared/infra/database';
-import { ConfigService } from '@nestjs/config';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
 import { System } from '@shared/domain';
 import { SysType } from '@shared/infra/identity-management';
@@ -29,7 +29,6 @@ export class DatabaseManagementUc {
 		private fileSystemAdapter: FileSystemAdapter,
 		private databaseManagementService: DatabaseManagementService,
 		private bsonConverter: BsonConverter,
-		private readonly configService: ConfigService,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
 	) {}
@@ -252,7 +251,7 @@ export class DatabaseManagementUc {
 				} else {
 					const end = json.indexOf('}', start);
 					const placeholder = json.slice(start + 2, end).trim();
-					const placeholderContent = this.configService.get<string>(placeholder) ?? '';
+					const placeholderContent = Configuration.has(placeholder) ? (Configuration.get(placeholder) as string) : '';
 					json = json.slice(0, start) + placeholderContent + json.slice(end + 1);
 					start += placeholderContent.length + 1;
 				}

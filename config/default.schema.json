@@ -345,12 +345,22 @@
 		"OIDCMOCK": {
 			"type": "object",
 			"description": "OpenID Connect Identity Provider mock server.",
-			"required": ["BASE_URL"],
+			"required": ["BASE_URL", "CLIENT_ID", "CLIENT_SECRET"],
 			"properties": {
 				"BASE_URL": {
 					"type": "string",
-					"default": null,
+					"default": "http://oidc-server-mock:80",
 					"description": "The mock server base path."
+				},
+				"CLIENT_ID": {
+					"type": "string",
+					"default": "erwin-credentials-mock-client",
+					"description": "The mock server accepted client id."
+				},
+				"CLIENT_SECRET": {
+					"type": "string",
+					"default": "erwin-credentials-mock-client-secret",
+					"description": "The mock server accepted client's secret."
 				}
 			}
 		},
