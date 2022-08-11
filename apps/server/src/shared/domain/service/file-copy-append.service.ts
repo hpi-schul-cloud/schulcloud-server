@@ -56,20 +56,39 @@ export class FileCopyAppendService {
 	}
 
 	private createFailedCopyStatus(taskCopyStatus: CopyStatus) {
-		const fileGroupStatus = {
-			type: CopyElementType.FILE_GROUP,
-			status: CopyStatusEnum.FAIL,
-		};
+		let fileGroupStatus = this.getFileGroupStatus(taskCopyStatus.elements);
+		if (fileGroupStatus === undefined) {
+			fileGroupStatus = {
+				type: CopyElementType.FILE_GROUP,
+				status: CopyStatusEnum.FAIL,
+			};
+		}
+		const elements =
+			fileGroupStatus.elements && fileGroupStatus.elements.length > 0
+				? fileGroupStatus.elements.map((el) => {
+						el.status = CopyStatusEnum.FAIL;
+						return el;
+				  })
+				: undefined;
 		const updatedFileGroupStatus = {
 			...fileGroupStatus,
 			status: CopyStatusEnum.FAIL,
+			elements,
 		};
+		taskCopyStatus.status = this.copyHelperService.deriveStatusFromElements(taskCopyStatus.elements as CopyStatus[]);
 		taskCopyStatus.elements = this.setFileGroupStatus(taskCopyStatus.elements, updatedFileGroupStatus);
-		taskCopyStatus.status = this.copyHelperService.deriveStatusFromElements(taskCopyStatus.elements);
 		return taskCopyStatus;
 	}
 
+	private getFileGroupStatus(elements: CopyStatus[] = []): CopyStatus | undefined {
+		return elements.find((el) => el.type === CopyElementType.FILE_GROUP) as CopyStatus;
+	}
+
 	private setFileGroupStatus(elements: CopyStatus[] = [], updatedFileGroupStatus: CopyStatus): CopyStatus[] {
+		const fileGroupStatus = this.getFileGroupStatus(elements);
+		if (fileGroupStatus) {
+			return elements.map((el) => (el.type === CopyElementType.FILE_GROUP ? updatedFileGroupStatus : el));
+		}
 		return [...elements, updatedFileGroupStatus];
 	}
 

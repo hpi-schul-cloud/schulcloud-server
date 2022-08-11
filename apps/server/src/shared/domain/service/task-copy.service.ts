@@ -25,7 +25,22 @@ export class TaskCopyService {
 			lesson: params.destinationLesson,
 		});
 
-		const elements = [
+		const elements = [...this.defaultTaskStatusElements(), ...this.copyTaskFiles(params.originalTask)];
+
+		const status: CopyStatus = {
+			title: copy.name,
+			type: CopyElementType.TASK,
+			status: this.copyHelperService.deriveStatusFromElements(elements),
+			copyEntity: copy,
+			originalEntity: params.originalTask,
+			elements,
+		};
+
+		return status;
+	}
+
+	private defaultTaskStatusElements(): CopyStatus[] {
+		return [
 			{
 				type: CopyElementType.METADATA,
 				status: CopyStatusEnum.SUCCESS,
@@ -39,16 +54,23 @@ export class TaskCopyService {
 				status: CopyStatusEnum.NOT_DOING,
 			},
 		];
+	}
 
-		const status: CopyStatus = {
-			title: copy.name,
-			type: CopyElementType.TASK,
-			status: this.copyHelperService.deriveStatusFromElements(elements),
-			copyEntity: copy,
-			originalEntity: params.originalTask,
-			elements,
-		};
-
-		return status;
+	private copyTaskFiles(task: Task): CopyStatus[] {
+		const fileNames = task.getFileNames();
+		if (fileNames.length > 0) {
+			const elements = fileNames.map((title) => ({
+				title,
+				type: CopyElementType.FILE,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
+			}));
+			const fileStatus = {
+				type: CopyElementType.FILE_GROUP,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
+				elements,
+			};
+			return [fileStatus];
+		}
+		return [];
 	}
 }
