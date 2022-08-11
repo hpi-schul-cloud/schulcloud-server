@@ -78,7 +78,7 @@ export class SyncEmbeddedFilesUc {
 		return _.uniq(fileIds).map((id) => new ObjectId(id));
 	}
 
-	private extractFileId(text: string) {
+	private extractFileIds(text: string) {
 		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
 		const contentFileIds = text.match(regEx);
 
