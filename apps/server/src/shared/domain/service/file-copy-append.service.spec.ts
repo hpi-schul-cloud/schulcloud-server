@@ -161,21 +161,8 @@ describe('file copy append service', () => {
 							originalEntity: originalTask,
 							elements: [
 								{
-									type: CopyElementType.FILE_GROUP,
-									title: 'Tolle Filegroup',
-									status: CopyStatusEnum.PARTIAL,
-									elements: [
-										{
-											type: CopyElementType.FILE,
-											title: FILENAME1,
-											status: CopyStatusEnum.NOT_IMPLEMENTED,
-										},
-										{
-											type: CopyElementType.FILE,
-											title: FILENAME2,
-											status: CopyStatusEnum.NOT_IMPLEMENTED,
-										},
-									],
+									type: CopyElementType.METADATA,
+									status: CopyStatusEnum.SUCCESS,
 								},
 							],
 						},
@@ -258,8 +245,6 @@ describe('file copy append service', () => {
 					const school = schoolFactory.buildWithId();
 					const originalTask = taskFactory.buildWithId({ school });
 					const taskCopy = taskFactory.buildWithId({ school });
-					const FILENAME1 = 'Tolle Datei';
-					const FILENAME2 = 'Tolle Datei 1';
 					const copyStatus: CopyStatus = {
 						type: CopyElementType.LESSON,
 						title: 'Tolle Lesson',
@@ -273,21 +258,8 @@ describe('file copy append service', () => {
 								originalEntity: originalTask,
 								elements: [
 									{
-										type: CopyElementType.FILE_GROUP,
-										title: 'Tolle Filegroup',
-										status: CopyStatusEnum.PARTIAL,
-										elements: [
-											{
-												type: CopyElementType.FILE,
-												title: FILENAME1,
-												status: CopyStatusEnum.NOT_IMPLEMENTED,
-											},
-											{
-												type: CopyElementType.FILE,
-												title: FILENAME2,
-												status: CopyStatusEnum.NOT_IMPLEMENTED,
-											},
-										],
+										type: CopyElementType.METADATA,
+										status: CopyStatusEnum.SUCCESS,
 									},
 								],
 							},
