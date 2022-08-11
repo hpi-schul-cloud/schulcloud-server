@@ -60,7 +60,7 @@ export class SyncEmbeddedFilesUc {
 					return;
 				}
 
-				const contentFileIds = this.extractFileId(item.content.text);
+				const contentFileIds = this.extractFileIdsFromContent(item.content.text);
 
 				if (contentFileIds !== null) {
 					fileIds.push(...contentFileIds);
@@ -68,7 +68,7 @@ export class SyncEmbeddedFilesUc {
 			});
 		}
 		if (entity instanceof Task) {
-			const contentFileIds = this.extractFileId(entity.description);
+			const contentFileIds = this.extractFileIdsFromContent(entity.description);
 
 			if (contentFileIds !== null) {
 				fileIds.push(...contentFileIds);
@@ -78,7 +78,7 @@ export class SyncEmbeddedFilesUc {
 		return _.uniq(fileIds).map((id) => new ObjectId(id));
 	}
 
-	private extractFileIds(text: string) {
+	private extractFileIdsFromContent(text: string) {
 		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
 		const contentFileIds = text.match(regEx);
 
