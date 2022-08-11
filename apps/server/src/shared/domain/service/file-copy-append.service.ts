@@ -141,35 +141,25 @@ export class FileCopyAppendService {
 	}
 
 	async copyEmbeddedFilesOfLessons(lessonCopyStatus: CopyStatus, schoolId: EntityId, jwt: string): Promise<CopyStatus> {
-		const lesson = lessonCopyStatus.copyEntity as Lesson;
+		const lessonEntities = this.getLessonEntities(lessonCopyStatus);
 
-		if (lessonCopyStatus.originalEntity?.id === undefined || lessonCopyStatus.copyEntity?.id === undefined) {
+		if (!lessonEntities) {
 			return lessonCopyStatus;
 		}
 
-		const sourceParams = FileParamBuilder.buildForLesson(jwt, schoolId, lessonCopyStatus.originalEntity?.id);
-		const targetParams = FileParamBuilder.buildForLesson(jwt, schoolId, lessonCopyStatus.copyEntity?.id);
+		const { originalLesson, copyLesson } = lessonEntities;
+		const sourceParams = FileParamBuilder.buildForLesson(jwt, schoolId, originalLesson.id);
+		const targetParams = FileParamBuilder.buildForLesson(jwt, schoolId, copyLesson.id);
 		const response = await this.fileCopyAdapterService.copyFilesOfParent(sourceParams, targetParams);
 
 		if (response.length > 0) {
-			response.forEach(({ id, sourceId, name }) => {
-				lesson.contents = lesson.contents.map((item: IComponentProperties) => {
-					if ('text' in item.content) {
-						const text = this.replaceIdAndName(item.content.text, sourceId, id, name);
-						const itemWithUpdatedText = { ...item, content: { ...item.content, text } };
-						return itemWithUpdatedText;
-					}
-
-					return item;
-				});
-			});
+			copyLesson.contents = this.replaceLessonContentsUrls(copyLesson, response);
+			lessonCopyStatus.copyEntity = copyLesson;
 
 			const fileGroupStatus = this.deriveFileGroupLessonStatus(response);
 			lessonCopyStatus.elements = this.setFileGroupStatus(lessonCopyStatus.elements, fileGroupStatus);
 			lessonCopyStatus.status = this.copyHelperService.deriveStatusFromElements(lessonCopyStatus.elements);
 		}
-
-		lessonCopyStatus.copyEntity = lesson;
 
 		return lessonCopyStatus;
 	}
@@ -224,22 +214,51 @@ export class FileCopyAppendService {
 		return fileGroupStatus;
 	}
 
-	extractOldFileIds(text: string): string[] {
+	private extractOldFileIds(text: string): string[] {
 		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
 		const fileIds = text.match(regEx);
 		return fileIds ? uniq(fileIds) : [];
 	}
 
-	replaceOldFileUrls(text: string, oldFileId: EntityId, fileId: EntityId, filename: string): string {
+	private replaceOldFileUrls(text: string, oldFileId: EntityId, fileId: EntityId, filename: string): string {
 		const regEx = new RegExp(`${fileUrlRegex}${oldFileId}.+?"`, 'g');
 		const newUrl = `"/files/file?file=${fileId}&amp;name=${filename}"`;
 
 		return text.replace(regEx, newUrl);
 	}
 
-	replaceIdAndName(text: string, oldFileId: EntityId, fileId: EntityId, fileName: string): string {
+	private replaceLessonContentsUrls(lesson: Lesson, response: CopyFileResponse[]): [] | IComponentProperties[] {
+		return lesson.contents.map((item: IComponentProperties) => {
+			response.forEach(({ id, sourceId, name }) => {
+				item = this.replaceIdAndName(item, sourceId, id, name);
+			});
+
+			return item;
+		});
+	}
+
+	private replaceIdAndName(
+		content: IComponentProperties,
+		oldFileId: EntityId,
+		fileId: EntityId,
+		fileName: string
+	): IComponentProperties {
+		if (!('text' in content.content)) {
+			return content;
+		}
+
 		const regEx = new RegExp(`${oldFileId}/${fileName}`, 'g');
 
-		return text.replace(regEx, `${fileId}/${fileName}`);
+		const text = content.content.text.replace(regEx, `${fileId}/${fileName}`);
+
+		return { ...content, content: { ...content.content, text } };
+	}
+
+	private getLessonEntities(lessonCopyStatus: CopyStatus): { originalLesson: Lesson; copyLesson: Lesson } | undefined {
+		if (lessonCopyStatus.originalEntity instanceof Lesson && lessonCopyStatus.copyEntity instanceof Lesson) {
+			return { originalLesson: lessonCopyStatus.originalEntity, copyLesson: lessonCopyStatus.copyEntity };
+		}
+
+		return undefined;
 	}
 }
