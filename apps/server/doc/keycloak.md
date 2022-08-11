@@ -39,7 +39,7 @@ docker run `
 
 To add ErWIn-IDM identity broker feature via OpenID Connect (OIDC) Identity Provider (IdP) mock:
 
-- adjust 'schulcloud-server/backup/setup/systems.json' and set 'OIDCMOCK\_\_BASE_URL' to your local ip address.
+- adjust 'config\development.json' and set 'OIDCMOCK\_\_BASE_URL' according to your local ip address.
 - re-trigger `npm run setup:idm` to reset and apply seed data.
 - start the 'oidc-server-mock' as follows:
 
