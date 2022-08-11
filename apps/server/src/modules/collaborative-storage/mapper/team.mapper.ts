@@ -1,4 +1,4 @@
-import { Team } from '@shared/domain';
+import { Team, TeamUser } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
 import { TeamDto, TeamUserDto } from '../services/dto/team.dto';
 
@@ -11,7 +11,7 @@ export class TeamMapper {
 	 */
 	public mapEntityToDto(teamEntity: Team): TeamDto {
 		const teamUsers: TeamUserDto[] = teamEntity.teamUsers.map(
-			(teamUser) =>
+			(teamUser: TeamUser) =>
 				new TeamUserDto({
 					userId: teamUser.user.id,
 					roleId: teamUser.role.id,
