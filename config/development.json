@@ -31,7 +31,7 @@
 		"ADMIN_PASSWORD": "dBildungscloud"
 	},
 	"OIDCMOCK": {
-		"BASE_URL": "http://oidc-server-mock:80",
+		"BASE_URL": "http://127.0.0.1:4011",
 		"CLIENT_ID": "erwin-credentials-mock-client",
 		"CLIENT_SECRET": "erwin-credentials-mock-client-secret"
 	},
