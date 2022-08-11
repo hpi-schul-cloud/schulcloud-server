@@ -95,7 +95,7 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 		return firstChar + secondChar;
 	}
 
-	private getCourseGroupItems(): CourseGroup[] {
+	getCourseGroupItems(): CourseGroup[] {
 		if (!this.courseGroups.isInitialized(true)) {
 			throw new InternalServerErrorException('Courses trying to access their course groups that are not loaded.');
 		}
@@ -126,10 +126,5 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 		const isFinished = this.untilDate < new Date();
 
 		return isFinished;
-	}
-
-	getCourseLinkedCourseGroups(): CourseGroup[] {
-		const courseGroups = this.getCourseGroupItems();
-		return courseGroups;
 	}
 }

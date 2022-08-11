@@ -172,13 +172,13 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	describe('getCourseLinkedCourseGroups', () => {
+	describe('getCourseGroupItems', () => {
 		describe('when course groups are not populated', () => {
-			it('should trow', () => {
+			it('should throw', () => {
 				const course = courseFactory.build();
 				course.courseGroups.set([orm.em.getReference(CourseGroup, new ObjectId().toHexString())]);
 
-				expect(() => course.getCourseLinkedCourseGroups()).toThrow();
+				expect(() => course.getCourseGroupItems()).toThrow();
 			});
 		});
 
@@ -187,7 +187,7 @@ describe('CourseEntity', () => {
 				const course = courseFactory.build();
 				const courseGroups = courseGroupFactory.buildList(2, { course });
 
-				const result = course.getCourseLinkedCourseGroups();
+				const result = course.getCourseGroupItems();
 				expect(result.length).toEqual(2);
 				expect(result[0]).toEqual(courseGroups[0]);
 			});

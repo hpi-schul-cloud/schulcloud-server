@@ -42,9 +42,10 @@ export class CourseCopyService {
 			},
 		];
 
-		const courseGroupsExist = params.originalCourse.getCourseLinkedCourseGroups().length > 0;
-		if (courseGroupsExist)
+		const courseGroupsExist = params.originalCourse.getCourseGroupItems().length > 0;
+		if (courseGroupsExist) {
 			elements.push({ type: CopyElementType.COURSEGROUP_GROUP, status: CopyStatusEnum.NOT_IMPLEMENTED });
+		}
 
 		const status = {
 			title: copy.name,
