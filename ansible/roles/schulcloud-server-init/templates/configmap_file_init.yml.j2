@@ -11,6 +11,7 @@ data:
     curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
     IDM_ACTIVE={{ WITH_ERWINIDM }}
     if [[ ${IDM_ACTIVE,,} == true ]]
+    then
       curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/idm/seed'
     else
       echo "Skip IDM initialization"
