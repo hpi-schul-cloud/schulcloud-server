@@ -10,6 +10,7 @@ import {
 } from '@shared/infra/encryption';
 import { System } from '@shared/domain';
 import { ObjectId } from 'mongodb';
+import { ConfigService } from '@nestjs/config';
 import { DatabaseManagementUc } from './database-management.uc';
 import { BsonConverter } from '../converter/bson.converter';
 
@@ -18,6 +19,7 @@ describe('DatabaseManagementService', () => {
 	let uc: DatabaseManagementUc;
 	let fileSystemAdapter: DeepMocked<FileSystemAdapter>;
 	let dbService: DeepMocked<DatabaseManagementService>;
+	let configService: DeepMocked<ConfigService>;
 	let defaultEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let ldapEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let bsonConverter: BsonConverter;
@@ -136,6 +138,7 @@ describe('DatabaseManagementService', () => {
 				DatabaseManagementUc,
 				BsonConverter,
 				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
+				{ provide: ConfigService, useValue: createMock<ConfigService>() },
 				{ provide: LdapEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{
 					provide: FileSystemAdapter,
@@ -212,6 +215,7 @@ describe('DatabaseManagementService', () => {
 		fileSystemAdapter = module.get(FileSystemAdapter);
 		dbService = module.get(DatabaseManagementService);
 		bsonConverter = module.get(BsonConverter);
+		configService = module.get(ConfigService);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		ldapEncryptionService = module.get(LdapEncryptionService);
 	});
@@ -371,6 +375,13 @@ describe('DatabaseManagementService', () => {
 	});
 
 	describe('When import some collections from filesystem', () => {
+		beforeAll(() => {
+			configService.get.mockReturnValue(undefined);
+		});
+		afterAll(() => {
+			configService.get.mockReset();
+		});
+
 		it('should seed all collections from filesystem and return collectionnames with document counts', async () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem();
 			expect(collections).toEqual(['collectionName1:3', 'collectionName2:1', 'systems:3', 'storageproviders:1']);
@@ -447,7 +458,8 @@ describe('DatabaseManagementService', () => {
 						clientSecret: 'ISERV_CLIENT_SECRET',
 					});
 				});
-				it('should replace placeholder with empty value, if key does not exists', async () => {
+				it('should replace placeholder with environmental variable value, if configuration key does not exists', async () => {
+					configService.get.mockImplementation((data) => data);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					expect(dbService.collectionExists).toBeCalledTimes(1);
@@ -461,6 +473,39 @@ describe('DatabaseManagementService', () => {
 					expect((importedSystems[1] as System).config).toMatchObject({
 						clientId: '',
 						clientSecret: '',
+					});
+				});
+				it('should replace placeholder with empty value, if neither configuration key nor environmental variable exists', async () => {
+					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
+					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
+					expect(dbService.collectionExists).toBeCalledTimes(1);
+					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
+					expect(dbService.clearCollection).not.toBeCalled();
+					const importedSystems = dbService.importCollection.mock.calls[0][1];
+					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+						clientId: '',
+						clientSecret: '',
+					});
+					expect((importedSystems[1] as System).config).toMatchObject({
+						clientId: '',
+						clientSecret: '',
+					});
+				});
+				it('should favor configuration key before environmental variable', async () => {
+					const configurationCompareValue = 'CONFIGURATION';
+					const environmentCompareValue = 'ENVIRONMENT';
+					configGetSpy.mockReturnValue(configurationCompareValue);
+					configHasSpy.mockReturnValue(true);
+					configService.get.mockReturnValue(environmentCompareValue);
+					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
+					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
+					expect(dbService.collectionExists).toBeCalledTimes(1);
+					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
+					expect(dbService.clearCollection).not.toBeCalled();
+					const importedSystems = dbService.importCollection.mock.calls[0][1];
+					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+						clientId: configurationCompareValue,
+						clientSecret: configurationCompareValue,
 					});
 				});
 				it('should keep escaped placeholder', async () => {

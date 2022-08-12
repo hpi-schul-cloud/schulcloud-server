@@ -8,6 +8,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
 import { System } from '@shared/domain';
 import { SysType } from '@shared/infra/identity-management';
+import { ConfigService } from '@nestjs/config';
 import { BsonConverter } from '../converter/bson.converter';
 
 export interface ICollectionFilePath {
@@ -29,6 +30,7 @@ export class DatabaseManagementUc {
 		private fileSystemAdapter: FileSystemAdapter,
 		private databaseManagementService: DatabaseManagementService,
 		private bsonConverter: BsonConverter,
+		private readonly configService: ConfigService,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
 	) {}
@@ -251,13 +253,20 @@ export class DatabaseManagementUc {
 				} else {
 					const end = json.indexOf('}', start);
 					const placeholder = json.slice(start + 2, end).trim();
-					const placeholderContent = Configuration.has(placeholder) ? (Configuration.get(placeholder) as string) : '';
+					const placeholderContent = this.resolvePlaceholder(placeholder);
 					json = json.slice(0, start) + placeholderContent + json.slice(end + 1);
 					start += placeholderContent.length + 1;
 				}
 			}
 		}
 		return json;
+	}
+
+	private resolvePlaceholder(placeholder: string) {
+		if (Configuration.has(placeholder)) {
+			return Configuration.get(placeholder) as string;
+		}
+		return this.configService.get<string>(placeholder) ?? '';
 	}
 
 	private encryptSecretsInSystems(systems: System[]) {
