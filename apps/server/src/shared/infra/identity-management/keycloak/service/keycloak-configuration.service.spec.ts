@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
-import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { v1 } from 'uuid';
 import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { SysType } from '../../sys.type';
@@ -29,7 +29,7 @@ describe('configureIdentityProviders', () => {
 	let service: KeycloakConfigurationService;
 	let configService: DeepMocked<ConfigService>;
 	let repo: DeepMocked<SystemRepo>;
-	let symetricKeyEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
+	let defaultEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let settings: IKeycloakSettings;
 
 	const kcApiClientIdentityProvidersMock = createMock<IdentityProviders>();
@@ -141,10 +141,7 @@ describe('configureIdentityProviders', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
-				{
-					provide: SymetricKeyEncryptionService,
-					useValue: createMock<SymetricKeyEncryptionService>(),
-				},
+				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 			],
 		}).compile();
 		client = module.get(KeycloakAdminClient);
@@ -152,9 +149,9 @@ describe('configureIdentityProviders', () => {
 		configService = module.get(ConfigService);
 		settings = module.get(KeycloakSettings);
 		repo = module.get(SystemRepo);
-		symetricKeyEncryptionService = module.get(SymetricKeyEncryptionService);
-		symetricKeyEncryptionService.encrypt.mockImplementation((data) => data);
-		symetricKeyEncryptionService.decrypt.mockImplementation((data) => data);
+		defaultEncryptionService = module.get(DefaultEncryptionService);
+		defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_enc`);
+		defaultEncryptionService.decrypt.mockImplementation((data) => `${data}_dec`);
 
 		repo.findAll.mockResolvedValue(systems);
 		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
@@ -187,23 +184,10 @@ describe('configureIdentityProviders', () => {
 		fsReadFile.mockRestore();
 	});
 
-	it('should read configs from database in development', async () => {
+	it('should read configs from database successfully', async () => {
 		const result = await service.configureIdentityProviders();
 		expect(result).toBeGreaterThan(0);
 		expect(repo.findAll).toBeCalled();
-		expect(fsReadFile).not.toBeCalled();
-	});
-	it('should read configs from database in production', async () => {
-		const result = await service.configureIdentityProviders();
-		expect(result).toBeGreaterThan(0);
-		expect(repo.findAll).toBeCalled();
-		expect(fsReadFile).not.toBeCalled();
-	});
-	it('should read configs from database per default', async () => {
-		const result = await service.configureIdentityProviders();
-		expect(result).toBeGreaterThan(0);
-		expect(repo.findAll).toBeCalled();
-		expect(fsReadFile).not.toBeCalled();
 	});
 
 	it('should create a configuration in Keycloak', async () => {
@@ -219,6 +203,25 @@ describe('configureIdentityProviders', () => {
 		const result = await service.configureIdentityProviders();
 		expect(result).toBe(1);
 		expect(kcApiClientIdentityProvidersMock.update).toBeCalledTimes(1);
+	});
+	it('should decrypt secrets when creating a configuration in Keycloak', async () => {
+		kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
+
+		await service.configureIdentityProviders();
+		expect(kcApiClientIdentityProvidersMock.create).toHaveBeenCalledWith(
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			expect.objectContaining({ config: expect.objectContaining({ clientId: expect.stringMatching('.*dec') }) })
+		);
+
+		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
+	});
+	it('should decrypt secrets when updating a configuration in Keycloak', async () => {
+		await service.configureIdentityProviders();
+		expect(kcApiClientIdentityProvidersMock.update).toHaveBeenCalledWith(
+			expect.anything(),
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			expect.objectContaining({ config: expect.objectContaining({ clientId: expect.stringMatching('.*dec') }) })
+		);
 	});
 	it('should delete a new configuration in Keycloak', async () => {
 		repo.findAll.mockResolvedValue([]);

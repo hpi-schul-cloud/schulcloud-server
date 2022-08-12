@@ -4,7 +4,13 @@ import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
 import AuthenticationExecutionInfoRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionInfoRepresentation';
-import { IdentityProviderConfig, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import {
+	IdentityProviderConfig,
+	IKeycloakManagementInputFiles,
+	IOidcIdentityProviderConfig,
+	KeycloakManagementInputFiles,
+} from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { SysType } from '../../sys.type';
 
@@ -20,7 +26,8 @@ export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly systemRepo: SystemRepo,
-		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles
+		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles,
+		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService
 	) {}
 
 	public async configureBrokerFlows(): Promise<void> {
@@ -157,42 +164,31 @@ export class KeycloakConfigurationService {
 	private async createIdentityProvider(system: IdentityProviderConfig): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		if (system.type === SysType.OIDC) {
-			await kc.identityProviders.create({
-				providerId: system.type,
-				alias: system.alias,
-				enabled: true,
-				firstBrokerLoginFlowAlias: flowAlias,
-				config: {
-					clientId: system.config.clientId,
-					clientSecret: system.config.clientSecret,
-					authorizationUrl: system.config.authorizationUrl,
-					tokenUrl: system.config.tokenUrl,
-					logoutUrl: system.config.logoutUrl,
-				},
-			});
+			await kc.identityProviders.create(this.mapSystemToIdentityProvider(system));
 		}
 	}
 
 	private async updateIdentityProvider(system: IdentityProviderConfig): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		if (system.type === SysType.OIDC) {
-			await kc.identityProviders.update(
-				{ alias: system.alias },
-				{
-					providerId: system.type,
-					alias: system.alias,
-					enabled: true,
-					firstBrokerLoginFlowAlias: flowAlias,
-					config: {
-						clientId: system.config.clientId,
-						clientSecret: system.config.clientSecret,
-						authorizationUrl: system.config.authorizationUrl,
-						tokenUrl: system.config.tokenUrl,
-						logoutUrl: system.config.logoutUrl,
-					},
-				}
-			);
+			await kc.identityProviders.update({ alias: system.alias }, this.mapSystemToIdentityProvider(system));
 		}
+	}
+
+	private mapSystemToIdentityProvider(system: IOidcIdentityProviderConfig): IdentityProviderRepresentation {
+		return {
+			providerId: system.type,
+			alias: system.alias,
+			enabled: true,
+			firstBrokerLoginFlowAlias: flowAlias,
+			config: {
+				clientId: this.defaultEncryptionService.decrypt(system.config.clientId),
+				clientSecret: this.defaultEncryptionService.decrypt(system.config.clientSecret),
+				authorizationUrl: system.config.authorizationUrl,
+				tokenUrl: system.config.tokenUrl,
+				logoutUrl: system.config.logoutUrl,
+			},
+		};
 	}
 
 	private async loadConfigs(sysTypes: SysType[]): Promise<IdentityProviderConfig[]> {
