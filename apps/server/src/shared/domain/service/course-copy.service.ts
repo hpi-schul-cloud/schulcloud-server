@@ -40,11 +40,12 @@ export class CourseCopyService {
 				type: CopyElementType.TIME_GROUP,
 				status: CopyStatusEnum.NOT_DOING,
 			},
-			{
-				type: CopyElementType.COURSEGROUP_GROUP,
-				status: CopyStatusEnum.NOT_IMPLEMENTED,
-			},
 		];
+
+		const courseGroupsExist = params.originalCourse.getCourseGroupItems().length > 0;
+		if (courseGroupsExist) {
+			elements.push({ type: CopyElementType.COURSEGROUP_GROUP, status: CopyStatusEnum.NOT_IMPLEMENTED });
+		}
 
 		const status = {
 			title: copy.name,
