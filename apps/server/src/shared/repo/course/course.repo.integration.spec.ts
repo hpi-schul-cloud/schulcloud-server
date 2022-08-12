@@ -1,11 +1,11 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
 import { NotFoundError } from '@mikro-orm/core';
 import { Course, EntityId, SortOrder } from '@shared/domain';
-import { userFactory, courseFactory, cleanupCollections } from '@shared/testing';
+import { cleanupCollections, courseFactory, courseGroupFactory, userFactory } from '@shared/testing';
 import { CourseRepo } from './course.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {
@@ -60,6 +60,7 @@ describe('course repo', () => {
 				'_id',
 				'color',
 				'createdAt',
+				'courseGroups',
 				'description',
 				'name',
 				'school',
@@ -313,6 +314,36 @@ describe('course repo', () => {
 			const callFunction = () => repo.findOne(course.id, user.id);
 
 			await expect(callFunction).rejects.toThrow(NotFoundError);
+		});
+	});
+
+	describe('findById', () => {
+		it('should find a course by its id', async () => {
+			const course = courseFactory.build({ name: 'important course' });
+			await em.persistAndFlush(course);
+			em.clear();
+
+			const foundCourse = await repo.findById(course.id);
+			expect(foundCourse.name).toEqual('important course');
+		});
+
+		it('should throw error if the course cannot be found by id', async () => {
+			const unknownId = new ObjectId().toHexString();
+			await expect(async () => {
+				await repo.findById(unknownId);
+			}).rejects.toThrow();
+		});
+
+		it('should populate course groups', async () => {
+			const course = courseFactory.buildWithId({});
+			const courseGroup = courseGroupFactory.buildWithId({ course });
+
+			await em.persistAndFlush([course, courseGroup]);
+			em.clear();
+
+			const foundCourse = await repo.findById(course.id);
+			expect(foundCourse.courseGroups.isInitialized()).toEqual(true);
+			expect(foundCourse.courseGroups[0].id).toEqual(courseGroup.id);
 		});
 	});
 });
