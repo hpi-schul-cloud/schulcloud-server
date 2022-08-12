@@ -18,9 +18,13 @@ class TeamUserFactory extends BaseFactory<TeamUser, TeamUser> {
 }
 
 export const teamUserFactory = TeamUserFactory.define(TeamUser, () => {
-	return {
-		user: userFactory.buildWithId(),
-		school: schoolFactory.buildWithId(),
-		role: roleFactory.buildWithId(),
-	};
+	const role = roleFactory.buildWithId();
+	const school = schoolFactory.buildWithId();
+	const user = userFactory.buildWithId({ roles: [role] });
+
+	return new TeamUser({
+		user,
+		school,
+		role,
+	});
 });
