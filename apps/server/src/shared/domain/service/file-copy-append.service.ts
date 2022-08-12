@@ -214,13 +214,13 @@ export class FileCopyAppendService {
 		return fileGroupStatus;
 	}
 
-	private extractOldFileIds(text: string): string[] {
+	extractOldFileIds(text: string): string[] {
 		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
 		const fileIds = text.match(regEx);
 		return fileIds ? uniq(fileIds) : [];
 	}
 
-	private replaceOldFileUrls(text: string, oldFileId: EntityId, fileId: EntityId, filename: string): string {
+	replaceOldFileUrls(text: string, oldFileId: EntityId, fileId: EntityId, filename: string): string {
 		const regEx = new RegExp(`${fileUrlRegex}${oldFileId}.+?"`, 'g');
 		const newUrl = `"/files/file?file=${fileId}&amp;name=${filename}"`;
 
