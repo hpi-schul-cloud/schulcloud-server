@@ -3,7 +3,6 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { File, FileRecordParentType, Lesson, Task } from '@shared/domain';
 import { SyncFileItemMapper } from '../mapper';
-import { LessonMapper } from '../mapper/lesson-mapper';
 import { SyncFileItem } from '../types';
 
 export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
@@ -11,24 +10,16 @@ const tasksQuery = {
 	description: new RegExp(`src=${fileUrlRegex}`, 'i'),
 };
 
-const lessonsQuery = [
-	{
-		$match: {
-			'contents.component': {
-				$eq: 'text',
-			},
+const lessonsQuery = {
+	contents: {
+		component: {
+			$eq: 'text',
+		},
+		text: {
+			$regex: new RegExp(`src=${fileUrlRegex}`, 'i'),
 		},
 	},
-	{
-		$match: {
-			'contents.content.text': {
-				$regex: new RegExp(`src=${fileUrlRegex}`),
-				$options: 'i',
-			},
-		},
-	},
-];
-
+};
 const filesQuery = (fileIds: ObjectId[], parentId: ObjectId) => [
 	{
 		$match: {
@@ -113,17 +104,12 @@ export class EmbeddedFilesRepo {
 
 	async findEmbeddedFilesForTasks(): Promise<Task[]> {
 		const results = await this._em.find(Task, tasksQuery);
-
 		return results;
 	}
 
 	async findEmbeddedFilesForLessons(): Promise<Lesson[]> {
-		const results = await this._em.aggregate(Lesson, lessonsQuery);
-
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const lessons = results.map((result) => LessonMapper.mapToLesson(result));
-
-		return lessons;
+		const results = await this._em.find(Lesson, lessonsQuery);
+		return results;
 	}
 
 	async findFiles(fileIds: ObjectId[], parentId: ObjectId, parentType: FileRecordParentType): Promise<SyncFileItem[]> {

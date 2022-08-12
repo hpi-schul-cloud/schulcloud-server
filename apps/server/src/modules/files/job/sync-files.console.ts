@@ -16,13 +16,12 @@ export class SyncFilesConsole {
 		await this.syncFilesUc.syncFilesForParentType(FileRecordParentType.Task, aggregationSize, numParallelPromises);
 	}
 
-	@Command({ command: 'lessons-embedded' })
-	async syncFilesForLessons() {
-		await this.syncEmbeddedFilesUc.syncEmbeddedFilesForLesson();
-	}
-
-	@Command({ command: 'tasks-embedded' })
-	async syncFilesForTask() {
-		await this.syncEmbeddedFilesUc.syncEmbeddedFilesForTasks();
+	@Command({ command: 'embedded [type]' })
+	async syncEmbeddedFiles(type: string) {
+		if (!type) {
+			throw Error('wrong type');
+		}
+		const entityType = type === FileRecordParentType.Lesson ? FileRecordParentType.Lesson : FileRecordParentType.Task;
+		await this.syncEmbeddedFilesUc.syncEmbeddedFiles(entityType);
 	}
 }

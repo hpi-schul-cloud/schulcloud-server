@@ -19,33 +19,23 @@ export class SyncEmbeddedFilesUc {
 		private syncFilesStorageService: SyncFilesStorageService
 	) {}
 
-	async syncEmbeddedFilesForTasks() {
-		await this.embeddedFilesRepo.createTaskBackUpCollection();
+	async syncEmbeddedFiles(type: FileRecordParentType.Task | FileRecordParentType.Lesson) {
+		let entities: Lesson[] | Task[] = [];
+		if (type === FileRecordParentType.Task) {
+			await this.embeddedFilesRepo.createTaskBackUpCollection();
+			entities = await this.embeddedFilesRepo.findEmbeddedFilesForTasks();
+		} else if (type === FileRecordParentType.Lesson) {
+			await this.embeddedFilesRepo.createLessonBackUpCollection();
+			entities = await this.embeddedFilesRepo.findEmbeddedFilesForLessons();
+		}
 
-		const tasks = await this.embeddedFilesRepo.findEmbeddedFilesForTasks();
-		this.logger.log(`Found ${tasks.length} tasks descriptions with embedded files.`);
+		this.logger.log(`Found ${entities.length} ${type} descriptions with embedded files.`);
 
-		const promises = tasks.map(async (task) => {
-			const fileIds = this.extractFileIds(task);
+		const promises = entities.map(async (entity: Lesson | Task) => {
+			const fileIds = this.extractFileIds(entity);
 
-			const files = await this.embeddedFilesRepo.findFiles(fileIds, task._id, FileRecordParentType.Task);
-			return this.syncFiles(files);
-		});
-
-		await Promise.all(promises);
-	}
-
-	async syncEmbeddedFilesForLesson() {
-		await this.embeddedFilesRepo.createLessonBackUpCollection();
-
-		const lessons = await this.embeddedFilesRepo.findEmbeddedFilesForLessons();
-		this.logger.log(`Found ${lessons.length} lesson contents with embedded files.`);
-
-		const promises = lessons.map(async (lesson) => {
-			const fileIds = this.extractFileIds(lesson);
-
-			const files = await this.embeddedFilesRepo.findFiles(fileIds, lesson._id, FileRecordParentType.Lesson);
-			return this.syncFiles(files);
+			const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
+			return this.syncFiles(files, entity);
 		});
 
 		await Promise.all(promises);
@@ -85,26 +75,23 @@ export class SyncEmbeddedFilesUc {
 		return contentFileIds;
 	}
 
-	private async syncFiles(files: SyncFileItem[]) {
-		// eslint-disable-next-line no-await-in-loop
-		const promises = files.map((file) => {
-			return this.sync(file);
-		});
+	private async syncFiles(files: SyncFileItem[], entity: Lesson | Task) {
+		const promises = files.map((file) => this.sync(file, entity));
 		await Promise.all(promises);
 	}
 
-	private async sync(file: SyncFileItem) {
+	private async sync(file: SyncFileItem, entity: Lesson | Task) {
 		try {
 			await this.syncFilesMetaDataService.prepareMetaData(file);
 			await this.syncFilesStorageService.syncS3File(file);
 			await this.syncFilesMetaDataService.persistMetaData(file);
 
-			if (file.parentType === FileRecordParentType.Lesson) {
-				await this.updateLessonsLinks(file);
+			if (file.parentType === FileRecordParentType.Lesson && entity instanceof Lesson) {
+				await this.updateLessonsLinks(file, entity);
 			}
 
-			if (file.parentType === FileRecordParentType.Task) {
-				await this.updateTaskLinks(file);
+			if (file.parentType === FileRecordParentType.Task && entity instanceof Task) {
+				await this.updateTaskLinks(file, entity);
 			}
 			this.logger.log(`Synced file ${file.source.id}`);
 		} catch (error) {
@@ -115,28 +102,20 @@ export class SyncEmbeddedFilesUc {
 		}
 	}
 
-	private async updateTaskLinks(file: SyncFileItem) {
-		const task = await this.embeddedFilesRepo.findTask(new ObjectId(file.parentId));
-
-		if (task) {
-			task.description = this.replaceLink(task.description, file);
-			await this.embeddedFilesRepo.updateTask(task);
-		}
+	private async updateTaskLinks(file: SyncFileItem, task: Task) {
+		task.description = this.replaceLink(task.description, file);
+		await this.embeddedFilesRepo.updateTask(task);
 	}
 
-	private async updateLessonsLinks(file: SyncFileItem) {
-		const lesson = await this.embeddedFilesRepo.findLesson(new ObjectId(file.parentId));
+	private async updateLessonsLinks(file: SyncFileItem, lesson: Lesson) {
+		lesson.contents = lesson.contents.map((item: IComponentProperties) => {
+			if ('text' in item.content) {
+				item.content.text = this.replaceLink(item.content.text, file);
+			}
 
-		if (lesson) {
-			lesson.contents = lesson.contents.map((item: IComponentProperties) => {
-				if ('text' in item.content) {
-					item.content.text = this.replaceLink(item.content.text, file);
-				}
-
-				return item;
-			});
-			await this.embeddedFilesRepo.updateLesson(lesson);
-		}
+			return item;
+		});
+		await this.embeddedFilesRepo.updateLesson(lesson);
 	}
 
 	private replaceLink(text: string, file: SyncFileItem) {
