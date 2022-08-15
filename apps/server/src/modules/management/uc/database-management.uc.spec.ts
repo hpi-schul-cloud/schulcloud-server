@@ -459,7 +459,7 @@ describe('DatabaseManagementService', () => {
 				it('should replace placeholder with environmental variable value, if configuration key does not exists', async () => {
 					configGetSpy.mockReturnValue(undefined);
 					configHasSpy.mockReturnValue(false);
-					configService.get.mockImplementation((data) => `${data}_env`);
+					configService.get.mockImplementation((data: string) => `${data}_env`);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					expect(dbService.collectionExists).toBeCalledTimes(1);

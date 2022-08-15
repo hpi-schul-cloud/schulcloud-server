@@ -254,7 +254,6 @@ export class DatabaseManagementUc {
 					const end = json.indexOf('}', start);
 					const placeholder = json.slice(start + 2, end).trim();
 					const placeholderContent = this.resolvePlaceholder(placeholder);
-					console.log('Receiver ' + placeholder + ' content as ' + placeholderContent);
 					json = json.slice(0, start) + placeholderContent + json.slice(end + 1);
 					start += placeholderContent.length + 1;
 				}
@@ -265,10 +264,8 @@ export class DatabaseManagementUc {
 
 	private resolvePlaceholder(placeholder: string) {
 		if (Configuration.has(placeholder)) {
-			console.log('Load ' + placeholder + ' from Configuration');
 			return Configuration.get(placeholder) as string;
 		}
-		console.log('Load ' + placeholder + ' from environment');
 		return this.configService.get<string>(placeholder) ?? '';
 	}
 
