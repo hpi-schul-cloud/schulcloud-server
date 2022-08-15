@@ -6,7 +6,7 @@ import { FileSystemAdapter } from '@shared/infra/file-system';
 import { DatabaseManagementService } from '@shared/infra/database';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
-import { System } from '@shared/domain';
+import { StorageProvider, System } from '@shared/domain';
 import { SysType } from '@shared/infra/identity-management';
 import { ConfigService } from '@nestjs/config';
 import { BsonConverter } from '../converter/bson.converter';
@@ -254,6 +254,7 @@ export class DatabaseManagementUc {
 					const end = json.indexOf('}', start);
 					const placeholder = json.slice(start + 2, end).trim();
 					const placeholderContent = this.resolvePlaceholder(placeholder);
+					console.log('Receiver ' + placeholder + ' content as ' + placeholderContent);
 					json = json.slice(0, start) + placeholderContent + json.slice(end + 1);
 					start += placeholderContent.length + 1;
 				}
@@ -264,8 +265,10 @@ export class DatabaseManagementUc {
 
 	private resolvePlaceholder(placeholder: string) {
 		if (Configuration.has(placeholder)) {
+			console.log('Load ' + placeholder + ' from Configuration');
 			return Configuration.get(placeholder) as string;
 		}
+		console.log('Load ' + placeholder + ' from environment');
 		return this.configService.get<string>(placeholder) ?? '';
 	}
 
@@ -273,7 +276,6 @@ export class DatabaseManagementUc {
 		systems.forEach((system) => {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oauthConfig.clientSecret);
-				system.oauthConfig.clientId = this.defaultEncryptionService.encrypt(system.oauthConfig.clientId);
 			}
 			if (system.type === SysType.OIDC && system.config) {
 				system.config.clientSecret = this.defaultEncryptionService.encrypt(system.config.clientSecret as string);
@@ -294,8 +296,6 @@ export class DatabaseManagementUc {
 			if (system.oauthConfig) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				system.oauthConfig.clientSecret = `\${${system.alias!.toLocaleUpperCase()}_CLIENT_SECRET}`;
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.oauthConfig.clientId = `\${${system.alias!.toLocaleUpperCase()}_CLIENT_ID}`;
 			}
 			if (system.type === SysType.OIDC && system.config) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion

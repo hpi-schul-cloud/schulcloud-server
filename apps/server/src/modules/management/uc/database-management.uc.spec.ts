@@ -50,7 +50,7 @@ describe('DatabaseManagementService', () => {
 		type: 'oauthSanis',
 		__v: 0,
 		oauthConfig: {
-			clientId: 'encryptedClientId',
+			clientId: 'ClientId',
 			clientSecret: 'encryptedClientSecret',
 		},
 	};
@@ -64,12 +64,12 @@ describe('DatabaseManagementService', () => {
 			$date: '2022-07-12T14:01:58.588Z',
 		},
 		type: 'oidc',
-		alias: 'iserv',
+		alias: 'oidc',
 		config: {
 			// eslint-disable-next-line no-template-curly-in-string
-			clientId: '${ISERV_CLIENT_ID}',
+			clientId: '${OIDC_CLIENT_ID}',
 			// eslint-disable-next-line no-template-curly-in-string
-			clientSecret: '${ISERV_CLIENT_SECRET}',
+			clientSecret: '${OIDC_CLIENT_SECRET}',
 		},
 	};
 
@@ -82,7 +82,7 @@ describe('DatabaseManagementService', () => {
 			$date: '2022-07-12T14:01:58.588Z',
 		},
 		type: 'oidc',
-		alias: 'iserv',
+		alias: 'oidc',
 		config: {
 			clientId: 'encryptedClientId',
 			clientSecret: 'encryptedClientSecret',
@@ -360,12 +360,10 @@ describe('DatabaseManagementService', () => {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
 					const fileContent: string = fileSystemAdapter.writeFile.mock.calls[0][1];
 					expect(fileName).toEqual(`${systemsCollectionName}.json`);
-					expect(fileContent.includes(oauthSystemWithSecrets.oauthConfig.clientId)).toBe(false);
 					expect(fileContent.includes(oauthSystemWithSecrets.oauthConfig.clientSecret)).toBe(false);
 					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
 					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
 
-					expect(fileContent.includes(oauthSystem.oauthConfig.clientId)).toBe(true);
 					expect(fileContent.includes(oauthSystem.oauthConfig.clientSecret)).toBe(true);
 					expect(fileContent.includes(oidcSystem.config.clientSecret)).toBe(true);
 					expect(fileContent.includes(oidcSystem.config.clientSecret)).toBe(true);
@@ -454,12 +452,14 @@ describe('DatabaseManagementService', () => {
 						clientSecret: 'SANIS_CLIENT_SECRET',
 					});
 					expect((importedSystems[1] as System).config).toMatchObject({
-						clientId: 'ISERV_CLIENT_ID',
-						clientSecret: 'ISERV_CLIENT_SECRET',
+						clientId: 'OIDC_CLIENT_ID',
+						clientSecret: 'OIDC_CLIENT_SECRET',
 					});
 				});
 				it('should replace placeholder with environmental variable value, if configuration key does not exists', async () => {
-					configService.get.mockImplementation((data) => data);
+					configGetSpy.mockReturnValue(undefined);
+					configHasSpy.mockReturnValue(false);
+					configService.get.mockImplementation((data) => `${data}_env`);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					expect(dbService.collectionExists).toBeCalledTimes(1);
@@ -467,15 +467,18 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
-						clientId: '',
-						clientSecret: '',
+						clientId: 'SANIS_CLIENT_ID_env',
+						clientSecret: 'SANIS_CLIENT_SECRET_env',
 					});
 					expect((importedSystems[1] as System).config).toMatchObject({
-						clientId: '',
-						clientSecret: '',
+						clientId: 'OIDC_CLIENT_ID_env',
+						clientSecret: 'OIDC_CLIENT_SECRET_env',
 					});
 				});
 				it('should replace placeholder with empty value, if neither configuration key nor environmental variable exists', async () => {
+					configGetSpy.mockReturnValue(undefined);
+					configHasSpy.mockReturnValue(false);
+					configService.get.mockReturnValue(undefined);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					expect(dbService.collectionExists).toBeCalledTimes(1);
@@ -534,12 +537,12 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
-						clientId: 'SANIS_CLIENT_ID_encrypted',
+						clientId: 'SANIS_CLIENT_ID',
 						clientSecret: 'SANIS_CLIENT_SECRET_encrypted',
 					});
 					expect((importedSystems[1] as System).config).toMatchObject({
-						clientId: 'ISERV_CLIENT_ID_encrypted',
-						clientSecret: 'ISERV_CLIENT_SECRET_encrypted',
+						clientId: 'OIDC_CLIENT_ID_encrypted',
+						clientSecret: 'OIDC_CLIENT_SECRET_encrypted',
 					});
 				});
 				it('should encrypt ldap secrets with ldap encryption service if key is configured in env var', async () => {
