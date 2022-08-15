@@ -120,7 +120,8 @@ export class KeycloakConsole {
 			try {
 				// eslint-disable-next-line no-await-in-loop
 				return await command();
-			} catch {
+			} catch (err) {
+				this.console.info(JSON.stringify(err));
 				if (repetitions < count) {
 					this.console.info(
 						`Command '${commandName}' failed, retry in ${delay} seconds. Execution ${repetitions} / ${count}`
