@@ -5,12 +5,7 @@ import { SystemRepo } from '@shared/repo';
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
 import AuthenticationExecutionInfoRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionInfoRepresentation';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import {
-	IdentityProviderConfig,
-	IKeycloakManagementInputFiles,
-	IOidcIdentityProviderConfig,
-	KeycloakManagementInputFiles,
-} from '../interface';
+import { IdentityProviderConfig, IOidcIdentityProviderConfig } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { SysType } from '../../sys.type';
 
@@ -26,7 +21,6 @@ export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly systemRepo: SystemRepo,
-		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService
 	) {}
 

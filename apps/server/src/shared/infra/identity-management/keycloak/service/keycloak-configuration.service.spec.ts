@@ -14,12 +14,7 @@ import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/
 import { v1 } from 'uuid';
 import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { SysType } from '../../sys.type';
-import {
-	IKeycloakSettings,
-	IKeycloakManagementInputFiles,
-	KeycloakManagementInputFiles,
-	KeycloakSettings,
-} from '../interface';
+import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { flowAlias, KeycloakConfigurationService } from './keycloak-configuration.service';
 
@@ -59,12 +54,6 @@ describe('configureIdentityProviders', () => {
 		};
 	};
 
-	const inputFiles: IKeycloakManagementInputFiles = {
-		accountsFile: 'accounts.json',
-		usersFile: 'users.json',
-		systemsFile: 'systems.json',
-	};
-
 	const idps: IdentityProviderRepresentation[] = [
 		{
 			providerId: 'oidc',
@@ -96,15 +85,10 @@ describe('configureIdentityProviders', () => {
 			updatedAt: new Date(),
 		},
 	];
-	let fsReadFile: jest.SpyInstance;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				{
-					provide: KeycloakManagementInputFiles,
-					useValue: inputFiles,
-				},
 				KeycloakConfigurationService,
 				{
 					provide: KeycloakAdministrationService,
@@ -158,10 +142,6 @@ describe('configureIdentityProviders', () => {
 		kcApiClientIdentityProvidersMock.create.mockResolvedValue({ id: '' });
 		kcApiClientIdentityProvidersMock.update.mockResolvedValue();
 		kcApiClientIdentityProvidersMock.del.mockResolvedValue();
-		fsReadFile = jest.spyOn(fs, 'readFile').mockImplementation((path) => {
-			if (path === inputFiles.systemsFile) return Promise.resolve(JSON.stringify(systems));
-			throw new Error('File not found');
-		});
 	});
 
 	beforeEach(() => {
@@ -171,7 +151,6 @@ describe('configureIdentityProviders', () => {
 		kcApiClientIdentityProvidersMock.update.mockClear();
 		kcApiClientIdentityProvidersMock.del.mockClear();
 		configService.get.mockClear();
-		fsReadFile.mockClear();
 	});
 
 	afterAll(() => {
@@ -181,7 +160,6 @@ describe('configureIdentityProviders', () => {
 		kcApiClientIdentityProvidersMock.update.mockRestore();
 		kcApiClientIdentityProvidersMock.del.mockRestore();
 		configService.get.mockRestore();
-		fsReadFile.mockRestore();
 	});
 
 	it('should read configs from database successfully', async () => {
