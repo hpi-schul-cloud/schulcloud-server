@@ -1,6 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
-import { courseFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory, courseGroupFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { Course } from './course.entity';
+import { CourseGroup } from './coursegroup.entity';
 
 const DEFAULT = {
 	color: '#ACACAC',
@@ -121,7 +123,7 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	describe('getStudents', () => {
+	describe('getNumberOfStudents', () => {
 		it('should count the number of assigned students', () => {
 			const student1 = userFactory.build();
 			const student2 = userFactory.build();
@@ -167,6 +169,28 @@ describe('CourseEntity', () => {
 			const result = course.isFinished();
 
 			expect(result).toBe(true);
+		});
+	});
+
+	describe('getCourseGroupItems', () => {
+		describe('when course groups are not populated', () => {
+			it('should throw', () => {
+				const course = courseFactory.build();
+				course.courseGroups.set([orm.em.getReference(CourseGroup, new ObjectId().toHexString())]);
+
+				expect(() => course.getCourseGroupItems()).toThrow();
+			});
+		});
+
+		describe('when course groups are populated', () => {
+			it('should return the linked course groups to that course', () => {
+				const course = courseFactory.build();
+				const courseGroups = courseGroupFactory.buildList(2, { course });
+
+				const result = course.getCourseGroupItems();
+				expect(result.length).toEqual(2);
+				expect(result[0]).toEqual(courseGroups[0]);
+			});
 		});
 	});
 });

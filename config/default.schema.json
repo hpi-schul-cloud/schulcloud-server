@@ -945,6 +945,11 @@
 			"default": "https://blog.dbildungscloud.de",
 			"pattern": ".*(?<!/)$",
 			"description": "Base URL of ghost blog (should end without a slash)"
+		},
+		"FEATURE_CONSENT_NECESSARY": {
+			"type": "boolean",
+			"default": true,
+			"description": "Determines if consent is necessary during registration."
 		}
 	},
 	"required": [
