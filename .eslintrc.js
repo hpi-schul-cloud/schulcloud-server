@@ -1,7 +1,7 @@
 module.exports = {
 	extends: ['airbnb-base', 'prettier', 'plugin:promise/recommended'],
 	rules: {
-		'prettier/prettier': ['warn'],
+		'prettier/prettier': ['error'],
 		'no-process-env': 'error',
 		'no-multiple-empty-lines': [
 			'error',

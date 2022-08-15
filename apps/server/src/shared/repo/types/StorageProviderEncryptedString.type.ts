@@ -35,9 +35,6 @@ export class StorageProviderEncryptedStringType extends Type<string, string> {
 
 	convertToJSValue(value: string | undefined, platform: Platform): string {
 		// keep nullish values
-		console.log('☺☺☺ Try ' + value);
-		console.trace();
-
 		if (value == null) {
 			return value as unknown as string;
 		}
