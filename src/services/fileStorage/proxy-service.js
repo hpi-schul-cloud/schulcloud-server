@@ -1,6 +1,7 @@
 const fs = require('fs');
 const url = require('url');
 const rp = require('request-promise-native');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { filesRepo } = require('../../components/fileStorage/repo');
 
@@ -20,6 +21,7 @@ const {
 	createCorrectStrategy,
 	createDefaultPermissions,
 	createPermission,
+	copyCourseFile,
 } = require('./utils');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
 const { schoolModel } = require('../school/model');
@@ -729,6 +731,25 @@ const bucketService = {
 	},
 };
 
+class CourseFileCopyService {
+	constructor(app) {
+		this.app = app;
+	}
+
+	async create(data, params) {
+		const strategy = createCorrectStrategy('awsS3');
+		try {
+			return await copyCourseFile(
+				{ fileId: data.fileId, targetCourseId: data.targetCourseId, userId: data.userId, strategy },
+				this.app
+			);
+		} catch (err) {
+			logger.error(`could not copy file ${data.fileId}`, err);
+			return { orginalId: data.fileId };
+		}
+	}
+}
+
 const copyService = {
 	docs: swaggerDocs.copyService,
 
@@ -1059,10 +1080,13 @@ module.exports = function proxyService() {
 	app.use('/fileStorage/bucket', bucketService);
 	app.use('/fileStorage/total', fileTotalSizeService);
 	app.use('/fileStorage/copy', copyService);
+	app.use('/fileStorage/coursefilecopy', new CourseFileCopyService(app));
 	app.use('/fileStorage/permission', filePermissionService);
 	app.use('/fileStorage/files/new', newFileService);
 	app.use('/fileStorage/shared', shareTokenService);
 	app.use('/fileStorage', fileStorageService);
+
+	app.service('/fileStorage/coursefilecopy').hooks({ before: [iff(isProvider('external'), disallow())] });
 
 	[
 		'/fileStorage',

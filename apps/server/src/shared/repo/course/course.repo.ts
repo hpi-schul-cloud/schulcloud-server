@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { Injectable } from '@nestjs/common';
 
-import { EntityId, Course, Counted, IFindOptions } from '@shared/domain';
-import { Scope } from '../scope';
+import { Counted, Course, EntityId, IFindOptions } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
+import { Scope } from '../scope';
 
 class CourseScope extends Scope<Course> {
 	forAllGroupTypes(userId: EntityId): CourseScope {
@@ -49,6 +49,12 @@ class CourseScope extends Scope<Course> {
 export class CourseRepo extends BaseRepo<Course> {
 	get entityName() {
 		return Course;
+	}
+
+	async findById(id: EntityId): Promise<Course> {
+		const course = await super.findById(id);
+		await this._em.populate(course, ['courseGroups']);
+		return course;
 	}
 
 	async findAllByUserId(

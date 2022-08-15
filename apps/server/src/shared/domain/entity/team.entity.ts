@@ -6,25 +6,48 @@ import { User } from './user.entity';
 
 export interface ITeamProperties {
 	name: string;
-	userIds?: TeamUser[];
+	teamUsers?: TeamUser[];
+}
+
+export interface ITeamUserProperties {
+	user: User;
+	role: Role;
+	school: School;
 }
 
 @Embeddable()
 export class TeamUser {
-	constructor(teamUser: TeamUser) {
-		this.userId = teamUser.userId;
-		this.role = teamUser.role;
-		this.schoolId = teamUser.schoolId;
+	constructor(props: ITeamUserProperties) {
+		this.userId = props.user;
+		this.role = props.role;
+		this.schoolId = props.school;
 	}
 
-	@ManyToOne({ entity: () => User })
-	userId: User;
+	@ManyToOne(() => User)
+	private userId: User;
 
-	@ManyToOne({ entity: () => Role })
+	@ManyToOne(() => Role)
 	role: Role;
 
-	@ManyToOne({ entity: () => School })
-	schoolId: School;
+	@ManyToOne(() => School)
+	private schoolId: School;
+
+	// fieldName cannot be used in ManyToOne on Embeddable due to a mikro-orm bug (https://github.com/mikro-orm/mikro-orm/issues/2165)
+	get user(): User {
+		return this.userId;
+	}
+
+	set user(value: User) {
+		this.userId = value;
+	}
+
+	get school(): School {
+		return this.schoolId;
+	}
+
+	set school(value: School) {
+		this.schoolId = value;
+	}
 }
 
 @Entity({ tableName: 'teams' })
@@ -33,11 +56,19 @@ export class Team extends BaseEntityWithTimestamps {
 	name: string;
 
 	@Embedded(() => TeamUser, { array: true })
-	userIds: TeamUser[];
+	private userIds: TeamUser[];
+
+	get teamUsers(): TeamUser[] {
+		return this.userIds;
+	}
+
+	set teamUsers(value: TeamUser[]) {
+		this.userIds = value;
+	}
 
 	constructor(props: ITeamProperties) {
 		super();
 		this.name = props.name;
-		this.userIds = props.userIds ? props.userIds.map((teamUser) => new TeamUser(teamUser)) : [];
+		this.userIds = props.teamUsers ? props.teamUsers.map((teamUser) => new TeamUser(teamUser)) : [];
 	}
 }

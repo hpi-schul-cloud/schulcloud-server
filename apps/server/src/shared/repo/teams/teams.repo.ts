@@ -15,7 +15,7 @@ export class TeamsRepo extends BaseRepo<Team> {
 
 		if (populate) {
 			await Promise.all<void>(
-				team.userIds.map(async (teamUser: TeamUser): Promise<void> => {
+				team.teamUsers.map(async (teamUser: TeamUser): Promise<void> => {
 					await this._em.populate(teamUser, ['role']);
 					await this.populateRoles([teamUser.role]);
 				})

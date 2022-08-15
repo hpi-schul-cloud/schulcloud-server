@@ -1,10 +1,9 @@
-import { VideoConferenceRepo } from '@shared/repo';
+import { EntityProperties, VideoConferenceRepo } from '@shared/repo';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
 import {
-	IBaseEntityProps,
 	IVideoConferenceProperties,
 	TargetModels,
 	VideoConference,
@@ -23,7 +22,7 @@ class VideoConferenceRepoSpec extends VideoConferenceRepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntitySpec(entityDO: VideoConferenceDO): IVideoConferenceProperties & IBaseEntityProps {
+	mapDOToEntitySpec(entityDO: VideoConferenceDO): EntityProperties<IVideoConferenceProperties> {
 		return super.mapDOToEntity(entityDO);
 	}
 }
@@ -134,7 +133,7 @@ describe('Video Conference Repo', () => {
 			});
 
 			// Act
-			const result: IVideoConferenceProperties & IBaseEntityProps = repo.mapDOToEntitySpec(testDO);
+			const result: EntityProperties<IVideoConferenceProperties> = repo.mapDOToEntitySpec(testDO);
 
 			// Assert
 			expect(result.id).toEqual(testDO.id);

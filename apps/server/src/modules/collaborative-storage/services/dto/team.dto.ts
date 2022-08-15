@@ -1,32 +1,34 @@
+import { EntityId } from '@shared/domain';
+
 /**
  * TODO
  * This DTO and all associated functionality should be moved to a general teams module once it has been created
  */
 
 export class TeamDto {
-	id?: string;
+	id: EntityId;
 
-	name?: string;
+	name: string;
 
-	userIds!: TeamUserDto[];
+	teamUsers: TeamUserDto[];
 
 	constructor(props: TeamDto) {
 		this.id = props.id;
 		this.name = props.name;
-		this.userIds = props.userIds;
+		this.teamUsers = props.teamUsers;
 	}
 }
 
 export class TeamUserDto {
 	userId: string;
 
-	role: string;
+	roleId: string;
 
 	schoolId: string;
 
 	constructor(props: TeamUserDto) {
 		this.userId = props.userId;
-		this.role = props.role;
+		this.roleId = props.roleId;
 		this.schoolId = props.schoolId;
 	}
 }

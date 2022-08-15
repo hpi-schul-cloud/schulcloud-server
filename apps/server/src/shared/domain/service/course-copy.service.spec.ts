@@ -2,7 +2,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardCopyService, CopyHelperService, CourseCopyService } from '@shared/domain';
-import { boardFactory, courseFactory, schoolFactory, setupEntities, userFactory } from '../../testing';
+import {
+	boardFactory,
+	courseFactory,
+	courseGroupFactory,
+	schoolFactory,
+	setupEntities,
+	userFactory,
+} from '../../testing';
 import { Course } from '../entity';
 import { CopyElementType, CopyStatusEnum } from '../types';
 
@@ -271,20 +278,7 @@ describe('course copy service', () => {
 				expect(timesStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			});
 
-			it('should set status of files', () => {
-				const { originalCourse, user } = setup();
-
-				const status = copyService.copyCourse({
-					originalCourse,
-					user,
-				});
-
-				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
-				expect(fileGroup).toBeDefined();
-				expect(fileGroup?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
-			});
-
-			it('should set status of coursegroups', () => {
+			it('should not set status of course groups in absence of course groups', () => {
 				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
@@ -293,8 +287,7 @@ describe('course copy service', () => {
 				});
 
 				const coursegroupsStatus = status.elements?.find((el) => el.type === CopyElementType.COURSEGROUP_GROUP);
-				expect(coursegroupsStatus).toBeDefined();
-				expect(coursegroupsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+				expect(coursegroupsStatus).not.toBeDefined();
 			});
 
 			it('should call copyHelperService', () => {
@@ -357,6 +350,38 @@ describe('course copy service', () => {
 
 				const course = status.copyEntity as Course;
 				expect(course.substitutionTeachers.length).toEqual(0);
+			});
+		});
+
+		describe('when course contains course groups', () => {
+			const setupWithCourseGroups = () => {
+				const user = userFactory.build();
+				const originalCourse = courseFactory.build();
+				courseGroupFactory.build({ course: originalCourse });
+
+				const boardCopy = boardFactory.build();
+				const boardCopyStatus = {
+					title: 'board',
+					type: CopyElementType.BOARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: boardCopy,
+				};
+				boardCopyService.copyBoard.mockResolvedValue(boardCopyStatus);
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.PARTIAL);
+
+				return { user, originalCourse };
+			};
+			it('should set status of coursegroups', () => {
+				const { originalCourse, user } = setupWithCourseGroups();
+
+				const status = copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+
+				const coursegroupsStatus = status.elements?.find((el) => el.type === CopyElementType.COURSEGROUP_GROUP);
+				expect(coursegroupsStatus).toBeDefined();
+				expect(coursegroupsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
 		});
 	});

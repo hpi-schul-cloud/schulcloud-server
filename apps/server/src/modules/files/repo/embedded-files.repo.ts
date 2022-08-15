@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Lesson, FileRecordParentType, File } from '@shared/domain';
+import { File, FileRecordParentType, Lesson } from '@shared/domain';
 import { SyncFileItemMapper } from '../mapper';
 import { LessonMapper } from '../mapper/lesson-mapper';
 import { SyncFileItem } from '../types';
@@ -137,8 +137,8 @@ export class EmbeddedFilesRepo {
 	}
 
 	async createLessonBackUpCollection() {
-		const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+		const date = new Date();
 
-		await this._em.aggregate(Lesson, [{ $match: {} }, { $out: `lessons_backup_${date}` }]);
+		await this._em.aggregate(Lesson, [{ $match: {} }, { $out: `lessons_backup_${date.getTime()}` }]);
 	}
 }

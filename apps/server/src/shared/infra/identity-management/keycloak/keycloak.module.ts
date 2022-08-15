@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { SystemRepo } from '@shared/repo';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { EncryptionModule } from '@shared/infra/encryption';
 import { KeycloakSettings } from './interface/keycloak-settings.interface';
 import { KeycloakManagementUc } from './uc/Keycloak-management.uc';
 import { KeycloakManagementInputFiles } from './interface';
@@ -11,7 +12,7 @@ import { KeycloakConfigurationService } from './service/keycloak-configuration.s
 import { KeycloakSeedService } from './service/keycloak-seed.service';
 
 @Module({
-	imports: [LoggerModule],
+	imports: [LoggerModule, EncryptionModule],
 	controllers: [],
 	providers: [
 		SystemRepo,
