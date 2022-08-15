@@ -187,6 +187,13 @@ export class KeycloakConfigurationService {
 				authorizationUrl: system.config.authorizationUrl,
 				tokenUrl: system.config.tokenUrl,
 				logoutUrl: system.config.logoutUrl,
+				userInfoUrl: system.config.userinfoUrl,
+				defaultScope: system.config.defaultScopes,
+				syncMode: 'IMPORT',
+				sync_mode: 'import',
+				clientAuthMethod: 'client_secret_post',
+				backchannelSupported: 'true',
+				prompt: 'login',
 			},
 		};
 	}

@@ -9,5 +9,7 @@ export interface IOidcIdentityProviderConfig extends IIdentityProviderConfig {
 		authorizationUrl: string;
 		tokenUrl: string;
 		logoutUrl: string;
+		userinfoUrl: string;
+		defaultScopes: string;
 	};
 }
