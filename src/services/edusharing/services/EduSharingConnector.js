@@ -324,7 +324,11 @@ class EduSharingConnector {
 		}
 	}
 
+<<<<<<< HEAD
 	async getRendererForNode(nodeUuid) {
+=======
+	getRendererForNode(nodeUuid) {
+>>>>>>> h5p renderer request added
 	    try {
 			const url = `${ES_ENDPOINTS.RENDERER}{nodeUuid}`
 			const options = {
@@ -342,7 +346,10 @@ class EduSharingConnector {
 			if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
 				return new parsed.detailsSnippet;
 			} else {
+<<<<<<< HEAD
 				logger.error(`Unexpected answer from Edu-Sharing: ${response}`)
+=======
+>>>>>>> h5p renderer request added
 				throw new GeneralError('Unexpected answer from Edu-Sharing');
 			}
 	    } catch (err) {
