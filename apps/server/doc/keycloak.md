@@ -40,7 +40,7 @@ docker run `
 To add ErWIn-IDM identity broker feature via OpenID Connect (OIDC) Identity Provider (IdP) mock:
 
 - adjust 'config\development.json' and set 'OIDCMOCK\_\_BASE_URL' according to your local ip address.
-- re-trigger `npm run setup:idm` to reset and apply seed data.
+- re-trigger `npm run setup:db` and `npm run setup:idm` to reset and apply seed data.
 - start the 'oidc-server-mock' as follows:
 
 ```bash
