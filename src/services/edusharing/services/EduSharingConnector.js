@@ -16,6 +16,7 @@ const ES_ENDPOINTS = {
 	AUTH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/authentication/v1/validateSession`,
 	NODE: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/node/v1/nodes/-home-/`,
 	SEARCH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/search/v1/queriesV2/-home-/${ES_METADATASET}/ngsearch/`,
+	RENDERER: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/rendering/v1/details/-home-/`,
 };
 
 const basicAuthorizationHeaders = {
@@ -316,6 +317,32 @@ class EduSharingConnector {
 			return new EduSharingResponse(parsed);
 		} catch (err) {
 			logger.error('Edu-Sharing failed search ', err.message);
+			return Promise.reject(err);
+		}
+	}
+
+	getRendererForNode(nodeUuid) {
+	    try {
+			const url = `${ES_ENDPOINTS.RENDERER}{nodeUuid}`
+			const options = {
+				method: 'GET',
+				url,
+				headers: {
+					Accept: 'application/json',
+					...basicAuthorizationHeaders,
+				},
+				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
+			};
+
+			const response = await this.eduSharingRequest(options);
+			const parsed = JSON.parse(response);
+			if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
+				return new parsed.detailsSnippet;
+			} else {
+				throw new GeneralError('Unexpected answer from Edu-Sharing');
+			}
+	    } catch (err) {
+			logger.error('Edu-Sharing failed getting renderer: ', err.message);
 			return Promise.reject(err);
 		}
 	}
