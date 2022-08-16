@@ -366,10 +366,14 @@ class EduSharingConnector {
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	async getRendererForNode(nodeUuid) {
 =======
 	getRendererForNode(nodeUuid) {
 >>>>>>> h5p renderer request added
+=======
+	async getRendererForNode(nodeUuid) {
+>>>>>>> h5p: very experimental edusharing renderer service
 	    try {
 			const url = `${ES_ENDPOINTS.RENDERER}{nodeUuid}`
 			const options = {
