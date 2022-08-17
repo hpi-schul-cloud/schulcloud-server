@@ -37,7 +37,7 @@ export class SyncEmbeddedFilesUc {
 		});
 
 		await Promise.all(promises);
-		if (count - entities.length !== 0) {
+		if (count > 0) {
 			await this.syncEmbeddedFiles(type, limit);
 		}
 	}
@@ -86,42 +86,38 @@ export class SyncEmbeddedFilesUc {
 			await this.syncFilesMetaDataService.prepareMetaData(file);
 			await this.syncFilesStorageService.syncS3File(file);
 			await this.syncFilesMetaDataService.persistMetaData(file);
-
-			if (file.parentType === FileRecordParentType.Lesson && entity instanceof Lesson) {
-				await this.updateLessonsLinks(file, entity);
-			}
-
-			if (file.parentType === FileRecordParentType.Task && entity instanceof Task) {
-				await this.updateTaskLinks(file, entity);
-			}
+			await this.updateEntityLinks(file, entity);
 			this.logger.log(`Synced file ${file.source.id}`);
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
 			this.logger.error(file, stack);
+			await this.updateEntityLinks(file, entity, '[image-not-found]');
 			await this.syncFilesMetaDataService.persistError(file, stack);
 		}
 	}
 
-	private async updateTaskLinks(file: SyncFileItem, task: Task) {
-		task.description = this.replaceLink(task.description, file);
-		await this.embeddedFilesRepo.updateEntity(task);
+	private async updateEntityLinks(file: SyncFileItem, entity: Task | Lesson, errorUrl?: string) {
+		if (file.parentType === FileRecordParentType.Lesson && entity instanceof Lesson) {
+			entity.contents = entity.contents.map((item: IComponentProperties) => {
+				if ('text' in item.content) {
+					item.content.text = this.replaceLink(item.content.text, file, errorUrl);
+				}
+
+				return item;
+			});
+			await this.embeddedFilesRepo.updateEntity(entity);
+		}
+
+		if (file.parentType === FileRecordParentType.Task && entity instanceof Task) {
+			entity.description = this.replaceLink(entity.description, file, errorUrl);
+			await this.embeddedFilesRepo.updateEntity(entity);
+		}
 	}
 
-	private async updateLessonsLinks(file: SyncFileItem, lesson: Lesson) {
-		lesson.contents = lesson.contents.map((item: IComponentProperties) => {
-			if ('text' in item.content) {
-				item.content.text = this.replaceLink(item.content.text, file);
-			}
-
-			return item;
-		});
-		await this.embeddedFilesRepo.updateEntity(lesson);
-	}
-
-	private replaceLink(text: string, file: SyncFileItem) {
+	private replaceLink(text: string, file: SyncFileItem, errorUrl?: string) {
 		const regex = new RegExp(`${fileUrlRegex}${file.source.id}.+?"`, 'g');
-		const newUrl = `"/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}"`;
+		const newUrl = errorUrl || `"/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}"`;
 		return text.replace(regex, newUrl);
 	}
 }

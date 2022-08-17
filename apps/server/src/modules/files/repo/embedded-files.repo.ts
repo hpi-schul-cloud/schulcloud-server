@@ -7,13 +7,14 @@ import { SyncFileItemMapper } from '../mapper';
 import { SyncFileItem } from '../types';
 
 export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
+const fileIdRegex = '(0x|0h)?[0-9A-F]{24}';
 const tasksQuery = {
-	description: new RegExp(`src=${fileUrlRegex}`, 'i'),
+	description: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i'),
 };
 
 const lessonsQuery = {
 	'contents.component': { $eq: 'text' },
-	'contents.content.text': { $regex: new RegExp(`src=${fileUrlRegex}`, 'i').source },
+	'contents.content.text': { $regex: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i').source },
 } as FilterQuery<Lesson>;
 
 const filesQuery = (fileIds: ObjectId[], parentId: ObjectId) => [
