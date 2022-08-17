@@ -3,6 +3,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { ILearnroomElement } from '@shared/domain/interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
+import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
 import { Task } from './task.entity';
 
@@ -10,6 +11,7 @@ export interface ILessonProperties {
 	name: string;
 	hidden: boolean;
 	course: Course;
+	courseGroup?: CourseGroup;
 	position?: number;
 	contents: IComponentProperties[] | [];
 	materials?: Material[];
@@ -87,6 +89,10 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 	@ManyToOne('Course', { fieldName: 'courseId' })
 	course: Course;
 
+	@Index()
+	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId', nullable: true })
+	courseGroup?: CourseGroup;
+
 	@Property()
 	position: number;
 
@@ -104,6 +110,7 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		this.name = props.name;
 		if (props.hidden !== undefined) this.hidden = props.hidden;
 		this.course = props.course;
+		this.courseGroup = props.courseGroup;
 		this.position = props.position || 0;
 		this.contents = props.contents;
 		if (props.materials) this.materials.set(props.materials);

@@ -16,6 +16,7 @@ import {
 } from '@shared/domain';
 import {
 	courseFactory,
+	courseGroupFactory,
 	lessonFactory,
 	roleFactory,
 	schoolFactory,
@@ -117,6 +118,15 @@ describe('authorization.service', () => {
 			const response = service.hasPermission(team.teamUsers[0].user, team, {
 				requiredPermissions: [Permission.CHANGE_TEAM_ROLES],
 			});
+			expect(response).toBe(true);
+		});
+
+		it('can resolve courses', () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user] });
+			const courseGroup = courseGroupFactory.build({ course });
+
+			const response = service.hasPermission(user, courseGroup, context);
 			expect(response).toBe(true);
 		});
 	});

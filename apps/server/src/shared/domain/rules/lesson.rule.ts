@@ -3,11 +3,12 @@ import { Lesson, User } from '../entity';
 import { RoleName } from '../interface';
 import { IPermissionContext } from '../interface/permission';
 import { BasePermission } from './base-permission';
+import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 
 @Injectable()
 export class LessonRule extends BasePermission<Lesson> {
-	constructor(private readonly courseRule: CourseRule) {
+	constructor(private readonly courseRule: CourseRule, private readonly courseGroupRule: CourseGroupRule) {
 		super();
 	}
 
@@ -26,7 +27,15 @@ export class LessonRule extends BasePermission<Lesson> {
 		}
 
 		const hasPermission = this.utils.hasAllPermissions(user, requiredPermissions);
-		const hasCoursePermission = this.courseRule.hasPermission(user, entity.course, { action, requiredPermissions: [] });
+		let hasCoursePermission = false;
+		if (entity.course) {
+			hasCoursePermission = this.courseRule.hasPermission(user, entity.course, { action, requiredPermissions: [] });
+		} else if (entity.courseGroup) {
+			hasCoursePermission = this.courseGroupRule.hasPermission(user, entity.courseGroup, {
+				action,
+				requiredPermissions: [],
+			});
+		}
 		const result = hasPermission && hasCoursePermission;
 
 		return result;
