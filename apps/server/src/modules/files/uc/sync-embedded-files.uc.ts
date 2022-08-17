@@ -12,6 +12,8 @@ import { SyncFilesStorageService } from './sync-files-storage.service';
 
 @Injectable()
 export class SyncEmbeddedFilesUc {
+	wrongIds: ObjectId[] = [];
+
 	constructor(
 		private embeddedFilesRepo: EmbeddedFilesRepo,
 		private logger: Logger,
@@ -25,7 +27,7 @@ export class SyncEmbeddedFilesUc {
 	}
 
 	private async syncEmbeddedFiles(type: FileRecordParentType.Task | FileRecordParentType.Lesson, limit: number) {
-		const [entities, count] = await this.embeddedFilesRepo.findElementsToSyncFiles(type, limit);
+		const [entities, count] = await this.embeddedFilesRepo.findElementsToSyncFiles(type, limit, this.wrongIds);
 
 		this.logger.log(`Found ${entities.length} ${type} descriptions with embedded files.`);
 
@@ -92,7 +94,7 @@ export class SyncEmbeddedFilesUc {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
 			this.logger.error(file, stack);
-			await this.updateEntityLinks(file, entity, '[image-not-found]');
+			this.wrongIds.push(entity._id);
 			await this.syncFilesMetaDataService.persistError(file, stack);
 		}
 	}

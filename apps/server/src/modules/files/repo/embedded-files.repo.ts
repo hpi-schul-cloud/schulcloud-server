@@ -8,14 +8,20 @@ import { SyncFileItem } from '../types';
 
 export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
 const fileIdRegex = '(0x|0h)?[0-9A-F]{24}';
-const tasksQuery = {
-	description: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i'),
+const tasksQuery = (wrongIds: ObjectId[]) => {
+	return {
+		_id: { $nin: wrongIds },
+		description: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i'),
+	};
 };
 
-const lessonsQuery = {
-	'contents.component': { $eq: 'text' },
-	'contents.content.text': { $regex: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i').source },
-} as FilterQuery<Lesson>;
+const lessonsQuery = (wrongIds: ObjectId[]) => {
+	return {
+		_id: { $nin: wrongIds },
+		'contents.component': { $eq: 'text' },
+		'contents.content.text': { $regex: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i').source },
+	} as FilterQuery<Lesson>;
+};
 
 const filesQuery = (fileIds: ObjectId[], parentId: ObjectId) => [
 	{
@@ -101,14 +107,15 @@ export class EmbeddedFilesRepo {
 
 	async findElementsToSyncFiles(
 		type: FileRecordParentType.Task | FileRecordParentType.Lesson,
-		limit: number
+		limit: number,
+		wrongIds: ObjectId[]
 	): Promise<Counted<Task[] | Lesson[]>> {
 		let results: Counted<Task[] | Lesson[]> = [[], 0];
 
 		if (type === FileRecordParentType.Task) {
-			results = await this._em.findAndCount(Task, tasksQuery, { limit });
+			results = await this._em.findAndCount(Task, tasksQuery(wrongIds), { limit });
 		} else if (type === FileRecordParentType.Lesson) {
-			results = await this._em.findAndCount(Lesson, lessonsQuery, { limit });
+			results = await this._em.findAndCount(Lesson, lessonsQuery(wrongIds), { limit });
 		}
 		return results;
 	}
