@@ -58,6 +58,13 @@ export class LessonCopyUC {
 			await this.lessonRepo.save(lessonCopy);
 			status = this.lessonCopyService.updateCopiedEmbeddedTasks(status);
 			status = await this.fileCopyAppendService.appendFiles(status, parentParams.jwt);
+			status = await this.fileCopyAppendService.copyEmbeddedFilesOfLessons(
+				status,
+				lessonCopy.course.id,
+				userId,
+				user.school.id,
+				parentParams.jwt
+			);
 			const updatedLesson = status.copyEntity as Lesson;
 			await this.lessonRepo.save(updatedLesson);
 		}
