@@ -106,11 +106,19 @@ export class FileCopyAppendService {
 		}));
 	}
 
-	private createFileStatusesByCopyResult(files: FileLegacyResponse[]): CopyStatus[] {
+	private createLegayFileStatusesByCopyResult(files: FileLegacyResponse[]): CopyStatus[] {
 		return files.map(({ oldFileId, fileId, filename }) => ({
 			type: CopyElementType.FILE,
 			status: fileId ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
 			title: filename ?? `(old fileid: ${oldFileId})`,
+		}));
+	}
+
+	private createFileStatusesByCopyResult(files: CopyFileResponse[]): CopyStatus[] {
+		return files.map(({ sourceId, id, name }) => ({
+			type: CopyElementType.FILE,
+			status: id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
+			title: name ?? `(old fileid: ${sourceId})`,
 		}));
 	}
 
@@ -179,18 +187,23 @@ export class FileCopyAppendService {
 			});
 
 			if (fileCopyResults.length > 0) {
-				const fileGroupStatus = this.deriveFileGroupStatus(fileCopyResults);
+				const fileGroupStatus = this.deriveLegacyFileGroupStatus(fileCopyResults);
 				lessonCopyStatus.elements = this.setFileGroupStatus(lessonCopyStatus.elements, fileGroupStatus);
 				lessonCopyStatus.status = this.copyHelperService.deriveStatusFromElements(lessonCopyStatus.elements);
 			}
 		}
 
-		lessonCopyStatus.copyEntity = await this.copyFilesService.copyFilesOfEntity(
+		const { entity, response } = await this.copyFilesService.copyFilesOfEntity(
 			lessonCopyStatus.originalEntity,
 			lesson,
 			schoolId,
 			jwt
 		);
+
+		lessonCopyStatus.copyEntity = entity;
+		const fileGroupStatus = this.deriveFileGroupStatus(response);
+		lessonCopyStatus.elements = this.setFileGroupStatus(lessonCopyStatus.elements, fileGroupStatus);
+		lessonCopyStatus.status = this.copyHelperService.deriveStatusFromElements(lessonCopyStatus.elements);
 
 		return lessonCopyStatus;
 	}
@@ -215,7 +228,7 @@ export class FileCopyAppendService {
 			});
 
 			if (fileCopyResults.length > 0) {
-				const fileGroupStatus = this.deriveFileGroupStatus(fileCopyResults);
+				const fileGroupStatus = this.deriveLegacyFileGroupStatus(fileCopyResults);
 				taskCopyStatus.elements = this.setFileGroupStatus(taskCopyStatus.elements, fileGroupStatus);
 				taskCopyStatus.status = this.copyHelperService.deriveStatusFromElements(taskCopyStatus.elements);
 			}
@@ -225,7 +238,17 @@ export class FileCopyAppendService {
 		return taskCopyStatus;
 	}
 
-	private deriveFileGroupStatus(fileCopyResults: FileLegacyResponse[]) {
+	private deriveLegacyFileGroupStatus(fileCopyResults: FileLegacyResponse[]) {
+		const fileStatuses = this.createLegayFileStatusesByCopyResult(fileCopyResults);
+		const fileGroupStatus = {
+			type: CopyElementType.FILE_GROUP,
+			status: this.copyHelperService.deriveStatusFromElements(fileStatuses),
+			elements: fileStatuses,
+		};
+		return fileGroupStatus;
+	}
+
+	private deriveFileGroupStatus(fileCopyResults: CopyFileResponse[]) {
 		const fileStatuses = this.createFileStatusesByCopyResult(fileCopyResults);
 		const fileGroupStatus = {
 			type: CopyElementType.FILE_GROUP,

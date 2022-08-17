@@ -19,11 +19,13 @@ export class CopyFilesService {
 		copyEntity: EntityWithEmbeddedFiles,
 		schoolId: EntityId,
 		jwt: string
-	): Promise<EntityWithEmbeddedFiles> {
+	): Promise<{ entity: EntityWithEmbeddedFiles; response: CopyFileResponse[] }> {
 		const { sourceParams, targetParams } = this.buildParams(originalEntity, copyEntity, schoolId, jwt);
 		const response = await this.filesStorageClientAdapterService.copyFilesOfParent(sourceParams, targetParams);
 
-		return this.replaceUrlsOfEntity(response, copyEntity);
+		const entity = this.replaceUrlsOfEntity(response, copyEntity);
+
+		return { entity, response };
 	}
 
 	private replaceUrlsOfEntity(responses: CopyFileResponse[], entity: EntityWithEmbeddedFiles): EntityWithEmbeddedFiles {
