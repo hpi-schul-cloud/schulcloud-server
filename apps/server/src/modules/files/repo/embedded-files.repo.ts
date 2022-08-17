@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Counted, File, FileRecordParentType, Lesson, Task } from '@shared/domain';
@@ -11,15 +12,10 @@ const tasksQuery = {
 };
 
 const lessonsQuery = {
-	contents: {
-		component: {
-			$eq: 'text',
-		},
-		text: {
-			$regex: new RegExp(`src=${fileUrlRegex}`, 'i'),
-		},
-	},
-};
+	'contents.component': { $eq: 'text' },
+	'contents.content.text': { $regex: new RegExp(`src=${fileUrlRegex}`, 'i').source },
+} as FilterQuery<Lesson>;
+
 const filesQuery = (fileIds: ObjectId[], parentId: ObjectId) => [
 	{
 		$match: {
@@ -126,14 +122,8 @@ export class EmbeddedFilesRepo {
 		return items;
 	}
 
-	async findLesson(_id: ObjectId) {
-		const result = await this._em.findOne(Lesson, { _id });
-
-		return result;
-	}
-
-	async updateLesson(lesson: Lesson) {
-		await this._em.persistAndFlush(lesson);
+	async updateEntity(entity: Lesson | Task) {
+		await this._em.persistAndFlush(entity);
 	}
 
 	async createBackUpCollection(type: FileRecordParentType.Task | FileRecordParentType.Lesson) {
@@ -144,15 +134,5 @@ export class EmbeddedFilesRepo {
 		} else if (type === FileRecordParentType.Lesson) {
 			await this._em.aggregate(Lesson, [{ $match: {} }, { $out: `lessons_backup_${date.getTime()}` }]);
 		}
-	}
-
-	async findTask(_id: ObjectId) {
-		const result = await this._em.findOne(Task, { _id });
-
-		return result;
-	}
-
-	async updateTask(task: Task) {
-		await this._em.persistAndFlush(task);
 	}
 }

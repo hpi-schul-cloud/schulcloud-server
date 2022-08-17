@@ -20,12 +20,8 @@ export class SyncEmbeddedFilesUc {
 	) {}
 
 	async syncFilesForParentType(type: FileRecordParentType.Task | FileRecordParentType.Lesson, limit = 1000) {
-		let itemsFound = 0;
 		await this.embeddedFilesRepo.createBackUpCollection(type);
-		do {
-			// eslint-disable-next-line no-await-in-loop
-			itemsFound = await this.syncEmbeddedFiles(type, limit);
-		} while (itemsFound > 0);
+		await this.syncEmbeddedFiles(type, limit);
 	}
 
 	private async syncEmbeddedFiles(type: FileRecordParentType.Task | FileRecordParentType.Lesson, limit: number) {
@@ -41,7 +37,9 @@ export class SyncEmbeddedFilesUc {
 		});
 
 		await Promise.all(promises);
-		return entities.length - count;
+		if (count - entities.length !== 0) {
+			await this.syncEmbeddedFiles(type, limit);
+		}
 	}
 
 	private extractFileIds(entity: Lesson | Task): ObjectId[] {
@@ -107,7 +105,7 @@ export class SyncEmbeddedFilesUc {
 
 	private async updateTaskLinks(file: SyncFileItem, task: Task) {
 		task.description = this.replaceLink(task.description, file);
-		await this.embeddedFilesRepo.updateTask(task);
+		await this.embeddedFilesRepo.updateEntity(task);
 	}
 
 	private async updateLessonsLinks(file: SyncFileItem, lesson: Lesson) {
@@ -118,7 +116,7 @@ export class SyncEmbeddedFilesUc {
 
 			return item;
 		});
-		await this.embeddedFilesRepo.updateLesson(lesson);
+		await this.embeddedFilesRepo.updateEntity(lesson);
 	}
 
 	private replaceLink(text: string, file: SyncFileItem) {

@@ -29,6 +29,6 @@ export class SyncFilesConsole {
 		}
 
 		const entityType = type === FileRecordParentType.Lesson ? FileRecordParentType.Lesson : FileRecordParentType.Task;
-		await this.syncEmbeddedFilesUc.syncFilesForParentType(entityType, limit);
+		await this.syncEmbeddedFilesUc.syncFilesForParentType(entityType, Number(limit));
 	}
 }
