@@ -27,18 +27,25 @@ export class ProvisioningUc {
 			throw new HttpException(`System with id "${systemId}" does not exist.`, HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 
-		let strategy: ProvisioningStrategy<unknown>;
 		switch (system.provisioningStrategy) {
-			case SystemProvisioningStrategy.SANIS:
-				strategy = this.sanisStrategy;
-				strategy.init(system.provisioningUrl ?? '', { headers: { Authorization: `Bearer ${accessToken}` } });
-				break;
+			case SystemProvisioningStrategy.SANIS: {
+				const params = {
+					provisioningUrl: system.provisioningUrl ?? '',
+					accessToken,
+				};
+				return this.sanisStrategy.apply(params);
+			}
+			case SystemProvisioningStrategy.ISERV: {
+				// TODO Iserv strategy
+				const params = {
+					provisioningUrl: system.provisioningUrl ?? '',
+					accessToken,
+				};
+				return this.sanisStrategy.apply(params);
+			}
 			default:
 				this.logger.error(`Missing provisioning strategy for system with id ${systemId}`);
 				throw new HttpException(`Provisioning Strategy is not defined.`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		const provisioningDto = await strategy.apply();
-		return provisioningDto;
 	}
 }

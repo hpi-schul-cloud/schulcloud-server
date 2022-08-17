@@ -6,11 +6,16 @@ import { HttpService } from '@nestjs/axios';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { UserUc } from '@src/modules/user/uc';
 import { firstValueFrom } from 'rxjs';
-import { AxiosResponse } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
 
+export type SanisStrategyData = {
+	provisioningUrl: string;
+	accessToken: string;
+};
+
 @Injectable()
-export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisResponse> {
+export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisResponse, SanisStrategyData> {
 	constructor(
 		responseMapper: SanisResponseMapper,
 		schoolUc: SchoolUc,
@@ -18,14 +23,18 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisRespons
 		private readonly httpService: HttpService
 	) {
 		super(responseMapper, schoolUc, userUc);
-		this.config = {};
 	}
 
-	override getProvisioningData(): Promise<SanisResponse> {
-		if (!this.provisioningUrl || !this.config) {
+	override getProvisioningData(config: SanisStrategyData): Promise<SanisResponse> {
+		if (!config.provisioningUrl) {
 			throw new UnprocessableEntityException('Provisioning not initialized');
 		}
-		return firstValueFrom(this.httpService.get(`${this.provisioningUrl}`, this.config)).then(
+
+		const axiosConfig: AxiosRequestConfig = {
+			headers: { Authorization: `Bearer ${config.accessToken}` },
+		};
+
+		return firstValueFrom(this.httpService.get(`${config.provisioningUrl}`, axiosConfig)).then(
 			(r: AxiosResponse<SanisResponse>) => {
 				return r.data;
 			}
