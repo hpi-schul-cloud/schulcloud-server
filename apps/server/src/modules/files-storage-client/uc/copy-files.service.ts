@@ -45,11 +45,9 @@ export class CopyFilesService {
 	}
 
 	private replaceUrlsInLessons(lesson: Lesson, response: CopyFileResponse): Lesson {
-		const { sourceId, id, name } = response;
-
 		lesson.contents = lesson.contents.map((item: IComponentProperties) => {
-			if ('text' in item.content && id && name) {
-				const text = this.replaceIdAndName(item.content.text, sourceId, id, name);
+			if ('text' in item.content) {
+				const text = this.replaceUrl(item.content.text, response);
 				const itemWithUpdatedText = { ...item, content: { ...item.content, text } };
 				return itemWithUpdatedText;
 			}
@@ -61,17 +59,15 @@ export class CopyFilesService {
 	}
 
 	private replaceUrlsInTask(task: Task, response: CopyFileResponse): Task {
-		const { sourceId, id, name } = response;
-
-		task.description = this.replaceIdAndName(task.description, sourceId, id, name);
+		task.description = this.replaceUrl(task.description, response);
 
 		return task;
 	}
 
-	private replaceIdAndName(text: string, oldFileId: EntityId, fileId: EntityId, fileName: string): string {
-		const regEx = new RegExp(`${oldFileId}/${fileName}`, 'g');
-
-		return text.replace(regEx, `${fileId}/${fileName}`);
+	private replaceUrl(text: string, response: CopyFileResponse) {
+		const regex = new RegExp(`${response.sourceId}.+?"`, 'g');
+		const newUrl = `${response.id}/${response.name}"`;
+		return text.replace(regex, newUrl);
 	}
 
 	private buildParams(
