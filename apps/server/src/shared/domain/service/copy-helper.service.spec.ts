@@ -37,6 +37,12 @@ describe('copy helper service', () => {
 
 	describe('deriveStatusFromElements', () => {
 		describe('successful cases', () => {
+			it('should return success, if no elements were given', () => {
+				const derivedStatus = copyHelperService.deriveStatusFromElements([]);
+
+				expect(derivedStatus).toEqual(CopyStatusEnum.SUCCESS);
+			});
+
 			it('should return success, if all elements are successful', () => {
 				const elements = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.SUCCESS]);
 				const derivedStatus = copyHelperService.deriveStatusFromElements(elements);
@@ -52,7 +58,7 @@ describe('copy helper service', () => {
 			});
 
 			it('should return success, if there are no failure subelements', () => {
-				const elements = createStates([CopyStatusEnum.NOT_DOING]);
+				const elements = createStates([CopyStatusEnum.NOT_DOING, CopyStatusEnum.NOT_DOING]);
 				const derivedStatus = copyHelperService.deriveStatusFromElements(elements);
 
 				expect(derivedStatus).toEqual(CopyStatusEnum.SUCCESS);
@@ -60,12 +66,6 @@ describe('copy helper service', () => {
 		});
 
 		describe('failure cases', () => {
-			it('should return fail, if no elements were given', () => {
-				const derivedStatus = copyHelperService.deriveStatusFromElements([]);
-
-				expect(derivedStatus).toEqual(CopyStatusEnum.FAIL);
-			});
-
 			it('should return fail, if all elements are failing', () => {
 				const elements = createStates([CopyStatusEnum.FAIL, CopyStatusEnum.FAIL]);
 				const derivedStatus = copyHelperService.deriveStatusFromElements(elements);
@@ -75,13 +75,6 @@ describe('copy helper service', () => {
 
 			it('should return fail, when all elements are not implemented', () => {
 				const elements = createStates([CopyStatusEnum.NOT_IMPLEMENTED, CopyStatusEnum.NOT_IMPLEMENTED]);
-				const derivedStatus = copyHelperService.deriveStatusFromElements(elements);
-
-				expect(derivedStatus).toEqual(CopyStatusEnum.FAIL);
-			});
-
-			it('should return fail, when all elements are not doing', () => {
-				const elements = createStates([CopyStatusEnum.NOT_DOING, CopyStatusEnum.NOT_DOING]);
 				const derivedStatus = copyHelperService.deriveStatusFromElements(elements);
 
 				expect(derivedStatus).toEqual(CopyStatusEnum.FAIL);
