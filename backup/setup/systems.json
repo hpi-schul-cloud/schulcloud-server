@@ -57,6 +57,31 @@
 	},
 	{
 		"_id": {
+			"$oid": "0000d186816abba584714c00"
+		},
+		"__v": 0,
+		"alias": "Keycloak",
+		"type": "oauth",
+		"oauthConfig": {
+			"clientId": "${ OIDCMOCK__CLIENT_ID }",
+			"clientSecret": "",
+			"grantType": "authorization_code",
+			"scope": "openid profile email",
+			"responseType": "code",
+			"provider": "oauth",
+			"tokenEndpoint": "${ IDENTITY_MANAGEMENT__URI }/realms/${ IDENTITY_MANAGEMENT__TENANT }/protocol/openid-connect/token",
+			"redirectUri": "${ SC_DOMAIN }/api/v3/sso/oauth/0000d186816abba584714c00",
+			"authEndpoint": "${ IDENTITY_MANAGEMENT__URI }/realms/${ IDENTITY_MANAGEMENT__TENANT }/protocol/openid-connect/auth",
+			"logoutEndpoint": "${ IDENTITY_MANAGEMENT__URI }/realms/${ IDENTITY_MANAGEMENT__TENANT }/protocol/openid-connect/logout",
+			"jwksEndpoint": "${ IDENTITY_MANAGEMENT__URI }/realms/${ IDENTITY_MANAGEMENT__TENANT }/protocol/openid-connect/certs",
+			"issuer": "${ IDENTITY_MANAGEMENT__URI }/realms/${ IDENTITY_MANAGEMENT__TENANT }"
+		},
+		"updatedAt": {
+			"$date": "2022-07-12T14:01:58.588Z"
+		}
+	},
+	{
+		"_id": {
 			"$oid": "0000d186816abba584714c93"
 		},
 		"alias": "SANIS",

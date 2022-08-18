@@ -16,6 +16,7 @@ enum ConfigureAction {
 }
 
 export const flowAlias = 'Direct Broker Flow';
+export const CLIENT_ID = 'dbildungscloud-server';
 
 export class KeycloakConfigurationService {
 	constructor(
@@ -95,6 +96,26 @@ export class KeycloakConfigurationService {
 				id: execution.id,
 				requirement: 'ALTERNATIVE',
 			});
+		}
+	}
+
+	public async configureClient(): Promise<void> {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		let clients = await kc.clients.find({ clientId: CLIENT_ID });
+		if (clients.length === 0) {
+			await kc.clients.create({
+				clientId: CLIENT_ID,
+				publicClient: false,
+			});
+			clients = await kc.clients.find({ clientId: CLIENT_ID });
+		}
+		const response = await kc.clients.generateNewClientSecret({ id: clients[0].id as string });
+		const system = (await this.systemRepo.findAll()).find(
+			(tempSystem) => tempSystem.alias?.toLocaleLowerCase() === 'keycloak'
+		);
+		if (system && system.oauthConfig && response.value) {
+			system.oauthConfig.clientSecret = this.defaultEncryptionService.encrypt(response.value);
+			await this.systemRepo.save(system);
 		}
 	}
 
@@ -193,10 +214,9 @@ export class KeycloakConfigurationService {
 	}
 
 	private async loadConfigs(sysTypes: SysType[]): Promise<IdentityProviderConfig[]> {
-		const systems = (await this.systemRepo.findAll()).filter((system) =>
+		return (await this.systemRepo.findAll()).filter((system) =>
 			sysTypes.includes(system.type as SysType)
 		) as IdentityProviderConfig[];
-		return systems;
 	}
 
 	private async deleteIdentityProvider(alias: string): Promise<void> {

@@ -5,9 +5,9 @@
   "isShared": true,
   "region": "eu-central-1",
   "type": "S3",
-  "endpointUrl": "https://storage-${SC_DOMAIN}",
+  "endpointUrl": "https://storage-${ DOMAIN }",
   "accessKeyId": "${AWS_ACCESS_KEY}",
-  "secretAccessKey": "${AWS_SECRET_ACCESS_KEY_AES}",
+  "secretAccessKey": "${AWS_SECRET_ACCESS_KEY}",
   "maxBuckets": 999999,
   "freeBuckets": 999976,
   "createdAt": {
