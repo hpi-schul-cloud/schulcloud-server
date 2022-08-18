@@ -17,6 +17,7 @@ import { SysType } from '../../sys.type';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { flowAlias, KeycloakConfigurationService } from './keycloak-configuration.service';
+import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 
 describe('configureIdentityProviders', () => {
 	let module: TestingModule;
@@ -125,6 +126,7 @@ describe('configureIdentityProviders', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
+				{ provide: OidcIdentityProviderMapper, useValue: createMock<OidcIdentityProviderMapper>() },
 				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 			],
 		}).compile();
@@ -181,25 +183,6 @@ describe('configureIdentityProviders', () => {
 		const result = await service.configureIdentityProviders();
 		expect(result).toBe(1);
 		expect(kcApiClientIdentityProvidersMock.update).toBeCalledTimes(1);
-	});
-	it('should decrypt secrets when creating a configuration in Keycloak', async () => {
-		kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
-
-		await service.configureIdentityProviders();
-		expect(kcApiClientIdentityProvidersMock.create).toHaveBeenCalledWith(
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			expect.objectContaining({ config: expect.objectContaining({ clientId: expect.stringMatching('.*dec') }) })
-		);
-
-		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
-	});
-	it('should decrypt secrets when updating a configuration in Keycloak', async () => {
-		await service.configureIdentityProviders();
-		expect(kcApiClientIdentityProvidersMock.update).toHaveBeenCalledWith(
-			expect.anything(),
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			expect.objectContaining({ config: expect.objectContaining({ clientId: expect.stringMatching('.*dec') }) })
-		);
 	});
 	it('should delete a new configuration in Keycloak', async () => {
 		repo.findAll.mockResolvedValue([]);

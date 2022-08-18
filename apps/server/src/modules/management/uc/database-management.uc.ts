@@ -6,9 +6,10 @@ import { FileSystemAdapter } from '@shared/infra/file-system';
 import { DatabaseManagementService } from '@shared/infra/database';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
-import { StorageProvider, System } from '@shared/domain';
+import { System } from '@shared/domain';
 import { SysType } from '@shared/infra/identity-management';
 import { ConfigService } from '@nestjs/config';
+import { Logger } from '@src/core/logger';
 import { BsonConverter } from '../converter/bson.converter';
 
 export interface ICollectionFilePath {
@@ -31,9 +32,12 @@ export class DatabaseManagementUc {
 		private databaseManagementService: DatabaseManagementService,
 		private bsonConverter: BsonConverter,
 		private readonly configService: ConfigService,
+		private readonly logger: Logger,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
-	) {}
+	) {
+		this.logger.setContext(DatabaseManagementUc.name);
+	}
 
 	/**
 	 * absolute path reference for seed data base folder.
@@ -242,23 +246,10 @@ export class DatabaseManagementUc {
 	}
 
 	private injectEnvVars(json: string): string {
-		let start = 0;
-		while (start >= 0) {
-			start = json.indexOf('${', start);
-			if (start > 0) {
-				if (json.charAt(start - 1) === '\\') {
-					// skip and remove escape indicator
-					json = json.slice(0, start - 1) + json.slice(start);
-					start += 1;
-				} else {
-					const end = json.indexOf('}', start);
-					const placeholder = json.slice(start + 2, end).trim();
-					const placeholderContent = this.resolvePlaceholder(placeholder);
-					json = json.slice(0, start) + placeholderContent + json.slice(end + 1);
-					start += placeholderContent.length + 1;
-				}
-			}
-		}
+		json = json.replace(/(?<!\\)\$\{(.*?)\}/g, (placeholder) =>
+			this.resolvePlaceholder(placeholder.substring(2, placeholder.length - 1))
+		);
+		json = json.replace(/\\\$/g, '$');
 		return json;
 	}
 
@@ -266,7 +257,12 @@ export class DatabaseManagementUc {
 		if (Configuration.has(placeholder)) {
 			return Configuration.get(placeholder) as string;
 		}
-		return this.configService.get<string>(placeholder) ?? '';
+		const placeholderValue = this.configService.get<string>(placeholder);
+		if (placeholderValue) {
+			return placeholderValue;
+		}
+		this.logger.warn(`Placeholder "${placeholder}" could not be resolved!`);
+		return '';
 	}
 
 	private encryptSecretsInSystems(systems: System[]) {

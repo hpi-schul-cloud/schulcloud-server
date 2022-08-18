@@ -11,6 +11,7 @@ import {
 import { System } from '@shared/domain';
 import { ObjectId } from 'mongodb';
 import { ConfigService } from '@nestjs/config';
+import { Logger } from '@src/core/logger';
 import { DatabaseManagementUc } from './database-management.uc';
 import { BsonConverter } from '../converter/bson.converter';
 
@@ -20,6 +21,7 @@ describe('DatabaseManagementService', () => {
 	let fileSystemAdapter: DeepMocked<FileSystemAdapter>;
 	let dbService: DeepMocked<DatabaseManagementService>;
 	let configService: DeepMocked<ConfigService>;
+	let logger: DeepMocked<Logger>;
 	let defaultEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let ldapEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let bsonConverter: BsonConverter;
@@ -139,6 +141,7 @@ describe('DatabaseManagementService', () => {
 				BsonConverter,
 				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{ provide: ConfigService, useValue: createMock<ConfigService>() },
+				{ provide: Logger, useValue: createMock<Logger>() },
 				{ provide: LdapEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{
 					provide: FileSystemAdapter,
@@ -216,6 +219,7 @@ describe('DatabaseManagementService', () => {
 		dbService = module.get(DatabaseManagementService);
 		bsonConverter = module.get(BsonConverter);
 		configService = module.get(ConfigService);
+		logger = module.get(Logger);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		ldapEncryptionService = module.get(LdapEncryptionService);
 	});
@@ -443,9 +447,6 @@ describe('DatabaseManagementService', () => {
 					configHasSpy.mockImplementation((data) => data !== 'AES_KEY');
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					expect(dbService.collectionExists).toBeCalledTimes(1);
-					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
-					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
 						clientId: 'SANIS_CLIENT_ID',
@@ -462,9 +463,6 @@ describe('DatabaseManagementService', () => {
 					configService.get.mockImplementation((data: string) => `${data}_env`);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					expect(dbService.collectionExists).toBeCalledTimes(1);
-					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
-					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
 						clientId: 'SANIS_CLIENT_ID_env',
@@ -481,9 +479,6 @@ describe('DatabaseManagementService', () => {
 					configService.get.mockReturnValue(undefined);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					expect(dbService.collectionExists).toBeCalledTimes(1);
-					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
-					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
 						clientId: '',
@@ -493,6 +488,17 @@ describe('DatabaseManagementService', () => {
 						clientId: '',
 						clientSecret: '',
 					});
+				});
+				it('should warn if non resolvable placeholder encountered', async () => {
+					configGetSpy.mockReturnValue(undefined);
+					configHasSpy.mockReturnValue(false);
+					configService.get.mockReturnValue(undefined);
+					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
+					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
+					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SANIS_CLIENT_ID'));
+					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SANIS_CLIENT_SECRET'));
+					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('OIDC_CLIENT_ID'));
+					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('OIDC_CLIENT_SECRET'));
 				});
 				it('should favor configuration key before environmental variable', async () => {
 					const configurationCompareValue = 'CONFIGURATION';
