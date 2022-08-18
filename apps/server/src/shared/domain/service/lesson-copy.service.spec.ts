@@ -900,7 +900,7 @@ describe('lesson copy service', () => {
 		});
 	});
 
-	describe('when lesson contains nexBoard content element', () => {
+	describe('when lesson contains neXboard content element', () => {
 		const setup = () => {
 			const nexboardContent: IComponentProperties = {
 				title: 'text',
@@ -933,7 +933,7 @@ describe('lesson copy service', () => {
 			return { user, originalCourse, destinationCourse, originalLesson };
 		};
 
-		it('should not call nexboard service, if feature flag is false', async () => {
+		it('should not call neXboard service, if feature flag is false', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
 			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(false);
 
@@ -951,7 +951,7 @@ describe('lesson copy service', () => {
 			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
 		});
 
-		it('should call nexboard service to create new nexboard', async () => {
+		it('should call neXboard service to create new neXboard', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
 			await copyService.copyLesson({
@@ -963,7 +963,7 @@ describe('lesson copy service', () => {
 			expect(nexboardService.createNexboard).toHaveBeenCalled();
 		});
 
-		it('should not copy the nexboard content, if nexboard creation fails', async () => {
+		it('should not copy the neXboard content, if neXboard creation fails', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
 			nexboardService.createNexboard.mockResolvedValue(false);
@@ -985,7 +985,7 @@ describe('lesson copy service', () => {
 			expect(lessonContents.length).toEqual(0);
 		});
 
-		it('should copy nexboard correctly', async () => {
+		it('should copy neXboard correctly', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
 			nexboardService.createNexboard.mockResolvedValue({ board: '123', url: 'abc' });
