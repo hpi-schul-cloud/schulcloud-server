@@ -5,7 +5,6 @@ import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { UserRepo } from '@shared/repo';
 import { SystemRepo } from '@shared/repo/system';
 import { LoggerModule } from '@src/core/logger';
-import { IservOAuthService } from '@src/modules/oauth/service/iserv-oauth.service';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningModule } from '@src/modules/provisioning/provisioning.module';
 import { AuthorizationModule } from '../authorization';
@@ -22,7 +21,6 @@ const key = Configuration.get('AES_KEY') as string;
 		SystemRepo,
 		UserRepo,
 		OAuthService,
-		IservOAuthService,
 		{ provide: 'SYMMETRIC_CIPHER_KEY', useValue: key },
 		SymetricKeyEncryptionService,
 	],

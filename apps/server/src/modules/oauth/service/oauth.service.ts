@@ -16,7 +16,6 @@ import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { FeathersJwtProvider } from '../../authorization';
-import { IservOAuthService } from './iserv-oauth.service';
 import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthResponse } from './dto/oauth.response';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
@@ -29,7 +28,7 @@ export class OAuthService {
 		private readonly jwtService: FeathersJwtProvider,
 		private readonly httpService: HttpService,
 		private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
-		private readonly iservOauthService: IservOAuthService,
+		// private readonly iservOauthService: IservOAuthService,
 		private readonly logger: Logger,
 		private readonly provisioningUc: ProvisioningUc
 	) {
@@ -99,22 +98,18 @@ export class OAuthService {
 			issuer: oauthConfig.issuer,
 			audience: oauthConfig.clientId,
 		});
-		if (typeof verifiedJWT === 'string' || verifiedJWT instanceof String)
+		if (typeof verifiedJWT === 'string' || verifiedJWT instanceof String) {
 			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
+		}
 		return verifiedJWT as IJwt;
 	}
 
-	async findUser(accessToken: string, decodedJwt: IJwt, system: System): Promise<User> {
+	async findUser(accessToken: string, idToken: string, systemId: string): Promise<User> {
 		try {
-			// iserv strategy
-			if (system.oauthConfig && system.oauthConfig.provider === 'iserv') {
-				return await this.iservOauthService.findUserById(system.id, decodedJwt);
-			}
-			this.logger.debug(
-				`provisioning is running for user with sub: ${decodedJwt.sub} and system with id: ${system.id}`
-			);
-			const provisioningDto = await this.provisioningUc.process(accessToken, system.id);
-			const user = await this.userRepo.findByExternalIdOrFail(provisioningDto.userDto.externalId, system.id);
+			this.logger.debug(`provisioning is running for user with id_token: ${idToken} and system with id: ${systemId}`);
+			const provisioningDto = await this.provisioningUc.process(accessToken, idToken, systemId);
+			const user = await this.userRepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
+
 			return user;
 		} catch (error) {
 			throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
@@ -151,9 +146,9 @@ export class OAuthService {
 			this.logger.debug('Done. Next up: requestToken().');
 			const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig);
 			this.logger.debug('Done. Next up: validateToken().');
-			const decodedToken: IJwt = await this.validateToken(queryToken.id_token, oauthConfig);
+			await this.validateToken(queryToken.id_token, oauthConfig);
 			this.logger.debug('Done. Next up: findUser().');
-			const user: User = await this.findUser(queryToken.access_token, decodedToken, system);
+			const user: User = await this.findUser(queryToken.access_token, queryToken.id_token, system.id);
 			this.logger.debug('Done. Next up: getJWTForUser().');
 			const jwtResponse: string = await this.getJwtForUser(user);
 			this.logger.debug('Done. Next up: buildResponse().');

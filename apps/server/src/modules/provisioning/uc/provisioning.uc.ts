@@ -6,6 +6,7 @@ import { Logger } from '@src/core/logger';
 import { ProvisioningSystemInputDto } from '@src/modules/provisioning/dto/provisioning-system-input.dto';
 import { ProvisioningSystemInputMapper } from '@src/modules/provisioning/mapper/provisioning-system-input.mapper';
 import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
+import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 
 @Injectable()
@@ -13,12 +14,13 @@ export class ProvisioningUc {
 	constructor(
 		private readonly systemUc: SystemUc,
 		private readonly sanisStrategy: SanisProvisioningStrategy,
+		private readonly iservStrategy: IservProvisioningStrategy,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(ProvisioningUc.name);
 	}
 
-	async process(accessToken: string, systemId: string): Promise<ProvisioningDto> {
+	async process(accessToken: string, idToken: string, systemId: string): Promise<ProvisioningDto> {
 		let system: ProvisioningSystemInputDto;
 		try {
 			system = ProvisioningSystemInputMapper.mapToInternal(await this.systemUc.findById(systemId));
@@ -36,12 +38,10 @@ export class ProvisioningUc {
 				return this.sanisStrategy.apply(params);
 			}
 			case SystemProvisioningStrategy.ISERV: {
-				// TODO Iserv strategy
 				const params = {
-					provisioningUrl: system.provisioningUrl ?? '',
-					accessToken,
+					idToken,
 				};
-				return this.sanisStrategy.apply(params);
+				return this.iservStrategy.apply(params);
 			}
 			default:
 				this.logger.error(`Missing provisioning strategy for system with id ${systemId}`);

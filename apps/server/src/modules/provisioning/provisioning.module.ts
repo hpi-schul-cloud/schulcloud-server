@@ -10,11 +10,20 @@ import { PermissionService } from '@shared/domain';
 import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
 import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
 import { HttpModule } from '@nestjs/axios';
+import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
 
 @Module({
 	imports: [UserModule, SchoolModule, RoleModule, SystemModule, LoggerModule, HttpModule],
 	controllers: [],
-	providers: [ProvisioningUc, SanisProvisioningStrategy, Logger, SanisResponseMapper, UserRepo, PermissionService],
+	providers: [
+		ProvisioningUc,
+		SanisProvisioningStrategy,
+		IservProvisioningStrategy,
+		Logger,
+		SanisResponseMapper,
+		UserRepo,
+		PermissionService,
+	],
 	exports: [ProvisioningUc],
 })
 export class ProvisioningModule {}

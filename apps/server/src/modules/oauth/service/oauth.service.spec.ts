@@ -18,7 +18,6 @@ import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
-import { IservOAuthService } from './iserv-oauth.service';
 import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthResponse } from './dto/oauth.response';
@@ -72,7 +71,6 @@ describe('OAuthService', () => {
 	let systemRepo: DeepMocked<SystemRepo>;
 	let userRepo: DeepMocked<UserRepo>;
 	let feathersJwtProvider: DeepMocked<FeathersJwtProvider>;
-	let iservOAuthService: DeepMocked<IservOAuthService>;
 	let provisioningService: DeepMocked<ProvisioningUc>;
 
 	beforeAll(async () => {
@@ -115,10 +113,6 @@ describe('OAuthService', () => {
 					provide: FeathersJwtProvider,
 					useValue: createMock<FeathersJwtProvider>(),
 				},
-				{
-					provide: IservOAuthService,
-					useValue: createMock<IservOAuthService>(),
-				},
 			],
 		}).compile();
 		service = module.get(OAuthService);
@@ -127,7 +121,6 @@ describe('OAuthService', () => {
 		systemRepo = module.get(SystemRepo);
 		userRepo = module.get(UserRepo);
 		feathersJwtProvider = module.get(FeathersJwtProvider);
-		iservOAuthService = module.get(IservOAuthService);
 		provisioningService = module.get(ProvisioningUc);
 
 		jest.mock('axios', () =>
