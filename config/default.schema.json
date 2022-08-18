@@ -344,7 +344,7 @@
 		},
 		"OIDCMOCK": {
 			"type": "object",
-			"description": "OpenID Connect Identity Provider mock server for develop and testing purpose.",
+			"description": "OpenID Connect Identity Provider mock server for develop and testing purpose (set these values for local seeding purpose).",
 			"required": [],
 			"properties": {
 				"BASE_URL": {
