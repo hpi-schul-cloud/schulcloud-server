@@ -7,6 +7,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { Logger } from '@src/core/logger';
 import { HttpException } from '@nestjs/common';
 import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
+import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
 
 describe('ProvisioningUc', () => {
 	let module: TestingModule;
@@ -14,6 +15,7 @@ describe('ProvisioningUc', () => {
 
 	let systemUc: DeepMocked<SystemUc>;
 	let sanisProvisioningStrategy: DeepMocked<SanisProvisioningStrategy>;
+	let iservProvisioningStrategy: DeepMocked<IservProvisioningStrategy>;
 	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
@@ -29,6 +31,10 @@ describe('ProvisioningUc', () => {
 					useValue: createMock<SanisProvisioningStrategy>(),
 				},
 				{
+					provide: IservProvisioningStrategy,
+					useValue: createMock<IservProvisioningStrategy>(),
+				},
+				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -38,6 +44,7 @@ describe('ProvisioningUc', () => {
 
 		systemUc = module.get(SystemUc);
 		sanisProvisioningStrategy = module.get(SanisProvisioningStrategy);
+		iservProvisioningStrategy = module.get(IservProvisioningStrategy);
 		logger = module.get(Logger);
 	});
 
@@ -51,9 +58,14 @@ describe('ProvisioningUc', () => {
 
 	describe('process', () => {
 		const sanisSystemStrategyId = 'sanisSystemId';
+		const iservSystemStrategyId = 'iservSystemId';
 		const sanisStrategySystem: SystemDto = new SystemDto({
 			type: 'sanis',
 			provisioningStrategy: SystemProvisioningStrategy.SANIS,
+		});
+		const iservStrategySystem: SystemDto = new SystemDto({
+			type: 'iserv',
+			provisioningStrategy: SystemProvisioningStrategy.ISERV,
 		});
 
 		beforeEach(() => {
@@ -61,21 +73,32 @@ describe('ProvisioningUc', () => {
 				if (id === sanisSystemStrategyId) {
 					return Promise.resolve(sanisStrategySystem);
 				}
+				if (id === iservSystemStrategyId) {
+					return Promise.resolve(iservStrategySystem);
+				}
 				return Promise.reject();
 			});
 		});
 
 		it('should throw error when system does not exists', async () => {
 			// Act & Assert
-			await expect(provisioningUc.process('accessToken', 'no system found')).rejects.toThrow(HttpException);
+			await expect(provisioningUc.process('accessToken', 'idToken', 'no system found')).rejects.toThrow(HttpException);
 		});
 
 		it('should apply sanis provisioning strategy', async () => {
 			// Act
-			await provisioningUc.process('accessToken', sanisSystemStrategyId);
+			await provisioningUc.process('accessToken', 'idToken', sanisSystemStrategyId);
 
 			// Assert
 			expect(sanisProvisioningStrategy.apply).toHaveBeenCalled();
+		});
+
+		it('should apply iserv provisioning strategy', async () => {
+			// Act
+			await provisioningUc.process('accessToken', 'idToken', iservSystemStrategyId);
+
+			// Assert
+			expect(iservProvisioningStrategy.apply).toHaveBeenCalled();
 		});
 
 		it('should throw error for missing provisioning stratgey', async () => {
@@ -88,7 +111,9 @@ describe('ProvisioningUc', () => {
 			systemUc.findById.mockResolvedValueOnce(missingStrategySystem);
 
 			// Act & Assert
-			await expect(provisioningUc.process('accessToken', 'missingStrategySystemId')).rejects.toThrow(HttpException);
+			await expect(provisioningUc.process('accessToken', 'idToken', 'missingStrategySystemId')).rejects.toThrow(
+				HttpException
+			);
 			expect(logger.error).toHaveBeenCalled();
 		});
 	});

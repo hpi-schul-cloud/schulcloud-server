@@ -1,4 +1,3 @@
-import { IProviderResponseMapper } from '@src/modules/provisioning/interface/provider-response.mapper.interface';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
@@ -18,8 +17,10 @@ import {
 import { of } from 'rxjs';
 import { UUID } from 'bson';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { SanisResponseMapper } from './sanis-response.mapper';
+import { SchoolDto } from '../../../school/uc/dto/school.dto';
 
-const mapper: DeepMocked<IProviderResponseMapper<SanisResponse>> = createMock<IProviderResponseMapper<SanisResponse>>();
+const mapper: DeepMocked<SanisResponseMapper> = createMock<SanisResponseMapper>();
 
 const schoolUc: DeepMocked<SchoolUc> = createMock<SchoolUc>();
 
@@ -35,6 +36,11 @@ const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> 
 	config: {},
 });
 
+const params = {
+	provisioningUrl: 'sanisProvisioningUrl',
+	accessToken: 'sanisAccessToken',
+};
+
 describe('SanisStrategy', () => {
 	let sanisStrategy: SanisProvisioningStrategy;
 
@@ -44,14 +50,6 @@ describe('SanisStrategy', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
-	});
-
-	describe('init', () => {
-		it('should initialize the strategy', () => {
-			sanisStrategy.init('testURL', {
-				headers: { Authorization: `Testtoken` },
-			});
-		});
 	});
 
 	describe('apply', () => {
@@ -97,10 +95,6 @@ describe('SanisStrategy', () => {
 		});
 		beforeEach(() => {
 			schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDto);
-
-			sanisStrategy.init('testURL', {
-				headers: { Authorization: `Testtoken` },
-			});
 		});
 
 		it('should apply strategy', async () => {
@@ -110,34 +104,26 @@ describe('SanisStrategy', () => {
 			mapper.mapToUserDto.mockReturnValue(userDto);
 
 			// Act
-			const result = await sanisStrategy.apply();
+			const result = await sanisStrategy.apply(params);
 
 			// Assert
 			expect(mapper.mapToSchoolDto).toHaveBeenCalledWith(mockResponse);
 			expect(schoolUc.saveProvisioningSchoolOutputDto).toHaveBeenCalledWith(schoolDto);
 			expect(mapper.mapToUserDto).toHaveBeenCalledWith(mockResponse, schoolDto.id);
 			expect(userUc.saveProvisioningUserOutputDto).toHaveBeenCalled();
-			expect(result.userDto).toEqual(userDto);
-			expect(result.schoolDto).toEqual(schoolDto);
+			expect(result.externalUserId).toEqual(userDto.externalId);
 		});
 
-		it('should throw error when there is no school', async () => {
+		it('should throw error when there is no school saved', async () => {
 			// Arrange
 			httpService.get.mockReturnValue(of(createAxiosResponse(mockResponse)));
 			mapper.mapToUserDto.mockReturnValue(userDto);
-			mapper.mapToSchoolDto.mockReturnValue(undefined);
+			schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(new SchoolDto({ name: 'schoolName' }));
 
-			// Act
-			// const result = await sanisStrategy.apply();
-
-			// Assert
-			await expect(sanisStrategy.apply()).rejects.toThrow();
-			// expect(mapper.mapToSchoolDto).toHaveBeenCalledWith(mockResponse);
-			// expect(schoolUc.saveProvisioningSchoolOutputDto).not.toHaveBeenCalled();
-			// expect(mapper.mapToUserDto).not.toHaveBeenCalledWith(mockResponse, schoolDto.id);
-			// expect(userUc.saveProvisioningUserOutputDto).toHaveBeenCalled();
-			// expect(result.userDto).toEqual(userDto);
-			// expect(result.schoolDto).toEqual(undefined);
+			// Act & Assert
+			await expect(sanisStrategy.apply({ provisioningUrl: '', accessToken: '' })).rejects.toThrow(
+				UnprocessableEntityException
+			);
 		});
 	});
 
@@ -145,20 +131,6 @@ describe('SanisStrategy', () => {
 		it('should return type SANIS', () => {
 			const retType: SystemProvisioningStrategy = sanisStrategy.getType();
 			expect(retType).toEqual(SystemProvisioningStrategy.SANIS);
-		});
-	});
-
-	describe('getProvisioningData', () => {
-		it('should throw an error when initialization fails', async () => {
-			let message = '';
-			try {
-				await sanisStrategy.getProvisioningData();
-			} catch (e) {
-				if (e instanceof UnprocessableEntityException) {
-					message = e.message;
-				}
-			}
-			expect(message).toEqual('Provisioning not initialized');
 		});
 	});
 });
