@@ -13,12 +13,13 @@ import { System } from '@shared/domain';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo } from '@shared/repo';
 import { v1 } from 'uuid';
+import { systemFactory } from '@shared/testing';
 import { SysType } from '../../sys.type';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { flowAlias, KeycloakConfigurationService } from './keycloak-configuration.service';
 
-describe('configureIdentityProviders', () => {
+describe('KeycloakConfigurationService Unit', () => {
 	let module: TestingModule;
 	let client: DeepMocked<KeycloakAdminClient>;
 	let service: KeycloakConfigurationService;
@@ -31,6 +32,7 @@ describe('configureIdentityProviders', () => {
 	const kcApiClientMock = createMock<Clients>();
 	const kcApiAuthenticationManagementMock = createMock<AuthenticationManagement>();
 	const kcApiRealmsMock = createMock<Realms>();
+	const encryptionServiceMock = createMock<SymetricKeyEncryptionService>();
 	const adminUsername = 'admin';
 
 	const adminUser: UserRepresentation = {
@@ -127,7 +129,10 @@ describe('configureIdentityProviders', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
-				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
+				{
+					provide: DefaultEncryptionService,
+					useValue: encryptionServiceMock,
+				},
 			],
 		}).compile();
 		client = module.get(KeycloakAdminClient);
@@ -155,78 +160,105 @@ describe('configureIdentityProviders', () => {
 		configService.get.mockClear();
 	});
 
-	afterAll(() => {
-		repo.findAll.mockRestore();
-		kcApiClientIdentityProvidersMock.find.mockRestore();
-		kcApiClientIdentityProvidersMock.create.mockRestore();
-		kcApiClientIdentityProvidersMock.update.mockRestore();
-		kcApiClientIdentityProvidersMock.del.mockRestore();
-		configService.get.mockRestore();
-	});
+	describe('configureIdentityProviders', () => {
+		it('should read configs from database successfully', async () => {
+			const result = await service.configureIdentityProviders();
+			expect(result).toBeGreaterThan(0);
+			expect(repo.findAll).toBeCalled();
+		});
 
-	it('should read configs from database successfully', async () => {
-		const result = await service.configureIdentityProviders();
-		expect(result).toBeGreaterThan(0);
-		expect(repo.findAll).toBeCalled();
-	});
+		it('should create a configuration in Keycloak', async () => {
+			kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
 
-	it('should create a configuration in Keycloak', async () => {
-		kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
+			const result = await service.configureIdentityProviders();
+			expect(result).toBe(1);
+			expect(kcApiClientIdentityProvidersMock.create).toBeCalledTimes(1);
 
-		const result = await service.configureIdentityProviders();
-		expect(result).toBe(1);
-		expect(kcApiClientIdentityProvidersMock.create).toBeCalledTimes(1);
+			kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
+		});
+		it('should update a configuration in Keycloak', async () => {
+			const result = await service.configureIdentityProviders();
+			expect(result).toBe(1);
+			expect(kcApiClientIdentityProvidersMock.update).toBeCalledTimes(1);
+		});
+		it('should decrypt secrets when creating a configuration in Keycloak', async () => {
+			kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
 
-		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
-	});
-	it('should update a configuration in Keycloak', async () => {
-		const result = await service.configureIdentityProviders();
-		expect(result).toBe(1);
-		expect(kcApiClientIdentityProvidersMock.update).toBeCalledTimes(1);
-	});
-	it('should decrypt secrets when creating a configuration in Keycloak', async () => {
-		kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
+			await service.configureIdentityProviders();
+			expect(kcApiClientIdentityProvidersMock.create).toHaveBeenCalledWith(
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				expect.objectContaining({ config: expect.objectContaining({ clientId: expect.stringMatching('.*dec') }) })
+			);
 
-		await service.configureIdentityProviders();
-		expect(kcApiClientIdentityProvidersMock.create).toHaveBeenCalledWith(
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			expect.objectContaining({ config: expect.objectContaining({ clientId: expect.stringMatching('.*dec') }) })
-		);
+			kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
+		});
+		it('should decrypt secrets when updating a configuration in Keycloak', async () => {
+			await service.configureIdentityProviders();
+			expect(kcApiClientIdentityProvidersMock.update).toHaveBeenCalledWith(
+				expect.anything(),
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				expect.objectContaining({ config: expect.objectContaining({ clientId: expect.stringMatching('.*dec') }) })
+			);
+		});
+		it('should delete a new configuration in Keycloak', async () => {
+			repo.findAll.mockResolvedValue([]);
 
-		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
-	});
-	it('should decrypt secrets when updating a configuration in Keycloak', async () => {
-		await service.configureIdentityProviders();
-		expect(kcApiClientIdentityProvidersMock.update).toHaveBeenCalledWith(
-			expect.anything(),
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			expect.objectContaining({ config: expect.objectContaining({ clientId: expect.stringMatching('.*dec') }) })
-		);
-	});
-	it('should delete a new configuration in Keycloak', async () => {
-		repo.findAll.mockResolvedValue([]);
+			const result = await service.configureIdentityProviders();
+			expect(result).toBe(1);
+			expect(kcApiClientIdentityProvidersMock.del).toBeCalledTimes(1);
 
-		const result = await service.configureIdentityProviders();
-		expect(result).toBe(1);
-		expect(kcApiClientIdentityProvidersMock.del).toBeCalledTimes(1);
-
-		repo.findAll.mockRestore();
+			repo.findAll.mockRestore();
+		});
 	});
 
 	describe('configureClient', () => {
 		beforeAll(() => {
-			kcApiClientMock.create.mockResolvedValue();
+			encryptionServiceMock.encrypt.mockImplementation((value: string) => `encrypted: ${value}`);
+			kcApiClientMock.find.mockResolvedValue([]);
+			kcApiClientMock.create.mockResolvedValue({ id: 'new_client_id' });
+			kcApiClientMock.generateNewClientSecret.mockResolvedValue({ type: 'secret', value: 'generated_client_secret' });
+			repo.findAll.mockResolvedValue([systemFactory.build({ alias: 'keycloak', oauthConfig: {} })]);
 		});
 
-		it('should create a new client in Keycloak', async () => {});
+		afterAll(() => {
+			kcApiClientMock.find.mockRestore();
+			kcApiClientMock.findOne.mockRestore();
+			kcApiClientMock.create.mockRestore();
+			kcApiClientMock.generateNewClientSecret.mockRestore();
+			repo.findAll.mockRestore();
+		});
 
-		it('should not create a new client in Keycloak if client already exists', async () => {});
+		beforeEach(() => {
+			encryptionServiceMock.encrypt.mockClear();
+			kcApiClientMock.find.mockClear();
+			kcApiClientMock.findOne.mockClear();
+			kcApiClientMock.create.mockClear();
+			kcApiClientMock.generateNewClientSecret.mockClear();
+			repo.findAll.mockClear();
+			repo.save.mockClear();
+		});
 
-		it('should generate a new client secret', async () => {});
-
-		it('should encrypt the secret', async () => {});
-
-		it('should save the encrypted secret', async () => {});
+		it('should create client if client not exists', async () => {
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(kcApiClientMock.create).toBeCalledTimes(1);
+		});
+		it('should not create client if client already exists', async () => {
+			kcApiClientMock.find.mockResolvedValueOnce([{ id: 'old_client_id' }]);
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(kcApiClientMock.create).toBeCalledTimes(0);
+		});
+		it('should generate a new client secret', async () => {
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(kcApiClientMock.generateNewClientSecret).toBeCalledTimes(1);
+		});
+		it('should encrypt client secret', async () => {
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(encryptionServiceMock.encrypt).toBeCalledTimes(1);
+		});
+		it('should save client secret', async () => {
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(repo.save).toBeCalledTimes(1);
+		});
 	});
 
 	describe('configureBrokerFlows', () => {
