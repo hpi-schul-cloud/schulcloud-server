@@ -44,24 +44,34 @@ describe('copy files service', () => {
 	describe('copy files of entity', () => {
 		const setup = () => {
 			const school = schoolFactory.build();
-			const originalFile = fileFactory.buildWithId({ name: 'file.jpg' });
-			const html = getImageHTML(originalFile.id, originalFile.name);
+			const file1 = fileFactory.buildWithId({ name: 'file.jpg' });
+			const file2 = fileFactory.buildWithId({ name: 'file.jpg' });
+			const imageHTML1 = getImageHTML(file1.id, file1.name);
+			const imageHTML2 = getImageHTML(file2.id, file2.name);
 			const jwt = 'asdaksjdaskjdhsdjkfhsd';
-			return { originalFile, school, jwt, html };
+			return { file1, file2, school, jwt, imageHTML1, imageHTML2 };
 		};
 
 		const lessonSetup = () => {
-			const { originalFile, school, jwt, html } = setup();
+			const { file1, file2, school, jwt, imageHTML1, imageHTML2 } = setup();
 			const originalCourse = courseFactory.build({ school });
 			const textContent: IComponentProperties = {
 				title: '',
 				hidden: false,
 				component: ComponentType.TEXT,
-				content: { text: html },
+				content: { text: `${imageHTML1} test abschnitt ${imageHTML2}` },
 			};
-			const originalLesson = lessonFactory.build({ course: originalCourse, contents: [textContent] });
-			const copyLesson = lessonFactory.build({ course: originalCourse, contents: [textContent] });
-			return { originalLesson, copyLesson, originalFile, schoolId: school.id, jwt };
+			const geoGebraContent: IComponentProperties = {
+				title: 'geoGebra component 1',
+				hidden: false,
+				component: ComponentType.GEOGEBRA,
+				content: {
+					materialId: 'foo',
+				},
+			};
+			const originalLesson = lessonFactory.build({ course: originalCourse, contents: [geoGebraContent, textContent] });
+			const copyLesson = lessonFactory.build({ course: originalCourse, contents: [geoGebraContent, textContent] });
+			return { originalLesson, copyLesson, file1, file2, schoolId: school.id, jwt };
 		};
 
 		it('it should return copy response', async () => {
@@ -86,35 +96,46 @@ describe('copy files service', () => {
 		});
 
 		it('it should replace copied urls in lesson', async () => {
-			const { originalLesson, copyLesson, originalFile, schoolId, jwt } = lessonSetup();
+			const { originalLesson, copyLesson, file1, file2, schoolId, jwt } = lessonSetup();
 
-			const mockedResponse = [{ id: 'mockedFileId', sourceId: originalFile.id, name: 'mockedName' }];
+			const mockedResponse = [
+				{ id: 'mockedFileId1', sourceId: file1.id, name: 'mockedName1' },
+				{ id: 'mockedFileId2', sourceId: file2.id, name: 'mockedName2' },
+			];
 
 			filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue(mockedResponse);
 			const copyResponse = await copyFilesService.copyFilesOfEntity(originalLesson, copyLesson, schoolId, jwt);
 
 			const lesson = copyResponse.entity as Lesson;
-			const { text } = lesson.contents[0].content as IComponentTextProperties;
+			const { text } = lesson.contents[1].content as IComponentTextProperties;
 
-			const expectedHTML = getImageHTML(mockedResponse[0].id, mockedResponse[0].name);
-			expect(text).toEqual(expectedHTML);
+			const expectedHTML1 = getImageHTML(mockedResponse[0].id, mockedResponse[0].name);
+			const expectedHTML2 = getImageHTML(mockedResponse[1].id, mockedResponse[1].name);
+
+			expect(text).toContain(expectedHTML1);
+			expect(text).toContain(expectedHTML2);
 		});
 
 		it('it should replace copied urls in task', async () => {
-			const { originalFile, jwt, html, school } = setup();
+			const { file1, file2, jwt, imageHTML1, imageHTML2, school } = setup();
 
-			const originalTask = taskFactory.buildWithId({ school, description: html });
-			const copyTask = taskFactory.buildWithId({ school, description: html });
+			const originalTask = taskFactory.buildWithId({ school, description: `${imageHTML1} ${imageHTML2}` });
+			const copyTask = taskFactory.buildWithId({ school, description: `${imageHTML1} ${imageHTML2}` });
 
-			const mockedResponse = [{ id: 'mockedFileId', sourceId: originalFile.id, name: 'mockedName' }];
+			const mockedResponse = [
+				{ id: 'mockedFileId1', sourceId: file1.id, name: 'mockedName1' },
+				{ id: 'mockedFileId2', sourceId: file2.id, name: 'mockedName2' },
+			];
 
 			filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue(mockedResponse);
 			const copyResponse = await copyFilesService.copyFilesOfEntity(originalTask, copyTask, school.id, jwt);
 
 			const { description } = copyResponse.entity as Task;
 
-			const expectedHTML = getImageHTML(mockedResponse[0].id, mockedResponse[0].name);
-			expect(description).toEqual(expectedHTML);
+			const expectedHTML1 = getImageHTML(mockedResponse[0].id, mockedResponse[0].name);
+			const expectedHTML2 = getImageHTML(mockedResponse[0].id, mockedResponse[0].name);
+			expect(description).toContain(expectedHTML1);
+			expect(description).toContain(expectedHTML2);
 		});
 	});
 });
