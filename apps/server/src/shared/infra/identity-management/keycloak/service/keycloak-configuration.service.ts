@@ -130,7 +130,9 @@ export class KeycloakConfigurationService {
 				},
 			});
 			await this.systemRepo.save(keycloakSystem);
-			keycloakSystem.oauthConfig!.redirectUri = `http://localhost:3030/api/v3/sso/oauth/${keycloakSystem.id}`;
+			if (keycloakSystem.oauthConfig) {
+				keycloakSystem.oauthConfig.redirectUri = `http://localhost:3030/api/v3/sso/oauth/${keycloakSystem.id}`;
+			}
 			await this.systemRepo.save(keycloakSystem);
 		}
 	}
