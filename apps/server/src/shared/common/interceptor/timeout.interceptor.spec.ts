@@ -20,8 +20,7 @@ describe('TimeoutInterceptor', () => {
 		});
 
 		it('should respond with error code if request runs into timeout', async () => {
-			const configService = new ConfigService<IInterceptorConfig, true>({ INCOMING_REQUEST_TIMEOUT: 1 });
-			const interceptor = new TimeoutInterceptor(configService);
+			const interceptor = new TimeoutInterceptor(1);
 
 			app = (await createTestModule(interceptor)).createNestApplication();
 			await app.init();
@@ -32,8 +31,7 @@ describe('TimeoutInterceptor', () => {
 		});
 
 		it('should pass if request does not run into timeout', async () => {
-			const configService = new ConfigService<IInterceptorConfig, true>({ INCOMING_REQUEST_TIMEOUT: 30000 });
-			const interceptor = new TimeoutInterceptor(configService);
+			const interceptor = new TimeoutInterceptor(30000);
 
 			app = (await createTestModule(interceptor)).createNestApplication();
 			await app.init();

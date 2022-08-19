@@ -1,9 +1,10 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Patch, UseInterceptors } from '@nestjs/common';
 
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 
+import { TimeoutInterceptor } from '@shared/common';
 import { ResolvedUserMapper } from '../mapper';
 import { UserUc } from '../uc/user.uc';
 
@@ -16,6 +17,7 @@ export class UserController {
 	constructor(private readonly userUc: UserUc) {}
 
 	@Get('me')
+	@UseInterceptors(new TimeoutInterceptor(3000))
 	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUserResponse> {
 		const [user, permissions] = await this.userUc.me(currentUser.userId);
 
