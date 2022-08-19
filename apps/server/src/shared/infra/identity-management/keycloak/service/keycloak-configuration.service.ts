@@ -109,12 +109,29 @@ export class KeycloakConfigurationService {
 			}));
 		}
 		const response = await kc.clients.generateNewClientSecret({ id });
-		const system = (await this.systemRepo.findAll()).find(
-			(tempSystem) => tempSystem.alias?.toLocaleLowerCase() === 'keycloak'
-		);
-		if (system && system.oauthConfig && response.value) {
-			system.oauthConfig.clientSecret = this.defaultEncryptionService.encrypt(response.value);
-			await this.systemRepo.save(system);
+		const systems = await this.systemRepo.findByFilter(SysType.KEYCLOAK, false);
+		if (systems.length === 0) {
+			const keycloakSystem = new System({
+				type: SysType.KEYCLOAK,
+				alias: 'Keycloak',
+				oauthConfig: {
+					clientId: CLIENT_ID,
+					clientSecret: response.value as string,
+					grantType: 'authorization_code',
+					scope: 'openid profile email',
+					responseType: 'code',
+					provider: 'oauth',
+					tokenEndpoint: `${kc.baseUrl}/realms/${kc.realmName}/protocol/openid-connect/token`,
+					redirectUri: '',
+					authEndpoint: `${kc.baseUrl}/realms/${kc.realmName}/protocol/openid-connect/auth`,
+					logoutEndpoint: `${kc.baseUrl}/realms/${kc.realmName}/protocol/openid-connect/logout`,
+					jwksEndpoint: `${kc.baseUrl}/realms/${kc.realmName}/protocol/openid-connect/certs`,
+					issuer: `${kc.baseUrl}/realms/${kc.realmName}`,
+				},
+			});
+			await this.systemRepo.save(keycloakSystem);
+			keycloakSystem.oauthConfig!.redirectUri = `http://localhost:3030/api/v3/sso/oauth/${keycloakSystem.id}`;
+			await this.systemRepo.save(keycloakSystem);
 		}
 	}
 

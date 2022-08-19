@@ -3,6 +3,7 @@ import { SystemRepo } from '@shared/repo';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { EntityId, System } from '@shared/domain';
+import { SysType } from '@shared/infra/identity-management';
 
 @Injectable()
 export class SystemService {
@@ -15,13 +16,17 @@ export class SystemService {
 		} else {
 			systemEntities = await this.systemRepo.findByFilter(type, onlyOauth);
 		}
-		const systemDtos: SystemDto[] = SystemMapper.mapFromEntitiesToDtos(systemEntities);
-		return systemDtos;
+		const keycloakConfig = (await this.systemRepo.findByFilter(SysType.KEYCLOAK, true))[0];
+		systemEntities.forEach((systemEntity) => {
+			if (keycloakConfig && systemEntity.type === SysType.OIDC && !systemEntity.oauthConfig) {
+				systemEntity.oauthConfig = keycloakConfig.oauthConfig;
+			}
+		});
+		return SystemMapper.mapFromEntitiesToDtos(systemEntities);
 	}
 
 	async findById(id: EntityId): Promise<SystemDto> {
-		const entity: System = await this.systemRepo.findById(id);
-		const systemDto: SystemDto = SystemMapper.mapFromEntityToDto(entity);
-		return systemDto;
+		const entity = await this.systemRepo.findById(id);
+		return SystemMapper.mapFromEntityToDto(entity);
 	}
 }
