@@ -128,8 +128,11 @@ describe('DatabaseManagementService', () => {
 		isShared: true,
 		region: 'eu-central-1',
 		type: 'S3',
+		// eslint-disable-next-line no-template-curly-in-string
 		endpointUrl: 'https://storage-${SC_DOMAIN}',
+		// eslint-disable-next-line no-template-curly-in-string
 		accessKeyId: '${AWS_ACCESS_KEY}',
+		// eslint-disable-next-line no-template-curly-in-string
 		secretAccessKey: '${AWS_SECRET_ACCESS_KEY_AES}',
 		maxBuckets: 999999,
 		freeBuckets: 999976,
@@ -245,7 +248,7 @@ describe('DatabaseManagementService', () => {
 							if (collectionName === storageprovidersCollectionName) {
 								// JSON used for cloning, so that oauthSystemWithSecrets' values can't be changed
 								// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-								return Promise.resolve(storageProviderWithSecret);
+								return Promise.resolve([storageProviderWithSecret]);
 							}
 							return Promise.resolve([]);
 						},
