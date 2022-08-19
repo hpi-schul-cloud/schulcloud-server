@@ -1,7 +1,7 @@
 import { Collection } from '@mikro-orm/core';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { TeamUser, User, Role } from '@shared/domain/entity';
-import { IEntity, IEntityWithSchool, IUserRoleName } from '../interface';
+import { Role, User } from '@shared/domain/entity';
+import { IEntityWithSchool, IUserRoleName } from '../interface';
 
 @Injectable()
 export class AuthorisationUtils {
@@ -19,13 +19,7 @@ export class AuthorisationUtils {
 		return rolesAndPermissions;
 	}
 
-	resolveTeamPermissions(teamUser: TeamUser): string[] {
-		const rolesAndPermissions = this.resolvePermissionsByRoles([teamUser.role]);
-
-		return rolesAndPermissions;
-	}
-
-	private resolvePermissionsByRoles(inputRoles: Role[]): string[] {
+	resolvePermissionsByRoles(inputRoles: Role[]): string[] {
 		let permissions: string[] = [];
 
 		for (let i = 0; i < inputRoles.length; i += 1) {
@@ -97,7 +91,7 @@ export class AuthorisationUtils {
 	 * @param userRefProps Array of properties in the entity the user is associated with
 	 * @returns
 	 */
-	hasAccessToEntity<T extends IEntity, K extends keyof T>(user: User, entity: T, userRefProps: K[]) {
+	hasAccessToEntity<T, K extends keyof T>(user: User, entity: T, userRefProps: K[]) {
 		const res = userRefProps.some((prop) => {
 			const reference = entity[prop];
 			if (reference instanceof Collection) {

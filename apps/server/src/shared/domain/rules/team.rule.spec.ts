@@ -39,9 +39,7 @@ describe('TeamRule', () => {
 
 	describe('isApplicable', () => {
 		it('should return truthy', () => {
-			expect(() =>
-				service.isApplicable(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionA]))
-			).toBeTruthy();
+			expect(() => service.isApplicable(entity.teamUsers[0].user, entity)).toBeTruthy();
 		});
 	});
 
