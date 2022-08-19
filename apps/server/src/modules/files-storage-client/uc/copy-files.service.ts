@@ -21,11 +21,16 @@ export class CopyFilesService {
 		jwt: string
 	): Promise<{ entity: EntityWithEmbeddedFiles; response: CopyFileResponse[] }> {
 		const { sourceParams, targetParams } = this.buildParams(originalEntity, copyEntity, schoolId, jwt);
-		const response = await this.filesStorageClientAdapterService.copyFilesOfParent(sourceParams, targetParams);
 
-		const entity = this.replaceUrlsOfEntity(response, copyEntity);
+		try {
+			const response = await this.filesStorageClientAdapterService.copyFilesOfParent(sourceParams, targetParams);
 
-		return { entity, response };
+			const entity = this.replaceUrlsOfEntity(response, copyEntity);
+
+			return { entity, response };
+		} catch (error) {
+			return { entity: copyEntity, response: [] };
+		}
 	}
 
 	private replaceUrlsOfEntity(responses: CopyFileResponse[], entity: EntityWithEmbeddedFiles): EntityWithEmbeddedFiles {
