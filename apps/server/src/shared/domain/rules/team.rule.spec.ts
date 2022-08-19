@@ -1,11 +1,12 @@
 import { MikroORM } from '@mikro-orm/core';
-import { Test, TestingModule } from '@nestjs/testing';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { TeamRule } from '@shared/domain/rules/team.rule';
-import { teamFactory } from '@shared/testing/factory/team.factory';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TeamRule } from '@shared/domain/rules/team.rule';
+import { roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { teamFactory } from '@shared/testing/factory/team.factory';
 import { Role, Team, User } from '../entity';
 import { Permission } from '../interface';
+import PermissionContextBuilder from './permission-context.builder';
 
 describe('TeamRule', () => {
 	let orm: MikroORM;
@@ -39,25 +40,25 @@ describe('TeamRule', () => {
 	describe('isApplicable', () => {
 		it('should return truthy', () => {
 			expect(() =>
-				service.isApplicable(entity.teamUsers[0].user, entity, { requiredPermissions: [permissionA] })
+				service.isApplicable(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionA]))
 			).toBeTruthy();
 		});
 	});
 
 	describe('hasPermission', () => {
 		it('should return "true" if user in scope', () => {
-			const res = service.hasPermission(entity.teamUsers[0].user, entity, { requiredPermissions: [permissionA] });
+			const res = service.hasPermission(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionA]));
 			expect(res).toBe(true);
 		});
 
 		it('should return "false" if user has not permission', () => {
-			const res = service.hasPermission(entity.teamUsers[0].user, entity, { requiredPermissions: [permissionC] });
+			const res = service.hasPermission(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionC]));
 			expect(res).toBe(false);
 		});
 
 		it('should throw error if entity was not found', () => {
 			const notFoundUser = userFactory.build({ roles: [role] });
-			expect(() => service.hasPermission(notFoundUser, entity, { requiredPermissions: [permissionA] })).toThrow(
+			expect(() => service.hasPermission(notFoundUser, entity, PermissionContextBuilder.read([permissionA]))).toThrow(
 				new InternalServerErrorException('Cannot find user in team')
 			);
 		});

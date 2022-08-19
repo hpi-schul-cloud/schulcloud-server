@@ -72,16 +72,13 @@ export class AuthorizationService extends BasePermissionManager {
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
 		permissions: Permission[],
-		action?: Actions
+		action: Actions
 	): Map<Permission, Promise<boolean>> {
 		const returnMap: Map<Permission, Promise<boolean>> = new Map();
 		permissions.forEach((perm) => {
-			const ret = this.hasPermissionByReferences(
-				userId,
-				entityName,
-				entityId,
-				PermissionContextBuilder.build([perm], action)
-			);
+			const context =
+				action === Actions.read ? PermissionContextBuilder.read([perm]) : PermissionContextBuilder.write([perm]);
+			const ret = this.hasPermissionByReferences(userId, entityName, entityId, context);
 			returnMap.set(perm, ret);
 		});
 		return returnMap;
