@@ -18,36 +18,13 @@ export class LessonRule extends BasePermission<Lesson> {
 		return isMatched;
 	}
 
-	/* public hasPermission(user: User, entity: Lesson, context: IPermissionContext): boolean {
-		const { action, requiredPermissions } = context;
-		const isStudent = this.utils.hasRole(user, RoleName.STUDENT);
-
-		if (isStudent && entity.hidden) {
-			return false;
-		}
-
-		const hasPermission = this.utils.hasAllPermissions(user, requiredPermissions);
-		let hasCoursePermission = false;
-		if (entity.course) {
-			hasCoursePermission = this.courseRule.hasPermission(user, entity.course, { action, requiredPermissions: [] });
-		} else if (entity.courseGroup) {
-			hasCoursePermission = this.courseGroupRule.hasPermission(user, entity.courseGroup, {
-				action,
-				requiredPermissions: [],
-			});
-		}
-		const result = hasPermission && hasCoursePermission;
-
-		return result;
-	} */
-
 	public hasPermission(user: User, entity: Lesson, context: IPermissionContext): boolean {
 		const { action, requiredPermissions } = context;
 		let hasLessonPermission = false;
 
-		if (Actions.read === action) {
+		if (action === Actions.read) {
 			hasLessonPermission = this.lessonReadPermission(user, entity);
-		} else if (Actions.write === action) {
+		} else if (action === Actions.write) {
 			hasLessonPermission = this.lessonWritePermission(user, entity);
 		}
 

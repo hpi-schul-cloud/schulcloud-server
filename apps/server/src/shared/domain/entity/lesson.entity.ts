@@ -89,7 +89,6 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 	@ManyToOne('Course', { fieldName: 'courseId' })
 	course: Course;
 
-	@Index()
 	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId', nullable: true })
 	courseGroup?: CourseGroup;
 
