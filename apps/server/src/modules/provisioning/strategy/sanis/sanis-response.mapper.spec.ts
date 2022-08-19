@@ -57,6 +57,7 @@ describe('SanisResponseMapper', () => {
 			const dto = mapper.mapToUserDto(sanisResponse, schoolId);
 			expect(dto.firstName).toEqual(sanisResponse.person.name.vorname);
 			expect(dto.lastName).toEqual(sanisResponse.person.name.familienname);
+			expect(dto.email).toEqual('');
 			expect(dto.schoolId).toEqual(schoolId);
 			expect(dto.roleNames[0]).toEqual(RoleName.STUDENT);
 			expect(dto.externalId).toStrictEqual(sanisResponse.pid);

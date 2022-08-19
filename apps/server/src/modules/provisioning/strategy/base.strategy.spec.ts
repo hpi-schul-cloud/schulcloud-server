@@ -23,8 +23,17 @@ describe('BaseStrategy', () => {
 
 	describe('apply', () => {
 		it('should throw not implemented exception', async () => {
-			// Act & Assert
-			await expect(baseStrategy.apply('')).rejects.toThrow(NotImplementedException);
+			// Act
+			let message = '';
+			try {
+				await baseStrategy.apply({ accessToken: '' });
+			} catch (e) {
+				if (e instanceof NotImplementedException) {
+					message = e.message;
+				}
+			}
+			// Assert
+			expect(message).toEqual('Not Implemented');
 		});
 	});
 
