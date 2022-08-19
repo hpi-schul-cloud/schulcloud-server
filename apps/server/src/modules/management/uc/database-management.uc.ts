@@ -244,12 +244,12 @@ export class DatabaseManagementUc {
 	}
 
 	private injectEnvVars(json: string): string {
+		// replace ${VAR} with VAR content
 		json = json.replace(/(?<!\\)\$\{(.*?)\}/g, (placeholder) =>
 			this.resolvePlaceholder(placeholder.substring(2, placeholder.length - 1))
 		);
-		json = json.replace(/\\\$\{(.*?)\}/g, (match) => {
-			return `\${${match}}`;
-		});
+		// replace \$ with $ (escaped placeholder sequence)
+		json = json.replace(/\\\$/g, '$');
 		return json;
 	}
 
@@ -291,9 +291,7 @@ export class DatabaseManagementUc {
 
 	/**
 	 * Removes all known secrets (hard coded) from the export.
-	 *
-	 * This intentionally breaks the exported JSON file. Manual replacement with the intend placeholders or value is mandatory.
-	 *
+	 * Manual replacement with the intend placeholders or value is mandatory.
 	 * Currently this affects system and storageproviders collections.
 	 */
 	private removeSecrets(collectionName: string, jsonDocuments: unknown[]) {

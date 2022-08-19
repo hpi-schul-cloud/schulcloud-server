@@ -8,7 +8,7 @@ import {
 	LdapEncryptionService,
 	SymetricKeyEncryptionService,
 } from '@shared/infra/encryption';
-import { System } from '@shared/domain';
+import { StorageProvider, System } from '@shared/domain';
 import { ObjectId } from 'mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
@@ -121,48 +121,43 @@ describe('DatabaseManagementService', () => {
 		},
 	};
 
-	const storageProvider = {
-		id: {
-			$oid: '62d6ca7e769952e3f6e67925',
+	const storageProviderParsed: StorageProvider[] = [
+		{
+			id: '62d6ca7e769952e3f6e67925',
+			_id: new ObjectId('62d6ca7e769952e3f6e67925'),
+			// eslint-disable-next-line no-template-curly-in-string
+			region: 'DoNotIgnore ${Ignore}',
+			// eslint-disable-next-line no-template-curly-in-string
+			endpointUrl: 'https://storage-SC_DOMAIN',
+			// eslint-disable-next-line no-template-curly-in-string
+			accessKeyId: 'AWS_ACCESS_KEY',
+			// eslint-disable-next-line no-template-curly-in-string
+			secretAccessKey: 'AWS_SECRET_ACCESS_KEY_AES',
+			createdAt: new Date('2021-07-16T09:03:18.536Z'),
+			updatedAt: new Date('2021-07-16T09:03:18.536Z'),
 		},
-		isShared: true,
-		region: 'eu-central-1',
-		type: 'S3',
-		// eslint-disable-next-line no-template-curly-in-string
-		endpointUrl: 'https://storage-${SC_DOMAIN}',
-		// eslint-disable-next-line no-template-curly-in-string
-		accessKeyId: '${AWS_ACCESS_KEY}',
-		// eslint-disable-next-line no-template-curly-in-string
-		secretAccessKey: '${AWS_SECRET_ACCESS_KEY_AES}',
-		maxBuckets: 999999,
-		freeBuckets: 999976,
-		createdAt: {
-			$date: '2021-07-16T09:03:18.536Z',
-		},
-		updatedAt: {
-			$date: '2021-07-16T09:03:18.536Z',
-		},
-	};
+	];
 
-	const storageProviderWithSecret = {
-		id: {
-			$oid: '62d6ca7e769952e3f6e67925',
-		},
-		isShared: true,
-		region: 'eu-central-1',
-		type: 'S3',
-		endpointUrl: 'https://storage-domain',
-		accessKeyId: 'AWS_ACCESS_KEY',
-		secretAccessKey: 'AWS_SECRET_ACCESS_KEY_AES',
-		maxBuckets: 999999,
-		freeBuckets: 999976,
-		createdAt: {
-			$date: '2021-07-16T09:03:18.536Z',
-		},
-		updatedAt: {
-			$date: '2021-07-16T09:03:18.536Z',
-		},
-	};
+	const storageProviderJSON =
+		'[{' +
+		'"id": {' +
+		'	"$oid": "62d6ca7e769952e3f6e67925"' +
+		'},' +
+		// eslint-disable-next-line no-template-curly-in-string
+		'"region": "${DoNotIgnore} \\${Ignore}",' +
+		// eslint-disable-next-line no-template-curly-in-string
+		'"endpointUrl": "https://storage-${SC_DOMAIN}",' +
+		// eslint-disable-next-line no-template-curly-in-string
+		'"accessKeyId": "${AWS_ACCESS_KEY}",' +
+		// eslint-disable-next-line no-template-curly-in-string
+		'"secretAccessKey": "${AWS_SECRET_ACCESS_KEY_AES}",' +
+		'"createdAt": {' +
+		'	"$date": "2021-07-16T09:03:18.536Z"' +
+		'},' +
+		'"updatedAt": {' +
+		'	"$date": "2021-07-16T09:03:18.536Z"' +
+		'}' +
+		'}]';
 
 	const collection1Name = 'collectionName1';
 	// eslint-disable-next-line no-template-curly-in-string
@@ -171,14 +166,6 @@ describe('DatabaseManagementService', () => {
 	const collection2Name = 'collectionName2';
 	// eslint-disable-next-line no-template-curly-in-string
 	const collection2Data = [{ first: 'foo2' }];
-
-	const arbitraryProviderData = [
-		// eslint-disable-next-line no-template-curly-in-string
-		{ parseMe: '${DoNotIgnore}', ignoreMe: '\\${Ignore}', skipMe: '\\$notAnEscapedPlaceholderMarker' },
-	];
-	const arbitraryProviderJsonString =
-		// eslint-disable-next-line no-template-curly-in-string
-		'[{"parseMe": "${DoNotIgnore}", "ignoreMe": "\\${Ignore}", "skipMe": "\\$notAnEscapedPlaceholderMarker"}]';
 
 	const defaultSecretReplacementHintText = 'replace with secret placeholder';
 
@@ -214,8 +201,7 @@ describe('DatabaseManagementService', () => {
 								return JSON.stringify([oauthSystem, oidcSystem, ldapSystem]);
 							}
 							if (fileName === `${storageprovidersCollectionName}.json`) {
-								// eslint-disable-next-line no-template-curly-in-string
-								return JSON.stringify(storageProvider);
+								return storageProviderJSON;
 							}
 							return '[]';
 						}),
@@ -240,15 +226,12 @@ describe('DatabaseManagementService', () => {
 							}
 							if (collectionName === systemsCollectionName) {
 								// JSON used for cloning, so that oauthSystemWithSecrets' values can't be changed
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 								return Promise.resolve(
 									JSON.parse(JSON.stringify([oauthSystemWithSecrets, oidcSystemWithSecrets, ldapSystemWithSecret]))
 								);
 							}
 							if (collectionName === storageprovidersCollectionName) {
-								// JSON used for cloning, so that oauthSystemWithSecrets' values can't be changed
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-								return Promise.resolve([storageProviderWithSecret]);
+								return Promise.resolve(storageProviderParsed);
 							}
 							return Promise.resolve([]);
 						},
@@ -403,22 +386,8 @@ describe('DatabaseManagementService', () => {
 				const arg: unknown = fileSystemAdapter.writeFile.mock.calls[0][0];
 				expect(arg).toEqual('collectionName1.json');
 			});
-
 			describe('for systems', () => {
 				it('should replace secrets with replacement hint', async () => {
-					await uc.exportCollectionsToFileSystem([systemsCollectionName]);
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					const fileName: unknown = fileSystemAdapter.writeFile.mock.calls[0][0];
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-					const fileContent: string = fileSystemAdapter.writeFile.mock.calls[0][1];
-					expect(fileName).toEqual(`${systemsCollectionName}.json`);
-					expect(fileContent.includes(oauthSystemWithSecrets.oauthConfig.clientSecret)).toBe(false);
-					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
-					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
-
-					expect(fileContent.includes(defaultSecretReplacementHintText)).toBe(true);
-				});
-				it('should create a non valid JSON secrets with replacement hint', async () => {
 					await uc.exportCollectionsToFileSystem([systemsCollectionName]);
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 					const fileName: unknown = fileSystemAdapter.writeFile.mock.calls[0][0];
@@ -440,19 +409,6 @@ describe('DatabaseManagementService', () => {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
 					const fileContent: string = fileSystemAdapter.writeFile.mock.calls[0][1];
 					expect(fileName).toEqual(`${storageprovidersCollectionName}.json`);
-					expect(fileContent.includes(oauthSystemWithSecrets.oauthConfig.clientSecret)).toBe(false);
-					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
-					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
-
-					expect(fileContent.includes(defaultSecretReplacementHintText)).toBe(true);
-				});
-				it('should create a non valid JSON secrets with replacement hint', async () => {
-					await uc.exportCollectionsToFileSystem([systemsCollectionName]);
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					const fileName: unknown = fileSystemAdapter.writeFile.mock.calls[0][0];
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-					const fileContent: string = fileSystemAdapter.writeFile.mock.calls[0][1];
-					expect(fileName).toEqual(`${systemsCollectionName}.json`);
 					expect(fileContent.includes(oauthSystemWithSecrets.oauthConfig.clientSecret)).toBe(false);
 					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
 					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
@@ -483,6 +439,7 @@ describe('DatabaseManagementService', () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem(['collectionName1']);
 			expect(collections).toEqual(['collectionName1:3']);
 		});
+
 		it('should fail when seed a database collection which does not exist', async () => {
 			await expect(async () => {
 				await uc.seedDatabaseCollectionsFromFileSystem(['non_existing_collection']);
@@ -609,31 +566,13 @@ describe('DatabaseManagementService', () => {
 					configHasSpy.mockReturnValue(true);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([storageprovidersCollectionName]);
-					expect(dbService.collectionExists).toBeCalledTimes(1);
-					expect(dbService.createCollection).toBeCalledWith(storageprovidersCollectionName);
-					expect(dbService.clearCollection).not.toBeCalled();
-					const importedObject = dbService.importCollection.mock.calls[0][1];
-					expect(importedObject[0]).toMatchObject(
-						expect.objectContaining({
-							parseMe: 'DoNotIgnore',
-							// eslint-disable-next-line no-template-curly-in-string
-							ignoreMe: '${Ignore}',
-						})
-					);
-				});
-				it('should ignore escaped placeholder marker ($) if not part of placeholder', async () => {
-					configGetSpy.mockImplementation((data) => data);
-					configHasSpy.mockReturnValue(true);
-					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
-					await uc.seedDatabaseCollectionsFromFileSystem([storageprovidersCollectionName]);
-					expect(dbService.collectionExists).toBeCalledTimes(1);
-					expect(dbService.createCollection).toBeCalledWith(storageprovidersCollectionName);
-					expect(dbService.clearCollection).not.toBeCalled();
-					const importedObject = dbService.importCollection.mock.calls[0][1];
-					expect(importedObject[0]).toMatchObject(
-						expect.objectContaining({
-							skipMe: '\\$notAnEscapedPlaceholderMarker',
-						})
+					expect(dbService.importCollection).toBeCalledWith(
+						expect.anything(),
+						expect.arrayContaining([
+							expect.objectContaining({
+								region: storageProviderParsed[0].region,
+							}),
+						])
 					);
 				});
 				it('should encrypt secrets if secret is configured in env var', async () => {
