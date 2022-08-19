@@ -142,7 +142,6 @@ describe('OAuthService', () => {
 		// defaultSchool.externalId = '9999';
 		defaultDecodedJWT = {
 			sub: '4444',
-			uuid: '1111',
 		};
 
 		defaultUser = {
@@ -250,8 +249,6 @@ describe('OAuthService', () => {
 			throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
 		});
 		feathersJwtProvider.generateJwt.mockResolvedValue(defaultJWT);
-		iservOAuthService.extractUUID.mockReturnValue(defaultDecodedJWT.uuid);
-		iservOAuthService.findUserById.mockResolvedValue(defaultIservUser);
 	});
 
 	it('should be defined', () => {
@@ -303,11 +300,11 @@ describe('OAuthService', () => {
 	describe('validateToken', () => {
 		it('should validate id_token and return it decoded', async () => {
 			jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
-				return { uuid: '123456' };
+				return { sub: 'mockSub' };
 			});
 			service._getPublicKey = jest.fn().mockResolvedValue('publicKey');
 			const decodedJwt: IJwt = await service.validateToken(defaultJWT, defaultOauthConfig);
-			expect(decodedJwt.uuid).toStrictEqual('123456');
+			expect(decodedJwt.sub).toStrictEqual('mockSub');
 		});
 		it('should throw an error', async () => {
 			jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
@@ -323,48 +320,35 @@ describe('OAuthService', () => {
 	describe('findUser', () => {
 		it('should return the user according to the uuid(externalId)', async () => {
 			// Arrange
-			const oauthConfig = new OauthConfig(defaultSystem.oauthConfig as OauthConfig);
-			oauthConfig.provider = 'iserv';
+			provisioningService.process.mockResolvedValue({ externalUserId: '3333' });
+			userRepo.findByExternalIdOrFail.mockResolvedValue(defaultIservUser);
 
 			// Act
-			const user: User = await service.findUser(defaultTokenResponse.access_token, defaultDecodedJWT, {
-				_id: new ObjectId(defaultIservSystemId),
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				id: defaultIservSystemId,
-				type: 'iserv',
-				oauthConfig,
-			});
+			const user: User = await service.findUser(
+				defaultTokenResponse.access_token,
+				defaultTokenResponse.id_token,
+				defaultIservSystemId
+			);
 
 			// Assert
-			expect(iservOAuthService.findUserById).toHaveBeenCalled();
+			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
 			expect(user).toBe(defaultIservUser);
 		});
 		it('should return an error if no User is found with this Id', async () => {
 			userRepo.findByExternalIdOrFail.mockRejectedValueOnce(new Error('User not found'));
 			await expect(
-				service.findUser(defaultTokenResponse.access_token, defaultDecodedJWT, defaultSystem)
+				service.findUser(defaultTokenResponse.access_token, defaultTokenResponse.id_token, defaultSystem.id)
 			).rejects.toThrow(OAuthSSOError);
 		});
 		it('should return the user according to the id', async () => {
-			const provisioning: ProvisioningDto = new ProvisioningDto({
-				userDto: {
-					id: defaultUserId,
-					email: '',
-					firstName: 'firstName',
-					lastName: 'lastName',
-					roleNames: [],
-					schoolId: new ObjectId().toString(),
-					externalId: 'sanisId',
-				},
-				schoolDto: {
-					name: 'testSchool',
-					externalId: defaultSchool.externalId as string,
-				},
-			});
+			const provisioning: ProvisioningDto = new ProvisioningDto({ externalUserId: 'sanisUserId' });
 			provisioningService.process.mockResolvedValue(provisioning);
 			userRepo.findByExternalIdOrFail.mockResolvedValue(defaultUser);
-			const user = await service.findUser(defaultTokenResponse.access_token, defaultDecodedJWT, defaultSystem);
+			const user = await service.findUser(
+				defaultTokenResponse.access_token,
+				defaultTokenResponse.id_token,
+				defaultSystem.id
+			);
 			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});

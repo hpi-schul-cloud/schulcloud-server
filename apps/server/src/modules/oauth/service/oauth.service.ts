@@ -106,6 +106,7 @@ export class OAuthService {
 
 	async findUser(accessToken: string, idToken: string, systemId: string): Promise<User> {
 		try {
+			// TODO Do not use idToken as debug comment
 			this.logger.debug(`provisioning is running for user with id_token: ${idToken} and system with id: ${systemId}`);
 			const provisioningDto = await this.provisioningUc.process(accessToken, idToken, systemId);
 			const user = await this.userRepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
