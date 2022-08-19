@@ -1,13 +1,13 @@
+import AuthenticationExecutionInfoRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionInfoRepresentation';
+import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Inject } from '@nestjs/common';
 import { System } from '@shared/domain';
-import { SystemRepo } from '@shared/repo';
-import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
-import AuthenticationExecutionInfoRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionInfoRepresentation';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { SystemRepo } from '@shared/repo';
+import { SysType } from '../../sys.type';
 import { IdentityProviderConfig, IOidcIdentityProviderConfig } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
-import { SysType } from '../../sys.type';
 
 enum ConfigureAction {
 	CREATE = 'create',
@@ -101,15 +101,14 @@ export class KeycloakConfigurationService {
 
 	public async configureClient(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		let clients = await kc.clients.find({ clientId: CLIENT_ID });
-		if (clients.length === 0) {
-			await kc.clients.create({
+		let id = (await kc.clients.find({ clientId: CLIENT_ID }))[0]?.id;
+		if (!id) {
+			({ id } = await kc.clients.create({
 				clientId: CLIENT_ID,
 				publicClient: false,
-			});
-			clients = await kc.clients.find({ clientId: CLIENT_ID });
+			}));
 		}
-		const response = await kc.clients.generateNewClientSecret({ id: clients[0].id as string });
+		const response = await kc.clients.generateNewClientSecret({ id });
 		const system = (await this.systemRepo.findAll()).find(
 			(tempSystem) => tempSystem.alias?.toLocaleLowerCase() === 'keycloak'
 		);

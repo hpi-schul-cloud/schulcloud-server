@@ -1,18 +1,18 @@
-import fs from 'node:fs/promises';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
+import { Clients } from '@keycloak/keycloak-admin-client/lib/resources/clients';
 import { IdentityProviders } from '@keycloak/keycloak-admin-client/lib/resources/identityProviders';
+import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
-import { SystemRepo } from '@shared/repo';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { SystemRepo } from '@shared/repo';
 import { v1 } from 'uuid';
-import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { SysType } from '../../sys.type';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -28,6 +28,7 @@ describe('configureIdentityProviders', () => {
 	let settings: IKeycloakSettings;
 
 	const kcApiClientIdentityProvidersMock = createMock<IdentityProviders>();
+	const kcApiClientMock = createMock<Clients>();
 	const kcApiAuthenticationManagementMock = createMock<AuthenticationManagement>();
 	const kcApiRealmsMock = createMock<Realms>();
 	const adminUsername = 'admin';
@@ -111,6 +112,7 @@ describe('configureIdentityProviders', () => {
 						identityProviders: kcApiClientIdentityProvidersMock,
 						authenticationManagement: kcApiAuthenticationManagementMock,
 						realms: kcApiRealmsMock,
+						clients: kcApiClientMock,
 					}),
 				},
 				{
@@ -209,6 +211,22 @@ describe('configureIdentityProviders', () => {
 		expect(kcApiClientIdentityProvidersMock.del).toBeCalledTimes(1);
 
 		repo.findAll.mockRestore();
+	});
+
+	describe('configureClient', () => {
+		beforeAll(() => {
+			kcApiClientMock.create.mockResolvedValue();
+		});
+
+		it('should create a new client in Keycloak', async () => {});
+
+		it('should not create a new client in Keycloak if client already exists', async () => {});
+
+		it('should generate a new client secret', async () => {});
+
+		it('should encrypt the secret', async () => {});
+
+		it('should save the encrypted secret', async () => {});
 	});
 
 	describe('configureBrokerFlows', () => {
