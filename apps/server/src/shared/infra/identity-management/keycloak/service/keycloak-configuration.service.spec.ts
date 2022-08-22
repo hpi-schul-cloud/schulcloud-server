@@ -12,8 +12,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo } from '@shared/repo';
-import { v1 } from 'uuid';
 import { systemFactory } from '@shared/testing';
+import { v1 } from 'uuid';
 import { SysType } from '../../sys.type';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -258,6 +258,15 @@ describe('KeycloakConfigurationService Unit', () => {
 		it('should save client secret', async () => {
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(repo.save).toBeCalledTimes(1);
+		});
+		it('should create Keycloak system if not already exists', async () => {
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(repo.save).toBeCalledTimes(2);
+		});
+		it('should not create Keycloak system if already exists', async () => {
+			repo.findByFilter.mockResolvedValueOnce([systemFactory.build()]);
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(repo.save).toBeCalledTimes(0);
 		});
 	});
 
