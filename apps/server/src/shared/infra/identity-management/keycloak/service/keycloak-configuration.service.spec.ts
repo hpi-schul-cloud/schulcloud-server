@@ -268,6 +268,15 @@ describe('KeycloakConfigurationService Unit', () => {
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(repo.save).toBeCalledTimes(0);
 		});
+		it('should create Keycloak system if not already exists', async () => {
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(repo.save).toBeCalledTimes(2);
+		});
+		it('should not create Keycloak system if already exists', async () => {
+			repo.findByFilter.mockResolvedValueOnce([systemFactory.build()]);
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(repo.save).toBeCalledTimes(0);
+		});
 	});
 
 	describe('configureBrokerFlows', () => {
