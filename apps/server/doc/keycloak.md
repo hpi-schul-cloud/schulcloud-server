@@ -37,7 +37,7 @@ docker run `
 
 ### Setup OpenID Connect Identity Provider mock for ErWIn-IDM brokering
 
-To add ErWIn-IDM identity broker feature via OpenID Connect (OIDC) Identity Provider (IdP) mock:
+To add ErWIn-IDM identity broker feature via OpenID Connect (OIDC) Identity Provider (IdP) mock follow the steps below. Execute these commands in the repository root.
 
 - adjust 'config\development.json' and set 'OIDCMOCK\_\_BASE_URL' according to your local ip address.
 - re-trigger `npm run setup:db` and `npm run setup:idm` to reset and apply seed data.
@@ -52,6 +52,20 @@ docker run \
   -e USERS_CONFIGURATION_PATH='/tmp/config/users-config.json' \
   -e CLIENTS_CONFIGURATION_PATH='/tmp/config/clients-config.json' \
   -v "$PWD/backup/idm/oidcmock:/tmp/config" \
+  ghcr.io/soluto/oidc-server-mock:0.6.0
+```
+
+**PowerShell:**
+
+```pwsh
+docker run `
+  --name oidc-server-mock `
+  -p 4011:80 `
+  -e ASPNETCORE_ENVIRONMENT='Development' `
+  -e SERVER_OPTIONS_PATH='/tmp/config/server-config.json' `
+  -e USERS_CONFIGURATION_PATH='/tmp/config/users-config.json' `
+  -e CLIENTS_CONFIGURATION_PATH='/tmp/config/clients-config.json' `
+  -v "$PWD/backup/idm/oidcmock:/tmp/config" `
   ghcr.io/soluto/oidc-server-mock:0.6.0
 ```
 
