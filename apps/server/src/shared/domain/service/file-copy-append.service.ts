@@ -201,9 +201,12 @@ export class FileCopyAppendService {
 		);
 
 		lessonCopyStatus.copyEntity = entity;
-		const fileGroupStatus = this.deriveFileGroupStatus(response);
-		lessonCopyStatus.elements = this.setFileGroupStatus(lessonCopyStatus.elements, fileGroupStatus);
-		lessonCopyStatus.status = this.copyHelperService.deriveStatusFromElements(lessonCopyStatus.elements);
+
+		if (response.length > 0) {
+			const fileGroupStatus = this.deriveFileGroupStatus(response);
+			lessonCopyStatus.elements = this.setFileGroupStatus(lessonCopyStatus.elements, fileGroupStatus);
+			lessonCopyStatus.status = this.copyHelperService.deriveStatusFromElements(lessonCopyStatus.elements);
+		}
 
 		return lessonCopyStatus;
 	}
