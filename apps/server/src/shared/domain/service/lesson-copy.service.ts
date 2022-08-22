@@ -128,11 +128,19 @@ export class LessonCopyService {
 		const copiedContentStatus: CopyStatus[] = [];
 		for (let i = 0; i < content.length; i += 1) {
 			const element = content[i];
-			if (element.component === ComponentType.TEXT || element.component === ComponentType.LERNSTORE) {
+			if (element.component === ComponentType.TEXT) {
 				copiedContent.push(element);
 				copiedContentStatus.push({
 					title: element.title,
-					type: CopyElementType.LESSON_CONTENT,
+					type: CopyElementType.LESSON_CONTENT_TEXT,
+					status: CopyStatusEnum.SUCCESS,
+				});
+			}
+			if (element.component === ComponentType.LERNSTORE) {
+				copiedContent.push(element);
+				copiedContentStatus.push({
+					title: element.title,
+					type: CopyElementType.LESSON_CONTENT_LERNSTORE,
 					status: CopyStatusEnum.SUCCESS,
 				});
 			}
@@ -141,7 +149,7 @@ export class LessonCopyService {
 				copiedContent.push(geoGebraContent);
 				copiedContentStatus.push({
 					title: element.title,
-					type: CopyElementType.LESSON_CONTENT,
+					type: CopyElementType.LESSON_CONTENT_GEOGEBRA,
 					status: CopyStatusEnum.PARTIAL,
 				});
 			}
@@ -150,7 +158,7 @@ export class LessonCopyService {
 				const etherpadContent = await this.copyEtherpad(element, params);
 				const etherpadStatus = {
 					title: element.title,
-					type: CopyElementType.LESSON_CONTENT,
+					type: CopyElementType.LESSON_CONTENT_ETHERPAD,
 					status: CopyStatusEnum.PARTIAL,
 				};
 				if (etherpadContent) {
@@ -164,7 +172,7 @@ export class LessonCopyService {
 				const linkContent = this.copyEmbeddedTaskLink(element);
 				const embeddedTaskStatus = {
 					title: element.title,
-					type: CopyElementType.LESSON_CONTENT,
+					type: CopyElementType.LESSON_CONTENT_TASK,
 					status: CopyStatusEnum.SUCCESS,
 				};
 				copiedContent.push(linkContent);
@@ -175,7 +183,7 @@ export class LessonCopyService {
 				const nexboardContent = await this.copyNexboard(element, params);
 				const nexboardStatus = {
 					title: element.title,
-					type: CopyElementType.LESSON_CONTENT,
+					type: CopyElementType.LESSON_CONTENT_NEXBOARD,
 					status: CopyStatusEnum.PARTIAL,
 				};
 				if (nexboardContent) {
