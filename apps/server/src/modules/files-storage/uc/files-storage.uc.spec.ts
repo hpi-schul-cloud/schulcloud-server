@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { HttpService } from '@nestjs/axios';
 import { ForbiddenException, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, EntityId, FileRecord, FileRecordParentType, Permission, ScanStatus } from '@shared/domain';
@@ -9,19 +10,36 @@ import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
+import { AxiosResponse, AxiosResponseHeaders } from 'axios';
 import { Busboy } from 'busboy';
 import { Request } from 'express';
+import { Observable, of } from 'rxjs';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileParams,
 	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileRecordParams,
+	FileUrlParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
 import { ErrorType } from '../files-storage.const';
 import { IGetFileResponse } from '../interface/storage-client';
 import { FilesStorageUC } from './files-storage.uc';
+
+function createAxiosResponse<T = unknown>(data: T, headers: AxiosResponseHeaders = {}): AxiosResponse<T> {
+	return {
+		data,
+		status: 0,
+		statusText: '',
+		headers,
+		config: {},
+	};
+}
+
+function createObservable<T = unknown>(data: T, headers: AxiosResponseHeaders = {}): Observable<AxiosResponse<T>> {
+	return of(createAxiosResponse(data, headers));
+}
 
 describe('FilesStorageUC', () => {
 	let module: TestingModule;
@@ -29,6 +47,7 @@ describe('FilesStorageUC', () => {
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let antivirusService: DeepMocked<AntivirusService>;
+	let httpService: DeepMocked<HttpService>;
 	let request: DeepMocked<Request>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
 	let orm: MikroORM;
@@ -37,6 +56,8 @@ describe('FilesStorageUC', () => {
 
 	let fileDownloadParams: DownloadFileParams;
 	let fileUploadParams: FileRecordParams;
+	let uploadFromUrlParams: FileRecordParams & FileUrlParams;
+	const url = 'http://localhost/test.jpg';
 	let response: IGetFileResponse;
 	const entityId: EntityId = new ObjectId().toHexString();
 	const userId: EntityId = new ObjectId().toHexString();
@@ -49,6 +70,14 @@ describe('FilesStorageUC', () => {
 			schoolId,
 			parentId: userId,
 			parentType: FileRecordParentType.User,
+		};
+		uploadFromUrlParams = {
+			...fileUploadParams,
+			url,
+			fileName: 'test.jpg',
+			headers: {
+				authorization: 'custom jwt',
+			},
 		};
 
 		fileRecord = fileRecordFactory.buildWithId({ name: 'text.txt' });
@@ -83,12 +112,17 @@ describe('FilesStorageUC', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(FilesStorageUC);
 		authorizationService = module.get(AuthorizationService);
 		antivirusService = module.get(AntivirusService);
+		httpService = module.get(HttpService);
 		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
 		fileRecords = [
@@ -110,6 +144,86 @@ describe('FilesStorageUC', () => {
 
 	it('should be defined', () => {
 		expect(service).toBeDefined();
+	});
+
+	describe('upload from link()', () => {
+		beforeEach(() => {
+			httpService.get.mockReturnValue(
+				createObservable(
+					{},
+					{
+						connection: 'keep-alive',
+						'content-length': '10699',
+						'content-type': 'image/jpeg',
+					}
+				)
+			);
+		});
+
+		it('should call request.get()', async () => {
+			await service.uploadFromUrl(userId, uploadFromUrlParams);
+
+			expect(httpService.get).toBeCalledWith(url, {
+				headers: { authorization: 'custom jwt' },
+				responseType: 'stream',
+			});
+			expect(httpService.get).toHaveBeenCalledTimes(1);
+		});
+
+		it('should return instance of FileRecord', async () => {
+			const result = await service.uploadFromUrl(userId, uploadFromUrlParams);
+			expect(result).toBeInstanceOf(FileRecord);
+			expect(result).toEqual(
+				expect.objectContaining({
+					createdAt: expect.any(Date) as Date,
+					id: expect.any(String) as string,
+					name: 'test.jpg',
+					parentType: 'users',
+					securityCheck: {
+						createdAt: expect.any(Date) as Date,
+						reason: 'not yet scanned',
+						requestToken: expect.any(String) as string,
+						status: 'pending',
+						updatedAt: expect.any(Date) as Date,
+					},
+					size: 10699,
+					updatedAt: expect.any(Date) as Date,
+				})
+			);
+		});
+
+		it('should throw Error', async () => {
+			httpService.get.mockResolvedValue(
+				createObservable({
+					isAxiosError: true,
+					code: '404',
+					response: {},
+					name: 'errorText',
+					message: 'errorText',
+					toJSON: () => ({}),
+				}) as never
+			);
+
+			await expect(service.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow(NotFoundException);
+		});
+
+		describe('Tests of permission handling', () => {
+			it('should call authorizationService.hasPermissionByReferences', async () => {
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
+				await service.uploadFromUrl(userId, uploadFromUrlParams);
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+					userId,
+					fileUploadParams.parentType,
+					fileUploadParams.parentId,
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+				);
+			});
+
+			it('should throw Error', async () => {
+				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
+				await expect(service.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow();
+			});
+		});
 	});
 
 	describe('upload()', () => {
