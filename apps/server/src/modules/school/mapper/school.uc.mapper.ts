@@ -7,6 +7,7 @@ export class SchoolUcMapper {
 			id: dto.id,
 			name: dto.name,
 			externalId: dto.externalId,
+			systemIds: dto.systemIds,
 		});
 	}
 }

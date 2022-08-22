@@ -1,14 +1,20 @@
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
-import { School } from '@shared/domain';
+import { EntityId, School, System } from '@shared/domain';
+import { IdentifiedReference, Reference } from '@mikro-orm/core';
 
 export class SchoolMapper {
 	static mapToEntity(schoolDto: SchoolDto): School {
 		const school = new School({
 			name: schoolDto.name,
+			externalId: schoolDto.externalId,
 		});
 		if (schoolDto.id) {
 			school.id = schoolDto.id;
 		}
+		const refs: IdentifiedReference<System, EntityId>[] = schoolDto.systemIds.map((systemId) => {
+			return Reference.createFromPK(System, systemId);
+		});
+		school.systems.add(...refs);
 		return school;
 	}
 
@@ -22,6 +28,7 @@ export class SchoolMapper {
 			name: entity.name,
 			id: entity.id,
 			externalId: entity.externalId,
+			systemIds: entity.systems.getItems().map((system: System) => system.id),
 		});
 	}
 }

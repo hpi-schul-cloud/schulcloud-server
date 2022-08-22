@@ -3,6 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { uuid } from 'aws-sdk/clients/customerprofiles';
 
 /**
  * @deprecated This repo is do not use it for new repos. Please use {@link BaseDORepo}
@@ -27,6 +28,11 @@ export abstract class BaseRepo<T extends BaseEntity> {
 
 	async findById(id: EntityId): Promise<T> {
 		const promise: Promise<T> = this._em.findOneOrFail(this.entityName, id as FilterQuery<T>);
+		return promise;
+	}
+
+	async findByExternalId(ldapSchoolIdentifier: string): Promise<T> {
+		const promise: Promise<T> = this._em.findOneOrFail(this.entityName, ldapSchoolIdentifier as FilterQuery<T>);
 		return promise;
 	}
 }

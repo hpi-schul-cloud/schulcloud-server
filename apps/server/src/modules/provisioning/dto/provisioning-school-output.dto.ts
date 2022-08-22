@@ -8,6 +8,7 @@ export class ProvisioningSchoolOutputDto {
 		this.id = schoolDto.id;
 		this.name = schoolDto.name;
 		this.externalId = schoolDto.externalId;
+		this.systemIds = schoolDto.systemIds;
 	}
 
 	id?: EntityId;
@@ -15,4 +16,6 @@ export class ProvisioningSchoolOutputDto {
 	name: string;
 
 	externalId: string;
+
+	systemIds: EntityId[];
 }

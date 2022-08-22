@@ -34,6 +34,7 @@ export class ProvisioningUc {
 				const params = {
 					provisioningUrl: system.provisioningUrl ?? '',
 					accessToken,
+					systemId,
 				};
 				return this.sanisStrategy.apply(params);
 			}

@@ -1,9 +1,9 @@
 import { UUID } from 'bson';
 
 export enum SanisRole {
-	LEHR = 'LEHR',
-	LERN = 'LERN',
-	SYSA = 'SYSA',
+	LEHR = 'Lehr',
+	LERN = 'Lern',
+	SYSA = 'Sysa',
 }
 
 export class SanisResponseName {

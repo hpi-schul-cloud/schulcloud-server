@@ -23,7 +23,7 @@ export class UserDto {
 
 	lastName: string;
 
-	roleIds: string[] = [];
+	roleIds: EntityId[] = [];
 
 	schoolId: string;
 

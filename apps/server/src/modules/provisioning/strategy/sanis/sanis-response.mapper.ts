@@ -1,7 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
-import { EntityId, RoleName } from '@shared/domain';
+import { EntityId, RoleName, System } from '@shared/domain';
 import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 
 const RoleMapping = {
@@ -12,10 +12,11 @@ const RoleMapping = {
 
 @Injectable()
 export class SanisResponseMapper {
-	mapToSchoolDto(source: SanisResponse): ProvisioningSchoolOutputDto {
+	mapToSchoolDto(source: SanisResponse, systemId: string): ProvisioningSchoolOutputDto {
 		return new ProvisioningSchoolOutputDto({
 			name: source.personenkontexte[0].organisation.name,
 			externalId: source.personenkontexte[0].organisation.orgid.toString(),
+			systemIds: [systemId],
 		});
 	}
 

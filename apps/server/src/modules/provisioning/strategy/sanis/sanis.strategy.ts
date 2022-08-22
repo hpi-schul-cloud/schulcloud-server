@@ -12,10 +12,12 @@ import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisi
 import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
+import { School, User } from '@shared/domain';
 
 export type SanisStrategyData = {
 	provisioningUrl: string;
 	accessToken: string;
+	systemId: string;
 };
 
 @Injectable()
@@ -40,14 +42,27 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrateg
 			return r.data;
 		});
 
-		const school: ProvisioningSchoolOutputDto = this.responseMapper.mapToSchoolDto(data);
+		const school: ProvisioningSchoolOutputDto = this.responseMapper.mapToSchoolDto(data, params.systemId);
+		try {
+			const schoolEntity: School = this.schoolUc.findByExternalId(school.externalId);
+			school.id = schoolEntity.id;
+		} catch (e) {
+			// ignore NotFoundException and create new school
+		}
+
 		const savedSchool: SchoolDto = await this.schoolUc.saveProvisioningSchoolOutputDto(school);
 
 		if (!savedSchool.id) {
-			throw new UnprocessableEntityException(`Provisioning of user: ${data.pid} failed. No school id supplied.`);
+			throw new UnprocessableEntityException(`Provisioning of usestrasr: ${data.pid} failed. No school id supplied.`);
 		}
 
 		const user: ProvisioningUserOutputDto = this.responseMapper.mapToUserDto(data, savedSchool.id);
+		try {
+			const userEntity: User = this.userUc.findByExternalId(user.externalId);
+			user.id = userEntity.id;
+		} catch (e) {
+			// ignore NotFoundException and create new user
+		}
 		await this.userUc.saveProvisioningUserOutputDto(user);
 
 		return new ProvisioningDto({ externalUserId: user.externalId });
