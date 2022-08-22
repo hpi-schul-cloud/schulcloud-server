@@ -63,7 +63,7 @@ export class CourseCopyUC {
 
 		statusCourse.elements ||= [];
 		statusCourse.elements.push(statusBoard);
-
+		statusCourse.status = this.copyHelperService.deriveStatusFromElements(statusCourse.elements);
 		return statusCourse;
 	}
 }
