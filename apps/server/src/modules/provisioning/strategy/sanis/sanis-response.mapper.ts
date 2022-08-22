@@ -1,8 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
-import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
-import { EntityId, RoleName, System } from '@shared/domain';
+import { EntityId, RoleName } from '@shared/domain';
 import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/sanis.response';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 
 const RoleMapping = {
 	[SanisRole.LEHR]: RoleName.TEACHER,
@@ -20,14 +20,18 @@ export class SanisResponseMapper {
 		});
 	}
 
-	mapToUserDto(source: SanisResponse, schoolId: EntityId): ProvisioningUserOutputDto {
-		return new ProvisioningUserOutputDto({
+	mapToUserDO(source: SanisResponse, schoolId: EntityId, roleId: EntityId): UserDO {
+		return new UserDO({
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
 			email: '',
-			roleNames: [RoleMapping[source.personenkontexte[0].rolle]],
+			roleIds: [roleId],
 			schoolId,
 			externalId: source.pid,
 		});
+	}
+
+	mapSanisRoleToRoleName(source: SanisResponse) {
+		return RoleMapping[source.personenkontexte[0].rolle];
 	}
 }

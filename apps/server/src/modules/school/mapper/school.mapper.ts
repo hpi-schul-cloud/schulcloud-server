@@ -11,7 +11,7 @@ export class SchoolMapper {
 		if (schoolDto.id) {
 			school.id = schoolDto.id;
 		}
-		const refs: IdentifiedReference<System, EntityId>[] = schoolDto.systemIds.map((systemId) => {
+		const refs: IdentifiedReference<System, EntityId>[] = schoolDto.systemIds.map((systemId: EntityId) => {
 			return Reference.createFromPK(System, systemId);
 		});
 		school.systems.add(...refs);

@@ -7,4 +7,13 @@ export class SchoolRepo extends BaseRepo<School> {
 	get entityName() {
 		return School;
 	}
+
+	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<School> {
+		const [schools] = await this._em.findAndCount(School, { externalId });
+		const resultSchool = schools.find((school) => {
+			const { systems } = school;
+			return systems && systems.getItems().find((system) => system.id === systemId);
+		});
+		return resultSchool ?? Promise.reject();
+	}
 }

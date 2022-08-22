@@ -8,11 +8,15 @@ import { UserUc } from '@src/modules/user/uc';
 import { firstValueFrom } from 'rxjs';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
-import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
 import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
-import { School, User } from '@shared/domain';
+import { EntityId, Role, School } from '@shared/domain';
+import { RoleRepo, SchoolRepo } from '@shared/repo/index';
+import { AccountUc } from '@src/modules/account/uc/account.uc';
+import { AccountSaveDto } from '@src/modules/account/services/dto/index';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
 
 export type SanisStrategyData = {
 	provisioningUrl: string;
@@ -26,7 +30,11 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrateg
 		private readonly responseMapper: SanisResponseMapper,
 		private readonly schoolUc: SchoolUc,
 		private readonly userUc: UserUc,
-		private readonly httpService: HttpService
+		private readonly schoolRepo: SchoolRepo,
+		private readonly userRepo: UserDORepo,
+		private readonly roleRepo: RoleRepo,
+		private readonly httpService: HttpService,
+		private readonly accountUc: AccountUc
 	) {
 		super();
 	}
@@ -42,33 +50,59 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrateg
 			return r.data;
 		});
 
-		const school: ProvisioningSchoolOutputDto = this.responseMapper.mapToSchoolDto(data, params.systemId);
+		const school: SchoolDto = await this.provisionSchool(data, params.systemId);
+
+		if (!school.id) {
+			throw new UnprocessableEntityException(`Provisioning of usestrasr: ${data.pid} failed. No school id supplied.`);
+		}
+
+		const user: UserDO = await this.provisionUser(data, params.systemId, school.id);
+
+		return new ProvisioningDto({ externalUserId: user.externalId ?? '' });
+	}
+
+	getType(): SystemProvisioningStrategy {
+		return SystemProvisioningStrategy.SANIS;
+	}
+
+	protected async provisionSchool(data: SanisResponse, systemId: EntityId): Promise<SchoolDto> {
+		const school: ProvisioningSchoolOutputDto = this.responseMapper.mapToSchoolDto(data, systemId);
 		try {
-			const schoolEntity: School = this.schoolUc.findByExternalId(school.externalId);
+			const schoolEntity: School = await this.schoolRepo.findByExternalIdOrFail(school.externalId, systemId);
 			school.id = schoolEntity.id;
 		} catch (e) {
 			// ignore NotFoundException and create new school
 		}
 
 		const savedSchool: SchoolDto = await this.schoolUc.saveProvisioningSchoolOutputDto(school);
+		return savedSchool;
+	}
 
-		if (!savedSchool.id) {
-			throw new UnprocessableEntityException(`Provisioning of usestrasr: ${data.pid} failed. No school id supplied.`);
-		}
+	protected async provisionUser(data: SanisResponse, systemId: EntityId, schoolId: EntityId): Promise<UserDO> {
+		const role: Role = await this.roleRepo.findByName(this.responseMapper.mapSanisRoleToRoleName(data));
+		const user: UserDO = this.responseMapper.mapToUserDO(data, schoolId, role.id);
 
-		const user: ProvisioningUserOutputDto = this.responseMapper.mapToUserDto(data, savedSchool.id);
+		let createNewAccount = false;
 		try {
-			const userEntity: User = this.userUc.findByExternalId(user.externalId);
+			const userEntity: UserDO = await this.userRepo.findByExternalIdOrFail(user.externalId ?? '', systemId);
 			user.id = userEntity.id;
 		} catch (e) {
 			// ignore NotFoundException and create new user
+			createNewAccount = true;
 		}
-		await this.userUc.saveProvisioningUserOutputDto(user);
+		const savedUser: UserDO = await this.userRepo.save(user);
 
-		return new ProvisioningDto({ externalUserId: user.externalId });
-	}
+		if (createNewAccount) {
+			await this.accountUc.saveAccount(
+				new AccountSaveDto({
+					userId: user.id,
+					password: 'generateSecret',
+					username: 'generateEmail',
+					activated: true,
+				})
+			);
+		}
 
-	getType(): SystemProvisioningStrategy {
-		return SystemProvisioningStrategy.SANIS;
+		return user;
 	}
 }
