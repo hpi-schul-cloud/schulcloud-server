@@ -5,6 +5,7 @@ import { setupEntities, systemFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SystemService } from './system.service';
+import {SysType} from "@shared/infra/identity-management";
 
 describe('SystemService', () => {
 	let module: TestingModule;
@@ -41,9 +42,9 @@ describe('SystemService', () => {
 		oauthSystems.push(iserv);
 		allSystems.push(iserv);
 		allSystems.push(systemFactory.buildWithId({ oauthConfig: undefined }));
-		const moodle = systemFactory.buildWithId();
-		moodle.type = 'moodle';
-		allSystems.push(moodle);
+		allSystems.push(systemFactory.buildWithId({ type: 'moodle' }));
+		allSystems.push(systemFactory.buildWithId({ type: SysType.KEYCLOAK, alias: 'Keycloak', oauthConfig: {} }));
+		allSystems.push(systemFactory.buildWithId({ type: SysType.OIDC, alias: 'Third Party System' }));
 
 		systemRepo.findByFilter.mockResolvedValue(oauthSystems);
 		systemRepo.findAll.mockResolvedValue(allSystems);
