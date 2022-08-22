@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios';
 import {
 	BadRequestException,
 	Injectable,
@@ -13,6 +14,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import busboy from 'busboy';
 import { Request } from 'express';
 import path from 'path';
+import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
@@ -20,6 +22,7 @@ import {
 	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileRecordParams,
+	FileUrlParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
 import { ErrorType, PermissionContexts } from '../files-storage.const';
@@ -34,7 +37,8 @@ export class FilesStorageUC {
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly antivirusService: AntivirusService,
 		private logger: Logger,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly httpService: HttpService
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -49,7 +53,12 @@ export class FilesStorageUC {
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			requestStream.on('file', async (_name, file, info): Promise<void> => {
-				const fileDescription = this.createFileDescription(file, info, req);
+				const fileDescription: IFile = {
+					name: info.filename,
+					buffer: file,
+					size: Number(req.get('content-length')),
+					mimeType: info.mimeType,
+				};
 				try {
 					const record = await this.uploadFile(userId, params, fileDescription);
 					resolve(record);
@@ -75,16 +84,29 @@ export class FilesStorageUC {
 		return result;
 	}
 
-	private createFileDescription(file: internal.Readable, info: busboy.FileInfo, req: Request): IFile {
-		const size = Number(req.get('content-length'));
-		const fileDescription: IFile = {
-			name: info.filename,
-			buffer: file,
-			size,
-			mimeType: info.mimeType,
-		};
+	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
+		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
+		try {
+			const response = await firstValueFrom(
+				this.httpService.get<internal.Readable>(params.url, {
+					headers: params.headers,
+					responseType: 'stream',
+				})
+			);
 
-		return fileDescription;
+			const fileDescription: IFile = {
+				name: decodeURI(params.fileName),
+				buffer: response.data,
+				size: Number(response.headers['content-length']),
+				mimeType: response.headers['content-type'],
+			};
+			const result = await this.uploadFile(userId, params, fileDescription);
+
+			return result;
+		} catch (error) {
+			this.logger.warn(`could not find file by url: ${params.url}`, error);
+			throw new NotFoundException('FILE_NOT_FOUND');
+		}
 	}
 
 	private async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: IFile) {
