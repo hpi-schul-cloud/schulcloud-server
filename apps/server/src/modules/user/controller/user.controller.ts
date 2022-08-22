@@ -1,13 +1,14 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, Patch, SetMetadata, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 
 import { ICurrentUser } from '@shared/domain';
-import { Authenticate, CurrentUser, Timeout } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 
-import { TimeoutInterceptor } from '@shared/common';
+import { Timeout } from '@shared/common/decorators';
+// eslint-disable-next-line import/no-cycle
+import serverConfig from '../../../server.config';
 import { ResolvedUserMapper } from '../mapper';
 import { UserUc } from '../uc/user.uc';
-
 import { ResolvedUserResponse, ChangeLanguageParams, SuccessfulResponse } from './dto';
 
 @ApiTags('User')
@@ -17,8 +18,6 @@ export class UserController {
 	constructor(private readonly userUc: UserUc) {}
 
 	@Get('me')
-	@Timeout(43)
-	// @SetMetadata('timeout', 42)
 	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUserResponse> {
 		const [user, permissions] = await this.userUc.me(currentUser.userId);
 

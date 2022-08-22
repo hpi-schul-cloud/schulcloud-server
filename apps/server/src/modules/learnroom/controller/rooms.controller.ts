@@ -1,9 +1,11 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Timeout } from '@shared/common';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { LessonCopyUC } from '@src/modules/learnroom/uc/lesson-copy.uc';
+import serverConfig from '@src/server.config';
 import { CopyMapper } from '../mapper/copy.mapper';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { CourseCopyUC } from '../uc/course-copy.uc';
@@ -53,6 +55,7 @@ export class RoomsController {
 	}
 
 	@Post(':roomid/copy')
+	@Timeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('roomid', ParseObjectIdPipe) courseId: string,
@@ -64,6 +67,7 @@ export class RoomsController {
 	}
 
 	@Post('lessons/:lessonid/copy')
+	@Timeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('lessonid', ParseObjectIdPipe) lessonId: string,
