@@ -110,13 +110,13 @@ export class KeycloakConfigurationService {
 		}
 		const response = await kc.clients.generateNewClientSecret({ id });
 		const systems = await this.systemRepo.findByFilter(SysType.KEYCLOAK, false);
-		if (systems.length === 0) {
+		if (systems.length === 0 && response.value) {
 			const keycloakSystem = new System({
 				type: SysType.KEYCLOAK,
 				alias: 'Keycloak',
 				oauthConfig: {
 					clientId: CLIENT_ID,
-					clientSecret: response.value as string,
+					clientSecret: this.defaultEncryptionService.encrypt(response.value),
 					grantType: 'authorization_code',
 					scope: 'openid profile email',
 					responseType: 'code',
