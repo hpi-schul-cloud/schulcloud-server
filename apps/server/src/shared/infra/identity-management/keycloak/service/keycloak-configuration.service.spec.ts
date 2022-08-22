@@ -13,7 +13,6 @@ import { System } from '@shared/domain';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo } from '@shared/repo';
 import { v1 } from 'uuid';
-import { systemFactory } from '@shared/testing';
 import { SysType } from '../../sys.type';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -217,7 +216,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.find.mockResolvedValue([]);
 			kcApiClientMock.create.mockResolvedValue({ id: 'new_client_id' });
 			kcApiClientMock.generateNewClientSecret.mockResolvedValue({ type: 'secret', value: 'generated_client_secret' });
-			repo.findAll.mockResolvedValue([systemFactory.build({ alias: 'keycloak', oauthConfig: {} })]);
+			repo.findByFilter.mockResolvedValue([]);
 		});
 
 		afterAll(() => {
@@ -225,7 +224,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.findOne.mockRestore();
 			kcApiClientMock.create.mockRestore();
 			kcApiClientMock.generateNewClientSecret.mockRestore();
-			repo.findAll.mockRestore();
+			repo.findByFilter.mockRestore();
 		});
 
 		beforeEach(() => {
@@ -234,7 +233,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.findOne.mockClear();
 			kcApiClientMock.create.mockClear();
 			kcApiClientMock.generateNewClientSecret.mockClear();
-			repo.findAll.mockClear();
+			repo.findByFilter.mockClear();
 			repo.save.mockClear();
 		});
 
@@ -257,7 +256,7 @@ describe('KeycloakConfigurationService Unit', () => {
 		});
 		it('should save client secret', async () => {
 			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(repo.save).toBeCalledTimes(1);
+			expect(repo.save).toBeCalledTimes(2);
 		});
 	});
 
