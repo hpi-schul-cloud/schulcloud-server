@@ -4,8 +4,8 @@ import { SystemRepo } from '@shared/repo';
 import { setupEntities, systemFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SysType } from '@shared/infra/identity-management';
 import { SystemService } from './system.service';
-import {SysType} from "@shared/infra/identity-management";
 
 describe('SystemService', () => {
 	let module: TestingModule;
