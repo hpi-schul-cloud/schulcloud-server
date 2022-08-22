@@ -56,6 +56,31 @@ describe('copy mapper', () => {
 
 			expect(result instanceof CopyApiResponse).toEqual(true);
 		});
+		it('should only map root element if sub elements have status type SUCCESS', () => {
+			const copyStatus = {
+				title: 'Test element',
+				type: CopyElementType.COURSE || CopyElementType.TASK,
+				status: CopyStatusEnum.SUCCESS,
+				elements: [{ title: 'Sub element', type: CopyElementType.METADATA, status: CopyStatusEnum.SUCCESS }],
+			};
+			const result = CopyMapper.mapToResponse(copyStatus);
+
+			expect(result.elements).not.toBeDefined();
+		});
+		it('should also map sub elements if root element does not have status type SUCCESS', () => {
+			const copyStatus = {
+				title: 'Test element',
+				type: CopyElementType.COURSE || CopyElementType.TASK,
+				status: CopyStatusEnum.PARTIAL,
+				elements: [{ title: 'Sub element', type: CopyElementType.LTITOOL_GROUP, status: CopyStatusEnum.NOT_DOING }],
+			};
+			const result = CopyMapper.mapToResponse(copyStatus);
+
+			expect(result.elements).toBeDefined();
+			if (result.elements) {
+				expect(result.elements[0].type).toEqual(CopyElementType.LTITOOL_GROUP);
+			}
+		});
 	});
 
 	describe('mapTaskCopyToDomain', () => {
