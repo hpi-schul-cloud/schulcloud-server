@@ -1,8 +1,8 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, Patch, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Patch, SetMetadata, UseInterceptors } from '@nestjs/common';
 
 import { ICurrentUser } from '@shared/domain';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser, Timeout } from '@src/modules/authentication/decorator/auth.decorator';
 
 import { TimeoutInterceptor } from '@shared/common';
 import { ResolvedUserMapper } from '../mapper';
@@ -17,7 +17,8 @@ export class UserController {
 	constructor(private readonly userUc: UserUc) {}
 
 	@Get('me')
-	@UseInterceptors(new TimeoutInterceptor(3000))
+	@Timeout(43)
+	// @SetMetadata('timeout', 42)
 	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUserResponse> {
 		const [user, permissions] = await this.userUc.me(currentUser.userId);
 
