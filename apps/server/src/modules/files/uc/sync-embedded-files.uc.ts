@@ -6,13 +6,13 @@ import { FileRecordParentType, IComponentProperties, Lesson, Task } from '@share
 import { Logger } from '@src/core/logger/logger.service';
 import _ from 'lodash';
 import { EmbeddedFilesRepo, fileUrlRegex } from '../repo/embedded-files.repo';
-import { SyncFileItem } from '../types';
+import { AvailableSyncEntityType, AvailableSyncParentType, SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
 import { SyncFilesStorageService } from './sync-files-storage.service';
 
 @Injectable()
 export class SyncEmbeddedFilesUc {
-	wrongIds: ObjectId[] = [];
+	failedIds: ObjectId[] = [];
 
 	constructor(
 		private embeddedFilesRepo: EmbeddedFilesRepo,
@@ -21,17 +21,17 @@ export class SyncEmbeddedFilesUc {
 		private syncFilesStorageService: SyncFilesStorageService
 	) {}
 
-	async syncFilesForParentType(type: FileRecordParentType.Task | FileRecordParentType.Lesson, limit = 1000) {
+	async syncFilesForParentType(type: AvailableSyncParentType, limit = 1000) {
 		await this.embeddedFilesRepo.createBackUpCollection(type);
 		await this.syncEmbeddedFiles(type, limit);
 	}
 
-	private async syncEmbeddedFiles(type: FileRecordParentType.Task | FileRecordParentType.Lesson, limit: number) {
-		const [entities, count] = await this.embeddedFilesRepo.findElementsToSyncFiles(type, limit, this.wrongIds);
+	private async syncEmbeddedFiles(type: AvailableSyncParentType, limit: number) {
+		const [entities, count] = await this.embeddedFilesRepo.findElementsToSyncFiles(type, limit, this.failedIds);
 
 		this.logger.log(`Found ${entities.length} ${type} descriptions with embedded files.`);
 
-		const promises = entities.map(async (entity: Lesson | Task) => {
+		const promises = entities.map(async (entity: AvailableSyncEntityType) => {
 			const fileIds = this.extractFileIds(entity);
 
 			const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
@@ -42,9 +42,10 @@ export class SyncEmbeddedFilesUc {
 		if (count > 0) {
 			await this.syncEmbeddedFiles(type, limit);
 		}
+		return true;
 	}
 
-	private extractFileIds(entity: Lesson | Task): ObjectId[] {
+	private extractFileIds(entity: AvailableSyncEntityType): ObjectId[] {
 		const fileIds: string[] = [];
 
 		if (entity instanceof Lesson) {
@@ -78,12 +79,12 @@ export class SyncEmbeddedFilesUc {
 		return contentFileIds;
 	}
 
-	private async syncFiles(files: SyncFileItem[], entity: Lesson | Task) {
+	private async syncFiles(files: SyncFileItem[], entity: AvailableSyncEntityType) {
 		const promises = files.map((file) => this.sync(file, entity));
 		await Promise.all(promises);
 	}
 
-	private async sync(file: SyncFileItem, entity: Lesson | Task) {
+	private async sync(file: SyncFileItem, entity: AvailableSyncEntityType) {
 		try {
 			await this.syncFilesMetaDataService.prepareMetaData(file);
 			await this.syncFilesStorageService.syncS3File(file);
@@ -94,7 +95,7 @@ export class SyncEmbeddedFilesUc {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
 			this.logger.error(file, stack);
-			this.wrongIds.push(entity._id);
+			this.failedIds.push(entity._id);
 			await this.syncFilesMetaDataService.persistError(file, stack);
 		}
 	}

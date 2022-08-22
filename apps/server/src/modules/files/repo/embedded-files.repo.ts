@@ -4,22 +4,22 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Counted, File, FileRecordParentType, Lesson, Task } from '@shared/domain';
 import { SyncFileItemMapper } from '../mapper';
-import { SyncFileItem } from '../types';
+import { AvailableSyncEntityType, AvailableSyncParentType, SyncFileItem } from '../types';
 
 export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
 const fileIdRegex = '(0x|0h)?[0-9A-F]{24}';
-const tasksQuery = (wrongIds: ObjectId[]) => {
+const tasksQuery = (excludeIds: ObjectId[]) => {
 	return {
-		_id: { $nin: wrongIds },
+		_id: { $nin: excludeIds },
 		description: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i'),
 	};
 };
 
-const lessonsQuery = (wrongIds: ObjectId[]) => {
+const lessonsQuery = (excludeIds: ObjectId[]) => {
 	return {
-		_id: { $nin: wrongIds },
+		_id: { $nin: excludeIds },
 		'contents.component': { $eq: 'text' },
-		'contents.content.text': { $regex: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i').source },
+		'contents.content.text': { $regex: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i') },
 	} as FilterQuery<Lesson>;
 };
 
@@ -106,16 +106,16 @@ export class EmbeddedFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
 	async findElementsToSyncFiles(
-		type: FileRecordParentType.Task | FileRecordParentType.Lesson,
+		type: AvailableSyncParentType,
 		limit: number,
-		wrongIds: ObjectId[]
+		excludeIds: ObjectId[]
 	): Promise<Counted<Task[] | Lesson[]>> {
 		let results: Counted<Task[] | Lesson[]> = [[], 0];
 
 		if (type === FileRecordParentType.Task) {
-			results = await this._em.findAndCount(Task, tasksQuery(wrongIds), { limit });
+			results = await this._em.findAndCount(Task, tasksQuery(excludeIds), { limit });
 		} else if (type === FileRecordParentType.Lesson) {
-			results = await this._em.findAndCount(Lesson, lessonsQuery(wrongIds), { limit });
+			results = await this._em.findAndCount(Lesson, lessonsQuery(excludeIds), { limit });
 		}
 		return results;
 	}
@@ -130,11 +130,11 @@ export class EmbeddedFilesRepo {
 		return items;
 	}
 
-	async updateEntity(entity: Lesson | Task) {
+	async updateEntity(entity: AvailableSyncEntityType) {
 		await this._em.persistAndFlush(entity);
 	}
 
-	async createBackUpCollection(type: FileRecordParentType.Task | FileRecordParentType.Lesson) {
+	async createBackUpCollection(type: AvailableSyncParentType) {
 		const date = new Date();
 
 		if (type === FileRecordParentType.Task) {

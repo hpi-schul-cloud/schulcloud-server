@@ -3,6 +3,7 @@
 import { FileRecordParentType } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
 import { Command, Console } from 'nestjs-console';
+import { AvailableSyncParentType } from '../types';
 import { SyncEmbeddedFilesUc } from '../uc/sync-embedded-files.uc';
 import { SyncFilesUc } from '../uc/sync-files.uc';
 
@@ -21,14 +22,13 @@ export class SyncFilesConsole {
 		await this.syncFilesUc.syncFilesForParentType(FileRecordParentType.Task, aggregationSize, numParallelPromises);
 	}
 
-	@Command({ command: 'embedded [type], [limit]' })
-	async syncEmbeddedFiles(type: string, limit = 1000): Promise<void> {
+	@Command({ command: 'embedded [type] [limit]' })
+	async syncEmbeddedFiles(type: AvailableSyncParentType, limit = 1000): Promise<void> {
 		if (type !== FileRecordParentType.Lesson && type !== FileRecordParentType.Task) {
 			this.logger.log('wrong parent type');
 			return;
 		}
 
-		const entityType = type === FileRecordParentType.Lesson ? FileRecordParentType.Lesson : FileRecordParentType.Task;
-		await this.syncEmbeddedFilesUc.syncFilesForParentType(entityType, Number(limit));
+		await this.syncEmbeddedFilesUc.syncFilesForParentType(type, Number(limit));
 	}
 }
