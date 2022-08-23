@@ -1,4 +1,4 @@
-import { CopyStatus } from '@shared/domain';
+import { CopyStatus, CopyStatusEnum } from '@shared/domain';
 import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
 import { LessonCopyParentParams } from '@src/modules/learnroom/uc/lesson-copy.uc';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
@@ -16,8 +16,10 @@ export class CopyMapper {
 		if (copyStatus.copyEntity) {
 			dto.id = copyStatus.copyEntity.id;
 		}
-		if (copyStatus.elements) {
-			dto.elements = copyStatus.elements.map((status) => CopyMapper.mapToResponse(status));
+		if (copyStatus.status !== CopyStatusEnum.SUCCESS && copyStatus.elements) {
+			dto.elements = copyStatus.elements
+				.map((element) => CopyMapper.mapToResponse(element))
+				.filter((element) => element.status !== CopyStatusEnum.SUCCESS);
 		}
 		return dto;
 	}

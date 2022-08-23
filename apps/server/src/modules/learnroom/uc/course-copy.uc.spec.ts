@@ -117,6 +117,7 @@ describe('course copy uc', () => {
 
 			const courseCopyName = 'Copy';
 			copyHelperService.deriveCopyName.mockReturnValue(courseCopyName);
+			copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
 
 			const boardCopyStatus = {
 				title: 'boardCopy',
@@ -221,11 +222,17 @@ describe('course copy uc', () => {
 			expect(roomsService.updateBoard).toHaveBeenCalledWith(originalBoard, course.id, user.id);
 		});
 
-		it('should use copyHelperService', async () => {
+		it('should use deriveCopyName from copyHelperService', async () => {
 			const { course, user, allCourses, jwt } = setup();
 			await uc.copyCourse(user.id, course.id, jwt);
 			const allCourseNames = allCourses.map((c) => c.name);
 			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(course.name, allCourseNames);
+		});
+
+		it('should use deriveStatusFromElements from copyHelperService', async () => {
+			const { course, user, jwt } = setup();
+			const result = await uc.copyCourse(user.id, course.id, jwt);
+			expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalledWith(result.elements);
 		});
 
 		it('should use lessonCopyService.updateCopiedEmbeddedTasks', async () => {
