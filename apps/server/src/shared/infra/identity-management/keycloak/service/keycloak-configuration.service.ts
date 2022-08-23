@@ -3,12 +3,12 @@ import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/li
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Inject } from '@nestjs/common';
 import { System } from '@shared/domain';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo } from '@shared/repo';
 import { SysType } from '../../sys.type';
-import { IdentityProviderConfig, IOidcIdentityProviderConfig } from '../interface';
-import { KeycloakAdministrationService } from './keycloak-administration.service';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { IdentityProviderConfig } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
+import { KeycloakAdministrationService } from './keycloak-administration.service';
 
 enum ConfigureAction {
 	CREATE = 'create',
