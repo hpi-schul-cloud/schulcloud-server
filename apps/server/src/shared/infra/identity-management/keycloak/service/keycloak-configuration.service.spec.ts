@@ -195,25 +195,6 @@ describe('KeycloakConfigurationService Unit', () => {
 			expect(result).toBe(1);
 			expect(kcApiClientIdentityProvidersMock.update).toBeCalledTimes(1);
 		});
-		it('should decrypt secrets when creating a configuration in Keycloak', async () => {
-			kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
-
-			await service.configureIdentityProviders();
-			expect(kcApiClientIdentityProvidersMock.create).toHaveBeenCalledWith(
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				expect.objectContaining({ config: expect.objectContaining({ clientId: expect.stringMatching('.*dec') }) })
-			);
-
-			kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
-		});
-		it('should decrypt secrets when updating a configuration in Keycloak', async () => {
-			await service.configureIdentityProviders();
-			expect(kcApiClientIdentityProvidersMock.update).toHaveBeenCalledWith(
-				expect.anything(),
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				expect.objectContaining({ config: expect.objectContaining({ clientId: expect.stringMatching('.*dec') }) })
-			);
-		});
 		it('should delete a new configuration in Keycloak', async () => {
 			repo.findAll.mockResolvedValue([]);
 
