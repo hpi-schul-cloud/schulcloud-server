@@ -6,10 +6,11 @@ import { lastValueFrom } from 'rxjs';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { OauthConfig, System, User } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AxiosResponse } from 'axios';
+import { Inject } from '@nestjs/common';
 import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
@@ -27,8 +28,7 @@ export class OAuthService {
 		private readonly systemRepo: SystemRepo,
 		private readonly jwtService: FeathersJwtProvider,
 		private readonly httpService: HttpService,
-		private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
-		// private readonly iservOauthService: IservOAuthService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
 		private readonly logger: Logger,
 		private readonly provisioningUc: ProvisioningUc
 	) {

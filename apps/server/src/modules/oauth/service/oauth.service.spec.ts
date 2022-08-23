@@ -14,7 +14,7 @@ import jwt from 'jsonwebtoken';
 import { of } from 'rxjs';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { schoolFactory } from '@shared/testing';
-import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
@@ -113,6 +113,10 @@ describe('OAuthService', () => {
 					provide: FeathersJwtProvider,
 					useValue: createMock<FeathersJwtProvider>(),
 				},
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<SymetricKeyEncryptionService>(),
+				},
 			],
 		}).compile();
 		service = module.get(OAuthService);
@@ -139,7 +143,6 @@ describe('OAuthService', () => {
 		defaultErrorQuery = { error: 'oauth_login_failed' };
 		defaultUserId = '123456789';
 		defaultSchool = schoolFactory.build();
-		// defaultSchool.externalId = '9999';
 		defaultDecodedJWT = {
 			sub: '4444',
 		};

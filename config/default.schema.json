@@ -342,6 +342,28 @@
 				}
 			}
 		},
+		"OIDCMOCK": {
+			"type": "object",
+			"description": "OpenID Connect Identity Provider mock server for develop and testing purpose (set these values for local seeding purpose).",
+			"required": [],
+			"properties": {
+				"BASE_URL": {
+					"type": "string",
+					"default": null,
+					"description": "The mock server base path."
+				},
+				"CLIENT_ID": {
+					"type": "string",
+					"default": null,
+					"description": "The mock server accepted client id."
+				},
+				"CLIENT_SECRET": {
+					"type": "string",
+					"default": null,
+					"description": "The mock server accepted client's secret."
+				}
+			}
+		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -591,9 +613,7 @@
 		"ETHERPAD": {
 			"type": "object",
 			"description": "Etherpad settings",
-			"required": [
-				"PAD_URI"
-			],
+			"required": ["PAD_URI"],
 			"properties": {
 				"PAD_URI": {
 					"type": "string",
@@ -899,25 +919,10 @@
 			"default": "",
 			"description": "SystemId for migration of users from system"
 		},
-		"FEATURE_COURSE_COPY": {
+		"FEATURE_COPY_SERVICE_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Toggle for copy/duplicate a course feature."
-		},
-		"FEATURE_COURSE_COPY_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for copy/duplicate a course feature."
-		},
-		"FEATURE_TASK_COPY_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for copy/duplicate a task feature."
-		},
-		"FEATURE_LESSON_COPY_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for copy/duplicate a lesson feature."
+			"description": "Toggle for copy course feature."
 		},
 		"GHOST_BASE_URL": {
 			"type": "string",

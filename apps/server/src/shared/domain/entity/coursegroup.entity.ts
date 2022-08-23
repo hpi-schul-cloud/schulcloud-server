@@ -1,10 +1,10 @@
-import { Entity, Collection, ManyToMany, ManyToOne, Index } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToMany, ManyToOne } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { IEntityWithSchool } from '../interface';
 import { BaseEntityWithTimestamps } from './base.entity';
-import type { User } from './user.entity';
 import type { Course } from './course.entity';
 import { School } from './school.entity';
-import { IEntityWithSchool } from '../interface';
+import type { User } from './user.entity';
 
 export interface ICourseGroupProperties {
 	course: Course;
@@ -18,7 +18,8 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 	@Index()
 	students = new Collection<User>(this);
 
-	@ManyToOne('Course', { fieldName: 'courseId' })
+	@Index()
+	@ManyToOne('Course', { fieldName: 'courseId', eager: true })
 	course: Course;
 
 	@ManyToOne('School', { fieldName: 'schoolId' })

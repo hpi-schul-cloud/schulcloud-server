@@ -1,19 +1,19 @@
 
-  - name: DB Init Configmap File
+  - name: Init Configmap File
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: configmap_file_init_db.yml.j2
+      template: configmap_file_init.yml.j2
     when: WITH_SCHULCLOUD_INIT
 
-  - name: Remove DB Init Configmap File
+  - name: Remove Init Configmap File
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       state: absent
       api_version: v1
       kind: ConfigMap
-      name: api-db-init-file
+      name: api-init-file
     when: not WITH_SCHULCLOUD_INIT
 
   - name: Management Deployment
@@ -50,53 +50,19 @@
       name: mgmt-svc
     when: not WITH_SCHULCLOUD_INIT
 
-  - name: DB Init Job
+  - name: Init Job
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: job_init_db.yml.j2
+      template: job_init.yml.j2
     when: WITH_SCHULCLOUD_INIT
 
-  - name: Remove DB Init Job
+  - name: Remove Init Job
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       state: absent
       api_version: batch/v1
       kind: Job
-      name: api-db-init-job
+      name: api-init-job
     when: not WITH_SCHULCLOUD_INIT
-
-  - name: IDM Init Configmap File
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: configmap_file_init_idm.yml.j2
-    when: WITH_SCHULCLOUD_INIT and WITH_ERWINIDM
-
-  - name: Remove IDM Init Configmap File
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      state: absent
-      api_version: v1
-      kind: ConfigMap
-      name: api-idm-init-file
-    when: not (WITH_SCHULCLOUD_INIT and WITH_ERWINIDM)
-
-  - name: IDM Init Job
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: job_init_idm.yml.j2
-    when: WITH_SCHULCLOUD_INIT and WITH_ERWINIDM
-
-  - name: Remove IDM Init Job
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      state: absent
-      api_version: batch/v1
-      kind: Job
-      name: api-idm-init-job
-    when: not (WITH_SCHULCLOUD_INIT and WITH_ERWINIDM)

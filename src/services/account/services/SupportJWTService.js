@@ -133,7 +133,7 @@ class SupportJWTService {
 			const requestedUserId = userId.toString();
 			const currentUserId = params.account.userId.toString();
 
-			const account = await accountModel.findOne({ userId }).select('_id').lean().exec();
+			const account = await accountModel.findOne({ userId }).select(['_id', 'systemId']).lean().exec();
 			if (!account && !account._id) {
 				throw new Error(`Account for user with the id ${userId} does not exist.`);
 			}
