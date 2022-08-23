@@ -33,6 +33,7 @@ import {
 	FileRecordListResponse,
 	FileRecordParams,
 	FileRecordResponse,
+	FileUrlParams,
 	RenameFileParams,
 	SingleFileParams,
 } from './dto';
@@ -42,6 +43,25 @@ import {
 @Controller('file')
 export class FilesStorageController {
 	constructor(private readonly filesStorageUC: FilesStorageUC, private readonly fileRecordUC: FileRecordUC) {}
+
+	@ApiOperation({ summary: 'Upload file from url' })
+	@ApiResponse({ status: 201, type: FileRecordResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 400, type: BadRequestException })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@Post('/upload-from-url/:schoolId/:parentType/:parentId')
+	async uploadFromUrl(
+		@Body() body: FileUrlParams,
+		@Param() params: FileRecordParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<FileRecordResponse> {
+		const res = await this.filesStorageUC.uploadFromUrl(currentUser.userId, { ...body, ...params });
+
+		const response = new FileRecordResponse(res);
+
+		return response;
+	}
 
 	@ApiOperation({ summary: 'Streamable upload of a binary file.' })
 	@ApiResponse({ status: 201, type: FileRecordResponse })
