@@ -90,19 +90,21 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrateg
 			// ignore NotFoundException and create new user
 			createNewAccount = true;
 		}
-		const savedUser: UserDO = await this.userRepo.save(user);
+		const savedUser: UserDO = (await this.userRepo.save(user)) as UserDO;
+		const userEntity: UserDO = await this.userRepo.findByExternalIdOrFail(savedUser.externalId ?? '', systemId);
+		savedUser.id = userEntity.id;
 
 		if (createNewAccount) {
 			await this.accountUc.saveAccount(
 				new AccountSaveDto({
-					userId: user.id,
-					password: 'generateSecret',
-					username: 'generateEmail',
+					userId: savedUser.id,
+					password: 'generateSecret100%',
+					username: 'generateEmail@schul-cloud.org',
 					activated: true,
 				})
 			);
 		}
 
-		return user;
+		return savedUser;
 	}
 }
