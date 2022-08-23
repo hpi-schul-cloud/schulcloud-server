@@ -48,6 +48,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 
 	protected mapEntityToDO(entity: User): UserDO {
 		return new UserDO({
+			id: entity.id,
 			email: entity.email,
 			firstName: entity.firstName,
 			lastName: entity.lastName,
