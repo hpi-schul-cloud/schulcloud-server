@@ -18,6 +18,7 @@ import { SysType } from '../../sys.type';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { flowAlias, KeycloakConfigurationService } from './keycloak-configuration.service';
+import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 
 describe('KeycloakConfigurationService Unit', () => {
 	let module: TestingModule;
@@ -133,6 +134,10 @@ describe('KeycloakConfigurationService Unit', () => {
 					provide: DefaultEncryptionService,
 					useValue: encryptionServiceMock,
 				},
+				{ 
+          provide: OidcIdentityProviderMapper, 
+          useValue: createMock<OidcIdentityProviderMapper>() 
+        },
 			],
 		}).compile();
 		client = module.get(KeycloakAdminClient);
@@ -160,6 +165,15 @@ describe('KeycloakConfigurationService Unit', () => {
 		configService.get.mockClear();
 	});
 
+	afterAll(() => {
+		repo.findAll.mockRestore();
+		kcApiClientIdentityProvidersMock.find.mockRestore();
+		kcApiClientIdentityProvidersMock.create.mockRestore();
+		kcApiClientIdentityProvidersMock.update.mockRestore();
+		kcApiClientIdentityProvidersMock.del.mockRestore();
+		configService.get.mockRestore();
+	});
+  
 	describe('configureIdentityProviders', () => {
 		it('should read configs from database successfully', async () => {
 			const result = await service.configureIdentityProviders();

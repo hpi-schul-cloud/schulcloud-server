@@ -3,11 +3,12 @@ import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/li
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Inject } from '@nestjs/common';
 import { System } from '@shared/domain';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo } from '@shared/repo';
 import { SysType } from '../../sys.type';
 import { IdentityProviderConfig, IOidcIdentityProviderConfig } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 
 enum ConfigureAction {
 	CREATE = 'create',
@@ -22,6 +23,7 @@ export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly systemRepo: SystemRepo,
+		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService
 	) {}
 
@@ -197,38 +199,20 @@ export class KeycloakConfigurationService {
 	private async createIdentityProvider(system: IdentityProviderConfig): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		if (system.type === SysType.OIDC) {
-			await kc.identityProviders.create(this.mapSystemToIdentityProvider(system));
+			await kc.identityProviders.create(
+				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
+			);
 		}
 	}
 
 	private async updateIdentityProvider(system: IdentityProviderConfig): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		if (system.type === SysType.OIDC) {
-			await kc.identityProviders.update({ alias: system.alias }, this.mapSystemToIdentityProvider(system));
+			await kc.identityProviders.update(
+				{ alias: system.alias },
+				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
+			);
 		}
-	}
-
-	private mapSystemToIdentityProvider(system: IOidcIdentityProviderConfig): IdentityProviderRepresentation {
-		return {
-			providerId: system.type,
-			alias: system.alias,
-			enabled: true,
-			firstBrokerLoginFlowAlias: flowAlias,
-			config: {
-				clientId: this.defaultEncryptionService.decrypt(system.config.clientId),
-				clientSecret: this.defaultEncryptionService.decrypt(system.config.clientSecret),
-				authorizationUrl: system.config.authorizationUrl,
-				tokenUrl: system.config.tokenUrl,
-				logoutUrl: system.config.logoutUrl,
-				userInfoUrl: system.config.userinfoUrl,
-				defaultScope: system.config.defaultScopes,
-				syncMode: 'IMPORT',
-				sync_mode: 'import',
-				clientAuthMethod: 'client_secret_post',
-				backchannelSupported: 'true',
-				prompt: 'login',
-			},
-		};
 	}
 
 	private async loadConfigs(sysTypes: SysType[]): Promise<IdentityProviderConfig[]> {

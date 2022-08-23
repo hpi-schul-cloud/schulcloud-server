@@ -9,6 +9,7 @@ import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } f
 import { StorageProvider, System } from '@shared/domain';
 import { SysType } from '@shared/infra/identity-management';
 import { ConfigService } from '@nestjs/config';
+import { Logger } from '@src/core/logger';
 import { BsonConverter } from '../converter/bson.converter';
 
 export interface ICollectionFilePath {
@@ -18,6 +19,8 @@ export interface ICollectionFilePath {
 
 const systemsCollectionName = 'systems';
 const storageprovidersCollectionName = 'storageproviders';
+
+const defaultSecretReplacementHintText = 'replace with secret placeholder';
 
 @Injectable()
 export class DatabaseManagementUc {
@@ -31,9 +34,12 @@ export class DatabaseManagementUc {
 		private databaseManagementService: DatabaseManagementService,
 		private bsonConverter: BsonConverter,
 		private readonly configService: ConfigService,
+		private readonly logger: Logger,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
-	) {}
+	) {
+		this.logger.setContext(DatabaseManagementUc.name);
+	}
 
 	/**
 	 * absolute path reference for seed data base folder.
@@ -177,9 +183,7 @@ export class DatabaseManagementUc {
 					await this.databaseManagementService.createCollection(collectionName);
 				}
 
-				if (collectionName === systemsCollectionName) {
-					this.encryptSecretsInSystems(jsonDocuments as System[]);
-				}
+				this.encryptSecrets(collectionName, jsonDocuments);
 
 				// import backup data into database collection
 				const importedDocumentsAmount = await this.databaseManagementService.importCollection(
@@ -215,9 +219,7 @@ export class DatabaseManagementUc {
 			collectionsToExport.map(async ({ filePath, collectionName }) => {
 				// load json documents from collection
 				const jsonDocuments = await this.databaseManagementService.findDocumentsOfCollection(collectionName);
-				if (collectionName === systemsCollectionName) {
-					this.removeSecretsFromSystems(jsonDocuments as System[]);
-				}
+				this.removeSecrets(collectionName, jsonDocuments);
 				// serialize to bson (format of mongoexport)
 				const bsonDocuments = this.bsonConverter.serialize(jsonDocuments);
 				// sort results to have 'new' data added at documents end
@@ -242,23 +244,12 @@ export class DatabaseManagementUc {
 	}
 
 	private injectEnvVars(json: string): string {
-		let start = 0;
-		while (start >= 0) {
-			start = json.indexOf('${', start);
-			if (start > 0) {
-				if (json.charAt(start - 1) === '\\') {
-					// skip and remove escape indicator
-					json = json.slice(0, start - 1) + json.slice(start);
-					start += 1;
-				} else {
-					const end = json.indexOf('}', start);
-					const placeholder = json.slice(start + 2, end).trim();
-					const placeholderContent = this.resolvePlaceholder(placeholder);
-					json = json.slice(0, start) + placeholderContent + json.slice(end + 1);
-					start += placeholderContent.length + 1;
-				}
-			}
-		}
+		// replace ${VAR} with VAR content
+		json = json.replace(/(?<!\\)\$\{(.*?)\}/g, (placeholder) =>
+			this.resolvePlaceholder(placeholder.substring(2, placeholder.length - 1))
+		);
+		// replace \$ with $ (escaped placeholder sequence)
+		json = json.replace(/\\\$/g, '$');
 		return json;
 	}
 
@@ -266,7 +257,18 @@ export class DatabaseManagementUc {
 		if (Configuration.has(placeholder)) {
 			return Configuration.get(placeholder) as string;
 		}
-		return this.configService.get<string>(placeholder) ?? '';
+		const placeholderValue = this.configService.get<string>(placeholder);
+		if (placeholderValue) {
+			return placeholderValue;
+		}
+		this.logger.warn(`Placeholder "${placeholder}" could not be resolved!`);
+		return '';
+	}
+
+	private encryptSecrets(collectionName: string, jsonDocuments: unknown[]) {
+		if (collectionName === systemsCollectionName) {
+			this.encryptSecretsInSystems(jsonDocuments as System[]);
+		}
 	}
 
 	private encryptSecretsInSystems(systems: System[]) {
@@ -287,22 +289,38 @@ export class DatabaseManagementUc {
 		return systems;
 	}
 
+	/**
+	 * Removes all known secrets (hard coded) from the export.
+	 * Manual replacement with the intend placeholders or value is mandatory.
+	 * Currently this affects system and storageproviders collections.
+	 */
+	private removeSecrets(collectionName: string, jsonDocuments: unknown[]) {
+		if (collectionName === systemsCollectionName) {
+			this.removeSecretsFromSystems(jsonDocuments as System[]);
+		}
+		if (collectionName === storageprovidersCollectionName) {
+			this.removeSecretsFromStorageproviders(jsonDocuments as StorageProvider[]);
+		}
+	}
+
+	private removeSecretsFromStorageproviders(storageProviders: StorageProvider[]) {
+		storageProviders.forEach((storageProvider) => {
+			storageProvider.accessKeyId = defaultSecretReplacementHintText;
+			storageProvider.secretAccessKey = defaultSecretReplacementHintText;
+		});
+	}
+
 	private removeSecretsFromSystems(systems: System[]) {
 		systems.forEach((system) => {
-			// The system's alias needs to be set otherwise the export will fail here, but that is acceptable.
 			if (system.oauthConfig) {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.oauthConfig.clientSecret = `\${${system.alias!.toLocaleUpperCase()}_CLIENT_SECRET}`;
+				system.oauthConfig.clientSecret = defaultSecretReplacementHintText;
 			}
 			if (system.type === SysType.OIDC && system.config) {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.config.clientSecret = `\${${system.alias!.toLocaleUpperCase()}_CLIENT_SECRET}`;
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.config.clientId = `\${${system.alias!.toLocaleUpperCase()}_CLIENT_ID}`;
+				system.config.clientSecret = defaultSecretReplacementHintText;
+				system.config.clientId = defaultSecretReplacementHintText;
 			}
 			if (system.type === SysType.LDAP && system.ldapConfig) {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				system.ldapConfig.searchUserPassword = `\${${system.alias!.toLocaleUpperCase()}_SEARCHUSER_PASSWORD}`;
+				system.ldapConfig.searchUserPassword = defaultSecretReplacementHintText;
 			}
 		});
 		return systems;

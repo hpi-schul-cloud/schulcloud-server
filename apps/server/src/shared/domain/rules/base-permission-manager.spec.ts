@@ -61,7 +61,7 @@ describe('base-permission', () => {
 		const user = userFactory.buildWithId({ roles });
 		const domainObject = new MyDomainObject();
 
-		expect(manager.hasPermission(user, domainObject, PermissionContextBuilder.build([]))).toEqual(true);
+		expect(manager.hasPermission(user, domainObject, PermissionContextBuilder.read([]))).toEqual(true);
 	});
 
 	it('Should support authorisation utils as public interface', () => {

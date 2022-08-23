@@ -1,10 +1,10 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { Course, EntityId, Lesson, School, Task, Team, User } from '@shared/domain';
-import { CourseRepo, LessonRepo, SchoolRepo, TaskRepo, TeamsRepo, UserRepo } from '@shared/repo';
+import { Course, CourseGroup, EntityId, Lesson, School, Task, Team, User } from '@shared/domain';
+import { CourseGroupRepo, CourseRepo, LessonRepo, SchoolRepo, TaskRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { AllowedAuthorizationEntityType } from './interfaces';
 
-type RepoType = TaskRepo | CourseRepo | UserRepo | SchoolRepo | LessonRepo | TeamsRepo;
-export type ReferenceEntityType = Task | Course | User | School | Lesson | Team;
+type RepoType = TaskRepo | CourseRepo | UserRepo | SchoolRepo | LessonRepo | TeamsRepo | CourseGroupRepo;
+export type ReferenceEntityType = Task | Course | User | School | Lesson | Team | CourseGroup;
 
 interface IRepoLoader {
 	repo: RepoType;
@@ -18,6 +18,7 @@ export class ReferenceLoader {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly courseRepo: CourseRepo,
+		private readonly courseGroupRepo: CourseGroupRepo,
 		private readonly taskRepo: TaskRepo,
 		private readonly schoolRepo: SchoolRepo,
 		private readonly lessonRepo: LessonRepo,
@@ -25,6 +26,7 @@ export class ReferenceLoader {
 	) {
 		this.repos.set(AllowedAuthorizationEntityType.Task, { repo: this.taskRepo });
 		this.repos.set(AllowedAuthorizationEntityType.Course, { repo: this.courseRepo });
+		this.repos.set(AllowedAuthorizationEntityType.CourseGroup, { repo: this.courseGroupRepo });
 		this.repos.set(AllowedAuthorizationEntityType.User, { repo: this.userRepo, populate: true });
 		this.repos.set(AllowedAuthorizationEntityType.School, { repo: this.schoolRepo });
 		this.repos.set(AllowedAuthorizationEntityType.Lesson, { repo: this.lessonRepo });

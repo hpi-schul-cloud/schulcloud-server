@@ -8,9 +8,10 @@ import {
 	LdapEncryptionService,
 	SymetricKeyEncryptionService,
 } from '@shared/infra/encryption';
-import { System } from '@shared/domain';
+import { StorageProvider, System } from '@shared/domain';
 import { ObjectId } from 'mongodb';
 import { ConfigService } from '@nestjs/config';
+import { Logger } from '@src/core/logger';
 import { DatabaseManagementUc } from './database-management.uc';
 import { BsonConverter } from '../converter/bson.converter';
 
@@ -20,6 +21,7 @@ describe('DatabaseManagementService', () => {
 	let fileSystemAdapter: DeepMocked<FileSystemAdapter>;
 	let dbService: DeepMocked<DatabaseManagementService>;
 	let configService: DeepMocked<ConfigService>;
+	let logger: DeepMocked<Logger>;
 	let defaultEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let ldapEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let bsonConverter: BsonConverter;
@@ -119,6 +121,44 @@ describe('DatabaseManagementService', () => {
 		},
 	};
 
+	const storageProviderParsed: StorageProvider[] = [
+		{
+			id: '62d6ca7e769952e3f6e67925',
+			_id: new ObjectId('62d6ca7e769952e3f6e67925'),
+			// eslint-disable-next-line no-template-curly-in-string
+			region: 'DoNotIgnore ${Ignore}',
+			// eslint-disable-next-line no-template-curly-in-string
+			endpointUrl: 'https://storage-SC_DOMAIN',
+			// eslint-disable-next-line no-template-curly-in-string
+			accessKeyId: 'AWS_ACCESS_KEY',
+			// eslint-disable-next-line no-template-curly-in-string
+			secretAccessKey: 'AWS_SECRET_ACCESS_KEY_AES',
+			createdAt: new Date('2021-07-16T09:03:18.536Z'),
+			updatedAt: new Date('2021-07-16T09:03:18.536Z'),
+		},
+	];
+
+	const storageProviderJSON =
+		'[{' +
+		'"id": {' +
+		'	"$oid": "62d6ca7e769952e3f6e67925"' +
+		'},' +
+		// eslint-disable-next-line no-template-curly-in-string
+		'"region": "${DoNotIgnore} \\${Ignore}",' +
+		// eslint-disable-next-line no-template-curly-in-string
+		'"endpointUrl": "https://storage-${SC_DOMAIN}",' +
+		// eslint-disable-next-line no-template-curly-in-string
+		'"accessKeyId": "${AWS_ACCESS_KEY}",' +
+		// eslint-disable-next-line no-template-curly-in-string
+		'"secretAccessKey": "${AWS_SECRET_ACCESS_KEY_AES}",' +
+		'"createdAt": {' +
+		'	"$date": "2021-07-16T09:03:18.536Z"' +
+		'},' +
+		'"updatedAt": {' +
+		'	"$date": "2021-07-16T09:03:18.536Z"' +
+		'}' +
+		'}]';
+
 	const collection1Name = 'collectionName1';
 	// eslint-disable-next-line no-template-curly-in-string
 	const collection1Data = [{ first: 'foo1' }, { second: 'bar1' }, { third: '${aVar}' }];
@@ -127,10 +167,7 @@ describe('DatabaseManagementService', () => {
 	// eslint-disable-next-line no-template-curly-in-string
 	const collection2Data = [{ first: 'foo2' }];
 
-	// eslint-disable-next-line no-template-curly-in-string
-	const storageProviderData = [{ parseMe: '${DoNotIgnore}', ignoreMe: '\\${Ignore}' }];
-	// eslint-disable-next-line no-template-curly-in-string
-	const storageProviderJsonString = '[{"parseMe": "${DoNotIgnore}", "ignoreMe": "\\${Ignore}"}]';
+	const defaultSecretReplacementHintText = 'replace with secret placeholder';
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -139,6 +176,7 @@ describe('DatabaseManagementService', () => {
 				BsonConverter,
 				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{ provide: ConfigService, useValue: createMock<ConfigService>() },
+				{ provide: Logger, useValue: createMock<Logger>() },
 				{ provide: LdapEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{
 					provide: FileSystemAdapter,
@@ -163,8 +201,7 @@ describe('DatabaseManagementService', () => {
 								return JSON.stringify([oauthSystem, oidcSystem, ldapSystem]);
 							}
 							if (fileName === `${storageprovidersCollectionName}.json`) {
-								// eslint-disable-next-line no-template-curly-in-string
-								return storageProviderJsonString;
+								return storageProviderJSON;
 							}
 							return '[]';
 						}),
@@ -189,15 +226,12 @@ describe('DatabaseManagementService', () => {
 							}
 							if (collectionName === systemsCollectionName) {
 								// JSON used for cloning, so that oauthSystemWithSecrets' values can't be changed
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 								return Promise.resolve(
 									JSON.parse(JSON.stringify([oauthSystemWithSecrets, oidcSystemWithSecrets, ldapSystemWithSecret]))
 								);
 							}
 							if (collectionName === storageprovidersCollectionName) {
-								// JSON used for cloning, so that oauthSystemWithSecrets' values can't be changed
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-								return Promise.resolve(storageProviderData);
+								return Promise.resolve(storageProviderParsed);
 							}
 							return Promise.resolve([]);
 						},
@@ -216,6 +250,7 @@ describe('DatabaseManagementService', () => {
 		dbService = module.get(DatabaseManagementService);
 		bsonConverter = module.get(BsonConverter);
 		configService = module.get(ConfigService);
+		logger = module.get(Logger);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		ldapEncryptionService = module.get(LdapEncryptionService);
 	});
@@ -351,9 +386,8 @@ describe('DatabaseManagementService', () => {
 				const arg: unknown = fileSystemAdapter.writeFile.mock.calls[0][0];
 				expect(arg).toEqual('collectionName1.json');
 			});
-
 			describe('for systems', () => {
-				it('should replace secrets with placeholders', async () => {
+				it('should replace secrets with replacement hint', async () => {
 					await uc.exportCollectionsToFileSystem([systemsCollectionName]);
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 					const fileName: unknown = fileSystemAdapter.writeFile.mock.calls[0][0];
@@ -364,9 +398,22 @@ describe('DatabaseManagementService', () => {
 					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
 					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
 
-					expect(fileContent.includes(oauthSystem.oauthConfig.clientSecret)).toBe(true);
-					expect(fileContent.includes(oidcSystem.config.clientSecret)).toBe(true);
-					expect(fileContent.includes(oidcSystem.config.clientSecret)).toBe(true);
+					expect(fileContent.includes(defaultSecretReplacementHintText)).toBe(true);
+				});
+			});
+			describe('for storageproviders', () => {
+				it('should replace secrets with replacement hint', async () => {
+					await uc.exportCollectionsToFileSystem([storageprovidersCollectionName]);
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					const fileName: unknown = fileSystemAdapter.writeFile.mock.calls[0][0];
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+					const fileContent: string = fileSystemAdapter.writeFile.mock.calls[0][1];
+					expect(fileName).toEqual(`${storageprovidersCollectionName}.json`);
+					expect(fileContent.includes(oauthSystemWithSecrets.oauthConfig.clientSecret)).toBe(false);
+					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
+					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
+
+					expect(fileContent.includes(defaultSecretReplacementHintText)).toBe(true);
 				});
 			});
 		});
@@ -392,6 +439,7 @@ describe('DatabaseManagementService', () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem(['collectionName1']);
 			expect(collections).toEqual(['collectionName1:3']);
 		});
+
 		it('should fail when seed a database collection which does not exist', async () => {
 			await expect(async () => {
 				await uc.seedDatabaseCollectionsFromFileSystem(['non_existing_collection']);
@@ -443,9 +491,6 @@ describe('DatabaseManagementService', () => {
 					configHasSpy.mockImplementation((data) => data !== 'AES_KEY');
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					expect(dbService.collectionExists).toBeCalledTimes(1);
-					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
-					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
 						clientId: 'SANIS_CLIENT_ID',
@@ -462,9 +507,6 @@ describe('DatabaseManagementService', () => {
 					configService.get.mockImplementation((data: string) => `${data}_env`);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					expect(dbService.collectionExists).toBeCalledTimes(1);
-					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
-					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
 						clientId: 'SANIS_CLIENT_ID_env',
@@ -481,9 +523,6 @@ describe('DatabaseManagementService', () => {
 					configService.get.mockReturnValue(undefined);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					expect(dbService.collectionExists).toBeCalledTimes(1);
-					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
-					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
 						clientId: '',
@@ -493,6 +532,17 @@ describe('DatabaseManagementService', () => {
 						clientId: '',
 						clientSecret: '',
 					});
+				});
+				it('should warn if non resolvable placeholder encountered', async () => {
+					configGetSpy.mockReturnValue(undefined);
+					configHasSpy.mockReturnValue(false);
+					configService.get.mockReturnValue(undefined);
+					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
+					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
+					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SANIS_CLIENT_ID'));
+					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SANIS_CLIENT_SECRET'));
+					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('OIDC_CLIENT_ID'));
+					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('OIDC_CLIENT_SECRET'));
 				});
 				it('should favor configuration key before environmental variable', async () => {
 					const configurationCompareValue = 'CONFIGURATION';
@@ -516,15 +566,14 @@ describe('DatabaseManagementService', () => {
 					configHasSpy.mockReturnValue(true);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([storageprovidersCollectionName]);
-					expect(dbService.collectionExists).toBeCalledTimes(1);
-					expect(dbService.createCollection).toBeCalledWith(storageprovidersCollectionName);
-					expect(dbService.clearCollection).not.toBeCalled();
-					const importedObject = dbService.importCollection.mock.calls[0][1];
-					expect(importedObject[0]).toMatchObject({
-						parseMe: 'DoNotIgnore',
-						// eslint-disable-next-line no-template-curly-in-string
-						ignoreMe: '${Ignore}',
-					});
+					expect(dbService.importCollection).toBeCalledWith(
+						expect.anything(),
+						expect.arrayContaining([
+							expect.objectContaining({
+								region: storageProviderParsed[0].region,
+							}),
+						])
+					);
 				});
 				it('should encrypt secrets if secret is configured in env var', async () => {
 					configGetSpy.mockImplementation((data) => data);
