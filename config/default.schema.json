@@ -342,6 +342,28 @@
 				}
 			}
 		},
+		"OIDCMOCK": {
+			"type": "object",
+			"description": "OpenID Connect Identity Provider mock server for develop and testing purpose (set these values for local seeding purpose).",
+			"required": [],
+			"properties": {
+				"BASE_URL": {
+					"type": "string",
+					"default": null,
+					"description": "The mock server base path."
+				},
+				"CLIENT_ID": {
+					"type": "string",
+					"default": null,
+					"description": "The mock server accepted client id."
+				},
+				"CLIENT_SECRET": {
+					"type": "string",
+					"default": null,
+					"description": "The mock server accepted client's secret."
+				}
+			}
+		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
 			"default": false,

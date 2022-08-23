@@ -1,27 +1,25 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { BasePermission } from '@shared/domain/rules/base-permission';
+import { Injectable } from '@nestjs/common';
 import { Team, TeamUser, User } from '@shared/domain/entity';
 import { IPermissionContext } from '@shared/domain/interface';
+import { BasePermission } from '@shared/domain/rules/base-permission';
 
 @Injectable()
 export class TeamRule extends BasePermission<Team> {
-	// defined by Basetype
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public isApplicable(user: User, entity: Team, context?: IPermissionContext): boolean {
+	public isApplicable(user: User, entity: Team): boolean {
 		return entity instanceof Team;
 	}
 
 	public hasPermission(user: User, entity: Team, context: IPermissionContext): boolean {
-		const resultTeamUser: TeamUser | undefined = entity.teamUsers.find(
-			(teamUser: TeamUser) => teamUser.user.id === user.id
-		);
+		let hasPermission = false;
+		entity.teamUsers.forEach((teamUser: TeamUser) => {
+			if (
+				this.utils.hasAccessToEntity(user, teamUser, ['user']) &&
+				this.utils.hasAllPermissions(user, context.requiredPermissions)
+			) {
+				hasPermission = true;
+			}
+		});
 
-		if (!resultTeamUser) {
-			throw new InternalServerErrorException('Cannot find user in team');
-		}
-
-		const permissions: string[] = this.utils.resolveTeamPermissions(resultTeamUser);
-
-		return context.requiredPermissions.every((permission) => permissions.includes(permission));
+		return hasPermission;
 	}
 }

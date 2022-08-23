@@ -10,7 +10,7 @@ export class KeycloakManagementController {
 
 	/**
 	 * This connects to IDM, seeds the test users and seeds the identity providers.
-	 * Used by Autodeployment for develop environment (job_init_idm.yml.j2) via cURL
+	 * Used by auto-deployment for develop environment (job_init_idm.yml.j2) via cURL
 	 *
 	 * @returns The number of seeded users
 	 * @throws ServiceUnavailableException if IDM is not ready.
@@ -19,7 +19,7 @@ export class KeycloakManagementController {
 	async importSeedData(): Promise<number> {
 		if (await this.keycloakManagementUc.check()) {
 			try {
-				await this.keycloakManagementUc.configure(true);
+				await this.keycloakManagementUc.configure();
 				return await this.keycloakManagementUc.seed();
 			} catch (err) {
 				this.logger.error(err);

@@ -1,8 +1,8 @@
-# Keycloak
+# ErWIn-IDM (Keycloak)
 
-> Keycloak will be the future IAM provider for the dBildungscloud. Keycloak provides OpenID Connect, SAML 2.0 and other
-> identity related functionalities like SSO out of the box. It can also act as identity broker or aggregate identities
-> from third party services which can be an active directory or LDAP.
+> ErWIn-IDM, namely Keycloak, will be the future Identity Management System (IDM) for the dBildungscloud. Keycloak
+> provides OpenID Connect, SAML 2.0 and other identity related functionalities like SSO out of the box. It can
+> also act as identity broker or aggregate identities from third party services which can be an active directory or LDAP.
 
 ## Docker
 
@@ -15,10 +15,10 @@ Keycloak with any user.
 
 ```bash
 docker run \
-  --name keycloak \
+  --name erwinidm \
   -p 8080:8080 \
   -p 8443:8443 \
-  -v "$PWD/backup/keycloak:/tmp/realms" \
+  -v "$PWD/backup/idm/keycloak:/tmp/realms" \
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest \
   "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
 ```
@@ -27,12 +27,46 @@ docker run \
 
 ```pwsh
 docker run `
-  --name keycloak `
+  --name erwinidm `
   -p 8080:8080 `
   -p 8443:8443 `
-  -v "$PWD/backup/keycloak:/tmp/realms" `
+  -v "$PWD/backup/idm/keycloak:/tmp/realms" `
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest `
   "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
+```
+
+### Setup OpenID Connect Identity Provider mock for ErWIn-IDM brokering
+
+To add ErWIn-IDM identity broker feature via OpenID Connect (OIDC) Identity Provider (IdP) mock follow the steps below. Execute these commands in the repository root.
+
+- adjust 'config\development.json' and set 'OIDCMOCK\_\_BASE_URL' according to your local ip address.
+- re-trigger `npm run setup:db` and `npm run setup:idm` to reset and apply seed data.
+- start the 'oidc-server-mock' as follows:
+
+```bash
+docker run \
+  --name oidc-server-mock \
+  -p 4011:80 \
+  -e ASPNETCORE_ENVIRONMENT='Development' \
+  -e SERVER_OPTIONS_PATH='/tmp/config/server-config.json' \
+  -e USERS_CONFIGURATION_PATH='/tmp/config/users-config.json' \
+  -e CLIENTS_CONFIGURATION_PATH='/tmp/config/clients-config.json' \
+  -v "$PWD/backup/idm/oidcmock:/tmp/config" \
+  ghcr.io/soluto/oidc-server-mock:0.6.0
+```
+
+**PowerShell:**
+
+```pwsh
+docker run `
+  --name oidc-server-mock `
+  -p 4011:80 `
+  -e ASPNETCORE_ENVIRONMENT='Development' `
+  -e SERVER_OPTIONS_PATH='/tmp/config/server-config.json' `
+  -e USERS_CONFIGURATION_PATH='/tmp/config/users-config.json' `
+  -e CLIENTS_CONFIGURATION_PATH='/tmp/config/clients-config.json' `
+  -v "$PWD/backup/idm/oidcmock:/tmp/config" `
+  ghcr.io/soluto/oidc-server-mock:0.6.0
 ```
 
 ## Test local environment
@@ -50,7 +84,7 @@ Keycloak-CLI to import the dBildungscloud realm, which contains some seed users,
 and testing. In the table below you can see the username and password combinations for the Keycloak login.
 
 | Username       | Password       | Description                                              |
-|:---------------|:---------------|:---------------------------------------------------------|
+| :------------- | :------------- | :------------------------------------------------------- |
 | keycloak       | keycloak       | The overall Keycloak administrator with all permissions. |
 | dbildungscloud | dBildungscloud | The dBildungscloud realm specific administrator.         |
 
@@ -68,14 +102,14 @@ and testing. In the table below you can see the username and password combinatio
 
 In order to re-apply the seeding data for a running keycloak container, you may run following commands (to be executed in the repository root):
 
-1. `docker cp ./backup/keycloak keycloak:/tmp/realms`
-2. `docker exec keycloak /opt/keycloak/bin/kc.sh import --dir /tmp/realms`
+1. `docker cp ./backup/idm/keycloak keycloak:/tmp/realms`
+2. `docker exec erwinidm /opt/keycloak/bin/kc.sh import --dir /tmp/realms`
 
 ## NPM Commands
 
 A list of available NPM commands regarding Keycloak / IDM.
 
-| Command             | Description                                                                 |
-|:--------------------|:----------------------------------------------------------------------------|
-| setup:idm:seed      | Seeds users for development and testing purpose into the IDM                |
-| setup:idm:configure | Configures identity and authentication providers and other stuff in the IDM |
+| Command             | Description                                                                   |
+| :------------------ | :---------------------------------------------------------------------------- |
+| setup:idm:seed      | Seeds users for development and testing purpose into the IDM                  |
+| setup:idm:configure | Configures identity and authentication providers and other details in the IDM |
