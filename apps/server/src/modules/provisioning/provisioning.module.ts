@@ -4,7 +4,7 @@ import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
 import { SchoolModule } from '@src/modules/school/school.module';
 import { RoleModule } from '@src/modules/role/role.module';
 import { SystemModule } from '@src/modules/system/system.module';
-import { RoleRepo, SchoolRepo, UserRepo } from '@shared/repo';
+import { RoleRepo, SchoolRepo } from '@shared/repo';
 import { PermissionService } from '@shared/domain';
 import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
 import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
@@ -13,7 +13,6 @@ import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/is
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { AccountModule } from '@src/modules/account/account.module';
 import { UserModule } from '@src/modules/user/user.module';
-// import { AccountModule, UserModule } from '@src/modules';
 
 @Module({
 	imports: [AccountModule, SchoolModule, UserModule, RoleModule, SystemModule, LoggerModule, HttpModule],
@@ -25,7 +24,6 @@ import { UserModule } from '@src/modules/user/user.module';
 		Logger,
 		SanisResponseMapper,
 		SchoolRepo,
-		UserRepo,
 		UserDORepo,
 		RoleRepo,
 		PermissionService,

@@ -12,6 +12,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { AxiosResponse } from 'axios';
 import { Inject } from '@nestjs/common';
 import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
+import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -106,11 +107,11 @@ export class OAuthService {
 
 	async findUser(accessToken: string, idToken: string, systemId: string): Promise<User> {
 		try {
-			// TODO Do not use idToken as debug comment
-			this.logger.debug(`provisioning is running for user with id_token: ${idToken} and system with id: ${systemId}`);
-			const provisioningDto = await this.provisioningUc.process(accessToken, idToken, systemId);
-			const user = await this.userRepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
+			const sub: string = jwt.decode(idToken, { json: true })?.sub ?? "'invalid id token'";
+			this.logger.debug(`provisioning is running for user with sub: ${sub} and system with id: ${systemId}`);
 
+			const provisioningDto: ProvisioningDto = await this.provisioningUc.process(accessToken, idToken, systemId);
+			const user: User = await this.userRepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
 			return user;
 		} catch (error) {
 			throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');

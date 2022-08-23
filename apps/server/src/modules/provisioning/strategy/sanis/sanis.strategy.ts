@@ -1,5 +1,5 @@
 import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SanisResponse } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { HttpService } from '@nestjs/axios';
@@ -11,7 +11,7 @@ import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sa
 import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
-import { EntityId, Role, School } from '@shared/domain';
+import { EntityId, Role, RoleName, School } from '@shared/domain';
 import { RoleRepo, SchoolRepo } from '@shared/repo/index';
 import { AccountUc } from '@src/modules/account/uc/account.uc';
 import { AccountSaveDto } from '@src/modules/account/services/dto/index';
@@ -79,20 +79,23 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrateg
 	}
 
 	protected async provisionUser(data: SanisResponse, systemId: EntityId, schoolId: EntityId): Promise<UserDO> {
-		const role: Role = await this.roleRepo.findByName(this.responseMapper.mapSanisRoleToRoleName(data));
+		const roleName: RoleName = this.responseMapper.mapSanisRoleToRoleName(data);
+		const role: Role = await this.roleRepo.findByName(roleName);
 		const user: UserDO = this.responseMapper.mapToUserDO(data, schoolId, role.id);
+
+		if (!user.externalId) {
+			throw new UnprocessableEntityException('Cannot provision sanis user without external id');
+		}
 
 		let createNewAccount = false;
 		try {
-			const userEntity: UserDO = await this.userRepo.findByExternalIdOrFail(user.externalId ?? '', systemId);
+			const userEntity: UserDO = await this.userRepo.findByExternalIdOrFail(user.externalId, systemId);
 			user.id = userEntity.id;
 		} catch (e) {
 			// ignore NotFoundException and create new user
 			createNewAccount = true;
 		}
 		const savedUser: UserDO = (await this.userRepo.save(user)) as UserDO;
-		/* const userEntity: UserDO = await this.userRepo.findByExternalIdOrFail(savedUser.externalId ?? '', systemId);
-		savedUser.id = userEntity.id; */
 
 		if (createNewAccount) {
 			await this.accountUc.saveAccount(
@@ -100,6 +103,7 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrateg
 					userId: savedUser.id,
 					password: 'generateSecret100%',
 					username: 'generateEmail@schul-cloud.org',
+					systemId,
 					activated: true,
 				})
 			);

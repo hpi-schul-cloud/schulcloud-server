@@ -3,6 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseDO, BaseEntity, baseEntityProperties, EntityId, IBaseEntityProps } from '@shared/domain';
 import { Logger } from '@src/core/logger';
+import ArrayLike = jasmine.ArrayLike;
 
 export type EntityProperties<P> = P & IBaseEntityProps;
 
