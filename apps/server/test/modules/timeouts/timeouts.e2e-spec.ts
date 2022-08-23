@@ -5,12 +5,10 @@ import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@src/server.module';
-import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { userFactory, courseFactory, cleanupCollections, roleFactory, mapUserToCurrentUser } from '@shared/testing';
 import { ICurrentUser } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import serverConfig from '@src/server.config';
 
 describe('Course Controller (e2e)', () => {
 	let app: INestApplication;
@@ -81,8 +79,6 @@ describe('Course Controller (e2e)', () => {
 		const response = await request(app.getHttpServer()).post(':id/copy');
 
 		expect(response.status).toEqual(408);
-		const body = response.body as CourseMetadataListResponse;
-		expect(typeof body.data[0].title).toBe('string');
 	});
 
 	it('Lesson copy timeout', async () => {
@@ -96,7 +92,6 @@ describe('Course Controller (e2e)', () => {
 		const response = await request(app.getHttpServer()).post('lessons/:lessonid/copy');
 
 		expect(response.status).toEqual(408);
-		const body = response.body as CourseMetadataListResponse;
-		expect(typeof body.data[0].title).toBe('string');
+
 	});
 });
