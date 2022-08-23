@@ -1,7 +1,14 @@
 import { DeepPartial, MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, lessonFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { CourseRule } from '.';
+import {
+	courseFactory,
+	courseGroupFactory,
+	lessonFactory,
+	roleFactory,
+	setupEntities,
+	userFactory,
+} from '@shared/testing';
+import { CourseGroupRule, CourseRule } from '.';
 import { Lesson, User } from '../entity';
 import { Permission, RoleName } from '../interface';
 import { Actions } from './actions.enum';
@@ -11,6 +18,7 @@ describe('LessonRule', () => {
 	let orm: MikroORM;
 	let service: LessonRule;
 	let courseRule: DeepPartial<CourseRule>;
+	let courseGroupRule: DeepPartial<CourseGroupRule>;
 	let user: User;
 	let entity: Lesson;
 	const permissionA = 'a' as Permission;
@@ -21,11 +29,12 @@ describe('LessonRule', () => {
 		orm = await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [LessonRule, CourseRule],
+			providers: [LessonRule, CourseRule, CourseGroupRule],
 		}).compile();
 
 		service = await module.get(LessonRule);
 		courseRule = await module.get(CourseRule);
+		courseGroupRule = await module.get(CourseGroupRule);
 	});
 
 	afterAll(async () => {
@@ -51,6 +60,17 @@ describe('LessonRule', () => {
 		service.hasPermission(user, entity, { action: Actions.write, requiredPermissions: [permissionA] });
 		expect(spy).toBeCalledWith(user, entity.course, { action: Actions.write, requiredPermissions: [] });
 	});
+
+	it('should call courseGroupRule.hasPermission', () => {
+		const course = courseFactory.build({ teachers: [user] });
+		const courseGroup = courseGroupFactory.build({ course });
+		entity = lessonFactory.build({ course: undefined, courseGroup });
+
+		const spy = jest.spyOn(courseGroupRule, 'hasPermission');
+		service.hasPermission(user, entity, { action: Actions.write, requiredPermissions: [permissionA] });
+		expect(spy).toBeCalledWith(user, entity.courseGroup, { action: Actions.write, requiredPermissions: [] });
+	});
+
 	describe('User [TEACHER]', () => {
 		it('should return "true" if user in scope', () => {
 			const course = courseFactory.build({ teachers: [user] });
