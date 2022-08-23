@@ -62,7 +62,6 @@ describe('KeycloakManagementController', () => {
 		it('should call configure with param true', async () => {
 			const received = await controller.importSeedData();
 			expect(received).toBe(1);
-			expect(uc.configure).toBeCalledWith(true);
 		});
 		it('should return -1 if connection ok but seed fails', async () => {
 			uc.seed.mockRejectedValue('seeding error');

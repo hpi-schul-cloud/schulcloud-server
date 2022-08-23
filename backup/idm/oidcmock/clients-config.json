@@ -1,0 +1,11 @@
+[
+	{
+		"ClientId": "erwin-credentials-mock-client",
+		"ClientSecrets": ["erwin-credentials-mock-client-secret"],
+		"Description": "ErWIn-IDM client with client credentials flow",
+		"AllowedGrantTypes": ["client_credentials", "authorization_code"],
+		"RequirePkce": false,
+		"RedirectUris": ["http://localhost:8080/realms/dBildungscloud/broker/oidcmock/endpoint"],
+		"AllowedScopes": ["openid", "profile", "email"]
+	}
+]

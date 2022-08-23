@@ -91,4 +91,7 @@ export class System extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	config?: Record<string, unknown>;
+
+	@Property({ nullable: true })
+	ldapConfig?: Record<string, unknown>;
 }
