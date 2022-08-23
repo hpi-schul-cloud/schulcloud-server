@@ -66,7 +66,7 @@ exports.before = {
 };
 
 exports.after = {
-	all: [iff(isProvider('external'), [discard('ldapConfig.searchUserPassword')])],
+	all: [iff(isProvider('external'), [discard('ldapConfig.searchUserPassword'), discard('oauthConfig.clientSecret')])],
 	find: [decryptSecret],
 	get: [decryptSecret],
 	create: [iff(isProvider('external'), [addSystemToSchool])],
