@@ -11,10 +11,10 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules';
+import { CopyFilesService, FilesStorageClientAdapterService } from '@src/modules';
 import { FileRecordParamsParentTypeEnum } from '@src/modules/files-storage-client/filesStorageApi/v3';
 import { CopyFileResponse } from '@src/modules/files-storage/controller/dto';
-import { IComponentTextProperties, Lesson, Task } from '../entity';
+import { IComponentTextProperties, Task } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
 import { FileCopyAppendService } from './file-copy-append.service';
@@ -27,7 +27,7 @@ const getAudioHtml = (id = '62e3a78126cefc001d5b0c4c') =>
 const getVideoHtml = (id = '62e3a8f926cefc001d5b12ae') =>
 	`<video src="/files/file?file=${id}&amp;name=blinkencount.mp4" controls="true" controlslist="nodownload"> </video>`;
 
-const getEmbeddedV1Html = (file: { id: string; name: string }) => {
+const getEmbeddedHtml = (file: { id: string; name: string }) => {
 	const matches = file.name.match(/\.([^.]+)$/);
 	const ext = matches ? matches[1] : undefined;
 	switch (ext) {
@@ -40,30 +40,15 @@ const getEmbeddedV1Html = (file: { id: string; name: string }) => {
 			return `<figure class="image"><img src="/files/file?file=${file.id}&amp;name=${file.name}" alt /></figure>`;
 	}
 };
-
-const getEmbeddedV3Html = (file: { id: string; name: string }) => {
-	const matches = file.name.match(/\.([^.]+)$/);
-	const ext = matches ? matches[1] : undefined;
-	const fileUrl = `"/api/v3/file/download/${file.id}/${file.name}"`;
-	switch (ext) {
-		case '.mp3':
-			return `<audio src=${fileUrl} controls="true" controlslist="nodownload"> </audio>`;
-		case '.mp4':
-			return `<video src=${fileUrl} controls="true" controlslist="nodownload"> </video>`;
-		case '.jpg':
-		default:
-			return `<figure class="image"><img src=${fileUrl} alt /></figure>`;
-	}
-};
 const getSubStatus = (status: CopyStatus | undefined, type: CopyElementType) =>
 	(status?.elements || []).find((el) => el.type === type);
 
 describe('file copy append service', () => {
 	let module: TestingModule;
 	let copyService: FileCopyAppendService;
-	let copyHelperService: DeepMocked<CopyHelperService>;
 	let fileServiceAdapter: DeepMocked<FilesStorageClientAdapterService>;
 	let fileLegacyService: DeepMocked<FileLegacyService>;
+	let copyFilesService: DeepMocked<CopyFilesService>;
 
 	let orm: MikroORM;
 
@@ -88,13 +73,17 @@ describe('file copy append service', () => {
 					provide: FileLegacyService,
 					useValue: createMock<FileLegacyService>(),
 				},
+				{
+					provide: CopyFilesService,
+					useValue: createMock<CopyFilesService>(),
+				},
 			],
 		}).compile();
 
 		copyService = module.get(FileCopyAppendService);
-		copyHelperService = module.get(CopyHelperService);
 		fileServiceAdapter = module.get(FilesStorageClientAdapterService);
 		fileLegacyService = module.get(FileLegacyService);
+		copyFilesService = module.get(CopyFilesService);
 	});
 
 	describe('copying files attached to tasks', () => {
@@ -373,7 +362,6 @@ describe('file copy append service', () => {
 					const jwt = 'veryveryverylongstringthatissignedandstuff';
 					return { originalCourse, user, copyStatus, jwt };
 				};
-
 				it('should not change status', async () => {
 					const { originalCourse, copyStatus, user, jwt } = setup();
 
@@ -394,7 +382,7 @@ describe('file copy append service', () => {
 					const originalCourse = courseFactory.build({ school: user.school });
 					const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
 					const originalFile = fileFactory.buildWithId({ name: 'file.jpg' });
-					const text = getEmbeddedV3Html(originalFile);
+					const text = getEmbeddedHtml(originalFile);
 					const textContent: IComponentProperties = {
 						title: '',
 						hidden: false,
@@ -409,14 +397,11 @@ describe('file copy append service', () => {
 							materialId: 'foo',
 						},
 					};
-					const originalLesson = lessonFactory.buildWithId({
+					const originalLesson = lessonFactory.build({
 						course: originalCourse,
 						contents: [geoGebraContent, textContent],
 					});
-					const copyLesson = lessonFactory.buildWithId({
-						course: originalCourse,
-						contents: [geoGebraContent, textContent],
-					});
+					const copyLesson = lessonFactory.build({ course: originalCourse, contents: [geoGebraContent, textContent] });
 					const copyStatus: CopyStatus = {
 						type: CopyElementType.LESSON,
 						title: 'Tolle Lesson',
@@ -438,46 +423,44 @@ describe('file copy append service', () => {
 					};
 				};
 
-				it('should use fileServiceAdapter.copyFilesOfParent', async () => {
-					const { originalCourse, copyStatus, user, jwt, originalFile, originalLesson, copyLesson } = setup();
-					const targetId = 'fnew123';
-					const targetName = 'file.jpg';
+				it('should replace legacy file ids', async () => {
+					const { originalCourse, copyStatus, user, jwt, originalFile, copyLesson, originalLesson } = setup();
 
-					fileServiceAdapter.copyFilesOfParent.mockResolvedValue([
-						{
-							sourceId: originalFile.id,
-							id: targetId,
-							name: targetName,
-						},
-					]);
+					fileLegacyService.copyFile.mockResolvedValue({
+						oldFileId: originalFile.id,
+						fileId: 'fnew123',
+						filename: 'file.jpg',
+					});
 
-					const updatedStatus = await copyService.copyFiles(
-						copyStatus,
-						originalCourse.id,
-						user.id,
+					copyFilesService.copyFilesOfEntity.mockResolvedValue({ entity: copyLesson, response: [] });
+
+					await copyService.copyFiles(copyStatus, originalCourse.id, user.id, user.school.id, jwt);
+
+					const updatedCopyLesson = { ...copyLesson };
+					const content = updatedCopyLesson.contents[1].content as unknown as IComponentTextProperties;
+					content.text = '<figure class="image"><img src="/files/file?file=fnew123&amp;name=file.jpg" alt /></figure>';
+
+					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(
+						originalLesson,
+						updatedCopyLesson,
 						user.school.id,
 						jwt
 					);
-					const textComponent = (updatedStatus.copyEntity as Lesson).contents[1]
-						.content as unknown as IComponentTextProperties;
+				});
 
-					expect(textComponent?.text).toEqual(
-						`<figure class="image"><img src="/api/v3/file/download/${targetId}/${targetName}" alt /></figure>`
+				it('should leave embedded file urls untouched, if files were not copied', async () => {
+					const { originalCourse, copyStatus, user, jwt, originalFile, copyLesson, originalLesson } = setup();
+					fileLegacyService.copyFile.mockResolvedValue({ oldFileId: originalFile.id });
+					await copyService.copyFiles(copyStatus, originalCourse.id, user.id, user.school.id, jwt);
+
+					copyFilesService.copyFilesOfEntity.mockResolvedValue({ entity: copyLesson, response: [] });
+
+					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(
+						originalLesson,
+						copyLesson,
+						user.school.id,
+						jwt
 					);
-
-					const param = {
-						jwt,
-						schoolId: user.school.id,
-						parentType: FileRecordParamsParentTypeEnum.Lessons,
-						parentId: originalLesson.id,
-					};
-					const target = {
-						jwt,
-						schoolId: user.school.id,
-						parentType: FileRecordParamsParentTypeEnum.Lessons,
-						parentId: copyLesson.id,
-					};
-					expect(fileServiceAdapter.copyFilesOfParent).toHaveBeenCalledWith(param, target);
 				});
 			});
 		});
@@ -489,7 +472,7 @@ describe('file copy append service', () => {
 					const originalFile = fileFactory.buildWithId({ name: 'file.jpg' });
 
 					const originalCourse = courseFactory.build({ school: user.school });
-					const description = getEmbeddedV1Html(originalFile);
+					const description = getEmbeddedHtml(originalFile);
 					const originalTask = taskFactory.buildWithId({
 						school: user.school,
 						description,
