@@ -1,13 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { INestApplication, HttpStatus } from '@nestjs/common';
-import request from 'supertest';
-import { ConfigService } from '@nestjs/config';
-
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TimeoutInterceptor } from '@shared/common';
-
+import request from 'supertest';
 import { createTestModule } from './test/create-test.module';
-import { IInterceptorConfig } from './interfaces';
 
 describe('TimeoutInterceptor', () => {
 	describe('when integrate TimeoutInterceptor', () => {
@@ -39,6 +33,17 @@ describe('TimeoutInterceptor', () => {
 			const response = await request(app.getHttpServer()).get('/');
 
 			expect(response.status).toEqual(HttpStatus.OK);
+		});
+
+		it('should respond with error code if request runs into timeout by timeout decorator', async () => {
+			const interceptor = new TimeoutInterceptor(30000);
+
+			app = (await createTestModule(interceptor)).createNestApplication();
+			await app.init();
+
+			const response = await request(app.getHttpServer()).get('/timeout');
+
+			expect(response.status).toEqual(HttpStatus.REQUEST_TIMEOUT);
 		});
 	});
 });
