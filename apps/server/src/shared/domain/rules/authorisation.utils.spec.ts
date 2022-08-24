@@ -2,9 +2,8 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { Role } from '@shared/domain/entity';
+import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { Permission, RoleName } from '../interface';
 import { AuthorisationUtils } from './authorisation.utils';
 
@@ -105,18 +104,6 @@ describe('permission.utils', () => {
 			const user = userFactory.build({ roles: [role] });
 
 			expect(() => service.resolvePermissions(user)).toThrowError();
-		});
-	});
-
-	describe('[resolveTeamPermissions]', () => {
-		it('should return permissions of a teamuser with one role', () => {
-			const role = roleFactory.build({ permissions: [permissionA] });
-			const teamUser = teamUserFactory.buildWithId();
-			teamUser.role = role;
-
-			const permissions = service.resolveTeamPermissions(teamUser);
-
-			expect(permissions).toEqual([permissionA]);
 		});
 	});
 

@@ -37,6 +37,16 @@ class API {
 		};
 	}
 
+	async postUploadFromUrl(routeName: string, data: Record<string, unknown>) {
+		const response = await request(this.app.getHttpServer()).post(routeName).send(data);
+
+		return {
+			result: response.body as FileRecordResponse,
+			error: response.body as ApiValidationError,
+			status: response.status,
+		};
+	}
+
 	async getDownloadFile(routeName: string, query?: string | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
 			.get(routeName)
@@ -53,6 +63,7 @@ class API {
 const createRndInt = (max) => Math.floor(Math.random() * max);
 
 describe('files-storage controller (e2e)', () => {
+	let module: TestingModule;
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
@@ -60,9 +71,11 @@ describe('files-storage controller (e2e)', () => {
 	let api: API;
 	let s3instance: S3rver;
 	let validId: EntityId;
+	let appPort: number;
 
 	beforeAll(async () => {
 		const port = 10000 + createRndInt(10000);
+		appPort = 10000 + createRndInt(10000);
 		const overridetS3Config = Object.assign(config, { endpoint: `http://localhost:${port}` });
 
 		s3instance = new S3rver({
@@ -71,7 +84,7 @@ describe('files-storage controller (e2e)', () => {
 			port,
 		});
 		await s3instance.run();
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			imports: [FilesStorageTestModule],
 			providers: [
 				FilesStorageTestModule,
@@ -94,7 +107,9 @@ describe('files-storage controller (e2e)', () => {
 			.compile();
 
 		app = module.createNestApplication();
-		await app.init();
+		const a = await app.init();
+		await a.listen(appPort);
+
 		orm = app.get(MikroORM);
 		em = module.get(EntityManager);
 		api = new API(app);
@@ -104,6 +119,7 @@ describe('files-storage controller (e2e)', () => {
 		await orm.close();
 		await app.close();
 		await s3instance.close();
+		await module.close();
 	});
 
 	beforeEach(async () => {
@@ -184,6 +200,107 @@ describe('files-storage controller (e2e)', () => {
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 
 				expect(result.name).toEqual('test (1).txt');
+			});
+		});
+	});
+
+	describe('upload from url action', () => {
+		let body = {
+			url: 'http://localhost/test.txt',
+			fileName: 'test.txt',
+		};
+		describe('with bad request data', () => {
+			it('should return status 400 for invalid schoolId', async () => {
+				const response = await api.postUploadFromUrl(`/file/upload-from-url/123/users/${validId}`, body);
+				expect(response.error.validationErrors).toEqual([
+					{
+						errors: ['schoolId must be a mongodb id'],
+						field: 'schoolId',
+					},
+				]);
+				expect(response.status).toEqual(400);
+			});
+
+			it('should return status 400 for invalid parentId', async () => {
+				const response = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/users/123`, body);
+				expect(response.error.validationErrors).toEqual([
+					{
+						errors: ['parentId must be a mongodb id'],
+						field: 'parentId',
+					},
+				]);
+				expect(response.status).toEqual(400);
+			});
+
+			it('should return status 400 for invalid parentType', async () => {
+				const response = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/cookies/${validId}`, body);
+				expect(response.error.validationErrors).toEqual([
+					{
+						errors: ['parentType must be a valid enum value'],
+						field: 'parentType',
+					},
+				]);
+				expect(response.status).toEqual(400);
+			});
+
+			it('should return status 400 for empty url and fileName', async () => {
+				const response = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, {});
+
+				expect(response.error.validationErrors).toEqual([
+					{
+						errors: ['url should not be empty', 'url must be a string'],
+						field: 'url',
+					},
+					{
+						errors: ['fileName should not be empty', 'fileName must be a string'],
+						field: 'fileName',
+					},
+				]);
+				expect(response.status).toEqual(400);
+			});
+		});
+
+		describe(`with valid request data`, () => {
+			beforeEach(async () => {
+				const uploadResponse = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+				const { result } = uploadResponse;
+				body = {
+					url: `http://localhost:${appPort}/file/download/${result.id}/${result.name}`,
+					fileName: 'test.txt',
+				};
+			});
+
+			it('should return status 201 for successful upload', async () => {
+				const response = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
+				expect(response.status).toEqual(201);
+			});
+
+			it('should return the new created file record', async () => {
+				const { result } = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
+				expect(result).toStrictEqual(
+					expect.objectContaining({
+						id: expect.any(String) as string,
+						name: 'test (1).txt',
+						parentId: validId,
+						creatorId: currentUser.userId,
+						type: 'text/plain',
+						parentType: 'schools',
+						securityCheckStatus: 'pending',
+					})
+				);
+			});
+
+			it('should read file name from upload stream', async () => {
+				const { result } = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
+
+				expect(result.name).toEqual('test (1).txt');
+			});
+
+			it('should set iterator number to file name if file already exist', async () => {
+				await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
+				const { result } = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
+
+				expect(result.name).toEqual('test (2).txt');
 			});
 		});
 	});

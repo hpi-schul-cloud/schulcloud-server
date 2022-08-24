@@ -1,10 +1,10 @@
 import { Actions } from '@shared/domain/rules/actions.enum';
-import { Permission } from './permission.enum';
 import type { BaseEntity, User } from '../entity';
 import { BaseDomainObject } from './base-domain-object';
+import { Permission } from './permission.enum';
 
 export interface IPermissionContext {
-	action?: Actions;
+	action: Actions;
 	requiredPermissions: Permission[];
 }
 

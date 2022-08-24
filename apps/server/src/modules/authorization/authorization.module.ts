@@ -1,7 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ALL_RULES } from '@shared/domain';
 import { FeathersModule } from '@shared/infra/feathers';
-import { CourseRepo, FileRecordRepo, LessonRepo, SchoolRepo, TaskRepo, TeamsRepo, UserRepo } from '@shared/repo';
+import {
+	CourseGroupRepo,
+	CourseRepo,
+	FileRecordRepo,
+	LessonRepo,
+	SchoolRepo,
+	TaskRepo,
+	TeamsRepo,
+	UserRepo,
+} from '@shared/repo';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 import { FeathersAuthorizationService } from './feathers-authorization.service';
@@ -19,6 +28,7 @@ import { ReferenceLoader } from './reference.loader';
 		ReferenceLoader,
 		UserRepo,
 		CourseRepo,
+		CourseGroupRepo,
 		TaskRepo,
 		FileRecordRepo,
 		SchoolRepo,

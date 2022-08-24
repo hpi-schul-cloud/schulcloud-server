@@ -10,18 +10,14 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
-import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { v1 } from 'uuid';
 import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { SysType } from '../../sys.type';
-import {
-	IKeycloakSettings,
-	IKeycloakManagementInputFiles,
-	KeycloakManagementInputFiles,
-	KeycloakSettings,
-} from '../interface';
+import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { flowAlias, KeycloakConfigurationService } from './keycloak-configuration.service';
+import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 
 describe('configureIdentityProviders', () => {
 	let module: TestingModule;
@@ -29,7 +25,7 @@ describe('configureIdentityProviders', () => {
 	let service: KeycloakConfigurationService;
 	let configService: DeepMocked<ConfigService>;
 	let repo: DeepMocked<SystemRepo>;
-	let symetricKeyEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
+	let defaultEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let settings: IKeycloakSettings;
 
 	const kcApiClientIdentityProvidersMock = createMock<IdentityProviders>();
@@ -57,12 +53,6 @@ describe('configureIdentityProviders', () => {
 				clientId: 'client-id',
 			},
 		};
-	};
-
-	const inputFiles: IKeycloakManagementInputFiles = {
-		accountsFile: 'accounts.json',
-		usersFile: 'users.json',
-		systemsFile: 'systems.json',
 	};
 
 	const idps: IdentityProviderRepresentation[] = [
@@ -96,15 +86,10 @@ describe('configureIdentityProviders', () => {
 			updatedAt: new Date(),
 		},
 	];
-	let fsReadFile: jest.SpyInstance;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				{
-					provide: KeycloakManagementInputFiles,
-					useValue: inputFiles,
-				},
 				KeycloakConfigurationService,
 				{
 					provide: KeycloakAdministrationService,
@@ -141,10 +126,8 @@ describe('configureIdentityProviders', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
-				{
-					provide: SymetricKeyEncryptionService,
-					useValue: createMock<SymetricKeyEncryptionService>(),
-				},
+				{ provide: OidcIdentityProviderMapper, useValue: createMock<OidcIdentityProviderMapper>() },
+				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 			],
 		}).compile();
 		client = module.get(KeycloakAdminClient);
@@ -152,19 +135,15 @@ describe('configureIdentityProviders', () => {
 		configService = module.get(ConfigService);
 		settings = module.get(KeycloakSettings);
 		repo = module.get(SystemRepo);
-		symetricKeyEncryptionService = module.get(SymetricKeyEncryptionService);
-		symetricKeyEncryptionService.encrypt.mockImplementation((data) => data);
-		symetricKeyEncryptionService.decrypt.mockImplementation((data) => data);
+		defaultEncryptionService = module.get(DefaultEncryptionService);
+		defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_enc`);
+		defaultEncryptionService.decrypt.mockImplementation((data) => `${data}_dec`);
 
 		repo.findAll.mockResolvedValue(systems);
 		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
 		kcApiClientIdentityProvidersMock.create.mockResolvedValue({ id: '' });
 		kcApiClientIdentityProvidersMock.update.mockResolvedValue();
 		kcApiClientIdentityProvidersMock.del.mockResolvedValue();
-		fsReadFile = jest.spyOn(fs, 'readFile').mockImplementation((path) => {
-			if (path === inputFiles.systemsFile) return Promise.resolve(JSON.stringify(systems));
-			throw new Error('File not found');
-		});
 	});
 
 	beforeEach(() => {
@@ -174,7 +153,6 @@ describe('configureIdentityProviders', () => {
 		kcApiClientIdentityProvidersMock.update.mockClear();
 		kcApiClientIdentityProvidersMock.del.mockClear();
 		configService.get.mockClear();
-		fsReadFile.mockClear();
 	});
 
 	afterAll(() => {
@@ -184,26 +162,12 @@ describe('configureIdentityProviders', () => {
 		kcApiClientIdentityProvidersMock.update.mockRestore();
 		kcApiClientIdentityProvidersMock.del.mockRestore();
 		configService.get.mockRestore();
-		fsReadFile.mockRestore();
 	});
 
-	it('should read configs from file system in development', async () => {
-		const result = await service.configureIdentityProviders(true);
-		expect(result).toBeGreaterThan(0);
-		expect(repo.findAll).not.toBeCalled();
-		expect(fsReadFile).toBeCalled();
-	});
-	it('should read configs from database in production', async () => {
-		const result = await service.configureIdentityProviders(false);
-		expect(result).toBeGreaterThan(0);
-		expect(repo.findAll).toBeCalled();
-		expect(fsReadFile).not.toBeCalled();
-	});
-	it('should read configs from database per default', async () => {
+	it('should read configs from database successfully', async () => {
 		const result = await service.configureIdentityProviders();
 		expect(result).toBeGreaterThan(0);
 		expect(repo.findAll).toBeCalled();
-		expect(fsReadFile).not.toBeCalled();
 	});
 
 	it('should create a configuration in Keycloak', async () => {
