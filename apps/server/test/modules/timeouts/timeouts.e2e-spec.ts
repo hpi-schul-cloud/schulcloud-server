@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
@@ -8,18 +9,20 @@ import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { userFactory, courseFactory, cleanupCollections, roleFactory, mapUserToCurrentUser } from '@shared/testing';
 import { ICurrentUser } from '@shared/domain';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
+
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
+Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 
 describe('Course Controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
+	let configBefore: IConfig;
 
 	beforeEach(async () => {
-		// process.env.INCOMING_REQUEST_TIMEOUT_COPY_API = 1 as unknown as string;
-		Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
-
+		configBefore = Configuration.toObject({ plainSecrets: true });
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
@@ -43,6 +46,7 @@ describe('Course Controller (e2e)', () => {
 		await cleanupCollections(em);
 		await app.close();
 		await orm.close();
+		Configuration.reset(configBefore);
 	});
 
 	const setup = () => {
@@ -52,7 +56,7 @@ describe('Course Controller (e2e)', () => {
 		return user;
 	};
 
- 	it.only('Course copy timeout', async () => {
+	it('Course copy timeout', async () => {
 		const student = setup();
 		const course = courseFactory.build({ name: 'course #1', students: [student] });
 		await em.persistAndFlush(course);
@@ -76,7 +80,7 @@ describe('Course Controller (e2e)', () => {
 
 		currentUser = mapUserToCurrentUser(student);
 
-		const response = await request(app.getHttpServer()).post(':id/copy');
+		const response = await request(app.getHttpServer()).post(`${course.id}/copy`);
 
 		expect(response.status).toEqual(408);
 	});
@@ -89,9 +93,8 @@ describe('Course Controller (e2e)', () => {
 
 		currentUser = mapUserToCurrentUser(student);
 
-		const response = await request(app.getHttpServer()).post('lessons/:lessonid/copy');
+		const response = await request(app.getHttpServer()).post(`lessons/${course.id}/copy`);
 
 		expect(response.status).toEqual(408);
-
 	});
 });

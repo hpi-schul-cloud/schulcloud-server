@@ -15,7 +15,8 @@ export class TimeoutInterceptor implements NestInterceptor {
 		const reflector = new Reflector();
 		const timeoutValue =
 			reflector.get<number>('timeout', context.getHandler()) || reflector.get<number>('timeout', context.getClass());
-
+		const test = 1;
+		console.log('============== timeoutValue: ', timeoutValue);
 		return next.handle().pipe(
 			timeout(timeoutValue || this.requestTimeout),
 			catchError((err: Error) => {
