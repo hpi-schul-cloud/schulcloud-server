@@ -20,7 +20,8 @@ export class CopyFilesService {
 		schoolId: EntityId,
 		jwt: string
 	): Promise<{ entity: EntityWithEmbeddedFiles; response: CopyFileResponse[] }> {
-		const { sourceParams, targetParams } = this.buildParams(originalEntity, copyEntity, schoolId, jwt);
+		const sourceParams = FileParamBuilder.build(jwt, schoolId, originalEntity);
+		const targetParams = FileParamBuilder.build(jwt, schoolId, copyEntity);
 
 		try {
 			const response = await this.filesStorageClientAdapterService.copyFilesOfParent(sourceParams, targetParams);
@@ -73,24 +74,5 @@ export class CopyFilesService {
 		const regex = new RegExp(`${response.sourceId}.+?"`, 'g');
 		const newUrl = `${response.id}/${response.name}"`;
 		return text.replace(regex, newUrl);
-	}
-
-	private buildParams(
-		originalEntity: EntityWithEmbeddedFiles,
-		copyEntity: EntityWithEmbeddedFiles,
-		schoolId: EntityId,
-		jwt: string
-	): { sourceParams: FileRequestInfo; targetParams: FileRequestInfo } {
-		if (originalEntity instanceof Lesson) {
-			const sourceParams = FileParamBuilder.buildForLesson(jwt, schoolId, originalEntity.id);
-			const targetParams = FileParamBuilder.buildForLesson(jwt, schoolId, copyEntity.id);
-
-			return { sourceParams, targetParams };
-		}
-
-		const sourceParams = FileParamBuilder.buildForTask(jwt, schoolId, originalEntity.id);
-		const targetParams = FileParamBuilder.buildForTask(jwt, schoolId, copyEntity.id);
-
-		return { sourceParams, targetParams };
 	}
 }

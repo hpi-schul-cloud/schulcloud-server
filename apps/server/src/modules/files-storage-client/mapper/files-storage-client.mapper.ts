@@ -1,4 +1,4 @@
-import { EntityId } from '@shared/domain';
+import { EntityId, Lesson, Task } from '@shared/domain';
 import { AxiosResponse } from 'axios';
 import { FileRecordListResponse, FileRecordParamsParentTypeEnum, FileRecordResponse } from '../filesStorageApi/v3';
 import { FileDto } from '../dto';
@@ -47,5 +47,13 @@ export class FilesStorageClientMapper {
 		}
 
 		return response;
+	}
+
+	static mapEntityToParentType(entity: Task | Lesson): FileRecordParamsParentTypeEnum {
+		if (entity instanceof Lesson) return FileRecordParamsParentTypeEnum.Lessons;
+
+		if (entity instanceof Task) return FileRecordParamsParentTypeEnum.Tasks;
+
+		throw new Error(`Mapping type is not supported.`);
 	}
 }

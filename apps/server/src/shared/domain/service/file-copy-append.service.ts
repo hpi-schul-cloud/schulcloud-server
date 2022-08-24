@@ -41,8 +41,8 @@ export class FileCopyAppendService {
 		try {
 			const original: Task = taskCopyStatusCopy.originalEntity as Task;
 			const copy: Task = taskCopyStatusCopy.copyEntity as Task;
-			const source = FileParamBuilder.buildForTask(jwt, original.school.id, original.id);
-			const target = FileParamBuilder.buildForTask(jwt, copy.school.id, copy.id);
+			const source = FileParamBuilder.build(jwt, original.school.id, original);
+			const target = FileParamBuilder.build(jwt, copy.school.id, copy);
 			const files = await this.fileCopyAdapterService.copyFilesOfParent(source, target);
 			return this.createSuccessCopyStatus(taskCopyStatusCopy, files);
 		} catch (err) {
