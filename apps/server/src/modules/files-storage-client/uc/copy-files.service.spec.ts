@@ -89,16 +89,6 @@ describe('copy files service', () => {
 				expect(copyResponse.response).toEqual(mockedResponse);
 			});
 
-			it('it handle error in copyFilesOfParent ', async () => {
-				const { originalLesson, copyLesson, schoolId, jwt } = lessonSetup();
-
-				filesStorageClientAdapterService.copyFilesOfParent.mockRejectedValue(new Error(''));
-				const copyResponse = await copyFilesService.copyFilesOfEntity(originalLesson, copyLesson, schoolId, jwt);
-
-				expect(copyResponse.entity).toEqual(copyLesson);
-				expect(copyResponse.response).toEqual([]);
-			});
-
 			it('it should replace copied urls in lesson', async () => {
 				const { originalLesson, copyLesson, file1, file2, schoolId, jwt } = lessonSetup();
 
