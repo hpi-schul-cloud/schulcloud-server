@@ -246,9 +246,9 @@ describe(`${baseRouteName} (api)`, () => {
 				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt');
 				const { result } = await api.copy(`/${validId}/schools/${validId}`, copyFilesParams);
 
-				expect(Array.isArray(result)).toBe(true);
-				expect(result[0]).toBeDefined();
-				expect(result[0]).toStrictEqual({
+				expect(Array.isArray(result.data)).toBe(true);
+				expect(result.data[0]).toBeDefined();
+				expect(result.data[0]).toStrictEqual({
 					id: expect.any(String) as string,
 					name: expect.any(String) as string,
 					sourceId: expect.any(String) as string,
