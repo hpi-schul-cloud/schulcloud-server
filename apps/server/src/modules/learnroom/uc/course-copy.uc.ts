@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	Actions,
 	Board,
@@ -34,6 +35,7 @@ export class CourseCopyUC {
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalCourse = await this.courseRepo.findById(courseId);
 		let originalBoard = await this.boardRepo.findByCourseId(courseId);
+		this.featureEnabled();
 		originalBoard = await this.roomsService.updateBoard(originalBoard, courseId, userId);
 
 		this.authorisation.checkPermission(user, originalCourse, {
@@ -65,5 +67,12 @@ export class CourseCopyUC {
 		statusCourse.elements.push(statusBoard);
 		statusCourse.status = this.copyHelperService.deriveStatusFromElements(statusCourse.elements);
 		return statusCourse;
+	}
+
+	private featureEnabled() {
+		const enabled = Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean;
+		if (!enabled) {
+			throw new InternalServerErrorException('Copy Feature not enabled');
+		}
 	}
 }
