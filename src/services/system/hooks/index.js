@@ -71,6 +71,8 @@ exports.after = {
 			discard('ldapConfig.searchUserPassword'),
 			discard('oauthConfig.clientId'),
 			discard('oauthConfig.clientSecret'),
+			discard('config.clientId'),
+			discard('config.clientSecret'),
 		]),
 	],
 	find: [decryptSecret],
