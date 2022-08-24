@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { BaseRepo } from '@shared/repo/base.repo';
-import { EntityId } from '@shared/domain';
-import { Account } from '@shared/domain/entity/account.entity';
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
+import { Account } from '@shared/domain/entity/account.entity';
+import { BaseRepo } from '@shared/repo/base.repo';
 
 @Injectable()
 export class AccountRepo extends BaseRepo<Account> {
@@ -57,7 +57,7 @@ export class AccountRepo extends BaseRepo<Account> {
 	}
 
 	async deleteByUserId(userId: EntityId): Promise<void> {
-		const accountReference = this._em.getReference(Account, userId);
+		const accountReference = await this.findByUserIdOrFail(userId);
 		return this._em.removeAndFlush(accountReference);
 	}
 
