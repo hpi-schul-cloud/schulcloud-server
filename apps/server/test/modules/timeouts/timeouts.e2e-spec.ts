@@ -5,14 +5,14 @@ import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { userFactory, courseFactory, cleanupCollections, roleFactory, mapUserToCurrentUser } from '@shared/testing';
 import { ICurrentUser } from '@shared/domain';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 
-// eslint-disable-next-line @typescript-eslint/no-use-before-define
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
+// eslint-disable-next-line import/first
+import { ServerTestModule } from '@src/server.module';
 
 describe('Course Controller (e2e)', () => {
 	let app: INestApplication;
@@ -80,7 +80,10 @@ describe('Course Controller (e2e)', () => {
 
 		currentUser = mapUserToCurrentUser(student);
 
-		const response = await request(app.getHttpServer()).post(`${course.id}/copy`);
+		const response = await request(app.getHttpServer())
+			.post(`/tasks/${course.id}/copy`)
+			.set('Authorization', 'jwt')
+			.send();
 
 		expect(response.status).toEqual(408);
 	});
@@ -93,7 +96,10 @@ describe('Course Controller (e2e)', () => {
 
 		currentUser = mapUserToCurrentUser(student);
 
-		const response = await request(app.getHttpServer()).post(`lessons/${course.id}/copy`);
+		const response = await request(app.getHttpServer())
+			.post(`/rooms/lessons/${course.id}/copy`)
+			.set('Authorization', 'jwt')
+			.send();
 
 		expect(response.status).toEqual(408);
 	});
