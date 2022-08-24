@@ -251,18 +251,7 @@ class EduSharingConnector {
 			});
 		} else if (collection) {
 			sortProperties = 'cclom:title';
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 			sortAscending = 'true';
-=======
->>>>>>> lern-store change sortProperties to title for collections
-=======
-			sortAscending = 'false';
->>>>>>> lern-store sortAscending true for collections
-=======
-			sortAscending = 'true';
->>>>>>> lern-store collection sortAscending true
 			criterias.push({ property: 'ngsearchword', values: ['*'] });
 			criterias.push({
 				property: 'ccm:hpi_lom_relation',
@@ -272,48 +261,18 @@ class EduSharingConnector {
 			criterias.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
 		}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 		const response = await this.searchEduSharing(criterias, skipCount, maxItems, sortProperties, sortAscending);
 		return response;
 	}
 
 	async searchEduSharing(criterias, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
-=======
-		const response = await this.searchEduSharing(criterias, skipCount, maxItems, sortProperties);
-		return response;
-	}
-
-	async searchEduSharing(criterias, skipCount, maxItems, sortProperties = 'score') {
->>>>>>> lern-store change sortProperties to title for collections
-=======
-		const response = await this.searchEduSharing(criterias, skipCount, maxItems, sortProperties, sortAscending);
-		return response;
-	}
-
-	async searchEduSharing(criterias, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
->>>>>>> lern-store sortAscending true for collections
 		try {
 			const url = `${ES_ENDPOINTS.SEARCH}?${[
 				`contentType=FILES`,
 				`skipCount=${skipCount}`,
 				`maxItems=${maxItems}`,
-<<<<<<< HEAD
-<<<<<<< HEAD
 				`sortProperties=${sortProperties}`,
 				`sortAscending=${sortAscending}`,
-=======
-				`sortProperties=cclom:title`,
-				`sortAscending=false`,
->>>>>>> lern-store change sortProperties to title
-=======
-				`sortProperties=${sortProperties}`,
-<<<<<<< HEAD
-				`sortAscending=true`,
->>>>>>> lern-store change sortProperties to title for collections
-=======
-				`sortAscending=${sortAscending}`,
->>>>>>> lern-store sortAscending true for collections
 				`propertyFilter=-all-`,
 			].join('&')}`;
 
@@ -365,15 +324,7 @@ class EduSharingConnector {
 		}
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	async getRendererForNode(nodeUuid) {
-=======
-	getRendererForNode(nodeUuid) {
->>>>>>> h5p renderer request added
-=======
-	async getRendererForNode(nodeUuid) {
->>>>>>> h5p: very experimental edusharing renderer service
 	    try {
 			const url = `${ES_ENDPOINTS.RENDERER}{nodeUuid}`
 			const options = {
@@ -391,10 +342,7 @@ class EduSharingConnector {
 			if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
 				return new parsed.detailsSnippet;
 			} else {
-<<<<<<< HEAD
 				logger.error(`Unexpected answer from Edu-Sharing: ${response}`)
-=======
->>>>>>> h5p renderer request added
 				throw new GeneralError('Unexpected answer from Edu-Sharing');
 			}
 	    } catch (err) {
