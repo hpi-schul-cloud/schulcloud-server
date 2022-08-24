@@ -342,6 +342,7 @@ class EduSharingConnector {
 			if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
 				return new parsed.detailsSnippet;
 			} else {
+				logger.error(`Unexpected answer from Edu-Sharing: ${response}`)
 				throw new GeneralError('Unexpected answer from Edu-Sharing');
 			}
 	    } catch (err) {
