@@ -14,6 +14,7 @@ describe('SanisResponseMapper', () => {
 
 	const userUUID: UUID = new UUID('aef1f4fd-c323-466e-962b-a84354c0e713');
 	const schoolUUID: UUID = new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e');
+	const systemUUID: UUID = new UUID('bee7376a-31c3-42d3-93e3-e976f273f90d');
 	const sanisResponse: SanisResponse = new SanisResponse({
 		pid: userUUID.toString(),
 		person: {
@@ -39,28 +40,42 @@ describe('SanisResponseMapper', () => {
 		],
 	});
 
+	const RoleMapping = {
+		[SanisRole.LEHR]: RoleName.TEACHER,
+		[SanisRole.LERN]: RoleName.STUDENT,
+		[SanisRole.SYSA]: RoleName.ADMINISTRATOR,
+	};
 	beforeAll(() => {
 		mapper = new SanisResponseMapper();
 	});
 
 	describe('mapToSchoolDto', () => {
 		it('should map a school to Dto', () => {
-			const dto = mapper.mapToSchoolDto(sanisResponse);
+			const dto = mapper.mapToSchoolDto(sanisResponse, systemUUID.toString());
 			expect(dto?.name).toEqual(sanisResponse.personenkontexte[0].organisation.name);
 			expect(dto?.externalId).toEqual(sanisResponse.personenkontexte[0].organisation.orgid.toString());
+			expect(dto?.systemIds[0]).toEqual(systemUUID.toString());
 		});
 	});
 
-	describe('mapToUserDto', () => {
+	describe('mapToUserDO', () => {
 		it('should map a user to Dto', () => {
 			const schoolId = 'testSchool';
-			const dto = mapper.mapToUserDto(sanisResponse, schoolId);
-			expect(dto.firstName).toEqual(sanisResponse.person.name.vorname);
-			expect(dto.lastName).toEqual(sanisResponse.person.name.familienname);
-			expect(dto.email).toEqual('');
-			expect(dto.schoolId).toEqual(schoolId);
-			expect(dto.roleNames[0]).toEqual(RoleName.STUDENT);
-			expect(dto.externalId).toStrictEqual(sanisResponse.pid);
+			const roleId = RoleName.STUDENT;
+			const userDO = mapper.mapToUserDO(sanisResponse, schoolId, roleId);
+			expect(userDO.firstName).toEqual(sanisResponse.person.name.vorname);
+			expect(userDO.lastName).toEqual(sanisResponse.person.name.familienname);
+			expect(userDO.email).toEqual('');
+			expect(userDO.schoolId).toEqual(schoolId);
+			expect(userDO.roleIds[0]).toEqual(RoleName.STUDENT);
+			expect(userDO.externalId).toStrictEqual(sanisResponse.pid);
+		});
+	});
+
+	describe('mapSanisRoleToRolename', () => {
+		it('should map a Sanis Role to Schoolcloud Rolename', () => {
+			const role = mapper.mapSanisRoleToRoleName(sanisResponse);
+			expect(role).toEqual(RoleName.STUDENT);
 		});
 	});
 });

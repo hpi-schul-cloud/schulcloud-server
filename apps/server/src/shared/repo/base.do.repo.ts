@@ -41,10 +41,14 @@ export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity, P> {
 					.findOneOrFail(this.entityName, d.id as FilterQuery<E>)
 					.then((fetchedEntity: E) => {
 						// Ignore base entity properties when updating entity
-						const wrapped: EntityDTO<E> = wrap(newEntity).toObject(baseEntityProperties);
+						Object.keys(newEntity).forEach((key) => {
+							if (baseEntityProperties.includes(key)) {
+								delete newEntity[key];
+							}
+						});
 
 						this.logger.debug(`Update entity with id ${fetchedEntity.id}`);
-						return Object.assign(fetchedEntity, wrapped) as E;
+						return this._em.assign(fetchedEntity, newEntity);
 					})
 					.catch(() => {
 						this.logger.debug(`Created new entity`);

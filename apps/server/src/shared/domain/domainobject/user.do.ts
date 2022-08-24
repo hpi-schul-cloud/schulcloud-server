@@ -40,6 +40,6 @@ export class UserDO extends BaseWithTimestampsDO {
 		this.externalId = domainObject.externalId;
 		this.forcePasswordChange = domainObject.forcePasswordChange;
 		this.language = domainObject.language;
-		this.preferences = domainObject.preferences ?? {};
+		this.preferences = domainObject.preferences;
 	}
 }

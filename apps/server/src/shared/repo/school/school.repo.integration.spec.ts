@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { School, SchoolRolePermission, SchoolRoles, SchoolYear } from '@shared/domain';
+import { School, SchoolRolePermission, SchoolRoles, SchoolYear, System } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { schoolFactory } from '@shared/testing';
+import { schoolFactory, systemFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { SchoolRepo } from '..';
 import { SchoolYearRepo } from '../schoolyear';
@@ -67,5 +67,25 @@ describe('school repo', () => {
 		const savedSchoolEntity = await em.find(School, {});
 		expect(savedSchoolEntity[0].id).toBeDefined();
 		expect(createdSchool.id).toBeDefined();
+	});
+
+	describe('findByExternalIdOrFail', () => {
+		it('should find school by external ID', async () => {
+			// Arrange
+			const system: System = systemFactory.buildWithId();
+			const schoolEntity: School = schoolFactory.build({ externalId: 'externalId' });
+			schoolEntity.systems.add(system);
+
+			await em.persistAndFlush(schoolEntity);
+
+			// Act
+			const result: School = await repo.findByExternalIdOrFail(
+				schoolEntity.externalId as string,
+				schoolEntity.systems[0].id
+			);
+
+			// Assert
+			expect(result).toEqual(schoolEntity);
+		});
 	});
 });

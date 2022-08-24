@@ -5,12 +5,14 @@ import { SchoolRepo } from '@shared/repo';
 import { MikroORM } from '@mikro-orm/core';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { SchoolService } from './school.service';
 
 describe('SchoolService', () => {
 	let module: TestingModule;
 	let schoolService: SchoolService;
 	let schoolRepo: DeepMocked<SchoolRepo>;
+	let schoolMapper: DeepMocked<SchoolMapper>;
 	let orm: MikroORM;
 	let schoolDto: SchoolDto;
 	let mockSchoolEntities: School[];
@@ -22,6 +24,10 @@ describe('SchoolService', () => {
 				{
 					provide: SchoolRepo,
 					useValue: createMock<SchoolRepo>(),
+				},
+				{
+					provide: SchoolMapper,
+					useValue: createMock<SchoolMapper>(),
 				},
 			],
 		}).compile();
@@ -37,7 +43,7 @@ describe('SchoolService', () => {
 
 	beforeEach(() => {
 		mockSchoolEntities = [schoolFactory.buildWithId(), schoolFactory.buildWithId()];
-		schoolDto = new SchoolDto({ name: 'schule1234' });
+		schoolDto = new SchoolDto({ name: 'schule1234', systemIds: ['systemId'] });
 		schoolRepo.create.mockImplementation((): School => {
 			return mockSchoolEntities[0];
 		});
@@ -45,14 +51,17 @@ describe('SchoolService', () => {
 			const school = mockSchoolEntities.find((tmpSchool) => tmpSchool.id?.toString() === schoolId);
 			return school ? Promise.resolve(school) : Promise.reject();
 		});
+		// TODO continue here | const school = s;
 	});
 
 	afterEach(() => {
 		jest.resetAllMocks();
 	});
 
-	describe('saveSchool', () => {
-		it('should create new school', async () => {
+	describe('createOrUpdate', () => {
+		it('should create new school or update new school', async () => {
+			// Arrange
+
 			// Act
 			await schoolService.createOrUpdateSchool(schoolDto);
 
@@ -69,7 +78,6 @@ describe('SchoolService', () => {
 			await schoolService.createOrUpdateSchool(schoolDto);
 
 			// Assert
-			expect(schoolRepo.findById).toHaveBeenCalledWith(schoolDto.id);
 			expect(schoolRepo.save).toHaveBeenCalledWith(
 				expect.objectContaining({
 					name: schoolDto.name,

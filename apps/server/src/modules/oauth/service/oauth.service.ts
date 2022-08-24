@@ -10,7 +10,7 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AxiosResponse } from 'axios';
-import { Inject } from '@nestjs/common';
+import { Inject, UnprocessableEntityException } from '@nestjs/common';
 import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
@@ -106,11 +106,16 @@ export class OAuthService {
 	}
 
 	async findUser(accessToken: string, idToken: string, systemId: string): Promise<User> {
-		try {
-			const sub: string = jwt.decode(idToken, { json: true })?.sub ?? "'invalid id token'";
-			this.logger.debug(`provisioning is running for user with sub: ${sub} and system with id: ${systemId}`);
+		const sub: string | undefined = jwt.decode(idToken, { json: true })?.sub;
 
-			const provisioningDto: ProvisioningDto = await this.provisioningUc.process(accessToken, idToken, systemId);
+		if (!sub) {
+			throw new UnprocessableEntityException(`Provided idToken: ${idToken} has no sub.`);
+		}
+
+		this.logger.debug(`provisioning is running for user with sub: ${sub} and system with id: ${systemId}`);
+		const provisioningDto: ProvisioningDto = await this.provisioningUc.process(accessToken, idToken, systemId);
+
+		try {
 			const user: User = await this.userRepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
 			return user;
 		} catch (error) {

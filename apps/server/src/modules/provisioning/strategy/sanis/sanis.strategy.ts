@@ -17,6 +17,7 @@ import { AccountUc } from '@src/modules/account/uc/account.uc';
 import { AccountSaveDto } from '@src/modules/account/services/dto/index';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import CryptoJS from 'crypto-js';
 
 export type SanisStrategyData = {
 	provisioningUrl: string;
@@ -58,7 +59,7 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrateg
 
 		const user: UserDO = await this.provisionUser(data, params.systemId, school.id);
 
-		return new ProvisioningDto({ externalUserId: user.externalId ?? '' });
+		return new ProvisioningDto({ externalUserId: user.externalId as string });
 	}
 
 	getType(): SystemProvisioningStrategy {
@@ -101,8 +102,7 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrateg
 			await this.accountUc.saveAccount(
 				new AccountSaveDto({
 					userId: savedUser.id,
-					password: 'generateSecret100%',
-					username: 'generateEmail@schul-cloud.org',
+					username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
 					systemId,
 					activated: true,
 				})

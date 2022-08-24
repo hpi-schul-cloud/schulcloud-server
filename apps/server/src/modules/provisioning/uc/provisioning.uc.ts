@@ -1,12 +1,17 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+	HttpException,
+	HttpStatus,
+	Injectable,
+	InternalServerErrorException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { SystemUc } from '@src/modules/system/uc/system.uc';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
 import { Logger } from '@src/core/logger';
 import { ProvisioningSystemInputDto } from '@src/modules/provisioning/dto/provisioning-system-input.dto';
 import { ProvisioningSystemInputMapper } from '@src/modules/provisioning/mapper/provisioning-system-input.mapper';
-import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
-import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
+import { SanisProvisioningStrategy, SanisStrategyData } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
+import { IservProvisioningStrategy, IservStrategyData } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 
 @Injectable()
@@ -26,12 +31,12 @@ export class ProvisioningUc {
 			system = ProvisioningSystemInputMapper.mapToInternal(await this.systemUc.findById(systemId));
 		} catch (e) {
 			this.logger.error(`System with id ${systemId} was not found.`);
-			throw new HttpException(`System with id "${systemId}" does not exist.`, HttpStatus.UNPROCESSABLE_ENTITY);
+			throw new UnprocessableEntityException(`System with id "${systemId}" does not exist.`);
 		}
 
 		switch (system.provisioningStrategy) {
 			case SystemProvisioningStrategy.SANIS: {
-				const params = {
+				const params: SanisStrategyData = {
 					provisioningUrl: system.provisioningUrl ?? '',
 					accessToken,
 					systemId,
@@ -39,14 +44,14 @@ export class ProvisioningUc {
 				return this.sanisStrategy.apply(params);
 			}
 			case SystemProvisioningStrategy.ISERV: {
-				const params = {
+				const params: IservStrategyData = {
 					idToken,
 				};
 				return this.iservStrategy.apply(params);
 			}
 			default:
 				this.logger.error(`Missing provisioning strategy for system with id ${systemId}`);
-				throw new HttpException(`Provisioning Strategy is not defined.`, HttpStatus.INTERNAL_SERVER_ERROR);
+				throw new InternalServerErrorException('Provisioning Strategy is not defined.');
 		}
 	}
 }

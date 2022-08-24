@@ -8,18 +8,23 @@ export class SchoolMapper {
 			name: schoolDto.name,
 			externalId: schoolDto.externalId,
 		});
+
 		if (schoolDto.id) {
 			school.id = schoolDto.id;
 		}
+
 		const refs: IdentifiedReference<System, EntityId>[] = schoolDto.systemIds.map((systemId: EntityId) => {
 			return Reference.createFromPK(System, systemId);
 		});
 		school.systems.add(...refs);
+
 		return school;
 	}
 
 	static mapEntityToEntity(target: School, source: School): School {
 		target.name = source.name;
+		target.externalId = source.externalId;
+		target.systems = source.systems;
 		return target;
 	}
 

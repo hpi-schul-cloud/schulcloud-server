@@ -18,6 +18,7 @@ import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthResponse } from './dto/oauth.response';
@@ -321,9 +322,19 @@ describe('OAuthService', () => {
 	});
 
 	describe('findUser', () => {
+		beforeEach(() => {
+			jest.spyOn(jwt, 'decode').mockImplementation(() => {
+				return { sub: new ObjectId().toHexString() };
+			});
+		});
+
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
 		it('should return the user according to the uuid(externalId)', async () => {
 			// Arrange
-			provisioningService.process.mockResolvedValue({ externalUserId: '3333' });
+			provisioningService.process.mockResolvedValue({ externalUserId: new ObjectId().toHexString() });
 			userRepo.findByExternalIdOrFail.mockResolvedValue(defaultIservUser);
 
 			// Act
@@ -337,23 +348,45 @@ describe('OAuthService', () => {
 			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
 			expect(user).toBe(defaultIservUser);
 		});
+
 		it('should return an error if no User is found with this Id', async () => {
+			// Arrange
 			userRepo.findByExternalIdOrFail.mockRejectedValueOnce(new Error('User not found'));
+
+			// Act & Assert
 			await expect(
 				service.findUser(defaultTokenResponse.access_token, defaultTokenResponse.id_token, defaultSystem.id)
 			).rejects.toThrow(OAuthSSOError);
 		});
+
 		it('should return the user according to the id', async () => {
-			const provisioning: ProvisioningDto = new ProvisioningDto({ externalUserId: 'sanisUserId' });
+			// Arrange
+			const provisioning: ProvisioningDto = new ProvisioningDto({ externalUserId: new ObjectId().toHexString() });
 			provisioningService.process.mockResolvedValue(provisioning);
 			userRepo.findByExternalIdOrFail.mockResolvedValue(defaultUser);
+
+			// Act
 			const user = await service.findUser(
 				defaultTokenResponse.access_token,
 				defaultTokenResponse.id_token,
 				defaultSystem.id
 			);
+
+			// Assert
 			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
+		});
+
+		it('should throw if idToken is invalid and has no sub', async () => {
+			// Arrange
+			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
+				return null;
+			});
+
+			// Act & Assert
+			await expect(
+				service.findUser(defaultTokenResponse.access_token, defaultTokenResponse.id_token, defaultSystem.id)
+			).rejects.toThrow(UnprocessableEntityException);
 		});
 	});
 

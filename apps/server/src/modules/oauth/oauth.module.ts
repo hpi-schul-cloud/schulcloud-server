@@ -1,6 +1,6 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { EncryptionModule, SymetricKeyEncryptionService} from '@shared/infra/encryption';
+import { EncryptionModule } from '@shared/infra/encryption';
 import { UserRepo } from '@shared/repo';
 import { SystemRepo } from '@shared/repo/system';
 import { LoggerModule } from '@src/core/logger';

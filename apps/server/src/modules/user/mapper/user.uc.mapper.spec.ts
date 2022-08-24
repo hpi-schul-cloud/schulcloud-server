@@ -42,9 +42,11 @@ describe('UserUcMapper', () => {
 
 		// Assert
 		expect(resultDto.id).toEqual(provisioningUserOutputDto.id);
+		expect(resultDto.email).toEqual(provisioningUserOutputDto.email);
 		expect(resultDto.firstName).toEqual(provisioningUserOutputDto.firstName);
 		expect(resultDto.lastName).toEqual(provisioningUserOutputDto.lastName);
 		expect(resultDto.roleIds).toEqual(roleIds);
 		expect(resultDto.schoolId).toEqual(provisioningUserOutputDto.schoolId);
+		expect(resultDto.externalId).toEqual(provisioningUserOutputDto.externalId);
 	});
 });

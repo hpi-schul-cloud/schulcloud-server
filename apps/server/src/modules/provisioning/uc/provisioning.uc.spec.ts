@@ -5,7 +5,7 @@ import { SystemUc } from '@src/modules/system/uc/system.uc';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
-import { HttpException } from '@nestjs/common';
+import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
 import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
 
@@ -82,7 +82,9 @@ describe('ProvisioningUc', () => {
 
 		it('should throw error when system does not exists', async () => {
 			// Act & Assert
-			await expect(provisioningUc.process('accessToken', 'idToken', 'no system found')).rejects.toThrow(HttpException);
+			await expect(provisioningUc.process('accessToken', 'idToken', 'no system found')).rejects.toThrow(
+				UnprocessableEntityException
+			);
 		});
 
 		it('should apply sanis provisioning strategy', async () => {
@@ -112,7 +114,7 @@ describe('ProvisioningUc', () => {
 
 			// Act & Assert
 			await expect(provisioningUc.process('accessToken', 'idToken', 'missingStrategySystemId')).rejects.toThrow(
-				HttpException
+				InternalServerErrorException
 			);
 			expect(logger.error).toHaveBeenCalled();
 		});
