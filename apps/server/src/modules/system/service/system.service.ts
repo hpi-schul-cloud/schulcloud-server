@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { EntityId, System } from '@shared/domain';
+import { SysType } from '@shared/infra/identity-management';
 import { SystemRepo } from '@shared/repo';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { EntityId, System } from '@shared/domain';
-import { SysType } from '@shared/infra/identity-management';
 
 @Injectable()
 export class SystemService {
@@ -18,7 +18,7 @@ export class SystemService {
 		}
 		const keycloakConfig = (await this.systemRepo.findByFilter(SysType.KEYCLOAK, true))[0];
 		systemEntities.forEach((systemEntity) => {
-			if (keycloakConfig && systemEntity.type === SysType.OIDC && !systemEntity.oauthConfig) {
+			if (systemEntity.type === SysType.OIDC && !systemEntity.oauthConfig) {
 				systemEntity.oauthConfig = keycloakConfig.oauthConfig;
 			}
 		});
