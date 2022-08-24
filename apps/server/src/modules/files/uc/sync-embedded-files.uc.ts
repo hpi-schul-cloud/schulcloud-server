@@ -2,16 +2,18 @@
 
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { FileRecordParentType, IComponentProperties, Lesson } from '@shared/domain';
+import { FileRecordParentType, IComponentProperties, Lesson, Task } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
 import _ from 'lodash';
 import { EmbeddedFilesRepo, fileUrlRegex } from '../repo/embedded-files.repo';
-import { SyncFileItem } from '../types';
+import { AvailableSyncEntityType, AvailableSyncParentType, SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
 import { SyncFilesStorageService } from './sync-files-storage.service';
 
 @Injectable()
 export class SyncEmbeddedFilesUc {
+	failedIds: ObjectId[] = [];
+
 	constructor(
 		private embeddedFilesRepo: EmbeddedFilesRepo,
 		private logger: Logger,
@@ -19,79 +21,106 @@ export class SyncEmbeddedFilesUc {
 		private syncFilesStorageService: SyncFilesStorageService
 	) {}
 
-	async syncEmbeddedFilesForLesson() {
-		await this.embeddedFilesRepo.createLessonBackUpCollection();
+	async syncFilesForParentType(type: AvailableSyncParentType, limit = 1000) {
+		await this.embeddedFilesRepo.createBackUpCollection(type);
+		await this.syncEmbeddedFiles(type, limit);
+	}
 
-		const lessons = await this.embeddedFilesRepo.findEmbeddedFilesForLessons();
-		this.logger.log(`Found ${lessons.length} lesson contents with embedded files.`);
+	private async syncEmbeddedFiles(type: AvailableSyncParentType, limit: number) {
+		const [entities, count] = await this.embeddedFilesRepo.findElementsToSyncFiles(type, limit, this.failedIds);
 
-		const promises = lessons.map(async (lesson) => {
-			const fileIds = this.extractFileIds(lesson);
+		this.logger.log(`Found ${entities.length} ${type} descriptions with embedded files.`);
 
-			const files = await this.embeddedFilesRepo.findFiles(fileIds, lesson._id, FileRecordParentType.Lesson);
-			return this.syncFiles(files);
+		const promises = entities.map(async (entity: AvailableSyncEntityType) => {
+			const fileIds = this.extractFileIds(entity);
+
+			const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
+			return this.syncFiles(files, entity);
 		});
 
 		await Promise.all(promises);
+		if (count > 0) {
+			await this.syncEmbeddedFiles(type, limit);
+		}
+		return true;
 	}
 
-	private extractFileIds(lesson: Lesson): ObjectId[] {
-		const lessonFileIds: string[] = [];
+	private extractFileIds(entity: AvailableSyncEntityType): ObjectId[] {
+		const fileIds: string[] = [];
 
-		lesson.contents.forEach((item: IComponentProperties) => {
-			if (item.content === undefined || !('text' in item.content)) {
-				return;
-			}
+		if (entity instanceof Lesson) {
+			entity.contents.forEach((item: IComponentProperties) => {
+				if (item.content === undefined || !('text' in item.content)) {
+					return;
+				}
 
-			const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
-			const contentFileIds = item.content.text.match(regEx);
+				const contentFileIds = this.extractFileIdsFromContent(item.content.text);
+
+				if (contentFileIds !== null) {
+					fileIds.push(...contentFileIds);
+				}
+			});
+		}
+		if (entity instanceof Task) {
+			const contentFileIds = this.extractFileIdsFromContent(entity.description);
 
 			if (contentFileIds !== null) {
-				lessonFileIds.push(...contentFileIds);
+				fileIds.push(...contentFileIds);
 			}
-		});
+		}
 
-		return _.uniq(lessonFileIds).map((id) => new ObjectId(id));
+		return _.uniq(fileIds).map((id) => new ObjectId(id));
 	}
 
-	private async syncFiles(files: SyncFileItem[]) {
-		// eslint-disable-next-line no-await-in-loop
-		const promises = files.map((file) => {
-			return this.sync(file);
-		});
+	private extractFileIdsFromContent(text: string) {
+		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
+		const contentFileIds = text.match(regEx);
+
+		return contentFileIds;
+	}
+
+	private async syncFiles(files: SyncFileItem[], entity: AvailableSyncEntityType) {
+		const promises = files.map((file) => this.sync(file, entity));
 		await Promise.all(promises);
 	}
 
-	private async sync(file: SyncFileItem) {
+	private async sync(file: SyncFileItem, entity: AvailableSyncEntityType) {
 		try {
 			await this.syncFilesMetaDataService.prepareMetaData(file);
 			await this.syncFilesStorageService.syncS3File(file);
 			await this.syncFilesMetaDataService.persistMetaData(file);
-			await this.updateLessonsLinks(file);
+			await this.updateEntityLinks(file, entity);
 			this.logger.log(`Synced file ${file.source.id}`);
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
 			this.logger.error(file, stack);
+			this.failedIds.push(entity._id);
 			await this.syncFilesMetaDataService.persistError(file, stack);
 		}
 	}
 
-	private async updateLessonsLinks(file: SyncFileItem) {
-		const lesson = await this.embeddedFilesRepo.findLesson(new ObjectId(file.parentId));
-
-		if (lesson) {
-			lesson.contents = lesson.contents.map((item: IComponentProperties) => {
-				const regex = new RegExp(`${fileUrlRegex}${file.source.id}.+?"`, 'g');
-				const newUrl = `"/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}"`;
-
+	private async updateEntityLinks(file: SyncFileItem, entity: Task | Lesson, errorUrl?: string) {
+		if (file.parentType === FileRecordParentType.Lesson && entity instanceof Lesson) {
+			entity.contents = entity.contents.map((item: IComponentProperties) => {
 				if ('text' in item.content) {
-					item.content.text = item.content.text.replace(regex, newUrl);
+					item.content.text = this.replaceLink(item.content.text, file, errorUrl);
 				}
 
 				return item;
 			});
-			await this.embeddedFilesRepo.updateLesson(lesson);
+			await this.embeddedFilesRepo.updateEntity(entity);
 		}
+
+		if (file.parentType === FileRecordParentType.Task && entity instanceof Task) {
+			entity.description = this.replaceLink(entity.description, file, errorUrl);
+			await this.embeddedFilesRepo.updateEntity(entity);
+		}
+	}
+
+	private replaceLink(text: string, file: SyncFileItem, errorUrl?: string) {
+		const regex = new RegExp(`${fileUrlRegex}${file.source.id}.+?"`, 'g');
+		const newUrl = errorUrl || `"/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}"`;
+		return text.replace(regex, newUrl);
 	}
 }

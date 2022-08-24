@@ -1,16 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
 import { SymetricKeyEncryptionService } from './encryption.service';
 
 describe('SymetricKeyEncryptionService', () => {
 	describe('with configure encryption key', () => {
 		const encryptionKey = 'abcdefghijklmnop';
-		const configServiceMock = createMock<ConfigService>();
-		configServiceMock.get.mockReturnValue(encryptionKey);
-
 		const logger = createMock<Logger>();
-		const encryptionService = new SymetricKeyEncryptionService(configServiceMock, logger);
+		const encryptionService = new SymetricKeyEncryptionService(logger, encryptionKey);
 		const testInput = 'testInput';
 
 		it('encrypts the input', () => {
@@ -36,10 +32,8 @@ describe('SymetricKeyEncryptionService', () => {
 	});
 
 	describe('without configured encryption key', () => {
-		const configServiceMock = createMock<ConfigService>();
-		configServiceMock.get.mockReturnValue(undefined);
 		const logger = createMock<Logger>();
-		const encryptionService = new SymetricKeyEncryptionService(configServiceMock, logger);
+		const encryptionService = new SymetricKeyEncryptionService(logger);
 		const testInput = 'testInput';
 
 		beforeEach(() => {

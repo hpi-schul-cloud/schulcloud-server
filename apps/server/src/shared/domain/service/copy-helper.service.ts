@@ -11,12 +11,14 @@ export class CopyHelperService {
 
 		const filtered = elementsStatuses.filter((status) => status !== CopyStatusEnum.NOT_DOING);
 
-		if (filtered.every((status) => !isAtLeastPartialSuccessfull(status))) {
-			return CopyStatusEnum.FAIL;
-		}
+		if (filtered.length > 0) {
+			if (filtered.every((status) => !isAtLeastPartialSuccessfull(status))) {
+				return CopyStatusEnum.FAIL;
+			}
 
-		if (filtered.some((status) => status !== CopyStatusEnum.SUCCESS)) {
-			return CopyStatusEnum.PARTIAL;
+			if (filtered.some((status) => status !== CopyStatusEnum.SUCCESS)) {
+				return CopyStatusEnum.PARTIAL;
+			}
 		}
 
 		return CopyStatusEnum.SUCCESS;
