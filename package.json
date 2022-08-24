@@ -161,6 +161,7 @@
 		"moodle-client": "^0.5.2",
 		"nanoid": "^3.1.20",
 		"nestjs-console": "^7.0.0",
+		"node-html-parser": "^5.4.2-0",
 		"oauth-1.0a": "^2.2.6",
 		"papaparse": "^5.1.1",
 		"passport": "^0.4.1",

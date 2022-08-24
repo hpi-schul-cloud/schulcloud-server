@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
+const { hasPermission, hasSchoolPermission } = require('../../../hooks');
 const { NotFound } = require('@feathersjs/errors');
 
 const isEdusharing = (context) => {

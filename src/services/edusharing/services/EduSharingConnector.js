@@ -1,4 +1,6 @@
 const request = require('request-promise-native');
+const html_parser = require('node-html-parser');
+
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { Forbidden, GeneralError, NotFound } = require('../../../errors');
@@ -106,11 +108,13 @@ class EduSharingConnector {
 	async eduSharingRequest(options, retried = false) {
 		try {
 			await this.authorize();
-			if (options.method.toUpperCase() === 'POST') {
+			if (options.method.toUpperCase() === 'GET') {
+				return await request.get(options);
+			} else if (options.method.toUpperCase() === 'POST') {
 				return await request.post(options);
+			} else {
+				throw new GeneralError(`Method not supported: ${options.method}`);
 			}
-			const res = await request.get(options);
-			return res;
 		} catch (err) {
 			if (err.statusCode === 404) {
 				return null;
@@ -326,7 +330,7 @@ class EduSharingConnector {
 
 	async getRendererForNode(nodeUuid) {
 	    try {
-			const url = `${ES_ENDPOINTS.RENDERER}{nodeUuid}`
+			const url = `${ES_ENDPOINTS.RENDERER}${nodeUuid}`
 			const options = {
 				method: 'GET',
 				url,
@@ -340,13 +344,17 @@ class EduSharingConnector {
 			const response = await this.eduSharingRequest(options);
 			const parsed = JSON.parse(response);
 			if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
-				return new parsed.detailsSnippet;
+				const root = html_parser.parse(parsed.detailsSnippet);
+				const iframe = root.querySelector('.edusharing_rendering_content_wrapper')
+				if (iframe == null) {
+					throw new GeneralError('no iframe found')
+				}
+				return iframe.toString();
 			} else {
-				logger.error(`Unexpected answer from Edu-Sharing: ${response}`)
-				throw new GeneralError('Unexpected answer from Edu-Sharing');
+				throw new GeneralError(`Unexpected answer from Edu-Sharing: ${response}`);
 			}
 	    } catch (err) {
-			logger.error('Edu-Sharing failed getting renderer: ', err.message);
+			logger.error('Edu-Sharing failed getting renderer: ', err, err.message);
 			return Promise.reject(err);
 		}
 	}

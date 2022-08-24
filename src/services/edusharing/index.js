@@ -32,9 +32,9 @@ class MerlinToken {
 
 module.exports = (app) => {
 	const eduSharingRoute = '/edu-sharing';
-	const eduSharingRendererRoute = `${eduSharingRoute}/renderer`
-	const merlinRoute = `${eduSharingRoute}/merlinToken`;
-	const docRoute = `${eduSharingRoute}/api`;
+	const eduSharingRendererRoute = '/edu-sharing/renderer';
+	const merlinRoute = '/edu-sharing/merlinToken';
+	const docRoute = '/edu-sharing/api';
 
 	app.use(eduSharingRoute, new EduSharing(), (req, res) => {
 		res.send(res.data);
@@ -46,7 +46,7 @@ module.exports = (app) => {
 	    res.send(res.data);
 	});
 	const eduSharingRendererService = app.service(eduSharingRendererRoute);
-	eduSharingRendererService.hooks()
+	eduSharingRendererService.hooks();
 
 	app.use(merlinRoute, new MerlinToken(), (req, res) => {
 		res.send(res.data);
