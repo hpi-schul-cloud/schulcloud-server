@@ -23,10 +23,10 @@ export class KeycloakManagementUc {
 		return this.keycloakSeedService.seed();
 	}
 
-	async configure(loadFromJson = false): Promise<number> {
+	async configure(): Promise<number> {
 		await this.kcAdmin.setPasswordPolicy();
 		await this.keycloakConfigService.configureBrokerFlows();
-		const result = this.keycloakConfigService.configureIdentityProviders(loadFromJson);
+		const result = this.keycloakConfigService.configureIdentityProviders();
 		return result;
 	}
 }

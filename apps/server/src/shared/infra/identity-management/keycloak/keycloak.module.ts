@@ -10,6 +10,7 @@ import KeycloakConfiguration from './keycloak-config';
 import { KeycloakAdministrationService } from './service/keycloak-administration.service';
 import { KeycloakConfigurationService } from './service/keycloak-configuration.service';
 import { KeycloakSeedService } from './service/keycloak-seed.service';
+import { OidcIdentityProviderMapper } from './mapper/identity-provider.mapper';
 
 @Module({
 	imports: [LoggerModule, EncryptionModule],
@@ -27,6 +28,7 @@ import { KeycloakSeedService } from './service/keycloak-seed.service';
 			useValue: KeycloakConfiguration.keycloakInputFiles,
 		},
 		KeycloakManagementUc,
+		OidcIdentityProviderMapper,
 		KeycloakConfigurationService,
 		KeycloakSeedService,
 	],

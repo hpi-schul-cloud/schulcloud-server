@@ -1,11 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
-import { CourseRepo, FileRecordRepo, LessonRepo, SchoolRepo, TaskRepo, TeamsRepo, UserRepo } from '@shared/repo';
+import {
+	CourseGroupRepo,
+	CourseRepo,
+	FileRecordRepo,
+	LessonRepo,
+	SchoolRepo,
+	TaskRepo,
+	TeamsRepo,
+	UserRepo,
+} from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { NotImplementedException } from '@nestjs/common';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
@@ -14,6 +23,7 @@ describe('reference.loader', () => {
 	let service: ReferenceLoader;
 	let userRepo: DeepMocked<UserRepo>;
 	let courseRepo: DeepMocked<CourseRepo>;
+	let courseGroupRepo: DeepMocked<CourseGroupRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let schoolRepo: DeepMocked<SchoolRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
@@ -33,6 +43,10 @@ describe('reference.loader', () => {
 				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
+				},
+				{
+					provide: CourseGroupRepo,
+					useValue: createMock<CourseGroupRepo>(),
 				},
 				{
 					provide: TaskRepo,
@@ -60,6 +74,7 @@ describe('reference.loader', () => {
 		service = await module.get(ReferenceLoader);
 		userRepo = await module.get(UserRepo);
 		courseRepo = await module.get(CourseRepo);
+		courseGroupRepo = await module.get(CourseGroupRepo);
 		taskRepo = await module.get(TaskRepo);
 		schoolRepo = await module.get(SchoolRepo);
 		lessonRepo = await module.get(LessonRepo);
@@ -85,6 +100,12 @@ describe('reference.loader', () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.Course, entityId);
 
 			expect(courseRepo.findById).toBeCalledWith(entityId);
+		});
+
+		it('should call courseGroupRepo.findById', async () => {
+			await service.loadEntity(AllowedAuthorizationEntityType.CourseGroup, entityId);
+
+			expect(courseGroupRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call schoolRepo.findById', async () => {

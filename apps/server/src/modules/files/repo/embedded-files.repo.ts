@@ -1,29 +1,27 @@
 /* istanbul ignore file */
+import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { File, FileRecordParentType, Lesson } from '@shared/domain';
+import { Counted, File, FileRecordParentType, Lesson, Task } from '@shared/domain';
 import { SyncFileItemMapper } from '../mapper';
-import { LessonMapper } from '../mapper/lesson-mapper';
-import { SyncFileItem } from '../types';
+import { AvailableSyncEntityType, AvailableSyncParentType, SyncFileItem } from '../types';
 
 export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
-const lessonsQuery = [
-	{
-		$match: {
-			'contents.component': {
-				$eq: 'text',
-			},
-		},
-	},
-	{
-		$match: {
-			'contents.content.text': {
-				$regex: new RegExp(`src=${fileUrlRegex}`),
-				$options: 'i',
-			},
-		},
-	},
-];
+const fileIdRegex = '(0x|0h)?[0-9A-F]{24}';
+const tasksQuery = (excludeIds: ObjectId[]) => {
+	return {
+		_id: { $nin: excludeIds },
+		description: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i'),
+	};
+};
+
+const lessonsQuery = (excludeIds: ObjectId[]) => {
+	return {
+		_id: { $nin: excludeIds },
+		'contents.component': { $eq: 'text' },
+		'contents.content.text': { $regex: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i') },
+	} as FilterQuery<Lesson>;
+};
 
 const filesQuery = (fileIds: ObjectId[], parentId: ObjectId) => [
 	{
@@ -107,13 +105,19 @@ const filesQuery = (fileIds: ObjectId[], parentId: ObjectId) => [
 export class EmbeddedFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
-	async findEmbeddedFilesForLessons(): Promise<Lesson[]> {
-		const results = await this._em.aggregate(Lesson, lessonsQuery);
+	async findElementsToSyncFiles(
+		type: AvailableSyncParentType,
+		limit: number,
+		excludeIds: ObjectId[]
+	): Promise<Counted<Task[] | Lesson[]>> {
+		let results: Counted<Task[] | Lesson[]> = [[], 0];
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const lessons = results.map((result) => LessonMapper.mapToLesson(result));
-
-		return lessons;
+		if (type === FileRecordParentType.Task) {
+			results = await this._em.findAndCount(Task, tasksQuery(excludeIds), { limit });
+		} else if (type === FileRecordParentType.Lesson) {
+			results = await this._em.findAndCount(Lesson, lessonsQuery(excludeIds), { limit });
+		}
+		return results;
 	}
 
 	async findFiles(fileIds: ObjectId[], parentId: ObjectId, parentType: FileRecordParentType): Promise<SyncFileItem[]> {
@@ -126,19 +130,17 @@ export class EmbeddedFilesRepo {
 		return items;
 	}
 
-	async findLesson(_id: ObjectId) {
-		const result = await this._em.findOne(Lesson, { _id });
-
-		return result;
+	async updateEntity(entity: AvailableSyncEntityType) {
+		await this._em.persistAndFlush(entity);
 	}
 
-	async updateLesson(lesson: Lesson) {
-		await this._em.persistAndFlush(lesson);
-	}
-
-	async createLessonBackUpCollection() {
+	async createBackUpCollection(type: AvailableSyncParentType) {
 		const date = new Date();
 
-		await this._em.aggregate(Lesson, [{ $match: {} }, { $out: `lessons_backup_${date.getTime()}` }]);
+		if (type === FileRecordParentType.Task) {
+			await this._em.aggregate(Task, [{ $match: {} }, { $out: `homeworks_backup_${date.getTime()}` }]);
+		} else if (type === FileRecordParentType.Lesson) {
+			await this._em.aggregate(Lesson, [{ $match: {} }, { $out: `lessons_backup_${date.getTime()}` }]);
+		}
 	}
 }

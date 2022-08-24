@@ -1,11 +1,10 @@
 import { DeepPartial, MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { CourseRule, LessonRule } from '.';
+import { CourseGroupRule, CourseRule, LessonRule, TaskRule } from '.';
 import { Task, User } from '../entity';
 import { Permission, RoleName } from '../interface';
 import { Actions } from './actions.enum';
-import { TaskRule } from './task.rule';
 
 describe('TaskRule', () => {
 	let orm: MikroORM;
@@ -22,7 +21,7 @@ describe('TaskRule', () => {
 		orm = await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [TaskRule, CourseRule, LessonRule],
+			providers: [TaskRule, CourseRule, LessonRule, CourseGroupRule],
 		}).compile();
 
 		service = await module.get(TaskRule);
