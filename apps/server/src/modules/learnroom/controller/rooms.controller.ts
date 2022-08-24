@@ -55,7 +55,8 @@ export class RoomsController {
 	}
 
 	@Post(':roomid/copy')
-	@Timeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	// @Timeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	@Timeout(1)
 	async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('roomid', ParseObjectIdPipe) courseId: string,
@@ -67,7 +68,8 @@ export class RoomsController {
 	}
 
 	@Post('lessons/:lessonid/copy')
-	@Timeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	// @Timeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	@Timeout(1)
 	async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('lessonid', ParseObjectIdPipe) lessonId: string,

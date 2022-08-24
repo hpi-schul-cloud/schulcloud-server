@@ -87,7 +87,8 @@ export class TaskController {
 	}
 
 	@Post(':id/copy')
-	@Timeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	// @Timeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	@Timeout(1)
 	async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('id', ParseObjectIdPipe) taskId: string,
