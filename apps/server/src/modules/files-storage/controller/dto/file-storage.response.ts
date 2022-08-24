@@ -71,3 +71,13 @@ export class CopyFileResponse {
 	@DecodeHtmlEntities()
 	name: string;
 }
+
+export class CopyFileListResponse extends PaginationResponse<CopyFileResponse[]> {
+	constructor(data: CopyFileResponse[], total: number, skip?: number, limit?: number) {
+		super(total, skip, limit);
+		this.data = data;
+	}
+
+	@ApiProperty({ type: [CopyFileResponse] })
+	data: CopyFileResponse[];
+}

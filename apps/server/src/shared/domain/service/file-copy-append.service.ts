@@ -4,7 +4,7 @@ import {
 	FilesStorageClientAdapterService,
 	CopyFilesService,
 } from '@src/modules/files-storage-client';
-import { CopyFileResponse } from '@src/modules/files-storage/controller/dto';
+import { CopyFileDto } from '@src/modules/files-storage-client/dto';
 import { uniq } from 'lodash';
 import { IComponentProperties, Lesson, Task } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum, EntityId } from '../types';
@@ -50,7 +50,7 @@ export class FileCopyAppendService {
 		}
 	}
 
-	private createSuccessCopyStatus(taskCopyStatus: CopyStatus, files: CopyFileResponse[]): CopyStatus {
+	private createSuccessCopyStatus(taskCopyStatus: CopyStatus, files: CopyFileDto[]): CopyStatus {
 		const fileGroupStatus = {
 			type: CopyElementType.FILE_GROUP,
 			status: CopyStatusEnum.SUCCESS,
@@ -98,7 +98,7 @@ export class FileCopyAppendService {
 		return [...elements, updatedFileGroupStatus];
 	}
 
-	private createFileStatuses(files: CopyFileResponse[]): CopyStatus[] {
+	private createFileStatuses(files: CopyFileDto[]): CopyStatus[] {
 		return files.map((file) => ({
 			type: CopyElementType.FILE,
 			title: file.name,
@@ -114,7 +114,7 @@ export class FileCopyAppendService {
 		}));
 	}
 
-	private createFileStatusesByCopyResult(files: CopyFileResponse[]): CopyStatus[] {
+	private createFileStatusesByCopyResult(files: CopyFileDto[]): CopyStatus[] {
 		return files.map(({ sourceId, id, name }) => ({
 			type: CopyElementType.FILE,
 			status: id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
@@ -251,7 +251,7 @@ export class FileCopyAppendService {
 		return fileGroupStatus;
 	}
 
-	private deriveFileGroupStatus(fileCopyResults: CopyFileResponse[]) {
+	private deriveFileGroupStatus(fileCopyResults: CopyFileDto[]) {
 		const fileStatuses = this.createFileStatusesByCopyResult(fileCopyResults);
 		const fileGroupStatus = {
 			type: CopyElementType.FILE_GROUP,

@@ -26,6 +26,7 @@ import { Request } from 'express';
 import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
 import {
+	CopyFileListResponse,
 	CopyFileParams,
 	CopyFileResponse,
 	CopyFilesOfParentParams,
@@ -216,7 +217,7 @@ export class FilesStorageController {
 	}
 
 	@ApiOperation({ summary: 'Copy all files of a parent entityId to a target entitId' })
-	@ApiResponse({ status: 201, type: [CopyFileResponse] })
+	@ApiResponse({ status: 201, type: CopyFileListResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
@@ -225,10 +226,10 @@ export class FilesStorageController {
 		@Param() params: FileRecordParams,
 		@Body() copyFilesParam: CopyFilesOfParentParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<CopyFileResponse[]> {
-		const response = await this.filesStorageUC.copyFilesOfParent(currentUser.userId, params, copyFilesParam);
+	): Promise<CopyFileListResponse> {
+		const [response, count] = await this.filesStorageUC.copyFilesOfParent(currentUser.userId, params, copyFilesParam);
 
-		return response;
+		return new CopyFileListResponse(response, count);
 	}
 
 	@ApiOperation({ summary: 'Copy a single file in the same target entityId scope.' })

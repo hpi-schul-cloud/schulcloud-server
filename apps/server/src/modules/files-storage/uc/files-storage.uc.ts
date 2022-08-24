@@ -262,7 +262,7 @@ export class FilesStorageUC {
 		userId: string,
 		params: FileRecordParams,
 		copyFilesParams: CopyFilesOfParentParams
-	): Promise<CopyFileResponse[]> {
+	): Promise<Counted<CopyFileResponse[]>> {
 		await Promise.all([
 			this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create),
 			this.checkPermission(
@@ -275,13 +275,13 @@ export class FilesStorageUC {
 
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
-		if (count > 0) {
-			const response = await this.copy(userId, fileRecords, copyFilesParams.target);
-
-			return response;
+		if (count === 0) {
+			return [[], 0];
 		}
 
-		throw new NotFoundException('NO_FILES_TO_COPY');
+		const response = await this.copy(userId, fileRecords, copyFilesParams.target);
+
+		return [response, count];
 	}
 
 	public async copyOneFile(

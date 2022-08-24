@@ -650,12 +650,6 @@ describe('FilesStorageUC', () => {
 					sourceParentParams.parentId
 				);
 			});
-
-			it('should return exception response if entities not found', async () => {
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([[], 0]);
-
-				await expect(service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams)).rejects.toThrow();
-			});
 		});
 
 		describe('calls to fileRecordRepo.save()', () => {
@@ -679,7 +673,7 @@ describe('FilesStorageUC', () => {
 
 			it('should return file response with source file id', async () => {
 				const fileRecordsRes = await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
-				expect(fileRecordsRes).toEqual(
+				expect(fileRecordsRes[0]).toEqual(
 					expect.arrayContaining([expect.objectContaining({ sourceId: fileRecords[1].id })])
 				);
 			});

@@ -12,8 +12,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { CopyFilesService, FilesStorageClientAdapterService } from '@src/modules';
+import { CopyFileDto } from '@src/modules/files-storage-client/dto';
 import { FileRecordParamsParentTypeEnum } from '@src/modules/files-storage-client/filesStorageApi/v3';
-import { CopyFileResponse } from '@src/modules/files-storage/controller/dto';
 import { IComponentTextProperties, Task } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
@@ -186,7 +186,7 @@ describe('file copy append service', () => {
 						},
 					],
 				};
-				const copyFileResponse: CopyFileResponse[] = [
+				const copyFileResponse: CopyFileDto[] = [
 					{
 						id: 'some-file-id',
 						name: FILENAME1,

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Task, Lesson, EntityId, IComponentProperties } from '@shared/domain';
-import { CopyFileResponse } from '../filesStorageApi/v3';
-import { FileRequestInfo } from '../interfaces';
+import { CopyFileDto } from '../dto';
 import { FileParamBuilder } from '../mapper/files-storage-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
@@ -11,30 +10,23 @@ type EntityWithEmbeddedFiles = Task | Lesson;
 export class CopyFilesService {
 	constructor(private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService) {}
 
-	/**
-	 * Copies embedded and appended files of entity
-	 */
 	async copyFilesOfEntity(
 		originalEntity: EntityWithEmbeddedFiles,
 		copyEntity: EntityWithEmbeddedFiles,
 		schoolId: EntityId,
 		jwt: string
-	): Promise<{ entity: EntityWithEmbeddedFiles; response: CopyFileResponse[] }> {
+	): Promise<{ entity: EntityWithEmbeddedFiles; response: CopyFileDto[] }> {
 		const sourceParams = FileParamBuilder.build(jwt, schoolId, originalEntity);
 		const targetParams = FileParamBuilder.build(jwt, schoolId, copyEntity);
 
-		try {
-			const response = await this.filesStorageClientAdapterService.copyFilesOfParent(sourceParams, targetParams);
+		const response = await this.filesStorageClientAdapterService.copyFilesOfParent(sourceParams, targetParams);
 
-			const entity = this.replaceUrlsOfEntity(response, copyEntity);
+		const entity = this.replaceUrlsOfEntity(response, copyEntity);
 
-			return { entity, response };
-		} catch (error) {
-			return { entity: copyEntity, response: [] };
-		}
+		return { entity, response };
 	}
 
-	private replaceUrlsOfEntity(responses: CopyFileResponse[], entity: EntityWithEmbeddedFiles): EntityWithEmbeddedFiles {
+	private replaceUrlsOfEntity(responses: CopyFileDto[], entity: EntityWithEmbeddedFiles): EntityWithEmbeddedFiles {
 		if (responses.length === 0) {
 			return entity;
 		}
@@ -50,7 +42,7 @@ export class CopyFilesService {
 		return entity;
 	}
 
-	private replaceUrlsInLessons(lesson: Lesson, response: CopyFileResponse): Lesson {
+	private replaceUrlsInLessons(lesson: Lesson, response: CopyFileDto): Lesson {
 		lesson.contents = lesson.contents.map((item: IComponentProperties) => {
 			if ('text' in item.content) {
 				const text = this.replaceUrl(item.content.text, response);
@@ -64,13 +56,13 @@ export class CopyFilesService {
 		return lesson;
 	}
 
-	private replaceUrlsInTask(task: Task, response: CopyFileResponse): Task {
+	private replaceUrlsInTask(task: Task, response: CopyFileDto): Task {
 		task.description = this.replaceUrl(task.description, response);
 
 		return task;
 	}
 
-	private replaceUrl(text: string, response: CopyFileResponse) {
+	private replaceUrl(text: string, response: CopyFileDto) {
 		const regex = new RegExp(`${response.sourceId}.+?"`, 'g');
 		const newUrl = `${response.id}/${response.name}"`;
 		return text.replace(regex, newUrl);

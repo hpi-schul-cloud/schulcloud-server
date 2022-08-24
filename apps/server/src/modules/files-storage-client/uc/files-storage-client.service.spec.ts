@@ -55,12 +55,18 @@ describe('FilesStorageClientAdapterService', () => {
 			const param = FileParamBuilder.build(jwt, schoolId, sourceTask);
 			const target = FileParamBuilder.build(jwt, schoolId, targetTask);
 
+			const spy = jest.spyOn(FilesStorageClientMapper, 'mapAxiosToCopyFilesDto').mockImplementation(() => []);
+
 			await service.copyFilesOfParent(param, target);
 
 			const expectedOptions = { headers: { Authorization: `Bearer ${jwt}` } };
 			const expectedParams = [schoolId, sourceTask.id, 'tasks', { target }, expectedOptions];
 
 			expect(client.filesStorageControllerCopy).toHaveBeenCalledWith(...expectedParams);
+
+			expect(spy).toBeCalled();
+
+			spy.mockRestore();
 		});
 
 		it('Should call error mapper if throw an error.', async () => {

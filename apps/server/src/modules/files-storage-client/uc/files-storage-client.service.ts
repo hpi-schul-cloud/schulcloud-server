@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { FileDto } from '../dto';
+import { CopyFileDto, FileDto } from '../dto';
 import { AxiosJWTOptionBuilder, FilesStorageClientMapper, ErrorMapper } from '../mapper';
-import { CopyFileResponse, FileApi, FileRecordListResponse } from '../filesStorageApi/v3';
+import { CopyFileListResponse, FileApi, FileRecordListResponse } from '../filesStorageApi/v3';
 import { FileRequestInfo, FileRequestOptions } from '../interfaces';
 
 @Injectable()
@@ -12,11 +12,13 @@ export class FilesStorageClientAdapterService {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
 	}
 
-	async copyFilesOfParent(param: FileRequestInfo, target: FileRequestInfo): Promise<CopyFileResponse[]> {
+	async copyFilesOfParent(param: FileRequestInfo, target: FileRequestInfo): Promise<CopyFileDto[]> {
 		const options = AxiosJWTOptionBuilder.build(param);
 		const response = await this.copy(param, target, options);
 
-		return response.data;
+		const fileInfos = FilesStorageClientMapper.mapAxiosToCopyFilesDto(response);
+
+		return fileInfos;
 	}
 
 	async listFilesOfParent(param: FileRequestInfo): Promise<FileDto[]> {
@@ -39,7 +41,7 @@ export class FilesStorageClientAdapterService {
 		param: FileRequestInfo,
 		target: FileRequestInfo,
 		options: AxiosRequestConfig<FileRequestOptions>
-	): Promise<AxiosResponse<CopyFileResponse[]>> {
+	): Promise<AxiosResponse<CopyFileListResponse>> {
 		try {
 			const response = await this.fileStorageClient.filesStorageControllerCopy(
 				param.schoolId,
