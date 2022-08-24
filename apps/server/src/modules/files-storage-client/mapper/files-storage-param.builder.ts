@@ -1,5 +1,4 @@
 import { EntityId, Lesson, Task } from '@shared/domain';
-import { FileRecordParamsParentTypeEnum } from '../filesStorageApi/v3';
 import { FileRequestInfo } from '../interfaces';
 import { FilesStorageClientMapper } from './files-storage-client.mapper';
 
