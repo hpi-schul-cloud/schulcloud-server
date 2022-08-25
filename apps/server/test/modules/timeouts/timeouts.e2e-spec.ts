@@ -6,15 +6,23 @@ import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { userFactory, courseFactory, cleanupCollections, roleFactory, mapUserToCurrentUser } from '@shared/testing';
-import { ICurrentUser } from '@shared/domain';
+import {
+	userFactory,
+	courseFactory,
+	cleanupCollections,
+	roleFactory,
+	mapUserToCurrentUser,
+	lessonFactory,
+	taskFactory,
+} from '@shared/testing';
+import { ICurrentUser, Permission } from '@shared/domain';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 // eslint-disable-next-line import/first
 import { ServerTestModule } from '@src/server.module';
 
-describe('Course Controller (e2e)', () => {
+describe('Copy timeout (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
@@ -57,12 +65,12 @@ describe('Course Controller (e2e)', () => {
 	};
 
 	it('Course copy timeout', async () => {
-		const student = setup();
-		const course = courseFactory.build({ name: 'course #1', students: [student] });
+		const teacher = setup();
+		const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
 		await em.persistAndFlush(course);
 		em.clear();
 
-		currentUser = mapUserToCurrentUser(student);
+		currentUser = mapUserToCurrentUser(teacher);
 
 		const response = await request(app.getHttpServer())
 			.post(`/rooms/${course.id}/copy`)
@@ -73,15 +81,17 @@ describe('Course Controller (e2e)', () => {
 	});
 
 	it('Task copy timeout', async () => {
-		const student = setup();
-		const course = courseFactory.build({ name: 'course #1', students: [student] });
-		await em.persistAndFlush(course);
+		const teacher = setup();
+		const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
+		const task = taskFactory.build({ name: 'task #1', course });
+
+		await em.persistAndFlush([task, course]);
 		em.clear();
 
-		currentUser = mapUserToCurrentUser(student);
+		currentUser = mapUserToCurrentUser(teacher);
 
 		const response = await request(app.getHttpServer())
-			.post(`/tasks/${course.id}/copy`)
+			.post(`/tasks/${task.id}/copy`)
 			.set('Authorization', 'jwt')
 			.send();
 
@@ -89,15 +99,16 @@ describe('Course Controller (e2e)', () => {
 	});
 
 	it('Lesson copy timeout', async () => {
-		const student = setup();
-		const course = courseFactory.build({ name: 'course #1', students: [student] });
-		await em.persistAndFlush(course);
+		const teacher = setup();
+		const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
+		const lesson = lessonFactory.build({ name: 'lesson #1', course });
+		await em.persistAndFlush([lesson, course]);
 		em.clear();
 
-		currentUser = mapUserToCurrentUser(student);
+		currentUser = mapUserToCurrentUser(teacher);
 
 		const response = await request(app.getHttpServer())
-			.post(`/rooms/lessons/${course.id}/copy`)
+			.post(`/rooms/lessons/${lesson.id}/copy`)
 			.set('Authorization', 'jwt')
 			.send();
 
