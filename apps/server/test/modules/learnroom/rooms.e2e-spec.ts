@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -25,6 +26,10 @@ describe('Rooms Controller (e2e)', () => {
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 
+	const setConfig = () => {
+		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+	};
+
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
@@ -43,6 +48,7 @@ describe('Rooms Controller (e2e)', () => {
 		await app.init();
 		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
+		setConfig();
 	});
 
 	afterEach(async () => {
