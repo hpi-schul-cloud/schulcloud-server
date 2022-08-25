@@ -14,7 +14,6 @@ export class BBBJoinConfig extends BBBBaseMeetingConfig {
 		this.userID = config.userID;
 		this.guest = config.guest;
 		this.redirect = config.redirect;
-		this['meta_bbb-origin-server-name'] = config['meta_bbb-origin-server-name'];
 	}
 
 	fullName: string;
@@ -26,6 +25,4 @@ export class BBBJoinConfig extends BBBBaseMeetingConfig {
 	guest?: boolean;
 
 	redirect?: string;
-
-	'meta_bbb-origin-server-name'?: string;
 }

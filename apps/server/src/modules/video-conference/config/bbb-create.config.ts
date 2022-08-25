@@ -18,6 +18,7 @@ export class BBBCreateConfig extends BBBBaseMeetingConfig {
 		this.moderatorPW = config.moderatorPW;
 		this.attendeePW = config.attendeePW;
 		this.allowModsToUnmuteUsers = config.allowModsToUnmuteUsers;
+		this['meta_bbb-origin-server-name'] = config['meta_bbb-origin-server-name'];
 	}
 
 	name: string;
@@ -35,4 +36,6 @@ export class BBBCreateConfig extends BBBBaseMeetingConfig {
 	muteOnStart?: boolean;
 
 	allowModsToUnmuteUsers?: boolean;
+
+	'meta_bbb-origin-server-name'?: string;
 }

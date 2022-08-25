@@ -16,9 +16,4 @@ export class BBBJoinConfigBuilder extends Builder<BBBJoinConfig> {
 		this.product.userID = value;
 		return this;
 	}
-
-	withMetaBBBOriginsServerName(value: string): BBBJoinConfigBuilder {
-		this.product['meta_bbb-origin-server-name'] = value;
-		return this;
-	}
 }

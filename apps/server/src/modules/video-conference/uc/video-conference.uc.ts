@@ -120,6 +120,7 @@ export class VideoConferenceUc {
 		if (options.everyAttendeeJoinsMuted) {
 			configBuilder.withMuteOnStart(true);
 		}
+		configBuilder.withMetaBBBOriginsServerName(Configuration.get('SC_DOMAIN') as string);
 
 		let vcDo: VideoConferenceDO;
 		try {
@@ -175,7 +176,6 @@ export class VideoConferenceUc {
 		const isGuest: boolean = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
 		const vcDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
 		configBuilder.withUserId(currentUser.userId);
-		configBuilder.withMetaBBBOriginsServerName(Configuration.get('SC_DOMAIN') as string);
 
 		if (isGuest) {
 			configBuilder.asGuest(true);

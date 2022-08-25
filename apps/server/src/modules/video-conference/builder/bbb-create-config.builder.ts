@@ -23,6 +23,11 @@ export class BBBCreateConfigBuilder extends Builder<BBBCreateConfig> {
 		return this;
 	}
 
+	withMetaBBBOriginsServerName(value: string): BBBCreateConfigBuilder {
+		this.product['meta_bbb-origin-server-name'] = value;
+		return this;
+	}
+
 	override build(): BBBCreateConfig {
 		// Deprecated fields from BBB that have to be set to a consistent value, in order to call the create endpoint multiple times without error
 		this.product.moderatorPW = BBBRole.MODERATOR;
