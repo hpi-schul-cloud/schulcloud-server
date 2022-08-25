@@ -34,7 +34,8 @@ const systemSchema = new Schema(
 		oauthConfig: {
 			type: {
 				clientId: { type: String, required: true },
-				// clientSecret: { type: String, required: true },
+				clientSecret: { type: String, required: true },
+				tokenEndpoint: { type: String, required: true },
 				grantType: { type: String, required: true },
 				redirectUri: { type: String, required: true },
 				scope: { type: String, required: true },
