@@ -365,13 +365,7 @@ describe('file copy append service', () => {
 				it('should not change status', async () => {
 					const { originalCourse, copyStatus, user, jwt } = setup();
 
-					const updatedCopyStatus = await copyService.copyFiles(
-						copyStatus,
-						originalCourse.id,
-						user.id,
-						user.school.id,
-						jwt
-					);
+					const updatedCopyStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
 					expect(updatedCopyStatus).toEqual(copyStatus);
 				});
 			});
@@ -434,33 +428,23 @@ describe('file copy append service', () => {
 
 					copyFilesService.copyFilesOfEntity.mockResolvedValue({ entity: copyLesson, response: [] });
 
-					await copyService.copyFiles(copyStatus, originalCourse.id, user.id, user.school.id, jwt);
+					await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
 
 					const updatedCopyLesson = { ...copyLesson };
 					const content = updatedCopyLesson.contents[1].content as unknown as IComponentTextProperties;
 					content.text = '<figure class="image"><img src="/files/file?file=fnew123&amp;name=file.jpg" alt /></figure>';
 
-					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(
-						originalLesson,
-						updatedCopyLesson,
-						user.school.id,
-						jwt
-					);
+					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(originalLesson, updatedCopyLesson, jwt);
 				});
 
 				it('should leave embedded file urls untouched, if files were not copied', async () => {
 					const { originalCourse, copyStatus, user, jwt, originalFile, copyLesson, originalLesson } = setup();
 					fileLegacyService.copyFile.mockResolvedValue({ oldFileId: originalFile.id });
-					await copyService.copyFiles(copyStatus, originalCourse.id, user.id, user.school.id, jwt);
+					await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
 
 					copyFilesService.copyFilesOfEntity.mockResolvedValue({ entity: copyLesson, response: [] });
 
-					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(
-						originalLesson,
-						copyLesson,
-						user.school.id,
-						jwt
-					);
+					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(originalLesson, copyLesson, jwt);
 				});
 			});
 		});
@@ -496,7 +480,7 @@ describe('file copy append service', () => {
 				it('should use file legacy service', async () => {
 					const { originalCourse, copyStatus, user, jwt, originalFile } = setup();
 
-					await copyService.copyFiles(copyStatus, originalCourse.id, user.id, user.school.id, jwt);
+					await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
 					expect(fileLegacyService.copyFile).toHaveBeenCalledWith({
 						fileId: originalFile.id,
 						targetCourseId: originalCourse.id,
@@ -513,13 +497,7 @@ describe('file copy append service', () => {
 						filename: originalFile.name,
 					});
 
-					const updatedStatus = await copyService.copyFiles(
-						copyStatus,
-						originalCourse.id,
-						user.id,
-						user.school.id,
-						jwt
-					);
+					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
 					const copiedTask = updatedStatus.copyEntity as Task;
 					const fileGroupStatus = getSubStatus(updatedStatus, CopyElementType.FILE_GROUP);
 					const file = getSubStatus(fileGroupStatus, CopyElementType.FILE);
@@ -537,13 +515,7 @@ describe('file copy append service', () => {
 						oldFileId: originalFile.id,
 					});
 
-					const updatedStatus = await copyService.copyFiles(
-						copyStatus,
-						originalCourse.id,
-						user.id,
-						user.school.id,
-						jwt
-					);
+					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
 					const copiedTask = updatedStatus.copyEntity as Task;
 					const fileGroupStatus = getSubStatus(updatedStatus, CopyElementType.FILE_GROUP);
 					const file = getSubStatus(fileGroupStatus, CopyElementType.FILE);

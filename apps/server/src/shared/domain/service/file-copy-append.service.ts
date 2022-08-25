@@ -122,15 +122,9 @@ export class FileCopyAppendService {
 		}));
 	}
 
-	async copyFiles(
-		copyStatus: CopyStatus,
-		courseId: EntityId,
-		userId: EntityId,
-		schoolId: EntityId,
-		jwt: string
-	): Promise<CopyStatus> {
+	async copyFiles(copyStatus: CopyStatus, courseId: EntityId, userId: EntityId, jwt: string): Promise<CopyStatus> {
 		if (copyStatus.type === CopyElementType.LESSON) {
-			return this.copyEmbeddedFilesOfLessons(copyStatus, courseId, userId, schoolId, jwt);
+			return this.copyEmbeddedFilesOfLessons(copyStatus, courseId, userId, jwt);
 		}
 		if (copyStatus.type === CopyElementType.TASK) {
 			const updatedStatus = await this.appendFilesToTask(copyStatus, jwt);
@@ -138,7 +132,7 @@ export class FileCopyAppendService {
 		}
 		if (copyStatus.elements && copyStatus.elements.length > 0) {
 			copyStatus.elements = await Promise.all(
-				copyStatus.elements.map((el) => this.copyFiles(el, courseId, userId, schoolId, jwt))
+				copyStatus.elements.map((el) => this.copyFiles(el, courseId, userId, jwt))
 			);
 			copyStatus.status = this.copyHelperService.deriveStatusFromElements(copyStatus.elements);
 		}
@@ -149,7 +143,6 @@ export class FileCopyAppendService {
 		lessonCopyStatus: CopyStatus,
 		courseId: EntityId,
 		userId: EntityId,
-		schoolId: EntityId,
 		jwt: string
 	): Promise<CopyStatus> {
 		if (!(lessonCopyStatus.copyEntity instanceof Lesson) || !(lessonCopyStatus.originalEntity instanceof Lesson)) {
@@ -196,7 +189,6 @@ export class FileCopyAppendService {
 		const { entity, response } = await this.copyFilesService.copyFilesOfEntity(
 			lessonCopyStatus.originalEntity,
 			lesson,
-			schoolId,
 			jwt
 		);
 

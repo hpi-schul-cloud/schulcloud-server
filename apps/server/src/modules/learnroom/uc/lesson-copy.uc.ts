@@ -62,7 +62,6 @@ export class LessonCopyUC {
 				status,
 				lessonCopy.course.id,
 				userId,
-				user.school.id,
 				parentParams.jwt
 			);
 			const updatedLesson = status.copyEntity as Lesson;

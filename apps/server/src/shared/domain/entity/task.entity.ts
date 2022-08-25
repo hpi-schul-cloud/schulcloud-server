@@ -289,6 +289,18 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.finished.remove(user);
 	}
 
+	getSchoolId(): EntityId {
+		if (this.lesson !== undefined) {
+			return this.lesson?.getSchoolId();
+		}
+
+		if (this.course !== undefined) {
+			return this.course?.school.id;
+		}
+
+		throw new Error(`Couldn't find parent of task.`);
+	}
+
 	publish() {
 		this.private = false;
 		this.availableDate = new Date(Date.now());

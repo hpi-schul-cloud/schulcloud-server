@@ -13,11 +13,10 @@ export class CopyFilesService {
 	async copyFilesOfEntity(
 		originalEntity: EntityWithEmbeddedFiles,
 		copyEntity: EntityWithEmbeddedFiles,
-		schoolId: EntityId,
 		jwt: string
 	): Promise<{ entity: EntityWithEmbeddedFiles; response: CopyFileDto[] }> {
-		const sourceParams = FileParamBuilder.build(jwt, schoolId, originalEntity);
-		const targetParams = FileParamBuilder.build(jwt, schoolId, copyEntity);
+		const sourceParams = FileParamBuilder.build(jwt, originalEntity.getSchoolId(), originalEntity);
+		const targetParams = FileParamBuilder.build(jwt, copyEntity.getSchoolId(), copyEntity);
 
 		const response = await this.filesStorageClientAdapterService.copyFilesOfParent(sourceParams, targetParams);
 
