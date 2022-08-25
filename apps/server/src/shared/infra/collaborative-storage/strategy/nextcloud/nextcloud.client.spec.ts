@@ -260,7 +260,7 @@ describe('NextCloud Adapter Strategy', () => {
 
 			// Act & Assert
 			await expect(
-				client.setGroupPermissions(testGroupId, testFolderId, [true, true, true, true, true])
+				client.setGroupPermissions(testGroupId, testFolderId, [true, false, true, true, false])
 			).rejects.toThrow(NotImplementedException);
 		});
 	});

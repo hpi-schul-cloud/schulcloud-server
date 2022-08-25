@@ -61,6 +61,7 @@ describe('ProvisioningUc', () => {
 		const iservSystemStrategyId = 'iservSystemId';
 		const sanisStrategySystem: SystemDto = new SystemDto({
 			type: 'sanis',
+			provisioningUrl: 'sanisUrl',
 			provisioningStrategy: SystemProvisioningStrategy.SANIS,
 		});
 		const iservStrategySystem: SystemDto = new SystemDto({
@@ -93,6 +94,16 @@ describe('ProvisioningUc', () => {
 
 			// Assert
 			expect(sanisProvisioningStrategy.apply).toHaveBeenCalled();
+		});
+
+		it('should throw if sanis system has no provisioning url', async () => {
+			// Arrange
+			sanisStrategySystem.provisioningUrl = undefined;
+
+			// Act & Assert
+			await expect(provisioningUc.process('accessToken', 'idToken', sanisSystemStrategyId)).rejects.toThrow(
+				UnprocessableEntityException
+			);
 		});
 
 		it('should apply iserv provisioning strategy', async () => {

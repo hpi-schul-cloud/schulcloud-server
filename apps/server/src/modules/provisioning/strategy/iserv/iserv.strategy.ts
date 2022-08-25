@@ -11,7 +11,7 @@ export type IservStrategyData = {
 
 @Injectable()
 export class IservProvisioningStrategy extends ProvisioningStrategy<IservStrategyData> {
-	override apply(params: IservStrategyData): Promise<ProvisioningDto> {
+	override async apply(params: IservStrategyData): Promise<ProvisioningDto> {
 		const idToken: JwtPayload | null = jwt.decode(params.idToken, { json: true });
 		if (!idToken || !idToken.uuid) {
 			throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');

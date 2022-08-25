@@ -1,9 +1,10 @@
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, NotFoundError } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { School, SchoolRolePermission, SchoolRoles, SchoolYear, System } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { schoolFactory, systemFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolRepo } from '..';
 import { SchoolYearRepo } from '../schoolyear';
 
@@ -86,6 +87,12 @@ describe('school repo', () => {
 
 			// Assert
 			expect(result).toEqual(schoolEntity);
+		});
+		it('should throw NotFoundError when no school is found', async () => {
+			// Act & Assert
+			await expect(
+				repo.findByExternalIdOrFail(new ObjectId().toHexString(), new ObjectId().toHexString())
+			).rejects.toThrow(NotFoundError);
 		});
 	});
 });

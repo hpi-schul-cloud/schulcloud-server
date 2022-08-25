@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo, EntityProperties } from '@shared/repo/index';
-import { EntityId, IUserProperties, Role, School, User } from '@shared/domain/index';
-import { EntityName, FilterQuery, Reference } from '@mikro-orm/core';
+import { EntityId, IUserProperties, Role, School, System, User } from '@shared/domain/index';
+import { EntityName, FilterQuery, NotFoundError, Reference } from '@mikro-orm/core';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 
 @Injectable()
@@ -27,11 +27,16 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 
 	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDO> {
 		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
-		const userEntity: User | undefined = userEntitys.find((user: User) => {
+		const userEntity: User | undefined = userEntitys.find((user: User): boolean => {
 			const { systems } = user.school;
-			return systems && systems.getItems().find((system) => system.id === systemId);
+			return systems && !!systems.getItems().find((system: System): boolean => system.id === systemId);
 		});
-		return userEntity ? this.mapEntityToDO(userEntity) : Promise.reject();
+
+		if (!userEntity) {
+			throw new NotFoundError(`User entity with externalId: ${externalId} and systemId: ${systemId} not found.`);
+		}
+
+		return this.mapEntityToDO(userEntity);
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {
@@ -47,12 +52,14 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 	}
 
 	protected mapEntityToDO(entity: User): UserDO {
-		return new UserDO({
+		const user: UserDO = new UserDO({
 			id: entity.id,
+			createdAt: entity.createdAt,
+			updatedAt: entity.updatedAt,
 			email: entity.email,
 			firstName: entity.firstName,
 			lastName: entity.lastName,
-			roleIds: entity.roles.getItems().map((role: Role) => role.id),
+			roleIds: [],
 			schoolId: entity.school.id,
 			ldapDn: entity.ldapDn,
 			externalId: entity.externalId,
@@ -64,10 +71,17 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			forcePasswordChange: entity.forcePasswordChange,
 			preferences: entity.preferences,
 		});
+
+		if (entity.roles.isInitialized(true)) {
+			user.roleIds = entity.roles.getItems().map((role: Role) => role.id);
+		}
+
+		return user;
 	}
 
 	protected mapDOToEntity(entityDO: UserDO): EntityProperties<IUserProperties> {
 		return {
+			id: entityDO.id,
 			email: entityDO.email,
 			firstName: entityDO.firstName,
 			lastName: entityDO.lastName,

@@ -1,10 +1,4 @@
-import {
-	HttpException,
-	HttpStatus,
-	Injectable,
-	InternalServerErrorException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { SystemUc } from '@src/modules/system/uc/system.uc';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
@@ -36,8 +30,12 @@ export class ProvisioningUc {
 
 		switch (system.provisioningStrategy) {
 			case SystemProvisioningStrategy.SANIS: {
+				if (!system.provisioningUrl) {
+					throw new UnprocessableEntityException(`Sanis system with id: ${systemId} is missing a provisioning url`);
+				}
+
 				const params: SanisStrategyData = {
-					provisioningUrl: system.provisioningUrl ?? '',
+					provisioningUrl: system.provisioningUrl as string,
 					accessToken,
 					systemId,
 				};

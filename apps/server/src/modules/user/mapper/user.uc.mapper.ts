@@ -8,7 +8,7 @@ export class UserUcMapper {
 	): UserDto {
 		return new UserDto({
 			id: provUserOutput.id,
-			email: provUserOutput.email ?? '',
+			email: provUserOutput.email,
 			firstName: provUserOutput.firstName,
 			lastName: provUserOutput.lastName,
 			roleIds,

@@ -21,9 +21,11 @@ import { AccountUc } from '@src/modules/account/uc/account.uc';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, School, System } from '@shared/domain';
-import { schoolFactory, setupEntities, systemFactory } from '@shared/testing';
+import { EntityId, Role, RoleName, School, System } from '@shared/domain';
+import { roleFactory, schoolFactory, setupEntities, systemFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 import { SchoolDto } from '../../../school/uc/dto/school.dto';
 import { SanisResponseMapper } from './sanis-response.mapper';
 
@@ -60,6 +62,17 @@ describe('SanisStrategy', () => {
 	let accountUc: DeepMocked<AccountUc>;
 
 	let sanisReponse: SanisResponse;
+	let userDO: UserDO;
+	let userDOwithID: UserDO;
+	let userRole: Role;
+	let system: System;
+	let school: School;
+	let schoolDto: SchoolDto;
+	let schoolProvisioningDto: ProvisioningSchoolOutputDto;
+
+	const externalId = 'testExternalId';
+	const schoolUUID: UUID = new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e');
+	const userUUID: UUID = new UUID('aef1f4fd-c323-466e-962b-a84354c0e713');
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -114,8 +127,12 @@ describe('SanisStrategy', () => {
 	});
 
 	beforeEach(() => {
+		userRole = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR });
+		system = systemFactory.buildWithId({ alias: 'SANIS' });
+		school = schoolFactory.buildWithId({ externalId });
+		school.systems.add(system);
 		sanisReponse = new SanisResponse({
-			pid: 'pid',
+			pid: userUUID.toHexString(),
 			person: {
 				name: new SanisResponseName({
 					vorname: 'Hans',
@@ -130,13 +147,33 @@ describe('SanisStrategy', () => {
 					ktid: new UUID(),
 					rolle: SanisRole.SYSA,
 					organisation: new SanisResponseOrganisation({
-						orgid: new UUID(),
-						name: 'orga',
-						typ: 'school',
+						orgid: schoolUUID,
+						name: 'schoolName',
+						typ: 'SCHULE',
 					}),
 					personenstatus: 'dead',
 				}),
 			],
+		});
+		userDO = new UserDO({
+			firstName: 'firstName',
+			lastName: 'lastame',
+			email: '',
+			roleIds: [userRole.id],
+			schoolId: school.id,
+			externalId: userUUID.toHexString(),
+		});
+		schoolDto = new SchoolDto({
+			id: school.id,
+			name: school.name,
+			externalId,
+			systemIds: [system.id],
+		});
+		userDOwithID = { ...userDO, id: new ObjectId().toHexString() };
+		schoolProvisioningDto = new ProvisioningSchoolOutputDto({
+			name: school.name,
+			externalId,
+			systemIds: [system.id],
 		});
 	});
 
@@ -149,47 +186,6 @@ describe('SanisStrategy', () => {
 	});
 
 	describe('apply', () => {
-		const userUUID: UUID = new UUID('aef1f4fd-c323-466e-962b-a84354c0e713');
-		const schoolUUID: UUID = new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e');
-		const systemUUID: UUID = new UUID('bee7376a-31c3-42d3-93e3-e976f273f90d');
-		const schoolDto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({
-			id: 'schoolId',
-			name: 'schoolName',
-			externalId: userUUID.toString(),
-			systemIds: [systemUUID.toString()],
-		});
-		const userDO: UserDO = new UserDO({
-			firstName: 'firstName',
-			lastName: 'lastame',
-			email: '',
-			roleIds: ['role'],
-			schoolId: 'schoolId',
-			externalId: schoolUUID.toString(),
-		});
-		const mockResponse: SanisResponse = new SanisResponse({
-			pid: userUUID.toString(),
-			person: {
-				name: new SanisResponseName({
-					vorname: 'firstName',
-					familienname: 'lastName',
-				}),
-				geschlecht: 'x',
-				lokalisierung: 'de-de',
-				vertrauensstufe: '',
-			},
-			personenkontexte: [
-				new SanisResponsePersonenkontext({
-					ktid: new UUID(),
-					rolle: SanisRole.LERN,
-					organisation: new SanisResponseOrganisation({
-						orgid: schoolUUID,
-						name: 'schoolName',
-						typ: 'SCHULE',
-					}),
-					personenstatus: '',
-				}),
-			],
-		});
 		const sanisParams: SanisStrategyData = {
 			provisioningUrl: 'sanisProvisioningUrl',
 			accessToken: 'sanisAccessToken',
@@ -197,38 +193,32 @@ describe('SanisStrategy', () => {
 		};
 
 		beforeEach(() => {
+			httpService.get.mockReturnValue(of(createAxiosResponse(sanisReponse)));
+			mapper.mapSanisRoleToRoleName.mockReturnValue(RoleName.ADMINISTRATOR);
+			roleRepo.findByName.mockResolvedValue(userRole);
+			mapper.mapToUserDO.mockReturnValue(userDO);
+			userRepo.findByExternalIdOrFail.mockResolvedValue(userDOwithID);
+			userRepo.save.mockResolvedValue(userDOwithID);
+			accountUc.saveAccount.mockResolvedValue();
+			mapper.mapToSchoolDto.mockReturnValue(schoolProvisioningDto);
+			schoolRepo.findByExternalIdOrFail.mockResolvedValue(school);
 			schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDto);
 		});
 
 		it('should apply strategy', async () => {
-			// Arrange
-			httpService.get.mockReturnValue(of(createAxiosResponse(mockResponse)));
-			mapper.mapToSchoolDto.mockReturnValue(schoolDto);
-			mapper.mapToUserDO.mockReturnValue(userDO);
+			const result: ProvisioningDto = await sanisStrategy.apply(sanisParams);
 
-			// Act
-			const result = await sanisStrategy.apply(sanisParams);
-
-			// Assert
-			expect(mapper.mapToSchoolDto).toHaveBeenCalledWith(mockResponse, sanisParams.systemId);
-			expect(schoolUc.saveProvisioningSchoolOutputDto).toHaveBeenCalledWith(schoolDto);
-			expect(mapper.mapToUserDO).toHaveBeenCalledWith(mockResponse, schoolDto.id, userDO.roleIds);
-			expect(userUc.saveProvisioningUserOutputDto).toHaveBeenCalled();
-			expect(result.externalUserId).toEqual(userDO.externalId);
+			expect(result.externalUserId).toEqual(userUUID.toHexString());
 		});
 
 		it('should throw error when there is no school saved', async () => {
 			// Arrange
-			httpService.get.mockReturnValue(of(createAxiosResponse(mockResponse)));
+			schoolDto.id = undefined;
 			mapper.mapToUserDO.mockReturnValue(userDO);
-			schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(
-				new SchoolDto({ name: 'schoolName', systemIds: [systemUUID.toString()] })
-			);
+			schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDto);
 
 			// Act & Assert
-			await expect(sanisStrategy.apply({ provisioningUrl: '', accessToken: '', systemId: '' })).rejects.toThrow(
-				UnprocessableEntityException
-			);
+			await expect(sanisStrategy.apply(sanisParams)).rejects.toThrow(UnprocessableEntityException);
 		});
 	});
 
@@ -243,28 +233,7 @@ describe('SanisStrategy', () => {
 	});
 
 	describe('provisionSchool', () => {
-		const externalId = 'testExternalId';
-		let system: System;
-		let school: School;
-		let schoolProvisioningDto: ProvisioningSchoolOutputDto;
-		let schoolDto: SchoolDto;
-
 		beforeEach(() => {
-			system = systemFactory.buildWithId({ alias: 'SANIS' });
-			school = schoolFactory.buildWithId({ externalId });
-			school.systems.add(system);
-			schoolProvisioningDto = new ProvisioningSchoolOutputDto({
-				name: school.name,
-				externalId,
-				systemIds: [system.id],
-			});
-			schoolDto = new SchoolDto({
-				id: school.id,
-				name: school.name,
-				externalId,
-				systemIds: [system.id],
-			});
-
 			mapper.mapToSchoolDto.mockReturnValue(schoolProvisioningDto);
 			schoolRepo.findByExternalIdOrFail.mockResolvedValue(school);
 			schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDto);
@@ -275,31 +244,63 @@ describe('SanisStrategy', () => {
 			schoolRepo.findByExternalIdOrFail.mockRejectedValueOnce('Not Found');
 
 			// Act
-			const result: SchoolDto = await sanisStrategy.provisionSchool(sanisReponse, 'systemId');
+			const result: SchoolDto = await sanisStrategy.provisionSchool(sanisReponse, system.id);
 
 			// Assert
-			expect(schoolDto).toEqual(result);
+			expect(result).toEqual(schoolDto);
 			expect(schoolProvisioningDto.id).toBeUndefined();
 		});
 
 		it('should update school', async () => {
 			// Act
-			const result: SchoolDto = await sanisStrategy.provisionSchool(sanisReponse, 'systemId');
+			const result: SchoolDto = await sanisStrategy.provisionSchool(sanisReponse, system.id);
 
 			// Assert
-			expect(schoolDto).toEqual(result);
+			expect(result).toEqual(schoolDto);
 			expect(schoolProvisioningDto.id).toEqual(school.id);
 		});
 	});
 
 	describe('provisionUser', () => {
-		it('should save new user', async () => {});
+		beforeEach(() => {
+			mapper.mapSanisRoleToRoleName.mockReturnValue(RoleName.ADMINISTRATOR);
+			roleRepo.findByName.mockResolvedValue(userRole);
+			mapper.mapToUserDO.mockReturnValue(userDO);
+			userRepo.findByExternalIdOrFail.mockResolvedValue(userDOwithID);
+			userRepo.save.mockResolvedValue(userDOwithID);
+			accountUc.saveAccount.mockResolvedValue();
+		});
 
-		it('should update user', async () => {});
+		it('should save new user', async () => {
+			// Arrange
+			userRepo.findByExternalIdOrFail.mockRejectedValueOnce('Not Found');
+
+			// Act
+			const result = await sanisStrategy.provisionUser(sanisReponse, system.id, school.id);
+
+			// Assert
+			expect(result).toEqual(userDOwithID);
+			expect(userRepo.save).toHaveBeenCalledTimes(1);
+			expect(accountUc.saveAccount).toHaveBeenCalledTimes(1);
+		});
+
+		it('should update user', async () => {
+			// Act
+			const result = await sanisStrategy.provisionUser(sanisReponse, system.id, school.id);
+
+			// Assert
+			expect(result).toEqual(userDOwithID);
+			expect(userRepo.save).toHaveBeenCalledTimes(1);
+			expect(accountUc.saveAccount).not.toHaveBeenCalled();
+		});
 
 		it('should throw if no external id in provided data', async () => {
+			// Arrange
+			userDO.externalId = undefined;
+			mapper.mapToUserDO.mockReturnValueOnce(userDO);
+
 			// Act & Assert
-			await expect(sanisStrategy.provisionUser(sanisReponse, 'systemId', 'schoolId')).rejects.toThrow(
+			await expect(sanisStrategy.provisionUser(sanisReponse, system.id, school.id)).rejects.toThrow(
 				UnprocessableEntityException
 			);
 		});

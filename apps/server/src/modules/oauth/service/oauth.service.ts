@@ -166,9 +166,16 @@ export class OAuthService {
 			oauthResponse.jwt = jwtResponse;
 			return oauthResponse;
 		} catch (error) {
-			this.logger.log(error);
-			const system: System = await this.systemRepo.findById(systemId);
-			return this.getOAuthError(error as string, system.oauthConfig?.provider as string);
+			const oauthResponse: OAuthResponse = await this.systemRepo
+				.findById(systemId)
+				.then((system: System) => {
+					const provider = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
+					return this.getOAuthError(error as string, provider);
+				})
+				.catch(() => {
+					throw new UnprocessableEntityException(`No system with id: ${systemId} found`);
+				});
+			return oauthResponse;
 		}
 	}
 

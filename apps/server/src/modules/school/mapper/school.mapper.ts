@@ -13,9 +13,11 @@ export class SchoolMapper {
 			school.id = schoolDto.id;
 		}
 
-		const refs: IdentifiedReference<System, EntityId>[] = schoolDto.systemIds.map((systemId: EntityId) => {
-			return Reference.createFromPK(System, systemId);
-		});
+		const refs: IdentifiedReference<System, EntityId>[] = schoolDto.systemIds.map(
+			(systemId: EntityId): IdentifiedReference<System, EntityId> => {
+				return Reference.createFromPK(System, systemId);
+			}
+		);
 		school.systems.add(...refs);
 
 		return school;
@@ -33,7 +35,7 @@ export class SchoolMapper {
 			name: entity.name,
 			id: entity.id,
 			externalId: entity.externalId,
-			systemIds: entity.systems.getItems().map((system: System) => system.id),
+			systemIds: entity.systems.getItems().map((system: System): EntityId => system.id),
 		});
 	}
 }

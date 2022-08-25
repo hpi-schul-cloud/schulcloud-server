@@ -1,5 +1,5 @@
-import { School, SchoolFeatures } from '@shared/domain';
-import { schoolFactory, setupEntities } from '@shared/testing';
+import { School, SchoolFeatures, System } from '@shared/domain';
+import { schoolFactory, setupEntities, systemFactory } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolRepo } from '@shared/repo';
 import { MikroORM } from '@mikro-orm/core';
@@ -11,11 +11,13 @@ import { SchoolService } from './school.service';
 describe('SchoolService', () => {
 	let module: TestingModule;
 	let schoolService: SchoolService;
-	let schoolRepo: DeepMocked<SchoolRepo>;
-	let schoolMapper: DeepMocked<SchoolMapper>;
 	let orm: MikroORM;
-	let schoolDto: SchoolDto;
+
+	let schoolRepo: DeepMocked<SchoolRepo>;
+
+	let school1Dto: SchoolDto;
 	let mockSchoolEntities: School[];
+	let system: System;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -42,8 +44,12 @@ describe('SchoolService', () => {
 	});
 
 	beforeEach(() => {
-		mockSchoolEntities = [schoolFactory.buildWithId(), schoolFactory.buildWithId()];
-		schoolDto = new SchoolDto({ name: 'schule1234', systemIds: ['systemId'] });
+		system = systemFactory.buildWithId();
+		const school1: School = schoolFactory.buildWithId({ name: 'schoolName' });
+		const school2: School = schoolFactory.buildWithId();
+		school1.systems.add(system);
+		mockSchoolEntities = [school1, school2];
+		school1Dto = new SchoolDto({ name: school1.name, systemIds: [system.id] });
 		schoolRepo.create.mockImplementation((): School => {
 			return mockSchoolEntities[0];
 		});
@@ -51,7 +57,6 @@ describe('SchoolService', () => {
 			const school = mockSchoolEntities.find((tmpSchool) => tmpSchool.id?.toString() === schoolId);
 			return school ? Promise.resolve(school) : Promise.reject();
 		});
-		// TODO continue here | const school = s;
 	});
 
 	afterEach(() => {
@@ -59,33 +64,32 @@ describe('SchoolService', () => {
 	});
 
 	describe('createOrUpdate', () => {
-		it('should create new school or update new school', async () => {
+		it('should create new school', async () => {
 			// Arrange
 
 			// Act
-			await schoolService.createOrUpdateSchool(schoolDto);
+			await schoolService.createOrUpdateSchool(school1Dto);
 
 			// Assert
-			expect(schoolRepo.create).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
+			expect(schoolRepo.create).toHaveBeenCalledWith(expect.objectContaining({ name: school1Dto.name }));
 			expect(schoolRepo.save).toHaveBeenCalled();
 		});
 
 		it('should update existing school', async () => {
 			// Arrange
-			schoolDto.id = mockSchoolEntities[0].id;
+			school1Dto.id = mockSchoolEntities[0].id;
 
 			// Act
-			await schoolService.createOrUpdateSchool(schoolDto);
+			await schoolService.createOrUpdateSchool(school1Dto);
 
 			// Assert
 			expect(schoolRepo.save).toHaveBeenCalledWith(
 				expect.objectContaining({
-					name: schoolDto.name,
-					id: schoolDto.id,
+					name: school1Dto.name,
+					id: school1Dto.id,
 				})
 			);
 			expect(schoolRepo.create).not.toHaveBeenCalled();
-			expect(schoolRepo.save).toHaveBeenCalled();
 		});
 	});
 

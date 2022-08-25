@@ -1,5 +1,5 @@
 import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SanisResponse } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { HttpService } from '@nestjs/axios';
@@ -96,7 +96,7 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrateg
 			// ignore NotFoundException and create new user
 			createNewAccount = true;
 		}
-		const savedUser: UserDO = (await this.userRepo.save(user)) as UserDO;
+		const savedUser: UserDO = await this.userRepo.save(user);
 
 		if (createNewAccount) {
 			await this.accountUc.saveAccount(

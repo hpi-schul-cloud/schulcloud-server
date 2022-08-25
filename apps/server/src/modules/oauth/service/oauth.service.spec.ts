@@ -230,19 +230,14 @@ describe('OAuthService', () => {
 		};
 		defaultErrorRedirect = `${Configuration.get('HOST') as string}/login?error=${
 			defaultErrorQuery.error as string
-		}&provider=${defaultOauthConfig.provider}`;
+		}&provider=iserv`;
 		defaultErrorResponse = new OAuthResponse();
 		defaultErrorResponse.errorcode = defaultErrorQuery.error as string;
 		defaultErrorResponse.redirect = defaultErrorRedirect;
 
 		// Init mocks
 		oAuthEncryptionService.decrypt.mockReturnValue(defaultDecryptedSecret);
-		systemRepo.findById.mockImplementation((id: string): Promise<System> => {
-			if (id === defaultIservSystemId) {
-				return Promise.resolve(defaultIservSystem);
-			}
-			return Promise.resolve(systemFactory.withOauthConfig().build());
-		});
+		systemRepo.findById.mockResolvedValue(defaultIservSystem);
 		userRepo.findById.mockImplementation((sub: string): Promise<User> => {
 			if (sub === '') {
 				throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
@@ -411,18 +406,44 @@ describe('OAuthService', () => {
 			expect(response.redirect).toStrictEqual(iservRedirectMock);
 			expect(response.jwt).toStrictEqual(defaultJWT);
 		});
+
 		it('should return an error if processOAuth failed', async () => {
 			const errorResponse = await service.processOAuth(defaultQuery, '');
 			expect(errorResponse).toEqual(defaultErrorResponse);
 		});
+
+		it('should return a error response if processOAuth failed and the provider cannot be fetched from the system', async () => {
+			// Arrange
+			defaultIservSystem.oauthConfig = undefined;
+
+			// Act
+			const errorResponse = await service.processOAuth(defaultQuery, '');
+
+			// Assert
+			expect(errorResponse).toEqual(
+				expect.objectContaining({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					redirect: expect.stringContaining('provider=unknown-provider'),
+				})
+			);
+		});
+
 		it('should throw error if oauthconfig is missing', async () => {
 			const system: System = systemFactory.buildWithId();
 			systemRepo.findById.mockResolvedValueOnce(system);
 			const response = await service.processOAuth(defaultQuery, system.id);
 			expect(response).toEqual({
 				errorcode: 'sso_internal_error',
-				redirect: 'https://mock.de/login?error=sso_internal_error&provider=mock_type',
+				redirect: 'https://mock.de/login?error=sso_internal_error&provider=iserv',
 			});
+		});
+
+		it('should throw if no system was found', async () => {
+			// Arrange
+			systemRepo.findById.mockRejectedValue('Not Found');
+
+			// Act & Assert
+			await expect(service.processOAuth(defaultQuery, 'unknown id')).rejects.toThrow(UnprocessableEntityException);
 		});
 	});
 
@@ -442,7 +463,9 @@ describe('OAuthService', () => {
 		it('should return a login url string within an error', () => {
 			const generalError = new Error('foo');
 			const response = service.getOAuthError(generalError, defaultOauthConfig.provider);
-			expect(response.redirect).toStrictEqual(defaultErrorRedirect);
+			expect(response.redirect).toStrictEqual(
+				`${Configuration.get('HOST') as string}/login?error=oauth_login_failed&provider=${defaultOauthConfig.provider}`
+			);
 		});
 		it('should return a login url string within an error', () => {
 			const specialError: OAuthSSOError = new OAuthSSOError('foo', 'bar');
