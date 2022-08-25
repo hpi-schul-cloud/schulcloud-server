@@ -169,6 +169,17 @@ describe('account repo', () => {
 		});
 	});
 
+	describe('deleteId', () => {
+		it('should delete an account by id', async () => {
+			const account = accountFactory.buildWithId();
+			await em.persistAndFlush([account]);
+
+			await expect(repo.deleteById(account.id)).resolves.not.toThrow();
+
+			await expect(repo.findById(account.id)).rejects.toThrow(NotFoundError);
+		});
+	});
+
 	describe('deleteByUserId', () => {
 		it('should delete an account by user id', async () => {
 			const user = userFactory.buildWithId();
