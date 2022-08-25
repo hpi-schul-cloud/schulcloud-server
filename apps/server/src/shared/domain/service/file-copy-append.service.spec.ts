@@ -360,12 +360,33 @@ describe('file copy append service', () => {
 						copyEntity: copyLesson,
 					};
 					const jwt = 'veryveryverylongstringthatissignedandstuff';
-					return { originalCourse, user, copyStatus, jwt };
+					return { originalCourse, user, copyStatus, copyLesson, jwt };
 				};
+
 				it('should not change status', async () => {
 					const { originalCourse, copyStatus, user, jwt } = setup();
 
 					const updatedCopyStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					expect(updatedCopyStatus).toEqual(copyStatus);
+				});
+
+				it('should not change status if original entity is task', async () => {
+					const { originalCourse, user, copyLesson, jwt } = setup();
+					const originalTask = taskFactory.build();
+					const copyStatus: CopyStatus = {
+						type: CopyElementType.LESSON,
+						title: 'Tolle Lesson',
+						status: CopyStatusEnum.SUCCESS,
+						originalEntity: originalTask,
+						copyEntity: copyLesson,
+					};
+
+					const updatedCopyStatus = await copyService.copyEmbeddedFilesOfLessons(
+						copyStatus,
+						originalCourse.id,
+						user.id,
+						jwt
+					);
 					expect(updatedCopyStatus).toEqual(copyStatus);
 				});
 			});
@@ -440,11 +461,12 @@ describe('file copy append service', () => {
 				it('should leave embedded file urls untouched, if files were not copied', async () => {
 					const { originalCourse, copyStatus, user, jwt, originalFile, copyLesson, originalLesson } = setup();
 					fileLegacyService.copyFile.mockResolvedValue({ oldFileId: originalFile.id });
-					await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					const status = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
 
 					copyFilesService.copyFilesOfEntity.mockResolvedValue({ entity: copyLesson, response: [] });
 
 					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(originalLesson, copyLesson, jwt);
+					expect(status).toEqual(copyStatus);
 				});
 			});
 		});
@@ -586,6 +608,7 @@ describe('file copy append service', () => {
 				const expected = `<figure class="image"><img src="/files/file?file=${fileId}&amp;name=${filename}" alt /></figure>`;
 				expect(result).toEqual(expected);
 			});
+
 			it('should replace multiple old file urls', () => {
 				const oldFileId = 'old123';
 				const fileId = 'new123';
