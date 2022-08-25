@@ -120,7 +120,6 @@ export class VideoConferenceUc {
 		if (options.everyAttendeeJoinsMuted) {
 			configBuilder.withMuteOnStart(true);
 		}
-		configBuilder.withMetaBBBOriginsServerName(Configuration.get('SC_DOMAIN') as string);
 
 		let vcDo: VideoConferenceDO;
 		try {
