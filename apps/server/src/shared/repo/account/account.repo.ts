@@ -52,14 +52,14 @@ export class AccountRepo extends BaseRepo<Account> {
 	}
 
 	async deleteById(accountId: EntityId): Promise<void> {
-		const entity = await this.findById(accountId);
-		return this.delete(entity);
+		const account = await this.findById(accountId);
+		return this.delete(account);
 	}
 
 	async deleteByUserId(userId: EntityId): Promise<void> {
-		const accountReference = await this.findByUserId(userId);
-		if (accountReference) {
-			await this._em.removeAndFlush(accountReference);
+		const account = await this.findByUserId(userId);
+		if (account) {
+			await this._em.removeAndFlush(account);
 		}
 	}
 
