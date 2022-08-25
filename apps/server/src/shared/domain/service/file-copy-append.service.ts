@@ -63,12 +63,6 @@ export class FileCopyAppendService {
 
 	private createFailedCopyStatus(taskCopyStatus: CopyStatus) {
 		let fileGroupStatus = this.getFileGroupStatus(taskCopyStatus.elements);
-		if (fileGroupStatus === undefined) {
-			fileGroupStatus = {
-				type: CopyElementType.FILE_GROUP,
-				status: CopyStatusEnum.FAIL,
-			};
-		}
 		const elements =
 			fileGroupStatus.elements && fileGroupStatus.elements.length > 0
 				? fileGroupStatus.elements.map((el) => {
@@ -86,8 +80,15 @@ export class FileCopyAppendService {
 		return taskCopyStatus;
 	}
 
-	private getFileGroupStatus(elements: CopyStatus[] = []): CopyStatus | undefined {
-		return elements.find((el) => el.type === CopyElementType.FILE_GROUP) as CopyStatus;
+	private getFileGroupStatus(elements: CopyStatus[] = []): CopyStatus {
+		const fileElements = elements.find((el) => el.type === CopyElementType.FILE_GROUP) as CopyStatus;
+
+		return (
+			fileElements ?? {
+				type: CopyElementType.FILE_GROUP,
+				status: CopyStatusEnum.FAIL,
+			}
+		);
 	}
 
 	private setFileGroupStatus(elements: CopyStatus[] = [], updatedFileGroupStatus: CopyStatus): CopyStatus[] {
