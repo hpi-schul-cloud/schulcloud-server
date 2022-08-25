@@ -155,6 +155,12 @@ describe('course copy uc', () => {
 			};
 		};
 
+		it('should throw if copy feature is deactivated', async () => {
+			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
+			const { course, user, jwt } = setup();
+			await expect(uc.copyCourse(user.id, course.id, jwt)).rejects.toThrowError(InternalServerErrorException);
+		});
+
 		it('should fetch correct user', async () => {
 			const { course, user, jwt } = setup();
 			await uc.copyCourse(user.id, course.id, jwt);
@@ -171,12 +177,6 @@ describe('course copy uc', () => {
 			const { course, user, jwt } = setup();
 			await uc.copyCourse(user.id, course.id, jwt);
 			expect(boardRepo.findByCourseId).toBeCalledWith(course.id);
-		});
-
-		it('should throw if copy feature is deactivated', async () => {
-			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
-			const { course, user, jwt } = setup();
-			await expect(uc.copyCourse(user.id, course.id, jwt)).rejects.toThrowError(InternalServerErrorException);
 		});
 
 		it('should check authorisation for course', async () => {

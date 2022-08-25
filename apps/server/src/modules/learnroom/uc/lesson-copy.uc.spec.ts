@@ -122,6 +122,14 @@ describe('lesson copy uc', () => {
 			};
 		};
 
+		it('should throw if copy feature is deactivated', async () => {
+			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
+			const { course, user, lesson, jwt } = setup();
+			await expect(uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt })).rejects.toThrowError(
+				InternalServerErrorException
+			);
+		});
+
 		it('should fetch correct user', async () => {
 			const { course, user, lesson, jwt } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
@@ -132,14 +140,6 @@ describe('lesson copy uc', () => {
 			const { course, user, lesson, jwt } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
 			expect(lessonRepo.findById).toBeCalledWith(lesson.id);
-		});
-
-		it('should throw if copy feature is deactivated', async () => {
-			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
-			const { course, user, lesson, jwt } = setup();
-			await expect(uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt })).rejects.toThrowError(
-				InternalServerErrorException
-			);
 		});
 
 		it('should fetch destination course', async () => {

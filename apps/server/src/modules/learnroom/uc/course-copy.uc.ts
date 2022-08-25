@@ -32,10 +32,10 @@ export class CourseCopyUC {
 	) {}
 
 	async copyCourse(userId: EntityId, courseId: EntityId, jwt: string): Promise<CopyStatus> {
+		this.featureEnabled();
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalCourse = await this.courseRepo.findById(courseId);
 		let originalBoard = await this.boardRepo.findByCourseId(courseId);
-		this.featureEnabled();
 		originalBoard = await this.roomsService.updateBoard(originalBoard, courseId, userId);
 
 		this.authorisation.checkPermission(user, originalCourse, {

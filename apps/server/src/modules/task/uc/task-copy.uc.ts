@@ -35,9 +35,9 @@ export class TaskCopyUC {
 	) {}
 
 	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {
+		this.featureEnabled();
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalTask = await this.taskRepo.findById(taskId);
-		this.featureEnabled();
 		if (!this.authorisation.hasPermission(user, originalTask, PermissionContextBuilder.read([]))) {
 			throw new NotFoundException('could not find task to copy');
 		}
