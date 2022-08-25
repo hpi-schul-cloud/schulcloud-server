@@ -113,8 +113,11 @@ export class KeycloakConfigurationService {
 		cr.protocol = 'openid-connect';
 		cr.publicClient = false;
 		cr.redirectUris = [`${redirectUri}*`];
-		const defaultClientInternalId = await kc.clients.create(cr);
-		const generatedClientSecret = await kc.clients.generateNewClientSecret(defaultClientInternalId);
+		let defaultClientInternalId = (await kc.clients.find({ clientId: CLIENT_ID }))[0]?.id;
+		if (!defaultClientInternalId) {
+			({ id: defaultClientInternalId } = await kc.clients.create(cr));
+		}
+		const generatedClientSecret = await kc.clients.generateNewClientSecret({ id: defaultClientInternalId });
 		const systems = await this.systemRepo.findByFilter(SysType.KEYCLOAK, false);
 		if (systems.length === 0 && generatedClientSecret.value) {
 			const keycloakSystem = new System({
