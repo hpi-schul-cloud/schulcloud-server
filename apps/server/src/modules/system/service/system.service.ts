@@ -11,18 +11,32 @@ export class SystemService {
 
 	async find(type: string | undefined, onlyOauth = false): Promise<SystemDto[]> {
 		let systemEntities: System[];
-		if (type === '' && !onlyOauth) {
+		let oidcSystems: System[];
+		if (!type && !onlyOauth) {
 			systemEntities = await this.systemRepo.findAll();
+			oidcSystems = systemEntities.filter((system) => system.type === SysType.OIDC);
 		} else {
 			systemEntities = await this.systemRepo.findByFilter(type, onlyOauth);
+			oidcSystems = await this.systemRepo.findByFilter(SysType.OIDC);
 		}
-		const keycloakConfig = (await this.systemRepo.findByFilter(SysType.KEYCLOAK, true))[0];
-		systemEntities.forEach((systemEntity) => {
-			if (systemEntity.type === SysType.OIDC && !systemEntity.oauthConfig) {
-				systemEntity.oauthConfig = keycloakConfig.oauthConfig;
+
+		const generatedOAuthsystems: System[] = [];
+		if (onlyOauth) {
+			const keycloakConfig = await this.systemRepo.findByFilter(SysType.KEYCLOAK, true);
+			if (keycloakConfig.length === 1) {
+				oidcSystems.forEach((systemEntity) => {
+					const generatedSystem: System = new System({
+						type: SysType.OAUTH,
+						alias: systemEntity.alias,
+						oauthConfig: keycloakConfig[0].oauthConfig,
+					});
+					generatedOAuthsystems.push(generatedSystem);
+				});
+				systemEntities = systemEntities.filter((system) => system.type !== SysType.KEYCLOAK);
 			}
-		});
-		return SystemMapper.mapFromEntitiesToDtos(systemEntities);
+		}
+
+		return SystemMapper.mapFromEntitiesToDtos([...systemEntities, ...generatedOAuthsystems]);
 	}
 
 	async findById(id: EntityId): Promise<SystemDto> {
