@@ -1,5 +1,6 @@
 import AuthenticationExecutionInfoRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionInfoRepresentation';
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
+import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clientRepresentation.js';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Inject } from '@nestjs/common';
 import { System } from '@shared/domain';
@@ -104,14 +105,18 @@ export class KeycloakConfigurationService {
 
 	public async configureClient(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		let id = (await kc.clients.find({ clientId: CLIENT_ID }))[0]?.id;
-		if (!id) {
-			({ id } = await kc.clients.create({
-				clientId: CLIENT_ID,
-				publicClient: false,
-			}));
+		const redirectUri = `https://${SC_DOMAIN}/api/v3/sso/oauth/`;
+		const kcBaseUrl = `https://idm-${SC_DOMAIN}/realms/${kc.realmName}`;
+		const cr: ClientRepresentation = {};
+		cr.clientId = CLIENT_ID;
+		cr.enabled = true;
+		cr.protocol = 'openid-connect';
+		cr.redirectUris = [`${redirectUri}*`];
+		let defaultClientInternalId = (await kc.clients.find({ clientId: CLIENT_ID }))[0]?.id;
+		if (!defaultClientInternalId) {
+			({ id: defaultClientInternalId } = await kc.clients.create(cr));
 		}
-		const generatedClientSecret = await kc.clients.generateNewClientSecret({ id });
+		const generatedClientSecret = await kc.clients.generateNewClientSecret({ id: defaultClientInternalId });
 		const systems = await this.systemRepo.findByFilter(SysType.KEYCLOAK, false);
 		if (systems.length === 0 && generatedClientSecret.value) {
 			const keycloakSystem = new System({
@@ -124,17 +129,17 @@ export class KeycloakConfigurationService {
 					scope: 'openid profile email',
 					responseType: 'code',
 					provider: 'oauth',
-					tokenEndpoint: `${kc.baseUrl}realms/${kc.realmName}/protocol/openid-connect/token`,
+					tokenEndpoint: `${kcBaseUrl}/protocol/openid-connect/token`,
 					redirectUri: '',
-					authEndpoint: `${kc.baseUrl}realms/${kc.realmName}/protocol/openid-connect/auth`,
-					logoutEndpoint: `${kc.baseUrl}realms/${kc.realmName}/protocol/openid-connect/logout`,
-					jwksEndpoint: `${kc.baseUrl}realms/${kc.realmName}/protocol/openid-connect/certs`,
-					issuer: `${kc.baseUrl}realms/${kc.realmName}`,
+					authEndpoint: `${kcBaseUrl}/protocol/openid-connect/auth`,
+					logoutEndpoint: `${kcBaseUrl}/protocol/openid-connect/logout`,
+					jwksEndpoint: `${kcBaseUrl}/protocol/openid-connect/certs`,
+					issuer: `${kcBaseUrl}`,
 				},
 			});
 			await this.systemRepo.save(keycloakSystem);
 			if (keycloakSystem.oauthConfig) {
-				keycloakSystem.oauthConfig.redirectUri = `https://${SC_DOMAIN}/api/v3/sso/oauth/${keycloakSystem.id}`;
+				keycloakSystem.oauthConfig.redirectUri = `${redirectUri}${keycloakSystem.id}`;
 			}
 			await this.systemRepo.save(keycloakSystem);
 		}
