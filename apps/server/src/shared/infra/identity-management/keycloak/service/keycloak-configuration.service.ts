@@ -111,7 +111,7 @@ export class KeycloakConfigurationService {
 		cr.clientId = CLIENT_ID;
 		cr.enabled = true;
 		cr.protocol = 'openid-connect';
-		cr.publicClient = true;
+		cr.publicClient = false;
 		cr.redirectUris = [`${redirectUri}*`];
 		const defaultClientInternalId = await kc.clients.create(cr);
 		const generatedClientSecret = await kc.clients.generateNewClientSecret(defaultClientInternalId);
