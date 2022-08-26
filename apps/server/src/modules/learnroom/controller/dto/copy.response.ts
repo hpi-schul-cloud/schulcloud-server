@@ -7,7 +7,6 @@ import { CopyElementType, CopyStatusEnum } from '@shared/domain/types/copy.types
 export class CopyApiResponse {
 	constructor({ title, type, status }: CopyApiResponse) {
 		if (title) this.title = title;
-
 		this.type = type;
 		this.status = status;
 	}
