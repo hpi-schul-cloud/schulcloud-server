@@ -60,6 +60,7 @@ describe('account repo', () => {
 			await em.persistAndFlush(anAccountToFind);
 			await em.persistAndFlush(anotherAccountToFind);
 			em.clear();
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			const accounts = await repo.findMultipleByUserId([anAccountToFind.userId!, anotherAccountToFind.userId!]);
 			expect(accounts).toContainEqual(anAccountToFind);
 			expect(accounts).toContainEqual(anotherAccountToFind);
