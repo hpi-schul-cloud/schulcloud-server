@@ -1,6 +1,6 @@
 import { Builder } from '@src/modules/video-conference/builder/builder';
 import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { BBBCreateConfig, GuestPolicy } from '../config/bbb-create.config';
 
 export class BBBCreateConfigBuilder extends Builder<BBBCreateConfig> {

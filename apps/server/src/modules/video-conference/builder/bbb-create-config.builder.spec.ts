@@ -1,6 +1,6 @@
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
 import { BBBCreateConfig, GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Configuration } from '@hpi-schul-cloud/commons';
 
 describe('BBBCreateConfigBuilder', () => {
 	it('should build generic bbb createConfig with all attributes', () => {
