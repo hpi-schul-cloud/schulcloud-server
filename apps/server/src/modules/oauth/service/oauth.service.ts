@@ -108,11 +108,15 @@ export class OAuthService {
 		if (system.oauthConfig && system.oauthConfig.provider === 'iserv') {
 			return this.iservOauthService.findUserById(system.id, decodedJwt);
 		}
+		// FIXME Temporary change - wait for N21-138 merge
 		try {
-			const user = await this.userRepo.findById(decodedJwt.sub);
-			return user;
+			return await this.userRepo.findById(decodedJwt.sub);
 		} catch (error) {
-			throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
+			try {
+				return await this.userRepo.findByLdapIdOrFail(system.id, decodedJwt.sub);
+			} catch {
+				throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
+			}
 		}
 	}
 
