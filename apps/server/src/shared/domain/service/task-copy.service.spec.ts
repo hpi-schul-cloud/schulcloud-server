@@ -199,19 +199,6 @@ describe('task copy service', () => {
 				expect(status.type).toEqual(CopyElementType.TASK);
 			});
 
-			it('should set status destination course ID', () => {
-				const { user, destinationCourse, destinationLesson, originalTask } = setup();
-
-				const status = copyService.copyTaskMetadata({
-					originalTask,
-					destinationCourse,
-					destinationLesson,
-					user,
-				});
-
-				expect(status.destinationCourseId).toEqual(destinationCourse.id);
-			});
-
 			it('should set status original entity', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 

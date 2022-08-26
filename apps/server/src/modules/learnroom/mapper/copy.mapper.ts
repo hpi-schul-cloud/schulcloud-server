@@ -10,12 +10,12 @@ export class CopyMapper {
 		const dto = new CopyApiResponse({
 			title: copyStatus.title,
 			type: copyStatus.type,
-			destinationCourseId: copyStatus.destinationCourseId,
 			status: copyStatus.status,
 		});
 
 		if (copyStatus.copyEntity) {
 			dto.id = copyStatus.copyEntity.id;
+			dto.destinationCourseId = copyStatus.copyEntity.id;
 		}
 		if (copyStatus.status !== CopyStatusEnum.SUCCESS && copyStatus.elements) {
 			dto.elements = copyStatus.elements

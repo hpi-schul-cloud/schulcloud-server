@@ -30,7 +30,6 @@ export class TaskCopyService {
 		const status: CopyStatus = {
 			title: copy.name,
 			type: CopyElementType.TASK,
-			destinationCourseId: params.destinationCourse?.id,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
 			originalEntity: params.originalTask,

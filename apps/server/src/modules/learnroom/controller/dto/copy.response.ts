@@ -5,11 +5,9 @@ import { CopyElementType, CopyStatusEnum } from '@shared/domain/types/copy.types
  * DTO for returning a copy status document via api.
  */
 export class CopyApiResponse {
-	constructor({ title, type, destinationCourseId, status }: CopyApiResponse) {
+	constructor({ title, type, status }: CopyApiResponse) {
 		if (title) this.title = title;
-		if (destinationCourseId) {
-			this.destinationCourseId = destinationCourseId;
-		}
+
 		this.type = type;
 		this.status = status;
 	}
