@@ -520,7 +520,6 @@
 		},
 		"SC_DOMAIN": {
 			"type": "string",
-			"default": "localhost",
 			"description": "The Schulcloud domain."
 		},
 		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
