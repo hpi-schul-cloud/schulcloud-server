@@ -10,6 +10,7 @@ export class CopyMapper {
 		const dto = new CopyApiResponse({
 			title: copyStatus.title,
 			type: copyStatus.type,
+			destinationCourseId: copyStatus.destinationCourseId,
 			status: copyStatus.status,
 		});
 

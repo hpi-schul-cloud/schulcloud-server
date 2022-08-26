@@ -4,6 +4,7 @@ export type CopyStatus = {
 	id?: string;
 	title?: string;
 	type: CopyElementType;
+	destinationCourseId?: string;
 	status: CopyStatusEnum;
 	elements?: CopyStatus[];
 	copyEntity?: BaseEntity;

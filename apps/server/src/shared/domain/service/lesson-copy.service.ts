@@ -60,6 +60,7 @@ export class LessonCopyService {
 		const status: CopyStatus = {
 			title: copy.name,
 			type: CopyElementType.LESSON,
+			destinationCourseId: params.destinationCourse.id,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
 			originalEntity: params.originalLesson,
