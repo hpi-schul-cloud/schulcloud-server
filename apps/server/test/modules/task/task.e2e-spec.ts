@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -69,6 +70,10 @@ describe('Task Controller (e2e)', () => {
 		let orm: MikroORM;
 		let api: API;
 
+		const setConfig = () => {
+			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+		};
+
 		beforeAll(async () => {
 			const moduleFixture: TestingModule = await Test.createTestingModule({
 				imports: [ServerTestModule],
@@ -83,6 +88,10 @@ describe('Task Controller (e2e)', () => {
 		afterAll(async () => {
 			await orm.close();
 			await app.close();
+		});
+
+		beforeEach(() => {
+			setConfig();
 		});
 
 		it('[FIND] /tasks', async () => {
