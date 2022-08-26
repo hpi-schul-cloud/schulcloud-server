@@ -44,7 +44,6 @@ export class SchoolRoles {
 }
 
 @Entity({ tableName: 'schools' })
-// TODO create index ldapSchoolIdentifier
 @Index({ properties: ['externalId', 'systems'] })
 export class School extends BaseEntity {
 	constructor(props: ISchoolProperties) {

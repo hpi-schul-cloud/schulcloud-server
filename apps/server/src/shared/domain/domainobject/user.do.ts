@@ -31,15 +31,19 @@ export class UserDO extends BaseWithTimestampsDO {
 
 	constructor(domainObject: UserDO) {
 		super(domainObject);
+		this.email = domainObject.email;
 		this.firstName = domainObject.firstName;
 		this.lastName = domainObject.lastName;
-		this.email = domainObject.email;
-		this.schoolId = domainObject.schoolId;
 		this.roleIds = domainObject.roleIds;
+		this.schoolId = domainObject.schoolId;
 		this.ldapDn = domainObject.ldapDn;
 		this.externalId = domainObject.externalId;
-		this.forcePasswordChange = domainObject.forcePasswordChange;
+		this.importHash = domainObject.importHash;
+		this.firstNameSearchValues = domainObject.firstNameSearchValues;
+		this.lastNameSearchValues = domainObject.lastNameSearchValues;
+		this.emailSearchValues = domainObject.emailSearchValues;
 		this.language = domainObject.language;
+		this.forcePasswordChange = domainObject.forcePasswordChange;
 		this.preferences = domainObject.preferences;
 	}
 }

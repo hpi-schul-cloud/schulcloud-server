@@ -32,23 +32,29 @@ describe('System Entity', () => {
 			const system = systemFactory.withOauthConfig().build({ url: 'SAMPLE_URL', alias: 'SAMPLE_ALIAS' });
 
 			expect(system instanceof System).toEqual(true);
-			expect(system.type).toEqual('oauth');
-			expect(system.url).toEqual('SAMPLE_URL');
-			expect(system.alias).toEqual('SAMPLE_ALIAS');
-			expect(system.provisioningStrategy).toEqual(SystemProvisioningStrategy.UNDEFINED);
-			expect(system.provisioningUrl).toEqual('provisioningUrl');
-			expect(system.oauthConfig?.clientId).toEqual('12345');
-			expect(system.oauthConfig?.clientSecret).toEqual('mocksecret');
-			expect(system.oauthConfig?.tokenEndpoint).toEqual('http://mock.de/mock/auth/public/mockToken');
-			expect(system.oauthConfig?.grantType).toEqual('authorization_code');
-			expect(system.oauthConfig?.redirectUri).toEqual('http://mockhost:3030/api/v3/sso/oauth/testsystemId');
-			expect(system.oauthConfig?.scope).toEqual('openid uuid');
-			expect(system.oauthConfig?.responseType).toEqual('code');
-			expect(system.oauthConfig?.authEndpoint).toEqual('mock_authEndpoint');
-			expect(system.oauthConfig?.provider).toEqual('mock_type');
-			expect(system.oauthConfig?.logoutEndpoint).toEqual('mock_logoutEndpoint');
-			expect(system.oauthConfig?.issuer).toEqual('mock_issuer');
-			expect(system.oauthConfig?.jwksEndpoint).toEqual('mock_jwksEndpoint');
+			expect(system).toEqual(
+				expect.objectContaining({
+					type: 'oauth',
+					url: 'SAMPLE_URL',
+					alias: 'SAMPLE_ALIAS',
+					provisioningStrategy: SystemProvisioningStrategy.UNDEFINED,
+					provisioningUrl: 'provisioningUrl',
+					oauthConfig: {
+						clientId: '12345',
+						clientSecret: 'mocksecret',
+						tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+						grantType: 'authorization_code',
+						redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
+						scope: 'openid uuid',
+						responseType: 'code',
+						authEndpoint: 'mock_authEndpoint',
+						provider: 'mock_type',
+						logoutEndpoint: 'mock_logoutEndpoint',
+						issuer: 'mock_issuer',
+						jwksEndpoint: 'mock_jwksEndpoint',
+					},
+				})
+			);
 		});
 	});
 });

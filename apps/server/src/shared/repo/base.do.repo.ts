@@ -73,13 +73,20 @@ export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity, P> {
 		const dos: T[] = isArray ? entityDOs : [entityDOs];
 
 		const entities: E[] = await Promise.all(
-			dos.map(async (domainObject): Promise<E> => {
+			dos.map(async (domainObject: T): Promise<E> => {
 				const entityProps: EntityProperties<P> = this.mapDOToEntityWithId(domainObject);
 				const newEntity: E = this.entityFactory(this.getConstructor(), entityProps);
 
 				const entity: E = await this._em
-					.findOneOrFail(this.entityName, domainObject.id as FilterQuery<E>)
-					.then((fetchedEntity: E): E => {
+					.findOne(this.entityName, domainObject.id as FilterQuery<E>)
+					.then((fetchedEntity: E | null): E => {
+						// Create
+						if (!fetchedEntity) {
+							const created: E = this._em.create(this.entityName, newEntity);
+							this.logger.debug(`Created new entity with id ${created.id}`);
+							return created;
+						}
+						// Update
 						// Ignore base entity properties when updating entity
 						Object.keys(newEntity).forEach((key) => {
 							if (baseEntityProperties.includes(key)) {
@@ -90,11 +97,6 @@ export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity, P> {
 						const updated: E = this._em.assign(fetchedEntity, newEntity);
 						this.logger.debug(`Updated entity with id ${updated.id}`);
 						return updated;
-					})
-					.catch((): E => {
-						const created: E = this._em.create(this.entityName, newEntity);
-						this.logger.debug(`Created new entity with id ${created.id}`);
-						return created;
 					});
 
 				return entity;
@@ -110,17 +112,15 @@ export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity, P> {
 	 * Deletes one or more entities in the database.
 	 * @param entityDOs The domain objects with an id related to the entities that should be deleted
 	 */
-	async delete(entityDOs: T | T[]): Promise<void> {
+	async delete(entityDOs: T | T[]): Promise<number[]> {
 		const dos: T[] = Array.isArray(entityDOs) ? entityDOs : [entityDOs];
 
-		const entities: E[] = await Promise.all(
-			dos.map(async (domainObject): Promise<E> => {
+		return Promise.all(
+			dos.map(async (domainObject: T): Promise<number> => {
 				const entityProps: EntityProperties<P> = this.mapDOToEntityWithId(domainObject);
-				return this._em.findOneOrFail(this.entityName, entityProps.id as FilterQuery<E>);
+				return this._em.nativeDelete(this.entityName, entityProps.id as FilterQuery<E>);
 			})
 		);
-
-		await this._em.removeAndFlush(entities);
 	}
 
 	/**

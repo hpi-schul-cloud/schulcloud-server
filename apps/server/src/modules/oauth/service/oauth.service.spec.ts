@@ -72,7 +72,7 @@ describe('OAuthService', () => {
 	let systemRepo: DeepMocked<SystemRepo>;
 	let userRepo: DeepMocked<UserRepo>;
 	let feathersJwtProvider: DeepMocked<FeathersJwtProvider>;
-	let provisioningService: DeepMocked<ProvisioningUc>;
+	let provisioningUc: DeepMocked<ProvisioningUc>;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -126,7 +126,7 @@ describe('OAuthService', () => {
 		systemRepo = module.get(SystemRepo);
 		userRepo = module.get(UserRepo);
 		feathersJwtProvider = module.get(FeathersJwtProvider);
-		provisioningService = module.get(ProvisioningUc);
+		provisioningUc = module.get(ProvisioningUc);
 
 		jest.mock('axios', () =>
 			jest.fn(() => {
@@ -329,7 +329,7 @@ describe('OAuthService', () => {
 
 		it('should return the user according to the uuid(externalId)', async () => {
 			// Arrange
-			provisioningService.process.mockResolvedValue({ externalUserId: new ObjectId().toHexString() });
+			provisioningUc.process.mockResolvedValue({ externalUserId: new ObjectId().toHexString() });
 			userRepo.findByExternalIdOrFail.mockResolvedValue(defaultIservUser);
 
 			// Act
@@ -357,7 +357,7 @@ describe('OAuthService', () => {
 		it('should return the user according to the id', async () => {
 			// Arrange
 			const provisioning: ProvisioningDto = new ProvisioningDto({ externalUserId: new ObjectId().toHexString() });
-			provisioningService.process.mockResolvedValue(provisioning);
+			provisioningUc.process.mockResolvedValue(provisioning);
 			userRepo.findByExternalIdOrFail.mockResolvedValue(defaultUser);
 
 			// Act

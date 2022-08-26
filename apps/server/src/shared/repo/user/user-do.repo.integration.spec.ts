@@ -168,28 +168,36 @@ describe('UserRepo', () => {
 			);
 			const role: Role = roleFactory.buildWithId();
 			testEntity.roles.add(role);
+			testEntity.firstNameSearchValues = ['em'];
+			testEntity.lastNameSearchValues = ['em'];
+			testEntity.emailSearchValues = ['em'];
+			testEntity.importHash = 'importHash';
 
 			// Act
 			const userDO: UserDO = repo.mapEntityToDOSpec(testEntity);
 
 			// Assert
-			expect(userDO.id).toEqual(testEntity.id);
-			expect(userDO.updatedAt).toEqual(testEntity.updatedAt);
-			expect(userDO.createdAt).toEqual(testEntity.createdAt);
-			expect(userDO.email).toEqual(testEntity.email);
-			expect(userDO.firstName).toEqual(testEntity.firstName);
-			expect(userDO.lastName).toEqual(testEntity.lastName);
-			expect(userDO.schoolId).toEqual(testEntity.school.id);
-			expect(userDO.roleIds[0]).toEqual(role.id);
-			expect(userDO.ldapDn).toEqual(testEntity.ldapDn);
-			expect(userDO.externalId).toEqual(testEntity.externalId);
-			expect(userDO.importHash).toEqual(testEntity.importHash);
-			expect(userDO.firstNameSearchValues).toEqual(testEntity.firstNameSearchValues);
-			expect(userDO.lastNameSearchValues).toEqual(testEntity.lastNameSearchValues);
-			expect(userDO.emailSearchValues).toEqual(testEntity.emailSearchValues);
-			expect(userDO.language).toEqual(testEntity.language);
-			expect(userDO.forcePasswordChange).toEqual(testEntity.forcePasswordChange);
-			expect(userDO.preferences).toEqual(testEntity.preferences);
+			expect(userDO).toEqual(
+				expect.objectContaining({
+					id: testEntity.id,
+					updatedAt: testEntity.updatedAt,
+					createdAt: testEntity.createdAt,
+					email: testEntity.email,
+					firstName: testEntity.firstName,
+					lastName: testEntity.lastName,
+					schoolId: testEntity.school.id,
+					roleIds: [role.id],
+					ldapDn: testEntity.ldapDn,
+					externalId: testEntity.externalId,
+					importHash: testEntity.importHash,
+					firstNameSearchValues: testEntity.firstNameSearchValues,
+					lastNameSearchValues: testEntity.lastNameSearchValues,
+					emailSearchValues: testEntity.emailSearchValues,
+					language: testEntity.language,
+					forcePasswordChange: testEntity.forcePasswordChange,
+					preferences: testEntity.preferences,
+				})
+			);
 		});
 	});
 
@@ -214,17 +222,21 @@ describe('UserRepo', () => {
 			const result: EntityProperties<IUserProperties> = repo.mapDOToEntitySpec(testDO);
 
 			// Assert
-			expect(result.id).toEqual(testDO.id);
-			expect(result.email).toEqual(testDO.email);
-			expect(result.firstName).toEqual(testDO.firstName);
-			expect(result.lastName).toEqual(testDO.lastName);
-			expect((result.roles[0] as Role).id).toEqual(testDO.roleIds[0]);
-			expect(result.school.id).toEqual(testDO.schoolId);
-			expect(result.ldapDn).toEqual(testDO.ldapDn);
-			expect(result.externalId).toEqual(testDO.externalId);
-			expect(result.language).toEqual(testDO.language);
-			expect(result.forcePasswordChange).toEqual(testDO.forcePasswordChange);
-			expect(result.preferences).toEqual(testDO.preferences);
+			expect(result).toEqual(
+				expect.objectContaining({
+					id: testDO.id,
+					email: testDO.email,
+					firstName: testDO.firstName,
+					lastName: testDO.lastName,
+					school: { id: testDO.schoolId },
+					roles: [{ id: testDO.roleIds[0] }],
+					ldapDn: testDO.ldapDn,
+					externalId: testDO.externalId,
+					language: testDO.language,
+					forcePasswordChange: testDO.forcePasswordChange,
+					preferences: testDO.preferences,
+				})
+			);
 		});
 	});
 });

@@ -94,12 +94,12 @@ export class OAuthService {
 
 	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<IJwt> {
 		const publicKey = await this._getPublicKey(oauthConfig);
-		const verifiedJWT = jwt.verify(idToken, publicKey, {
+		const verifiedJWT: string | jwt.JwtPayload = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
 			issuer: oauthConfig.issuer,
 			audience: oauthConfig.clientId,
 		});
-		if (typeof verifiedJWT === 'string' || verifiedJWT instanceof String) {
+		if (verifiedJWT instanceof String) {
 			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
 		}
 		return verifiedJWT as IJwt;
