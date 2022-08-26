@@ -12,7 +12,7 @@ describe('BBBCreateConfigBuilder', () => {
 		const guestPolicy = GuestPolicy.ALWAYS_ACCEPT;
 		const muteOnStart = true;
 
-		const builder = new BBBCreateConfigBuilder({ name, meetingID });
+		const builder = new BBBCreateConfigBuilder(new BBBCreateConfig({ name, meetingID }));
 
 		// Act
 		builder.withLogoutUrl(logoutURL);
@@ -37,7 +37,7 @@ describe('BBBCreateConfigBuilder', () => {
 		const meetingID = 'meetingId';
 		const SC_DOMAIN = 'server origin name';
 		jest.spyOn(Configuration, 'get').mockReturnValue(SC_DOMAIN);
-		const builder = new BBBCreateConfigBuilder({ name, meetingID });
+		const builder = new BBBCreateConfigBuilder(new BBBCreateConfig({ name, meetingID }));
 
 		// Act
 		const result: BBBCreateConfig = builder.build();
