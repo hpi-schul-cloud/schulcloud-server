@@ -2,8 +2,6 @@ import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bb
 import { BBBCreateConfig, GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
-jest.mock('@hpi-schul-cloud/commons/lib');
-
 describe('BBBCreateConfigBuilder', () => {
 	it('should build generic bbb createConfig with all attributes', () => {
 		// Arrange
