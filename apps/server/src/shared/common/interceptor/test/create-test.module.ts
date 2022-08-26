@@ -2,7 +2,7 @@ import { Controller, Get, NestInterceptor } from '@nestjs/common';
 
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Timeout } from '@shared/common/decorators';
+import { RequestTimeout } from '@shared/common/decorators';
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -15,7 +15,7 @@ class DelayController {
 		return 'Schulcloud Server API';
 	}
 
-	@Timeout(1)
+	@RequestTimeout(1)
 	@Get('/timeout')
 	async getHelloWithTimeout(): Promise<string> {
 		await delay(100);

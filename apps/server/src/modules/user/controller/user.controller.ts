@@ -1,15 +1,11 @@
-import { ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Get, Patch } from '@nestjs/common';
-
+import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-
-import { Timeout } from '@shared/common/decorators';
 // eslint-disable-next-line import/no-cycle
-import serverConfig from '../../../server.config';
 import { ResolvedUserMapper } from '../mapper';
 import { UserUc } from '../uc/user.uc';
-import { ResolvedUserResponse, ChangeLanguageParams, SuccessfulResponse } from './dto';
+import { ChangeLanguageParams, ResolvedUserResponse, SuccessfulResponse } from './dto';
 
 @ApiTags('User')
 @Authenticate('jwt')

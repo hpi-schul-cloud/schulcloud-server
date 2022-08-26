@@ -1,23 +1,24 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ICurrentUser } from '@shared/domain';
 import {
-	userFactory,
-	courseFactory,
 	cleanupCollections,
-	roleFactory,
-	mapUserToCurrentUser,
+	courseFactory,
 	lessonFactory,
+	mapUserToCurrentUser,
+	roleFactory,
 	taskFactory,
+	userFactory,
 } from '@shared/testing';
-import { ICurrentUser, Permission } from '@shared/domain';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { Request } from 'express';
+import request from 'supertest';
 
+Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 // eslint-disable-next-line import/first
 import { ServerTestModule } from '@src/server.module';

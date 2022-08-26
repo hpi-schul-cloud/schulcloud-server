@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Timeout } from '@shared/common';
+import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
 import { ParseObjectIdPipe } from '@shared/controller/pipe';
 import { ICurrentUser } from '@shared/domain';
@@ -87,7 +87,7 @@ export class TaskController {
 	}
 
 	@Post(':id/copy')
-	@Timeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('id', ParseObjectIdPipe) taskId: string,
