@@ -67,8 +67,6 @@ module.exports = {
 		alert(`Cleanup of accounts to deleted users is successfully: Count ${count}`);
 	},
 	down: async function down() {
-		await connect();
 		alert(`Is nothing to rollback`);
-		await close();
 	},
 };
