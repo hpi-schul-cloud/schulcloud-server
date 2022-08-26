@@ -3,18 +3,6 @@ import { BBBCreateConfig, GuestPolicy } from '@src/modules/video-conference/conf
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 jest.mock('@hpi-schul-cloud/commons/lib');
-// 	, () => {
-// 	return {
-// 		Configuration: jest.fn().mockImplementation(() => {
-// 			let SC_DOMAIN;
-// 			return {
-// 				get: () => {
-// 					SC_DOMAIN = 'origin server name';
-// 				},
-// 			};
-// 		}),
-// 	};
-// });
 
 describe('BBBCreateConfigBuilder', () => {
 	it('should build generic bbb createConfig with all attributes', () => {
