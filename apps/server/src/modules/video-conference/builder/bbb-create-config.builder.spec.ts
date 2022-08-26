@@ -3,6 +3,16 @@ import { BBBCreateConfig, GuestPolicy } from '@src/modules/video-conference/conf
 import { Configuration } from '@hpi-schul-cloud/commons';
 
 describe('BBBCreateConfigBuilder', () => {
+	const SC_DOMAIN = 'server origin name';
+
+	beforeAll(() => {
+		jest.spyOn(Configuration, 'get').mockReturnValue(SC_DOMAIN);
+	});
+
+	afterAll(() => {
+		jest.clearAllMocks();
+	});
+
 	it('should build generic bbb createConfig with all attributes', () => {
 		// Arrange
 		const name = 'name';
@@ -29,14 +39,13 @@ describe('BBBCreateConfigBuilder', () => {
 		expect(result.welcome).toEqual(welcome);
 		expect(result.guestPolicy).toEqual(guestPolicy);
 		expect(result.muteOnStart).toEqual(muteOnStart);
+		expect(result['meta_bbb-origin-server-name']).toEqual(SC_DOMAIN);
 	});
 
 	it('should build generic bbb createConfig with only required attributes', () => {
 		// Arrange
 		const name = 'name';
 		const meetingID = 'meetingId';
-		const SC_DOMAIN = 'server origin name';
-		jest.spyOn(Configuration, 'get').mockReturnValue(SC_DOMAIN);
 		const builder = new BBBCreateConfigBuilder(new BBBCreateConfig({ name, meetingID }));
 
 		// Act
@@ -49,7 +58,6 @@ describe('BBBCreateConfigBuilder', () => {
 		expect(result.welcome).toBeUndefined();
 		expect(result.guestPolicy).toBeUndefined();
 		expect(result.muteOnStart).toBeUndefined();
-		expect(result['meta_bbb-origin-server-name']).toEqual('server origin name');
-		jest.clearAllMocks();
+		expect(result['meta_bbb-origin-server-name']).toEqual(SC_DOMAIN);
 	});
 });
