@@ -518,6 +518,10 @@
 			"default": "HPI Schul-Cloud",
 			"description": "Look to SC_TITLE, it is a possible short form of it."
 		},
+		"SC_DOMAIN": {
+			"type": "string",
+			"description": "The Schulcloud domain."
+		},
 		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
 			"type": "boolean",
 			"default": true,
