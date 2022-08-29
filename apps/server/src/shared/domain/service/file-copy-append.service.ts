@@ -83,7 +83,7 @@ export class FileCopyAppendService {
 			status: CopyStatusEnum.FAIL,
 			elements,
 		};
-		taskCopyStatus.status = this.copyHelperService.deriveStatusFromElements(taskCopyStatus.elements as CopyStatus[]);
+		taskCopyStatus.status = this.copyHelperService.deriveStatusFromElements(taskCopyStatus.elements || []);
 		taskCopyStatus.elements = this.setFileGroupStatus(taskCopyStatus.elements, updatedFileGroupStatus);
 		return taskCopyStatus;
 	}

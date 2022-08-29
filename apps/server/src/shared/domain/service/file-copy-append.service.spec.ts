@@ -115,6 +115,13 @@ describe('file copy append service', () => {
 				const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
 				expect(updatedCopyStatus).toEqual(copyStatus);
 			});
+
+			it('should handle error of copyFilesOfParent', async () => {
+				const { copyStatus, jwt } = setup();
+				fileServiceAdapter.copyFilesOfParent.mockRejectedValue(new Error());
+				const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
+				expect(updatedCopyStatus.status).toEqual('success');
+			});
 		});
 
 		describe('when taskstatus is failed before appending files', () => {
@@ -392,31 +399,15 @@ describe('file copy append service', () => {
 			});
 
 			describe('when files are present', () => {
-				const setup = () => {
+				const setup = (contents: IComponentProperties[]) => {
 					const user = userFactory.build();
 					const originalCourse = courseFactory.build({ school: user.school });
 					const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
-					const originalFile = fileFactory.buildWithId({ name: 'file.jpg' });
-					const text = getEmbeddedHtml(originalFile);
-					const textContent: IComponentProperties = {
-						title: '',
-						hidden: false,
-						component: ComponentType.TEXT,
-						content: { text },
-					};
-					const geoGebraContent: IComponentProperties = {
-						title: 'geoGebra component 1',
-						hidden: false,
-						component: ComponentType.GEOGEBRA,
-						content: {
-							materialId: 'foo',
-						},
-					};
 					const originalLesson = lessonFactory.build({
 						course: originalCourse,
-						contents: [geoGebraContent, textContent],
+						contents,
 					});
-					const copyLesson = lessonFactory.build({ course: originalCourse, contents: [geoGebraContent, textContent] });
+					const copyLesson = lessonFactory.build({ course: originalCourse, contents });
 					const copyStatus: CopyStatus = {
 						type: CopyElementType.LESSON,
 						title: 'Tolle Lesson',
@@ -434,12 +425,31 @@ describe('file copy append service', () => {
 						originalLesson,
 						copyLesson,
 						jwt,
-						originalFile,
 					};
 				};
 
 				it('should replace legacy file ids', async () => {
-					const { originalCourse, copyStatus, user, jwt, originalFile, copyLesson, originalLesson } = setup();
+					const originalFile = fileFactory.buildWithId({ name: 'file.jpg' });
+					const text = getEmbeddedHtml(originalFile);
+					const textContent: IComponentProperties = {
+						title: '',
+						hidden: false,
+						component: ComponentType.TEXT,
+						content: { text },
+					};
+					const geoGebraContent: IComponentProperties = {
+						title: 'geoGebra component 1',
+						hidden: false,
+						component: ComponentType.GEOGEBRA,
+						content: {
+							materialId: 'foo',
+						},
+					};
+
+					const { originalCourse, copyStatus, user, jwt, copyLesson, originalLesson } = setup([
+						textContent,
+						geoGebraContent,
+					]);
 
 					fileLegacyService.copyFile.mockResolvedValue({
 						oldFileId: originalFile.id,
@@ -459,7 +469,16 @@ describe('file copy append service', () => {
 				});
 
 				it('should leave embedded file urls untouched, if files were not copied', async () => {
-					const { originalCourse, copyStatus, user, jwt, originalFile, copyLesson, originalLesson } = setup();
+					const originalFile = fileFactory.buildWithId({ name: 'file.jpg' });
+					const textContent: IComponentProperties = {
+						title: '',
+						hidden: false,
+						component: ComponentType.TEXT,
+						content: { text: '' },
+					};
+
+					const { originalCourse, copyStatus, user, jwt, copyLesson, originalLesson } = setup([textContent]);
+
 					fileLegacyService.copyFile.mockResolvedValue({ oldFileId: originalFile.id });
 					const status = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
 
@@ -467,6 +486,23 @@ describe('file copy append service', () => {
 
 					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(originalLesson, copyLesson, jwt);
 					expect(status).toEqual(copyStatus);
+				});
+
+				it('should update status for new file service', async () => {
+					const originalFile = fileFactory.buildWithId({ name: 'file.jpg' });
+					const textContent: IComponentProperties = {
+						title: '',
+						hidden: false,
+						component: ComponentType.TEXT,
+						content: { text: '' },
+					};
+
+					const { originalCourse, copyStatus, user, jwt, copyLesson } = setup([textContent]);
+					const reponse1 = new CopyFileDto({ id: 'id123', sourceId: originalFile.id, name: originalFile.name });
+					copyFilesService.copyFilesOfEntity.mockResolvedValue({ entity: copyLesson, response: [reponse1] });
+					const status = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+
+					expect(status.status).toEqual('success');
 				});
 			});
 		});
