@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
 import { ParseObjectIdPipe } from '@shared/controller/pipe';
 import { ICurrentUser } from '@shared/domain';
@@ -7,6 +8,7 @@ import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/deco
 // todo  @src/modules/learnroom/* must be replaced
 import { CopyApiResponse } from '@src/modules/learnroom/controller/dto/copy.response';
 import { CopyMapper } from '@src/modules/learnroom/mapper/copy.mapper';
+import serverConfig from '@src/server.config';
 import { TaskMapper } from '../mapper/task.mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
@@ -85,6 +87,7 @@ export class TaskController {
 	}
 
 	@Post(':id/copy')
+	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('id', ParseObjectIdPipe) taskId: string,
