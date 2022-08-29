@@ -764,6 +764,13 @@ describe('FilesStorageUC', () => {
 					sourceParentParams.parentId
 				);
 			});
+
+			it('should return empty response if entities not found', async () => {
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([[], 0]);
+
+				const res = await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
+				expect(res).toEqual([[], 0]);
+			});
 		});
 
 		describe('calls to fileRecordRepo.save()', () => {
