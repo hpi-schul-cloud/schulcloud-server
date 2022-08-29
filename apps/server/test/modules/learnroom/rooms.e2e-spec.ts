@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -28,6 +29,10 @@ describe('Rooms Controller (e2e)', () => {
 	let currentUser: ICurrentUser;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
+	const setConfig = () => {
+		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+	};
+
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
@@ -49,6 +54,7 @@ describe('Rooms Controller (e2e)', () => {
 		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
 		filesStorageClientAdapterService = app.get(FilesStorageClientAdapterService);
+		setConfig();
 	});
 
 	afterEach(async () => {

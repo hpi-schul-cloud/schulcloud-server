@@ -7,7 +7,6 @@ export enum GuestPolicy {
 }
 
 export class BBBCreateConfig extends BBBBaseMeetingConfig {
-	/* istanbul ignore next */
 	constructor(config: BBBCreateConfig) {
 		super(config);
 		this.name = config.name;
@@ -18,6 +17,7 @@ export class BBBCreateConfig extends BBBBaseMeetingConfig {
 		this.moderatorPW = config.moderatorPW;
 		this.attendeePW = config.attendeePW;
 		this.allowModsToUnmuteUsers = config.allowModsToUnmuteUsers;
+		this['meta_bbb-origin-server-name'] = config['meta_bbb-origin-server-name'];
 	}
 
 	name: string;
@@ -35,4 +35,6 @@ export class BBBCreateConfig extends BBBBaseMeetingConfig {
 	muteOnStart?: boolean;
 
 	allowModsToUnmuteUsers?: boolean;
+
+	'meta_bbb-origin-server-name'?: string;
 }
