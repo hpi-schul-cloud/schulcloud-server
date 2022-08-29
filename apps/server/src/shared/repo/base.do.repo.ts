@@ -77,27 +77,29 @@ export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity, P> {
 				const entityProps: EntityProperties<P> = this.mapDOToEntityWithId(domainObject);
 				const newEntity: E = this.entityFactory(this.getConstructor(), entityProps);
 
-				const entity: E = await this._em
-					.findOne(this.entityName, domainObject.id as FilterQuery<E>)
-					.then((fetchedEntity: E | null): E => {
-						// Create
-						if (!fetchedEntity) {
-							const created: E = this._em.create(this.entityName, newEntity);
-							this.logger.debug(`Created new entity with id ${created.id}`);
-							return created;
-						}
-						// Update
-						// Ignore base entity properties when updating entity
-						Object.keys(newEntity).forEach((key) => {
-							if (baseEntityProperties.includes(key)) {
-								delete newEntity[key];
-							}
-						});
+				let entity: E;
 
-						const updated: E = this._em.assign(fetchedEntity, newEntity);
-						this.logger.debug(`Updated entity with id ${updated.id}`);
-						return updated;
-					});
+				if (!domainObject.id) {
+					// Create
+					entity = this._em.create(this.entityName, newEntity);
+					this.logger.debug(`Created new entity with id ${entity.id}`);
+				} else {
+					// Update
+					entity = await this._em
+						.findOneOrFail(this.entityName, domainObject.id as FilterQuery<E>)
+						.then((fetchedEntity: E): E => {
+							// Ignore base entity properties when updating entity
+							Object.keys(newEntity).forEach((key) => {
+								if (baseEntityProperties.includes(key)) {
+									delete newEntity[key];
+								}
+							});
+
+							const updated: E = this._em.assign(fetchedEntity, newEntity);
+							this.logger.debug(`Updated entity with id ${updated.id}`);
+							return updated;
+						});
+				}
 
 				return entity;
 			})
