@@ -2,15 +2,15 @@ import jwt from 'jsonwebtoken';
 import { HttpService } from '@nestjs/axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
-import { lastValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { OauthConfig, System, User } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { AxiosResponse } from 'axios';
-import { Inject } from '@nestjs/common';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { NotFoundException } from '@nestjs/common';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -53,6 +53,29 @@ export class OAuthService {
 		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
 	}
 
+	async requestAuthToken(config: OauthConfig, userId: string): Promise<AuthorizationParams> {
+		const query = QueryString.stringify({
+			response_type: config.responseType,
+			scope: config.scope,
+			client_id: config.clientId,
+			redirect_uri: config.redirectUri,
+			state: 'GARGARGAR',
+		});
+		const axiosConfig: AxiosRequestConfig = {
+			headers: {
+				Cookie: `jwt=${await this.jwtService.generateJwt(userId)}`,
+			},
+		};
+		let respObservable = this.httpService.get<AuthorizationParams>(`${config.authEndpoint}?${query}`, axiosConfig);
+		let resp = await firstValueFrom(respObservable);
+		if (resp.status === 200) {
+			respObservable = this.httpService.get('http://localhost:3100/oauth2/login/success', axiosConfig);
+			resp = await firstValueFrom(respObservable);
+			this.logger.debug(resp.headers);
+		}
+		return resp.data;
+	}
+
 	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
 		this.logger.debug('requestToken() has started. Next up: decrypt().');
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
@@ -62,9 +85,10 @@ export class OAuthService {
 			decryptedClientSecret,
 			code
 		);
+		const query = QueryString.stringify(tokenRequestPayload);
 		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(
-			tokenRequestPayload.tokenEndpoint,
-			QueryString.stringify(tokenRequestPayload),
+			`${tokenRequestPayload.tokenEndpoint}`,
+			query,
 			{
 				method: 'POST',
 				headers: {
@@ -103,10 +127,10 @@ export class OAuthService {
 		return verifiedJWT as IJwt;
 	}
 
-	async findUser(decodedJwt: IJwt, system: System): Promise<User> {
+	async findUser(decodedJwt: IJwt, oauthConfig: OauthConfig, systemId: string): Promise<User> {
 		// iserv strategy
-		if (system.oauthConfig && system.oauthConfig.provider === 'iserv') {
-			return this.iservOauthService.findUserById(system.id, decodedJwt);
+		if (oauthConfig && oauthConfig.provider === 'iserv') {
+			return this.iservOauthService.findUserById(systemId, decodedJwt);
 		}
 		try {
 			const user = await this.userRepo.findById(decodedJwt.sub);
@@ -129,42 +153,6 @@ export class OAuthService {
 		return response;
 	}
 
-	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
-		try {
-			this.logger.debug('Oauth process strated. Next up: checkAuthorizationCode().');
-			const authCode: string = this.checkAuthorizationCode(query);
-			this.logger.debug('Done. Next up: systemRepo.findById().');
-			const system: System = await this.systemRepo.findById(systemId);
-			this.logger.debug('Done. Next up: oauthConfig check.');
-			const { oauthConfig } = system;
-			if (oauthConfig == null) {
-				this.logger.error(
-					`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id}`
-				);
-				throw new OAuthSSOError('Requested system has no oauth configured', 'sso_internal_error');
-			}
-			this.logger.debug('Done. Next up: requestToken().');
-			const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig);
-			this.logger.debug('Done. Next up: validateToken().');
-			const decodedToken: IJwt = await this.validateToken(queryToken.id_token, oauthConfig);
-			this.logger.debug('Done. Next up: findUser().');
-			const user: User = await this.findUser(decodedToken, system);
-			this.logger.debug('Done. Next up: getJWTForUser().');
-			const jwtResponse: string = await this.getJwtForUser(user);
-			this.logger.debug('Done. Next up: buildResponse().');
-			const response: OAuthResponse = this.buildResponse(oauthConfig, queryToken);
-			this.logger.debug('Done. Next up: getRedirect().');
-			const oauthResponse: OAuthResponse = this.getRedirect(response);
-			this.logger.debug('Done. Response should now be returned().');
-			oauthResponse.jwt = jwtResponse;
-			return oauthResponse;
-		} catch (error) {
-			this.logger.log(error);
-			const system: System = await this.systemRepo.findById(systemId);
-			return this.getOAuthError(error as string, system.oauthConfig?.provider as string);
-		}
-	}
-
 	getRedirect(response: OAuthResponse): OAuthResponse {
 		const HOST = Configuration.get('HOST') as string;
 		let redirect: string;
@@ -179,6 +167,14 @@ export class OAuthService {
 		}
 		oauthResponse.redirect = redirect;
 		return oauthResponse;
+	}
+
+	async getOauthConfig(systemId: string) {
+		const system: System = await this.systemRepo.findById(systemId);
+		if (system.oauthConfig) {
+			return system.oauthConfig;
+		}
+		throw new NotFoundException(system, 'No OAuthConfig Available in the given System!');
 	}
 
 	getOAuthError(error: unknown, provider: string): OAuthResponse {
