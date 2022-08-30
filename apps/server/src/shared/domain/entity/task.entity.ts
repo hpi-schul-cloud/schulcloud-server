@@ -1,5 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { School } from '@shared/domain/entity/school.entity';
+import _ from 'lodash';
 import { IEntityWithSchool } from '../interface';
 import { ILearnroomElement } from '../interface/learnroom';
 import { EntityId } from '../types/entity-id';
@@ -290,11 +291,11 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	getSchoolId(): EntityId {
-		if (this.lesson !== undefined) {
+		if (!_.isNil(this.lesson)) {
 			return this.lesson?.getSchoolId();
 		}
 
-		if (this.course !== undefined) {
+		if (!_.isNil(this.course)) {
 			return this.course?.school.id;
 		}
 
