@@ -53,3 +53,31 @@ export class FileRecordListResponse extends PaginationResponse<FileRecordRespons
 	@ApiProperty({ type: [FileRecordResponse] })
 	data: FileRecordResponse[];
 }
+
+export class CopyFileResponse {
+	constructor(data: CopyFileResponse) {
+		this.id = data.id;
+		this.sourceId = data.sourceId;
+		this.name = data.name;
+	}
+
+	@ApiProperty()
+	id: string;
+
+	@ApiProperty()
+	sourceId: string;
+
+	@ApiProperty()
+	@DecodeHtmlEntities()
+	name: string;
+}
+
+export class CopyFileListResponse extends PaginationResponse<CopyFileResponse[]> {
+	constructor(data: CopyFileResponse[], total: number, skip?: number, limit?: number) {
+		super(total, skip, limit);
+		this.data = data;
+	}
+
+	@ApiProperty({ type: [CopyFileResponse] })
+	data: CopyFileResponse[];
+}
