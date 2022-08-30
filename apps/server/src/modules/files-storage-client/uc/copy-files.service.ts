@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Task, Lesson, EntityId, IComponentProperties } from '@shared/domain';
+import { Task, Lesson, IComponentProperties } from '@shared/domain';
 import { CopyFileDto } from '../dto';
 import { FileParamBuilder } from '../mapper/files-storage-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
