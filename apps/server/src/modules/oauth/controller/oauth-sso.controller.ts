@@ -2,7 +2,8 @@ import { Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ParseObjectIdPipe } from '@shared/controller/pipe/parse-object-id.pipe';
 import { Logger } from '@src/core/logger';
-import { Response } from 'express';
+import { CookieOptions, Response } from 'express';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationParams } from './dto/authorization.params';
 
@@ -20,7 +21,13 @@ export class OauthSSOController {
 		@Param('systemid', ParseObjectIdPipe) systemid: string
 	): Promise<unknown> {
 		const oauthResponse = await this.oauthUc.startOauth(query, systemid);
-		res.cookie('jwt', oauthResponse.jwt ? oauthResponse.jwt : '');
+		const cookieDefaultOptions: CookieOptions = {
+			httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
+			sameSite: Configuration.get('COOKIE__SAME_SITE') as boolean,
+			secure: Configuration.get('COOKIE__SECURE') as boolean,
+			expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
+		};
+		res.cookie('jwt', oauthResponse.jwt ? oauthResponse.jwt : '', cookieDefaultOptions);
 		return res.redirect(oauthResponse.redirect ? oauthResponse.redirect : '');
 	}
 }
