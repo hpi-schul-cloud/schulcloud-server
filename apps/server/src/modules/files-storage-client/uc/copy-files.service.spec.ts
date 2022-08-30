@@ -112,7 +112,7 @@ describe('copy files service', () => {
 		});
 
 		describe('copy files of task', () => {
-			it('it should replace copied urls in task', async () => {
+			it('it should replace copied urls in task in same school', async () => {
 				const { file1, file2, jwt, imageHTML1, imageHTML2, school } = setup();
 
 				const originalCourse = courseFactory.build();
@@ -124,6 +124,39 @@ describe('copy files service', () => {
 				});
 				const copyTask = taskFactory.buildWithId({
 					school,
+					description: `${imageHTML1} ${imageHTML2}`,
+					course: targetCourse,
+				});
+
+				const mockedResponse = [
+					{ id: 'mockedFileId1', sourceId: file1.id, name: 'mockedName1' },
+					{ id: 'mockedFileId2', sourceId: file2.id, name: 'mockedName2' },
+				];
+
+				filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue(mockedResponse);
+				const copyResponse = await copyFilesService.copyFilesOfEntity(originalTask, copyTask, jwt);
+
+				const { description } = copyResponse.entity as Task;
+
+				const expectedHTML1 = getImageHTML(mockedResponse[0].id, mockedResponse[0].name);
+				const expectedHTML2 = getImageHTML(mockedResponse[0].id, mockedResponse[0].name);
+				expect(description).toContain(expectedHTML1);
+				expect(description).toContain(expectedHTML2);
+			});
+
+			it('it should replace copied urls in task between different schools', async () => {
+				const { file1, file2, jwt, imageHTML1, imageHTML2, school } = setup();
+
+				const copySchool = schoolFactory.build();
+				const originalCourse = courseFactory.build({ school });
+				const targetCourse = courseFactory.build({ school: copySchool });
+				const originalTask = taskFactory.buildWithId({
+					school,
+					description: `${imageHTML1} ${imageHTML2}`,
+					course: originalCourse,
+				});
+				const copyTask = taskFactory.buildWithId({
+					school: copySchool,
 					description: `${imageHTML1} ${imageHTML2}`,
 					course: targetCourse,
 				});
