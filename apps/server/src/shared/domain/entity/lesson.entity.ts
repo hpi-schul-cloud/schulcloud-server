@@ -167,11 +167,11 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 	}
 
 	getSchoolId(): EntityId {
-		if (_.isNil(this.courseGroup)) {
+		if (!this.courseGroup) {
 			return this.course.school.id;
 		}
 
-		return this.courseGroup?.school.id;
+		return this.courseGroup.school.id;
 	}
 
 	publish() {
