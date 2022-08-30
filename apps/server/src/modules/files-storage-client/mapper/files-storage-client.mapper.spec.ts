@@ -36,12 +36,17 @@ describe('FilesStorageClientMapper', () => {
 			it('Should map to valid file Dtos.', () => {
 				const result = FilesStorageClientMapper.mapAxiosToFilesDto(response, schoolId);
 
-				expect(Array.isArray(result)).toBe(true);
-				expect(result[0].id).toStrictEqual(record.id);
-				expect(result[0].name).toStrictEqual(record.name);
-				expect(result[0].parentId).toStrictEqual(record.parentId);
-				expect(result[0].parentType).toStrictEqual(record.parentType);
-				expect(result[0].schoolId).toStrictEqual(schoolId);
+				expect(result).toEqual(
+					expect.objectContaining([
+						{
+							id: record.id,
+							name: record.name,
+							parentId: record.parentId,
+							parentType: record.parentType,
+							schoolId,
+						},
+					])
+				);
 			});
 		});
 
@@ -49,12 +54,17 @@ describe('FilesStorageClientMapper', () => {
 			it('Should map to valid file Dtos.', () => {
 				const result = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(list, schoolId);
 
-				expect(Array.isArray(result)).toBe(true);
-				expect(result[0].id).toStrictEqual(record.id);
-				expect(result[0].name).toStrictEqual(record.name);
-				expect(result[0].parentId).toStrictEqual(record.parentId);
-				expect(result[0].parentType).toStrictEqual(record.parentType);
-				expect(result[0].schoolId).toStrictEqual(schoolId);
+				expect(result).toEqual(
+					expect.objectContaining([
+						{
+							id: record.id,
+							name: record.name,
+							parentId: record.parentId,
+							parentType: record.parentType,
+							schoolId,
+						},
+					])
+				);
 			});
 		});
 
@@ -62,12 +72,15 @@ describe('FilesStorageClientMapper', () => {
 			it('Should map to valid file Dto.', () => {
 				const result = FilesStorageClientMapper.mapFileRecordResponseToFileDto(record, schoolId);
 
-				expect(result).toBeDefined();
-				expect(result.id).toStrictEqual(record.id);
-				expect(result.name).toStrictEqual(record.name);
-				expect(result.parentId).toStrictEqual(record.parentId);
-				expect(result.parentType).toStrictEqual(record.parentType);
-				expect(result.schoolId).toStrictEqual(schoolId);
+				expect(result).toEqual(
+					expect.objectContaining({
+						id: record.id,
+						name: record.name,
+						parentId: record.parentId,
+						parentType: record.parentType,
+						schoolId,
+					})
+				);
 			});
 
 			it.todo('Should use FileStorageClientMapper.mapStringToPartenType for map parentTypes');
@@ -125,10 +138,13 @@ describe('FilesStorageClientMapper', () => {
 			it('Should map to valid copy file Dtos.', () => {
 				const result = FilesStorageClientMapper.mapAxiosToCopyFilesDto(response);
 
-				expect(Array.isArray(result)).toBe(true);
-				expect(result[0].id).toStrictEqual(copyFileResponse.id);
-				expect(result[0].sourceId).toStrictEqual(copyFileResponse.sourceId);
-				expect(result[0].name).toStrictEqual(copyFileResponse.name);
+				expect(result).toEqual(
+					expect.objectContaining([
+						{
+							...copyFileResponse,
+						},
+					])
+				);
 			});
 		});
 
@@ -136,10 +152,13 @@ describe('FilesStorageClientMapper', () => {
 			it('Should map to valid file Dtos.', () => {
 				const result = FilesStorageClientMapper.mapCopyFileListResponseToCopyFilesDto(list);
 
-				expect(Array.isArray(result)).toBe(true);
-				expect(result[0].id).toStrictEqual(copyFileResponse.id);
-				expect(result[0].sourceId).toStrictEqual(copyFileResponse.sourceId);
-				expect(result[0].name).toStrictEqual(copyFileResponse.name);
+				expect(result).toEqual(
+					expect.objectContaining([
+						{
+							...copyFileResponse,
+						},
+					])
+				);
 			});
 		});
 
@@ -147,10 +166,11 @@ describe('FilesStorageClientMapper', () => {
 			it('Should map to valid file Dto.', () => {
 				const result = FilesStorageClientMapper.mapCopyFileResponseToCopyFileDto(copyFileResponse);
 
-				expect(result).toBeDefined();
-				expect(result.id).toStrictEqual(copyFileResponse.id);
-				expect(result.sourceId).toStrictEqual(copyFileResponse.sourceId);
-				expect(result.name).toStrictEqual(copyFileResponse.name);
+				expect(result).toEqual(
+					expect.objectContaining({
+						...copyFileResponse,
+					})
+				);
 			});
 
 			it.todo('Should use FileStorageClientMapper.mapStringToPartenType for map parentTypes');
