@@ -53,7 +53,12 @@ const bruteForceCheck = async (context) => {
 				}
 			}
 			// set current time to last tried login
-			await context.app.service('/accounts').patch(account._id, { lasttriedFailedLogin: Date.now() });
+			// ('/accounts').patch(...)
+			await context.app
+				.service('nest-account-service')
+				.updateLastTriedFailedLogin(account.id ? account.id : account._id.toString(), {
+					lasttriedFailedLogin: Date.now(),
+				});
 		}
 	}
 	return context;
@@ -65,7 +70,12 @@ const bruteForceReset = async (context) => {
 		return context;
 	}
 	// if successful login enable next login try directly
-	await context.app.service('/accounts').patch(context.result.account._id, { lasttriedFailedLogin: 0 });
+	// await context.app.service('/accounts').patch(context.result.account._id, { lasttriedFailedLogin: 0 });
+	await context.app
+		.service('nest-account-service')
+		.updateLastTriedFailedLogin(context.result.id ? context.result.id : context.result.id.toString(), {
+			lasttriedFailedLogin: 0,
+		});
 	return context;
 };
 
@@ -100,7 +110,7 @@ const injectUserId = async (context) => {
 						strategy,
 						systemId,
 					};
-					const newAccount = await context.app.service('accounts').create(accountParameters);
+					const newAccount = await context.app.service('nest-account-uc').saveAccount(accountParameters);
 					context.params.payload = {};
 					context.params.payload.accountId = newAccount._id;
 					if (newAccount.systemId) {

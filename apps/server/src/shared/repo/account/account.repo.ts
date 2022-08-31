@@ -28,6 +28,10 @@ export class AccountRepo extends BaseRepo<Account> {
 		return this._em.findOneOrFail(Account, { userId: new ObjectId(userId) });
 	}
 
+	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account> {
+		return this._em.findOneOrFail(Account, { username: username, systemId: new ObjectId(systemId)});
+	}
+
 	getObjectReference<Entity extends AnyEntity<Entity>>(
 		entityName: EntityName<Entity>,
 		id: Primary<Entity> | Primary<Entity>[]

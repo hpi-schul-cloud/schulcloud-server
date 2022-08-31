@@ -34,6 +34,14 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
+	async findByUsernameAndSystemId(userId: EntityId, systemId: EntityId): Promise<AccountDto>{
+		const accountEntity = await this.accountRepo.findByUsernameAndSystemId(userId, systemId);
+		if(!accountEntity) {
+			throw new EntityNotFoundError('Account');
+		}
+		return AccountEntityToDtoMapper.mapToDto(accountEntity);
+	}
+
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		// Check if the ID is correct?
 		// const user = await this.userRepo.findById(accountDto.userId);
@@ -73,6 +81,13 @@ export class AccountService {
 		account.updatedAt = new Date();
 		await this.accountRepo.save(account);
 		return AccountEntityToDtoMapper.mapToDto(account);
+	}
+
+	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto>{
+		const account = await this.accountRepo.findById(accountId);
+		account.lasttriedFailedLogin = lastTriedFailedLogin;
+		await this.accountRepo.save(account);
+		return AccountEntityToDtoMapper.mapToDto(account)
 	}
 
 	delete(id: EntityId): Promise<void> {
