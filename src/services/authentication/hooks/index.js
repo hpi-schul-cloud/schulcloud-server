@@ -20,6 +20,7 @@ const updateUsernameForLDAP = async (context) => {
 		await context.app
 			.service('schools')
 			.get(schoolId)
+			// eslint-disable-next-line promise/always-return
 			.then((school) => {
 				context.data.username = `${school.ldapSchoolIdentifier}/${context.data.username}`;
 			});
@@ -34,12 +35,17 @@ const bruteForceCheck = async (context) => {
 	const { systemId, strategy } = context.data;
 
 	if (strategy !== 'jwt') {
-		const [account] = await context.app.service('/accounts').find({
-			query: {
-				username: context.data.username,
-				systemId,
-			},
-			paginate: false,
+		// const [account] = await context.app.service('/accounts').find({
+		// 	query: {
+		// 		username: context.data.username,
+		// 		systemId,
+		// 	},
+		// 	paginate: false,
+		// });
+
+		const [account] = await context.app.service('nest-account-service').findByUsernameAndSystemId({
+			username: context.data.username,
+			systemId,
 		});
 
 		// if account doesn't exist we can not update (e.g. iserv, moodle)
@@ -85,13 +91,10 @@ const injectUserId = async (context) => {
 
 	if (strategy !== 'jwt' && context.data.username) {
 		return context.app
-			.service('/accounts')
-			.find({
-				query: {
-					username: context.data.username,
-					systemId,
-				},
-				paginate: false,
+			.service('nest-account-service')
+			.findByUsernameAndSystemId({
+				username: context.data.username,
+				systemId,
 			})
 			.then(async ([account]) => {
 				if (account) {
