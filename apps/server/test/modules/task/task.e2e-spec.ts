@@ -545,10 +545,9 @@ describe('Task Controller (e2e)', () => {
 					.set('Accept', 'application/json')
 					.set('Authorization', 'jwt')
 					.expect(400);
-				expect(r.body).toEqual({
-					type: 'BAD_REQUEST',
-					title: 'Bad Request',
-					message: 'Invalid ObjectId',
+				expect(r.body).toMatchObject({
+					type: 'API_VALIDATION_ERROR',
+					title: 'API Validation Error',
 					code: 400,
 				});
 			});

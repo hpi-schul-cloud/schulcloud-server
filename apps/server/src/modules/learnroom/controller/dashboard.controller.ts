@@ -1,11 +1,10 @@
-import { Controller, Get, Patch, Param, Body, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
-import { DashboardUc } from '../uc/dashboard.uc';
-import { DashboardResponse, MoveElementParams, PatchGroupParams } from './dto';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { DashboardMapper } from '../mapper/dashboard.mapper';
+import { DashboardUc } from '../uc/dashboard.uc';
+import { DashboardResponse, DashboardUrlParams, MoveElementParams, PatchGroupParams } from './dto';
 
 @ApiTags('Dashboard')
 @Authenticate('jwt')
@@ -20,9 +19,9 @@ export class DashboardController {
 		return dto;
 	}
 
-	@Patch(':id/moveElement')
+	@Patch(':dashboardId/moveElement')
 	async moveElement(
-		@Param('id', ParseObjectIdPipe) dashboardId: string,
+		@Param() { dashboardId }: DashboardUrlParams,
 		@Body() params: MoveElementParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<DashboardResponse> {
@@ -36,9 +35,9 @@ export class DashboardController {
 		return dto;
 	}
 
-	@Patch(':id/element')
+	@Patch(':dashboardId/element')
 	async patchGroup(
-		@Param('id', ParseObjectIdPipe) dashboardId: string,
+		@Param() { dashboardId }: DashboardUrlParams,
 		@Query('x') x: number,
 		@Query('y') y: number,
 		@Body() params: PatchGroupParams,

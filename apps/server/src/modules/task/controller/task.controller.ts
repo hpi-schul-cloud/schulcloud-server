@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
-import { ParseObjectIdPipe } from '@shared/controller/pipe';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 // todo  @src/modules/learnroom/* must be replaced
@@ -12,7 +11,7 @@ import serverConfig from '@src/server.config';
 import { TaskMapper } from '../mapper/task.mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
-import { TaskListResponse, TaskResponse } from './dto';
+import { TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
 import { TaskCopyApiParams } from './dto/task-copy.params';
 
 @ApiTags('Task')
@@ -51,11 +50,8 @@ export class TaskController {
 		return result;
 	}
 
-	@Patch(':id/finish')
-	async finish(
-		@Param('id', ParseObjectIdPipe) taskId: string,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<TaskResponse> {
+	@Patch(':taskId/finish')
+	async finish(@Param() { taskId }: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
 		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, taskId, true);
 
 		const response = TaskMapper.mapToResponse(task);
@@ -63,11 +59,8 @@ export class TaskController {
 		return response;
 	}
 
-	@Patch(':id/restore')
-	async restore(
-		@Param('id', ParseObjectIdPipe) taskId: string,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<TaskResponse> {
+	@Patch(':taskId/restore')
+	async restore(@Param() { taskId }: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
 		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, taskId, false);
 
 		const response = TaskMapper.mapToResponse(task);
@@ -75,9 +68,9 @@ export class TaskController {
 		return response;
 	}
 
-	@Delete(':id')
+	@Delete(':taskId')
 	async delete(
-		@Param('id', ParseObjectIdPipe) taskId: string,
+		@Param() { taskId }: TaskUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@JWT() jwt: string
 	): Promise<boolean> {
@@ -86,11 +79,11 @@ export class TaskController {
 		return result;
 	}
 
-	@Post(':id/copy')
+	@Post(':taskId/copy')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param('id', ParseObjectIdPipe) taskId: string,
+		@Param() { taskId }: TaskUrlParams,
 		@Body() params: TaskCopyApiParams,
 		@JWT() jwt: string
 	): Promise<CopyApiResponse> {

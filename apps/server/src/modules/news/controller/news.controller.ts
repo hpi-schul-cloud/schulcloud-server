@@ -1,11 +1,18 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationParams, ParseObjectIdPipe } from '@shared/controller';
+import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { NewsMapper } from '../mapper/news.mapper';
 import { NewsUc } from '../uc/news.uc';
-import { CreateNewsParams, FilterNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from './dto';
+import {
+	CreateNewsParams,
+	FilterNewsParams,
+	NewsListResponse,
+	NewsResponse,
+	NewsUrlParams,
+	UpdateNewsParams,
+} from './dto';
 
 @ApiTags('News')
 @Authenticate('jwt')
@@ -51,12 +58,8 @@ export class NewsController {
 	 * A user may only read news of scopes he has the read permission.
 	 * The news entity has school and user names populated.
 	 */
-	@Get(':id')
-	async findOne(
-		// A parameter pipe like ParseObjectIdPipe gives us the guarantee of typesafety for @Param
-		@Param('id', ParseObjectIdPipe) newsId: string,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<NewsResponse> {
+	@Get(':newsId')
+	async findOne(@Param() { newsId }: NewsUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<NewsResponse> {
 		const news = await this.newsUc.findOneByIdForUser(newsId, currentUser.userId);
 		const dto = NewsMapper.mapToResponse(news);
 		return dto;
@@ -65,9 +68,9 @@ export class NewsController {
 	/**
 	 * Update properties of a news.
 	 */
-	@Patch(':id')
+	@Patch(':newsId')
 	async update(
-		@Param('id', ParseObjectIdPipe) newsId: string,
+		@Param() { newsId }: NewsUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: UpdateNewsParams
 	): Promise<NewsResponse> {
@@ -79,11 +82,8 @@ export class NewsController {
 	/**
 	 * Delete a news.
 	 */
-	@Delete(':id')
-	async delete(
-		@Param('id', ParseObjectIdPipe) newsId: string,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<string> {
+	@Delete(':newsId')
+	async delete(@Param() { newsId }: NewsUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<string> {
 		const deletedId = await this.newsUc.delete(newsId, currentUser.userId);
 		return deletedId;
 	}
