@@ -952,8 +952,8 @@
 			"properties": {
 				"SAME_SITE": {
 					"type": "string",
-					"default": "Lax",
-					"enum": ["None", "Lax", "Strict"],
+					"default": "lax",
+					"enum": ["none", "lax", "strict"],
 					"description": "Value for cookies sameSite property. When SECURE flag is false, 'None' is not allowed in SAME_SITE and Lax should be used as default instead"
 				},
 				"HTTP_ONLY": {
@@ -1001,7 +1001,7 @@
 					"then": {
 						"properties": {
 							"SAME_SITE": {
-								"enum": ["Lax", "Strict"]
+								"enum": ["lax", "strict"]
 							}
 						}
 					}
