@@ -23,7 +23,7 @@ export class OauthSSOController {
 		const oauthResponse = await this.oauthUc.startOauth(query, systemid);
 		const cookieDefaultOptions: CookieOptions = {
 			httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
-			sameSite: Configuration.get('COOKIE__SAME_SITE') as boolean,
+			sameSite: Configuration.get('COOKIE__SAME_SITE') as 'lax' | 'strict' | 'none',
 			secure: Configuration.get('COOKIE__SECURE') as boolean,
 			expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
 		};
