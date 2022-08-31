@@ -105,8 +105,6 @@ export class AccountUc {
 		return AccountResponseMapper.mapToResponse(account);
 	}
 
-
-
 	async saveAccount(dto: AccountSaveDto): Promise<void> {
 		await validateOrReject(dto);
 		// sanatizeUsername ✔

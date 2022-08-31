@@ -8,6 +8,7 @@ import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shar
 import { AccountDto } from '@src/modules/account/services/dto';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountService } from './account.service';
+import { AccountModule } from '../account.module';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -26,6 +27,8 @@ describe('AccountService', () => {
 
 	let mockTeacherAccount: Account;
 	let mockStudentAccount: Account;
+
+	let mockAccountWithSystemId: Account;
 
 	afterAll(async () => {
 		await module.close();
@@ -74,6 +77,16 @@ describe('AccountService', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
+						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<Account> => {
+							const account = mockAccounts.find(
+								(tempAccount) => tempAccount.username === username && tempAccount.systemId === systemId
+							);
+							if (account) {
+								return Promise.resolve(account);
+							}
+							throw new EntityNotFoundError(Account.name);
+						},
+
 						findById: jest.fn().mockImplementation((accountId: EntityId): Promise<Account> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
 
@@ -121,7 +134,8 @@ describe('AccountService', () => {
 		mockTeacherAccount = accountFactory.buildWithId({ userId: mockTeacherUser.id, password: defaultPassword });
 		mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id, password: defaultPassword });
 
-		mockAccounts = [mockTeacherAccount, mockStudentAccount];
+		mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId()).build();
+		mockAccounts = [mockTeacherAccount, mockStudentAccount, mockAccountWithSystemId];
 	});
 
 	afterEach(() => {
@@ -144,6 +158,16 @@ describe('AccountService', () => {
 		it('should return null', async () => {
 			const resultAccount = await accountService.findByUserId('nonExistentId');
 			expect(resultAccount).toBeNull();
+		});
+	});
+
+	describe('findByUsernameAndSystemId', () => {
+		it('should returnn accountDto', async () => {
+			const resultAccount = await accountService.findByUsernameAndSystemId(
+				mockAccountWithSystemId.username,
+				mockAccountWithSystemId.systemId ?? ''
+			);
+			expect(resultAccount).not.toBe(undefined);
 		});
 	});
 
