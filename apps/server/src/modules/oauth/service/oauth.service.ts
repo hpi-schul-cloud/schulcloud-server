@@ -4,13 +4,15 @@ import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { OauthConfig, System, User } from '@shared/domain';
+import { OauthConfig, User } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { SystemRepo, UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AxiosResponse } from 'axios';
 import { Inject } from '@nestjs/common';
+import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -25,7 +27,7 @@ import { AuthorizationParams } from '../controller/dto/authorization.params';
 export class OAuthService {
 	constructor(
 		private readonly userRepo: UserRepo,
-		private readonly systemRepo: SystemRepo,
+		private readonly systemService: SystemService,
 		private readonly jwtService: FeathersJwtProvider,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
@@ -56,7 +58,7 @@ export class OAuthService {
 	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
 		this.logger.debug('requestToken() has started. Next up: decrypt().');
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
-		this.logger.debug('decrypt() ran succefullly. Next up: post().');
+		this.logger.debug('decrypt() ran successfully. Next up: post().');
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
 			oauthConfig,
 			decryptedClientSecret,
@@ -72,7 +74,7 @@ export class OAuthService {
 				},
 			}
 		);
-		this.logger.debug('post() ran succefullly. The tokens should get returned now.');
+		this.logger.debug('post() ran successfully. The tokens should get returned now.');
 		let responseToken: AxiosResponse<OauthTokenResponse>;
 		try {
 			responseToken = await lastValueFrom(responseTokenObservable);
@@ -103,17 +105,17 @@ export class OAuthService {
 		return verifiedJWT as IJwt;
 	}
 
-	async findUser(decodedJwt: IJwt, system: System): Promise<User> {
+	async findUser(decodedJwt: IJwt, system: SystemDto): Promise<User> {
 		// iserv strategy
 		if (system.oauthConfig && system.oauthConfig.provider === 'iserv') {
-			return this.iservOauthService.findUserById(system.id, decodedJwt);
+			return this.iservOauthService.findUserById(system.id ?? '', decodedJwt);
 		}
 		// FIXME Temporary change - wait for N21-138 merge
 		try {
 			return await this.userRepo.findById(decodedJwt.sub);
 		} catch (error) {
 			try {
-				return await this.userRepo.findByLdapIdOrFail(system.id, decodedJwt.sub);
+				return await this.userRepo.findByLdapIdOrFail(decodedJwt.preferred_username ?? '', system.id ?? '');
 			} catch {
 				throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
 			}
@@ -135,15 +137,15 @@ export class OAuthService {
 
 	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
 		try {
-			this.logger.debug('Oauth process strated. Next up: checkAuthorizationCode().');
+			this.logger.debug('Oauth process started. Next up: checkAuthorizationCode().');
 			const authCode: string = this.checkAuthorizationCode(query);
-			this.logger.debug('Done. Next up: systemRepo.findById().');
-			const system: System = await this.systemRepo.findById(systemId);
+			this.logger.debug('Done. Next up: systemService.findById().');
+			const system = await this.systemService.findOAuthById(systemId);
 			this.logger.debug('Done. Next up: oauthConfig check.');
 			const { oauthConfig } = system;
 			if (oauthConfig == null) {
 				this.logger.error(
-					`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id}`
+					`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${systemId}`
 				);
 				throw new OAuthSSOError('Requested system has no oauth configured', 'sso_internal_error');
 			}
@@ -164,7 +166,7 @@ export class OAuthService {
 			return oauthResponse;
 		} catch (error) {
 			this.logger.log(error);
-			const system: System = await this.systemRepo.findById(systemId);
+			const system = await this.systemService.findOAuthById(systemId);
 			return this.getOAuthError(error as string, system.oauthConfig?.provider as string);
 		}
 	}

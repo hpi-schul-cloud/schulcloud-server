@@ -5,6 +5,7 @@ import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto
 export class SystemMapper {
 	static mapFromEntityToDto(entity: System): SystemDto {
 		return new SystemDto({
+			id: entity.id,
 			type: entity.type,
 			url: entity.url,
 			alias: entity.alias,
