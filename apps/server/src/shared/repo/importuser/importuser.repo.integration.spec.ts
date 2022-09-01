@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import {
 	IImportUserRoleName,
 	ImportUser,
@@ -12,7 +12,7 @@ import {
 	School,
 	User,
 } from '@shared/domain';
-import { MikroORM, NotFoundError } from '@mikro-orm/core';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo } from '.';
 
 describe('ImportUserRepo', () => {
@@ -144,6 +144,17 @@ describe('ImportUserRepo', () => {
 				await expect(async () => repo.findImportUsers({} as unknown as School)).rejects.toThrowError(
 					'invalid school id'
 				);
+			});
+		});
+
+		describe('byExisting', () => {
+			it('should exclude deleted importUsers', async () => {
+				const school = schoolFactory.build();
+				const importUser = importUserFactory.build({ school, deletedAt: new Date() });
+				await em.persistAndFlush([school, importUser]);
+				const [results, count] = await repo.findImportUsers(school);
+				expect(results).not.toContain(importUser);
+				expect(count).toEqual(0);
 			});
 		});
 

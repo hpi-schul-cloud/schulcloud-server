@@ -1,9 +1,9 @@
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { BaseRepo } from '@shared/repo/base.repo';
-import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, School, User } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, School, User } from '@shared/domain';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { ImportUserScope } from './importuser.scope';
 
 @Injectable()
@@ -38,6 +38,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 	): Promise<Counted<ImportUser[]>> {
 		const scope = new ImportUserScope();
 		scope.bySchool(school);
+		scope.byExisting();
 		if (filters.firstName != null) scope.byFirstName(filters.firstName);
 		if (filters.lastName != null) scope.byLastName(filters.lastName);
 		if (filters.loginName != null) scope.byLoginName(filters.loginName);
