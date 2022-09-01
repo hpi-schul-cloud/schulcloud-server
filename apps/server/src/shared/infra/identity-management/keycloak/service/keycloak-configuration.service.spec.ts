@@ -18,7 +18,7 @@ import { SysType } from '../../sys.type';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
-import { flowAlias, KeycloakConfigurationService } from './keycloak-configuration.service';
+import { KeycloakConfigurationService } from './keycloak-configuration.service';
 
 describe('KeycloakConfigurationService Unit', () => {
 	let module: TestingModule;
@@ -204,6 +204,29 @@ describe('KeycloakConfigurationService Unit', () => {
 
 			repo.findAll.mockRestore();
 		});
+		it('should add a mapper to a newly created identity provider', async () => {
+			kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
+
+			await service.configureIdentityProviders();
+			expect(kcApiClientIdentityProvidersMock.createMapper).toBeCalledTimes(1);
+
+			repo.findAll.mockRestore();
+		});
+		it('should create a mapper for an updated identity provider if non existed before', async () => {
+			await service.configureIdentityProviders();
+			expect(kcApiClientIdentityProvidersMock.createMapper).toBeCalledTimes(1);
+
+			repo.findAll.mockRestore();
+		});
+		it('should update a mapper for an updated  identity provider', async () => {
+			kcApiClientIdentityProvidersMock.findMappers.mockResolvedValue([
+				{ id: '1', identityProviderAlias: idps[0].alias },
+			]);
+			await service.configureIdentityProviders();
+			expect(kcApiClientIdentityProvidersMock.updateMapper).toBeCalledTimes(1);
+
+			repo.findAll.mockRestore();
+		});
 	});
 
 	describe('configureClient', () => {
@@ -252,25 +275,22 @@ describe('KeycloakConfigurationService Unit', () => {
 		});
 		it('should save client secret', async () => {
 			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(repo.save).toBeCalledTimes(2);
+			expect(repo.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining({ clientSecret: expect.anything() }),
+				})
+			);
 		});
 		it('should create Keycloak system if not already exists', async () => {
 			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(repo.save).toBeCalledTimes(2);
+			expect(repo.save).toHaveBeenCalledWith(expect.objectContaining({ type: SysType.KEYCLOAK }));
 		});
 		it('should not create Keycloak system if already exists', async () => {
-			repo.findByFilter.mockResolvedValueOnce([systemFactory.build()]);
+			const mockedSystem = systemFactory.buildWithId();
+			repo.findByFilter.mockResolvedValueOnce([mockedSystem]);
 			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(repo.save).toBeCalledTimes(0);
-		});
-		it('should create Keycloak system if not already exists', async () => {
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(repo.save).toBeCalledTimes(2);
-		});
-		it('should not create Keycloak system if already exists', async () => {
-			repo.findByFilter.mockResolvedValueOnce([systemFactory.build()]);
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(repo.save).toBeCalledTimes(0);
+			expect(repo.save).toHaveBeenCalledWith(expect.objectContaining({ _id: mockedSystem._id }));
 		});
 	});
 
@@ -322,6 +342,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			);
 		});
 		it('should skip flow creation', async () => {
+			const flowAlias = 'Direct Broker Flow';
 			kcApiRealmsMock.makeRequest.mockImplementation(
 				() => async () => Promise.resolve([{ alias: flowAlias, id: 'id' }])
 			);

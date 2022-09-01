@@ -7,9 +7,10 @@ import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/li
 import AuthenticationExecutionExportRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionExportRepresentation';
 import { KeycloakModule } from '../keycloak.module';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
-import { flowAlias, KeycloakConfigurationService } from './keycloak-configuration.service';
+import { KeycloakConfigurationService } from './keycloak-configuration.service';
 
 describe('KeycloakConfigurationService Integration', () => {
+	const flowAlias = 'Direct Broker Flow';
 	let module: TestingModule;
 	let keycloakAdministrationService: KeycloakAdministrationService;
 	let keycloakConfigurationService: KeycloakConfigurationService;

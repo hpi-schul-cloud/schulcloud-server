@@ -1,5 +1,6 @@
 import AuthenticationExecutionInfoRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionInfoRepresentation';
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
+import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/IdentityProviderMapperRepresentation';
 import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clientRepresentation.js';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Inject } from '@nestjs/common';
@@ -18,9 +19,9 @@ enum ConfigureAction {
 	DELETE = 'delete',
 }
 
-export const flowAlias = 'Direct Broker Flow';
-export const CLIENT_ID = 'dbildungscloud-server';
-
+const flowAlias = 'Direct Broker Flow';
+const clientId = 'dbildungscloud-server';
+const defaultIdpMapperName = 'oidc-username-idp-mapper';
 export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
@@ -105,45 +106,32 @@ export class KeycloakConfigurationService {
 
 	public async configureClient(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
+		// TODO generalize this re-direct URL (will not work locally, due to missing port and httpS)
 		const redirectUri = `https://${SC_DOMAIN}/api/v3/sso/oauth/`;
-		const kcBaseUrl = `https://idm-${SC_DOMAIN}/realms/${kc.realmName}`;
+		const kcBaseUrl = `${kc.baseUrl}/realms/${kc.realmName}`;
 		const cr: ClientRepresentation = {};
-		cr.clientId = CLIENT_ID;
+		cr.clientId = clientId;
 		cr.enabled = true;
 		cr.protocol = 'openid-connect';
 		cr.publicClient = false;
 		cr.redirectUris = [`${redirectUri}*`];
-		let defaultClientInternalId = (await kc.clients.find({ clientId: CLIENT_ID }))[0]?.id;
+		let defaultClientInternalId = (await kc.clients.find({ clientId }))[0]?.id;
 		if (!defaultClientInternalId) {
 			({ id: defaultClientInternalId } = await kc.clients.create(cr));
+		} else {
+			await kc.clients.update({ id: defaultClientInternalId }, cr);
 		}
 		const generatedClientSecret = await kc.clients.generateNewClientSecret({ id: defaultClientInternalId });
+
+		let keycloakSystem: System;
 		const systems = await this.systemRepo.findByFilter(SysType.KEYCLOAK, false);
-		if (systems.length === 0 && generatedClientSecret.value) {
-			const keycloakSystem = new System({
-				type: SysType.KEYCLOAK,
-				alias: 'Keycloak',
-				oauthConfig: {
-					clientId: CLIENT_ID,
-					clientSecret: this.defaultEncryptionService.encrypt(generatedClientSecret.value),
-					grantType: 'authorization_code',
-					scope: 'openid profile email',
-					responseType: 'code',
-					provider: 'oauth',
-					tokenEndpoint: `${kcBaseUrl}/protocol/openid-connect/token`,
-					redirectUri: '',
-					authEndpoint: `${kcBaseUrl}/protocol/openid-connect/auth`,
-					logoutEndpoint: `${kcBaseUrl}/protocol/openid-connect/logout`,
-					jwksEndpoint: `${kcBaseUrl}/protocol/openid-connect/certs`,
-					issuer: `${kcBaseUrl}`,
-				},
-			});
-			await this.systemRepo.save(keycloakSystem);
-			if (keycloakSystem.oauthConfig) {
-				keycloakSystem.oauthConfig.redirectUri = `${redirectUri}${keycloakSystem.id}`;
-			}
-			await this.systemRepo.save(keycloakSystem);
+		if (systems.length === 0) {
+			keycloakSystem = new System({ type: SysType.KEYCLOAK });
+		} else {
+			[keycloakSystem] = systems;
 		}
+		this.setKeycloakSystemInformation(keycloakSystem, kcBaseUrl, redirectUri, generatedClientSecret.value ?? '');
+		await this.systemRepo.save(keycloakSystem);
 	}
 
 	public async configureIdentityProviders(): Promise<number> {
@@ -171,6 +159,31 @@ export class KeycloakConfigurationService {
 			}
 		}
 		return count;
+	}
+
+	private setKeycloakSystemInformation(
+		keycloakSystem: System,
+		kcBaseUrl: string,
+		redirectUri: string,
+		generatedClientSecret: string
+	) {
+		keycloakSystem.type = SysType.KEYCLOAK;
+		keycloakSystem.alias = 'Keycloak';
+		keycloakSystem.oauthConfig = {
+			clientId,
+			clientSecret: this.defaultEncryptionService.encrypt(generatedClientSecret),
+			grantType: 'authorization_code',
+			scope: 'openid profile email',
+			responseType: 'code',
+			provider: 'oauth',
+			tokenEndpoint: `${kcBaseUrl}/protocol/openid-connect/token`,
+			redirectUri: `${redirectUri}`,
+			authEndpoint: `${kcBaseUrl}/protocol/openid-connect/auth`,
+			logoutEndpoint: `${kcBaseUrl}/protocol/openid-connect/logout`,
+			jwksEndpoint: `${kcBaseUrl}/protocol/openid-connect/certs`,
+			issuer: `${kcBaseUrl}`,
+		};
+		return keycloakSystem;
 	}
 
 	/**
@@ -209,6 +222,7 @@ export class KeycloakConfigurationService {
 			await kc.identityProviders.create(
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
 			);
+			await this.createIdpDefaultMapper(system.alias);
 		}
 	}
 
@@ -219,7 +233,41 @@ export class KeycloakConfigurationService {
 				{ alias: system.alias },
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
 			);
+			await this.updateOrCreateIdpDefaultMapper(system.alias);
 		}
+	}
+
+	private async updateOrCreateIdpDefaultMapper(idpAlias: string) {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		const allMappers = await kc.identityProviders.findMappers({ alias: idpAlias });
+		const defaultMapper = allMappers.find((mapper) => mapper.name === defaultIdpMapperName);
+		if (defaultMapper?.id) {
+			await kc.identityProviders.updateMapper(
+				{ alias: idpAlias, id: defaultMapper.id },
+				this.getIdpMapperConfiguration(idpAlias, defaultMapper.id)
+			);
+		} else {
+			await this.createIdpDefaultMapper(idpAlias);
+		}
+	}
+
+	private async createIdpDefaultMapper(idpAlias: string) {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		await kc.identityProviders.createMapper({
+			alias: idpAlias,
+			identityProviderMapper: this.getIdpMapperConfiguration(idpAlias),
+		});
+	}
+
+	private getIdpMapperConfiguration(idpAlias: string, id?: string): IdentityProviderMapperRepresentation {
+		return {
+			id,
+			identityProviderAlias: idpAlias,
+			name: defaultIdpMapperName,
+			identityProviderMapper: defaultIdpMapperName,
+			// eslint-disable-next-line no-template-curly-in-string
+			config: { syncMode: 'FORCE', target: 'LOCAL', template: '${CLAIM.sub}' },
+		};
 	}
 
 	private async loadConfigs(sysTypes: SysType[]): Promise<IdentityProviderConfig[]> {
