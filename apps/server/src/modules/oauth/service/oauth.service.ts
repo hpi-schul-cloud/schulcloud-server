@@ -115,6 +115,8 @@ export class OAuthService {
 			return await this.userRepo.findById(decodedJwt.sub);
 		} catch (error) {
 			try {
+				// FIXME user id resolution is trial and error at the moment
+				// FIXME move system id to the token instead of path parameter
 				return await this.userRepo.findByLdapIdOrFail(decodedJwt.preferred_username ?? '', system.id ?? '');
 			} catch {
 				throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');

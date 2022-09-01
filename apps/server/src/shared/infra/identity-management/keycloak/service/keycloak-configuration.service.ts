@@ -106,9 +106,10 @@ export class KeycloakConfigurationService {
 
 	public async configureClient(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		// TODO generalize this re-direct URL (will not work locally, due to missing port and httpS)
+		// TODO generalize both (re-direct and base) URL. This will not work locally, due to missing port and https
 		const redirectUri = `https://${SC_DOMAIN}/api/v3/sso/oauth/`;
-		const kcBaseUrl = `${kc.baseUrl}/realms/${kc.realmName}`;
+		// TODO grab from well-known endpoint or move to separat environmental variable
+		const kcBaseUrl = `https://idm-${SC_DOMAIN}/realms/${kc.realmName}`;
 		const cr: ClientRepresentation = {};
 		cr.clientId = clientId;
 		cr.enabled = true;
@@ -176,6 +177,7 @@ export class KeycloakConfigurationService {
 			scope: 'openid profile email',
 			responseType: 'code',
 			provider: 'oauth',
+			// TODO grab from well-known endpoint instead of storing here
 			tokenEndpoint: `${kcBaseUrl}/protocol/openid-connect/token`,
 			redirectUri: `${redirectUri}`,
 			authEndpoint: `${kcBaseUrl}/protocol/openid-connect/auth`,
