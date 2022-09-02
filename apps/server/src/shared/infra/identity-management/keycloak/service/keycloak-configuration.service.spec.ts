@@ -148,7 +148,9 @@ describe('KeycloakConfigurationService Unit', () => {
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_enc`);
 		defaultEncryptionService.decrypt.mockImplementation((data) => `${data}_dec`);
+	});
 
+	beforeEach(() => {
 		repo.findAll.mockResolvedValue(systems);
 		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
 		kcApiClientIdentityProvidersMock.create.mockResolvedValue({ id: '' });
@@ -156,22 +158,15 @@ describe('KeycloakConfigurationService Unit', () => {
 		kcApiClientIdentityProvidersMock.del.mockResolvedValue();
 	});
 
-	beforeEach(() => {
+	afterEach(() => {
 		repo.findAll.mockClear();
 		kcApiClientIdentityProvidersMock.find.mockClear();
 		kcApiClientIdentityProvidersMock.create.mockClear();
 		kcApiClientIdentityProvidersMock.update.mockClear();
 		kcApiClientIdentityProvidersMock.del.mockClear();
+		kcApiClientIdentityProvidersMock.updateMapper.mockClear();
+		kcApiClientIdentityProvidersMock.createMapper.mockClear();
 		configService.get.mockClear();
-	});
-
-	afterAll(() => {
-		repo.findAll.mockRestore();
-		kcApiClientIdentityProvidersMock.find.mockRestore();
-		kcApiClientIdentityProvidersMock.create.mockRestore();
-		kcApiClientIdentityProvidersMock.update.mockRestore();
-		kcApiClientIdentityProvidersMock.del.mockRestore();
-		configService.get.mockRestore();
 	});
 
 	describe('configureIdentityProviders', () => {
@@ -209,23 +204,18 @@ describe('KeycloakConfigurationService Unit', () => {
 
 			await service.configureIdentityProviders();
 			expect(kcApiClientIdentityProvidersMock.createMapper).toBeCalledTimes(1);
-
-			repo.findAll.mockRestore();
 		});
 		it('should create a mapper for an updated identity provider if non existed before', async () => {
+			kcApiClientIdentityProvidersMock.findMappers.mockResolvedValue([]);
 			await service.configureIdentityProviders();
 			expect(kcApiClientIdentityProvidersMock.createMapper).toBeCalledTimes(1);
-
-			repo.findAll.mockRestore();
 		});
 		it('should update a mapper for an updated  identity provider', async () => {
 			kcApiClientIdentityProvidersMock.findMappers.mockResolvedValue([
-				{ id: '1', identityProviderAlias: idps[0].alias },
+				{ id: '1', identityProviderAlias: idps[0].alias, name: 'oidc-username-idp-mapper' },
 			]);
 			await service.configureIdentityProviders();
 			expect(kcApiClientIdentityProvidersMock.updateMapper).toBeCalledTimes(1);
-
-			repo.findAll.mockRestore();
 		});
 	});
 
