@@ -5,8 +5,7 @@ import { Logger } from '@src/core/logger';
 import { Response } from 'express';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydraOauth.uc';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ICurrentUser } from '@shared/domain';
+import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationParams } from './dto/authorization.params';
 

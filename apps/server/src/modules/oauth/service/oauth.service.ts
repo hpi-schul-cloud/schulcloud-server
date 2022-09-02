@@ -55,11 +55,12 @@ export class OAuthService {
 
 	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
 		this.logger.debug('requestToken() has started. Next up: decrypt().');
-		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
+		// TODO: use encryptedkey
+		// const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
 		this.logger.debug('decrypt() ran succefullly. Next up: post().');
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
 			oauthConfig,
-			decryptedClientSecret,
+			oauthConfig.clientSecret,
 			code
 		);
 		const query = QueryString.stringify(tokenRequestPayload);
