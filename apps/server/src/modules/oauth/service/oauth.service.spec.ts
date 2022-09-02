@@ -17,14 +17,14 @@ import { schoolFactory } from '@shared/testing';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { IservOAuthService } from './iserv-oauth.service';
 import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthResponse } from './dto/oauth.response';
 import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 
 jest.mock('jwks-rsa', () => {
 	return () => ({
