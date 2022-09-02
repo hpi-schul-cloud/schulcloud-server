@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { OauthConfig, System, User } from '@shared/domain';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
+import { OauthConfig, User } from '@shared/domain';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { IJwt } from '@src/modules/oauth/interface/jwt.base.interface';
 import { OAuthService } from '../service/oauth.service';

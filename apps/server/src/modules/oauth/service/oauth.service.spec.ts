@@ -322,33 +322,28 @@ describe('OAuthService', () => {
 	});
 
 	describe('findUser', () => {
-		it('should return the user according to the uuid(LdapId)', async () => {
+		let oauthConfig: OauthConfig;
+		beforeAll(() => {
 			// Arrange
-			const oauthConfig = new OauthConfig(defaultSystem.oauthConfig as OauthConfig);
+			oauthConfig = new OauthConfig(defaultSystem.oauthConfig as OauthConfig);
 			oauthConfig.provider = 'iserv';
-
+		});
+		it('should return the user according to the uuid(LdapId)', async () => {
 			// Act
-			const user: User = await service.findUser(defaultDecodedJWT, {
-				_id: new ObjectId(defaultIservSystemId),
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				id: defaultIservSystemId,
-				type: 'iserv',
-				oauthConfig,
-			});
+			const user: User = await service.findUser(defaultDecodedJWT, oauthConfig, defaultIservSystemId);
 
 			// Assert
 			expect(iservOAuthService.findUserById).toHaveBeenCalled();
 			expect(user).toBe(defaultIservUser);
 		});
 		it('should return the user according to the id', async () => {
-			const user = await service.findUser(defaultDecodedJWT, defaultSystem);
+			const user = await service.findUser(defaultDecodedJWT, oauthConfig, defaultSystem.id);
 			expect(userRepo.findById).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});
 		it('should return an error if no User is found by this Id', async () => {
 			defaultDecodedJWT.sub = '';
-			await expect(service.findUser(defaultDecodedJWT, defaultSystem)).rejects.toThrow(OAuthSSOError);
+			await expect(service.findUser(defaultDecodedJWT, oauthConfig, defaultSystem.id)).rejects.toThrow(OAuthSSOError);
 		});
 	});
 
@@ -363,28 +358,6 @@ describe('OAuthService', () => {
 		it('should build the Response successfully', () => {
 			const response = service.buildResponse(defaultIservSystem.oauthConfig as OauthConfig, defaultTokenResponse);
 			expect(response).toEqual(defaultResponseAfterBuild);
-		});
-	});
-
-	describe('processOAuth', () => {
-		it('should do the process successfully and redirect to iserv', async () => {
-			jest.spyOn(service, 'validateToken').mockResolvedValueOnce(defaultDecodedJWT);
-			const response = await service.processOAuth(defaultQuery, defaultIservSystemId);
-			expect(response.redirect).toStrictEqual(iservRedirectMock);
-			expect(response.jwt).toStrictEqual(defaultJWT);
-		});
-		it('should return an error if processOAuth failed', async () => {
-			const errorResponse = await service.processOAuth(defaultQuery, '');
-			expect(errorResponse).toEqual(defaultErrorResponse);
-		});
-		it('should throw error if oauthconfig is missing', async () => {
-			const system: System = systemFactory.buildWithId();
-			systemRepo.findById.mockResolvedValueOnce(system);
-			const response = await service.processOAuth(defaultQuery, system.id);
-			expect(response).toEqual({
-				errorcode: 'sso_internal_error',
-				redirect: 'https://mock.de/login?error=sso_internal_error&provider=mock_type',
-			});
 		});
 	});
 

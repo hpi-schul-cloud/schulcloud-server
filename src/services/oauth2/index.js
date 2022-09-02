@@ -52,7 +52,6 @@ module.exports = function oauth2() {
 			return hydraAdmin.getLoginRequest(challenge);
 		},
 		patch(challenge, body, params) {
-			console.log(challenge);
 			return params.query.accept
 				? hydraAdmin.acceptLoginRequest(challenge, body)
 				: hydraAdmin.rejectLoginRequest(challenge, body);

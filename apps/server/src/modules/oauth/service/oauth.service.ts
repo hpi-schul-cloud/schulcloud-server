@@ -10,7 +10,7 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { NotFoundException } from '@nestjs/common';
+import { Inject, NotFoundException } from '@nestjs/common';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -51,29 +51,6 @@ export class OAuthService {
 			this.logger.error(`SSO Oauth authorization code request return with an error: ${query.code as string}`);
 		}
 		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
-	}
-
-	async requestAuthToken(config: OauthConfig, userId: string): Promise<AuthorizationParams> {
-		const query = QueryString.stringify({
-			response_type: config.responseType,
-			scope: config.scope,
-			client_id: config.clientId,
-			redirect_uri: config.redirectUri,
-			state: 'GARGARGAR',
-		});
-		const axiosConfig: AxiosRequestConfig = {
-			headers: {
-				Cookie: `jwt=${await this.jwtService.generateJwt(userId)}`,
-			},
-		};
-		let respObservable = this.httpService.get<AuthorizationParams>(`${config.authEndpoint}?${query}`, axiosConfig);
-		let resp = await firstValueFrom(respObservable);
-		if (resp.status === 200) {
-			respObservable = this.httpService.get('http://localhost:3100/oauth2/login/success', axiosConfig);
-			resp = await firstValueFrom(respObservable);
-			this.logger.debug(resp.headers);
-		}
-		return resp.data;
 	}
 
 	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {

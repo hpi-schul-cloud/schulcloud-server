@@ -33,10 +33,4 @@ export class OauthSSOController {
 	async getHydraOauthToken(@Query() query: AuthorizationParams): Promise<OauthTokenResponse> {
 		return this.hydraUc.getOauthToken(query);
 	}
-
-	@Get('auth')
-	@Authenticate('jwt')
-	async requestAuthToken(@CurrentUser() currentUser: ICurrentUser): Promise<AuthorizationParams> {
-		return this.hydraUc.requestAuthCode(currentUser.userId);
-	}
 }

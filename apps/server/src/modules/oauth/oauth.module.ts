@@ -14,17 +14,7 @@ import { OauthUc } from './uc/oauth.uc';
 @Module({
 	imports: [LoggerModule, AuthorizationModule, HttpModule, EncryptionModule],
 	controllers: [OauthSSOController],
-	providers: [
-		OauthUc,
-		HydraOauthUc,
-		SystemRepo,
-		UserRepo,
-		OAuthService,
-		IservOAuthService,
-		{ provide: 'SYMMETRIC_CIPHER_KEY', useValue: key },
-		SymetricKeyEncryptionService,
-	],
-	providers: [OauthUc, SystemRepo, UserRepo, OAuthService, IservOAuthService],
+	providers: [OauthUc, HydraOauthUc, SystemRepo, UserRepo, OAuthService, IservOAuthService],
 	exports: [OauthUc],
 })
 export class OauthModule {}

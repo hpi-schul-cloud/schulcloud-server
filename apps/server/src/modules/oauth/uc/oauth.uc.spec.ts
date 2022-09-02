@@ -4,6 +4,8 @@ import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { System } from '@shared/domain';
+import { systemFactory } from '@shared/testing';
 import { OauthUc } from '.';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
@@ -96,6 +98,28 @@ describe('OAuthUc', () => {
 			jest.spyOn(oauthService, 'processOAuth').mockResolvedValue(defaultErrorResponse);
 			const response = await service.startOauth(defaultQuery, '');
 			expect(response.redirect).toEqual(defaultErrorRedirect);
+		});
+	});
+
+	describe('processOAuth', () => {
+		it('should do the process successfully and redirect to iserv', async () => {
+			jest.spyOn(service, 'validateToken').mockResolvedValueOnce(defaultDecodedJWT);
+			const response = await service.processOAuth(defaultQuery, defaultIservSystemId);
+			expect(response.redirect).toStrictEqual(iservRedirectMock);
+			expect(response.jwt).toStrictEqual(defaultJWT);
+		});
+		it('should return an error if processOAuth failed', async () => {
+			const errorResponse = await service.processOAuth(defaultQuery, '');
+			expect(errorResponse).toEqual(defaultErrorResponse);
+		});
+		it('should throw error if oauthconfig is missing', async () => {
+			const system: System = systemFactory.buildWithId();
+			systemRepo.findById.mockResolvedValueOnce(system);
+			const response = await service.processOAuth(defaultQuery, system.id);
+			expect(response).toEqual({
+				errorcode: 'sso_internal_error',
+				redirect: 'https://mock.de/login?error=sso_internal_error&provider=mock_type',
+			});
 		});
 	});
 });

@@ -658,10 +658,30 @@
 			"default": "admin",
 			"description": "Admin-password for Nextcloud-API"
 		},
+		"NEXTCLOUD_CLIENT_ID": {
+			"type:": "string",
+			"default": "Nextcloud",
+			"description": "ClientId for Nextcloud Oauth2 Login"
+		},
+		"NEXTCLOUD_CLIENT_SECRET": {
+			"type:": "string",
+			"default": "Nextcloud",
+			"description": "ClientSecret for Nextcloud Oauth2 Login"
+		},
 		"NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME": {
 			"type:": "string",
 			"default": "SchulcloudNextcloud",
 			"description": "Internal name of schulcloud oidc provider of nextcloud's social login app"
+		},
+		"HYDRA_URI": {
+			"type:": "string",
+			"default": "http://hydra.localhost:9000",
+			"description": "Internal Hydra URI"
+		},
+		"API_HOST": {
+			"type:": "string",
+			"default": "http://localhost:3031/api",
+			"description": "Internal API Host"
 		},
 		"COLLABORATIVE_STORAGE_PROVIDER": {
 			"type:": "string",
