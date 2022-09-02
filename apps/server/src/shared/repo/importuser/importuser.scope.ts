@@ -7,11 +7,6 @@ import { MongoPatterns } from '../mongo.patterns';
 import { Scope } from '../scope';
 
 export class ImportUserScope extends Scope<ImportUser> {
-	byExisting(): ImportUserScope {
-		this.addQuery({ deletedAt: null });
-		return this;
-	}
-
 	bySchool(school: School): ImportUserScope {
 		const schoolId = school._id;
 		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');

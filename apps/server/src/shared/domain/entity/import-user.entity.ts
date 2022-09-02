@@ -23,7 +23,6 @@ export interface IImportUserProperties {
 	user?: User;
 	matchedBy?: MatchCreator;
 	flagged?: boolean;
-	deletedAt?: Date;
 }
 
 export enum MatchCreator {
@@ -45,7 +44,6 @@ export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithS
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
 		this.email = props.email;
-		this.deletedAt = props.deletedAt;
 		if (Array.isArray(props.roleNames) && props.roleNames.length > 0) this.roleNames.push(...props.roleNames);
 		if (Array.isArray(props.classNames) && props.classNames.length > 0) this.classNames.push(...props.classNames);
 		if (props.user && props.matchedBy) this.setMatch(props.user, props.matchedBy);
@@ -112,9 +110,6 @@ export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithS
 
 	@Property({ type: Boolean })
 	flagged = false;
-
-	@Property({ nullable: true })
-	deletedAt?: Date;
 
 	setMatch(user: User, matchedBy: MatchCreator) {
 		if (this.school.id !== user.school.id) {

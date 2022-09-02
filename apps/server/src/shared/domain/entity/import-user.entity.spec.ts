@@ -46,12 +46,6 @@ describe('ImportUser entity', () => {
 			const importUser = importUserFactory.build({ flagged: false });
 			expect(importUser.flagged).not.toEqual(true);
 		});
-		it('should set deletedAt iff defined', () => {
-			const currentDate = new Date();
-			const importUser = importUserFactory.build({ deletedAt: currentDate });
-			expect(importUser.deletedAt).toBeDefined();
-			expect(importUser.deletedAt).toEqual(currentDate);
-		});
 	});
 
 	describe('match', () => {

@@ -147,17 +147,6 @@ describe('ImportUserRepo', () => {
 			});
 		});
 
-		describe('byExisting', () => {
-			it('should exclude deleted importUsers', async () => {
-				const school = schoolFactory.build();
-				const importUser = importUserFactory.build({ school, deletedAt: new Date() });
-				await em.persistAndFlush([school, importUser]);
-				const [results, count] = await repo.findImportUsers(school);
-				expect(results).not.toContain(importUser);
-				expect(count).toEqual(0);
-			});
-		});
-
 		describe('byFirstName', () => {
 			it('should find fully matching firstnames "exact match"', async () => {
 				const school = schoolFactory.build();

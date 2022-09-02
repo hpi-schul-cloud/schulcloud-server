@@ -38,7 +38,6 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 	): Promise<Counted<ImportUser[]>> {
 		const scope = new ImportUserScope();
 		scope.bySchool(school);
-		scope.byExisting();
 		if (filters.firstName != null) scope.byFirstName(filters.firstName);
 		if (filters.lastName != null) scope.byLastName(filters.lastName);
 		if (filters.loginName != null) scope.byLoginName(filters.loginName);
