@@ -185,8 +185,8 @@ export class OAuthService {
 		const oauthResponse: OAuthResponse = new OAuthResponse();
 		// iserv strategy
 		if (response.provider === 'iserv') {
-			const { idToken } = response;
-			const { logoutEndpoint } = response;
+			const idToken: string = response.idToken as string;
+			const logoutEndpoint: string = response.logoutEndpoint as string;
 			redirect = `${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`;
 		} else {
 			redirect = `${HOST}/dashboard`;
