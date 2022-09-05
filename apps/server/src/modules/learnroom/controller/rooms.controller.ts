@@ -33,40 +33,45 @@ export class RoomsController {
 
 	@Get(':roomId/board')
 	async getRoomBoard(
-		@Param() { roomId }: RoomUrlParams,
+		@Param() urlParams: RoomUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
-		const board = await this.roomsUc.getBoard(roomId, currentUser.userId);
+		const board = await this.roomsUc.getBoard(urlParams.roomId, currentUser.userId);
 		const mapped = this.mapper.mapToResponse(board);
 		return mapped;
 	}
 
 	@Patch(':roomId/elements/:elementId/visibility')
 	async patchElementVisibility(
-		@Param() { roomId, elementId }: RoomElementUrlParams,
+		@Param() urlParams: RoomElementUrlParams,
 		@Body() params: PatchVisibilityParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.roomsUc.updateVisibilityOfBoardElement(roomId, elementId, currentUser.userId, params.visibility);
+		await this.roomsUc.updateVisibilityOfBoardElement(
+			urlParams.roomId,
+			urlParams.elementId,
+			currentUser.userId,
+			params.visibility
+		);
 	}
 
 	@Patch(':roomId/board/order')
 	async patchOrderingOfElements(
-		@Param() { roomId }: RoomUrlParams,
+		@Param() urlParams: RoomUrlParams,
 		@Body() params: PatchOrderParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.roomsUc.reorderBoardElements(roomId, currentUser.userId, params.elements);
+		await this.roomsUc.reorderBoardElements(urlParams.roomId, currentUser.userId, params.elements);
 	}
 
 	@Post(':roomId/copy')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() { roomId }: RoomUrlParams,
+		@Param() urlParams: RoomUrlParams,
 		@JWT() jwt: string
 	): Promise<CopyApiResponse> {
-		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, roomId, jwt);
+		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId, jwt);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
 	}
@@ -75,13 +80,13 @@ export class RoomsController {
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() { lessonId }: LessonUrlParams,
+		@Param() urlParams: LessonUrlParams,
 		@Body() params: LessonCopyApiParams,
 		@JWT() jwt: string
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.lessonCopyUc.copyLesson(
 			currentUser.userId,
-			lessonId,
+			urlParams.lessonId,
 			CopyMapper.mapLessonCopyToDomain(params, jwt)
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);

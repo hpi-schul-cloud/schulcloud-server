@@ -37,14 +37,14 @@ export class DashboardController {
 
 	@Patch(':dashboardId/element')
 	async patchGroup(
-		@Param() { dashboardId }: DashboardUrlParams,
+		@Param() urlParams: DashboardUrlParams,
 		@Query('x') x: number,
 		@Query('y') y: number,
 		@Body() params: PatchGroupParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<DashboardResponse> {
 		const dashboard = await this.dashboardUc.renameGroupOnDashboard(
-			dashboardId,
+			urlParams.dashboardId,
 			{ x, y },
 			params.title,
 			currentUser.userId

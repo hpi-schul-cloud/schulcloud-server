@@ -51,8 +51,8 @@ export class TaskController {
 	}
 
 	@Patch(':taskId/finish')
-	async finish(@Param() { taskId }: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
-		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, taskId, true);
+	async finish(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
+		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, urlParams.taskId, true);
 
 		const response = TaskMapper.mapToResponse(task);
 
@@ -60,8 +60,8 @@ export class TaskController {
 	}
 
 	@Patch(':taskId/restore')
-	async restore(@Param() { taskId }: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
-		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, taskId, false);
+	async restore(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
+		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, urlParams.taskId, false);
 
 		const response = TaskMapper.mapToResponse(task);
 
@@ -70,11 +70,11 @@ export class TaskController {
 
 	@Delete(':taskId')
 	async delete(
-		@Param() { taskId }: TaskUrlParams,
+		@Param() urlParams: TaskUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@JWT() jwt: string
 	): Promise<boolean> {
-		const result = await this.taskUc.delete(currentUser.userId, taskId, jwt);
+		const result = await this.taskUc.delete(currentUser.userId, urlParams.taskId, jwt);
 
 		return result;
 	}
@@ -83,13 +83,13 @@ export class TaskController {
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() { taskId }: TaskUrlParams,
+		@Param() urlParams: TaskUrlParams,
 		@Body() params: TaskCopyApiParams,
 		@JWT() jwt: string
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.taskCopyUc.copyTask(
 			currentUser.userId,
-			taskId,
+			urlParams.taskId,
 			CopyMapper.mapTaskCopyToDomain(params, jwt)
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);

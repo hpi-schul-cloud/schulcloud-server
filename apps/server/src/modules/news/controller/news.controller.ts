@@ -59,8 +59,8 @@ export class NewsController {
 	 * The news entity has school and user names populated.
 	 */
 	@Get(':newsId')
-	async findOne(@Param() { newsId }: NewsUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<NewsResponse> {
-		const news = await this.newsUc.findOneByIdForUser(newsId, currentUser.userId);
+	async findOne(@Param() urlParams: NewsUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<NewsResponse> {
+		const news = await this.newsUc.findOneByIdForUser(urlParams.newsId, currentUser.userId);
 		const dto = NewsMapper.mapToResponse(news);
 		return dto;
 	}
@@ -70,11 +70,15 @@ export class NewsController {
 	 */
 	@Patch(':newsId')
 	async update(
-		@Param() { newsId }: NewsUrlParams,
+		@Param() urlParams: NewsUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: UpdateNewsParams
 	): Promise<NewsResponse> {
-		const news = await this.newsUc.update(newsId, currentUser.userId, NewsMapper.mapUpdateNewsToDomain(params));
+		const news = await this.newsUc.update(
+			urlParams.newsId,
+			currentUser.userId,
+			NewsMapper.mapUpdateNewsToDomain(params)
+		);
 		const dto = NewsMapper.mapToResponse(news);
 		return dto;
 	}
@@ -83,8 +87,8 @@ export class NewsController {
 	 * Delete a news.
 	 */
 	@Delete(':newsId')
-	async delete(@Param() { newsId }: NewsUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<string> {
-		const deletedId = await this.newsUc.delete(newsId, currentUser.userId);
+	async delete(@Param() urlParams: NewsUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<string> {
+		const deletedId = await this.newsUc.delete(urlParams.newsId, currentUser.userId);
 		return deletedId;
 	}
 }

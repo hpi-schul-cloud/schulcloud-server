@@ -16,9 +16,9 @@ export class OauthSSOController {
 	async startOauthAuthorizationCodeFlow(
 		@Query() query: AuthorizationParams,
 		@Res() res: Response,
-		@Param() { systemId }: SystemUrlParams
+		@Param() urlParams: SystemUrlParams
 	): Promise<unknown> {
-		const oauthResponse = await this.oauthUc.startOauth(query, systemId);
+		const oauthResponse = await this.oauthUc.startOauth(query, urlParams.systemId);
 		res.cookie('jwt', oauthResponse.jwt ? oauthResponse.jwt : '');
 		return res.redirect(oauthResponse.redirect ? oauthResponse.redirect : '');
 	}

@@ -20,13 +20,13 @@ export class TeamNewsController {
 	 */
 	@Get(':teamId/news')
 	async findAllForTeam(
-		@Param() { teamId }: TeamUrlParams,
+		@Param() urlParams: TeamUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: FilterNewsParams,
 		@Query() pagination: PaginationParams
 	): Promise<NewsListResponse> {
 		// enforce filter by a given team, used in team tab
-		scope.targetId = teamId;
+		scope.targetId = urlParams.teamId;
 		scope.targetModel = 'teams';
 		const [newsList, count] = await this.newsUc.findAllForUser(
 			currentUser.userId,

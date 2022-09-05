@@ -47,11 +47,11 @@ export class ImportUserController {
 
 	@Patch(':importUserId/match')
 	async setMatch(
-		@Param() { importUserId }: ImportUserUrlParams,
+		@Param() urlParams: ImportUserUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: UpdateMatchParams
 	): Promise<ImportUserResponse> {
-		const result = await this.userImportUc.setMatch(currentUser.userId, importUserId, params.userId);
+		const result = await this.userImportUc.setMatch(currentUser.userId, urlParams.importUserId, params.userId);
 		const response = ImportUserMapper.mapToResponse(result);
 
 		return response;
@@ -59,10 +59,10 @@ export class ImportUserController {
 
 	@Delete(':importUserId/match')
 	async removeMatch(
-		@Param() { importUserId }: ImportUserUrlParams,
+		@Param() urlParams: ImportUserUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ImportUserResponse> {
-		const result = await this.userImportUc.removeMatch(currentUser.userId, importUserId);
+		const result = await this.userImportUc.removeMatch(currentUser.userId, urlParams.importUserId);
 		const response = ImportUserMapper.mapToResponse(result);
 
 		return response;
@@ -70,11 +70,11 @@ export class ImportUserController {
 
 	@Patch(':importUserId/flag')
 	async updateFlag(
-		@Param() { importUserId }: ImportUserUrlParams,
+		@Param() urlParams: ImportUserUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: UpdateFlagParams
 	): Promise<ImportUserResponse> {
-		const result = await this.userImportUc.updateFlag(currentUser.userId, importUserId, params.flagged);
+		const result = await this.userImportUc.updateFlag(currentUser.userId, urlParams.importUserId, params.flagged);
 		const response = ImportUserMapper.mapToResponse(result);
 
 		return response;
