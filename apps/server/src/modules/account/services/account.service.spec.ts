@@ -8,7 +8,6 @@ import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shar
 import { AccountDto } from '@src/modules/account/services/dto';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountService } from './account.service';
-import { AccountModule } from '../account.module';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -373,6 +372,20 @@ describe('AccountService', () => {
 				...mockTeacherAccountDto,
 				updatedAt: theNewDate,
 				username: newUsername,
+			});
+		});
+	});
+
+	describe('updateLastTriedFailedLogin', () => {
+		it('should update last tried failed login', async () => {
+			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			const theNewDate = new Date();
+			const ret = await accountService.updateLastTriedFailedLogin(mockTeacherAccount.id, theNewDate);
+
+			expect(ret).toBeDefined();
+			expect(ret).toMatchObject({
+				...mockTeacherAccountDto,
+				lasttriedFailedLogin: theNewDate,
 			});
 		});
 	});

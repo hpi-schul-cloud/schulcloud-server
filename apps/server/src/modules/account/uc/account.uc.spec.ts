@@ -20,6 +20,7 @@ import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
+import { ObjectId } from 'bson';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -30,6 +31,8 @@ import {
 import { AccountEntityToDtoMapper, AccountResponseMapper } from '../mapper';
 import { AccountUc } from './account.uc';
 import { AccountValidationService } from '../services/account.validation.service';
+import { BruteForcePrevention } from '../../../../../../src/errors/index.js';
+import { LOGIN_BLOCK_TIME as allowedTimeDifference } from '../../../../../../config/globals.js';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -77,6 +80,9 @@ describe('AccountUc', () => {
 	let mockExternalUserAccount: Account;
 	let mockAccountWithoutRole: Account;
 	let mockAccountWithoutUser: Account;
+	let mockAccountWithSystemId: Account;
+	let mockAccountWithLastFailedLogin: Account;
+	let mockAccountWithOldLastFailedLogin: Account;
 	let mockAccounts: Account[];
 	let mockUsers: User[];
 
@@ -147,6 +153,17 @@ describe('AccountUc', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
+
+						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<AccountDto> => {
+							const account = mockAccounts.find(
+								(tempAccount) => tempAccount.username === username && tempAccount.systemId === systemId
+							);
+							if (account) {
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
+							}
+							throw new EntityNotFoundError(Account.name);
+						},
+
 						searchByUsernameExactMatch: (username: string): Promise<{ accounts: AccountDto[]; total: number }> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
 
@@ -176,6 +193,7 @@ describe('AccountUc', () => {
 								total: mockAccounts.length,
 							});
 						},
+						updateLastTriedFailedLogin: jest.fn(),
 					},
 				},
 				{
@@ -415,6 +433,19 @@ describe('AccountUc', () => {
 			password: defaultPasswordHash,
 			systemId: systemFactory.buildWithId().id,
 		});
+		mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId(10)).build();
+		mockAccountWithLastFailedLogin = accountFactory.buildWithId({
+			userId: undefined,
+			password: defaultPasswordHash,
+			systemId: systemFactory.buildWithId().id,
+			lasttriedFailedLogin: new Date(),
+		});
+		mockAccountWithOldLastFailedLogin = accountFactory.buildWithId({
+			userId: undefined,
+			password: defaultPasswordHash,
+			systemId: systemFactory.buildWithId().id,
+			lasttriedFailedLogin: new Date(new Date().getTime() - allowedTimeDifference - 1),
+		});
 
 		mockUsers = [
 			mockSuperheroUser,
@@ -453,6 +484,9 @@ describe('AccountUc', () => {
 			mockExternalUserAccount,
 			mockAccountWithoutRole,
 			mockAccountWithoutUser,
+			mockAccountWithSystemId,
+			mockAccountWithLastFailedLogin,
+			mockAccountWithOldLastFailedLogin,
 		];
 	});
 
@@ -1174,6 +1208,32 @@ describe('AccountUc', () => {
 					{ id: 'xxx' } as AccountByIdParams
 				)
 			).rejects.toThrow(EntityNotFoundError);
+		});
+	});
+
+	describe('checkBrutForce', () => {
+		let updateMock: jest.Mock;
+		beforeEach(() => {
+			// eslint-disable-next-line jest/unbound-method
+			updateMock = accountService.updateLastTriedFailedLogin as jest.Mock;
+			updateMock.mockClear();
+		});
+		it('should throw, if ...', async () => {
+			await expect(
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				accountUc.checkBrutForce(mockAccountWithLastFailedLogin.username, mockAccountWithLastFailedLogin.systemId!)
+			).rejects.toThrow(BruteForcePrevention);
+		});
+		it('should throw, if ...', async () => {
+			await expect(
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				accountUc.checkBrutForce(mockAccountWithSystemId.username, mockAccountWithSystemId.systemId!)
+			).resolves.not.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			expect(updateMock.mock.calls[0][0]).toEqual(mockAccountWithSystemId.id);
+			const newDate = new Date().getTime() - 10000;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			expect((updateMock.mock.calls[0][1] as Date).getTime()).toBeGreaterThan(newDate);
 		});
 	});
 });
