@@ -35,6 +35,7 @@ const bruteForceCheck = async (context) => {
 	const { systemId, strategy } = context.data;
 
 	if (strategy !== 'jwt') {
+		await context.app.service('nest-account-uc').checkBrutForce(context.data.username, systemId);
 		// const [account] = await context.app.service('/accounts').find({
 		// 	query: {
 		// 		username: context.data.username,
@@ -42,30 +43,30 @@ const bruteForceCheck = async (context) => {
 		// 	},
 		// 	paginate: false,
 		// });
-
-		const [account] = await context.app.service('nest-account-service').findByUsernameAndSystemId({
-			username: context.data.username,
-			systemId,
-		});
-
-		// if account doesn't exist we can not update (e.g. iserv, moodle)
-		if (account) {
-			if (account.lasttriedFailedLogin) {
-				const timeDifference = (Date.now() - account.lasttriedFailedLogin) / 1000;
-				if (timeDifference < allowedTimeDifference) {
-					throw new BruteForcePrevention('Brute Force Prevention!', {
-						timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
-					});
-				}
-			}
-			// set current time to last tried login
-			// ('/accounts').patch(...)
-			await context.app
-				.service('nest-account-service')
-				.updateLastTriedFailedLogin(account.id ? account.id : account._id.toString(), {
-					lasttriedFailedLogin: Date.now(),
-				});
-		}
+		//
+		// const [account] = await context.app.service('nest-account-service').findByUsernameAndSystemId({
+		// 	username: context.data.username,
+		// 	systemId,
+		// });
+		//
+		// // if account doesn't exist we can not update (e.g. iserv, moodle)
+		// if (account) {
+		// 	if (account.lasttriedFailedLogin) {
+		// 		const timeDifference = (Date.now() - account.lasttriedFailedLogin) / 1000;
+		// 		if (timeDifference < allowedTimeDifference) {
+		// 			throw new BruteForcePrevention('Brute Force Prevention!', {
+		// 				timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
+		// 			});
+		// 		}
+		// 	}
+		// 	// set current time to last tried login
+		// 	// ('/accounts').patch(...)
+		// 	await context.app
+		// 		.service('nest-account-service')
+		// 		.updateLastTriedFailedLogin(account.id ? account.id : account._id.toString(), {
+		// 			lasttriedFailedLogin: Date.now(),
+		// 		});
+		// }
 	}
 	return context;
 };
