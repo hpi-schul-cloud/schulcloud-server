@@ -26,6 +26,8 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 			name: entity.name,
+			oAuthClientId: entity.oAuthClientId,
+			secret: entity.secret,
 		});
 	}
 
@@ -33,6 +35,8 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		return {
 			id: entityDO.id,
 			name: entityDO.name,
+			oAuthClientId: entityDO.oAuthClientId,
+			secret: entityDO.secret,
 		};
 	}
 }

@@ -7,6 +7,7 @@ import { HydraOauthUc } from '@src/modules/oauth/uc/hydraOauth.uc';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
+import { HydraParams } from '@src/modules/oauth/controller/dto/hydra.params';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationParams } from './dto/authorization.params';
 
@@ -28,9 +29,12 @@ export class OauthSSOController {
 		return res.redirect(oauthResponse.redirect ? oauthResponse.redirect : '');
 	}
 
-	@Get('hydra')
+	@Get('hydra/:ltiToolId')
 	@Authenticate('jwt')
-	async getHydraOauthToken(@Query() query: AuthorizationParams): Promise<OauthTokenResponse> {
-		return this.hydraUc.getOauthToken(query);
+	async getHydraOauthToken(
+		@Query() query: AuthorizationParams,
+		@Param() { ltiToolId }: HydraParams
+	): Promise<OauthTokenResponse> {
+		return this.hydraUc.getOauthToken(query, ltiToolId);
 	}
 }
