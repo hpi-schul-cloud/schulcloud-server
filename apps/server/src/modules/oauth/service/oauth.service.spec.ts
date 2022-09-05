@@ -16,9 +16,9 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { schoolFactory } from '@shared/testing';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
 import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthResponse } from './dto/oauth.response';
@@ -72,7 +72,7 @@ describe('OAuthService', () => {
 	let systemRepo: DeepMocked<SystemRepo>;
 	let userRepo: DeepMocked<UserRepo>;
 	let feathersJwtProvider: DeepMocked<FeathersJwtProvider>;
-	let provisioningUc: DeepMocked<ProvisioningUc>;
+	let provisioningService: DeepMocked<ProvisioningService>;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -88,8 +88,8 @@ describe('OAuthService', () => {
 					useValue: createMock<SymetricKeyEncryptionService>(),
 				},
 				{
-					provide: ProvisioningUc,
-					useValue: createMock<ProvisioningUc>(),
+					provide: ProvisioningService,
+					useValue: createMock<ProvisioningService>(),
 				},
 				{
 					provide: HttpService,
@@ -126,7 +126,7 @@ describe('OAuthService', () => {
 		systemRepo = module.get(SystemRepo);
 		userRepo = module.get(UserRepo);
 		feathersJwtProvider = module.get(FeathersJwtProvider);
-		provisioningUc = module.get(ProvisioningUc);
+		provisioningService = module.get(ProvisioningService);
 
 		jest.mock('axios', () =>
 			jest.fn(() => {
@@ -329,7 +329,7 @@ describe('OAuthService', () => {
 
 		it('should return the user according to the uuid(externalId)', async () => {
 			// Arrange
-			provisioningUc.process.mockResolvedValue({ externalUserId: new ObjectId().toHexString() });
+			provisioningService.process.mockResolvedValue({ externalUserId: new ObjectId().toHexString() });
 			userRepo.findByExternalIdOrFail.mockResolvedValue(defaultIservUser);
 
 			// Act
@@ -357,7 +357,7 @@ describe('OAuthService', () => {
 		it('should return the user according to the id', async () => {
 			// Arrange
 			const provisioning: ProvisioningDto = new ProvisioningDto({ externalUserId: new ObjectId().toHexString() });
-			provisioningUc.process.mockResolvedValue(provisioning);
+			provisioningService.process.mockResolvedValue(provisioning);
 			userRepo.findByExternalIdOrFail.mockResolvedValue(defaultUser);
 
 			// Act

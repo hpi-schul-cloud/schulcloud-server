@@ -11,8 +11,8 @@ import { SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AxiosResponse } from 'axios';
 import { Inject, UnprocessableEntityException } from '@nestjs/common';
-import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
+import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -31,7 +31,7 @@ export class OAuthService {
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
 		private readonly logger: Logger,
-		private readonly provisioningUc: ProvisioningUc
+		private readonly provisioningService: ProvisioningService
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
@@ -99,7 +99,7 @@ export class OAuthService {
 			issuer: oauthConfig.issuer,
 			audience: oauthConfig.clientId,
 		});
-		if (verifiedJWT instanceof String) {
+		if (typeof verifiedJWT === 'string') {
 			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
 		}
 		return verifiedJWT as IJwt;
@@ -113,7 +113,7 @@ export class OAuthService {
 		}
 
 		this.logger.debug(`provisioning is running for user with sub: ${sub} and system with id: ${systemId}`);
-		const provisioningDto: ProvisioningDto = await this.provisioningUc.process(accessToken, idToken, systemId);
+		const provisioningDto: ProvisioningDto = await this.provisioningService.process(accessToken, idToken, systemId);
 
 		try {
 			const user: User = await this.userRepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
@@ -185,8 +185,8 @@ export class OAuthService {
 		const oauthResponse: OAuthResponse = new OAuthResponse();
 		// iserv strategy
 		if (response.provider === 'iserv') {
-			const idToken = response.idToken as string;
-			const logoutEndpoint = response.logoutEndpoint as string;
+			const { idToken } = response;
+			const { logoutEndpoint } = response;
 			redirect = `${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`;
 		} else {
 			redirect = `${HOST}/dashboard`;

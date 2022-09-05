@@ -1,19 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
-import { SystemUc } from '@src/modules/system/uc/system.uc';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
 import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
+import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
+import { SystemService } from '@src/modules/system/service/system.service';
 
-describe('ProvisioningUc', () => {
+describe('ProvisioningService', () => {
 	let module: TestingModule;
-	let provisioningUc: ProvisioningUc;
+	let provisioningService: ProvisioningService;
 
-	let systemUc: DeepMocked<SystemUc>;
+	let systemService: DeepMocked<SystemService>;
 	let sanisProvisioningStrategy: DeepMocked<SanisProvisioningStrategy>;
 	let iservProvisioningStrategy: DeepMocked<IservProvisioningStrategy>;
 	let logger: DeepMocked<Logger>;
@@ -21,10 +21,10 @@ describe('ProvisioningUc', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				ProvisioningUc,
+				ProvisioningService,
 				{
-					provide: SystemUc,
-					useValue: createMock<SystemUc>(),
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 				{
 					provide: SanisProvisioningStrategy,
@@ -40,9 +40,9 @@ describe('ProvisioningUc', () => {
 				},
 			],
 		}).compile();
-		provisioningUc = module.get(ProvisioningUc);
+		provisioningService = module.get(ProvisioningService);
 
-		systemUc = module.get(SystemUc);
+		systemService = module.get(SystemService);
 		sanisProvisioningStrategy = module.get(SanisProvisioningStrategy);
 		iservProvisioningStrategy = module.get(IservProvisioningStrategy);
 		logger = module.get(Logger);
@@ -70,7 +70,7 @@ describe('ProvisioningUc', () => {
 		});
 
 		beforeEach(() => {
-			systemUc.findById.mockImplementationOnce((id: string): Promise<SystemDto> => {
+			systemService.findById.mockImplementationOnce((id: string): Promise<SystemDto> => {
 				if (id === sanisSystemStrategyId) {
 					return Promise.resolve(sanisStrategySystem);
 				}
@@ -83,14 +83,14 @@ describe('ProvisioningUc', () => {
 
 		it('should throw error when system does not exists', async () => {
 			// Act & Assert
-			await expect(provisioningUc.process('accessToken', 'idToken', 'no system found')).rejects.toThrow(
+			await expect(provisioningService.process('accessToken', 'idToken', 'no system found')).rejects.toThrow(
 				UnprocessableEntityException
 			);
 		});
 
 		it('should apply sanis provisioning strategy', async () => {
 			// Act
-			await provisioningUc.process('accessToken', 'idToken', sanisSystemStrategyId);
+			await provisioningService.process('accessToken', 'idToken', sanisSystemStrategyId);
 
 			// Assert
 			expect(sanisProvisioningStrategy.apply).toHaveBeenCalled();
@@ -101,14 +101,14 @@ describe('ProvisioningUc', () => {
 			sanisStrategySystem.provisioningUrl = undefined;
 
 			// Act & Assert
-			await expect(provisioningUc.process('accessToken', 'idToken', sanisSystemStrategyId)).rejects.toThrow(
+			await expect(provisioningService.process('accessToken', 'idToken', sanisSystemStrategyId)).rejects.toThrow(
 				UnprocessableEntityException
 			);
 		});
 
 		it('should apply iserv provisioning strategy', async () => {
 			// Act
-			await provisioningUc.process('accessToken', 'idToken', iservSystemStrategyId);
+			await provisioningService.process('accessToken', 'idToken', iservSystemStrategyId);
 
 			// Assert
 			expect(iservProvisioningStrategy.apply).toHaveBeenCalled();
@@ -120,11 +120,11 @@ describe('ProvisioningUc', () => {
 				type: 'unknown',
 				provisioningStrategy: 'unknown strategy' as SystemProvisioningStrategy,
 			});
-			systemUc.findById.mockReset();
-			systemUc.findById.mockResolvedValueOnce(missingStrategySystem);
+			systemService.findById.mockReset();
+			systemService.findById.mockResolvedValueOnce(missingStrategySystem);
 
 			// Act & Assert
-			await expect(provisioningUc.process('accessToken', 'idToken', 'missingStrategySystemId')).rejects.toThrow(
+			await expect(provisioningService.process('accessToken', 'idToken', 'missingStrategySystemId')).rejects.toThrow(
 				InternalServerErrorException
 			);
 			expect(logger.error).toHaveBeenCalled();

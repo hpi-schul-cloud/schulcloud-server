@@ -1,5 +1,4 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { SystemUc } from '@src/modules/system/uc/system.uc';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
 import { ProvisioningSystemInputDto } from '@src/modules/provisioning/dto/provisioning-system-input.dto';
@@ -7,22 +6,23 @@ import { ProvisioningSystemInputMapper } from '@src/modules/provisioning/mapper/
 import { SanisProvisioningStrategy, SanisStrategyData } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
 import { IservProvisioningStrategy, IservStrategyData } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
+import { SystemService } from '@src/modules/system/service/system.service';
 
 @Injectable()
-export class ProvisioningUc {
+export class ProvisioningService {
 	constructor(
-		private readonly systemUc: SystemUc,
+		private readonly systemService: SystemService,
 		private readonly sanisStrategy: SanisProvisioningStrategy,
 		private readonly iservStrategy: IservProvisioningStrategy,
 		private readonly logger: Logger
 	) {
-		this.logger.setContext(ProvisioningUc.name);
+		this.logger.setContext(ProvisioningService.name);
 	}
 
 	async process(accessToken: string, idToken: string, systemId: string): Promise<ProvisioningDto> {
 		let system: ProvisioningSystemInputDto;
 		try {
-			system = ProvisioningSystemInputMapper.mapToInternal(await this.systemUc.findById(systemId));
+			system = ProvisioningSystemInputMapper.mapToInternal(await this.systemService.findById(systemId));
 		} catch (e) {
 			this.logger.error(`System with id ${systemId} was not found.`);
 			throw new UnprocessableEntityException(`System with id "${systemId}" does not exist.`);

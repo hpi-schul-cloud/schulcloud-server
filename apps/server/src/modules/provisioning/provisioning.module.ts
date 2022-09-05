@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { Logger, LoggerModule } from '@src/core/logger';
-import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
 import { SchoolModule } from '@src/modules/school/school.module';
 import { RoleModule } from '@src/modules/role/role.module';
 import { SystemModule } from '@src/modules/system/system.module';
@@ -13,12 +12,13 @@ import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/is
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { AccountModule } from '@src/modules/account/account.module';
 import { UserModule } from '@src/modules/user/user.module';
+import { ProvisioningService } from './service/provisioning.service';
 
 @Module({
 	imports: [AccountModule, SchoolModule, UserModule, RoleModule, SystemModule, LoggerModule, HttpModule],
 	controllers: [],
 	providers: [
-		ProvisioningUc,
+		ProvisioningService,
 		SanisProvisioningStrategy,
 		IservProvisioningStrategy,
 		Logger,
@@ -28,6 +28,6 @@ import { UserModule } from '@src/modules/user/user.module';
 		RoleRepo,
 		PermissionService,
 	],
-	exports: [ProvisioningUc],
+	exports: [ProvisioningService],
 })
 export class ProvisioningModule {}
