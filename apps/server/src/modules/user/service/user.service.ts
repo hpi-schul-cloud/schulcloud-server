@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
+import { EntityId, LanguageType, Role, School, User } from '@shared/domain';
 import { RoleRepo, SchoolRepo, UserRepo } from '@shared/repo';
 import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
@@ -17,16 +17,8 @@ export class UserService {
 		private readonly roleRepo: RoleRepo,
 		private readonly roleService: RoleService,
 		private readonly schoolRepo: SchoolRepo,
-		private readonly permissionService: PermissionService,
 		private readonly configService: ConfigService<IUserConfig, true>
 	) {}
-
-	async me(userId: EntityId): Promise<[User, string[]]> {
-		const user = await this.userRepo.findById(userId, true);
-		const permissions = this.permissionService.resolvePermissions(user);
-
-		return [user, permissions];
-	}
 
 	private checkAvailableLanguages(language: LanguageType): void | BadRequestException {
 		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {

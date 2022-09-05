@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LanguageType, PermissionService, Role, RoleName, School, User } from '@shared/domain';
+import { LanguageType, Role, RoleName, School, User } from '@shared/domain';
 import { RoleRepo, SchoolRepo, UserRepo } from '@shared/repo';
 import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { RoleService } from '@src/modules/role/service/role.service';
@@ -18,7 +18,6 @@ describe('UserService', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let schoolRepo: DeepMocked<SchoolRepo>;
 	let roleRepo: DeepMocked<RoleRepo>;
-	let permissionService: DeepMocked<PermissionService>;
 	let config: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
@@ -42,10 +41,6 @@ describe('UserService', () => {
 					useValue: createMock<RoleRepo>(),
 				},
 				{
-					provide: PermissionService,
-					useValue: createMock<PermissionService>(),
-				},
-				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
@@ -56,7 +51,6 @@ describe('UserService', () => {
 		userRepo = module.get(UserRepo);
 		schoolRepo = module.get(SchoolRepo);
 		roleRepo = module.get(RoleRepo);
-		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
 
 		orm = await setupEntities();
@@ -73,22 +67,6 @@ describe('UserService', () => {
 
 	it('should be defined', () => {
 		expect(service).toBeDefined();
-	});
-
-	describe('me', () => {
-		let user: User;
-
-		beforeEach(() => {
-			user = userFactory.buildWithId({ roles: [] });
-			userRepo.findById.mockResolvedValue(user);
-		});
-
-		it('should provide information about the passed userId', async () => {
-			await service.me(user.id);
-
-			expect(userRepo.findById).toHaveBeenCalled();
-			expect(permissionService.resolvePermissions).toHaveBeenCalledWith(user);
-		});
 	});
 
 	describe('patchLanguage', () => {
