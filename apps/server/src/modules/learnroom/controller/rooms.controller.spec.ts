@@ -154,13 +154,15 @@ describe('rooms controller', () => {
 			};
 			it('should call uc', async () => {
 				const { currentUser, ucSpy } = setup();
-				await controller.copyCourse(currentUser, { roomId: 'roomId' }, 'some-jwt-token');
-				expect(ucSpy).toHaveBeenCalledWith('userId', 'roomId', 'some-jwt-token');
+				const fakejwt = `jwt${Date.now()}`;
+				await controller.copyCourse(currentUser, { roomId: 'roomId' }, fakejwt);
+				expect(ucSpy).toHaveBeenCalledWith('userId', 'roomId', fakejwt);
 			});
 
 			it('should return result of correct type', async () => {
 				const { currentUser } = setup();
-				const result = await controller.copyCourse(currentUser, { roomId: 'roomId' }, 'some-jwt-token');
+				const fakejwt = `jwt${Date.now()}`;
+				const result = await controller.copyCourse(currentUser, { roomId: 'roomId' }, fakejwt);
 				expect(result).toBeInstanceOf(CopyApiResponse);
 			});
 		});
@@ -184,13 +186,15 @@ describe('rooms controller', () => {
 
 			it('should call uc with parentId', async () => {
 				const { currentUser, ucSpy } = setup();
-				await controller.copyLesson(currentUser, { lessonId: 'lessonId' }, { courseId: 'id' }, 'some-jwt-token');
-				expect(ucSpy).toHaveBeenCalledWith('userId', 'lessonId', { courseId: 'id', jwt: 'some-jwt-token' });
+				const fakejwt = `jwt${Date.now()}`;
+				await controller.copyLesson(currentUser, { lessonId: 'lessonId' }, { courseId: 'id' }, fakejwt);
+				expect(ucSpy).toHaveBeenCalledWith('userId', 'lessonId', { courseId: 'id', jwt: fakejwt });
 			});
 
 			it('should return result of correct type', async () => {
 				const { currentUser } = setup();
-				const result = await controller.copyLesson(currentUser, { lessonId: 'lessonId' }, {}, 'some-jwt-token');
+				const fakejwt = `jwt${Date.now()}`;
+				const result = await controller.copyLesson(currentUser, { lessonId: 'lessonId' }, {}, fakejwt);
 				expect(result).toBeInstanceOf(CopyApiResponse);
 			});
 		});
