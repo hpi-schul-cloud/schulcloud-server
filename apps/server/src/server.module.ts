@@ -8,10 +8,10 @@ import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/i
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { CoreModule } from '@src/core';
-import { UserModule } from '@src/modules/user';
-import { SchoolModule } from '@src/modules/school/school.module';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { RoleModule } from '@src/modules/role/role.module';
+import { SchoolModule } from '@src/modules/school/school.module';
+import { UserRootModule } from '@src/modules/user';
 // todo: MUST BE CHECKED BEFORE MERGE
 // import { FilesModule } from '@src/modules/files';
 import {
@@ -44,7 +44,7 @@ const serverModules = [
 	OauthModule,
 	TaskModule,
 	NewsModule,
-	UserModule,
+	UserRootModule,
 	ImportUserModule,
 	LearnroomModule,
 	FilesStorageClientModule,

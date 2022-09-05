@@ -1,16 +1,21 @@
-import { RoleRepo, SchoolRepo, UserRepo } from '@shared/repo';
-import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
+import { RoleRepo, SchoolRepo, UserRepo } from '@shared/repo';
+import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { RoleService } from '@src/modules/role/service/role.service';
 import { IUserConfig } from '@src/modules/user/interfaces';
+import { UserMapper } from '@src/modules/user/mapper/user.mapper';
+import { UserDto } from '@src/modules/user/uc/dto/user.dto';
+import { UserUcMapper } from '../mapper/user.uc.mapper';
 
 @Injectable()
 export class UserService {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly roleRepo: RoleRepo,
+		private readonly roleService: RoleService,
 		private readonly schoolRepo: SchoolRepo,
 		private readonly permissionService: PermissionService,
 		private readonly configService: ConfigService<IUserConfig, true>
@@ -53,5 +58,11 @@ export class UserService {
 
 		const promise: Promise<void> = this.userRepo.save(saveEntity);
 		return promise;
+	}
+
+	async saveProvisioningUserOutputDto(user: ProvisioningUserOutputDto): Promise<void> {
+		const roleDtos = await this.roleService.findByNames(user.roleNames);
+		const roleIds: EntityId[] = roleDtos.map((role: RoleDto) => role.id as EntityId);
+		return this.createOrUpdate(UserUcMapper.mapFromProvisioningUserOutputDtoToUserDto(user, roleIds));
 	}
 }
