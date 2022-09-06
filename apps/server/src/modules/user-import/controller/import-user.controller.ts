@@ -1,23 +1,24 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { PaginationParams, ParseObjectIdPipe } from '@shared/controller';
+import { PaginationParams } from '@shared/controller';
 import { ICurrentUser, IFindOptions, ImportUser, User } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 
-import { UserImportUc } from '../uc/user-import.uc';
 import { ImportUserMapper } from '../mapper/import-user.mapper';
 import { UserMatchMapper } from '../mapper/user-match.mapper';
+import { UserImportUc } from '../uc/user-import.uc';
 
 import {
 	FilterImportUserParams,
+	FilterUserParams,
 	ImportUserListResponse,
 	ImportUserResponse,
+	ImportUserUrlParams,
+	SortImportUserParams,
+	UpdateFlagParams,
 	UpdateMatchParams,
 	UserMatchListResponse,
-	FilterUserParams,
-	UpdateFlagParams,
-	SortImportUserParams,
 } from './dto';
 
 @ApiTags('UserImport')
@@ -44,36 +45,36 @@ export class ImportUserController {
 		return response;
 	}
 
-	@Patch(':id/match')
+	@Patch(':importUserId/match')
 	async setMatch(
-		@Param('id', ParseObjectIdPipe) importUserId: string,
+		@Param() urlParams: ImportUserUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: UpdateMatchParams
 	): Promise<ImportUserResponse> {
-		const result = await this.userImportUc.setMatch(currentUser.userId, importUserId, params.userId);
+		const result = await this.userImportUc.setMatch(currentUser.userId, urlParams.importUserId, params.userId);
 		const response = ImportUserMapper.mapToResponse(result);
 
 		return response;
 	}
 
-	@Delete(':id/match')
+	@Delete(':importUserId/match')
 	async removeMatch(
-		@Param('id', ParseObjectIdPipe) importUserId: string,
+		@Param() urlParams: ImportUserUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ImportUserResponse> {
-		const result = await this.userImportUc.removeMatch(currentUser.userId, importUserId);
+		const result = await this.userImportUc.removeMatch(currentUser.userId, urlParams.importUserId);
 		const response = ImportUserMapper.mapToResponse(result);
 
 		return response;
 	}
 
-	@Patch(':id/flag')
+	@Patch(':importUserId/flag')
 	async updateFlag(
-		@Param('id', ParseObjectIdPipe) importUserId: string,
+		@Param() urlParams: ImportUserUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: UpdateFlagParams
 	): Promise<ImportUserResponse> {
-		const result = await this.userImportUc.updateFlag(currentUser.userId, importUserId, params.flagged);
+		const result = await this.userImportUc.updateFlag(currentUser.userId, urlParams.importUserId, params.flagged);
 		const response = ImportUserMapper.mapToResponse(result);
 
 		return response;

@@ -65,7 +65,7 @@ describe('OAuthController', () => {
 					}/dashboard`,
 				})),
 			});
-			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
+			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
 			const expected = [query, system.id];
 			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).toBeCalledWith('jwt', '1111');
@@ -79,7 +79,7 @@ describe('OAuthController', () => {
 					logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
 				})),
 			});
-			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
+			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
 			expect(res.cookie).toBeCalledWith('jwt', '');
 			expect(res.redirect).toBeCalledWith('');
 		});
