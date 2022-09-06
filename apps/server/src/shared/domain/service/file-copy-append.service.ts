@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-	FileParamBuilder,
-	FilesStorageClientAdapterService,
-	CopyFilesService,
-} from '@src/modules/files-storage-client';
+import { CopyFilesService } from '@src/modules/files-storage-client';
 import { CopyFileDto } from '@src/modules/files-storage-client/dto';
 import { uniq } from 'lodash';
 import { IComponentProperties, Lesson, Task } from '../entity';
@@ -17,76 +13,9 @@ export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
 export class FileCopyAppendService {
 	constructor(
 		private readonly copyHelperService: CopyHelperService,
-		private readonly fileCopyAdapterService: FilesStorageClientAdapterService,
 		private readonly fileLegacyService: FileLegacyService,
 		private readonly copyFilesService: CopyFilesService
 	) {}
-
-	async appendFiles(copyStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
-		if (copyStatus.type === CopyElementType.TASK) {
-			return this.appendFilesToTask(copyStatus, jwt);
-		}
-		if (copyStatus.elements && copyStatus.elements.length > 0) {
-			copyStatus.elements = await Promise.all(copyStatus.elements.map((el) => this.appendFiles(el, jwt)));
-			copyStatus.status = this.copyHelperService.deriveStatusFromElements(copyStatus.elements);
-		}
-		return Promise.resolve(copyStatus);
-	}
-
-	private async appendFilesToTask(taskCopyStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
-		const taskCopyStatusCopy = { ...taskCopyStatus };
-		if (taskCopyStatusCopy.copyEntity === undefined || taskCopyStatusCopy.originalEntity === undefined) {
-			return taskCopyStatusCopy;
-		}
-		try {
-			const original: Task = taskCopyStatusCopy.originalEntity as Task;
-			const copy: Task = taskCopyStatusCopy.copyEntity as Task;
-			const source = FileParamBuilder.build(jwt, original.school.id, original);
-			const target = FileParamBuilder.build(jwt, copy.school.id, copy);
-			const files = await this.fileCopyAdapterService.copyFilesOfParent(source, target);
-			return this.createSuccessCopyStatus(taskCopyStatusCopy, files);
-		} catch (err) {
-			return this.createFailedCopyStatus(taskCopyStatusCopy);
-		}
-	}
-
-	private createSuccessCopyStatus(taskCopyStatus: CopyStatus, files: CopyFileDto[]): CopyStatus {
-		const fileGroupStatus = {
-			type: CopyElementType.FILE_GROUP,
-			status: CopyStatusEnum.SUCCESS,
-			elements: this.createFileStatuses(files),
-		};
-		taskCopyStatus.status = this.copyHelperService.deriveStatusFromElements(fileGroupStatus.elements);
-		taskCopyStatus.elements = this.setFileGroupStatus(taskCopyStatus.elements, fileGroupStatus);
-		return taskCopyStatus;
-	}
-
-	private createFailedCopyStatus(taskCopyStatus: CopyStatus) {
-		let fileGroupStatus = this.getFileGroupStatus(taskCopyStatus.elements);
-
-		if (fileGroupStatus === undefined) {
-			fileGroupStatus = {
-				type: CopyElementType.FILE_GROUP,
-				status: CopyStatusEnum.FAIL,
-			};
-		}
-
-		const elements =
-			fileGroupStatus.elements && fileGroupStatus.elements.length > 0
-				? fileGroupStatus.elements.map((el) => {
-						el.status = CopyStatusEnum.FAIL;
-						return el;
-				  })
-				: undefined;
-		const updatedFileGroupStatus = {
-			...fileGroupStatus,
-			status: CopyStatusEnum.FAIL,
-			elements,
-		};
-		taskCopyStatus.status = this.copyHelperService.deriveStatusFromElements(taskCopyStatus.elements || []);
-		taskCopyStatus.elements = this.setFileGroupStatus(taskCopyStatus.elements, updatedFileGroupStatus);
-		return taskCopyStatus;
-	}
 
 	private getFileGroupStatus(elements: CopyStatus[] = []): CopyStatus {
 		return elements.find((el) => el.type === CopyElementType.FILE_GROUP) as CopyStatus;
@@ -98,14 +27,6 @@ export class FileCopyAppendService {
 			return elements.map((el) => (el.type === CopyElementType.FILE_GROUP ? updatedFileGroupStatus : el));
 		}
 		return [...elements, updatedFileGroupStatus];
-	}
-
-	private createFileStatuses(files: CopyFileDto[]): CopyStatus[] {
-		return files.map((file) => ({
-			type: CopyElementType.FILE,
-			title: file.name,
-			status: CopyStatusEnum.SUCCESS,
-		}));
 	}
 
 	private createLegayFileStatusesByCopyResult(files: FileLegacyResponse[]): CopyStatus[] {
@@ -129,8 +50,7 @@ export class FileCopyAppendService {
 			return this.copyEmbeddedFilesOfLessons(copyStatus, courseId, userId, jwt);
 		}
 		if (copyStatus.type === CopyElementType.TASK) {
-			const updatedStatus = await this.appendFilesToTask(copyStatus, jwt);
-			return this.copyEmbeddedFilesOfTasks(updatedStatus, courseId, userId);
+			return this.copyEmbeddedFilesOfTasks(copyStatus, courseId, userId, jwt);
 		}
 		if (copyStatus.elements && copyStatus.elements.length > 0) {
 			copyStatus.elements = await Promise.all(
@@ -188,29 +108,20 @@ export class FileCopyAppendService {
 			}
 		}
 
-		const { entity, response } = await this.copyFilesService.copyFilesOfEntity(
-			lessonCopyStatus.originalEntity,
-			lesson,
-			jwt
-		);
-
-		lessonCopyStatus.copyEntity = entity;
-
-		if (response.length > 0) {
-			const fileGroupStatus = this.deriveFileGroupStatus(response);
-			lessonCopyStatus.elements = this.setFileGroupStatus(lessonCopyStatus.elements, fileGroupStatus);
-			lessonCopyStatus.status = this.copyHelperService.deriveStatusFromElements(lessonCopyStatus.elements);
-		}
-
-		return lessonCopyStatus;
+		return this.copyFilesOfEntity(lessonCopyStatus, lessonCopyStatus.originalEntity, lesson, jwt);
 	}
 
 	async copyEmbeddedFilesOfTasks(
 		taskCopyStatus: CopyStatus,
 		courseId: EntityId,
-		userId: EntityId
+		userId: EntityId,
+		jwt: string
 	): Promise<CopyStatus> {
-		const task = taskCopyStatus.copyEntity as Task;
+		if (!(taskCopyStatus.copyEntity instanceof Task) || !(taskCopyStatus.originalEntity instanceof Task)) {
+			return taskCopyStatus;
+		}
+
+		const task = taskCopyStatus.copyEntity;
 		const legacyFileIds = this.extractOldFileIds(task.description);
 
 		if (legacyFileIds.length > 0) {
@@ -232,7 +143,25 @@ export class FileCopyAppendService {
 			taskCopyStatus.copyEntity = task;
 		}
 
-		return taskCopyStatus;
+		return this.copyFilesOfEntity(taskCopyStatus, taskCopyStatus.originalEntity, task, jwt);
+	}
+
+	async copyFilesOfEntity(copyStatus: CopyStatus, originalEntity: Task | Lesson, entity: Task | Lesson, jwt: string) {
+		const { entity: updatedEntity, response } = await this.copyFilesService.copyFilesOfEntity(
+			originalEntity,
+			entity,
+			jwt
+		);
+
+		copyStatus.copyEntity = updatedEntity;
+
+		if (response.length > 0) {
+			const fileGroupStatus = this.deriveFileGroupStatus(response);
+			copyStatus.elements = this.setFileGroupStatus(copyStatus.elements, fileGroupStatus);
+			copyStatus.status = this.copyHelperService.deriveStatusFromElements(copyStatus.elements);
+		}
+
+		return copyStatus;
 	}
 
 	private deriveLegacyFileGroupStatus(fileCopyResults: FileLegacyResponse[]) {
