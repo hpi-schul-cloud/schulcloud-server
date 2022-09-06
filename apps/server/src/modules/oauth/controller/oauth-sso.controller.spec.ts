@@ -16,8 +16,7 @@ describe('OAuthController', () => {
 	let oauthUc: DeepMocked<OauthUc>;
 
 	const mockHost = 'https://mock.de';
-	const defaultJWT =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
+	const defaultJWT = 'JWT_mock';
 	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${mockHost}/dashboard`;
 
 	const dateNow: Date = new Date('2020-01-01T00:00:00.000Z');
