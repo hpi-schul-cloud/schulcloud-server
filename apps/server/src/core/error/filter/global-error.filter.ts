@@ -1,8 +1,10 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
 import { ILogger, Logger } from '@src/core/logger';
-import { Response } from 'express';
+import cookie from 'cookie';
+import { Request, Response } from 'express';
 import _ from 'lodash';
+import { v4 as uuid } from 'uuid';
 import { ApiValidationErrorResponse, ErrorResponse } from '../dto';
 import { FeathersError } from '../interface';
 
@@ -114,15 +116,21 @@ const writeErrorLog = (error: unknown, logger: ILogger): void => {
 };
 
 @Catch()
-export class GlobalErrorFilter<T = unknown> implements ExceptionFilter<T> {
+export class GlobalErrorFilter<T extends { traceId?: string }> implements ExceptionFilter<T> {
 	constructor(private logger: Logger) {
 		this.logger.setContext('Error');
 	}
 
-	// eslint-disable-next-line class-methods-use-this
 	catch(error: T, host: ArgumentsHost): void {
 		const ctx = host.switchToHttp();
+		const request = ctx.getRequest<Request>();
 		const response = ctx.getResponse<Response>();
+		const cookies = cookie.parse(request.headers.cookie || '');
+		const traceId: string = cookies.traceId || uuid();
+
+		response.cookie('traceId', traceId);
+		error.traceId = traceId;
+
 		writeErrorLog(error, this.logger);
 		const errorResponse: ErrorResponse = this.createErrorResponse(error);
 		response.status(errorResponse.code).json(errorResponse);
