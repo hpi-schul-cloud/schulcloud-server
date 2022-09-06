@@ -96,7 +96,7 @@ describe('OAuthController', () => {
 			});
 
 			// Act
-			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
+			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
 
 			// Assert
 			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
@@ -113,7 +113,7 @@ describe('OAuthController', () => {
 			});
 
 			// Act
-			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
+			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
 
 			// Assert
 			expect(res.cookie).toBeCalledWith('jwt', '', cookieProperties);

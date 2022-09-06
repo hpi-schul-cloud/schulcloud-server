@@ -1,11 +1,10 @@
 import { Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ParseObjectIdPipe } from '@shared/controller/pipe/parse-object-id.pipe';
 import { Logger } from '@src/core/logger';
 import { CookieOptions, Response } from 'express';
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthUc } from '../uc/oauth.uc';
-import { AuthorizationParams } from './dto/authorization.params';
+import { AuthorizationParams, SystemUrlParams } from './dto';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -14,13 +13,13 @@ export class OauthSSOController {
 		this.logger.setContext(OauthSSOController.name);
 	}
 
-	@Get('oauth/:systemid')
+	@Get('oauth/:systemId')
 	async startOauthAuthorizationCodeFlow(
 		@Query() query: AuthorizationParams,
 		@Res() res: Response,
-		@Param('systemid', ParseObjectIdPipe) systemid: string
+		@Param() urlParams: SystemUrlParams
 	): Promise<void> {
-		const oauthResponse = await this.oauthUc.startOauth(query, systemid);
+		const oauthResponse = await this.oauthUc.startOauth(query, urlParams.systemId);
 		const cookieDefaultOptions: CookieOptions = {
 			httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
 			sameSite: Configuration.get('COOKIE__SAME_SITE') as 'lax' | 'strict' | 'none',
