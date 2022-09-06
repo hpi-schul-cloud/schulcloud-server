@@ -29,7 +29,7 @@ Default is (like it is expected) as default and is overritten by added enviremen
 
 ## current and NestJS solutions
 
-## @hpi-schul-cloud/commons
+### @hpi-schul-cloud/commons
 
 ``` javascript
     const { Configuration } = require('@hpi-schul-cloud/commons');
