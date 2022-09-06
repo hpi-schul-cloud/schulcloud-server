@@ -9,7 +9,7 @@ We want to avoid any process.env.XXX call inside of the code.
 > It is not documentated on a single place, or has a desciption to understand for what it is used.
 > Any validation and used default value is set on the called placed and is hard to detected by deploying and reuse on other places.
 
-## history and legacy tech stack
+## History and legacy tech stack
 
 ### FeatherJS and Express
 
@@ -27,7 +27,7 @@ It is extended over featherJS and directly matched to
 
 Default is (like it is expected) as default and is overritten by added envirement variables from test.json, or production.json.
 
-## current and NestJS solutions
+## Current and NestJS solutions
 
 ### @hpi-schul-cloud/commons
 
@@ -112,7 +112,7 @@ For test we can also use injections of the nestjs configuration module, or servi
 
 > Please look to featherJS test examples or nestjs test examples in this file for configurations that should only effects single tests.
 
-### auto deployment (overriding and setting additional values)
+### Auto deployment (overriding and setting additional values)
 
 We have 2 sources that can fullfill and add envirements.
 The one is our auto deployment repository that can set envirment values directly over config.jsons.
@@ -126,9 +126,9 @@ on all production like systems (dev, ref, production), it should not add to conf
 
 > For documentation how it is work, plase look to our confluence. No github documentation exist atm.
 
-### nestjs configuration module
+### Nestjs configuration module
 
-#### setup configuration interfaces
+#### Setup configuration interfaces
 
 <https://docs.nestjs.com/techniques/configuration>
 
@@ -269,7 +269,7 @@ Mocking in api (.e2e) tests.
     });
 ```
 
-### special cases in nestjs
+### Special cases in nestjs
 
 If we want to use values in decorators, we can not use the nestjs configuration module.
 The parsing of decorators in file start first and after it the injections are solved.
@@ -298,7 +298,7 @@ They are readable in brower and request response.
 
 > The public config endpoint should move to v3/ stack in future.
 
-## desired changes in future
+## Desired changes in future
 
 We want to remove the different config files and the Configuration from @hpi-schul-cloud/commons package.
 We want to use the nestjs solutions over parsing configuration values for different states.
@@ -306,7 +306,7 @@ This result in a new format for the default.schema.json file.
 
 We also want to put more envirments values to database, to enable us to switching it without redeploys over our dashboard.
 
-## local setups
+## Local setups
 
 You can use the .env convention to set settings that only work for you locally.
 For temporary checks you can add envirements to you terminal based on the solution of your IOS.
