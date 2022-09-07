@@ -76,15 +76,24 @@ describe('AccountService', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
-						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<Account> => {
+						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<Account | null> => {
 							const account = mockAccounts.find(
 								(tempAccount) => tempAccount.username === username && tempAccount.systemId === systemId
 							);
 							if (account) {
 								return Promise.resolve(account);
 							}
-							throw new EntityNotFoundError(Account.name);
+							return Promise.resolve(null);
 						},
+						// findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<Account> => {
+						// 	const account = mockAccounts.find(
+						// 		(tempAccount) => tempAccount.username === username && tempAccount.systemId === systemId
+						// 	);
+						// 	if (account) {
+						// 		return Promise.resolve(account);
+						// 	}
+						// 	throw new EntityNotFoundError('Account');
+						// },
 
 						findById: jest.fn().mockImplementation((accountId: EntityId): Promise<Account> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
@@ -161,12 +170,26 @@ describe('AccountService', () => {
 	});
 
 	describe('findByUsernameAndSystemId', () => {
-		it('should returnn accountDto', async () => {
+		it('should return accountDto', async () => {
 			const resultAccount = await accountService.findByUsernameAndSystemId(
 				mockAccountWithSystemId.username,
 				mockAccountWithSystemId.systemId ?? ''
 			);
 			expect(resultAccount).not.toBe(undefined);
+		});
+		it('should return null if username does not exist', async () => {
+			const resultAccount = await accountService.findByUsernameAndSystemId(
+				'nonExistentUsername',
+				mockAccountWithSystemId.systemId ?? ''
+			);
+			expect(resultAccount).toBeNull();
+		});
+		it('should return null if system id does not exist', async () => {
+			const resultAccount = await accountService.findByUsernameAndSystemId(
+				mockAccountWithSystemId.username,
+				'nonExistentSystemId' ?? ''
+			);
+			expect(resultAccount).toBeNull();
 		});
 	});
 
