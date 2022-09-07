@@ -388,7 +388,7 @@ describe('file copy append service', () => {
 						copyEntity: copyLesson,
 					};
 
-					const updatedCopyStatus = await copyService.copyEmbeddedFilesOfLessons(
+					const updatedCopyStatus = await copyService.copyEmbeddedLegacyFilesOfLessons(
 						copyStatus,
 						originalCourse.id,
 						user.id,

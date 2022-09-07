@@ -109,7 +109,7 @@ describe('lesson copy uc', () => {
 
 			const jwt = 'some-fake-jwt';
 			fileCopyAppendService.appendFiles.mockResolvedValue(status);
-			fileCopyAppendService.copyEmbeddedFilesOfLessons.mockResolvedValue(status);
+			fileCopyAppendService.copyEmbeddedLegacyFilesOfLessons.mockResolvedValue(status);
 
 			return {
 				user,

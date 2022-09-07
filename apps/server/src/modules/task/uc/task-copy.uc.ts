@@ -68,14 +68,16 @@ export class TaskCopyUC {
 		});
 
 		if (status.copyEntity instanceof Task && status.originalEntity instanceof Task) {
-			const taskCopy = status.copyEntity;
-			await this.taskRepo.save(taskCopy);
 			status = await this.fileCopyAppendService.copyFilesOfEntity(
 				status,
 				status.originalEntity,
-				taskCopy,
+				status.copyEntity,
 				parentParams.jwt
 			);
+		}
+
+		if (status.copyEntity instanceof Task) {
+			await this.taskRepo.save(status.copyEntity);
 		}
 
 		return status;

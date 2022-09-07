@@ -46,11 +46,17 @@ export class FileCopyAppendService {
 	}
 
 	async copyFiles(copyStatus: CopyStatus, courseId: EntityId, userId: EntityId, jwt: string): Promise<CopyStatus> {
-		if (copyStatus.type === CopyElementType.LESSON) {
-			return this.copyEmbeddedFilesOfLessons(copyStatus, courseId, userId, jwt);
+		const { copyEntity, originalEntity, type } = copyStatus;
+
+		if (type === CopyElementType.LESSON && copyEntity instanceof Lesson && originalEntity instanceof Lesson) {
+			const status = await this.copyEmbeddedLegacyFilesOfLessons(copyStatus, courseId, userId);
+
+			return this.copyFilesOfEntity(status, originalEntity, copyEntity, jwt);
 		}
-		if (copyStatus.type === CopyElementType.TASK) {
-			return this.copyEmbeddedFilesOfTasks(copyStatus, courseId, userId, jwt);
+		if (type === CopyElementType.TASK && copyEntity instanceof Task && originalEntity instanceof Task) {
+			const status = await this.copyEmbeddedLegacyFilesOfTasks(copyStatus, courseId, userId);
+
+			return this.copyFilesOfEntity(status, originalEntity, copyEntity, jwt);
 		}
 		if (copyStatus.elements && copyStatus.elements.length > 0) {
 			copyStatus.elements = await Promise.all(
@@ -61,11 +67,10 @@ export class FileCopyAppendService {
 		return copyStatus;
 	}
 
-	async copyEmbeddedFilesOfLessons(
+	async copyEmbeddedLegacyFilesOfLessons(
 		lessonCopyStatus: CopyStatus,
 		courseId: EntityId,
-		userId: EntityId,
-		jwt: string
+		userId: EntityId
 	): Promise<CopyStatus> {
 		if (!(lessonCopyStatus.copyEntity instanceof Lesson) || !(lessonCopyStatus.originalEntity instanceof Lesson)) {
 			return lessonCopyStatus;
@@ -108,14 +113,13 @@ export class FileCopyAppendService {
 			}
 		}
 
-		return this.copyFilesOfEntity(lessonCopyStatus, lessonCopyStatus.originalEntity, lesson, jwt);
+		return lessonCopyStatus;
 	}
 
-	async copyEmbeddedFilesOfTasks(
+	async copyEmbeddedLegacyFilesOfTasks(
 		taskCopyStatus: CopyStatus,
 		courseId: EntityId,
-		userId: EntityId,
-		jwt: string
+		userId: EntityId
 	): Promise<CopyStatus> {
 		if (!(taskCopyStatus.copyEntity instanceof Task) || !(taskCopyStatus.originalEntity instanceof Task)) {
 			return taskCopyStatus;
@@ -143,7 +147,7 @@ export class FileCopyAppendService {
 			taskCopyStatus.copyEntity = task;
 		}
 
-		return this.copyFilesOfEntity(taskCopyStatus, taskCopyStatus.originalEntity, task, jwt);
+		return taskCopyStatus;
 	}
 
 	async copyFilesOfEntity(copyStatus: CopyStatus, originalEntity: Task | Lesson, entity: Task | Lesson, jwt: string) {
