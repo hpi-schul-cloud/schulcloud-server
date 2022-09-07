@@ -658,15 +658,10 @@
 			"default": "admin",
 			"description": "Admin-password for Nextcloud-API"
 		},
-		"NEXTCLOUD_CLIENT_ID": {
+		"NEXTCLOUD_SCOPES": {
 			"type:": "string",
-			"default": "Nextcloud",
+			"default": "openid offline profile email groups",
 			"description": "ClientId for Nextcloud Oauth2 Login"
-		},
-		"NEXTCLOUD_CLIENT_SECRET": {
-			"type:": "string",
-			"default": "Nextcloud",
-			"description": "ClientSecret for Nextcloud Oauth2 Login"
 		},
 		"NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME": {
 			"type:": "string",
