@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { FileRecordParentType, IComponentProperties, Lesson, Task } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
 import _ from 'lodash';
-import { EmbeddedFilesRepo, fileUrlRegex } from '../repo/embedded-files.repo';
+import { EmbeddedFilesRepo, fileIdRegex, fileUrlRegex } from '../repo/embedded-files.repo';
 import { AvailableSyncEntityType, AvailableSyncParentType, SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
 import { SyncFilesStorageService } from './sync-files-storage.service';
@@ -35,6 +35,15 @@ export class SyncEmbeddedFilesUc {
 			const fileIds = this.extractFileIds(entity);
 
 			const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
+
+			fileIds.forEach((id) => {
+				const idExists = files.some((file) => new ObjectId(file.source.id) === id);
+
+				if (!idExists) {
+					this.failedIds.push(entity._id);
+				}
+			});
+
 			return this.syncFiles(files, entity);
 		});
 
@@ -55,7 +64,6 @@ export class SyncEmbeddedFilesUc {
 				}
 
 				const contentFileIds = this.extractFileIdsFromContent(item.content.text);
-
 				if (contentFileIds !== null) {
 					fileIds.push(...contentFileIds);
 				}
@@ -69,11 +77,23 @@ export class SyncEmbeddedFilesUc {
 			}
 		}
 
-		return _.uniq(fileIds).map((id) => new ObjectId(id));
+		const objectIds = _.uniq(fileIds)
+			// eslint-disable-next-line array-callback-return, consistent-return
+			.map((id) => {
+				try {
+					return new ObjectId(id);
+				} catch (error) {
+					this.failedIds.push(entity._id);
+					this.logger.error({ entityId: entity._id, fileIds });
+				}
+			})
+			.filter((item): item is ObjectId => !!item);
+
+		return objectIds;
 	}
 
 	private extractFileIdsFromContent(text: string) {
-		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
+		const regEx = new RegExp(`(?<=src=${fileUrlRegex})${fileIdRegex}(?=&amp;)`, 'gi');
 		const contentFileIds = text.match(regEx);
 
 		return contentFileIds;
