@@ -952,7 +952,7 @@
 			"properties": {
 				"SAME_SITE": {
 					"type": "string",
-					"default": "lax",
+					"default": "none",
 					"enum": ["none", "lax", "strict"],
 					"description": "Value for cookies sameSite property. When SECURE flag is false, 'None' is not allowed in SAME_SITE and Lax should be used as default instead"
 				},
@@ -963,7 +963,7 @@
 				},
 				"HOST_ONLY": {
 					"type": "boolean",
-					"default": false,
+					"default": true,
 					"description": "Value for cookies hostOnly property"
 				},
 				"SECURE": {

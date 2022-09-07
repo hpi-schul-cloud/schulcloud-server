@@ -31,10 +31,10 @@
 		"STUDENT_ROOM_CREATION": false
 	},
 	"COOKIE": {
-		"SAME_SITE": "lax",
-		"HTTP_ONLY": false,
+		"SAME_SITE": "none",
+		"HTTP_ONLY": true,
 		"HOST_ONLY": false,
-		"SECURE": false,
+		"SECURE": true,
 		"EXPIRES_SECONDS": 2592000000
 	}
 }
