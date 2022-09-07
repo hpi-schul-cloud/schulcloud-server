@@ -41,10 +41,12 @@ describe('SystemService', () => {
 	const oidc1 = systemFactory.buildWithId({
 		type: SysType.OIDC,
 		alias: 'Third Party System 1',
+		displayName: 'OIDC_Broker_1',
 	});
 	const oidc2 = systemFactory.buildWithId({
 		type: SysType.OIDC,
 		alias: 'Third Party System 2',
+		displayName: 'OIDC_Broker_2',
 	});
 
 	let systemRepo: DeepMocked<SystemRepo>;
@@ -132,7 +134,7 @@ describe('SystemService', () => {
 	});
 
 	describe('findOAuth', () => {
-		it('should add generated oauth systems to result if oauth only requested  but exclude keycloak', async () => {
+		it('should add generated oauth systems to result if oauth only requested but exclude keycloak', async () => {
 			// When
 			const resultSystems = await systemService.findOAuth();
 
@@ -149,6 +151,7 @@ describe('SystemService', () => {
 					expect.objectContaining<SystemDto>({
 						type: SysType.OAUTH,
 						alias: system.alias,
+						displayName: system.displayName,
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						oauthConfig: expect.objectContaining<OauthConfigDto>({
 							clientId: keycloak.oauthConfig.clientId,
@@ -223,7 +226,10 @@ describe('SystemService', () => {
 			const resultSystems = await systemService.findOAuthById(oidc1.id);
 
 			// Assert
+			expect(resultSystems.type).toEqual(SysType.OAUTH);
 			expect(resultSystems.alias).toEqual(oidc1.alias);
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+			expect(resultSystems.displayName).toEqual(oidc1.displayName);
 
 			expect(resultSystems.oauthConfig).toEqual(
 				expect.objectContaining<OauthConfigDto>({

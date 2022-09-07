@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { systemFactory } from '@shared/testing';
 import { System } from '@shared/domain';
+import { systemFactory } from '@shared/testing';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 
 describe('SystemMapper', () => {
@@ -27,6 +27,7 @@ describe('SystemMapper', () => {
 			// Assert
 			expect(result.url).toEqual(systemEntity.url);
 			expect(result.alias).toEqual(systemEntity.alias);
+			expect(result.displayName).toEqual(systemEntity.displayName);
 			expect(result.type).toEqual(systemEntity.type);
 			expect(result.provisioningStrategy).toEqual(systemEntity.provisioningStrategy);
 			expect(result.oauthConfig).toEqual(systemEntity.oauthConfig);

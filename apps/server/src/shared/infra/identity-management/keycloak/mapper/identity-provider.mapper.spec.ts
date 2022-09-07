@@ -38,6 +38,7 @@ describe('OidcIdentityProviderMapper', () => {
 			id: new ObjectId(0).toString(),
 			type: SysType.OIDC,
 			alias: 'alias',
+			displayName: undefined,
 			config: {
 				clientId: 'clientId',
 				clientSecret: 'clientSecret',
@@ -54,6 +55,7 @@ describe('OidcIdentityProviderMapper', () => {
 		const keycloakRepresentation: IdentityProviderRepresentation = {
 			providerId: 'oidc',
 			alias: 'alias',
+			displayName: 'alias',
 			enabled: true,
 			firstBrokerLoginFlowAlias: brokerFlowAlias,
 			config: {
