@@ -1248,7 +1248,7 @@ describe('AccountUc', () => {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect((updateMock.mock.calls[0][1] as Date).getTime()).toBeGreaterThan(newDate);
 		});
-		it('should throw, if ...', async () => {
+		it('should not throw, if lasttriedFailedLogin is undefined', async () => {
 			await expect(
 				accountUc.checkBrutForce(
 					mockAccountWithNoLastFailedLogin.username,
