@@ -1,6 +1,6 @@
 import { OauthConfig, System } from '@shared/domain';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 
 export class SystemMapper {
 	static mapFromEntityToDto(entity: System): SystemDto {
@@ -9,6 +9,7 @@ export class SystemMapper {
 			type: entity.type,
 			url: entity.url,
 			alias: entity.alias,
+			displayName: entity.displayName,
 			provisioningStrategy: entity.provisioningStrategy,
 			oauthConfig: SystemMapper.mapFromOauthConfigEntityToDto(entity.oauthConfig),
 		});

@@ -13,6 +13,7 @@ export class OidcIdentityProviderMapper {
 		return {
 			providerId: system.type,
 			alias: system.alias,
+			displayName: system.displayName ? system.displayName : system.alias,
 			enabled: true,
 			firstBrokerLoginFlowAlias: flowAlias,
 			config: {

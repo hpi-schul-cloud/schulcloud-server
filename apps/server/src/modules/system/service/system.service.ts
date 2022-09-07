@@ -64,6 +64,7 @@ export class SystemService {
 		const generatedSystem: System = new System({
 			type: SysType.OAUTH,
 			alias: systemEntity.alias,
+			displayName: systemEntity.displayName ? systemEntity.displayName : systemEntity.alias,
 			oauthConfig: identityManagement.oauthConfig,
 		});
 		if (generatedSystem.oauthConfig) {

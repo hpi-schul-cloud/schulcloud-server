@@ -18,7 +18,8 @@
 		"_id": {
 			"$oid": "0000d186816abba584714c92"
 		},
-		"alias": "Schulserver",
+		"alias": "ldapSchulserver",
+		"displayName": "Schulserver",
 		"__v": 0,
 		"ldapConfig" : {
 			"active" : true,
@@ -59,7 +60,8 @@
 		"_id": {
 			"$oid": "0000d186816abba584714c93"
 		},
-		"alias": "SANIS",
+		"alias": "oauthSANIS",
+		"displayName": "SANIS",
 		"type": "oauth",
 		"__v": 0,
 		"oauthConfig": {
@@ -90,6 +92,7 @@
 		},
 		"type": "oidc",
 		"alias": "oidcmock",
+		"displayName": "OIDCMOCK",
 		"config": {
 			"clientId": "${OIDCMOCK__CLIENT_ID}",
 			"clientSecret": "${OIDCMOCK__CLIENT_SECRET}",
@@ -102,7 +105,8 @@
 	},
 	{
 		"type" : "ldap",
-		"alias" : "schoolOne0",
+		"alias" : "ldapSchoolOne0",
+		"displayName": "schoolOne0",
 		"ldapConfig" : {
 			"active" : true,
 			"federalState": {
@@ -143,7 +147,8 @@
 	},
 	{
 		"type" : "ldap",
-		"alias" : "schoolOne1",
+		"alias" : "ldapSchoolOne1",
+		"displayName": "schoolOne1",
 		"ldapConfig" : {
 			"active" : true,
 			"federalState": {

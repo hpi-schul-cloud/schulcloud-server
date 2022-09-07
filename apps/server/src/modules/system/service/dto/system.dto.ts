@@ -1,6 +1,6 @@
-import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { EntityId } from '@shared/domain';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 
 export class SystemDto {
 	constructor(system: SystemDto) {
@@ -8,6 +8,7 @@ export class SystemDto {
 		this.type = system.type;
 		this.url = system.url;
 		this.alias = system.alias;
+		this.displayName = system.displayName;
 		this.provisioningStrategy = system.provisioningStrategy;
 		this.oauthConfig = system.oauthConfig;
 	}
@@ -19,6 +20,8 @@ export class SystemDto {
 	url?: string;
 
 	alias?: string;
+
+	displayName?: string;
 
 	provisioningStrategy?: SystemProvisioningStrategy;
 

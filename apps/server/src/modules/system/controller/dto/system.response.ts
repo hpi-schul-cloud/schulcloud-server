@@ -1,11 +1,12 @@
-import { OauthConfigResponse } from '@src/modules/system/controller/dto/oauth-config.response';
 import { ApiProperty } from '@nestjs/swagger';
+import { OauthConfigResponse } from '@src/modules/system/controller/dto/oauth-config.response';
 
 export class SystemResponse {
 	constructor(system: SystemResponse) {
 		this.type = system.type;
 		this.url = system.url;
 		this.alias = system.alias;
+		this.displayName = system.displayName;
 		this.oauthConfig = system.oauthConfig;
 	}
 
@@ -29,6 +30,13 @@ export class SystemResponse {
 		nullable: true,
 	})
 	alias?: string;
+
+	@ApiProperty({
+		description: 'Display name of the system.',
+		required: false,
+		nullable: true,
+	})
+	displayName?: string;
 
 	@ApiProperty({
 		description: 'Oauth config of the system.',
