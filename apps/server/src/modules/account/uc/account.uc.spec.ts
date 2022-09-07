@@ -83,6 +83,7 @@ describe('AccountUc', () => {
 	let mockAccountWithSystemId: Account;
 	let mockAccountWithLastFailedLogin: Account;
 	let mockAccountWithOldLastFailedLogin: Account;
+	let mockAccountWithNoLastFailedLogin: Account;
 	let mockAccounts: Account[];
 	let mockUsers: User[];
 
@@ -194,6 +195,11 @@ describe('AccountUc', () => {
 							});
 						},
 						updateLastTriedFailedLogin: jest.fn(),
+
+						// (accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> => {
+						// 	const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
+						// 	return
+						// },
 					},
 				},
 				{
@@ -446,6 +452,12 @@ describe('AccountUc', () => {
 			systemId: systemFactory.buildWithId().id,
 			lasttriedFailedLogin: new Date(new Date().getTime() - allowedTimeDifference - 1),
 		});
+		mockAccountWithNoLastFailedLogin = accountFactory.buildWithId({
+			userId: undefined,
+			password: defaultPasswordHash,
+			systemId: systemFactory.buildWithId().id,
+			lasttriedFailedLogin: undefined,
+		});
 
 		mockUsers = [
 			mockSuperheroUser,
@@ -487,6 +499,7 @@ describe('AccountUc', () => {
 			mockAccountWithSystemId,
 			mockAccountWithLastFailedLogin,
 			mockAccountWithOldLastFailedLogin,
+			mockAccountWithNoLastFailedLogin,
 		];
 	});
 
@@ -1218,13 +1231,13 @@ describe('AccountUc', () => {
 			updateMock = accountService.updateLastTriedFailedLogin as jest.Mock;
 			updateMock.mockClear();
 		});
-		it('should throw, if ...', async () => {
+		it('should throw, if time difference < the allowed time', async () => {
 			await expect(
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				accountUc.checkBrutForce(mockAccountWithLastFailedLogin.username, mockAccountWithLastFailedLogin.systemId!)
 			).rejects.toThrow(BruteForcePrevention);
 		});
-		it('should throw, if ...', async () => {
+		it('should not throw Error, if the time difference > the allowed time', async () => {
 			await expect(
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				accountUc.checkBrutForce(mockAccountWithSystemId.username, mockAccountWithSystemId.systemId!)
@@ -1234,6 +1247,15 @@ describe('AccountUc', () => {
 			const newDate = new Date().getTime() - 10000;
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect((updateMock.mock.calls[0][1] as Date).getTime()).toBeGreaterThan(newDate);
+		});
+		it('should throw, if ...', async () => {
+			await expect(
+				accountUc.checkBrutForce(
+					mockAccountWithNoLastFailedLogin.username,
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					mockAccountWithNoLastFailedLogin.systemId!
+				)
+			).resolves.not.toThrow();
 		});
 	});
 });
