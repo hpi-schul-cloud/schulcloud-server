@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraParams } from '@src/modules/oauth/controller/dto/hydra.params';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import QueryString from 'qs';
+import { nanoid } from 'nanoid';
+import { OauthConfig } from '@shared/domain';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
 import { OAuthService } from '../service/oauth.service';
 import { HydraSsoService } from '../service/hydra.service';
@@ -18,6 +21,8 @@ export class HydraOauthUc {
 		this.logger.setContext(HydraOauthUc.name);
 	}
 
+	private readonly MAX_REDIRECTS: number = 10;
+
 	async getOauthToken(query: AuthorizationParams, ltiToolId: string): Promise<OauthTokenResponse> {
 		const hydraOauthConfig = await this.hydraSsoService.generateConfig(ltiToolId);
 		this.logger.debug('Oauth process strated. Next up: checkAuthorizationCode().');
@@ -29,7 +34,8 @@ export class HydraOauthUc {
 		return queryToken;
 	}
 
-	async requestAuthCode(userId: string, jwt: string, ltiToolId: any): Promise<AuthorizationParams> {
+	async requestAuthCode(userId: string, jwt: string, ltiToolId: string): Promise<AuthorizationParams> {
+		const hydraOauthConfig: OauthConfig = await this.hydraSsoService.generateConfig(ltiToolId);
 		const cookies: CookiesDto = new CookiesDto({ localCookie: `jwt=${jwt}`, hydraCookie: '' });
 		const axiosConfig: AxiosRequestConfig = {
 			headers: {},
@@ -40,15 +46,18 @@ export class HydraOauthUc {
 			},
 		};
 		let resp: AxiosResponse;
-		let referer;
+		let referer: string;
+		resp = this.hydraSsoService.initAuth(hydraOauthConfig, axiosConfig);
 		do {
-			resp = this.hydraSsoService.processCall();
 			if (resp.headers['set-cookie']) {
 				this.processCookies(resp.headers['set-cookie'], cookies);
 			}
+			resp = this.hydraSsoService.processRedirect();
 		} while (resp.status === 302);
-
-		return undefined;
+		if (resp.data instanceof AuthorizationParams) {
+			return resp.data;
+		}
+		throw new InternalServerErrorException('Error occured aquiring AuthCode!');
 	}
 
 	private processCookies(setCookies: string[], cookies: CookiesDto): void {

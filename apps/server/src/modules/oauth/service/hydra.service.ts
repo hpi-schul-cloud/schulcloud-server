@@ -10,147 +10,27 @@ import { firstValueFrom } from 'rxjs';
 import QueryString from 'qs';
 import { HttpService } from '@nestjs/axios';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class HydraSsoService {
 	constructor(private readonly ltiRepo: LtiToolRepo, private readonly httpService: HttpService) {}
 
-	async requestAuthToken(config: OauthConfig, userId: string, currJwt: string): Promise<AuthorizationParams> {
+	initAuth(oauthConfig: OauthConfig, axiosConfig: AxiosRequestConfig): AxiosResponse {
 		const query = QueryString.stringify({
-			response_type: config.responseType,
-			scope: config.scope,
-			client_id: config.clientId,
-			redirect_uri: config.redirectUri,
-			state: 'GARGARGAR',
+			response_type: oauthConfig.responseType,
+			scope: oauthConfig.scope,
+			client_id: oauthConfig.clientId,
+			redirect_uri: oauthConfig.redirectUri,
+			state: nanoid(15),
 		});
 
-		const axiosConfig: AxiosRequestConfig = {
-			headers: {},
-			withCredentials: true,
-			maxRedirects: 0,
-			validateStatus: (status: number) => {
-				return status === 200 || status === 302;
-			},
-		};
-		let respObservable = this.httpService.get<AuthorizationParams>(`${config.authEndpoint}?${query}`, axiosConfig);
-		let resp = await firstValueFrom(respObservable);
-		let referer = resp.headers.location;
+		const res: AxiosResponse = this.get(`${oauthConfig.authEndpoint}?${query}`, axiosConfig);
 
-		if (axiosConfig.headers) {
-			if (resp.headers['set-cookie']) {
-				this.processCookies(resp.headers['set-cookie']);
-			}
-			if (resp.headers.location.includes('hydra.localhost:9000')) {
-				axiosConfig.headers.Cookie = this.hydraCookie;
-			} else {
-				axiosConfig.headers.Cookie = this.dbcCookie;
-			}
-			axiosConfig.headers.Referer = referer;
-			respObservable = this.httpService.get(resp.headers.location, axiosConfig);
-			resp = await firstValueFrom(respObservable);
-			this.logger.debug(resp.headers);
-
-			if (resp.headers['set-cookie']) {
-				this.processCookies(resp.headers['set-cookie']);
-			}
-			if (resp.headers.location.includes('hydra.localhost:9000')) {
-				axiosConfig.headers.Cookie = this.hydraCookie;
-			} else {
-				axiosConfig.headers.Cookie = this.dbcCookie;
-			}
-			axiosConfig.headers.Referer = referer;
-			referer = `http://localhost:3100${resp.headers.location}`;
-			respObservable = this.httpService.get(`http://localhost:3100${resp.headers.location}`, axiosConfig);
-			resp = await firstValueFrom(respObservable);
-			this.logger.debug(resp.headers);
-
-			if (resp.headers['set-cookie']) {
-				this.processCookies(resp.headers['set-cookie']);
-			}
-			if (resp.headers.location.includes('hydra.localhost:9000')) {
-				axiosConfig.headers.Cookie = this.hydraCookie;
-			} else {
-				axiosConfig.headers.Cookie = this.dbcCookie;
-			}
-			axiosConfig.headers.Referer = referer;
-			referer = `http://localhost:3100${resp.headers.location}`;
-			respObservable = this.httpService.get(`http://localhost:3100${resp.headers.location}`, axiosConfig);
-			resp = await firstValueFrom(respObservable);
-			this.logger.debug(resp.headers);
-
-			if (resp.headers['set-cookie']) {
-				this.processCookies(resp.headers['set-cookie']);
-			}
-			if (resp.headers.location.includes('hydra.localhost:9000')) {
-				axiosConfig.headers.Cookie = this.hydraCookie;
-			} else {
-				axiosConfig.headers.Cookie = this.dbcCookie;
-			}
-			axiosConfig.headers.Referer = referer;
-			referer = `http://localhost:3100${resp.headers.location}`;
-			respObservable = this.httpService.get(`http://localhost:3100${resp.headers.location}`, axiosConfig);
-			resp = await firstValueFrom(respObservable);
-			this.logger.debug(resp.headers);
-
-			if (resp.headers['set-cookie']) {
-				this.processCookies(resp.headers['set-cookie']);
-			}
-			if (resp.headers.location.includes('hydra.localhost:9000')) {
-				axiosConfig.headers.Cookie = this.hydraCookie;
-			} else {
-				axiosConfig.headers.Cookie = this.dbcCookie;
-			}
-			axiosConfig.headers.Referer = referer;
-			referer = `${resp.headers.location}`;
-			respObservable = this.httpService.get(`${resp.headers.location}`, axiosConfig);
-			resp = await firstValueFrom(respObservable);
-			this.logger.debug(resp.headers);
-
-			if (resp.headers['set-cookie']) {
-				this.processCookies(resp.headers['set-cookie']);
-			}
-			if (resp.headers.location.includes('hydra.localhost:9000')) {
-				axiosConfig.headers.Cookie = this.hydraCookie;
-			} else {
-				axiosConfig.headers.Cookie = this.dbcCookie;
-			}
-			axiosConfig.headers.Referer = referer;
-			referer = `${resp.headers.location}`;
-			respObservable = this.httpService.get(`${resp.headers.location}`, axiosConfig);
-			resp = await firstValueFrom(respObservable);
-			this.logger.debug(resp.headers);
-
-			if (resp.headers['set-cookie']) {
-				this.processCookies(resp.headers['set-cookie']);
-			}
-			if (resp.headers.location.includes('hydra.localhost:9000')) {
-				axiosConfig.headers.Cookie = this.hydraCookie;
-			} else {
-				axiosConfig.headers.Cookie = this.dbcCookie;
-			}
-			axiosConfig.headers.Referer = referer;
-			referer = `${resp.headers.location}`;
-			respObservable = this.httpService.get(`${resp.headers.location}`, axiosConfig);
-			resp = await firstValueFrom(respObservable);
-			this.logger.debug(resp.headers);
-			if (resp.headers['set-cookie']) {
-				this.processCookies(resp.headers['set-cookie']);
-			}
-			if (resp.headers.location.includes('hydra.localhost:9000')) {
-				axiosConfig.headers.Cookie = this.hydraCookie;
-			} else {
-				axiosConfig.headers.Cookie = this.dbcCookie;
-			}
-			axiosConfig.headers.Referer = referer;
-			referer = `${resp.headers.location}`;
-			respObservable = this.httpService.get(`${resp.headers.location}`, axiosConfig);
-			resp = await firstValueFrom(respObservable);
-			this.logger.debug(resp.data);
-		}
-		return resp.data;
+		return res;
 	}
 
-	processCall(location: string, referer: string, cookies: CookiesDto, axiosConfig: AxiosRequestConfig): AxiosResponse {
+	processRedirect(resp: AxiosResponse, cookies: CookiesDto, axiosConfig: AxiosRequestConfig): AxiosResponse {
 		if (!axiosConfig.headers) throw new InternalServerErrorException();
 		if (location.startsWith(Configuration.get('HYDRA_URI') as string)) {
 			axiosConfig.headers.Cookie = cookies.hydraCookie;
@@ -158,14 +38,9 @@ export class HydraSsoService {
 			axiosConfig.headers.Cookie = cookies.localCookie;
 		}
 		axiosConfig.headers.Referer = referer;
-		const respObservable = this.httpService.get(location, axiosConfig);
-		const res: AxiosResponse = firstValueFrom(respObservable)
-			.then((resp) => {
-				return resp;
-			})
-			.catch((err) => {
-				throw new InternalServerErrorException(err);
-			});
+
+		const res: AxiosResponse = this.get(location, axiosConfig);
+
 		return res;
 	}
 
@@ -177,7 +52,7 @@ export class HydraSsoService {
 		}
 
 		const hydraOauthConfig = new OauthConfig({
-			authEndpoint: '',
+			authEndpoint: `${Configuration.get('HYDRA_URI') as string}/oauth2/auth`,
 			clientId: tool.oAuthClientId,
 			clientSecret: tool.secret,
 			grantType: 'authorization_code',
@@ -192,5 +67,17 @@ export class HydraSsoService {
 		});
 
 		return hydraOauthConfig;
+	}
+
+	private get(url: string, axiosConfig: AxiosRequestConfig): AxiosResponse {
+		const respObservable = this.httpService.get<AuthorizationParams>(url, axiosConfig);
+		const res: AxiosResponse = firstValueFrom(respObservable)
+			.then((resp: AxiosResponse) => {
+				return resp;
+			})
+			.catch((err) => {
+				throw new InternalServerErrorException(err);
+			});
+		return res;
 	}
 }
