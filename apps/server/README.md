@@ -9,6 +9,7 @@ You find the whole [documentation published as GitHub Page](https://hpi-schul-cl
 - Node.js (see `.nvmrc` for version)
 - MongoDB (`4.x`)
 - RabbitMQ (configure using `RABBITMQ_URL`, see `default.schema.json`)
+- S3 Object Storage e.g. MinIO locally
 
 ### preconditions
 
