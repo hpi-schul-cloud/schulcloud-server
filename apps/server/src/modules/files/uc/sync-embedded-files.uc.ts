@@ -95,7 +95,7 @@ export class SyncEmbeddedFilesUc {
 	}
 
 	private extractFileIdsFromContent(text: string) {
-		const regEx = new RegExp(`(?<=src=${fileUrlRegex})${fileIdRegex}(?=&amp;)`, 'gi');
+		const regEx = new RegExp(`(?<=src=${fileUrlRegex})${fileIdRegex}(?=&)`, 'gi');
 		const contentFileIds = text.match(regEx);
 
 		return contentFileIds;
