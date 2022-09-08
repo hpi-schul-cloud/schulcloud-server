@@ -32,6 +32,7 @@ export class SyncEmbeddedFilesUc {
 		this.logger.log(`Found ${entities.length} ${type} descriptions with embedded files.`);
 
 		const promises = entities.map(async (entity: AvailableSyncEntityType) => {
+			this.logger.log("migrating entity with id " + entity.id)
 			const fileIds = this.extractFileIds(entity);
 
 			const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
