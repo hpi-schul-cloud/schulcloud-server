@@ -59,6 +59,7 @@ describe('user repo', () => {
 					'forcePasswordChange',
 					'preferences',
 					'language',
+					'deletedAt',
 				].sort()
 			);
 		});
@@ -132,6 +133,7 @@ describe('user repo', () => {
 					'forcePasswordChange',
 					'preferences',
 					'language',
+					'deletedAt',
 				].sort()
 			);
 		});
@@ -182,6 +184,15 @@ describe('user repo', () => {
 			expect(result).toContain(user);
 			expect(result).not.toContain(matchedUser);
 			expect(count).toEqual(1);
+		});
+
+		it('should exclude deleted users', async () => {
+			const school = schoolFactory.build();
+			const user = userFactory.build({ school, deletedAt: new Date() });
+			await em.persistAndFlush([school, user]);
+			const [result, count] = await repo.findWithoutImportUser(school);
+			expect(result).not.toContain(user);
+			expect(count).toEqual(0);
 		});
 
 		it('should filter users by firstName contains or lastName contains, ignore case', async () => {
