@@ -32,9 +32,9 @@ export class SyncEmbeddedFilesUc {
 		this.logger.log(`Found ${entities.length} ${type} descriptions with embedded files.`);
 
 		const promises = entities.map(async (entity: AvailableSyncEntityType) => {
-			this.logger.log("migrating entity with id " + entity.id)
+			this.logger.log(`migrating entity with id ${entity.id}`);
 			const fileIds = this.extractFileIds(entity);
-			this.logger.log("extracted file ids for entity with id " + entity.id + " - fileids: " + JSON.stringify(fileIds))
+			this.logger.log(`extracted file ids for entity with id ${entity.id} - fileIds: ${JSON.stringify(fileIds)}`);
 
 			const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
 
@@ -43,6 +43,7 @@ export class SyncEmbeddedFilesUc {
 
 				if (!idExists) {
 					this.failedIds.push(entity._id);
+					this.logger.error(`legacy file with id: ${id.toHexString()} in entity ${entity._id.toHexString()} not found`);
 				}
 			});
 
@@ -86,7 +87,7 @@ export class SyncEmbeddedFilesUc {
 					return new ObjectId(id);
 				} catch (error) {
 					this.failedIds.push(entity._id);
-					this.logger.error({ entityId: entity._id, fileIds });
+					this.logger.error(`The file id ${id} is not ObjectId in entity ${entity._id.toHexString()}`);
 				}
 			})
 			.filter((item): item is ObjectId => !!item);
@@ -108,7 +109,7 @@ export class SyncEmbeddedFilesUc {
 
 	private async sync(file: SyncFileItem, entity: AvailableSyncEntityType) {
 		try {
-			this.logger.log("syncing entity with id " + entity.id)
+			this.logger.log(`syncing entity with id ${entity.id}`);
 			await this.syncFilesMetaDataService.prepareMetaData(file);
 			await this.syncFilesStorageService.syncS3File(file);
 			await this.syncFilesMetaDataService.persistMetaData(file);
