@@ -61,16 +61,22 @@ export class HydraOauthUc {
 	}
 
 	private processCookies(setCookies: string[], cookies: CookiesDto): void {
-		setCookies.forEach((item) => {
-			const cookie = item.split(';')[0];
+		setCookies.forEach((item: string): void => {
+			const cookie: string = item.split(';')[0];
 			if (cookie.startsWith('oauth2')) {
 				if (!cookies.hydraCookie.includes(cookie)) {
-					if (cookies.hydraCookie === '') cookies.hydraCookie = cookie;
-					else cookies.hydraCookie = `${cookies.hydraCookie}; ${cookie}`;
+					if (cookies.hydraCookie === '') {
+						cookies.hydraCookie = cookie;
+					} else {
+						cookies.hydraCookie = `${cookies.hydraCookie}; ${cookie}`;
+					}
 				}
 			} else if (!cookies.localCookie.includes(cookie)) {
-				if (cookies.localCookie === '') cookies.localCookie = cookie;
-				else cookies.localCookie = `${cookies.localCookie}; ${cookie}`;
+				if (cookies.localCookie === '') {
+					cookies.localCookie = cookie;
+				} else {
+					cookies.localCookie = `${cookies.localCookie}; ${cookie}`;
+				}
 			}
 		});
 	}
