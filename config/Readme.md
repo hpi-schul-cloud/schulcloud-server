@@ -41,7 +41,7 @@ It is used for parsing any environment value that is added in ./config/default.s
 It is overridden with values in default.json.
 The default.json is also overridden by development.json (NODE_ENV==='default'), or test.json. (NODE_ENV==='test').
 
-For legacy featherJS stack, or legacy client it is the only solution that shoul be used.
+For legacy featherJS stack, or legacy client it is the only solution that should be used.
 For newer nestjs stack we use it for parsing values in the right order, but map it to the nestjs based solution.
 > Look to the topic nestjs in this file for more information.
 
@@ -65,14 +65,14 @@ The vue client we pass this values over an api endpoint.
 
 ### ./config/global.js (deprecated)
 
-To collect and cleanup all existing process.env.XXX calls in code, it exists a step, where all envirements variables are moved to global.js file.
-This should not be used anymore and cleanup up.
+To collect and cleanup all existing process.env.XXX calls in code, it exists a step, where all environments variables are moved to global.js file.
+This should not be used anymore and cleaned up.
 
 Feel free to move variables to default.schema.json.
 
 ### ./config/production.js (deprecated)
 
-This config values should not be use anymore.
+This config values should not be used anymore.
 
 The default.schema.json and default.json represent the default values that should be set in all production systems.
 All other production values are added over autodeployment configurations.
@@ -97,7 +97,7 @@ The values should be the same as in default.schema.json and are added as default
 
 This file overrides default.json and default.schema.json values.
 It is used for local development.
-For example it increases the timeouts to  enable us to debug stuff.
+For example it increases the timeouts to enable us to debug stuff.
 
 > Please look to "local setups" topic on this page, if you only want to add your personal settings.
 
@@ -114,13 +114,13 @@ For test we can also use injections of the nestjs configuration module, or servi
 
 ### Auto deployment (overriding and setting additional values)
 
-We have 2 sources that can fullfill and add envirements.
+We have 2 sources that can fullfill and add environments.
 One is our auto deployment repository that can set environment values directly over config.jsons.
 The other source fetches secrets for .dev systems from gitHub, or 1password for productions.
 
 We only add values to it if we need them. If we want the default values from default.schema.json,
 on all production like systems (dev, ref, production), they shouldn't be added to configurations in autodeployment.
-> Over this way we can reduce the total amount of envirement values in production pods.
+> Over this way we can reduce the total amount of environment values in production pods.
 
 <https://github.com/hpi-schul-cloud/dof_app_deploy/blob/main/ansible/group_vars/all/config.yml>
 
@@ -142,9 +142,9 @@ The nestjs configuration module is defined globally in the hole app and can be u
 
 > We force it this way, so that modules can be defined by their needs.
 > We only have a single point, where all envirements are added to our application.
-> We can easy replace this solution with a nestjs parser instead, of Configuration from @hpi-schul-cloud/commons in future.
+> We can easily replace this solution with a nestjs parser instead, of Configuration from @hpi-schul-cloud/commons in future.
 
-This code show a minimal flow.
+This code shows a minimal flow.
 
 ``` javascript
     // needed configuration for a module
@@ -272,7 +272,7 @@ Mocking in api (.e2e) tests.
 ### Special cases in nestjs
 
 If we want to use values in decorators, we can not use the nestjs configuration module.
-The parsing of decorators in files start first and after the injections are solved.
+The parsing of decorators in files starts first and after it the injections are solved.
 
 It is possible to import the config file of the application directly and use the values.
 
@@ -284,11 +284,11 @@ It is possible to import the config file of the application directly and use the
 
 ## Passing configuration to vue client
 
-It exist an endpoint that exposes environment values.
+It exists an endpoint that exposes environment values.
 This values are used by the vue client.
 The solution is the only existing way how environments should be passed to the new vue client.
 
-Please be carful! Secrets should be never exposed!
+Please be careful! Secrets should be never exposed!
 They are readable in browser and request response.
 
 <https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/src/services/config/publicAppConfigService.js#L14>
@@ -304,13 +304,13 @@ We want to remove the different config files and the Configuration from @hpi-sch
 We want to use the nestjs solutions over parsing configuration values for different states.
 This results in a new format for the default.schema.json file.
 
-We also want to put more environments values to database, to enable us to switching it without redeploys over our dashboard.
+We also want to put more environment values to database, to enable us to switching it without redeploys over our dashboard.
 
 ## Local setups
 
 You can use the .env convention to set settings that only work for you locally.
-For temporary checks you can add envirements to you terminal based on the solution of your IOS.
-You can also add envirements for debugging, or if you run your applications over .vscode/lunch.json with:
+For temporary checks you can add environments to your terminal based on the solution of your IOS.
+You can also add environments for debugging, or if you run your applications over .vscode/lunch.json with:
 
 ``` json
     "env": {
