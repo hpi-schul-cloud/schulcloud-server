@@ -6,17 +6,17 @@ import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { firstValueFrom } from 'rxjs';
 import QueryString from 'qs';
 import { HttpService } from '@nestjs/axios';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { nanoid } from 'nanoid';
+import { firstValueFrom, Observable } from 'rxjs';
 
 @Injectable()
 export class HydraSsoService {
 	constructor(private readonly ltiRepo: LtiToolRepo, private readonly httpService: HttpService) {}
 
-	initAuth(oauthConfig: OauthConfig, axiosConfig: AxiosRequestConfig): AxiosResponse {
+	async initAuth(oauthConfig: OauthConfig, axiosConfig: AxiosRequestConfig): Promise<AxiosResponse> {
 		const query = QueryString.stringify({
 			response_type: oauthConfig.responseType,
 			scope: oauthConfig.scope,
@@ -25,12 +25,17 @@ export class HydraSsoService {
 			state: nanoid(15),
 		});
 
-		const res: AxiosResponse = this.get(`${oauthConfig.authEndpoint}?${query}`, axiosConfig);
+		const res: Promise<AxiosResponse> = this.get(`${oauthConfig.authEndpoint}?${query}`, axiosConfig);
 
 		return res;
 	}
 
-	processRedirect(resp: AxiosResponse, cookies: CookiesDto, axiosConfig: AxiosRequestConfig): AxiosResponse {
+	async processRedirect(
+		location: string,
+		referer: string,
+		cookies: CookiesDto,
+		axiosConfig: AxiosRequestConfig
+	): Promise<AxiosResponse> {
 		if (!axiosConfig.headers) throw new InternalServerErrorException();
 		if (location.startsWith(Configuration.get('HYDRA_URI') as string)) {
 			axiosConfig.headers.Cookie = cookies.hydraCookie;
@@ -39,7 +44,7 @@ export class HydraSsoService {
 		}
 		axiosConfig.headers.Referer = referer;
 
-		const res: AxiosResponse = this.get(location, axiosConfig);
+		const res: Promise<AxiosResponse> = this.get(location, axiosConfig);
 
 		return res;
 	}
@@ -51,33 +56,28 @@ export class HydraSsoService {
 			throw new NotFoundException(ltiToolId, 'Suitable tool not found!');
 		}
 
+		const hydraUri: string = Configuration.get('HYDRA_URI') as string;
 		const hydraOauthConfig = new OauthConfig({
-			authEndpoint: `${Configuration.get('HYDRA_URI') as string}/oauth2/auth`,
+			authEndpoint: `${hydraUri}/oauth2/auth`,
 			clientId: tool.oAuthClientId,
 			clientSecret: tool.secret,
 			grantType: 'authorization_code',
-			issuer: `${Configuration.get('HYDRA_URI') as string}/`,
-			jwksEndpoint: `${Configuration.get('HYDRA_URI') as string}/.well-known/jwks.json`,
-			logoutEndpoint: `${Configuration.get('HYDRA_URI') as string}/oauth2/sessions/logout`,
+			issuer: `${hydraUri}/`,
+			jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,
+			logoutEndpoint: `${hydraUri}/oauth2/sessions/logout`,
 			provider: 'hydra',
-			redirectUri: `${Configuration.get('API_HOST') as string}/v3/sso/hydra`,
+			redirectUri: `${Configuration.get('API_HOST') as string}/v3/sso/hydra/${ltiToolId}`,
 			responseType: 'code',
 			scope: Configuration.get('NEXTCLOUD_SCOPES') as string, // Only Nextcloud is currently supported
-			tokenEndpoint: `${Configuration.get('HYDRA_URI') as string}/oauth2/token`,
+			tokenEndpoint: `${hydraUri}/oauth2/token`,
 		});
 
 		return hydraOauthConfig;
 	}
 
-	private get(url: string, axiosConfig: AxiosRequestConfig): AxiosResponse {
-		const respObservable = this.httpService.get<AuthorizationParams>(url, axiosConfig);
-		const res: AxiosResponse = firstValueFrom(respObservable)
-			.then((resp: AxiosResponse) => {
-				return resp;
-			})
-			.catch((err) => {
-				throw new InternalServerErrorException(err);
-			});
+	private get(url: string, axiosConfig: AxiosRequestConfig): Promise<AxiosResponse> {
+		const respObservable: Observable<AxiosResponse> = this.httpService.get<AuthorizationParams>(url, axiosConfig);
+		const res: Promise<AxiosResponse> = firstValueFrom(respObservable);
 		return res;
 	}
 }

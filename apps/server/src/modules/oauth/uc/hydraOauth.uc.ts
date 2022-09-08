@@ -7,6 +7,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import QueryString from 'qs';
 import { nanoid } from 'nanoid';
 import { OauthConfig } from '@shared/domain';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
 import { OAuthService } from '../service/oauth.service';
 import { HydraSsoService } from '../service/hydra.service';
@@ -22,6 +23,10 @@ export class HydraOauthUc {
 	}
 
 	private readonly MAX_REDIRECTS: number = 10;
+
+	private readonly HYDRA_URI: string = Configuration.get('HYDRA_URI') as string;
+
+	private readonly HOST: string = Configuration.get('HOST') as string;
 
 	async getOauthToken(query: AuthorizationParams, ltiToolId: string): Promise<OauthTokenResponse> {
 		const hydraOauthConfig = await this.hydraSsoService.generateConfig(ltiToolId);
@@ -46,18 +51,24 @@ export class HydraOauthUc {
 			},
 		};
 		let resp: AxiosResponse;
-		let referer: string;
-		resp = this.hydraSsoService.initAuth(hydraOauthConfig, axiosConfig);
+		let referer = '';
+		let location: string;
+		let currentRedirect = 0;
+		resp = await this.hydraSsoService.initAuth(hydraOauthConfig, axiosConfig);
 		do {
 			if (resp.headers['set-cookie']) {
 				this.processCookies(resp.headers['set-cookie'], cookies);
 			}
-			resp = this.hydraSsoService.processRedirect();
-		} while (resp.status === 302);
-		if (resp.data instanceof AuthorizationParams) {
-			return resp.data;
-		}
-		throw new InternalServerErrorException('Error occured aquiring AuthCode!');
+			location = resp.headers.location.startsWith('http')
+				? resp.headers.location
+				: `${this.HOST}${resp.headers.location}`;
+			// eslint-disable-next-line no-await-in-loop
+			resp = await this.hydraSsoService.processRedirect(location, referer, cookies, axiosConfig);
+			referer = location;
+			currentRedirect += 1;
+		} while (resp.status === 302 && currentRedirect < this.MAX_REDIRECTS);
+		const authParams: AuthorizationParams = resp.data as AuthorizationParams;
+		return authParams;
 	}
 
 	private processCookies(setCookies: string[], cookies: CookiesDto): void {
