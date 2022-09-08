@@ -83,7 +83,8 @@ We want to move any environment variable to this file for now.
 > Please add a discription and if possible default values to it.
 > Any default values that are set on this files should be for production systems. They can be overridden with autodeployment configurations.
 
-It make sense to cluster variables with same context. The situation can be different, but look like it is used atm.
+It make sense to cluster variables with same context.
+Depending on the context, the motivation for clustering variables can vary, please see current usage for further examples.
 For this cases you can add embedded objects. By passing a value to embedded objects, you can write MY_SCOPE_NAME__MY_VARIABLEN_NAME.
 The scope name and value is splitted by double underscore ( _ ).
 Defaults values for embedded objects do not work well. For this we let the default.json stay alive.
