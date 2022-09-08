@@ -1,7 +1,17 @@
+import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { ForbiddenOperationError } from '@shared/common';
 import { IsEnum } from 'class-validator';
+
+const errorTemplate = (errorType: ErrorTypes) => {
+	return {
+		type: '$error',
+		code: '$status',
+		message: errorType,
+		title: '$error',
+	};
+};
 
 enum ErrorTypes {
 	NEST_NOT_FOUND_OBJ = 'NEST_NOT_FOUND_OBJ',
@@ -22,6 +32,15 @@ export class ServerController {
 		return 'Schulcloud Server API';
 	}
 
+	@ApiException(() => NotFoundException, {
+		description: 'Throws when NEST_NOT_FOUND_STR happens',
+		template: errorTemplate(ErrorTypes.NEST_NOT_FOUND_STR),
+	})
+	@ApiException(() => NotFoundException, {
+		description: 'Throws when NEST_NOT_FOUND_OBJ happens',
+		template: errorTemplate(ErrorTypes.NEST_NOT_FOUND_OBJ),
+	})
+	@ApiException(() => ForbiddenOperationError, { description: 'Throws when BUSINESS_ERROR happens' })
 	@Get('/:type')
 	getError(@Param() params: ErrorTypeParams) {
 		const { type } = params;
