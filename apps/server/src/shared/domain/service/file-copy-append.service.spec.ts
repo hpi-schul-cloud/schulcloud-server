@@ -340,6 +340,22 @@ describe('file copy append service', () => {
 					expect(file?.status).toEqual(CopyStatusEnum.FAIL);
 					expect(file?.title).not.toEqual(originalFile.name);
 				});
+
+				it('should not change status if original entity is lesson', async () => {
+					const { originalCourse, copyStatus, user } = setup();
+					const originalLesson = lessonFactory.build();
+					const status: CopyStatus = {
+						...copyStatus,
+						originalEntity: originalLesson,
+					};
+
+					const updatedCopyStatus = await copyService.copyEmbeddedLegacyFilesOfTasks(
+						status,
+						originalCourse.id,
+						user.id
+					);
+					expect(updatedCopyStatus).toEqual(status);
+				});
 			});
 		});
 
