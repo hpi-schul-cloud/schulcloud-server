@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { FileRecordParentType, IComponentProperties, Lesson, Task } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
 import _ from 'lodash';
-import { EmbeddedFilesRepo, fileUrlRegex } from '../repo/embedded-files.repo';
+import { EmbeddedFilesRepo, fileIdRegex, fileUrlRegex } from '../repo/embedded-files.repo';
 import { AvailableSyncEntityType, AvailableSyncParentType, SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
 import { SyncFilesStorageService } from './sync-files-storage.service';
@@ -32,9 +32,21 @@ export class SyncEmbeddedFilesUc {
 		this.logger.log(`Found ${entities.length} ${type} descriptions with embedded files.`);
 
 		const promises = entities.map(async (entity: AvailableSyncEntityType) => {
+			this.logger.log(`migrating entity with id ${entity.id}`);
 			const fileIds = this.extractFileIds(entity);
+			this.logger.log(`extracted file ids for entity with id ${entity.id} - fileIds: ${JSON.stringify(fileIds)}`);
 
 			const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
+
+			fileIds.forEach((id) => {
+				const idExists = files.some((file) => new ObjectId(file.source.id) === id);
+
+				if (!idExists) {
+					this.failedIds.push(entity._id);
+					this.logger.error(`legacy file with id: ${id.toHexString()} in entity ${entity._id.toHexString()} not found`);
+				}
+			});
+
 			return this.syncFiles(files, entity);
 		});
 
@@ -55,7 +67,6 @@ export class SyncEmbeddedFilesUc {
 				}
 
 				const contentFileIds = this.extractFileIdsFromContent(item.content.text);
-
 				if (contentFileIds !== null) {
 					fileIds.push(...contentFileIds);
 				}
@@ -69,11 +80,23 @@ export class SyncEmbeddedFilesUc {
 			}
 		}
 
-		return _.uniq(fileIds).map((id) => new ObjectId(id));
+		const objectIds = _.uniq(fileIds)
+			// eslint-disable-next-line array-callback-return, consistent-return
+			.map((id) => {
+				try {
+					return new ObjectId(id);
+				} catch (error) {
+					this.failedIds.push(entity._id);
+					this.logger.error(`The file id ${id} is not ObjectId in entity ${entity._id.toHexString()}`);
+				}
+			})
+			.filter((item): item is ObjectId => !!item);
+
+		return objectIds;
 	}
 
 	private extractFileIdsFromContent(text: string) {
-		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
+		const regEx = new RegExp(`(?<=src=${fileUrlRegex})${fileIdRegex}(?=&)`, 'gi');
 		const contentFileIds = text.match(regEx);
 
 		return contentFileIds;
@@ -86,6 +109,7 @@ export class SyncEmbeddedFilesUc {
 
 	private async sync(file: SyncFileItem, entity: AvailableSyncEntityType) {
 		try {
+			this.logger.log(`syncing entity with id ${entity.id}`);
 			await this.syncFilesMetaDataService.prepareMetaData(file);
 			await this.syncFilesStorageService.syncS3File(file);
 			await this.syncFilesMetaDataService.persistMetaData(file);
