@@ -17,6 +17,7 @@ import path from 'path';
 import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
+import { CopyFileResponse } from '../controller/dto';
 import {
 	CopyFileParams,
 	CopyFilesOfParentParams,
@@ -283,7 +284,7 @@ export class FilesStorageUC {
 		userId: string,
 		params: FileRecordParams,
 		copyFilesParams: CopyFilesOfParentParams
-	): Promise<Counted<FileRecord[]>> {
+	): Promise<Counted<CopyFileResponse[]>> {
 		await Promise.all([
 			this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create),
 			this.checkPermission(
@@ -297,15 +298,19 @@ export class FilesStorageUC {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		if (count === 0) {
-			return [fileRecords, count];
+			return [[], 0];
 		}
 
-		const newRecords = await this.copy(userId, fileRecords, copyFilesParams.target);
+		const response = await this.copy(userId, fileRecords, copyFilesParams.target);
 
-		return newRecords;
+		return [response, count];
 	}
 
-	public async copyOneFile(userId: string, params: SingleFileParams, copyFileParams: CopyFileParams) {
+	public async copyOneFile(
+		userId: string,
+		params: SingleFileParams,
+		copyFileParams: CopyFileParams
+	): Promise<CopyFileResponse> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 		await Promise.all([
 			this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create),
@@ -317,17 +322,18 @@ export class FilesStorageUC {
 			),
 		]);
 
-		const [newRecord] = await this.copy(userId, [fileRecord], copyFileParams.target);
+		const response = await this.copy(userId, [fileRecord], copyFileParams.target);
 
-		return newRecord[0];
+		return response[0];
 	}
 
 	private async copy(
 		userId: EntityId,
 		sourceFileRecords: FileRecord[],
 		targetParams: FileRecordParams
-	): Promise<Counted<FileRecord[]>> {
+	): Promise<CopyFileResponse[]> {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
+		const responseEntities: CopyFileResponse[] = [];
 		const newRecords: FileRecord[] = [];
 		const paths: Array<ICopyFiles> = [];
 
@@ -341,7 +347,9 @@ export class FilesStorageUC {
 
 					await this.fileRecordRepo.save(entity);
 					newRecords.push(entity);
+					responseEntities.push(new CopyFileResponse({ id: entity.id, sourceId: item.id, name: entity.name }));
 					paths.push({
+						//
 						sourcePath: this.createPath(item.schoolId, item.id),
 						targetPath: this.createPath(entity.schoolId, entity.id),
 					});
@@ -359,7 +367,7 @@ export class FilesStorageUC {
 			});
 
 			await Promise.all(pendedFileRecords);
-			return [newRecords, newRecords.length];
+			return responseEntities;
 		} catch (error) {
 			await this.fileRecordRepo.delete(newRecords);
 			throw error;

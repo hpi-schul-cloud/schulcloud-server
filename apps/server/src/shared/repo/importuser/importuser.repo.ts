@@ -1,9 +1,9 @@
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { BaseRepo } from '@shared/repo/base.repo';
-import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, School, User } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, School, User } from '@shared/domain';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { ImportUserScope } from './importuser.scope';
 
 @Injectable()

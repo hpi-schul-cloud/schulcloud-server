@@ -1073,7 +1073,7 @@ describe('TaskUC', () => {
 
 		it('should call fileStorageClientAdapterService.deleteFilesOfParent', async () => {
 			await service.delete(user.id, task.id, 'jwt');
-			const params = FileParamBuilder.buildForTask('jwt', task.school.id, task.id);
+			const params = FileParamBuilder.build('jwt', task.school.id, task);
 			expect(fileStorageClientAdapterService.deleteFilesOfParent).toBeCalledWith(params);
 		});
 	});

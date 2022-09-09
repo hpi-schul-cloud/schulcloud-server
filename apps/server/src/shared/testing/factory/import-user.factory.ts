@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { ImportUser, IImportUserProperties, MatchCreator, User, RoleName, IImportUserRoleName } from '@shared/domain';
+import { IImportUserProperties, IImportUserRoleName, ImportUser, MatchCreator, RoleName, User } from '@shared/domain';
 import { DeepPartial } from 'fishery';
+import { BaseFactory } from './base.factory';
 import { schoolFactory } from './school.factory';
 import { systemFactory } from './system.factory';
-import { BaseFactory } from './base.factory';
 
 class ImportUserFactory extends BaseFactory<ImportUser, IImportUserProperties> {
 	matched(matchedBy: MatchCreator, user: User): this {

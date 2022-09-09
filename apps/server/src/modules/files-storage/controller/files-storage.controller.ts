@@ -26,7 +26,9 @@ import { Request } from 'express';
 import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
 import {
+	CopyFileListResponse,
 	CopyFileParams,
+	CopyFileResponse,
 	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileParams,
@@ -235,7 +237,7 @@ export class FilesStorageController {
 	}
 
 	@ApiOperation({ summary: 'Copy all files of a parent entityId to a target entitId' })
-	@ApiResponse({ status: 201, type: FileRecordListResponse })
+	@ApiResponse({ status: 201, type: CopyFileListResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
@@ -244,20 +246,10 @@ export class FilesStorageController {
 		@Param() params: FileRecordParams,
 		@Body() copyFilesParam: CopyFilesOfParentParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<FileRecordListResponse> {
-		const [fileRecords, total] = await this.filesStorageUC.copyFilesOfParent(
-			currentUser.userId,
-			params,
-			copyFilesParam
-		);
+	): Promise<CopyFileListResponse> {
+		const [response, count] = await this.filesStorageUC.copyFilesOfParent(currentUser.userId, params, copyFilesParam);
 
-		const responseFileRecords = fileRecords.map((fileRecord) => {
-			return new FileRecordResponse(fileRecord);
-		});
-
-		const response = new FileRecordListResponse(responseFileRecords, total);
-
-		return response;
+		return new CopyFileListResponse(response, count);
 	}
 
 	@ApiOperation({ summary: 'Copy a single file in the same target entityId scope.' })
@@ -271,10 +263,8 @@ export class FilesStorageController {
 		@Param() params: SingleFileParams,
 		@Body() copyFileParam: CopyFileParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<FileRecordResponse> {
-		const fileRecord = await this.filesStorageUC.copyOneFile(currentUser.userId, params, copyFileParam);
-
-		const response = new FileRecordResponse(fileRecord);
+	): Promise<CopyFileResponse> {
+		const response = await this.filesStorageUC.copyOneFile(currentUser.userId, params, copyFileParam);
 
 		return response;
 	}
