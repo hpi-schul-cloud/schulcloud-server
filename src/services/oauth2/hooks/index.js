@@ -41,6 +41,7 @@ const setSubject = (hook) => {
 const setIdToken = (hook) => {
 	const scope = hook.params.consentRequest.requested_scope;
 	if (!hook.params.query.accept) return hook;
+	// add 'federalState' to Promise - clean solution
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
 		scope.includes('groups')
@@ -77,7 +78,17 @@ const setIdToken = (hook) => {
 						email: scope.includes('email') ? user.email : undefined,
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
+						userRole: scope.includes('bilo')
+							? user.roles.data.map((roles) => ({
+									roleName: roles.name,
+							  }))
+							: undefined,
 						schoolId: user.schoolId,
+						federalState: scope.includes('bilo')
+							? user.schoolId.federalState.data.map((federalState) => ({
+									federalStateName: federalState.name,
+							  }))
+							: undefined,
 						groups: scope.includes('groups')
 							? userTeams.data.map((team) => ({
 									gid: team._id,
@@ -86,6 +97,8 @@ const setIdToken = (hook) => {
 							: undefined,
 					},
 				};
+				// eslint-disable-next-line no-console
+				console.log('id_token_bilo: ', hook);
 				return hook;
 			})
 	);
