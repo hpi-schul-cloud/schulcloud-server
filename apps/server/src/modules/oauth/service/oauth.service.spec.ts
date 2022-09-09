@@ -16,9 +16,8 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { schoolFactory } from '@shared/testing';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
-import { UnprocessableEntityException } from '@nestjs/common';
-import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthResponse } from './dto/oauth.response';
@@ -381,7 +380,7 @@ describe('OAuthService', () => {
 			// Act & Assert
 			await expect(
 				service.findUser(defaultTokenResponse.access_token, defaultTokenResponse.id_token, defaultSystem.id)
-			).rejects.toThrow(UnprocessableEntityException);
+			).rejects.toThrow(BadRequestException);
 		});
 	});
 
@@ -443,7 +442,7 @@ describe('OAuthService', () => {
 			systemRepo.findById.mockRejectedValue('Not Found');
 
 			// Act & Assert
-			await expect(service.processOAuth(defaultQuery, 'unknown id')).rejects.toThrow(UnprocessableEntityException);
+			await expect(service.processOAuth(defaultQuery, 'unknown id')).rejects.toThrow(NotFoundException);
 		});
 	});
 

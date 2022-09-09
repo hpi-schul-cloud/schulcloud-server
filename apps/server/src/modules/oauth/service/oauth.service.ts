@@ -10,7 +10,7 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AxiosResponse } from 'axios';
-import { Inject, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, Inject, NotFoundException } from '@nestjs/common';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
@@ -109,7 +109,7 @@ export class OAuthService {
 		const sub: string | undefined = jwt.decode(idToken, { json: true })?.sub;
 
 		if (!sub) {
-			throw new UnprocessableEntityException(`Provided idToken: ${idToken} has no sub.`);
+			throw new BadRequestException(`Provided idToken: ${idToken} has no sub.`);
 		}
 
 		this.logger.debug(`provisioning is running for user with sub: ${sub} and system with id: ${systemId}`);
@@ -173,7 +173,7 @@ export class OAuthService {
 					return this.getOAuthError(error as string, provider);
 				})
 				.catch(() => {
-					throw new UnprocessableEntityException(`No system with id: ${systemId} found`);
+					throw new NotFoundException(`No system with id: ${systemId} found`);
 				});
 			return oauthResponse;
 		}
