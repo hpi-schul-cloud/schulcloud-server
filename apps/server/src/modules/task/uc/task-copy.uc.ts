@@ -68,6 +68,7 @@ export class TaskCopyUC {
 		});
 
 		if (status.copyEntity instanceof Task && status.originalEntity instanceof Task) {
+			await this.taskRepo.save(status.copyEntity);
 			status = await this.fileCopyAppendService.copyFilesOfEntity(
 				status,
 				status.originalEntity,
