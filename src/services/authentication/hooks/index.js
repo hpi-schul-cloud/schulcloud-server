@@ -35,6 +35,7 @@ const bruteForceCheck = async (context) => {
 	const { systemId, strategy } = context.data;
 
 	if (strategy !== 'jwt') {
+		// await context.app.service('nest-account-uc').checkBrutForce(context.data.username, systemId);
 		// const [account] = await context.app.service('/accounts').find({
 		// 	query: {
 		// 		username: context.data.username,
@@ -42,6 +43,7 @@ const bruteForceCheck = async (context) => {
 		// 	},
 		// 	paginate: false,
 		// });
+		// console.log('context.data', context.data);
 
 		const [account] = await context.app.service('nest-account-service').findByUsernameAndSystemId({
 			username: context.data.username,

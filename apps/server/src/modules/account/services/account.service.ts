@@ -40,8 +40,8 @@ export class AccountService {
 		if (!accountEntity) {
 			throw new EntityNotFoundError('Account');
 		}
-		// return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
+		// return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
 	}
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
