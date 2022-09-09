@@ -3,7 +3,7 @@ import { OauthConfig } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { LtiToolRepo } from '@shared/repo';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import QueryString from 'qs';
@@ -26,7 +26,6 @@ export class HydraSsoService {
 		});
 
 		const res: Promise<AxiosResponse> = this.get(`${oauthConfig.authEndpoint}?${query}`, axiosConfig);
-
 		return res;
 	}
 
@@ -36,7 +35,10 @@ export class HydraSsoService {
 		cookies: CookiesDto,
 		axiosConfig: AxiosRequestConfig
 	): Promise<AxiosResponse> {
-		if (!axiosConfig.headers) throw new InternalServerErrorException();
+		if (!axiosConfig.headers) {
+			axiosConfig.headers = {};
+		}
+
 		if (location.startsWith(Configuration.get('HYDRA_URI') as string)) {
 			axiosConfig.headers.Cookie = cookies.hydraCookie;
 		} else {
@@ -45,15 +47,15 @@ export class HydraSsoService {
 		axiosConfig.headers.Referer = referer;
 
 		const res: Promise<AxiosResponse> = this.get(location, axiosConfig);
-
 		return res;
 	}
 
-	async generateConfig(ltiToolId: string): Promise<OauthConfig> {
-		const tool: LtiToolDO = await this.ltiRepo.findById(ltiToolId);
+	async generateConfig(oauthClientId: string): Promise<OauthConfig> {
+		const tool: LtiToolDO = await this.ltiRepo.findByOauthClientId(oauthClientId);
 
+		// Needs to be checked, because the fields can be undefined
 		if (!tool.oAuthClientId || !tool.secret) {
-			throw new NotFoundException(ltiToolId, 'Suitable tool not found!');
+			throw new InternalServerErrorException(oauthClientId, 'Suitable tool not found!');
 		}
 
 		const hydraUri: string = Configuration.get('HYDRA_URI') as string;
@@ -66,7 +68,7 @@ export class HydraSsoService {
 			jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,
 			logoutEndpoint: `${hydraUri}/oauth2/sessions/logout`,
 			provider: 'hydra',
-			redirectUri: `${Configuration.get('API_HOST') as string}/v3/sso/hydra/${ltiToolId}`,
+			redirectUri: `${Configuration.get('API_HOST') as string}/v3/sso/hydra/${oauthClientId}`,
 			responseType: 'code',
 			scope: Configuration.get('NEXTCLOUD_SCOPES') as string, // Only Nextcloud is currently supported
 			tokenEndpoint: `${hydraUri}/oauth2/token`,

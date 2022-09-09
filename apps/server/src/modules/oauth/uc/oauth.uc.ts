@@ -15,23 +15,14 @@ export class OauthUc {
 
 	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
 		try {
-			this.logger.debug('Oauth process strated. Next up: checkAuthorizationCode().');
 			const authCode: string = this.oauthService.checkAuthorizationCode(query);
-			this.logger.debug('Done. Next up: oauthService.getOauthConfig().');
 			const oauthConfig: OauthConfig = await this.oauthService.getOauthConfig(systemId);
-			this.logger.debug('Done. Next up: requestToken().');
 			const queryToken: OauthTokenResponse = await this.oauthService.requestToken(authCode, oauthConfig);
-			this.logger.debug('Done. Next up: validateToken().');
 			const decodedToken: IJwt = await this.oauthService.validateToken(queryToken.id_token, oauthConfig);
-			this.logger.debug('Done. Next up: findUser().');
 			const user: User = await this.oauthService.findUser(decodedToken, oauthConfig, systemId);
-			this.logger.debug('Done. Next up: getJWTForUser().');
 			const jwtResponse: string = await this.oauthService.getJwtForUser(user);
-			this.logger.debug('Done. Next up: buildResponse().');
 			const response: OAuthResponse = this.oauthService.buildResponse(oauthConfig, queryToken);
-			this.logger.debug('Done. Next up: getRedirect().');
 			const oauthResponse: OAuthResponse = this.oauthService.getRedirect(response);
-			this.logger.debug('Done. Response should now be returned().');
 			oauthResponse.jwt = jwtResponse;
 			return oauthResponse;
 		} catch (error) {

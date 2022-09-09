@@ -81,6 +81,29 @@ describe('LtiTool Repo', () => {
 		});
 	});
 
+	describe('findByOauthClientId', () => {
+		it('should find a tool with the oAuthClientId', async () => {
+			// Arrange
+			const oAuthClientId = 'clientId';
+			const entity: LtiTool = ltiToolFactory.withOauthClientId(oAuthClientId).buildWithId();
+			await em.persistAndFlush(entity);
+
+			// Act
+			const result = await repo.findByOauthClientId(oAuthClientId);
+
+			// Assert
+			expect(result.oAuthClientId).toEqual(oAuthClientId);
+		});
+
+		it('should throw an error if the tool was not found', async () => {
+			// Arrange
+			const oAuthClientId = 'NoExistingTool';
+
+			// Act & Assert
+			await expect(repo.findByOauthClientId(oAuthClientId)).rejects.toThrow(NotFoundError);
+		});
+	});
+
 	describe('mapEntityToDO', () => {
 		it('should return a domain object', () => {
 			// Arrange
@@ -91,6 +114,8 @@ describe('LtiTool Repo', () => {
 				updatedAt: new Date('2022-07-20'),
 				createdAt: new Date('2022-07-20'),
 				name: 'toolName',
+				oAuthClientId: 'clientId',
+				secret: 'secret',
 			};
 
 			// Act
@@ -99,6 +124,8 @@ describe('LtiTool Repo', () => {
 			// Assert
 			expect(ltiToolDO.id).toEqual(testEntity.id);
 			expect(ltiToolDO.name).toEqual(testEntity.name);
+			expect(ltiToolDO.oAuthClientId).toEqual(testEntity.oAuthClientId);
+			expect(ltiToolDO.secret).toEqual(testEntity.secret);
 		});
 	});
 
@@ -110,6 +137,8 @@ describe('LtiTool Repo', () => {
 				updatedAt: new Date('2022-07-20'),
 				createdAt: new Date('2022-07-20'),
 				name: 'toolName',
+				oAuthClientId: 'clientId',
+				secret: 'secret',
 			});
 
 			// Act
@@ -118,6 +147,8 @@ describe('LtiTool Repo', () => {
 			// Assert
 			expect(result.id).toEqual(testDO.id);
 			expect(result.name).toEqual(testDO.name);
+			expect(result.oAuthClientId).toEqual(testDO.oAuthClientId);
+			expect(result.secret).toEqual(testDO.secret);
 		});
 	});
 });

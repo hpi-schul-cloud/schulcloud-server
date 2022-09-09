@@ -1,87 +1,140 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { createMock } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { getMockRes } from '@jest-mock/express';
 import { Test, TestingModule } from '@nestjs/testing';
-import { System } from '@shared/domain';
+import { ICurrentUser, System } from '@shared/domain';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
+import { HydraParams } from '@src/modules/oauth/controller/dto/hydra.params';
+import { HydraOauthUc } from '@src/modules/oauth/uc';
+import { Request } from 'express';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationParams } from './dto/authorization.params';
 import { OauthSSOController } from './oauth-sso.controller';
 
 describe('OAuthController', () => {
-	Configuration.set('HOST', 'https://mock.de');
+	let module: TestingModule;
 	let controller: OauthSSOController;
-	let oauthUc: OauthUc;
-	const defaultJWT =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
-	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${
-		Configuration.get('HOST') as string
-	}/dashboard`;
+	let oauthUc: DeepMocked<OauthUc>;
+	let hydraOauthUc: DeepMocked<HydraOauthUc>;
 
-	const generateMock = async (oauthUcMock) => {
-		const module: TestingModule = await Test.createTestingModule({
+	const mockHost = 'https://mock.de';
+	const defaultJWT = 'JWT_mock';
+	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${mockHost}/dashboard`;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			controllers: [OauthSSOController],
-			imports: [],
 			providers: [
 				{
 					provide: OauthUc,
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					useValue: oauthUcMock,
+					useValue: createMock<OauthUc>(),
 				},
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: HydraOauthUc,
+					useValue: createMock<HydraOauthUc>(),
 				},
 			],
 		}).compile();
 
 		controller = module.get(OauthSSOController);
 		oauthUc = module.get(OauthUc);
-	};
+		hydraOauthUc = module.get(HydraOauthUc);
+	});
 
-	it('should be defined', async () => {
-		await generateMock({
-			startOauth: jest.fn(),
-		});
+	it('should be defined', () => {
 		expect(controller).toBeDefined();
 	});
 
-	describe('startOauthFlow', () => {
+	describe('startOauthAuthorizationCodeFlow', () => {
 		const defaultAuthCode = '43534543jnj543342jn2';
 		const query: AuthorizationParams = { code: defaultAuthCode };
 		const system: System = systemFactory.build();
 		system.id = '4345345';
+
 		it('should redirect to mock.de', async () => {
+			// Arrange
 			const { res } = getMockRes();
-			await generateMock({
-				startOauth: jest.fn(() => ({
-					jwt: '1111',
-					idToken: '2222',
-					logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
-					redirect: `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${
-						Configuration.get('HOST') as string
-					}/dashboard`,
-				})),
+			oauthUc.processOAuth.mockResolvedValue({
+				jwt: '1111',
+				idToken: '2222',
+				logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
+				redirect: `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${mockHost}/dashboard`,
+				provider: 'iserv',
 			});
+
+			// Act
 			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
+
+			// Assert
 			const expected = [query, system.id];
-			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
+			expect(oauthUc.processOAuth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).toBeCalledWith('jwt', '1111');
 			expect(res.redirect).toBeCalledWith(iservRedirectMock);
 		});
+
 		it('should redirect to empty string', async () => {
+			// Arrange
 			const { res } = getMockRes();
-			await generateMock({
-				startOauth: jest.fn(() => ({
-					idToken: '2222',
-					logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
-				})),
+			oauthUc.processOAuth.mockResolvedValue({
+				idToken: '2222',
+				redirect: '',
+				provider: 'iserv',
 			});
+
+			// Act
 			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
+
+			// Assert
 			expect(res.cookie).toBeCalledWith('jwt', '');
 			expect(res.redirect).toBeCalledWith('');
+		});
+	});
+
+	describe('getHydraOauthToken', () => {
+		it('should call the hydraOauthUc', async () => {
+			// Arrange
+			const authParams: AuthorizationParams = {
+				code: 'code',
+			};
+			const hydraParams: HydraParams = {
+				oauthClientId: 'clientId',
+			};
+
+			// Act
+			await controller.getHydraOauthToken(authParams, hydraParams);
+
+			// Assert
+			expect(hydraOauthUc.getOauthToken).toBeCalledWith(authParams, hydraParams.oauthClientId);
+		});
+	});
+
+	describe('requestAuthToken', () => {
+		it('should call the hydraOauthUc', async () => {
+			// Arrange
+			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+
+			const request: Request = {
+				headers: { authorization: 'Bearer token123' },
+			} as Request;
+
+			const hydraParams: HydraParams = {
+				oauthClientId: 'clientId',
+			};
+
+			// Act
+			await controller.requestAuthToken(currentUser, request, hydraParams);
+
+			// Assert
+			expect(hydraOauthUc.requestAuthCode).toBeCalledWith(
+				currentUser.userId,
+				expect.any(String),
+				hydraParams.oauthClientId
+			);
 		});
 	});
 });

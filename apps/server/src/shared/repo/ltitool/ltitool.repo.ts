@@ -20,6 +20,12 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		return this.mapEntityToDO(entity);
 	}
 
+	async findByOauthClientId(oAuthClientId: string): Promise<LtiToolDO> {
+		const entity = await this._em.findOneOrFail(LtiTool, { oAuthClientId });
+
+		return this.mapEntityToDO(entity);
+	}
+
 	protected mapEntityToDO(entity: LtiTool): LtiToolDO {
 		return new LtiToolDO({
 			id: entity.id,

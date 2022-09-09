@@ -389,4 +389,11 @@ describe('OAuthService', () => {
 			);
 		});
 	});
+
+	describe('getOAuthConfig', () => {
+		it('should return an OauthConfig', async () => {
+			const response: OauthConfig = await service.getOauthConfig('');
+			expect(response.clientId).toEqual('12345');
+		});
+	});
 });

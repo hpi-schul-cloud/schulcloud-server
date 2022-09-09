@@ -267,7 +267,7 @@ export class NextcloudClient {
 	 * Calls nextcloud to get all users in a group.
 	 *
 	 * @param groupId Id of the group in nextcloud
-	 * @returns The app password for the current user
+	 * @returns List of the nextcloud user ids
 	 */
 	public getGroupUsers(groupId: string): Promise<string[]> {
 		const request = this.get<OcsResponse<GroupUsers>>(`/ocs/v1.php/cloud/groups/${groupId}/users`);

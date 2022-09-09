@@ -8,5 +8,5 @@ export class HydraParams {
 		required: true,
 		nullable: false,
 	})
-	ltiToolId!: string;
+	oauthClientId!: string;
 }

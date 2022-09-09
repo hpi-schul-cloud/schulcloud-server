@@ -1,11 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
-import { HydraParams } from '@src/modules/oauth/controller/dto/hydra.params';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import QueryString from 'qs';
-import { nanoid } from 'nanoid';
 import { OauthConfig } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
@@ -28,19 +25,16 @@ export class HydraOauthUc {
 
 	private readonly HOST: string = Configuration.get('HOST') as string;
 
-	async getOauthToken(query: AuthorizationParams, ltiToolId: string): Promise<OauthTokenResponse> {
-		const hydraOauthConfig = await this.hydraSsoService.generateConfig(ltiToolId);
-		this.logger.debug('Oauth process strated. Next up: checkAuthorizationCode().');
+	async getOauthToken(query: AuthorizationParams, oauthClientId: string): Promise<OauthTokenResponse> {
+		const hydraOauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);
 		const authCode: string = this.oauthService.checkAuthorizationCode(query);
-		this.logger.debug('Done. Next up: requestToken().');
 		const queryToken: OauthTokenResponse = await this.oauthService.requestToken(authCode, hydraOauthConfig);
-		this.logger.debug('Done. Next up: validateToken().');
 		await this.oauthService.validateToken(queryToken.id_token, hydraOauthConfig);
 		return queryToken;
 	}
 
-	async requestAuthCode(userId: string, jwt: string, ltiToolId: string): Promise<AuthorizationParams> {
-		const hydraOauthConfig: OauthConfig = await this.hydraSsoService.generateConfig(ltiToolId);
+	async requestAuthCode(userId: string, jwt: string, oauthClientId: string): Promise<AuthorizationParams> {
+		const hydraOauthConfig: OauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);
 		const cookies: CookiesDto = new CookiesDto({ localCookie: `jwt=${jwt}`, hydraCookie: '' });
 		const axiosConfig: AxiosRequestConfig = {
 			headers: {},
