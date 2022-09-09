@@ -448,13 +448,21 @@ describe('OAuthService', () => {
 
 	describe('getRedirect', () => {
 		it('should return a login url string', () => {
-			const response = service.getRedirect(defaultResponse);
-			expect(response.redirect).toStrictEqual(`${Configuration.get('HOST') as string}/dashboard`);
+			const url = service.getRedirectUrl(
+				defaultResponse.provider,
+				defaultResponse.idToken,
+				defaultResponse.logoutEndpoint
+			);
+			expect(url).toStrictEqual(`${Configuration.get('HOST') as string}/dashboard`);
 		});
 		it('should return an iserv login url string', () => {
 			defaultResponse.provider = 'iserv';
-			const response = service.getRedirect(defaultResponse);
-			expect(response.redirect).toStrictEqual(iservRedirectMock);
+			const url = service.getRedirectUrl(
+				defaultResponse.provider,
+				defaultResponse.idToken,
+				defaultResponse.logoutEndpoint
+			);
+			expect(url).toStrictEqual(iservRedirectMock);
 		});
 	});
 

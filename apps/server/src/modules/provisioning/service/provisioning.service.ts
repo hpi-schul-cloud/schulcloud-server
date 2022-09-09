@@ -1,6 +1,5 @@
-import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { Logger } from '@src/core/logger';
 import { ProvisioningSystemInputDto } from '@src/modules/provisioning/dto/provisioning-system-input.dto';
 import { ProvisioningSystemInputMapper } from '@src/modules/provisioning/mapper/provisioning-system-input.mapper';
 import { SanisProvisioningStrategy, SanisStrategyData } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
@@ -13,25 +12,21 @@ export class ProvisioningService {
 	constructor(
 		private readonly systemService: SystemService,
 		private readonly sanisStrategy: SanisProvisioningStrategy,
-		private readonly iservStrategy: IservProvisioningStrategy,
-		private readonly logger: Logger
-	) {
-		this.logger.setContext(ProvisioningService.name);
-	}
+		private readonly iservStrategy: IservProvisioningStrategy
+	) {}
 
 	async process(accessToken: string, idToken: string, systemId: string): Promise<ProvisioningDto> {
 		let system: ProvisioningSystemInputDto;
 		try {
 			system = ProvisioningSystemInputMapper.mapToInternal(await this.systemService.findById(systemId));
 		} catch (e) {
-			this.logger.error(`System with id ${systemId} was not found.`);
-			throw new UnprocessableEntityException(`System with id "${systemId}" does not exist.`);
+			throw new NotFoundException(`System with id "${systemId}" does not exist.`);
 		}
 
 		switch (system.provisioningStrategy) {
 			case SystemProvisioningStrategy.SANIS: {
 				if (!system.provisioningUrl) {
-					throw new UnprocessableEntityException(`Sanis system with id: ${systemId} is missing a provisioning url`);
+					throw new InternalServerErrorException(`Sanis system with id: ${systemId} is missing a provisioning url`);
 				}
 
 				const params: SanisStrategyData = {
@@ -48,7 +43,6 @@ export class ProvisioningService {
 				return this.iservStrategy.apply(params);
 			}
 			default:
-				this.logger.error(`Missing provisioning strategy for system with id ${systemId}`);
 				throw new InternalServerErrorException('Provisioning Strategy is not defined.');
 		}
 	}

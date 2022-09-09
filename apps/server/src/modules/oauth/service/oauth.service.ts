@@ -138,11 +138,9 @@ export class OAuthService {
 
 	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
 		try {
-			this.logger.debug('Oauth process strated. Next up: checkAuthorizationCode().');
+			this.logger.debug('Oauth process started for systemId {}', systemId);
 			const authCode: string = this.checkAuthorizationCode(query);
-			this.logger.debug('Done. Next up: systemRepo.findById().');
 			const system: System = await this.systemRepo.findById(systemId);
-			this.logger.debug('Done. Next up: oauthConfig check.');
 			const { oauthConfig } = system;
 			if (oauthConfig == null) {
 				this.logger.warn(
@@ -150,27 +148,24 @@ export class OAuthService {
 				);
 				throw new OAuthSSOError('Requested system has no oauth configured', 'sso_internal_error');
 			}
-			this.logger.debug('Done. Next up: requestToken().');
 			const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig);
-			this.logger.debug('Done. Next up: validateToken().');
 			await this.validateToken(queryToken.id_token, oauthConfig);
-			this.logger.debug('Done. Next up: findUser().');
+
 			const user: User = await this.findUser(queryToken.access_token, queryToken.id_token, system.id);
-			this.logger.debug('Done. Next up: getJWTForUser().');
 			const jwtResponse: string = await this.getJwtForUser(user);
-			this.logger.debug('Done. Next up: buildResponse().');
+
 			const response: OAuthResponse = this.buildResponse(oauthConfig, queryToken);
-			this.logger.debug('Done. Next up: getRedirect().');
-			const oauthResponse: OAuthResponse = this.getRedirect(response);
-			this.logger.debug('Done. Response should now be returned().');
-			oauthResponse.jwt = jwtResponse;
-			return oauthResponse;
+
+			response.redirect = this.getRedirectUrl(response.provider, response.idToken, response.logoutEndpoint);
+			response.jwt = jwtResponse;
+			return response;
 		} catch (error) {
 			const oauthResponse: OAuthResponse = await this.systemRepo
 				.findById(systemId)
 				.then((system: System) => {
 					const provider = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
-					return this.getOAuthError(error as string, provider);
+					const oAuthError = this.getOAuthError(error, provider);
+					return oAuthError;
 				})
 				.catch(() => {
 					throw new NotFoundException(`No system with id: ${systemId} found`);
@@ -179,20 +174,31 @@ export class OAuthService {
 		}
 	}
 
-	getRedirect(response: OAuthResponse): OAuthResponse {
+	/**
+	 * Builds the URL from the given parameters.
+	 *
+	 * @param provider
+	 * @param idToken
+	 * @param logoutEndpoint
+	 * @return built redirectUrl
+	 */
+	getRedirectUrl(provider: string, idToken: string | undefined, logoutEndpoint: string | undefined): string {
 		const HOST = Configuration.get('HOST') as string;
-		let redirect: string;
-		const oauthResponse: OAuthResponse = new OAuthResponse();
 		// iserv strategy
-		if (response.provider === 'iserv') {
-			const idToken: string = response.idToken as string;
-			const logoutEndpoint: string = response.logoutEndpoint as string;
+		let redirect = '';
+		if (!idToken || !logoutEndpoint) {
+			this.logger.debug(
+				'No redirectUrl could set because of missing idToken or logoutEndpoint of provider: {}',
+				provider
+			);
+			return redirect;
+		}
+		if (provider === 'iserv') {
 			redirect = `${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`;
 		} else {
 			redirect = `${HOST}/dashboard`;
 		}
-		oauthResponse.redirect = redirect;
-		return oauthResponse;
+		return redirect;
 	}
 
 	getOAuthError(error: unknown, provider: string): OAuthResponse {

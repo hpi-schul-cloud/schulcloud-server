@@ -2,8 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { Logger } from '@src/core/logger';
-import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
 import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
 import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
@@ -16,7 +15,6 @@ describe('ProvisioningService', () => {
 	let systemService: DeepMocked<SystemService>;
 	let sanisProvisioningStrategy: DeepMocked<SanisProvisioningStrategy>;
 	let iservProvisioningStrategy: DeepMocked<IservProvisioningStrategy>;
-	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -34,10 +32,6 @@ describe('ProvisioningService', () => {
 					provide: IservProvisioningStrategy,
 					useValue: createMock<IservProvisioningStrategy>(),
 				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
-				},
 			],
 		}).compile();
 		provisioningService = module.get(ProvisioningService);
@@ -45,7 +39,6 @@ describe('ProvisioningService', () => {
 		systemService = module.get(SystemService);
 		sanisProvisioningStrategy = module.get(SanisProvisioningStrategy);
 		iservProvisioningStrategy = module.get(IservProvisioningStrategy);
-		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
@@ -84,7 +77,7 @@ describe('ProvisioningService', () => {
 		it('should throw error when system does not exists', async () => {
 			// Act & Assert
 			await expect(provisioningService.process('accessToken', 'idToken', 'no system found')).rejects.toThrow(
-				UnprocessableEntityException
+				NotFoundException
 			);
 		});
 
@@ -127,7 +120,6 @@ describe('ProvisioningService', () => {
 			await expect(provisioningService.process('accessToken', 'idToken', 'missingStrategySystemId')).rejects.toThrow(
 				InternalServerErrorException
 			);
-			expect(logger.error).toHaveBeenCalled();
 		});
 	});
 });
