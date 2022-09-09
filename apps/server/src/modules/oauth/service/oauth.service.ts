@@ -49,7 +49,7 @@ export class OAuthService {
 
 		if (query.error) {
 			errorCode = `sso_oauth_${query.error}`;
-			this.logger.error(`SSO Oauth authorization code request return with an error: ${query.error}`);
+			this.logger.warn(`SSO Oauth authorization code request return with an error: ${query.error}`);
 		}
 		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
 	}
@@ -145,7 +145,7 @@ export class OAuthService {
 			this.logger.debug('Done. Next up: oauthConfig check.');
 			const { oauthConfig } = system;
 			if (oauthConfig == null) {
-				this.logger.error(
+				this.logger.warn(
 					`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id}`
 				);
 				throw new OAuthSSOError('Requested system has no oauth configured', 'sso_internal_error');
@@ -196,7 +196,7 @@ export class OAuthService {
 	}
 
 	getOAuthError(error: unknown, provider: string): OAuthResponse {
-		this.logger.error(error);
+		this.logger.warn(error);
 		const oauthResponse = new OAuthResponse();
 		if (error instanceof OAuthSSOError) {
 			oauthResponse.errorcode = error.errorcode;
