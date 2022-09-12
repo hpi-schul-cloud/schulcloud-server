@@ -34,14 +34,14 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
-	// async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {
-	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto> {
+	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {
+		// async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto> {
 		const accountEntity = await this.accountRepo.findByUsernameAndSystemId(username, systemId);
-		if (!accountEntity) {
-			throw new EntityNotFoundError('Account');
-		}
-		return AccountEntityToDtoMapper.mapToDto(accountEntity);
-		// return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
+		// 	if (!accountEntity) {
+		// 		throw new EntityNotFoundError('Account');
+		// 	}
+		// 	return AccountEntityToDtoMapper.mapToDto(accountEntity);
+		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
 	}
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {

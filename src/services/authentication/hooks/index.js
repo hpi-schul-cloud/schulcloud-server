@@ -35,7 +35,8 @@ const bruteForceCheck = async (context) => {
 	const { systemId, strategy } = context.data;
 
 	if (strategy !== 'jwt') {
-		// await context.app.service('nest-account-uc').checkBrutForce(context.data.username, systemId);
+		await context.app.service('nest-account-uc').checkBrutForce(context.data.username, systemId);
+
 		// const [account] = await context.app.service('/accounts').find({
 		// 	query: {
 		// 		username: context.data.username,
@@ -45,27 +46,26 @@ const bruteForceCheck = async (context) => {
 		// });
 		// console.log('context.data', context.data);
 
-		const [account] = await context.app.service('nest-account-service').findByUsernameAndSystemId({
-			username: context.data.username,
-			systemId,
-		});
+		// 	const account = await context.app
+		// 		.service('nest-account-service')
+		// 		.findByUsernameAndSystemId(context.data.username, systemId);
 
-		// if account doesn't exist we can not update (e.g. iserv, moodle)
-		if (account) {
-			if (account.lasttriedFailedLogin) {
-				const timeDifference = (Date.now() - account.lasttriedFailedLogin) / 1000;
-				if (timeDifference < allowedTimeDifference) {
-					throw new BruteForcePrevention('Brute Force Prevention!', {
-						timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
-					});
-				}
-			}
-			// set current time to last tried login
-			// await context.app.service('/accounts').patch(account._id, { lasttriedFailedLogin: Date.now() });
-			await context.app.service('nest-account-service').updateLastTriedFailedLogin(account._id, {
-				lasttriedFailedLogin: Date.now(),
-			});
-		}
+		// 	// if account doesn't exist we can not update (e.g. iserv, moodle)
+		// 	if (account) {
+		// 		if (account.lasttriedFailedLogin) {
+		// 			const timeDifference = (Date.now() - account.lasttriedFailedLogin) / 1000;
+		// 			if (timeDifference < allowedTimeDifference) {
+		// 				throw new BruteForcePrevention('Brute Force Prevention!', {
+		// 					timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
+		// 				});
+		// 			}
+		// 		}
+		// 		// set current time to last tried login
+		// 		// await context.app.service('/accounts').patch(account._id, { lasttriedFailedLogin: Date.now() });
+		// 		await context.app.service('nest-account-service').updateLastTriedFailedLogin(account._id, {
+		// 			lasttriedFailedLogin: Date.now(),
+		// 		});
+		// 	}
 	}
 	return context;
 };
@@ -89,15 +89,9 @@ const injectUserId = async (context) => {
 
 	if (strategy !== 'jwt' && context.data.username) {
 		return context.app
-			.service('/accounts')
-			.find({
-				query: {
-					username: context.data.username,
-					systemId,
-				},
-				paginate: false,
-			})
-			.then(async ([account]) => {
+			.service('nest-account-service')
+			.findByUsernameAndSystemId(context.data.username, systemId)
+			.then(async (account) => {
 				if (account) {
 					context.params.payload = {};
 					context.params.payload.accountId = account._id;
