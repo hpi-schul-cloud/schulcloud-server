@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
-import { ParseObjectIdPipe } from '@shared/controller/pipe';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 // todo  @src/modules/learnroom/* must be replaced
@@ -12,7 +11,7 @@ import serverConfig from '@src/server.config';
 import { TaskMapper } from '../mapper/task.mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
-import { TaskListResponse, TaskResponse } from './dto';
+import { TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
 import { TaskCopyApiParams } from './dto/task-copy.params';
 
 @ApiTags('Task')
@@ -51,52 +50,46 @@ export class TaskController {
 		return result;
 	}
 
-	@Patch(':id/finish')
-	async finish(
-		@Param('id', ParseObjectIdPipe) taskId: string,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<TaskResponse> {
-		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, taskId, true);
+	@Patch(':taskId/finish')
+	async finish(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
+		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, urlParams.taskId, true);
 
 		const response = TaskMapper.mapToResponse(task);
 
 		return response;
 	}
 
-	@Patch(':id/restore')
-	async restore(
-		@Param('id', ParseObjectIdPipe) taskId: string,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<TaskResponse> {
-		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, taskId, false);
+	@Patch(':taskId/restore')
+	async restore(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
+		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, urlParams.taskId, false);
 
 		const response = TaskMapper.mapToResponse(task);
 
 		return response;
 	}
 
-	@Delete(':id')
+	@Delete(':taskId')
 	async delete(
-		@Param('id', ParseObjectIdPipe) taskId: string,
+		@Param() urlParams: TaskUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@JWT() jwt: string
 	): Promise<boolean> {
-		const result = await this.taskUc.delete(currentUser.userId, taskId, jwt);
+		const result = await this.taskUc.delete(currentUser.userId, urlParams.taskId, jwt);
 
 		return result;
 	}
 
-	@Post(':id/copy')
+	@Post(':taskId/copy')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param('id', ParseObjectIdPipe) taskId: string,
+		@Param() urlParams: TaskUrlParams,
 		@Body() params: TaskCopyApiParams,
 		@JWT() jwt: string
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.taskCopyUc.copyTask(
 			currentUser.userId,
-			taskId,
+			urlParams.taskId,
 			CopyMapper.mapTaskCopyToDomain(params, jwt)
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);

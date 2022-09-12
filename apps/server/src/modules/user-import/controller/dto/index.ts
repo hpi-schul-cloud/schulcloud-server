@@ -1,6 +1,7 @@
 export * from './filter-import-user.params';
 export * from './filter-user.params';
 export * from './import-user.response';
+export * from './import-user.url.params';
 export * from './match-type';
 export * from './sort-import-user.params';
 export * from './update-flag.params';

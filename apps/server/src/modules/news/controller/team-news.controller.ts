@@ -2,12 +2,12 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 
-import { PaginationParams, ParseObjectIdPipe } from '@shared/controller';
+import { PaginationParams } from '@shared/controller';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 
 import { NewsMapper } from '../mapper/news.mapper';
 import { NewsUc } from '../uc';
-import { FilterNewsParams, NewsListResponse } from './dto';
+import { FilterNewsParams, NewsListResponse, TeamUrlParams } from './dto';
 
 @ApiTags('News')
 @Authenticate('jwt')
@@ -20,13 +20,13 @@ export class TeamNewsController {
 	 */
 	@Get(':teamId/news')
 	async findAllForTeam(
-		@Param('teamId', ParseObjectIdPipe) teamId: string,
+		@Param() urlParams: TeamUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: FilterNewsParams,
 		@Query() pagination: PaginationParams
 	): Promise<NewsListResponse> {
 		// enforce filter by a given team, used in team tab
-		scope.targetId = teamId;
+		scope.targetId = urlParams.teamId;
 		scope.targetModel = 'teams';
 		const [newsList, count] = await this.newsUc.findAllForUser(
 			currentUser.userId,

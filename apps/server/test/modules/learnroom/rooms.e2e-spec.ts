@@ -258,4 +258,25 @@ describe('Rooms Controller (e2e)', () => {
 			expect(response.status).toEqual(201);
 		});
 	});
+
+	describe('[POST] lesson copy', () => {
+		it('should return 201', async () => {
+			const roles = roleFactory.buildList(1, { permissions: [Permission.TOPIC_CREATE] });
+			const teacher = userFactory.build({ roles });
+			const course = courseFactory.build({ teachers: [teacher] });
+			const lesson = lessonFactory.build({ course });
+
+			await em.persistAndFlush([lesson]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+
+			const response = await request(app.getHttpServer())
+				.post(`/rooms/lessons/${lesson.id}/copy`)
+				.set('Authorization', 'jwt')
+				.send({ courseId: course.id });
+
+			expect(response.status).toEqual(201);
+		});
+	});
 });
