@@ -290,7 +290,13 @@ describe('file copy append service', () => {
 
 					copyFilesService.copyFilesOfEntity.mockResolvedValue({
 						entity: copyStatus.copyEntity as Task,
-						response: [],
+						response: [
+							{
+								id: 'id',
+								sourceId: 'sourceId',
+								name: 'name',
+							},
+						],
 					});
 
 					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
@@ -310,7 +316,6 @@ describe('file copy append service', () => {
 					expect(updatedStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 					expect(fileGroupStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 					expect(file?.status).toEqual(CopyStatusEnum.SUCCESS);
-					expect(file?.title).toEqual(originalFile.name);
 				});
 
 				it('should try to copy embeddedFiles and not update on failure', async () => {
