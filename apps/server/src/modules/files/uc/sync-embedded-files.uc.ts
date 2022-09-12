@@ -39,8 +39,7 @@ export class SyncEmbeddedFilesUc {
 			const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
 
 			fileIds.forEach((id) => {
-				const idExists = files.some((file) => new ObjectId(file.source.id) === id);
-
+				const idExists = files.some((file) => file.source.id === id.toHexString());
 				if (!idExists) {
 					this.failedIds.push(entity._id);
 					this.logger.error(`legacy file with id: ${id.toHexString()} in entity ${entity._id.toHexString()} not found`);
@@ -62,13 +61,11 @@ export class SyncEmbeddedFilesUc {
 
 		if (entity instanceof Lesson) {
 			entity.contents.forEach((item: IComponentProperties) => {
-				if (item.content === undefined || !('text' in item.content)) {
-					return;
-				}
-
-				const contentFileIds = this.extractFileIdsFromContent(item.content.text);
-				if (contentFileIds !== null) {
-					fileIds.push(...contentFileIds);
+				if (item.component === 'text' && 'text' in item.content) {
+					const contentFileIds = this.extractFileIdsFromContent(item.content.text);
+					if (contentFileIds !== null) {
+						fileIds.push(...contentFileIds);
+					}
 				}
 			});
 		}
@@ -127,7 +124,7 @@ export class SyncEmbeddedFilesUc {
 	private async updateEntityLinks(file: SyncFileItem, entity: Task | Lesson, errorUrl?: string) {
 		if (file.parentType === FileRecordParentType.Lesson && entity instanceof Lesson) {
 			entity.contents = entity.contents.map((item: IComponentProperties) => {
-				if ('text' in item.content) {
+				if (item.component === 'text' && 'text' in item.content) {
 					item.content.text = this.replaceLink(item.content.text, file, errorUrl);
 				}
 
