@@ -155,6 +155,8 @@ export class OAuthService {
 	}
 
 	getOAuthError(error: unknown, provider: string): OAuthResponse {
+		this.logger.error(error);
+
 		const oauthResponse = new OAuthResponse();
 
 		oauthResponse.provider = provider;
