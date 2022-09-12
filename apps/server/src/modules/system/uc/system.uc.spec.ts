@@ -88,7 +88,6 @@ describe('SystemUc', () => {
 		it('should return a system by id', async () => {
 			const receivedSystem: SystemDto = await systemUc.findById(system1.id);
 
-			console.log(receivedSystem);
 			expect(receivedSystem.alias).toEqual(system1.alias);
 		});
 
