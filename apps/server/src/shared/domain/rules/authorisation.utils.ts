@@ -19,7 +19,7 @@ export class AuthorisationUtils {
 		return rolesAndPermissions;
 	}
 
-	private resolvePermissionsByRoles(inputRoles: Role[]): string[] {
+	public resolvePermissionsByRoles(inputRoles: Role[]): string[] {
 		let permissions: string[] = [];
 
 		for (let i = 0; i < inputRoles.length; i += 1) {

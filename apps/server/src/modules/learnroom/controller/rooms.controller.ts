@@ -1,16 +1,24 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ParseObjectIdPipe } from '@shared/controller';
+import { RequestTimeout } from '@shared/common';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { LessonCopyUC } from '@src/modules/learnroom/uc/lesson-copy.uc';
+import serverConfig from '@src/server.config';
 import { CopyMapper } from '../mapper/copy.mapper';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { CourseCopyUC } from '../uc/course-copy.uc';
 import { RoomsUc } from '../uc/rooms.uc';
-import { BoardResponse, PatchOrderParams, PatchVisibilityParams } from './dto';
+import {
+	BoardResponse,
+	LessonCopyApiParams,
+	LessonUrlParams,
+	PatchOrderParams,
+	PatchVisibilityParams,
+	RoomElementUrlParams,
+	RoomUrlParams,
+} from './dto';
 import { CopyApiResponse } from './dto/copy.response';
-import { LessonCopyApiParams } from './dto/lesson/lesson-copy.params';
 
 @ApiTags('Rooms')
 @Authenticate('jwt')
@@ -23,56 +31,62 @@ export class RoomsController {
 		private readonly lessonCopyUc: LessonCopyUC
 	) {}
 
-	@Get(':roomid/board')
+	@Get(':roomId/board')
 	async getRoomBoard(
-		@Param('roomid', ParseObjectIdPipe) roomId: string,
+		@Param() urlParams: RoomUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
-		const board = await this.roomsUc.getBoard(roomId, currentUser.userId);
+		const board = await this.roomsUc.getBoard(urlParams.roomId, currentUser.userId);
 		const mapped = this.mapper.mapToResponse(board);
 		return mapped;
 	}
 
-	@Patch(':roomid/elements/:elementid/visibility')
+	@Patch(':roomId/elements/:elementId/visibility')
 	async patchElementVisibility(
-		@Param('roomid', ParseObjectIdPipe) roomId: string,
-		@Param('elementid', ParseObjectIdPipe) elementId: string,
+		@Param() urlParams: RoomElementUrlParams,
 		@Body() params: PatchVisibilityParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.roomsUc.updateVisibilityOfBoardElement(roomId, elementId, currentUser.userId, params.visibility);
+		await this.roomsUc.updateVisibilityOfBoardElement(
+			urlParams.roomId,
+			urlParams.elementId,
+			currentUser.userId,
+			params.visibility
+		);
 	}
 
-	@Patch(':roomid/board/order')
+	@Patch(':roomId/board/order')
 	async patchOrderingOfElements(
-		@Param('roomid', ParseObjectIdPipe) roomId: string,
+		@Param() urlParams: RoomUrlParams,
 		@Body() params: PatchOrderParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.roomsUc.reorderBoardElements(roomId, currentUser.userId, params.elements);
+		await this.roomsUc.reorderBoardElements(urlParams.roomId, currentUser.userId, params.elements);
 	}
 
-	@Post(':roomid/copy')
+	@Post(':roomId/copy')
+	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param('roomid', ParseObjectIdPipe) courseId: string,
+		@Param() urlParams: RoomUrlParams,
 		@JWT() jwt: string
 	): Promise<CopyApiResponse> {
-		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, courseId, jwt);
+		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId, jwt);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
 	}
 
-	@Post('lessons/:lessonid/copy')
+	@Post('lessons/:lessonId/copy')
+	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param('lessonid', ParseObjectIdPipe) lessonId: string,
+		@Param() urlParams: LessonUrlParams,
 		@Body() params: LessonCopyApiParams,
 		@JWT() jwt: string
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.lessonCopyUc.copyLesson(
 			currentUser.userId,
-			lessonId,
+			urlParams.lessonId,
 			CopyMapper.mapLessonCopyToDomain(params, jwt)
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);

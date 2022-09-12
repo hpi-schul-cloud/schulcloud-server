@@ -249,37 +249,10 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(Array.isArray(result.data)).toBe(true);
 				expect(result.data[0]).toBeDefined();
 				expect(result.data[0]).toStrictEqual({
-					creatorId: expect.any(String) as string,
 					id: expect.any(String) as string,
 					name: expect.any(String) as string,
-					parentId: targetParentId,
-					parentType: FileRecordParentType.Course,
-					type: 'text/plain',
-					securityCheckStatus: 'pending',
-					size: expect.any(Number) as number,
+					sourceId: expect.any(String) as string,
 				});
-			});
-
-			it('should return elements of requested scope', async () => {
-				const otherParentId = new ObjectId().toHexString();
-				await Promise.all([
-					api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test2.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test3.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${otherParentId}`, 'other1.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${otherParentId}`, 'other2.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${otherParentId}`, 'other3.txt'),
-				]);
-
-				const { result } = await api.copy(`/${validId}/schools/${validId}`, copyFilesParams);
-
-				const resultData: FileRecordResponse[] = result.data;
-				const ids: EntityId[] = resultData.map((o) => o.parentId);
-
-				expect(result.total).toEqual(3);
-				expect(ids.sort()).toEqual(
-					[copyFilesParams.target.parentId, copyFilesParams.target.parentId, copyFilesParams.target.parentId].sort()
-				);
 			});
 		});
 	});
@@ -370,14 +343,9 @@ describe(`${baseRouteName} (api)`, () => {
 				const { result } = await api.copyFile(`/${fileRecordId}`, copyFileParams);
 
 				expect(result).toStrictEqual({
-					creatorId: expect.any(String) as string,
 					id: expect.any(String) as string,
 					name: expect.any(String) as string,
-					parentId: targetParentId,
-					parentType: FileRecordParentType.Course,
-					type: 'text/plain',
-					securityCheckStatus: 'pending',
-					size: expect.any(Number) as number,
+					sourceId: expect.any(String) as string,
 				});
 			});
 
