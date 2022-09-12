@@ -62,13 +62,11 @@ export class SyncEmbeddedFilesUc {
 
 		if (entity instanceof Lesson) {
 			entity.contents.forEach((item: IComponentProperties) => {
-				if (item.content === undefined || !('text' in item.content)) {
-					return;
-				}
-
-				const contentFileIds = this.extractFileIdsFromContent(item.content.text);
-				if (contentFileIds !== null) {
-					fileIds.push(...contentFileIds);
+				if (item.component === 'text' && 'text' in item.content) {
+					const contentFileIds = this.extractFileIdsFromContent(item.content.text);
+					if (contentFileIds !== null) {
+						fileIds.push(...contentFileIds);
+					}
 				}
 			});
 		}
@@ -127,7 +125,7 @@ export class SyncEmbeddedFilesUc {
 	private async updateEntityLinks(file: SyncFileItem, entity: Task | Lesson, errorUrl?: string) {
 		if (file.parentType === FileRecordParentType.Lesson && entity instanceof Lesson) {
 			entity.contents = entity.contents.map((item: IComponentProperties) => {
-				if ('text' in item.content) {
+				if (item.component === 'text' && 'text' in item.content) {
 					item.content.text = this.replaceLink(item.content.text, file, errorUrl);
 				}
 
