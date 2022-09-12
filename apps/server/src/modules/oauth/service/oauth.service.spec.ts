@@ -358,18 +358,20 @@ describe('OAuthService', () => {
 			const response: OAuthResponse = service.getOAuthError(generalError, 'provider');
 
 			// Assert
+			expect(response.provider).toStrictEqual('provider');
 			expect(response.errorcode).toStrictEqual('oauth_login_failed');
 			expect(response.redirect).toStrictEqual(`${hostUri}/login?error=oauth_login_failed&provider=provider`);
 		});
 
 		it('should return a login url string within an error', () => {
 			// Arrange
-			const specialError: OAuthSSOError = new OAuthSSOError('foo', 'bar');
+			const specialError: OAuthSSOError = new OAuthSSOError('foo', 'special_error_code');
 
 			// Act
 			const response = service.getOAuthError(specialError, 'provider');
 
 			// Assert
+			expect(response.provider).toStrictEqual('provider');
 			expect(response.errorcode).toStrictEqual('special_error_code');
 			expect(response.redirect).toStrictEqual(`${hostUri}/login?error=special_error_code&provider=provider`);
 		});

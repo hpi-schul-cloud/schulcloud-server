@@ -6,6 +6,8 @@ import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { setupEntities, systemFactory, userFactory } from '@shared/testing/index';
 import { System, User } from '@shared/domain/index';
 import { SystemRepo } from '@shared/repo/index';
+import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
+import { NotFoundException } from '@nestjs/common';
 import { OauthUc } from '.';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
@@ -56,9 +58,11 @@ describe('OAuthUc', () => {
 	});
 
 	describe('processOAuth', () => {
+		const code = '43534543jnj543342jn2';
+		const query: AuthorizationParams = { code };
+
 		it('should do the process successfully', async () => {
 			// Arrange
-			const code = '43534543jnj543342jn2';
 			const jwt = 'schulcloudJwt';
 			const redirect = 'redirect';
 			const baseResponse: OAuthResponse = {
@@ -67,7 +71,6 @@ describe('OAuthUc', () => {
 				provider: 'provider',
 				redirect,
 			};
-			const query: AuthorizationParams = { code };
 			const user: User = userFactory.buildWithId();
 
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
@@ -96,39 +99,58 @@ describe('OAuthUc', () => {
 			expect(response.jwt).toStrictEqual(jwt);
 		});
 
-		// TODO --------->
 		it('should throw error if oauthconfig is missing', async () => {
+			// Arrange
 			const system: System = systemFactory.buildWithId();
-			systemRepo.findById.mockResolvedValueOnce(system);
-			const response = await service.processOAuth(defaultQuery, system.id);
-			expect(response).toEqual({
+			const errorResponse: OAuthResponse = {
+				provider: 'unknown-provider',
 				errorcode: 'sso_internal_error',
-				redirect: 'https://mock.de/login?error=sso_internal_error&provider=iserv',
-			});
+				redirect: 'errorRedirect',
+			};
+
+			oauthService.checkAuthorizationCode.mockReturnValue(code);
+			systemRepo.findById.mockResolvedValue(system);
+			oauthService.getOAuthError.mockReturnValue(errorResponse);
+
+			// Act
+			const response: OAuthResponse = await service.processOAuth(query, system.id);
+
+			// Assert
+			expect(oauthService.getOAuthError).toHaveBeenCalledWith(expect.any(Error), 'unknown-provider');
+			expect(response).toEqual(errorResponse);
 		});
 
 		it('should return a error response if processOAuth failed and the provider cannot be fetched from the system', async () => {
 			// Arrange
-			defaultIservSystem.oauthConfig = undefined;
+			const system: System = systemFactory.withOauthConfig().buildWithId();
+			const errorResponse: OAuthResponse = {
+				provider: system.oauthConfig?.provider,
+				errorcode: 'sso_internal_error',
+				redirect: 'errorRedirect',
+			} as OAuthResponse;
+
+			oauthService.checkAuthorizationCode.mockImplementation(() => {
+				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
+			});
+			systemRepo.findById.mockResolvedValue(system);
+			oauthService.getOAuthError.mockReturnValue(errorResponse);
 
 			// Act
-			const errorResponse = await service.processOAuth(defaultQuery, '');
+			const response: OAuthResponse = await service.processOAuth(query, '');
 
 			// Assert
-			expect(errorResponse).toEqual(
-				expect.objectContaining({
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					redirect: expect.stringContaining('provider=unknown-provider'),
-				})
-			);
+			expect(response).toEqual(errorResponse);
 		});
 
 		it('should throw if no system was found', async () => {
 			// Arrange
+			oauthService.checkAuthorizationCode.mockImplementation(() => {
+				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
+			});
 			systemRepo.findById.mockRejectedValue(new NotFoundError('Not Found'));
 
 			// Act & Assert
-			await expect(service.processOAuth(defaultQuery, 'unknown id')).rejects.toThrow(NotFoundException);
+			await expect(service.processOAuth(query, 'unknown id')).rejects.toThrow(NotFoundException);
 		});
 	});
 });

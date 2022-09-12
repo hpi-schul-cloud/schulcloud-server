@@ -87,7 +87,7 @@ describe('OAuthController', () => {
 			// Arrange
 			const { res } = getMockRes();
 			const expected = [query, system.id];
-			oauthUc.startOauth.mockResolvedValue({
+			oauthUc.processOAuth.mockResolvedValue({
 				jwt: '1111',
 				idToken: '2222',
 				logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
@@ -99,14 +99,14 @@ describe('OAuthController', () => {
 			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
 
 			// Assert
-			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
+			expect(oauthUc.processOAuth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).toBeCalledWith('jwt', '1111', cookieProperties);
 			expect(res.redirect).toBeCalledWith(iservRedirectMock);
 		});
 		it('should redirect to empty string', async () => {
 			// Arrange
 			const { res } = getMockRes();
-			oauthUc.startOauth.mockResolvedValue({
+			oauthUc.processOAuth.mockResolvedValue({
 				idToken: '2222',
 				redirect: '',
 				provider: 'iserv',

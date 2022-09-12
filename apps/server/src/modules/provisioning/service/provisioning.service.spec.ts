@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
 import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
 import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
@@ -95,7 +95,7 @@ describe('ProvisioningService', () => {
 
 			// Act & Assert
 			await expect(provisioningService.process('accessToken', 'idToken', sanisSystemStrategyId)).rejects.toThrow(
-				UnprocessableEntityException
+				InternalServerErrorException
 			);
 		});
 

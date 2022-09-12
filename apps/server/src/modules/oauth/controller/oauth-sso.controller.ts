@@ -19,7 +19,8 @@ export class OauthSSOController {
 		@Res() res: Response,
 		@Param() urlParams: SystemUrlParams
 	): Promise<void> {
-		const oauthResponse = await this.oauthUc.startOauth(query, urlParams.systemId);
+		const oauthResponse = await this.oauthUc.processOAuth(query, urlParams.systemId);
+
 		const cookieDefaultOptions: CookieOptions = {
 			httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
 			sameSite: Configuration.get('COOKIE__SAME_SITE') as 'lax' | 'strict' | 'none',

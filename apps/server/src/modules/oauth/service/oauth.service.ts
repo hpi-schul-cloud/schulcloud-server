@@ -157,6 +157,8 @@ export class OAuthService {
 	getOAuthError(error: unknown, provider: string): OAuthResponse {
 		const oauthResponse = new OAuthResponse();
 
+		oauthResponse.provider = provider;
+
 		if (error instanceof OAuthSSOError) {
 			oauthResponse.errorcode = error.errorcode;
 		} else {
