@@ -142,6 +142,15 @@ describe('CourseEntity', () => {
 
 			expect(number).toEqual(0);
 		});
+
+		it('should return 0 if student not an array', () => {
+			const teacher = userFactory.build();
+			const course = courseFactory.build({ teachers: [teacher], students: undefined });
+
+			const number = course.getNumberOfStudents();
+
+			expect(number).toEqual(0);
+		});
 	});
 
 	describe('isFinished', () => {
