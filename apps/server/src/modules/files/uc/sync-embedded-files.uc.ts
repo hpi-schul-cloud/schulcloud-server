@@ -39,8 +39,7 @@ export class SyncEmbeddedFilesUc {
 			const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
 
 			fileIds.forEach((id) => {
-				const idExists = files.some((file) => new ObjectId(file.source.id) === id);
-
+				const idExists = files.some((file) => file.source.id === id.toHexString());
 				if (!idExists) {
 					this.failedIds.push(entity._id);
 					this.logger.error(`legacy file with id: ${id.toHexString()} in entity ${entity._id.toHexString()} not found`);
