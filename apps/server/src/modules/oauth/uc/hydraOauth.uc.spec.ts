@@ -13,32 +13,50 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { CookiesDto } from '../service/dto/cookies.dto';
 import { HydraOauthUc } from '.';
 
+class HydraOauthUcSpec extends HydraOauthUc {
+	public processCookiesSpec(setCookies: string[], cookies: CookiesDto): void {
+		super.processCookies(setCookies, cookies);
+	}
+}
+
 describe('HydraOauthUc', () => {
-	let service: HydraOauthUc;
+	let module: TestingModule;
+	let uc: HydraOauthUcSpec;
+
 	let hydraOauthService: DeepMocked<HydraSsoService>;
 	let oauthService: DeepMocked<OAuthService>;
-	let defaultAuthCode: string;
-	let defaultQuery: AuthorizationParams;
+
 	let ltiToolId: string;
 	let JWTMock: string;
 	let userIdMock: string;
 	let oauthClientId: string;
-	let cookieDTO: CookiesDto;
 	let hydraOauthConfig: OauthConfig;
 	let oauthTokenResponse: OauthTokenResponse;
 	let defaultDecodedJWT: IJwt;
-	let axiosConfig: AxiosRequestConfig;
-	let axiosResponse: AxiosResponse;
 
 	const hydraUri = 'hyraUri';
 	const apiHost = 'apiHost';
 	const nextcloudScopes = 'nextcloudscope';
+	const MAX_REDIRECTS = 1;
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
+			switch (key) {
+				case 'HYDRA_URI':
+					return hydraUri;
+				case 'API_HOST':
+					return apiHost;
+				case 'NEXTCLOUD_SCOPES':
+					return nextcloudScopes;
+				default:
+					return '';
+			}
+		});
+
+		module = await Test.createTestingModule({
 			imports: [HttpModule],
 			providers: [
-				HydraOauthUc,
+				HydraOauthUcSpec,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
@@ -54,26 +72,17 @@ describe('HydraOauthUc', () => {
 			],
 		}).compile();
 
-		service = await module.get(HydraOauthUc);
+		uc = await module.get(HydraOauthUcSpec);
 		hydraOauthService = await module.get(HydraSsoService);
 		oauthService = await module.get(OAuthService);
 	});
 
+	afterAll(async () => {
+		jest.clearAllMocks();
+		await module.close();
+	});
+
 	beforeEach(() => {
-		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
-			switch (key) {
-				case 'HYDRA_URI':
-					return hydraUri;
-				case 'API_HOST':
-					return apiHost;
-				case 'NEXTCLOUD_SCOPES':
-					return nextcloudScopes;
-				default:
-					return '';
-			}
-		});
-		defaultAuthCode = '43534543jnj543342jn2';
-		defaultQuery = { code: defaultAuthCode };
 		ltiToolId = 'ltiToolIdMock';
 		JWTMock = 'jwtMock';
 		userIdMock = 'userIdMock';
@@ -104,8 +113,28 @@ describe('HydraOauthUc', () => {
 			sub: 'subMock',
 			uuid: 'uuidMock',
 		};
+	});
 
-		axiosConfig = {
+	describe('getOauthToken', () => {
+		it('should return the oauth token response', async () => {
+			// Arrange
+			const code = 'kdjiqwjdjnq';
+
+			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
+			oauthService.checkAuthorizationCode.mockReturnValue(code);
+			oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
+			oauthService.validateToken.mockResolvedValue(defaultDecodedJWT);
+
+			// Act
+			const oauthToken = await uc.getOauthToken({ code }, '4566456');
+
+			// Assert
+			expect(oauthToken).toEqual(oauthTokenResponse);
+		});
+	});
+
+	describe('requestAuthCode', () => {
+		const axiosConfig = {
 			headers: {},
 			withCredentials: true,
 			maxRedirects: 0,
@@ -114,48 +143,83 @@ describe('HydraOauthUc', () => {
 			},
 		};
 
-		axiosResponse = {
-			data: { url: 'urlMock' },
-			status: 0,
-			statusText: '',
-			headers: {},
-			config: axiosConfig,
-		};
-	});
-	it('should be defined', () => {
-		expect(service).toBeDefined();
-	});
-
-	describe('getOauthToken', () => {
-		it('should return the oauth token response', async () => {
+		it('should return the authorizationcode', async () => {
 			// Arrange
+			const expectedAuthParams: AuthorizationParams = {
+				code: 'defaultAuthCode',
+			};
+
+			const axiosResponse1: AxiosResponse = {
+				data: expectedAuthParams,
+				status: 302,
+				statusText: '',
+				headers: {
+					location: 'https//mock.url/',
+					referer: 'hydra',
+				},
+				config: axiosConfig,
+			};
+			axiosResponse1.headers['set-cookie'] = ['oauth2=cookieMock; Secure; HttpOnly'];
+
+			const axiosResponse2: AxiosResponse = {
+				data: expectedAuthParams,
+				status: 200,
+				statusText: '',
+				headers: {
+					location: '/mock/path',
+					referer: 'dbildungscloud',
+				},
+				config: axiosConfig,
+			};
+			// axiosResponse2.headers['set-cookie'] = ['foo=bar; Expires=Thu; Secure; HttpOnly'];
+
 			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
-			oauthService.checkAuthorizationCode.mockReturnValue(defaultAuthCode);
-			oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
-			oauthService.validateToken.mockResolvedValue(defaultDecodedJWT);
+			hydraOauthService.initAuth.mockResolvedValue(axiosResponse1);
+
+			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse1);
+			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse2);
+
 			// Act
-			const oauthToken = await service.getOauthToken(defaultQuery, '4566456');
+			const authParams: AuthorizationParams = await uc.requestAuthCode(userIdMock, JWTMock, oauthClientId);
+
 			// Assert
-			expect(oauthToken).toEqual(oauthTokenResponse);
+			expect(authParams).toStrictEqual(expectedAuthParams);
+			expect(hydraOauthService.processRedirect).toHaveBeenNthCalledWith(
+				1,
+				axiosResponse1.headers.location,
+				axiosResponse1.headers.referer,
+				new CookiesDto({ localCookie: `jwt=${JWTMock}`, hydraCookie: '' }),
+				axiosConfig
+			);
+			expect(hydraOauthService.processRedirect).toHaveBeenNthCalledWith(
+				2,
+				axiosResponse1.headers.location,
+				axiosResponse1.headers.referer,
+				new CookiesDto({ localCookie: `jwt=${JWTMock}`, hydraCookie: 'oauth2=cookieMock' }),
+				axiosConfig
+			);
 		});
 	});
 
-	describe('requestAuthCode', () => {
-		it('should return the authorizationcode', async () => {
+	describe('processCookies', () => {
+		it('should return the oauth token response', () => {
 			// Arrange
-			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
-			jest.mock('../service/dto/cookies.dto.ts', () => {
-				return new CookiesDto({
-					localCookie: `jwt=${JWTMock}`,
-					hydraCookie: 'oauth2_blabla=kjasndlijashflkjsabsflöij; oauth2_blabla2=asdasdasd',
-				});
-			});
-			hydraOauthService.initAuth.mockResolvedValue(axiosResponse);
-			axiosResponse.headers['set-cookie']?.push();
+			const headers = [
+				'oauth2_cookie1=cookieMock; Secure; HttpOnly',
+				'oauth2_cookie2=cookieMock; Secure',
+				'foo1=bar1; Expires:Thu',
+				'foo2=bar2; HttpOnly',
+			];
+			const cookiesDTO = new CookiesDto({ hydraCookie: '', localCookie: '' });
+
 			// Act
-			const authParams = await service.requestAuthCode(userIdMock, JWTMock, oauthClientId);
+			uc.processCookiesSpec(headers, cookiesDTO);
+
 			// Assert
-			expect(authParams).toEqual(oauthTokenResponse);
+			expect(cookiesDTO.hydraCookie).toEqual([
+				'oauth2_cookie1=cookieMock; Secure; HttpOnly',
+				'oauth2_cookie2=cookieMock; Secure',
+			]);
 		});
 	});
 });

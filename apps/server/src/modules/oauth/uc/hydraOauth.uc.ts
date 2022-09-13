@@ -44,15 +44,19 @@ export class HydraOauthUc {
 				return status === 200 || status === 302;
 			},
 		};
+
 		let resp: AxiosResponse;
 		let referer = '';
 		let location: string;
 		let currentRedirect = 0;
+
 		resp = await this.hydraSsoService.initAuth(hydraOauthConfig, axiosConfig);
+
 		do {
 			if (resp.headers['set-cookie']) {
 				this.processCookies(resp.headers['set-cookie'], cookies);
 			}
+
 			location = resp.headers.location.startsWith('http')
 				? resp.headers.location
 				: `${this.HOST}${resp.headers.location}`;
@@ -61,11 +65,29 @@ export class HydraOauthUc {
 			referer = location;
 			currentRedirect += 1;
 		} while (resp.status === 302 && currentRedirect < this.MAX_REDIRECTS);
+
 		const authParams: AuthorizationParams = resp.data as AuthorizationParams;
 		return authParams;
 	}
 
-	private processCookies(setCookies: string[], cookies: CookiesDto): void {
+	protected processCookies(setCookies: string[], cookies: CookiesDto): void {
+		const hydraCookieList: string[] = [];
+		const localCookieList: string[] = [];
+
+		setCookies.forEach((item: string): void => {
+			const cookie: string = item.split(';')[0];
+			if (cookie.startsWith('oauth2') && !cookies.hydraCookie.includes(cookie)) {
+				hydraCookieList.push(cookie);
+			} else if (!cookies.localCookie.includes(cookie)) {
+				localCookieList.push(cookie);
+			}
+		});
+
+		cookies.hydraCookie.concat('; ', hydraCookieList.join('; '));
+		cookies.localCookie.concat('; ', localCookieList.join('; '));
+	}
+	// TODO
+	/* protected processCookies(setCookies: string[], cookies: CookiesDto): void {
 		setCookies.forEach((item: string): void => {
 			const cookie: string = item.split(';')[0];
 			if (cookie.startsWith('oauth2')) {
@@ -84,5 +106,5 @@ export class HydraOauthUc {
 				}
 			}
 		});
-	}
+	} */
 }
