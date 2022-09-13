@@ -35,7 +35,9 @@ export class SyncEmbeddedFilesUc {
 			this.logger.log(`migrating entity with id ${entity.id}`);
 			const fileIds = this.extractFileIds(entity);
 			this.logger.log(`extracted file ids for entity with id ${entity.id} - fileIds: ${JSON.stringify(fileIds)}`);
-
+			if (fileIds.length === 0) {
+				this.failedIds.push(entity._id);
+			}
 			const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
 
 			fileIds.forEach((id) => {
