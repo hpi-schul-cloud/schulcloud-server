@@ -1,13 +1,39 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { INestApplication, HttpStatus } from '@nestjs/common';
+import { Controller, Get, HttpStatus, INestApplication, NestInterceptor } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { RequestTimeout, TimeoutInterceptor } from '@shared/common';
 import request from 'supertest';
-import { ConfigService } from '@nestjs/config';
 
-import { TimeoutInterceptor } from '@shared/common';
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-import { createTestModule } from './test/create-test.module';
-import { IInterceptorConfig } from './interfaces';
+@Controller()
+class DelayController {
+	/** default route to test public access */
+	@Get()
+	async getHello(): Promise<string> {
+		await delay(100);
+		return 'Schulcloud Server API';
+	}
+
+	@RequestTimeout(1)
+	@Get('/timeout')
+	async getHelloWithTimeout(): Promise<string> {
+		await delay(100);
+		return 'Schulcloud Server API';
+	}
+}
+
+export const createTestModule = (interceptor: NestInterceptor): Promise<TestingModule> => {
+	return Test.createTestingModule({
+		providers: [
+			{
+				provide: APP_INTERCEPTOR,
+				useValue: interceptor,
+			},
+		],
+		controllers: [DelayController],
+	}).compile();
+};
 
 describe('TimeoutInterceptor', () => {
 	describe('when integrate TimeoutInterceptor', () => {
@@ -20,8 +46,7 @@ describe('TimeoutInterceptor', () => {
 		});
 
 		it('should respond with error code if request runs into timeout', async () => {
-			const configService = new ConfigService<IInterceptorConfig, true>({ INCOMING_REQUEST_TIMEOUT: 1 });
-			const interceptor = new TimeoutInterceptor(configService);
+			const interceptor = new TimeoutInterceptor(1);
 
 			app = (await createTestModule(interceptor)).createNestApplication();
 			await app.init();
@@ -32,8 +57,7 @@ describe('TimeoutInterceptor', () => {
 		});
 
 		it('should pass if request does not run into timeout', async () => {
-			const configService = new ConfigService<IInterceptorConfig, true>({ INCOMING_REQUEST_TIMEOUT: 30000 });
-			const interceptor = new TimeoutInterceptor(configService);
+			const interceptor = new TimeoutInterceptor(30000);
 
 			app = (await createTestModule(interceptor)).createNestApplication();
 			await app.init();
@@ -41,6 +65,17 @@ describe('TimeoutInterceptor', () => {
 			const response = await request(app.getHttpServer()).get('/');
 
 			expect(response.status).toEqual(HttpStatus.OK);
+		});
+
+		it('should respond with error code if request runs into timeout by timeout decorator', async () => {
+			const interceptor = new TimeoutInterceptor(30000);
+
+			app = (await createTestModule(interceptor)).createNestApplication();
+			await app.init();
+
+			const response = await request(app.getHttpServer()).get('/timeout');
+
+			expect(response.status).toEqual(HttpStatus.REQUEST_TIMEOUT);
 		});
 	});
 });

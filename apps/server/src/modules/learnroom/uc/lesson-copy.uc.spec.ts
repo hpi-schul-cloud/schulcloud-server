@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Actions, CopyHelperService, EtherpadService, LessonCopyService, PermissionTypes, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
@@ -77,6 +78,7 @@ describe('lesson copy uc', () => {
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
 		fileCopyAppendService = module.get(FileCopyAppendService);
+		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 	});
 
 	describe('copy lesson', () => {
@@ -106,7 +108,7 @@ describe('lesson copy uc', () => {
 			copyHelperService.deriveCopyName.mockReturnValue(lessonCopyName);
 
 			const jwt = 'some-fake-jwt';
-			fileCopyAppendService.appendFiles.mockResolvedValue(status);
+			fileCopyAppendService.copyFiles.mockResolvedValue(status);
 
 			return {
 				user,
@@ -119,6 +121,14 @@ describe('lesson copy uc', () => {
 				jwt,
 			};
 		};
+
+		it('should throw if copy feature is deactivated', async () => {
+			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
+			const { course, user, lesson, jwt } = setup();
+			await expect(uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt })).rejects.toThrowError(
+				InternalServerErrorException
+			);
+		});
 
 		it('should fetch correct user', async () => {
 			const { course, user, lesson, jwt } = setup();
@@ -186,12 +196,6 @@ describe('lesson copy uc', () => {
 			const { course, user, lesson, copy, jwt } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
 			expect(lessonRepo.save).toBeCalledWith(copy);
-		});
-
-		it('should try to append file copies from original task to task copy', async () => {
-			const { course, user, lesson, jwt } = setup();
-			const copyStatus = await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
-			expect(fileCopyAppendService.appendFiles).toBeCalledWith(copyStatus, jwt);
 		});
 
 		it('should return status', async () => {
