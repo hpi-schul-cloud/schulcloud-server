@@ -104,6 +104,7 @@ export class SyncEmbeddedFilesUc {
 	private async syncFiles(files: SyncFileItem[], entity: AvailableSyncEntityType) {
 		const promises = files.map((file) => this.sync(file, entity));
 		await Promise.all(promises);
+		await this.embeddedFilesRepo.updateEntity(entity);
 	}
 
 	private async sync(file: SyncFileItem, entity: AvailableSyncEntityType) {
@@ -127,22 +128,14 @@ export class SyncEmbeddedFilesUc {
 		if (entity instanceof Lesson) {
 			entity.contents = entity.contents.map((item: IComponentProperties) => {
 				if (item.component === 'text' && 'text' in item.content && item.content?.text) {
-					const res = this.replaceLink(item.content.text, file, errorUrl);
-					if (res === item.content.text) {
-						this.logger.error("text did not change while trying to replace for entityId: " + entity._id + " fileId: " + file.source.id)
-					}
-					item.content.text = res;
-
+					item.content.text = this.replaceLink(item.content.text, file, errorUrl);
 				}
-
 				return item;
 			});
-			await this.embeddedFilesRepo.updateEntity(entity);
 		}
 
 		if (entity instanceof Task) {
 			entity.description = this.replaceLink(entity.description, file, errorUrl);
-			await this.embeddedFilesRepo.updateEntity(entity);
 		}
 	}
 
