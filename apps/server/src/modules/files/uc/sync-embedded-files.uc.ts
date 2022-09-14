@@ -127,7 +127,12 @@ export class SyncEmbeddedFilesUc {
 		if (entity instanceof Lesson) {
 			entity.contents = entity.contents.map((item: IComponentProperties) => {
 				if (item.component === 'text' && 'text' in item.content && item.content?.text) {
-					item.content.text = this.replaceLink(item.content.text, file, errorUrl);
+					const res = this.replaceLink(item.content.text, file, errorUrl);
+					if (res === item.content.text) {
+						this.logger.error("text did not change while trying to replace for entityId: " + entity._id + " fileId: " + file.source.id)
+					}
+					item.content.text = res;
+
 				}
 
 				return item;
