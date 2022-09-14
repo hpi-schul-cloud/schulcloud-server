@@ -1,6 +1,5 @@
 const { discard } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { BruteForcePrevention } = require('../../../errors');
 const { getRedisClient, redisDelAsync } = require('../../../utils/redis');
 const {
 	extractRedisDataFromJwt,
@@ -8,7 +7,6 @@ const {
 	addTokenToWhitelistWithIdAndJti,
 } = require('../logic/whitelist');
 
-const { LOGIN_BLOCK_TIME: allowedTimeDifference } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 
 const disabledBruteForceCheck = Configuration.get('DISABLED_BRUTE_FORCE_CHECK');
@@ -20,9 +18,9 @@ const updateUsernameForLDAP = async (context) => {
 		await context.app
 			.service('schools')
 			.get(schoolId)
-			// eslint-disable-next-line promise/always-return
 			.then((school) => {
 				context.data.username = `${school.ldapSchoolIdentifier}/${context.data.username}`;
+				return context;
 			});
 	}
 	return context;
@@ -36,36 +34,6 @@ const bruteForceCheck = async (context) => {
 
 	if (strategy !== 'jwt') {
 		await context.app.service('nest-account-uc').checkBrutForce(context.data.username, systemId);
-
-		// const [account] = await context.app.service('/accounts').find({
-		// 	query: {
-		// 		username: context.data.username,
-		// 		systemId,
-		// 	},
-		// 	paginate: false,
-		// });
-		// console.log('context.data', context.data);
-
-		// 	const account = await context.app
-		// 		.service('nest-account-service')
-		// 		.findByUsernameAndSystemId(context.data.username, systemId);
-
-		// 	// if account doesn't exist we can not update (e.g. iserv, moodle)
-		// 	if (account) {
-		// 		if (account.lasttriedFailedLogin) {
-		// 			const timeDifference = (Date.now() - account.lasttriedFailedLogin) / 1000;
-		// 			if (timeDifference < allowedTimeDifference) {
-		// 				throw new BruteForcePrevention('Brute Force Prevention!', {
-		// 					timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
-		// 				});
-		// 			}
-		// 		}
-		// 		// set current time to last tried login
-		// 		// await context.app.service('/accounts').patch(account._id, { lasttriedFailedLogin: Date.now() });
-		// 		await context.app.service('nest-account-service').updateLastTriedFailedLogin(account._id, {
-		// 			lasttriedFailedLogin: Date.now(),
-		// 		});
-		// 	}
 	}
 	return context;
 };
@@ -76,10 +44,7 @@ const bruteForceReset = async (context) => {
 		return context;
 	}
 	// if successful login enable next login try directly
-	// await context.app.service('/accounts').patch(context.result.account._id, { lasttriedFailedLogin: 0 });
-	await context.app.service('nest-account-service').updateLastTriedFailedLogin(context.result.account._id, {
-		lasttriedFailedLogin: 0,
-	});
+	await context.app.service('nest-account-service').updateLastTriedFailedLogin(context.result.account._id, null);
 	return context;
 };
 
@@ -105,7 +70,6 @@ const injectUserId = async (context) => {
 					const accountParameters = {
 						username: context.data.username,
 						password: context.data.password,
-						strategy,
 						systemId,
 					};
 					const newAccount = await context.app.service('nest-account-uc').saveAccount(accountParameters);

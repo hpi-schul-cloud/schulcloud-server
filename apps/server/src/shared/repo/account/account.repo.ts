@@ -29,8 +29,6 @@ export class AccountRepo extends BaseRepo<Account> {
 	}
 
 	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
-		// async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account> {
-		// return this._em.findOneOrFail(Account, { username, systemId: new ObjectId(systemId) });
 		return this._em.findOne(Account, { username, systemId: new ObjectId(systemId) });
 	}
 
