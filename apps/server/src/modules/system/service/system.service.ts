@@ -24,20 +24,16 @@ export class SystemService {
 		return SystemMapper.mapFromEntityToDto(entity);
 	}
 
+	/*
+	This returns systems that provide authentication via OAuth
+	It merges systems that dBildungscloud communicates with directly
+	and systems that are queried via keycloak brokering.
+	*/
 	async findOAuth(): Promise<SystemDto[]> {
-		const systemEntities = await this.systemRepo.findByFilter(SysType.OAUTH, true);
-		const oidcSystems = await this.systemRepo.findByFilter(SysType.OIDC);
+		const systemEntities = await this.findDirectOauthSystems();
+		const generatedOAuthsystems = await this.findOauthViaKeycloakSystems();
 
-		const keycloakSystem = await this.lookupIdentityManagement();
-		const generatedOAuthsystems: System[] = [];
-		if (keycloakSystem) {
-			oidcSystems.forEach((systemEntity) => {
-				const generatedSystem: System = this.generateBrokerSystem(systemEntity, keycloakSystem);
-				generatedOAuthsystems.push(generatedSystem);
-			});
-		}
-
-		return SystemMapper.mapFromEntitiesToDtos([...systemEntities, ...generatedOAuthsystems]);
+		return [...systemEntities, ...generatedOAuthsystems];
 	}
 
 	async findOAuthById(id: EntityId): Promise<SystemDto> {
@@ -50,6 +46,26 @@ export class SystemService {
 			}
 		}
 		return SystemMapper.mapFromEntityToDto(systemEntity);
+	}
+
+	private async findDirectOauthSystems(): Promise<SystemDto[]> {
+		const systemEntities = await this.systemRepo.findByFilter(SysType.OAUTH, true);
+		return systemEntities;
+	}
+
+	private async findOauthViaKeycloakSystems(): Promise<SystemDto[]> {
+		const keycloakSystem = await this.lookupIdentityManagement();
+		if (!keycloakSystem) {
+			return [];
+		}
+		const oidcSystems = await this.systemRepo.findByFilter(SysType.OIDC);
+
+		const generatedOAuthsystems: System[] = [];
+		oidcSystems.forEach((systemEntity) => {
+			const generatedSystem: System = this.generateBrokerSystem(systemEntity, keycloakSystem);
+			generatedOAuthsystems.push(generatedSystem);
+		});
+		return generatedOAuthsystems;
 	}
 
 	private async lookupIdentityManagement() {

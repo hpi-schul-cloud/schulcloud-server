@@ -1,6 +1,6 @@
 export enum SysType {
 	LDAP = 'ldap',
-	OIDC = 'oidc',
-	OAUTH = 'oauth',
+	OIDC = 'oidc', // systems for authentication via keycloaks brokering mechanism
+	OAUTH = 'oauth', // systems for direct authentication via OAuth
 	KEYCLOAK = 'keycloak',
 }
