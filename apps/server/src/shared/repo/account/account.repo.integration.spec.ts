@@ -54,12 +54,16 @@ describe('account repo', () => {
 	});
 
 	describe('findByUsernameAndSystemId', () => {
-		it('should findByUsernameAndSystemId', async () => {
+		it('findByUsernameAndSystemId, should return account', async () => {
 			const accountToFind = accountFactory.withSystemId(new ObjectId(10)).build();
 			await em.persistAndFlush(accountToFind);
 			em.clear();
 			const account = await repo.findByUsernameAndSystemId(accountToFind.username ?? '', accountToFind.systemId ?? '');
 			expect(account?.username).toEqual(accountToFind.username);
+		});
+		it('findByUsernameAndSystemId, should return null', async () => {
+			const account = await repo.findByUsernameAndSystemId('', new ObjectId(undefined));
+			expect(account).toBeNull();
 		});
 	});
 
