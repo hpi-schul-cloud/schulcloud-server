@@ -9,7 +9,7 @@ import { OauthConfig } from '@shared/domain';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { IJwt } from '@src/modules/oauth/interface/jwt.base.interface';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { CookiesDto } from '../service/dto/cookies.dto';
 import { HydraOauthUc } from '.';
 
@@ -117,7 +117,6 @@ describe('HydraOauthUc', () => {
 
 	describe('getOauthToken', () => {
 		it('should return the oauth token response', async () => {
-			// Arrange
 			const code = 'kdjiqwjdjnq';
 
 			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
@@ -125,10 +124,8 @@ describe('HydraOauthUc', () => {
 			oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
 			oauthService.validateToken.mockResolvedValue(defaultDecodedJWT);
 
-			// Act
 			const oauthToken = await uc.getOauthToken({ code }, '4566456');
 
-			// Assert
 			expect(oauthToken).toEqual(oauthTokenResponse);
 		});
 	});
@@ -144,7 +141,6 @@ describe('HydraOauthUc', () => {
 		};
 
 		it('should return the authorizationcode', async () => {
-			// Arrange
 			const expectedAuthParams: AuthorizationParams = {
 				code: 'defaultAuthCode',
 			};
@@ -179,10 +175,8 @@ describe('HydraOauthUc', () => {
 			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse1);
 			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse2);
 
-			// Act
 			const authParams: AuthorizationParams = await uc.requestAuthCode(userIdMock, JWTMock, oauthClientId);
 
-			// Assert
 			expect(authParams).toStrictEqual(expectedAuthParams);
 			expect(hydraOauthService.processRedirect).toHaveBeenNthCalledWith(
 				1,
@@ -203,7 +197,6 @@ describe('HydraOauthUc', () => {
 
 	describe('processCookies', () => {
 		it('should return the oauth token response', () => {
-			// Arrange
 			const headers = [
 				'oauth2_cookie1=cookieMock; Secure; HttpOnly',
 				'oauth2_cookie2=cookieMock; Secure',
@@ -212,10 +205,8 @@ describe('HydraOauthUc', () => {
 			];
 			const cookiesDTO = new CookiesDto({ hydraCookie: '', localCookie: '' });
 
-			// Act
 			uc.processCookiesSpec(headers, cookiesDTO);
 
-			// Assert
 			expect(cookiesDTO.hydraCookie).toEqual([
 				'oauth2_cookie1=cookieMock; Secure; HttpOnly',
 				'oauth2_cookie2=cookieMock; Secure',

@@ -57,7 +57,6 @@ describe('OAuthController', () => {
 		system.id = '4345345';
 
 		it('should redirect to mock.de', async () => {
-			// Arrange
 			const { res } = getMockRes();
 			oauthUc.processOAuth.mockResolvedValue({
 				jwt: '1111',
@@ -67,10 +66,8 @@ describe('OAuthController', () => {
 				provider: 'iserv',
 			});
 
-			// Act
 			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
 
-			// Assert
 			const expected = [query, system.id];
 			expect(oauthUc.processOAuth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).toBeCalledWith('jwt', '1111');
@@ -78,7 +75,6 @@ describe('OAuthController', () => {
 		});
 
 		it('should redirect to empty string', async () => {
-			// Arrange
 			const { res } = getMockRes();
 			oauthUc.processOAuth.mockResolvedValue({
 				idToken: '2222',
@@ -86,10 +82,8 @@ describe('OAuthController', () => {
 				provider: 'iserv',
 			});
 
-			// Act
 			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
 
-			// Assert
 			expect(res.cookie).toBeCalledWith('jwt', '');
 			expect(res.redirect).toBeCalledWith('');
 		});
@@ -97,7 +91,6 @@ describe('OAuthController', () => {
 
 	describe('getHydraOauthToken', () => {
 		it('should call the hydraOauthUc', async () => {
-			// Arrange
 			const authParams: AuthorizationParams = {
 				code: 'code',
 			};
@@ -105,19 +98,15 @@ describe('OAuthController', () => {
 				oauthClientId: 'clientId',
 			};
 
-			// Act
 			await controller.getHydraOauthToken(authParams, hydraParams);
 
-			// Assert
 			expect(hydraOauthUc.getOauthToken).toBeCalledWith(authParams, hydraParams.oauthClientId);
 		});
 	});
 
 	describe('requestAuthToken', () => {
 		it('should call the hydraOauthUc', async () => {
-			// Arrange
 			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-
 			const request: Request = {
 				headers: { authorization: 'Bearer token123' },
 			} as Request;
@@ -126,10 +115,8 @@ describe('OAuthController', () => {
 				oauthClientId: 'clientId',
 			};
 
-			// Act
 			await controller.requestAuthToken(currentUser, request, hydraParams);
 
-			// Assert
 			expect(hydraOauthUc.requestAuthCode).toBeCalledWith(
 				currentUser.userId,
 				expect.any(String),
