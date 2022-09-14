@@ -673,11 +673,6 @@
 			"default": "http://hydra.localhost:9000",
 			"description": "Internal Hydra URI"
 		},
-		"API_HOST": {
-			"type:": "string",
-			"default": "http://localhost:3031/api",
-			"description": "Internal API Host"
-		},
 		"COLLABORATIVE_STORAGE_PROVIDER": {
 			"type:": "string",
 			"description": "Selects the storage provider strategy for the collaborative storage"
