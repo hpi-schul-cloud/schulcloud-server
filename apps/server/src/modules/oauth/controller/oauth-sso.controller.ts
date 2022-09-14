@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, Req, Res } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, Param, Query, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ParseObjectIdPipe } from '@shared/controller/pipe/parse-object-id.pipe';
 import { Logger } from '@src/core/logger';
@@ -45,7 +45,16 @@ export class OauthSSOController {
 		@Req() req: Request,
 		@Param() { oauthClientId }: HydraParams
 	): Promise<AuthorizationParams> {
-		const jwt: string = req.headers.authorization?.split(' ')[1] as string;
+		let jwt: string;
+		const authHeader: string | undefined = req.headers.authorization;
+		if (authHeader && authHeader.toLowerCase().startsWith('bearer ')) {
+			// eslint-disable-next-line prefer-destructuring
+			jwt = authHeader.split(' ')[1];
+		} else {
+			throw new UnauthorizedException(
+				`No bearer token in header for authorization process of user ${currentUser.userId} on oauth system ${oauthClientId}`
+			);
+		}
 		return this.hydraUc.requestAuthCode(currentUser.userId, jwt, oauthClientId);
 	}
 }

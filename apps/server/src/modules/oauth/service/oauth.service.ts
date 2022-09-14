@@ -146,12 +146,12 @@ export class OAuthService {
 		return oauthResponse;
 	}
 
-	async getOauthConfig(systemId: string) {
+	async getOauthConfig(systemId: string): Promise<OauthConfig> {
 		const system: System = await this.systemRepo.findById(systemId);
 		if (system.oauthConfig) {
 			return system.oauthConfig;
 		}
-		throw new NotFoundException(system, 'No OAuthConfig Available in the given System!');
+		throw new NotFoundException(`No OAuthConfig Available in the given System ${system.id}!`);
 	}
 
 	getOAuthError(error: unknown, provider: string): OAuthResponse {

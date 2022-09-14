@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, Role, School, System, User } from '@shared/domain';
 import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo/user/user.repo';
-import { systemFactory } from '@shared/testing/factory/system.factory';
+import { SystemFactory, systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
 import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AxiosResponse } from 'axios';
@@ -16,6 +16,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { schoolFactory } from '@shared/testing';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
+import { NotFoundException } from '@nestjs/common';
 import { IservOAuthService } from './iserv-oauth.service';
 import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
@@ -136,7 +137,6 @@ describe('OAuthService', () => {
 	beforeEach(() => {
 		defaultSystem = systemFactory.withOauthConfig().build();
 		defaultOauthConfig = defaultSystem.oauthConfig as OauthConfig;
-
 		defaultAuthCode = '43534543jnj543342jn2';
 		defaultQuery = { code: defaultAuthCode };
 		defaultErrorQuery = { error: 'oauth_login_failed' };
@@ -196,7 +196,7 @@ describe('OAuthService', () => {
 			type: 'iserv',
 			url: 'http://mock.de',
 			alias: `system`,
-			oauthConfig: {
+			oauthConfig: new OauthConfig({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
@@ -209,7 +209,7 @@ describe('OAuthService', () => {
 				issuer: 'mock_issuer',
 				jwksEndpoint: 'mock_jwksEndpoint',
 				redirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId',
-			},
+			}),
 			_id: new ObjectId(),
 			id: '',
 			createdAt: new Date(),
@@ -323,25 +323,29 @@ describe('OAuthService', () => {
 
 	describe('findUser', () => {
 		let oauthConfig: OauthConfig;
-		beforeAll(() => {
-			// Arrange
-			oauthConfig = new OauthConfig(defaultSystem.oauthConfig as OauthConfig);
-			oauthConfig.provider = 'iserv';
+
+		beforeEach(() => {
+			oauthConfig = defaultIservSystem.oauthConfig as OauthConfig;
 		});
+
 		it('should return the user according to the uuid(LdapId)', async () => {
-			// Act
 			const user: User = await service.findUser(defaultDecodedJWT, oauthConfig, defaultIservSystemId);
 
-			// Assert
 			expect(iservOAuthService.findUserById).toHaveBeenCalled();
 			expect(user).toBe(defaultIservUser);
 		});
+
 		it('should return the user according to the id', async () => {
+			oauthConfig.provider = 'sanis';
+
 			const user = await service.findUser(defaultDecodedJWT, oauthConfig, defaultSystem.id);
+
 			expect(userRepo.findById).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});
+
 		it('should return an error if no User is found by this Id', async () => {
+			oauthConfig.provider = 'sanis';
 			defaultDecodedJWT.sub = '';
 			await expect(service.findUser(defaultDecodedJWT, oauthConfig, defaultSystem.id)).rejects.toThrow(OAuthSSOError);
 		});
@@ -394,6 +398,11 @@ describe('OAuthService', () => {
 		it('should return an OauthConfig', async () => {
 			const response: OauthConfig = await service.getOauthConfig('');
 			expect(response.clientId).toEqual('12345');
+		});
+		it('should throw a NotFoundException', async () => {
+			const system = systemFactory.build();
+			systemRepo.findById.mockResolvedValue(system);
+			await expect(service.getOauthConfig(system.id)).rejects.toThrow(NotFoundException);
 		});
 	});
 });

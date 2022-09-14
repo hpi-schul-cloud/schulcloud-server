@@ -14,8 +14,8 @@ import { CookiesDto } from '../service/dto/cookies.dto';
 import { HydraOauthUc } from '.';
 
 class HydraOauthUcSpec extends HydraOauthUc {
-	public processCookiesSpec(setCookies: string[], cookies: CookiesDto): void {
-		super.processCookies(setCookies, cookies);
+	public processCookiesSpec(setCookies: string[]): CookiesDto {
+		return super.processCookies(setCookies);
 	}
 }
 
@@ -182,14 +182,14 @@ describe('HydraOauthUc', () => {
 				1,
 				axiosResponse1.headers.location,
 				axiosResponse1.headers.referer,
-				new CookiesDto({ localCookie: `jwt=${JWTMock}`, hydraCookie: '' }),
+				new CookiesDto({ localCookies: [`jwt=${JWTMock}`], hydraCookies: [''] }),
 				axiosConfig
 			);
 			expect(hydraOauthService.processRedirect).toHaveBeenNthCalledWith(
 				2,
 				axiosResponse1.headers.location,
 				axiosResponse1.headers.referer,
-				new CookiesDto({ localCookie: `jwt=${JWTMock}`, hydraCookie: 'oauth2=cookieMock' }),
+				new CookiesDto({ localCookies: [`jwt=${JWTMock}`], hydraCookies: ['oauth2=cookieMock'] }),
 				axiosConfig
 			);
 		});
@@ -203,14 +203,10 @@ describe('HydraOauthUc', () => {
 				'foo1=bar1; Expires:Thu',
 				'foo2=bar2; HttpOnly',
 			];
-			const cookiesDTO = new CookiesDto({ hydraCookie: '', localCookie: '' });
 
-			uc.processCookiesSpec(headers, cookiesDTO);
+			const cookies: CookiesDto = uc.processCookiesSpec(headers);
 
-			expect(cookiesDTO.hydraCookie).toEqual([
-				'oauth2_cookie1=cookieMock; Secure; HttpOnly',
-				'oauth2_cookie2=cookieMock; Secure',
-			]);
+			expect(cookies).toEqual(['oauth2_cookie1=cookieMock; Secure; HttpOnly', 'oauth2_cookie2=cookieMock; Secure']);
 		});
 	});
 });

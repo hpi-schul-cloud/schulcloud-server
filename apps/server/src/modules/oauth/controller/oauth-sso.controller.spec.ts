@@ -8,6 +8,7 @@ import { Logger } from '@src/core/logger';
 import { HydraParams } from '@src/modules/oauth/controller/dto/hydra.params';
 import { HydraOauthUc } from '@src/modules/oauth/uc';
 import { Request } from 'express';
+import { UnauthorizedException } from '@nestjs/common';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationParams } from './dto/authorization.params';
 import { OauthSSOController } from './oauth-sso.controller';
@@ -105,15 +106,15 @@ describe('OAuthController', () => {
 	});
 
 	describe('requestAuthToken', () => {
+		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+		const hydraParams: HydraParams = {
+			oauthClientId: 'clientId',
+		};
+
 		it('should call the hydraOauthUc', async () => {
-			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 			const request: Request = {
 				headers: { authorization: 'Bearer token123' },
 			} as Request;
-
-			const hydraParams: HydraParams = {
-				oauthClientId: 'clientId',
-			};
 
 			await controller.requestAuthToken(currentUser, request, hydraParams);
 
@@ -121,6 +122,16 @@ describe('OAuthController', () => {
 				currentUser.userId,
 				expect.any(String),
 				hydraParams.oauthClientId
+			);
+		});
+
+		it('should throw UnauthorizedException', async () => {
+			const request: Request = {
+				headers: { authorization: '1551 token123' },
+			} as Request;
+
+			await expect(controller.requestAuthToken(currentUser, request, hydraParams)).rejects.toThrow(
+				UnauthorizedException
 			);
 		});
 	});

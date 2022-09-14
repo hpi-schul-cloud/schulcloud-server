@@ -1,10 +1,10 @@
 export class CookiesDto {
-	hydraCookie: string;
+	hydraCookies: string[];
 
-	localCookie: string;
+	localCookies: string[];
 
 	constructor(props: CookiesDto) {
-		this.localCookie = props.localCookie;
-		this.hydraCookie = props.hydraCookie;
+		this.localCookies = props.localCookies;
+		this.hydraCookies = props.hydraCookies;
 	}
 }

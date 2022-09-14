@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { LtiToolRepo } from '@shared/repo';
 import { HttpService } from '@nestjs/axios';
-import { AxiosResponse } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { OauthConfig } from '@shared/domain';
 import { of } from 'rxjs';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
@@ -96,8 +96,8 @@ describe('HydraService', () => {
 			jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,
 		});
 		cookiesDto = new CookiesDto({
-			hydraCookie: 'testHydraCookie',
-			localCookie: 'testLocalCookie',
+			hydraCookies: ['testHydraCookie'],
+			localCookies: ['testLocalCookie'],
 		});
 
 		httpService.get.mockReturnValue(of(createAxiosResponse(responseData)));
@@ -119,37 +119,11 @@ describe('HydraService', () => {
 
 	describe('processRedirect', () => {
 		it('should process http request with hydra cookie', async () => {
-			// Arrange
-			const testReferer = 'testReferer';
-
 			// Act
-			const result: AxiosResponse = await service.processRedirect(hydraUri, testReferer, cookiesDto, {});
+			const result: AxiosResponse = await service.processRedirect(hydraUri, {});
 
 			// Assert
-			expect(httpService.get).toHaveBeenCalledWith(hydraUri, {
-				headers: {
-					Cookie: cookiesDto.hydraCookie,
-					Referer: testReferer,
-				},
-			});
-			expect(result.data).toEqual(responseData);
-		});
-
-		it('should process http request with other cookie', async () => {
-			// Arrange
-			const localUri = 'localUri';
-			const testReferer = 'testReferer';
-
-			// Act
-			const result: AxiosResponse = await service.processRedirect(localUri, testReferer, cookiesDto, {});
-
-			// Assert
-			expect(httpService.get).toHaveBeenCalledWith(localUri, {
-				headers: {
-					Cookie: cookiesDto.localCookie,
-					Referer: testReferer,
-				},
-			});
+			expect(httpService.get).toHaveBeenCalledWith(hydraUri, {});
 			expect(result.data).toEqual(responseData);
 		});
 	});

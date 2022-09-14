@@ -29,23 +29,7 @@ export class HydraSsoService {
 		return res;
 	}
 
-	async processRedirect(
-		location: string,
-		referer: string,
-		cookies: CookiesDto,
-		axiosConfig: AxiosRequestConfig
-	): Promise<AxiosResponse> {
-		if (!axiosConfig.headers) {
-			axiosConfig.headers = {};
-		}
-
-		if (location.startsWith(Configuration.get('HYDRA_URI') as string)) {
-			axiosConfig.headers.Cookie = cookies.hydraCookie;
-		} else {
-			axiosConfig.headers.Cookie = cookies.localCookie;
-		}
-		axiosConfig.headers.Referer = referer;
-
+	async processRedirect(location: string, axiosConfig: AxiosRequestConfig): Promise<AxiosResponse> {
 		const res: Promise<AxiosResponse> = this.get(location, axiosConfig);
 		return res;
 	}

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
@@ -35,7 +35,6 @@ export class HydraOauthUc {
 
 	async requestAuthCode(userId: string, jwt: string, oauthClientId: string): Promise<AuthorizationParams> {
 		const hydraOauthConfig: OauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);
-		const cookies: CookiesDto = new CookiesDto({ localCookie: `jwt=${jwt}`, hydraCookie: '' });
 		const axiosConfig: AxiosRequestConfig = {
 			headers: {},
 			withCredentials: true,
@@ -45,66 +44,73 @@ export class HydraOauthUc {
 			},
 		};
 
-		let resp: AxiosResponse;
-		let referer = '';
-		let location: string;
+		let response: AxiosResponse;
 		let currentRedirect = 0;
+		let referer = '';
 
-		resp = await this.hydraSsoService.initAuth(hydraOauthConfig, axiosConfig);
+		response = await this.hydraSsoService.initAuth(hydraOauthConfig, axiosConfig);
 
 		do {
-			if (resp.headers['set-cookie']) {
-				this.processCookies(resp.headers['set-cookie'], cookies);
+			let { location } = response.headers;
+			const isHydra = location.startsWith(Configuration.get('HYDRA_URI') as string);
+
+			// locations of schulcloud cookies are a relative path
+			if (!isHydra) {
+				location = `${this.HOST}${location}`;
 			}
 
-			location = resp.headers.location.startsWith('http')
-				? resp.headers.location
-				: `${this.HOST}${resp.headers.location}`;
+			const cookies: CookiesDto = new CookiesDto({ localCookies: [], hydraCookies: [] });
+			if (response.headers['set-cookie']) {
+				const extractedCookies: CookiesDto = this.processCookies(response.headers['set-cookie']);
+				cookies.localCookies = extractedCookies.localCookies;
+				cookies.hydraCookies = extractedCookies.hydraCookies;
+			}
+			cookies.localCookies.push(`jwt=${jwt}`);
+
+			const headerCookies: string = isHydra ? cookies.hydraCookies.join('; ') : cookies.localCookies.join('; ');
+
+			axiosConfig.headers = {
+				Referer: referer,
+				Cookie: headerCookies,
+			};
+
 			// eslint-disable-next-line no-await-in-loop
-			resp = await this.hydraSsoService.processRedirect(location, referer, cookies, axiosConfig);
+			response = await this.hydraSsoService.processRedirect(location, axiosConfig);
 			referer = location;
 			currentRedirect += 1;
-		} while (resp.status === 302 && currentRedirect < this.MAX_REDIRECTS);
+		} while (response.status === 302 && currentRedirect < this.MAX_REDIRECTS);
 
-		const authParams: AuthorizationParams = resp.data as AuthorizationParams;
+		if (currentRedirect >= this.MAX_REDIRECTS) {
+			throw new InternalServerErrorException(`Redirect limit of ${this.MAX_REDIRECTS} exceeded.`);
+		}
+
+		if (!(response.data instanceof AuthorizationParams)) {
+			throw new InternalServerErrorException(
+				`Invalid response after authorization process for user ${userId} on oauth client ${oauthClientId}.`
+			);
+		}
+
+		const authParams: AuthorizationParams = response.data;
 		return authParams;
 	}
 
-	protected processCookies(setCookies: string[], cookies: CookiesDto): void {
-		const hydraCookieList: string[] = [];
-		const localCookieList: string[] = [];
+	protected processCookies(setCookies: string[]): CookiesDto {
+		const localCookies: string[] = [];
+		const hydraCookies: string[] = [];
 
-		setCookies.forEach((item: string): void => {
-			const cookie: string = item.split(';')[0];
-			if (cookie.startsWith('oauth2') && !cookies.hydraCookie.includes(cookie)) {
-				hydraCookieList.push(cookie);
-			} else if (!cookies.localCookie.includes(cookie)) {
-				localCookieList.push(cookie);
-			}
-		});
-
-		cookies.hydraCookie.concat('; ', hydraCookieList.join('; '));
-		cookies.localCookie.concat('; ', localCookieList.join('; '));
-	}
-	// TODO
-	/* protected processCookies(setCookies: string[], cookies: CookiesDto): void {
 		setCookies.forEach((item: string): void => {
 			const cookie: string = item.split(';')[0];
 			if (cookie.startsWith('oauth2')) {
-				if (!cookies.hydraCookie.includes(cookie)) {
-					if (cookies.hydraCookie === '') {
-						cookies.hydraCookie = cookie;
-					} else {
-						cookies.hydraCookie = `${cookies.hydraCookie}; ${cookie}`;
-					}
-				}
-			} else if (!cookies.localCookie.includes(cookie)) {
-				if (cookies.localCookie === '') {
-					cookies.localCookie = cookie;
-				} else {
-					cookies.localCookie = `${cookies.localCookie}; ${cookie}`;
-				}
+				hydraCookies.push(cookie);
+			} else {
+				localCookies.push(cookie);
 			}
 		});
-	} */
+
+		const cookiesDto = new CookiesDto({
+			localCookies,
+			hydraCookies,
+		});
+		return cookiesDto;
+	}
 }
