@@ -50,7 +50,7 @@ describe('OAuthUc', () => {
 	let defaultErrorRedirect: string;
 	let defaultErrorResponse: OAuthResponse;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [HttpModule],
 			providers: [
@@ -65,7 +65,6 @@ describe('OAuthUc', () => {
 				},
 			],
 		}).compile();
-
 		oauthService = await module.get(OAuthService);
 		uc = await module.get(OauthUc);
 		defaultSystem = systemFactory.withOauthConfig().build();
