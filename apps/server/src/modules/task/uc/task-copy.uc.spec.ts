@@ -107,10 +107,11 @@ describe('task copy uc', () => {
 				type: CopyElementType.TASK,
 				status: CopyStatusEnum.SUCCESS,
 				copyEntity: copy,
+				originalEntity: task,
 			};
 			taskCopyService.copyTaskMetadata.mockReturnValue(status);
 			taskRepo.save.mockResolvedValue(undefined);
-			fileCopyAppendService.appendFiles.mockResolvedValue(status);
+			fileCopyAppendService.copyFilesOfEntity.mockResolvedValue(status);
 			const jwt = 'some-jwt-string';
 			return {
 				user,
@@ -188,10 +189,15 @@ describe('task copy uc', () => {
 				expect(taskRepo.save).toBeCalledWith(copy);
 			});
 
-			it('should try to append file copies from original task to task copy', async () => {
+			it('should try to copy files from original task to task copy', async () => {
 				const { course, lesson, user, task, jwt } = setup();
 				const copyStatus = await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, jwt });
-				expect(fileCopyAppendService.appendFiles).toBeCalledWith(copyStatus, jwt);
+				expect(fileCopyAppendService.copyFilesOfEntity).toBeCalledWith(
+					copyStatus,
+					copyStatus.originalEntity,
+					copyStatus.copyEntity,
+					jwt
+				);
 			});
 		});
 

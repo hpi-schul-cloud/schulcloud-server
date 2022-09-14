@@ -55,17 +55,11 @@ export class LessonCopyUC {
 			copyName,
 		});
 
-		if (status.copyEntity) {
-			const lessonCopy = status.copyEntity as Lesson;
+		if (status.copyEntity instanceof Lesson) {
+			const lessonCopy = status.copyEntity;
 			await this.lessonRepo.save(lessonCopy);
 			status = this.lessonCopyService.updateCopiedEmbeddedTasks(status);
-			status = await this.fileCopyAppendService.appendFiles(status, parentParams.jwt);
-			status = await this.fileCopyAppendService.copyEmbeddedFilesOfLessons(
-				status,
-				lessonCopy.course.id,
-				userId,
-				parentParams.jwt
-			);
+			status = await this.fileCopyAppendService.copyFiles(status, lessonCopy.course.id, userId, parentParams.jwt);
 			const updatedLesson = status.copyEntity as Lesson;
 			await this.lessonRepo.save(updatedLesson);
 		}
