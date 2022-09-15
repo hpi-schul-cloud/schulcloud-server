@@ -7,7 +7,6 @@ import { HydraOauthUc } from '@src/modules/oauth/uc/hydraOauth.uc';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
-import { HydraParams } from '@src/modules/oauth/controller/dto/hydra.params';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationParams } from './dto/authorization.params';
 
@@ -33,7 +32,7 @@ export class OauthSSOController {
 	@Authenticate('jwt')
 	async getHydraOauthToken(
 		@Query() query: AuthorizationParams,
-		@Param() { oauthClientId }: HydraParams
+		@Param('oauthClientId') oauthClientId: string
 	): Promise<OauthTokenResponse> {
 		return this.hydraUc.getOauthToken(query, oauthClientId);
 	}
@@ -43,7 +42,7 @@ export class OauthSSOController {
 	async requestAuthToken(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request,
-		@Param() { oauthClientId }: HydraParams
+		@Param('oauthClientId') oauthClientId: string
 	): Promise<AuthorizationParams> {
 		let jwt: string;
 		const authHeader: string | undefined = req.headers.authorization;

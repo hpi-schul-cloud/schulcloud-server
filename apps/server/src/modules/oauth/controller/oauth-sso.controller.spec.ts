@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser, System } from '@shared/domain';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
-import { HydraParams } from '@src/modules/oauth/controller/dto/hydra.params';
 import { HydraOauthUc } from '@src/modules/oauth/uc';
 import { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
@@ -95,34 +94,26 @@ describe('OAuthController', () => {
 			const authParams: AuthorizationParams = {
 				code: 'code',
 			};
-			const hydraParams: HydraParams = {
-				oauthClientId: 'clientId',
-			};
+			const oauthClientId = 'clientId';
 
-			await controller.getHydraOauthToken(authParams, hydraParams);
+			await controller.getHydraOauthToken(authParams, oauthClientId);
 
-			expect(hydraOauthUc.getOauthToken).toBeCalledWith(authParams, hydraParams.oauthClientId);
+			expect(hydraOauthUc.getOauthToken).toBeCalledWith(authParams, oauthClientId);
 		});
 	});
 
 	describe('requestAuthToken', () => {
 		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-		const hydraParams: HydraParams = {
-			oauthClientId: 'clientId',
-		};
+		const oauthClientId = 'clientId';
 
 		it('should call the hydraOauthUc', async () => {
 			const request: Request = {
 				headers: { authorization: 'Bearer token123' },
 			} as Request;
 
-			await controller.requestAuthToken(currentUser, request, hydraParams);
+			await controller.requestAuthToken(currentUser, request, oauthClientId);
 
-			expect(hydraOauthUc.requestAuthCode).toBeCalledWith(
-				currentUser.userId,
-				expect.any(String),
-				hydraParams.oauthClientId
-			);
+			expect(hydraOauthUc.requestAuthCode).toBeCalledWith(currentUser.userId, expect.any(String), oauthClientId);
 		});
 
 		it('should throw UnauthorizedException', async () => {
@@ -130,9 +121,7 @@ describe('OAuthController', () => {
 				headers: { authorization: '1551 token123' },
 			} as Request;
 
-			await expect(controller.requestAuthToken(currentUser, request, hydraParams)).rejects.toThrow(
-				UnauthorizedException
-			);
+			await expect(controller.requestAuthToken(currentUser, request, '')).rejects.toThrow(UnauthorizedException);
 		});
 	});
 });

@@ -55,6 +55,7 @@ const globals = {
 	ENVIRONMENTS,
 	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
 	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
+	API_HOST: process.env.API_HOST,
 	// secrets smtp
 	SMTP: process.env.SMTP,
 	SMTP_HOST: process.env.SMTP_HOST,
