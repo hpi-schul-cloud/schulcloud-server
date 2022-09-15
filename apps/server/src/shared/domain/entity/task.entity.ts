@@ -1,5 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { School } from '@shared/domain/entity/school.entity';
+import _ from 'lodash';
 import { IEntityWithSchool } from '../interface';
 import { ILearnroomElement } from '../interface/learnroom';
 import { EntityId } from '../types/entity-id';
@@ -287,6 +288,18 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	restoreForUser(user: User) {
 		this.finished.remove(user);
+	}
+
+	getSchoolId(): EntityId {
+		if (this.lesson) {
+			return this.lesson.getSchoolId();
+		}
+
+		if (this.course) {
+			return this.course.school.id;
+		}
+
+		throw new Error(`Couldn't find parent of task.`);
 	}
 
 	publish() {

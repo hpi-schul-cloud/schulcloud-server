@@ -7,7 +7,7 @@ import { SyncFileItemMapper } from '../mapper';
 import { AvailableSyncEntityType, AvailableSyncParentType, SyncFileItem } from '../types';
 
 export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
-const fileIdRegex = '(0x|0h)?[0-9A-F]{24}';
+export const fileIdRegex = '(0x|0h)?[0-9A-F]{24}';
 const tasksQuery = (excludeIds: ObjectId[]) => {
 	return {
 		_id: { $nin: excludeIds },

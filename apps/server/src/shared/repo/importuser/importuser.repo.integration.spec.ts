@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import {
 	IImportUserRoleName,
 	ImportUser,
@@ -12,7 +12,7 @@ import {
 	School,
 	User,
 } from '@shared/domain';
-import { MikroORM, NotFoundError } from '@mikro-orm/core';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo } from '.';
 
 describe('ImportUserRepo', () => {

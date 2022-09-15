@@ -518,6 +518,10 @@
 			"default": "HPI Schul-Cloud",
 			"description": "Look to SC_TITLE, it is a possible short form of it."
 		},
+		"SC_DOMAIN": {
+			"type": "string",
+			"description": "The Schulcloud domain."
+		},
 		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
 			"type": "boolean",
 			"default": true,
@@ -790,6 +794,12 @@
 			"default": 8000,
 			"description": "Timeout for incoming requests to the API in milliseconds."
 		},
+		"INCOMING_REQUEST_TIMEOUT_COPY_API": {
+			"type": "integer",
+			"minimum": 0,
+			"default": 60000,
+			"description": "Timeout for incoming requests to the copy API in milliseconds."
+		},
 		"FEATURE_SYNCER_CONSUMER_ENABLE": {
 			"type": "boolean",
 			"default": false,
@@ -935,6 +945,68 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Determines if consent is necessary during registration."
+		},
+		"COOKIE": {
+			"type": "object",
+			"description": "Cookie properties, required always to be defined",
+			"properties": {
+				"SAME_SITE": {
+					"type": "string",
+					"default": "none",
+					"enum": ["none", "lax", "strict"],
+					"description": "Value for cookies sameSite property. When SECURE flag is false, 'None' is not allowed in SAME_SITE and Lax should be used as default instead"
+				},
+				"HTTP_ONLY": {
+					"type": "boolean",
+					"default": false,
+					"description": "Value for cookies httpOnly property"
+				},
+				"HOST_ONLY": {
+					"type": "boolean",
+					"default": true,
+					"description": "Value for cookies hostOnly property"
+				},
+				"SECURE": {
+					"type": "boolean",
+					"default": true,
+					"description": "Value for cookies httpOnly property"
+				},
+				"EXPIRES_SECONDS": {
+					"type": "integer",
+					"default": 2592000000,
+					"description": "Expiration in seconds from now"
+				}
+			},
+			"required": [
+				"SAME_SITE",
+				"HTTP_ONLY",
+				"HOST_ONLY",
+				"SECURE",
+				"EXPIRES_SECONDS"
+			],
+			"allOf": [
+				{
+					"$ref": "#/properties/COOKIE/definitions/SAME_SITE_SECURE_VALID"
+				}
+			],
+			"definitions": {
+				"SAME_SITE_SECURE_VALID": {
+					"if": {
+						"properties": {
+							"SECURE": {
+								"const": false
+							}
+						}
+					},
+					"then": {
+						"properties": {
+							"SAME_SITE": {
+								"enum": ["lax", "strict"]
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"required": [

@@ -3,13 +3,15 @@ import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
 import { Configuration, FileApi } from './filesStorageApi/v3';
 import { IFilesStorageClientConfig } from './interfaces';
-import { FilesStorageClientAdapterService } from './uc';
+import { CopyFilesService } from './uc/copy-files.service';
+import { FilesStorageClientAdapterService } from './uc/files-storage-client.service';
 
 @Module({
 	imports: [],
 	controllers: [],
 	providers: [
 		FilesStorageClientAdapterService,
+		CopyFilesService,
 		Logger,
 		{
 			provide: 'FileStorageClient',
@@ -27,6 +29,6 @@ import { FilesStorageClientAdapterService } from './uc';
 			inject: [ConfigService],
 		},
 	],
-	exports: [FilesStorageClientAdapterService],
+	exports: [FilesStorageClientAdapterService, CopyFilesService],
 })
 export class FilesStorageClientModule {}

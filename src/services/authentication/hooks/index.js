@@ -5,6 +5,7 @@ const {
 	extractRedisDataFromJwt,
 	createRedisIdentifierFromJwtData,
 	addTokenToWhitelistWithIdAndJti,
+	ensureTokenIsWhitelisted,
 } = require('../logic/whitelist');
 
 const globalHooks = require('../../../hooks');
@@ -161,9 +162,19 @@ const increaseJwtTimeoutForPrivateDevices = (context) => {
 	return context;
 };
 
+const checkJwtAuthWhitelisted = async (context) => {
+	const { strategy, accessToken } = context.data;
+	if (strategy === 'jwt') {
+		const { accountId, jti, privateDevice } = extractRedisDataFromJwt(accessToken);
+		await ensureTokenIsWhitelisted({ accountId, jti, privateDevice });
+	}
+	return context;
+};
+
 const hooks = {
 	before: {
 		create: [
+			checkJwtAuthWhitelisted,
 			updateUsernameForLDAP,
 			lowerCaseUsername,
 			trimUsername,

@@ -1,4 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamRule } from '@shared/domain/rules/team.rule';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
@@ -13,7 +14,9 @@ describe('TeamRule', () => {
 	let user: User;
 	let entity: Team;
 	let role: Role;
+	let teamRole: Role;
 	const permissionA = 'a' as Permission;
+	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
@@ -32,8 +35,9 @@ describe('TeamRule', () => {
 
 	beforeEach(() => {
 		role = roleFactory.build({ permissions: [permissionA] });
+		teamRole = roleFactory.build({ permissions: [permissionB] });
 		user = userFactory.build({ roles: [role] });
-		entity = teamFactory.withRoleAndUserId(role, user.id).build();
+		entity = teamFactory.withRoleAndUserId(teamRole, user.id).build();
 	});
 
 	describe('isApplicable', () => {
@@ -44,13 +48,20 @@ describe('TeamRule', () => {
 
 	describe('hasPermission', () => {
 		it('should return "true" if user in scope', () => {
-			const res = service.hasPermission(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionA]));
+			const res = service.hasPermission(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionB]));
 			expect(res).toBe(true);
 		});
 
 		it('should return "false" if user has not permission', () => {
 			const res = service.hasPermission(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionC]));
 			expect(res).toBe(false);
+		});
+
+		it('should throw error if entity was not found', () => {
+			const notFoundUser = userFactory.build({ roles: [role] });
+			expect(() => service.hasPermission(notFoundUser, entity, PermissionContextBuilder.read([permissionA]))).toThrow(
+				new InternalServerErrorException('Cannot find user in team')
+			);
 		});
 	});
 });

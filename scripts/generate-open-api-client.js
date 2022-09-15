@@ -68,7 +68,7 @@ const errorMessageContains = (includedString, error) =>
 const getOpenApiCommand = (configuration) => {
 	const { url, path } = configuration;
 	// TODO: check with openapi-generator version 7 -g typescript-nestjs
-	const command = `openapi-generator-cli generate -i ${url} -g typescript-axios -o ${path} --supportsES6=true,withInterfaces=true --skip-validate-spec`;
+	const command = `openapi-generator-cli generate -i ${url} -g typescript-axios -o ${path} --additional-properties=supportsES6=true,withInterfaces=true --skip-validate-spec`;
 	return command;
 };
 
