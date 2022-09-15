@@ -10,13 +10,18 @@ import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authoriza
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { IJwt } from '@src/modules/oauth/interface/jwt.base.interface';
 import { AxiosResponse } from 'axios';
+import { InternalServerErrorException } from '@nestjs/common';
 import { CookiesDto } from '../service/dto/cookies.dto';
 import { HydraOauthUc } from '.';
 
 class HydraOauthUcSpec extends HydraOauthUc {
-	public processCookiesSpec(setCookies: string[]): CookiesDto {
-		return super.processCookies(setCookies);
+	public processCookiesSpec(setCookies: string[], cookie: CookiesDto): CookiesDto {
+		return super.processCookies(setCookies, cookie);
 	}
+
+	public validateStatusSpec = (status: number) => {
+		return this.validateStatus(status);
+	};
 }
 
 describe('HydraOauthUc', () => {
@@ -34,10 +39,9 @@ describe('HydraOauthUc', () => {
 	let oauthTokenResponse: OauthTokenResponse;
 	let defaultDecodedJWT: IJwt;
 
-	const hydraUri = 'hyraUri';
+	const hydraUri = 'hydraUri';
 	const apiHost = 'apiHost';
 	const nextcloudScopes = 'nextcloudscope';
-	const MAX_REDIRECTS = 1;
 
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
@@ -131,18 +135,18 @@ describe('HydraOauthUc', () => {
 	});
 
 	describe('requestAuthCode', () => {
-		const axiosConfig = {
-			headers: {},
-			withCredentials: true,
-			maxRedirects: 0,
-			validateStatus: (status: number) => {
-				return status === 200 || status === 302;
-			},
-		};
-
 		it('should return the authorizationcode', async () => {
 			const expectedAuthParams: AuthorizationParams = {
 				code: 'defaultAuthCode',
+			};
+			const axiosConfig = {
+				headers: {},
+				withCredentials: true,
+				maxRedirects: 0,
+				// untestable
+				validateStatus: jest.fn().mockImplementationOnce(() => {
+					return true;
+				}),
 			};
 
 			const axiosResponse1: AxiosResponse = {
@@ -150,12 +154,55 @@ describe('HydraOauthUc', () => {
 				status: 302,
 				statusText: '',
 				headers: {
-					location: 'https//mock.url/',
-					referer: 'hydra',
+					location: Configuration.get('HYDRA_URI') as string,
+					Referer: 'hydra',
 				},
 				config: axiosConfig,
 			};
-			axiosResponse1.headers['set-cookie'] = ['oauth2=cookieMock; Secure; HttpOnly'];
+
+			const axiosResponse2: AxiosResponse = {
+				data: expectedAuthParams,
+				status: 200,
+				statusText: '',
+				headers: {
+					location: Configuration.get('HYDRA_URI') as string,
+					Referer: 'hydra',
+				},
+				config: axiosConfig,
+			};
+
+			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
+			hydraOauthService.initAuth.mockResolvedValue(axiosResponse1);
+			axiosResponse1.headers['set-cookie'] = ['oauth2=cookieMock; Referer=hydraUri; Secure; HttpOnly'];
+			/*			axiosResponse1.config.headers = {
+				Cookie: 'oauth2=cookieMock; Referer=hydraUri; Secure; HttpOnly',
+				referer: Configuration.get('HYDRA_URI') as string,
+			}; */
+			axiosResponse2.config.headers = {
+				Cookie: 'oauth2=cookieMock',
+				Referer: Configuration.get('HYDRA_URI') as string,
+			};
+			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse1);
+			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse2);
+
+			const authParams: AuthorizationParams = await uc.requestAuthCode(userIdMock, JWTMock, oauthClientId);
+
+			expect(authParams).toStrictEqual(expectedAuthParams);
+			expect(hydraOauthService.processRedirect).toBeCalledTimes(2);
+		});
+		it('should return the authorizationcode', async () => {
+			const expectedAuthParams: AuthorizationParams = {
+				code: 'defaultAuthCode',
+			};
+
+			const axiosConfig2 = {
+				headers: {},
+				withCredentials: true,
+				maxRedirects: 0,
+				validateStatus: jest.fn().mockImplementationOnce(() => {
+					return true;
+				}),
+			};
 
 			const axiosResponse2: AxiosResponse = {
 				data: expectedAuthParams,
@@ -163,40 +210,70 @@ describe('HydraOauthUc', () => {
 				statusText: '',
 				headers: {
 					location: '/mock/path',
-					referer: 'dbildungscloud',
+					Referer: 'dbildungscloud',
 				},
-				config: axiosConfig,
+				config: axiosConfig2,
 			};
-			// axiosResponse2.headers['set-cookie'] = ['foo=bar; Expires=Thu; Secure; HttpOnly'];
+			axiosResponse2.headers['set-cookie'] = ['foo=bar; Expires=Thu; Secure; HttpOnly'];
 
 			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
-			hydraOauthService.initAuth.mockResolvedValue(axiosResponse1);
+			hydraOauthService.initAuth.mockResolvedValue(axiosResponse2);
 
-			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse1);
+			axiosResponse2.config.headers = {
+				Cookie: 'foo=bar; Expires=Thu; Secure; HttpOnly',
+				Referer: '',
+			};
 			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse2);
 
 			const authParams: AuthorizationParams = await uc.requestAuthCode(userIdMock, JWTMock, oauthClientId);
 
-			expect(authParams).toStrictEqual(expectedAuthParams);
-			expect(hydraOauthService.processRedirect).toHaveBeenNthCalledWith(
-				1,
-				axiosResponse1.headers.location,
-				axiosResponse1.headers.referer,
-				new CookiesDto({ localCookies: [`jwt=${JWTMock}`], hydraCookies: [''] }),
-				axiosConfig
-			);
-			expect(hydraOauthService.processRedirect).toHaveBeenNthCalledWith(
-				2,
-				axiosResponse1.headers.location,
-				axiosResponse1.headers.referer,
-				new CookiesDto({ localCookies: [`jwt=${JWTMock}`], hydraCookies: ['oauth2=cookieMock'] }),
-				axiosConfig
+			expect(authParams).toEqual(expectedAuthParams);
+			expect(hydraOauthService.processRedirect).toHaveBeenCalledWith(axiosResponse2.headers.location, axiosConfig2);
+		});
+		it('should throw InternalServerErrorException', async () => {
+			const expectedAuthParams: AuthorizationParams = {
+				code: 'defaultAuthCode',
+			};
+			const axiosConfig = {
+				headers: {},
+				withCredentials: true,
+				maxRedirects: 0,
+				validateStatus: jest.fn().mockImplementationOnce(() => {
+					return true;
+				}),
+			};
+
+			const axiosResponse1: AxiosResponse = {
+				data: expectedAuthParams,
+				status: 302,
+				statusText: '',
+				headers: {
+					location: Configuration.get('HYDRA_URI') as string,
+					Referer: 'hydra',
+				},
+				config: axiosConfig,
+			};
+
+			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
+			hydraOauthService.initAuth.mockResolvedValue(axiosResponse1);
+			axiosResponse1.headers['set-cookie'] = ['oauth2=cookieMock; Referer=hydraUri; Secure; HttpOnly'];
+			hydraOauthService.processRedirect.mockResolvedValue(axiosResponse1);
+
+			await expect(uc.requestAuthCode(userIdMock, JWTMock, oauthClientId)).rejects.toThrow(
+				InternalServerErrorException
 			);
 		});
 	});
 
 	describe('processCookies', () => {
 		it('should return the oauth token response', () => {
+			const cookie: CookiesDto = new CookiesDto({ hydraCookies: [], localCookies: [] });
+
+			const expectCookie: CookiesDto = new CookiesDto({
+				hydraCookies: ['oauth2_cookie1=cookieMock', 'oauth2_cookie2=cookieMock'],
+				localCookies: ['foo1=bar1', 'foo2=bar2'],
+			});
+
 			const headers = [
 				'oauth2_cookie1=cookieMock; Secure; HttpOnly',
 				'oauth2_cookie2=cookieMock; Secure',
@@ -204,9 +281,27 @@ describe('HydraOauthUc', () => {
 				'foo2=bar2; HttpOnly',
 			];
 
-			const cookies: CookiesDto = uc.processCookiesSpec(headers);
+			const cookies: CookiesDto = uc.processCookiesSpec(headers, cookie);
 
-			expect(cookies).toEqual(['oauth2_cookie1=cookieMock; Secure; HttpOnly', 'oauth2_cookie2=cookieMock; Secure']);
+			expect(cookies).toEqual(expectCookie);
+		});
+	});
+
+	describe('validateStatus', () => {
+		it('should return true for 302', () => {
+			const ret: boolean = uc.validateStatusSpec(302);
+
+			expect(ret).toEqual(true);
+		});
+		it('should return true for 200', () => {
+			const ret: boolean = uc.validateStatusSpec(200);
+
+			expect(ret).toEqual(true);
+		});
+		it('should return false for 400', () => {
+			const ret: boolean = uc.validateStatusSpec(400);
+
+			expect(ret).toEqual(false);
 		});
 	});
 });

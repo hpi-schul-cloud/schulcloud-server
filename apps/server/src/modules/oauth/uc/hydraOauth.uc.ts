@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { OauthConfig } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
@@ -33,15 +33,17 @@ export class HydraOauthUc {
 		return queryToken;
 	}
 
+	protected validateStatus = (status: number): boolean => {
+		return status === 200 || status === 302;
+	};
+
 	async requestAuthCode(userId: string, jwt: string, oauthClientId: string): Promise<AuthorizationParams> {
 		const hydraOauthConfig: OauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);
 		const axiosConfig: AxiosRequestConfig = {
 			headers: {},
 			withCredentials: true,
 			maxRedirects: 0,
-			validateStatus: (status: number) => {
-				return status === 200 || status === 302;
-			},
+			validateStatus: this.validateStatus,
 		};
 
 		let response: AxiosResponse;
@@ -59,11 +61,9 @@ export class HydraOauthUc {
 				location = `${this.HOST}${location}`;
 			}
 
-			const cookies: CookiesDto = new CookiesDto({ localCookies: [], hydraCookies: [] });
+			let cookies: CookiesDto = new CookiesDto({ localCookies: [], hydraCookies: [] });
 			if (response.headers['set-cookie']) {
-				const extractedCookies: CookiesDto = this.processCookies(response.headers['set-cookie']);
-				cookies.localCookies = extractedCookies.localCookies;
-				cookies.hydraCookies = extractedCookies.hydraCookies;
+				cookies = this.processCookies(response.headers['set-cookie'], cookies);
 			}
 			cookies.localCookies.push(`jwt=${jwt}`);
 
@@ -84,25 +84,19 @@ export class HydraOauthUc {
 			throw new InternalServerErrorException(`Redirect limit of ${this.MAX_REDIRECTS} exceeded.`);
 		}
 
-		if (!(response.data instanceof AuthorizationParams)) {
-			throw new InternalServerErrorException(
-				`Invalid response after authorization process for user ${userId} on oauth client ${oauthClientId}.`
-			);
-		}
-
-		const authParams: AuthorizationParams = response.data;
+		const authParams: AuthorizationParams = response.data as AuthorizationParams;
 		return authParams;
 	}
 
-	protected processCookies(setCookies: string[]): CookiesDto {
-		const localCookies: string[] = [];
-		const hydraCookies: string[] = [];
+	protected processCookies(setCookies: string[], cookies: CookiesDto): CookiesDto {
+		const { localCookies } = cookies;
+		const { hydraCookies } = cookies;
 
 		setCookies.forEach((item: string): void => {
 			const cookie: string = item.split(';')[0];
-			if (cookie.startsWith('oauth2')) {
+			if (cookie.startsWith('oauth2') && !hydraCookies.includes(cookie)) {
 				hydraCookies.push(cookie);
-			} else {
+			} else if (!localCookies.includes(cookie)) {
 				localCookies.push(cookie);
 			}
 		});
