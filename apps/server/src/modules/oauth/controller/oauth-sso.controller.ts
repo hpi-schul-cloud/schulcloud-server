@@ -1,10 +1,8 @@
-import { Controller, ForbiddenException, Get, Param, Query, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ParseObjectIdPipe } from '@shared/controller/pipe/parse-object-id.pipe';
 import { Logger } from '@src/core/logger';
-import { CookieOptions, Response } from 'express';
+import { CookieOptions, Request, Response } from 'express';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Request, Response } from 'express';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydraOauth.uc';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -25,7 +23,7 @@ export class OauthSSOController {
 		@Res() res: Response,
 		@Param() urlParams: SystemUrlParams
 	): Promise<void> {
-		const oauthResponse = await this.oauthUc.startOauth(query, urlParams.systemId);
+		const oauthResponse = await this.oauthUc.processOAuth(query, urlParams.systemId);
 		const cookieDefaultOptions: CookieOptions = {
 			httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
 			sameSite: Configuration.get('COOKIE__SAME_SITE') as 'lax' | 'strict' | 'none',
@@ -55,8 +53,7 @@ export class OauthSSOController {
 		let jwt: string;
 		const authHeader: string | undefined = req.headers.authorization;
 		if (authHeader && authHeader.toLowerCase().startsWith('bearer ')) {
-			// eslint-disable-next-line prefer-destructuring
-			jwt = authHeader.split(' ')[1];
+			[, jwt] = authHeader.split(' ');
 		} else {
 			throw new UnauthorizedException(
 				`No bearer token in header for authorization process of user ${currentUser.userId} on oauth system ${oauthClientId}`

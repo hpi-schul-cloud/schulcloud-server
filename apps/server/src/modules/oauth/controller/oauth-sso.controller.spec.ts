@@ -17,6 +17,7 @@ describe('OAuthController', () => {
 	let module: TestingModule;
 	let controller: OauthSSOController;
 	let oauthUc: DeepMocked<OauthUc>;
+	let hydraOauthUc: DeepMocked<HydraOauthUc>;
 
 	const mockHost = 'https://mock.de';
 	const defaultJWT = 'JWT_mock';
@@ -31,8 +32,6 @@ describe('OAuthController', () => {
 		sameSite: 'lax',
 		secure: false,
 	};
-	let oauthUc: DeepMocked<OauthUc>;
-	let hydraOauthUc: DeepMocked<HydraOauthUc>;
 
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
@@ -54,12 +53,6 @@ describe('OAuthController', () => {
 		jest.useFakeTimers('modern');
 		jest.setSystemTime(dateNow);
 
-		module = await Test.createTestingModule({
-	const mockHost = 'https://mock.de';
-	const defaultJWT = 'JWT_mock';
-	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${mockHost}/dashboard`;
-
-	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			controllers: [OauthSSOController],
 			providers: [
@@ -83,8 +76,7 @@ describe('OAuthController', () => {
 		hydraOauthUc = module.get(HydraOauthUc);
 	});
 
-	it('should be defined', () => {
-	});
+	it('should be defined', () => {});
 
 	afterAll(async () => {
 		await module.close();
@@ -103,7 +95,6 @@ describe('OAuthController', () => {
 		system.id = '4345345';
 
 		it('should redirect to mock.de', async () => {
-			// Arrange
 			const { res } = getMockRes();
 			const expected = [query, system.id];
 			oauthUc.processOAuth.mockResolvedValue({
@@ -114,11 +105,9 @@ describe('OAuthController', () => {
 				provider: 'iserv',
 			});
 
-			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
-
-			const expected = [query, system.id];
+			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
 			expect(oauthUc.processOAuth).toHaveBeenCalledWith(...expected);
-			expect(res.cookie).toBeCalledWith('jwt', '1111');
+			expect(res.cookie).toBeCalledWith('jwt', '1111', cookieProperties);
 			expect(res.redirect).toBeCalledWith(iservRedirectMock);
 		});
 
@@ -136,10 +125,6 @@ describe('OAuthController', () => {
 
 			// Assert
 			expect(res.cookie).toBeCalledWith('jwt', '', cookieProperties);
-
-			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
-
-			expect(res.cookie).toBeCalledWith('jwt', '');
 			expect(res.redirect).toBeCalledWith('');
 		});
 	});
