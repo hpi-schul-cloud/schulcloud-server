@@ -44,7 +44,7 @@ const bruteForceReset = async (context) => {
 		return context;
 	}
 	// if successful login enable next login try directly
-	await context.app.service('nest-account-service').updateLastTriedFailedLogin(context.result.account._id, null);
+	await context.app.service('nest-account-service').updateLastTriedFailedLogin(context.result.account._id, new Date(0));
 	return context;
 };
 

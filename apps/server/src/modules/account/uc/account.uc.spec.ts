@@ -195,11 +195,6 @@ describe('AccountUc', () => {
 							});
 						},
 						updateLastTriedFailedLogin: jest.fn(),
-
-						// (accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> => {
-						// 	const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
-						// 	return
-						// },
 					},
 				},
 				{

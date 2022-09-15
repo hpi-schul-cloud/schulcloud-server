@@ -85,15 +85,6 @@ describe('AccountService', () => {
 							}
 							return Promise.resolve(null);
 						},
-						// findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<Account> => {
-						// 	const account = mockAccounts.find(
-						// 		(tempAccount) => tempAccount.username === username && tempAccount.systemId === systemId
-						// 	);
-						// 	if (account) {
-						// 		return Promise.resolve(account);
-						// 	}
-						// 	throw new EntityNotFoundError('Account');
-						// },
 
 						findById: jest.fn().mockImplementation((accountId: EntityId): Promise<Account> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
