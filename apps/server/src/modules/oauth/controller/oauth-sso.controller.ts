@@ -2,13 +2,15 @@ import { Controller, ForbiddenException, Get, Param, Query, Req, Res, Unauthoriz
 import { ApiTags } from '@nestjs/swagger';
 import { ParseObjectIdPipe } from '@shared/controller/pipe/parse-object-id.pipe';
 import { Logger } from '@src/core/logger';
+import { CookieOptions, Response } from 'express';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Request, Response } from 'express';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydraOauth.uc';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
 import { OauthUc } from '../uc/oauth.uc';
-import { AuthorizationParams } from './dto/authorization.params';
+import { AuthorizationParams, SystemUrlParams } from './dto';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -17,15 +19,21 @@ export class OauthSSOController {
 		this.logger.setContext(OauthSSOController.name);
 	}
 
-	@Get('oauth/:systemid')
+	@Get('oauth/:systemId')
 	async startOauthAuthorizationCodeFlow(
 		@Query() query: AuthorizationParams,
 		@Res() res: Response,
-		@Param('systemid', ParseObjectIdPipe) systemid: string
-	): Promise<unknown> {
-		const oauthResponse = await this.oauthUc.processOAuth(query, systemid);
-		res.cookie('jwt', oauthResponse.jwt ? oauthResponse.jwt : '');
-		return res.redirect(oauthResponse.redirect ? oauthResponse.redirect : '');
+		@Param() urlParams: SystemUrlParams
+	): Promise<void> {
+		const oauthResponse = await this.oauthUc.startOauth(query, urlParams.systemId);
+		const cookieDefaultOptions: CookieOptions = {
+			httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
+			sameSite: Configuration.get('COOKIE__SAME_SITE') as 'lax' | 'strict' | 'none',
+			secure: Configuration.get('COOKIE__SECURE') as boolean,
+			expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
+		};
+		res.cookie('jwt', oauthResponse.jwt ? oauthResponse.jwt : '', cookieDefaultOptions);
+		res.redirect(oauthResponse.redirect ? oauthResponse.redirect : '');
 	}
 
 	@Get('hydra/:oauthClientId')

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { getMockRes } from '@jest-mock/express';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser, System } from '@shared/domain';
@@ -16,8 +17,44 @@ describe('OAuthController', () => {
 	let module: TestingModule;
 	let controller: OauthSSOController;
 	let oauthUc: DeepMocked<OauthUc>;
+
+	const mockHost = 'https://mock.de';
+	const defaultJWT = 'JWT_mock';
+	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${mockHost}/dashboard`;
+
+	const dateNow: Date = new Date('2020-01-01T00:00:00.000Z');
+	const dateExpires: Date = new Date('2020-01-02T00:00:00.000Z');
+
+	const cookieProperties = {
+		expires: dateExpires,
+		httpOnly: false,
+		sameSite: 'lax',
+		secure: false,
+	};
+	let oauthUc: DeepMocked<OauthUc>;
 	let hydraOauthUc: DeepMocked<HydraOauthUc>;
 
+	beforeAll(async () => {
+		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
+			switch (key) {
+				case 'HOST':
+					return mockHost;
+				case 'COOKIE__HTTP_ONLY':
+					return cookieProperties.httpOnly;
+				case 'COOKIE__SAME_SITE':
+					return cookieProperties.sameSite;
+				case 'COOKIE__SECURE':
+					return cookieProperties.secure;
+				case 'COOKIE__EXPIRES_SECONDS':
+					return 86400000; // One day in ms
+				default:
+					return 'nonexistent case';
+			}
+		});
+		jest.useFakeTimers('modern');
+		jest.setSystemTime(dateNow);
+
+		module = await Test.createTestingModule({
 	const mockHost = 'https://mock.de';
 	const defaultJWT = 'JWT_mock';
 	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${mockHost}/dashboard`;
@@ -47,6 +84,15 @@ describe('OAuthController', () => {
 	});
 
 	it('should be defined', () => {
+	});
+
+	afterAll(async () => {
+		await module.close();
+		jest.useRealTimers();
+		jest.clearAllMocks();
+	});
+
+	it('should be defined', () => {
 		expect(controller).toBeDefined();
 	});
 
@@ -57,7 +103,9 @@ describe('OAuthController', () => {
 		system.id = '4345345';
 
 		it('should redirect to mock.de', async () => {
+			// Arrange
 			const { res } = getMockRes();
+			const expected = [query, system.id];
 			oauthUc.processOAuth.mockResolvedValue({
 				jwt: '1111',
 				idToken: '2222',
@@ -75,12 +123,19 @@ describe('OAuthController', () => {
 		});
 
 		it('should redirect to empty string', async () => {
+			// Arrange
 			const { res } = getMockRes();
 			oauthUc.processOAuth.mockResolvedValue({
 				idToken: '2222',
 				redirect: '',
 				provider: 'iserv',
 			});
+
+			// Act
+			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
+
+			// Assert
+			expect(res.cookie).toBeCalledWith('jwt', '', cookieProperties);
 
 			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
 
