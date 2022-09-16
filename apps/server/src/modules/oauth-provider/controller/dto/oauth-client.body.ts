@@ -1,25 +1,50 @@
-import { IsArray, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { SubjectTypeEnum } from '@src/modules/oauth-provider/interface/subject-type.enum';
+import { TokenAuthMethod } from '../../interface/token-auth-method.enum';
 
 export class OauthClientBody {
 	@IsString()
+	@ApiProperty({ description: 'The Oauth2 client id.', required: false, nullable: false })
 	client_id?: string;
 
 	@IsString()
+	@ApiProperty({ description: 'The Oauth2 client name.', required: false, nullable: false })
 	client_name?: string;
 
 	@IsString()
+	@ApiProperty({ description: 'The Oauth2 client secret.', required: false, nullable: false })
 	client_secret?: string;
 
 	@IsArray()
 	@IsString({ each: true })
+	@ApiProperty({ description: 'The allowed redirect urls of the Oauth2 client.', required: false, nullable: false })
 	redirect_uris?: string[];
 
-	@IsString()
-	token_endpoint_auth_method?: string;
+	@IsEnum(TokenAuthMethod)
+	@ApiProperty({
+		description:
+			'Requested Client Authentication method for the Token Endpoint. The options are client_secret_post, client_secret_basic, private_key_jwt, and none.',
+		required: false,
+		nullable: false,
+	})
+	token_endpoint_auth_method?: TokenAuthMethod;
+
+	@IsEnum(SubjectTypeEnum)
+	@ApiProperty({
+		description:
+			'SubjectType requested for responses to this Client. The subject_types_supported Discovery parameter contains a list of the supported subject_type values for this server. Valid types include pairwise and public.',
+		required: false,
+		nullable: false,
+	})
+	subject_type?: SubjectTypeEnum;
 
 	@IsString()
-	subject_type?: string;
-
-	@IsString()
+	@ApiProperty({
+		description:
+			'Scope is a string containing a space-separated list of scope values (as described in Section 3.3 of OAuth 2.0 [RFC6749]) that the client can use when requesting access tokens.',
+		required: false,
+		nullable: false,
+	})
 	scope?: string;
 }

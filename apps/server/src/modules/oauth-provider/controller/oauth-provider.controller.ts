@@ -1,64 +1,105 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { AcceptQuery } from '@src/modules/oauth-provider/controller/dto/accept.query';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ConsentRequestBody } from '@src/modules/oauth-provider/controller/dto/consent-request.body';
-import { OauthClientBody } from '@src/modules/oauth-provider/controller/dto/oauth-client.body';
-import { IntrospectBody } from '@src/modules/oauth-provider/controller/dto/introspect.body';
-import { ListOauthClientsParams } from '@src/modules/oauth-provider/controller/dto/list-oauth-clients.params';
-import { IdParams } from './dto/id.params';
-import { ChallengeParams } from './dto/challenge.params';
-import { LoginRequestBody } from './dto/login-request.body';
-import { RedirectBody } from './dto/redirect.body';
+import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
+import {
+	AcceptQuery,
+	ChallengeParams,
+	ConsentRequestBody,
+	IdParams,
+	IntrospectBody,
+	ListOauthClientsParams,
+	LoginRequestBody,
+	OauthClientBody,
+	RedirectBody,
+	RevokeConsentQuery,
+	UserParams,
+} from './dto';
 
-// TODO authentication annotations
 @Controller('oauth2')
 export class OauthProviderController {
+	@Authenticate('jwt')
 	@Get('clients/:id')
-	getOAuth2Client(@Param() { id }: IdParams) {}
+	getOAuth2Client(@Param() { id }: IdParams) {
+		throw new NotImplementedException();
+	}
 
+	@Authenticate('jwt')
 	@Get('clients')
-	listOAuth2Clients(@Param() params: ListOauthClientsParams) {}
+	listOAuth2Clients(@Param() params: ListOauthClientsParams) {
+		throw new NotImplementedException();
+	}
 
+	@Authenticate('jwt')
 	@Post('clients')
-	createOAuth2Client(@Body() body: OauthClientBody) {}
+	createOAuth2Client(@Body() body: OauthClientBody) {
+		throw new NotImplementedException();
+	}
 
+	@Authenticate('jwt')
 	@Put('clients/:id')
-	updateOAuth2Client(@Param() { id }: IdParams, @Body() body: OauthClientBody) {}
+	updateOAuth2Client(@Param() { id }: IdParams, @Body() body: OauthClientBody) {
+		throw new NotImplementedException();
+	}
 
+	@Authenticate('jwt')
 	@Delete('clients/:id')
-	deleteOAuth2Client(@Param() { id }: IdParams) {}
+	deleteOAuth2Client(@Param() { id }: IdParams) {
+		throw new NotImplementedException();
+	}
 
 	@Post('introspect')
-	introspectOAuth2Token(@Body() { token }: IntrospectBody) {}
+	introspectOAuth2Token(@Body() { token }: IntrospectBody) {
+		throw new NotImplementedException();
+	}
 
 	@Get('loginRequest/:challenge')
-	getLoginRequest(@Param() { challenge }: ChallengeParams) {}
+	getLoginRequest(@Param() { challenge }: ChallengeParams) {
+		throw new NotImplementedException();
+	}
 
+	@Authenticate('jwt')
 	@Patch('loginRequest/:challenge')
 	patchLoginRequest(
 		@Param() { challenge }: ChallengeParams,
 		@Query() query: AcceptQuery,
 		@Body() body: LoginRequestBody
-	) {}
+	) {
+		throw new NotImplementedException();
+	}
 
+	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
-	acceptLogoutRequest(@Param() { challenge }: ChallengeParams, @Body() body: RedirectBody) {}
+	acceptLogoutRequest(@Param() { challenge }: ChallengeParams, @Body() body: RedirectBody) {
+		throw new NotImplementedException();
+	}
 
+	@Authenticate('jwt')
 	@Get('consentRequest/:challenge')
-	getConsentRequest(@Param() { challenge }: ChallengeParams) {}
+	getConsentRequest(@Param() { challenge }: ChallengeParams) {
+		throw new NotImplementedException();
+	}
 
+	@Authenticate('jwt')
 	@Patch('consentRequest/:challenge')
 	patchConsentRequest(
 		@Param() { challenge }: ChallengeParams,
 		@Query() query: AcceptQuery,
 		@Body() body: ConsentRequestBody
-	) {}
+	) {
+		throw new NotImplementedException();
+	}
 
-	@Get('auth/sessions/consent')
-	listConsentSessions() {}
+	@Authenticate('jwt')
+	@Get('auth/sessions/consent/:userId')
+	listConsentSessions(@Param() { userId }: UserParams) {
+		throw new NotImplementedException();
+	}
 
-	@Delete('auth/sessions/consent')
-	revokeConsentSession() {}
+	@Authenticate('jwt')
+	@Delete('auth/sessions/consent/:user')
+	revokeConsentSession(@Param() { userId }: UserParams, @Query() { client }: RevokeConsentQuery) {
+		throw new NotImplementedException();
+	}
 
 	@Get('baseUrl')
 	getUrl(): Promise<string> {

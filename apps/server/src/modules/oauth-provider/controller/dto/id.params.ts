@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class IdParams {
 	@IsString()
 	@ApiProperty({
-		description: 'The OAuth Client Id.',
+		description: 'The Oauth Client Id.',
 		required: true,
 		nullable: false,
 	})

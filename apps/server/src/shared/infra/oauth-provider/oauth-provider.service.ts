@@ -19,9 +19,9 @@ export abstract class OauthProviderService {
 
 	abstract getConsentRequest(challenge: string): ConsentResponse;
 
-	abstract acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody);
+	abstract acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): RedirectResponse;
 
-	abstract rejectConsentRequest(challenge: string, body: RejectRequestBody);
+	abstract rejectConsentRequest(challenge: string, body: RejectRequestBody): RedirectResponse;
 
 	abstract acceptLogoutRequest(challenge: string): RedirectResponse;
 

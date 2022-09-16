@@ -14,7 +14,7 @@ import { OauthProviderService } from '../oauth-provider.service';
 
 @Injectable()
 export class HydraService extends OauthProviderService {
-	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody) {
+	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): RedirectResponse {
 		throw new NotImplementedException();
 	}
 
@@ -62,7 +62,7 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	rejectConsentRequest(challenge: string, body: RejectRequestBody) {
+	rejectConsentRequest(challenge: string, body: RejectRequestBody): RedirectResponse {
 		throw new NotImplementedException();
 	}
 
