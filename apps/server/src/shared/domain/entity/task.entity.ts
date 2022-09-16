@@ -1,6 +1,5 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { School } from '@shared/domain/entity/school.entity';
-import _ from 'lodash';
 import { IEntityWithSchool } from '../interface';
 import { ILearnroomElement } from '../interface/learnroom';
 import { EntityId } from '../types/entity-id';
@@ -24,6 +23,7 @@ export interface ITaskProperties {
 	submissions?: Submission[];
 	finished?: User[];
 	files?: File[];
+	publicSubmissions?: boolean;
 }
 
 export interface ITaskStatus {
@@ -70,6 +70,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@Property()
 	private = true;
 
+	@Property({ nullable: true })
+	publicSubmissions?: boolean;
+
 	@Index()
 	@ManyToOne('User', { fieldName: 'teacherId', nullable: true })
 	creator?: User;
@@ -110,6 +113,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.submissions.set(props.submissions || []);
 		this.finished.set(props.finished || []);
 		this.files.set(props.files || []);
+		this.publicSubmissions = props.publicSubmissions || false;
 	}
 
 	isFinishedForUser(user: User): boolean {
