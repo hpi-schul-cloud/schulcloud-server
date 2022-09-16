@@ -8,7 +8,6 @@ import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authoriza
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import QueryString from 'qs';
 import { HttpService } from '@nestjs/axios';
-import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { nanoid } from 'nanoid';
 import { firstValueFrom, Observable } from 'rxjs';
 

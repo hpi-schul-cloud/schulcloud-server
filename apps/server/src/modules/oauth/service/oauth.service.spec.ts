@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, Role, School, System, User } from '@shared/domain';
 import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo/user/user.repo';
-import { SystemFactory, systemFactory } from '@shared/testing/factory/system.factory';
+import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
 import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AxiosResponse } from 'axios';

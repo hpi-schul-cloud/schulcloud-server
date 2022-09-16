@@ -7,7 +7,6 @@ import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import { OauthConfig } from '@shared/domain';
 import { of } from 'rxjs';
-import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';

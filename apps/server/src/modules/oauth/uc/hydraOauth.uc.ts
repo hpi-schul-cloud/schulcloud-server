@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { OauthConfig } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
@@ -46,11 +46,23 @@ export class HydraOauthUc {
 			validateStatus: this.validateStatus,
 		};
 
-		let response: AxiosResponse;
+		const initResponse = await this.hydraSsoService.initAuth(hydraOauthConfig, axiosConfig);
+
+		const response: AxiosResponse = await this.processRedirectCascade(initResponse, jwt);
+
+		const authParams: AuthorizationParams = response.data as AuthorizationParams;
+		return authParams;
+	}
+
+	private async processRedirectCascade(
+		initResponse: AxiosResponse,
+		jwt: string
+	): Promise<AxiosResponse<AuthorizationParams>> {
 		let currentRedirect = 0;
 		let referer = '';
-
-		response = await this.hydraSsoService.initAuth(hydraOauthConfig, axiosConfig);
+		let cookies: CookiesDto = new CookiesDto({ localCookies: [`jwt=${jwt}`], hydraCookies: [] });
+		let response = initResponse;
+		const axiosConfig: AxiosRequestConfig = initResponse.config;
 
 		do {
 			let { location } = response.headers;
@@ -61,11 +73,9 @@ export class HydraOauthUc {
 				location = `${this.HOST}${location}`;
 			}
 
-			let cookies: CookiesDto = new CookiesDto({ localCookies: [], hydraCookies: [] });
 			if (response.headers['set-cookie']) {
 				cookies = this.processCookies(response.headers['set-cookie'], cookies);
 			}
-			cookies.localCookies.push(`jwt=${jwt}`);
 
 			const headerCookies: string = isHydra ? cookies.hydraCookies.join('; ') : cookies.localCookies.join('; ');
 
@@ -84,8 +94,7 @@ export class HydraOauthUc {
 			throw new InternalServerErrorException(`Redirect limit of ${this.MAX_REDIRECTS} exceeded.`);
 		}
 
-		const authParams: AuthorizationParams = response.data as AuthorizationParams;
-		return authParams;
+		return response;
 	}
 
 	protected processCookies(setCookies: string[], cookies: CookiesDto): CookiesDto {
