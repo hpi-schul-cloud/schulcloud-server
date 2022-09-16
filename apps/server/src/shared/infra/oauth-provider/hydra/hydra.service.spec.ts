@@ -16,4 +16,9 @@ describe('HydraService', () => {
 	afterAll(async () => {
 		await module.close();
 	});
+
+	// TODO remove after implementation
+	it('should be defined', () => {
+		expect(service).toBeDefined();
+	});
 });

@@ -6,4 +6,9 @@ describe('OauthProviderResponseMapper', () => {
 	beforeAll(() => {
 		mapper = new OauthProviderResponseMapper();
 	});
+
+	// TODO remove after implementation
+	it('should be defined', () => {
+		expect(mapper).toBeDefined();
+	});
 });
