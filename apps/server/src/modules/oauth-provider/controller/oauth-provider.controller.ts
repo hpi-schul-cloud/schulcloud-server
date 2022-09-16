@@ -2,6 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
+import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -18,7 +19,10 @@ import {
 
 @Controller('oauth2')
 export class OauthProviderController {
-	constructor(private readonly oauthProviderUc: OauthProviderUc) {}
+	constructor(
+		private readonly oauthProviderUc: OauthProviderUc,
+		private readonly oauthProviderResponseMapper: OauthProviderResponseMapper
+	) {}
 
 	@Authenticate('jwt')
 	@Get('clients/:id')
