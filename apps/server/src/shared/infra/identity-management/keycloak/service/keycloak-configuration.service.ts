@@ -106,10 +106,13 @@ export class KeycloakConfigurationService {
 
 	public async configureClient(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		// TODO generalize both (re-direct and base) URL. This will not work locally, due to missing port and https
-		const redirectUri = `https://${SC_DOMAIN}/api/v3/sso/oauth/`;
+		let redirectUri = `https://${SC_DOMAIN}/api/v3/sso/oauth/`;
 		// TODO grab from well-known endpoint or move to separat environmental variable
-		const kcBaseUrl = `https://idm-${SC_DOMAIN}/realms/${kc.realmName}`;
+		let kcBaseUrl = `https://idm-${SC_DOMAIN}/realms/${kc.realmName}`;
+		if (SC_DOMAIN === 'localhost') {
+			redirectUri = `http://localhost:3030/api/v3/sso/oauth/`;
+			kcBaseUrl = `http://localhost:8080/realms/${kc.realmName}`;
+		}
 		const cr: ClientRepresentation = {};
 		cr.clientId = clientId;
 		cr.enabled = true;

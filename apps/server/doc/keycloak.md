@@ -42,8 +42,6 @@ To add ErWIn-IDM identity broker feature via OpenID Connect (OIDC) Identity Prov
 - Set env vars (or in your .env file) 'OIDCMOCK\_\_BASE_URL' to http://\<your-local-ip\>:4011.
 - To make it work with the nuxt client set the env var HOST=http://localhost:4000
 - re-trigger `npm run setup:db` and `npm run setup:idm` to reset and apply seed data.
-- adjust the entry for keycloak in your local DB. Put "http://localhost:8080" into the keycloaks client's URLs in the DB,
- except for "redirectURI" which needs to be "http://localhost:3030"
 - start the 'oidc-server-mock' as follows:
 
 ```bash
