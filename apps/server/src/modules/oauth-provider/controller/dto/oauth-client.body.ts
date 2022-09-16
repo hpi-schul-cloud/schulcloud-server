@@ -47,4 +47,12 @@ export class OauthClientBody {
 		nullable: false,
 	})
 	scope?: string;
+
+	@IsString()
+	@ApiProperty({
+		description: 'Thr frontchannel logout uri.',
+		required: false,
+		nullable: false,
+	})
+	frontchannel_logout_uri?: string;
 }
