@@ -11,35 +11,35 @@ import {
 } from './dto';
 
 export abstract class OauthProviderService {
-	abstract getLoginRequest(challenge: string): LoginResponse;
+	abstract getLoginRequest(challenge: string): Promise<LoginResponse>;
 
-	abstract acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): RedirectResponse;
+	abstract acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<RedirectResponse>;
 
-	abstract rejectLoginRequest(challenge: string, body: RejectRequestBody): RedirectResponse;
+	abstract rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse>;
 
-	abstract getConsentRequest(challenge: string): ConsentResponse;
+	abstract getConsentRequest(challenge: string): Promise<ConsentResponse>;
 
-	abstract acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): RedirectResponse;
+	abstract acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<RedirectResponse>;
 
-	abstract rejectConsentRequest(challenge: string, body: RejectRequestBody): RedirectResponse;
+	abstract rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse>;
 
-	abstract acceptLogoutRequest(challenge: string): RedirectResponse;
+	abstract acceptLogoutRequest(challenge: string): Promise<RedirectResponse>;
 
-	abstract introspectOAuth2Token(token: string, scope?: string): IntrospectResponse;
+	abstract introspectOAuth2Token(token: string, scope?: string): Promise<IntrospectResponse>;
 
-	abstract isInstanceAlive(): boolean;
+	abstract isInstanceAlive(): Promise<boolean>;
 
-	abstract listOAuth2Clients(): OauthClient[];
+	abstract listOAuth2Clients(): Promise<OauthClient[]>;
 
-	abstract createOAuth2Client(data: OauthClient): OauthClient;
+	abstract createOAuth2Client(data: OauthClient): Promise<OauthClient>;
 
-	abstract getOAuth2Client(id: string): OauthClient;
+	abstract getOAuth2Client(id: string): Promise<OauthClient>;
 
-	abstract updateOAuth2Client(id: string, data: OauthClient): OauthClient;
+	abstract updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient>;
 
-	abstract deleteOAuth2Client(id: string): void;
+	abstract deleteOAuth2Client(id: string): Promise<void>;
 
-	abstract listConsentSessions(user: string): ConsentSessionResponse[];
+	abstract listConsentSessions(user: string): Promise<ConsentSessionResponse[]>;
 
-	abstract revokeConsentSession(user: string, client: string): void;
+	abstract revokeConsentSession(user: string, client: string): Promise<void>;
 }
