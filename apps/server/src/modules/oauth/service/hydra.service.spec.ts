@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { LtiToolRepo } from '@shared/repo';
 import { HttpService } from '@nestjs/axios';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { OauthConfig } from '@shared/domain';
 import { of } from 'rxjs';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
@@ -33,14 +33,26 @@ describe('HydraService', () => {
 	let ltiToolRepo: DeepMocked<LtiToolRepo>;
 	let httpService: DeepMocked<HttpService>;
 
-	let oauthConfig: OauthConfig;
-	let cookiesDto: CookiesDto;
-
 	const responseData = {};
 
 	const hydraUri = 'http://hydra.mock';
 	const scopes = 'openid uuid';
 	const apiHost = 'localhost';
+
+	const oauthConfig: OauthConfig = new OauthConfig({
+		clientId: '12345',
+		clientSecret: 'mocksecret',
+		tokenEndpoint: `${hydraUri}/oauth2/token`,
+		grantType: 'authorization_code',
+		redirectUri: `${apiHost}/v3/sso/hydra/12345`,
+		scope: scopes,
+		responseType: 'code',
+		authEndpoint: `${hydraUri}/oauth2/auth`,
+		provider: 'hydra',
+		logoutEndpoint: `${hydraUri}/oauth2/sessions/logout`,
+		issuer: `${hydraUri}/`,
+		jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,
+	});
 
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
@@ -73,34 +85,12 @@ describe('HydraService', () => {
 		service = module.get(HydraSsoService);
 		ltiToolRepo = module.get(LtiToolRepo);
 		httpService = module.get(HttpService);
+		httpService.get.mockReturnValue(of(createAxiosResponse(responseData)));
 	});
 
 	afterAll(async () => {
 		jest.clearAllMocks();
 		await module.close();
-	});
-
-	beforeEach(() => {
-		oauthConfig = new OauthConfig({
-			clientId: '12345',
-			clientSecret: 'mocksecret',
-			tokenEndpoint: `${hydraUri}/oauth2/token`,
-			grantType: 'authorization_code',
-			redirectUri: `${apiHost}/v3/sso/hydra/12345`,
-			scope: scopes,
-			responseType: 'code',
-			authEndpoint: `${hydraUri}/oauth2/auth`,
-			provider: 'hydra',
-			logoutEndpoint: `${hydraUri}/oauth2/sessions/logout`,
-			issuer: `${hydraUri}/`,
-			jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,
-		});
-		cookiesDto = new CookiesDto({
-			hydraCookies: ['testHydraCookie'],
-			localCookies: ['testLocalCookie'],
-		});
-
-		httpService.get.mockReturnValue(of(createAxiosResponse(responseData)));
 	});
 
 	describe('initAuth', () => {

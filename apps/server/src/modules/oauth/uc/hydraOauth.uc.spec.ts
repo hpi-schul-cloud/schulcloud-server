@@ -9,7 +9,7 @@ import { OauthConfig } from '@shared/domain';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { IJwt } from '@src/modules/oauth/interface/jwt.base.interface';
-import { AxiosResponse } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { CookiesDto } from '../service/dto/cookies.dto';
 import { HydraOauthUc } from '.';
@@ -30,25 +30,43 @@ describe('HydraOauthUc', () => {
 
 	let hydraOauthService: DeepMocked<HydraSsoService>;
 	let oauthService: DeepMocked<OAuthService>;
+	const oauthTokenResponse: OauthTokenResponse = {
+		access_token: 'accessTockenMock',
+		refresh_token: 'refreshTokenMock',
+		id_token: 'idTokenMock',
+	};
+	const defaultDecodedJWT: IJwt = {
+		sub: 'subMock',
+		uuid: 'uuidMock',
+	};
 
-	let ltiToolId: string;
-	let JWTMock: string;
-	let userIdMock: string;
-	let oauthClientId: string;
-	let hydraOauthConfig: OauthConfig;
-	let oauthTokenResponse: OauthTokenResponse;
-	let defaultDecodedJWT: IJwt;
-
+	const JWTMock = 'jwtMock';
+	const userIdMock = 'userIdMock';
+	const oauthClientId = 'oauthClientIdMock';
 	const hydraUri = 'hydraUri';
 	const apiHost = 'apiHost';
 	const nextcloudScopes = 'nextcloudscope';
+	const hydraOauthConfig = new OauthConfig({
+		authEndpoint: `${hydraUri}/oauth2/auth`,
+		clientId: 'toolClientId',
+		clientSecret: 'toolSecret',
+		grantType: 'authorization_code',
+		issuer: `${hydraUri}/`,
+		jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,
+		logoutEndpoint: `${hydraUri}/oauth2/sessions/logout`,
+		provider: 'hydra',
+		redirectUri: `${apiHost}/v3/sso/hydra/ltiToolIdMock`,
+		responseType: 'code',
+		scope: 'openid offline others',
+		tokenEndpoint: `${hydraUri}/oauth2/token`,
+	});
 
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
 			switch (key) {
 				case 'HYDRA_PUBLIC_URI':
 					return hydraUri;
-				case 'API_HOST':
+				case 'HOST':
 					return apiHost;
 				case 'NEXTCLOUD_SCOPES':
 					return nextcloudScopes;
@@ -86,39 +104,6 @@ describe('HydraOauthUc', () => {
 		await module.close();
 	});
 
-	beforeEach(() => {
-		ltiToolId = 'ltiToolIdMock';
-		JWTMock = 'jwtMock';
-		userIdMock = 'userIdMock';
-		oauthClientId = 'oauthClientIdMock';
-
-		hydraOauthConfig = new OauthConfig({
-			authEndpoint: `${hydraUri}/oauth2/auth`,
-			clientId: 'toolClientId',
-			clientSecret: 'toolSecret',
-			grantType: 'authorization_code',
-			issuer: `${hydraUri}/`,
-			jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,
-			logoutEndpoint: `${hydraUri}/oauth2/sessions/logout`,
-			provider: 'hydra',
-			redirectUri: `${Configuration.get('API_HOST') as string}/v3/sso/hydra/${ltiToolId}`,
-			responseType: 'code',
-			scope: Configuration.get('NEXTCLOUD_SCOPES') as string, // Only Nextcloud is currently supported
-			tokenEndpoint: `${hydraUri}/oauth2/token`,
-		});
-
-		oauthTokenResponse = {
-			access_token: 'accessTockenMock',
-			refresh_token: 'refreshTokenMock',
-			id_token: 'idTokenMock',
-		};
-
-		defaultDecodedJWT = {
-			sub: 'subMock',
-			uuid: 'uuidMock',
-		};
-	});
-
 	describe('getOauthToken', () => {
 		it('should return the oauth token response', async () => {
 			const code = 'kdjiqwjdjnq';
@@ -135,32 +120,34 @@ describe('HydraOauthUc', () => {
 	});
 
 	describe('requestAuthCode', () => {
-		it('should return the authorizationcode', async () => {
-			const expectedAuthParams: AuthorizationParams = {
+		let expectedAuthParams: AuthorizationParams;
+		let axiosConfig: AxiosRequestConfig;
+		let axiosResponse1: AxiosResponse;
+		let axiosResponse2: AxiosResponse;
+
+		beforeEach(() => {
+			expectedAuthParams = {
 				code: 'defaultAuthCode',
 			};
-			const axiosConfig = {
+			axiosConfig = {
 				headers: {},
 				withCredentials: true,
 				maxRedirects: 0,
-				// untestable
 				validateStatus: jest.fn().mockImplementationOnce(() => {
 					return true;
 				}),
 			};
-
-			const axiosResponse1: AxiosResponse = {
+			axiosResponse1 = {
 				data: expectedAuthParams,
 				status: 302,
 				statusText: '',
 				headers: {
-					location: Configuration.get('HYDRA_PUBLIC_URI') as string,
+					location: '/some/where',
 					Referer: 'hydra',
 				},
 				config: axiosConfig,
 			};
-
-			const axiosResponse2: AxiosResponse = {
+			axiosResponse2 = {
 				data: expectedAuthParams,
 				status: 200,
 				statusText: '',
@@ -170,14 +157,12 @@ describe('HydraOauthUc', () => {
 				},
 				config: axiosConfig,
 			};
+		});
 
+		it('should return the authorizationcode', async () => {
 			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
 			hydraOauthService.initAuth.mockResolvedValue(axiosResponse1);
 			axiosResponse1.headers['set-cookie'] = ['oauth2=cookieMock; Referer=hydraUri; Secure; HttpOnly'];
-			/*			axiosResponse1.config.headers = {
-				Cookie: 'oauth2=cookieMock; Referer=hydraUri; Secure; HttpOnly',
-				referer: Configuration.get('HYDRA_URI') as string,
-			}; */
 			axiosResponse2.config.headers = {
 				Cookie: 'oauth2=cookieMock',
 				Referer: Configuration.get('HYDRA_PUBLIC_URI') as string,
@@ -191,29 +176,6 @@ describe('HydraOauthUc', () => {
 			expect(hydraOauthService.processRedirect).toBeCalledTimes(2);
 		});
 		it('should return the authorizationcode', async () => {
-			const expectedAuthParams: AuthorizationParams = {
-				code: 'defaultAuthCode',
-			};
-
-			const axiosConfig2 = {
-				headers: {},
-				withCredentials: true,
-				maxRedirects: 0,
-				validateStatus: jest.fn().mockImplementationOnce(() => {
-					return true;
-				}),
-			};
-
-			const axiosResponse2: AxiosResponse = {
-				data: expectedAuthParams,
-				status: 200,
-				statusText: '',
-				headers: {
-					location: '/mock/path',
-					Referer: 'dbildungscloud',
-				},
-				config: axiosConfig2,
-			};
 			axiosResponse2.headers['set-cookie'] = ['foo=bar; Expires=Thu; Secure; HttpOnly'];
 
 			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
@@ -228,32 +190,9 @@ describe('HydraOauthUc', () => {
 			const authParams: AuthorizationParams = await uc.requestAuthCode(userIdMock, JWTMock, oauthClientId);
 
 			expect(authParams).toEqual(expectedAuthParams);
-			expect(hydraOauthService.processRedirect).toHaveBeenCalledWith(axiosResponse2.headers.location, axiosConfig2);
+			expect(hydraOauthService.processRedirect).toHaveBeenCalledWith(axiosResponse2.headers.location, axiosConfig);
 		});
 		it('should throw InternalServerErrorException', async () => {
-			const expectedAuthParams: AuthorizationParams = {
-				code: 'defaultAuthCode',
-			};
-			const axiosConfig = {
-				headers: {},
-				withCredentials: true,
-				maxRedirects: 0,
-				validateStatus: jest.fn().mockImplementationOnce(() => {
-					return true;
-				}),
-			};
-
-			const axiosResponse1: AxiosResponse = {
-				data: expectedAuthParams,
-				status: 302,
-				statusText: '',
-				headers: {
-					location: Configuration.get('HYDRA_PUBLIC_URI') as string,
-					Referer: 'hydra',
-				},
-				config: axiosConfig,
-			};
-
 			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
 			hydraOauthService.initAuth.mockResolvedValue(axiosResponse1);
 			axiosResponse1.headers['set-cookie'] = ['oauth2=cookieMock; Referer=hydraUri; Secure; HttpOnly'];
