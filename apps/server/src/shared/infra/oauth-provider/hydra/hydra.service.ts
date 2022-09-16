@@ -1,5 +1,6 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { ConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+import { HttpService } from '@nestjs/axios';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
@@ -14,67 +15,71 @@ import { OauthProviderService } from '../oauth-provider.service';
 
 @Injectable()
 export class HydraService extends OauthProviderService {
-	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): RedirectResponse {
+	constructor(private readonly httpService: HttpService) {
+		super();
+	}
+
+	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<RedirectResponse> {
 		throw new NotImplementedException();
 	}
 
-	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): RedirectResponse {
+	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<RedirectResponse> {
 		throw new NotImplementedException();
 	}
 
-	acceptLogoutRequest(challenge: string): RedirectResponse {
+	acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
 		throw new NotImplementedException();
 	}
 
-	createOAuth2Client(data: OauthClient): OauthClient {
+	createOAuth2Client(data: OauthClient): Promise<OauthClient> {
 		throw new NotImplementedException();
 	}
 
-	deleteOAuth2Client(id: string): void {
+	deleteOAuth2Client(id: string): Promise<void> {
 		throw new NotImplementedException();
 	}
 
-	getConsentRequest(challenge: string): ConsentResponse {
+	getConsentRequest(challenge: string): Promise<ConsentResponse> {
 		throw new NotImplementedException();
 	}
 
-	getLoginRequest(challenge: string): LoginResponse {
+	getLoginRequest(challenge: string): Promise<LoginResponse> {
 		throw new NotImplementedException();
 	}
 
-	getOAuth2Client(id: string): OauthClient {
+	getOAuth2Client(id: string): Promise<OauthClient> {
 		throw new NotImplementedException();
 	}
 
-	introspectOAuth2Token(token: string, scope: string): IntrospectResponse {
+	introspectOAuth2Token(token: string, scope: string): Promise<IntrospectResponse> {
 		throw new NotImplementedException();
 	}
 
-	isInstanceAlive(): boolean {
+	isInstanceAlive(): Promise<boolean> {
 		throw new NotImplementedException();
 	}
 
-	listConsentSessions(user: string): ConsentSessionResponse[] {
+	listConsentSessions(user: string): Promise<ConsentSessionResponse[]> {
 		throw new NotImplementedException();
 	}
 
-	listOAuth2Clients(): OauthClient[] {
+	listOAuth2Clients(): Promise<OauthClient[]> {
 		throw new NotImplementedException();
 	}
 
-	rejectConsentRequest(challenge: string, body: RejectRequestBody): RedirectResponse {
+	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
 		throw new NotImplementedException();
 	}
 
-	rejectLoginRequest(challenge: string, body: RejectRequestBody): RedirectResponse {
+	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
 		throw new NotImplementedException();
 	}
 
-	revokeConsentSession(user: string, client: string): void {
+	revokeConsentSession(user: string, client: string): Promise<void> {
 		throw new NotImplementedException();
 	}
 
-	updateOAuth2Client(id: string, data: OauthClient): OauthClient {
+	updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient> {
 		throw new NotImplementedException();
 	}
 }
