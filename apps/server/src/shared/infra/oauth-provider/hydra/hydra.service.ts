@@ -3,7 +3,7 @@ import { ConsentSessionResponse } from '@shared/infra/oauth-provider/dto/respons
 import { HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AxiosResponse } from 'axios';
-import { Observable } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
@@ -30,12 +30,14 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
+	async acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
 		const hydraUri: string = Configuration.get('HYDRA_URI') as string;
 		const url = `${hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=${challenge}`;
-		const response: Observable<AxiosResponse> = this.httpService.put(url, null, {
+		const responseObservable: Observable<AxiosResponse<RedirectResponse>> = this.httpService.put(url, null, {
 			headers: { 'Content-Type': 'application/json', 'X-Forwarded-Proto': 'https' },
 		});
+		const response: AxiosResponse<RedirectResponse> = await lastValueFrom(responseObservable);
+		return response.data;
 	}
 
 	createOAuth2Client(data: OauthClient): Promise<OauthClient> {
