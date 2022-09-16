@@ -32,7 +32,7 @@
 	},
 	"COOKIE": {
 		"SAME_SITE": "none",
-		"HTTP_ONLY": true,
+		"HTTP_ONLY": false,
 		"HOST_ONLY": false,
 		"SECURE": true,
 		"EXPIRES_SECONDS": 2592000000
