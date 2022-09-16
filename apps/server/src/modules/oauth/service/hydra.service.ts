@@ -42,7 +42,7 @@ export class HydraSsoService {
 			throw new InternalServerErrorException(oauthClientId, 'Suitable tool not found!');
 		}
 
-		const hydraUri: string = Configuration.get('HYDRA_URI') as string;
+		const hydraUri: string = Configuration.get('HYDRA_PUBLIC_URI') as string;
 		const hydraOauthConfig = new OauthConfig({
 			authEndpoint: `${hydraUri}/oauth2/auth`,
 			clientId: tool.oAuthClientId,

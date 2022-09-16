@@ -21,7 +21,7 @@ export class HydraOauthUc {
 
 	private readonly MAX_REDIRECTS: number = 10;
 
-	private readonly HYDRA_URI: string = Configuration.get('HYDRA_URI') as string;
+	private readonly HYDRA_PUBLIC_URI: string = Configuration.get('HYDRA_PUBLIC_URI') as string;
 
 	private readonly HOST: string = Configuration.get('HOST') as string;
 
@@ -54,7 +54,7 @@ export class HydraOauthUc {
 
 		do {
 			let { location } = response.headers;
-			const isHydra = location.startsWith(Configuration.get('HYDRA_URI') as string);
+			const isHydra = location.startsWith(Configuration.get('HYDRA_PUBLIC_URI') as string);
 
 			// locations of schulcloud cookies are a relative path
 			if (!isHydra) {

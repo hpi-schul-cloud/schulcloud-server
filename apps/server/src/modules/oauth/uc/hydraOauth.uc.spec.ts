@@ -46,7 +46,7 @@ describe('HydraOauthUc', () => {
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
 			switch (key) {
-				case 'HYDRA_URI':
+				case 'HYDRA_PUBLIC_URI':
 					return hydraUri;
 				case 'API_HOST':
 					return apiHost;
@@ -154,7 +154,7 @@ describe('HydraOauthUc', () => {
 				status: 302,
 				statusText: '',
 				headers: {
-					location: Configuration.get('HYDRA_URI') as string,
+					location: Configuration.get('HYDRA_PUBLIC_URI') as string,
 					Referer: 'hydra',
 				},
 				config: axiosConfig,
@@ -165,7 +165,7 @@ describe('HydraOauthUc', () => {
 				status: 200,
 				statusText: '',
 				headers: {
-					location: Configuration.get('HYDRA_URI') as string,
+					location: Configuration.get('HYDRA_PUBLIC_URI') as string,
 					Referer: 'hydra',
 				},
 				config: axiosConfig,
@@ -180,7 +180,7 @@ describe('HydraOauthUc', () => {
 			}; */
 			axiosResponse2.config.headers = {
 				Cookie: 'oauth2=cookieMock',
-				Referer: Configuration.get('HYDRA_URI') as string,
+				Referer: Configuration.get('HYDRA_PUBLIC_URI') as string,
 			};
 			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse1);
 			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse2);
@@ -248,7 +248,7 @@ describe('HydraOauthUc', () => {
 				status: 302,
 				statusText: '',
 				headers: {
-					location: Configuration.get('HYDRA_URI') as string,
+					location: Configuration.get('HYDRA_PUBLIC_URI') as string,
 					Referer: 'hydra',
 				},
 				config: axiosConfig,

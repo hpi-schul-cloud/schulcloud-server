@@ -45,7 +45,7 @@ describe('HydraService', () => {
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
 			switch (key) {
-				case 'HYDRA_URI':
+				case 'HYDRA_PUBLIC_URI':
 					return hydraUri;
 				case 'API_HOST':
 					return apiHost;
