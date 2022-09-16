@@ -3,6 +3,7 @@ import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, P
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { OauthClient } from '@shared/infra/oauth-provider/dto/index';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -12,10 +13,11 @@ import {
 	ListOauthClientsParams,
 	LoginRequestBody,
 	OauthClientBody,
+	OauthClientResponse,
 	RedirectBody,
 	RevokeConsentQuery,
 	UserParams,
-} from './dto';
+} from './dto/index';
 
 @Controller('oauth2')
 export class OauthProviderController {
@@ -26,32 +28,37 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Get('clients/:id')
-	getOAuth2Client(@Param() { id }: IdParams) {
-		throw new NotImplementedException();
+	async getOAuth2Client(@Param() { id }: IdParams): Promise<OauthClientResponse> {
+		const client: OauthClient = await this.oauthProviderUc.getOAuth2Client(id);
+		return this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 	}
 
 	@Authenticate('jwt')
 	@Get('clients')
-	listOAuth2Clients(@Param() params: ListOauthClientsParams) {
-		throw new NotImplementedException();
+	async listOAuth2Clients(@Param() params: ListOauthClientsParams) {
+		const clients: OauthClient[] = await this.oauthProviderUc.listOAuth2Clients();
+		// TODO map to response
+		return clients;
 	}
 
 	@Authenticate('jwt')
 	@Post('clients')
-	createOAuth2Client(@Body() body: OauthClientBody) {
-		throw new NotImplementedException();
+	async createOAuth2Client(@Body() body: OauthClientBody): Promise<OauthClientResponse> {
+		const client = await this.oauthProviderUc.createOAuth2Client(body);
+		return this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 	}
 
 	@Authenticate('jwt')
 	@Put('clients/:id')
-	updateOAuth2Client(@Param() { id }: IdParams, @Body() body: OauthClientBody) {
-		throw new NotImplementedException();
+	async updateOAuth2Client(@Param() { id }: IdParams, @Body() body: OauthClientBody): Promise<OauthClientResponse> {
+		const client: OauthClient = await this.oauthProviderUc.updateOAuth2Client(id, body);
+		return this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 	}
 
 	@Authenticate('jwt')
 	@Delete('clients/:id')
-	deleteOAuth2Client(@Param() { id }: IdParams) {
-		throw new NotImplementedException();
+	deleteOAuth2Client(@Param() { id }: IdParams): Promise<void> {
+		return this.oauthProviderUc.deleteOAuth2Client(id);
 	}
 
 	@Post('introspect')

@@ -27,7 +27,7 @@ export interface OauthClient {
 
 	contacts?: string[];
 
-	created_at: string;
+	created_at?: string;
 
 	frontchannel_logout_session_required?: boolean;
 
@@ -47,7 +47,7 @@ export interface OauthClient {
 
 	logo_uri?: string;
 
-	metadata: object;
+	metadata?: object;
 
 	owner?: string;
 

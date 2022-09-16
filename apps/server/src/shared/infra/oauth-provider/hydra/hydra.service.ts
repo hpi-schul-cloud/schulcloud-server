@@ -1,6 +1,9 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { ConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import { HttpService } from '@nestjs/axios';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
+import { firstValueFrom, Observable } from 'rxjs';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
@@ -15,8 +18,11 @@ import { OauthProviderService } from '../oauth-provider.service';
 
 @Injectable()
 export class HydraService extends OauthProviderService {
+	private readonly hydraUri: string;
+
 	constructor(private readonly httpService: HttpService) {
 		super();
+		this.hydraUri = Configuration.get('HYDRA_URI') as string;
 	}
 
 	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<RedirectResponse> {
@@ -31,23 +37,11 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	createOAuth2Client(data: OauthClient): Promise<OauthClient> {
-		throw new NotImplementedException();
-	}
-
-	deleteOAuth2Client(id: string): Promise<void> {
-		throw new NotImplementedException();
-	}
-
 	getConsentRequest(challenge: string): Promise<ConsentResponse> {
 		throw new NotImplementedException();
 	}
 
 	getLoginRequest(challenge: string): Promise<LoginResponse> {
-		throw new NotImplementedException();
-	}
-
-	getOAuth2Client(id: string): Promise<OauthClient> {
 		throw new NotImplementedException();
 	}
 
@@ -63,10 +57,6 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	listOAuth2Clients(): Promise<OauthClient[]> {
-		throw new NotImplementedException();
-	}
-
 	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
 		throw new NotImplementedException();
 	}
@@ -79,7 +69,42 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
+	listOAuth2Clients(): Promise<OauthClient[]> {
+		return this.request<OauthClient[]>('GET', `${this.hydraUri}/clients`);
+	}
+
+	getOAuth2Client(id: string): Promise<OauthClient> {
+		return this.request<OauthClient>('GET', `${this.hydraUri}/clients/${id}`);
+	}
+
+	createOAuth2Client(data: OauthClient): Promise<OauthClient> {
+		return this.request<OauthClient>('POST', `${this.hydraUri}/clients`, data);
+	}
+
 	updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient> {
-		throw new NotImplementedException();
+		return this.request<OauthClient>('PUT', `${this.hydraUri}/clients/${id}`, data);
+	}
+
+	deleteOAuth2Client(id: string): Promise<void> {
+		return this.request<void>('DELETE', `${this.hydraUri}/clients/${id}`);
+	}
+
+	protected async request<T>(
+		method: Method,
+		url: string,
+		data?: unknown,
+		additionalHeaders: AxiosRequestHeaders = {}
+	): Promise<T> {
+		const observable: Observable<AxiosResponse<T>> = this.httpService.request({
+			url,
+			method,
+			headers: {
+				'X-Forwarded-Proto': 'https',
+				...additionalHeaders,
+			},
+			data,
+		});
+		const response: AxiosResponse<T> = await firstValueFrom(observable);
+		return response.data;
 	}
 }
