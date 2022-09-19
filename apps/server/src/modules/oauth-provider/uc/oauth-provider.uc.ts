@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { OauthProviderService } from '@shared/infra/oauth-provider/index';
+import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ConsentResponse, ProviderRedirectResponse, RejectRequestBody } from '@shared/infra/oauth-provider/dto';
 import { AcceptQuery, ConsentRequestBody } from '@src/modules/oauth-provider/controller/dto';
 

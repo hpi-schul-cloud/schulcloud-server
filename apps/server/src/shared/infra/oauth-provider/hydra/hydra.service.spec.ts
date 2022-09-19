@@ -109,15 +109,7 @@ describe('HydraService', () => {
 
 		beforeEach(() => {
 			challenge = 'challengexyz';
-			httpService.request.mockReturnValue(
-				of({
-					data: '',
-					status: 0,
-					statusText: '',
-					headers: {},
-					config: {},
-				})
-			);
+			httpService.request.mockReturnValue(of(createAxiosResponse({})));
 		});
 
 		afterEach(() => {

@@ -1,3 +1,3 @@
-export class ProviderRedirectResponse {
-	redirect_to!: string;
+export interface ProviderRedirectResponse {
+	redirect_to: string;
 }
