@@ -76,8 +76,8 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
-	acceptLogoutRequest(@Param() { challenge }: ChallengeParams, @Body() body: RedirectBody) {
-		this.oauthProviderUc.logoutFlow(challenge);
+	async acceptLogoutRequest(@Param() { challenge }: ChallengeParams, @Body() body: RedirectBody) {
+		await this.oauthProviderUc.logoutFlow(challenge);
 	}
 
 	@Authenticate('jwt')
