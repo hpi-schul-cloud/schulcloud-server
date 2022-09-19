@@ -3,6 +3,7 @@ import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, P
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -83,17 +84,19 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Get('consentRequest/:challenge')
 	getConsentRequest(@Param() { challenge }: ChallengeParams) {
-		throw new NotImplementedException();
+		return this.oauthProviderUc.getConsentRequest(challenge);
 	}
 
 	@Authenticate('jwt')
 	@Patch('consentRequest/:challenge')
-	patchConsentRequest(
+	async patchConsentRequest(
 		@Param() { challenge }: ChallengeParams,
 		@Query() query: AcceptQuery,
 		@Body() body: ConsentRequestBody
-	) {
-		throw new NotImplementedException();
+	): Promise<RedirectResponse> {
+		const redirectResponse: RedirectResponse = await this.oauthProviderUc.patchConsentRequest(challenge, query, body);
+		const response: RedirectResponse = this.oauthProviderResponseMapper.mapRedirectResponse(redirectResponse);
+		return response;
 	}
 
 	@Authenticate('jwt')

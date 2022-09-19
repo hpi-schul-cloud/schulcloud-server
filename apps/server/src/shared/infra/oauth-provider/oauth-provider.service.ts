@@ -6,24 +6,24 @@ import {
 	ConsentResponse,
 	IntrospectResponse,
 	LoginResponse,
-	RedirectResponse,
+	ProviderRedirectResponse,
 	RejectRequestBody,
 } from './dto';
 
 export abstract class OauthProviderService {
 	abstract getLoginRequest(challenge: string): Promise<LoginResponse>;
 
-	abstract acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<RedirectResponse>;
+	abstract acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<ProviderRedirectResponse>;
 
-	abstract rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse>;
+	abstract rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse>;
 
 	abstract getConsentRequest(challenge: string): Promise<ConsentResponse>;
 
-	abstract acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<RedirectResponse>;
+	abstract acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<ProviderRedirectResponse>;
 
-	abstract rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse>;
+	abstract rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse>;
 
-	abstract acceptLogoutRequest(challenge: string): Promise<RedirectResponse>;
+	abstract acceptLogoutRequest(challenge: string): Promise<ProviderRedirectResponse>;
 
 	abstract introspectOAuth2Token(token: string, scope?: string): Promise<IntrospectResponse>;
 

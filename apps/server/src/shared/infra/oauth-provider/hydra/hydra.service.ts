@@ -11,7 +11,7 @@ import {
 	IntrospectResponse,
 	LoginResponse,
 	OauthClient,
-	RedirectResponse,
+	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '../dto';
 import { OauthProviderService } from '../oauth-provider.service';
@@ -25,15 +25,15 @@ export class HydraService extends OauthProviderService {
 		this.hydraUri = Configuration.get('HYDRA_URI') as string;
 	}
 
-	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<RedirectResponse> {
+	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<ProviderRedirectResponse> {
+		return this.put<ProviderRedirectResponse>('consent', 'accept', challenge, body);
+	}
+
+	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<ProviderRedirectResponse> {
 		throw new NotImplementedException();
 	}
 
-	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<RedirectResponse> {
-		throw new NotImplementedException();
-	}
-
-	acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
+	acceptLogoutRequest(challenge: string): Promise<ProviderRedirectResponse> {
 		throw new NotImplementedException();
 	}
 
@@ -46,7 +46,7 @@ export class HydraService extends OauthProviderService {
 	}
 
 	getConsentRequest(challenge: string): Promise<ConsentResponse> {
-		throw new NotImplementedException();
+		return this.get<ConsentResponse>('consent', challenge);
 	}
 
 	getLoginRequest(challenge: string): Promise<LoginResponse> {
@@ -73,11 +73,11 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
-		throw new NotImplementedException();
+	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
+		return this.put<ProviderRedirectResponse>('consent', 'reject', challenge, body);
 	}
 
-	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
+	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
 		throw new NotImplementedException();
 	}
 
@@ -87,6 +87,23 @@ export class HydraService extends OauthProviderService {
 
 	updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient> {
 		throw new NotImplementedException();
+	}
+
+	protected async put<T>(
+		flow: string,
+		action: string,
+		challenge: string,
+		body: AcceptConsentRequestBody | AcceptLoginRequestBody | RejectRequestBody
+	): Promise<T> {
+		return this.request<T>(
+			'PUT',
+			`${this.hydraUri}/oauth2/auth/requests/${flow}/${action}?${flow}_challenge=${challenge}`,
+			body
+		);
+	}
+
+	protected async get<T>(flow: string, challenge: string): Promise<T> {
+		return this.request<T>('GET', `${this.hydraUri}/oauth2/auth/requests/${flow}?${flow}_challenge=${challenge}`);
 	}
 
 	protected async request<T>(
