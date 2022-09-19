@@ -30,7 +30,11 @@ export class HydraService extends OauthProviderService {
 	}
 
 	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<RedirectResponse> {
-		throw new NotImplementedException();
+		return this.request<RedirectResponse>(
+			'PUT',
+			`${this.hydraUri}/oauth2/auth/requests/login/accept?login_challenge=${challenge}`,
+			body
+		);
 	}
 
 	acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
@@ -50,7 +54,10 @@ export class HydraService extends OauthProviderService {
 	}
 
 	getLoginRequest(challenge: string): Promise<LoginResponse> {
-		throw new NotImplementedException();
+		return this.request<LoginResponse>(
+			'GET',
+			`${this.hydraUri}/oauth2/auth/requests/login?login_challenge=${challenge}`
+		);
 	}
 
 	getOAuth2Client(id: string): Promise<OauthClient> {
@@ -78,7 +85,11 @@ export class HydraService extends OauthProviderService {
 	}
 
 	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
-		throw new NotImplementedException();
+		return this.request<RedirectResponse>(
+			'PUT',
+			`${this.hydraUri}/oauth2/auth/requests/login/reject?login_challenge=${challenge}`,
+			body
+		);
 	}
 
 	revokeConsentSession(user: string, client: string): Promise<void> {
