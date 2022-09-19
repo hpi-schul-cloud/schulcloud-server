@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { NotImplementedException } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import { AcceptQuery, ChallengeParams, ConsentRequestBody } from '@src/modules/oauth-provider/controller/dto';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
@@ -10,10 +12,14 @@ import { OauthProviderController } from './oauth-provider.controller';
 describe('OauthProviderController', () => {
 	let module: TestingModule;
 	let controller: OauthProviderController;
-	let mapper: DeepMocked<OauthProviderResponseMapper>;
 	let uc: DeepMocked<OauthProviderUc>;
+	let responseMapper: DeepMocked<OauthProviderResponseMapper>;
+
+	const hydraUri = 'http://hydra.uri';
 
 	beforeAll(async () => {
+		jest.spyOn(Configuration, 'get').mockReturnValue(hydraUri);
+
 		module = await Test.createTestingModule({
 			providers: [
 				OauthProviderController,
@@ -29,56 +35,140 @@ describe('OauthProviderController', () => {
 		}).compile();
 
 		controller = module.get(OauthProviderController);
+
 		uc = module.get(OauthProviderUc);
-		mapper = module.get(OauthProviderResponseMapper);
+		responseMapper = module.get(OauthProviderResponseMapper);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	// TODO remove after implementation
-	it('should be defined', () => {
-		expect(controller).toBeDefined();
-	});
-
-	describe('consent', () => {
+	describe('Consent Flow', () => {
 		let challengeParams: ChallengeParams;
 
 		beforeEach(() => {
 			challengeParams = { challenge: 'challengexyz' };
 		});
 
-		it('getConsentRequest should call uc', async () => {
-			// Arrange
-			const consentResponse: ConsentResponse = { challenge: challengeParams.challenge, subject: 'subject' };
-			uc.getConsentRequest.mockResolvedValue(consentResponse);
+		describe('getConsentRequest', () => {
+			it('should call uc', async () => {
+				// Arrange
+				const consentResponse: ConsentResponse = { challenge: challengeParams.challenge, subject: 'subject' };
+				uc.getConsentRequest.mockResolvedValue(consentResponse);
 
-			// Act
-			const result = await controller.getConsentRequest(challengeParams);
+				// Act
+				const result = await controller.getConsentRequest(challengeParams);
 
-			// Assert
-			expect(result).toBeDefined();
+				// Assert
+				expect(result).toBeDefined();
+			});
 		});
 
-		it('patchConsentRequest should call uc and mapper', async () => {
-			// Arrange
-			const acceptQuery: AcceptQuery = { accept: true };
-			const consentRequestBody: ConsentRequestBody = {
-				grant_scope: ['openid', 'offline'],
-				remember: false,
-				remember_for: 0,
-			};
-			const expectedRedirectResponse: RedirectResponse = { redirect_to: 'anywhere' };
-			uc.patchConsentRequest.mockResolvedValue(expectedRedirectResponse);
+		describe('patchConsentRequest', () => {
+			it('should call uc and mapper', async () => {
+				// Arrange
+				const acceptQuery: AcceptQuery = { accept: true };
+				const consentRequestBody: ConsentRequestBody = {
+					grant_scope: ['openid', 'offline'],
+					remember: false,
+					remember_for: 0,
+				};
+				const expectedRedirectResponse: RedirectResponse = { redirect_to: 'anywhere' };
+				uc.patchConsentRequest.mockResolvedValue(expectedRedirectResponse);
 
-			// Act
-			const result = await controller.patchConsentRequest(challengeParams, acceptQuery, consentRequestBody);
+				// Act
+				const result = await controller.patchConsentRequest(challengeParams, acceptQuery, consentRequestBody);
 
-			// Assert
-			expect(result).toBeDefined();
-			expect(uc.patchConsentRequest).toHaveBeenCalledWith(challengeParams.challenge, acceptQuery, consentRequestBody);
-			expect(mapper.mapRedirectResponse).toHaveBeenCalledWith(expectedRedirectResponse);
+				// Assert
+				expect(result).toBeDefined();
+				expect(uc.patchConsentRequest).toHaveBeenCalledWith(challengeParams.challenge, acceptQuery, consentRequestBody);
+				expect(responseMapper.mapRedirectResponse).toHaveBeenCalledWith(expectedRedirectResponse);
+			});
+		});
+
+		describe('listConsentSessions', () => {
+			it('should throw', () => {
+				expect(() => controller.listConsentSessions({ userId: '' })).toThrow(NotImplementedException);
+			});
+		});
+
+		describe('revokeConsentSession', () => {
+			it('should throw', () => {
+				expect(() => controller.revokeConsentSession({ userId: '' }, { client: '' })).toThrow(NotImplementedException);
+			});
+		});
+	});
+
+	describe('Login Flow', () => {
+		describe('getLoginRequest', () => {
+			it('should throw', () => {
+				expect(() => controller.getLoginRequest({ challenge: '' })).toThrow(NotImplementedException);
+			});
+		});
+
+		describe('patchLoginRequest', () => {
+			it('should throw', () => {
+				expect(() => controller.patchLoginRequest({ challenge: '' }, { accept: false }, {})).toThrow(
+					NotImplementedException
+				);
+			});
+		});
+	});
+
+	describe('Logout Flow', () => {
+		describe('acceptLogoutRequest', () => {
+			it('should throw', () => {
+				expect(() => controller.acceptLogoutRequest({ challenge: '' }, { redirect_to: '' })).toThrow(
+					NotImplementedException
+				);
+			});
+		});
+	});
+
+	describe('Client Flow', () => {
+		describe('listOAuth2Clients', () => {
+			it('should throw', () => {
+				expect(() => controller.listOAuth2Clients({})).toThrow(NotImplementedException);
+			});
+		});
+
+		describe('getOAuth2Client', () => {
+			it('should throw', () => {
+				expect(() => controller.getOAuth2Client({ id: '' })).toThrow(NotImplementedException);
+			});
+		});
+
+		describe('createOAuth2Client', () => {
+			it('should throw', () => {
+				expect(() => controller.createOAuth2Client({})).toThrow(NotImplementedException);
+			});
+		});
+
+		describe('updateOAuth2Client', () => {
+			it('should throw', () => {
+				expect(() => controller.updateOAuth2Client({ id: '' }, {})).toThrow(NotImplementedException);
+			});
+		});
+
+		describe('deleteOAuth2Client', () => {
+			it('should throw', () => {
+				expect(() => controller.deleteOAuth2Client({ id: '' })).toThrow(NotImplementedException);
+			});
+		});
+	});
+
+	describe('introspectOAuth2Token', () => {
+		it('should throw', () => {
+			expect(() => controller.introspectOAuth2Token({ token: '' })).toThrow(NotImplementedException);
+		});
+	});
+
+	describe('getUrl', () => {
+		it('should return hydra uri', async () => {
+			const result: string = await controller.getUrl();
+
+			expect(result).toEqual(hydraUri);
 		});
 	});
 });
