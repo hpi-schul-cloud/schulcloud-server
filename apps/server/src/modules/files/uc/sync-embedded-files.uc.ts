@@ -12,9 +12,7 @@ import { SyncFilesStorageService } from './sync-files-storage.service';
 
 @Injectable()
 export class SyncEmbeddedFilesUc {
-	failedEntityIds: ObjectId[] = [];
 
-	private failedFileIds: Map<string, EntityId[]> = new Map();
 
 	constructor(
 		private embeddedFilesRepo: EmbeddedFilesRepo,
@@ -29,7 +27,7 @@ export class SyncEmbeddedFilesUc {
 	}
 
 	private async syncEmbeddedFiles(type: AvailableSyncParentType, limit: number) {
-		const [entities, count] = await this.embeddedFilesRepo.findElementsToSyncFiles(type, limit, this.failedEntityIds);
+		const [entities, count] = await this.embeddedFilesRepo.findElementsToSyncFiles(type, limit, []);
 
 		this.logger.log(`Found ${entities.length} ${type} descriptions with embedded files.`);
 
@@ -40,23 +38,22 @@ export class SyncEmbeddedFilesUc {
 			if (fileIds.length > 0) {
 				const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
 
+				const unreachableFileIds = [];
 				fileIds.forEach((id) => {
 					const idExists = files.some((file) => file.source.id === id.toHexString());
 					if (!idExists) {
-						this.failedEntityIds.push(entity._id);
-						this.setErrorFile(entity._id, id);
+						this.unreachableFileIds.push(id.toHexString())
 						this.logger.error(
 							`legacy file with id: ${id.toHexString()} in entity ${entity._id.toHexString()} not found`
 						);
 					}
 				});
+				unreachableFileIds.forEach((id) => {
+					this.updateEntityLinks(entity, true, id, '', '');
+				});
+
 
 				return this.syncFiles(files, entity);
-				// eslint-disable-next-line no-else-return
-			} else {
-				this.failedEntityIds.push(entity._id);
-				// eslint-disable-next-line consistent-return, no-useless-return
-				return;
 			}
 		});
 
@@ -94,7 +91,6 @@ export class SyncEmbeddedFilesUc {
 				try {
 					return new ObjectId(id);
 				} catch (error) {
-					this.failedEntityIds.push(entity._id);
 					this.logger.error(`The file id ${id} is not ObjectId in entity ${entity._id.toHexString()}`);
 				}
 			})
@@ -122,15 +118,16 @@ export class SyncEmbeddedFilesUc {
 			await this.syncFilesMetaDataService.prepareMetaData(file);
 			await this.syncFilesStorageService.syncS3File(file);
 			await this.syncFilesMetaDataService.persistMetaData(file);
-			this.updateEntityLinks(file, entity);
+			this.updateEntityLinks(entity, false, file.source.id, file.fileRecord.id, file.fileRecord.name);
 			this.logger.log(`Synced file ${file.source.id}`);
 		} catch (error) {
-			if ((error = '')) {
-				this.setErrorFile(entity._id, file.source.id);
-				this.updateEntityLinks(file, entity);
-			}
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			await this.writeError(error, file.source.id, entity);
+			// if ((error = '')) {
+			// 	this.setErrorFile(entity._id, file.source.id);
+			// 	this.updateEntityLinks(file, entity);
+			// }
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
 		}
 	}
 
@@ -139,42 +136,32 @@ export class SyncEmbeddedFilesUc {
 		const entityId = entity._id.toHexString();
 		const stack = 'stack' in error ? error.stack : JSON.stringify(error);
 		this.logger.error(`${entityId}`, stack);
-		this.failedEntityIds.push(entity._id);
 		return this.syncFilesMetaDataService.persistError(sourceFileId, stack);
 	}
 
-	private setErrorFile(entityId: ObjectId, sourceFileId: ObjectId) {
-		const result = this.failedFileIds.get(entityId.toHexString());
-		if (result) {
-			this.failedFileIds.set(entityId.toHexString(), [...result, sourceFileId.toHexString()]);
-		}
-	}
-
-	private updateEntityLinks(file: SyncFileItem, entity: Task | Lesson) {
+	private updateEntityLinks(entity: Task | Lesson, error: boolean, sourceFileId: string, fileRecordId: string, fileRecordName: string) {
 		if (entity instanceof Lesson) {
 			entity.contents = entity.contents.map((item: IComponentProperties) => {
 				if (item.component === 'text' && 'text' in item.content && item.content?.text) {
-					item.content.text = this.replaceLink(item.content.text, file, entity.id);
+					item.content.text = this.replaceLink(item.content.text, sourceFileId, fileRecordId, fileRecordName, error);
 				}
 				return item;
 			});
 		} else if (entity instanceof Task && entity?.description) {
-			entity.description = this.replaceLink(entity.description, file, entity.id);
+			entity.description = this.replaceLink(entity.description, sourceFileId, fileRecordId, fileRecordName, error);
 		} else {
 			throw new Error(`no matching condition in updateEntityLinks() for entity ${entity._id.toHexString()}`);
 		}
 	}
 
-	private replaceLink(text: string, file: SyncFileItem, entityId: string) {
+	private replaceLink(text: string, sourceFileId: string, fileRecordId: string, fileRecordName: string, error: boolean) {
 		let newUrl = '';
-		const sourceFileId = file.source.id;
 		const regex = new RegExp(`${fileUrlRegex}${sourceFileId}.*?"`, 'g');
 
-		const record = this.failedFileIds.get(entityId);
-		if (record && record.includes(sourceFileId)) {
-			newUrl = `"/files/file?file=not-found-${sourceFileId}"`;
+		if (!error) {
+			newUrl = `"/api/v3/file/download/${fileRecordId}/${fileRecordName}"`;
 		} else {
-			newUrl = `"/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}"`;
+			newUrl = `"/files/file?file=not-found-${sourceFileId}"`;
 		}
 
 		return text.replace(regex, newUrl);
