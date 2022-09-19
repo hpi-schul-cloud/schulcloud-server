@@ -22,6 +22,7 @@ import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ObjectId } from 'bson';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -34,6 +35,9 @@ import {
 import { AccountResponseMapper } from '../mapper';
 import { AccountSaveDto } from '../services/dto';
 import { AccountValidationService } from '../services/account.validation.service';
+
+import { BruteForcePrevention } from '../../../../../../src/errors/index.js';
+import { LOGIN_BLOCK_TIME as allowedTimeDifference } from '../../../../../../config/globals.js';
 
 type UserPreferences = {
 	// first login completed
@@ -335,6 +339,22 @@ export class AccountUc {
 			await this.userRepo.save(user);
 		} catch (err) {
 			throw new EntityNotFoundError(User.name);
+		}
+	}
+
+	async checkBrutForce(username: string, systemId: EntityId | ObjectId): Promise<void> {
+		const account = await this.accountService.findByUsernameAndSystemId(username, systemId);
+		//  missing Account is ignored as in legacy feathers Impl.
+		if (account) {
+			if (account.lasttriedFailedLogin) {
+				const timeDifference = (new Date().getTime() - account.lasttriedFailedLogin.getTime()) / 1000;
+				if (timeDifference < allowedTimeDifference) {
+					throw new BruteForcePrevention('Brute Force Prevention!', {
+						timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
+					});
+				}
+			}
+			await this.accountService.updateLastTriedFailedLogin(account.id, new Date());
 		}
 	}
 
