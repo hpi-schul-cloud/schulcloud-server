@@ -31,6 +31,7 @@ const createAxiosResponse = <T>(data: T): AxiosResponse<T> => ({
 describe('HydraService', () => {
 	let module: TestingModule;
 	let service: HydraServiceSpec;
+
 	let httpService: DeepMocked<HttpService>;
 	const hydraUri = Configuration.get('HYDRA_URI') as string;
 
