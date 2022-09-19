@@ -1,39 +1,43 @@
 const accountsHelper = require('./accounts');
 
-const generateJWT = (appPromise) => async ({ username, password }) => {
-	const app = await appPromise;
-	const result = await app.service('authentication').create(
-		{
-			strategy: 'local',
-			username,
-			password,
-		},
-		{
-			headers: {
-				'content-type': 'application/json',
+const generateJWT =
+	(appPromise) =>
+	async ({ username, password }) => {
+		const app = await appPromise;
+		const result = await app.service('authentication').create(
+			{
+				strategy: 'local',
+				username,
+				password,
 			},
-			provider: 'rest',
-		}
-	);
-	return result.accessToken;
-};
+			{
+				headers: {
+					'content-type': 'application/json',
+				},
+				provider: 'rest',
+			}
+		);
+		return result.accessToken;
+	};
 
 /**
  * Execute login with username and password
  * @returns { authentication = {accessToken, strategy}, provider = 'rest' }
  */
-const generateRequestParams = (appPromise) => async ({ username, password }) => {
-	const app = await appPromise;
-	const fetchJwt = generateJWT(app);
-	const jwt = await fetchJwt({ username, password });
-	return {
-		authentication: {
-			accessToken: jwt,
-			strategy: 'jwt',
-		},
-		provider: 'rest',
+const generateRequestParams =
+	(appPromise) =>
+	async ({ username, password }) => {
+		const app = await appPromise;
+		const fetchJwt = generateJWT(app);
+		const jwt = await fetchJwt({ username, password });
+		return {
+			authentication: {
+				accessToken: jwt,
+				strategy: 'jwt',
+			},
+			provider: 'rest',
+		};
 	};
-};
 
 /**
  * I ) Create a account for this user
