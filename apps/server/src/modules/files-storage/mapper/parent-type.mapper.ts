@@ -10,6 +10,7 @@ export class FileStorageMapper {
 		types.set(FileRecordParentType.User, AllowedAuthorizationEntityType.User);
 		types.set(FileRecordParentType.School, AllowedAuthorizationEntityType.School);
 		types.set(FileRecordParentType.Lesson, AllowedAuthorizationEntityType.Lesson);
+		types.set(FileRecordParentType.Submission, AllowedAuthorizationEntityType.Submission);
 
 		const res = types.get(type);
 
