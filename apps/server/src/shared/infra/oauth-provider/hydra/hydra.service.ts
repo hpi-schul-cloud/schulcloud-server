@@ -1,6 +1,9 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { ConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import { HttpService } from '@nestjs/axios';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
+import { firstValueFrom, Observable } from 'rxjs';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
@@ -15,8 +18,11 @@ import { OauthProviderService } from '../oauth-provider.service';
 
 @Injectable()
 export class HydraService extends OauthProviderService {
+	private readonly hydraUri: string;
+
 	constructor(private readonly httpService: HttpService) {
 		super();
+		this.hydraUri = Configuration.get('HYDRA_URI') as string;
 	}
 
 	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<RedirectResponse> {
@@ -81,5 +87,24 @@ export class HydraService extends OauthProviderService {
 
 	updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient> {
 		throw new NotImplementedException();
+	}
+
+	protected async request<T>(
+		method: Method,
+		url: string,
+		data?: unknown,
+		additionalHeaders: AxiosRequestHeaders = {}
+	): Promise<T> {
+		const observable: Observable<AxiosResponse<T>> = this.httpService.request({
+			url,
+			method,
+			headers: {
+				'X-Forwarded-Proto': 'https',
+				...additionalHeaders,
+			},
+			data,
+		});
+		const response: AxiosResponse<T> = await firstValueFrom(observable);
+		return response.data;
 	}
 }

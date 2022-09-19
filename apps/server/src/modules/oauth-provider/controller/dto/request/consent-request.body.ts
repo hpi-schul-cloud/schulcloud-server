@@ -1,13 +1,15 @@
-import { IsArray, IsBoolean, IsInt, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ConsentRequestBody {
 	@IsArray()
 	@IsString({ each: true })
+	@IsOptional()
 	@ApiProperty({ description: 'The Oauth2 client id.', required: false, nullable: false })
 	grant_scope?: string[];
 
 	@IsBoolean()
+	@IsOptional()
 	@ApiProperty({
 		description:
 			'Remember, if set to true, tells the oauth provider to remember this consent authorization and reuse it if the same client asks the same user for the same, or a subset of, scope.',
@@ -17,6 +19,7 @@ export class ConsentRequestBody {
 	remember?: boolean;
 
 	@IsInt()
+	@IsOptional()
 	@ApiProperty({
 		description:
 			'RememberFor sets how long the consent authorization should be remembered for in seconds. If set to 0, the authorization will be remembered indefinitely.',
