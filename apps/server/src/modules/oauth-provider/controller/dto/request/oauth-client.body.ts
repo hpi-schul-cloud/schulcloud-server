@@ -1,7 +1,7 @@
 import { IsArray, IsEnum, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { SubjectTypeEnum } from '@src/modules/oauth-provider/interface/subject-type.enum';
-import { TokenAuthMethod } from 'apps/server/src/modules/oauth-provider/interface/token-auth-method.enum';
+import { TokenAuthMethod } from '@src/modules/oauth-provider/interface/token-auth-method.enum';
 
 export class OauthClientBody {
 	@IsString()
