@@ -17,7 +17,7 @@ import {
 	RedirectBody,
 	RevokeConsentQuery,
 	UserParams,
-} from './dto/index';
+} from './dto';
 
 @Controller('oauth2')
 export class OauthProviderController {
@@ -28,8 +28,8 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Get('clients/:id')
-	async getOAuth2Client(@Param() { id }: IdParams): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.oauthProviderUc.getOAuth2Client(id);
+	async getOAuth2Client(@Param() params: IdParams): Promise<OauthClientResponse> {
+		const client: OauthClient = await this.oauthProviderUc.getOAuth2Client(params.id);
 		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 		return mapped;
 	}
@@ -55,69 +55,61 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Put('clients/:id')
-	async updateOAuth2Client(@Param() { id }: IdParams, @Body() body: OauthClientBody): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.oauthProviderUc.updateOAuth2Client(id, body);
+	async updateOAuth2Client(@Param() params: IdParams, @Body() body: OauthClientBody): Promise<OauthClientResponse> {
+		const client: OauthClient = await this.oauthProviderUc.updateOAuth2Client(params.id, body);
 		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 		return mapped;
 	}
 
 	@Authenticate('jwt')
 	@Delete('clients/:id')
-	deleteOAuth2Client(@Param() { id }: IdParams): Promise<void> {
-		return this.oauthProviderUc.deleteOAuth2Client(id);
+	deleteOAuth2Client(@Param() params: IdParams): Promise<void> {
+		return this.oauthProviderUc.deleteOAuth2Client(params.id);
 	}
 
 	@Post('introspect')
-	introspectOAuth2Token(@Body() { token }: IntrospectBody) {
+	introspectOAuth2Token(@Body() body: IntrospectBody) {
 		throw new NotImplementedException();
 	}
 
 	@Get('loginRequest/:challenge')
-	getLoginRequest(@Param() { challenge }: ChallengeParams) {
+	getLoginRequest(@Param() params: ChallengeParams) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
 	@Patch('loginRequest/:challenge')
-	patchLoginRequest(
-		@Param() { challenge }: ChallengeParams,
-		@Query() query: AcceptQuery,
-		@Body() body: LoginRequestBody
-	) {
+	patchLoginRequest(@Param() params: ChallengeParams, @Query() query: AcceptQuery, @Body() body: LoginRequestBody) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
-	acceptLogoutRequest(@Param() { challenge }: ChallengeParams, @Body() body: RedirectBody) {
+	acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
 	@Get('consentRequest/:challenge')
-	getConsentRequest(@Param() { challenge }: ChallengeParams) {
+	getConsentRequest(@Param() params: ChallengeParams) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
 	@Patch('consentRequest/:challenge')
-	patchConsentRequest(
-		@Param() { challenge }: ChallengeParams,
-		@Query() query: AcceptQuery,
-		@Body() body: ConsentRequestBody
-	) {
+	patchConsentRequest(@Param() params: ChallengeParams, @Query() query: AcceptQuery, @Body() body: ConsentRequestBody) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
 	@Get('auth/sessions/consent/:userId')
-	listConsentSessions(@Param() { userId }: UserParams) {
+	listConsentSessions(@Param() params: UserParams) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
-	@Delete('auth/sessions/consent/:user')
-	revokeConsentSession(@Param() { userId }: UserParams, @Query() { client }: RevokeConsentQuery) {
+	@Delete('auth/sessions/consent/:userId')
+	revokeConsentSession(@Param() params: UserParams, @Query() query: RevokeConsentQuery) {
 		throw new NotImplementedException();
 	}
 
