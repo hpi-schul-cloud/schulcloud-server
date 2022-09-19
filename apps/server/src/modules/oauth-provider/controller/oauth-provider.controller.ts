@@ -26,7 +26,7 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Get('clients/:id')
-	getOAuth2Client(@Param() { id }: IdParams) {
+	getOAuth2Client(@Param() params: IdParams) {
 		throw new NotImplementedException();
 	}
 
@@ -44,67 +44,59 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Put('clients/:id')
-	updateOAuth2Client(@Param() { id }: IdParams, @Body() body: OauthClientBody) {
+	updateOAuth2Client(@Param() params: IdParams, @Body() body: OauthClientBody) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
 	@Delete('clients/:id')
-	deleteOAuth2Client(@Param() { id }: IdParams) {
+	deleteOAuth2Client(@Param() params: IdParams) {
 		throw new NotImplementedException();
 	}
 
 	@Post('introspect')
-	introspectOAuth2Token(@Body() { token }: IntrospectBody) {
+	introspectOAuth2Token(@Body() body: IntrospectBody) {
 		throw new NotImplementedException();
 	}
 
 	@Get('loginRequest/:challenge')
-	getLoginRequest(@Param() { challenge }: ChallengeParams) {
+	getLoginRequest(@Param() params: ChallengeParams) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
 	@Patch('loginRequest/:challenge')
-	patchLoginRequest(
-		@Param() { challenge }: ChallengeParams,
-		@Query() query: AcceptQuery,
-		@Body() body: LoginRequestBody
-	) {
+	patchLoginRequest(@Param() params: ChallengeParams, @Query() query: AcceptQuery, @Body() body: LoginRequestBody) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
-	acceptLogoutRequest(@Param() { challenge }: ChallengeParams, @Body() body: RedirectBody) {
+	acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
 	@Get('consentRequest/:challenge')
-	getConsentRequest(@Param() { challenge }: ChallengeParams) {
+	getConsentRequest(@Param() params: ChallengeParams) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
 	@Patch('consentRequest/:challenge')
-	patchConsentRequest(
-		@Param() { challenge }: ChallengeParams,
-		@Query() query: AcceptQuery,
-		@Body() body: ConsentRequestBody
-	) {
+	patchConsentRequest(@Param() params: ChallengeParams, @Query() query: AcceptQuery, @Body() body: ConsentRequestBody) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
 	@Get('auth/sessions/consent/:userId')
-	listConsentSessions(@Param() { userId }: UserParams) {
+	listConsentSessions(@Param() params: UserParams) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
-	@Delete('auth/sessions/consent/:user')
-	revokeConsentSession(@Param() { userId }: UserParams, @Query() { client }: RevokeConsentQuery) {
+	@Delete('auth/sessions/consent/:userId')
+	revokeConsentSession(@Param() params: UserParams, @Query() query: RevokeConsentQuery) {
 		throw new NotImplementedException();
 	}
 
