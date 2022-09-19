@@ -107,23 +107,4 @@ export class HydraService extends OauthProviderService {
 		const response: AxiosResponse<T> = await firstValueFrom(observable);
 		return response.data;
 	}
-
-	protected async request<T>(
-		method: Method,
-		url: string,
-		data?: unknown,
-		additionalHeaders: AxiosRequestHeaders = {}
-	): Promise<T> {
-		const observable: Observable<AxiosResponse<T>> = this.httpService.request({
-			url,
-			method,
-			headers: {
-				'X-Forwarded-Proto': 'https',
-				...additionalHeaders,
-			},
-			data,
-		});
-		const response: AxiosResponse<T> = await firstValueFrom(observable);
-		return response.data;
-	}
 }

@@ -30,29 +30,35 @@ export class OauthProviderController {
 	@Get('clients/:id')
 	async getOAuth2Client(@Param() { id }: IdParams): Promise<OauthClientResponse> {
 		const client: OauthClient = await this.oauthProviderUc.getOAuth2Client(id);
-		return this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
+		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
 	@Get('clients')
-	async listOAuth2Clients(@Param() params: ListOauthClientsParams) {
+	async listOAuth2Clients(@Param() params: ListOauthClientsParams): Promise<OauthClientResponse[]> {
 		const clients: OauthClient[] = await this.oauthProviderUc.listOAuth2Clients();
-		// TODO map to response
-		return clients;
+		const mapped: OauthClientResponse[] = clients.map(
+			(client: OauthClient): OauthClientResponse =>
+				this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client)
+		);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
 	@Post('clients')
 	async createOAuth2Client(@Body() body: OauthClientBody): Promise<OauthClientResponse> {
-		const client = await this.oauthProviderUc.createOAuth2Client(body);
-		return this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
+		const client: OauthClient = await this.oauthProviderUc.createOAuth2Client(body);
+		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
 	@Put('clients/:id')
 	async updateOAuth2Client(@Param() { id }: IdParams, @Body() body: OauthClientBody): Promise<OauthClientResponse> {
 		const client: OauthClient = await this.oauthProviderUc.updateOAuth2Client(id, body);
-		return this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
+		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
