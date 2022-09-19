@@ -11,14 +11,10 @@ import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-toke
 import { IJwt } from '@src/modules/oauth/interface/jwt.base.interface';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { InternalServerErrorException } from '@nestjs/common';
-import { CookiesDto } from '../service/dto/cookies.dto';
+import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { HydraOauthUc } from '.';
 
 class HydraOauthUcSpec extends HydraOauthUc {
-	public processCookiesSpec(setCookies: string[], cookie: CookiesDto): CookiesDto {
-		return super.processCookies(setCookies, cookie);
-	}
-
 	public validateStatusSpec = (status: number) => {
 		return this.validateStatus(status);
 	};
@@ -124,8 +120,10 @@ describe('HydraOauthUc', () => {
 		let axiosConfig: AxiosRequestConfig;
 		let axiosResponse1: AxiosResponse;
 		let axiosResponse2: AxiosResponse;
+		let responseDto1: HydraRedirectDto;
+		let responseDto2: HydraRedirectDto;
 
-		beforeEach(() => {
+		beforeAll(() => {
 			expectedAuthParams = {
 				code: 'defaultAuthCode',
 			};
@@ -157,72 +155,44 @@ describe('HydraOauthUc', () => {
 				},
 				config: axiosConfig,
 			};
+			responseDto1 = {
+				axiosConfig,
+				cookies: { localCookies: [], hydraCookies: [] },
+				currentRedirect: 0,
+				referer: '',
+				response: axiosResponse1,
+			};
+			responseDto2 = {
+				axiosConfig,
+				cookies: { localCookies: [], hydraCookies: [] },
+				currentRedirect: 0,
+				referer: '',
+				response: axiosResponse2,
+			};
 		});
 
 		it('should return the authorizationcode', async () => {
 			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
 			hydraOauthService.initAuth.mockResolvedValue(axiosResponse1);
-			axiosResponse1.headers['set-cookie'] = ['oauth2=cookieMock; Referer=hydraUri; Secure; HttpOnly'];
-			axiosResponse2.config.headers = {
-				Cookie: 'oauth2=cookieMock',
-				Referer: Configuration.get('HYDRA_PUBLIC_URI') as string,
-			};
-			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse1);
-			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse2);
+			hydraOauthService.processRedirect.mockResolvedValueOnce(responseDto1);
+			hydraOauthService.processRedirect.mockResolvedValueOnce(responseDto2);
 
 			const authParams: AuthorizationParams = await uc.requestAuthCode(userIdMock, JWTMock, oauthClientId);
 
 			expect(authParams).toStrictEqual(expectedAuthParams);
 			expect(hydraOauthService.processRedirect).toBeCalledTimes(2);
 		});
-		it('should return the authorizationcode', async () => {
-			axiosResponse2.headers['set-cookie'] = ['foo=bar; Expires=Thu; Secure; HttpOnly'];
-
-			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
-			hydraOauthService.initAuth.mockResolvedValue(axiosResponse2);
-
-			axiosResponse2.config.headers = {
-				Cookie: 'foo=bar; Expires=Thu; Secure; HttpOnly',
-				Referer: '',
-			};
-			hydraOauthService.processRedirect.mockResolvedValueOnce(axiosResponse2);
-
-			const authParams: AuthorizationParams = await uc.requestAuthCode(userIdMock, JWTMock, oauthClientId);
-
-			expect(authParams).toEqual(expectedAuthParams);
-			expect(hydraOauthService.processRedirect).toHaveBeenCalledWith(axiosResponse2.headers.location, axiosConfig);
-		});
 		it('should throw InternalServerErrorException', async () => {
 			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
 			hydraOauthService.initAuth.mockResolvedValue(axiosResponse1);
-			axiosResponse1.headers['set-cookie'] = ['oauth2=cookieMock; Referer=hydraUri; Secure; HttpOnly'];
-			hydraOauthService.processRedirect.mockResolvedValue(axiosResponse1);
+			hydraOauthService.processRedirect.mockImplementation((dto) => {
+				dto.currentRedirect += 1;
+				return Promise.resolve(dto);
+			});
 
 			await expect(uc.requestAuthCode(userIdMock, JWTMock, oauthClientId)).rejects.toThrow(
 				InternalServerErrorException
 			);
-		});
-	});
-
-	describe('processCookies', () => {
-		it('should return the oauth token response', () => {
-			const cookie: CookiesDto = new CookiesDto({ hydraCookies: [], localCookies: [] });
-
-			const expectCookie: CookiesDto = new CookiesDto({
-				hydraCookies: ['oauth2_cookie1=cookieMock', 'oauth2_cookie2=cookieMock'],
-				localCookies: ['foo1=bar1', 'foo2=bar2'],
-			});
-
-			const headers = [
-				'oauth2_cookie1=cookieMock; Secure; HttpOnly',
-				'oauth2_cookie2=cookieMock; Secure',
-				'foo1=bar1; Expires:Thu',
-				'foo2=bar2; HttpOnly',
-			];
-
-			const cookies: CookiesDto = uc.processCookiesSpec(headers, cookie);
-
-			expect(cookies).toEqual(expectCookie);
 		});
 	});
 

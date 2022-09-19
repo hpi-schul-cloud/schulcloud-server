@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { HttpService } from '@nestjs/axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { OauthConfig, System, User } from '@shared/domain';
 import { Logger } from '@src/core/logger';
@@ -54,29 +54,39 @@ export class OAuthService {
 	}
 
 	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
-		this.logger.debug('requestToken() has started. Next up: decrypt().');
+		const payload = this.buildTokenRequestPayload(code, oauthConfig);
+		const responseTokenObservable = this.buildTokenRequest(payload);
+		const responseToken = this.executeTokenRequest(responseTokenObservable);
+		return responseToken;
+	}
+
+	private buildTokenRequestPayload(code: string, oauthConfig: OauthConfig): TokenRequestPayload {
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
-		this.logger.debug('decrypt() ran succefullly. Next up: post().');
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
 			oauthConfig,
 			decryptedClientSecret,
 			code
 		);
-		const query = QueryString.stringify(tokenRequestPayload);
-		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(
-			`${tokenRequestPayload.tokenEndpoint}`,
-			query,
-			{
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-				},
-			}
-		);
-		this.logger.debug('post() ran succefullly. The tokens should get returned now.');
+		return tokenRequestPayload;
+	}
+
+	private buildTokenRequest(payload: TokenRequestPayload): Observable<AxiosResponse<OauthTokenResponse, unknown>> {
+		const query = QueryString.stringify(payload);
+		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(`${payload.tokenEndpoint}`, query, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+		});
+		return responseTokenObservable;
+	}
+
+	private async executeTokenRequest(
+		observable: Observable<AxiosResponse<OauthTokenResponse, unknown>>
+	): Promise<OauthTokenResponse> {
 		let responseToken: AxiosResponse<OauthTokenResponse>;
 		try {
-			responseToken = await lastValueFrom(responseTokenObservable);
+			responseToken = await lastValueFrom(observable);
 		} catch (error) {
 			throw new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step');
 		}

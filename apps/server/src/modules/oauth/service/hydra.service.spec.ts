@@ -4,12 +4,21 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { LtiToolRepo } from '@shared/repo';
 import { HttpService } from '@nestjs/axios';
-import { AxiosResponse } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { OauthConfig } from '@shared/domain';
 import { of } from 'rxjs';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
+import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
+import { AuthorizationParams } from '@src/modules/oauth/controller/dto';
+import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
+
+class HydraOauthSsoSpec extends HydraSsoService {
+	public processCookiesSpec(setCookies: string[], cookie: CookiesDto): CookiesDto {
+		return super.processCookies(setCookies, cookie);
+	}
+}
 
 jest.mock('nanoid', () => {
 	return {
@@ -27,7 +36,7 @@ const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => ({
 
 describe('HydraService', () => {
 	let module: TestingModule;
-	let service: HydraSsoService;
+	let service: HydraOauthSsoSpec;
 
 	let ltiToolRepo: DeepMocked<LtiToolRepo>;
 	let httpService: DeepMocked<HttpService>;
@@ -60,6 +69,8 @@ describe('HydraService', () => {
 					return hydraUri;
 				case 'API_HOST':
 					return apiHost;
+				case 'HOST':
+					return apiHost;
 				case 'NEXTCLOUD_SCOPES':
 					return scopes;
 				default:
@@ -68,8 +79,8 @@ describe('HydraService', () => {
 		});
 
 		module = await Test.createTestingModule({
-			controllers: [HydraSsoService],
 			providers: [
+				HydraOauthSsoSpec,
 				{
 					provide: LtiToolRepo,
 					useValue: createMock<LtiToolRepo>(),
@@ -81,7 +92,7 @@ describe('HydraService', () => {
 			],
 		}).compile();
 
-		service = module.get(HydraSsoService);
+		service = module.get(HydraOauthSsoSpec);
 		ltiToolRepo = module.get(LtiToolRepo);
 		httpService = module.get(HttpService);
 		httpService.get.mockReturnValue(of(createAxiosResponse(responseData)));
@@ -107,13 +118,76 @@ describe('HydraService', () => {
 	});
 
 	describe('processRedirect', () => {
-		it('should process http request with hydra cookie', async () => {
+		const expectedAuthParams: AuthorizationParams = {
+			code: 'defaultAuthCode',
+		};
+		const axiosConfig: AxiosRequestConfig = {
+			headers: {},
+			withCredentials: true,
+			maxRedirects: 0,
+			validateStatus: jest.fn().mockImplementationOnce(() => {
+				return true;
+			}),
+		};
+		let axiosResponse1: AxiosResponse;
+		let axiosResponse2: AxiosResponse;
+		let responseDto1: HydraRedirectDto;
+		let responseDto2: HydraRedirectDto;
+
+		it('should process a local request', async () => {
+			axiosResponse1 = {
+				data: expectedAuthParams,
+				status: 302,
+				statusText: '',
+				headers: {
+					location: '/some/where',
+					Referer: 'hydra',
+				},
+				config: axiosConfig,
+			};
+			responseDto1 = {
+				axiosConfig,
+				cookies: { localCookies: [], hydraCookies: [] },
+				currentRedirect: 0,
+				referer: '',
+				response: axiosResponse1,
+			};
+
+			axiosResponse1.headers['set-cookie'] = ['oauth2=cookieMock; Referer=hydraUri; Secure; HttpOnly'];
+			httpService.get.mockReturnValue(of(axiosResponse1));
 			// Act
-			const result: AxiosResponse = await service.processRedirect(hydraUri, {});
+			const resDto: HydraRedirectDto = await service.processRedirect(responseDto1);
 
 			// Assert
-			expect(httpService.get).toHaveBeenCalledWith(hydraUri, {});
-			expect(result.data).toEqual(responseData);
+			expect(httpService.get).toHaveBeenCalledWith(`${apiHost}${axiosResponse1.headers.location}`, axiosConfig);
+			expect(resDto.response.data).toEqual(expectedAuthParams);
+		});
+		it('should process a hydra request', async () => {
+			axiosResponse2 = {
+				data: expectedAuthParams,
+				status: 200,
+				statusText: '',
+				headers: {
+					location: Configuration.get('HYDRA_PUBLIC_URI') as string,
+					Referer: 'hydra',
+				},
+				config: axiosConfig,
+			};
+			responseDto2 = {
+				axiosConfig,
+				cookies: { localCookies: [], hydraCookies: [] },
+				currentRedirect: 0,
+				referer: '',
+				response: axiosResponse2,
+			};
+			axiosResponse2.headers['set-cookie'] = ['foo=bar; Expires=Thu; Secure; HttpOnly'];
+			httpService.get.mockReturnValue(of(axiosResponse2));
+			// Act
+			const resDto: HydraRedirectDto = await service.processRedirect(responseDto2);
+
+			// Assert
+			expect(httpService.get).toHaveBeenCalledWith(`${axiosResponse2.headers.location}`, axiosConfig);
+			expect(resDto.response.data).toEqual(expectedAuthParams);
 		});
 	});
 
@@ -147,6 +221,28 @@ describe('HydraService', () => {
 
 			// Assert
 			expect(result).toEqual(oauthConfig);
+		});
+	});
+
+	describe('processCookies', () => {
+		it('should return the oauth token response', () => {
+			const cookie: CookiesDto = new CookiesDto({ hydraCookies: [], localCookies: [] });
+
+			const expectCookie: CookiesDto = new CookiesDto({
+				hydraCookies: ['oauth2_cookie1=cookieMock', 'oauth2_cookie2=cookieMock'],
+				localCookies: ['foo1=bar1', 'foo2=bar2'],
+			});
+
+			const headers = [
+				'oauth2_cookie1=cookieMock; Secure; HttpOnly',
+				'oauth2_cookie2=cookieMock; Secure',
+				'foo1=bar1; Expires:Thu',
+				'foo2=bar2; HttpOnly',
+			];
+
+			const cookies: CookiesDto = service.processCookiesSpec(headers, cookie);
+
+			expect(cookies).toEqual(expectCookie);
 		});
 	});
 });

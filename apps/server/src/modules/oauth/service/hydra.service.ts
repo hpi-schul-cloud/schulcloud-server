@@ -10,10 +10,14 @@ import QueryString from 'qs';
 import { HttpService } from '@nestjs/axios';
 import { nanoid } from 'nanoid';
 import { firstValueFrom, Observable } from 'rxjs';
+import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
+import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 
 @Injectable()
 export class HydraSsoService {
 	constructor(private readonly ltiRepo: LtiToolRepo, private readonly httpService: HttpService) {}
+
+	private readonly HOST: string = Configuration.get('HOST') as string;
 
 	async initAuth(oauthConfig: OauthConfig, axiosConfig: AxiosRequestConfig): Promise<AxiosResponse> {
 		const query = QueryString.stringify({
@@ -28,9 +32,54 @@ export class HydraSsoService {
 		return res;
 	}
 
-	async processRedirect(location: string, axiosConfig: AxiosRequestConfig): Promise<AxiosResponse> {
-		const res: Promise<AxiosResponse> = this.get(location, axiosConfig);
-		return res;
+	async processRedirect(dto: HydraRedirectDto): Promise<HydraRedirectDto> {
+		const localDto: HydraRedirectDto = new HydraRedirectDto(dto);
+		let { location } = localDto.response.headers;
+		const isHydra = location.startsWith(Configuration.get('HYDRA_PUBLIC_URI') as string);
+
+		// locations of schulcloud cookies are a relative path
+		if (!isHydra) {
+			location = `${this.HOST}${location}`;
+		}
+
+		if (localDto.response.headers['set-cookie']) {
+			localDto.cookies = this.processCookies(localDto.response.headers['set-cookie'], dto.cookies);
+		}
+
+		const headerCookies: string = isHydra
+			? localDto.cookies.hydraCookies.join('; ')
+			: localDto.cookies.localCookies.join('; ');
+
+		localDto.axiosConfig.headers = {
+			Referer: localDto.referer,
+			Cookie: headerCookies,
+		};
+
+		localDto.response = await this.get(location, localDto.axiosConfig);
+		localDto.referer = location;
+		localDto.currentRedirect += 1;
+
+		return localDto;
+	}
+
+	protected processCookies(setCookies: string[], cookies: CookiesDto): CookiesDto {
+		const { localCookies } = cookies;
+		const { hydraCookies } = cookies;
+
+		setCookies.forEach((item: string): void => {
+			const cookie: string = item.split(';')[0];
+			if (cookie.startsWith('oauth2') && !hydraCookies.includes(cookie)) {
+				hydraCookies.push(cookie);
+			} else if (!localCookies.includes(cookie)) {
+				localCookies.push(cookie);
+			}
+		});
+
+		const cookiesDto = new CookiesDto({
+			localCookies,
+			hydraCookies,
+		});
+		return cookiesDto;
 	}
 
 	async generateConfig(oauthClientId: string): Promise<OauthConfig> {

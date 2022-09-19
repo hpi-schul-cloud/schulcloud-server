@@ -1,58 +1,30 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { OauthConfig, Role, School, System, User } from '@shared/domain';
-import { schoolFactory, systemFactory } from '@shared/testing';
-import { Collection } from '@mikro-orm/core';
-import { ObjectId } from 'bson';
-import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { IJwt } from '@src/modules/oauth/interface/jwt.base.interface';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
-import { OAuthResponse } from '../service/dto/oauth.response';
-import { OAuthService } from '../service/oauth.service';
+import { AuthorizationParams } from '@src/modules/oauth/controller/dto/index';
+import { MikroORM } from '@mikro-orm/core';
+import { setupEntities, systemFactory, userFactory } from '@shared/testing/index';
+import { System, User } from '@shared/domain/index';
+import { SystemRepo } from '@shared/repo/index';
+import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '.';
-import resetAllMocks = jest.resetAllMocks;
-
-jest.mock('jwks-rsa', () => {
-	return () => ({
-		getKeys: jest.fn(),
-		getSigningKey: jest.fn().mockResolvedValue({
-			kid: 'kid',
-			alg: 'alg',
-			getPublicKey: jest.fn().mockReturnValue('publicKey'),
-			rsaPublicKey: 'publicKey',
-		}),
-		getSigningKeys: jest.fn(),
-	});
-});
+import { OAuthService } from '../service/oauth.service';
+import { OAuthResponse } from '../service/dto/oauth.response';
 
 describe('OAuthUc', () => {
-	let uc: OauthUc;
+	let module: TestingModule;
+	let orm: MikroORM;
+	let service: OauthUc;
+
 	let oauthService: DeepMocked<OAuthService>;
+	let systemRepo: DeepMocked<SystemRepo>;
 
-	let defaultSystem: System;
-	let defaultOauthConfig: OauthConfig;
-
-	let defaultAuthCode: string;
-	let defaultQuery: AuthorizationParams;
-	let defaultErrorQuery: AuthorizationParams;
-	let defaultScool: School;
-	let defaultDecodedJWT: IJwt;
-
-	let defaultUser: User;
-	let defaultJWT: string;
-	let defaultTokenResponse: OauthTokenResponse;
-
-	let defaultResponse: OAuthResponse;
-	let defaultErrorRedirect: string;
-	let defaultErrorResponse: OAuthResponse;
+	let testSystem: System;
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
-			imports: [HttpModule],
+		orm = await setupEntities();
+
+		module = await Test.createTestingModule({
 			providers: [
 				OauthUc,
 				{
@@ -60,83 +32,92 @@ describe('OAuthUc', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
+					provide: SystemRepo,
+					useValue: createMock<SystemRepo>(),
+				},
+				{
 					provide: OAuthService,
 					useValue: createMock<OAuthService>(),
 				},
 			],
 		}).compile();
+
+		service = await module.get(OauthUc);
+		systemRepo = await module.get(SystemRepo);
 		oauthService = await module.get(OAuthService);
-		uc = await module.get(OauthUc);
-		defaultSystem = systemFactory.withOauthConfig().build();
-		defaultOauthConfig = defaultSystem.oauthConfig as OauthConfig;
-
-		defaultAuthCode = '43534543jnj543342jn2';
-		defaultQuery = { code: defaultAuthCode };
-		defaultErrorQuery = { error: 'oauth_login_failed' };
-		defaultScool = schoolFactory.build();
-		defaultDecodedJWT = {
-			sub: '4444',
-			uuid: '1111',
-		};
-
-		defaultUser = {
-			email: '',
-			roles: new Collection<Role>([]),
-			school: defaultScool,
-			_id: new ObjectId(),
-			id: '4444',
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			ldapId: '1111',
-			firstName: 'Test',
-			lastName: 'Testmann',
-		};
-		defaultJWT =
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
-		defaultTokenResponse = {
-			access_token: 'zzzz',
-			refresh_token: 'zzzz',
-			id_token: defaultJWT,
-		};
-
-		defaultResponse = {
-			idToken: defaultJWT,
-			logoutEndpoint: 'logoutEndpointMock',
-			provider: 'providerMock',
-			redirect: '',
-		};
-		defaultErrorRedirect = `${Configuration.get('HOST') as string}/login?error=${
-			defaultErrorQuery.error as string
-		}&provider=${defaultOauthConfig.provider}`;
-		defaultErrorResponse = new OAuthResponse();
-		defaultErrorResponse.errorcode = defaultErrorQuery.error as string;
-		defaultErrorResponse.redirect = defaultErrorRedirect;
-
-		oauthService.checkAuthorizationCode.mockReturnValue(defaultAuthCode);
-		oauthService.getOauthConfig.mockResolvedValue(defaultOauthConfig);
-		oauthService.requestToken.mockResolvedValue(defaultTokenResponse);
-		oauthService.validateToken.mockResolvedValue(defaultDecodedJWT);
-		oauthService.findUser.mockResolvedValue(defaultUser);
-		oauthService.getJwtForUser.mockResolvedValue(defaultJWT);
-		oauthService.buildResponse.mockReturnValue(defaultResponse);
-		oauthService.getRedirect.mockReturnValue(defaultResponse);
 	});
 
-	it('should be defined', () => {
-		expect(uc).toBeDefined();
+	afterAll(async () => {
+		await module.close();
+		await orm.close();
+	});
+
+	beforeEach(() => {
+		testSystem = systemFactory.withOauthConfig().buildWithId();
 	});
 
 	describe('processOAuth', () => {
-		it('should do the process', async () => {
-			const response = await uc.processOAuth(defaultQuery, defaultSystem.id);
-			expect(response.jwt).toStrictEqual(defaultJWT);
+		const code = '43534543jnj543342jn2';
+		const query: AuthorizationParams = { code };
+
+		it('should do the process successfully', async () => {
+			// Arrange
+			const jwt = 'schulcloudJwt';
+			const redirect = 'redirect';
+			const baseResponse: OAuthResponse = {
+				idToken: 'idToken',
+				logoutEndpoint: 'logoutEndpoint',
+				provider: 'provider',
+				redirect,
+			};
+			const user: User = userFactory.buildWithId();
+
+			oauthService.checkAuthorizationCode.mockReturnValue(code);
+			systemRepo.findById.mockResolvedValue(testSystem);
+			oauthService.requestToken.mockResolvedValue({
+				access_token: 'accessToken',
+				refresh_token: 'refreshToken',
+				id_token: 'idToken',
+			});
+			oauthService.validateToken.mockResolvedValue({ sub: 'sub', uuid: 'uuid' });
+			oauthService.findUser.mockResolvedValue(user);
+			oauthService.getJwtForUser.mockResolvedValue(jwt);
+			oauthService.buildResponse.mockReturnValue(baseResponse);
+			oauthService.getRedirect.mockReturnValue(baseResponse);
+
+			// Act
+			const response: OAuthResponse = await service.processOAuth(query, testSystem.id);
+
+			// Assert
+			expect(response).toEqual(
+				expect.objectContaining({
+					jwt,
+					...baseResponse,
+				})
+			);
+			expect(response.jwt).toStrictEqual(jwt);
 		});
-		it('should return an error if processOAuth failed', async () => {
-			resetAllMocks();
-			oauthService.getOauthConfig.mockResolvedValue(defaultOauthConfig);
-			oauthService.getOAuthError.mockReturnValue(defaultErrorResponse);
-			const errorResponse = await uc.processOAuth(defaultErrorQuery, '');
-			expect(errorResponse).toEqual(defaultErrorResponse);
+
+		it('should return a error response if processOAuth failed and the provider cannot be fetched from the system', async () => {
+			// Arrange
+			const system: System = systemFactory.withOauthConfig().buildWithId();
+			const errorResponse: OAuthResponse = {
+				provider: system.oauthConfig?.provider,
+				errorcode: 'sso_internal_error',
+				redirect: 'errorRedirect',
+			} as OAuthResponse;
+
+			oauthService.checkAuthorizationCode.mockImplementation(() => {
+				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
+			});
+			systemRepo.findById.mockResolvedValue(system);
+			oauthService.getOAuthError.mockReturnValue(errorResponse);
+
+			// Act
+			const response: OAuthResponse = await service.processOAuth(query, '');
+
+			// Assert
+			expect(response).toEqual(errorResponse);
 		});
 	});
 });
