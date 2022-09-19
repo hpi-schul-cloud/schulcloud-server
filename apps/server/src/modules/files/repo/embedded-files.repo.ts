@@ -18,6 +18,7 @@ const tasksQuery = (excludeIds: ObjectId[]) => {
 const lessonsQuery = (excludeIds: ObjectId[]) => {
 	return {
 		_id: { $nin: excludeIds },
+		courseId: { $exists: true },
 		'contents.component': { $eq: 'text' },
 		'contents.content.text': { $regex: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i') },
 	} as FilterQuery<Lesson>;
