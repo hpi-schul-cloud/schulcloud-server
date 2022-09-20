@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, PermissionContextBuilder } from '@shared/domain';
-import { FilesRepo, LessonRepo } from '@shared/repo';
+import { LessonRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
@@ -9,8 +9,7 @@ export class LessonUC {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly lessonRepo: LessonRepo,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly filesRepo: FilesRepo
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
 
 	async delete(userId: EntityId, lessonId: EntityId, jwt: string) {
