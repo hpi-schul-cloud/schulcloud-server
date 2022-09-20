@@ -88,12 +88,16 @@ describe('OauthProviderController', () => {
 
 	describe('Logout Flow', () => {
 		describe('acceptLogoutRequest', () => {
-			it('should call uc', async () => {
+			it('should call uc and return redirect string', async () => {
 				uc.logoutFlow.mockResolvedValue({ redirect_to: 'www.mock.de' });
 
-				await controller.acceptLogoutRequest({ challenge: 'challenge_mock' }, { redirect_to: 'www.mock.de' });
+				const redirect = await controller.acceptLogoutRequest(
+					{ challenge: 'challenge_mock' },
+					{ redirect_to: 'www.mock.de' }
+				);
 
 				expect(uc.logoutFlow).toHaveBeenCalledWith('challenge_mock');
+				expect(redirect).toEqual('www.mock.de');
 			});
 		});
 	});

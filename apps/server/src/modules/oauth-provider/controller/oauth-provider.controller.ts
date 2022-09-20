@@ -3,6 +3,7 @@ import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, P
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { RedirectResponse } from '@shared/infra/oauth-provider/dto';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -73,7 +74,8 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
 	async acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody) {
-		await this.oauthProviderUc.logoutFlow(params.challenge);
+		const redirect: RedirectResponse = await this.oauthProviderUc.logoutFlow(params.challenge);
+		return redirect.redirect_to;
 	}
 
 	@Authenticate('jwt')
