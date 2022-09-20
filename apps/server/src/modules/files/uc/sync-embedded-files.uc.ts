@@ -128,10 +128,12 @@ export class SyncEmbeddedFilesUc {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-	private async writeError(error: Error, sourceFileId: EntityId, entity: AvailableSyncEntityType) {
+	private async writeError(error: any, sourceFileId: EntityId, entity: AvailableSyncEntityType) {
 		const entityId = entity._id.toHexString();
-		const stack = 'stack' in error ? error.stack : JSON.stringify(error);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+		const stack = 'stack' in error ? error.stack : error;
 		this.logger.error(`${entityId}`, stack);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		return this.syncFilesMetaDataService.persistError(sourceFileId, stack);
 	}
 
