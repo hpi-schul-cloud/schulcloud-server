@@ -1,8 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { LoginResponse, RedirectResponse } from '@shared/infra/oauth-provider/dto';
+import { ICurrentUser } from '@shared/domain';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -60,8 +62,8 @@ export class OauthProviderController {
 	}
 
 	@Get('loginRequest/:challenge')
-	getLoginRequest(@Param() { challenge }: ChallengeParams) {
-		throw new NotImplementedException();
+	getLoginRequest(@Param() params: ChallengeParams): Promise<LoginResponse> {
+		return this.oauthProviderUc.getLoginRequest(params.challenge);
 	}
 
 	@Authenticate('jwt')
@@ -69,9 +71,10 @@ export class OauthProviderController {
 	patchLoginRequest(
 		@Param() { challenge }: ChallengeParams,
 		@Query() query: AcceptQuery,
-		@Body() body: LoginRequestBody
-	) {
-		throw new NotImplementedException();
+		@Body() body: LoginRequestBody,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<RedirectResponse> {
+		return this.oauthProviderUc.patchLoginRequest(currentUser.userId, challenge, body, query);
 	}
 
 	@Authenticate('jwt')

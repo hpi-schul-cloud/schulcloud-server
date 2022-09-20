@@ -1,5 +1,5 @@
-export interface AcceptLoginRequestBody {
-	subject: string;
+export class AcceptLoginRequestBody {
+	subject?: string;
 
 	acr?: string;
 
