@@ -428,6 +428,12 @@
 			"type": "string",
 			"description": "The nexboard 'schul-cloud' userId."
 		},
+		"HYDRA_URI": {
+			"type": "string",
+			"format": "uri",
+			"default": "http://localhost:9001",
+			"description": "The hydra url."
+		},
 		"FEATURE_NEXBOARD_ENABLED": {
 			"type": "boolean",
 			"default": false,

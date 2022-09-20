@@ -22,12 +22,12 @@ import {
 	LearnroomModule,
 	NewsModule,
 	OauthModule,
+	OauthProviderModule,
 	RocketChatModule,
 	SystemModule,
 	TaskModule,
+	VideoConferenceModule,
 } from '@src/modules';
-
-import { VideoConferenceModule } from '@src/modules/video-conference';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
@@ -64,6 +64,7 @@ const serverModules = [
 	ProvisioningModule,
 	RoleModule,
 	VideoConferenceModule,
+	OauthProviderModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
