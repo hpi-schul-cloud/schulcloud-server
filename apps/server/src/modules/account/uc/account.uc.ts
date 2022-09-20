@@ -35,7 +35,6 @@ import {
 import { AccountResponseMapper } from '../mapper';
 import { AccountSaveDto } from '../services/dto';
 import { AccountValidationService } from '../services/account.validation.service';
-
 import { BruteForcePrevention } from '../../../imports-from-feathers';
 import { IAccountConfig } from '../account-config';
 
@@ -43,7 +42,6 @@ type UserPreferences = {
 	// first login completed
 	firstLogin: boolean;
 };
-
 @Injectable()
 export class AccountUc {
 	constructor(
