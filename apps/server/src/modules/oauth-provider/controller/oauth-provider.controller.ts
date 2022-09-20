@@ -66,18 +66,14 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Patch('loginRequest/:challenge')
-	patchLoginRequest(
-		@Param() { params }: ChallengeParams,
-		@Query() query: AcceptQuery,
-		@Body() body: LoginRequestBody
-	) {
+	patchLoginRequest(@Param() params: ChallengeParams, @Query() query: AcceptQuery, @Body() body: LoginRequestBody) {
 		throw new NotImplementedException();
 	}
 
 	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
 	async acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody) {
-		await this.oauthProviderUc.logoutFlow(params);
+		await this.oauthProviderUc.logoutFlow(params.challenge);
 	}
 
 	@Authenticate('jwt')
@@ -88,11 +84,7 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Patch('consentRequest/:challenge')
-	patchConsentRequest(
-		@Param() { params }: ChallengeParams,
-		@Query() query: AcceptQuery,
-		@Body() body: ConsentRequestBody
-	) {
+	patchConsentRequest(@Param() params: ChallengeParams, @Query() query: AcceptQuery, @Body() body: ConsentRequestBody) {
 		throw new NotImplementedException();
 	}
 
