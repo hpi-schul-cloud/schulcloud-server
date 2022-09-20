@@ -3,17 +3,17 @@ import { MikroORM } from '@mikro-orm/core';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ShareTokenParentType } from '@shared/domain';
-import { ShareableRepo } from '@shared/repo/shareable';
+import { ShareTokenRepo } from '@shared/repo/sharetoken';
 import { courseFactory, setupEntities } from '@shared/testing';
-import { shareableFactory } from '@shared/testing/factory/shareable.factory';
+import { shareTokenFactory } from '@shared/testing/factory/share-token.factory';
 import { ShareTokenService } from './share-token.service';
 import { TokenGenerator } from './token-generator.service';
 
-describe('share-token.service', () => {
+describe('ShareTokenService', () => {
 	let orm: MikroORM;
 	let service: ShareTokenService;
 	let generator: DeepMocked<TokenGenerator>;
-	let repo: DeepMocked<ShareableRepo>;
+	let repo: DeepMocked<ShareTokenRepo>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -28,15 +28,15 @@ describe('share-token.service', () => {
 					useValue: createMock<TokenGenerator>(),
 				},
 				{
-					provide: ShareableRepo,
-					useValue: createMock<ShareableRepo>(),
+					provide: ShareTokenRepo,
+					useValue: createMock<ShareTokenRepo>(),
 				},
 			],
 		}).compile();
 
 		service = await module.get(ShareTokenService);
 		generator = await module.get(TokenGenerator);
-		repo = await module.get(ShareableRepo);
+		repo = await module.get(ShareTokenRepo);
 	});
 
 	afterAll(async () => {
@@ -63,7 +63,7 @@ describe('share-token.service', () => {
 			expect(token).toEqual(token);
 		});
 
-		it('should use the repo to persist the shareable', async () => {
+		it('should use the repo to persist the shareToken', async () => {
 			const course = courseFactory.buildWithId();
 
 			await service.createToken({ id: course.id, type: ShareTokenParentType.Course });
@@ -73,13 +73,13 @@ describe('share-token.service', () => {
 	});
 
 	describe('lookup', () => {
-		it('should lookup a shareable using a token', async () => {
-			const shareable = shareableFactory.build();
-			repo.findOneByToken.mockResolvedValue(shareable);
+		it('should lookup a shareToken using a token', async () => {
+			const shareToken = shareTokenFactory.build();
+			repo.findOneByToken.mockResolvedValue(shareToken);
 
-			const result = await service.lookupToken(shareable.token);
+			const result = await service.lookupToken(shareToken.token);
 
-			expect(result).toEqual(shareable);
+			expect(result).toEqual(shareToken);
 		});
 
 		it('should throw an error when token is invalid', async () => {
@@ -90,11 +90,11 @@ describe('share-token.service', () => {
 			await expect(lookupToken).rejects.toThrowError(NotFoundException);
 		});
 
-		it('should throw an error when shareable is expired', async () => {
-			const shareable = shareableFactory.build({ expiresAt: new Date(Date.now() - 10000) });
-			repo.findOneByToken.mockResolvedValue(shareable);
+		it('should throw an error when shareToken is expired', async () => {
+			const shareToken = shareTokenFactory.build({ expiresAt: new Date(Date.now() - 10000) });
+			repo.findOneByToken.mockResolvedValue(shareToken);
 
-			const lookupToken = async () => service.lookupToken(shareable.token);
+			const lookupToken = async () => service.lookupToken(shareToken.token);
 
 			await expect(lookupToken).rejects.toThrowError();
 		});

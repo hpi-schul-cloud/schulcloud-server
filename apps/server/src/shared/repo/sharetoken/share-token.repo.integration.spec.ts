@@ -1,22 +1,22 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Shareable } from '@shared/domain';
+import { ShareToken } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { shareableFactory } from '@shared/testing/factory/shareable.factory';
-import { ShareableRepo } from './shareable.repo';
+import { shareTokenFactory } from '@shared/testing/factory/share-token.factory';
+import { ShareTokenRepo } from './share-token.repo';
 
-describe('ShareableRepo', () => {
+describe('ShareTokenRepo', () => {
 	let module: TestingModule;
-	let repo: ShareableRepo;
+	let repo: ShareTokenRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [ShareableRepo],
+			providers: [ShareTokenRepo],
 		}).compile();
-		repo = module.get(ShareableRepo);
+		repo = module.get(ShareTokenRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -29,20 +29,20 @@ describe('ShareableRepo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(Shareable);
+		expect(repo.entityName).toBe(ShareToken);
 	});
 
 	describe('findOneByToken', () => {
-		it('should find a shareable by its token', async () => {
-			const shareable = shareableFactory.build();
+		it('should find a shareToken by its token', async () => {
+			const shareToken = shareTokenFactory.build();
 
-			await em.persistAndFlush(shareable);
+			await em.persistAndFlush(shareToken);
 			em.clear();
 
-			const result = await repo.findOneByToken(shareable.token);
+			const result = await repo.findOneByToken(shareToken.token);
 
 			expect(result).toBeDefined();
-			expect(result.id).toEqual(shareable.id);
+			expect(result.id).toEqual(shareToken.id);
 		});
 	});
 });

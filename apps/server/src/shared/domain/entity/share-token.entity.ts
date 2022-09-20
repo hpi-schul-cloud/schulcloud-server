@@ -13,10 +13,10 @@ export enum ShareTokenContextType {
 	'School' = 'schools',
 }
 
-export type ShareToken = string;
+export type ShareTokenString = string;
 
-export interface IShareableProperties {
-	token: ShareToken;
+export interface IShareTokenProperties {
+	token: ShareTokenString;
 	parentType: ShareTokenParentType;
 	parentId: EntityId | ObjectId;
 	contextType?: ShareTokenContextType;
@@ -24,10 +24,10 @@ export interface IShareableProperties {
 	expiresAt?: Date;
 }
 
-@Entity({ tableName: 'shareables' })
-export class Shareable extends BaseEntityWithTimestamps {
+@Entity({ tableName: 'sharetokens' })
+export class ShareToken extends BaseEntityWithTimestamps {
 	@Property()
-	token: ShareToken;
+	token: ShareTokenString;
 
 	@Enum()
 	parentType: ShareTokenParentType;
@@ -52,7 +52,7 @@ export class Shareable extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	expiresAt?: Date;
 
-	constructor(props: IShareableProperties) {
+	constructor(props: IShareTokenProperties) {
 		super();
 		this.token = props.token;
 		this.parentType = props.parentType;

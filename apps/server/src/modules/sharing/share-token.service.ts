@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { Shareable, ShareToken } from '@shared/domain';
-import { ShareableRepo } from '@shared/repo/shareable';
+import { ShareToken, ShareTokenString } from '@shared/domain';
+import { ShareTokenRepo } from '@shared/repo/sharetoken';
 import { TokenGenerator } from './token-generator.service';
 import { ShareTokenContext, ShareTokenPayload } from './types';
 
 @Injectable()
 export class ShareTokenService {
-	constructor(private readonly tokenGenerator: TokenGenerator, private readonly shareableRepo: ShareableRepo) {}
+	constructor(private readonly tokenGenerator: TokenGenerator, private readonly shareTokenRepo: ShareTokenRepo) {}
 
 	async createToken(
 		payload: ShareTokenPayload,
 		options?: { context?: ShareTokenContext; expiresAt?: Date }
-	): Promise<ShareToken> {
+	): Promise<ShareTokenString> {
 		const token = this.tokenGenerator.generateShareToken();
-		const shareable = new Shareable({
+		const shareToken = new ShareToken({
 			token,
 			parentId: payload.id,
 			parentType: payload.type,
@@ -22,21 +22,21 @@ export class ShareTokenService {
 			expiresAt: options?.expiresAt,
 		});
 
-		await this.shareableRepo.save(shareable);
+		await this.shareTokenRepo.save(shareToken);
 
 		return token;
 	}
 
-	async lookupToken(shareToken: ShareToken): Promise<Shareable> {
-		const shareable = await this.shareableRepo.findOneByToken(shareToken);
+	async lookupToken(token: ShareTokenString): Promise<ShareToken> {
+		const shareToken = await this.shareTokenRepo.findOneByToken(token);
 
-		this.checkExpired(shareable);
+		this.checkExpired(shareToken);
 
-		return shareable;
+		return shareToken;
 	}
 
-	private checkExpired(shareable: Shareable) {
-		if (shareable.expiresAt != null && shareable.expiresAt < new Date(Date.now())) {
+	private checkExpired(shareToken: ShareToken) {
+		if (shareToken.expiresAt != null && shareToken.expiresAt < new Date(Date.now())) {
 			throw new Error('Share token expired');
 		}
 	}

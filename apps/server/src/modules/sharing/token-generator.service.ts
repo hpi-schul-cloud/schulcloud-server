@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ShareToken } from '@shared/domain';
+import { ShareTokenString } from '@shared/domain';
 import { nanoid } from 'nanoid';
 
 @Injectable()
 export class TokenGenerator {
-	generateShareToken(): ShareToken {
+	generateShareToken(): ShareTokenString {
 		const token = nanoid(12);
 		return token;
 	}

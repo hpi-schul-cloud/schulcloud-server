@@ -15,7 +15,7 @@ import { Pseudonym } from './pseudonym.entity';
 import { Role } from './role.entity';
 import { School, SchoolRolePermission, SchoolRoles } from './school.entity';
 import { SchoolYear } from './schoolyear.entity';
-import { Shareable } from './shareable.entity';
+import { ShareToken } from './share-token.entity';
 import { StorageProvider } from './storageprovider.entity';
 import { Submission } from './submission.entity';
 import { System } from './system.entity';
@@ -53,7 +53,7 @@ export const ALL_ENTITIES = [
 	News,
 	Pseudonym,
 	SchoolNews,
-	Shareable,
+	ShareToken,
 	TeamNews,
 	System,
 	ImportUser,
