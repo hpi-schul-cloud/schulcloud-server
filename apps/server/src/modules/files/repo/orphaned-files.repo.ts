@@ -70,7 +70,7 @@ export class OrphanedFilesRepo {
 
 		await Promise.all(
 			result.map(async (entity) => {
-				const r = await this._em.aggregate('files_filerecodrs', [{ $match: { fileId: entity._id } }]);
+				const r = await this._em.aggregate('files_filerecords', [{ $match: { fileId: entity._id } }]);
 				return Promise.all(
 					r.map(async (el: any) => {
 						const a = await this._em.aggregate('lessons', [
