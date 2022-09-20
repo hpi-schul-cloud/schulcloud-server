@@ -14,8 +14,8 @@ export class ShareTokenController {
 
 	@Get(':token')
 	async lookupShareToken(
-		@Param() urlParams: ShareTokenUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: ShareTokenUrlParams
 	): Promise<ShareTokenResponse> {
 		const shareToken = await this.shareTokenUC.lookupShareToken(currentUser.userId, urlParams.token);
 
