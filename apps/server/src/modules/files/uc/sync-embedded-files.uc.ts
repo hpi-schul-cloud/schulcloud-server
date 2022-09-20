@@ -41,7 +41,7 @@ export class SyncEmbeddedFilesUc {
 					const idExists = files.some((file) => file.source.id === id.toHexString());
 					if (!idExists) {
 						unreachableFileIds.push(id.toHexString());
-						this.logger.error(
+						this.logger.warn(
 							`legacy file with id: ${id.toHexString()} in entity ${entity._id.toHexString()} not found`
 						);
 					}
