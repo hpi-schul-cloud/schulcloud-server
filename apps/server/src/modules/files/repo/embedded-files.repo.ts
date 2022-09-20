@@ -29,7 +29,7 @@ const filesQuery = (fileIds: ObjectId[], parentId: ObjectId) => [
 		$match: {
 			_id: { $in: fileIds },
 			storageProviderId: { $exists: true },
-			size: { $ne: 0 },
+			// size: { $ne: 0 },
 			deleted: { $ne: true },
 			deletedAt: null,
 		},
