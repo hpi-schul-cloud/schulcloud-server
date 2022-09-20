@@ -21,5 +21,28 @@
 				"Value": "emil.extern@not.amail"
 			}
 		]
+	},
+	{
+		"SubjectId": "c6635610-1a20-11ed-861d-0242ac120000",
+		"Username": "emilia.extern",
+		"Password": "DummyPwd!",
+		"Claims": [
+			{
+				"Type": "name",
+				"Value": "Emilia Extern"
+			},
+			{
+				"Type": "given_name",
+				"Value": "Emilia"
+			},
+			{
+				"Type": "family_name",
+				"Value": "Extern"
+			},
+			{
+				"Type": "email",
+				"Value": "emilia.extern@not.amail"
+			}
+		]
 	}
 ]
