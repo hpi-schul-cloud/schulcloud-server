@@ -35,7 +35,7 @@ export class DeleteOrphanedFilesUc {
 		for await (const fileRecord of orphanedFileRecords) {
 			const found = await this.orphanedFilesRepo.findLessonsByFileRecordId(fileRecord.id);
 			this.logger.log(`FileRecord with id ${fileRecord.id} and lesson found: ${found}`);
-			if (found) {
+			if (!found) {
 				await this.deleteOrphan(fileRecord);
 			}
 		}

@@ -90,7 +90,7 @@ export class OrphanedFilesRepo {
 
 	async findLessonsByFileRecordId(fileRecordId: EntityId) {
 		const a = await this._em.aggregate('lessons', [{ $match: { 'contents.content.text': RegExp(fileRecordId) } }]);
-		return a.length === 0;
+		return a.length !== 0;
 	}
 
 	async findOrphanedFileRecords(parentType: FileRecordParentType): Promise<FileRecord[]> {
