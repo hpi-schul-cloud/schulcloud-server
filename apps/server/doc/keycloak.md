@@ -75,7 +75,7 @@ docker run `
 You may test your local setup executing 'keycloak-identity-management.integration.spec.ts':
 
 ```pwsh
-npx jest apps/server/src/shared/infra/identity-management/keycloak-identity-management.integration.spec.ts
+npx jest apps/server/src/shared/infra/identity-management/keycloak/service/keycloak-identity-management.service.integration.spec.ts
 ```
 
 ## Seeding Data
