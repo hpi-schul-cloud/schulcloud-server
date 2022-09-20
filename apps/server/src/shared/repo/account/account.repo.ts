@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { BaseRepo } from '@shared/repo/base.repo';
-import { EntityId } from '@shared/domain';
-import { Account } from '@shared/domain/entity/account.entity';
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
+import { Account } from '@shared/domain/entity/account.entity';
+import { BaseRepo } from '@shared/repo/base.repo';
 
 @Injectable()
 export class AccountRepo extends BaseRepo<Account> {
@@ -26,6 +26,10 @@ export class AccountRepo extends BaseRepo<Account> {
 
 	async findByUserIdOrFail(userId: EntityId | ObjectId): Promise<Account> {
 		return this._em.findOneOrFail(Account, { userId: new ObjectId(userId) });
+	}
+
+	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
+		return this._em.findOne(Account, { username, systemId: new ObjectId(systemId) });
 	}
 
 	getObjectReference<Entity extends AnyEntity<Entity>>(
@@ -52,13 +56,15 @@ export class AccountRepo extends BaseRepo<Account> {
 	}
 
 	async deleteById(accountId: EntityId): Promise<void> {
-		const accountReference = this._em.getReference(Account, accountId);
-		return this._em.removeAndFlush(accountReference);
+		const account = await this.findById(accountId);
+		return this.delete(account);
 	}
 
 	async deleteByUserId(userId: EntityId): Promise<void> {
-		const accountReference = this._em.getReference(Account, userId);
-		return this._em.removeAndFlush(accountReference);
+		const account = await this.findByUserId(userId);
+		if (account) {
+			await this._em.removeAndFlush(account);
+		}
 	}
 
 	private async searchByUsername(

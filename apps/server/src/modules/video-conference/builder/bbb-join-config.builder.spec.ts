@@ -4,11 +4,13 @@ import { BBBJoinConfig, BBBRole } from '@src/modules/video-conference/config/bbb
 describe('BBBJoinConfigBuilder', () => {
 	it('should build generic bbb joinConfig with all attributes', () => {
 		// Arrange
-		const builder = new BBBJoinConfigBuilder({
-			fullName: 'fullname',
-			meetingID: 'meetingId',
-			role: BBBRole.MODERATOR,
-		});
+		const builder = new BBBJoinConfigBuilder(
+			new BBBJoinConfig({
+				fullName: 'fullname',
+				meetingID: 'meetingId',
+				role: BBBRole.MODERATOR,
+			})
+		);
 
 		// Act
 		const result: BBBJoinConfig = builder.build();
@@ -26,11 +28,13 @@ describe('BBBJoinConfigBuilder', () => {
 	});
 	it('should build generic bbb joinConfig only with required attributes', () => {
 		// Arrange
-		const builder = new BBBJoinConfigBuilder({
-			fullName: 'fullname',
-			meetingID: 'meetingId',
-			role: BBBRole.MODERATOR,
-		});
+		const builder = new BBBJoinConfigBuilder(
+			new BBBJoinConfig({
+				fullName: 'fullname',
+				meetingID: 'meetingId',
+				role: BBBRole.MODERATOR,
+			})
+		);
 
 		// Act
 		const result: BBBJoinConfig = builder.build();

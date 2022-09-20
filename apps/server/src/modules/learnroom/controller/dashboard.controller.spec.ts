@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	DashboardEntity,
 	EntityId,
-	GridPosition,
 	GridElement,
-	LearnroomTypes,
-	LearnroomMetadata,
+	GridPosition,
 	ICurrentUser,
+	LearnroomMetadata,
+	LearnroomTypes,
 } from '@shared/domain';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
@@ -123,7 +123,11 @@ describe('dashboard uc', () => {
 					return Promise.resolve(dashboard);
 				});
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			await controller.moveElement('dashboardId', { from: { x: 1, y: 2 }, to: { x: 2, y: 1 } }, currentUser);
+			await controller.moveElement(
+				{ dashboardId: 'dashboardId' },
+				{ from: { x: 1, y: 2 }, to: { x: 2, y: 1 } },
+				currentUser
+			);
 			expect(spy).toHaveBeenCalledWith('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, currentUser.userId);
 		});
 
@@ -144,7 +148,7 @@ describe('dashboard uc', () => {
 				});
 			const currentUser = { userId: 'userId' } as ICurrentUser;
 			const response = await controller.moveElement(
-				'dashboardId',
+				{ dashboardId: 'dashboardId' },
 				{
 					from: { x: 1, y: 2 },
 					to: { x: 2, y: 1 },
@@ -175,7 +179,7 @@ describe('dashboard uc', () => {
 					return Promise.resolve(dashboard);
 				});
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			await controller.patchGroup('dashboardId', 3, 4, { title: 'groupTitle' }, currentUser);
+			await controller.patchGroup({ dashboardId: 'dashboardId' }, 3, 4, { title: 'groupTitle' }, currentUser);
 			expect(spy).toHaveBeenCalledWith('dashboardId', { x: 3, y: 4 }, 'groupTitle', currentUser.userId);
 		});
 
@@ -198,7 +202,13 @@ describe('dashboard uc', () => {
 					return Promise.resolve(dashboard);
 				});
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			const response = await controller.patchGroup('dashboardId', 3, 4, { title: 'groupTitle' }, currentUser);
+			const response = await controller.patchGroup(
+				{ dashboardId: 'dashboardId' },
+				3,
+				4,
+				{ title: 'groupTitle' },
+				currentUser
+			);
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
 	});

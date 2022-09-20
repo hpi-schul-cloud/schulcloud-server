@@ -1,9 +1,9 @@
 import { NotFoundError } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { userFactory, accountFactory, cleanupCollections } from '@shared/testing';
+import { accountFactory, cleanupCollections, userFactory } from '@shared/testing';
 import { AccountRepo } from './account.repo';
 
 describe('account repo', () => {
@@ -53,6 +53,20 @@ describe('account repo', () => {
 		});
 	});
 
+	describe('findByUsernameAndSystemId', () => {
+		it('should return account', async () => {
+			const accountToFind = accountFactory.withSystemId(new ObjectId(10)).build();
+			await em.persistAndFlush(accountToFind);
+			em.clear();
+			const account = await repo.findByUsernameAndSystemId(accountToFind.username ?? '', accountToFind.systemId ?? '');
+			expect(account?.username).toEqual(accountToFind.username);
+		});
+		it('should return null', async () => {
+			const account = await repo.findByUsernameAndSystemId('', new ObjectId(undefined));
+			expect(account).toBeNull();
+		});
+	});
+
 	describe('findMultipleByUserId', () => {
 		it('should find multiple user by id', async () => {
 			const anAccountToFind = accountFactory.build();
@@ -60,6 +74,7 @@ describe('account repo', () => {
 			await em.persistAndFlush(anAccountToFind);
 			await em.persistAndFlush(anotherAccountToFind);
 			em.clear();
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			const accounts = await repo.findMultipleByUserId([anAccountToFind.userId!, anotherAccountToFind.userId!]);
 			expect(accounts).toContainEqual(anAccountToFind);
 			expect(accounts).toContainEqual(anotherAccountToFind);
@@ -169,11 +184,24 @@ describe('account repo', () => {
 		});
 	});
 
+	describe('deleteId', () => {
+		it('should delete an account by id', async () => {
+			const account = accountFactory.buildWithId();
+			await em.persistAndFlush([account]);
+
+			await expect(repo.deleteById(account.id)).resolves.not.toThrow();
+
+			await expect(repo.findById(account.id)).rejects.toThrow(NotFoundError);
+		});
+	});
+
 	describe('deleteByUserId', () => {
 		it('should delete an account by user id', async () => {
-			const account = accountFactory.buildWithId();
-			await expect(repo.deleteByUserId(account.userId?.toString() ?? '')).resolves.not.toThrow();
-			em.clear();
+			const user = userFactory.buildWithId();
+			const account = accountFactory.build({ userId: user.id });
+			await em.persistAndFlush([user, account]);
+
+			await expect(repo.deleteByUserId(user.id)).resolves.not.toThrow();
 
 			await expect(repo.findById(account.id)).rejects.toThrow(NotFoundError);
 		});

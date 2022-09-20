@@ -1,5 +1,6 @@
 {
 	"$schema": "./default.schema.json",
+	"SC_DOMAIN": "localhost",
 	"FEATURE_API_VALIDATION_ENABLED": true,
 	"FEATURE_API_RESPONSE_VALIDATION_ENABLED": true,
 	"FILE_SECURITY_CHECK_SERVICE_URI": "http://localhost:8081/scan/file",
@@ -37,5 +38,13 @@
 	},
 	"INCOMING_REQUEST_TIMEOUT_API": 60000,
 	"NEST_AVAILABLE_LOG_LEVELS": "log,error,warn,debug,verbose,http",
-	"FEATURE_COPY_SERVICE_ENABLED": true
+	"FEATURE_COPY_SERVICE_ENABLED": true,
+	"COOKIE": {
+		"SAME_SITE": "lax",
+		"HTTP_ONLY": false,
+		"HOST_ONLY": false,
+		"SECURE": false,
+		"EXPIRES_SECONDS": 2592000000
+	},
+	"HYDRA_URI": "http://localhost:9001"
 }

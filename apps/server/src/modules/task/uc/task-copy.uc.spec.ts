@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Actions, CopyHelperService, PermissionTypes, TaskCopyService, User } from '@shared/domain';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
@@ -83,6 +84,7 @@ describe('task copy uc', () => {
 		taskCopyService = module.get(TaskCopyService);
 		fileCopyAppendService = module.get(FileCopyAppendService);
 		copyHelperService = module.get(CopyHelperService);
+		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 	});
 
 	describe('copy task', () => {
@@ -105,10 +107,11 @@ describe('task copy uc', () => {
 				type: CopyElementType.TASK,
 				status: CopyStatusEnum.SUCCESS,
 				copyEntity: copy,
+				originalEntity: task,
 			};
 			taskCopyService.copyTaskMetadata.mockReturnValue(status);
 			taskRepo.save.mockResolvedValue(undefined);
-			fileCopyAppendService.appendFiles.mockResolvedValue(status);
+			fileCopyAppendService.copyFilesOfEntity.mockResolvedValue(status);
 			const jwt = 'some-jwt-string';
 			return {
 				user,
@@ -122,6 +125,14 @@ describe('task copy uc', () => {
 				jwt,
 			};
 		};
+
+		it('should throw if copy feature is deactivated', async () => {
+			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
+			const { course, user, task } = setup();
+			await expect(uc.copyTask(user.id, task.id, { courseId: course.id, jwt: 'some-jwt-string' })).rejects.toThrowError(
+				InternalServerErrorException
+			);
+		});
 
 		describe('status', () => {
 			it('should return status', async () => {
@@ -178,10 +189,15 @@ describe('task copy uc', () => {
 				expect(taskRepo.save).toBeCalledWith(copy);
 			});
 
-			it('should try to append file copies from original task to task copy', async () => {
+			it('should try to copy files from original task to task copy', async () => {
 				const { course, lesson, user, task, jwt } = setup();
 				const copyStatus = await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, jwt });
-				expect(fileCopyAppendService.appendFiles).toBeCalledWith(copyStatus, jwt);
+				expect(fileCopyAppendService.copyFilesOfEntity).toBeCalledWith(
+					copyStatus,
+					copyStatus.originalEntity,
+					copyStatus.copyEntity,
+					jwt
+				);
 			});
 		});
 

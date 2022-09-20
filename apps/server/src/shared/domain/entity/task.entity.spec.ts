@@ -4,6 +4,7 @@ import {
 	courseFactory,
 	fileFactory,
 	lessonFactory,
+	schoolFactory,
 	setupEntities,
 	submissionFactory,
 	taskFactory,
@@ -739,6 +740,16 @@ describe('Task Entity', () => {
 			const task = taskFactory.build();
 			task.unpublish();
 			expect(task.isDraft()).toEqual(true);
+		});
+	});
+
+	describe('getSchoolId', () => {
+		it('schould return schoolId from school', () => {
+			const school = schoolFactory.build();
+			const task = taskFactory.build({ school });
+			const schoolId = task.getSchoolId();
+
+			expect(schoolId).toEqual(school.id);
 		});
 	});
 });
