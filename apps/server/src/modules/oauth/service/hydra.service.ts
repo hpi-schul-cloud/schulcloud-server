@@ -35,10 +35,11 @@ export class HydraSsoService {
 	async processRedirect(dto: HydraRedirectDto): Promise<HydraRedirectDto> {
 		const localDto: HydraRedirectDto = new HydraRedirectDto(dto);
 		let { location } = localDto.response.headers;
+		const isLocal = !location.startsWith('http');
 		const isHydra = location.startsWith(Configuration.get('HYDRA_PUBLIC_URI') as string);
 
 		// locations of schulcloud cookies are a relative path
-		if (!isHydra) {
+		if (isLocal) {
 			location = `${this.HOST}${location}`;
 		}
 
@@ -100,7 +101,7 @@ export class HydraSsoService {
 			jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,
 			logoutEndpoint: `${hydraUri}/oauth2/sessions/logout`,
 			provider: 'hydra',
-			redirectUri: `${Configuration.get('API_HOST') as string}/v3/sso/hydra/${oauthClientId}`,
+			redirectUri: `${Configuration.get('API_HOST') as string}/api/v3/sso/hydra/${oauthClientId}`,
 			responseType: 'code',
 			scope: Configuration.get('NEXTCLOUD_SCOPES') as string, // Only Nextcloud is currently supported
 			tokenEndpoint: `${hydraUri}/oauth2/token`,
