@@ -55,8 +55,8 @@ export class OAuthService {
 
 	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
 		const payload = this.buildTokenRequestPayload(code, oauthConfig);
-		const responseTokenObservable = this.buildTokenRequest(payload);
-		const responseToken = this.executeTokenRequest(responseTokenObservable);
+		const responseTokenObservable = this.sendTokenRequest(payload);
+		const responseToken = this.resolveTokenRequest(responseTokenObservable);
 		return responseToken;
 	}
 
@@ -70,7 +70,7 @@ export class OAuthService {
 		return tokenRequestPayload;
 	}
 
-	private buildTokenRequest(payload: TokenRequestPayload): Observable<AxiosResponse<OauthTokenResponse, unknown>> {
+	private sendTokenRequest(payload: TokenRequestPayload): Observable<AxiosResponse<OauthTokenResponse, unknown>> {
 		const query = QueryString.stringify(payload);
 		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(`${payload.tokenEndpoint}`, query, {
 			method: 'POST',
@@ -81,7 +81,7 @@ export class OAuthService {
 		return responseTokenObservable;
 	}
 
-	private async executeTokenRequest(
+	private async resolveTokenRequest(
 		observable: Observable<AxiosResponse<OauthTokenResponse, unknown>>
 	): Promise<OauthTokenResponse> {
 		let responseToken: AxiosResponse<OauthTokenResponse>;
