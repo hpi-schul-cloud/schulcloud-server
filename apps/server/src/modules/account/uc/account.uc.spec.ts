@@ -34,7 +34,6 @@ import { AccountUc } from './account.uc';
 import { AccountValidationService } from '../services/account.validation.service';
 import { BruteForcePrevention } from '../../../imports-from-feathers';
 
-
 describe('AccountUc', () => {
 	let module: TestingModule;
 	let accountUc: AccountUc;
