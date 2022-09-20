@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable consistent-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* istanbul ignore file */
 import { EntityManager } from '@mikro-orm/mongodb';
@@ -53,6 +57,39 @@ const tasksQuery = [
 @Injectable()
 export class OrphanedFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
+
+	async findDuplicatedFileRecords(parentType: FileRecordParentType) {
+		const fileRecords: FileRecord[] = [];
+		const query = [
+			{ $group: { _id: '$fileId', count: { $sum: 1 } } },
+			{ $match: { _id: { $ne: null }, count: { $gt: 1 } } },
+			{ $sort: { count: -1 } },
+		];
+		//	const connection = this._em.getConnection();
+		const result = await this._em.aggregate('files_filerecords', query);
+
+		await Promise.all(
+			result.map(async (entity) => {
+				const r = await this._em.aggregate('files_filerecodrs', [{ $match: { fileId: entity._id } }]);
+				return Promise.all(
+					r.map(async (el: any) => {
+						const a = await this._em.aggregate('lessons', [
+							{ $match: { 'contents.content.text': RegExp(el.filerecordId) } },
+						]);
+						if (a.length === 0) {
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+							const fileRecord = await this._em.findOne(FileRecord, { _id: el.filerecordId });
+							if (fileRecord) {
+								fileRecords.push(fileRecord);
+							}
+						}
+					})
+				);
+			})
+		);
+
+		return fileRecords;
+	}
 
 	async findOrphanedFileRecords(parentType: FileRecordParentType): Promise<FileRecord[]> {
 		let query;
