@@ -58,7 +58,7 @@ const tasksQuery = [
 export class OrphanedFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
-	async findDuplicatedFileRecords(parentType: FileRecordParentType) {
+	async findDuplicatedFileRecords(parentType: FileRecordParentType, fileRecordFunction) {
 		const fileRecords: FileRecord[] = [];
 		const query = [
 			{ $group: { _id: '$fileId', count: { $sum: 1 } } },
@@ -80,7 +80,8 @@ export class OrphanedFilesRepo {
 							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 							const fileRecord = await this._em.findOne(FileRecord, { _id: el.filerecordId });
 							if (fileRecord) {
-								fileRecords.push(fileRecord);
+								await fileRecordFunction(fileRecord)
+								//fileRecords.push(fileRecord);
 							}
 						}
 					})
