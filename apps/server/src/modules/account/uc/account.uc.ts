@@ -39,7 +39,6 @@ import { AccountValidationService } from '../services/account.validation.service
 import { BruteForcePrevention } from '../../../imports-from-feathers';
 import { IAccountConfig } from '../account-config';
 
-
 type UserPreferences = {
 	// first login completed
 	firstLogin: boolean;
