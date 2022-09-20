@@ -13,3 +13,4 @@ export * from './user-import';
 export * from './system';
 export * from './collaborative-storage';
 export * from './video-conference';
+export * from './lesson';
