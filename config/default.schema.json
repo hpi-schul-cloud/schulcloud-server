@@ -431,7 +431,7 @@
 		"HYDRA_URI": {
 			"type": "string",
 			"format": "uri",
-			"pattern": ".*(?<!/)$",
+			"default": "http://localhost:9001",
 			"description": "The hydra url."
 		},
 		"FEATURE_NEXBOARD_ENABLED": {
