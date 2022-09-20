@@ -22,6 +22,7 @@ import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { ConfigService } from '@nestjs/config';
+
 import { ObjectId } from 'bson';
 import {
 	AccountByIdBodyParams,
@@ -38,6 +39,7 @@ import { AccountValidationService } from '../services/account.validation.service
 
 import { BruteForcePrevention } from '../../../imports-from-feathers';
 import { IAccountConfig } from '../account-config';
+
 
 type UserPreferences = {
 	// first login completed
