@@ -219,7 +219,7 @@ export class TaskUC {
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
 
-		const params = FileParamBuilder.buildForTask(jwt, task.school.id, task.id);
+		const params = FileParamBuilder.build(jwt, task.school.id, task);
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
 
 		await this.taskRepo.delete(task);

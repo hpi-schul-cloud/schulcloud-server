@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import {
 	Actions,
@@ -97,6 +98,7 @@ describe('course copy uc', () => {
 		copyHelperService = module.get(CopyHelperService);
 		lessonCopyService = module.get(LessonCopyService);
 		fileCopyAppendService = module.get(FileCopyAppendService);
+		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 	});
 
 	describe('copy course', () => {
@@ -152,6 +154,12 @@ describe('course copy uc', () => {
 				jwt,
 			};
 		};
+
+		it('should throw if copy feature is deactivated', async () => {
+			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
+			const { course, user, jwt } = setup();
+			await expect(uc.copyCourse(user.id, course.id, jwt)).rejects.toThrowError(InternalServerErrorException);
+		});
 
 		it('should fetch correct user', async () => {
 			const { course, user, jwt } = setup();

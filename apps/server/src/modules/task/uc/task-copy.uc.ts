@@ -1,4 +1,5 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import {
 	CopyHelperService,
 	CopyStatus,
@@ -34,6 +35,7 @@ export class TaskCopyUC {
 	) {}
 
 	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {
+		this.featureEnabled();
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalTask = await this.taskRepo.findById(taskId);
 		if (!this.authorisation.hasPermission(user, originalTask, PermissionContextBuilder.read([]))) {
@@ -88,5 +90,12 @@ export class TaskCopyUC {
 			throw new ForbiddenException('you dont have permission to add to this lesson');
 		}
 		return destinationLesson;
+	}
+
+	private featureEnabled() {
+		const enabled = Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean;
+		if (!enabled) {
+			throw new InternalServerErrorException('Copy Feature not enabled');
+		}
 	}
 }

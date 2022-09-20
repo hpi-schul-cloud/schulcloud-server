@@ -28,6 +28,11 @@ export class CopyApiResponse {
 	})
 	type: CopyElementType;
 
+	@ApiPropertyOptional({
+		description: 'Id of destination course',
+	})
+	destinationCourseId?: string;
+
 	@ApiProperty({
 		type: 'string',
 		enum: CopyStatusEnum,

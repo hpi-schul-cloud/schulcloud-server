@@ -43,6 +43,7 @@ export class UserRepo extends BaseRepo<User> {
 		const { _id: schoolId } = school;
 		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
 
+		const existingMatch = { deletedAt: null };
 		const permittedMatch = { schoolId };
 
 		const queryFilterMatch: { $or?: unknown[] } = {};
@@ -72,6 +73,7 @@ export class UserRepo extends BaseRepo<User> {
 		}
 
 		const pipeline: unknown[] = [
+			{ $match: existingMatch },
 			{ $match: permittedMatch },
 			{
 				$lookup: {

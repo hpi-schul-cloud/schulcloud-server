@@ -29,5 +29,12 @@
 		"SERVERNAME": "messenger.schule",
 		"SECRET": "SECRET",
 		"STUDENT_ROOM_CREATION": false
+	},
+	"COOKIE": {
+		"SAME_SITE": "none",
+		"HTTP_ONLY": true,
+		"HOST_ONLY": false,
+		"SECURE": true,
+		"EXPIRES_SECONDS": 2592000000
 	}
 }

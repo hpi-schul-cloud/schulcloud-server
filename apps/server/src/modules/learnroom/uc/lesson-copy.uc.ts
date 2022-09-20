@@ -1,4 +1,5 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	CopyHelperService,
 	CopyStatus,
@@ -30,6 +31,7 @@ export class LessonCopyUC {
 	) {}
 
 	async copyLesson(userId: EntityId, lessonId: EntityId, parentParams: LessonCopyParentParams): Promise<CopyStatus> {
+		this.featureEnabled();
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalLesson = await this.lessonRepo.findById(lessonId);
 		const context = PermissionContextBuilder.read([Permission.TOPIC_CREATE]);
@@ -58,6 +60,12 @@ export class LessonCopyUC {
 			await this.lessonRepo.save(lessonCopy);
 			status = this.lessonCopyService.updateCopiedEmbeddedTasks(status);
 			status = await this.fileCopyAppendService.appendFiles(status, parentParams.jwt);
+			status = await this.fileCopyAppendService.copyEmbeddedFilesOfLessons(
+				status,
+				lessonCopy.course.id,
+				userId,
+				parentParams.jwt
+			);
 			const updatedLesson = status.copyEntity as Lesson;
 			await this.lessonRepo.save(updatedLesson);
 		}
@@ -71,5 +79,12 @@ export class LessonCopyUC {
 			throw new ForbiddenException('you dont have permission to add to this course');
 		}
 		return destinationCourse;
+	}
+
+	private featureEnabled() {
+		const enabled = Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean;
+		if (!enabled) {
+			throw new InternalServerErrorException('Copy Feature not enabled');
+		}
 	}
 }

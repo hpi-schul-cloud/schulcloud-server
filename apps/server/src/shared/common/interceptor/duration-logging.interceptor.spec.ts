@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { DurationLoggingInterceptor } from '@shared/common';
 import { Logger } from '@src/core/logger';
 import request from 'supertest';
-import { createTestModule } from './test/create-test.module';
+import { createTestModule } from './timeout.interceptor.spec';
 
 describe('DurationLoggingInterceptor', () => {
 	describe('when integrate DurationLoggingInterceptor', () => {

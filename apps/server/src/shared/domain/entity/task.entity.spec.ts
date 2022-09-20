@@ -741,4 +741,28 @@ describe('Task Entity', () => {
 			expect(task.isDraft()).toEqual(true);
 		});
 	});
+
+	describe('getSchoolId', () => {
+		it('schould return schoolId from lesson', () => {
+			const lesson = lessonFactory.build();
+			const task = taskFactory.build({ lesson });
+			const schoolId = task.getSchoolId();
+
+			expect(schoolId).toEqual(lesson.getSchoolId());
+		});
+
+		it('schould return schoolId from course', () => {
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			const schoolId = task.getSchoolId();
+
+			expect(schoolId).toEqual(course.school.id);
+		});
+
+		it('schould return error on missing parent', () => {
+			const task = taskFactory.build();
+
+			expect(() => task.getSchoolId()).toThrowError(`Couldn't find parent of task.`);
+		});
+	});
 });

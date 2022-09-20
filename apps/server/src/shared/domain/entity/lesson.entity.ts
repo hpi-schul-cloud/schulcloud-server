@@ -1,6 +1,8 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ILearnroomElement } from '@shared/domain/interface';
+import _ from 'lodash';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
@@ -162,6 +164,14 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		}
 		const materials = this.materials.getItems();
 		return materials;
+	}
+
+	getSchoolId(): EntityId {
+		if (!this.courseGroup) {
+			return this.course.school.id;
+		}
+
+		return this.courseGroup.school.id;
 	}
 
 	publish() {

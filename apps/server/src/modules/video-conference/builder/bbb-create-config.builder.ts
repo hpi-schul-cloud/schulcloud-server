@@ -1,5 +1,6 @@
 import { Builder } from '@src/modules/video-conference/builder/builder';
 import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { BBBCreateConfig, GuestPolicy } from '../config/bbb-create.config';
 
 export class BBBCreateConfigBuilder extends Builder<BBBCreateConfig> {
@@ -24,6 +25,8 @@ export class BBBCreateConfigBuilder extends Builder<BBBCreateConfig> {
 	}
 
 	override build(): BBBCreateConfig {
+		this.product['meta_bbb-origin-server-name'] = Configuration.get('SC_DOMAIN') as string;
+
 		// Deprecated fields from BBB that have to be set to a consistent value, in order to call the create endpoint multiple times without error
 		this.product.moderatorPW = BBBRole.MODERATOR;
 		this.product.attendeePW = BBBRole.VIEWER;

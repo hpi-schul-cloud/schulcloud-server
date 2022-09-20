@@ -174,7 +174,6 @@ export class VideoConferenceUc {
 
 		const isGuest: boolean = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
 		const vcDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
-
 		configBuilder.withUserId(currentUser.userId);
 
 		if (isGuest) {

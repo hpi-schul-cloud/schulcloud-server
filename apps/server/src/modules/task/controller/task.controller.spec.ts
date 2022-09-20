@@ -52,19 +52,19 @@ describe('TaskController', () => {
 			};
 			it('should call uc with two parentIds', async () => {
 				const { currentUser, ucSpy } = setup();
-				await controller.copyTask(currentUser, 'taskId', { courseId: 'id', lessonId: 'anotherId' }, jwt);
+				await controller.copyTask(currentUser, { taskId: 'taskId' }, { courseId: 'id', lessonId: 'anotherId' }, jwt);
 				expect(ucSpy).toHaveBeenCalledWith('userId', 'taskId', { courseId: 'id', lessonId: 'anotherId', jwt });
 			});
 
 			it('should call uc with one parentId', async () => {
 				const { currentUser, ucSpy } = setup();
-				await controller.copyTask(currentUser, 'taskId', { courseId: 'id' }, jwt);
+				await controller.copyTask(currentUser, { taskId: 'taskId' }, { courseId: 'id' }, jwt);
 				expect(ucSpy).toHaveBeenCalledWith('userId', 'taskId', { courseId: 'id', jwt });
 			});
 
 			it('should return result of correct type', async () => {
 				const { currentUser } = setup();
-				const result = await controller.copyTask(currentUser, 'taskId', { courseId: 'id' }, jwt);
+				const result = await controller.copyTask(currentUser, { taskId: 'taskId' }, { courseId: 'id' }, jwt);
 				expect(result).toBeInstanceOf(CopyApiResponse);
 			});
 		});
