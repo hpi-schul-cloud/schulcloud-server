@@ -46,7 +46,7 @@ module.exports = (app) => {
 	    res.send(res.data);
 	});
 	const eduSharingRendererService = app.service(eduSharingRendererRoute);
-	eduSharingRendererService.hooks();
+	eduSharingRendererService.hooks(rendererHooks);
 
 	app.use(merlinRoute, new MerlinToken(), (req, res) => {
 		res.send(res.data);

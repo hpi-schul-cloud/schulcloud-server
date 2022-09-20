@@ -99,7 +99,6 @@ class EduSharingConnector {
 				this.eduSharingCookie = await this.getCookie();
 				eduSharingCookieExpires = new Date(now.getTime() + eduSharingCookieValidity);
 			} catch (err) {
-				logger.error(`Edu-Sharing failed to authorise request`, err);
 				throw new GeneralError('Edu-Sharing Request failed');
 			}
 		}
@@ -121,7 +120,7 @@ class EduSharingConnector {
 			}
 			logger.error(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, options);
 			if (retried === true) {
-				throw new GeneralError('Edu-Sharing Request failed');
+				throw new GeneralError('Edu-Sharing request failed');
 			} else {
 				eduSharingCookieExpires = new Date();
 				const response = await this.eduSharingRequest(options, true);
@@ -323,7 +322,7 @@ class EduSharingConnector {
 
 			return new EduSharingResponse(parsed);
 		} catch (err) {
-			logger.error('Edu-Sharing failed search ', err.message);
+			logger.error(`Edu-Sharing failed search: ${err.message}`);
 			return Promise.reject(err);
 		}
 	}
