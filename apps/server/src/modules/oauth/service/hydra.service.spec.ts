@@ -52,7 +52,7 @@ describe('HydraService', () => {
 		clientSecret: 'mocksecret',
 		tokenEndpoint: `${hydraUri}/oauth2/token`,
 		grantType: 'authorization_code',
-		redirectUri: `${apiHost}/v3/sso/hydra/12345`,
+		redirectUri: `${apiHost}/api/v3/sso/hydra/12345`,
 		scope: scopes,
 		responseType: 'code',
 		authEndpoint: `${hydraUri}/oauth2/auth`,
