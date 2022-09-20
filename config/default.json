@@ -32,8 +32,8 @@
 	},
 	"COOKIE": {
 		"SAME_SITE": "none",
-		"HTTP_ONLY": true,
-		"HOST_ONLY": false,
+		"HTTP_ONLY": false,
+		"HOST_ONLY": true,
 		"SECURE": true,
 		"EXPIRES_SECONDS": 2592000000
 	}
