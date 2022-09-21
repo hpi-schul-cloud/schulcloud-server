@@ -49,8 +49,9 @@ export class SystemService {
 	}
 
 	private async findDirectOauthSystems(): Promise<SystemDto[]> {
-		const systemEntities = await this.systemRepo.findByFilter('', true);
-		return systemEntities;
+		const ldapSystemEntities = await this.systemRepo.findByFilter(SysType.LDAP, true);
+		const oauthSystemEntities = await this.systemRepo.findByFilter(SysType.OAUTH, true);
+		return [...ldapSystemEntities, ...oauthSystemEntities];
 	}
 
 	private async findOauthViaKeycloakSystems(): Promise<SystemDto[]> {
