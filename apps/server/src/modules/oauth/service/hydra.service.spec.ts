@@ -52,7 +52,7 @@ describe('HydraService', () => {
 		clientSecret: 'mocksecret',
 		tokenEndpoint: `${hydraUri}/oauth2/token`,
 		grantType: 'authorization_code',
-		redirectUri: `${apiHost}/api/v3/sso/hydra/12345`,
+		redirectUri: `${apiHost}/v3/sso/hydra/12345`,
 		scope: scopes,
 		responseType: 'code',
 		authEndpoint: `${hydraUri}/oauth2/auth`,
@@ -110,7 +110,7 @@ describe('HydraService', () => {
 
 			// Assert
 			expect(httpService.get).toHaveBeenCalledWith(
-				`http://hydra.mock/oauth2/auth?response_type=code&scope=openid%20uuid&client_id=12345&redirect_uri=localhost%2Fapi%2Fv3%2Fsso%2Fhydra%2F12345&state=mockNanoId`,
+				`http://hydra.mock/oauth2/auth?response_type=code&scope=openid%20uuid&client_id=12345&redirect_uri=localhost%2Fv3%2Fsso%2Fhydra%2F12345&state=mockNanoId`,
 				{}
 			);
 			expect(result.data).toEqual(responseData);
