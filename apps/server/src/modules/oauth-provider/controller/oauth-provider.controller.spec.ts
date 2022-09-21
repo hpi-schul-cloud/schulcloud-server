@@ -4,6 +4,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotImplementedException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { ICurrentUser } from '@shared/domain/index';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
+import { ConsentSessionResponse } from '@src/modules/oauth-provider/controller/dto/response/consent-session.response';
 import { OauthProviderController } from './oauth-provider.controller';
 
 describe('OauthProviderController', () => {
@@ -58,14 +61,40 @@ describe('OauthProviderController', () => {
 		});
 
 		describe('listConsentSessions', () => {
-			it('should throw', () => {
-				expect(() => controller.listConsentSessions({ userId: '' })).toThrow(NotImplementedException);
+			it('should list all consent sessions', async () => {
+				const session: ProviderConsentSessionResponse = {
+					consent_request: {
+						challenge: 'challenge',
+						client: {
+							client_id: 'clientId',
+							client_name: 'clientName',
+						},
+					},
+				};
+				const response: ConsentSessionResponse = new ConsentSessionResponse({
+					challenge: 'challenge',
+					client_id: 'clientId',
+					client_name: 'clientName',
+				});
+				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+
+				uc.listConsentSessions.mockResolvedValue([session]);
+				responseMapper.mapConsentSessionsToResponse.mockReturnValue(response);
+
+				const result: ConsentSessionResponse[] = await controller.listConsentSessions(currentUser);
+
+				expect(result).toEqual([response]);
+				expect(uc.listConsentSessions).toHaveBeenCalledWith(currentUser.userId);
 			});
 		});
 
 		describe('revokeConsentSession', () => {
-			it('should throw', () => {
-				expect(() => controller.revokeConsentSession({ userId: '' }, { client: '' })).toThrow(NotImplementedException);
+			it('should revoke consent sessions', async () => {
+				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+
+				await controller.revokeConsentSession(currentUser, { client: 'clientId' });
+
+				expect(uc.revokeConsentSession).toHaveBeenCalledWith(currentUser.userId, 'clientId');
 			});
 		});
 	});
@@ -125,12 +154,6 @@ describe('OauthProviderController', () => {
 			it('should throw', () => {
 				expect(() => controller.deleteOAuth2Client({ id: '' })).toThrow(NotImplementedException);
 			});
-		});
-	});
-
-	describe('introspectOAuth2Token', () => {
-		it('should throw', () => {
-			expect(() => controller.introspectOAuth2Token({ token: '' })).toThrow(NotImplementedException);
 		});
 	});
 

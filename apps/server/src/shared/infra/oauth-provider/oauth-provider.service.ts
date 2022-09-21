@@ -1,5 +1,5 @@
 import { OauthClient } from '@shared/infra/oauth-provider/dto/interface/oauth-client.interface';
-import { ConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
@@ -39,7 +39,7 @@ export abstract class OauthProviderService {
 
 	abstract deleteOAuth2Client(id: string): Promise<void>;
 
-	abstract listConsentSessions(user: string): Promise<ConsentSessionResponse[]>;
+	abstract listConsentSessions(user: string): Promise<ProviderConsentSessionResponse[]>;
 
 	abstract revokeConsentSession(user: string, client: string): Promise<void>;
 }

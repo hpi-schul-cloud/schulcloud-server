@@ -1,21 +1,22 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
+import { ICurrentUser } from '@shared/domain/index';
 import {
 	AcceptQuery,
 	ChallengeParams,
 	ConsentRequestBody,
 	IdParams,
-	IntrospectBody,
 	ListOauthClientsParams,
 	LoginRequestBody,
 	OauthClientBody,
 	RedirectBody,
-	RevokeConsentQuery,
-	UserParams,
+	RevokeConsentParams,
 } from './dto';
+import { ConsentSessionResponse } from './dto/response/consent-session.response';
 
 @Controller('oauth2')
 export class OauthProviderController {
@@ -54,11 +55,6 @@ export class OauthProviderController {
 		throw new NotImplementedException();
 	}
 
-	@Post('introspect')
-	introspectOAuth2Token(@Body() body: IntrospectBody) {
-		throw new NotImplementedException();
-	}
-
 	@Get('loginRequest/:challenge')
 	getLoginRequest(@Param() params: ChallengeParams) {
 		throw new NotImplementedException();
@@ -89,15 +85,23 @@ export class OauthProviderController {
 	}
 
 	@Authenticate('jwt')
-	@Get('auth/sessions/consent/:userId')
-	listConsentSessions(@Param() params: UserParams) {
-		throw new NotImplementedException();
+	@Get('auth/sessions/consent')
+	async listConsentSessions(@CurrentUser() currentUser: ICurrentUser): Promise<ConsentSessionResponse[]> {
+		const sessions: ProviderConsentSessionResponse[] = await this.oauthProviderUc.listConsentSessions(
+			currentUser.userId
+		);
+		const mapped: ConsentSessionResponse[] = sessions.map(
+			(session: ProviderConsentSessionResponse): ConsentSessionResponse =>
+				this.oauthProviderResponseMapper.mapConsentSessionsToResponse(session)
+		);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
-	@Delete('auth/sessions/consent/:userId')
-	revokeConsentSession(@Param() params: UserParams, @Query() query: RevokeConsentQuery) {
-		throw new NotImplementedException();
+	@Delete('auth/sessions/consent')
+	revokeConsentSession(@CurrentUser() currentUser: ICurrentUser, @Param() params: RevokeConsentParams): Promise<void> {
+		const promise: Promise<void> = this.oauthProviderUc.revokeConsentSession(currentUser.userId, params.client);
+		return promise;
 	}
 
 	@Get('baseUrl')
