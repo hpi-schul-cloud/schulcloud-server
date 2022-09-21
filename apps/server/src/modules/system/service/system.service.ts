@@ -49,7 +49,7 @@ export class SystemService {
 	}
 
 	private async findDirectOauthSystems(): Promise<SystemDto[]> {
-		const systemEntities = await this.systemRepo.findByFilter(SysType.OAUTH, true);
+		const systemEntities = await this.systemRepo.findByFilter('', true);
 		return systemEntities;
 	}
 
