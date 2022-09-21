@@ -16,13 +16,6 @@ describe('OauthProviderController', () => {
 
 	const hydraUri = 'http://hydra.uri';
 
-	const defaultOauthClientBody: OauthClientBody = {
-		scope: 'openid offline',
-		grant_types: ['authorization_code', 'refresh_token'],
-		response_types: ['code', 'token', 'id_token'],
-		redirect_uris: [],
-	};
-
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockReturnValue(hydraUri);
 
@@ -103,25 +96,6 @@ describe('OauthProviderController', () => {
 				const data: OauthClientBody = {
 					client_id: 'clientId',
 				};
-				const dataWithDefaults = { ...defaultOauthClientBody, ...data };
-				uc.createOAuth2Client.mockResolvedValue(dataWithDefaults);
-				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...dataWithDefaults }));
-
-				const result: OauthClientResponse = await controller.createOAuth2Client(data);
-
-				expect(uc.createOAuth2Client).toHaveBeenCalledWith(dataWithDefaults);
-				expect(result).toEqual(dataWithDefaults);
-			});
-
-			it('should create oauth2 client without defaults', async () => {
-				const data: OauthClientBody = {
-					client_id: 'clientId',
-					scope: 'openid',
-					grant_types: ['authorization_code'],
-					response_types: ['code'],
-					redirect_uris: ['url'],
-				};
-
 				uc.createOAuth2Client.mockResolvedValue(data);
 				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
 
@@ -137,31 +111,13 @@ describe('OauthProviderController', () => {
 				const data: OauthClientBody = {
 					client_id: 'clientId',
 				};
-				const dataWithDefaults = { ...defaultOauthClientBody, ...data };
-				uc.updateOAuth2Client.mockResolvedValue(dataWithDefaults);
-				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...dataWithDefaults }));
+				uc.updateOAuth2Client.mockResolvedValue(data);
+				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
 
 				const result: OauthClientResponse = await controller.updateOAuth2Client(
 					{ id: 'clientId' },
 					{ client_id: 'clientId' }
 				);
-
-				expect(uc.updateOAuth2Client).toHaveBeenCalledWith('clientId', dataWithDefaults);
-				expect(result).toEqual(dataWithDefaults);
-			});
-
-			it('should update oauth2 client without defaults', async () => {
-				const data: OauthClientBody = {
-					client_id: 'clientId',
-					scope: 'openid',
-					grant_types: ['authorization_code'],
-					response_types: ['code'],
-					redirect_uris: ['url'],
-				};
-				uc.updateOAuth2Client.mockResolvedValue(data);
-				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
-
-				const result: OauthClientResponse = await controller.updateOAuth2Client({ id: 'clientId' }, data);
 
 				expect(uc.updateOAuth2Client).toHaveBeenCalledWith('clientId', data);
 				expect(result).toEqual(data);

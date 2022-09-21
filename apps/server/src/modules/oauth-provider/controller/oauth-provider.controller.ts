@@ -28,13 +28,6 @@ export class OauthProviderController {
 		private readonly oauthProviderResponseMapper: OauthProviderResponseMapper
 	) {}
 
-	private readonly defaultOauthClientBody: OauthClientBody = {
-		scope: 'openid offline',
-		grant_types: ['authorization_code', 'refresh_token'],
-		response_types: ['code', 'token', 'id_token'],
-		redirect_uris: [],
-	};
-
 	@RequireRole(RoleName.SUPERHERO)
 	@Authenticate('jwt')
 	@Get('clients/:id')
@@ -65,8 +58,7 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Post('clients')
 	async createOAuth2Client(@Body() body: OauthClientBody): Promise<OauthClientResponse> {
-		const bodyWithDefaults: OauthClientBody = { ...this.defaultOauthClientBody, ...body };
-		const client: OauthClient = await this.oauthProviderUc.createOAuth2Client(bodyWithDefaults);
+		const client: OauthClient = await this.oauthProviderUc.createOAuth2Client(body);
 		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 		return mapped;
 	}
@@ -75,8 +67,7 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Put('clients/:id')
 	async updateOAuth2Client(@Param() params: IdParams, @Body() body: OauthClientBody): Promise<OauthClientResponse> {
-		const bodyWithDefaults: OauthClientBody = { ...this.defaultOauthClientBody, ...body };
-		const client: OauthClient = await this.oauthProviderUc.updateOAuth2Client(params.id, bodyWithDefaults);
+		const client: OauthClient = await this.oauthProviderUc.updateOAuth2Client(params.id, body);
 		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 		return mapped;
 	}

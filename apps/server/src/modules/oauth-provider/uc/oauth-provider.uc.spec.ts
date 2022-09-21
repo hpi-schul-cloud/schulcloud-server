@@ -10,6 +10,13 @@ describe('OauthProviderUc', () => {
 
 	let providerService: DeepMocked<OauthProviderService>;
 
+	const defaultOauthClientBody: OauthClient = {
+		scope: 'openid offline',
+		grant_types: ['authorization_code', 'refresh_token'],
+		response_types: ['code', 'token', 'id_token'],
+		redirect_uris: [],
+	};
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -65,8 +72,25 @@ describe('OauthProviderUc', () => {
 		});
 
 		describe('createOAuth2Client', () => {
-			it('should create oauth2 client', async () => {
+			it('should create oauth2 client with defaults', async () => {
 				const data: OauthClient = { client_id: 'clientId' };
+				const dataWithDefaults = { ...defaultOauthClientBody, ...data };
+				providerService.createOAuth2Client.mockResolvedValue(dataWithDefaults);
+
+				const result: OauthClient = await uc.createOAuth2Client(data);
+
+				expect(result).toEqual(dataWithDefaults);
+				expect(providerService.createOAuth2Client).toHaveBeenCalledWith(dataWithDefaults);
+			});
+
+			it('should create oauth2 client without defaults', async () => {
+				const data: OauthClient = {
+					client_id: 'clientId',
+					scope: 'openid',
+					grant_types: ['authorization_code'],
+					response_types: ['code'],
+					redirect_uris: ['url'],
+				};
 				providerService.createOAuth2Client.mockResolvedValue(data);
 
 				const result: OauthClient = await uc.createOAuth2Client(data);
@@ -77,8 +101,25 @@ describe('OauthProviderUc', () => {
 		});
 
 		describe('updateOAuth2Client', () => {
-			it('should update oauth2 client', async () => {
+			it('should update oauth2 client with defaults', async () => {
 				const data: OauthClient = { client_id: 'clientId' };
+				const dataWithDefaults = { ...defaultOauthClientBody, ...data };
+				providerService.updateOAuth2Client.mockResolvedValue(dataWithDefaults);
+
+				const result: OauthClient = await uc.updateOAuth2Client('clientId', data);
+
+				expect(result).toEqual(dataWithDefaults);
+				expect(providerService.updateOAuth2Client).toHaveBeenCalledWith('clientId', dataWithDefaults);
+			});
+
+			it('should update oauth2 client without defaults', async () => {
+				const data: OauthClient = {
+					client_id: 'clientId',
+					scope: 'openid',
+					grant_types: ['authorization_code'],
+					response_types: ['code'],
+					redirect_uris: ['url'],
+				};
 				providerService.updateOAuth2Client.mockResolvedValue(data);
 
 				const result: OauthClient = await uc.updateOAuth2Client('clientId', data);
