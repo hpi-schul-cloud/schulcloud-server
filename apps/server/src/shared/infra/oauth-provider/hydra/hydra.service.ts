@@ -34,13 +34,9 @@ export class HydraService extends OauthProviderService {
 	}
 
 	async acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
-		const hydraUri: string = Configuration.get('HYDRA_URI') as string;
-		const url = `${hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=${challenge}`;
-		const responseObservable: Observable<AxiosResponse<RedirectResponse>> = this.httpService.put(url, null, {
-			headers: { 'Content-Type': 'application/json', 'X-Forwarded-Proto': 'https' },
-		});
-		const response: AxiosResponse<RedirectResponse> = await firstValueFrom(responseObservable);
-		return response.data;
+		const url = `${this.hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=${challenge}`;
+		const response: Promise<RedirectResponse> = this.request<RedirectResponse>('PUT', url);
+		return response;
 	}
 
 	createOAuth2Client(data: OauthClient): Promise<OauthClient> {

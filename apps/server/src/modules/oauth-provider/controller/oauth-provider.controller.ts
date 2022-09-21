@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
-import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
+import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import { RedirectResponse } from '@shared/infra/oauth-provider/dto';
 import {
@@ -21,7 +21,7 @@ import {
 @Controller('oauth2')
 export class OauthProviderController {
 	constructor(
-		private readonly oauthProviderUc: OauthProviderUc,
+		private readonly oauthProviderUc: OauthProviderLogoutFlowUc,
 		private readonly oauthProviderResponseMapper: OauthProviderResponseMapper
 	) {}
 
