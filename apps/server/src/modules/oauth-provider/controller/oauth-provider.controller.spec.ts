@@ -5,9 +5,9 @@ import { NotImplementedException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import { ICurrentUser } from '@shared/domain/index';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
-import { ConsentSessionResponse } from '@src/modules/oauth-provider/controller/dto/response/consent-session.response';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto';
 import { OauthProviderController } from './oauth-provider.controller';
+import { ConsentSessionResponse } from './dto';
 
 describe('OauthProviderController', () => {
 	let module: TestingModule;

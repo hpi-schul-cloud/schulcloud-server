@@ -3,12 +3,13 @@ import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, P
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
 import { ICurrentUser } from '@shared/domain/index';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto';
 import {
 	AcceptQuery,
 	ChallengeParams,
 	ConsentRequestBody,
+	ConsentSessionResponse,
 	IdParams,
 	ListOauthClientsParams,
 	LoginRequestBody,
@@ -16,7 +17,6 @@ import {
 	RedirectBody,
 	RevokeConsentParams,
 } from './dto';
-import { ConsentSessionResponse } from './dto/response/consent-session.response';
 
 @Controller('oauth2')
 export class OauthProviderController {
