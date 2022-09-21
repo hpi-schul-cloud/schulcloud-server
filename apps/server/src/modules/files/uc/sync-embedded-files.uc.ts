@@ -121,6 +121,10 @@ export class SyncEmbeddedFilesUc {
 			await this.syncFilesMetaDataService.persistMetaData(file);
 			this.logger.log(`Synced file ${file.source.id}`);
 		} catch (error) {
+			if (error instanceof Error && error.message.includes('S3 file not found')) {
+				file.fileRecord.name = '';
+				file.fileRecord.id = '';
+			}
 			await this.writeError(error, file.source.id, entity);
 		}
 	}
