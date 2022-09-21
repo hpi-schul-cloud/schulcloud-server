@@ -1,29 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, PermissionContextBuilder } from '@shared/domain';
-import { LessonRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
-import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { LessonService } from '../service';
 
 @Injectable()
 export class LessonUC {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
-		private readonly lessonRepo: LessonRepo,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
+		private readonly lessonService: LessonService
 	) {}
 
 	async delete(userId: EntityId, lessonId: EntityId, jwt: string) {
 		const [user, lesson] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.lessonRepo.findById(lessonId),
+			this.lessonService.findById(lessonId),
 		]);
 
 		this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
 
-		const params = FileParamBuilder.build(jwt, lesson.getSchoolId(), lesson);
-		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
+		await this.lessonService.deleteLesson(lesson, jwt);
 
-		await this.lessonRepo.delete(lesson);
 		return true;
 	}
 }
