@@ -89,6 +89,12 @@ describe('SystemService', () => {
 		});
 		systemRepo.findByFilter.mockImplementation(
 			(theType: string | SysType = '', onlyOauth = false): Promise<System[]> => {
+				if (theType === SysType.LDAP && onlyOauth) {
+					return Promise.resolve([iserv]);
+				}
+				if (theType === SysType.OAUTH && onlyOauth) {
+					return Promise.resolve([]);
+				}
 				if (theType === SysType.KEYCLOAK) {
 					return Promise.resolve([keycloak]);
 				}
@@ -178,11 +184,14 @@ describe('SystemService', () => {
 			// Given
 			systemRepo.findByFilter.mockImplementation(
 				(theType: string | SysType = '', onlyOauth = false): Promise<System[]> => {
-					if (theType === SysType.KEYCLOAK) {
+					if (theType === SysType.LDAP && onlyOauth) {
+						return Promise.resolve([iserv]);
+					}
+					if (theType === SysType.OAUTH && onlyOauth) {
 						return Promise.resolve([]);
 					}
-					if (onlyOauth) {
-						return Promise.resolve([iserv]);
+					if (theType === SysType.KEYCLOAK) {
+						return Promise.resolve([]);
 					}
 					if (theType === SysType.OIDC) {
 						return Promise.resolve(oidcSystems);
