@@ -2,9 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ShareTokenParentType } from '@shared/domain';
+import { ShareTokenContextType, ShareTokenParentType } from '@shared/domain';
 import { ShareTokenRepo } from '@shared/repo/sharetoken';
-import { courseFactory, setupEntities } from '@shared/testing';
+import { courseFactory, schoolFactory, setupEntities } from '@shared/testing';
 import { shareTokenFactory } from '@shared/testing/factory/share-token.factory';
 import { ShareTokenService } from './share-token.service';
 import { TokenGenerator } from './token-generator.service';
@@ -69,6 +69,28 @@ describe('ShareTokenService', () => {
 			await service.createToken({ id: course.id, type: ShareTokenParentType.Course });
 
 			expect(repo.save).toBeCalled();
+		});
+
+		it('should add context to shareToken', async () => {
+			const school = schoolFactory.buildWithId();
+			const course = courseFactory.buildWithId({ school });
+
+			await service.createToken(
+				{
+					id: course.id,
+					type: ShareTokenParentType.Course,
+				},
+				{
+					context: {
+						type: ShareTokenContextType.School,
+						id: school.id,
+					},
+				}
+			);
+
+			expect(repo.save).toBeCalledWith(
+				expect.objectContaining({ contextType: ShareTokenContextType.School, contextId: school.id })
+			);
 		});
 	});
 

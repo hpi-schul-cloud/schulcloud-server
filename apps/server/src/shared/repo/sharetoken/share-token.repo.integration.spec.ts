@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ShareToken } from '@shared/domain';
+import { ShareToken, ShareTokenContextType } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections } from '@shared/testing';
+import { cleanupCollections, schoolFactory } from '@shared/testing';
 import { shareTokenFactory } from '@shared/testing/factory/share-token.factory';
 import { ShareTokenRepo } from './share-token.repo';
 
@@ -43,6 +43,18 @@ describe('ShareTokenRepo', () => {
 
 			expect(result).toBeDefined();
 			expect(result.id).toEqual(shareToken.id);
+		});
+
+		it('should include context id', async () => {
+			const school = schoolFactory.build();
+			await em.persistAndFlush([school]);
+			const shareToken = shareTokenFactory.build({ contextType: ShareTokenContextType.School, contextId: school.id });
+
+			await em.persistAndFlush([shareToken]);
+			em.clear();
+
+			const result = await repo.findOneByToken(shareToken.token);
+			expect(result.contextId).toEqual(school.id);
 		});
 	});
 });
