@@ -79,24 +79,28 @@ export class HydraService extends OauthProviderService {
 			client_name,
 			owner,
 		});
-
-		return this.request<OauthClient[]>('GET', url.toString());
+		const response: Promise<OauthClient[]> = this.request<OauthClient[]>('GET', url.toString());
+		return response;
 	}
 
 	getOAuth2Client(id: string): Promise<OauthClient> {
-		return this.request<OauthClient>('GET', `${this.hydraUri}/clients/${id}`);
+		const response: Promise<OauthClient> = this.request<OauthClient>('GET', `${this.hydraUri}/clients/${id}`);
+		return response;
 	}
 
 	createOAuth2Client(data: OauthClient): Promise<OauthClient> {
-		return this.request<OauthClient>('POST', `${this.hydraUri}/clients`, data);
+		const response: Promise<OauthClient> = this.request<OauthClient>('POST', `${this.hydraUri}/clients`, data);
+		return response;
 	}
 
 	updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient> {
-		return this.request<OauthClient>('PUT', `${this.hydraUri}/clients/${id}`, data);
+		const response: Promise<OauthClient> = this.request<OauthClient>('PUT', `${this.hydraUri}/clients/${id}`, data);
+		return response;
 	}
 
 	deleteOAuth2Client(id: string): Promise<void> {
-		return this.request<void>('DELETE', `${this.hydraUri}/clients/${id}`);
+		const response: Promise<void> = this.request<void>('DELETE', `${this.hydraUri}/clients/${id}`);
+		return response;
 	}
 
 	protected async request<T>(
