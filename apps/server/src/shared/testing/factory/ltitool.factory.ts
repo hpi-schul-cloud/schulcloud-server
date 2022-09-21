@@ -14,5 +14,7 @@ class LtiToolFactory extends BaseFactory<LtiTool, ILtiToolProperties> {
 export const ltiToolFactory = LtiToolFactory.define(LtiTool, ({ sequence }) => {
 	return {
 		name: `ltiTool-${sequence}`,
+		isLocal: true,
+		oAuthClientId: 'clientId',
 	};
 });

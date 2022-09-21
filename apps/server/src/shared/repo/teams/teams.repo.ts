@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Role, Team, TeamUser } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()
@@ -23,6 +24,17 @@ export class TeamsRepo extends BaseRepo<Team> {
 		}
 
 		return team;
+	}
+
+	/**
+	 * Finds partly teams which the user is a member.
+	 *
+	 * @param userId
+	 * @return Array of teams which only has set _id and name
+	 */
+	async findByUserId(userId: EntityId): Promise<Team[]> {
+		const teams: Team[] = await this._em.find<Team>(Team, { userIds: { userId: new ObjectId(userId) } });
+		return teams;
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void[]> {

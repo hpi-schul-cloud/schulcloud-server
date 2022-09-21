@@ -7,12 +7,15 @@ import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/
 import { AcceptQuery, ChallengeParams, ConsentRequestBody } from '@src/modules/oauth-provider/controller/dto';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { ConsentResponse } from '@shared/infra/oauth-provider/dto';
+import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
+import { ICurrentUser } from '@shared/domain';
 import { OauthProviderController } from './oauth-provider.controller';
 
 describe('OauthProviderController', () => {
 	let module: TestingModule;
 	let controller: OauthProviderController;
 	let uc: DeepMocked<OauthProviderUc>;
+	let consentUc: DeepMocked<OauthProviderConsentFlowUc>;
 	let responseMapper: DeepMocked<OauthProviderResponseMapper>;
 
 	const hydraUri = 'http://hydra.uri';
@@ -28,6 +31,10 @@ describe('OauthProviderController', () => {
 					useValue: createMock<OauthProviderUc>(),
 				},
 				{
+					provide: OauthProviderConsentFlowUc,
+					useValue: createMock<OauthProviderConsentFlowUc>(),
+				},
+				{
 					provide: OauthProviderResponseMapper,
 					useValue: createMock<OauthProviderResponseMapper>(),
 				},
@@ -38,6 +45,7 @@ describe('OauthProviderController', () => {
 
 		uc = module.get(OauthProviderUc);
 		responseMapper = module.get(OauthProviderResponseMapper);
+		consentUc = module.get(OauthProviderConsentFlowUc);
 	});
 
 	afterAll(async () => {
@@ -55,7 +63,7 @@ describe('OauthProviderController', () => {
 			it('should call uc', async () => {
 				// Arrange
 				const consentResponse: ConsentResponse = { challenge: challengeParams.challenge, subject: 'subject' };
-				uc.getConsentRequest.mockResolvedValue(consentResponse);
+				consentUc.getConsentRequest.mockResolvedValue(consentResponse);
 
 				// Act
 				const result = await controller.getConsentRequest(challengeParams);
@@ -74,15 +82,26 @@ describe('OauthProviderController', () => {
 					remember: false,
 					remember_for: 0,
 				};
+				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 				const expectedRedirectResponse: RedirectResponse = { redirect_to: 'anywhere' };
-				uc.patchConsentRequest.mockResolvedValue(expectedRedirectResponse);
+				consentUc.patchConsentRequest.mockResolvedValue(expectedRedirectResponse);
 
 				// Act
-				const result = await controller.patchConsentRequest(challengeParams, acceptQuery, consentRequestBody);
+				const result = await controller.patchConsentRequest(
+					challengeParams,
+					acceptQuery,
+					consentRequestBody,
+					currentUser
+				);
 
 				// Assert
 				expect(result).toBeDefined();
-				expect(uc.patchConsentRequest).toHaveBeenCalledWith(challengeParams.challenge, acceptQuery, consentRequestBody);
+				expect(consentUc.patchConsentRequest).toHaveBeenCalledWith(
+					challengeParams.challenge,
+					acceptQuery,
+					consentRequestBody,
+					currentUser
+				);
 				expect(responseMapper.mapRedirectResponse).toHaveBeenCalledWith(expectedRedirectResponse);
 			});
 		});

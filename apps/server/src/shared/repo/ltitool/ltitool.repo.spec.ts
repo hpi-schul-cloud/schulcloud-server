@@ -63,7 +63,7 @@ describe('LtiTool Repo', () => {
 	});
 
 	describe('findByUserAndTool', () => {
-		it('should find a pseudonym by userId and toolId', async () => {
+		it('should find a ltitool by userId and toolId', async () => {
 			// Arrange
 			const entity: LtiTool = ltiToolFactory.buildWithId();
 			await em.persistAndFlush(entity);
@@ -75,7 +75,28 @@ describe('LtiTool Repo', () => {
 			expect(result.id).toEqual(entity.id);
 		});
 
-		it('should throw an Error if the scope mismatches the idtype', async () => {
+		it('should throw an error if the ltitool was not found', async () => {
+			const entity: LtiTool = ltiToolFactory.buildWithId();
+			await expect(repo.findByName(entity.name)).rejects.toThrow(NotFoundError);
+		});
+	});
+
+	describe('findByClientIdAndIsLocal', () => {
+		it('should find a ltiTool by clientId and local flag', async () => {
+			// Arrange
+			const entity: LtiTool = ltiToolFactory.buildWithId();
+			await em.persistAndFlush(entity);
+
+			// Act
+			const result = await repo.findByClientIdAndIsLocal(entity.oAuthClientId, entity.isLocal);
+
+			// Assert
+			expect(result.id).toEqual(entity.id);
+			expect(result.oAuthClientId).toEqual(entity.oAuthClientId);
+			expect(result.isLocal).toEqual(entity.isLocal);
+		});
+
+		it('should throw an error if the ltitool was not found', async () => {
 			const entity: LtiTool = ltiToolFactory.buildWithId();
 			await expect(repo.findByName(entity.name)).rejects.toThrow(NotFoundError);
 		});
@@ -91,6 +112,8 @@ describe('LtiTool Repo', () => {
 				updatedAt: new Date('2022-07-20'),
 				createdAt: new Date('2022-07-20'),
 				name: 'toolName',
+				isLocal: true,
+				oAuthClientId: 'clientId',
 			};
 
 			// Act
@@ -110,6 +133,8 @@ describe('LtiTool Repo', () => {
 				updatedAt: new Date('2022-07-20'),
 				createdAt: new Date('2022-07-20'),
 				name: 'toolName',
+				isLocal: true,
+				oAuthClientId: 'clientId',
 			});
 
 			// Act

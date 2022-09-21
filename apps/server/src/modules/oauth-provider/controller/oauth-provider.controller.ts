@@ -1,9 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
+import { ICurrentUser } from '@shared/domain';
+import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -22,6 +24,7 @@ import {
 export class OauthProviderController {
 	constructor(
 		private readonly oauthProviderUc: OauthProviderUc,
+		private readonly consentFlowUc: OauthProviderConsentFlowUc,
 		private readonly oauthProviderResponseMapper: OauthProviderResponseMapper
 	) {}
 
@@ -80,7 +83,7 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Get('consentRequest/:challenge')
 	getConsentRequest(@Param() params: ChallengeParams) {
-		return this.oauthProviderUc.getConsentRequest(params.challenge);
+		return this.consentFlowUc.getConsentRequest(params.challenge);
 	}
 
 	@Authenticate('jwt')
@@ -88,12 +91,14 @@ export class OauthProviderController {
 	async patchConsentRequest(
 		@Param() params: ChallengeParams,
 		@Query() query: AcceptQuery,
-		@Body() body: ConsentRequestBody
+		@Body() body: ConsentRequestBody,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<RedirectResponse> {
-		const redirectResponse: RedirectResponse = await this.oauthProviderUc.patchConsentRequest(
+		const redirectResponse: RedirectResponse = await this.consentFlowUc.patchConsentRequest(
 			params.challenge,
 			query,
-			body
+			body,
+			currentUser
 		);
 		const response: RedirectResponse = this.oauthProviderResponseMapper.mapRedirectResponse(redirectResponse);
 		return response;
