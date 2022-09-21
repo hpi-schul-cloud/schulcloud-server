@@ -10,6 +10,8 @@ export class OauthClientResponse {
 		this.subject_type = response.subject_type;
 		this.scope = response.scope;
 		this.frontchannel_logout_uri = response.frontchannel_logout_uri;
+		this.grant_types = response.grant_types;
+		this.response_types = response.response_types;
 	}
 
 	@ApiProperty()
@@ -35,4 +37,10 @@ export class OauthClientResponse {
 
 	@ApiProperty()
 	frontchannel_logout_uri?: string;
+
+	@ApiProperty()
+	grant_types?: string[];
+
+	@ApiProperty()
+	response_types?: string[];
 }

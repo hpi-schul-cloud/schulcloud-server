@@ -4,6 +4,8 @@ import { Authenticate } from '@src/modules/authentication/decorator/auth.decorat
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import { OauthClient } from '@shared/infra/oauth-provider/dto/index';
+import { RoleName } from '@shared/domain/index';
+import { RequireRole } from '@src/modules/authorization';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -26,6 +28,14 @@ export class OauthProviderController {
 		private readonly oauthProviderResponseMapper: OauthProviderResponseMapper
 	) {}
 
+	private readonly defaultOauthClientBody: OauthClientBody = {
+		scope: 'openid offline',
+		grant_types: ['authorization_code', 'refresh_token'],
+		response_types: ['code', 'token', 'id_token'],
+		redirect_uris: [],
+	};
+
+	@RequireRole(RoleName.SUPERHERO)
 	@Authenticate('jwt')
 	@Get('clients/:id')
 	async getOAuth2Client(@Param() params: IdParams): Promise<OauthClientResponse> {
@@ -34,10 +44,16 @@ export class OauthProviderController {
 		return mapped;
 	}
 
+	@RequireRole(RoleName.SUPERHERO)
 	@Authenticate('jwt')
 	@Get('clients')
 	async listOAuth2Clients(@Param() params: ListOauthClientsParams): Promise<OauthClientResponse[]> {
-		const clients: OauthClient[] = await this.oauthProviderUc.listOAuth2Clients();
+		const clients: OauthClient[] = await this.oauthProviderUc.listOAuth2Clients(
+			params.limit,
+			params.offset,
+			params.client_name,
+			params.owner
+		);
 		const mapped: OauthClientResponse[] = clients.map(
 			(client: OauthClient): OauthClientResponse =>
 				this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client)
@@ -45,22 +61,27 @@ export class OauthProviderController {
 		return mapped;
 	}
 
+	@RequireRole(RoleName.SUPERHERO)
 	@Authenticate('jwt')
 	@Post('clients')
 	async createOAuth2Client(@Body() body: OauthClientBody): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.oauthProviderUc.createOAuth2Client(body);
+		const bodyWithDefaults: OauthClientBody = { ...this.defaultOauthClientBody, ...body };
+		const client: OauthClient = await this.oauthProviderUc.createOAuth2Client(bodyWithDefaults);
 		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 		return mapped;
 	}
 
+	@RequireRole(RoleName.SUPERHERO)
 	@Authenticate('jwt')
 	@Put('clients/:id')
 	async updateOAuth2Client(@Param() params: IdParams, @Body() body: OauthClientBody): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.oauthProviderUc.updateOAuth2Client(params.id, body);
+		const bodyWithDefaults: OauthClientBody = { ...this.defaultOauthClientBody, ...body };
+		const client: OauthClient = await this.oauthProviderUc.updateOAuth2Client(params.id, bodyWithDefaults);
 		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 		return mapped;
 	}
 
+	@RequireRole(RoleName.SUPERHERO)
 	@Authenticate('jwt')
 	@Delete('clients/:id')
 	deleteOAuth2Client(@Param() params: IdParams): Promise<void> {

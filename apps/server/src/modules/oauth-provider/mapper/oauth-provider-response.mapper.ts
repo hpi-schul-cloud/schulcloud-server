@@ -14,6 +14,8 @@ export class OauthProviderResponseMapper {
 			subject_type: client.subject_type,
 			scope: client.scope,
 			frontchannel_logout_uri: client.frontchannel_logout_uri,
+			grant_types: client.grant_types,
+			response_types: client.response_types,
 		});
 	}
 }

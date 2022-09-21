@@ -6,8 +6,13 @@ import { OauthClient } from '@shared/infra/oauth-provider/dto/index';
 export class OauthProviderUc {
 	constructor(private readonly oauthProviderService: OauthProviderService) {}
 
-	listOAuth2Clients(): Promise<OauthClient[]> {
-		const promise: Promise<OauthClient[]> = this.oauthProviderService.listOAuth2Clients();
+	listOAuth2Clients(limit?: number, offset?: number, client_name?: string, owner?: string): Promise<OauthClient[]> {
+		const promise: Promise<OauthClient[]> = this.oauthProviderService.listOAuth2Clients(
+			limit,
+			offset,
+			client_name,
+			owner
+		);
 		return promise;
 	}
 

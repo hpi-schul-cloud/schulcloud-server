@@ -4,6 +4,8 @@ import { HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
+import QueryString from 'qs';
+import { URL } from 'url';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
@@ -69,8 +71,16 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	listOAuth2Clients(): Promise<OauthClient[]> {
-		return this.request<OauthClient[]>('GET', `${this.hydraUri}/clients`);
+	listOAuth2Clients(limit?: number, offset?: number, client_name?: string, owner?: string): Promise<OauthClient[]> {
+		const url: URL = new URL(`${this.hydraUri}/clients`);
+		url.search = QueryString.stringify({
+			limit,
+			offset,
+			client_name,
+			owner,
+		});
+
+		return this.request<OauthClient[]>('GET', url.toString());
 	}
 
 	getOAuth2Client(id: string): Promise<OauthClient> {
