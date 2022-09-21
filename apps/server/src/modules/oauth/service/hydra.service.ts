@@ -27,7 +27,8 @@ export class HydraSsoService {
 			redirect_uri: oauthConfig.redirectUri,
 			state: nanoid(15),
 		});
-
+		console.log(`${oauthConfig.authEndpoint}?${query}`);
+		console.log(axiosConfig);
 		const res: Promise<AxiosResponse> = this.get(`${oauthConfig.authEndpoint}?${query}`, axiosConfig);
 		return res;
 	}
@@ -55,7 +56,7 @@ export class HydraSsoService {
 			Referer: localDto.referer,
 			Cookie: headerCookies,
 		};
-
+		console.log(localDto);
 		localDto.response = await this.get(location, localDto.axiosConfig);
 		localDto.referer = location;
 		localDto.currentRedirect += 1;
