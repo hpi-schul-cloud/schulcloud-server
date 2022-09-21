@@ -30,7 +30,7 @@ export class TeamsRepo extends BaseRepo<Team> {
 	 * Finds partly teams which the user is a member.
 	 *
 	 * @param userId
-	 * @return Array of teams which only has set _id and name
+	 * @return Array of teams
 	 */
 	async findByUserId(userId: EntityId): Promise<Team[]> {
 		const teams: Team[] = await this._em.find<Team>(Team, { userIds: { userId: new ObjectId(userId) } });
