@@ -106,6 +106,10 @@ export class SyncEmbeddedFilesUc {
 	private async syncFiles(files: SyncFileItem[], entity: AvailableSyncEntityType) {
 		const promises = files.map((file) => this.sync(file, entity));
 		await Promise.all(promises);
+		// eslint-disable-next-line no-restricted-syntax
+		for (const file of files) {
+			this.updateEntityLinks(entity, file.source.id, file.fileRecord.id, file.fileRecord.name);
+		}
 		await this.embeddedFilesRepo.updateEntity(entity);
 	}
 
@@ -115,14 +119,8 @@ export class SyncEmbeddedFilesUc {
 			await this.syncFilesMetaDataService.prepareMetaData(file);
 			await this.syncFilesStorageService.syncS3File(file);
 			await this.syncFilesMetaDataService.persistMetaData(file);
-			this.updateEntityLinks(entity, file.source.id, file.fileRecord.id, file.fileRecord.name);
 			this.logger.log(`Synced file ${file.source.id}`);
 		} catch (error) {
-			// if ((error = '')) {
-			// 	this.setErrorFile(entity._id, file.source.id);
-			// 	this.updateEntityLinks(file, entity);
-			// }
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			await this.writeError(error, file.source.id, entity);
 		}
 	}
