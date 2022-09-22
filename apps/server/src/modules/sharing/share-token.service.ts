@@ -10,7 +10,7 @@ export class ShareTokenService {
 	async createToken(
 		payload: ShareTokenPayload,
 		options?: { context?: ShareTokenContext; expiresAt?: Date }
-	): Promise<ShareTokenString> {
+	): Promise<ShareTokenDO> {
 		const token = this.tokenGenerator.generateShareToken();
 
 		const shareToken = new ShareTokenDO({
@@ -22,7 +22,7 @@ export class ShareTokenService {
 
 		await this.shareTokenRepo.save(shareToken);
 
-		return token;
+		return shareToken;
 	}
 
 	async lookupToken(token: ShareTokenString): Promise<ShareTokenDO> {
