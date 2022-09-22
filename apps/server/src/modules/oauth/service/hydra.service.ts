@@ -102,7 +102,7 @@ export class HydraSsoService {
 			jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,
 			logoutEndpoint: `${hydraUri}/oauth2/sessions/logout`,
 			provider: 'hydra',
-			redirectUri: `${Configuration.get('API_HOST') as string}/v3/sso/hydra/${oauthClientId}`,
+			redirectUri: `${Configuration.get('HOST') as string}/api/v3/sso/hydra/${oauthClientId}`,
 			responseType: 'code',
 			scope: Configuration.get('NEXTCLOUD_SCOPES') as string, // Only Nextcloud is currently supported
 			tokenEndpoint: `${hydraUri}/oauth2/token`,
