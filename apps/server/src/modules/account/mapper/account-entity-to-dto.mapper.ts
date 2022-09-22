@@ -1,5 +1,5 @@
 import { Account } from '@shared/domain';
-import { AccountReadDto } from '../services/dto/account.dto';
+import { AccountReadDto } from '../services/dto/account-read.dto';
 
 export class AccountEntityToDtoMapper {
 	static mapToDto(account: Account): AccountReadDto {

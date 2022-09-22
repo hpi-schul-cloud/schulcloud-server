@@ -1,4 +1,4 @@
-import { AccountReadDto } from '@src/modules/account/services/dto/account.dto';
+import { AccountReadDto } from '@src/modules/account/services/dto/account-read.dto';
 import { AccountResponse } from '../controller/dto';
 
 export class AccountResponseMapper {

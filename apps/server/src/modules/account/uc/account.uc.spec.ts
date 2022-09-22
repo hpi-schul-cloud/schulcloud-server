@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountReadDto } from '@src/modules/account/services/dto/account.dto';
+import { AccountReadDto } from '@src/modules/account/services/dto/account-read.dto';
 import {
 	Account,
 	EntityId,

@@ -20,7 +20,7 @@ import {
 } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountReadDto } from '@src/modules/account/services/dto/account.dto';
+import { AccountReadDto } from '@src/modules/account/services/dto/account-read.dto';
 import { ConfigService } from '@nestjs/config';
 
 import { ObjectId } from 'bson';

@@ -22,7 +22,7 @@ import { ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountReadDto } from '@src/modules/account/services/dto/account.dto';
+import { AccountReadDto } from '@src/modules/account/services/dto/account-read.dto';
 
 export type UserImportPermissions =
 	| Permission.SCHOOL_IMPORT_USERS_MIGRATE
