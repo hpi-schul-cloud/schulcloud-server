@@ -1,18 +1,17 @@
 import { EntityId, ShareTokenString, ShareTokenContextType, ShareTokenParentType } from '@shared/domain';
 
 export type ShareTokenPayload = {
-	id: EntityId;
-	type: ShareTokenParentType;
+	parentType: ShareTokenParentType;
+	parentId: EntityId;
 };
 
 export type ShareTokenContext = {
-	id: EntityId;
-	type: ShareTokenContextType;
+	contextType: ShareTokenContextType;
+	contextId: EntityId;
 };
-
-export type ShareToken = {
+export interface IShareToken {
 	token: ShareTokenString;
 	payload: ShareTokenPayload;
 	expiresAt?: Date;
 	context?: ShareTokenContext;
-};
+}

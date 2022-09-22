@@ -15,10 +15,10 @@ export class ShareTokenService {
 		const token = this.tokenGenerator.generateShareToken();
 		const shareToken = new ShareToken({
 			token,
-			parentId: payload.id,
-			parentType: payload.type,
-			contextId: options?.context?.id,
-			contextType: options?.context?.type,
+			parentId: payload.parentId,
+			parentType: payload.parentType,
+			contextId: options?.context?.contextId,
+			contextType: options?.context?.contextType,
 			expiresAt: options?.expiresAt,
 		});
 

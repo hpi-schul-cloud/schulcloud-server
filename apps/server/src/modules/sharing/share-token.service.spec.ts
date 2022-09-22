@@ -47,7 +47,7 @@ describe('ShareTokenService', () => {
 		it('should create a token', () => {
 			const course = courseFactory.buildWithId();
 
-			const token = service.createToken({ id: course.id, type: ShareTokenParentType.Course });
+			const token = service.createToken({ parentId: course.id, parentType: ShareTokenParentType.Course });
 
 			expect(token).toBeDefined();
 		});
@@ -57,7 +57,7 @@ describe('ShareTokenService', () => {
 			const token = 'share-token';
 			generator.generateShareToken.mockReturnValue(token);
 
-			await service.createToken({ id: course.id, type: ShareTokenParentType.Course });
+			await service.createToken({ parentId: course.id, parentType: ShareTokenParentType.Course });
 
 			expect(generator.generateShareToken).toBeCalled();
 			expect(token).toEqual(token);
@@ -66,7 +66,7 @@ describe('ShareTokenService', () => {
 		it('should use the repo to persist the shareToken', async () => {
 			const course = courseFactory.buildWithId();
 
-			await service.createToken({ id: course.id, type: ShareTokenParentType.Course });
+			await service.createToken({ parentId: course.id, parentType: ShareTokenParentType.Course });
 
 			expect(repo.save).toBeCalled();
 		});
@@ -77,13 +77,13 @@ describe('ShareTokenService', () => {
 
 			await service.createToken(
 				{
-					id: course.id,
-					type: ShareTokenParentType.Course,
+					parentId: course.id,
+					parentType: ShareTokenParentType.Course,
 				},
 				{
 					context: {
-						type: ShareTokenContextType.School,
-						id: school.id,
+						contextType: ShareTokenContextType.School,
+						contextId: school.id,
 					},
 				}
 			);
