@@ -13,7 +13,7 @@ export class AccountEntityToDtoMapper {
 			credentialHash: account.credentialHash,
 			expiresAt: account.expiresAt,
 			lasttriedFailedLogin: account.lasttriedFailedLogin,
-			password: account.password,
+			newCleartextPassword: account.password,
 			systemId: account.systemId?.toString(),
 			token: account.token,
 		});

@@ -21,7 +21,7 @@ export class AccountSaveDto {
 
 	@IsOptional()
 	@Matches(passwordPattern)
-	password?: string;
+	newCleartextPassword?: string;
 
 	@IsOptional()
 	@IsString()
@@ -56,7 +56,7 @@ export class AccountSaveDto {
 		this.createdAt = props.createdAt;
 		this.updatedAt = props.updatedAt;
 		this.username = props.username;
-		this.password = props.password;
+		this.newCleartextPassword = props.newCleartextPassword;
 		this.token = props.token;
 		this.credentialHash = props.credentialHash;
 		this.userId = props.userId;

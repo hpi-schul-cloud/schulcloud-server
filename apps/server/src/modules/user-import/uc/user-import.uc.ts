@@ -232,7 +232,7 @@ export class UserImportUc {
 		const account: AccountDto = await this.accountService.findByUserIdOrFail(user.id);
 
 		account.systemId = importUser.system.id;
-		account.password = undefined;
+		account.newCleartextPassword = undefined;
 		account.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;
 
 		await this.userRepo.save(user);

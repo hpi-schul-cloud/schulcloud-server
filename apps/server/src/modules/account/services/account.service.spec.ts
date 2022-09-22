@@ -274,7 +274,7 @@ describe('AccountService', () => {
 				username: 'asdf@asdf.de',
 				userId: mockUserWithoutAccount.id,
 				systemId: '012345678912',
-				password: defaultPassword,
+				newCleartextPassword: defaultPassword,
 			} as AccountDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
@@ -295,7 +295,7 @@ describe('AccountService', () => {
 				updatedAt: new Date(),
 				username: 'asdf@asdf.de',
 				userId: mockUserWithoutAccount.id,
-				password: defaultPassword,
+				newCleartextPassword: defaultPassword,
 			} as AccountDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
@@ -313,7 +313,7 @@ describe('AccountService', () => {
 				username: 'asdf@asdf.de',
 				userId: mockUserWithoutAccount.id,
 				systemId: '012345678912',
-				password: defaultPassword,
+				newCleartextPassword: defaultPassword,
 			} as AccountDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
@@ -329,7 +329,7 @@ describe('AccountService', () => {
 			const spy = jest.spyOn(accountRepo, 'save');
 			const dto = {
 				username: 'john.doe@domain.tld',
-				password: '',
+				newCleartextPassword: '',
 			} as AccountDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
@@ -347,7 +347,7 @@ describe('AccountService', () => {
 			const dto = {
 				id: mockTeacherAccount.id,
 				// username: 'john.doe@domain.tld',
-				password: undefined,
+				newCleartextPassword: undefined,
 			} as AccountDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();

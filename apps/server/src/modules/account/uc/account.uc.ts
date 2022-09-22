@@ -115,7 +115,7 @@ export class AccountUc {
 		if (!dto.systemId) {
 			dto.username = dto.username.trim().toLowerCase();
 		}
-		if (!dto.systemId && !dto.password) {
+		if (!dto.systemId && !dto.newCleartextPassword) {
 			throw new ValidationError('No password provided');
 		}
 		// validateUserName ✔
@@ -173,7 +173,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('Current user is not authorized to update target account.');
 		}
 		if (body.password !== undefined) {
-			targetAccount.password = body.password;
+			targetAccount.newCleartextPassword = body.password;
 			targetUser.forcePasswordChange = true;
 			updateUser = true;
 			updateAccount = true;
@@ -239,17 +239,21 @@ export class AccountUc {
 			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
 
-		if (!params.passwordOld || !account.password || !(await this.checkPassword(params.passwordOld, account.password))) {
+		if (
+			!params.passwordOld ||
+			!account.newCleartextPassword ||
+			!(await this.checkPassword(params.passwordOld, account.newCleartextPassword))
+		) {
 			throw new AuthorizationError('Dein Passwort ist nicht korrekt!');
 		}
 
 		let updateUser = false;
 		let updateAccount = false;
 		if (params.passwordNew) {
-			account.password = params.passwordNew;
+			account.newCleartextPassword = params.passwordNew;
 			updateAccount = true;
 		} else {
-			account.password = undefined;
+			account.newCleartextPassword = undefined;
 		}
 
 		if (params.email && user.email !== params.email) {
@@ -325,14 +329,14 @@ export class AccountUc {
 			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
 
-		if (!account.password) {
+		if (!account.newCleartextPassword) {
 			throw new Error('The account does not have a password to compare against.');
-		} else if (await this.checkPassword(password, account.password)) {
+		} else if (await this.checkPassword(password, account.newCleartextPassword)) {
 			throw new ForbiddenOperationError('New password can not be same as old password.');
 		}
 
 		try {
-			account.password = password;
+			account.newCleartextPassword = password;
 			await this.accountService.save(account);
 		} catch (err) {
 			throw new EntityNotFoundError(Account.name);

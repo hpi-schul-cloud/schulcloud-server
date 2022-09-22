@@ -1009,7 +1009,7 @@ describe('AccountUc', () => {
 		it('should throw, if target account has no user', async () => {
 			await expect(
 				accountUc.findAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, { id: 'xxx' } as AccountByIdParams)
-			).rejects.toThrow(EntityNotFoundError);
+			)newPassword.toThrow(EntityNotFoundError);
 		});
 	});
 
@@ -1034,7 +1034,7 @@ describe('AccountUc', () => {
 		it('should not sanitize username for external user', async () => {
 			const spy = jest.spyOn(accountService, 'save');
 			const params: AccountSaveDto = {
-				username: ' John.Doe@domain.tld ',
+				newCleartextPassword: ' John.Doe@domain.tld ',
 				systemId: 'ABC123',
 			};
 			await accountUc.saveAccount(params);
@@ -1062,7 +1062,7 @@ describe('AccountUc', () => {
 			const params: AccountSaveDto = {
 				username: 'dc=schul-cloud,dc=org/fake.ldap',
 				systemId: 'ABC123',
-			};
+			}newPassword
 			await expect(accountUc.saveAccount(params)).resolves.not.toThrow();
 		});
 		it('should throw if no password is provided for an internal user', async () => {
@@ -1072,7 +1072,7 @@ describe('AccountUc', () => {
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('No password provided');
 		});
 		it('should throw if account already exists', async () => {
-			const params: AccountSaveDto = {
+			cnewPasswordams: AccountSaveDto = {
 				username: mockStudentUser.email,
 				userId: mockStudentUser.id,
 				password: defaultPassword,
