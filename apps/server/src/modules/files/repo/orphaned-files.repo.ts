@@ -56,28 +56,33 @@ export class OrphanedFilesRepo {
 
 	async findDuplicatedFileRecords(parentType: FileRecordParentType) {
 		const fileRecords: FileRecord[] = [];
-		const query = [
-			{
-				$group: {
-					_id: '$fileId',
-					filerecordIds: { $push: '$filerecordId' },
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		let results: any[] = [];
+		if (parentType === FileRecordParentType.Lesson) {
+			const query = [
+				{
+					$group: {
+						_id: '$fileId',
+						filerecordIds: { $push: '$filerecordId' },
+					},
 				},
-			},
-			{
-				$project: { numberOfFilerecordIds: { $size: '$filerecordIds' }, filerecordIds: '$filerecordIds' },
-			},
-			{ $match: { numberOfFilerecordIds: { $gt: 1 } } },
-			{
-				$lookup: {
-					from: 'filerecords',
-					localField: 'filerecordIds',
-					foreignField: '_id',
-					as: 'fileRecords',
+				{
+					$project: { numberOfFilerecordIds: { $size: '$filerecordIds' }, filerecordIds: '$filerecordIds' },
 				},
-			},
-		];
+				{ $match: { numberOfFilerecordIds: { $gt: 1 } } },
+				{
+					$lookup: {
+						from: 'filerecords',
+						localField: 'filerecordIds',
+						foreignField: '_id',
+						as: 'fileRecords',
+					},
+				},
+			];
 
-		const results = await this._em.aggregate('files_filerecords', query);
+			results = await this._em.aggregate('files_filerecords', query);
+		}
+
 		results.forEach((entity) => {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 			entity.fileRecords.forEach((fileRecord) => {
