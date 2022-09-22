@@ -4,6 +4,7 @@ import {
 	courseFactory,
 	fileFactory,
 	lessonFactory,
+	schoolFactory,
 	setupEntities,
 	submissionFactory,
 	taskFactory,
@@ -743,26 +744,12 @@ describe('Task Entity', () => {
 	});
 
 	describe('getSchoolId', () => {
-		it('schould return schoolId from lesson', () => {
-			const lesson = lessonFactory.build();
-			const task = taskFactory.build({ lesson });
+		it('schould return schoolId from school', () => {
+			const school = schoolFactory.build();
+			const task = taskFactory.build({ school });
 			const schoolId = task.getSchoolId();
 
-			expect(schoolId).toEqual(lesson.getSchoolId());
-		});
-
-		it('schould return schoolId from course', () => {
-			const course = courseFactory.build();
-			const task = taskFactory.build({ course });
-			const schoolId = task.getSchoolId();
-
-			expect(schoolId).toEqual(course.school.id);
-		});
-
-		it('schould return error on missing parent', () => {
-			const task = taskFactory.build();
-
-			expect(() => task.getSchoolId()).toThrowError(`Couldn't find parent of task.`);
+			expect(schoolId).toEqual(school.id);
 		});
 	});
 });
