@@ -5,7 +5,7 @@ import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Role, School, User, RoleName, Permission } from '@shared/domain';
 import { AccountRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { AccountDto } from '@src/modules/account/services/dto';
+import { AccountReadDto } from '@src/modules/account/services/dto';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountService } from './account.service';
 
@@ -268,14 +268,14 @@ describe('AccountService', () => {
 			});
 		});
 		it('should save a new account', async () => {
-			const accountToSave: AccountDto = {
+			const accountToSave: AccountReadDto = {
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				username: 'asdf@asdf.de',
 				userId: mockUserWithoutAccount.id,
 				systemId: '012345678912',
 				newCleartextPassword: defaultPassword,
-			} as AccountDto;
+			} as AccountReadDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
 			const ret = await accountService.save(accountToSave);
@@ -290,13 +290,13 @@ describe('AccountService', () => {
 		});
 
 		it("should keep account's system undefined on save", async () => {
-			const accountToSave: AccountDto = {
+			const accountToSave: AccountReadDto = {
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				username: 'asdf@asdf.de',
 				userId: mockUserWithoutAccount.id,
 				newCleartextPassword: defaultPassword,
-			} as AccountDto;
+			} as AccountReadDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
 			const ret = await accountService.save(accountToSave);
@@ -314,7 +314,7 @@ describe('AccountService', () => {
 				userId: mockUserWithoutAccount.id,
 				systemId: '012345678912',
 				newCleartextPassword: defaultPassword,
-			} as AccountDto;
+			} as AccountReadDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
 			await accountService.save(accountToSave);
@@ -330,7 +330,7 @@ describe('AccountService', () => {
 			const dto = {
 				username: 'john.doe@domain.tld',
 				newCleartextPassword: '',
-			} as AccountDto;
+			} as AccountReadDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
 			await expect(accountService.save(dto)).resolves.not.toThrow();
@@ -348,7 +348,7 @@ describe('AccountService', () => {
 				id: mockTeacherAccount.id,
 				// username: 'john.doe@domain.tld',
 				newCleartextPassword: undefined,
-			} as AccountDto;
+			} as AccountReadDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
 			await expect(accountService.save(dto)).resolves.not.toThrow();

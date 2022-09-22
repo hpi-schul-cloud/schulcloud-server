@@ -1,9 +1,9 @@
 import { Account } from '@shared/domain';
-import { AccountDto } from '../services/dto/account.dto';
+import { AccountReadDto } from '../services/dto/account.dto';
 
 export class AccountEntityToDtoMapper {
-	static mapToDto(account: Account): AccountDto {
-		return new AccountDto({
+	static mapToDto(account: Account): AccountReadDto {
+		return new AccountReadDto({
 			id: account.id,
 			createdAt: account.createdAt,
 			updatedAt: account.updatedAt,
@@ -13,19 +13,19 @@ export class AccountEntityToDtoMapper {
 			credentialHash: account.credentialHash,
 			expiresAt: account.expiresAt,
 			lasttriedFailedLogin: account.lasttriedFailedLogin,
-			newCleartextPassword: account.password,
+			oldHashedPassword: account.password,
 			systemId: account.systemId?.toString(),
 			token: account.token,
 		});
 	}
 
-	static mapSearchResult(accountEntities: [Account[], number]) {
+	static mapSearchResult(accountEntities: [Account[], number]): { accounts: AccountReadDto[]; total: number } {
 		const foundAccounts = accountEntities[0];
-		const accountDtos: AccountDto[] = AccountEntityToDtoMapper.mapAccountsToDto(foundAccounts);
+		const accountDtos: AccountReadDto[] = AccountEntityToDtoMapper.mapAccountsToDto(foundAccounts);
 		return { accounts: accountDtos, total: accountEntities[1] };
 	}
 
-	static mapAccountsToDto(accounts: Account[]): AccountDto[] {
+	static mapAccountsToDto(accounts: Account[]): AccountReadDto[] {
 		return accounts.map((accountEntity) => AccountEntityToDtoMapper.mapToDto(accountEntity));
 	}
 }

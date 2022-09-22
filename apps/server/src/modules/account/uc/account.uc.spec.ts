@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { AccountReadDto } from '@src/modules/account/services/dto/account.dto';
 import {
 	Account,
 	EntityId,
@@ -105,7 +105,7 @@ describe('AccountUc', () => {
 				{
 					provide: AccountService,
 					useValue: {
-						save: jest.fn().mockImplementation((account: AccountDto): Promise<void> => {
+						save: jest.fn().mockImplementation((account: AccountReadDto): Promise<void> => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
 							}
@@ -118,7 +118,7 @@ describe('AccountUc', () => {
 							}
 							return Promise.reject();
 						}),
-						delete: (id: EntityId): Promise<AccountDto> => {
+						delete: (id: EntityId): Promise<AccountReadDto> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id?.toString() === id);
 
 							if (account) {
@@ -129,7 +129,7 @@ describe('AccountUc', () => {
 						create: (): Promise<void> => {
 							return Promise.resolve();
 						},
-						findByUserId: (userId: EntityId): Promise<AccountDto | null> => {
+						findByUserId: (userId: EntityId): Promise<AccountReadDto | null> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 
 							if (account) {
@@ -137,7 +137,7 @@ describe('AccountUc', () => {
 							}
 							return Promise.resolve(null);
 						},
-						findByUserIdOrFail: (userId: EntityId): Promise<AccountDto> => {
+						findByUserIdOrFail: (userId: EntityId): Promise<AccountReadDto> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 
 							if (account) {
@@ -148,7 +148,7 @@ describe('AccountUc', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
-						findById: (accountId: EntityId): Promise<AccountDto> => {
+						findById: (accountId: EntityId): Promise<AccountReadDto> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
 
 							if (account) {
@@ -157,7 +157,7 @@ describe('AccountUc', () => {
 							throw new EntityNotFoundError(Account.name);
 						},
 
-						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<AccountDto> => {
+						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<AccountReadDto> => {
 							const account = mockAccounts.find(
 								(tempAccount) => tempAccount.username === username && tempAccount.systemId === systemId
 							);
@@ -167,7 +167,7 @@ describe('AccountUc', () => {
 							throw new EntityNotFoundError(Account.name);
 						},
 
-						searchByUsernameExactMatch: (username: string): Promise<{ accounts: AccountDto[]; total: number }> => {
+						searchByUsernameExactMatch: (username: string): Promise<{ accounts: AccountReadDto[]; total: number }> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
 
 							if (account) {
@@ -190,7 +190,7 @@ describe('AccountUc', () => {
 								total: 0,
 							});
 						},
-						searchByUsernamePartialMatch: (): Promise<{ accounts: AccountDto[]; total: number }> => {
+						searchByUsernamePartialMatch: (): Promise<{ accounts: AccountReadDto[]; total: number }> => {
 							return Promise.resolve({
 								accounts: mockAccounts.map((mockAccount) => AccountEntityToDtoMapper.mapToDto(mockAccount)),
 								total: mockAccounts.length,
@@ -791,8 +791,9 @@ describe('AccountUc', () => {
 				{ userId: mockSuperheroUser.id } as ICurrentUser,
 				{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams
 			);
+
 			const expected = new AccountSearchListResponse(
-				[AccountResponseMapper.mapToResponseFromEntity(mockStudentAccount)],
+				[AccountResponseMapper.mapToResponse(AccountEntityToDtoMapper.mapAccountsToDto([mockStudentAccount])[0])],
 				1,
 				0,
 				1
@@ -1009,7 +1010,7 @@ describe('AccountUc', () => {
 		it('should throw, if target account has no user', async () => {
 			await expect(
 				accountUc.findAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, { id: 'xxx' } as AccountByIdParams)
-			)newPassword.toThrow(EntityNotFoundError);
+			).rejects.toThrow(EntityNotFoundError);
 		});
 	});
 
@@ -1022,7 +1023,7 @@ describe('AccountUc', () => {
 			const spy = jest.spyOn(accountService, 'save');
 			const params: AccountSaveDto = {
 				username: ' John.Doe@domain.tld ',
-				password: defaultPassword,
+				newCleartextPassword: defaultPassword,
 			};
 			await accountUc.saveAccount(params);
 			expect(spy).toHaveBeenCalledWith(
@@ -1047,7 +1048,7 @@ describe('AccountUc', () => {
 		it('should throw if username for a local user is not an email', async () => {
 			const params: AccountSaveDto = {
 				username: 'John Doe',
-				password: defaultPassword,
+				newCleartextPassword: defaultPassword,
 			};
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username is not an email');
 		});
@@ -1062,7 +1063,7 @@ describe('AccountUc', () => {
 			const params: AccountSaveDto = {
 				username: 'dc=schul-cloud,dc=org/fake.ldap',
 				systemId: 'ABC123',
-			}newPassword
+			};
 			await expect(accountUc.saveAccount(params)).resolves.not.toThrow();
 		});
 		it('should throw if no password is provided for an internal user', async () => {
@@ -1072,10 +1073,10 @@ describe('AccountUc', () => {
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('No password provided');
 		});
 		it('should throw if account already exists', async () => {
-			cnewPasswordams: AccountSaveDto = {
+			const params: AccountSaveDto = {
 				username: mockStudentUser.email,
 				userId: mockStudentUser.id,
-				password: defaultPassword,
+				newCleartextPassword: defaultPassword,
 			};
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Account already exists');
 		});
@@ -1085,7 +1086,7 @@ describe('AccountUc', () => {
 			mockStudentAccount.username = 'john.doe@domain.tld';
 			const params: AccountSaveDto = {
 				username: mockStudentAccount.username,
-				password: defaultPassword,
+				newCleartextPassword: defaultPassword,
 			};
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username already exists');
 		});

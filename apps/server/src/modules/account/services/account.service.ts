@@ -5,28 +5,28 @@ import bcrypt from 'bcryptjs';
 import { Account, EntityId } from '@shared/domain';
 import { AccountRepo } from '@shared/repo';
 import { AccountEntityToDtoMapper } from '../mapper';
-import { AccountDto, AccountSaveDto } from './dto';
+import { AccountReadDto, AccountSaveDto } from './dto';
 
 @Injectable()
 export class AccountService {
 	constructor(private accountRepo: AccountRepo) {}
 
-	async findById(id: EntityId): Promise<AccountDto> {
+	async findById(id: EntityId): Promise<AccountReadDto> {
 		const accountEntity = await this.accountRepo.findById(id);
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
-	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
+	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountReadDto[]> {
 		const accountEntities = await this.accountRepo.findMultipleByUserId(userIds);
 		return AccountEntityToDtoMapper.mapAccountsToDto(accountEntities);
 	}
 
-	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
+	async findByUserId(userId: EntityId): Promise<AccountReadDto | null> {
 		const accountEntity = await this.accountRepo.findByUserId(userId);
 		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
 	}
 
-	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
+	async findByUserIdOrFail(userId: EntityId): Promise<AccountReadDto> {
 		const accountEntity = await this.accountRepo.findByUserId(userId);
 		if (!accountEntity) {
 			throw new EntityNotFoundError('Account');
@@ -34,12 +34,12 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {
+	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountReadDto | null> {
 		const accountEntity = await this.accountRepo.findByUsernameAndSystemId(username, systemId);
 		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
 	}
 
-	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
+	async save(accountDto: AccountSaveDto): Promise<AccountReadDto> {
 		// Check if the ID is correct?
 		// const user = await this.userRepo.findById(accountDto.userId);
 		// const system = accountDto.systemId ? await this.systemRepo.findById(accountDto.systemId) : undefined;
@@ -76,7 +76,7 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
-	async updateUsername(accountId: EntityId, username: string): Promise<AccountDto> {
+	async updateUsername(accountId: EntityId, username: string): Promise<AccountReadDto> {
 		const account = await this.accountRepo.findById(accountId);
 		account.username = username;
 		account.updatedAt = new Date();
@@ -84,7 +84,7 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
-	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
+	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountReadDto> {
 		const account = await this.accountRepo.findById(accountId);
 		account.lasttriedFailedLogin = lastTriedFailedLogin;
 		await this.accountRepo.save(account);
@@ -103,12 +103,12 @@ export class AccountService {
 		userName: string,
 		skip: number,
 		limit: number
-	): Promise<{ accounts: AccountDto[]; total: number }> {
+	): Promise<{ accounts: AccountReadDto[]; total: number }> {
 		const accountEntities = await this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountDto[]; total: number }> {
+	async searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountReadDto[]; total: number }> {
 		const accountEntities = await this.accountRepo.searchByUsernameExactMatch(userName);
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}

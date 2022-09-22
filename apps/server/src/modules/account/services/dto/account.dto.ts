@@ -1,17 +1,20 @@
 import { EntityId } from '@shared/domain';
-import { AccountSaveDto } from './account-save.dto';
+import { AccountBaseDto } from './account-base.dto';
 
-export class AccountDto extends AccountSaveDto {
+export class AccountReadDto extends AccountBaseDto {
 	readonly id: EntityId;
 
 	readonly createdAt: Date;
 
 	readonly updatedAt: Date;
 
-	constructor(props: AccountDto) {
+	readonly oldHashedPassword?: string;
+
+	constructor(props: AccountReadDto) {
 		super(props);
 		this.id = props.id;
 		this.createdAt = props.createdAt;
 		this.updatedAt = props.updatedAt;
+		this.oldHashedPassword = props.oldHashedPassword;
 	}
 }

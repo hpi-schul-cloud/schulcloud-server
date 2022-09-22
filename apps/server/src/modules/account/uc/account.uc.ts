@@ -20,7 +20,7 @@ import {
 } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { AccountReadDto } from '@src/modules/account/services/dto/account.dto';
 import { ConfigService } from '@nestjs/config';
 
 import { ObjectId } from 'bson';
@@ -109,6 +109,11 @@ export class AccountUc {
 		return AccountResponseMapper.mapToResponse(account);
 	}
 
+	/**
+	 * This method is used by feathers services that used the legacy account service for saving
+	 *
+	 * @param dto
+	 */
 	async saveAccount(dto: AccountSaveDto): Promise<void> {
 		await validateOrReject(dto);
 		// sanatizeUsername ✔
@@ -158,13 +163,13 @@ export class AccountUc {
 		body: AccountByIdBodyParams
 	): Promise<AccountResponse> {
 		const executingUser = await this.userRepo.findById(currentUser.userId, true);
-		const targetAccount = await this.accountService.findById(params.id);
+		const targetAccountReadDto = await this.accountService.findById(params.id);
 
-		if (!targetAccount.userId) {
+		if (!targetAccountReadDto.userId) {
 			throw new EntityNotFoundError(User.name);
 		}
 
-		const targetUser = await this.userRepo.findById(targetAccount.userId, true);
+		const targetUser = await this.userRepo.findById(targetAccountReadDto.userId, true);
 
 		let updateUser = false;
 		let updateAccount = false;
@@ -172,22 +177,24 @@ export class AccountUc {
 		if (!this.hasPermissionsToAccessAccount(executingUser, targetUser, 'UPDATE')) {
 			throw new ForbiddenOperationError('Current user is not authorized to update target account.');
 		}
+		const targetAccountSaveDto = new AccountSaveDto(targetAccountReadDto);
+
 		if (body.password !== undefined) {
-			targetAccount.newCleartextPassword = body.password;
+			targetAccountSaveDto.newCleartextPassword = body.password;
 			targetUser.forcePasswordChange = true;
 			updateUser = true;
 			updateAccount = true;
 		}
 		if (body.username !== undefined) {
 			const newMail = body.username.toLowerCase();
-			await this.checkUniqueEmail(targetAccount, targetUser, newMail);
+			await this.checkUniqueEmail(targetAccountReadDto, targetUser, newMail);
 			targetUser.email = newMail;
-			targetAccount.username = newMail;
+			targetAccountSaveDto.username = newMail;
 			updateUser = true;
 			updateAccount = true;
 		}
 		if (body.activated !== undefined) {
-			targetAccount.activated = body.activated;
+			targetAccountSaveDto.activated = body.activated;
 			updateAccount = true;
 		}
 
@@ -200,12 +207,13 @@ export class AccountUc {
 		}
 		if (updateAccount) {
 			try {
-				await this.accountService.save(targetAccount);
+				const updatedAccountReadDto = await this.accountService.save(targetAccountSaveDto);
+				return AccountResponseMapper.mapToResponse(updatedAccountReadDto);
 			} catch (err) {
 				throw new EntityNotFoundError(Account.name);
 			}
 		}
-		return AccountResponseMapper.mapToResponse(targetAccount);
+		return AccountResponseMapper.mapToResponse(targetAccountReadDto);
 	}
 
 	/**
@@ -220,7 +228,7 @@ export class AccountUc {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new ForbiddenOperationError('Current user is not authorized to delete an account.');
 		}
-		const account: AccountDto = await this.accountService.findById(params.id);
+		const account: AccountReadDto = await this.accountService.findById(params.id);
 		await this.accountService.delete(account.id);
 		return AccountResponseMapper.mapToResponse(account);
 	}
@@ -233,34 +241,35 @@ export class AccountUc {
 	 */
 	async updateMyAccount(currentUserId: EntityId, params: PatchMyAccountParams) {
 		const user = await this.userRepo.findById(currentUserId, true);
-		const account: AccountDto = await this.accountService.findByUserIdOrFail(currentUserId);
+		const accountReadDto: AccountReadDto = await this.accountService.findByUserIdOrFail(currentUserId);
 
-		if (account.systemId) {
+		if (accountReadDto.systemId) {
 			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
 
 		if (
 			!params.passwordOld ||
-			!account.newCleartextPassword ||
-			!(await this.checkPassword(params.passwordOld, account.newCleartextPassword))
+			!accountReadDto.oldHashedPassword ||
+			!(await this.checkPassword(params.passwordOld, accountReadDto.oldHashedPassword))
 		) {
 			throw new AuthorizationError('Dein Passwort ist nicht korrekt!');
 		}
+		const accountSaveDto = new AccountSaveDto(accountReadDto);
 
 		let updateUser = false;
 		let updateAccount = false;
 		if (params.passwordNew) {
-			account.newCleartextPassword = params.passwordNew;
+			accountSaveDto.newCleartextPassword = params.passwordNew;
 			updateAccount = true;
 		} else {
-			account.newCleartextPassword = undefined;
+			accountSaveDto.newCleartextPassword = undefined;
 		}
 
 		if (params.email && user.email !== params.email) {
 			const newMail = params.email.toLowerCase();
-			await this.checkUniqueEmail(account, user, newMail);
+			await this.checkUniqueEmail(accountReadDto, user, newMail);
 			user.email = newMail;
-			account.username = newMail;
+			accountSaveDto.username = newMail;
 			updateUser = true;
 			updateAccount = true;
 		}
@@ -289,7 +298,7 @@ export class AccountUc {
 		}
 		if (updateAccount) {
 			try {
-				await this.accountService.save(account);
+				await this.accountService.save(accountSaveDto);
 			} catch (err) {
 				throw new EntityNotFoundError(Account.name);
 			}
@@ -323,21 +332,23 @@ export class AccountUc {
 			throw new ForbiddenOperationError('The password is not temporary, hence can not be changed.');
 		} // Password change was forces or this is a first logon for the user
 
-		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
+		const accountRead: AccountReadDto = await this.accountService.findByUserIdOrFail(userId);
 
-		if (account.systemId) {
+		if (accountRead.systemId) {
 			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
 
-		if (!account.newCleartextPassword) {
+		if (!accountRead.oldHashedPassword) {
 			throw new Error('The account does not have a password to compare against.');
-		} else if (await this.checkPassword(password, account.newCleartextPassword)) {
+		} else if (await this.checkPassword(password, accountRead.oldHashedPassword)) {
 			throw new ForbiddenOperationError('New password can not be same as old password.');
 		}
 
+		const accountSave = new AccountSaveDto(accountRead);
+
 		try {
-			account.newCleartextPassword = password;
-			await this.accountService.save(account);
+			accountSave.newCleartextPassword = password;
+			await this.accountService.save(accountSave);
 		} catch (err) {
 			throw new EntityNotFoundError(Account.name);
 		}
@@ -365,7 +376,7 @@ export class AccountUc {
 		}
 	}
 
-	private async checkUniqueEmail(account: AccountDto, user: User, email: string): Promise<void> {
+	private async checkUniqueEmail(account: AccountReadDto, user: User, email: string): Promise<void> {
 		if (!(await this.accountValidationService.isUniqueEmail(email, user.id, account.id, account.systemId))) {
 			throw new ValidationError(`The email address is already in use!`);
 		}
@@ -437,7 +448,7 @@ export class AccountUc {
 					break;
 				case 'DELETE':
 					permissionsToCheck.push('TEACHER_DELETE');
-					break; 
+					break;
  				*/
 			}
 		}
