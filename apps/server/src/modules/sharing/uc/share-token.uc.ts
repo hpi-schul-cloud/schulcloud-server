@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, ShareTokenContext, ShareTokenDO, ShareTokenParentType, ShareTokenPayload } from '@shared/domain';
-import { ObjectId } from 'bson';
+import { EntityId, ShareTokenContext, ShareTokenDO, ShareTokenPayload } from '@shared/domain';
 import { ShareTokenService } from '../share-token.service';
 
 @Injectable()
@@ -8,15 +7,11 @@ export class ShareTokenUC {
 	constructor(private readonly shareTokenService: ShareTokenService) {}
 
 	async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenDO> {
-		const shareToken = new ShareTokenDO({
-			token,
-			payload: {
-				parentType: ShareTokenParentType.Course,
-				parentId: new ObjectId().toHexString(),
-			},
-		});
+		// WIP add authorization
 
-		return Promise.resolve(shareToken);
+		const shareToken = await this.shareTokenService.lookupToken(token);
+
+		return shareToken;
 	}
 
 	async createShareToken(
@@ -24,8 +19,10 @@ export class ShareTokenUC {
 		payload: ShareTokenPayload,
 		options?: { context?: ShareTokenContext; expiresAt?: Date }
 	): Promise<ShareTokenDO> {
-		const token = await this.shareTokenService.createToken(payload, options);
+		// WIP add authorization
 
-		return token;
+		const shareToken = await this.shareTokenService.createToken(payload, options);
+
+		return shareToken;
 	}
 }
