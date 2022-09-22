@@ -1,4 +1,5 @@
-import { Account, EntityId, IAccountProperties, RoleName } from '@shared/domain';
+import { Account, EntityId, IAccountProperties } from '@shared/domain';
+
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
