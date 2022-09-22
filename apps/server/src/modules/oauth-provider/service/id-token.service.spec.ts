@@ -100,6 +100,10 @@ describe('IdTokenService', () => {
 		pseudonymDo = { pseudonym: 'Pseudonym' } as PseudonymDO;
 	});
 
+	afterEach(() => {
+		resetAllMocks();
+	});
+
 	describe('createIdToken', () => {
 		let userDto: UserDto;
 		let scopes: string[];
