@@ -13,6 +13,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
+import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 
 class HydraOauthSsoSpec extends HydraSsoService {
 	public processCookiesSpec(setCookies: string[], cookie: CookiesDto): CookiesDto {
@@ -88,6 +89,10 @@ describe('HydraService', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<SymetricKeyEncryptionService>(),
 				},
 			],
 		}).compile();

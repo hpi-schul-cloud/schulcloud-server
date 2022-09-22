@@ -3,7 +3,7 @@ import { OauthConfig } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { LtiToolRepo } from '@shared/repo';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { InternalServerErrorException } from '@nestjs/common';
+import { Inject, InternalServerErrorException } from '@nestjs/common';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import QueryString from 'qs';
@@ -12,10 +12,15 @@ import { nanoid } from 'nanoid';
 import { firstValueFrom, Observable } from 'rxjs';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 
 @Injectable()
 export class HydraSsoService {
-	constructor(private readonly ltiRepo: LtiToolRepo, private readonly httpService: HttpService) {}
+	constructor(
+		private readonly ltiRepo: LtiToolRepo,
+		private readonly httpService: HttpService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
+	) {}
 
 	private readonly HOST: string = Configuration.get('HOST') as string;
 
@@ -96,7 +101,7 @@ export class HydraSsoService {
 		const hydraOauthConfig = new OauthConfig({
 			authEndpoint: `${hydraUri}/oauth2/auth`,
 			clientId: tool.oAuthClientId,
-			clientSecret: tool.secret,
+			clientSecret: this.oAuthEncryptionService.encrypt(tool.secret),
 			grantType: 'authorization_code',
 			issuer: `${hydraUri}/`,
 			jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,
