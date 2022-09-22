@@ -161,8 +161,8 @@ describe('HydraService', () => {
 		describe('acceptLogoutRequest', () => {
 			it('should make http request', async () => {
 				// Arrange
-				const response: RedirectResponse = { redirect_to: 'redirect_mock' };
-				httpService.request.mockReturnValue(of(createAxiosResponse(response)));
+				const responseMock: RedirectResponse = { redirect_to: 'redirect_mock' };
+				httpService.request.mockReturnValue(of(createAxiosResponse(responseMock)));
 				const config: AxiosRequestConfig = {
 					method: 'PUT',
 					url: `${hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=challenge_mock`,
@@ -170,11 +170,11 @@ describe('HydraService', () => {
 				};
 
 				// Act
-				const redirect: RedirectResponse = await service.acceptLogoutRequest('challenge_mock');
+				const response: RedirectResponse = await service.acceptLogoutRequest('challenge_mock');
 
 				// Assert
 				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
-				expect(redirect).toEqual(response);
+				expect(response).toEqual(responseMock);
 			});
 		});
 	});
