@@ -6,7 +6,12 @@ import { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, Method } from '
 import { NotImplementedException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { of } from 'rxjs';
-import { AcceptConsentRequestBody, RejectRequestBody } from '@shared/infra/oauth-provider/dto';
+import {
+	AcceptConsentRequestBody,
+	ConsentResponse,
+	ProviderRedirectResponse,
+	RejectRequestBody,
+} from '@shared/infra/oauth-provider/dto';
 import resetAllMocks = jest.resetAllMocks;
 
 class HydraServiceSpec extends HydraService {
@@ -110,7 +115,6 @@ describe('HydraService', () => {
 
 		beforeEach(() => {
 			challenge = 'challengexyz';
-			httpService.request.mockReturnValue(of(createAxiosResponse({})));
 		});
 
 		afterEach(() => {
@@ -124,11 +128,13 @@ describe('HydraService', () => {
 					method: 'GET',
 					url: `${hydraUri}/oauth2/auth/requests/consent?consent_challenge=${challenge}`,
 				};
+				httpService.request.mockReturnValue(of(createAxiosResponse<ConsentResponse>({ challenge })));
 
 				// Act
-				await service.getConsentRequest(challenge);
+				const result: ConsentResponse = await service.getConsentRequest(challenge);
 
 				// Assert
+				expect(result.challenge).toEqual(challenge);
 				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
 			});
 		});
@@ -144,11 +150,16 @@ describe('HydraService', () => {
 					url: `${hydraUri}/oauth2/auth/requests/consent/accept?consent_challenge=${challenge}`,
 					data: body,
 				};
+				const expectedRedirectTo = 'redirectTo';
+				httpService.request.mockReturnValue(
+					of(createAxiosResponse<ProviderRedirectResponse>({ redirect_to: expectedRedirectTo }))
+				);
 
 				// Act
-				await service.acceptConsentRequest(challenge, body);
+				const result: ProviderRedirectResponse = await service.acceptConsentRequest(challenge, body);
 
 				// Assert
+				expect(result.redirect_to).toEqual(expectedRedirectTo);
 				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
 			});
 		});
@@ -164,11 +175,16 @@ describe('HydraService', () => {
 					url: `${hydraUri}/oauth2/auth/requests/consent/reject?consent_challenge=${challenge}`,
 					data: body,
 				};
+				const expectedRedirectTo = 'redirectTo';
+				httpService.request.mockReturnValue(
+					of(createAxiosResponse<ProviderRedirectResponse>({ redirect_to: expectedRedirectTo }))
+				);
 
 				// Act
-				await service.rejectConsentRequest(challenge, body);
+				const result: ProviderRedirectResponse = await service.rejectConsentRequest(challenge, body);
 
 				// Assert
+				expect(result.redirect_to).toEqual(expectedRedirectTo);
 				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
 			});
 		});

@@ -49,34 +49,24 @@ export class IdTokenService {
 
 	protected buildGroupsClaim(teams: Team[]): GroupNameIdTuple[] {
 		return teams.map(
-			(team: Team) =>
-				<GroupNameIdTuple>{
-					gid: team.id,
-					displayName: team.name,
-				}
+			(team: Team): GroupNameIdTuple => ({
+				gid: team.id,
+				displayName: team.name,
+			})
 		);
 	}
 
 	protected async createIframeSubject(userId: string, clientId: string): Promise<string | undefined> {
-		let ltiTool: LtiToolDO | undefined;
-		let pseudonymDO: PseudonymDO | undefined;
-
 		try {
-			ltiTool = await this.ltiToolRepo.findByClientIdAndIsLocal(clientId, true);
+			const ltiTool: LtiToolDO = await this.ltiToolRepo.findByClientIdAndIsLocal(clientId, true);
+			const pseudonymDO: PseudonymDO = await this.pseudonymsRepo.findByUserIdAndToolId(userId, ltiTool.id as string);
 
-			if (ltiTool && ltiTool.id) {
-				pseudonymDO = await this.pseudonymsRepo.findByUserIdAndToolId(userId, ltiTool.id);
-			}
+			return `<iframe src="${this.host}/oauth2/username/${pseudonymDO.pseudonym}" ${this.iFrameProperties}></iframe>`;
 		} catch (err) {
 			this.logger.debug(
 				`Something went wrong for id token creation. LtiTool or Pseudonym could not be found for userId: ${userId} and clientId: ${clientId}`
 			);
-		}
-
-		if (!pseudonymDO) {
 			return undefined;
 		}
-
-		return `<iframe src="${this.host}/oauth2/username/${pseudonymDO.pseudonym}" ${this.iFrameProperties}></iframe>`;
 	}
 }

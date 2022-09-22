@@ -52,10 +52,7 @@ export class UserService {
 		const protectedRoles: RoleDto[] = await this.roleService.getProtectedRoles();
 		const isProtectedUser = protectedRoles.find((role) => (userDto.roleIds || []).includes(role.id || ''));
 		if (isProtectedUser) {
-			if (userDto.lastName) {
-				return userDto.lastName;
-			}
-			return id;
+			return userDto.lastName ? userDto.lastName : id;
 		}
 		return userDto.lastName ? `${userDto.firstName} ${userDto.lastName}` : id;
 	}

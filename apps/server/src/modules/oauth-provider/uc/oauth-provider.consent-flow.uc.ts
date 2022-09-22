@@ -41,7 +41,8 @@ export class OauthProviderConsentFlowUc {
 				consentResponse.client?.client_id
 			);
 		}
-		return this.rejectConsentRequest(challenge, body as RejectRequestBody);
+		const response = this.rejectConsentRequest(challenge, body as RejectRequestBody);
+		return response;
 	}
 
 	private rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {

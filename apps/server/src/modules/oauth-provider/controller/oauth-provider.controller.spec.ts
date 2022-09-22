@@ -69,7 +69,8 @@ describe('OauthProviderController', () => {
 				const result = await controller.getConsentRequest(challengeParams);
 
 				// Assert
-				expect(result).toBeDefined();
+				expect(result).toEqual(consentResponse.challenge);
+				expect(consentUc.getConsentRequest).toHaveBeenCalledWith(consentResponse);
 			});
 		});
 
@@ -85,9 +86,10 @@ describe('OauthProviderController', () => {
 				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 				const expectedRedirectResponse: RedirectResponse = { redirect_to: 'anywhere' };
 				consentUc.patchConsentRequest.mockResolvedValue(expectedRedirectResponse);
+				responseMapper.mapRedirectResponse.mockReturnValue(expectedRedirectResponse);
 
 				// Act
-				const result = await controller.patchConsentRequest(
+				const result: RedirectResponse = await controller.patchConsentRequest(
 					challengeParams,
 					acceptQuery,
 					consentRequestBody,
@@ -95,7 +97,7 @@ describe('OauthProviderController', () => {
 				);
 
 				// Assert
-				expect(result).toBeDefined();
+				expect(result.redirect_to).toEqual(expectedRedirectResponse.redirect_to);
 				expect(consentUc.patchConsentRequest).toHaveBeenCalledWith(
 					challengeParams.challenge,
 					acceptQuery,

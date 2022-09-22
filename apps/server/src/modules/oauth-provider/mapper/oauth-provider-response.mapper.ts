@@ -5,6 +5,6 @@ import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/res
 @Injectable()
 export class OauthProviderResponseMapper {
 	mapRedirectResponse(response: ProviderRedirectResponse): RedirectResponse {
-		return { redirect_to: response.redirect_to };
+		return new RedirectResponse(response.redirect_to);
 	}
 }

@@ -14,6 +14,7 @@ import { teamFactory } from '@shared/testing/factory/team.factory';
 import { MikroORM } from '@mikro-orm/core';
 import { setupEntities } from '@shared/testing';
 import resetAllMocks = jest.resetAllMocks;
+import clearAllMocks = jest.clearAllMocks;
 
 class IdTokenServiceSpec extends IdTokenService {
 	buildGroupsClaimSpec(teams: Team[]): GroupNameIdTuple[] {
@@ -91,15 +92,12 @@ describe('IdTokenService', () => {
 	afterAll(async () => {
 		await module.close();
 		await orm.close();
+		clearAllMocks();
 	});
 
 	beforeEach(() => {
 		ltiToolDo = { id: 'ltiToolId' } as LtiToolDO;
 		pseudonymDo = { pseudonym: 'Pseudonym' } as PseudonymDO;
-	});
-
-	afterEach(() => {
-		resetAllMocks();
 	});
 
 	describe('createIdToken', () => {

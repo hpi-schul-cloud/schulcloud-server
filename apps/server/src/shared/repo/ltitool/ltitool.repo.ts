@@ -21,7 +21,7 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 	}
 
 	async findByClientIdAndIsLocal(oAuthClientId: string, isLocal: boolean): Promise<LtiToolDO> {
-		const entity = await this._em.findOneOrFail(LtiTool, { $and: [{ oAuthClientId }, { isLocal }] });
+		const entity = await this._em.findOneOrFail(LtiTool, { oAuthClientId, isLocal });
 		return this.mapEntityToDO(entity);
 	}
 

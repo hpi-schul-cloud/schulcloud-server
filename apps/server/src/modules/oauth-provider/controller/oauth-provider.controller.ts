@@ -6,6 +6,7 @@ import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { ICurrentUser } from '@shared/domain';
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
+import { ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -83,7 +84,8 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Get('consentRequest/:challenge')
 	getConsentRequest(@Param() params: ChallengeParams) {
-		return this.consentFlowUc.getConsentRequest(params.challenge);
+		const consentRequest = this.consentFlowUc.getConsentRequest(params.challenge);
+		return consentRequest;
 	}
 
 	@Authenticate('jwt')
@@ -94,7 +96,7 @@ export class OauthProviderController {
 		@Body() body: ConsentRequestBody,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<RedirectResponse> {
-		const redirectResponse: RedirectResponse = await this.consentFlowUc.patchConsentRequest(
+		const redirectResponse: ProviderRedirectResponse = await this.consentFlowUc.patchConsentRequest(
 			params.challenge,
 			query,
 			body,

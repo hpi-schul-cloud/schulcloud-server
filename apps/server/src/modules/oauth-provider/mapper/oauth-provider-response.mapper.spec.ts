@@ -1,5 +1,6 @@
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import { ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto';
+import { RedirectResponse } from 'apps/server/src/modules/oauth-provider/controller/dto/response/redirect.response';
 
 describe('OauthProviderResponseMapper', () => {
 	let mapper: OauthProviderResponseMapper;
@@ -8,20 +9,14 @@ describe('OauthProviderResponseMapper', () => {
 		mapper = new OauthProviderResponseMapper();
 	});
 
-	// TODO remove after implementation
-	it('should be defined', () => {
-		expect(mapper).toBeDefined();
-	});
-
 	it('mapRedirectResponse', () => {
 		// Arrange
 		const providerResponse: ProviderRedirectResponse = { redirect_to: 'anywhere' };
 
 		// Act
-		const result = mapper.mapRedirectResponse(providerResponse);
+		const result: RedirectResponse = mapper.mapRedirectResponse(providerResponse);
 
 		// Assert
-		expect(result).toBeDefined();
 		expect(result.redirect_to).toEqual(providerResponse.redirect_to);
 	});
 });
