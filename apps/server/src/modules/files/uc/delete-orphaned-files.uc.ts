@@ -29,7 +29,7 @@ export class DeleteOrphanedFilesUc {
 	async deleteDuplicatedFilesForParentType(parentType: FileRecordParentType) {
 		this.logger.log('Start deletion process.');
 
-		const orphanedFileRecords = await this.orphanedFilesRepo.findDuplicatedFileRecords({ _parentType: parentType });
+		const orphanedFileRecords = await this.orphanedFilesRepo.findDuplicatedFileRecords(parentType);
 		const chunkSize = 100;
 		const chunks: FileRecord[][] = [];
 		for (let i = 0; i < orphanedFileRecords.length; i += chunkSize) {
