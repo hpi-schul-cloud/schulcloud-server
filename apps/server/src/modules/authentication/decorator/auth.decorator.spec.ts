@@ -82,7 +82,7 @@ describe('auth.decorator', () => {
 		});
 	});
 
-	describe('Authenticate', () => {
+	describe.skip('Authenticate', () => {
 		it('should throw with UnauthorizedException if no jwt user data can be extracted from request context', () => {
 			// @ts-expect-error Testcase
 			const exec = () => Authenticate('bla');

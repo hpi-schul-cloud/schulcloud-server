@@ -17,7 +17,7 @@ type Strategies = typeof STRATEGIES;
 
 /**
  * Authentication Decorator taking care of require authentication header to be present, setting up the user context and extending openAPI spec.
- * @param strategies accepted strategies
+ * @param strategy accepted strategies
  * @returns
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

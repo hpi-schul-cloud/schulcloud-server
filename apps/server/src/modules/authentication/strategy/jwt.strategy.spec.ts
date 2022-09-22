@@ -3,12 +3,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 
-import { RoleRepo, UserRepo } from '@shared/repo';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { UserRepo } from '@shared/repo';
+import { setupEntities, userFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Role, User } from '@shared/domain';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
 
@@ -16,13 +15,11 @@ import { JwtStrategy } from './jwt.strategy';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
 
 describe('jwt strategy', () => {
+	let adapter: DeepMocked<JwtValidationAdapter>;
 	let strategy: JwtStrategy;
+	let repo: DeepMocked<UserRepo>;
 	let module: TestingModule;
 	let orm: MikroORM;
-
-	let adapter: DeepMocked<JwtValidationAdapter>;
-	let userRepo: DeepMocked<UserRepo>;
-	let roleRepo: DeepMocked<RoleRepo>;
 
 	beforeEach(async () => {
 		orm = await setupEntities();
@@ -39,17 +36,12 @@ describe('jwt strategy', () => {
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
 				},
-				{
-					provide: RoleRepo,
-					useValue: createMock<RoleRepo>(),
-				},
 			],
 		}).compile();
 
 		strategy = module.get(JwtStrategy);
+		repo = module.get(UserRepo);
 		adapter = module.get(JwtValidationAdapter);
-		userRepo = module.get(UserRepo);
-		roleRepo = module.get(RoleRepo);
 	});
 
 	afterAll(async () => {
@@ -60,65 +52,32 @@ describe('jwt strategy', () => {
 	it('should be defined', () => {
 		expect(strategy).toBeDefined();
 		expect(adapter).toBeDefined();
-		expect(userRepo).toBeDefined();
-		expect(roleRepo).toBeDefined();
+		expect(repo).toBeDefined();
 	});
 
 	describe('when authenticate a user with jwt', () => {
-		let role: Role;
-		let user: User;
-		let payload: JwtPayload;
-
-		beforeEach(() => {
-			role = roleFactory.buildWithId();
-			user = userFactory.buildWithId();
-			payload = {
-				accountId: new ObjectId().toHexString(),
-				jti: new ObjectId().toHexString(),
-				userId: new ObjectId().toHexString(),
-				roles: [role.id],
-			} as JwtPayload;
-
-			userRepo.findById.mockResolvedValue(user);
-			roleRepo.findByIds.mockResolvedValue([role]);
-		});
-
 		it('should check jwt for being whitelisted', async () => {
-			await strategy.validate(payload);
-
-			expect(adapter.isWhitelisted).toHaveBeenCalledWith(payload.accountId, payload.jti);
+			const accountId = new ObjectId().toHexString();
+			const jti = new ObjectId().toHexString();
+			await strategy.validate({ accountId, jti } as JwtPayload);
+			expect(adapter.isWhitelisted).toHaveBeenCalledWith(accountId, jti);
 		});
-
 		it('should load the defined user', async () => {
-			const result: JwtPayload = await strategy.validate(payload);
-
-			expect(userRepo.findById).toHaveBeenCalledWith(payload.userId);
-			expect(result).toEqual(
-				expect.objectContaining({
-					...payload,
-					user: {
-						firstName: user.firstName,
-						lastName: user.lastName,
-						id: user.id,
-						createdAt: user.createdAt,
-						updatedAt: user.updatedAt,
-						roles: [{ id: role.id, name: role.name }],
-						permissions: [],
-						schoolId: user.school.id,
-					},
-				})
-			);
+			const accountId = new ObjectId().toHexString();
+			const userId = new ObjectId().toHexString();
+			const jti = new ObjectId().toHexString();
+			const payload = { accountId, jti, userId } as JwtPayload;
+			repo.findById.mockResolvedValue(userFactory.build());
+			await strategy.validate(payload);
+			expect(repo.findById).toHaveBeenCalledWith(userId);
 		});
 
 		it('should throw an UnauthorizedException when the user is not found', async () => {
-			userRepo.findById.mockRejectedValue(new NotFoundException());
-
-			await expect(() => strategy.validate(payload)).rejects.toThrow(UnauthorizedException);
-		});
-
-		it('should throw an UnauthorizedException when the user is not found', async () => {
-			payload.roles = [];
-
+			const accountId = new ObjectId().toHexString();
+			const userId = new ObjectId().toHexString();
+			const jti = new ObjectId().toHexString();
+			repo.findById.mockRejectedValue(new NotFoundException());
+			const payload = { accountId, jti, userId } as JwtPayload;
 			await expect(() => strategy.validate(payload)).rejects.toThrow(UnauthorizedException);
 		});
 	});
