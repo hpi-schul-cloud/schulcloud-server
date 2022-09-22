@@ -1,12 +1,11 @@
-import { ShareToken } from '@shared/domain';
+import { ShareTokenDO } from '@shared/domain';
 import { ShareTokenResponse } from '../controller/dto';
 
 export class ShareTokenMapper {
-	static mapToResponse(shareToken: ShareToken): ShareTokenResponse {
+	static mapToResponse(shareToken: ShareTokenDO): ShareTokenResponse {
 		const dto = new ShareTokenResponse({
 			token: shareToken.token,
-			parentType: shareToken.parentType,
-			parentId: shareToken.parentId,
+			payload: shareToken.payload,
 			expiresAt: shareToken.expiresAt,
 		});
 

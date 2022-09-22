@@ -1,9 +1,10 @@
+import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ShareToken, ShareTokenContextType } from '@shared/domain';
+import { ShareTokenContextType } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, schoolFactory } from '@shared/testing';
-import { shareTokenFactory } from '@shared/testing/factory/share-token.factory';
+import { cleanupCollections, schoolFactory, shareTokenFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { ShareTokenRepo } from './share-token.repo';
 
 describe('ShareTokenRepo', () => {
@@ -14,7 +15,13 @@ describe('ShareTokenRepo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [ShareTokenRepo],
+			providers: [
+				ShareTokenRepo,
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+			],
 		}).compile();
 		repo = module.get(ShareTokenRepo);
 		em = module.get(EntityManager);
@@ -28,16 +35,10 @@ describe('ShareTokenRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(ShareToken);
-	});
-
 	describe('findOneByToken', () => {
 		it('should find a shareToken by its token', async () => {
 			const shareToken = shareTokenFactory.build();
-
-			await em.persistAndFlush(shareToken);
-			em.clear();
+			await repo.save(shareToken);
 
 			const result = await repo.findOneByToken(shareToken.token);
 
@@ -48,13 +49,14 @@ describe('ShareTokenRepo', () => {
 		it('should include context id', async () => {
 			const school = schoolFactory.build();
 			await em.persistAndFlush([school]);
-			const shareToken = shareTokenFactory.build({ contextType: ShareTokenContextType.School, contextId: school.id });
-
-			await em.persistAndFlush([shareToken]);
-			em.clear();
+			const shareToken = shareTokenFactory.build({
+				context: { contextType: ShareTokenContextType.School, contextId: school.id },
+			});
+			await repo.save(shareToken);
 
 			const result = await repo.findOneByToken(shareToken.token);
-			expect(result.contextId).toEqual(school.id);
+
+			expect(result.context?.contextId).toEqual(school.id);
 		});
 	});
 });

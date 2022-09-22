@@ -4,10 +4,12 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ShareTokenContextType, ShareTokenParentType } from '@shared/domain';
 import { ShareTokenRepo } from '@shared/repo/sharetoken';
-import { courseFactory, schoolFactory, setupEntities } from '@shared/testing';
-import { shareTokenFactory } from '@shared/testing/factory/share-token.factory';
+import { setupEntities, shareTokenFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { ShareTokenService } from './share-token.service';
 import { TokenGenerator } from './token-generator.service';
+
+const buildId = () => new ObjectId().toHexString();
 
 describe('ShareTokenService', () => {
 	let orm: MikroORM;
@@ -45,52 +47,52 @@ describe('ShareTokenService', () => {
 
 	describe('createToken', () => {
 		it('should create a token', () => {
-			const course = courseFactory.buildWithId();
+			const courseId = buildId();
 
-			const token = service.createToken({ parentId: course.id, parentType: ShareTokenParentType.Course });
+			const token = service.createToken({ parentId: courseId, parentType: ShareTokenParentType.Course });
 
 			expect(token).toBeDefined();
 		});
 
 		it('should use the token generator', async () => {
-			const course = courseFactory.buildWithId();
+			const courseId = buildId();
+
 			const token = 'share-token';
 			generator.generateShareToken.mockReturnValue(token);
 
-			await service.createToken({ parentId: course.id, parentType: ShareTokenParentType.Course });
+			await service.createToken({ parentId: courseId, parentType: ShareTokenParentType.Course });
 
 			expect(generator.generateShareToken).toBeCalled();
 			expect(token).toEqual(token);
 		});
 
 		it('should use the repo to persist the shareToken', async () => {
-			const course = courseFactory.buildWithId();
+			const courseId = buildId();
 
-			await service.createToken({ parentId: course.id, parentType: ShareTokenParentType.Course });
+			await service.createToken({ parentId: courseId, parentType: ShareTokenParentType.Course });
 
 			expect(repo.save).toBeCalled();
 		});
 
 		it('should add context to shareToken', async () => {
-			const school = schoolFactory.buildWithId();
-			const course = courseFactory.buildWithId({ school });
+			const schoolId = buildId();
+			const courseId = buildId();
+			const context = {
+				contextType: ShareTokenContextType.School,
+				contextId: schoolId,
+			};
 
 			await service.createToken(
 				{
-					parentId: course.id,
+					parentId: courseId,
 					parentType: ShareTokenParentType.Course,
 				},
 				{
-					context: {
-						contextType: ShareTokenContextType.School,
-						contextId: school.id,
-					},
+					context,
 				}
 			);
 
-			expect(repo.save).toBeCalledWith(
-				expect.objectContaining({ contextType: ShareTokenContextType.School, contextId: school.id })
-			);
+			expect(repo.save).toBeCalledWith(expect.objectContaining({ context }));
 		});
 	});
 

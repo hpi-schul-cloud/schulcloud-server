@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@shared/domain';
-import { shareTokenFactory } from '@shared/testing/factory/share-token.factory';
+import { shareTokenFactory } from '@shared/testing';
 import { ShareTokenUC } from '../uc';
 import { ShareTokenController } from './share-token.controller';
 
@@ -31,7 +31,7 @@ describe('ShareTokenController', () => {
 	describe('looking up a token', () => {
 		it('should call the use case', async () => {
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			const shareToken = shareTokenFactory.buildWithId();
+			const shareToken = shareTokenFactory.withId().build();
 			uc.lookupShareToken.mockResolvedValue(shareToken);
 
 			await controller.lookupShareToken(currentUser, { token: shareToken.token });
@@ -41,15 +41,14 @@ describe('ShareTokenController', () => {
 
 		it('should return the token data', async () => {
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			const shareToken = shareTokenFactory.buildWithId();
+			const shareToken = shareTokenFactory.withId().build();
 			uc.lookupShareToken.mockResolvedValue(shareToken);
 
 			const response = await controller.lookupShareToken(currentUser, { token: shareToken.token });
 
 			expect(response).toMatchObject({
 				token: shareToken.token,
-				parentType: shareToken.parentType,
-				parentId: shareToken.parentId,
+				payload: shareToken.payload,
 			});
 		});
 	});

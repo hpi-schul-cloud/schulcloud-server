@@ -1,22 +1,18 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ShareTokenParentType } from '@shared/domain';
+import { ShareTokenPayloadResponse } from './share-token-payload.response';
 
 export class ShareTokenResponse {
-	constructor({ token, parentType, parentId, expiresAt }: ShareTokenResponse) {
+	constructor({ token, payload, expiresAt }: ShareTokenResponse) {
 		this.token = token;
-		this.parentType = parentType;
-		this.parentId = parentId;
+		this.payload = new ShareTokenPayloadResponse(payload);
 		this.expiresAt = expiresAt;
 	}
 
 	@ApiProperty()
 	token: string;
 
-	@ApiProperty({ enum: ShareTokenParentType })
-	parentType: ShareTokenParentType;
-
 	@ApiProperty()
-	parentId: string;
+	payload: ShareTokenPayloadResponse;
 
 	@ApiPropertyOptional()
 	expiresAt?: Date;
