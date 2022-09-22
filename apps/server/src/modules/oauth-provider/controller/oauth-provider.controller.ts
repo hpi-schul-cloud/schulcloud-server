@@ -2,6 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
+import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { ICurrentUser } from '@shared/domain';
@@ -26,6 +27,7 @@ export class OauthProviderController {
 	constructor(
 		private readonly oauthProviderUc: OauthProviderUc,
 		private readonly consentFlowUc: OauthProviderConsentFlowUc,
+		private readonly logoutFlowUc: OauthProviderLogoutFlowUc,
 		private readonly oauthProviderResponseMapper: OauthProviderResponseMapper
 	) {}
 
@@ -77,8 +79,10 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
-	acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody) {
-		throw new NotImplementedException();
+	async acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody) {
+		const redirect: ProviderRedirectResponse = await this.logoutFlowUc.logoutFlow(params.challenge);
+		const response: RedirectResponse = this.oauthProviderResponseMapper.mapRedirectResponse(redirect);
+		return response;
 	}
 
 	@Authenticate('jwt')

@@ -8,12 +8,14 @@ import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.ser
 import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
 import { UserModule } from '@src/modules/user';
 import { LoggerModule } from '@src/core/logger';
+import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 
 @Module({
 	imports: [OauthProviderServiceModule, UserModule, LoggerModule],
 	providers: [
 		OauthProviderUc,
 		OauthProviderConsentFlowUc,
+		OauthProviderLogoutFlowUc,
 		OauthProviderResponseMapper,
 		IdTokenService,
 		PseudonymsRepo,

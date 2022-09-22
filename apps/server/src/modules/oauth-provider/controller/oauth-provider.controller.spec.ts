@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
+import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotImplementedException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
@@ -14,7 +14,8 @@ import { OauthProviderController } from './oauth-provider.controller';
 describe('OauthProviderController', () => {
 	let module: TestingModule;
 	let controller: OauthProviderController;
-	let uc: DeepMocked<OauthProviderUc>;
+
+	let logoutUc: DeepMocked<OauthProviderLogoutFlowUc>;
 	let consentUc: DeepMocked<OauthProviderConsentFlowUc>;
 	let responseMapper: DeepMocked<OauthProviderResponseMapper>;
 
@@ -27,8 +28,8 @@ describe('OauthProviderController', () => {
 			providers: [
 				OauthProviderController,
 				{
-					provide: OauthProviderUc,
-					useValue: createMock<OauthProviderUc>(),
+					provide: OauthProviderLogoutFlowUc,
+					useValue: createMock<OauthProviderLogoutFlowUc>(),
 				},
 				{
 					provide: OauthProviderConsentFlowUc,
@@ -43,7 +44,7 @@ describe('OauthProviderController', () => {
 
 		controller = module.get(OauthProviderController);
 
-		uc = module.get(OauthProviderUc);
+		logoutUc = module.get(OauthProviderLogoutFlowUc);
 		responseMapper = module.get(OauthProviderResponseMapper);
 		consentUc = module.get(OauthProviderConsentFlowUc);
 	});
@@ -139,10 +140,16 @@ describe('OauthProviderController', () => {
 
 	describe('Logout Flow', () => {
 		describe('acceptLogoutRequest', () => {
-			it('should throw', () => {
-				expect(() => controller.acceptLogoutRequest({ challenge: '' }, { redirect_to: '' })).toThrow(
-					NotImplementedException
+			it('should call uc and return redirect string', async () => {
+				logoutUc.logoutFlow.mockResolvedValue({ redirect_to: 'www.mock.de' });
+
+				const redirect = await controller.acceptLogoutRequest(
+					{ challenge: 'challenge_mock' },
+					{ redirect_to: 'www.mock.de' }
 				);
+
+				expect(logoutUc.logoutFlow).toHaveBeenCalledWith('challenge_mock');
+				expect(redirect).toEqual('www.mock.de');
 			});
 		});
 	});

@@ -38,6 +38,7 @@ describe('HydraService', () => {
 	let service: HydraServiceSpec;
 
 	let httpService: DeepMocked<HttpService>;
+
 	const hydraUri = Configuration.get('HYDRA_URI') as string;
 
 	beforeAll(async () => {
@@ -224,8 +225,22 @@ describe('HydraService', () => {
 
 	describe('Logout Flow', () => {
 		describe('acceptLogoutRequest', () => {
-			it('should throw', () => {
-				expect(() => service.acceptLogoutRequest('')).toThrow(NotImplementedException);
+			it('should make http request', async () => {
+				// Arrange
+				const responseMock: ProviderRedirectResponse = { redirect_to: 'redirect_mock' };
+				httpService.request.mockReturnValue(of(createAxiosResponse(responseMock)));
+				const config: AxiosRequestConfig = {
+					method: 'PUT',
+					url: `${hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=challenge_mock`,
+					headers: { 'X-Forwarded-Proto': 'https' },
+				};
+
+				// Act
+				const response: ProviderRedirectResponse = await service.acceptLogoutRequest('challenge_mock');
+
+				// Assert
+				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
+				expect(response).toEqual(responseMock);
 			});
 		});
 	});
