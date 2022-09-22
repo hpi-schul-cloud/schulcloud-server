@@ -105,16 +105,17 @@ describe('AccountUc', () => {
 				{
 					provide: AccountService,
 					useValue: {
-						save: jest.fn().mockImplementation((account: AccountReadDto): Promise<void> => {
-							if (account.username === 'fail@to.update') {
+						save: jest.fn().mockImplementation((accountSaveDto: AccountSaveDto): Promise<AccountReadDto> => {
+							if (accountSaveDto.username === 'fail@to.update') {
 								return Promise.reject();
 							}
 							const accountEntity = mockAccounts.find(
-								(tempAccount) => tempAccount.userId?.toString() === account.userId
+								(tempAccount) => tempAccount.userId?.toString() === accountSaveDto.userId
 							);
 							if (accountEntity) {
-								Object.assign(accountEntity, account);
-								return Promise.resolve();
+								Object.assign(accountEntity, accountSaveDto);
+								accountEntity.password = accountSaveDto.newCleartextPassword;
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(accountEntity));
 							}
 							return Promise.reject();
 						}),
@@ -441,7 +442,7 @@ describe('AccountUc', () => {
 			password: defaultPasswordHash,
 			systemId: systemFactory.buildWithId().id,
 		});
-		mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId(10)).build();
+		mockAccountWithSystemId = accountFactory.buildWithId({ systemId: systemFactory.buildWithId().id });
 		mockAccountWithLastFailedLogin = accountFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
@@ -676,7 +677,7 @@ describe('AccountUc', () => {
 			});
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					password: undefined,
+					newCleartextPassword: undefined,
 				})
 			);
 		});
@@ -1035,7 +1036,7 @@ describe('AccountUc', () => {
 		it('should not sanitize username for external user', async () => {
 			const spy = jest.spyOn(accountService, 'save');
 			const params: AccountSaveDto = {
-				newCleartextPassword: ' John.Doe@domain.tld ',
+				username: ' John.Doe@domain.tld ',
 				systemId: 'ABC123',
 			};
 			await accountUc.saveAccount(params);
