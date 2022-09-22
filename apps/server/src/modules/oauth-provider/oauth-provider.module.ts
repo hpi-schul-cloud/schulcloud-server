@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
-import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
-import { OauthProviderController } from '@src/modules/oauth-provider/controller/oauth-provider.controller';
-import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { OauthProviderController } from './controller/oauth-provider.controller';
+import { OauthProviderResponseMapper } from './mapper/oauth-provider-response.mapper';
+import { OauthProviderClientCrudUc } from './uc/oauth-provider.client-crud.uc';
 
 @Module({
 	imports: [OauthProviderServiceModule],
-	providers: [OauthProviderUc, OauthProviderResponseMapper],
+	providers: [OauthProviderClientCrudUc, OauthProviderResponseMapper],
 	controllers: [OauthProviderController],
 })
 export class OauthProviderModule {}

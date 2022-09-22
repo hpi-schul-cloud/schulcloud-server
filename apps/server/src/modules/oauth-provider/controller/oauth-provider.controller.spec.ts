@@ -1,20 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotImplementedException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { ICurrentUser } from '@shared/domain/index';
 import { OauthProviderController } from './oauth-provider.controller';
 import { OauthClientBody, OauthClientResponse } from './dto';
+import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
 
 describe('OauthProviderController', () => {
 	let module: TestingModule;
 	let controller: OauthProviderController;
 
-	let uc: DeepMocked<OauthProviderUc>;
+	let uc: DeepMocked<OauthProviderClientCrudUc>;
 	let responseMapper: DeepMocked<OauthProviderResponseMapper>;
 
 	const hydraUri = 'http://hydra.uri';
+	const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockReturnValue(hydraUri);
@@ -23,8 +25,8 @@ describe('OauthProviderController', () => {
 			providers: [
 				OauthProviderController,
 				{
-					provide: OauthProviderUc,
-					useValue: createMock<OauthProviderUc>(),
+					provide: OauthProviderClientCrudUc,
+					useValue: createMock<OauthProviderClientCrudUc>(),
 				},
 				{
 					provide: OauthProviderResponseMapper,
@@ -34,7 +36,7 @@ describe('OauthProviderController', () => {
 		}).compile();
 
 		controller = module.get(OauthProviderController);
-		uc = module.get(OauthProviderUc);
+		uc = module.get(OauthProviderClientCrudUc);
 		responseMapper = module.get(OauthProviderResponseMapper);
 	});
 
@@ -51,10 +53,10 @@ describe('OauthProviderController', () => {
 				uc.getOAuth2Client.mockResolvedValue(data);
 				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
 
-				const result: OauthClientResponse = await controller.getOAuth2Client({ id: 'clientId' });
+				const result: OauthClientResponse = await controller.getOAuth2Client(currentUser, { id: 'clientId' });
 
 				expect(result).toEqual(data);
-				expect(uc.getOAuth2Client).toHaveBeenCalledWith('clientId');
+				expect(uc.getOAuth2Client).toHaveBeenCalledWith(currentUser, 'clientId');
 			});
 		});
 
@@ -66,7 +68,7 @@ describe('OauthProviderController', () => {
 				uc.listOAuth2Clients.mockResolvedValue([data]);
 				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
 
-				const result: OauthClientResponse[] = await controller.listOAuth2Clients({
+				const result: OauthClientResponse[] = await controller.listOAuth2Clients(currentUser, {
 					limit: 1,
 					offset: 0,
 					client_name: 'clientId',
@@ -74,7 +76,7 @@ describe('OauthProviderController', () => {
 				});
 
 				expect(result).toEqual([data]);
-				expect(uc.listOAuth2Clients).toHaveBeenCalledWith(1, 0, 'clientId', 'clientOwner');
+				expect(uc.listOAuth2Clients).toHaveBeenCalledWith(currentUser, 1, 0, 'clientId', 'clientOwner');
 			});
 
 			it('should list oauth2 clients when uc is called without parameters', async () => {
@@ -84,10 +86,10 @@ describe('OauthProviderController', () => {
 				uc.listOAuth2Clients.mockResolvedValue([data]);
 				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
 
-				const result: OauthClientResponse[] = await controller.listOAuth2Clients({});
+				const result: OauthClientResponse[] = await controller.listOAuth2Clients(currentUser, {});
 
 				expect(result).toEqual([data]);
-				expect(uc.listOAuth2Clients).toHaveBeenCalledWith(undefined, undefined, undefined, undefined);
+				expect(uc.listOAuth2Clients).toHaveBeenCalledWith(currentUser, undefined, undefined, undefined, undefined);
 			});
 		});
 
@@ -99,9 +101,9 @@ describe('OauthProviderController', () => {
 				uc.createOAuth2Client.mockResolvedValue(data);
 				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
 
-				const result: OauthClientResponse = await controller.createOAuth2Client(data);
+				const result: OauthClientResponse = await controller.createOAuth2Client(currentUser, data);
 
-				expect(uc.createOAuth2Client).toHaveBeenCalledWith(data);
+				expect(uc.createOAuth2Client).toHaveBeenCalledWith(currentUser, data);
 				expect(result).toEqual(data);
 			});
 		});
@@ -115,20 +117,21 @@ describe('OauthProviderController', () => {
 				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
 
 				const result: OauthClientResponse = await controller.updateOAuth2Client(
+					currentUser,
 					{ id: 'clientId' },
 					{ client_id: 'clientId' }
 				);
 
-				expect(uc.updateOAuth2Client).toHaveBeenCalledWith('clientId', data);
+				expect(uc.updateOAuth2Client).toHaveBeenCalledWith(currentUser, 'clientId', data);
 				expect(result).toEqual(data);
 			});
 		});
 
 		describe('deleteOAuth2Client', () => {
 			it('should delete oauth2 client', async () => {
-				await controller.deleteOAuth2Client({ id: 'clientId' });
+				await controller.deleteOAuth2Client(currentUser, { id: 'clientId' });
 
-				expect(uc.deleteOAuth2Client).toHaveBeenCalledWith('clientId');
+				expect(uc.deleteOAuth2Client).toHaveBeenCalledWith(currentUser, 'clientId');
 			});
 		});
 	});

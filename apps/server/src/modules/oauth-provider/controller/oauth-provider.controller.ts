@@ -1,11 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
-import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import { OauthClient } from '@shared/infra/oauth-provider/dto/index';
-import { RoleName } from '@shared/domain/index';
-import { RequireRole } from '@src/modules/authorization';
+import { ICurrentUser } from '@shared/domain/index';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -20,28 +18,34 @@ import {
 	RevokeConsentQuery,
 	UserParams,
 } from './dto';
+import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
 
 @Controller('oauth2')
 export class OauthProviderController {
 	constructor(
-		private readonly oauthProviderUc: OauthProviderUc,
+		private readonly oauthProviderUc: OauthProviderClientCrudUc,
 		private readonly oauthProviderResponseMapper: OauthProviderResponseMapper
 	) {}
 
-	@RequireRole(RoleName.SUPERHERO)
 	@Authenticate('jwt')
 	@Get('clients/:id')
-	async getOAuth2Client(@Param() params: IdParams): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.oauthProviderUc.getOAuth2Client(params.id);
+	async getOAuth2Client(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: IdParams
+	): Promise<OauthClientResponse> {
+		const client: OauthClient = await this.oauthProviderUc.getOAuth2Client(currentUser, params.id);
 		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 		return mapped;
 	}
 
-	@RequireRole(RoleName.SUPERHERO)
 	@Authenticate('jwt')
 	@Get('clients')
-	async listOAuth2Clients(@Param() params: ListOauthClientsParams): Promise<OauthClientResponse[]> {
+	async listOAuth2Clients(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ListOauthClientsParams
+	): Promise<OauthClientResponse[]> {
 		const clients: OauthClient[] = await this.oauthProviderUc.listOAuth2Clients(
+			currentUser,
 			params.limit,
 			params.offset,
 			params.client_name,
@@ -54,29 +58,34 @@ export class OauthProviderController {
 		return mapped;
 	}
 
-	@RequireRole(RoleName.SUPERHERO)
 	@Authenticate('jwt')
 	@Post('clients')
-	async createOAuth2Client(@Body() body: OauthClientBody): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.oauthProviderUc.createOAuth2Client(body);
+	async createOAuth2Client(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() body: OauthClientBody
+	): Promise<OauthClientResponse> {
+		const client: OauthClient = await this.oauthProviderUc.createOAuth2Client(currentUser, body);
 		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 		return mapped;
 	}
 
-	@RequireRole(RoleName.SUPERHERO)
 	@Authenticate('jwt')
 	@Put('clients/:id')
-	async updateOAuth2Client(@Param() params: IdParams, @Body() body: OauthClientBody): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.oauthProviderUc.updateOAuth2Client(params.id, body);
+	async updateOAuth2Client(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: IdParams,
+		@Body() body: OauthClientBody
+	): Promise<OauthClientResponse> {
+		const client: OauthClient = await this.oauthProviderUc.updateOAuth2Client(currentUser, params.id, body);
 		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 		return mapped;
 	}
 
-	@RequireRole(RoleName.SUPERHERO)
 	@Authenticate('jwt')
 	@Delete('clients/:id')
-	deleteOAuth2Client(@Param() params: IdParams): Promise<void> {
-		return this.oauthProviderUc.deleteOAuth2Client(params.id);
+	deleteOAuth2Client(@CurrentUser() currentUser: ICurrentUser, @Param() params: IdParams): Promise<void> {
+		const promise: Promise<void> = this.oauthProviderUc.deleteOAuth2Client(currentUser, params.id);
+		return promise;
 	}
 
 	@Post('introspect')
