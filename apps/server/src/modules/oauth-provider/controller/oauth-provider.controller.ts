@@ -7,7 +7,8 @@ import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { ICurrentUser } from '@shared/domain';
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
-import { ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto';
+import { ProviderConsentResponse, ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto';
+import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -79,7 +80,7 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
-	async acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody) {
+	async acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody): Promise<RedirectResponse> {
 		const redirect: ProviderRedirectResponse = await this.logoutFlowUc.logoutFlow(params.challenge);
 		const response: RedirectResponse = this.oauthProviderResponseMapper.mapRedirectResponse(redirect);
 		return response;
@@ -87,9 +88,10 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Get('consentRequest/:challenge')
-	getConsentRequest(@Param() params: ChallengeParams) {
-		const consentRequest = this.consentFlowUc.getConsentRequest(params.challenge);
-		return consentRequest;
+	async getConsentRequest(@Param() params: ChallengeParams): Promise<ConsentResponse> {
+		const consentRequest: ProviderConsentResponse = await this.consentFlowUc.getConsentRequest(params.challenge);
+		const response: ConsentResponse = this.oauthProviderResponseMapper.mapConsentResponse(consentRequest);
+		return response;
 	}
 
 	@Authenticate('jwt')

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RedirectResponse {
-	constructor(redirect_to: string) {
-		this.redirect_to = redirect_to;
+	constructor(redirectReponse: RedirectResponse) {
+		this.redirect_to = redirectReponse.redirect_to;
 	}
 
 	@ApiProperty()

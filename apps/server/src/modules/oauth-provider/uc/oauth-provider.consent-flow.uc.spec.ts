@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AcceptQuery, ConsentRequestBody } from '@src/modules/oauth-provider/controller/dto';
 import {
 	AcceptConsentRequestBody,
-	ConsentResponse,
+	ProviderConsentResponse,
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
@@ -49,7 +49,7 @@ describe('OauthProviderConsentFlowUc', () => {
 	describe('consent', () => {
 		let challenge: string;
 		let currentUser: ICurrentUser;
-		let consentResponse: ConsentResponse;
+		let consentResponse: ProviderConsentResponse;
 
 		beforeEach(() => {
 			challenge = 'challengexyz';

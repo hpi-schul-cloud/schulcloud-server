@@ -1,12 +1,15 @@
-import { ProviderOauthClient } from '../interface/oauth-client.interface';
-import { ProviderOidcContext } from '../interface/oidc-context.interface';
+import { ProviderOauthClient, ProviderOidcContext } from '@shared/infra/oauth-provider/dto';
 
-export interface ProviderConsentResponse {
+export class ConsentResponse {
+	constructor(consentResponse: ConsentResponse) {
+		Object.assign(this, consentResponse);
+	}
+
 	acr?: string;
 
 	amr?: string[];
 
-	challenge: string;
+	challenge: string | undefined;
 
 	client?: ProviderOauthClient;
 

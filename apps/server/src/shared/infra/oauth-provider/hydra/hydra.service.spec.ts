@@ -8,7 +8,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { of } from 'rxjs';
 import {
 	AcceptConsentRequestBody,
-	ConsentResponse,
+	ProviderConsentResponse,
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
@@ -129,10 +129,10 @@ describe('HydraService', () => {
 					method: 'GET',
 					url: `${hydraUri}/oauth2/auth/requests/consent?consent_challenge=${challenge}`,
 				};
-				httpService.request.mockReturnValue(of(createAxiosResponse<ConsentResponse>({ challenge })));
+				httpService.request.mockReturnValue(of(createAxiosResponse<ProviderConsentResponse>({ challenge })));
 
 				// Act
-				const result: ConsentResponse = await service.getConsentRequest(challenge);
+				const result: ProviderConsentResponse = await service.getConsentRequest(challenge);
 
 				// Assert
 				expect(result.challenge).toEqual(challenge);

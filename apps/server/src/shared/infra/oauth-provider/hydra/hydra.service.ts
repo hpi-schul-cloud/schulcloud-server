@@ -7,10 +7,10 @@ import { firstValueFrom, Observable } from 'rxjs';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
-	ConsentResponse,
+	ProviderConsentResponse,
 	IntrospectResponse,
 	LoginResponse,
-	OauthClient,
+	ProviderOauthClient,
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '../dto';
@@ -39,7 +39,7 @@ export class HydraService extends OauthProviderService {
 		return response;
 	}
 
-	createOAuth2Client(data: OauthClient): Promise<OauthClient> {
+	createOAuth2Client(data: ProviderOauthClient): Promise<ProviderOauthClient> {
 		throw new NotImplementedException();
 	}
 
@@ -47,15 +47,15 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	getConsentRequest(challenge: string): Promise<ConsentResponse> {
-		return this.get<ConsentResponse>('consent', challenge);
+	getConsentRequest(challenge: string): Promise<ProviderConsentResponse> {
+		return this.get<ProviderConsentResponse>('consent', challenge);
 	}
 
 	getLoginRequest(challenge: string): Promise<LoginResponse> {
 		throw new NotImplementedException();
 	}
 
-	getOAuth2Client(id: string): Promise<OauthClient> {
+	getOAuth2Client(id: string): Promise<ProviderOauthClient> {
 		throw new NotImplementedException();
 	}
 
@@ -71,7 +71,7 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	listOAuth2Clients(): Promise<OauthClient[]> {
+	listOAuth2Clients(): Promise<ProviderOauthClient[]> {
 		throw new NotImplementedException();
 	}
 
@@ -87,7 +87,7 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient> {
+	updateOAuth2Client(id: string, data: ProviderOauthClient): Promise<ProviderOauthClient> {
 		throw new NotImplementedException();
 	}
 

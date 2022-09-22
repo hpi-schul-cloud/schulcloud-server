@@ -1,6 +1,6 @@
 import {
 	AcceptConsentRequestBody,
-	ConsentResponse,
+	ProviderConsentResponse,
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
@@ -18,8 +18,8 @@ export class OauthProviderConsentFlowUc {
 		private readonly idTokenService: IdTokenService
 	) {}
 
-	async getConsentRequest(challenge: string): Promise<ConsentResponse> {
-		const consentResponse: ConsentResponse = await this.oauthProviderService.getConsentRequest(challenge);
+	async getConsentRequest(challenge: string): Promise<ProviderConsentResponse> {
+		const consentResponse: ProviderConsentResponse = await this.oauthProviderService.getConsentRequest(challenge);
 		return consentResponse;
 	}
 
@@ -75,7 +75,7 @@ export class OauthProviderConsentFlowUc {
 		return redirectResponse;
 	}
 
-	private validateSubject(currentUser: ICurrentUser, response: ConsentResponse): void {
+	private validateSubject(currentUser: ICurrentUser, response: ProviderConsentResponse): void {
 		if (response.subject !== currentUser.userId) {
 			throw new ForbiddenException("You want to patch another user's consent");
 		}

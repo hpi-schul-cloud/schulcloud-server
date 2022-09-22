@@ -1,9 +1,9 @@
-import { OauthClient } from '@shared/infra/oauth-provider/dto/interface/oauth-client.interface';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto/interface/oauth-client.interface';
 import { ConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
-	ConsentResponse,
+	ProviderConsentResponse,
 	IntrospectResponse,
 	LoginResponse,
 	ProviderRedirectResponse,
@@ -17,7 +17,7 @@ export abstract class OauthProviderService {
 
 	abstract rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse>;
 
-	abstract getConsentRequest(challenge: string): Promise<ConsentResponse>;
+	abstract getConsentRequest(challenge: string): Promise<ProviderConsentResponse>;
 
 	abstract acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<ProviderRedirectResponse>;
 
@@ -29,13 +29,13 @@ export abstract class OauthProviderService {
 
 	abstract isInstanceAlive(): Promise<boolean>;
 
-	abstract listOAuth2Clients(): Promise<OauthClient[]>;
+	abstract listOAuth2Clients(): Promise<ProviderOauthClient[]>;
 
-	abstract createOAuth2Client(data: OauthClient): Promise<OauthClient>;
+	abstract createOAuth2Client(data: ProviderOauthClient): Promise<ProviderOauthClient>;
 
-	abstract getOAuth2Client(id: string): Promise<OauthClient>;
+	abstract getOAuth2Client(id: string): Promise<ProviderOauthClient>;
 
-	abstract updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient>;
+	abstract updateOAuth2Client(id: string, data: ProviderOauthClient): Promise<ProviderOauthClient>;
 
 	abstract deleteOAuth2Client(id: string): Promise<void>;
 

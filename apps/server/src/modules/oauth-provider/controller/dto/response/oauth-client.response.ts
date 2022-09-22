@@ -1,4 +1,8 @@
-export interface ProviderOauthClient {
+export class OauthClientResponse {
+	constructor(oauthClientResponse: OauthClientResponse) {
+		Object.assign(this, oauthClientResponse);
+	}
+
 	allowed_cors_origins?: string[];
 
 	audience?: string[];

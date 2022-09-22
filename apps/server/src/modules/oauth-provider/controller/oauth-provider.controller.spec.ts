@@ -6,9 +6,11 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import { AcceptQuery, ChallengeParams, ConsentRequestBody } from '@src/modules/oauth-provider/controller/dto';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
-import { ConsentResponse } from '@shared/infra/oauth-provider/dto';
+import { ProviderConsentResponse } from '@shared/infra/oauth-provider/dto';
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import { ICurrentUser } from '@shared/domain';
+import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
+import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
 import { OauthProviderController } from './oauth-provider.controller';
 
 describe('OauthProviderController', () => {
@@ -27,6 +29,10 @@ describe('OauthProviderController', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				OauthProviderController,
+				{
+					provide: OauthProviderUc,
+					useValue: createMock<OauthProviderUc>(),
+				},
 				{
 					provide: OauthProviderLogoutFlowUc,
 					useValue: createMock<OauthProviderLogoutFlowUc>(),
@@ -61,17 +67,22 @@ describe('OauthProviderController', () => {
 		});
 
 		describe('getConsentRequest', () => {
-			it('should call uc', async () => {
+			it('should call uc and mapper', async () => {
 				// Arrange
-				const consentResponse: ConsentResponse = { challenge: challengeParams.challenge, subject: 'subject' };
+				const consentResponse: ProviderConsentResponse = {
+					challenge: challengeParams.challenge,
+					subject: 'subject',
+				};
 				consentUc.getConsentRequest.mockResolvedValue(consentResponse);
+				responseMapper.mapConsentResponse.mockReturnValue(new ConsentResponse({ ...consentResponse }));
 
 				// Act
-				const result = await controller.getConsentRequest(challengeParams);
+				const result: ConsentResponse = await controller.getConsentRequest(challengeParams);
 
 				// Assert
-				expect(result).toEqual(consentResponse.challenge);
-				expect(consentUc.getConsentRequest).toHaveBeenCalledWith(consentResponse);
+				expect(result.challenge).toEqual(consentResponse.challenge);
+				expect(result.subject).toEqual(consentResponse.subject);
+				expect(consentUc.getConsentRequest).toHaveBeenCalledWith(consentResponse.challenge);
 			});
 		});
 
@@ -141,7 +152,9 @@ describe('OauthProviderController', () => {
 	describe('Logout Flow', () => {
 		describe('acceptLogoutRequest', () => {
 			it('should call uc and return redirect string', async () => {
-				logoutUc.logoutFlow.mockResolvedValue({ redirect_to: 'www.mock.de' });
+				const expectedRedirect: RedirectResponse = new RedirectResponse({ redirect_to: 'www.mock.de' });
+				logoutUc.logoutFlow.mockResolvedValue(expectedRedirect);
+				responseMapper.mapRedirectResponse.mockReturnValue(expectedRedirect);
 
 				const redirect = await controller.acceptLogoutRequest(
 					{ challenge: 'challenge_mock' },
@@ -149,7 +162,7 @@ describe('OauthProviderController', () => {
 				);
 
 				expect(logoutUc.logoutFlow).toHaveBeenCalledWith('challenge_mock');
-				expect(redirect).toEqual('www.mock.de');
+				expect(redirect.redirect_to).toEqual(expectedRedirect.redirect_to);
 			});
 		});
 	});
