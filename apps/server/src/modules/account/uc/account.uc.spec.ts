@@ -667,6 +667,19 @@ describe('AccountUc', () => {
 				})
 			).rejects.toThrow(EntityNotFoundError);
 		});
+		it('should not update password if no new password', async () => {
+			const spy = jest.spyOn(accountService, 'save');
+			await accountUc.updateMyAccount(mockStudentUser.id, {
+				passwordOld: defaultPassword,
+				passwordNew: undefined,
+				email: 'newemail@to.update',
+			});
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					password: undefined,
+				})
+			);
+		});
 	});
 
 	describe('replaceMyTemporaryPassword', () => {
