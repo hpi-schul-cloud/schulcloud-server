@@ -50,7 +50,7 @@ export class SyncEmbeddedFilesUc {
 					this.updateEntityLinks(entity, id);
 				});
 
-				return this.syncFiles(files, entity);
+				await this.syncFiles(files, entity);
 			}
 		});
 
