@@ -231,25 +231,30 @@ const registerUser = function register(data, params, app) {
 				user = newUser;
 			})
 		)
-		.then(() => {
-			return app
+		.then(() =>
+			// eslint-disable-next-line promise/no-nesting
+			app
 				.service('nest-account-uc')
 				.saveAccount({
 					username: user.email,
-					password: data.password_1,
+					newCleartextPassword: data.password_1,
 					userId: user._id.toString(),
 					activated: true,
 				})
 				.then(async () => {
 					account = await app.service('nest-account-service').findByUserId(user._id.toString());
+					if (account) {
+						account.password = account.oldHashedPassword;
+						delete account.oldHashedPassword;
+					}
 					return Promise.resolve();
 				})
 				.catch((err) => {
 					const msg = 'Fehler beim Erstellen des Accounts.';
 					logger.warning(msg, err);
 					return Promise.reject(new Error(msg));
-				});
-		})
+				})
+		)
 		.then(() => {
 			// store consent
 			if (data.parent_email) {

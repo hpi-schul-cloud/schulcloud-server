@@ -23,6 +23,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountReadDto } from '@src/modules/account/services/dto/account-read.dto';
+import { AccountSaveDto } from '@src/modules/account/services/dto';
 
 export type UserImportPermissions =
 	| Permission.SCHOOL_IMPORT_USERS_MIGRATE
@@ -230,10 +231,11 @@ export class UserImportUc {
 		user.ldapId = importUser.ldapId;
 
 		const account: AccountReadDto = await this.accountService.findByUserIdOrFail(user.id);
+		const accountSaveDeto = new AccountSaveDto(account);
 
-		account.systemId = importUser.system.id;
-		account.newCleartextPassword = undefined;
-		account.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;
+		accountSaveDeto.systemId = importUser.system.id;
+		accountSaveDeto.newCleartextPassword = undefined;
+		accountSaveDeto.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;
 
 		await this.userRepo.save(user);
 		await this.accountService.save(account);

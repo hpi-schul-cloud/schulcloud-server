@@ -12,7 +12,7 @@ const createTestAccount = (appPromise) => async (accountParameters, system, user
 
 	const accountDto = {
 		username: accountParameters.username,
-		password: accountParameters.password,
+		newCleartextPassword: accountParameters.password,
 		token: accountParameters.token,
 		credentialHash: accountParameters.credentialHash,
 		userId: accountParameters.userId,
@@ -22,6 +22,8 @@ const createTestAccount = (appPromise) => async (accountParameters, system, user
 		activated: accountParameters.activated,
 	};
 	const createdAccount = await accountService.save(accountDto);
+	createdAccount.password = createdAccount.oldHashedPassword;
+	delete createdAccount.oldHashedPassword;
 	createdaccountsIds.push(createdAccount.id.toString());
 	return createdAccount;
 };

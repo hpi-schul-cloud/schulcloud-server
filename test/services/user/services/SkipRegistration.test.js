@@ -155,7 +155,7 @@ describe('skipRegistration service', () => {
 		const account = await app.service('nest-account-service').findByUserId(user._id.toString());
 		expect(account).to.not.equal(null);
 		expect(account.activated).to.equal(true);
-		expect(account.password).to.not.equal(undefined);
+		expect(account.oldHashedPassword).to.not.equal(undefined);
 	});
 
 	it('correctly creates a consent', async () => {

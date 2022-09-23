@@ -85,7 +85,6 @@ const facadeStubs = {
 };
 
 let getUserStub;
-let getUserAccountStub;
 let createUserTrashbinStub;
 let updateTrashbinByUserIdStub;
 let getUserRolesStub;
@@ -106,7 +105,15 @@ describe('users usecase', () => {
 		const app = { service() {} };
 		const accountService = { findByUserId() {}, deleteByUserId() {} };
 		sinon.stub(app, 'service').returns(accountService);
-		sinon.stub(accountService, 'findByUserId').callsFake((userId = USER_ID) => createTestAccount(userId));
+		sinon.stub(accountService, 'findByUserId').callsFake((userId = USER_ID) => {
+			const user = createTestUser(userId);
+			return {
+				_id: 'ACCOUNT_ID',
+				userId: user._id,
+				username: user.email,
+				oldHashedPassword: 'PASSWORD',
+			};
+		});
 		sinon.stub(accountService, 'deleteByUserId');
 		userUC.initialize(app);
 

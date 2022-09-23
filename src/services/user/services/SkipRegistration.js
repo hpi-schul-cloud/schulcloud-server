@@ -32,7 +32,7 @@ const createAccount = async function createAccount(data, targetUser, app) {
 	if (!existingAccount) {
 		return app.service('nest-account-uc').saveAccount({
 			userId: targetUser._id,
-			password: data.password,
+			newCleartextPassword: data.password,
 			username: targetUser.email,
 			activated: true,
 		});

@@ -70,7 +70,7 @@ const injectUserId = async (context) => {
 				} else if (['moodle', 'iserv'].includes(strategy)) {
 					const accountParameters = {
 						username: context.data.username,
-						password: context.data.password,
+						newCleartextPassword: context.data.password,
 						systemId,
 					};
 					const newAccount = await context.app.service('nest-account-uc').saveAccount(accountParameters);

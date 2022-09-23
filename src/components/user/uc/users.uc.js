@@ -37,6 +37,10 @@ const getUserData = async (id) => {
 		data: user,
 	});
 	const account = await this.app.service('nest-account-service').findByUserId(id);
+	if (account) {
+		account.password = account.oldHashedPassword;
+		delete account.oldHashedPassword;
+	}
 	returnArray.push({
 		scope: 'account',
 		data: account,
