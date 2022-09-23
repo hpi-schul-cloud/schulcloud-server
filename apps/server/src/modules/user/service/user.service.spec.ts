@@ -113,7 +113,6 @@ describe('UserService', () => {
 	});
 
 	describe('getDisplayName', () => {
-		let user: User;
 		let role: Role;
 
 		beforeEach(() => {

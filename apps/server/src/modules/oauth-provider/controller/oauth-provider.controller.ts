@@ -5,7 +5,11 @@ import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
-import {ProviderConsentResponse, ProviderOauthClient, ProviderRedirectResponse} from '@shared/infra/oauth-provider/dto';
+import {
+	ProviderConsentResponse,
+	ProviderOauthClient,
+	ProviderRedirectResponse,
+} from '@shared/infra/oauth-provider/dto';
 import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
 import { ICurrentUser } from '@shared/domain';
 import {

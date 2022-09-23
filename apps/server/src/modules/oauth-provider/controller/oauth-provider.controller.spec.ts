@@ -4,14 +4,19 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotImplementedException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
-import { AcceptQuery, ChallengeParams, ConsentRequestBody } from '@src/modules/oauth-provider/controller/dto';
+import {
+	AcceptQuery,
+	ChallengeParams,
+	ConsentRequestBody,
+	OauthClientBody,
+	OauthClientResponse,
+} from '@src/modules/oauth-provider/controller/dto';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { ProviderConsentResponse } from '@shared/infra/oauth-provider/dto';
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import { ICurrentUser } from '@shared/domain';
 import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
 import { OauthProviderController } from './oauth-provider.controller';
-import { OauthClientBody, OauthClientResponse } from './dto';
 import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
 
 describe('OauthProviderController', () => {
@@ -185,7 +190,7 @@ describe('OauthProviderController', () => {
 				consentUc.getConsentRequest.mockResolvedValue(consentResponse);
 				responseMapper.mapConsentResponse.mockReturnValue(new ConsentResponse({ ...consentResponse }));
 
-				const result: ConsentResponse = await controller.getConsentRequest(challengeParams);
+				await controller.getConsentRequest(challengeParams);
 
 				expect(responseMapper.mapConsentResponse).toHaveBeenCalledWith(consentResponse);
 			});
@@ -194,7 +199,7 @@ describe('OauthProviderController', () => {
 				consentUc.getConsentRequest.mockResolvedValue(consentResponse);
 				responseMapper.mapConsentResponse.mockReturnValue(new ConsentResponse({ ...consentResponse }));
 
-				const result: ConsentResponse = await controller.getConsentRequest(challengeParams);
+				await controller.getConsentRequest(challengeParams);
 
 				expect(consentUc.getConsentRequest).toHaveBeenCalledWith(consentResponse.challenge);
 			});
@@ -214,8 +219,6 @@ describe('OauthProviderController', () => {
 			});
 
 			it('should call uc', async () => {
-				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-
 				await controller.patchConsentRequest(challengeParams, acceptQuery, consentRequestBody, currentUser);
 
 				expect(consentUc.patchConsentRequest).toHaveBeenCalledWith(
@@ -227,7 +230,6 @@ describe('OauthProviderController', () => {
 			});
 
 			it('should call mapper', async () => {
-				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 				const expectedRedirectResponse: RedirectResponse = { redirect_to: 'anywhere' };
 				consentUc.patchConsentRequest.mockResolvedValue(expectedRedirectResponse);
 
@@ -237,7 +239,6 @@ describe('OauthProviderController', () => {
 			});
 
 			it('should return redirect response', async () => {
-				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 				const expectedRedirectResponse: RedirectResponse = { redirect_to: 'anywhere' };
 				consentUc.patchConsentRequest.mockResolvedValue(expectedRedirectResponse);
 				responseMapper.mapRedirectResponse.mockReturnValue(expectedRedirectResponse);
