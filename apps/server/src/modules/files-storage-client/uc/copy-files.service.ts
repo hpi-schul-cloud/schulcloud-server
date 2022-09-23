@@ -43,7 +43,7 @@ export class CopyFilesService {
 
 	private replaceUrlsInLessons(lesson: Lesson, response: CopyFileDto): Lesson {
 		lesson.contents = lesson.contents.map((item: IComponentProperties) => {
-			if (item.content && 'text' in item.content) {
+			if (item.component === 'text' && item.content && 'text' in item.content && item.content.text) {
 				const text = this.replaceUrl(item.content.text, response);
 				const itemWithUpdatedText = { ...item, content: { ...item.content, text } };
 				return itemWithUpdatedText;
