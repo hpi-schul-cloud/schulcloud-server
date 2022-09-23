@@ -29,7 +29,12 @@ export abstract class OauthProviderService {
 
 	abstract isInstanceAlive(): Promise<boolean>;
 
-	abstract listOAuth2Clients(): Promise<ProviderOauthClient[]>;
+	abstract listOAuth2Clients(
+		limit?: number,
+		offset?: number,
+		client_name?: string,
+		owner?: string
+	): Promise<ProviderOauthClient[]>;
 
 	abstract createOAuth2Client(data: ProviderOauthClient): Promise<ProviderOauthClient>;
 

@@ -4,12 +4,14 @@ import { HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
+import QueryString from 'qs';
+import { URL } from 'url';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
-	ProviderConsentResponse,
 	IntrospectResponse,
 	LoginResponse,
+	ProviderConsentResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 	RejectRequestBody,
@@ -39,23 +41,11 @@ export class HydraService extends OauthProviderService {
 		return response;
 	}
 
-	createOAuth2Client(data: ProviderOauthClient): Promise<ProviderOauthClient> {
-		throw new NotImplementedException();
-	}
-
-	deleteOAuth2Client(id: string): Promise<void> {
-		throw new NotImplementedException();
-	}
-
 	getConsentRequest(challenge: string): Promise<ProviderConsentResponse> {
 		return this.get<ProviderConsentResponse>('consent', challenge);
 	}
 
 	getLoginRequest(challenge: string): Promise<LoginResponse> {
-		throw new NotImplementedException();
-	}
-
-	getOAuth2Client(id: string): Promise<ProviderOauthClient> {
 		throw new NotImplementedException();
 	}
 
@@ -71,10 +61,6 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	listOAuth2Clients(): Promise<ProviderOauthClient[]> {
-		throw new NotImplementedException();
-	}
-
 	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
 		return this.put<ProviderRedirectResponse>('consent', 'reject', challenge, body);
 	}
@@ -87,8 +73,52 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
+	listOAuth2Clients(
+		limit?: number,
+		offset?: number,
+		client_name?: string,
+		owner?: string
+	): Promise<ProviderOauthClient[]> {
+		const url: URL = new URL(`${this.hydraUri}/clients`);
+		url.search = QueryString.stringify({
+			limit,
+			offset,
+			client_name,
+			owner,
+		});
+		const response: Promise<ProviderOauthClient[]> = this.request<ProviderOauthClient[]>('GET', url.toString());
+		return response;
+	}
+
+	getOAuth2Client(id: string): Promise<ProviderOauthClient> {
+		const response: Promise<ProviderOauthClient> = this.request<ProviderOauthClient>(
+			'GET',
+			`${this.hydraUri}/clients/${id}`
+		);
+		return response;
+	}
+
+	createOAuth2Client(data: ProviderOauthClient): Promise<ProviderOauthClient> {
+		const response: Promise<ProviderOauthClient> = this.request<ProviderOauthClient>(
+			'POST',
+			`${this.hydraUri}/clients`,
+			data
+		);
+		return response;
+	}
+
 	updateOAuth2Client(id: string, data: ProviderOauthClient): Promise<ProviderOauthClient> {
-		throw new NotImplementedException();
+		const response: Promise<ProviderOauthClient> = this.request<ProviderOauthClient>(
+			'PUT',
+			`${this.hydraUri}/clients/${id}`,
+			data
+		);
+		return response;
+	}
+
+	deleteOAuth2Client(id: string): Promise<void> {
+		const response: Promise<void> = this.request<void>('DELETE', `${this.hydraUri}/clients/${id}`);
+		return response;
 	}
 
 	protected async put<T>(

@@ -33,7 +33,7 @@ export interface ProviderOauthClient {
 
 	frontchannel_logout_uri?: string;
 
-	grant_types?: string;
+	grant_types?: string[];
 
 	implicit_grant_access_token_lifespan?: string;
 

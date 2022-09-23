@@ -20,8 +20,10 @@ export class OauthProviderResponseMapper {
 		return new ConsentResponse({ ...consent });
 	}
 
-	protected mapOauthClientResponse(oauthClient: ProviderOauthClient): OauthClientResponse {
-		return new OauthClientResponse({ ...oauthClient });
+	mapOauthClientResponse(oauthClient: ProviderOauthClient): OauthClientResponse {
+		type ClientWithoutSecret = Omit<ProviderOauthClient, 'client_secret'>;
+
+		return new OauthClientResponse({ ...oauthClient } as ClientWithoutSecret);
 	}
 
 	protected mapOidcContextResponse(oidcContext: ProviderOidcContext): OidcContextResponse {

@@ -76,7 +76,7 @@ describe('OauthProviderResponseMapper', () => {
 			created_at: 'created_at',
 			frontchannel_logout_session_required: true,
 			frontchannel_logout_uri: 'frontchannel_logout_uri',
-			grant_types: 'grant_types',
+			grant_types: ['grant_types'],
 			implicit_grant_access_token_lifespan: 'implicit_grant_access_token_lifespan',
 			implicit_grant_id_token_lifespan: 'implicit_grant_id_token_lifespan',
 			jwks: {},

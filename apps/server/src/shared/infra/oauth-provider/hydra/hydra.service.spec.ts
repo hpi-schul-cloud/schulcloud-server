@@ -3,15 +3,16 @@ import { HydraService } from '@shared/infra/oauth-provider/hydra/hydra.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
-import { NotImplementedException } from '@nestjs/common';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { of } from 'rxjs';
 import {
 	AcceptConsentRequestBody,
 	ProviderConsentResponse,
+	ProviderOauthClient,
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { NotImplementedException } from '@nestjs/common';
+import { of } from 'rxjs';
 import resetAllMocks = jest.resetAllMocks;
 
 class HydraServiceSpec extends HydraService {
@@ -39,9 +40,11 @@ describe('HydraService', () => {
 
 	let httpService: DeepMocked<HttpService>;
 
-	const hydraUri = Configuration.get('HYDRA_URI') as string;
+	const hydraUri = 'http://hydra.uri';
 
 	beforeAll(async () => {
+		jest.spyOn(Configuration, 'get').mockReturnValue(hydraUri);
+
 		module = await Test.createTestingModule({
 			providers: [
 				HydraServiceSpec,
@@ -58,6 +61,7 @@ describe('HydraService', () => {
 
 	afterAll(async () => {
 		await module.close();
+		jest.clearAllMocks();
 	});
 
 	describe('request', () => {
@@ -108,6 +112,146 @@ describe('HydraService', () => {
 					},
 				})
 			);
+		});
+	});
+
+	describe('Client Flow', () => {
+		describe('listOAuth2Clients', () => {
+			it('should list all oauth2 clients', async () => {
+				const data: ProviderOauthClient[] = [
+					{
+						client_id: 'client1',
+					},
+					{
+						client_id: 'client2',
+					},
+				];
+
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: ProviderOauthClient[] = await service.listOAuth2Clients();
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients`,
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
+			});
+
+			it('should list all oauth2 clients within parameters', async () => {
+				const data: ProviderOauthClient[] = [
+					{
+						client_id: 'client1',
+						owner: 'clientOwner',
+					},
+				];
+
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: ProviderOauthClient[] = await service.listOAuth2Clients(1, 0, 'client1', 'clientOwner');
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients?limit=1&offset=0&client_name=client1&owner=clientOwner`,
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
+			});
+		});
+
+		describe('getOAuth2Client', () => {
+			it('should get oauth2 client', async () => {
+				const data: ProviderOauthClient = {
+					client_id: 'client',
+				};
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: ProviderOauthClient = await service.getOAuth2Client('clientId');
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients/clientId`,
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
+			});
+		});
+
+		describe('createOAuth2Client', () => {
+			it('should create oauth2 client', async () => {
+				const data: ProviderOauthClient = {
+					client_id: 'client',
+				};
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: ProviderOauthClient = await service.createOAuth2Client(data);
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients`,
+						method: 'POST',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+						data,
+					})
+				);
+			});
+		});
+
+		describe('updateOAuth2Client', () => {
+			it('should update oauth2 client', async () => {
+				const data: ProviderOauthClient = {
+					client_id: 'client',
+				};
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: ProviderOauthClient = await service.updateOAuth2Client('clientId', data);
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients/clientId`,
+						method: 'PUT',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+						data,
+					})
+				);
+			});
+		});
+
+		describe('deleteOAuth2Client', () => {
+			it('should delete oauth2 client', async () => {
+				httpService.request.mockReturnValue(of(createAxiosResponse({})));
+
+				await service.deleteOAuth2Client('clientId');
+
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients/clientId`,
+						method: 'DELETE',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
+			});
 		});
 	});
 
@@ -241,38 +385,6 @@ describe('HydraService', () => {
 				// Assert
 				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
 				expect(response).toEqual(responseMock);
-			});
-		});
-	});
-
-	describe('Client Flow', () => {
-		describe('listOAuth2Clients', () => {
-			it('should throw', () => {
-				expect(() => service.listOAuth2Clients()).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('getOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => service.getOAuth2Client('')).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('createOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => service.createOAuth2Client({})).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('updateOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => service.updateOAuth2Client('', {})).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('deleteOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => service.deleteOAuth2Client('')).toThrow(NotImplementedException);
 			});
 		});
 	});

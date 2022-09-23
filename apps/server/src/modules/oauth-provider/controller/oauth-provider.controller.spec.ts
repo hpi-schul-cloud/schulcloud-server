@@ -9,9 +9,10 @@ import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/res
 import { ProviderConsentResponse } from '@shared/infra/oauth-provider/dto';
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import { ICurrentUser } from '@shared/domain';
-import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
 import { OauthProviderController } from './oauth-provider.controller';
+import { OauthClientBody, OauthClientResponse } from './dto';
+import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
 
 describe('OauthProviderController', () => {
 	let module: TestingModule;
@@ -19,9 +20,11 @@ describe('OauthProviderController', () => {
 
 	let logoutUc: DeepMocked<OauthProviderLogoutFlowUc>;
 	let consentUc: DeepMocked<OauthProviderConsentFlowUc>;
+	let crudUc: DeepMocked<OauthProviderClientCrudUc>;
 	let responseMapper: DeepMocked<OauthProviderResponseMapper>;
 
 	const hydraUri = 'http://hydra.uri';
+	const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockReturnValue(hydraUri);
@@ -30,8 +33,8 @@ describe('OauthProviderController', () => {
 			providers: [
 				OauthProviderController,
 				{
-					provide: OauthProviderUc,
-					useValue: createMock<OauthProviderUc>(),
+					provide: OauthProviderClientCrudUc,
+					useValue: createMock<OauthProviderClientCrudUc>(),
 				},
 				{
 					provide: OauthProviderLogoutFlowUc,
@@ -49,7 +52,7 @@ describe('OauthProviderController', () => {
 		}).compile();
 
 		controller = module.get(OauthProviderController);
-
+		crudUc = module.get(OauthProviderClientCrudUc);
 		logoutUc = module.get(OauthProviderLogoutFlowUc);
 		responseMapper = module.get(OauthProviderResponseMapper);
 		consentUc = module.get(OauthProviderConsentFlowUc);
@@ -57,6 +60,98 @@ describe('OauthProviderController', () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('Client Flow', () => {
+		describe('getOAuth2Client', () => {
+			it('should get oauth2 client', async () => {
+				const data: OauthClientBody = {
+					client_id: 'clientId',
+				};
+				crudUc.getOAuth2Client.mockResolvedValue(data);
+				responseMapper.mapOauthClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
+
+				const result: OauthClientResponse = await controller.getOAuth2Client(currentUser, { id: 'clientId' });
+
+				expect(result).toEqual(data);
+				expect(crudUc.getOAuth2Client).toHaveBeenCalledWith(currentUser, 'clientId');
+			});
+		});
+
+		describe('listOAuth2Clients', () => {
+			it('should list oauth2 clients when uc is called with all parameters', async () => {
+				const data: OauthClientBody = {
+					client_id: 'clientId',
+				};
+				crudUc.listOAuth2Clients.mockResolvedValue([data]);
+				responseMapper.mapOauthClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
+
+				const result: OauthClientResponse[] = await controller.listOAuth2Clients(currentUser, {
+					limit: 1,
+					offset: 0,
+					client_name: 'clientId',
+					owner: 'clientOwner',
+				});
+
+				expect(result).toEqual([data]);
+				expect(crudUc.listOAuth2Clients).toHaveBeenCalledWith(currentUser, 1, 0, 'clientId', 'clientOwner');
+			});
+
+			it('should list oauth2 clients when uc is called without parameters', async () => {
+				const data: OauthClientBody = {
+					client_id: 'clientId',
+				};
+				crudUc.listOAuth2Clients.mockResolvedValue([data]);
+				responseMapper.mapOauthClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
+
+				const result: OauthClientResponse[] = await controller.listOAuth2Clients(currentUser, {});
+
+				expect(result).toEqual([data]);
+				expect(crudUc.listOAuth2Clients).toHaveBeenCalledWith(currentUser, undefined, undefined, undefined, undefined);
+			});
+		});
+
+		describe('createOAuth2Client', () => {
+			it('should create oauth2 client with defaults', async () => {
+				const data: OauthClientBody = {
+					client_id: 'clientId',
+				};
+				crudUc.createOAuth2Client.mockResolvedValue(data);
+				responseMapper.mapOauthClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
+
+				const result: OauthClientResponse = await controller.createOAuth2Client(currentUser, data);
+
+				expect(crudUc.createOAuth2Client).toHaveBeenCalledWith(currentUser, data);
+				expect(result).toEqual(data);
+			});
+		});
+
+		describe('updateOAuth2Client', () => {
+			it('should update oauth2 client with defaults', async () => {
+				const data: OauthClientBody = {
+					client_id: 'clientId',
+				};
+				crudUc.updateOAuth2Client.mockResolvedValue(data);
+				responseMapper.mapOauthClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
+
+				const result: OauthClientResponse = await controller.updateOAuth2Client(
+					currentUser,
+					{ id: 'clientId' },
+					{ client_id: 'clientId' }
+				);
+
+				expect(crudUc.updateOAuth2Client).toHaveBeenCalledWith(currentUser, 'clientId', data);
+				expect(result).toEqual(data);
+			});
+		});
+
+		describe('deleteOAuth2Client', () => {
+			it('should delete oauth2 client', async () => {
+				await controller.deleteOAuth2Client(currentUser, { id: 'clientId' });
+
+				expect(crudUc.deleteOAuth2Client).toHaveBeenCalledWith(currentUser, 'clientId');
+			});
+		});
 	});
 
 	describe('Consent Flow', () => {
@@ -201,38 +296,6 @@ describe('OauthProviderController', () => {
 
 				expect(logoutUc.logoutFlow).toHaveBeenCalledWith('challenge_mock');
 				expect(redirect.redirect_to).toEqual(expectedRedirect.redirect_to);
-			});
-		});
-	});
-
-	describe('Client Flow', () => {
-		describe('listOAuth2Clients', () => {
-			it('should throw', () => {
-				expect(() => controller.listOAuth2Clients({})).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('getOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => controller.getOAuth2Client({ id: '' })).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('createOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => controller.createOAuth2Client({})).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('updateOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => controller.updateOAuth2Client({ id: '' }, {})).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('deleteOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => controller.deleteOAuth2Client({ id: '' })).toThrow(NotImplementedException);
 			});
 		});
 	});

@@ -54,7 +54,7 @@ export class OauthClientResponse {
 	frontchannel_logout_uri?: string;
 
 	@ApiProperty()
-	grant_types?: string;
+	grant_types?: string[];
 
 	@ApiProperty()
 	implicit_grant_access_token_lifespan?: string;
