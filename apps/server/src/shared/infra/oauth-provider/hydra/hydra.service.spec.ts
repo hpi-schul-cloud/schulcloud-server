@@ -4,10 +4,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import { of } from 'rxjs';
-import { OauthClient } from '@shared/infra/oauth-provider/dto/index';
+import { OauthClient, RedirectResponse } from '@shared/infra/oauth-provider/dto';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { NotImplementedException } from '@nestjs/common';
-import { RedirectResponse } from '@shared/infra/oauth-provider/dto';
 
 class HydraServiceSpec extends HydraService {
 	public async requestSpec<T>(

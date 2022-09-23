@@ -4,8 +4,8 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import { RedirectResponse } from '@shared/infra/oauth-provider/dto';
-import { OauthClient } from '@shared/infra/oauth-provider/dto/index';
-import { ICurrentUser } from '@shared/domain/index';
+import { OauthClient } from '@shared/infra/oauth-provider/dto';
+import { ICurrentUser } from '@shared/domain';
 import {
 	AcceptQuery,
 	ChallengeParams,

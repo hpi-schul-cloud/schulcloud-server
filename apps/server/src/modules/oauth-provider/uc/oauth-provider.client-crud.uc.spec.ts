@@ -1,13 +1,13 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {OauthProviderService} from '@shared/infra/oauth-provider/index';
-import {createMock, DeepMocked} from '@golevelup/ts-jest';
-import {OauthClient} from '@shared/infra/oauth-provider/dto/index';
-import {ICurrentUser, Permission, User} from '@shared/domain/index';
-import {AuthorizationService} from '@src/modules/index';
-import {setupEntities, userFactory} from '@shared/testing/index';
-import {UnauthorizedException} from '@nestjs/common';
-import {MikroORM} from '@mikro-orm/core';
-import {OauthProviderClientCrudUc} from './oauth-provider.client-crud.uc';
+import { Test, TestingModule } from '@nestjs/testing';
+import { OauthProviderService } from '@shared/infra/oauth-provider';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { OauthClient } from '@shared/infra/oauth-provider/dto';
+import { ICurrentUser, Permission, User } from '@shared/domain';
+import { AuthorizationService } from '@src/modules';
+import { setupEntities, userFactory } from '@shared/testing';
+import { UnauthorizedException } from '@nestjs/common';
+import { MikroORM } from '@mikro-orm/core';
+import { OauthProviderClientCrudUc } from './oauth-provider.client-crud.uc';
 import resetAllMocks = jest.resetAllMocks;
 
 describe('OauthProviderUc', () => {
