@@ -55,6 +55,7 @@ const globals = {
 	ENVIRONMENTS,
 	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
 	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
+	API_HOST: process.env.API_HOST,
 	// secrets smtp
 	SMTP: process.env.SMTP,
 	SMTP_HOST: process.env.SMTP_HOST,
@@ -105,6 +106,7 @@ const globals = {
 	NEXTCLOUD_BASE_URL: process.env.NEXTCLOUD_BASE_URL,
 	NEXTCLOUD_ADMIN_USER: process.env.NEXTCLOUD_ADMIN_USER,
 	NEXTCLOUD_ADMIN_PASS: process.env.NEXTCLOUD_ADMIN_PASS,
+	NEXTCLOUD_SCOPES: process.env.NEXTCLOUD_SCOPES,
 
 	// calendar
 	CALENDAR_URI: process.env.CALENDAR_URI,
