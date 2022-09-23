@@ -35,6 +35,40 @@
 	},
 	{
 		"_id": {
+			"$oid": "632d776240633294deaa1837"
+		},
+		"username": "iserv.testlehrer@iserv.n21.dbildungscloud.de",
+		"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+		"updatedAt": {
+			"$date": "2022-02-11T11:40:29.456Z"
+		},
+		"createdAt": {
+			"$date": "2022-02-11T10:30:37.148Z"
+		},
+		"userId": {
+			"$oid": "632d765840633294deaa1833"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "632d7a9540633294deaa183e"
+		},
+		"username": "iserv.testschueler@iserv.n21.dbildungscloud.de",
+		"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+		"updatedAt": {
+			"$date": "2022-02-11T11:40:29.456Z"
+		},
+		"createdAt": {
+			"$date": "2022-02-11T10:30:37.148Z"
+		},
+		"userId": {
+			"$oid": "632d77a940633294deaa183a"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
 			"$oid": "0000d225816abba584714c9d"
 		},
 		"username": "schueler@schul-cloud.org",
