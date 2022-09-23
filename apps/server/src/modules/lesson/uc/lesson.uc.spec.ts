@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PermissionContextBuilder } from '@shared/domain';
+import { Permission, PermissionContextBuilder } from '@shared/domain';
 import { lessonFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService, LessonUC } from '@src/modules';
 import { LessonService } from '../service';
@@ -65,7 +65,7 @@ describe('LessonUC', () => {
 		expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 			expect.objectContaining({ ...user }),
 			expect.objectContaining({ ...lesson }),
-			PermissionContextBuilder.write([])
+			PermissionContextBuilder.write([Permission.TOPIC_EDIT])
 		);
 		expect(lessonService.deleteLesson).toHaveBeenCalledWith(expect.objectContaining({ ...lesson }), jwt);
 
