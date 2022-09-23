@@ -1,14 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { OauthProviderService } from '@shared/infra/oauth-provider/index';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { OauthClient } from '@shared/infra/oauth-provider/dto/index';
-import { ICurrentUser, Permission, User } from '@shared/domain/index';
-import { AuthorizationService } from '@src/modules/index';
-import { UserRepo } from '@shared/repo/index';
-import { setupEntities, userFactory } from '@shared/testing/index';
-import { UnauthorizedException } from '@nestjs/common';
-import { MikroORM } from '@mikro-orm/core';
-import { OauthProviderClientCrudUc } from './oauth-provider.client-crud.uc';
+import {Test, TestingModule} from '@nestjs/testing';
+import {OauthProviderService} from '@shared/infra/oauth-provider/index';
+import {createMock, DeepMocked} from '@golevelup/ts-jest';
+import {OauthClient} from '@shared/infra/oauth-provider/dto/index';
+import {ICurrentUser, Permission, User} from '@shared/domain/index';
+import {AuthorizationService} from '@src/modules/index';
+import {setupEntities, userFactory} from '@shared/testing/index';
+import {UnauthorizedException} from '@nestjs/common';
+import {MikroORM} from '@mikro-orm/core';
+import {OauthProviderClientCrudUc} from './oauth-provider.client-crud.uc';
 import resetAllMocks = jest.resetAllMocks;
 
 describe('OauthProviderUc', () => {
@@ -18,7 +17,6 @@ describe('OauthProviderUc', () => {
 
 	let providerService: DeepMocked<OauthProviderService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let userRepo: DeepMocked<UserRepo>;
 
 	let user: User;
 
@@ -44,17 +42,12 @@ describe('OauthProviderUc', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
-				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
-				},
 			],
 		}).compile();
 
 		uc = module.get(OauthProviderClientCrudUc);
 		providerService = module.get(OauthProviderService);
 		authorizationService = module.get(AuthorizationService);
-		userRepo = module.get(UserRepo);
 	});
 
 	afterAll(async () => {
@@ -64,7 +57,7 @@ describe('OauthProviderUc', () => {
 
 	beforeEach(() => {
 		user = userFactory.buildWithId();
-		userRepo.findById.mockResolvedValue(user);
+		authorizationService.getUserWithPermissions.mockResolvedValue(user);
 	});
 
 	afterEach(() => {
@@ -73,27 +66,37 @@ describe('OauthProviderUc', () => {
 
 	describe('Client Flow', () => {
 		describe('listOAuth2Clients', () => {
-			it('should list oauth2 clients when service is called with all parameters', async () => {
-				const data: OauthClient[] = [{ client_id: 'clientId' }];
+			const data: OauthClient[] = [{ client_id: 'clientId' }];
 
-				providerService.listOAuth2Clients.mockResolvedValue(data);
-
-				const result: OauthClient[] = await uc.listOAuth2Clients(currentUser, 1, 0, 'clientId', 'owner');
-
-				expect(result).toEqual(data);
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.OAUTH_CLIENT_VIEW]);
-				expect(providerService.listOAuth2Clients).toHaveBeenCalledWith(1, 0, 'clientId', 'owner');
-			});
-
-			it('should list oauth2 clients when service is called without parameters', async () => {
-				const data: OauthClient[] = [{ client_id: 'clientId' }];
-
+			it('should list oauth2 clients in return value', async () => {
 				providerService.listOAuth2Clients.mockResolvedValue(data);
 
 				const result: OauthClient[] = await uc.listOAuth2Clients(currentUser);
 
 				expect(result).toEqual(data);
+			});
+
+			it('should call the authorization service to check permissions', async () => {
+				providerService.listOAuth2Clients.mockResolvedValue(data);
+
+				const result: OauthClient[] = await uc.listOAuth2Clients(currentUser, 1, 0, 'clientId', 'owner');
+
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.OAUTH_CLIENT_VIEW]);
+			});
+
+			it('should list oauth2 clients when service is called with all parameters', async () => {
+				providerService.listOAuth2Clients.mockResolvedValue(data);
+
+				const result: OauthClient[] = await uc.listOAuth2Clients(currentUser, 1, 0, 'clientId', 'owner');
+
+				expect(providerService.listOAuth2Clients).toHaveBeenCalledWith(1, 0, 'clientId', 'owner');
+			});
+
+			it('should list oauth2 clients when service is called without parameters', async () => {
+				providerService.listOAuth2Clients.mockResolvedValue(data);
+
+				const result: OauthClient[] = await uc.listOAuth2Clients(currentUser);
+
 				expect(providerService.listOAuth2Clients).toHaveBeenCalledWith(undefined, undefined, undefined, undefined);
 			});
 

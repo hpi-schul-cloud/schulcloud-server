@@ -8,7 +8,6 @@ export class OauthProviderResponseMapper {
 		return new OauthClientResponse({
 			client_id: client.client_id,
 			client_name: client.client_name,
-			client_secret: client.client_secret,
 			redirect_uris: client.redirect_uris,
 			token_endpoint_auth_method: client.token_endpoint_auth_method,
 			subject_type: client.subject_type,

@@ -3,13 +3,12 @@ import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import { OauthProviderController } from '@src/modules/oauth-provider/controller/oauth-provider.controller';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
-import { UserRepo } from '@shared/repo/user';
 import { AuthorizationModule } from '../authorization/authorization.module';
 import { OauthProviderClientCrudUc } from './uc/oauth-provider.client-crud.uc';
 
 @Module({
 	imports: [OauthProviderServiceModule, AuthorizationModule],
-	providers: [OauthProviderClientCrudUc, OauthProviderLogoutFlowUc, OauthProviderResponseMapper, UserRepo],
+	providers: [OauthProviderClientCrudUc, OauthProviderLogoutFlowUc, OauthProviderResponseMapper],
 	controllers: [OauthProviderController],
 })
 export class OauthProviderModule {}

@@ -14,7 +14,6 @@ describe('OauthProviderResponseMapper', () => {
 			const client: OauthClient = {
 				client_id: 'clientId',
 				client_name: 'clientName',
-				client_secret: 'clientSecret',
 				redirect_uris: ['redirectUri'],
 				token_endpoint_auth_method: 'authMethod',
 				subject_type: 'subjectType',
