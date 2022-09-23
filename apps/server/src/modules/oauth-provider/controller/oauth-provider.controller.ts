@@ -3,8 +3,7 @@ import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, P
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
-import { RedirectResponse } from '@shared/infra/oauth-provider/dto';
-import { OauthClient } from '@shared/infra/oauth-provider/dto';
+import { OauthClient, RedirectResponse } from '@shared/infra/oauth-provider/dto';
 import { ICurrentUser } from '@shared/domain';
 import {
 	AcceptQuery,

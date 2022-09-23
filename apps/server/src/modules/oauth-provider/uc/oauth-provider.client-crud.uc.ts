@@ -28,12 +28,7 @@ export class OauthProviderClientCrudUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.OAUTH_CLIENT_VIEW]);
 
-		const client: OauthClient[] = await this.oauthProviderService.listOAuth2Clients(
-			limit,
-			offset,
-			client_name,
-			owner
-		);
+		const client: OauthClient[] = await this.oauthProviderService.listOAuth2Clients(limit, offset, client_name, owner);
 		return client;
 	}
 
