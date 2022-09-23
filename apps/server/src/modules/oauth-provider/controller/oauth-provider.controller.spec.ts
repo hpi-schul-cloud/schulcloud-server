@@ -182,7 +182,6 @@ describe('OauthProviderController', () => {
 					client_id: 'clientId',
 					client_name: 'clientName',
 				});
-				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 
 				oauthProviderUc.listConsentSessions.mockResolvedValue([session]);
 				responseMapper.mapConsentSessionsToResponse.mockReturnValue(response);
@@ -196,8 +195,6 @@ describe('OauthProviderController', () => {
 
 		describe('revokeConsentSession', () => {
 			it('should revoke consent sessions', async () => {
-				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-
 				await controller.revokeConsentSession(currentUser, { client: 'clientId' });
 
 				expect(oauthProviderUc.revokeConsentSession).toHaveBeenCalledWith(currentUser.userId, 'clientId');

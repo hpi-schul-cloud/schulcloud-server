@@ -7,7 +7,6 @@ import { of } from 'rxjs';
 import { IntrospectResponse, OauthClient, RedirectResponse } from '@shared/infra/oauth-provider/dto/index';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { NotImplementedException } from '@nestjs/common';
 
 class HydraServiceSpec extends HydraService {
 	public async requestSpec<T>(
