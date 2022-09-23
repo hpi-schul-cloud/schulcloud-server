@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Task, Lesson, IComponentProperties } from '@shared/domain';
+import { IComponentProperties, Lesson, Task } from '@shared/domain';
 import { CopyFileDto } from '../dto';
 import { FileParamBuilder } from '../mapper/files-storage-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
@@ -43,7 +43,7 @@ export class CopyFilesService {
 
 	private replaceUrlsInLessons(lesson: Lesson, response: CopyFileDto): Lesson {
 		lesson.contents = lesson.contents.map((item: IComponentProperties) => {
-			if ('text' in item.content) {
+			if (item.component === 'text' && item.content && 'text' in item.content && item.content.text) {
 				const text = this.replaceUrl(item.content.text, response);
 				const itemWithUpdatedText = { ...item, content: { ...item.content, text } };
 				return itemWithUpdatedText;

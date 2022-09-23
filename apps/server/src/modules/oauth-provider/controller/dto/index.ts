@@ -9,3 +9,4 @@ export * from './request/oauth-client.body';
 export * from './request/redirect.body';
 export * from './request/revoke-consent.query';
 export * from './request/user.params';
+export * from './response/oauth-client.response';
