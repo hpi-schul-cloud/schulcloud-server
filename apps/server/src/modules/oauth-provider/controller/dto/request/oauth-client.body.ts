@@ -63,4 +63,16 @@ export class OauthClientBody {
 		nullable: false,
 	})
 	frontchannel_logout_uri?: string;
+
+	@IsArray()
+	@IsOptional()
+	@IsString({ each: true })
+	@ApiProperty({ description: 'The grant types of the Oauth2 client.', required: false, nullable: false })
+	grant_types?: string[];
+
+	@IsArray()
+	@IsOptional()
+	@IsString({ each: true })
+	@ApiProperty({ description: 'The response types of the Oauth2 client.', required: false, nullable: false })
+	response_types?: string[];
 }

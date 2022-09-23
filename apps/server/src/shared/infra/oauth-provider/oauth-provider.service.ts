@@ -48,7 +48,7 @@ export abstract class OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	listOAuth2Clients(): Promise<OauthClient[]> {
+	listOAuth2Clients(limit?: number, offset?: number, client_name?: string, owner?: string): Promise<OauthClient[]> {
 		throw new NotImplementedException();
 	}
 

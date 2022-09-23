@@ -4,10 +4,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import { of } from 'rxjs';
-import { IntrospectResponse } from '@shared/infra/oauth-provider/dto/index';
+import { IntrospectResponse, OauthClient, RedirectResponse } from '@shared/infra/oauth-provider/dto/index';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
-import { RedirectResponse } from '@shared/infra/oauth-provider/dto';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { NotImplementedException } from '@nestjs/common';
 
 class HydraServiceSpec extends HydraService {
 	public async requestSpec<T>(
@@ -55,6 +55,7 @@ describe('HydraService', () => {
 
 	afterAll(async () => {
 		await module.close();
+		jest.clearAllMocks();
 	});
 
 	describe('request', () => {
@@ -105,6 +106,146 @@ describe('HydraService', () => {
 					},
 				})
 			);
+		});
+	});
+
+	describe('Client Flow', () => {
+		describe('listOAuth2Clients', () => {
+			it('should list all oauth2 clients', async () => {
+				const data: OauthClient[] = [
+					{
+						client_id: 'client1',
+					},
+					{
+						client_id: 'client2',
+					},
+				];
+
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: OauthClient[] = await service.listOAuth2Clients();
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients`,
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
+			});
+
+			it('should list all oauth2 clients within parameters', async () => {
+				const data: OauthClient[] = [
+					{
+						client_id: 'client1',
+						owner: 'clientOwner',
+					},
+				];
+
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: OauthClient[] = await service.listOAuth2Clients(1, 0, 'client1', 'clientOwner');
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients?limit=1&offset=0&client_name=client1&owner=clientOwner`,
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
+			});
+		});
+
+		describe('getOAuth2Client', () => {
+			it('should get oauth2 client', async () => {
+				const data: OauthClient = {
+					client_id: 'client',
+				};
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: OauthClient = await service.getOAuth2Client('clientId');
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients/clientId`,
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
+			});
+		});
+
+		describe('createOAuth2Client', () => {
+			it('should create oauth2 client', async () => {
+				const data: OauthClient = {
+					client_id: 'client',
+				};
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: OauthClient = await service.createOAuth2Client(data);
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients`,
+						method: 'POST',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+						data,
+					})
+				);
+			});
+		});
+
+		describe('updateOAuth2Client', () => {
+			it('should update oauth2 client', async () => {
+				const data: OauthClient = {
+					client_id: 'client',
+				};
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: OauthClient = await service.updateOAuth2Client('clientId', data);
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients/clientId`,
+						method: 'PUT',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+						data,
+					})
+				);
+			});
+		});
+
+		describe('deleteOAuth2Client', () => {
+			it('should delete oauth2 client', async () => {
+				httpService.request.mockReturnValue(of(createAxiosResponse({})));
+
+				await service.deleteOAuth2Client('clientId');
+
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients/clientId`,
+						method: 'DELETE',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
+			});
 		});
 	});
 

@@ -4,8 +4,10 @@ import { HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
+import QueryString from 'qs';
+import { URL } from 'url';
+import { IntrospectResponse, OauthClient, RedirectResponse } from '../dto';
 import { OauthProviderService } from '../oauth-provider.service';
-import { IntrospectResponse, RedirectResponse } from '../dto';
 
 @Injectable()
 export class HydraService extends OauthProviderService {
@@ -50,6 +52,38 @@ export class HydraService extends OauthProviderService {
 			'DELETE',
 			`${this.hydraUri}/oauth2/auth/sessions/consent?subject=${user}&client=${client}`
 		);
+		return response;
+	}
+
+	listOAuth2Clients(limit?: number, offset?: number, client_name?: string, owner?: string): Promise<OauthClient[]> {
+		const url: URL = new URL(`${this.hydraUri}/clients`);
+		url.search = QueryString.stringify({
+			limit,
+			offset,
+			client_name,
+			owner,
+		});
+		const response: Promise<OauthClient[]> = this.request<OauthClient[]>('GET', url.toString());
+		return response;
+	}
+
+	getOAuth2Client(id: string): Promise<OauthClient> {
+		const response: Promise<OauthClient> = this.request<OauthClient>('GET', `${this.hydraUri}/clients/${id}`);
+		return response;
+	}
+
+	createOAuth2Client(data: OauthClient): Promise<OauthClient> {
+		const response: Promise<OauthClient> = this.request<OauthClient>('POST', `${this.hydraUri}/clients`, data);
+		return response;
+	}
+
+	updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient> {
+		const response: Promise<OauthClient> = this.request<OauthClient>('PUT', `${this.hydraUri}/clients/${id}`, data);
+		return response;
+	}
+
+	deleteOAuth2Client(id: string): Promise<void> {
+		const response: Promise<void> = this.request<void>('DELETE', `${this.hydraUri}/clients/${id}`);
 		return response;
 	}
 
