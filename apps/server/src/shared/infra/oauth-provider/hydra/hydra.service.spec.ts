@@ -2,9 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HydraService } from '@shared/infra/oauth-provider/hydra/hydra.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
-import { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
+import { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import { of } from 'rxjs';
 import { NotImplementedException } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { RedirectResponse } from '@shared/infra/oauth-provider/dto';
 
 class HydraServiceSpec extends HydraService {
 	public async requestSpec<T>(
@@ -30,6 +32,8 @@ describe('HydraService', () => {
 	let service: HydraServiceSpec;
 
 	let httpService: DeepMocked<HttpService>;
+
+	const hydraUri = Configuration.get('HYDRA_URI') as string;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -155,8 +159,22 @@ describe('HydraService', () => {
 
 	describe('Logout Flow', () => {
 		describe('acceptLogoutRequest', () => {
-			it('should throw', () => {
-				expect(() => service.acceptLogoutRequest('')).toThrow(NotImplementedException);
+			it('should make http request', async () => {
+				// Arrange
+				const responseMock: RedirectResponse = { redirect_to: 'redirect_mock' };
+				httpService.request.mockReturnValue(of(createAxiosResponse(responseMock)));
+				const config: AxiosRequestConfig = {
+					method: 'PUT',
+					url: `${hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=challenge_mock`,
+					headers: { 'X-Forwarded-Proto': 'https' },
+				};
+
+				// Act
+				const response: RedirectResponse = await service.acceptLogoutRequest('challenge_mock');
+
+				// Assert
+				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
+				expect(response).toEqual(responseMock);
 			});
 		});
 	});
