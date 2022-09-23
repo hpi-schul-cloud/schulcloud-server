@@ -2,11 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HydraService } from '@shared/infra/oauth-provider/hydra/hydra.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
-import { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
+import { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import { of } from 'rxjs';
 import { IntrospectResponse } from '@shared/infra/oauth-provider/dto/index';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
+import { RedirectResponse } from '@shared/infra/oauth-provider/dto';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 class HydraServiceSpec extends HydraService {
 	public async requestSpec<T>(
@@ -145,49 +146,71 @@ describe('HydraService', () => {
 				);
 			});
 		});
-	});
 
-	describe('Miscellaneous', () => {
-		describe('introspectOAuth2Token', () => {
-			it('should return introspect', async () => {
-				const response: IntrospectResponse = {
-					active: true,
-				};
-				httpService.request.mockReturnValue(of(createAxiosResponse(response)));
+		describe('Logout Flow', () => {
+			describe('acceptLogoutRequest', () => {
+				it('should make http request', async () => {
+					// Arrange
+					const responseMock: RedirectResponse = { redirect_to: 'redirect_mock' };
+					httpService.request.mockReturnValue(of(createAxiosResponse(responseMock)));
+					const config: AxiosRequestConfig = {
+						method: 'PUT',
+						url: `${hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=challenge_mock`,
+						headers: { 'X-Forwarded-Proto': 'https' },
+					};
 
-				const result: IntrospectResponse = await service.introspectOAuth2Token('token', 'scope');
+					// Act
+					const response: RedirectResponse = await service.acceptLogoutRequest('challenge_mock');
 
-				expect(result).toEqual(response);
-				expect(httpService.request).toHaveBeenCalledWith(
-					expect.objectContaining({
-						url: `${hydraUri}/oauth2/introspect`,
-						method: 'POST',
-						headers: {
-							'X-Forwarded-Proto': 'https',
-							'Content-Type': 'application/x-www-form-urlencoded',
-						},
-						data: 'token=token&scope=scope',
-					})
-				);
+					// Assert
+					expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
+					expect(response).toEqual(responseMock);
+				});
 			});
 		});
 
-		describe('isInstanceAlive', () => {
-			it('should check if hydra is alive', async () => {
-				httpService.request.mockReturnValue(of(createAxiosResponse(true)));
+		describe('Miscellaneous', () => {
+			describe('introspectOAuth2Token', () => {
+				it('should return introspect', async () => {
+					const response: IntrospectResponse = {
+						active: true,
+					};
+					httpService.request.mockReturnValue(of(createAxiosResponse(response)));
 
-				const result: boolean = await service.isInstanceAlive();
+					const result: IntrospectResponse = await service.introspectOAuth2Token('token', 'scope');
 
-				expect(result).toEqual(true);
-				expect(httpService.request).toHaveBeenCalledWith(
-					expect.objectContaining({
-						url: `${hydraUri}/health/alive`,
-						method: 'GET',
-						headers: {
-							'X-Forwarded-Proto': 'https',
-						},
-					})
-				);
+					expect(result).toEqual(response);
+					expect(httpService.request).toHaveBeenCalledWith(
+						expect.objectContaining({
+							url: `${hydraUri}/oauth2/introspect`,
+							method: 'POST',
+							headers: {
+								'X-Forwarded-Proto': 'https',
+								'Content-Type': 'application/x-www-form-urlencoded',
+							},
+							data: 'token=token&scope=scope',
+						})
+					);
+				});
+			});
+
+			describe('isInstanceAlive', () => {
+				it('should check if hydra is alive', async () => {
+					httpService.request.mockReturnValue(of(createAxiosResponse(true)));
+
+					const result: boolean = await service.isInstanceAlive();
+
+					expect(result).toEqual(true);
+					expect(httpService.request).toHaveBeenCalledWith(
+						expect.objectContaining({
+							url: `${hydraUri}/health/alive`,
+							method: 'GET',
+							headers: {
+								'X-Forwarded-Proto': 'https',
+							},
+						})
+					);
+				});
 			});
 		});
 	});

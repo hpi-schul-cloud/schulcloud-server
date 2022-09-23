@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
+import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotImplementedException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
@@ -13,7 +13,7 @@ describe('OauthProviderController', () => {
 	let module: TestingModule;
 	let controller: OauthProviderController;
 
-	let uc: DeepMocked<OauthProviderUc>;
+	let uc: DeepMocked<OauthProviderLogoutFlowUc>;
 	let responseMapper: DeepMocked<OauthProviderResponseMapper>;
 
 	const hydraUri = 'http://hydra.uri';
@@ -25,8 +25,8 @@ describe('OauthProviderController', () => {
 			providers: [
 				OauthProviderController,
 				{
-					provide: OauthProviderUc,
-					useValue: createMock<OauthProviderUc>(),
+					provide: OauthProviderLogoutFlowUc,
+					useValue: createMock<OauthProviderLogoutFlowUc>(),
 				},
 				{
 					provide: OauthProviderResponseMapper,
@@ -37,7 +37,7 @@ describe('OauthProviderController', () => {
 
 		controller = module.get(OauthProviderController);
 
-		uc = module.get(OauthProviderUc);
+		uc = module.get(OauthProviderLogoutFlowUc);
 		responseMapper = module.get(OauthProviderResponseMapper);
 	});
 
@@ -117,10 +117,16 @@ describe('OauthProviderController', () => {
 
 	describe('Logout Flow', () => {
 		describe('acceptLogoutRequest', () => {
-			it('should throw', () => {
-				expect(() => controller.acceptLogoutRequest({ challenge: '' }, { redirect_to: '' })).toThrow(
-					NotImplementedException
+			it('should call uc and return redirect string', async () => {
+				uc.logoutFlow.mockResolvedValue({ redirect_to: 'www.mock.de' });
+
+				const redirect = await controller.acceptLogoutRequest(
+					{ challenge: 'challenge_mock' },
+					{ redirect_to: 'www.mock.de' }
 				);
+
+				expect(uc.logoutFlow).toHaveBeenCalledWith('challenge_mock');
+				expect(redirect).toEqual('www.mock.de');
 			});
 		});
 	});

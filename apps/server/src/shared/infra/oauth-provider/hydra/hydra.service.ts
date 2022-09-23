@@ -4,8 +4,8 @@ import { HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
-import { IntrospectResponse } from '../dto';
 import { OauthProviderService } from '../oauth-provider.service';
+import { IntrospectResponse, RedirectResponse } from '../dto';
 
 @Injectable()
 export class HydraService extends OauthProviderService {
@@ -14,6 +14,12 @@ export class HydraService extends OauthProviderService {
 	constructor(private readonly httpService: HttpService) {
 		super();
 		this.hydraUri = Configuration.get('HYDRA_URI') as string;
+	}
+
+	async acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
+		const url = `${this.hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=${challenge}`;
+		const response: Promise<RedirectResponse> = this.request<RedirectResponse>('PUT', url);
+		return response;
 	}
 
 	introspectOAuth2Token(token: string, scope: string): Promise<IntrospectResponse> {
