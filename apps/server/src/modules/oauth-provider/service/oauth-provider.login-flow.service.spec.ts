@@ -1,13 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LtiToolRepo, PseudonymsRepo, RoleRepo, UserRepo } from '@shared/repo';
-import { ICurrentUser, Permission, PermissionService, PseudonymDO } from '@shared/domain';
+import { ICurrentUser, Permission, PermissionService, PseudonymDO, User } from '@shared/domain';
 import { LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
 import { OauthProviderLoginFlowService } from '@src/modules/oauth-provider/service/oauth-provider.login-flow.service';
 import { LoginResponse } from '@shared/infra/oauth-provider/dto';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { NotFoundException } from '@nestjs/common';
-import { roleFactory, userFactory } from '@shared/testing';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { roleFactory, userFactory, setupEntities } from '@shared/testing';
+import { MikroORM } from '@mikro-orm/core';
+import { ObjectID } from 'bson';
+import clearAllMocks = jest.clearAllMocks;
 
 describe('OauthProviderLoginFlowService', () => {
 	let module: TestingModule;
@@ -17,8 +20,7 @@ describe('OauthProviderLoginFlowService', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let roleRepo: DeepMocked<RoleRepo>;
 	let permissionService: DeepMocked<PermissionService>;
-
-	const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+	let orm: MikroORM;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -53,13 +55,17 @@ describe('OauthProviderLoginFlowService', () => {
 		pseudonymsRepo = module.get(PseudonymsRepo);
 		roleRepo = module.get(RoleRepo);
 		permissionService = module.get(PermissionService);
+		orm = await setupEntities();
 	});
 
 	afterAll(async () => {
 		await module.close();
+		await orm.close();
+		clearAllMocks();
 	});
 
 	describe('setSubject', () => {
+		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 		const loginRequestBodyMock: LoginRequestBody = {
 			remember: true,
 			remember_for: 0,
@@ -122,17 +128,10 @@ describe('OauthProviderLoginFlowService', () => {
 	});
 	describe('validateNextcloudPermission', () => {
 		it('should validate Nextcloud permissions', async () => {
+			const currentUser: ICurrentUser = { userId: new ObjectID(213135).toString() } as ICurrentUser;
 			const role = roleFactory.build({ permissions: ['NEXTCLOUD_USER' as Permission] });
-			const user = userFactory.build({
-				email: 'email',
-				firstName: 'firstname',
-				lastName: 'lastname',
-				ldapDn: 'ldapDn',
-				ldapId: 'ldapId',
-				roles: [role],
-			});
-			user.roles.add(role);
-			user.roles[0].permissions = ['NEXTCLOUD_USER' as Permission];
+
+			const user: User = userFactory.buildWithId({ roles: [role] }, currentUser.userId);
 			const loginResponse: LoginResponse = {
 				challenge: 'challenge',
 				client: {
@@ -156,8 +155,32 @@ describe('OauthProviderLoginFlowService', () => {
 			expect(userRepo.findById).toHaveBeenCalledWith(user.id);
 			expect(permissionService.resolvePermissions).toHaveBeenCalledWith(user);
 			expect(ltiToolRepo.findByOauthClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id);
-			expect(validation).toHaveBeenCalled();
+		});
+
+		it('should trow a ForbiddenException', async () => {
+			const currentUser: ICurrentUser = { userId: new ObjectID(213135).toString() } as ICurrentUser;
+			const role = roleFactory.build();
+			const user: User = userFactory.buildWithId({ roles: [role] }, currentUser.userId);
+			const loginResponse: LoginResponse = {
+				challenge: 'challenge',
+				client: {
+					client_id: 'clientId',
+				},
+			} as LoginResponse;
+			const ltiToolDoMock: LtiToolDO = {
+				id: 'toolId',
+				name: 'SchulcloudNextcloud',
+				oAuthClientId: 'oAuthClientId',
+				isLocal: true,
+			};
+
+			userRepo.findById.mockResolvedValue(user);
+			permissionService.resolvePermissions.mockReturnValue(role.permissions);
+			ltiToolRepo.findByOauthClientIdAndIsLocal.mockResolvedValue(ltiToolDoMock);
+
+			await expect(service.validateNextcloudPermission(currentUser.userId, loginResponse)).rejects.toThrow(
+				ForbiddenException
+			);
 		});
 	});
-	describe('rejectLoginRequest', () => {});
 });
