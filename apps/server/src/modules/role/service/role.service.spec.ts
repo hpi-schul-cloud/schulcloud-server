@@ -5,6 +5,7 @@ import { RoleRepo } from '@shared/repo';
 import { Role, RoleName } from '@shared/domain';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { roleFactory } from '@shared/testing';
+import { NotFoundError } from '@mikro-orm/core';
 
 describe('RoleService', () => {
 	let module: TestingModule;
@@ -43,10 +44,10 @@ describe('RoleService', () => {
 		});
 
 		it('should reject promise, when no entity was found', async () => {
-			roleRepo.findById.mockReturnValue(Promise.reject(undefined));
+			roleRepo.findById.mockRejectedValue(new NotFoundError('not found'));
 			roleRepo.findByNames.mockResolvedValue([testRoleEntity]);
 
-			await expect(roleService.findById('')).rejects.toEqual(undefined);
+			await expect(roleService.findById('')).rejects.toThrow(NotFoundError);
 		});
 	});
 
@@ -61,9 +62,9 @@ describe('RoleService', () => {
 		});
 
 		it('should reject promise, when no entity was found', async () => {
-			roleRepo.findByNames.mockReturnValue(Promise.reject(undefined));
+			roleRepo.findByNames.mockRejectedValue(new NotFoundError('not found'));
 
-			await expect(roleService.findByNames(['unknown role' as unknown as RoleName])).rejects.toEqual(undefined);
+			await expect(roleService.findByNames(['unknown role' as unknown as RoleName])).rejects.toThrow(NotFoundError);
 		});
 	});
 
@@ -76,9 +77,9 @@ describe('RoleService', () => {
 		});
 
 		it('should reject promise, when no entity was found', async () => {
-			roleRepo.findByNames.mockReturnValue(Promise.reject(undefined));
+			roleRepo.findByNames.mockRejectedValue(new NotFoundError('not found'));
 
-			await expect(roleService.findByNames([RoleName.HELPDESK])).rejects.toEqual(undefined);
+			await expect(roleService.findByNames([RoleName.HELPDESK])).rejects.toThrow(NotFoundError);
 		});
 	});
 });
