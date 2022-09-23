@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, System } from '@shared/domain';
-import { SysType } from '@shared/infra/identity-management';
+import { EntityId, System, SystemTypeEnum } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -36,9 +35,13 @@ export class SystemService {
 		return [...systemEntities, ...generatedOAuthsystems];
 	}
 
+	async findOidc(): Promise<SystemDto[]> {
+		return this.findOIDCSystems();
+	}
+
 	async findOAuthById(id: EntityId): Promise<SystemDto> {
 		let systemEntity = await this.systemRepo.findById(id);
-		if (systemEntity.type === SysType.OIDC) {
+		if (systemEntity.type === SystemTypeEnum.OIDC) {
 			const keycloakSystem = await this.lookupIdentityManagement();
 			if (keycloakSystem) {
 				systemEntity = this.generateBrokerSystem(systemEntity, keycloakSystem);
@@ -48,10 +51,41 @@ export class SystemService {
 		return SystemMapper.mapFromEntityToDto(systemEntity);
 	}
 
+	async save(systemDto: SystemDto): Promise<SystemDto> {
+		let system: System;
+		if (systemDto.id) {
+			system = await this.systemRepo.findById(systemDto.id);
+			system.type = systemDto.type;
+			system.alias = systemDto.alias;
+			system.displayName = systemDto.displayName;
+			system.oauthConfig = systemDto.oauthConfig;
+			system.config = { ...systemDto.oidcConfig };
+			system.provisioningStrategy = systemDto.provisioningStrategy;
+			system.url = systemDto.url;
+		} else {
+			system = new System({
+				type: systemDto.type,
+				alias: systemDto.alias,
+				displayName: systemDto.displayName,
+				oauthConfig: systemDto.oauthConfig,
+				provisioningStrategy: systemDto.provisioningStrategy,
+				url: systemDto.url,
+			});
+			system.config = { ...systemDto.oauthConfig };
+		}
+		await this.systemRepo.save(system);
+		return SystemMapper.mapFromEntityToDto(system);
+	}
+
+	private async findOIDCSystems(): Promise<SystemDto[]> {
+		const systemEntities = await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
+		return SystemMapper.mapFromEntitiesToDtos(systemEntities);
+	}
+
 	private async findDirectOauthSystems(): Promise<SystemDto[]> {
-		const ldapSystemEntities = await this.systemRepo.findByFilter(SysType.LDAP, true);
-		const oauthSystemEntities = await this.systemRepo.findByFilter(SysType.OAUTH, true);
-		return [...ldapSystemEntities, ...oauthSystemEntities];
+		const ldapSystemEntities = await this.systemRepo.findByFilter(SystemTypeEnum.LDAP, true);
+		const oauthSystemEntities = await this.systemRepo.findByFilter(SystemTypeEnum.OAUTH, true);
+		return SystemMapper.mapFromEntitiesToDtos([...ldapSystemEntities, ...oauthSystemEntities]);
 	}
 
 	private async findOauthViaKeycloakSystems(): Promise<SystemDto[]> {
@@ -59,7 +93,7 @@ export class SystemService {
 		if (!keycloakSystem) {
 			return [];
 		}
-		const oidcSystems = await this.systemRepo.findByFilter(SysType.OIDC);
+		const oidcSystems = await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
 
 		const generatedOAuthsystems: System[] = [];
 		oidcSystems.forEach((systemEntity) => {
@@ -70,7 +104,7 @@ export class SystemService {
 	}
 
 	private async lookupIdentityManagement() {
-		const keycloakConfig = await this.systemRepo.findByFilter(SysType.KEYCLOAK, true);
+		const keycloakConfig = await this.systemRepo.findByFilter(SystemTypeEnum.KEYCLOAK, true);
 		if (keycloakConfig.length === 1) {
 			return keycloakConfig[0];
 		}
@@ -79,7 +113,7 @@ export class SystemService {
 
 	private generateBrokerSystem(systemEntity: System, identityManagement: System) {
 		const generatedSystem: System = new System({
-			type: SysType.OAUTH,
+			type: SystemTypeEnum.OAUTH,
 			alias: systemEntity.alias,
 			displayName: systemEntity.displayName ? systemEntity.displayName : systemEntity.alias,
 			oauthConfig: identityManagement.oauthConfig,

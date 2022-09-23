@@ -1,9 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, System } from '@shared/domain';
+import { EntityId, System, SystemTypeEnum } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SysType } from '@shared/infra/identity-management';
 import { SystemRepo } from '@shared/repo';
 import { setupEntities, systemFactory } from '@shared/testing';
 import { OauthConfigDto } from './dto/oauth-config.dto';
@@ -19,7 +18,7 @@ describe('SystemService', () => {
 
 	const iserv = systemFactory.buildWithId();
 	const keycloak = systemFactory.buildWithId({
-		type: SysType.KEYCLOAK,
+		type: SystemTypeEnum.KEYCLOAK,
 		alias: 'Keycloak',
 		provisioningStrategy: SystemProvisioningStrategy.PLACEHOLDER,
 		url: 'http://mock.de',
@@ -39,12 +38,12 @@ describe('SystemService', () => {
 		},
 	});
 	const oidc1 = systemFactory.buildWithId({
-		type: SysType.OIDC,
+		type: SystemTypeEnum.OIDC,
 		alias: 'Third Party System 1',
 		displayName: 'OIDC_Broker_1',
 	});
 	const oidc2 = systemFactory.buildWithId({
-		type: SysType.OIDC,
+		type: SystemTypeEnum.OIDC,
 		alias: 'Third Party System 2',
 		displayName: 'OIDC_Broker_2',
 	});
@@ -88,23 +87,23 @@ describe('SystemService', () => {
 			return Promise.reject();
 		});
 		systemRepo.findByFilter.mockImplementation(
-			(theType: string | SysType = '', onlyOauth = false): Promise<System[]> => {
-				if (theType === SysType.LDAP && onlyOauth) {
+			(theType: string | SystemTypeEnum = '', onlyOauth = false): Promise<System[]> => {
+				if (theType === SystemTypeEnum.LDAP && onlyOauth) {
 					return Promise.resolve([iserv]);
 				}
-				if (theType === SysType.OAUTH && onlyOauth) {
+				if (theType === SystemTypeEnum.OAUTH && onlyOauth) {
 					return Promise.resolve([]);
 				}
-				if (theType === SysType.KEYCLOAK) {
+				if (theType === SystemTypeEnum.KEYCLOAK) {
 					return Promise.resolve([keycloak]);
 				}
 				if (theType === '' && onlyOauth) {
 					return Promise.resolve([iserv, keycloak]);
 				}
-				if (theType === SysType.OIDC) {
+				if (theType === SystemTypeEnum.OIDC) {
 					return Promise.resolve(oidcSystems);
 				}
-				if (theType === SysType.OAUTH) {
+				if (theType === SystemTypeEnum.OAUTH) {
 					return Promise.resolve([iserv]);
 				}
 				return Promise.resolve(allSystems);
@@ -126,7 +125,7 @@ describe('SystemService', () => {
 		});
 		it('should limit the results for the specified type (by repo call)', async () => {
 			// When
-			const resultSystems = await systemService.find(SysType.OIDC);
+			const resultSystems = await systemService.find(SystemTypeEnum.OIDC);
 
 			// Then
 			expect(resultSystems).toContainEqual(
@@ -155,7 +154,7 @@ describe('SystemService', () => {
 				}
 				expect(resultSystems).toContainEqual(
 					expect.objectContaining<SystemDto>({
-						type: SysType.OAUTH,
+						type: SystemTypeEnum.OAUTH,
 						alias: system.alias,
 						displayName: system.displayName,
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -183,17 +182,18 @@ describe('SystemService', () => {
 		it('should ignore generated oauth systems if no keycloak exists', async () => {
 			// Given
 			systemRepo.findByFilter.mockImplementation(
-				(theType: string | SysType = '', onlyOauth = false): Promise<System[]> => {
-					if (theType === SysType.LDAP && onlyOauth) {
+				(theType: string | SystemTypeEnum = '', onlyOauth = false): Promise<System[]> => {
+					if (theType === SystemTypeEnum.LDAP && onlyOauth) {
 						return Promise.resolve([iserv]);
 					}
-					if (theType === SysType.OAUTH && onlyOauth) {
+					if (theType === SystemTypeEnum.OAUTH && onlyOauth) {
 						return Promise.resolve([]);
 					}
-					if (theType === SysType.KEYCLOAK) {
+					if (theType === SystemTypeEnum.KEYCLOAK) {
 						return Promise.resolve([]);
 					}
-					if (theType === SysType.OIDC) {
+
+					if (theType === SystemTypeEnum.OIDC) {
 						return Promise.resolve(oidcSystems);
 					}
 					return Promise.resolve(allSystems);
@@ -209,6 +209,22 @@ describe('SystemService', () => {
 			);
 
 			expect(resultSystems).toHaveLength(1);
+		});
+	});
+
+	describe('findOIDC', () => {
+		it('should find all oidc systems', async () => {
+			// When
+			const resultSystems = await systemService.findOidc();
+
+			// Then
+			expect(resultSystems).toContainEqual(
+				expect.objectContaining<SystemDto>({ type: oidc1.type, alias: oidc1.alias })
+			);
+			expect(resultSystems).toContainEqual(
+				expect.objectContaining<SystemDto>({ type: oidc2.type, alias: oidc2.alias })
+			);
+			expect(resultSystems).toHaveLength(oidcSystems.length);
 		});
 	});
 
@@ -235,7 +251,7 @@ describe('SystemService', () => {
 			const resultSystems = await systemService.findOAuthById(oidc1.id);
 
 			// Assert
-			expect(resultSystems.type).toEqual(SysType.OAUTH);
+			expect(resultSystems.type).toEqual(SystemTypeEnum.OAUTH);
 			expect(resultSystems.alias).toEqual(oidc1.alias);
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			expect(resultSystems.displayName).toEqual(oidc1.displayName);
@@ -261,14 +277,14 @@ describe('SystemService', () => {
 		it('should not generate oauth systems if no keycloak exists', async () => {
 			// Given
 			systemRepo.findByFilter.mockImplementation(
-				(theType: string | SysType = '', onlyOauth = false): Promise<System[]> => {
-					if (theType === SysType.KEYCLOAK) {
+				(theType: string | SystemTypeEnum = '', onlyOauth = false): Promise<System[]> => {
+					if (theType === SystemTypeEnum.KEYCLOAK) {
 						return Promise.resolve([]);
 					}
 					if (onlyOauth) {
 						return Promise.resolve([iserv]);
 					}
-					if (theType === SysType.OIDC) {
+					if (theType === SystemTypeEnum.OIDC) {
 						return Promise.resolve(oidcSystems);
 					}
 					return Promise.resolve(allSystems);
@@ -286,6 +302,40 @@ describe('SystemService', () => {
 
 		it('should reject promise, because no entity was found', async () => {
 			await expect(systemService.findOAuthById('unknown id')).rejects.toEqual(undefined);
+		});
+	});
+
+	describe('save', () => {
+		it('should save new systems', async () => {
+			const newSystem = new System({
+				type: SystemTypeEnum.OIDC,
+				alias: 'alias',
+				displayName: 'displayName',
+				oauthConfig: undefined,
+				provisioningStrategy: undefined,
+				url: undefined,
+			});
+
+			// Act
+			const resultSystem = await systemService.save(newSystem);
+
+			// Assert
+			expect(resultSystem.type).toEqual(newSystem.type);
+			expect(resultSystem.alias).toEqual(newSystem.alias);
+			expect(resultSystem.displayName).toEqual(newSystem.displayName);
+		});
+
+		it('should update existing systems ', async () => {
+			const existingSystem = new SystemDto(oidc1);
+			existingSystem.alias = 'newAlias';
+
+			// Act
+			const resultSystem = await systemService.save(existingSystem);
+
+			// Assert
+			expect(resultSystem.type).toEqual(oidc1.type);
+			expect(resultSystem.displayName).toEqual(oidc1.displayName);
+			expect(resultSystem.alias).toEqual(existingSystem.alias);
 		});
 	});
 });

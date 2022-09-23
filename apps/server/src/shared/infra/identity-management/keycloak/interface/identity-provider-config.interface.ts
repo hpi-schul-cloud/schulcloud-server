@@ -1,8 +1,7 @@
-import { System } from '@shared/domain';
-import { SysType } from '../../sys.type';
+import { System, SystemType } from '@shared/domain';
 
 export interface IIdentityProviderConfig extends Omit<System, 'url' | 'oauthConfig' | 'ldapConfig'> {
-	type: SysType;
+	type: SystemType;
 	alias: string;
 	displayName: string | undefined;
 }

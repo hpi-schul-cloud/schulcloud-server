@@ -4,11 +4,11 @@ import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clien
 import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Inject } from '@nestjs/common';
-import { System } from '@shared/domain';
+import { System, SystemTypeEnum } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { SystemRepo } from '@shared/repo';
+import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SC_DOMAIN } from '../../../../../../../../config/globals.js';
-import { SysType } from '../../sys.type';
 import { IdentityProviderConfig } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -25,7 +25,7 @@ const defaultIdpMapperName = 'oidc-username-idp-mapper';
 export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
-		private readonly systemRepo: SystemRepo,
+		private readonly systemService: SystemService,
 		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService
 	) {}
@@ -107,7 +107,7 @@ export class KeycloakConfigurationService {
 	public async configureClient(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		let redirectUri = `https://${SC_DOMAIN}/api/v3/sso/oauth/`;
-		// TODO grab from well-known endpoint or move to separat environmental variable
+		// TODO grab from well-known endpoint or move to separat environmental variable, see EW-326
 		let kcBaseUrl = `https://idm-${SC_DOMAIN}/realms/${kc.realmName}`;
 		if (SC_DOMAIN === 'localhost') {
 			redirectUri = `http://localhost:3030/api/v3/sso/oauth/`;
@@ -127,22 +127,22 @@ export class KeycloakConfigurationService {
 		}
 		const generatedClientSecret = await kc.clients.generateNewClientSecret({ id: defaultClientInternalId });
 
-		let keycloakSystem: System;
-		const systems = await this.systemRepo.findByFilter(SysType.KEYCLOAK, false);
+		let keycloakSystem: SystemDto;
+		const systems = await this.systemService.find(SystemTypeEnum.KEYCLOAK);
 		if (systems.length === 0) {
-			keycloakSystem = new System({ type: SysType.KEYCLOAK });
+			keycloakSystem = new SystemDto({ type: SystemTypeEnum.KEYCLOAK });
 		} else {
 			[keycloakSystem] = systems;
 		}
 		this.setKeycloakSystemInformation(keycloakSystem, kcBaseUrl, redirectUri, generatedClientSecret.value ?? '');
-		await this.systemRepo.save(keycloakSystem);
+		await this.systemService.save(keycloakSystem);
 	}
 
 	public async configureIdentityProviders(): Promise<number> {
 		let count = 0;
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const oldConfigs = await kc.identityProviders.find();
-		const newConfigs = await this.loadConfigs([SysType.OIDC]);
+		const newConfigs = (await this.systemService.findOidc()) as IdentityProviderConfig[];
 		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const configureAction of configureActions) {
@@ -166,12 +166,12 @@ export class KeycloakConfigurationService {
 	}
 
 	private setKeycloakSystemInformation(
-		keycloakSystem: System,
+		keycloakSystem: SystemDto,
 		kcBaseUrl: string,
 		redirectUri: string,
 		generatedClientSecret: string
 	) {
-		keycloakSystem.type = SysType.KEYCLOAK;
+		keycloakSystem.type = SystemTypeEnum.KEYCLOAK;
 		keycloakSystem.alias = 'Keycloak';
 		keycloakSystem.oauthConfig = {
 			clientId,
@@ -180,7 +180,7 @@ export class KeycloakConfigurationService {
 			scope: 'openid profile email',
 			responseType: 'code',
 			provider: 'oauth',
-			// TODO grab from well-known endpoint instead of storing here
+			// TODO grab from well-known endpoint instead of storing here, see EW-326
 			tokenEndpoint: `${kcBaseUrl}/protocol/openid-connect/token`,
 			redirectUri: `${redirectUri}`,
 			authEndpoint: `${kcBaseUrl}/protocol/openid-connect/auth`,
@@ -223,7 +223,7 @@ export class KeycloakConfigurationService {
 
 	private async createIdentityProvider(system: IdentityProviderConfig): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		if (system.type === SysType.OIDC) {
+		if (system.type === SystemTypeEnum.OIDC) {
 			await kc.identityProviders.create(
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
 			);
@@ -233,7 +233,7 @@ export class KeycloakConfigurationService {
 
 	private async updateIdentityProvider(system: IdentityProviderConfig): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		if (system.type === SysType.OIDC) {
+		if (system.type === SystemTypeEnum.OIDC) {
 			await kc.identityProviders.update(
 				{ alias: system.alias },
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
@@ -273,12 +273,6 @@ export class KeycloakConfigurationService {
 			// eslint-disable-next-line no-template-curly-in-string
 			config: { syncMode: 'FORCE', target: 'LOCAL', template: '${CLAIM.sub}' },
 		};
-	}
-
-	private async loadConfigs(sysTypes: SysType[]): Promise<IdentityProviderConfig[]> {
-		return (await this.systemRepo.findAll()).filter((system) =>
-			sysTypes.includes(system.type as SysType)
-		) as IdentityProviderConfig[];
 	}
 
 	private async deleteIdentityProvider(alias: string): Promise<void> {

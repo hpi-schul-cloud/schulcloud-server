@@ -110,13 +110,13 @@ export class OAuthService {
 		if (system.oauthConfig && system.oauthConfig.provider === 'iserv') {
 			return this.iservOauthService.findUserById(system.id ?? '', decodedJwt);
 		}
-		// FIXME Temporary change - wait for N21-138 merge
+		// TODO Temporary change - wait for N21-138 merge
+		// This user id resolution is trial and error at the moment. It is ought to be replaced by a proper strategy pattern (N21-138)
+		// See scope of EW-325
 		try {
 			return await this.userRepo.findById(decodedJwt.sub);
 		} catch (error) {
 			try {
-				// FIXME user id resolution is trial and error at the moment
-				// FIXME move system id to the token instead of path parameter
 				return await this.userRepo.findByLdapIdOrFail(decodedJwt.preferred_username ?? '', system.id ?? '');
 			} catch {
 				throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');

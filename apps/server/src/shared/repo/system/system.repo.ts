@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { System } from '@shared/domain';
+import { System, SystemType } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { SystemScope } from '@shared/repo/system/system-scope';
-import { SysType } from '../../infra/identity-management/sys.type';
 
 @Injectable()
 export class SystemRepo extends BaseRepo<System> {
@@ -10,7 +9,7 @@ export class SystemRepo extends BaseRepo<System> {
 		return System;
 	}
 
-	async findByFilter(type: string | SysType = '', onlyOauth = false): Promise<System[]> {
+	async findByFilter(type: string | SystemType = '', onlyOauth = false): Promise<System[]> {
 		const scope = new SystemScope();
 		if (type) {
 			scope.byType(type);

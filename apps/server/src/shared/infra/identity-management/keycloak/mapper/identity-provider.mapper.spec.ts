@@ -2,8 +2,8 @@ import { createMock } from '@golevelup/ts-jest';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SystemTypeEnum } from '@shared/domain';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { SysType } from '../../sys.type';
 import { IOidcIdentityProviderConfig } from '../interface';
 import { OidcIdentityProviderMapper } from './identity-provider.mapper';
 
@@ -36,7 +36,7 @@ describe('OidcIdentityProviderMapper', () => {
 		const internalRepresentation: IOidcIdentityProviderConfig = {
 			_id: new ObjectId(0),
 			id: new ObjectId(0).toString(),
-			type: SysType.OIDC,
+			type: SystemTypeEnum.OIDC,
 			alias: 'alias',
 			displayName: undefined,
 			config: {
@@ -79,6 +79,27 @@ describe('OidcIdentityProviderMapper', () => {
 
 			expect(ret).toEqual(keycloakRepresentation);
 		});
+
+		it('should map system alias if no display name is given', () => {
+			const internalRepresentationWithoutDisplayName = { ...internalRepresentation };
+			const theAlias = 'alias';
+			internalRepresentationWithoutDisplayName.alias = theAlias;
+			internalRepresentationWithoutDisplayName.displayName = undefined;
+			const ret = mapper.mapToKeycloakIdentityProvider(internalRepresentationWithoutDisplayName, brokerFlowAlias);
+
+			expect(ret).toEqual(expect.objectContaining({ displayName: theAlias }));
+		});
+
+		it('should favor system display name if set', () => {
+			const internalRepresentationWithDisplayName = { ...internalRepresentation };
+			const theDisplayName = 'displayName';
+			internalRepresentationWithDisplayName.alias = 'alias';
+			internalRepresentationWithDisplayName.displayName = theDisplayName;
+			const ret = mapper.mapToKeycloakIdentityProvider(internalRepresentationWithDisplayName, brokerFlowAlias);
+
+			expect(ret).toEqual(expect.objectContaining({ displayName: theDisplayName }));
+		});
+
 		it('should decrypt secrets', () => {
 			const ret = mapper.mapToKeycloakIdentityProvider(internalRepresentation, brokerFlowAlias);
 

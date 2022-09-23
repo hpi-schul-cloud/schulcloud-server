@@ -20,6 +20,15 @@ describe('SystemMapper', () => {
 		it('should map all fields', () => {
 			// Arrange
 			const systemEntity = systemFactory.withOauthConfig().build();
+			systemEntity.config = {
+				clientId: 'mockId',
+				clientSecret: 'mockSecret',
+				authorizationUrl: 'mockAuthorizationUrl',
+				tokenUrl: 'mockTokenUrl',
+				logoutUrl: 'mockLogoutUrl',
+				userinfoUrl: 'userInfoUrl',
+				defaultScopes: 'mockDefaultScopes',
+			};
 
 			// Act
 			const result = SystemMapper.mapFromEntityToDto(systemEntity);
@@ -31,6 +40,7 @@ describe('SystemMapper', () => {
 			expect(result.type).toEqual(systemEntity.type);
 			expect(result.provisioningStrategy).toEqual(systemEntity.provisioningStrategy);
 			expect(result.oauthConfig).toEqual(systemEntity.oauthConfig);
+			expect(result.oidcConfig).toEqual(systemEntity.config);
 		});
 	});
 
@@ -73,6 +83,49 @@ describe('SystemMapper', () => {
 			expect(result[0].oauthConfig?.jwksEndpoint).toEqual(systemEntities[0].oauthConfig?.jwksEndpoint);
 			expect(result[0].oauthConfig?.redirectUri).toEqual(systemEntities[0].oauthConfig?.redirectUri);
 			expect(result[1].oauthConfig).toBe(undefined);
+		});
+		it('should map oidcconfig if exists', () => {
+			// Arrange
+			const system = systemFactory.build();
+			system.config = {
+				authorizationUrl: 'authorizationUrl',
+				clientId: 'clientId',
+				clientSecret: 'clientSecret',
+				defaultScopes: 'defaultScopes',
+				logoutUrl: 'logoutUrl',
+				tokenUrl: 'tokenUrl',
+				userinfoUrl: 'userinfoUrl',
+			};
+
+			// Act
+			const result = SystemMapper.mapFromEntitiesToDtos([system]);
+
+			// Assert
+			expect(result[0].oidcConfig?.authorizationUrl).toEqual(system.config.authorizationUrl);
+			expect(result[0].oidcConfig?.clientId).toEqual(system.config.clientId);
+			expect(result[0].oidcConfig?.clientSecret).toEqual(system.config.clientSecret);
+			expect(result[0].oidcConfig?.defaultScopes).toEqual(system.config.defaultScopes);
+			expect(result[0].oidcConfig?.logoutUrl).toEqual(system.config.logoutUrl);
+			expect(result[0].oidcConfig?.tokenUrl).toEqual(system.config.tokenUrl);
+			expect(result[0].oidcConfig?.userinfoUrl).toEqual(system.config.userinfoUrl);
+		});
+		it('should not map oidcconfig if mandatory field is missing', () => {
+			// Arrange
+			const system = systemFactory.build();
+			system.config = {
+				authorizationUrl: 'authorizationUrl',
+				clientSecret: 'clientSecret',
+				defaultScopes: 'defaultScopes',
+				logoutUrl: 'logoutUrl',
+				tokenUrl: 'tokenUrl',
+				userinfoUrl: 'userinfoUrl',
+			};
+
+			// Act
+			const result = SystemMapper.mapFromEntitiesToDtos([system]);
+
+			// Assert
+			expect(result[0].oidcConfig).toBe(undefined);
 		});
 	});
 });
