@@ -4,7 +4,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import { of } from 'rxjs';
-import { NotImplementedException } from '@nestjs/common';
 import { IntrospectResponse } from '@shared/infra/oauth-provider/dto/index';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
@@ -109,24 +108,6 @@ describe('HydraService', () => {
 	});
 
 	describe('Consent Flow', () => {
-		describe('getConsentRequest', () => {
-			it('should throw', () => {
-				expect(() => service.getConsentRequest('')).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('acceptConsentRequest', () => {
-			it('should throw', () => {
-				expect(() => service.acceptConsentRequest('', {})).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('rejectConsentRequest', () => {
-			it('should throw', () => {
-				expect(() => service.rejectConsentRequest('', {})).toThrow(NotImplementedException);
-			});
-		});
-
 		describe('listConsentSessions', () => {
 			it('should list all consent sessions', async () => {
 				const response: ProviderConsentSessionResponse[] = [{ consent_request: { challenge: 'challenge' } }];
@@ -166,106 +147,48 @@ describe('HydraService', () => {
 		});
 	});
 
-	describe('Login Flow', () => {
-		describe('getLoginRequest', () => {
-			it('should throw', () => {
-				expect(() => service.getLoginRequest('')).toThrow(NotImplementedException);
+	describe('Miscellaneous', () => {
+		describe('introspectOAuth2Token', () => {
+			it('should return introspect', async () => {
+				const response: IntrospectResponse = {
+					active: true,
+				};
+				httpService.request.mockReturnValue(of(createAxiosResponse(response)));
+
+				const result: IntrospectResponse = await service.introspectOAuth2Token('token', 'scope');
+
+				expect(result).toEqual(response);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/oauth2/introspect`,
+						method: 'POST',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+							'Content-Type': 'application/x-www-form-urlencoded',
+						},
+						data: 'token=token&scope=scope',
+					})
+				);
 			});
 		});
 
-		describe('acceptLoginRequest', () => {
-			it('should throw', () => {
-				expect(() => service.acceptLoginRequest('', { subject: '' })).toThrow(NotImplementedException);
+		describe('isInstanceAlive', () => {
+			it('should check if hydra is alive', async () => {
+				httpService.request.mockReturnValue(of(createAxiosResponse(true)));
+
+				const result: boolean = await service.isInstanceAlive();
+
+				expect(result).toEqual(true);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/health/alive`,
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
 			});
-		});
-
-		describe('rejectLoginRequest', () => {
-			it('should throw', () => {
-				expect(() => service.rejectLoginRequest('', {})).toThrow(NotImplementedException);
-			});
-		});
-	});
-
-	describe('Logout Flow', () => {
-		describe('acceptLogoutRequest', () => {
-			it('should throw', () => {
-				expect(() => service.acceptLogoutRequest('')).toThrow(NotImplementedException);
-			});
-		});
-	});
-
-	describe('Client Flow', () => {
-		describe('listOAuth2Clients', () => {
-			it('should throw', () => {
-				expect(() => service.listOAuth2Clients()).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('getOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => service.getOAuth2Client('')).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('createOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => service.createOAuth2Client({})).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('updateOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => service.updateOAuth2Client('', {})).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('deleteOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => service.deleteOAuth2Client('')).toThrow(NotImplementedException);
-			});
-		});
-	});
-
-	describe('introspectOAuth2Token', () => {
-		it('should return introspect', async () => {
-			const response: IntrospectResponse = {
-				active: true,
-			};
-			httpService.request.mockReturnValue(of(createAxiosResponse(response)));
-
-			const result: IntrospectResponse = await service.introspectOAuth2Token('token', 'scope');
-
-			expect(result).toEqual(response);
-			expect(httpService.request).toHaveBeenCalledWith(
-				expect.objectContaining({
-					url: `${hydraUri}/oauth2/introspect`,
-					method: 'POST',
-					headers: {
-						'X-Forwarded-Proto': 'https',
-						'Content-Type': 'application/x-www-form-urlencoded',
-					},
-					data: 'token=token&scope=scope',
-				})
-			);
-		});
-	});
-
-	describe('isInstanceAlive', () => {
-		it('should check if hydra is alive', async () => {
-			httpService.request.mockReturnValue(of(createAxiosResponse(true)));
-
-			const result: boolean = await service.isInstanceAlive();
-
-			expect(result).toEqual(true);
-			expect(httpService.request).toHaveBeenCalledWith(
-				expect.objectContaining({
-					url: `${hydraUri}/health/alive`,
-					method: 'GET',
-					headers: {
-						'X-Forwarded-Proto': 'https',
-					},
-				})
-			);
 		});
 	});
 });
