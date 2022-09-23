@@ -2,7 +2,6 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { EncryptionModule } from '@shared/infra/encryption';
 import { LtiToolRepo, UserRepo } from '@shared/repo';
-
 import { LoggerModule } from '@src/core/logger';
 import { IservOAuthService } from '@src/modules/oauth/service/iserv-oauth.service';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
