@@ -41,12 +41,12 @@
 			"description": "The URI to the Calendar Service"
 		},
 		"CONSENT_AGE_FIRST": {
-			"tpye": "integer",
+			"type": "integer",
 			"default": 14,
 			"description": "First gate for consent. Starting at this age the user have to give his/her consent"
 		},
 		"CONSENT_AGE_SECOND": {
-			"tpye": "integer",
+			"type": "integer",
 			"default": 16,
 			"description": "Second gate for consent. Starting at this age parent consent is not required"
 		},
@@ -54,6 +54,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "To disabled the brute force prevention hooks for by authentication."
+		},
+		"LOGIN_BLOCK_TIME": {
+			"type": "integer",
+			"default": 15,
+			"description": "Time difference for the brute force check"
 		},
 		"FORCE_SEND_EMAIL": {
 			"type": "boolean",
