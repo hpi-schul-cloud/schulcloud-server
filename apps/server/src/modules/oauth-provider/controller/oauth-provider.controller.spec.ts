@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotImplementedException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
@@ -12,7 +13,8 @@ describe('OauthProviderController', () => {
 	let module: TestingModule;
 	let controller: OauthProviderController;
 
-	let uc: DeepMocked<OauthProviderClientCrudUc>;
+	let crudUc: DeepMocked<OauthProviderClientCrudUc>;
+	let logoutFlowUc: DeepMocked<OauthProviderLogoutFlowUc>;
 	let responseMapper: DeepMocked<OauthProviderResponseMapper>;
 
 	const hydraUri = 'http://hydra.uri';
@@ -29,6 +31,10 @@ describe('OauthProviderController', () => {
 					useValue: createMock<OauthProviderClientCrudUc>(),
 				},
 				{
+					provide: OauthProviderLogoutFlowUc,
+					useValue: createMock<OauthProviderLogoutFlowUc>(),
+				},
+				{
 					provide: OauthProviderResponseMapper,
 					useValue: createMock<OauthProviderResponseMapper>(),
 				},
@@ -36,7 +42,8 @@ describe('OauthProviderController', () => {
 		}).compile();
 
 		controller = module.get(OauthProviderController);
-		uc = module.get(OauthProviderClientCrudUc);
+		crudUc = module.get(OauthProviderClientCrudUc);
+		logoutFlowUc = module.get(OauthProviderLogoutFlowUc);
 		responseMapper = module.get(OauthProviderResponseMapper);
 	});
 
@@ -50,13 +57,13 @@ describe('OauthProviderController', () => {
 				const data: OauthClientBody = {
 					client_id: 'clientId',
 				};
-				uc.getOAuth2Client.mockResolvedValue(data);
+				crudUc.getOAuth2Client.mockResolvedValue(data);
 				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
 
 				const result: OauthClientResponse = await controller.getOAuth2Client(currentUser, { id: 'clientId' });
 
 				expect(result).toEqual(data);
-				expect(uc.getOAuth2Client).toHaveBeenCalledWith(currentUser, 'clientId');
+				expect(crudUc.getOAuth2Client).toHaveBeenCalledWith(currentUser, 'clientId');
 			});
 		});
 
@@ -65,7 +72,7 @@ describe('OauthProviderController', () => {
 				const data: OauthClientBody = {
 					client_id: 'clientId',
 				};
-				uc.listOAuth2Clients.mockResolvedValue([data]);
+				crudUc.listOAuth2Clients.mockResolvedValue([data]);
 				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
 
 				const result: OauthClientResponse[] = await controller.listOAuth2Clients(currentUser, {
@@ -76,20 +83,20 @@ describe('OauthProviderController', () => {
 				});
 
 				expect(result).toEqual([data]);
-				expect(uc.listOAuth2Clients).toHaveBeenCalledWith(currentUser, 1, 0, 'clientId', 'clientOwner');
+				expect(crudUc.listOAuth2Clients).toHaveBeenCalledWith(currentUser, 1, 0, 'clientId', 'clientOwner');
 			});
 
 			it('should list oauth2 clients when uc is called without parameters', async () => {
 				const data: OauthClientBody = {
 					client_id: 'clientId',
 				};
-				uc.listOAuth2Clients.mockResolvedValue([data]);
+				crudUc.listOAuth2Clients.mockResolvedValue([data]);
 				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
 
 				const result: OauthClientResponse[] = await controller.listOAuth2Clients(currentUser, {});
 
 				expect(result).toEqual([data]);
-				expect(uc.listOAuth2Clients).toHaveBeenCalledWith(currentUser, undefined, undefined, undefined, undefined);
+				expect(crudUc.listOAuth2Clients).toHaveBeenCalledWith(currentUser, undefined, undefined, undefined, undefined);
 			});
 		});
 
@@ -98,12 +105,12 @@ describe('OauthProviderController', () => {
 				const data: OauthClientBody = {
 					client_id: 'clientId',
 				};
-				uc.createOAuth2Client.mockResolvedValue(data);
+				crudUc.createOAuth2Client.mockResolvedValue(data);
 				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
 
 				const result: OauthClientResponse = await controller.createOAuth2Client(currentUser, data);
 
-				expect(uc.createOAuth2Client).toHaveBeenCalledWith(currentUser, data);
+				expect(crudUc.createOAuth2Client).toHaveBeenCalledWith(currentUser, data);
 				expect(result).toEqual(data);
 			});
 		});
@@ -113,7 +120,7 @@ describe('OauthProviderController', () => {
 				const data: OauthClientBody = {
 					client_id: 'clientId',
 				};
-				uc.updateOAuth2Client.mockResolvedValue(data);
+				crudUc.updateOAuth2Client.mockResolvedValue(data);
 				responseMapper.mapOauthClientToClientResponse.mockReturnValue(new OauthClientResponse({ ...data }));
 
 				const result: OauthClientResponse = await controller.updateOAuth2Client(
@@ -122,7 +129,7 @@ describe('OauthProviderController', () => {
 					{ client_id: 'clientId' }
 				);
 
-				expect(uc.updateOAuth2Client).toHaveBeenCalledWith(currentUser, 'clientId', data);
+				expect(crudUc.updateOAuth2Client).toHaveBeenCalledWith(currentUser, 'clientId', data);
 				expect(result).toEqual(data);
 			});
 		});
@@ -131,7 +138,7 @@ describe('OauthProviderController', () => {
 			it('should delete oauth2 client', async () => {
 				await controller.deleteOAuth2Client(currentUser, { id: 'clientId' });
 
-				expect(uc.deleteOAuth2Client).toHaveBeenCalledWith(currentUser, 'clientId');
+				expect(crudUc.deleteOAuth2Client).toHaveBeenCalledWith(currentUser, 'clientId');
 			});
 		});
 	});
@@ -182,10 +189,16 @@ describe('OauthProviderController', () => {
 
 	describe('Logout Flow', () => {
 		describe('acceptLogoutRequest', () => {
-			it('should throw', () => {
-				expect(() => controller.acceptLogoutRequest({ challenge: '' }, { redirect_to: '' })).toThrow(
-					NotImplementedException
+			it('should call uc and return redirect string', async () => {
+				logoutFlowUc.logoutFlow.mockResolvedValue({ redirect_to: 'www.mock.de' });
+
+				const redirect = await controller.acceptLogoutRequest(
+					{ challenge: 'challenge_mock' },
+					{ redirect_to: 'www.mock.de' }
 				);
+
+				expect(logoutFlowUc.logoutFlow).toHaveBeenCalledWith('challenge_mock');
+				expect(redirect).toEqual('www.mock.de');
 			});
 		});
 	});

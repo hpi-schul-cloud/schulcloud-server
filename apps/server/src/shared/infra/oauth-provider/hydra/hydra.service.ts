@@ -35,8 +35,10 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
-		throw new NotImplementedException();
+	async acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
+		const url = `${this.hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=${challenge}`;
+		const response: Promise<RedirectResponse> = this.request<RedirectResponse>('PUT', url);
+		return response;
 	}
 
 	getConsentRequest(challenge: string): Promise<ConsentResponse> {

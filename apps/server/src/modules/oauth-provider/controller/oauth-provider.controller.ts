@@ -1,7 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { RedirectResponse } from '@shared/infra/oauth-provider/dto';
 import { OauthClient } from '@shared/infra/oauth-provider/dto/index';
 import { ICurrentUser } from '@shared/domain/index';
 import {
@@ -23,7 +25,8 @@ import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
 @Controller('oauth2')
 export class OauthProviderController {
 	constructor(
-		private readonly oauthProviderUc: OauthProviderClientCrudUc,
+		private readonly crudUc: OauthProviderClientCrudUc,
+		private readonly oauthProviderUc: OauthProviderLogoutFlowUc,
 		private readonly oauthProviderResponseMapper: OauthProviderResponseMapper
 	) {}
 
@@ -33,7 +36,7 @@ export class OauthProviderController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: IdParams
 	): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.oauthProviderUc.getOAuth2Client(currentUser, params.id);
+		const client: OauthClient = await this.crudUc.getOAuth2Client(currentUser, params.id);
 		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 		return mapped;
 	}
@@ -44,7 +47,7 @@ export class OauthProviderController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ListOauthClientsParams
 	): Promise<OauthClientResponse[]> {
-		const clients: OauthClient[] = await this.oauthProviderUc.listOAuth2Clients(
+		const clients: OauthClient[] = await this.crudUc.listOAuth2Clients(
 			currentUser,
 			params.limit,
 			params.offset,
@@ -64,7 +67,7 @@ export class OauthProviderController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: OauthClientBody
 	): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.oauthProviderUc.createOAuth2Client(currentUser, body);
+		const client: OauthClient = await this.crudUc.createOAuth2Client(currentUser, body);
 		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 		return mapped;
 	}
@@ -76,7 +79,7 @@ export class OauthProviderController {
 		@Param() params: IdParams,
 		@Body() body: OauthClientBody
 	): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.oauthProviderUc.updateOAuth2Client(currentUser, params.id, body);
+		const client: OauthClient = await this.crudUc.updateOAuth2Client(currentUser, params.id, body);
 		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
 		return mapped;
 	}
@@ -84,7 +87,7 @@ export class OauthProviderController {
 	@Authenticate('jwt')
 	@Delete('clients/:id')
 	deleteOAuth2Client(@CurrentUser() currentUser: ICurrentUser, @Param() params: IdParams): Promise<void> {
-		const promise: Promise<void> = this.oauthProviderUc.deleteOAuth2Client(currentUser, params.id);
+		const promise: Promise<void> = this.crudUc.deleteOAuth2Client(currentUser, params.id);
 		return promise;
 	}
 
@@ -106,8 +109,9 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
-	acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody) {
-		throw new NotImplementedException();
+	async acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody) {
+		const redirect: RedirectResponse = await this.oauthProviderUc.logoutFlow(params.challenge);
+		return redirect.redirect_to;
 	}
 
 	@Authenticate('jwt')
