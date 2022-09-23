@@ -3,7 +3,7 @@ import { BaseWithTimestampsDO } from './base.do';
 export class LtiToolDO extends BaseWithTimestampsDO {
 	name: string;
 
-	oAuthClientId: string;
+	oAuthClientId?: string;
 
 	secret?: string;
 

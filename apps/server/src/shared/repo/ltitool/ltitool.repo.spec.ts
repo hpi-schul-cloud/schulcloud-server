@@ -64,14 +64,11 @@ describe('LtiTool Repo', () => {
 
 	describe('findByUserAndTool', () => {
 		it('should find a ltitool by userId and toolId', async () => {
-			// Arrange
 			const entity: LtiTool = ltiToolFactory.buildWithId();
 			await em.persistAndFlush(entity);
 
-			// Act
 			const result = await repo.findByName(entity.name);
 
-			// Assert
 			expect(result.id).toEqual(entity.id);
 		});
 
@@ -83,16 +80,22 @@ describe('LtiTool Repo', () => {
 
 	describe('findByClientIdAndIsLocal', () => {
 		it('should find a ltiTool by clientId and local flag', async () => {
-			// Arrange
 			const entity: LtiTool = ltiToolFactory.buildWithId();
 			await em.persistAndFlush(entity);
 
-			// Act
-			const result = await repo.findByClientIdAndIsLocal(entity.oAuthClientId, entity.isLocal);
+			const result = await repo.findByClientIdAndIsLocal(entity.oAuthClientId as string, entity.isLocal as boolean);
 
-			// Assert
 			expect(result.id).toEqual(entity.id);
 			expect(result.oAuthClientId).toEqual(entity.oAuthClientId);
+			expect(result.isLocal).toEqual(entity.isLocal);
+		});
+
+		it('should not find a ltiTool by clientId and the local flag is false', async () => {
+			const entity: LtiTool = ltiToolFactory.withLocal(false).buildWithId();
+			await em.persistAndFlush(entity);
+
+			const result = await repo.findByClientIdAndIsLocal(entity.oAuthClientId as string, entity.isLocal as boolean);
+
 			expect(result.isLocal).toEqual(entity.isLocal);
 		});
 
@@ -104,20 +107,16 @@ describe('LtiTool Repo', () => {
 
 	describe('findByOauthClientId', () => {
 		it('should find a tool with the oAuthClientId', async () => {
-			// Arrange
 			const oAuthClientId = 'clientId';
 			const entity: LtiTool = ltiToolFactory.withOauthClientId(oAuthClientId).buildWithId();
 			await em.persistAndFlush(entity);
 
-			// Act
 			const result = await repo.findByOauthClientId(oAuthClientId);
 
-			// Assert
 			expect(result.oAuthClientId).toEqual(oAuthClientId);
 		});
 
 		it('should throw an error if the tool was not found', async () => {
-			// Arrange
 			const oAuthClientId = 'NoExistingTool';
 
 			// Act & Assert
@@ -127,7 +126,6 @@ describe('LtiTool Repo', () => {
 
 	describe('mapEntityToDO', () => {
 		it('should return a domain object', () => {
-			// Arrange
 			const id = new ObjectId();
 			const testEntity: LtiTool = {
 				id: id.toHexString(),
@@ -140,10 +138,8 @@ describe('LtiTool Repo', () => {
 				isLocal: true,
 			};
 
-			// Act
 			const ltiToolDO: LtiToolDO = repo.mapEntityToDOSpec(testEntity);
 
-			// Assert
 			expect(ltiToolDO.id).toEqual(testEntity.id);
 			expect(ltiToolDO.name).toEqual(testEntity.name);
 			expect(ltiToolDO.oAuthClientId).toEqual(testEntity.oAuthClientId);
@@ -153,7 +149,6 @@ describe('LtiTool Repo', () => {
 
 	describe('mapDOToEntity', () => {
 		it('should map DO to Entity', () => {
-			// Arrange
 			const testDO: LtiToolDO = new LtiToolDO({
 				id: 'testId',
 				updatedAt: new Date('2022-07-20'),
@@ -164,10 +159,8 @@ describe('LtiTool Repo', () => {
 				isLocal: true,
 			});
 
-			// Act
 			const result: EntityProperties<ILtiToolProperties> = repo.mapDOToEntitySpec(testDO);
 
-			// Assert
 			expect(result.id).toEqual(testDO.id);
 			expect(result.name).toEqual(testDO.name);
 			expect(result.oAuthClientId).toEqual(testDO.oAuthClientId);

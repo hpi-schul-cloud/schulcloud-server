@@ -67,40 +67,86 @@ describe('OauthProviderController', () => {
 		});
 
 		describe('getConsentRequest', () => {
-			it('should call uc and mapper', async () => {
-				// Arrange
-				const consentResponse: ProviderConsentResponse = {
+			let consentResponse: ProviderConsentResponse;
+
+			beforeEach(() => {
+				consentResponse = {
 					challenge: challengeParams.challenge,
 					subject: 'subject',
 				};
+			});
+
+			it('should return a consentResponse', async () => {
 				consentUc.getConsentRequest.mockResolvedValue(consentResponse);
 				responseMapper.mapConsentResponse.mockReturnValue(new ConsentResponse({ ...consentResponse }));
 
-				// Act
 				const result: ConsentResponse = await controller.getConsentRequest(challengeParams);
 
-				// Assert
 				expect(result.challenge).toEqual(consentResponse.challenge);
 				expect(result.subject).toEqual(consentResponse.subject);
+			});
+
+			it('should call mapper', async () => {
+				consentUc.getConsentRequest.mockResolvedValue(consentResponse);
+				responseMapper.mapConsentResponse.mockReturnValue(new ConsentResponse({ ...consentResponse }));
+
+				const result: ConsentResponse = await controller.getConsentRequest(challengeParams);
+
+				expect(responseMapper.mapConsentResponse).toHaveBeenCalledWith(consentResponse);
+			});
+
+			it('should call uc', async () => {
+				consentUc.getConsentRequest.mockResolvedValue(consentResponse);
+				responseMapper.mapConsentResponse.mockReturnValue(new ConsentResponse({ ...consentResponse }));
+
+				const result: ConsentResponse = await controller.getConsentRequest(challengeParams);
+
 				expect(consentUc.getConsentRequest).toHaveBeenCalledWith(consentResponse.challenge);
 			});
 		});
 
 		describe('patchConsentRequest', () => {
-			it('should call uc and mapper', async () => {
-				// Arrange
-				const acceptQuery: AcceptQuery = { accept: true };
-				const consentRequestBody: ConsentRequestBody = {
+			let acceptQuery: AcceptQuery;
+			let consentRequestBody: ConsentRequestBody;
+
+			beforeEach(() => {
+				acceptQuery = { accept: true };
+				consentRequestBody = {
 					grant_scope: ['openid', 'offline'],
 					remember: false,
 					remember_for: 0,
 				};
+			});
+
+			it('should call uc', async () => {
+				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+
+				await controller.patchConsentRequest(challengeParams, acceptQuery, consentRequestBody, currentUser);
+
+				expect(consentUc.patchConsentRequest).toHaveBeenCalledWith(
+					challengeParams.challenge,
+					acceptQuery,
+					consentRequestBody,
+					currentUser
+				);
+			});
+
+			it('should call mapper', async () => {
+				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+				const expectedRedirectResponse: RedirectResponse = { redirect_to: 'anywhere' };
+				consentUc.patchConsentRequest.mockResolvedValue(expectedRedirectResponse);
+
+				await controller.patchConsentRequest(challengeParams, acceptQuery, consentRequestBody, currentUser);
+
+				expect(responseMapper.mapRedirectResponse).toHaveBeenCalledWith(expectedRedirectResponse);
+			});
+
+			it('should return redirect response', async () => {
 				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 				const expectedRedirectResponse: RedirectResponse = { redirect_to: 'anywhere' };
 				consentUc.patchConsentRequest.mockResolvedValue(expectedRedirectResponse);
 				responseMapper.mapRedirectResponse.mockReturnValue(expectedRedirectResponse);
 
-				// Act
 				const result: RedirectResponse = await controller.patchConsentRequest(
 					challengeParams,
 					acceptQuery,
@@ -108,15 +154,7 @@ describe('OauthProviderController', () => {
 					currentUser
 				);
 
-				// Assert
 				expect(result.redirect_to).toEqual(expectedRedirectResponse.redirect_to);
-				expect(consentUc.patchConsentRequest).toHaveBeenCalledWith(
-					challengeParams.challenge,
-					acceptQuery,
-					consentRequestBody,
-					currentUser
-				);
-				expect(responseMapper.mapRedirectResponse).toHaveBeenCalledWith(expectedRedirectResponse);
 			});
 		});
 

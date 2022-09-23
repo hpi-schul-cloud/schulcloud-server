@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { RoleRepo } from '@shared/repo';
-import { EntityId, Role, RoleName } from '@shared/domain';
+import { Role, RoleName } from '@shared/domain';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { roleFactory } from '@shared/testing';
 
@@ -29,54 +29,55 @@ describe('RoleService', () => {
 
 	beforeEach(() => {
 		testRoleEntity = roleFactory.buildWithId();
-		roleRepo.findById.mockImplementation(async (id: EntityId): Promise<Role> => {
-			return id === testRoleEntity.id ? Promise.resolve(testRoleEntity) : Promise.reject();
-		});
-		roleRepo.findByNames.mockImplementation(async (names: RoleName[]): Promise<Role[]> => {
-			if (names.includes(RoleName.TEACHER) && names.includes(RoleName.ADMINISTRATOR)) {
-				return Promise.resolve([testRoleEntity]);
-			}
-			if (names.includes(RoleName.HELPDESK)) {
-				return Promise.reject();
-			}
-			return names.some(() => names.includes(testRoleEntity.name)).valueOf()
-				? Promise.resolve([testRoleEntity])
-				: Promise.reject();
-		});
 	});
 
 	describe('findById', () => {
 		it('should find role entity', async () => {
+			roleRepo.findById.mockResolvedValue(testRoleEntity);
+			roleRepo.findByNames.mockResolvedValue([testRoleEntity]);
+
 			const entity: RoleDto = await roleService.findById(testRoleEntity.id);
 
 			expect(entity.id).toEqual(testRoleEntity.id);
 			expect(entity.name).toEqual(testRoleEntity.name);
 		});
+
 		it('should reject promise, when no entity was found', async () => {
+			roleRepo.findById.mockReturnValue(Promise.reject(undefined));
+			roleRepo.findByNames.mockResolvedValue([testRoleEntity]);
+
 			await expect(roleService.findById('')).rejects.toEqual(undefined);
 		});
 	});
 
 	describe('findByName', () => {
 		it('should find role entity', async () => {
+			roleRepo.findByNames.mockResolvedValue([testRoleEntity]);
+
 			const entities: RoleDto[] = await roleService.findByNames([testRoleEntity.name]);
 
 			expect(entities[0].id).toEqual(testRoleEntity.id);
 			expect(entities[0].name).toEqual(testRoleEntity.name);
 		});
+
 		it('should reject promise, when no entity was found', async () => {
+			roleRepo.findByNames.mockReturnValue(Promise.reject(undefined));
+
 			await expect(roleService.findByNames(['unknown role' as unknown as RoleName])).rejects.toEqual(undefined);
 		});
 	});
 
 	describe('getProtectedRoles', () => {
 		it('should gets the roles administrator and teacher', async () => {
+			roleRepo.findByNames.mockResolvedValue([testRoleEntity]);
 			const entities: RoleDto[] = await roleService.getProtectedRoles();
 
 			expect(entities[0]).toBeDefined();
 		});
 
 		it('should reject promise, when no entity was found', async () => {
+			roleRepo.findByNames.mockReturnValue(Promise.reject(undefined));
+
 			await expect(roleService.findByNames([RoleName.HELPDESK])).rejects.toEqual(undefined);
 		});
 	});

@@ -27,7 +27,7 @@ export class TeamsRepo extends BaseRepo<Team> {
 	}
 
 	/**
-	 * Finds partly teams which the user is a member.
+	 * Finds teams which the user is a member.
 	 *
 	 * @param userId
 	 * @return Array of teams

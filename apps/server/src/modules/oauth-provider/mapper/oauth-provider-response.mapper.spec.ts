@@ -28,18 +28,14 @@ describe('OauthProviderResponseMapper', () => {
 	});
 
 	it('mapRedirectResponse', () => {
-		// Arrange
 		const providerResponse: ProviderRedirectResponse = { redirect_to: 'anywhere' };
 
-		// Act
 		const result: RedirectResponse = mapper.mapRedirectResponse(providerResponse);
 
-		// Assert
 		expect(result.redirect_to).toEqual(providerResponse.redirect_to);
 	});
 
 	it('mapConsentResponse', () => {
-		// Arrange
 		const providerConsentResponse: ProviderConsentResponse = {
 			acr: 'acr',
 			amr: ['amr'],
@@ -56,15 +52,12 @@ describe('OauthProviderResponseMapper', () => {
 			subject: 'subject',
 		};
 
-		// Act
 		const result: ConsentResponse = mapper.mapConsentResponse(providerConsentResponse);
 
-		// Assert
 		expect(result).toEqual(new ConsentResponse({ ...providerConsentResponse }));
 	});
 
 	it('mapOauthClientResponseSpec', () => {
-		// Arrange
 		const providerOauthClientResponse: ProviderOauthClient = {
 			allowed_cors_origins: ['allowed_cors_origins'],
 			audience: ['audience'],
@@ -115,15 +108,12 @@ describe('OauthProviderResponseMapper', () => {
 			userinfo_signed_response_alg: 'userinfo_signed_response_alg',
 		};
 
-		// Act
 		const result: OauthClientResponse = mapper.mapOauthClientResponseSpec(providerOauthClientResponse);
 
-		// Assert
 		expect(result).toEqual(expect.objectContaining(providerOauthClientResponse));
 	});
 
 	it('mapOidcContextResponse', () => {
-		// Arrange
 		const providerOidcContext: ProviderOidcContext = {
 			acr_values: ['acr_values'],
 			display: 'display',
@@ -132,10 +122,8 @@ describe('OauthProviderResponseMapper', () => {
 			ui_locales: ['ui_locales'],
 		};
 
-		// Act
 		const result: OidcContextResponse = mapper.mapOidcContextResponseSpec(providerOidcContext);
 
-		// Assert
 		expect(result).toEqual(new OidcContextResponse({ ...providerOidcContext }));
 	});
 });

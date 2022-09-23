@@ -115,21 +115,16 @@ describe('IdTokenService', () => {
 		});
 
 		it('should call teamsRepo if scopes contains groups', async () => {
-			// Act
 			await idTokenService.createIdToken(userId, scopes, clientId);
 
-			// Assert
 			expect(teamsRepo.findByUserId).toHaveBeenCalledWith(userId);
 		});
 
 		it('should not call teamsRepo if scopes does not contain groups', async () => {
-			// Arrange
 			scopes = scopes.filter((scope: string) => scope !== OauthScope.GROUPS);
 
-			// Act
 			await idTokenService.createIdToken(userId, scopes, clientId);
 
-			// Assert
 			expect(teamsRepo.findByUserId).not.toHaveBeenCalled();
 		});
 
@@ -148,10 +143,8 @@ describe('IdTokenService', () => {
 			});
 
 			it('should return a full id token', async () => {
-				// Act
 				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
 
-				// Assert
 				expect(result.iframe).toBeDefined();
 				expect(result.email).toEqual(userDto.email);
 				expect(result.name).toEqual(expectedName);
@@ -170,57 +163,42 @@ describe('IdTokenService', () => {
 			});
 
 			it('iframe should be undefined if iframe cant be build', async () => {
-				// Arrange
 				ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(Promise.reject());
 
-				// Act
 				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
 
-				// Assert
 				expect(result.iframe).toBeUndefined();
 			});
 
 			it('email should be undefined if scope is missing', async () => {
-				// Arrange
 				scopes = scopes.filter((scope: string) => scope !== OauthScope.EMAIL);
 
-				// Act
 				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
 
-				// Assert
 				expect(result.email).toBeUndefined();
 			});
 
 			it('name should be undefined if scope is missing', async () => {
-				// Arrange
 				scopes = scopes.filter((scope: string) => scope !== OauthScope.PROFILE);
 
-				// Act
 				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
 
-				// Assert
 				expect(result.name).toBeUndefined();
 			});
 
 			it('userId should be undefined if scope is missing', async () => {
-				// Arrange
 				scopes = scopes.filter((scope: string) => scope !== OauthScope.PROFILE);
 
-				// Act
 				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
 
-				// Assert
 				expect(result.userId).toBeUndefined();
 			});
 
 			it('groups should be undefined if scope is missing', async () => {
-				// Arrange
 				scopes = scopes.filter((scope: string) => scope !== OauthScope.GROUPS);
 
-				// Act
 				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
 
-				// Assert
 				expect(result.groups).toBeUndefined();
 			});
 		});
@@ -228,14 +206,11 @@ describe('IdTokenService', () => {
 
 	describe('createIframeSubject', () => {
 		it('should create and return iframe string', async () => {
-			// Arrange
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDo);
 			pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(pseudonymDo);
 
-			// Act
 			const result = await idTokenService.createIframeSubjectSpec(userId, clientId);
 
-			// Assert
 			const expectedResult = `<iframe src="${host}/oauth2/username/${
 				pseudonymDo.pseudonym
 			}" ${idTokenService.getIframePropertiesSpec()}></iframe>`;
@@ -246,13 +221,10 @@ describe('IdTokenService', () => {
 		});
 
 		it('should return undefined if ltiTool can not be found', async () => {
-			// Arrange
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(Promise.reject());
 
-			// Act
 			const result = await idTokenService.createIframeSubjectSpec(userId, clientId);
 
-			// Assert
 			expect(result).toBeUndefined();
 
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(clientId, true);
@@ -260,14 +232,11 @@ describe('IdTokenService', () => {
 		});
 
 		it('should return undefined if pseudonym can not be found', async () => {
-			// Arrange
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDo);
 			pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(Promise.reject());
 
-			// Act
 			const result = await idTokenService.createIframeSubjectSpec(userId, clientId);
 
-			// Assert
 			expect(result).toBeUndefined();
 
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(clientId, true);
@@ -277,15 +246,12 @@ describe('IdTokenService', () => {
 
 	describe('buildGroupsClaim', () => {
 		it('should create and return a groups', () => {
-			// Arrange
 			const team1: Team = teamFactory.buildWithId();
 			const team2: Team = teamFactory.buildWithId();
 			const teams: Team[] = [team1, team2];
 
-			// Act
 			const result: GroupNameIdTuple[] = idTokenService.buildGroupsClaimSpec(teams);
 
-			// Assert
 			expect(result).toEqual<GroupNameIdTuple[]>([
 				{ gid: team1.id, displayName: team1.name },
 				{ gid: team2.id, displayName: team2.name },
@@ -293,10 +259,8 @@ describe('IdTokenService', () => {
 		});
 
 		it('should return an empty array', () => {
-			// Act
 			const result = idTokenService.buildGroupsClaimSpec([]);
 
-			// Assert
 			expect(result.length === 0).toBeTruthy();
 		});
 	});
