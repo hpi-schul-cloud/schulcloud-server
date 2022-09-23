@@ -3,6 +3,7 @@ import { Collection } from '@mikro-orm/core';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, Role, School, System, User } from '@shared/domain';
+import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo/user/user.repo';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
@@ -100,8 +101,8 @@ describe('OAuthService', () => {
 					},
 				},
 				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
+					provide: SystemRepo,
+					useValue: createMock<SystemRepo>(),
 				},
 				{
 					provide: UserRepo,
@@ -350,6 +351,17 @@ describe('OAuthService', () => {
 		it('should return the user according to the uuid(LdapId)', async () => {
 			const user: User = await service.findUser(defaultDecodedJWT, oauthConfig, defaultIservSystemId);
 
+			// Act
+			const user: User = await service.findUser(defaultDecodedJWT, {
+				_id: new ObjectId(defaultIservSystemId),
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				id: defaultIservSystemId,
+				type: 'iserv',
+				oauthConfig,
+			});
+
+			// Assert
 			expect(iservOAuthService.findUserById).toHaveBeenCalled();
 			expect(user).toBe(defaultIservUser);
 		});
