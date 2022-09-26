@@ -1,10 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class OidcContextResponse {
-	constructor(oidcContextResponse: OidcContextResponse) {
-		Object.assign(this, oidcContextResponse);
-	}
-
 	@ApiProperty()
 	acr_values?: string[];
 
