@@ -10,8 +10,8 @@ export interface AcceptConsentRequestBody {
 	remember_for?: number;
 
 	session?: {
-		access_token: string;
+		access_token?: string;
 
-		id_token: string;
+		id_token?: string;
 	};
 }
