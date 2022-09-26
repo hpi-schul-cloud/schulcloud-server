@@ -6,6 +6,7 @@ import { Role, RoleName } from '@shared/domain';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { roleFactory } from '@shared/testing';
 import { NotFoundError } from '@mikro-orm/core';
+import resetAllMocks = jest.resetAllMocks;
 
 describe('RoleService', () => {
 	let module: TestingModule;
@@ -28,8 +29,16 @@ describe('RoleService', () => {
 		roleRepo = module.get(RoleRepo);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	beforeEach(() => {
 		testRoleEntity = roleFactory.buildWithId();
+	});
+
+	afterEach(() => {
+		resetAllMocks();
 	});
 
 	describe('findById', () => {
@@ -70,6 +79,8 @@ describe('RoleService', () => {
 
 	describe('getProtectedRoles', () => {
 		it('should call the repo', async () => {
+			roleRepo.findByNames.mockResolvedValue([testRoleEntity]);
+
 			const entities: RoleDto[] = await roleService.getProtectedRoles();
 
 			expect(roleRepo.findByNames).toHaveBeenCalledWith([RoleName.ADMINISTRATOR, RoleName.TEACHER]);
@@ -77,6 +88,7 @@ describe('RoleService', () => {
 
 		it('should gets a role', async () => {
 			roleRepo.findByNames.mockResolvedValue([testRoleEntity]);
+
 			const entities: RoleDto[] = await roleService.getProtectedRoles();
 
 			expect(entities[0]).toBeDefined();
