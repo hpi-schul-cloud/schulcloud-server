@@ -2,7 +2,7 @@
 
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, IComponentProperties, Lesson, Task } from '@shared/domain';
+import { ComponentType, EntityId, IComponentProperties, IComponentTextProperties, Lesson, Task } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
 import _ from 'lodash';
 import { EmbeddedFilesRepo, fileIdRegex, fileUrlRegex } from '../repo/embedded-files.repo';
@@ -66,8 +66,8 @@ export class SyncEmbeddedFilesUc {
 
 		if (entity instanceof Lesson) {
 			entity.contents.forEach((item: IComponentProperties) => {
-				if (item.component === 'text' && 'text' in item.content && item.content?.text) {
-					const contentFileIds = this.extractFileIdsFromContent(item.content.text);
+				if (this.isTextComponent(item)) {
+					const contentFileIds = this.extractFileIdsFromContent((item.content as IComponentTextProperties).text);
 					if (contentFileIds !== null) {
 						fileIds.push(...contentFileIds);
 					}
@@ -147,8 +147,13 @@ export class SyncEmbeddedFilesUc {
 	) {
 		if (entity instanceof Lesson) {
 			entity.contents = entity.contents.map((item: IComponentProperties) => {
-				if (item.component === 'text' && 'text' in item.content && item.content?.text) {
-					item.content.text = this.replaceLink(item.content.text, sourceFileId, fileRecordId, fileRecordName);
+				if (this.isTextComponent(item)) {
+					(item.content as IComponentTextProperties).text = this.replaceLink(
+						(item.content as IComponentTextProperties).text,
+						sourceFileId,
+						fileRecordId,
+						fileRecordName
+					);
 				}
 				return item;
 			});
@@ -170,5 +175,11 @@ export class SyncEmbeddedFilesUc {
 		}
 
 		return text.replace(regex, newUrl);
+	}
+
+	private isTextComponent(item: IComponentProperties) {
+		return Boolean(
+			item.component === ComponentType.TEXT && item.content && 'text' in item.content && item.content.text
+		);
 	}
 }
