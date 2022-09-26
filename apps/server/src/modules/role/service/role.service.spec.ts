@@ -6,6 +6,7 @@ import { Role, RoleName } from '@shared/domain';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { roleFactory } from '@shared/testing';
 import { NotFoundError } from '@mikro-orm/core';
+import resetAllMocks = jest.resetAllMocks;
 
 describe('RoleService', () => {
 	let module: TestingModule;
@@ -28,8 +29,16 @@ describe('RoleService', () => {
 		roleRepo = module.get(RoleRepo);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	beforeEach(() => {
 		testRoleEntity = roleFactory.buildWithId();
+	});
+
+	afterEach(() => {
+		resetAllMocks();
 	});
 
 	describe('findById', () => {
