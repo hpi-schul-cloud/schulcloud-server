@@ -20,7 +20,7 @@ export class ConsentResponse {
 	client?: OauthClientResponse;
 
 	@ApiProperty()
-	context?: OidcContextResponse;
+	context?: object;
 
 	@ApiProperty()
 	login_challenge?: string;
@@ -29,7 +29,7 @@ export class ConsentResponse {
 	login_session_id?: string;
 
 	@ApiProperty()
-	oidc_context?: OauthClientResponse;
+	oidc_context?: OidcContextResponse;
 
 	@ApiProperty()
 	request_url?: string;
