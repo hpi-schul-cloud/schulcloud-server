@@ -3,10 +3,18 @@ import { HydraService } from '@shared/infra/oauth-provider/hydra/hydra.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
+import {
+	AcceptConsentRequestBody,
+	ProviderConsentResponse,
+	ProviderOauthClient,
+	ProviderRedirectResponse,
+	RejectRequestBody,
+	IntrospectResponse,
+} from '@shared/infra/oauth-provider/dto';
 import { of } from 'rxjs';
-import { IntrospectResponse, OauthClient, RedirectResponse } from '@shared/infra/oauth-provider/dto/index';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+import resetAllMocks = jest.resetAllMocks;
 
 class HydraServiceSpec extends HydraService {
 	public async requestSpec<T>(
@@ -111,7 +119,7 @@ describe('HydraService', () => {
 	describe('Client Flow', () => {
 		describe('listOAuth2Clients', () => {
 			it('should list all oauth2 clients', async () => {
-				const data: OauthClient[] = [
+				const data: ProviderOauthClient[] = [
 					{
 						client_id: 'client1',
 					},
@@ -122,7 +130,7 @@ describe('HydraService', () => {
 
 				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
 
-				const result: OauthClient[] = await service.listOAuth2Clients();
+				const result: ProviderOauthClient[] = await service.listOAuth2Clients();
 
 				expect(result).toEqual(data);
 				expect(httpService.request).toHaveBeenCalledWith(
@@ -137,7 +145,7 @@ describe('HydraService', () => {
 			});
 
 			it('should list all oauth2 clients within parameters', async () => {
-				const data: OauthClient[] = [
+				const data: ProviderOauthClient[] = [
 					{
 						client_id: 'client1',
 						owner: 'clientOwner',
@@ -146,7 +154,7 @@ describe('HydraService', () => {
 
 				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
 
-				const result: OauthClient[] = await service.listOAuth2Clients(1, 0, 'client1', 'clientOwner');
+				const result: ProviderOauthClient[] = await service.listOAuth2Clients(1, 0, 'client1', 'clientOwner');
 
 				expect(result).toEqual(data);
 				expect(httpService.request).toHaveBeenCalledWith(
@@ -163,12 +171,12 @@ describe('HydraService', () => {
 
 		describe('getOAuth2Client', () => {
 			it('should get oauth2 client', async () => {
-				const data: OauthClient = {
+				const data: ProviderOauthClient = {
 					client_id: 'client',
 				};
 				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
 
-				const result: OauthClient = await service.getOAuth2Client('clientId');
+				const result: ProviderOauthClient = await service.getOAuth2Client('clientId');
 
 				expect(result).toEqual(data);
 				expect(httpService.request).toHaveBeenCalledWith(
@@ -185,12 +193,12 @@ describe('HydraService', () => {
 
 		describe('createOAuth2Client', () => {
 			it('should create oauth2 client', async () => {
-				const data: OauthClient = {
+				const data: ProviderOauthClient = {
 					client_id: 'client',
 				};
 				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
 
-				const result: OauthClient = await service.createOAuth2Client(data);
+				const result: ProviderOauthClient = await service.createOAuth2Client(data);
 
 				expect(result).toEqual(data);
 				expect(httpService.request).toHaveBeenCalledWith(
@@ -208,12 +216,12 @@ describe('HydraService', () => {
 
 		describe('updateOAuth2Client', () => {
 			it('should update oauth2 client', async () => {
-				const data: OauthClient = {
+				const data: ProviderOauthClient = {
 					client_id: 'client',
 				};
 				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
 
-				const result: OauthClient = await service.updateOAuth2Client('clientId', data);
+				const result: ProviderOauthClient = await service.updateOAuth2Client('clientId', data);
 
 				expect(result).toEqual(data);
 				expect(httpService.request).toHaveBeenCalledWith(
@@ -249,6 +257,84 @@ describe('HydraService', () => {
 	});
 
 	describe('Consent Flow', () => {
+		let challenge: string;
+
+		beforeEach(() => {
+			challenge = 'challengexyz';
+		});
+
+		afterEach(() => {
+			resetAllMocks();
+		});
+
+		describe('getConsentRequest', () => {
+			it('should make http request', async () => {
+				// Arrange
+				const config: AxiosRequestConfig = {
+					method: 'GET',
+					url: `${hydraUri}/oauth2/auth/requests/consent?consent_challenge=${challenge}`,
+				};
+				httpService.request.mockReturnValue(of(createAxiosResponse<ProviderConsentResponse>({ challenge })));
+
+				// Act
+				const result: ProviderConsentResponse = await service.getConsentRequest(challenge);
+
+				// Assert
+				expect(result.challenge).toEqual(challenge);
+				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
+			});
+		});
+
+		describe('acceptConsentRequest', () => {
+			it('should make http request', async () => {
+				// Arrange
+				const body: AcceptConsentRequestBody = {
+					grant_scope: ['offline', 'openid'],
+				};
+				const config: AxiosRequestConfig = {
+					method: 'PUT',
+					url: `${hydraUri}/oauth2/auth/requests/consent/accept?consent_challenge=${challenge}`,
+					data: body,
+				};
+				const expectedRedirectTo = 'redirectTo';
+				httpService.request.mockReturnValue(
+					of(createAxiosResponse<ProviderRedirectResponse>({ redirect_to: expectedRedirectTo }))
+				);
+
+				// Act
+				const result: ProviderRedirectResponse = await service.acceptConsentRequest(challenge, body);
+
+				// Assert
+				expect(result.redirect_to).toEqual(expectedRedirectTo);
+				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
+			});
+		});
+
+		describe('rejectConsentRequest', () => {
+			it('should make http request', async () => {
+				// Arrange
+				const body: RejectRequestBody = {
+					error: 'error',
+				};
+				const config: AxiosRequestConfig = {
+					method: 'PUT',
+					url: `${hydraUri}/oauth2/auth/requests/consent/reject?consent_challenge=${challenge}`,
+					data: body,
+				};
+				const expectedRedirectTo = 'redirectTo';
+				httpService.request.mockReturnValue(
+					of(createAxiosResponse<ProviderRedirectResponse>({ redirect_to: expectedRedirectTo }))
+				);
+
+				// Act
+				const result: ProviderRedirectResponse = await service.rejectConsentRequest(challenge, body);
+
+				// Assert
+				expect(result.redirect_to).toEqual(expectedRedirectTo);
+				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
+			});
+		});
+
 		describe('listConsentSessions', () => {
 			it('should list all consent sessions', async () => {
 				const response: ProviderConsentSessionResponse[] = [{ consent_request: { challenge: 'challenge' } }];
@@ -290,8 +376,7 @@ describe('HydraService', () => {
 		describe('Logout Flow', () => {
 			describe('acceptLogoutRequest', () => {
 				it('should make http request', async () => {
-					// Arrange
-					const responseMock: RedirectResponse = { redirect_to: 'redirect_mock' };
+					const responseMock: ProviderRedirectResponse = { redirect_to: 'redirect_mock' };
 					httpService.request.mockReturnValue(of(createAxiosResponse(responseMock)));
 					const config: AxiosRequestConfig = {
 						method: 'PUT',
@@ -299,10 +384,8 @@ describe('HydraService', () => {
 						headers: { 'X-Forwarded-Proto': 'https' },
 					};
 
-					// Act
-					const response: RedirectResponse = await service.acceptLogoutRequest('challenge_mock');
+					const response: ProviderRedirectResponse = await service.acceptLogoutRequest('challenge_mock');
 
-					// Assert
 					expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
 					expect(response).toEqual(responseMock);
 				});

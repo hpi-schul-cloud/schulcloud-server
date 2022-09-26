@@ -1,12 +1,12 @@
-import { OauthClient } from '../interface/oauth-client.interface';
-import { OidcContext } from '../interface/oidc-context.interface';
+import { ProviderOauthClient } from '../interface/oauth-client.interface';
+import { ProviderOidcContext } from '../interface/oidc-context.interface';
 
 export interface LoginResponse {
 	challenge: string;
 
-	client: OauthClient;
+	client: ProviderOauthClient;
 
-	oidc_context?: OidcContext;
+	oidc_context?: ProviderOidcContext;
 
 	request_url: string;
 

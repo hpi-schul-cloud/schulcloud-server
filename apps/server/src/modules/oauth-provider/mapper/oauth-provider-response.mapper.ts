@@ -1,30 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
-import { ConsentSessionResponse } from '@src/modules/oauth-provider/controller/dto/response/consent-session.response';
-import { OauthClientResponse } from '@src/modules/oauth-provider/controller/dto/response/oauth-client.response';
-import { OauthClient } from '@shared/infra/oauth-provider/dto';
+import {
+	ProviderConsentResponse,
+	ProviderConsentSessionResponse,
+	ProviderOauthClient,
+	ProviderRedirectResponse,
+} from '@shared/infra/oauth-provider/dto';
+import {
+	ConsentResponse,
+	ConsentSessionResponse,
+	OauthClientResponse,
+	RedirectResponse,
+} from '@src/modules/oauth-provider/controller/dto';
 
 @Injectable()
 export class OauthProviderResponseMapper {
-	mapConsentSessionsToResponse(session: ProviderConsentSessionResponse): ConsentSessionResponse {
-		return {
-			client_id: session.consent_request?.client?.client_id,
-			client_name: session.consent_request?.client?.client_name,
-			challenge: session.consent_request?.challenge,
-		};
+	mapRedirectResponse(redirect: ProviderRedirectResponse): RedirectResponse {
+		return new RedirectResponse({ ...redirect });
 	}
 
-	mapOauthClientToClientResponse(client: OauthClient): OauthClientResponse {
-		return new OauthClientResponse({
-			client_id: client.client_id,
-			client_name: client.client_name,
-			redirect_uris: client.redirect_uris,
-			token_endpoint_auth_method: client.token_endpoint_auth_method,
-			subject_type: client.subject_type,
-			scope: client.scope,
-			frontchannel_logout_uri: client.frontchannel_logout_uri,
-			grant_types: client.grant_types,
-			response_types: client.response_types,
-		});
+	mapConsentResponse(consent: ProviderConsentResponse): ConsentResponse {
+		return new ConsentResponse({ ...consent });
+	}
+
+	mapOauthClientResponse(oauthClient: ProviderOauthClient): OauthClientResponse {
+		type ClientWithoutSecret = Omit<ProviderOauthClient, 'client_secret'>;
+
+		return new OauthClientResponse({ ...oauthClient } as ClientWithoutSecret);
+	}
+
+	mapConsentSessionsToResponse(session: ProviderConsentSessionResponse): ConsentSessionResponse {
+		return new ConsentSessionResponse(
+			session.consent_request?.client?.client_id,
+			session.consent_request?.client?.client_name,
+			session.consent_request?.challenge
+		);
 	}
 }
