@@ -6,7 +6,6 @@ import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import {
 	ProviderConsentResponse,
-	ProviderConsentSessionResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
@@ -29,6 +28,7 @@ import {
 } from './dto';
 import { OauthProviderUc } from '../uc/oauth-provider.uc';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 
 @Controller('oauth2')
 export class OauthProviderController {

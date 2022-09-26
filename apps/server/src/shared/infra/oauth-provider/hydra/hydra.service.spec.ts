@@ -12,8 +12,8 @@ import {
 } from '@shared/infra/oauth-provider/dto';
 import { of } from 'rxjs';
 import { IntrospectResponse } from '@shared/infra/oauth-provider/dto/index';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import resetAllMocks = jest.resetAllMocks;
 
 class HydraServiceSpec extends HydraService {

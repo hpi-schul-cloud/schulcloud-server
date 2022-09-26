@@ -1,7 +1,6 @@
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import {
 	ProviderConsentResponse,
-	ProviderConsentSessionResponse,
 	ProviderOauthClient,
 	ProviderOidcContext,
 	ProviderRedirectResponse,
@@ -11,6 +10,7 @@ import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/resp
 import { OauthClientResponse } from '@src/modules/oauth-provider/controller/dto/response/oauth-client.response';
 import { OidcContextResponse } from '@src/modules/oauth-provider/controller/dto/response/oidc-context.response';
 import { ConsentSessionResponse } from '@src/modules/oauth-provider/controller/dto';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 
 class OauthProviderResponseMapperSpec extends OauthProviderResponseMapper {
 	mapOauthClientResponseSpec(oauthClient: ProviderOauthClient): OauthClientResponse {

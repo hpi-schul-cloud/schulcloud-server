@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
 import { HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
@@ -16,6 +15,7 @@ import {
 	RejectRequestBody,
 } from '../dto';
 import { OauthProviderService } from '../oauth-provider.service';
+import { ProviderConsentSessionResponse } from '../dto/response/consent-session.response';
 
 @Injectable()
 export class HydraService extends OauthProviderService {
@@ -37,7 +37,8 @@ export class HydraService extends OauthProviderService {
 	}
 
 	getConsentRequest(challenge: string): Promise<ProviderConsentResponse> {
-		return this.get<ProviderConsentResponse>('consent', challenge);
+		const response: Promise<ProviderConsentResponse> = this.get<ProviderConsentResponse>('consent', challenge);
+		return response;
 	}
 
 	introspectOAuth2Token(token: string, scope: string): Promise<IntrospectResponse> {

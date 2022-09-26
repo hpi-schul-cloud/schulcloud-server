@@ -7,10 +7,10 @@ import {
 } from '@shared/infra/oauth-provider/dto';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
 import { ConsentSessionResponse } from '@src/modules/oauth-provider/controller/dto/response/consent-session.response';
 import { OauthClientResponse } from '@src/modules/oauth-provider/controller/dto/response/oauth-client.response';
 import { OidcContextResponse } from '@src/modules/oauth-provider/controller/dto/response/oidc-context.response';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 
 @Injectable()
 export class OauthProviderResponseMapper {

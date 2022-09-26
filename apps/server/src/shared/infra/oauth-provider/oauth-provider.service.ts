@@ -9,7 +9,7 @@ import {
 	RejectRequestBody,
 } from './dto';
 import { NotImplementedException } from '@nestjs/common/exceptions/not-implemented.exception';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
+import { ProviderConsentSessionResponse } from './dto/response/consent-session.response';
 
 export abstract class OauthProviderService {
 	getLoginRequest(challenge: string): Promise<LoginResponse> {
