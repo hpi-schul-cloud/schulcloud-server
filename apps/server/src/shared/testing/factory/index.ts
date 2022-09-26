@@ -11,6 +11,7 @@ export * from './material.factory';
 export * from './news.factory';
 export * from './role.factory';
 export * from './school.factory';
+export * from './share-token.do.factory';
 export * from './storageprovider.factory';
 export * from './submission.factory';
 export * from './system.factory';
