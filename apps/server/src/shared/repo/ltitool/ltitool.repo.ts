@@ -26,6 +26,11 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		return this.mapEntityToDO(entity);
 	}
 
+	async findByClientIdAndIsLocal(oAuthClientId: string, isLocal: boolean): Promise<LtiToolDO> {
+		const entity = await this._em.findOneOrFail(LtiTool, { oAuthClientId, isLocal });
+		return this.mapEntityToDO(entity);
+	}
+
 	protected mapEntityToDO(entity: LtiTool): LtiToolDO {
 		return new LtiToolDO({
 			id: entity.id,
@@ -34,6 +39,7 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 			name: entity.name,
 			oAuthClientId: entity.oAuthClientId,
 			secret: entity.secret,
+			isLocal: entity.isLocal,
 		});
 	}
 
@@ -43,6 +49,7 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 			name: entityDO.name,
 			oAuthClientId: entityDO.oAuthClientId,
 			secret: entityDO.secret,
+			isLocal: entityDO.isLocal,
 		};
 	}
 }

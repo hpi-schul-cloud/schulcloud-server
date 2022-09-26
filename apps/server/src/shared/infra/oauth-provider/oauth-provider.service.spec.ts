@@ -3,42 +3,42 @@ import { NotImplementedException } from '@nestjs/common';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
-	ConsentResponse,
 	IntrospectResponse,
 	LoginResponse,
-	OauthClient,
-	ProviderConsentSessionResponse,
-	RedirectResponse,
+	ProviderConsentResponse,
+	ProviderOauthClient,
+	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
 import { OauthProviderService } from '@shared/infra/oauth-provider/oauth-provider.service';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 
 class OauthProviderServiceSpec extends OauthProviderService {
 	getLoginRequest(challenge: string): Promise<LoginResponse> {
 		return super.getLoginRequest(challenge);
 	}
 
-	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<RedirectResponse> {
+	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<ProviderRedirectResponse> {
 		return super.acceptLoginRequest(challenge, body);
 	}
 
-	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
+	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
 		return super.rejectLoginRequest(challenge, body);
 	}
 
-	getConsentRequest(challenge: string): Promise<ConsentResponse> {
+	getConsentRequest(challenge: string): Promise<ProviderConsentResponse> {
 		return super.getConsentRequest(challenge);
 	}
 
-	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<RedirectResponse> {
+	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<ProviderRedirectResponse> {
 		return super.acceptConsentRequest(challenge, body);
 	}
 
-	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
+	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
 		return super.rejectConsentRequest(challenge, body);
 	}
 
-	acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
+	acceptLogoutRequest(challenge: string): Promise<ProviderRedirectResponse> {
 		return super.acceptLogoutRequest(challenge);
 	}
 
@@ -50,19 +50,19 @@ class OauthProviderServiceSpec extends OauthProviderService {
 		return super.isInstanceAlive();
 	}
 
-	listOAuth2Clients(): Promise<OauthClient[]> {
+	listOAuth2Clients(): Promise<ProviderOauthClient[]> {
 		return super.listOAuth2Clients();
 	}
 
-	createOAuth2Client(data: OauthClient): Promise<OauthClient> {
+	createOAuth2Client(data: ProviderOauthClient): Promise<ProviderOauthClient> {
 		return super.createOAuth2Client(data);
 	}
 
-	getOAuth2Client(id: string): Promise<OauthClient> {
+	getOAuth2Client(id: string): Promise<ProviderOauthClient> {
 		return super.getOAuth2Client(id);
 	}
 
-	updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient> {
+	updateOAuth2Client(id: string, data: ProviderOauthClient): Promise<ProviderOauthClient> {
 		return super.updateOAuth2Client(id, data);
 	}
 
