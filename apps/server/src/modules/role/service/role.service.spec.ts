@@ -70,6 +70,8 @@ describe('RoleService', () => {
 
 	describe('getProtectedRoles', () => {
 		it('should call the repo', async () => {
+			roleRepo.findByNames.mockResolvedValue([testRoleEntity]);
+
 			await roleService.getProtectedRoles();
 
 			expect(roleRepo.findByNames).toHaveBeenCalledWith([RoleName.ADMINISTRATOR, RoleName.TEACHER]);
@@ -77,6 +79,7 @@ describe('RoleService', () => {
 
 		it('should gets a role', async () => {
 			roleRepo.findByNames.mockResolvedValue([testRoleEntity]);
+
 			const entities: RoleDto[] = await roleService.getProtectedRoles();
 
 			expect(entities[0]).toBeDefined();

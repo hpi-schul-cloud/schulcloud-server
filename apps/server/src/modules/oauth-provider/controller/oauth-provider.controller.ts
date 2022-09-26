@@ -108,8 +108,8 @@ export class OauthProviderController {
 	@Get('loginRequest/:challenge')
 	async getLoginRequest(@Param() params: ChallengeParams): Promise<LoginResponse> {
 		const loginResponse: ProviderLoginResponse = await this.oauthProviderLoginFlowUc.getLoginRequest(params.challenge);
-		const response: LoginResponse = this.oauthProviderResponseMapper.mapLoginResponse(loginResponse);
-		return response;
+		const mapped: LoginResponse = this.oauthProviderResponseMapper.mapLoginResponse(loginResponse);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
@@ -126,24 +126,24 @@ export class OauthProviderController {
 			body,
 			query
 		);
-		const response: RedirectResponse = this.oauthProviderResponseMapper.mapRedirectResponse(redirectResponse);
-		return response;
+		const mapped: RedirectResponse = this.oauthProviderResponseMapper.mapRedirectResponse(redirectResponse);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
 	async acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody): Promise<RedirectResponse> {
 		const redirect: ProviderRedirectResponse = await this.logoutFlowUc.logoutFlow(params.challenge);
-		const response: RedirectResponse = this.oauthProviderResponseMapper.mapRedirectResponse(redirect);
-		return response;
+		const mapped: RedirectResponse = this.oauthProviderResponseMapper.mapRedirectResponse(redirect);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
 	@Get('consentRequest/:challenge')
 	async getConsentRequest(@Param() params: ChallengeParams): Promise<ConsentResponse> {
 		const consentRequest: ProviderConsentResponse = await this.consentFlowUc.getConsentRequest(params.challenge);
-		const response: ConsentResponse = this.oauthProviderResponseMapper.mapConsentResponse(consentRequest);
-		return response;
+		const mapped: ConsentResponse = this.oauthProviderResponseMapper.mapConsentResponse(consentRequest);
+		return mapped;
 	}
 
 	@Authenticate('jwt')

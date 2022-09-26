@@ -69,7 +69,7 @@ describe('OauthProviderLoginFlowService', () => {
 			remember_for: 0,
 		};
 
-		it('set the subject in acceptLoginRequestBody succesfully', async () => {
+		it('set the subject in acceptLoginRequestBody successfully', async () => {
 			const loginResponse: ProviderLoginResponse = {
 				challenge: 'challenge',
 				client: {
@@ -110,7 +110,7 @@ describe('OauthProviderLoginFlowService', () => {
 				loginRequestBodyMock
 			);
 
-			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id);
+			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id, true);
 			expect(pseudonymsRepo.findByUserIdAndToolId).toHaveBeenCalledWith(ltiToolDoMock.id, currentUser.userId);
 			expect(acceptLoginRequestBody.subject).toStrictEqual(expected.subject);
 			expect(acceptLoginRequestBody.amr).toBeUndefined();
@@ -120,6 +120,7 @@ describe('OauthProviderLoginFlowService', () => {
 			expect(acceptLoginRequestBody.remember_for).toEqual(expected.remember_for);
 			expect(acceptLoginRequestBody.force_subject_identifier).toEqual(expected.force_subject_identifier);
 		});
+
 		it('could not set the subject in acceptLoginRequestBody and throw error', async () => {
 			const loginResponse: ProviderLoginResponse = {
 				challenge: 'challenge',
@@ -133,6 +134,7 @@ describe('OauthProviderLoginFlowService', () => {
 			);
 		});
 	});
+
 	describe('validateNextcloudPermission', () => {
 		it('should validate Nextcloud permissions', async () => {
 			const currentUser: ICurrentUser = { userId: new ObjectID(213135).toString() } as ICurrentUser;
@@ -161,10 +163,10 @@ describe('OauthProviderLoginFlowService', () => {
 
 			expect(userRepo.findById).toHaveBeenCalledWith(user.id);
 			expect(permissionService.resolvePermissions).toHaveBeenCalledWith(user);
-			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id);
+			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id, true);
 		});
 
-		it('should trow a ForbiddenException', async () => {
+		it('should throw a ForbiddenException', async () => {
 			const currentUser: ICurrentUser = { userId: new ObjectID(213135).toString() } as ICurrentUser;
 			const role = roleFactory.build();
 			const user: User = userFactory.buildWithId({ roles: [role] }, currentUser.userId);

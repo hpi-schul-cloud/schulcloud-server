@@ -469,7 +469,6 @@ describe('HydraService', () => {
 			});
 
 			describe('Login Flow', () => {
-				let challenge: string;
 				const providerLoginResponse: ProviderLoginResponse = {
 					challenge: 'challenge',
 					client: {
@@ -485,10 +484,6 @@ describe('HydraService', () => {
 					skip: true,
 					subject: 'subject',
 				};
-
-				beforeEach(() => {
-					challenge = 'challenge';
-				});
 
 				afterEach(() => {
 					resetAllMocks();

@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Optional } from '@nestjs/common';
-import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
-import { SubjectTypeEnum } from '@src/modules/oauth-provider/interface/subject-type.enum';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class OauthClientResponse {
 	constructor(oauthClientResponse: OauthClientResponse) {
@@ -196,12 +195,11 @@ export class OauthClientResponse {
 	sector_identifier_uri?: string;
 
 	@Optional()
-	@IsEnum(SubjectTypeEnum)
 	@ApiProperty({
 		description:
 			'SubjectType requested for responses to this Client. The subject_types_supported Discovery parameter contains a list of the supported subject_type values for this server. Valid types include pairwise and public.',
 	})
-	subject_type?: SubjectTypeEnum;
+	subject_type?: string;
 
 	@Optional()
 	@ApiProperty()

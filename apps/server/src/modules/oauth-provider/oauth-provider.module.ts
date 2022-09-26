@@ -12,8 +12,8 @@ import { AuthorizationModule } from '@src/modules/authorization/authorization.mo
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderLoginFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.login-flow.uc';
 import { OauthProviderLoginFlowService } from '@src/modules/oauth-provider/service/oauth-provider.login-flow.service';
-import { OauthProviderClientCrudUc } from './uc/oauth-provider.client-crud.uc';
 import { PermissionService } from '@shared/domain';
+import { OauthProviderClientCrudUc } from './uc/oauth-provider.client-crud.uc';
 
 @Module({
 	imports: [OauthProviderServiceModule, UserModule, LoggerModule, AuthorizationModule],

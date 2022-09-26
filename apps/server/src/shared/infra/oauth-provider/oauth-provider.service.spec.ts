@@ -4,8 +4,8 @@ import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
 	IntrospectResponse,
-	LoginResponse,
 	ProviderConsentResponse,
+	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 	RejectRequestBody,
@@ -14,7 +14,7 @@ import { OauthProviderService } from '@shared/infra/oauth-provider/oauth-provide
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 
 class OauthProviderServiceSpec extends OauthProviderService {
-	getLoginRequest(challenge: string): Promise<LoginResponse> {
+	getLoginRequest(challenge: string): Promise<ProviderLoginResponse> {
 		return super.getLoginRequest(challenge);
 	}
 

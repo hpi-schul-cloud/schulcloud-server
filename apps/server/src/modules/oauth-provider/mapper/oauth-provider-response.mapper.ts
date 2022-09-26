@@ -2,16 +2,16 @@ import { Injectable } from '@nestjs/common';
 import {
 	ProviderConsentResponse,
 	ProviderConsentSessionResponse,
+	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
-	ProviderLoginResponse,
 } from '@shared/infra/oauth-provider/dto';
 import {
 	ConsentResponse,
 	ConsentSessionResponse,
+	LoginResponse,
 	OauthClientResponse,
 	RedirectResponse,
-	LoginResponse,
 } from '@src/modules/oauth-provider/controller/dto';
 
 @Injectable()
