@@ -3,28 +3,20 @@ import {
 	ProviderConsentResponse,
 	ProviderConsentSessionResponse,
 	ProviderOauthClient,
-	ProviderOidcContext,
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
 import {
 	ConsentResponse,
 	ConsentSessionResponse,
 	OauthClientResponse,
-	OidcContextResponse,
 	RedirectResponse,
 } from '@src/modules/oauth-provider/controller/dto/';
 
-class OauthProviderResponseMapperSpec extends OauthProviderResponseMapper {
-	mapOidcContextResponseSpec(oidcContext: ProviderOidcContext): OidcContextResponse {
-		return super.mapOidcContextResponse(oidcContext);
-	}
-}
-
 describe('OauthProviderResponseMapper', () => {
-	let mapper: OauthProviderResponseMapperSpec;
+	let mapper: OauthProviderResponseMapper;
 
 	beforeAll(() => {
-		mapper = new OauthProviderResponseMapperSpec();
+		mapper = new OauthProviderResponseMapper();
 	});
 
 	it('mapRedirectResponse', () => {
@@ -111,20 +103,6 @@ describe('OauthProviderResponseMapper', () => {
 		const result: OauthClientResponse = mapper.mapOauthClientResponse(providerOauthClientResponse);
 
 		expect(result).toEqual(expect.objectContaining(providerOauthClientResponse));
-	});
-
-	it('mapOidcContextResponse', () => {
-		const providerOidcContext: ProviderOidcContext = {
-			acr_values: ['acr_values'],
-			display: 'display',
-			id_token_hint_claims: {},
-			login_hint: 'login_hint',
-			ui_locales: ['ui_locales'],
-		};
-
-		const result: OidcContextResponse = mapper.mapOidcContextResponseSpec(providerOidcContext);
-
-		expect(result).toEqual(new OidcContextResponse({ ...providerOidcContext }));
 	});
 
 	it('mapConsentSessionsToResponse', () => {
