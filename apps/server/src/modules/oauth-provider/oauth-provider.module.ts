@@ -8,12 +8,14 @@ import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
 import { UserModule } from '@src/modules/user';
 import { LoggerModule } from '@src/core/logger';
 import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
-import { AuthorizationModule } from '@src/modules/authorization';
+import { AuthorizationModule } from '@src/modules/authorization/authorization.module';
+import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderClientCrudUc } from './uc/oauth-provider.client-crud.uc';
 
 @Module({
 	imports: [OauthProviderServiceModule, UserModule, LoggerModule, AuthorizationModule],
 	providers: [
+		OauthProviderUc,
 		OauthProviderClientCrudUc,
 		OauthProviderConsentFlowUc,
 		OauthProviderLogoutFlowUc,

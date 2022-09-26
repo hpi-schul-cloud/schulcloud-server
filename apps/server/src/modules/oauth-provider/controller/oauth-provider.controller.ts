@@ -3,30 +3,32 @@ import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, P
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
-import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import {
 	ProviderConsentResponse,
+	ProviderConsentSessionResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
 import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
 import { ICurrentUser } from '@shared/domain';
+import { OauthProviderClientCrudUc } from '@src/modules/oauth-provider/uc/oauth-provider.client-crud.uc';
+import { IntrospectBody } from '@src/modules/oauth-provider/controller/dto/request/introspect.body';
 import {
 	AcceptQuery,
 	ChallengeParams,
 	ConsentRequestBody,
+	ConsentSessionResponse,
 	IdParams,
-	IntrospectBody,
 	ListOauthClientsParams,
 	LoginRequestBody,
 	OauthClientBody,
 	OauthClientResponse,
 	RedirectBody,
-	RevokeConsentQuery,
-	UserParams,
+	RevokeConsentParams,
 } from './dto';
-import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
+import { OauthProviderUc } from '../uc/oauth-provider.uc';
+import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 
 @Controller('oauth2')
 export class OauthProviderController {
@@ -34,6 +36,7 @@ export class OauthProviderController {
 		private readonly consentFlowUc: OauthProviderConsentFlowUc,
 		private readonly logoutFlowUc: OauthProviderLogoutFlowUc,
 		private readonly crudUc: OauthProviderClientCrudUc,
+		private readonly oauthProviderUc: OauthProviderUc,
 		private readonly oauthProviderResponseMapper: OauthProviderResponseMapper
 	) {}
 
@@ -98,11 +101,6 @@ export class OauthProviderController {
 		return promise;
 	}
 
-	@Post('introspect')
-	introspectOAuth2Token(@Body() body: IntrospectBody) {
-		throw new NotImplementedException();
-	}
-
 	@Get('loginRequest/:challenge')
 	getLoginRequest(@Param() params: ChallengeParams) {
 		throw new NotImplementedException();
@@ -149,14 +147,27 @@ export class OauthProviderController {
 	}
 
 	@Authenticate('jwt')
-	@Get('auth/sessions/consent/:userId')
-	listConsentSessions(@Param() params: UserParams) {
-		throw new NotImplementedException();
+	@Get('auth/sessions/consent')
+	async listConsentSessions(@CurrentUser() currentUser: ICurrentUser): Promise<ConsentSessionResponse[]> {
+		const sessions: ProviderConsentSessionResponse[] = await this.oauthProviderUc.listConsentSessions(
+			currentUser.userId
+		);
+		const mapped: ConsentSessionResponse[] = sessions.map(
+			(session: ProviderConsentSessionResponse): ConsentSessionResponse =>
+				this.oauthProviderResponseMapper.mapConsentSessionsToResponse(session)
+		);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
-	@Delete('auth/sessions/consent/:userId')
-	revokeConsentSession(@Param() params: UserParams, @Query() query: RevokeConsentQuery) {
+	@Delete('auth/sessions/consent')
+	revokeConsentSession(@CurrentUser() currentUser: ICurrentUser, @Param() params: RevokeConsentParams): Promise<void> {
+		const promise: Promise<void> = this.oauthProviderUc.revokeConsentSession(currentUser.userId, params.client);
+		return promise;
+	}
+
+	@Post('introspect')
+	introspectOAuth2Token(@Body() body: IntrospectBody) {
 		throw new NotImplementedException();
 	}
 

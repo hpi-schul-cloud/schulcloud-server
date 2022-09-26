@@ -1,6 +1,7 @@
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import {
 	ProviderConsentResponse,
+	ProviderConsentSessionResponse,
 	ProviderOauthClient,
 	ProviderOidcContext,
 	ProviderRedirectResponse,
@@ -9,6 +10,7 @@ import { RedirectResponse } from 'apps/server/src/modules/oauth-provider/control
 import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
 import { OauthClientResponse } from '@src/modules/oauth-provider/controller/dto/response/oauth-client.response';
 import { OidcContextResponse } from '@src/modules/oauth-provider/controller/dto/response/oidc-context.response';
+import { ConsentSessionResponse } from '@src/modules/oauth-provider/controller/dto';
 
 class OauthProviderResponseMapperSpec extends OauthProviderResponseMapper {
 	mapOauthClientResponseSpec(oauthClient: ProviderOauthClient): OauthClientResponse {
@@ -125,5 +127,27 @@ describe('OauthProviderResponseMapper', () => {
 		const result: OidcContextResponse = mapper.mapOidcContextResponseSpec(providerOidcContext);
 
 		expect(result).toEqual(new OidcContextResponse({ ...providerOidcContext }));
+	});
+
+	it('should map oauth client to client response', () => {
+		const session: ProviderConsentSessionResponse = {
+			consent_request: {
+				challenge: 'challenge',
+				client: {
+					client_id: 'clientId',
+					client_name: 'clientName',
+				},
+			},
+		};
+
+		const response: ConsentSessionResponse = mapper.mapConsentSessionsToResponse(session);
+
+		expect(response).toEqual(
+			expect.objectContaining<ConsentSessionResponse>({
+				challenge: 'challenge',
+				client_id: 'clientId',
+				client_name: 'clientName',
+			})
+		);
 	});
 });
