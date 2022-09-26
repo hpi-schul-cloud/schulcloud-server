@@ -79,7 +79,7 @@ describe('OauthProviderUc', () => {
 			it('should call the authorization service to check permissions', async () => {
 				providerService.listOAuth2Clients.mockResolvedValue(data);
 
-				const result: OauthClient[] = await uc.listOAuth2Clients(currentUser, 1, 0, 'clientId', 'owner');
+				await uc.listOAuth2Clients(currentUser, 1, 0, 'clientId', 'owner');
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.OAUTH_CLIENT_VIEW]);
 			});
@@ -87,7 +87,7 @@ describe('OauthProviderUc', () => {
 			it('should list oauth2 clients when service is called with all parameters', async () => {
 				providerService.listOAuth2Clients.mockResolvedValue(data);
 
-				const result: OauthClient[] = await uc.listOAuth2Clients(currentUser, 1, 0, 'clientId', 'owner');
+				await uc.listOAuth2Clients(currentUser, 1, 0, 'clientId', 'owner');
 
 				expect(providerService.listOAuth2Clients).toHaveBeenCalledWith(1, 0, 'clientId', 'owner');
 			});
@@ -95,7 +95,7 @@ describe('OauthProviderUc', () => {
 			it('should list oauth2 clients when service is called without parameters', async () => {
 				providerService.listOAuth2Clients.mockResolvedValue(data);
 
-				const result: OauthClient[] = await uc.listOAuth2Clients(currentUser);
+				await uc.listOAuth2Clients(currentUser);
 
 				expect(providerService.listOAuth2Clients).toHaveBeenCalledWith(undefined, undefined, undefined, undefined);
 			});

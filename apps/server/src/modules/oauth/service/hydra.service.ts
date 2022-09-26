@@ -13,13 +13,15 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { Logger } from '@src/core/logger';
 
 @Injectable()
 export class HydraSsoService {
 	constructor(
 		private readonly ltiRepo: LtiToolRepo,
 		private readonly httpService: HttpService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
+		private readonly logger: Logger
 	) {}
 
 	private readonly HOST: string = Configuration.get('HOST') as string;
@@ -32,8 +34,8 @@ export class HydraSsoService {
 			redirect_uri: oauthConfig.redirectUri,
 			state: nanoid(15),
 		});
-		console.log(`${oauthConfig.authEndpoint}?${query}`);
-		console.log(axiosConfig);
+		this.logger.log(`${oauthConfig.authEndpoint}?${query}`);
+		this.logger.log(axiosConfig);
 		const res: Promise<AxiosResponse> = this.get(`${oauthConfig.authEndpoint}?${query}`, axiosConfig);
 		return res;
 	}
@@ -61,7 +63,7 @@ export class HydraSsoService {
 			Referer: localDto.referer,
 			Cookie: headerCookies,
 		};
-		console.log(localDto);
+		this.logger.log(localDto);
 		localDto.response = await this.get(location, localDto.axiosConfig);
 		localDto.referer = location;
 		localDto.currentRedirect += 1;
