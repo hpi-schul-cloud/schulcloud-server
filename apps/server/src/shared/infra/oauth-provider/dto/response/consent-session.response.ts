@@ -1,7 +1,7 @@
-import { ConsentResponse } from './consent.response';
+import { ProviderConsentResponse } from './consent.response';
 
 export interface ProviderConsentSessionResponse {
-	consent_request?: ConsentResponse;
+	consent_request: ProviderConsentResponse;
 
 	grant_access_token_audience?: string[];
 
@@ -14,8 +14,8 @@ export interface ProviderConsentSessionResponse {
 	remember_for?: number;
 
 	session?: {
-		access_token?: string;
+		access_token: string;
 
-		id_token?: string;
+		id_token: string;
 	};
 }

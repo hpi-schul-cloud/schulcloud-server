@@ -3,10 +3,18 @@ import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, P
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
-import { OauthClient, ProviderConsentSessionResponse, RedirectResponse } from '@shared/infra/oauth-provider/dto';
+import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
+import {
+	ProviderConsentResponse,
+	ProviderOauthClient,
+	ProviderRedirectResponse,
+} from '@shared/infra/oauth-provider/dto';
+import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
 import { ICurrentUser } from '@shared/domain';
 import { OauthProviderClientCrudUc } from '@src/modules/oauth-provider/uc/oauth-provider.client-crud.uc';
 import { IntrospectBody } from '@src/modules/oauth-provider/controller/dto/request/introspect.body';
+import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -25,9 +33,10 @@ import { OauthProviderUc } from '../uc/oauth-provider.uc';
 @Controller('oauth2')
 export class OauthProviderController {
 	constructor(
+		private readonly consentFlowUc: OauthProviderConsentFlowUc,
+		private readonly logoutFlowUc: OauthProviderLogoutFlowUc,
 		private readonly crudUc: OauthProviderClientCrudUc,
 		private readonly oauthProviderUc: OauthProviderUc,
-		private readonly logoutFlowUc: OauthProviderLogoutFlowUc,
 		private readonly oauthProviderResponseMapper: OauthProviderResponseMapper
 	) {}
 
@@ -37,8 +46,8 @@ export class OauthProviderController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: IdParams
 	): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.crudUc.getOAuth2Client(currentUser, params.id);
-		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
+		const client: ProviderOauthClient = await this.crudUc.getOAuth2Client(currentUser, params.id);
+		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientResponse(client);
 		return mapped;
 	}
 
@@ -48,7 +57,7 @@ export class OauthProviderController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ListOauthClientsParams
 	): Promise<OauthClientResponse[]> {
-		const clients: OauthClient[] = await this.crudUc.listOAuth2Clients(
+		const clients: ProviderOauthClient[] = await this.crudUc.listOAuth2Clients(
 			currentUser,
 			params.limit,
 			params.offset,
@@ -56,8 +65,8 @@ export class OauthProviderController {
 			params.owner
 		);
 		const mapped: OauthClientResponse[] = clients.map(
-			(client: OauthClient): OauthClientResponse =>
-				this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client)
+			(client: ProviderOauthClient): OauthClientResponse =>
+				this.oauthProviderResponseMapper.mapOauthClientResponse(client)
 		);
 		return mapped;
 	}
@@ -68,8 +77,8 @@ export class OauthProviderController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: OauthClientBody
 	): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.crudUc.createOAuth2Client(currentUser, body);
-		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
+		const client: ProviderOauthClient = await this.crudUc.createOAuth2Client(currentUser, body);
+		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientResponse(client);
 		return mapped;
 	}
 
@@ -80,8 +89,8 @@ export class OauthProviderController {
 		@Param() params: IdParams,
 		@Body() body: OauthClientBody
 	): Promise<OauthClientResponse> {
-		const client: OauthClient = await this.crudUc.updateOAuth2Client(currentUser, params.id, body);
-		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
+		const client: ProviderOauthClient = await this.crudUc.updateOAuth2Client(currentUser, params.id, body);
+		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientResponse(client);
 		return mapped;
 	}
 
@@ -105,21 +114,36 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
-	async acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody) {
-		const redirect: RedirectResponse = await this.logoutFlowUc.logoutFlow(params.challenge);
-		return redirect.redirect_to;
+	async acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody): Promise<RedirectResponse> {
+		const redirect: ProviderRedirectResponse = await this.logoutFlowUc.logoutFlow(params.challenge);
+		const response: RedirectResponse = this.oauthProviderResponseMapper.mapRedirectResponse(redirect);
+		return response;
 	}
 
 	@Authenticate('jwt')
 	@Get('consentRequest/:challenge')
-	getConsentRequest(@Param() params: ChallengeParams) {
-		throw new NotImplementedException();
+	async getConsentRequest(@Param() params: ChallengeParams): Promise<ConsentResponse> {
+		const consentRequest: ProviderConsentResponse = await this.consentFlowUc.getConsentRequest(params.challenge);
+		const response: ConsentResponse = this.oauthProviderResponseMapper.mapConsentResponse(consentRequest);
+		return response;
 	}
 
 	@Authenticate('jwt')
 	@Patch('consentRequest/:challenge')
-	patchConsentRequest(@Param() params: ChallengeParams, @Query() query: AcceptQuery, @Body() body: ConsentRequestBody) {
-		throw new NotImplementedException();
+	async patchConsentRequest(
+		@Param() params: ChallengeParams,
+		@Query() query: AcceptQuery,
+		@Body() body: ConsentRequestBody,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<RedirectResponse> {
+		const redirectResponse: ProviderRedirectResponse = await this.consentFlowUc.patchConsentRequest(
+			params.challenge,
+			query,
+			body,
+			currentUser
+		);
+		const response: RedirectResponse = this.oauthProviderResponseMapper.mapRedirectResponse(redirectResponse);
+		return response;
 	}
 
 	@Authenticate('jwt')
