@@ -4,7 +4,7 @@ import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clien
 import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Inject } from '@nestjs/common';
-import { System, SystemTypeEnum } from '@shared/domain';
+import { SystemTypeEnum } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -224,7 +224,6 @@ export class KeycloakConfigurationService {
 	private async createIdentityProvider(system: IdentityProviderConfig): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		if (system.type === SystemTypeEnum.OIDC) {
-			console.log(system);
 			await kc.identityProviders.create(
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
 			);
