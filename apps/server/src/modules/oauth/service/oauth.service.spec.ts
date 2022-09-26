@@ -426,7 +426,7 @@ describe('OAuthService', () => {
 		});
 		it('should throw a NotFoundException', async () => {
 			const system = systemFactory.build();
-			systemService.findById.mockResolvedValue(system);
+			systemService.findOAuthById.mockResolvedValue(system);
 			await expect(service.getOauthConfig(system.id)).rejects.toThrow(NotFoundException);
 		});
 	});

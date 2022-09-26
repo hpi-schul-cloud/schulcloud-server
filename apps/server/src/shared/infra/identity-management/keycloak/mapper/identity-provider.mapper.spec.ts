@@ -34,12 +34,11 @@ describe('OidcIdentityProviderMapper', () => {
 	describe('mapToKeycloakIdentityProvider', () => {
 		const brokerFlowAlias = 'flow';
 		const internalRepresentation: IOidcIdentityProviderConfig = {
-			_id: new ObjectId(0),
 			id: new ObjectId(0).toString(),
 			type: SystemTypeEnum.OIDC,
 			alias: 'alias',
 			displayName: undefined,
-			config: {
+			oidcConfig: {
 				clientId: 'clientId',
 				clientSecret: 'clientSecret',
 				authorizationUrl: 'authorizationUrl',
@@ -48,8 +47,6 @@ describe('OidcIdentityProviderMapper', () => {
 				userinfoUrl: 'userinfoUrl',
 				defaultScopes: 'defaultScopes',
 			},
-			createdAt: new Date(),
-			updatedAt: new Date(),
 		};
 
 		const keycloakRepresentation: IdentityProviderRepresentation = {
