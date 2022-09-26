@@ -6,15 +6,19 @@ import { ShareTokenService } from '../share-token.service';
 export class ShareTokenUC {
 	constructor(private readonly shareTokenService: ShareTokenService) {}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenDO> {
-		throw new NotImplementedException();
+		return Promise.reject(new NotImplementedException());
 	}
 
 	createShareToken(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		userId: EntityId,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		payload: ShareTokenPayload,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		options?: { context?: ShareTokenContext; expiresAt?: Date }
 	): Promise<ShareTokenDO> {
-		throw new NotImplementedException();
+		return Promise.reject(new NotImplementedException());
 	}
 }
