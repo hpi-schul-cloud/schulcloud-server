@@ -79,11 +79,6 @@ export class HydraService extends OauthProviderService {
 
 	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
 		return this.put<ProviderRedirectResponse>('login', 'reject', challenge, body);
-		return this.request<ProviderRedirectResponse>(
-			'PUT',
-			`${this.hydraUri}/oauth2/auth/requests/login/reject?login_challenge=${challenge}`,
-			body
-		);
 	}
 
 	revokeConsentSession(user: string, client: string): Promise<void> {
