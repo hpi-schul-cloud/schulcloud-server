@@ -58,7 +58,6 @@ export class Team extends BaseEntityWithTimestamps {
 	@Embedded(() => TeamUser, { array: true })
 	userIds: TeamUser[];
 
-	@Property({ persist: false })
 	get teamUsers(): TeamUser[] {
 		return this.userIds;
 	}

@@ -1,22 +1,20 @@
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import {
 	ProviderConsentResponse,
+	ProviderConsentSessionResponse,
 	ProviderOauthClient,
 	ProviderOidcContext,
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
-import { RedirectResponse } from 'apps/server/src/modules/oauth-provider/controller/dto/response/redirect.response';
-import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
-import { OauthClientResponse } from '@src/modules/oauth-provider/controller/dto/response/oauth-client.response';
-import { OidcContextResponse } from '@src/modules/oauth-provider/controller/dto/response/oidc-context.response';
-import { ConsentSessionResponse } from '@src/modules/oauth-provider/controller/dto';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+import {
+	ConsentResponse,
+	ConsentSessionResponse,
+	OauthClientResponse,
+	OidcContextResponse,
+	RedirectResponse,
+} from '@src/modules/oauth-provider/controller/dto/';
 
 class OauthProviderResponseMapperSpec extends OauthProviderResponseMapper {
-	mapOauthClientResponseSpec(oauthClient: ProviderOauthClient): OauthClientResponse {
-		return super.mapOauthClientResponse(oauthClient);
-	}
-
 	mapOidcContextResponseSpec(oidcContext: ProviderOidcContext): OidcContextResponse {
 		return super.mapOidcContextResponse(oidcContext);
 	}
@@ -110,7 +108,7 @@ describe('OauthProviderResponseMapper', () => {
 			userinfo_signed_response_alg: 'userinfo_signed_response_alg',
 		};
 
-		const result: OauthClientResponse = mapper.mapOauthClientResponseSpec(providerOauthClientResponse);
+		const result: OauthClientResponse = mapper.mapOauthClientResponse(providerOauthClientResponse);
 
 		expect(result).toEqual(expect.objectContaining(providerOauthClientResponse));
 	});
@@ -129,7 +127,7 @@ describe('OauthProviderResponseMapper', () => {
 		expect(result).toEqual(new OidcContextResponse({ ...providerOidcContext }));
 	});
 
-	it('should map oauth client to client response', () => {
+	it('mapConsentSessionsToResponse', () => {
 		const session: ProviderConsentSessionResponse = {
 			consent_request: {
 				challenge: 'challenge',

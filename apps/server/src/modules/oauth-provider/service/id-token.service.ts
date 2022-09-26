@@ -56,6 +56,7 @@ export class IdTokenService {
 		);
 	}
 
+	// TODO N21-335 How we can refactor the iframe in the id token?
 	protected async createIframeSubject(userId: string, clientId: string): Promise<string | undefined> {
 		try {
 			const ltiTool: LtiToolDO = await this.ltiToolRepo.findByClientIdAndIsLocal(clientId, true);

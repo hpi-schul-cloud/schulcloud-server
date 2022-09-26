@@ -120,7 +120,7 @@ describe('UserService', () => {
 			roleService.getProtectedRoles.mockResolvedValue([role]);
 		});
 
-		it('should return only the last name because the user has a protected role', async () => {
+		it('should return only the last name when the user has a protected role', async () => {
 			// Arrange
 			const userDto: UserDto = { roleIds: [role.id], lastName: 'lastName' } as UserDto;
 
@@ -132,7 +132,7 @@ describe('UserService', () => {
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
 		});
 
-		it('should return the id because the user has a protected role and the last name is missing', async () => {
+		it('should return the id when the user has a protected role and the last name is missing', async () => {
 			// Arrange
 			const userDto: UserDto = { roleIds: [role.id], id: 'id' } as UserDto;
 
@@ -144,7 +144,7 @@ describe('UserService', () => {
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
 		});
 
-		it('should return the first name and last name because the user has no protected role', async () => {
+		it('should return the first name and last name when the user has no protected role', async () => {
 			// Arrange
 			const userDto: UserDto = {
 				id: 'id',
@@ -160,7 +160,7 @@ describe('UserService', () => {
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
 		});
 
-		it('should return the id because the user has no protected role and last name is missing', async () => {
+		it('should return the id when the user has no protected role and last name is missing', async () => {
 			// Arrange
 			const userDto: UserDto = {
 				id: 'id',
