@@ -391,10 +391,9 @@ describe('OauthProviderController', () => {
 				const providerRedirectResponse: ProviderRedirectResponse = {
 					redirect_to: 'redirect_to',
 				};
-				const redirectResponse: ProviderRedirectResponse = {
-					redirect_to: 'redirect_to',
+				const redirectResponse: RedirectResponse = {
+					redirect_to: providerRedirectResponse.redirect_to,
 				};
-				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 				const expected = [currentUser.userId, params.challenge, loginRequestBody, query];
 
 				loginUc.patchLoginRequest.mockResolvedValue(providerRedirectResponse);

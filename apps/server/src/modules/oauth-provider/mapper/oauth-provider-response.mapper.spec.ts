@@ -13,7 +13,6 @@ import {
 	RedirectResponse,
 	LoginResponse,
 } from '@src/modules/oauth-provider/controller/dto/';
-import { LoginResponse } from '@src/modules/oauth-provider/controller/dto/response/login.response';
 
 describe('OauthProviderResponseMapper', () => {
 	let mapper: OauthProviderResponseMapper;

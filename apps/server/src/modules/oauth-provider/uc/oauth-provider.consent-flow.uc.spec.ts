@@ -154,7 +154,7 @@ describe('OauthProviderConsentFlowUc', () => {
 
 					it('rejectConsentRequest: reject when it is an reject request body', async () => {
 						requestBody = {
-							status_code: '500',
+							status_code: 500,
 						};
 
 						await uc.patchConsentRequest(challenge, acceptQuery, requestBody, currentUser);

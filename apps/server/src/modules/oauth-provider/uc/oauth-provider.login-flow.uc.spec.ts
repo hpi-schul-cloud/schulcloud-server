@@ -49,7 +49,7 @@ describe('OauthProviderLoginFlowUc', () => {
 		remember_for: 0,
 	};
 	const query: AcceptQuery = {
-		accept: 1,
+		accept: true,
 	};
 	const redirectResponse: ProviderRedirectResponse = {
 		redirect_to: 'redirect_to',

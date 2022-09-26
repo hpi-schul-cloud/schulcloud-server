@@ -70,7 +70,7 @@ describe('RoleService', () => {
 
 	describe('getProtectedRoles', () => {
 		it('should call the repo', async () => {
-			const entities: RoleDto[] = await roleService.getProtectedRoles();
+			await roleService.getProtectedRoles();
 
 			expect(roleRepo.findByNames).toHaveBeenCalledWith([RoleName.ADMINISTRATOR, RoleName.TEACHER]);
 		});

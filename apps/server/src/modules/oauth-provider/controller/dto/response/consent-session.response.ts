@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 export class ConsentSessionResponse {
 	constructor(response: ConsentSessionResponse) {
@@ -7,12 +8,13 @@ export class ConsentSessionResponse {
 		this.challenge = response.challenge;
 	}
 
-	@ApiProperty()
+	@IsOptional()
+	@ApiProperty({ description: 'The id of the client.' })
 	client_id?: string;
 
-	@ApiProperty()
+	@ApiProperty({ description: 'The name of the client.' })
 	client_name?: string;
 
-	@ApiProperty()
+	@ApiProperty({ description: 'The id/challenge of the consent authorization request.' })
 	challenge?: string;
 }
