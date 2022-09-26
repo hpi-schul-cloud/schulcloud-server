@@ -96,7 +96,14 @@ export class FileCopyAppendService {
 
 			fileCopyResults.forEach(({ oldFileId, fileId, filename }) => {
 				lesson.contents = lesson.contents.map((item: IComponentProperties) => {
-					if ('text' in item.content && fileId && filename) {
+					if (
+						item.component === 'text' &&
+						item.content &&
+						'text' in item.content &&
+						item.content.text &&
+						fileId &&
+						filename
+					) {
 						const text = this.replaceOldFileUrls(item.content.text, oldFileId, fileId, filename);
 						const itemWithUpdatedText = { ...item, content: { ...item.content, text } };
 						return itemWithUpdatedText;
