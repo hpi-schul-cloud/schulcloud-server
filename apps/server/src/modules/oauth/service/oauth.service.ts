@@ -166,7 +166,7 @@ export class OAuthService {
 	}
 
 	async getOauthConfig(systemId: string): Promise<OauthConfig> {
-		const system: SystemDto = await this.systemService.findById(systemId);
+		const system: SystemDto = await this.systemService.findOAuthById(systemId);
 		if (system.oauthConfig) {
 			return system.oauthConfig;
 		}
