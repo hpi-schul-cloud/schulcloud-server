@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsOptional, IsString } from 'class-validator';
-import { OidcContextResponse, OauthClientResponse } from '@src/modules/oauth-provider/controller/dto';
+import { OidcContextResponse } from '@src/modules/oauth-provider/controller/dto/response/oidc-context.response';
+import { OauthClientResponse } from '@src/modules/oauth-provider/controller/dto/response/oauth-client.response';
 
 export class ConsentResponse {
 	constructor(consentResponse: ConsentResponse) {

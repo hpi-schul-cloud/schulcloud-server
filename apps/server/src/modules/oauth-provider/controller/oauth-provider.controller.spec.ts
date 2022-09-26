@@ -287,11 +287,11 @@ describe('OauthProviderController', () => {
 						},
 					},
 				};
-				const response: ConsentSessionResponse = new ConsentSessionResponse({
-					challenge: 'challenge',
-					client_id: 'clientId',
-					client_name: 'clientName',
-				});
+				const response: ConsentSessionResponse = new ConsentSessionResponse(
+					session.consent_request.challenge,
+					session.consent_request.client?.client_id,
+					session.consent_request.client?.client_name
+				);
 
 				oauthProviderUc.listConsentSessions.mockResolvedValue([session]);
 				responseMapper.mapConsentSessionsToResponse.mockReturnValue(response);
