@@ -13,6 +13,8 @@ import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/resp
 import { ICurrentUser } from '@shared/domain';
 import { OauthProviderClientCrudUc } from '@src/modules/oauth-provider/uc/oauth-provider.client-crud.uc';
 import { IntrospectBody } from '@src/modules/oauth-provider/controller/dto/request/introspect.body';
+import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -27,8 +29,6 @@ import {
 	RevokeConsentParams,
 } from './dto';
 import { OauthProviderUc } from '../uc/oauth-provider.uc';
-import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 
 @Controller('oauth2')
 export class OauthProviderController {

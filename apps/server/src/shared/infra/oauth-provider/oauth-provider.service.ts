@@ -1,3 +1,4 @@
+import { NotImplementedException } from '@nestjs/common/exceptions/not-implemented.exception';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
@@ -8,7 +9,6 @@ import {
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from './dto';
-import { NotImplementedException } from '@nestjs/common/exceptions/not-implemented.exception';
 import { ProviderConsentSessionResponse } from './dto/response/consent-session.response';
 
 export abstract class OauthProviderService {

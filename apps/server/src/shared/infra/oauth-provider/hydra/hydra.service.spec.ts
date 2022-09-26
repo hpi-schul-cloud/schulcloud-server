@@ -9,9 +9,9 @@ import {
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 	RejectRequestBody,
+	IntrospectResponse,
 } from '@shared/infra/oauth-provider/dto';
 import { of } from 'rxjs';
-import { IntrospectResponse } from '@shared/infra/oauth-provider/dto/index';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import resetAllMocks = jest.resetAllMocks;

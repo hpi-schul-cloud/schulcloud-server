@@ -1,4 +1,4 @@
-import { ProviderConsentResponse } from '@shared/infra/oauth-provider/dto';
+import { ProviderConsentResponse } from './consent.response';
 
 export interface ProviderConsentSessionResponse {
 	consent_request: ProviderConsentResponse;
