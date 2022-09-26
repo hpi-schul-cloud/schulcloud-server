@@ -25,7 +25,7 @@ export class SyncEmbeddedFilesUc {
 	}
 
 	private async syncEmbeddedFiles(type: AvailableSyncParentType, limit: number) {
-		const [entities, count] = await this.embeddedFilesRepo.findElementsToSyncFiles(type, limit, []);
+		const [entities, count] = await this.embeddedFilesRepo.findElementsToSyncFiles(type, limit);
 
 		this.logger.log(`Found ${entities.length} ${type} descriptions with embedded files.`);
 

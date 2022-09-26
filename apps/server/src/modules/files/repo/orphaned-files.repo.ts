@@ -81,6 +81,8 @@ export class OrphanedFilesRepo {
 			];
 
 			results = await this._em.aggregate('files_filerecords', query);
+		} else {
+			throw new Error('wrong parent type');
 		}
 
 		results.forEach((entity) => {
