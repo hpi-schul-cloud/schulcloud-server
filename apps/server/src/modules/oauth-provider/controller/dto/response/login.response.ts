@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OauthClientResponse } from '@src/modules/oauth-provider/controller/dto/response/oauth-client.response';
 import { OidcContextResponse } from '@src/modules/oauth-provider/controller/dto/response/oidc-context.response';
-import { IsOptional } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class LoginResponse {
 	constructor(loginResponse: LoginResponse) {
@@ -30,8 +30,10 @@ export class LoginResponse {
 	@ApiProperty()
 	requested_access_token_audience?: string[];
 
+	@IsArray()
 	@IsOptional()
-	@ApiProperty()
+	@IsString({ each: true })
+	@ApiProperty({ description: 'The request scopes of the login request.', required: false, nullable: false })
 	requested_scope?: string[];
 
 	@IsOptional()
