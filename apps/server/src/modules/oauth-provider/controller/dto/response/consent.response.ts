@@ -1,5 +1,6 @@
 import { ProviderOauthClient, ProviderOidcContext } from '@shared/infra/oauth-provider/dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { OidcContextResponse } from '@src/modules/oauth-provider/controller/dto';
 
 export class ConsentResponse {
 	constructor(consentResponse: ConsentResponse) {
@@ -19,7 +20,7 @@ export class ConsentResponse {
 	client?: ProviderOauthClient;
 
 	@ApiProperty()
-	context?: object;
+	context?: OidcContextResponse;
 
 	@ApiProperty()
 	login_challenge?: string;
