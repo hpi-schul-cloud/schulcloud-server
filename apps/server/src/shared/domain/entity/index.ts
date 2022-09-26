@@ -18,6 +18,7 @@ export * from './pseudonym.entity';
 export * from './role.entity';
 export * from './school.entity';
 export * from './schoolyear.entity';
+export * from './share-token.entity';
 export * from './storageprovider.entity';
 export * from './submission.entity';
 export * from './system.entity';
