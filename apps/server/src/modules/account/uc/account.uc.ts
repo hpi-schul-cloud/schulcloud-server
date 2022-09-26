@@ -21,7 +21,8 @@ import {
 import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ConfigService } from '@nestjs/config';
+
 import { ObjectId } from 'bson';
 import {
 	AccountByIdBodyParams,
@@ -35,22 +36,21 @@ import {
 import { AccountResponseMapper } from '../mapper';
 import { AccountSaveDto } from '../services/dto';
 import { AccountValidationService } from '../services/account.validation.service';
-
-import { BruteForcePrevention } from '../../../../../../src/errors/index.js';
-import { LOGIN_BLOCK_TIME as allowedTimeDifference } from '../../../../../../config/globals.js';
+import { BruteForcePrevention } from '../../../imports-from-feathers';
+import { IAccountConfig } from '../account-config';
 
 type UserPreferences = {
 	// first login completed
 	firstLogin: boolean;
 };
-
 @Injectable()
 export class AccountUc {
 	constructor(
 		private readonly accountService: AccountService,
 		private readonly userRepo: UserRepo,
 		private readonly permissionService: PermissionService,
-		private readonly accountValidationService: AccountValidationService
+		private readonly accountValidationService: AccountValidationService,
+		private readonly configService: ConfigService<IAccountConfig, true>
 	) {}
 
 	/**
@@ -248,7 +248,10 @@ export class AccountUc {
 		if (params.passwordNew) {
 			account.password = params.passwordNew;
 			updateAccount = true;
+		} else {
+			account.password = undefined;
 		}
+
 		if (params.email && user.email !== params.email) {
 			const newMail = params.email.toLowerCase();
 			await this.checkUniqueEmail(account, user, newMail);
@@ -348,9 +351,9 @@ export class AccountUc {
 		if (account) {
 			if (account.lasttriedFailedLogin) {
 				const timeDifference = (new Date().getTime() - account.lasttriedFailedLogin.getTime()) / 1000;
-				if (timeDifference < allowedTimeDifference) {
+				if (timeDifference < this.configService.get<number>('LOGIN_BLOCK_TIME')) {
 					throw new BruteForcePrevention('Brute Force Prevention!', {
-						timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
+						timeToWait: this.configService.get<number>('LOGIN_BLOCK_TIME') - Math.ceil(timeDifference),
 					});
 				}
 			}
@@ -411,7 +414,7 @@ export class AccountUc {
 					break;
 				case 'DELETE':
 					permissionsToCheck.push('STUDENT_DELETE');
-					break; 
+					break;
 				*/
 			}
 		}
@@ -450,7 +453,7 @@ export class AccountUc {
 	}
 
 	private schoolPermissionExists(roles: string[], school: School, permissions: string[]): boolean {
-		if (Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE')) {
+		if (this.configService.get<boolean>('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE')) {
 			if (
 				roles.find((role) => role === RoleName.TEACHER) &&
 				permissions.find((permission) => permission === Permission.STUDENT_LIST)
