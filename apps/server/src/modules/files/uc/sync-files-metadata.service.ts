@@ -2,7 +2,7 @@
 
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { FileRecord } from '@shared/domain';
+import { EntityId, FileRecord } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
 import { SyncFileItem, SyncTargetFile } from '../types';
@@ -92,7 +92,7 @@ export class SyncFilesMetadataService {
 		}
 	}
 
-	async persistError(item: SyncFileItem, error: string) {
-		await this.syncFilesRepo.saveAssociation(item.source.id, undefined, error);
+	async persistError(sourceFileId: EntityId, error?: string) {
+		await this.syncFilesRepo.saveAssociation(sourceFileId, undefined, error);
 	}
 }

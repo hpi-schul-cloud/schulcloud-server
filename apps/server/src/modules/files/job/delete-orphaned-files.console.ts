@@ -14,4 +14,9 @@ export class DeleteOrphanedFilesConsole {
 	async deleteOrphanedFilesForTasks() {
 		await this.deleteOrphanedFilesUc.deleteOrphanedFilesForParentType(FileRecordParentType.Task);
 	}
+
+	@Command({ command: 'lessons' })
+	async deleteOrphanedFilesForLessons() {
+		await this.deleteOrphanedFilesUc.deleteDuplicatedFilesForParentType(FileRecordParentType.Lesson);
+	}
 }
