@@ -17,6 +17,7 @@ import { OauthProviderClientCrudUc } from '@src/modules/oauth-provider/uc/oauth-
 import { IntrospectBody } from '@src/modules/oauth-provider/controller/dto/request/introspect.body';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+import { ApiTags } from '@nestjs/swagger';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -34,6 +35,7 @@ import {
 import { OauthProviderUc } from '../uc/oauth-provider.uc';
 
 @Controller('oauth2')
+@ApiTags('Oauth2')
 export class OauthProviderController {
 	constructor(
 		private readonly consentFlowUc: OauthProviderConsentFlowUc,
