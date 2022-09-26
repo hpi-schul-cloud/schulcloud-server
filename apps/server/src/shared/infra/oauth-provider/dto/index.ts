@@ -9,4 +9,3 @@ export * from './interface/oidc-context.interface';
 export * from './response/introspect.response';
 export * from './response/consent-session.response';
 export * from './response/login.response';
-export * from './response/';
