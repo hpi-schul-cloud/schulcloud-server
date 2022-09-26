@@ -1,5 +1,6 @@
+import { NotImplementedException } from '@nestjs/common/exceptions/not-implemented.exception';
 import { OauthClient } from '@shared/infra/oauth-provider/dto/interface/oauth-client.interface';
-import { ConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/provider-consent-session.response';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
@@ -11,40 +12,67 @@ import {
 } from './dto';
 
 export abstract class OauthProviderService {
-	abstract getLoginRequest(challenge: string): Promise<LoginResponse>;
+	getLoginRequest(challenge: string): Promise<LoginResponse> {
+		throw new NotImplementedException();
+	}
 
-	abstract acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<RedirectResponse>;
+	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<RedirectResponse> {
+		throw new NotImplementedException();
+	}
 
-	abstract rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse>;
+	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
+		throw new NotImplementedException();
+	}
 
-	abstract getConsentRequest(challenge: string): Promise<ConsentResponse>;
+	getConsentRequest(challenge: string): Promise<ConsentResponse> {
+		throw new NotImplementedException();
+	}
 
-	abstract acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<RedirectResponse>;
+	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<RedirectResponse> {
+		throw new NotImplementedException();
+	}
 
-	abstract rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse>;
+	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
+		throw new NotImplementedException();
+	}
 
-	abstract acceptLogoutRequest(challenge: string): Promise<RedirectResponse>;
+	acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
+		throw new NotImplementedException();
+	}
 
-	abstract introspectOAuth2Token(token: string, scope?: string): Promise<IntrospectResponse>;
+	introspectOAuth2Token(token: string, scope?: string): Promise<IntrospectResponse> {
+		throw new NotImplementedException();
+	}
 
-	abstract isInstanceAlive(): Promise<boolean>;
+	isInstanceAlive(): Promise<boolean> {
+		throw new NotImplementedException();
+	}
 
-	abstract listOAuth2Clients(
-		limit?: number,
-		offset?: number,
-		client_name?: string,
-		owner?: string
-	): Promise<OauthClient[]>;
+	listOAuth2Clients(limit?: number, offset?: number, client_name?: string, owner?: string): Promise<OauthClient[]> {
+		throw new NotImplementedException();
+	}
 
-	abstract createOAuth2Client(data: OauthClient): Promise<OauthClient>;
+	createOAuth2Client(data: OauthClient): Promise<OauthClient> {
+		throw new NotImplementedException();
+	}
 
-	abstract getOAuth2Client(id: string): Promise<OauthClient>;
+	getOAuth2Client(id: string): Promise<OauthClient> {
+		throw new NotImplementedException();
+	}
 
-	abstract updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient>;
+	updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient> {
+		throw new NotImplementedException();
+	}
 
-	abstract deleteOAuth2Client(id: string): Promise<void>;
+	deleteOAuth2Client(id: string): Promise<void> {
+		throw new NotImplementedException();
+	}
 
-	abstract listConsentSessions(user: string): Promise<ConsentSessionResponse[]>;
+	listConsentSessions(user: string): Promise<ProviderConsentSessionResponse[]> {
+		throw new NotImplementedException();
+	}
 
-	abstract revokeConsentSession(user: string, client: string): Promise<void>;
+	revokeConsentSession(user: string, client: string): Promise<void> {
+		throw new NotImplementedException();
+	}
 }

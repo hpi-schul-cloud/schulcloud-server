@@ -1,7 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
-import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { OauthConfig } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';

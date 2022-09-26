@@ -4,15 +4,18 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotImplementedException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
-import { ICurrentUser } from '@shared/domain/index';
+import { ICurrentUser } from '@shared/domain';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto';
+import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderController } from './oauth-provider.controller';
-import { OauthClientBody, OauthClientResponse } from './dto';
+import { ConsentSessionResponse, OauthClientBody, OauthClientResponse } from './dto';
 import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
 
 describe('OauthProviderController', () => {
 	let module: TestingModule;
 	let controller: OauthProviderController;
 
+	let oauthProviderUc: DeepMocked<OauthProviderUc>;
 	let crudUc: DeepMocked<OauthProviderClientCrudUc>;
 	let logoutFlowUc: DeepMocked<OauthProviderLogoutFlowUc>;
 	let responseMapper: DeepMocked<OauthProviderResponseMapper>;
@@ -26,6 +29,10 @@ describe('OauthProviderController', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				OauthProviderController,
+				{
+					provide: OauthProviderUc,
+					useValue: createMock<OauthProviderUc>(),
+				},
 				{
 					provide: OauthProviderClientCrudUc,
 					useValue: createMock<OauthProviderClientCrudUc>(),
@@ -42,6 +49,7 @@ describe('OauthProviderController', () => {
 		}).compile();
 
 		controller = module.get(OauthProviderController);
+		oauthProviderUc = module.get(OauthProviderUc);
 		crudUc = module.get(OauthProviderClientCrudUc);
 		logoutFlowUc = module.get(OauthProviderLogoutFlowUc);
 		responseMapper = module.get(OauthProviderResponseMapper);
@@ -159,14 +167,37 @@ describe('OauthProviderController', () => {
 		});
 
 		describe('listConsentSessions', () => {
-			it('should throw', () => {
-				expect(() => controller.listConsentSessions({ userId: '' })).toThrow(NotImplementedException);
+			it('should list all consent sessions', async () => {
+				const session: ProviderConsentSessionResponse = {
+					consent_request: {
+						challenge: 'challenge',
+						client: {
+							client_id: 'clientId',
+							client_name: 'clientName',
+						},
+					},
+				};
+				const response: ConsentSessionResponse = new ConsentSessionResponse({
+					challenge: 'challenge',
+					client_id: 'clientId',
+					client_name: 'clientName',
+				});
+
+				oauthProviderUc.listConsentSessions.mockResolvedValue([session]);
+				responseMapper.mapConsentSessionsToResponse.mockReturnValue(response);
+
+				const result: ConsentSessionResponse[] = await controller.listConsentSessions(currentUser);
+
+				expect(result).toEqual([response]);
+				expect(oauthProviderUc.listConsentSessions).toHaveBeenCalledWith(currentUser.userId);
 			});
 		});
 
 		describe('revokeConsentSession', () => {
-			it('should throw', () => {
-				expect(() => controller.revokeConsentSession({ userId: '' }, { client: '' })).toThrow(NotImplementedException);
+			it('should revoke consent sessions', async () => {
+				await controller.revokeConsentSession(currentUser, { client: 'clientId' });
+
+				expect(oauthProviderUc.revokeConsentSession).toHaveBeenCalledWith(currentUser.userId, 'clientId');
 			});
 		});
 	});
