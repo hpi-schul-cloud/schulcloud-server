@@ -1,4 +1,4 @@
-export class AcceptLoginRequestBody {
+export interface AcceptLoginRequestBody {
 	subject?: string;
 
 	acr?: string;
