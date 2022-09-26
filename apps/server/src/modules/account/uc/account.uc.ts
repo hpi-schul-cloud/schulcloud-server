@@ -248,7 +248,10 @@ export class AccountUc {
 		if (params.passwordNew) {
 			account.password = params.passwordNew;
 			updateAccount = true;
+		} else {
+			account.password = undefined;
 		}
+
 		if (params.email && user.email !== params.email) {
 			const newMail = params.email.toLowerCase();
 			await this.checkUniqueEmail(account, user, newMail);
