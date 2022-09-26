@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseDORepo, EntityProperties } from '@shared/repo/base.do.repo';
 import { EntityName } from '@mikro-orm/core';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { ILtiToolProperties, LtiTool } from '@shared/domain/index';
+import { ILtiToolProperties, LtiTool } from '@shared/domain';
 
 @Injectable()
 export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperties> {

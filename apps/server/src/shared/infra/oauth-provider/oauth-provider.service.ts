@@ -8,8 +8,8 @@ import {
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 	RejectRequestBody,
+	ProviderConsentSessionResponse,
 } from './dto';
-import { ProviderConsentSessionResponse } from './dto/response/consent-session.response';
 
 export abstract class OauthProviderService {
 	getLoginRequest(challenge: string): Promise<ProviderLoginResponse> {
