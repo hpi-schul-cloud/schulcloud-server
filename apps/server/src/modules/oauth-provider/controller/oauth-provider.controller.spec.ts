@@ -8,10 +8,10 @@ import {
 	AcceptQuery,
 	ChallengeParams,
 	ConsentRequestBody,
+	ConsentResponse,
 	ConsentSessionResponse,
 	OauthClientBody,
 	OauthClientResponse,
-	ConsentResponse,
 } from '@src/modules/oauth-provider/controller/dto';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { ProviderConsentResponse, ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto';
@@ -273,11 +273,11 @@ describe('OauthProviderController', () => {
 						},
 					},
 				};
-				const response: ConsentSessionResponse = new ConsentSessionResponse({
-					challenge: 'challenge',
-					client_id: 'clientId',
-					client_name: 'clientName',
-				});
+				const response: ConsentSessionResponse = new ConsentSessionResponse(
+					session.consent_request.challenge,
+					session.consent_request.client?.client_id,
+					session.consent_request.client?.client_name
+				);
 
 				oauthProviderUc.listConsentSessions.mockResolvedValue([session]);
 				responseMapper.mapConsentSessionsToResponse.mockReturnValue(response);
