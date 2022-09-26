@@ -62,22 +62,23 @@ describe('LtiTool Repo', () => {
 		expect(repo.getConstructor()).toBe(LtiTool);
 	});
 
-	describe('findByUserAndTool', () => {
-		it('should find a pseudonym by userId and toolId', async () => {
+	describe('findByOauthClientIdAndIsLocal', () => {
+		it('should find a tool with the oAuthClientId', async () => {
 			// Arrange
-			const entity: LtiTool = ltiToolFactory.buildWithId();
+			const oAuthClientId = 'clientId';
+			const entity: LtiTool = ltiToolFactory.withOauthClientId(oAuthClientId).withLocal(true).buildWithId();
 			await em.persistAndFlush(entity);
+			const result = await repo.findByOauthClientIdAndIsLocal(oAuthClientId);
 
-			// Act
-			const result = await repo.findByName(entity.name);
-
-			// Assert
-			expect(result.id).toEqual(entity.id);
+			expect(result.oAuthClientId).toEqual(oAuthClientId);
 		});
 
-		it('should throw an Error if the scope mismatches the idtype', async () => {
-			const entity: LtiTool = ltiToolFactory.buildWithId();
-			await expect(repo.findByName(entity.name)).rejects.toThrow(NotFoundError);
+		it('should throw an error if the tool was not found', async () => {
+			// Arrange
+			const oAuthClientId = 'NoExistingTool';
+
+			// Act & Assert
+			await expect(repo.findByOauthClientIdAndIsLocal(oAuthClientId)).rejects.toThrow(NotFoundError);
 		});
 	});
 

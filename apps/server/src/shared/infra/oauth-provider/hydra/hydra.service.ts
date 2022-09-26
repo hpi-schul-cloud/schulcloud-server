@@ -9,10 +9,10 @@ import {
 	AcceptLoginRequestBody,
 	ConsentResponse,
 	IntrospectResponse,
-	LoginResponse,
+	ProviderLoginResponse,
 	OauthClient,
-	RedirectResponse,
 	RejectRequestBody,
+	ProviderRedirectResponse,
 } from '../dto';
 import { OauthProviderService } from '../oauth-provider.service';
 
@@ -25,19 +25,19 @@ export class HydraService extends OauthProviderService {
 		this.hydraUri = Configuration.get('HYDRA_URI') as string;
 	}
 
-	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<RedirectResponse> {
+	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<ProviderRedirectResponse> {
 		throw new NotImplementedException();
 	}
 
-	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<RedirectResponse> {
-		return this.request<RedirectResponse>(
+	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<ProviderRedirectResponse> {
+		return this.request<ProviderRedirectResponse>(
 			'PUT',
 			`${this.hydraUri}/oauth2/auth/requests/login/accept?login_challenge=${challenge}`,
 			body
 		);
 	}
 
-	acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
+	acceptLogoutRequest(challenge: string): Promise<ProviderRedirectResponse> {
 		throw new NotImplementedException();
 	}
 
@@ -53,8 +53,8 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	getLoginRequest(challenge: string): Promise<LoginResponse> {
-		return this.request<LoginResponse>(
+	getLoginRequest(challenge: string): Promise<ProviderLoginResponse> {
+		return this.request<ProviderLoginResponse>(
 			'GET',
 			`${this.hydraUri}/oauth2/auth/requests/login?login_challenge=${challenge}`
 		);
@@ -80,12 +80,12 @@ export class HydraService extends OauthProviderService {
 		throw new NotImplementedException();
 	}
 
-	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
+	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
 		throw new NotImplementedException();
 	}
 
-	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
-		return this.request<RedirectResponse>(
+	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
+		return this.request<ProviderRedirectResponse>(
 			'PUT',
 			`${this.hydraUri}/oauth2/auth/requests/login/reject?login_challenge=${challenge}`,
 			body

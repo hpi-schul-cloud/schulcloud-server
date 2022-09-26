@@ -6,8 +6,8 @@ import { LtiToolRepo, PseudonymsRepo, RoleRepo } from '@shared/repo';
 import { ICurrentUser, PermissionService } from '@shared/domain';
 import {
 	AcceptLoginRequestBody,
-	LoginResponse,
-	RedirectResponse,
+	ProviderLoginResponse,
+	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
 import { AcceptQuery, ChallengeParams, LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
@@ -17,13 +17,16 @@ import resetAllMocks = jest.resetAllMocks;
 class OauthProviderLoginFlowUcSpec extends OauthProviderLoginFlowUc {
 	public acceptLoginRequestSpec(
 		currentUserId: string,
-		loginResponse: LoginResponse,
+		loginResponse: ProviderLoginResponse,
 		loginRequestBody: LoginRequestBody
 	) {
 		return super.acceptLoginRequest(currentUserId, loginResponse, loginRequestBody);
 	}
 
-	public rejectLoginRequestSpec(challenge: string, rejectRequestBody: RejectRequestBody): Promise<RedirectResponse> {
+	public rejectLoginRequestSpec(
+		challenge: string,
+		rejectRequestBody: RejectRequestBody
+	): Promise<ProviderRedirectResponse> {
 		return super.rejectLoginRequest(challenge, rejectRequestBody);
 	}
 }
@@ -48,7 +51,7 @@ describe('OauthProviderLoginFlowUc', () => {
 	const query: AcceptQuery = {
 		accept: 1,
 	};
-	const redirectResponse: RedirectResponse = {
+	const redirectResponse: ProviderRedirectResponse = {
 		redirect_to: 'redirect_to',
 	};
 
@@ -98,7 +101,7 @@ describe('OauthProviderLoginFlowUc', () => {
 
 	describe('getLoginRequest', () => {
 		it('should get the login request', async () => {
-			const loginResponseMock = {
+			const loginResponseMock: ProviderLoginResponse = {
 				challenge: 'challenge',
 				client: {},
 				oidc_context: {},
@@ -108,7 +111,7 @@ describe('OauthProviderLoginFlowUc', () => {
 				session_id: 'session_id',
 				skip: true,
 				subject: 'subject',
-			} as LoginResponse;
+			} as ProviderLoginResponse;
 
 			service.getLoginRequest.mockResolvedValue(loginResponseMock);
 
@@ -120,7 +123,7 @@ describe('OauthProviderLoginFlowUc', () => {
 	});
 	describe('patchLoginRequest', () => {
 		it('should call the login request', async () => {
-			const loginResponseMock: LoginResponse = {
+			const loginResponseMock: ProviderLoginResponse = {
 				challenge: 'challenge',
 				client: {},
 				oidc_context: {},
@@ -130,7 +133,7 @@ describe('OauthProviderLoginFlowUc', () => {
 				session_id: 'session_id',
 				skip: true,
 				subject: 'subject',
-			} as LoginResponse;
+			} as ProviderLoginResponse;
 			const loginRequestBodyMock: LoginRequestBody = {
 				remember: true,
 				remember_for: 0,
@@ -173,7 +176,7 @@ describe('OauthProviderLoginFlowUc', () => {
 	});
 	describe('acceptLoginRequest', () => {
 		it('should accept the login request', async () => {
-			const loginResponse: LoginResponse = {
+			const loginResponse: ProviderLoginResponse = {
 				challenge: 'challenge',
 				client: {},
 				oidc_context: {},
@@ -183,7 +186,7 @@ describe('OauthProviderLoginFlowUc', () => {
 				session_id: 'session_id',
 				skip: true,
 				subject: 'subject',
-			} as LoginResponse;
+			} as ProviderLoginResponse;
 			const loginRequestBodyMock: LoginRequestBody = {
 				remember: true,
 				remember_for: 0,

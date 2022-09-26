@@ -4,7 +4,7 @@ import { LtiToolRepo, PseudonymsRepo, RoleRepo, UserRepo } from '@shared/repo';
 import { ICurrentUser, Permission, PermissionService, PseudonymDO, User } from '@shared/domain';
 import { LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
 import { OauthProviderLoginFlowService } from '@src/modules/oauth-provider/service/oauth-provider.login-flow.service';
-import { LoginResponse } from '@shared/infra/oauth-provider/dto';
+import { AcceptLoginRequestBody, ProviderLoginResponse } from '@shared/infra/oauth-provider/dto';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { roleFactory, userFactory, setupEntities } from '@shared/testing';
@@ -72,7 +72,7 @@ describe('OauthProviderLoginFlowService', () => {
 		};
 
 		it('set the subject in acceptLoginRequestBody succesfully', async () => {
-			const loginResponse: LoginResponse = {
+			const loginResponse: ProviderLoginResponse = {
 				challenge: 'challenge',
 				client: {
 					client_id: 'clientId',
@@ -84,7 +84,7 @@ describe('OauthProviderLoginFlowService', () => {
 				session_id: 'session_id',
 				skip: true,
 				subject: 'subject',
-			} as LoginResponse;
+			} as ProviderLoginResponse;
 			const ltiToolDoMock: LtiToolDO = {
 				id: 'toolId',
 				name: 'name',
@@ -96,6 +96,12 @@ describe('OauthProviderLoginFlowService', () => {
 				toolId: 'toolId',
 				userId: 'userId',
 			};
+			const expected: AcceptLoginRequestBody = {
+				subject: 'userId',
+				force_subject_identifier: 'pseudonym',
+				remember: true,
+				remember_for: 0,
+			};
 
 			ltiToolRepo.findByOauthClientIdAndIsLocal.mockResolvedValue(ltiToolDoMock);
 			pseudonymsRepo.findByUserIdAndToolId.mockResolvedValue(pseudonym);
@@ -104,23 +110,22 @@ describe('OauthProviderLoginFlowService', () => {
 
 			expect(ltiToolRepo.findByOauthClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id);
 			expect(pseudonymsRepo.findByUserIdAndToolId).toHaveBeenCalledWith(ltiToolDoMock.id, currentUser.userId);
-			expect(acceptLoginRequestBody.subject).toStrictEqual('userId');
+			expect(acceptLoginRequestBody.subject).toStrictEqual(expected.subject);
 			expect(acceptLoginRequestBody.amr).toBeUndefined();
 			expect(acceptLoginRequestBody.acr).toBeUndefined();
-			expect(acceptLoginRequestBody.remember).toBeTruthy();
-			expect(acceptLoginRequestBody.remember_for).toStrictEqual(0);
-			expect(acceptLoginRequestBody.force_subject_identifier).toStrictEqual(
-				acceptLoginRequestBody.force_subject_identifier
-			);
+			expect(acceptLoginRequestBody.context).toBeUndefined();
+			expect(acceptLoginRequestBody.remember).toEqual(expected.remember);
+			expect(acceptLoginRequestBody.remember_for).toEqual(expected.remember_for);
+			expect(acceptLoginRequestBody.force_subject_identifier).toEqual(expected.force_subject_identifier);
 		});
 		it('could not set the subject in acceptLoginRequestBody and throw error', async () => {
-			const loginResponse: LoginResponse = {
+			const loginResponse: ProviderLoginResponse = {
 				challenge: 'challenge',
 				client: {},
 				oidc_context: {},
 				skip: true,
 				subject: 'subject',
-			} as LoginResponse;
+			} as ProviderLoginResponse;
 			await expect(service.setSubject(currentUser.userId, loginResponse, loginRequestBodyMock)).rejects.toThrow(
 				NotFoundException
 			);
@@ -132,13 +137,13 @@ describe('OauthProviderLoginFlowService', () => {
 			const role = roleFactory.build({ permissions: ['NEXTCLOUD_USER' as Permission] });
 
 			const user: User = userFactory.buildWithId({ roles: [role] }, currentUser.userId);
-			const loginResponse: LoginResponse = {
+			const loginResponse: ProviderLoginResponse = {
 				challenge: 'challenge',
 				client: {
 					client_id: 'clientId',
 				},
 				oidc_context: {},
-			} as LoginResponse;
+			} as ProviderLoginResponse;
 			const ltiToolDoMock: LtiToolDO = {
 				id: 'toolId',
 				name: 'name',
@@ -161,12 +166,12 @@ describe('OauthProviderLoginFlowService', () => {
 			const currentUser: ICurrentUser = { userId: new ObjectID(213135).toString() } as ICurrentUser;
 			const role = roleFactory.build();
 			const user: User = userFactory.buildWithId({ roles: [role] }, currentUser.userId);
-			const loginResponse: LoginResponse = {
+			const loginResponse: ProviderLoginResponse = {
 				challenge: 'challenge',
 				client: {
 					client_id: 'clientId',
 				},
-			} as LoginResponse;
+			} as ProviderLoginResponse;
 			const ltiToolDoMock: LtiToolDO = {
 				id: 'toolId',
 				name: 'SchulcloudNextcloud',

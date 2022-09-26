@@ -1,10 +1,12 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
-import { LoginResponse, RedirectResponse } from '@shared/infra/oauth-provider/dto';
+import { ProviderLoginResponse, ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto';
 import { ICurrentUser } from '@shared/domain';
 import { OauthProviderLoginFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.login-flow.uc';
+import { LoginResponse } from '@src/modules/oauth-provider/controller/dto/response/login.response';
+import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -21,7 +23,10 @@ import {
 
 @Controller('oauth2')
 export class OauthProviderController {
-	constructor(private readonly oauthProviderLoginFlowUc: OauthProviderLoginFlowUc) {}
+	constructor(
+		private readonly oauthProviderLoginFlowUc: OauthProviderLoginFlowUc,
+		private readonly oauthProviderResponseMapper: OauthProviderResponseMapper
+	) {}
 
 	@Authenticate('jwt')
 	@Get('clients/:id')
@@ -60,9 +65,9 @@ export class OauthProviderController {
 
 	@Get('loginRequest/:challenge')
 	async getLoginRequest(@Param() params: ChallengeParams): Promise<LoginResponse> {
-		const loginResponse: LoginResponse = await this.oauthProviderLoginFlowUc.getLoginRequest(params.challenge);
-		// TODO Mapping like https://github.com/hpi-schul-cloud/schulcloud-server/blob/2a8257759811eb52109ba75d87d1d8a322514e77/apps/server/src/modules/oauth-provider/controller/oauth-provider.controller.ts#L111-L111
-		return loginResponse;
+		const loginResponse: ProviderLoginResponse = await this.oauthProviderLoginFlowUc.getLoginRequest(params.challenge);
+		const response: LoginResponse = this.oauthProviderResponseMapper.mapLoginResponse(loginResponse);
+		return response;
 	}
 
 	@Authenticate('jwt')
@@ -73,17 +78,14 @@ export class OauthProviderController {
 		@Body() body: LoginRequestBody,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<RedirectResponse> {
-		const redirect: RedirectResponse = await this.oauthProviderLoginFlowUc.patchLoginRequest(
+		const redirectResponse: ProviderRedirectResponse = await this.oauthProviderLoginFlowUc.patchLoginRequest(
 			currentUser.userId,
 			params.challenge,
 			body,
 			query
 		);
-		// TODO Mapping like https://github.com/hpi-schul-cloud/schulcloud-server/blob/2a8257759811eb52109ba75d87d1d8a322514e77/apps/server/src/modules/oauth-provider/controller/oauth-provider.controller.ts#L111-L111
-		// Mapper und Test
-		// https://github.com/hpi-schul-cloud/schulcloud-server/blob/2a8257759811eb52109ba75d87d1d8a322514e77/apps/server/src/modules/oauth-provider/mapper/oauth-provider-response.mapper.ts#L17-L17
-		// https://github.com/hpi-schul-cloud/schulcloud-server/blob/2a8257759811eb52109ba75d87d1d8a322514e77/apps/server/src/modules/oauth-provider/mapper/oauth-provider-response.mapper.spec.ts#L132-L132
-		return redirect;
+		const response: RedirectResponse = this.oauthProviderResponseMapper.mapRedirectResponse(redirectResponse);
+		return response;
 	}
 
 	@Authenticate('jwt')

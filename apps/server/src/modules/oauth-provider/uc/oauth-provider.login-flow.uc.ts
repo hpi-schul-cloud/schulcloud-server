@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { OauthProviderService } from '@shared/infra/oauth-provider/index';
 import {
 	AcceptLoginRequestBody,
-	LoginResponse,
-	RedirectResponse,
+	ProviderLoginResponse,
+	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
 import { AcceptQuery, LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
@@ -16,8 +16,8 @@ export class OauthProviderLoginFlowUc {
 		private readonly oauthProviderLoginFlowService: OauthProviderLoginFlowService
 	) {}
 
-	async getLoginRequest(challenge: string): Promise<LoginResponse> {
-		const loginResponse: Promise<LoginResponse> = this.oauthProviderService.getLoginRequest(challenge);
+	async getLoginRequest(challenge: string): Promise<ProviderLoginResponse> {
+		const loginResponse: Promise<ProviderLoginResponse> = this.oauthProviderService.getLoginRequest(challenge);
 		return loginResponse;
 	}
 
@@ -26,9 +26,9 @@ export class OauthProviderLoginFlowUc {
 		challenge: string,
 		body: LoginRequestBody | RejectRequestBody,
 		query: AcceptQuery
-	): Promise<RedirectResponse> {
-		const loginResponse: LoginResponse = await this.oauthProviderService.getLoginRequest(challenge);
-		let redirectResponse: RedirectResponse;
+	): Promise<ProviderRedirectResponse> {
+		const loginResponse: ProviderLoginResponse = await this.oauthProviderService.getLoginRequest(challenge);
+		let redirectResponse: ProviderRedirectResponse;
 		if (query.accept && this.isLoginRequestBody(body)) {
 			redirectResponse = await this.acceptLoginRequest(currentUserId, loginResponse, body);
 		} else {
@@ -39,9 +39,9 @@ export class OauthProviderLoginFlowUc {
 
 	protected async acceptLoginRequest(
 		currentUserId: string,
-		loginResponse: LoginResponse,
+		loginResponse: ProviderLoginResponse,
 		loginRequestBody: LoginRequestBody
-	): Promise<RedirectResponse> {
+	): Promise<ProviderRedirectResponse> {
 		const acceptLoginRequestBody: AcceptLoginRequestBody = await this.oauthProviderLoginFlowService.setSubject(
 			currentUserId,
 			loginResponse,
@@ -49,7 +49,7 @@ export class OauthProviderLoginFlowUc {
 		);
 		await this.oauthProviderLoginFlowService.validateNextcloudPermission(currentUserId, loginResponse);
 
-		const redirectResponse: RedirectResponse = await this.oauthProviderService.acceptLoginRequest(
+		const redirectResponse: ProviderRedirectResponse = await this.oauthProviderService.acceptLoginRequest(
 			loginResponse.challenge,
 			acceptLoginRequestBody
 		);
@@ -59,8 +59,8 @@ export class OauthProviderLoginFlowUc {
 	protected async rejectLoginRequest(
 		challenge: string,
 		rejectRequestBody: RejectRequestBody
-	): Promise<RedirectResponse> {
-		const redirectResponse: Promise<RedirectResponse> = this.oauthProviderService.rejectLoginRequest(
+	): Promise<ProviderRedirectResponse> {
+		const redirectResponse: Promise<ProviderRedirectResponse> = this.oauthProviderService.rejectLoginRequest(
 			challenge,
 			rejectRequestBody
 		);

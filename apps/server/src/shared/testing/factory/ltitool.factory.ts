@@ -9,6 +9,20 @@ class LtiToolFactory extends BaseFactory<LtiTool, ILtiToolProperties> {
 		};
 		return this.params(params);
 	}
+
+	withOauthClientId(oAuthClientId: string): this {
+		const params: DeepPartial<ILtiToolProperties> = {
+			oAuthClientId,
+		};
+		return this.params(params);
+	}
+
+	withLocal(isLocal: boolean): this {
+		const params: DeepPartial<ILtiToolProperties> = {
+			isLocal,
+		};
+		return this.params(params);
+	}
 }
 
 export const ltiToolFactory = LtiToolFactory.define(LtiTool, ({ sequence }) => {

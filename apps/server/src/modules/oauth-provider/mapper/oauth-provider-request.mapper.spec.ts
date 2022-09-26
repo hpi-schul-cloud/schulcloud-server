@@ -1,5 +1,6 @@
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
-import { OauthClient, OidcContext } from '@shared/infra/oauth-provider/dto';
+import { ProviderLoginResponse } from '@shared/infra/oauth-provider/dto';
+import { LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
 
 describe('OauthProviderRequestMapper', () => {
 	let mapper: OauthProviderRequestMapper;
@@ -11,7 +12,7 @@ describe('OauthProviderRequestMapper', () => {
 	});
 
 	describe('mapCreateAcceptLoginRequestBody', () => {
-		const loginResponseMock = {
+		const loginResponseMock: ProviderLoginResponse = {
 			challenge: 'challenge',
 			client: {
 				created_at: 'created_at',
@@ -25,7 +26,7 @@ describe('OauthProviderRequestMapper', () => {
 			skip: true,
 			subject: 'subject',
 		};
-		const loginRequestBodyMock = {
+		const loginRequestBodyMock: LoginRequestBody = {
 			remember: true,
 			remember_for: 0,
 		};

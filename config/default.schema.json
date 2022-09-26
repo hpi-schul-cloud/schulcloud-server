@@ -431,7 +431,7 @@
 		"HYDRA_URI": {
 			"type": "string",
 			"format": "uri",
-			"pattern": ".*(?<!/)$",
+			"default": "http://localhost:9001",
 			"description": "The hydra url."
 		},
 		"FEATURE_NEXBOARD_ENABLED": {
@@ -668,6 +668,11 @@
 			"type:": "string",
 			"default": "SchulcloudNextcloud",
 			"description": "Internal name of schulcloud oidc provider of nextcloud's social login app"
+		},
+		"HYDRA_PUBLIC_URI": {
+			"type:": "string",
+			"default": "http://hydra.localhost:9000",
+			"description": "Internal Hydra URI"
 		},
 		"COLLABORATIVE_STORAGE_PROVIDER": {
 			"type:": "string",

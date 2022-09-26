@@ -1,12 +1,12 @@
-import { AcceptLoginRequestBody, LoginResponse } from '@shared/infra/oauth-provider/dto';
+import { AcceptLoginRequestBody, ProviderLoginResponse } from '@shared/infra/oauth-provider/dto';
 import { LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiToolRepo, PseudonymsRepo, RoleRepo, UserRepo } from '@shared/repo';
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { IResolvedUser, PermissionService, User } from '@shared/domain';
+import { IResolvedUser, PermissionService, PseudonymDO, User } from '@shared/domain';
 import { ResolvedUserMapper } from '@src/modules/user/mapper';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { LtiToolRepo, PseudonymsRepo, RoleRepo, UserRepo } from '@shared/repo';
 
 @Injectable()
 export class OauthProviderLoginFlowService {
@@ -20,12 +20,15 @@ export class OauthProviderLoginFlowService {
 
 	async setSubject(
 		currentUserId: string,
-		loginResponse: LoginResponse,
+		loginResponse: ProviderLoginResponse,
 		loginRequestBody: LoginRequestBody
 	): Promise<AcceptLoginRequestBody> {
 		if (loginResponse.client.client_id) {
 			const ltiToolDO: LtiToolDO = await this.ltiToolRepo.findByOauthClientIdAndIsLocal(loginResponse.client.client_id);
-			const pseudonym = await this.pseudonymsRepo.findByUserIdAndToolId(ltiToolDO.id as string, currentUserId);
+			const pseudonym: PseudonymDO = await this.pseudonymsRepo.findByUserIdAndToolId(
+				ltiToolDO.id as string,
+				currentUserId
+			);
 			const acceptLoginRequestBody: AcceptLoginRequestBody = OauthProviderRequestMapper.mapCreateAcceptLoginRequestBody(
 				loginResponse,
 				loginRequestBody,
@@ -37,7 +40,7 @@ export class OauthProviderLoginFlowService {
 		throw new NotFoundException('Could not find oAuthClientId in login response to set subject');
 	}
 
-	async validateNextcloudPermission(currentUserId: string, loginResponse: LoginResponse) {
+	async validateNextcloudPermission(currentUserId: string, loginResponse: ProviderLoginResponse) {
 		// TODO after consent flow merge change User to UserDO
 		// userService getById -> return Dto
 		const user: User = await this.userRepo.findById(currentUserId);
