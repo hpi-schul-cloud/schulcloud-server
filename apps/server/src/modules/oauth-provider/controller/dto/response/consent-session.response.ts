@@ -2,10 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 
 export class ConsentSessionResponse {
-	constructor(response: ConsentSessionResponse) {
-		this.client_id = response.client_id;
-		this.client_name = response.client_name;
-		this.challenge = response.challenge;
+	constructor(clientId: string | undefined, clientName: string | undefined, challenge: string | undefined) {
+		this.client_id = clientId;
+		this.client_name = clientName;
+		this.challenge = challenge;
 	}
 
 	@IsOptional()

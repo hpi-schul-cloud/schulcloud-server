@@ -31,11 +31,11 @@ export class OauthProviderResponseMapper {
 	}
 
 	mapConsentSessionsToResponse(session: ProviderConsentSessionResponse): ConsentSessionResponse {
-		return {
-			client_id: session.consent_request?.client?.client_id,
-			client_name: session.consent_request?.client?.client_name,
-			challenge: session.consent_request?.challenge,
-		};
+		return new ConsentSessionResponse(
+			session.consent_request?.client?.client_id,
+			session.consent_request?.client?.client_name,
+			session.consent_request?.challenge
+		);
 	}
 
 	mapLoginResponse(providerLoginResponse: ProviderLoginResponse): LoginResponse {
