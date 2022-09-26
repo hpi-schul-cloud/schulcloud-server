@@ -11,12 +11,12 @@ import {
 	ConsentSessionResponse,
 	OauthClientBody,
 	OauthClientResponse,
+	ConsentResponse,
 } from '@src/modules/oauth-provider/controller/dto';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { ProviderConsentResponse, ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto';
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import { ICurrentUser } from '@shared/domain';
-import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderController } from './oauth-provider.controller';
 import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
