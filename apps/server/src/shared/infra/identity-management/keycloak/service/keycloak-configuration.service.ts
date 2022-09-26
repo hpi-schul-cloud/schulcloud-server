@@ -198,7 +198,7 @@ export class KeycloakConfigurationService {
 	 * @param oldConfigs
 	 * @returns
 	 */
-	private selectConfigureAction(newConfigs: System[], oldConfigs: IdentityProviderRepresentation[]) {
+	private selectConfigureAction(newConfigs: SystemDto[], oldConfigs: IdentityProviderRepresentation[]) {
 		const result = [] as (
 			| { action: ConfigureAction.CREATE; config: IdentityProviderConfig }
 			| { action: ConfigureAction.UPDATE; config: IdentityProviderConfig }
@@ -224,6 +224,7 @@ export class KeycloakConfigurationService {
 	private async createIdentityProvider(system: IdentityProviderConfig): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		if (system.type === SystemTypeEnum.OIDC) {
+			console.log(system);
 			await kc.identityProviders.create(
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
 			);
