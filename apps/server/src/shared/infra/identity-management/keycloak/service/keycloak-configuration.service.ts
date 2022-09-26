@@ -8,7 +8,7 @@ import { SystemTypeEnum } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { SC_DOMAIN } from '../../../../../../../../config/globals.js';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { IdentityProviderConfig } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -106,6 +106,7 @@ export class KeycloakConfigurationService {
 
 	public async configureClient(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
+		const SC_DOMAIN = Configuration.get('SC_DOMAIN') as string;
 		let redirectUri = `https://${SC_DOMAIN}/api/v3/sso/oauth/`;
 		// TODO grab from well-known endpoint or move to separat environmental variable, see EW-326
 		let kcBaseUrl = `https://idm-${SC_DOMAIN}/realms/${kc.realmName}`;

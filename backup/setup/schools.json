@@ -90,9 +90,6 @@
 			},
 			{
 				"$oid": "0000d186816abba584714c93"
-			},
-			{
-				"$oid": "62c7f233f35a554ba3ed42f1"
 			}
 		],
 		"updatedAt": {
@@ -361,12 +358,6 @@
 			"name": "Brandenburg an der Havel"
 		},
 		"systems": [
-			{
-				"$oid": "0000d186816abba584714c92"
-			},
-			{
-				"$oid": "0000d186816abba584714c93"
-			},
 			{
 				"$oid": "62c7f233f35a554ba3ed42f1"
 			}

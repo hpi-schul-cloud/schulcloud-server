@@ -1,4 +1,3 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, System, SystemTypeEnum } from '@shared/domain';
@@ -48,7 +47,7 @@ describe('SystemService', () => {
 		displayName: 'OIDC_Broker_2',
 	});
 
-	let systemRepo: DeepMocked<SystemRepo>;
+	let systemRepo: SystemRepo;
 
 	afterAll(async () => {
 		await module.close();
@@ -61,7 +60,18 @@ describe('SystemService', () => {
 				SystemService,
 				{
 					provide: SystemRepo,
-					useValue: createMock<SystemRepo>(),
+					useValue: {
+						findAll: jest.fn().mockResolvedValue(allSystems),
+						findById: jest.fn().mockImplementation((id: EntityId): Promise<System> => {
+							const foundSystem = allSystems.find((system) => system.id === id);
+							if (foundSystem) {
+								return Promise.resolve(foundSystem);
+							}
+							return Promise.reject();
+						}),
+						findByFilter: jest.fn(),
+						save: jest.fn().mockResolvedValue(undefined),
+					},
 				},
 			],
 		}).compile();
@@ -78,16 +88,9 @@ describe('SystemService', () => {
 	});
 
 	beforeEach(() => {
-		systemRepo.findAll.mockResolvedValue(allSystems);
-		systemRepo.findById.mockImplementation((id: EntityId): Promise<System> => {
-			const foundSystem = allSystems.find((system) => system.id === id);
-			if (foundSystem) {
-				return Promise.resolve(foundSystem);
-			}
-			return Promise.reject();
-		});
-		systemRepo.findByFilter.mockImplementation(
-			(theType: string | SystemTypeEnum = '', onlyOauth = false): Promise<System[]> => {
+		jest
+			.spyOn(systemRepo, 'findByFilter')
+			.mockImplementation((theType: string | SystemTypeEnum = '', onlyOauth = false): Promise<System[]> => {
 				if (theType === SystemTypeEnum.LDAP && onlyOauth) {
 					return Promise.resolve([iserv]);
 				}
@@ -107,8 +110,7 @@ describe('SystemService', () => {
 					return Promise.resolve([iserv]);
 				}
 				return Promise.resolve(allSystems);
-			}
-		);
+			});
 	});
 
 	describe('find', () => {
@@ -181,8 +183,9 @@ describe('SystemService', () => {
 
 		it('should ignore generated oauth systems if no keycloak exists', async () => {
 			// Given
-			systemRepo.findByFilter.mockImplementation(
-				(theType: string | SystemTypeEnum = '', onlyOauth = false): Promise<System[]> => {
+			jest
+				.spyOn(systemRepo, 'findByFilter')
+				.mockImplementation((theType: string | SystemTypeEnum = '', onlyOauth = false): Promise<System[]> => {
 					if (theType === SystemTypeEnum.LDAP && onlyOauth) {
 						return Promise.resolve([iserv]);
 					}
@@ -197,8 +200,7 @@ describe('SystemService', () => {
 						return Promise.resolve(oidcSystems);
 					}
 					return Promise.resolve(allSystems);
-				}
-			);
+				});
 
 			// When
 			const resultSystems = await systemService.findOAuth();
@@ -276,8 +278,9 @@ describe('SystemService', () => {
 
 		it('should not generate oauth systems if no keycloak exists', async () => {
 			// Given
-			systemRepo.findByFilter.mockImplementation(
-				(theType: string | SystemTypeEnum = '', onlyOauth = false): Promise<System[]> => {
+			jest
+				.spyOn(systemRepo, 'findByFilter')
+				.mockImplementation((theType: string | SystemTypeEnum = '', onlyOauth = false): Promise<System[]> => {
 					if (theType === SystemTypeEnum.KEYCLOAK) {
 						return Promise.resolve([]);
 					}
@@ -288,8 +291,7 @@ describe('SystemService', () => {
 						return Promise.resolve(oidcSystems);
 					}
 					return Promise.resolve(allSystems);
-				}
-			);
+				});
 
 			// // When
 			const resultSystem = await systemService.findOAuthById(oidc1.id);

@@ -36,7 +36,8 @@ export class SystemService {
 	}
 
 	async findOidc(): Promise<SystemDto[]> {
-		return this.findOIDCSystems();
+		const systemEntities = await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
+		return SystemMapper.mapFromEntitiesToDtos(systemEntities);
 	}
 
 	async findOAuthById(id: EntityId): Promise<SystemDto> {
@@ -75,11 +76,6 @@ export class SystemService {
 		}
 		await this.systemRepo.save(system);
 		return SystemMapper.mapFromEntityToDto(system);
-	}
-
-	private async findOIDCSystems(): Promise<SystemDto[]> {
-		const systemEntities = await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
-		return SystemMapper.mapFromEntitiesToDtos(systemEntities);
 	}
 
 	private async findDirectOauthSystems(): Promise<SystemDto[]> {

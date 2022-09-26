@@ -15,6 +15,7 @@ import { systemFactory } from '@shared/testing';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { v1 } from 'uuid';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -145,6 +146,11 @@ describe('KeycloakConfigurationService Unit', () => {
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_enc`);
 		defaultEncryptionService.decrypt.mockImplementation((data) => `${data}_dec`);
+		jest.spyOn(Configuration, 'get').mockReturnValue('localhost');
+	});
+
+	afterAll(() => {
+		jest.clearAllMocks();
 	});
 
 	beforeEach(() => {
@@ -179,8 +185,6 @@ describe('KeycloakConfigurationService Unit', () => {
 			const result = await service.configureIdentityProviders();
 			expect(result).toBe(1);
 			expect(kcApiClientIdentityProvidersMock.create).toBeCalledTimes(1);
-
-			kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
 		});
 		it('should update a configuration in Keycloak', async () => {
 			const result = await service.configureIdentityProviders();
@@ -193,8 +197,6 @@ describe('KeycloakConfigurationService Unit', () => {
 			const result = await service.configureIdentityProviders();
 			expect(result).toBe(1);
 			expect(kcApiClientIdentityProvidersMock.del).toBeCalledTimes(1);
-
-			systemService.findOidc.mockRestore();
 		});
 		it('should add a mapper to a newly created identity provider', async () => {
 			kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
