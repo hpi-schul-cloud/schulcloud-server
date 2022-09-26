@@ -108,8 +108,7 @@ describe('lesson copy uc', () => {
 			copyHelperService.deriveCopyName.mockReturnValue(lessonCopyName);
 
 			const jwt = 'some-fake-jwt';
-			fileCopyAppendService.appendFiles.mockResolvedValue(status);
-			fileCopyAppendService.copyEmbeddedFilesOfLessons.mockResolvedValue(status);
+			fileCopyAppendService.copyFiles.mockResolvedValue(status);
 
 			return {
 				user,
@@ -197,12 +196,6 @@ describe('lesson copy uc', () => {
 			const { course, user, lesson, copy, jwt } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
 			expect(lessonRepo.save).toBeCalledWith(copy);
-		});
-
-		it('should try to append file copies from original task to task copy', async () => {
-			const { course, user, lesson, jwt } = setup();
-			const copyStatus = await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
-			expect(fileCopyAppendService.appendFiles).toBeCalledWith(copyStatus, jwt);
 		});
 
 		it('should return status', async () => {

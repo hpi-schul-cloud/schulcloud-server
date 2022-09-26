@@ -16,6 +16,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { schoolFactory } from '@shared/testing';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
+import { NotFoundException } from '@nestjs/common';
 import { IservOAuthService } from './iserv-oauth.service';
 import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
@@ -136,7 +137,6 @@ describe('OAuthService', () => {
 	beforeEach(() => {
 		defaultSystem = systemFactory.withOauthConfig().build();
 		defaultOauthConfig = defaultSystem.oauthConfig as OauthConfig;
-
 		defaultAuthCode = '43534543jnj543342jn2';
 		defaultQuery = { code: defaultAuthCode };
 		defaultErrorQuery = { error: 'oauth_login_failed' };
@@ -196,7 +196,7 @@ describe('OAuthService', () => {
 			type: 'iserv',
 			url: 'http://mock.de',
 			alias: `system`,
-			oauthConfig: {
+			oauthConfig: new OauthConfig({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
@@ -209,7 +209,7 @@ describe('OAuthService', () => {
 				issuer: 'mock_issuer',
 				jwksEndpoint: 'mock_jwksEndpoint',
 				redirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId',
-			},
+			}),
 			_id: new ObjectId(),
 			id: '',
 			createdAt: new Date(),
@@ -322,33 +322,32 @@ describe('OAuthService', () => {
 	});
 
 	describe('findUser', () => {
+		let oauthConfig: OauthConfig;
+
+		beforeEach(() => {
+			oauthConfig = defaultIservSystem.oauthConfig as OauthConfig;
+		});
+
 		it('should return the user according to the uuid(LdapId)', async () => {
-			// Arrange
-			const oauthConfig = new OauthConfig(defaultSystem.oauthConfig as OauthConfig);
-			oauthConfig.provider = 'iserv';
+			const user: User = await service.findUser(defaultDecodedJWT, oauthConfig, defaultIservSystemId);
 
-			// Act
-			const user: User = await service.findUser(defaultDecodedJWT, {
-				_id: new ObjectId(defaultIservSystemId),
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				id: defaultIservSystemId,
-				type: 'iserv',
-				oauthConfig,
-			});
-
-			// Assert
 			expect(iservOAuthService.findUserById).toHaveBeenCalled();
 			expect(user).toBe(defaultIservUser);
 		});
+
 		it('should return the user according to the id', async () => {
-			const user = await service.findUser(defaultDecodedJWT, defaultSystem);
+			oauthConfig.provider = 'sanis';
+
+			const user = await service.findUser(defaultDecodedJWT, oauthConfig, defaultSystem.id);
+
 			expect(userRepo.findById).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});
+
 		it('should return an error if no User is found by this Id', async () => {
+			oauthConfig.provider = 'sanis';
 			defaultDecodedJWT.sub = '';
-			await expect(service.findUser(defaultDecodedJWT, defaultSystem)).rejects.toThrow(OAuthSSOError);
+			await expect(service.findUser(defaultDecodedJWT, oauthConfig, defaultSystem.id)).rejects.toThrow(OAuthSSOError);
 		});
 	});
 
@@ -363,28 +362,6 @@ describe('OAuthService', () => {
 		it('should build the Response successfully', () => {
 			const response = service.buildResponse(defaultIservSystem.oauthConfig as OauthConfig, defaultTokenResponse);
 			expect(response).toEqual(defaultResponseAfterBuild);
-		});
-	});
-
-	describe('processOAuth', () => {
-		it('should do the process successfully and redirect to iserv', async () => {
-			jest.spyOn(service, 'validateToken').mockResolvedValueOnce(defaultDecodedJWT);
-			const response = await service.processOAuth(defaultQuery, defaultIservSystemId);
-			expect(response.redirect).toStrictEqual(iservRedirectMock);
-			expect(response.jwt).toStrictEqual(defaultJWT);
-		});
-		it('should return an error if processOAuth failed', async () => {
-			const errorResponse = await service.processOAuth(defaultQuery, '');
-			expect(errorResponse).toEqual(defaultErrorResponse);
-		});
-		it('should throw error if oauthconfig is missing', async () => {
-			const system: System = systemFactory.buildWithId();
-			systemRepo.findById.mockResolvedValueOnce(system);
-			const response = await service.processOAuth(defaultQuery, system.id);
-			expect(response).toEqual({
-				errorcode: 'sso_internal_error',
-				redirect: 'https://mock.de/login?error=sso_internal_error&provider=mock_type',
-			});
 		});
 	});
 
@@ -414,6 +391,18 @@ describe('OAuthService', () => {
 					defaultOauthConfig.provider
 				}`
 			);
+		});
+	});
+
+	describe('getOAuthConfig', () => {
+		it('should return an OauthConfig', async () => {
+			const response: OauthConfig = await service.getOauthConfig('');
+			expect(response.clientId).toEqual('12345');
+		});
+		it('should throw a NotFoundException', async () => {
+			const system = systemFactory.build();
+			systemRepo.findById.mockResolvedValue(system);
+			await expect(service.getOauthConfig(system.id)).rejects.toThrow(NotFoundException);
 		});
 	});
 });

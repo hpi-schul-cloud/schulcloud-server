@@ -116,7 +116,11 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 	}
 
 	getNumberOfStudents(): number {
-		return this.students.length;
+		let length = 0;
+		if (this.students instanceof Collection) {
+			length = this.students.length;
+		}
+		return length;
 	}
 
 	isFinished(): boolean {

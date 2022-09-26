@@ -2,18 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType, IComponentProperties } from '@shared/domain';
-import {
-	courseFactory,
-	fileFactory,
-	lessonFactory,
-	schoolFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { courseFactory, fileFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { CopyFilesService, FilesStorageClientAdapterService } from '@src/modules';
 import { CopyFileDto } from '@src/modules/files-storage-client/dto';
-import { FileRecordParamsParentTypeEnum } from '@src/modules/files-storage-client/filesStorageApi/v3';
 import { IComponentTextProperties, Task } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
@@ -86,264 +77,6 @@ describe('file copy append service', () => {
 		copyFilesService = module.get(CopyFilesService);
 	});
 
-	describe('copying files attached to tasks', () => {
-		describe('when no files are present', () => {
-			const setup = () => {
-				const school = schoolFactory.buildWithId();
-				const originalTask = taskFactory.buildWithId({ school });
-				const taskCopy = taskFactory.buildWithId({ school });
-				const copyStatus: CopyStatus = {
-					type: CopyElementType.LESSON,
-					title: 'Tolle Lesson',
-					status: CopyStatusEnum.SUCCESS,
-					elements: [
-						{
-							type: CopyElementType.TASK,
-							title: 'Toller Task',
-							status: CopyStatusEnum.SUCCESS,
-							originalEntity: originalTask,
-							copyEntity: taskCopy,
-						},
-					],
-				};
-				const jwt = 'super';
-				return { copyStatus, jwt };
-			};
-
-			it('should not change status', async () => {
-				const { copyStatus, jwt } = setup();
-				const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
-				expect(updatedCopyStatus).toEqual(copyStatus);
-			});
-
-			it('should handle error of copyFilesOfParent', async () => {
-				const { copyStatus, jwt } = setup();
-				fileServiceAdapter.copyFilesOfParent.mockRejectedValue(new Error());
-				const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
-				expect(updatedCopyStatus.status).toEqual('success');
-			});
-		});
-
-		describe('when taskstatus is failed before appending files', () => {
-			const setup = () => {
-				const school = schoolFactory.buildWithId();
-				const originalTask = taskFactory.buildWithId({ school });
-				const taskCopy = taskFactory.buildWithId({ school });
-				const copyStatus: CopyStatus = {
-					type: CopyElementType.LESSON,
-					title: 'Tolle Lesson',
-					status: CopyStatusEnum.FAIL,
-					elements: [
-						{
-							type: CopyElementType.TASK,
-							title: taskCopy.name,
-							status: CopyStatusEnum.FAIL,
-							originalEntity: originalTask,
-						},
-					],
-				};
-				const jwt = 'veryveryverylongstringthatissignedandstuff';
-				return { copyStatus, originalTask, taskCopy, jwt };
-			};
-
-			it('it should not try to copy on failed taskstatus', async () => {
-				const { copyStatus, jwt } = setup();
-				const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
-				expect(updatedCopyStatus).toEqual(copyStatus);
-			});
-		});
-
-		describe('when files are present', () => {
-			const setup = () => {
-				const school = schoolFactory.buildWithId();
-				const originalTask = taskFactory.buildWithId({ school });
-				const taskCopy = taskFactory.buildWithId({ school });
-				const FILENAME1 = 'Tolle Datei';
-				const FILENAME2 = 'Tolle Datei 1';
-				const copyStatus: CopyStatus = {
-					type: CopyElementType.LESSON,
-					title: 'Tolle Lesson',
-					status: CopyStatusEnum.SUCCESS,
-					elements: [
-						{
-							type: CopyElementType.TASK,
-							title: taskCopy.name,
-							status: CopyStatusEnum.PARTIAL,
-							copyEntity: taskCopy,
-							originalEntity: originalTask,
-							elements: [
-								{
-									type: CopyElementType.FILE_GROUP,
-									title: 'Tolle Filegroup',
-									status: CopyStatusEnum.PARTIAL,
-									elements: [
-										{
-											type: CopyElementType.FILE,
-											title: FILENAME1,
-											status: CopyStatusEnum.NOT_IMPLEMENTED,
-										},
-										{
-											type: CopyElementType.FILE,
-											title: FILENAME2,
-											status: CopyStatusEnum.NOT_IMPLEMENTED,
-										},
-									],
-								},
-							],
-						},
-					],
-				};
-				const copyFileResponse: CopyFileDto[] = [
-					{
-						id: 'some-file-id',
-						name: FILENAME1,
-						sourceId: 'some-source-file-id',
-					},
-					{
-						id: 'some-file-id2',
-						name: FILENAME2,
-						sourceId: 'some-source-file-id2',
-					},
-				];
-				fileServiceAdapter.copyFilesOfParent.mockResolvedValue(copyFileResponse);
-				const jwt = 'veryveryverylongstringthatissignedandstuff';
-				return { copyStatus, originalTask, taskCopy, jwt };
-			};
-
-			it('should copy files of task via fileServiceAdapter', async () => {
-				const { copyStatus, originalTask, taskCopy, jwt } = setup();
-				await copyService.appendFiles(copyStatus, jwt);
-				const param = {
-					jwt,
-					schoolId: originalTask.school.id,
-					parentType: FileRecordParamsParentTypeEnum.Tasks,
-					parentId: originalTask.id,
-				};
-				const target = {
-					jwt,
-					schoolId: taskCopy.school.id,
-					parentType: FileRecordParamsParentTypeEnum.Tasks,
-					parentId: taskCopy.id,
-				};
-				expect(fileServiceAdapter.copyFilesOfParent).toHaveBeenCalledWith(param, target);
-			});
-
-			it('should update status of lesson', async () => {
-				const { copyStatus, jwt } = setup();
-				const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
-				expect(updatedCopyStatus.status).toEqual(CopyStatusEnum.SUCCESS);
-			});
-
-			it('should update status of task', async () => {
-				const { copyStatus, jwt } = setup();
-				const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
-				const taskStatus = updatedCopyStatus.elements?.find((el) => el.type === CopyElementType.TASK);
-				expect(taskStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
-			});
-
-			it('should update status of filegroup', async () => {
-				const { copyStatus, jwt } = setup();
-				const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
-				const taskStatus = updatedCopyStatus.elements?.find((el) => el.type === CopyElementType.TASK);
-				const fileGroupStatus = taskStatus?.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
-				expect(fileGroupStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
-			});
-
-			it('should replace status of copied files', async () => {
-				const { copyStatus, jwt } = setup();
-				const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
-				const taskStatus = updatedCopyStatus.elements?.find((el) => el.type === CopyElementType.TASK);
-				const fileGroupStatus = taskStatus?.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
-				expect(
-					fileGroupStatus?.elements?.every(
-						(el) => el.type === CopyElementType.FILE && el.status === CopyStatusEnum.SUCCESS
-					)
-				).toBeTruthy();
-			});
-
-			describe('failing file copy', () => {
-				const setup2 = () => {
-					const school = schoolFactory.buildWithId();
-					const originalTask = taskFactory.buildWithId({ school });
-					const taskCopy = taskFactory.buildWithId({ school });
-					const FILENAME1 = 'Tolle Datei';
-					const FILENAME2 = 'Tolle Datei 1';
-					const copyStatus: CopyStatus = {
-						type: CopyElementType.LESSON,
-						title: 'Tolle Lesson',
-						status: CopyStatusEnum.SUCCESS,
-						elements: [
-							{
-								type: CopyElementType.TASK,
-								title: taskCopy.name,
-								status: CopyStatusEnum.PARTIAL,
-								copyEntity: taskCopy,
-								originalEntity: originalTask,
-								elements: [
-									{
-										type: CopyElementType.FILE_GROUP,
-										title: 'Tolle Filegroup',
-										status: CopyStatusEnum.PARTIAL,
-										elements: [
-											{
-												type: CopyElementType.FILE,
-												title: FILENAME1,
-												status: CopyStatusEnum.NOT_IMPLEMENTED,
-											},
-											{
-												type: CopyElementType.FILE,
-												title: FILENAME2,
-												status: CopyStatusEnum.NOT_IMPLEMENTED,
-											},
-										],
-									},
-								],
-							},
-						],
-					};
-					fileServiceAdapter.copyFilesOfParent.mockRejectedValue(new Error());
-					const copyStatusMockResult = CopyStatusEnum.PARTIAL;
-					const jwt = 'veryveryverylongstringthatissignedandstuff';
-					return { copyStatus, originalTask, taskCopy, jwt, copyStatusMockResult };
-				};
-
-				it('should return partially failed CopyStatus, if file copy failed', async () => {
-					const { copyStatus, jwt, copyStatusMockResult } = setup2();
-					const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
-					const taskStatus = updatedCopyStatus.elements?.find((el) => el.type === CopyElementType.TASK);
-					const fileGroupStatus = taskStatus?.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
-					expect(taskStatus?.status).toEqual(copyStatusMockResult);
-					expect(fileGroupStatus?.status).toEqual(CopyStatusEnum.FAIL);
-				});
-
-				it('should set copy status of files', async () => {
-					const { copyStatus, jwt } = setup2();
-					const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
-					const taskStatus = updatedCopyStatus.elements?.find((el) => el.type === CopyElementType.TASK);
-					const fileGroupStatus = taskStatus?.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
-					expect(
-						fileGroupStatus?.elements?.every(
-							(el) => el.type === CopyElementType.FILE && el.status === CopyStatusEnum.FAIL
-						)
-					).toBeTruthy();
-				});
-
-				it('should update status of lesson', async () => {
-					const { copyStatus, jwt, copyStatusMockResult } = setup2();
-					const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
-					expect(updatedCopyStatus.status).toEqual(copyStatusMockResult);
-				});
-
-				it('should update status of task', async () => {
-					const { copyStatus, jwt, copyStatusMockResult } = setup2();
-					const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
-					const taskStatus = updatedCopyStatus.elements?.find((el) => el.type === CopyElementType.TASK);
-					expect(taskStatus?.status).toEqual(copyStatusMockResult);
-				});
-			});
-		});
-	});
-
 	describe('copying of embedded files', () => {
 		describe('copying files in lessons', () => {
 			describe('when no files are present', () => {
@@ -378,7 +111,7 @@ describe('file copy append service', () => {
 				});
 
 				it('should not change status if original entity is task', async () => {
-					const { originalCourse, user, copyLesson, jwt } = setup();
+					const { originalCourse, user, copyLesson } = setup();
 					const originalTask = taskFactory.build();
 					const copyStatus: CopyStatus = {
 						type: CopyElementType.LESSON,
@@ -388,11 +121,10 @@ describe('file copy append service', () => {
 						copyEntity: copyLesson,
 					};
 
-					const updatedCopyStatus = await copyService.copyEmbeddedFilesOfLessons(
+					const updatedCopyStatus = await copyService.copyEmbeddedLegacyFilesOfLessons(
 						copyStatus,
 						originalCourse.id,
-						user.id,
-						jwt
+						user.id
 					);
 					expect(updatedCopyStatus).toEqual(copyStatus);
 				});
@@ -549,40 +281,85 @@ describe('file copy append service', () => {
 				it('should copy embedded files and update the url with the new id', async () => {
 					const { originalCourse, copyStatus, user, jwt, originalFile } = setup();
 					const newFileId = 'new123';
+
 					fileLegacyService.copyFile.mockResolvedValue({
 						oldFileId: originalFile.id,
 						fileId: newFileId,
 						filename: originalFile.name,
 					});
 
+					copyFilesService.copyFilesOfEntity.mockResolvedValue({
+						entity: copyStatus.copyEntity as Task,
+						response: [
+							{
+								id: 'id',
+								sourceId: 'sourceId',
+								name: 'name',
+							},
+						],
+					});
+
 					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
-					const copiedTask = updatedStatus.copyEntity as Task;
 					const fileGroupStatus = getSubStatus(updatedStatus, CopyElementType.FILE_GROUP);
 					const file = getSubStatus(fileGroupStatus, CopyElementType.FILE);
+
+					const updatedCopyTask = { ...updatedStatus.copyEntity } as Task;
+					updatedCopyTask.description =
+						'<figure class="image"><img src="/files/file?file=new123&amp;name=file.jpg" alt /></figure>';
+
+					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(
+						copyStatus.originalEntity,
+						updatedCopyTask,
+						jwt
+					);
 
 					expect(updatedStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 					expect(fileGroupStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 					expect(file?.status).toEqual(CopyStatusEnum.SUCCESS);
-					expect(copiedTask.description).toEqual(expect.stringContaining(newFileId));
-					expect(file?.title).toEqual(originalFile.name);
 				});
 
 				it('should try to copy embeddedFiles and not update on failure', async () => {
 					const { originalCourse, copyStatus, user, jwt, originalFile } = setup();
+
 					fileLegacyService.copyFile.mockResolvedValue({
 						oldFileId: originalFile.id,
 					});
 
+					copyFilesService.copyFilesOfEntity.mockResolvedValue({
+						entity: copyStatus.copyEntity as Task,
+						response: [],
+					});
+
 					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
-					const copiedTask = updatedStatus.copyEntity as Task;
 					const fileGroupStatus = getSubStatus(updatedStatus, CopyElementType.FILE_GROUP);
 					const file = getSubStatus(fileGroupStatus, CopyElementType.FILE);
+
+					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(
+						copyStatus.originalEntity,
+						updatedStatus.copyEntity,
+						jwt
+					);
 
 					expect(updatedStatus?.status).toEqual(CopyStatusEnum.FAIL);
 					expect(fileGroupStatus?.status).toEqual(CopyStatusEnum.FAIL);
 					expect(file?.status).toEqual(CopyStatusEnum.FAIL);
-					expect(copiedTask.description).toEqual(expect.stringContaining(originalFile.id));
 					expect(file?.title).not.toEqual(originalFile.name);
+				});
+
+				it('should not change status if original entity is lesson', async () => {
+					const { originalCourse, copyStatus, user } = setup();
+					const originalLesson = lessonFactory.build();
+					const status: CopyStatus = {
+						...copyStatus,
+						originalEntity: originalLesson,
+					};
+
+					const updatedCopyStatus = await copyService.copyEmbeddedLegacyFilesOfTasks(
+						status,
+						originalCourse.id,
+						user.id
+					);
+					expect(updatedCopyStatus).toEqual(status);
 				});
 			});
 		});

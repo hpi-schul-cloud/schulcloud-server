@@ -139,8 +139,6 @@ describe('course copy uc', () => {
 			const jwt = 'some-great-jwt';
 			courseCopyService.copyCourse.mockReturnValue(status);
 
-			fileCopyAppendService.appendFiles.mockResolvedValue(status);
-
 			return {
 				user,
 				course,
