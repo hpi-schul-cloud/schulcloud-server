@@ -27,6 +27,8 @@ describe('AccountService', () => {
 	let mockTeacherAccount: Account;
 	let mockStudentAccount: Account;
 
+	let mockAccountWithSystemId: Account;
+
 	afterAll(async () => {
 		await module.close();
 		await orm.close();
@@ -74,6 +76,16 @@ describe('AccountService', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
+						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<Account | null> => {
+							const account = mockAccounts.find(
+								(tempAccount) => tempAccount.username === username && tempAccount.systemId === systemId
+							);
+							if (account) {
+								return Promise.resolve(account);
+							}
+							return Promise.resolve(null);
+						},
+
 						findById: jest.fn().mockImplementation((accountId: EntityId): Promise<Account> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
 
@@ -121,7 +133,8 @@ describe('AccountService', () => {
 		mockTeacherAccount = accountFactory.buildWithId({ userId: mockTeacherUser.id, password: defaultPassword });
 		mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id, password: defaultPassword });
 
-		mockAccounts = [mockTeacherAccount, mockStudentAccount];
+		mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId()).build();
+		mockAccounts = [mockTeacherAccount, mockStudentAccount, mockAccountWithSystemId];
 	});
 
 	afterEach(() => {
@@ -143,6 +156,30 @@ describe('AccountService', () => {
 		});
 		it('should return null', async () => {
 			const resultAccount = await accountService.findByUserId('nonExistentId');
+			expect(resultAccount).toBeNull();
+		});
+	});
+
+	describe('findByUsernameAndSystemId', () => {
+		it('should return accountDto', async () => {
+			const resultAccount = await accountService.findByUsernameAndSystemId(
+				mockAccountWithSystemId.username,
+				mockAccountWithSystemId.systemId ?? ''
+			);
+			expect(resultAccount).not.toBe(undefined);
+		});
+		it('should return null if username does not exist', async () => {
+			const resultAccount = await accountService.findByUsernameAndSystemId(
+				'nonExistentUsername',
+				mockAccountWithSystemId.systemId ?? ''
+			);
+			expect(resultAccount).toBeNull();
+		});
+		it('should return null if system id does not exist', async () => {
+			const resultAccount = await accountService.findByUsernameAndSystemId(
+				mockAccountWithSystemId.username,
+				'nonExistentSystemId' ?? ''
+			);
 			expect(resultAccount).toBeNull();
 		});
 	});
@@ -305,12 +342,12 @@ describe('AccountService', () => {
 			);
 		});
 
-		it('should set password to undefined if password is empty while editing an existing account', async () => {
+		it('should not change password if password is empty while editing an existing account', async () => {
 			const spy = jest.spyOn(accountRepo, 'save');
 			const dto = {
 				id: mockTeacherAccount.id,
 				// username: 'john.doe@domain.tld',
-				password: '',
+				password: undefined,
 			} as AccountDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
@@ -318,7 +355,7 @@ describe('AccountService', () => {
 			expect(accountRepo.findById).toHaveBeenCalled();
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					password: undefined,
+					password: defaultPassword,
 				})
 			);
 		});
@@ -349,6 +386,20 @@ describe('AccountService', () => {
 				...mockTeacherAccountDto,
 				updatedAt: theNewDate,
 				username: newUsername,
+			});
+		});
+	});
+
+	describe('updateLastTriedFailedLogin', () => {
+		it('should update last tried failed login', async () => {
+			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			const theNewDate = new Date();
+			const ret = await accountService.updateLastTriedFailedLogin(mockTeacherAccount.id, theNewDate);
+
+			expect(ret).toBeDefined();
+			expect(ret).toMatchObject({
+				...mockTeacherAccountDto,
+				lasttriedFailedLogin: theNewDate,
 			});
 		});
 	});

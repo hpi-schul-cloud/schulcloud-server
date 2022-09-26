@@ -4,7 +4,7 @@ import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo, PseudonymsRepo, RoleRepo, UserRepo } from '@shared/repo';
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { IResolvedUser, PermissionService, PseudonymDO, User } from '@shared/domain';
+import { IResolvedUser, Permission, PermissionService, PseudonymDO, User } from '@shared/domain';
 import { ResolvedUserMapper } from '@src/modules/user/mapper';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 
@@ -24,7 +24,10 @@ export class OauthProviderLoginFlowService {
 		loginRequestBody: LoginRequestBody
 	): Promise<AcceptLoginRequestBody> {
 		if (loginResponse.client.client_id) {
-			const ltiToolDO: LtiToolDO = await this.ltiToolRepo.findByOauthClientIdAndIsLocal(loginResponse.client.client_id);
+			const ltiToolDO: LtiToolDO = await this.ltiToolRepo.findByClientIdAndIsLocal(
+				loginResponse.client.client_id,
+				true
+			);
 			const pseudonym: PseudonymDO = await this.pseudonymsRepo.findByUserIdAndToolId(
 				ltiToolDO.id as string,
 				currentUserId
@@ -41,16 +44,16 @@ export class OauthProviderLoginFlowService {
 	}
 
 	async validateNextcloudPermission(currentUserId: string, loginResponse: ProviderLoginResponse) {
-		// TODO after consent flow merge change User to UserDO
-		// userService getById -> return Dto
 		const user: User = await this.userRepo.findById(currentUserId);
 		const permissions: string[] = this.permissionService.resolvePermissions(user);
 		const resolvedUser: IResolvedUser = ResolvedUserMapper.mapToResponse(user, permissions, user.roles.getItems());
 
 		if (loginResponse.client.client_id) {
-			const ltiToolDO: LtiToolDO = await this.ltiToolRepo.findByOauthClientIdAndIsLocal(loginResponse.client.client_id);
-			// use permission enum for nextcloud user
-			if (ltiToolDO.name === 'SchulcloudNextcloud' && !resolvedUser.permissions.includes('NEXTCLOUD_USER')) {
+			const ltiToolDO: LtiToolDO = await this.ltiToolRepo.findByClientIdAndIsLocal(
+				loginResponse.client.client_id,
+				true
+			);
+			if (ltiToolDO.name === 'SchulcloudNextcloud' && !resolvedUser.permissions.includes(Permission.NEXTCLOUD_USER)) {
 				throw new ForbiddenException('You are not allowed to use Nextcloud');
 			}
 		}

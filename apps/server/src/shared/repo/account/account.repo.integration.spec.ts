@@ -1,5 +1,5 @@
 import { NotFoundError } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -50,6 +50,20 @@ describe('account repo', () => {
 			em.clear();
 			const account = await repo.findByUserId(accountToFind.userId ?? '');
 			expect(account?.id).toEqual(accountToFind.id);
+		});
+	});
+
+	describe('findByUsernameAndSystemId', () => {
+		it('should return account', async () => {
+			const accountToFind = accountFactory.withSystemId(new ObjectId(10)).build();
+			await em.persistAndFlush(accountToFind);
+			em.clear();
+			const account = await repo.findByUsernameAndSystemId(accountToFind.username ?? '', accountToFind.systemId ?? '');
+			expect(account?.username).toEqual(accountToFind.username);
+		});
+		it('should return null', async () => {
+			const account = await repo.findByUsernameAndSystemId('', new ObjectId(undefined));
+			expect(account).toBeNull();
 		});
 	});
 

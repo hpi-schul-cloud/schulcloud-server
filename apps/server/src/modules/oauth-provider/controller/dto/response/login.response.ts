@@ -1,9 +1,10 @@
-import { OauthClient, OidcContext, ProviderLoginResponse } from '@shared/infra/oauth-provider/dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { OauthClientResponse } from '@src/modules/oauth-provider/controller/dto/response/oauth-client.response';
+import { OidcContextResponse } from '@src/modules/oauth-provider/controller/dto/response/oidc-context.response';
 
 export class LoginResponse {
-	constructor(providerLoginResponse: ProviderLoginResponse) {
-		Object.assign(this, providerLoginResponse);
+	constructor(loginResponse: LoginResponse) {
+		Object.assign(this, loginResponse);
 	}
 
 	@ApiProperty()
@@ -13,10 +14,10 @@ export class LoginResponse {
 	challenge: string | undefined;
 
 	@ApiProperty()
-	client: OauthClient | undefined;
+	client: OauthClientResponse | undefined;
 
 	@ApiProperty()
-	oidc_context?: OidcContext;
+	oidc_context?: OidcContextResponse;
 
 	@ApiProperty()
 	request_url?: string;
