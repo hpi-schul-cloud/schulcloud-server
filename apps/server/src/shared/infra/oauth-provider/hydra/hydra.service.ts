@@ -32,11 +32,7 @@ export class HydraService extends OauthProviderService {
 	}
 
 	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<ProviderRedirectResponse> {
-		return this.request<ProviderRedirectResponse>(
-			'PUT',
-			`${this.hydraUri}/oauth2/auth/requests/login/accept?login_challenge=${challenge}`,
-			body
-		);
+		return this.put<ProviderRedirectResponse>('login', 'accept', challenge, body);
 	}
 
 	async acceptLogoutRequest(challenge: string): Promise<ProviderRedirectResponse> {
@@ -51,10 +47,7 @@ export class HydraService extends OauthProviderService {
 	}
 
 	getLoginRequest(challenge: string): Promise<ProviderLoginResponse> {
-		return this.request<ProviderLoginResponse>(
-			'GET',
-			`${this.hydraUri}/oauth2/auth/requests/login?login_challenge=${challenge}`
-		);
+		return this.get<ProviderLoginResponse>('login', challenge);
 	}
 
 	introspectOAuth2Token(token: string, scope: string): Promise<IntrospectResponse> {
@@ -85,6 +78,7 @@ export class HydraService extends OauthProviderService {
 	}
 
 	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
+		return this.put<ProviderRedirectResponse>('login', 'reject', challenge, body);
 		return this.request<ProviderRedirectResponse>(
 			'PUT',
 			`${this.hydraUri}/oauth2/auth/requests/login/reject?login_challenge=${challenge}`,

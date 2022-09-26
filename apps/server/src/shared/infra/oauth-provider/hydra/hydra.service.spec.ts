@@ -459,6 +459,7 @@ describe('HydraService', () => {
 			afterEach(() => {
 				resetAllMocks();
 			});
+
 			describe('getLoginRequest', () => {
 				it('should make http request', async () => {
 					// Arrange

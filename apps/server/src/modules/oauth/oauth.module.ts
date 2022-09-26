@@ -13,7 +13,7 @@ import { OauthSSOController } from './controller/oauth-sso.controller';
 import { OauthUc } from './uc/oauth.uc';
 
 @Module({
-	imports: [LoggerModule, AuthorizationModule, HttpModule, EncryptionModule, LoggerModule],
+	imports: [LoggerModule, AuthorizationModule, HttpModule, EncryptionModule],
 	controllers: [OauthSSOController],
 	providers: [
 		OauthUc,
