@@ -52,7 +52,9 @@ export class AccountService {
 			account.activated = accountDto.activated;
 			account.expiresAt = accountDto.expiresAt;
 			account.lasttriedFailedLogin = accountDto.lasttriedFailedLogin;
-			account.password = accountDto.password ? await this.encryptPassword(accountDto.password) : undefined;
+			if (accountDto.password) {
+				account.password = await this.encryptPassword(accountDto.password);
+			}
 			account.credentialHash = accountDto.credentialHash;
 			account.token = accountDto.token;
 		} else {
