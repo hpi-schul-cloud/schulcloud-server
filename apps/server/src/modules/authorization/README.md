@@ -115,17 +115,43 @@ When calling other internal micro service for already authorised operations plea
 
 ## How to use Authorisation Service
 
-### Example 1 - ...
+> Please avoid to catch the errors of the authorisation in UC.
 
-{{ add more }}
+### Example 1 - Execute a single operation
 
-### Example 2 - ...
+``` javascript
+    this.authorizationService.hasPermission(user, course, PermissionContextBuilder.write([])
+```
 
-{{ add more }}
+### Example 2 - Execute a single operation with loading ressouces
 
-### Example 3 - ...
+``` javascript
+    this.checkPermission(userId, ReferenceEntityType.course, courseId, PermissionContextBuilder.read([]));
+```
 
-{{ add more }}
+### Example 3 - Set permission(s) of user as required
+
+``` javascript
+    // Multiple permissions can be added. The user need all of them to pass.
+    await this.hasPermission(userId, course, PermissionContextBuilder.read([Permissions. COURSE_VIEW]));
+```
+
+### Example 4 - Define context for multiple places
+
+``` javascript
+/** const **/
+export const PermissionContexts = {
+    create: PermissionContextBuilder.write([Permission.FILESTORAGE_CREATE]),
+    read: PermissionContextBuilder.read([Permission.FILESTORAGE_VIEW]),
+    update: PermissionContextBuilder.write([Permission.FILESTORAGE_EDIT]),
+    delete: PermissionContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
+};
+
+/** UC **/
+this.hasPermission(userId, course, PermissionContexts.create);
+// do other orechstration steps
+
+```
 
 ## Structure of the Authorisation Components
 
