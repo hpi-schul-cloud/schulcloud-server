@@ -35,58 +35,6 @@ data:
     SANIS_SYSTEM_ID=0000d186816abba584714c93
     mongo $DATABASE__URL --eval 'db.systems.insert([
     {
-      "_id": ObjectId("'$ISERV_SYSTEM_ID'"),
-      "alias" : "Schulserver",
-      "ldapConfig" : {
-        "active" : true,
-        "federalState": ObjectId("0000b186816abba584714c58"),
-        "url" : "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
-        "rootPath" : "dc=de,dc=example,dc=org",
-        "searchUser" : "cn=admin,dc=example,dc=org",
-        "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
-        "provider" : "iserv-idm",
-        "providerOptions" : {
-          "userAttributeNameMapping" : {},
-          "roleAttributeNameMapping" : {},
-          "classAttributeNameMapping" : {}
-        }
-      },
-      "type" : "ldap",
-      "oauthConfig": {
-        "clientId": "'$ISERV_CLIENT_ID'",
-        "clientSecret": "'$ISERV_CLIENT_SECRET'",
-        "tokenEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
-        "grantType": "authorization_code",
-        "scope": "openid uuid",
-        "responseType": "code",
-        "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/'$ISERV_SYSTEM_ID'",
-        "authEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
-        "provider": "iserv",
-        "logoutEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout",
-        "jwksEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/public/jwk",
-        "issuer": "https://iserv.n21.dbildungscloud.de"
-      }
-    },
-    {
-      "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
-      "alias" : "SANIS",
-      "type" : "oauth",
-      "oauthConfig": {
-        "clientId": "'$SANIS_CLIENT_ID'",
-        "clientSecret": "'$SANIS_CLIENT_SECRET'",
-        "tokenEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/token",
-        "grantType": "authorization_code",
-        "scope": "openid",
-        "responseType": "code",
-        "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/'$SANIS_SYSTEM_ID'",
-        "authEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/auth",
-        "provider": "sanis",
-        "logoutEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/logout",
-        "jwksEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/certs",
-        "issuer": "https://auth.niedersachsen-login.schule/auth/realms/SANIS"
-      }
-    },
-    {
       "type" : "ldap",
       "alias" : "schoolOne0",
       "ldapConfig" : {
@@ -193,6 +141,63 @@ data:
                                        "createdAt" : ISODate("2021-07-16T09:03:18.536Z"),
                                        "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
                                      } );'
+    if [[ $SC_THEME == "n21" ]]; then
+      echo "equal";
+      mongo $DATABASE__URL --eval 'db.systems.insert([
+      {
+            "_id": ObjectId("'$ISERV_SYSTEM_ID'"),
+            "alias" : "Schulserver",
+            "ldapConfig" : {
+              "active" : true,
+              "federalState": ObjectId("0000b186816abba584714c58"),
+              "url" : "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
+              "rootPath" : "dc=de,dc=example,dc=org",
+              "searchUser" : "cn=admin,dc=example,dc=org",
+              "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
+              "provider" : "iserv-idm",
+              "providerOptions" : {
+                "userAttributeNameMapping" : {},
+                "roleAttributeNameMapping" : {},
+                "classAttributeNameMapping" : {}
+              }
+            },
+            "type" : "ldap",
+            "oauthConfig": {
+              "clientId": "'$ISERV_CLIENT_ID'",
+              "clientSecret": "'$ISERV_CLIENT_SECRET'",
+              "tokenEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
+              "grantType": "authorization_code",
+              "scope": "openid uuid",
+              "responseType": "code",
+              "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/'$ISERV_SYSTEM_ID'",
+              "authEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
+              "provider": "iserv",
+              "logoutEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout",
+              "jwksEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/public/jwk",
+              "issuer": "https://iserv.n21.dbildungscloud.de"
+            }
+          },
+          {
+            "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
+            "alias" : "SANIS",
+            "type" : "oauth",
+            "oauthConfig": {
+              "clientId": "'$SANIS_CLIENT_ID'",
+              "clientSecret": "'$SANIS_CLIENT_SECRET'",
+              "tokenEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/token",
+              "grantType": "authorization_code",
+              "scope": "openid",
+              "responseType": "code",
+              "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/'$SANIS_SYSTEM_ID'",
+              "authEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/auth",
+              "provider": "sanis",
+              "logoutEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/logout",
+              "jwksEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/certs",
+              "issuer": "https://auth.niedersachsen-login.schule/auth/realms/SANIS"
+            }
+          }
+      ]);'
+    fi
     # this is crucial, until we have all entities in nest!
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
