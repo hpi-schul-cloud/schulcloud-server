@@ -63,7 +63,7 @@ export class OauthProviderConsentFlowUc {
 		const idToken: IdToken = await this.idTokenService.createIdToken(userId, requested_scope || [], client_id || '');
 		if (idToken) {
 			body.session = {
-				id_token: JSON.stringify(idToken),
+				id_token: idToken,
 			};
 		}
 

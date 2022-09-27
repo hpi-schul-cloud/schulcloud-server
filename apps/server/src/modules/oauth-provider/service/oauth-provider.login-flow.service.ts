@@ -29,8 +29,8 @@ export class OauthProviderLoginFlowService {
 				true
 			);
 			const pseudonym: PseudonymDO = await this.pseudonymsRepo.findByUserIdAndToolId(
-				ltiToolDO.id as string,
-				currentUserId
+				currentUserId,
+				ltiToolDO.id as string
 			);
 			const acceptLoginRequestBody: AcceptLoginRequestBody = OauthProviderRequestMapper.mapCreateAcceptLoginRequestBody(
 				loginResponse,
@@ -44,7 +44,7 @@ export class OauthProviderLoginFlowService {
 	}
 
 	async validateNextcloudPermission(currentUserId: string, loginResponse: ProviderLoginResponse) {
-		const user: User = await this.userRepo.findById(currentUserId);
+		const user: User = await this.userRepo.findById(currentUserId, true);
 		const permissions: string[] = this.permissionService.resolvePermissions(user);
 		const resolvedUser: IResolvedUser = ResolvedUserMapper.mapToResponse(user, permissions, user.roles.getItems());
 

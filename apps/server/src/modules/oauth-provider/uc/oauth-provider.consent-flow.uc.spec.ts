@@ -122,7 +122,6 @@ describe('OauthProviderConsentFlowUc', () => {
 				});
 
 				it('should generate idtoken and set this as json to session', async () => {
-					const jsonStringifySpy = jest.spyOn(JSON, 'stringify');
 					const idToken: IdToken = { userId: currentUser.userId, schoolId: 'schoolId' };
 					idTokenService.createIdToken.mockResolvedValue(idToken);
 					consentResponse = { ...consentResponse, client: { client_id: 'clientId' } };
@@ -135,10 +134,9 @@ describe('OauthProviderConsentFlowUc', () => {
 						consentResponse.requested_scope,
 						consentResponse.client?.client_id
 					);
-					expect(jsonStringifySpy).toHaveBeenCalledWith(idToken);
 					expect(service.acceptConsentRequest).toHaveBeenCalledWith(
 						challenge,
-						expect.objectContaining<AcceptConsentRequestBody>({ session: { id_token: JSON.stringify(idToken) } })
+						expect.objectContaining<AcceptConsentRequestBody>({ session: { id_token: idToken } })
 					);
 				});
 
