@@ -1,4 +1,4 @@
-export interface OidcContext {
+export interface ProviderOidcContext {
 	acr_values?: string[];
 
 	display?: string;

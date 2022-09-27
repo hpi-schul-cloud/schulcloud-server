@@ -1,14 +1,14 @@
-import { OauthClient } from '../interface/oauth-client.interface';
-import { OidcContext } from '../interface/oidc-context.interface';
+import { ProviderOauthClient } from '../interface/oauth-client.interface';
+import { ProviderOidcContext } from '../interface/oidc-context.interface';
 
-export interface ConsentResponse {
+export interface ProviderConsentResponse {
 	acr?: string;
 
 	amr?: string[];
 
 	challenge: string;
 
-	client?: OauthClient;
+	client?: ProviderOauthClient;
 
 	context?: object;
 
@@ -16,7 +16,7 @@ export interface ConsentResponse {
 
 	login_session_id?: string;
 
-	oidc_context?: OidcContext;
+	oidc_context?: ProviderOidcContext;
 
 	request_url?: string;
 

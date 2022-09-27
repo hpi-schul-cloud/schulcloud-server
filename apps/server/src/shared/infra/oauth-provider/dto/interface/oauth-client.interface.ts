@@ -1,4 +1,4 @@
-export interface OauthClient {
+export interface ProviderOauthClient {
 	allowed_cors_origins?: string[];
 
 	audience?: string[];
