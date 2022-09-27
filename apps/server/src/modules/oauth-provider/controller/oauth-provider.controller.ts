@@ -1,62 +1,95 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
-import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { OauthClient, ProviderConsentSessionResponse, RedirectResponse } from '@shared/infra/oauth-provider/dto';
+import { ICurrentUser } from '@shared/domain';
+import { OauthProviderClientCrudUc } from '@src/modules/oauth-provider/uc/oauth-provider.client-crud.uc';
+import { IntrospectBody } from '@src/modules/oauth-provider/controller/dto/request/introspect.body';
 import {
 	AcceptQuery,
 	ChallengeParams,
 	ConsentRequestBody,
+	ConsentSessionResponse,
 	IdParams,
-	IntrospectBody,
 	ListOauthClientsParams,
 	LoginRequestBody,
 	OauthClientBody,
+	OauthClientResponse,
 	RedirectBody,
-	RevokeConsentQuery,
-	UserParams,
+	RevokeConsentParams,
 } from './dto';
+import { OauthProviderUc } from '../uc/oauth-provider.uc';
 
 @Controller('oauth2')
 export class OauthProviderController {
 	constructor(
+		private readonly crudUc: OauthProviderClientCrudUc,
 		private readonly oauthProviderUc: OauthProviderUc,
+		private readonly logoutFlowUc: OauthProviderLogoutFlowUc,
 		private readonly oauthProviderResponseMapper: OauthProviderResponseMapper
 	) {}
 
 	@Authenticate('jwt')
 	@Get('clients/:id')
-	getOAuth2Client(@Param() params: IdParams) {
-		throw new NotImplementedException();
+	async getOAuth2Client(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: IdParams
+	): Promise<OauthClientResponse> {
+		const client: OauthClient = await this.crudUc.getOAuth2Client(currentUser, params.id);
+		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
 	@Get('clients')
-	listOAuth2Clients(@Param() params: ListOauthClientsParams) {
-		throw new NotImplementedException();
+	async listOAuth2Clients(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ListOauthClientsParams
+	): Promise<OauthClientResponse[]> {
+		const clients: OauthClient[] = await this.crudUc.listOAuth2Clients(
+			currentUser,
+			params.limit,
+			params.offset,
+			params.client_name,
+			params.owner
+		);
+		const mapped: OauthClientResponse[] = clients.map(
+			(client: OauthClient): OauthClientResponse =>
+				this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client)
+		);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
 	@Post('clients')
-	createOAuth2Client(@Body() body: OauthClientBody) {
-		throw new NotImplementedException();
+	async createOAuth2Client(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() body: OauthClientBody
+	): Promise<OauthClientResponse> {
+		const client: OauthClient = await this.crudUc.createOAuth2Client(currentUser, body);
+		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
 	@Put('clients/:id')
-	updateOAuth2Client(@Param() params: IdParams, @Body() body: OauthClientBody) {
-		throw new NotImplementedException();
+	async updateOAuth2Client(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: IdParams,
+		@Body() body: OauthClientBody
+	): Promise<OauthClientResponse> {
+		const client: OauthClient = await this.crudUc.updateOAuth2Client(currentUser, params.id, body);
+		const mapped: OauthClientResponse = this.oauthProviderResponseMapper.mapOauthClientToClientResponse(client);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
 	@Delete('clients/:id')
-	deleteOAuth2Client(@Param() params: IdParams) {
-		throw new NotImplementedException();
-	}
-
-	@Post('introspect')
-	introspectOAuth2Token(@Body() body: IntrospectBody) {
-		throw new NotImplementedException();
+	deleteOAuth2Client(@CurrentUser() currentUser: ICurrentUser, @Param() params: IdParams): Promise<void> {
+		const promise: Promise<void> = this.crudUc.deleteOAuth2Client(currentUser, params.id);
+		return promise;
 	}
 
 	@Get('loginRequest/:challenge')
@@ -72,8 +105,9 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
-	acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody) {
-		throw new NotImplementedException();
+	async acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody) {
+		const redirect: RedirectResponse = await this.logoutFlowUc.logoutFlow(params.challenge);
+		return redirect.redirect_to;
 	}
 
 	@Authenticate('jwt')
@@ -89,14 +123,27 @@ export class OauthProviderController {
 	}
 
 	@Authenticate('jwt')
-	@Get('auth/sessions/consent/:userId')
-	listConsentSessions(@Param() params: UserParams) {
-		throw new NotImplementedException();
+	@Get('auth/sessions/consent')
+	async listConsentSessions(@CurrentUser() currentUser: ICurrentUser): Promise<ConsentSessionResponse[]> {
+		const sessions: ProviderConsentSessionResponse[] = await this.oauthProviderUc.listConsentSessions(
+			currentUser.userId
+		);
+		const mapped: ConsentSessionResponse[] = sessions.map(
+			(session: ProviderConsentSessionResponse): ConsentSessionResponse =>
+				this.oauthProviderResponseMapper.mapConsentSessionsToResponse(session)
+		);
+		return mapped;
 	}
 
 	@Authenticate('jwt')
-	@Delete('auth/sessions/consent/:userId')
-	revokeConsentSession(@Param() params: UserParams, @Query() query: RevokeConsentQuery) {
+	@Delete('auth/sessions/consent')
+	revokeConsentSession(@CurrentUser() currentUser: ICurrentUser, @Param() params: RevokeConsentParams): Promise<void> {
+		const promise: Promise<void> = this.oauthProviderUc.revokeConsentSession(currentUser.userId, params.client);
+		return promise;
+	}
+
+	@Post('introspect')
+	introspectOAuth2Token(@Body() body: IntrospectBody) {
 		throw new NotImplementedException();
 	}
 
