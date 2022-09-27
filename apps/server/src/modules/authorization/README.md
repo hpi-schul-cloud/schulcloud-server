@@ -168,13 +168,30 @@ A enum that hold all avaible permission names, however it's mixing all domain sc
 
 ## Working other Internal MicroServices
 
-> Example FileService
+> Example FilesStorageService
 
-{{ add more }}
+We have the files storage service application that are a bundle of modules of this repository.
+The application is startet as additional micro service.
+It exists the need that the server application can call the file service.
+We add a files storage client module to the server.
+This module export a service to call with the file service.
+
+For the communication it used http calls, but it is switching to RabbitMQ soon.
+Every operation must already authorised in the UC of the server. It exist no need to do it again in files storage service.
+For this we want that the consumer of the RabbitMQ call the files storage service, services directly without authorisation.
 
 ## Legacy Tech Stack FeatherJS Hooks
 
-{{ add more }}
+In featherJS all the authorisation is done in hooks. Mostly before hooks and sometimes in after hooks.
+Before and after means before, or after the database operation. For self writen services before, or after the call of the operation that should be executed.
+They work similar to express middleware and bring is own request context.
+
+It exists hooks can be for all http(s) calls, or for specific type based on CRUD operations.
+Additional it exist the find operations that is a http(s) GET without ID of a specific element.
+
+Each hooks exist for a featherJS service that exposed directly the api endpoints. Additional it exist a global hook pattern for the whole application.
+
+Example: <https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/src/services/lesson/hooks/index.js#L232>
 
 ## Desired Changes in Future
 
