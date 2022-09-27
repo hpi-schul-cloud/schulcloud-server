@@ -1,20 +1,21 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
-import { ConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
+import QueryString from 'qs';
+import { URL } from 'url';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
-	ConsentResponse,
 	IntrospectResponse,
-	LoginResponse,
-	OauthClient,
-	RedirectResponse,
+	ProviderConsentResponse,
+	ProviderOauthClient,
+	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '../dto';
 import { OauthProviderService } from '../oauth-provider.service';
+import { ProviderConsentSessionResponse } from '../dto/response/consent-session.response';
 
 @Injectable()
 export class HydraService extends OauthProviderService {
@@ -25,70 +26,119 @@ export class HydraService extends OauthProviderService {
 		this.hydraUri = Configuration.get('HYDRA_URI') as string;
 	}
 
-	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<RedirectResponse> {
-		throw new NotImplementedException();
+	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<ProviderRedirectResponse> {
+		return this.put<ProviderRedirectResponse>('consent', 'accept', challenge, body);
 	}
 
-	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<RedirectResponse> {
-		throw new NotImplementedException();
-	}
-
-	async acceptLogoutRequest(challenge: string): Promise<RedirectResponse> {
+	async acceptLogoutRequest(challenge: string): Promise<ProviderRedirectResponse> {
 		const url = `${this.hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=${challenge}`;
-		const response: Promise<RedirectResponse> = this.request<RedirectResponse>('PUT', url);
+		const response: Promise<ProviderRedirectResponse> = this.request<ProviderRedirectResponse>('PUT', url);
 		return response;
 	}
 
-	createOAuth2Client(data: OauthClient): Promise<OauthClient> {
-		throw new NotImplementedException();
-	}
-
-	deleteOAuth2Client(id: string): Promise<void> {
-		throw new NotImplementedException();
-	}
-
-	getConsentRequest(challenge: string): Promise<ConsentResponse> {
-		throw new NotImplementedException();
-	}
-
-	getLoginRequest(challenge: string): Promise<LoginResponse> {
-		throw new NotImplementedException();
-	}
-
-	getOAuth2Client(id: string): Promise<OauthClient> {
-		throw new NotImplementedException();
+	getConsentRequest(challenge: string): Promise<ProviderConsentResponse> {
+		const response: Promise<ProviderConsentResponse> = this.get<ProviderConsentResponse>('consent', challenge);
+		return response;
 	}
 
 	introspectOAuth2Token(token: string, scope: string): Promise<IntrospectResponse> {
-		throw new NotImplementedException();
+		const response: Promise<IntrospectResponse> = this.request<IntrospectResponse>(
+			'POST',
+			`${this.hydraUri}/oauth2/introspect`,
+			`token=${token}&scope=${scope}`,
+			{ 'Content-Type': 'application/x-www-form-urlencoded' }
+		);
+		return response;
 	}
 
 	isInstanceAlive(): Promise<boolean> {
-		throw new NotImplementedException();
+		const response: Promise<boolean> = this.request<boolean>('GET', `${this.hydraUri}/health/alive`);
+		return response;
 	}
 
-	listConsentSessions(user: string): Promise<ConsentSessionResponse[]> {
-		throw new NotImplementedException();
+	listConsentSessions(user: string): Promise<ProviderConsentSessionResponse[]> {
+		const response: Promise<ProviderConsentSessionResponse[]> = this.request<ProviderConsentSessionResponse[]>(
+			'GET',
+			`${this.hydraUri}/oauth2/auth/sessions/consent?subject=${user}`
+		);
+		return response;
 	}
 
-	listOAuth2Clients(): Promise<OauthClient[]> {
-		throw new NotImplementedException();
-	}
-
-	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
-		throw new NotImplementedException();
-	}
-
-	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<RedirectResponse> {
-		throw new NotImplementedException();
+	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
+		return this.put<ProviderRedirectResponse>('consent', 'reject', challenge, body);
 	}
 
 	revokeConsentSession(user: string, client: string): Promise<void> {
-		throw new NotImplementedException();
+		const response: Promise<void> = this.request<void>(
+			'DELETE',
+			`${this.hydraUri}/oauth2/auth/sessions/consent?subject=${user}&client=${client}`
+		);
+		return response;
 	}
 
-	updateOAuth2Client(id: string, data: OauthClient): Promise<OauthClient> {
-		throw new NotImplementedException();
+	listOAuth2Clients(
+		limit?: number,
+		offset?: number,
+		client_name?: string,
+		owner?: string
+	): Promise<ProviderOauthClient[]> {
+		const url: URL = new URL(`${this.hydraUri}/clients`);
+		url.search = QueryString.stringify({
+			limit,
+			offset,
+			client_name,
+			owner,
+		});
+		const response: Promise<ProviderOauthClient[]> = this.request<ProviderOauthClient[]>('GET', url.toString());
+		return response;
+	}
+
+	getOAuth2Client(id: string): Promise<ProviderOauthClient> {
+		const response: Promise<ProviderOauthClient> = this.request<ProviderOauthClient>(
+			'GET',
+			`${this.hydraUri}/clients/${id}`
+		);
+		return response;
+	}
+
+	createOAuth2Client(data: ProviderOauthClient): Promise<ProviderOauthClient> {
+		const response: Promise<ProviderOauthClient> = this.request<ProviderOauthClient>(
+			'POST',
+			`${this.hydraUri}/clients`,
+			data
+		);
+		return response;
+	}
+
+	updateOAuth2Client(id: string, data: ProviderOauthClient): Promise<ProviderOauthClient> {
+		const response: Promise<ProviderOauthClient> = this.request<ProviderOauthClient>(
+			'PUT',
+			`${this.hydraUri}/clients/${id}`,
+			data
+		);
+		return response;
+	}
+
+	deleteOAuth2Client(id: string): Promise<void> {
+		const response: Promise<void> = this.request<void>('DELETE', `${this.hydraUri}/clients/${id}`);
+		return response;
+	}
+
+	protected async put<T>(
+		flow: string,
+		action: string,
+		challenge: string,
+		body: AcceptConsentRequestBody | AcceptLoginRequestBody | RejectRequestBody
+	): Promise<T> {
+		return this.request<T>(
+			'PUT',
+			`${this.hydraUri}/oauth2/auth/requests/${flow}/${action}?${flow}_challenge=${challenge}`,
+			body
+		);
+	}
+
+	protected async get<T>(flow: string, challenge: string): Promise<T> {
+		return this.request<T>('GET', `${this.hydraUri}/oauth2/auth/requests/${flow}?${flow}_challenge=${challenge}`);
 	}
 
 	protected async request<T>(

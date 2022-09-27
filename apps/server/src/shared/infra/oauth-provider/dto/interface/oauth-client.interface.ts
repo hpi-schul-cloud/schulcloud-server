@@ -1,4 +1,4 @@
-export interface OauthClient {
+export interface ProviderOauthClient {
 	allowed_cors_origins?: string[];
 
 	audience?: string[];
@@ -33,7 +33,7 @@ export interface OauthClient {
 
 	frontchannel_logout_uri?: string;
 
-	grant_types?: string;
+	grant_types?: string[];
 
 	implicit_grant_access_token_lifespan?: string;
 

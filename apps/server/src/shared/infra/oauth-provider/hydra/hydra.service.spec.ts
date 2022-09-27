@@ -3,10 +3,18 @@ import { HydraService } from '@shared/infra/oauth-provider/hydra/hydra.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
+import {
+	AcceptConsentRequestBody,
+	ProviderConsentResponse,
+	ProviderOauthClient,
+	ProviderRedirectResponse,
+	RejectRequestBody,
+	IntrospectResponse,
+} from '@shared/infra/oauth-provider/dto';
 import { of } from 'rxjs';
-import { NotImplementedException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { RedirectResponse } from '@shared/infra/oauth-provider/dto';
+import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+import resetAllMocks = jest.resetAllMocks;
 
 class HydraServiceSpec extends HydraService {
 	public async requestSpec<T>(
@@ -33,9 +41,11 @@ describe('HydraService', () => {
 
 	let httpService: DeepMocked<HttpService>;
 
-	const hydraUri = Configuration.get('HYDRA_URI') as string;
+	const hydraUri = 'http://hydra.uri';
 
 	beforeAll(async () => {
+		jest.spyOn(Configuration, 'get').mockReturnValue(hydraUri);
+
 		module = await Test.createTestingModule({
 			providers: [
 				HydraServiceSpec,
@@ -52,6 +62,7 @@ describe('HydraService', () => {
 
 	afterAll(async () => {
 		await module.close();
+		jest.clearAllMocks();
 	});
 
 	describe('request', () => {
@@ -105,121 +116,325 @@ describe('HydraService', () => {
 		});
 	});
 
-	describe('Consent Flow', () => {
-		describe('getConsentRequest', () => {
-			it('should throw', () => {
-				expect(() => service.getConsentRequest('')).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('acceptConsentRequest', () => {
-			it('should throw', () => {
-				expect(() => service.acceptConsentRequest('', {})).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('rejectConsentRequest', () => {
-			it('should throw', () => {
-				expect(() => service.rejectConsentRequest('', {})).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('listConsentSessions', () => {
-			it('should throw', () => {
-				expect(() => service.listConsentSessions('')).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('revokeConsentSession', () => {
-			it('should throw', () => {
-				expect(() => service.revokeConsentSession('', '')).toThrow(NotImplementedException);
-			});
-		});
-	});
-
-	describe('Login Flow', () => {
-		describe('getLoginRequest', () => {
-			it('should throw', () => {
-				expect(() => service.getLoginRequest('')).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('acceptLoginRequest', () => {
-			it('should throw', () => {
-				expect(() => service.acceptLoginRequest('', { subject: '' })).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('rejectLoginRequest', () => {
-			it('should throw', () => {
-				expect(() => service.rejectLoginRequest('', {})).toThrow(NotImplementedException);
-			});
-		});
-	});
-
-	describe('Logout Flow', () => {
-		describe('acceptLogoutRequest', () => {
-			it('should make http request', async () => {
-				// Arrange
-				const responseMock: RedirectResponse = { redirect_to: 'redirect_mock' };
-				httpService.request.mockReturnValue(of(createAxiosResponse(responseMock)));
-				const config: AxiosRequestConfig = {
-					method: 'PUT',
-					url: `${hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=challenge_mock`,
-					headers: { 'X-Forwarded-Proto': 'https' },
-				};
-
-				// Act
-				const response: RedirectResponse = await service.acceptLogoutRequest('challenge_mock');
-
-				// Assert
-				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
-				expect(response).toEqual(responseMock);
-			});
-		});
-	});
-
 	describe('Client Flow', () => {
 		describe('listOAuth2Clients', () => {
-			it('should throw', () => {
-				expect(() => service.listOAuth2Clients()).toThrow(NotImplementedException);
+			it('should list all oauth2 clients', async () => {
+				const data: ProviderOauthClient[] = [
+					{
+						client_id: 'client1',
+					},
+					{
+						client_id: 'client2',
+					},
+				];
+
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: ProviderOauthClient[] = await service.listOAuth2Clients();
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients`,
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
+			});
+
+			it('should list all oauth2 clients within parameters', async () => {
+				const data: ProviderOauthClient[] = [
+					{
+						client_id: 'client1',
+						owner: 'clientOwner',
+					},
+				];
+
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: ProviderOauthClient[] = await service.listOAuth2Clients(1, 0, 'client1', 'clientOwner');
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients?limit=1&offset=0&client_name=client1&owner=clientOwner`,
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
 			});
 		});
 
 		describe('getOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => service.getOAuth2Client('')).toThrow(NotImplementedException);
+			it('should get oauth2 client', async () => {
+				const data: ProviderOauthClient = {
+					client_id: 'client',
+				};
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: ProviderOauthClient = await service.getOAuth2Client('clientId');
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients/clientId`,
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
 			});
 		});
 
 		describe('createOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => service.createOAuth2Client({})).toThrow(NotImplementedException);
+			it('should create oauth2 client', async () => {
+				const data: ProviderOauthClient = {
+					client_id: 'client',
+				};
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: ProviderOauthClient = await service.createOAuth2Client(data);
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients`,
+						method: 'POST',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+						data,
+					})
+				);
 			});
 		});
 
 		describe('updateOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => service.updateOAuth2Client('', {})).toThrow(NotImplementedException);
+			it('should update oauth2 client', async () => {
+				const data: ProviderOauthClient = {
+					client_id: 'client',
+				};
+				httpService.request.mockReturnValue(of(createAxiosResponse(data)));
+
+				const result: ProviderOauthClient = await service.updateOAuth2Client('clientId', data);
+
+				expect(result).toEqual(data);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients/clientId`,
+						method: 'PUT',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+						data,
+					})
+				);
 			});
 		});
 
 		describe('deleteOAuth2Client', () => {
-			it('should throw', () => {
-				expect(() => service.deleteOAuth2Client('')).toThrow(NotImplementedException);
+			it('should delete oauth2 client', async () => {
+				httpService.request.mockReturnValue(of(createAxiosResponse({})));
+
+				await service.deleteOAuth2Client('clientId');
+
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/clients/clientId`,
+						method: 'DELETE',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
 			});
 		});
 	});
 
-	describe('introspectOAuth2Token', () => {
-		it('should throw', () => {
-			expect(() => service.introspectOAuth2Token('', '')).toThrow(NotImplementedException);
-		});
-	});
+	describe('Consent Flow', () => {
+		let challenge: string;
 
-	describe('isInstanceAlive', () => {
-		it('should throw', () => {
-			expect(() => service.isInstanceAlive()).toThrow(NotImplementedException);
+		beforeEach(() => {
+			challenge = 'challengexyz';
+		});
+
+		afterEach(() => {
+			resetAllMocks();
+		});
+
+		describe('getConsentRequest', () => {
+			it('should make http request', async () => {
+				// Arrange
+				const config: AxiosRequestConfig = {
+					method: 'GET',
+					url: `${hydraUri}/oauth2/auth/requests/consent?consent_challenge=${challenge}`,
+				};
+				httpService.request.mockReturnValue(of(createAxiosResponse<ProviderConsentResponse>({ challenge })));
+
+				// Act
+				const result: ProviderConsentResponse = await service.getConsentRequest(challenge);
+
+				// Assert
+				expect(result.challenge).toEqual(challenge);
+				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
+			});
+		});
+
+		describe('acceptConsentRequest', () => {
+			it('should make http request', async () => {
+				// Arrange
+				const body: AcceptConsentRequestBody = {
+					grant_scope: ['offline', 'openid'],
+				};
+				const config: AxiosRequestConfig = {
+					method: 'PUT',
+					url: `${hydraUri}/oauth2/auth/requests/consent/accept?consent_challenge=${challenge}`,
+					data: body,
+				};
+				const expectedRedirectTo = 'redirectTo';
+				httpService.request.mockReturnValue(
+					of(createAxiosResponse<ProviderRedirectResponse>({ redirect_to: expectedRedirectTo }))
+				);
+
+				// Act
+				const result: ProviderRedirectResponse = await service.acceptConsentRequest(challenge, body);
+
+				// Assert
+				expect(result.redirect_to).toEqual(expectedRedirectTo);
+				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
+			});
+		});
+
+		describe('rejectConsentRequest', () => {
+			it('should make http request', async () => {
+				// Arrange
+				const body: RejectRequestBody = {
+					error: 'error',
+				};
+				const config: AxiosRequestConfig = {
+					method: 'PUT',
+					url: `${hydraUri}/oauth2/auth/requests/consent/reject?consent_challenge=${challenge}`,
+					data: body,
+				};
+				const expectedRedirectTo = 'redirectTo';
+				httpService.request.mockReturnValue(
+					of(createAxiosResponse<ProviderRedirectResponse>({ redirect_to: expectedRedirectTo }))
+				);
+
+				// Act
+				const result: ProviderRedirectResponse = await service.rejectConsentRequest(challenge, body);
+
+				// Assert
+				expect(result.redirect_to).toEqual(expectedRedirectTo);
+				expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
+			});
+		});
+
+		describe('listConsentSessions', () => {
+			it('should list all consent sessions', async () => {
+				const response: ProviderConsentSessionResponse[] = [{ consent_request: { challenge: 'challenge' } }];
+				httpService.request.mockReturnValue(of(createAxiosResponse(response)));
+
+				const result: ProviderConsentSessionResponse[] = await service.listConsentSessions('userId');
+
+				expect(result).toEqual(response);
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/oauth2/auth/sessions/consent?subject=userId`,
+						method: 'GET',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
+			});
+		});
+
+		describe('revokeConsentSession', () => {
+			it('should revoke all consent sessions', async () => {
+				httpService.request.mockReturnValue(of(createAxiosResponse({})));
+
+				await service.revokeConsentSession('userId', 'clientId');
+
+				expect(httpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: `${hydraUri}/oauth2/auth/sessions/consent?subject=userId&client=clientId`,
+						method: 'DELETE',
+						headers: {
+							'X-Forwarded-Proto': 'https',
+						},
+					})
+				);
+			});
+		});
+
+		describe('Logout Flow', () => {
+			describe('acceptLogoutRequest', () => {
+				it('should make http request', async () => {
+					const responseMock: ProviderRedirectResponse = { redirect_to: 'redirect_mock' };
+					httpService.request.mockReturnValue(of(createAxiosResponse(responseMock)));
+					const config: AxiosRequestConfig = {
+						method: 'PUT',
+						url: `${hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=challenge_mock`,
+						headers: { 'X-Forwarded-Proto': 'https' },
+					};
+
+					const response: ProviderRedirectResponse = await service.acceptLogoutRequest('challenge_mock');
+
+					expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
+					expect(response).toEqual(responseMock);
+				});
+			});
+		});
+
+		describe('Miscellaneous', () => {
+			describe('introspectOAuth2Token', () => {
+				it('should return introspect', async () => {
+					const response: IntrospectResponse = {
+						active: true,
+					};
+					httpService.request.mockReturnValue(of(createAxiosResponse(response)));
+
+					const result: IntrospectResponse = await service.introspectOAuth2Token('token', 'scope');
+
+					expect(result).toEqual(response);
+					expect(httpService.request).toHaveBeenCalledWith(
+						expect.objectContaining({
+							url: `${hydraUri}/oauth2/introspect`,
+							method: 'POST',
+							headers: {
+								'X-Forwarded-Proto': 'https',
+								'Content-Type': 'application/x-www-form-urlencoded',
+							},
+							data: 'token=token&scope=scope',
+						})
+					);
+				});
+			});
+
+			describe('isInstanceAlive', () => {
+				it('should check if hydra is alive', async () => {
+					httpService.request.mockReturnValue(of(createAxiosResponse(true)));
+
+					const result: boolean = await service.isInstanceAlive();
+
+					expect(result).toEqual(true);
+					expect(httpService.request).toHaveBeenCalledWith(
+						expect.objectContaining({
+							url: `${hydraUri}/health/alive`,
+							method: 'GET',
+							headers: {
+								'X-Forwarded-Proto': 'https',
+							},
+						})
+					);
+				});
+			});
 		});
 	});
 });

@@ -1,7 +1,7 @@
-import { ConsentResponse } from '@shared/infra/oauth-provider/dto/index';
+import { ProviderConsentResponse } from './consent.response';
 
-export interface ConsentSessionResponse {
-	consent_request: ConsentResponse;
+export interface ProviderConsentSessionResponse {
+	consent_request: ProviderConsentResponse;
 
 	grant_access_token_audience?: string[];
 
