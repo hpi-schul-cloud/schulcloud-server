@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { OauthClient } from '@shared/infra/oauth-provider/dto';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ICurrentUser, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules';
 import { setupEntities, userFactory } from '@shared/testing';
@@ -21,7 +21,7 @@ describe('OauthProviderUc', () => {
 	let user: User;
 
 	const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-	const defaultOauthClientBody: OauthClient = {
+	const defaultOauthClientBody: ProviderOauthClient = {
 		scope: 'openid offline',
 		grant_types: ['authorization_code', 'refresh_token'],
 		response_types: ['code', 'token', 'id_token'],
@@ -66,12 +66,12 @@ describe('OauthProviderUc', () => {
 
 	describe('Client Flow', () => {
 		describe('listOAuth2Clients', () => {
-			const data: OauthClient[] = [{ client_id: 'clientId' }];
+			const data: ProviderOauthClient[] = [{ client_id: 'clientId' }];
 
 			it('should list oauth2 clients in return value', async () => {
 				providerService.listOAuth2Clients.mockResolvedValue(data);
 
-				const result: OauthClient[] = await uc.listOAuth2Clients(currentUser);
+				const result: ProviderOauthClient[] = await uc.listOAuth2Clients(currentUser);
 
 				expect(result).toEqual(data);
 			});
@@ -111,11 +111,11 @@ describe('OauthProviderUc', () => {
 
 		describe('getOAuth2Client', () => {
 			it('should get oauth2 client', async () => {
-				const data: OauthClient = { client_id: 'clientId' };
+				const data: ProviderOauthClient = { client_id: 'clientId' };
 
 				providerService.getOAuth2Client.mockResolvedValue(data);
 
-				const result: OauthClient = await uc.getOAuth2Client(currentUser, 'clientId');
+				const result: ProviderOauthClient = await uc.getOAuth2Client(currentUser, 'clientId');
 
 				expect(result).toEqual(data);
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.OAUTH_CLIENT_VIEW]);
@@ -133,12 +133,12 @@ describe('OauthProviderUc', () => {
 
 		describe('createOAuth2Client', () => {
 			it('should create oauth2 client with defaults', async () => {
-				const data: OauthClient = { client_id: 'clientId' };
-				const dataWithDefaults = { ...defaultOauthClientBody, ...data };
+				const data: ProviderOauthClient = { client_id: 'clientId' };
+				const dataWithDefaults: ProviderOauthClient = { ...defaultOauthClientBody, ...data };
 
 				providerService.createOAuth2Client.mockResolvedValue(dataWithDefaults);
 
-				const result: OauthClient = await uc.createOAuth2Client(currentUser, data);
+				const result: ProviderOauthClient = await uc.createOAuth2Client(currentUser, data);
 
 				expect(result).toEqual(dataWithDefaults);
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.OAUTH_CLIENT_EDIT]);
@@ -146,7 +146,7 @@ describe('OauthProviderUc', () => {
 			});
 
 			it('should create oauth2 client without defaults', async () => {
-				const data: OauthClient = {
+				const data: ProviderOauthClient = {
 					client_id: 'clientId',
 					scope: 'openid',
 					grant_types: ['authorization_code'],
@@ -156,7 +156,7 @@ describe('OauthProviderUc', () => {
 
 				providerService.createOAuth2Client.mockResolvedValue(data);
 
-				const result: OauthClient = await uc.createOAuth2Client(currentUser, data);
+				const result: ProviderOauthClient = await uc.createOAuth2Client(currentUser, data);
 
 				expect(result).toEqual(data);
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.OAUTH_CLIENT_EDIT]);
@@ -164,7 +164,7 @@ describe('OauthProviderUc', () => {
 			});
 
 			it('should throw if user is not authorized', async () => {
-				const data: OauthClient = { client_id: 'clientId' };
+				const data: ProviderOauthClient = { client_id: 'clientId' };
 
 				authorizationService.checkAllPermissions.mockImplementation(() => {
 					throw new UnauthorizedException();
@@ -176,12 +176,12 @@ describe('OauthProviderUc', () => {
 
 		describe('updateOAuth2Client', () => {
 			it('should update oauth2 client with defaults', async () => {
-				const data: OauthClient = { client_id: 'clientId' };
+				const data: ProviderOauthClient = { client_id: 'clientId' };
 				const dataWithDefaults = { ...defaultOauthClientBody, ...data };
 
 				providerService.updateOAuth2Client.mockResolvedValue(dataWithDefaults);
 
-				const result: OauthClient = await uc.updateOAuth2Client(currentUser, 'clientId', data);
+				const result: ProviderOauthClient = await uc.updateOAuth2Client(currentUser, 'clientId', data);
 
 				expect(result).toEqual(dataWithDefaults);
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.OAUTH_CLIENT_EDIT]);
@@ -189,7 +189,7 @@ describe('OauthProviderUc', () => {
 			});
 
 			it('should update oauth2 client without defaults', async () => {
-				const data: OauthClient = {
+				const data: ProviderOauthClient = {
 					client_id: 'clientId',
 					scope: 'openid',
 					grant_types: ['authorization_code'],
@@ -199,7 +199,7 @@ describe('OauthProviderUc', () => {
 
 				providerService.updateOAuth2Client.mockResolvedValue(data);
 
-				const result: OauthClient = await uc.updateOAuth2Client(currentUser, 'clientId', data);
+				const result: ProviderOauthClient = await uc.updateOAuth2Client(currentUser, 'clientId', data);
 
 				expect(result).toEqual(data);
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.OAUTH_CLIENT_EDIT]);
@@ -207,7 +207,7 @@ describe('OauthProviderUc', () => {
 			});
 
 			it('should throw if user is not authorized', async () => {
-				const data: OauthClient = { client_id: 'clientId' };
+				const data: ProviderOauthClient = { client_id: 'clientId' };
 
 				authorizationService.checkAllPermissions.mockImplementation(() => {
 					throw new UnauthorizedException();

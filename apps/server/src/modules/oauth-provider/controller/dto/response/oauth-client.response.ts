@@ -1,17 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class OauthClientResponse {
-	constructor(response: OauthClientResponse) {
-		this.client_id = response.client_id;
-		this.client_name = response.client_name;
-		this.redirect_uris = response.redirect_uris;
-		this.token_endpoint_auth_method = response.token_endpoint_auth_method;
-		this.subject_type = response.subject_type;
-		this.scope = response.scope;
-		this.frontchannel_logout_uri = response.frontchannel_logout_uri;
-		this.grant_types = response.grant_types;
-		this.response_types = response.response_types;
+	constructor(oauthClientResponse: OauthClientResponse) {
+		Object.assign(this, oauthClientResponse);
 	}
+
+	@ApiProperty()
+	allowed_cors_origins?: string[];
+
+	@ApiProperty()
+	audience?: string[];
+
+	@ApiProperty()
+	authorization_code_grant_access_token_lifespan?: string;
+
+	@ApiProperty()
+	authorization_code_grant_id_token_lifespan?: string;
+
+	@ApiProperty()
+	authorization_code_grant_refresh_token_lifespan?: string;
+
+	@ApiProperty()
+	backchannel_logout_session_required?: boolean;
+
+	@ApiProperty()
+	backchannel_logout_uri?: string;
+
+	@ApiProperty()
+	client_credentials_grant_access_token_lifespan?: string;
 
 	@ApiProperty()
 	client_id?: string;
@@ -20,16 +36,19 @@ export class OauthClientResponse {
 	client_name?: string;
 
 	@ApiProperty()
-	redirect_uris?: string[];
+	client_secret_expires_at?: number;
 
 	@ApiProperty()
-	token_endpoint_auth_method?: string;
+	client_uri?: string;
 
 	@ApiProperty()
-	subject_type?: string;
+	contacts?: string[];
 
 	@ApiProperty()
-	scope?: string;
+	created_at?: string;
+
+	@ApiProperty()
+	frontchannel_logout_session_required?: boolean;
 
 	@ApiProperty()
 	frontchannel_logout_uri?: string;
@@ -38,5 +57,89 @@ export class OauthClientResponse {
 	grant_types?: string[];
 
 	@ApiProperty()
+	implicit_grant_access_token_lifespan?: string;
+
+	@ApiProperty()
+	implicit_grant_id_token_lifespan?: string;
+
+	@ApiProperty()
+	jwks?: object;
+
+	@ApiProperty()
+	jwks_uri?: string;
+
+	@ApiProperty()
+	jwt_bearer_grant_access_token_lifespan?: string;
+
+	@ApiProperty()
+	logo_uri?: string;
+
+	@ApiProperty()
+	metadata?: object;
+
+	@ApiProperty()
+	owner?: string;
+
+	@ApiProperty()
+	password_grant_access_token_lifespan?: string;
+
+	@ApiProperty()
+	password_grant_refresh_token_lifespan?: string;
+
+	@ApiProperty()
+	policy_uri?: string;
+
+	@ApiProperty()
+	post_logout_redirect_uris?: string[];
+
+	@ApiProperty()
+	redirect_uris?: string[];
+
+	@ApiProperty()
+	refresh_token_grant_access_token_lifespan?: string;
+
+	@ApiProperty()
+	refresh_token_grant_id_token_lifespan?: string;
+
+	@ApiProperty()
+	refresh_token_grant_refresh_token_lifespan?: string;
+
+	@ApiProperty()
+	registration_access_token?: string;
+
+	@ApiProperty()
+	registration_client_uri?: string;
+
+	@ApiProperty()
+	request_object_signing_alg?: string;
+
+	@ApiProperty()
+	request_uris?: string[];
+
+	@ApiProperty()
 	response_types?: string[];
+
+	@ApiProperty()
+	scope?: string;
+
+	@ApiProperty()
+	sector_identifier_uri?: string;
+
+	@ApiProperty()
+	subject_type?: string;
+
+	@ApiProperty()
+	token_endpoint_auth_method?: string;
+
+	@ApiProperty()
+	token_endpoint_auth_signing_alg?: string;
+
+	@ApiProperty()
+	tos_uri?: string;
+
+	@ApiProperty()
+	updated_at?: string;
+
+	@ApiProperty()
+	userinfo_signed_response_alg?: string;
 }
