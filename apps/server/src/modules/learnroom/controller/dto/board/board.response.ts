@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { DecodeHtmlEntities } from '@shared/controller';
 import { BoardElementResponse } from './board-element.response';
 
 // TODO: this and DashboardResponse should be combined
@@ -16,6 +17,7 @@ export class BoardResponse {
 	})
 	roomId: string;
 
+	@DecodeHtmlEntities()
 	@ApiProperty({
 		description: 'Title of the Board',
 	})
