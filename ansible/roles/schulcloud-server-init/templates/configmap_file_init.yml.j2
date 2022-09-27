@@ -194,4 +194,8 @@ data:
                                        "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
                                      } );'
     # this is crucial, until we have all entities in nest!
+    git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
+    cd /schulcloud-server
+    git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    npm install
     npm run syncIndexes
