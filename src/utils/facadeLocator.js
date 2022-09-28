@@ -15,12 +15,8 @@ const facadeLocator = {
 };
 
 const setupFacadeLocator = (app) => {
-	app.registerFacade = (path, facade) => {
-		return facadeLocator.registerFacade(path, facade);
-	};
-	app.facade = (path) => {
-		return facadeLocator.facade(path);
-	};
+	app.registerFacade = (path, facade) => facadeLocator.registerFacade(path, facade);
+	app.facade = (path) => facadeLocator.facade(path);
 	return app;
 };
 

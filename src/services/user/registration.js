@@ -231,8 +231,8 @@ const registerUser = function register(data, params, app) {
 				user = newUser;
 			})
 		)
-		.then(() => {
-			return app
+		.then(() =>
+			app
 				.service('nest-account-uc')
 				.saveAccount({
 					username: user.email,
@@ -248,8 +248,8 @@ const registerUser = function register(data, params, app) {
 					const msg = 'Fehler beim Erstellen des Accounts.';
 					logger.warning(msg, err);
 					return Promise.reject(new Error(msg));
-				});
-		})
+				})
+		)
 		.then(() => {
 			// store consent
 			if (data.parent_email) {

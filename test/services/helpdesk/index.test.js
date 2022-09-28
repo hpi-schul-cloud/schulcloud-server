@@ -2,8 +2,8 @@
 const assert = require('assert');
 const { expect } = require('chai');
 const sinon = require('sinon');
-const appPromise = require('../../../src/app');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../src/app');
 
 describe('helpdesk service', function test() {
 	this.timeout(10000);

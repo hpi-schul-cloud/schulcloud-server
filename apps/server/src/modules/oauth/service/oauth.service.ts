@@ -10,7 +10,6 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AxiosResponse } from 'axios';
-import { Inject, NotFoundException } from '@nestjs/common';
 import { BadRequestException, Inject } from '@nestjs/common';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { FeathersJwtProvider } from '@src/modules/authorization';
@@ -166,14 +165,6 @@ export class OAuthService {
 		}
 
 		return redirect;
-	}
-
-	async getOauthConfig(systemId: string): Promise<OauthConfig> {
-		const system: System = await this.systemRepo.findById(systemId);
-		if (system.oauthConfig) {
-			return system.oauthConfig;
-		}
-		throw new NotFoundException(`No OAuthConfig Available in the given System ${system.id}!`);
 	}
 
 	getOAuthError(error: unknown, provider: string): OAuthResponse {

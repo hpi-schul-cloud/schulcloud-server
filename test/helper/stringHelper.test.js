@@ -1,4 +1,5 @@
 const chai = require('chai');
+
 const { expect } = chai;
 
 const { isNotEmptyString } = require('../../src/helper/stringHelper.js');

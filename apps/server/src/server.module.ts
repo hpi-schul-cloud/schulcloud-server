@@ -8,10 +8,6 @@ import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/i
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { CoreModule } from '@src/core';
-import { UserModule } from '@src/modules/user';
-import { SchoolModule } from '@src/modules/school/school.module';
-import { ProvisioningModule } from '@src/modules/provisioning';
-import { RoleModule } from '@src/modules/role/role.module';
 // todo: MUST BE CHECKED BEFORE MERGE
 // import { FilesModule } from '@src/modules/files';
 import {
@@ -29,6 +25,9 @@ import {
 	TaskModule,
 	VideoConferenceModule,
 	ProvisioningModule,
+	UserModule,
+	SchoolModule,
+	RoleModule,
 } from '@src/modules';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import serverConfig from './server.config';

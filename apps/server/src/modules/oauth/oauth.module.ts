@@ -15,15 +15,7 @@ import { OauthUc } from './uc/oauth.uc';
 @Module({
 	imports: [LoggerModule, AuthorizationModule, HttpModule, ProvisioningModule, EncryptionModule, LoggerModule],
 	controllers: [OauthSSOController],
-	providers: [
-		OauthUc,
-		HydraOauthUc,
-		SystemRepo,
-		UserRepo,
-		OAuthService,
-		HydraSsoService,
-		LtiToolRepo,
-	],
+	providers: [OauthUc, HydraOauthUc, SystemRepo, UserRepo, OAuthService, HydraSsoService, LtiToolRepo],
 	exports: [OauthUc],
 })
 export class OauthModule {}
