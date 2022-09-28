@@ -342,12 +342,12 @@ describe('AccountService', () => {
 			);
 		});
 
-		it('should set password to undefined if password is empty while editing an existing account', async () => {
+		it('should not change password if password is empty while editing an existing account', async () => {
 			const spy = jest.spyOn(accountRepo, 'save');
 			const dto = {
 				id: mockTeacherAccount.id,
 				// username: 'john.doe@domain.tld',
-				password: '',
+				password: undefined,
 			} as AccountDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
@@ -355,7 +355,7 @@ describe('AccountService', () => {
 			expect(accountRepo.findById).toHaveBeenCalled();
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					password: undefined,
+					password: defaultPassword,
 				})
 			);
 		});

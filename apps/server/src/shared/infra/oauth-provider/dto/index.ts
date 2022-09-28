@@ -7,3 +7,4 @@ export * from './response/consent.response';
 export * from './interface/oauth-client.interface';
 export * from './interface/oidc-context.interface';
 export * from './response/introspect.response';
+export * from './response/consent-session.response';
