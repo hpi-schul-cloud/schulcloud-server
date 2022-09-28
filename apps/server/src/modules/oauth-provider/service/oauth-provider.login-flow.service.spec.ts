@@ -111,7 +111,7 @@ describe('OauthProviderLoginFlowService', () => {
 			);
 
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id, true);
-			expect(pseudonymsRepo.findByUserIdAndToolId).toHaveBeenCalledWith(ltiToolDoMock.id, currentUser.userId);
+			expect(pseudonymsRepo.findByUserIdAndToolId).toHaveBeenCalledWith(currentUser.userId, ltiToolDoMock.id);
 			expect(acceptLoginRequestBody.subject).toStrictEqual(expected.subject);
 			expect(acceptLoginRequestBody.amr).toBeUndefined();
 			expect(acceptLoginRequestBody.acr).toBeUndefined();
@@ -161,7 +161,7 @@ describe('OauthProviderLoginFlowService', () => {
 
 			await service.validateNextcloudPermission(currentUser.userId, loginResponse);
 
-			expect(userRepo.findById).toHaveBeenCalledWith(user.id);
+			expect(userRepo.findById).toHaveBeenCalledWith(user.id, true);
 			expect(permissionService.resolvePermissions).toHaveBeenCalledWith(user);
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id, true);
 		});
