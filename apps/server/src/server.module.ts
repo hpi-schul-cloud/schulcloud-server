@@ -10,6 +10,7 @@ import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/
 import { CoreModule } from '@src/core';
 import { UserModule } from '@src/modules/user';
 import { SchoolModule } from '@src/modules/school/school.module';
+import { ProvisioningModule } from '@src/modules/provisioning';
 import { RoleModule } from '@src/modules/role/role.module';
 // todo: MUST BE CHECKED BEFORE MERGE
 // import { FilesModule } from '@src/modules/files';
@@ -19,15 +20,16 @@ import {
 	FilesStorageClientModule,
 	ImportUserModule,
 	LearnroomModule,
+	LessonApiModule,
 	NewsModule,
 	OauthModule,
+	OauthProviderModule,
 	RocketChatModule,
 	SystemModule,
 	TaskModule,
+	VideoConferenceModule,
 	ProvisioningModule,
 } from '@src/modules';
-
-import { VideoConferenceModule } from '@src/modules/video-conference';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
@@ -43,6 +45,7 @@ const serverModules = [
 	CollaborativeStorageModule,
 	OauthModule,
 	TaskModule,
+	LessonApiModule,
 	NewsModule,
 	UserModule,
 	ImportUserModule,
@@ -64,6 +67,7 @@ const serverModules = [
 	ProvisioningModule,
 	RoleModule,
 	VideoConferenceModule,
+	OauthProviderModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

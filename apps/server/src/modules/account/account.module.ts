@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PermissionService } from '@shared/domain';
 import { AccountRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { AccountController } from './controller/account.controller';
@@ -16,6 +17,7 @@ import { AccountUc } from './uc/account.uc';
 		AccountUc,
 		PermissionService,
 		AccountValidationService,
+		ConfigService,
 	],
 	controllers: [AccountController],
 	exports: [AccountUc, AccountService, AccountValidationService],

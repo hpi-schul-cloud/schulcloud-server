@@ -1,9 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { System, User } from '@shared/domain/index';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/index';
-import { SystemRepo } from '@shared/repo/index';
+import { AuthorizationParams } from '../controller/dto/authorization.params';
+import { OAuthResponse } from '../service/dto/oauth.response';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
@@ -18,50 +16,8 @@ export class OauthUc {
 		this.logger.setContext(OauthUc.name);
 	}
 
-	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
-		try {
-			this.logger.debug(`Oauth process started for systemId ${systemId}`);
-
-			const authCode: string = this.oauthService.checkAuthorizationCode(query);
-
-			const system: System = await this.systemRepo.findById(systemId);
-			const { oauthConfig } = system;
-			if (oauthConfig == null) {
-				this.logger.warn(
-					`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id}`
-				);
-				throw new OAuthSSOError('Requested system has no oauth configured', 'sso_internal_error');
-			}
-
-			const queryToken: OauthTokenResponse = await this.oauthService.requestToken(authCode, oauthConfig);
-
-			await this.oauthService.validateToken(queryToken.id_token, oauthConfig);
-
-			const user: User = await this.oauthService.findUser(queryToken.access_token, queryToken.id_token, system.id);
-
-			const jwtResponse: string = await this.oauthService.getJwtForUser(user);
-
-			const response: OAuthResponse = this.oauthService.buildResponse(oauthConfig, queryToken);
-			response.redirect = this.oauthService.getRedirectUrl(
-				response.provider,
-				response.idToken,
-				response.logoutEndpoint
-			);
-			response.jwt = jwtResponse;
-
-			return response;
-		} catch (error) {
-			const oauthResponse: OAuthResponse = await this.systemRepo
-				.findById(systemId)
-				.then((system: System) => {
-					const provider = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
-					const oAuthError = this.oauthService.getOAuthError(error, provider);
-					return oAuthError;
-				})
-				.catch(() => {
-					throw new NotFoundException(`No system with id: ${systemId} found`);
-				});
-			return oauthResponse;
-		}
+	async startOauth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
+		const promise: Promise<OAuthResponse> = this.oauthService.processOAuth(query, systemId);
+		return promise;
 	}
 }

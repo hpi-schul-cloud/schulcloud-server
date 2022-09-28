@@ -8,6 +8,11 @@ import { RoleMapper } from '@src/modules/role/mapper/role.mapper';
 export class RoleService {
 	constructor(private readonly roleRepo: RoleRepo) {}
 
+	async getProtectedRoles(): Promise<RoleDto[]> {
+		const roleDtos: RoleDto[] = await this.findByNames([RoleName.ADMINISTRATOR, RoleName.TEACHER]);
+		return roleDtos;
+	}
+
 	async findById(id: EntityId): Promise<RoleDto> {
 		const entity: Role = await this.roleRepo.findById(id);
 		const roleDto: RoleDto = RoleMapper.mapFromEntityToDto(entity);

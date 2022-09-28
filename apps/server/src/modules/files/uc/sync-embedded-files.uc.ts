@@ -2,7 +2,7 @@
 
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { FileRecordParentType, IComponentProperties, Lesson, Task } from '@shared/domain';
+import { ComponentType, EntityId, IComponentProperties, IComponentTextProperties, Lesson, Task } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
 import _ from 'lodash';
 import { EmbeddedFilesRepo, fileIdRegex, fileUrlRegex } from '../repo/embedded-files.repo';
@@ -12,8 +12,6 @@ import { SyncFilesStorageService } from './sync-files-storage.service';
 
 @Injectable()
 export class SyncEmbeddedFilesUc {
-	failedIds: ObjectId[] = [];
-
 	constructor(
 		private embeddedFilesRepo: EmbeddedFilesRepo,
 		private logger: Logger,
@@ -27,7 +25,7 @@ export class SyncEmbeddedFilesUc {
 	}
 
 	private async syncEmbeddedFiles(type: AvailableSyncParentType, limit: number) {
-		const [entities, count] = await this.embeddedFilesRepo.findElementsToSyncFiles(type, limit, this.failedIds);
+		const [entities, count] = await this.embeddedFilesRepo.findElementsToSyncFiles(type, limit);
 
 		this.logger.log(`Found ${entities.length} ${type} descriptions with embedded files.`);
 
@@ -35,19 +33,25 @@ export class SyncEmbeddedFilesUc {
 			this.logger.log(`migrating entity with id ${entity.id}`);
 			const fileIds = this.extractFileIds(entity);
 			this.logger.log(`extracted file ids for entity with id ${entity.id} - fileIds: ${JSON.stringify(fileIds)}`);
+			if (fileIds.length > 0) {
+				const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
 
-			const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
+				const unreachableFileIds: string[] = [];
+				fileIds.forEach((id) => {
+					const idExists = files.some((file) => file.source.id === id.toHexString());
+					if (!idExists) {
+						unreachableFileIds.push(id.toHexString());
+						this.logger.warn(
+							`legacy file with id: ${id.toHexString()} in entity ${entity._id.toHexString()} not found`
+						);
+					}
+				});
+				unreachableFileIds.forEach((id) => {
+					this.updateEntityLinks(entity, id);
+				});
 
-			fileIds.forEach((id) => {
-				const idExists = files.some((file) => new ObjectId(file.source.id) === id);
-
-				if (!idExists) {
-					this.failedIds.push(entity._id);
-					this.logger.error(`legacy file with id: ${id.toHexString()} in entity ${entity._id.toHexString()} not found`);
-				}
-			});
-
-			return this.syncFiles(files, entity);
+				await this.syncFiles(files, entity);
+			}
 		});
 
 		await Promise.all(promises);
@@ -62,13 +66,11 @@ export class SyncEmbeddedFilesUc {
 
 		if (entity instanceof Lesson) {
 			entity.contents.forEach((item: IComponentProperties) => {
-				if (item.content === undefined || !('text' in item.content)) {
-					return;
-				}
-
-				const contentFileIds = this.extractFileIdsFromContent(item.content.text);
-				if (contentFileIds !== null) {
-					fileIds.push(...contentFileIds);
+				if (this.isTextComponent(item)) {
+					const contentFileIds = this.extractFileIdsFromContent((item.content as IComponentTextProperties).text);
+					if (contentFileIds !== null) {
+						fileIds.push(...contentFileIds);
+					}
 				}
 			});
 		}
@@ -86,7 +88,6 @@ export class SyncEmbeddedFilesUc {
 				try {
 					return new ObjectId(id);
 				} catch (error) {
-					this.failedIds.push(entity._id);
 					this.logger.error(`The file id ${id} is not ObjectId in entity ${entity._id.toHexString()}`);
 				}
 			})
@@ -96,7 +97,7 @@ export class SyncEmbeddedFilesUc {
 	}
 
 	private extractFileIdsFromContent(text: string) {
-		const regEx = new RegExp(`(?<=src=${fileUrlRegex})${fileIdRegex}(?=&)`, 'gi');
+		const regEx = new RegExp(`(?<=src=${fileUrlRegex})${fileIdRegex}`, 'gi');
 		const contentFileIds = text.match(regEx);
 
 		return contentFileIds;
@@ -105,6 +106,11 @@ export class SyncEmbeddedFilesUc {
 	private async syncFiles(files: SyncFileItem[], entity: AvailableSyncEntityType) {
 		const promises = files.map((file) => this.sync(file, entity));
 		await Promise.all(promises);
+		// eslint-disable-next-line no-restricted-syntax
+		for (const file of files) {
+			this.updateEntityLinks(entity, file.source.id, file.fileRecord.id, file.fileRecord.name);
+		}
+		await this.embeddedFilesRepo.updateEntity(entity);
 	}
 
 	private async sync(file: SyncFileItem, entity: AvailableSyncEntityType) {
@@ -113,38 +119,67 @@ export class SyncEmbeddedFilesUc {
 			await this.syncFilesMetaDataService.prepareMetaData(file);
 			await this.syncFilesStorageService.syncS3File(file);
 			await this.syncFilesMetaDataService.persistMetaData(file);
-			await this.updateEntityLinks(file, entity);
 			this.logger.log(`Synced file ${file.source.id}`);
 		} catch (error) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const stack: string = 'stack' in error ? (error as Error).stack : error;
-			this.logger.error(file, stack);
-			this.failedIds.push(entity._id);
-			await this.syncFilesMetaDataService.persistError(file, stack);
+			if (error instanceof Error && error.message.includes('S3 file not found')) {
+				file.fileRecord.name = '';
+				file.fileRecord.id = '';
+			}
+			await this.writeError(error, file.source.id, entity);
 		}
 	}
 
-	private async updateEntityLinks(file: SyncFileItem, entity: Task | Lesson, errorUrl?: string) {
-		if (file.parentType === FileRecordParentType.Lesson && entity instanceof Lesson) {
-			entity.contents = entity.contents.map((item: IComponentProperties) => {
-				if ('text' in item.content) {
-					item.content.text = this.replaceLink(item.content.text, file, errorUrl);
-				}
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+	private async writeError(error: any, sourceFileId: EntityId, entity: AvailableSyncEntityType) {
+		const entityId = entity._id.toHexString();
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+		const stack = 'stack' in error ? error.stack : error;
+		this.logger.error(`${entityId}`, stack);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+		return this.syncFilesMetaDataService.persistError(sourceFileId, stack);
+	}
 
+	private updateEntityLinks(
+		entity: Task | Lesson,
+		sourceFileId: string,
+		fileRecordId?: string,
+		fileRecordName?: string
+	) {
+		if (entity instanceof Lesson) {
+			entity.contents = entity.contents.map((item: IComponentProperties) => {
+				if (this.isTextComponent(item)) {
+					(item.content as IComponentTextProperties).text = this.replaceLink(
+						(item.content as IComponentTextProperties).text,
+						sourceFileId,
+						fileRecordId,
+						fileRecordName
+					);
+				}
 				return item;
 			});
-			await this.embeddedFilesRepo.updateEntity(entity);
-		}
-
-		if (file.parentType === FileRecordParentType.Task && entity instanceof Task) {
-			entity.description = this.replaceLink(entity.description, file, errorUrl);
-			await this.embeddedFilesRepo.updateEntity(entity);
+		} else if (entity instanceof Task && entity?.description) {
+			entity.description = this.replaceLink(entity.description, sourceFileId, fileRecordId, fileRecordName);
+		} else {
+			throw new Error(`no matching condition in updateEntityLinks() for entity ${entity._id.toHexString()}`);
 		}
 	}
 
-	private replaceLink(text: string, file: SyncFileItem, errorUrl?: string) {
-		const regex = new RegExp(`${fileUrlRegex}${file.source.id}.+?"`, 'g');
-		const newUrl = errorUrl || `"/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}"`;
+	private replaceLink(text: string, sourceFileId: string, fileRecordId?: string, fileRecordName?: string) {
+		let newUrl = '';
+		const regex = new RegExp(`${fileUrlRegex}${sourceFileId}.*?"`, 'g');
+
+		if (fileRecordId && fileRecordName) {
+			newUrl = `"/api/v3/file/download/${fileRecordId}/${fileRecordName}"`;
+		} else {
+			newUrl = `"/files/file?file=not-found-${sourceFileId}"`;
+		}
+
 		return text.replace(regex, newUrl);
+	}
+
+	private isTextComponent(item: IComponentProperties) {
+		return Boolean(
+			item.component === ComponentType.TEXT && item.content && 'text' in item.content && item.content.text
+		);
 	}
 }
