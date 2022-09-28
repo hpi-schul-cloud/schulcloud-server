@@ -108,26 +108,6 @@ data:
           }
         }
       }
-    },
-    {
-    	"_id": {
-    		"$oid": "62c7f233f35a554ba3ed42f1"
-    	},
-    	"__v": 0,
-    	"updatedAt": {
-    		"$date": "2022-07-12T14:01:58.588Z"
-    	},
-    	"type": "oidc",
-    	"alias": "oidcmock",
-    	"config": {
-    		"clientId": "${OIDCMOCK__CLIENT_ID}",
-    		"clientSecret": "${OIDCMOCK__CLIENT_SECRET}",
-    		"authorizationUrl": "${OIDCMOCK__BASE_URL}/connect/authorize",
-    		"tokenUrl": "${OIDCMOCK__BASE_URL}/connect/token",
-    		"logoutUrl": "${OIDCMOCK__BASE_URL}/connect/endsession",
-    		"userinfoUrl": "${OIDCMOCK__BASE_URL}/connect/userinfo",
-    		"defaultScopes": "openid profile email"
-    	}
     }]);'
     mongo $DATABASE__URL --eval 'db.storageproviders.insert( {
                                        "isShared" : true,
@@ -151,6 +131,7 @@ data:
       {
             "_id": ObjectId("'$ISERV_SYSTEM_ID'"),
             "alias" : "Schulserver",
+            "displayName" : "Schulserver",
             "ldapConfig" : {
               "active" : true,
               "federalState": ObjectId("0000b186816abba584714c58"),
@@ -184,6 +165,7 @@ data:
           {
             "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
             "alias" : "SANIS",
+            "displayName" : "SANIS",
             "type" : "oauth",
             "oauthConfig": {
               "clientId": "'$SANIS_CLIENT_ID'",

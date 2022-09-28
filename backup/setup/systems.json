@@ -9,6 +9,7 @@
 		},
 		"type": "oidc",
 		"alias": "oidcmock",
+		"displayName": "OIDCMOCK",
 		"config": {
 			"clientId": "${OIDCMOCK__CLIENT_ID}",
 			"clientSecret": "${OIDCMOCK__CLIENT_SECRET}",

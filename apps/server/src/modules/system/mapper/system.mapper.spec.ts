@@ -42,6 +42,18 @@ describe('SystemMapper', () => {
 			expect(result.oauthConfig).toEqual(systemEntity.oauthConfig);
 			expect(result.oidcConfig).toEqual(systemEntity.config);
 		});
+		it('should map take alias as default instead of displayName', () => {
+			// Arrange
+			const systemEntity = systemFactory.withOauthConfig().build();
+			systemEntity.displayName = undefined;
+
+			// Act
+			const result = SystemMapper.mapFromEntityToDto(systemEntity);
+
+			// Assert
+			expect(result.alias).toEqual(systemEntity.alias);
+			expect(result.displayName).toEqual(systemEntity.alias);
+		});
 	});
 
 	describe('mapFromEntitiesToDtos', () => {
