@@ -75,40 +75,32 @@ describe('ProvisioningService', () => {
 		});
 
 		it('should throw error when system does not exists', async () => {
-			// Act & Assert
 			await expect(provisioningService.process('accessToken', 'idToken', 'no system found')).rejects.toThrow(
 				NotFoundException
 			);
 		});
 
 		it('should apply sanis provisioning strategy', async () => {
-			// Act
 			await provisioningService.process('accessToken', 'idToken', sanisSystemStrategyId);
 
-			// Assert
 			expect(sanisProvisioningStrategy.apply).toHaveBeenCalled();
 		});
 
 		it('should throw if sanis system has no provisioning url', async () => {
-			// Arrange
 			sanisStrategySystem.provisioningUrl = undefined;
 
-			// Act & Assert
 			await expect(provisioningService.process('accessToken', 'idToken', sanisSystemStrategyId)).rejects.toThrow(
 				InternalServerErrorException
 			);
 		});
 
 		it('should apply iserv provisioning strategy', async () => {
-			// Act
 			await provisioningService.process('accessToken', 'idToken', iservSystemStrategyId);
 
-			// Assert
 			expect(iservProvisioningStrategy.apply).toHaveBeenCalled();
 		});
 
 		it('should throw error for missing provisioning stratgey', async () => {
-			// Arrange
 			const missingStrategySystem: SystemDto = new SystemDto({
 				type: 'unknown',
 				provisioningStrategy: 'unknown strategy' as SystemProvisioningStrategy,
@@ -116,7 +108,6 @@ describe('ProvisioningService', () => {
 			systemService.findById.mockReset();
 			systemService.findById.mockResolvedValueOnce(missingStrategySystem);
 
-			// Act & Assert
 			await expect(provisioningService.process('accessToken', 'idToken', 'missingStrategySystemId')).rejects.toThrow(
 				InternalServerErrorException
 			);

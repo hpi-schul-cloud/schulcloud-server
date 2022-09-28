@@ -136,18 +136,14 @@ describe('UserUc', () => {
 		});
 
 		it('should call the save method of userService', async () => {
-			// Act
 			await userUc.save(userDto);
 
-			// Assert
 			expect(userService.createOrUpdate).toHaveBeenCalledWith(userDto);
 		});
 
 		it('should call the saveProvisioningUserOutputDto method of userService', async () => {
-			// Arrange
 			roleUc.findByNames.mockResolvedValue(Promise.resolve([roleDto]));
 
-			// Act
 			await userUc.saveProvisioningUserOutputDto(
 				new ProvisioningUserOutputDto({
 					id: userDto.id,
@@ -160,7 +156,6 @@ describe('UserUc', () => {
 				})
 			);
 
-			// Assert
 			expect(userService.createOrUpdate).toHaveBeenCalledWith(userDto);
 		});
 	});

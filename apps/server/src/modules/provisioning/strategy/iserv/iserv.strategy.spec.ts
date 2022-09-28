@@ -42,28 +42,22 @@ describe('IservStrategy', () => {
 		});
 
 		it('should apply strategy', async () => {
-			// Act
 			const result = await iservStrategy.apply(params);
 
-			// Assert
 			expect(result.externalUserId).toEqual(userUUID);
 		});
 
 		it('should throw error when there is no uuid in the idToken', async () => {
-			// Arrange
 			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
 				return {};
 			});
-			// Act & Assert
 			await expect(iservStrategy.apply(params)).rejects.toThrow(OAuthSSOError);
 		});
 
 		it('should throw error when there is no idToken', async () => {
-			// Arrange
 			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
 				return null;
 			});
-			// Act & Assert
 			await expect(iservStrategy.apply(params)).rejects.toThrow(OAuthSSOError);
 		});
 	});

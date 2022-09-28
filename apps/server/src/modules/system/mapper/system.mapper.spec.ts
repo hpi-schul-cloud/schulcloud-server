@@ -18,13 +18,10 @@ describe('SystemMapper', () => {
 
 	describe('mapFromEntityToDto', () => {
 		it('should map all fields', () => {
-			// Arrange
 			const systemEntity = systemFactory.withOauthConfig().build();
 
-			// Act
 			const result = SystemMapper.mapFromEntityToDto(systemEntity);
 
-			// Assert
 			expect(result.url).toEqual(systemEntity.url);
 			expect(result.alias).toEqual(systemEntity.alias);
 			expect(result.type).toEqual(systemEntity.type);
@@ -36,30 +33,24 @@ describe('SystemMapper', () => {
 
 	describe('mapFromEntitiesToDtos', () => {
 		it('should map all given entities', () => {
-			// Arrange
 			const systemEntities: System[] = [
 				systemFactory.withOauthConfig().build(),
 				systemFactory.build({ oauthConfig: undefined }),
 			];
 
-			// Act
 			const result = SystemMapper.mapFromEntitiesToDtos(systemEntities);
 
-			// Assert
 			expect(result.length).toBe(systemEntities.length);
 		});
 
 		it('should map oauthconfig if exists', () => {
-			// Arrange
 			const systemEntities: System[] = [
 				systemFactory.withOauthConfig().build(),
 				systemFactory.build({ oauthConfig: undefined }),
 			];
 
-			// Act
 			const result = SystemMapper.mapFromEntitiesToDtos(systemEntities);
 
-			// Assert
 			expect(result[0].oauthConfig?.clientId).toEqual(systemEntities[0].oauthConfig?.clientId);
 			expect(result[0].oauthConfig?.clientSecret).toEqual(systemEntities[0].oauthConfig?.clientSecret);
 			expect(result[0].oauthConfig?.grantType).toEqual(systemEntities[0].oauthConfig?.grantType);

@@ -34,13 +34,11 @@ describe('UserUcMapper', () => {
 	});
 
 	it('mapFromProvisioningUserOutputDtoToUserDto', () => {
-		// Act
 		const resultDto: UserDto = UserUcMapper.mapFromProvisioningUserOutputDtoToUserDto(
 			provisioningUserOutputDto,
 			roleIds
 		);
 
-		// Assert
 		expect(resultDto.id).toEqual(provisioningUserOutputDto.id);
 		expect(resultDto.email).toEqual(provisioningUserOutputDto.email);
 		expect(resultDto.firstName).toEqual(provisioningUserOutputDto.firstName);

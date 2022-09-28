@@ -62,7 +62,6 @@ describe('OAuthUc', () => {
 		const query: AuthorizationParams = { code };
 
 		it('should do the process successfully', async () => {
-			// Arrange
 			const jwt = 'schulcloudJwt';
 			const redirect = 'redirect';
 			const baseResponse: OAuthResponse = {
@@ -86,10 +85,8 @@ describe('OAuthUc', () => {
 			oauthService.buildResponse.mockReturnValue(baseResponse);
 			oauthService.getRedirectUrl.mockReturnValue(redirect);
 
-			// Act
 			const response: OAuthResponse = await service.processOAuth(query, testSystem.id);
 
-			// Assert
 			expect(response).toEqual(
 				expect.objectContaining({
 					jwt,
@@ -100,7 +97,6 @@ describe('OAuthUc', () => {
 		});
 
 		it('should throw error if oauthconfig is missing', async () => {
-			// Arrange
 			const system: System = systemFactory.buildWithId();
 			const errorResponse: OAuthResponse = {
 				provider: 'unknown-provider',
@@ -112,16 +108,13 @@ describe('OAuthUc', () => {
 			systemRepo.findById.mockResolvedValue(system);
 			oauthService.getOAuthError.mockReturnValue(errorResponse);
 
-			// Act
 			const response: OAuthResponse = await service.processOAuth(query, system.id);
 
-			// Assert
 			expect(oauthService.getOAuthError).toHaveBeenCalledWith(expect.any(Error), 'unknown-provider');
 			expect(response).toEqual(errorResponse);
 		});
 
 		it('should return a error response if processOAuth failed and the provider cannot be fetched from the system', async () => {
-			// Arrange
 			const system: System = systemFactory.withOauthConfig().buildWithId();
 			const errorResponse: OAuthResponse = {
 				provider: system.oauthConfig?.provider,
@@ -135,21 +128,17 @@ describe('OAuthUc', () => {
 			systemRepo.findById.mockResolvedValue(system);
 			oauthService.getOAuthError.mockReturnValue(errorResponse);
 
-			// Act
 			const response: OAuthResponse = await service.processOAuth(query, '');
 
-			// Assert
 			expect(response).toEqual(errorResponse);
 		});
 
 		it('should throw if no system was found', async () => {
-			// Arrange
 			oauthService.checkAuthorizationCode.mockImplementation(() => {
 				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
 			});
 			systemRepo.findById.mockRejectedValue(new NotFoundError('Not Found'));
 
-			// Act & Assert
 			await expect(service.processOAuth(query, 'unknown id')).rejects.toThrow(NotFoundException);
 		});
 	});

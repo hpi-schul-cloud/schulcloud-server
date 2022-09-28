@@ -84,7 +84,6 @@ describe('OAuthController', () => {
 		system.id = '4345345';
 
 		it('should redirect to mock.de', async () => {
-			// Arrange
 			const { res } = getMockRes();
 			const expected = [query, system.id];
 			oauthUc.processOAuth.mockResolvedValue({
@@ -95,16 +94,13 @@ describe('OAuthController', () => {
 				provider: 'iserv',
 			});
 
-			// Act
 			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
 
-			// Assert
 			expect(oauthUc.processOAuth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).toBeCalledWith('jwt', '1111', cookieProperties);
 			expect(res.redirect).toBeCalledWith(iservRedirectMock);
 		});
 		it('should redirect to empty string', async () => {
-			// Arrange
 			const { res } = getMockRes();
 			oauthUc.processOAuth.mockResolvedValue({
 				idToken: '2222',
@@ -112,10 +108,8 @@ describe('OAuthController', () => {
 				provider: 'iserv',
 			});
 
-			// Act
 			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
 
-			// Assert
 			expect(res.cookie).toBeCalledWith('jwt', '', cookieProperties);
 			expect(res.redirect).toBeCalledWith('');
 		});

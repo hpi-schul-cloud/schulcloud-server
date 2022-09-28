@@ -17,15 +17,12 @@ describe('SchoolMapper', () => {
 	});
 
 	it('mapToDto', () => {
-		// Arrange
 		const schoolEntity: School = schoolFactory.buildWithId();
 		const system: System = systemFactory.buildWithId();
 		schoolEntity.systems.add(system);
 
-		// Act
 		const schoolDto = SchoolMapper.mapToDto(schoolEntity);
 
-		// Assert
 		expect(schoolDto.id).toEqual(schoolEntity.id);
 		expect(schoolDto.name).toEqual(schoolEntity.name);
 		expect(schoolDto.externalId).toEqual(schoolEntity.externalId);
@@ -33,7 +30,6 @@ describe('SchoolMapper', () => {
 	});
 
 	it('mapToEntity', () => {
-		// Arrange
 		const system: System = systemFactory.buildWithId();
 
 		const schoolDto: SchoolDto = new SchoolDto({
@@ -43,10 +39,8 @@ describe('SchoolMapper', () => {
 			systemIds: [system.id],
 		});
 
-		// Act
 		const entity: School = SchoolMapper.mapToEntity(schoolDto);
 
-		// Assert
 		expect(entity.id).toEqual(schoolDto.id);
 		expect(entity.name).toEqual(schoolDto.name);
 		expect(entity.externalId).toEqual(schoolDto.externalId);
@@ -54,16 +48,13 @@ describe('SchoolMapper', () => {
 	});
 
 	it('mapEntityToEntity', () => {
-		// Arrange
 		const targetEntity: School = new School({ name: 'oldName' });
 		const sourceEntity: School = schoolFactory.buildWithId();
 		const system: System = systemFactory.buildWithId();
 		sourceEntity.systems.add(system);
 
-		// Act
 		const entity = SchoolMapper.mapEntityToEntity(targetEntity, sourceEntity);
 
-		// Assert
 		expect(entity.id).toEqual(targetEntity.id);
 		expect(entity.name).toEqual(sourceEntity.name);
 		expect(entity.externalId).toEqual(sourceEntity.externalId);

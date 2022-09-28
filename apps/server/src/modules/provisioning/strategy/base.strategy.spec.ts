@@ -21,17 +21,14 @@ describe('BaseStrategy', () => {
 
 	describe('apply', () => {
 		it('should throw not implemented exception', async () => {
-			// Act & Assert
 			await expect(baseStrategy.apply({ accessToken: '' })).rejects.toThrow(NotImplementedException);
 		});
 	});
 
 	describe('getType', () => {
 		it('should return strategy type', () => {
-			// Act
 			const result = baseStrategy.getType();
 
-			// Assert
 			expect(result).toEqual(SystemProvisioningStrategy.UNDEFINED);
 		});
 	});

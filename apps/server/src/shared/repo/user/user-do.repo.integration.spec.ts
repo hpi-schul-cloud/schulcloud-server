@@ -63,21 +63,17 @@ describe('UserRepo', () => {
 
 	describe('findById', () => {
 		it('should find user without populating roles', async () => {
-			// Arrange
 			const user: User = userFactory.buildWithId();
 
 			await em.persistAndFlush(user);
 
-			// Act
 			const result: UserDO = await repo.findById(user.id);
 
-			// Assert
 			expect(result.id).toEqual(user.id);
 			expect(result.roleIds).toEqual([]);
 		});
 
 		it('should find user and populate roles', async () => {
-			// Arrange
 			const roles3: Role[] = roleFactory.buildList(1);
 			await em.persistAndFlush(roles3);
 
@@ -92,16 +88,13 @@ describe('UserRepo', () => {
 
 			em.clear();
 
-			// Act
 			const result: UserDO = await repo.findById(user.id, true);
 
-			// Assert
 			expect(result.id).toEqual(user.id);
 			expect(result.roleIds).toEqual([roles1[0].id]);
 		});
 
 		it('should throw if user cannot be found', async () => {
-			// Act & Assert
 			await expect(repo.findById(new ObjectId().toHexString(), false)).rejects.toThrow(NotFoundError);
 		});
 	});
@@ -122,35 +115,28 @@ describe('UserRepo', () => {
 		});
 
 		it('should find a user by its external id', async () => {
-			// Act
 			const result: UserDO = await repo.findByExternalIdOrFail(user.externalId as string, system.id);
 
-			// Assert
 			expect(result.id).toEqual(user.id);
 			expect(result.externalId).toEqual(user.externalId);
 			expect(result.schoolId).toEqual(school.id);
 		});
 
 		it('should reject if no user with external id was found', async () => {
-			// Arrange
 			await em.nativeDelete(User, {});
 
-			// Act & Assert
 			await expect(repo.findByExternalIdOrFail(user.externalId as string, system.id)).rejects.toThrow(NotFoundError);
 		});
 
 		it('should reject if school has no corresponding system', async () => {
-			// Arrange
 			school.systems.removeAll();
 
-			// Act & Assert
 			await expect(repo.findByExternalIdOrFail(user.externalId as string, system.id)).rejects.toThrow(NotFoundError);
 		});
 	});
 
 	describe('mapEntityToDO', () => {
 		it('should return a domain object', () => {
-			// Arrange
 			const id = new ObjectId();
 			const testEntity: User = userFactory.buildWithId(
 				{
@@ -173,10 +159,8 @@ describe('UserRepo', () => {
 			testEntity.emailSearchValues = ['em'];
 			testEntity.importHash = 'importHash';
 
-			// Act
 			const userDO: UserDO = repo.mapEntityToDOSpec(testEntity);
 
-			// Assert
 			expect(userDO).toEqual(
 				expect.objectContaining({
 					id: testEntity.id,
@@ -203,7 +187,6 @@ describe('UserRepo', () => {
 
 	describe('mapDOToEntity', () => {
 		it('should map DO to Entity', () => {
-			// Arrange
 			const testDO: UserDO = new UserDO({
 				id: 'testId',
 				email: 'email@email.email',
@@ -218,10 +201,8 @@ describe('UserRepo', () => {
 				preferences: { firstLogin: true },
 			});
 
-			// Act
 			const result: EntityProperties<IUserProperties> = repo.mapDOToEntitySpec(testDO);
 
-			// Assert
 			expect(result).toEqual(
 				expect.objectContaining({
 					id: testDO.id,

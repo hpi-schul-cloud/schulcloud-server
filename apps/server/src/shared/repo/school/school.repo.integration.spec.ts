@@ -57,14 +57,11 @@ describe('school repo', () => {
 	});
 
 	it('createAndSave', async () => {
-		// Arrange
 		const schoolEntity: School = schoolFactory.build();
 
-		// Act
 		const createdSchool: School = repo.create(schoolEntity);
 		await repo.save(createdSchool);
 
-		// Assert
 		const savedSchoolEntity = await em.find(School, {});
 		expect(savedSchoolEntity[0].id).toBeDefined();
 		expect(createdSchool.id).toBeDefined();
@@ -72,24 +69,20 @@ describe('school repo', () => {
 
 	describe('findByExternalIdOrFail', () => {
 		it('should find school by external ID', async () => {
-			// Arrange
 			const system: System = systemFactory.buildWithId();
 			const schoolEntity: School = schoolFactory.build({ externalId: 'externalId' });
 			schoolEntity.systems.add(system);
 
 			await em.persistAndFlush(schoolEntity);
 
-			// Act
 			const result: School = await repo.findByExternalIdOrFail(
 				schoolEntity.externalId as string,
 				schoolEntity.systems[0].id
 			);
 
-			// Assert
 			expect(result).toEqual(schoolEntity);
 		});
 		it('should throw NotFoundError when no school is found', async () => {
-			// Act & Assert
 			await expect(
 				repo.findByExternalIdOrFail(new ObjectId().toHexString(), new ObjectId().toHexString())
 			).rejects.toThrow(NotFoundError);

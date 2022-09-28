@@ -77,14 +77,11 @@ describe('system repo', () => {
 		});
 
 		it('should return all systems', async () => {
-			// Arrange
 			const systems = [systemFactory.build(), systemFactory.build({ oauthConfig: undefined })];
 			await em.persistAndFlush(systems);
 
-			// Act
 			const result = await repo.findAll();
 
-			// Assert
 			expect(result.length).toEqual(systems.length);
 			expect(result).toEqual(systems);
 		});
@@ -103,37 +100,29 @@ describe('system repo', () => {
 		});
 
 		it('should return no systems', async () => {
-			// Act
 			const result = await repo.findByFilter();
 
-			// Assert
 			expect(result.length).toEqual(0);
 			expect(result).toEqual([]);
 		});
 
 		it('should return all systems with type oauth', async () => {
-			// Act
 			const result = await repo.findByFilter('oauth');
 
-			// Assert
 			expect(result.length).toEqual(systems.length);
 			expect(result).toEqual(systems);
 		});
 
 		it('should return all systems with type oauth and oauthConfig', async () => {
-			// Act
 			const result = await repo.findByFilter('oauth', true);
 
-			// Assert
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(systems[0].id);
 		});
 
 		it('should return all systems with oauthConfig', async () => {
-			// Act
 			const result = await repo.findByFilter('', true);
 
-			// Assert
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(systems[0].id);
 		});

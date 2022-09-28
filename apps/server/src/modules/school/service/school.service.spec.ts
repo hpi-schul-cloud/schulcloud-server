@@ -65,24 +65,17 @@ describe('SchoolService', () => {
 
 	describe('createOrUpdate', () => {
 		it('should create new school', async () => {
-			// Arrange
-
-			// Act
 			await schoolService.createOrUpdateSchool(school1Dto);
 
-			// Assert
 			expect(schoolRepo.create).toHaveBeenCalledWith(expect.objectContaining({ name: school1Dto.name }));
 			expect(schoolRepo.save).toHaveBeenCalled();
 		});
 
 		it('should update existing school', async () => {
-			// Arrange
 			school1Dto.id = mockSchoolEntities[0].id;
 
-			// Act
 			await schoolService.createOrUpdateSchool(school1Dto);
 
-			// Assert
 			expect(schoolRepo.save).toHaveBeenCalledWith(
 				expect.objectContaining({
 					name: school1Dto.name,
@@ -95,24 +88,18 @@ describe('SchoolService', () => {
 
 	describe('hasFeature', () => {
 		it('should return true', async () => {
-			// Arrange
 			schoolRepo.findById.mockResolvedValue(schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] }));
 
-			// Act
 			const result = await schoolService.hasFeature('schoolId', SchoolFeatures.VIDEOCONFERENCE);
 
-			// Assert
 			expect(result).toBe(true);
 		});
 
 		it('should return false', async () => {
-			// Arrange
 			schoolRepo.findById.mockResolvedValue(schoolFactory.buildWithId());
 
-			// Act
 			const result = await schoolService.hasFeature('schoolId', SchoolFeatures.VIDEOCONFERENCE);
 
-			// Assert
 			expect(result).toBe(false);
 		});
 	});

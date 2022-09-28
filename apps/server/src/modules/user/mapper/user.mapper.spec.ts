@@ -31,10 +31,8 @@ describe('UserMapper', () => {
 	});
 
 	it('mapFromEntityToDto', () => {
-		// Act
 		const resultDto: UserDto = UserMapper.mapFromEntityToDto(userEntity);
 
-		// Assert
 		expect(resultDto.id).toEqual(userEntity.id);
 		expect(resultDto.email).toEqual(userEntity.email);
 		expect(resultDto.firstName).toEqual(userEntity.firstName);
@@ -49,14 +47,12 @@ describe('UserMapper', () => {
 	});
 
 	it('mapFromDtoToEntity', () => {
-		// Act
 		const resultEntity: User = UserMapper.mapFromDtoToEntity(
 			userDto,
 			userEntity.roles.getItems(),
 			new School({ name: 'schoolName' })
 		);
 
-		// Assert
 		expect(resultEntity.id).toEqual(userDto.id);
 		expect(resultEntity.email).toEqual(userDto.email);
 		expect(resultEntity.firstName).toEqual(userDto.firstName);
@@ -72,7 +68,6 @@ describe('UserMapper', () => {
 
 	describe('mapFromEntityToEntity', () => {
 		it('map only necessary fields', () => {
-			// Arrange
 			const patch: User = new User({
 				email: 'overrideMe',
 				firstName: 'overrideMe',
@@ -83,10 +78,8 @@ describe('UserMapper', () => {
 				}),
 			});
 
-			// Act
 			const resultEntity = UserMapper.mapFromEntityToEntity(userEntity, patch);
 
-			// Assert
 			expect(resultEntity.id).toEqual(userEntity.id);
 			expect(resultEntity.email).toEqual(patch.email);
 			expect(resultEntity.firstName).toEqual(patch.firstName);
@@ -101,7 +94,6 @@ describe('UserMapper', () => {
 		});
 
 		it('map all fields', () => {
-			// Arrange
 			const patch: User = new User({
 				email: 'overrideMe',
 				firstName: 'overrideMe',
@@ -118,10 +110,8 @@ describe('UserMapper', () => {
 			patch.forcePasswordChange = true;
 			patch.preferences = { key: 'value' };
 
-			// Act
 			const resultEntity = UserMapper.mapFromEntityToEntity(userEntity, patch);
 
-			// Assert
 			expect(resultEntity.id).toEqual(userEntity.id);
 			expect(resultEntity.email).toEqual(patch.email);
 			expect(resultEntity.firstName).toEqual(patch.firstName);

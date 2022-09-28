@@ -125,32 +125,25 @@ describe('OAuthService', () => {
 
 	describe('checkAuthorizationCode', () => {
 		it('should extract code from query', () => {
-			// Arrange
 			const code = '43534543jnj543342jn2';
 			const query: AuthorizationParams = { code };
 
-			// Act
 			const extract: string = service.checkAuthorizationCode(query);
 
-			// Assert
 			expect(extract).toBe(code);
 		});
 
 		it('should throw an error from a query that contains an error', () => {
-			// Arrange
 			const query: AuthorizationParams = { error: 'error' };
 
-			// Act & Assert
 			expect(() => service.checkAuthorizationCode(query)).toThrow(
 				new OAuthSSOError('Authorization Query Object has no authorization code or error', 'error')
 			);
 		});
 
 		it('should throw an error from a falsy query', () => {
-			// Arrange
 			const query: AuthorizationParams = {};
 
-			// Act & Assert
 			expect(() => service.checkAuthorizationCode(query)).toThrow(
 				new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step')
 			);
@@ -171,18 +164,14 @@ describe('OAuthService', () => {
 		});
 
 		it('should get token from the external server', async () => {
-			// Act
 			const responseToken: OauthTokenResponse = await service.requestToken(code, testOauthConfig);
 
-			// Assert
 			expect(responseToken).toStrictEqual(tokenResponse);
 		});
 
 		it('should throw error if no token got returned', async () => {
-			// Arrange
 			httpService.post.mockReturnValueOnce(throwError(() => 'error'));
 
-			// Act & Assert
 			await expect(service.requestToken(code, testOauthConfig)).rejects.toEqual(
 				new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step')
 			);
@@ -191,10 +180,8 @@ describe('OAuthService', () => {
 
 	describe('_getPublicKey', () => {
 		it('should get public key from the external server', async () => {
-			// Act
 			const publicKey: string = await service._getPublicKey(testOauthConfig);
 
-			// Assert
 			expect(publicKey).toStrictEqual('publicKey');
 		});
 	});
@@ -205,25 +192,20 @@ describe('OAuthService', () => {
 		});
 
 		it('should validate id_token and return it decoded', async () => {
-			// Arrange
 			jest.spyOn(jwt, 'verify').mockImplementationOnce((): JwtPayload => {
 				return { sub: 'mockSub' };
 			});
 
-			// Act
 			const decodedJwt: IJwt = await service.validateToken('idToken', testOauthConfig);
 
-			// Assert
 			expect(decodedJwt.sub).toStrictEqual('mockSub');
 		});
 
 		it('should throw if no payload was returned', async () => {
-			// Arrange
 			jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => {
 				return 'string';
 			});
 
-			// Act & Assert
 			await expect(service.validateToken('idToken', testOauthConfig)).rejects.toEqual(
 				new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
 			);
@@ -242,31 +224,25 @@ describe('OAuthService', () => {
 		});
 
 		it('should return the user according to the externalId', async () => {
-			// Arrange
 			const externalId = new ObjectId().toHexString();
 			const user: User = userFactory.buildWithId({ externalId });
 
 			provisioningService.process.mockResolvedValue({ externalUserId: externalId });
 			userRepo.findByExternalIdOrFail.mockResolvedValue(user);
 
-			// Act
 			const result: User = await service.findUser('accessToken', 'idToken', testSystem.id);
 
-			// Assert
 			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
 			expect(result).toBe(user);
 		});
 
 		it('should throw if no user is found with this id', async () => {
-			// Arrange
 			userRepo.findByExternalIdOrFail.mockRejectedValue(new NotFoundError('User not found'));
 
-			// Act & Assert
 			await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(OAuthSSOError);
 		});
 
 		it('should return the user according to the id', async () => {
-			// Arrange
 			const externalId: string = new ObjectId().toHexString();
 			const user: User = userFactory.buildWithId({ externalId });
 			const provisioning: ProvisioningDto = new ProvisioningDto({ externalUserId: externalId });
@@ -274,37 +250,30 @@ describe('OAuthService', () => {
 			provisioningService.process.mockResolvedValue(provisioning);
 			userRepo.findByExternalIdOrFail.mockResolvedValue(user);
 
-			// Act
 			const result: User = await service.findUser('accessToken', 'idToken', testSystem.id);
 
-			// Assert
 			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
 			expect(result).toBe(user);
 		});
 
 		it('should throw if idToken is invalid and has no sub', async () => {
-			// Arrange
 			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
 				return null;
 			});
 
-			// Act & Assert
 			await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(BadRequestException);
 		});
 	});
 
 	describe('getJwtForUser', () => {
 		it('should return a JWT for a user', async () => {
-			// Arrange
 			const jwtToken = 'schulcloudJwt';
 			const user: User = userFactory.buildWithId();
 
 			feathersJwtProvider.generateJwt.mockResolvedValue(jwtToken);
 
-			// Act
 			const jwtResult = await service.getJwtForUser(user);
 
-			// Assert
 			expect(feathersJwtProvider.generateJwt).toHaveBeenCalled();
 			expect(jwtResult).toStrictEqual(jwtToken);
 		});
@@ -312,17 +281,14 @@ describe('OAuthService', () => {
 
 	describe('buildResponse', () => {
 		it('should build the Response successfully', () => {
-			// Arrange
 			const tokenResponse: OauthTokenResponse = {
 				access_token: 'accessToken',
 				refresh_token: 'refreshToken',
 				id_token: 'idToken',
 			};
 
-			// Act
 			const response: OAuthResponse = service.buildResponse(testOauthConfig, tokenResponse);
 
-			// Assert
 			expect(response).toEqual({
 				idToken: tokenResponse.id_token,
 				logoutEndpoint: testOauthConfig.logoutEndpoint,
@@ -333,44 +299,34 @@ describe('OAuthService', () => {
 
 	describe('getRedirect', () => {
 		it('should return a login url string', () => {
-			// Act
 			const url: string = service.getRedirectUrl('provider');
 
-			// Assert
 			expect(url).toStrictEqual(`${hostUri}/dashboard`);
 		});
 
 		it('should return an iserv login url string', () => {
-			// Act
 			const url = service.getRedirectUrl('iserv', 'idToken', 'logoutEndpoint');
 
-			// Assert
 			expect(url).toStrictEqual(`logoutEndpoint?id_token_hint=idToken&post_logout_redirect_uri=${hostUri}/dashboard`);
 		});
 	});
 
 	describe('getOAuthError', () => {
 		it('should return a login url string within an error', () => {
-			// Arrange
 			const generalError: Error = new Error('foo');
 
-			// Act
 			const response: OAuthResponse = service.getOAuthError(generalError, 'provider');
 
-			// Assert
 			expect(response.provider).toStrictEqual('provider');
 			expect(response.errorcode).toStrictEqual('oauth_login_failed');
 			expect(response.redirect).toStrictEqual(`${hostUri}/login?error=oauth_login_failed&provider=provider`);
 		});
 
 		it('should return a login url string within an error', () => {
-			// Arrange
 			const specialError: OAuthSSOError = new OAuthSSOError('foo', 'special_error_code');
 
-			// Act
 			const response = service.getOAuthError(specialError, 'provider');
 
-			// Assert
 			expect(response.provider).toStrictEqual('provider');
 			expect(response.errorcode).toStrictEqual('special_error_code');
 			expect(response.redirect).toStrictEqual(`${hostUri}/login?error=special_error_code&provider=provider`);

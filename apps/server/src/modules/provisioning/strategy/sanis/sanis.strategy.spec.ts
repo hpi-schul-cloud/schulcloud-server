@@ -212,22 +212,18 @@ describe('SanisStrategy', () => {
 		});
 
 		it('should throw error when there is no school saved', async () => {
-			// Arrange
 			schoolDto.id = undefined;
 			mapper.mapToUserDO.mockReturnValue(userDO);
 			schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDto);
 
-			// Act & Assert
 			await expect(sanisStrategy.apply(sanisParams)).rejects.toThrow(UnprocessableEntityException);
 		});
 	});
 
 	describe('getType', () => {
 		it('should return type SANIS', () => {
-			// Act
 			const retType: SystemProvisioningStrategy = sanisStrategy.getType();
 
-			// Assert
 			expect(retType).toEqual(SystemProvisioningStrategy.SANIS);
 		});
 	});
@@ -240,22 +236,17 @@ describe('SanisStrategy', () => {
 		});
 
 		it('should save new school', async () => {
-			// Arrange
 			schoolRepo.findByExternalIdOrFail.mockRejectedValueOnce('Not Found');
 
-			// Act
 			const result: SchoolDto = await sanisStrategy.provisionSchool(sanisReponse, system.id);
 
-			// Assert
 			expect(result).toEqual(schoolDto);
 			expect(schoolProvisioningDto.id).toBeUndefined();
 		});
 
 		it('should update school', async () => {
-			// Act
 			const result: SchoolDto = await sanisStrategy.provisionSchool(sanisReponse, system.id);
 
-			// Assert
 			expect(result).toEqual(schoolDto);
 			expect(schoolProvisioningDto.id).toEqual(school.id);
 		});
@@ -272,34 +263,27 @@ describe('SanisStrategy', () => {
 		});
 
 		it('should save new user', async () => {
-			// Arrange
 			userRepo.findByExternalIdOrFail.mockRejectedValueOnce('Not Found');
 
-			// Act
 			const result = await sanisStrategy.provisionUser(sanisReponse, system.id, school.id);
 
-			// Assert
 			expect(result).toEqual(userDOwithID);
 			expect(userRepo.save).toHaveBeenCalledTimes(1);
 			expect(accountUc.saveAccount).toHaveBeenCalledTimes(1);
 		});
 
 		it('should update user', async () => {
-			// Act
 			const result = await sanisStrategy.provisionUser(sanisReponse, system.id, school.id);
 
-			// Assert
 			expect(result).toEqual(userDOwithID);
 			expect(userRepo.save).toHaveBeenCalledTimes(1);
 			expect(accountUc.saveAccount).not.toHaveBeenCalled();
 		});
 
 		it('should throw if no external id in provided data', async () => {
-			// Arrange
 			userDO.externalId = undefined;
 			mapper.mapToUserDO.mockReturnValueOnce(userDO);
 
-			// Act & Assert
 			await expect(sanisStrategy.provisionUser(sanisReponse, system.id, school.id)).rejects.toThrow(
 				UnprocessableEntityException
 			);
