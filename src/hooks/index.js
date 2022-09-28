@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 
+const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = require('../errors');
 const { authenticate } = require('@feathersjs/authentication');
 
 const { v4: uuidv4 } = require('uuid');
@@ -7,7 +8,6 @@ const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
-const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = require('../errors');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');

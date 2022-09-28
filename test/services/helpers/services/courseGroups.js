@@ -8,29 +8,27 @@ const removeManyCourses = (ids) =>
 		.lean()
 		.exec();
 
-const createTestCourseGroup =
-	(app, opt) =>
-	({
-		// required fields for base group
-		name = 'testCourse',
-		schoolId = opt.schoolId,
-		userIds = [],
-		classIds = [],
-		courseId = undefined,
-	} = {}) =>
-		courseGroupModel
-			.create({
-				// required fields for user
-				name,
-				schoolId,
-				userIds,
-				classIds,
-				courseId,
-			})
-			.then((course) => {
-				createdCourseIds.push(course._id.toString());
-				return course;
-			});
+const createTestCourseGroup = (app, opt) => ({
+	// required fields for base group
+	name = 'testCourse',
+	schoolId = opt.schoolId,
+	userIds = [],
+	classIds = [],
+	courseId = undefined,
+} = {}) =>
+	courseGroupModel
+		.create({
+			// required fields for user
+			name,
+			schoolId,
+			userIds,
+			classIds,
+			courseId,
+		})
+		.then((course) => {
+			createdCourseIds.push(course._id.toString());
+			return course;
+		});
 
 const cleanup = () => {
 	if (createdCourseIds.length === 0) {

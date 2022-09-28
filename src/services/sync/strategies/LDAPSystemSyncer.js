@@ -3,7 +3,6 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const Syncer = require('./Syncer');
 const { LDAPSyncer } = require('./LDAPSyncer');
 const rabbitMq = require('../../../utils/rabbitmq');
-
 const LDAP_SYNC_CHANNEL_NAME = Configuration.get('SYNC_QUEUE_NAME');
 
 /**

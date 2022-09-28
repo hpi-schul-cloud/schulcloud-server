@@ -15,7 +15,12 @@ const addType = format.printf((log) => {
 const getTestFormat = () => format.combine(format.prettyPrint({ depth: 1, colorize: true }));
 
 const getProductionFormat = () =>
-	format.combine(format.errors({ stack: true }), format.timestamp(), addType, format.json());
+	format.combine(
+		format.errors({ stack: true }),
+		format.timestamp(),
+		addType,
+		format.json()
+	);
 
 const getDevelopFormat = () =>
 	format.combine(

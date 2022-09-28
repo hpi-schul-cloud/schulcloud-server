@@ -5,6 +5,7 @@ const { expect } = chai;
 
 const appPromise = require('../../../src/app');
 
+
 describe('sync service', () => {
 	let app;
 	let syncService;

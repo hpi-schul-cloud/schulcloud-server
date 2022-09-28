@@ -1,7 +1,9 @@
 const { loadavg, uptime, freemem, totalmem } = require('os');
 // cpus
 // networkInterfaces
-const byteToMB = (byte = 0) => byte / 1024 / 1024;
+const byteToMB = (byte = 0) => {
+	return byte / 1024 / 1024;
+};
 
 // https://nodejs.org/api/process.html#process_process_memoryusage
 const memoryUsage = () => {

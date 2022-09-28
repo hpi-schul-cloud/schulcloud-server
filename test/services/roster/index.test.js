@@ -4,6 +4,7 @@ const chaiHttp = require('chai-http');
 
 const appPromise = require('../../../src/app');
 
+
 chai.use(chaiHttp);
 
 describe('roster service', function oauth() {

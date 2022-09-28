@@ -70,37 +70,41 @@ const validateSchema = async (document, model) => {
 };
 
 async function writeUserFiles(entityName, outerEntities, getFilesForEntity, destinationFileName) {
-	const stream = fsSync.createWriteStream(destinationFileName, { flags: 'a' });
-	stream.write('[');
+    const stream = fsSync.createWriteStream(destinationFileName, {flags: 'a'})
+    stream.write('[')
 
-	let outerCounter = 0;
-	const outerTotalLength = outerEntities.length + 1;
+    let outerCounter = 0;
+    const outerTotalLength = outerEntities.length +1;
 
-	for (const outer of outerEntities) {
-		outerCounter++;
-		console.log(`${outerCounter} / ${outerTotalLength} ${entityName} files`);
-		const files = await getFilesForEntity(outer._id);
+    for (const outer of outerEntities) {
+        outerCounter++;
+        console.log('' + outerCounter + ' / ' + outerTotalLength + ' ' + entityName + ' files');
+        const files = await getFilesForEntity(outer._id);
 
-		const filesTotalLength = files.length + 1;
-		let innerCounter = 0;
-		files.flat().forEach((innerFile) => {
-			innerCounter++;
-			if (innerFile !== null && innerFile !== '' && validateSchema(innerFile, FileModel)) {
-				stream.write(JSON.stringify(innerFile));
-				if (filesTotalLength !== innerCounter && outerTotalLength !== outerCounter) {
-					stream.write(',');
-				}
-			}
-		});
-	}
-	stream.write(']');
-	stream.close();
+        const filesTotalLength = files.length +1 ;
+        let innerCounter = 0;
+        files
+            .flat()
+            .forEach(innerFile => {
+                innerCounter++;
+                if (innerFile !== null && innerFile !== '' && validateSchema(innerFile, FileModel)) {
+
+                    stream.write(JSON.stringify(innerFile));
+                    if (filesTotalLength !== innerCounter && outerTotalLength !== outerCounter) {
+                        stream.write(',')
+                    }
+                }
+
+            });
+    }
+    stream.write(']');
+    stream.close();
 }
 
 appPromise
 	.then(async () => {
 		const targetDirectory = process.argv[3];
-		await fs.mkdir(targetDirectory);
+		await fs.mkdir(targetDirectory)
 
 		const fullJson = {
 			school: {},
@@ -172,19 +176,19 @@ appPromise
 			console.log(exportErrors);
 			return process.exit(1);
 		}
-		console.log('start exporting files');
+		console.log('start exporting files')
 
-		await writeUserFiles('user', users, exportUserFiles, `${targetDirectory}/userFiles.json`);
-		await writeUserFiles('course', courses, exportCourseFiles, `${targetDirectory}/courseFiles.json`);
-		await writeUserFiles('team', teams, exportTeamFiles, `${targetDirectory}/teamFiles.json`);
+        await writeUserFiles('user', users, exportUserFiles, targetDirectory + '/userFiles.json');
+        await writeUserFiles('course', courses, exportCourseFiles, targetDirectory + '/courseFiles.json');
+        await writeUserFiles('team', teams, exportTeamFiles, targetDirectory + '/teamFiles.json');
 
-		const fullJsonString = JSON.stringify(fullJson);
+        const fullJsonString = JSON.stringify(fullJson);
 
-		await fs.writeFile(`${targetDirectory}/main.json`, fullJsonString);
-		console.log(exportErrors);
-		return process.exit(0);
-	})
-	.catch((error) => {
-		console.error(error);
-		return process.exit(1);
-	});
+        await fs.writeFile(targetDirectory + "/main.json", fullJsonString);
+        console.log(exportErrors);
+        return process.exit(0);
+    })
+    .catch((error) => {
+        console.error(error);
+        return process.exit(1);
+    });
