@@ -8,6 +8,11 @@ metadata:
 data:
   update.sh: |
     #! /bin/bash
+    # necessary for secret handling and legacy indexes
+    git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
+    cd /schulcloud-server
+    git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    npm install
     until mongo $DATABASE__URL --eval "print(\"waited for connection\")"
       do
         sleep 1
@@ -272,8 +277,4 @@ data:
         ]);'
     fi
     # this is crucial, until we have all entities in nest!
-    git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
-    cd /schulcloud-server
-    git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    npm install
     npm run syncIndexes
