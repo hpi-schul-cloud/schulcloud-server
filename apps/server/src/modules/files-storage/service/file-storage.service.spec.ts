@@ -8,6 +8,7 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto/file-storage.params';
+import { FilesStorageHelper } from '../helper';
 import { FilesStorageService } from './file-storage.service';
 
 describe('FilesStorageService', () => {
@@ -15,6 +16,7 @@ describe('FilesStorageService', () => {
 	let service: FilesStorageService;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
+	let filesStorageHelper: DeepMocked<FilesStorageHelper>;
 	let orm: MikroORM;
 	let fileRecord: FileRecord;
 	let fileRecords: FileRecord[];
@@ -49,12 +51,18 @@ describe('FilesStorageService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: FilesStorageHelper,
+					useValue: createMock<FilesStorageHelper>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(FilesStorageService);
 		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
+		filesStorageHelper = module.get(FilesStorageHelper);
+
 		fileRecords = [
 			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
 			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
@@ -152,13 +160,12 @@ describe('FilesStorageService', () => {
 
 		describe('calls to storageClient.delete', () => {
 			it('should call with correct paths', async () => {
-				const expectedPaths = [
-					`${fileRecords[0].schoolId}/${fileRecords[0].id}`,
-					`${fileRecords[1].schoolId}/${fileRecords[1].id}`,
-					`${fileRecords[2].schoolId}/${fileRecords[2].id}`,
-				];
+				const paths = ['1', '2'];
+				filesStorageHelper.getPaths.mockReturnValue(paths);
+
 				await service.deleteFilesOfParent(requestParams);
-				expect(storageClient.delete).toHaveBeenCalledWith(expectedPaths);
+
+				expect(storageClient.delete).toHaveBeenCalledWith(paths);
 			});
 
 			it('should not call save if count equals 0', async () => {

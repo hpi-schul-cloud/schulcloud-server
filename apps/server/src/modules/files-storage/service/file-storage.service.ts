@@ -4,21 +4,17 @@ import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
+import { FilesStorageHelper } from '../helper';
 
 @Injectable()
 export class FilesStorageService {
 	constructor(
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly storageClient: S3ClientAdapter,
-		private logger: Logger
+		private logger: Logger,
+		private readonly filesStorageHelper: FilesStorageHelper
 	) {
 		this.logger.setContext(FilesStorageService.name);
-	}
-
-	private createPath(schoolId: EntityId, fileRecordId: EntityId): string {
-		const pathToFile = [schoolId, fileRecordId].join('/');
-
-		return pathToFile;
 	}
 
 	private async unmarkForDelete(fileRecords: FileRecord[]): Promise<void> {
@@ -42,7 +38,7 @@ export class FilesStorageService {
 
 		await this.markForDelete(fileRecords);
 		try {
-			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
+			const paths = this.filesStorageHelper.getPaths(fileRecords);
 
 			await this.storageClient.delete(paths);
 		} catch (err) {
