@@ -30,6 +30,7 @@ import { ErrorType, PermissionContexts } from '../files-storage.const';
 import { ICopyFiles } from '../interface';
 import { IFile } from '../interface/file';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
+import { FilesStorageService } from '../service/file-storage.service';
 
 @Injectable()
 export class FilesStorageUC {
@@ -39,7 +40,8 @@ export class FilesStorageUC {
 		private readonly antivirusService: AntivirusService,
 		private logger: Logger,
 		private readonly authorizationService: AuthorizationService,
-		private readonly httpService: HttpService
+		private readonly httpService: HttpService,
+		private readonly filesStorageService: FilesStorageService
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -244,10 +246,7 @@ export class FilesStorageUC {
 
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.delete);
-		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
-		if (count > 0) {
-			await this.delete(fileRecords);
-		}
+		const [fileRecords, count] = await this.filesStorageService.deleteFilesOfParent(params);
 
 		return [fileRecords, count];
 	}

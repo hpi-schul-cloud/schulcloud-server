@@ -11,7 +11,9 @@ export class FilesStorageService {
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly storageClient: S3ClientAdapter,
 		private logger: Logger
-	) {}
+	) {
+		this.logger.setContext(FilesStorageService.name);
+	}
 
 	private createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 		const pathToFile = [schoolId, fileRecordId].join('/');
