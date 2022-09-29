@@ -45,5 +45,6 @@
 		"HOST_ONLY": false,
 		"SECURE": false,
 		"EXPIRES_SECONDS": 2592000000
-	}
+	},
+	"HYDRA_URI": "http://localhost:9001"
 }
