@@ -24,7 +24,7 @@ export class IservOAuthService {
 			return await this.userRepo.findByLdapIdOrFail(ldapId, systemId);
 		} catch (error) {
 			this.logger.warn(error);
-			throw new OAuthSSOError(`Failed to find user with ldapId ${ldapId}`, 'sso_user_notfound');
+			throw new OAuthSSOError(`Failed to find user with ldapId: ${ldapId}`, 'sso_user_notfound');
 		}
 	}
 }
