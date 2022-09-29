@@ -60,7 +60,8 @@
 			"TEAM_VIEW",
 			"TOOL_VIEW",
 			"TOPIC_VIEW",
-			"NEXTCLOUD_USER"
+			"NEXTCLOUD_USER",
+			"JOIN_MEETING"
 		],
 		"__v": 0
 	},
@@ -332,7 +333,8 @@
 			"NEWS_VIEW",
 			"UPLOAD_FILES",
 			"USE_LIBREOFFICE",
-			"USE_ROCKETCHAT"
+			"USE_ROCKETCHAT",
+			"JOIN_MEETING"
 		],
 		"__v": 0
 	},
