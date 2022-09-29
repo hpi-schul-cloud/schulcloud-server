@@ -12,48 +12,48 @@ We also want to avoid any specific code for modules, collections, or something e
 
 ## Explanation of Terms
 
-### permissions
+### Permissions
 
 We have string based permissions.
 For examples check "enum Permission".
 It includes all available permissions and is not seperated by concerns or abstraction levels.
 The permissions have different implicit scopes like instance, school, or named scope like team and course.
 
-#### (feature flag permissions)
+#### (Feature Flag Permissions)
 
 Some of the permissions are used like feature flags. We want to seperate and move these in the future.
 Please keep that in mind, while becoming familiar with permissions.
 
-### roles
+### Roles
 
 We have a role collection, where each role has a permissions array that includes string based permissions.
-The roles can have in the "roles" field other roles to inherit permissions from other roles.
+Roles inherit permissions from the roles they have in their "roles" field.
 Like the "user" role, some of these roles are abstract and only used for inheritance.
 Some others are scope based with a prefix name like team*, or course*.
 
 The "real" user roles by name are expert, student, teacher and administrator. All of these are in the school scope and the superhero is in the scope of an instance.
 
 > In future we want to remove the inherit logic.
-> We want to add scopes types to each role.
+> We want to add scope types to each role.
 > Add more technical users for the instance scope.
 
-### entities
+### Entities
 
 The entities are the representation of a single document of the collection, or the type.
 They are used for authorisation for now, but should be replaced by domain objects soon.
 
-### domain objects
+### Domain Objects
 
 They are not really introduced. They should mapped between the repository layer and the domain.
 > In future they are the base for authorisation and the authorisation service doesn't know anything about entities anymore.
 
-### scopes
+### Scopes
 
 Everything what the system, or a user wants to do, is executed in a scope.
 A scope means an area like the complete instance, the school, the course, the user itself and so on.
 The scopes are highly bind to the real domain objects that we have in our domain.
 
-#### scope actions
+#### Scope Actions
 
 The permission for a base action, like they are defined in CRUD operations, is needed to execute something in a scope.
 The most implicit action you ever need is the "read" action. That means, you must have the authorisation to "read" the scope, otherwise it should not exist for you. :-)
@@ -63,7 +63,7 @@ It is a combination of delete, edit, create from CRUD side.
 > From our current perspective, we need no differentiation.
 > But we force the implementation in a way, that allows us to add some more.
 
-#### scope permission
+#### Scope Permission
 
 We have different situations where it is hard to say you can write/read to the domain scope.
 We need the possibility to define differents for a single domain scope, or a single domain object it self.
@@ -74,13 +74,13 @@ We need the possibility to define differents for a single domain scope, or a sin
 or a other case..
 > A student has limited permissions in a team, where he is only a member, but would have more permissions in a team, where he is the owner. So at this point, we need to distingush between instances of domain objects.
 
-### user(s)
+### User(s)
 
 In authorisation scope it can be a system user, or a real user in our application.
 Each user has a role with permissions in the scope of the domain object they want to interact with.
 Each authorisation requires a user.
 
-#### system users
+#### System Users
 
 We have console operations, or operations based on API_KEYS that are used between internal services for already authorised operations like copy and copy files in file service.
 For this we want to use system user and roles with own permissions.
@@ -88,22 +88,23 @@ For this we want to use system user and roles with own permissions.
 
 ## Rules
 
-A rule is the implementation that solves the authorisation for a domain object based on the executed action.
-A rule has implement a check for what they should match. Mostly the entities, or the domain object.
-They are called from the authorisation service.
+The rules are implemented with a strategy pattern and is called from the authorisation service.
+The implementation should solve the authorisation for a domain object based on the executed action.
+It implements a check for which domain object, entity, or additional conditions should be used.
 
+> The rule must validate our scope actions.
 > We highly recommend that every single operation and check in the rule is implemented as a additional method to keep the logic clean and moveable.
 
 ## User (Role) Permissions vs Scope Based Permissions
 
-We have user permission they are added from the role of the user.
-This permissions have no explicit scope. But *implicit* the roles expert, student, teacher and administrator are in the school scope. The superhero is in the scope of the instance.
+The permissions of the user come from his role.
+This permissions have no explicit scope. But *implicit* the roles expert, student, teacher and administrator are in the school scope. The superhero is *implicit* in the scope of the instance.
 
-It exist also scope based permissions to solved the situation, that a user can have in different (scope)roles in different (domain)scopes. For example in teams where the student can have teamuser in one team, or teamadminstrator in a other.
+It exists also scope based permissions. A user can have different (scope)roles in different (domain)scopes. For example in teams where the student can have team member role in one team, or team adminstrator in another.
 
 > In future we want to switch the implicit scope of the user role permissions to explicit scopes like in teams.
-> At the moment we must handle scope-, user- and system-user-permissions as seperated special cases in the implementation.
-> By implementation of user role permissions bind to scopes, we can do it in one way for all situations
+> At the moment we must handle scope-, user- and system-user-permissions as seperated special cases in our implementation.
+> By implementing user role permissions bind to scopes, we can do it in one way for all situations.
 
 ## How should you Authorise an Operation?
 
@@ -116,22 +117,23 @@ When calling other internal micro service for already authorised operations plea
 ## How to use Authorisation Service
 
 > Please avoid to catch the errors of the authorisation in UC.
+> We set empty array as required for passing permissions to make it visible that no string base permission is needed.
 
-### Example 1 - Execute a single operation
+### Example 1 - Execute a Single Operation
 
 ``` javascript
     this.authorizationService.hasPermission(user, course, PermissionContextBuilder.write([])
     // next orechstration steps
 ```
 
-### Example 2 - Execute a single operation with loading ressouces
+### Example 2 - Execute a Single Operation with Loading Ressouces
 
 ``` javascript
     this.checkPermission(userId, ReferenceEntityType.course, courseId, PermissionContextBuilder.read([]));
     // next orechstration steps
 ```
 
-### Example 3 - Set permission(s) of user as required
+### Example 3 - Set Permission(s) of User as Required
 
 ``` javascript
     // Multiple permissions can be added. For a sussesful authorisation, the user need all of them.
@@ -139,7 +141,7 @@ When calling other internal micro service for already authorised operations plea
     // next orechstration steps
 ```
 
-### Example 4 - Define context for multiple places
+### Example 4 - Define Context for Multiple Places
 
 ``` javascript
 /** const **/
