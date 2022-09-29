@@ -69,36 +69,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "0000d213816abba584711234"
-		},
-		"__v": 0,
-		"firstName": "Max",
-		"lastName": "Mustermann",
-		"email": "max.mustermann@iserv.n21.dbildungscloud.de",
-		"ldapId": "5190046d-aeed-424e-bfd7-8f281ae494a1",
-		"updatedAt": {
-			"$date": "2022-02-11T11:40:29.456Z"
-		},
-		"birthday": {
-			"$date": "1979-01-01T11:25:43.556Z"
-		},
-		"createdAt": {
-			"$date": "2022-02-11T10:30:37.148Z"
-		},
-		"preferences": {
-			"firstLogin": true
-		},
-		"schoolId": {
-			"$oid": "5f2987e020834114b8efd6f8"
-		},
-		"roles": [
-			{
-				"$oid": "0000d186816abba584714c96"
-			}
-		]
-	},
-	{
-		"_id": {
 			"$oid": "0000d213816abba584714c0b"
 		},
 		"__v": 0,
