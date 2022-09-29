@@ -79,7 +79,7 @@ export class SyncFilesUc {
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
 
 			this.logError(item, stack);
-			await this.metadataService.persistError(item, stack);
+			await this.metadataService.persistError(item.source.id, stack);
 		}
 	}
 

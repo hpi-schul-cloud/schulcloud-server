@@ -24,7 +24,7 @@ export class TeamUser {
 	}
 
 	@ManyToOne(() => User)
-	private userId: User;
+	userId: User;
 
 	@ManyToOne(() => Role)
 	role: Role;
@@ -56,7 +56,7 @@ export class Team extends BaseEntityWithTimestamps {
 	name: string;
 
 	@Embedded(() => TeamUser, { array: true })
-	private userIds: TeamUser[];
+	userIds: TeamUser[];
 
 	get teamUsers(): TeamUser[] {
 		return this.userIds;

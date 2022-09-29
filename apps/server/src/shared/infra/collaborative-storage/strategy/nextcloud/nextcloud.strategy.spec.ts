@@ -82,6 +82,8 @@ describe('NextCloud Adapter Strategy', () => {
 			name: toolName,
 			createdAt: new Date('2022-07-20'),
 			updatedAt: new Date('2022-07-20'),
+			isLocal: true,
+			oAuthClientId: 'oauthClientId',
 		});
 		ltiToolRepo.findByName.mockResolvedValue(nextcloudTool);
 	});

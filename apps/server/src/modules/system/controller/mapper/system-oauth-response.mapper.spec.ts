@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
-import { SystemOauthResponseMapper } from '@src/modules/system/controller/mapper/system-oauth-response.mapper';
 import { SystemOauthResponse } from '@src/modules/system/controller/dto/system-oauth.response';
+import { SystemOauthResponseMapper } from '@src/modules/system/controller/mapper/system-oauth-response.mapper';
+import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { OauthConfigResponse } from '../dto/oauth-config.response';
 
@@ -63,7 +63,8 @@ describe('oauth-response mapper', () => {
 			const systemDtoLdap = new SystemDto({
 				type: 'oauth',
 				url: 'http://mockhost:3030/api/v3/oauth',
-				alias: 'Iserv',
+				alias: 'broker_Iserv',
+				displayName: 'Iserv',
 				oauthConfig: undefined,
 			});
 			const oauthSystems = [systemDtoOauth, systemDtoOauth];
@@ -77,6 +78,7 @@ describe('oauth-response mapper', () => {
 			for (let i = 0; i < result.data.length; i += 1) {
 				expect(systems[i].type).toEqual(result.data[i].type);
 				expect(systems[i].alias).toEqual(result.data[i].alias);
+				expect(systems[i].displayName).toEqual(result.data[i].displayName);
 				expect(systems[i].url).toEqual(result.data[i].url);
 				assertOauthConfig(systems[i].oauthConfig, result.data[i].oauthConfig);
 			}

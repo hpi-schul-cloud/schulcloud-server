@@ -295,15 +295,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	getSchoolId(): EntityId {
-		if (this.lesson) {
-			return this.lesson.getSchoolId();
-		}
-
-		if (this.course) {
-			return this.course.school.id;
-		}
-
-		throw new Error(`Couldn't find parent of task.`);
+		return this.school.id;
 	}
 
 	publish() {
