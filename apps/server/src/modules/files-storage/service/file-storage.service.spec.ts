@@ -9,21 +9,9 @@ import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
-import { AxiosResponse, AxiosResponseHeaders } from 'axios';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { DownloadFileParams, FileRecordParams, FileUrlParams } from '../controller/dto/file-storage.params';
-import { IGetFileResponse } from '../interface/storage-client';
+import { FileRecordParams } from '../controller/dto/file-storage.params';
 import { FilesStorageService } from './file-storage.service';
-
-function createAxiosResponse<T = unknown>(data: T, headers: AxiosResponseHeaders = {}): AxiosResponse<T> {
-	return {
-		data,
-		status: 0,
-		statusText: '',
-		headers,
-		config: {},
-	};
-}
 
 describe('FilesStorageService', () => {
 	let module: TestingModule;
@@ -34,34 +22,14 @@ describe('FilesStorageService', () => {
 	let fileRecord: FileRecord;
 	let fileRecords: FileRecord[];
 
-	let fileDownloadParams: DownloadFileParams;
-	let fileUploadParams: FileRecordParams;
-	let uploadFromUrlParams: FileRecordParams & FileUrlParams;
-	const url = 'http://localhost/test.jpg';
-	let response: IGetFileResponse;
 	const entityId: EntityId = new ObjectId().toHexString();
 	const userId: EntityId = new ObjectId().toHexString();
 	const schoolId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-		fileDownloadParams = { fileRecordId: schoolId, fileName: 'text.txt' };
-		fileUploadParams = {
-			schoolId,
-			parentId: userId,
-			parentType: FileRecordParentType.User,
-		};
-		uploadFromUrlParams = {
-			...fileUploadParams,
-			url,
-			fileName: 'test.jpg',
-			headers: {
-				authorization: 'custom jwt',
-			},
-		};
 
 		fileRecord = fileRecordFactory.buildWithId({ name: 'text.txt' });
-		response = createMock<IGetFileResponse>();
 	});
 
 	afterAll(async () => {
