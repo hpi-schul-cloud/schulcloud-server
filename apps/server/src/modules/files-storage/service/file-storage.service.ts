@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId, FileRecord } from '@shared/domain';
+import { Counted, EntityId, FileRecord } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
@@ -50,11 +50,13 @@ export class FilesStorageService {
 		}
 	}
 
-	public async deleteFilesOfParent(params: FileRecordParams): Promise<void> {
+	public async deleteFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		if (count > 0) {
 			await this.delete(fileRecords);
 		}
+
+		return [fileRecords, count];
 	}
 }

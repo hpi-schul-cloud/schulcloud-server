@@ -131,7 +131,7 @@ describe('FilesStorageService', () => {
 				parentId: userId,
 				parentType: FileRecordParentType.User,
 			};
-			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 1]);
+			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
 			storageClient.delete.mockResolvedValue([]);
 		});
 
@@ -216,17 +216,23 @@ describe('FilesStorageService', () => {
 
 			it('should call fileRecordRepo.save with unmarked file record', async () => {
 				storageClient.delete.mockRejectedValue(new Error());
-				await service.deleteFilesOfParent(requestParams);
+				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow();
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
 					expect.arrayContaining([expect.objectContaining({ deletedSince: undefined })])
 				);
 			});
 		});
 
-		// it('should return file response with deletedSince', async () => {
-		// 	const [fileRecordsRes] = await service.deleteFilesOfParent(requestParams);
-		// 	expect(fileRecordsRes).toEqual(
-		// 		expect.arrayContaining([expect.objectContaining({ deletedSince: expect.any(Date) as Date })])
-		// 	);
+		it('should return file records and count', async () => {
+			const responseData = await service.deleteFilesOfParent(requestParams);
+			expect(responseData[0]).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({ ...fileRecords[0] }),
+					expect.objectContaining({ ...fileRecords[1] }),
+					expect.objectContaining({ ...fileRecords[2] }),
+				])
+			);
+			expect(responseData[1]).toEqual(fileRecords.length);
+		});
 	});
 });
