@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Counted, EntityId, FileRecord } from '@shared/domain';
+import { Counted, FileRecord } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
@@ -17,33 +17,18 @@ export class FilesStorageService {
 		this.logger.setContext(FilesStorageService.name);
 	}
 
-	private async unmarkForDelete(fileRecords: FileRecord[]): Promise<void> {
-		fileRecords.forEach((fileRecord) => {
-			fileRecord.unmarkForDelete();
-		});
-
-		await this.fileRecordRepo.save(fileRecords);
-	}
-
-	private async markForDelete(fileRecords: FileRecord[]): Promise<void> {
-		fileRecords.forEach((fileRecord) => {
-			fileRecord.markForDelete();
-		});
-
-		await this.fileRecordRepo.save(fileRecords);
-	}
-
 	private async delete(fileRecords: FileRecord[]) {
 		this.logger.debug({ action: 'delete', fileRecords });
 
-		await this.markForDelete(fileRecords);
+		const markedFileRecords = this.filesStorageHelper.markForDelete(fileRecords);
+		await this.fileRecordRepo.save(markedFileRecords);
+
 		try {
 			const paths = this.filesStorageHelper.getPaths(fileRecords);
 
 			await this.storageClient.delete(paths);
 		} catch (err) {
-			await this.unmarkForDelete(fileRecords);
-
+			await this.fileRecordRepo.save(markedFileRecords);
 			throw new InternalServerErrorException(err, `${FilesStorageService.name}:delete`);
 		}
 	}
@@ -51,6 +36,7 @@ export class FilesStorageService {
 	public async deleteFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
+		// TODO: remove this
 		if (count > 0) {
 			await this.delete(fileRecords);
 		}

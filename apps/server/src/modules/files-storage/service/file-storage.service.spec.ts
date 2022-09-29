@@ -117,15 +117,6 @@ describe('FilesStorageService', () => {
 		});
 
 		describe('calls to fileRecordRepo.save()', () => {
-			it('should call with defined deletedSince params', async () => {
-				await service.deleteFilesOfParent(requestParams);
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecords);
-
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(
-					expect.arrayContaining([expect.objectContaining({ deletedSince: expect.any(Date) as Date })])
-				);
-			});
-
 			it('should not call save if count equals 0', async () => {
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([[], 0]);
 				await service.deleteFilesOfParent(requestParams);
@@ -133,6 +124,7 @@ describe('FilesStorageService', () => {
 			});
 
 			it('should call with fileRecords in params', async () => {
+				filesStorageHelper.markForDelete.mockReturnValue(fileRecords);
 				await service.deleteFilesOfParent(requestParams);
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecords);
 
@@ -174,12 +166,10 @@ describe('FilesStorageService', () => {
 				expect(storageClient.delete).toHaveBeenCalledTimes(0);
 			});
 
-			it('should call fileRecordRepo.save with unmarked file record', async () => {
+			it('should call fileRecordRepo.save on delete error with unmarked file record', async () => {
 				storageClient.delete.mockRejectedValue(new Error());
 				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow();
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(
-					expect.arrayContaining([expect.objectContaining({ deletedSince: undefined })])
-				);
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecords);
 			});
 		});
 

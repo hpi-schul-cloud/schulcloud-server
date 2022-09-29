@@ -18,4 +18,13 @@ export class FilesStorageHelper {
 
 		return fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
 	}
+
+	public markForDelete(fileRecords: FileRecord[]): FileRecord[] {
+		const markedFileRecords = fileRecords.map((fileRecord) => {
+			fileRecord.markForDelete();
+			return fileRecord;
+		});
+
+		return markedFileRecords;
+	}
 }

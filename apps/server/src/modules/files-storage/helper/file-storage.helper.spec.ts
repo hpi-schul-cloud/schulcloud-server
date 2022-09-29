@@ -1,7 +1,13 @@
+import { DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityId, FileRecord } from '@shared/domain';
+import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { FilesStorageHelper } from './files-storage.helper';
+
+let fileRecordRepo: DeepMocked<FileRecordRepo>;
 
 describe('FilesStorageHelper', () => {
 	let module: TestingModule;
@@ -11,11 +17,21 @@ describe('FilesStorageHelper', () => {
 	beforeAll(async () => {
 		orm = await setupEntities();
 	});
+	let fileRecords: FileRecord[];
+
+	const userId: EntityId = new ObjectId().toHexString();
+	const schoolId: EntityId = new ObjectId().toHexString();
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [FilesStorageHelper],
 		}).compile();
+
+		fileRecords = [
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		];
 
 		fileStorageHelper = module.get(FilesStorageHelper);
 	});
@@ -60,8 +76,6 @@ describe('FilesStorageHelper', () => {
 
 	describe('getPaths', () => {
 		it('should return paths', () => {
-			const fileRecords = [fileRecordFactory.buildWithId(), fileRecordFactory.buildWithId()];
-
 			const paths = fileStorageHelper.getPaths(fileRecords);
 
 			const fileRecordId1 = fileRecords[0].id;
@@ -76,6 +90,19 @@ describe('FilesStorageHelper', () => {
 			expect(() => {
 				fileStorageHelper.getPaths([]);
 			}).toThrowError(`FileRecordsArray is empty. Couldn't get paths`);
+		});
+	});
+
+	describe('markForDelete()', () => {
+		it('should mark files for delete', () => {
+			const markedFileRecords = fileStorageHelper.markForDelete(fileRecords);
+			expect(markedFileRecords).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) as Date }),
+					expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) as Date }),
+					expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) as Date }),
+				])
+			);
 		});
 	});
 });
