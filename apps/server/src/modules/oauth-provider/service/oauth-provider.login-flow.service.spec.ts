@@ -139,7 +139,7 @@ describe('OauthProviderLoginFlowService', () => {
 
 			await service.validateNextcloudPermission(currentUser.userId, loginResponse);
 
-			expect(userRepo.findById).toHaveBeenCalledWith(user.id);
+			expect(userRepo.findById).toHaveBeenCalledWith(user.id, true);
 			expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(user, [Permission.NEXTCLOUD_USER as string]);
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id, true);
 		});

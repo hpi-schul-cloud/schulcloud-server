@@ -30,7 +30,7 @@ export class OauthProviderLoginFlowService {
 	}
 
 	private async hasNextcloudPermission(currentUserId: string) {
-		const user: User = await this.userRepo.findById(currentUserId);
+		const user: User = await this.userRepo.findById(currentUserId, true);
 		const hasPermission: boolean = this.authorizationService.hasAllPermissions(user, [
 			Permission.NEXTCLOUD_USER as string,
 		]);
