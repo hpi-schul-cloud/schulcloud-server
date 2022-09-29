@@ -338,26 +338,21 @@ describe('OauthProviderController', () => {
 
 	describe('Login Flow', () => {
 		let params: ChallengeParams;
-		let loginResponse: LoginResponse;
-
-		beforeEach(() => {
-			params = { challenge: 'challenge' };
-			loginResponse = {
-				challenge: 'challenge',
-				client: {},
-				oidc_context: {},
-				request_url: 'request_url',
-				requested_access_token_audience: ['requested_access_token_audience'],
-				requested_scope: ['requested_scope'],
-				session_id: 'session_id',
-				skip: true,
-				subject: 'subject',
-			} as LoginResponse;
-		});
-
 		describe('getLoginRequest', () => {
 			it('should get the login request response', async () => {
-				const oauthLoginResponse: ProviderLoginResponse = {
+				params = { challenge: 'challenge' };
+				const loginResponse: LoginResponse = {
+					challenge: 'challenge',
+					client: {},
+					oidc_context: {},
+					request_url: 'request_url',
+					requested_access_token_audience: ['requested_access_token_audience'],
+					requested_scope: ['requested_scope'],
+					session_id: 'session_id',
+					skip: true,
+					subject: 'subject',
+				} as LoginResponse;
+				const providerLoginResponse: ProviderLoginResponse = {
 					challenge: 'challenge',
 					client: {},
 					oidc_context: {},
@@ -369,13 +364,13 @@ describe('OauthProviderController', () => {
 					subject: 'subject',
 				} as ProviderLoginResponse;
 
-				loginUc.getLoginRequest.mockResolvedValue(oauthLoginResponse);
+				loginUc.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				responseMapper.mapLoginResponse.mockReturnValue(loginResponse);
 
 				const response = await controller.getLoginRequest(params);
 
 				expect(loginUc.getLoginRequest).toHaveBeenCalledWith(params.challenge);
-				expect(response.subject).toEqual(oauthLoginResponse.subject);
+				expect(response).toEqual(providerLoginResponse);
 			});
 		});
 
@@ -400,12 +395,6 @@ describe('OauthProviderController', () => {
 				responseMapper.mapRedirectResponse.mockReturnValue(redirectResponse);
 
 				const response = await controller.patchLoginRequest(params, query, loginRequestBody, currentUser);
-				expect(loginUc.patchLoginRequest).toHaveBeenCalledWith(
-					currentUser.userId,
-					params.challenge,
-					loginRequestBody,
-					query
-				);
 				expect(loginUc.patchLoginRequest).toHaveBeenCalledWith(...expected);
 				expect(response.redirect_to).toStrictEqual(redirectResponse.redirect_to);
 			});

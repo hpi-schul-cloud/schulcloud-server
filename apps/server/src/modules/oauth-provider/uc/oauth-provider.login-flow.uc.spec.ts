@@ -3,15 +3,17 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { OauthProviderLoginFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.login-flow.uc';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { LtiToolRepo, PseudonymsRepo, RoleRepo } from '@shared/repo';
-import { ICurrentUser, PermissionService } from '@shared/domain';
+import { ICurrentUser, PseudonymDO } from '@shared/domain';
 import {
 	AcceptLoginRequestBody,
 	ProviderLoginResponse,
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
+import { AuthorizationService } from '@src/modules';
 import { AcceptQuery, ChallengeParams, LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
 import { OauthProviderLoginFlowService } from '@src/modules/oauth-provider/service/oauth-provider.login-flow.service';
+import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
 import resetAllMocks = jest.resetAllMocks;
 
 class OauthProviderLoginFlowUcSpec extends OauthProviderLoginFlowUc {
@@ -36,24 +38,35 @@ describe('OauthProviderLoginFlowUc', () => {
 	let uc: OauthProviderLoginFlowUcSpec;
 	let service: DeepMocked<OauthProviderService>;
 	let oauthProviderLoginFlowService: DeepMocked<OauthProviderLoginFlowService>;
+	let pseudonymRepo: DeepMocked<PseudonymsRepo>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 
 	const params: ChallengeParams = { challenge: 'challenge' };
 	const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-	const acceptLoginRequestBody: AcceptLoginRequestBody = {
-		subject: 'userId',
-		acr: 'acr',
-		amr: ['amr'],
-		context: {},
-		force_subject_identifier: 'pseudonym',
-		remember: true,
-		remember_for: 0,
-	};
 	const query: AcceptQuery = {
 		accept: true,
 	};
 	const redirectResponse: ProviderRedirectResponse = {
 		redirect_to: 'redirect_to',
 	};
+
+	const pseudonym: PseudonymDO = {
+		pseudonym: 'pseudonym',
+		toolId: 'toolId',
+		userId: 'userId',
+	};
+
+	const providerLoginResponse: ProviderLoginResponse = {
+		challenge: 'challenge',
+		client: {},
+		oidc_context: {},
+		request_url: 'request_url',
+		requested_access_token_audience: ['requested_access_token_audience'],
+		requested_scope: ['requested_scope'],
+		session_id: 'session_id',
+		skip: true,
+		subject: 'subject',
+	} as ProviderLoginResponse;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -80,8 +93,8 @@ describe('OauthProviderLoginFlowUc', () => {
 					useValue: createMock<PseudonymsRepo>(),
 				},
 				{
-					provide: PermissionService,
-					useValue: createMock<PermissionService>(),
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
 				},
 			],
 		}).compile();
@@ -89,6 +102,8 @@ describe('OauthProviderLoginFlowUc', () => {
 		uc = module.get(OauthProviderLoginFlowUcSpec);
 		service = module.get(OauthProviderService);
 		oauthProviderLoginFlowService = module.get(OauthProviderLoginFlowService);
+		pseudonymRepo = module.get(PseudonymsRepo);
+		authorizationService = module.get(AuthorizationService);
 	});
 
 	afterAll(async () => {
@@ -101,59 +116,34 @@ describe('OauthProviderLoginFlowUc', () => {
 
 	describe('getLoginRequest', () => {
 		it('should get the login request', async () => {
-			const loginResponseMock: ProviderLoginResponse = {
-				challenge: 'challenge',
-				client: {},
-				oidc_context: {},
-				request_url: 'request_url',
-				requested_access_token_audience: ['requested_access_token_audience'],
-				requested_scope: ['requested_scope'],
-				session_id: 'session_id',
-				skip: true,
-				subject: 'subject',
-			} as ProviderLoginResponse;
-
-			service.getLoginRequest.mockResolvedValue(loginResponseMock);
+			service.getLoginRequest.mockResolvedValue(providerLoginResponse);
 
 			const response = await uc.getLoginRequest(params.challenge);
 
 			expect(service.getLoginRequest).toHaveBeenCalledWith(params.challenge);
-			expect(response).toStrictEqual(loginResponseMock);
+			expect(response).toStrictEqual(providerLoginResponse);
 		});
 	});
 	describe('patchLoginRequest', () => {
 		it('should call the login request', async () => {
-			const loginResponseMock: ProviderLoginResponse = {
-				challenge: 'challenge',
-				client: {},
-				oidc_context: {},
-				request_url: 'request_url',
-				requested_access_token_audience: ['requested_access_token_audience'],
-				requested_scope: ['requested_scope'],
-				session_id: 'session_id',
-				skip: true,
-				subject: 'subject',
-			} as ProviderLoginResponse;
 			const loginRequestBodyMock: LoginRequestBody = {
 				remember: true,
 				remember_for: 0,
 			};
-			service.getLoginRequest.mockResolvedValue(loginResponseMock);
-			oauthProviderLoginFlowService.setSubject.mockResolvedValue(acceptLoginRequestBody);
-			oauthProviderLoginFlowService.validateNextcloudPermission.mockResolvedValue();
+
+			service.getLoginRequest.mockResolvedValue(providerLoginResponse);
 			service.acceptLoginRequest.mockResolvedValue(redirectResponse);
 
 			const response = await uc.patchLoginRequest(currentUser.userId, params.challenge, loginRequestBodyMock, query);
 
 			expect(response.redirect_to).toStrictEqual(redirectResponse.redirect_to);
-			expect(oauthProviderLoginFlowService.setSubject).toHaveBeenCalledWith(
+			expect(oauthProviderLoginFlowService.getPseudonym).toHaveBeenCalledWith(
 				currentUser.userId,
-				loginResponseMock,
-				loginRequestBodyMock
+				providerLoginResponse
 			);
 			expect(oauthProviderLoginFlowService.validateNextcloudPermission).toHaveBeenCalledWith(
 				currentUser.userId,
-				loginResponseMock
+				providerLoginResponse
 			);
 			expect(service.rejectLoginRequest).not.toHaveBeenCalled();
 		});
@@ -168,6 +158,7 @@ describe('OauthProviderLoginFlowUc', () => {
 			};
 
 			service.rejectLoginRequest.mockResolvedValue(redirectResponse);
+
 			const response = await uc.patchLoginRequest(currentUser.userId, params.challenge, rejectBody, query);
 
 			expect(response).toStrictEqual(redirectResponse);
@@ -176,34 +167,28 @@ describe('OauthProviderLoginFlowUc', () => {
 	});
 	describe('acceptLoginRequest', () => {
 		it('should accept the login request', async () => {
-			const loginResponse: ProviderLoginResponse = {
-				challenge: 'challenge',
-				client: {},
-				oidc_context: {},
-				request_url: 'request_url',
-				requested_access_token_audience: ['requested_access_token_audience'],
-				requested_scope: ['requested_scope'],
-				session_id: 'session_id',
-				skip: true,
-				subject: 'subject',
-			} as ProviderLoginResponse;
 			const loginRequestBodyMock: LoginRequestBody = {
 				remember: true,
 				remember_for: 0,
 			};
 
-			oauthProviderLoginFlowService.setSubject.mockResolvedValue(acceptLoginRequestBody);
+			oauthProviderLoginFlowService.getPseudonym.mockResolvedValue(pseudonym);
 			oauthProviderLoginFlowService.validateNextcloudPermission.mockResolvedValue();
+			const mappedAcceptLoginRequestBody: AcceptLoginRequestBody =
+				OauthProviderRequestMapper.mapCreateAcceptLoginRequestBody(
+					loginRequestBodyMock,
+					currentUser.userId,
+					pseudonym.pseudonym
+				);
 			service.acceptLoginRequest.mockResolvedValue(redirectResponse);
 
-			const response = await uc.acceptLoginRequestSpec(currentUser.userId, loginResponse, loginRequestBodyMock);
+			const response = await uc.acceptLoginRequestSpec(currentUser.userId, providerLoginResponse, loginRequestBodyMock);
 
-			expect(oauthProviderLoginFlowService.setSubject).toHaveBeenCalledWith(
+			expect(oauthProviderLoginFlowService.getPseudonym).toHaveBeenCalledWith(
 				currentUser.userId,
-				loginResponse,
-				loginRequestBodyMock
+				providerLoginResponse
 			);
-			expect(service.acceptLoginRequest).toHaveBeenCalledWith(params.challenge, acceptLoginRequestBody);
+			expect(service.acceptLoginRequest).toHaveBeenCalledWith(params.challenge, mappedAcceptLoginRequestBody);
 			expect(response.redirect_to).toStrictEqual(redirectResponse.redirect_to);
 		});
 	});
@@ -216,8 +201,7 @@ describe('OauthProviderLoginFlowUc', () => {
 				error_hint: 'error_hint',
 				status_code: 404,
 			};
-			oauthProviderLoginFlowService.setSubject.mockResolvedValue(acceptLoginRequestBody);
-			oauthProviderLoginFlowService.validateNextcloudPermission.mockResolvedValue();
+
 			service.rejectLoginRequest.mockResolvedValue(redirectResponse);
 
 			const response = await uc.rejectLoginRequestSpec(params.challenge, rejectBody);

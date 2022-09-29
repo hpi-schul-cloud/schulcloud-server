@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LtiToolRepo, PseudonymsRepo, RoleRepo, UserRepo } from '@shared/repo';
-import { ICurrentUser, Permission, PermissionService, PseudonymDO, User } from '@shared/domain';
-import { LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
+import { ICurrentUser, Permission, PseudonymDO, User } from '@shared/domain';
 import { OauthProviderLoginFlowService } from '@src/modules/oauth-provider/service/oauth-provider.login-flow.service';
-import { AcceptLoginRequestBody, ProviderLoginResponse } from '@shared/infra/oauth-provider/dto';
+import { ProviderLoginResponse } from '@shared/infra/oauth-provider/dto';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectID } from 'bson';
+import { AuthorizationService } from '@src/modules';
 import clearAllMocks = jest.clearAllMocks;
 
 describe('OauthProviderLoginFlowService', () => {
@@ -18,7 +18,7 @@ describe('OauthProviderLoginFlowService', () => {
 	let ltiToolRepo: DeepMocked<LtiToolRepo>;
 	let pseudonymsRepo: DeepMocked<PseudonymsRepo>;
 	let userRepo: DeepMocked<UserRepo>;
-	let permissionService: DeepMocked<PermissionService>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 	let orm: MikroORM;
 
 	beforeAll(async () => {
@@ -42,8 +42,8 @@ describe('OauthProviderLoginFlowService', () => {
 					useValue: createMock<PseudonymsRepo>(),
 				},
 				{
-					provide: PermissionService,
-					useValue: createMock<PermissionService>(),
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
 				},
 			],
 		}).compile();
@@ -52,7 +52,7 @@ describe('OauthProviderLoginFlowService', () => {
 		userRepo = module.get(UserRepo);
 		ltiToolRepo = module.get(LtiToolRepo);
 		pseudonymsRepo = module.get(PseudonymsRepo);
-		permissionService = module.get(PermissionService);
+		authorizationService = module.get(AuthorizationService);
 		orm = await setupEntities();
 	});
 
@@ -62,14 +62,10 @@ describe('OauthProviderLoginFlowService', () => {
 		clearAllMocks();
 	});
 
-	describe('setSubject', () => {
+	describe('getPseudonym', () => {
 		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-		const loginRequestBodyMock: LoginRequestBody = {
-			remember: true,
-			remember_for: 0,
-		};
 
-		it('set the subject in acceptLoginRequestBody successfully', async () => {
+		it('should get the Pseudonym successfully', async () => {
 			const loginResponse: ProviderLoginResponse = {
 				challenge: 'challenge',
 				client: {
@@ -94,34 +90,18 @@ describe('OauthProviderLoginFlowService', () => {
 				toolId: 'toolId',
 				userId: 'userId',
 			};
-			const expected: AcceptLoginRequestBody = {
-				subject: 'userId',
-				force_subject_identifier: 'pseudonym',
-				remember: true,
-				remember_for: 0,
-			};
 
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDoMock);
 			pseudonymsRepo.findByUserIdAndToolId.mockResolvedValue(pseudonym);
 
-			const acceptLoginRequestBody: AcceptLoginRequestBody = await service.setSubject(
-				currentUser.userId,
-				loginResponse,
-				loginRequestBodyMock
-			);
+			const pseudonymDO: PseudonymDO = await service.getPseudonym(currentUser.userId, loginResponse);
 
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id, true);
 			expect(pseudonymsRepo.findByUserIdAndToolId).toHaveBeenCalledWith(ltiToolDoMock.id, currentUser.userId);
-			expect(acceptLoginRequestBody.subject).toStrictEqual(expected.subject);
-			expect(acceptLoginRequestBody.amr).toBeUndefined();
-			expect(acceptLoginRequestBody.acr).toBeUndefined();
-			expect(acceptLoginRequestBody.context).toBeUndefined();
-			expect(acceptLoginRequestBody.remember).toEqual(expected.remember);
-			expect(acceptLoginRequestBody.remember_for).toEqual(expected.remember_for);
-			expect(acceptLoginRequestBody.force_subject_identifier).toEqual(expected.force_subject_identifier);
+			expect(pseudonymDO).toEqual(pseudonym);
 		});
 
-		it('could not set the subject in acceptLoginRequestBody and throw error', async () => {
+		it('should throw NotFoundException, if Pseudonym could not be found', async () => {
 			const loginResponse: ProviderLoginResponse = {
 				challenge: 'challenge',
 				client: {},
@@ -129,17 +109,15 @@ describe('OauthProviderLoginFlowService', () => {
 				skip: true,
 				subject: 'subject',
 			} as ProviderLoginResponse;
-			await expect(service.setSubject(currentUser.userId, loginResponse, loginRequestBodyMock)).rejects.toThrow(
-				NotFoundException
-			);
+
+			await expect(service.getPseudonym(currentUser.userId, loginResponse)).rejects.toThrow(NotFoundException);
 		});
 	});
 
 	describe('validateNextcloudPermission', () => {
-		it('should validate Nextcloud permissions', async () => {
+		it('should call the services and repos to validate Nextcloud permissions', async () => {
 			const currentUser: ICurrentUser = { userId: new ObjectID(213135).toString() } as ICurrentUser;
 			const role = roleFactory.build({ permissions: ['NEXTCLOUD_USER' as Permission] });
-
 			const user: User = userFactory.buildWithId({ roles: [role] }, currentUser.userId);
 			const loginResponse: ProviderLoginResponse = {
 				challenge: 'challenge',
@@ -156,17 +134,17 @@ describe('OauthProviderLoginFlowService', () => {
 			};
 
 			userRepo.findById.mockResolvedValue(user);
-			permissionService.resolvePermissions.mockReturnValue(role.permissions);
+			authorizationService.hasAllPermissions.mockReturnValue(true);
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDoMock);
 
 			await service.validateNextcloudPermission(currentUser.userId, loginResponse);
 
 			expect(userRepo.findById).toHaveBeenCalledWith(user.id);
-			expect(permissionService.resolvePermissions).toHaveBeenCalledWith(user);
+			expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(user, [Permission.NEXTCLOUD_USER as string]);
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id, true);
 		});
 
-		it('should throw a ForbiddenException', async () => {
+		it('should throw a ForbiddenException, if the user do not have nextcloud permission ', async () => {
 			const currentUser: ICurrentUser = { userId: new ObjectID(213135).toString() } as ICurrentUser;
 			const role = roleFactory.build();
 			const user: User = userFactory.buildWithId({ roles: [role] }, currentUser.userId);
@@ -184,7 +162,7 @@ describe('OauthProviderLoginFlowService', () => {
 			};
 
 			userRepo.findById.mockResolvedValue(user);
-			permissionService.resolvePermissions.mockReturnValue(role.permissions);
+			authorizationService.hasAllPermissions.mockReturnValue(false);
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDoMock);
 
 			await expect(service.validateNextcloudPermission(currentUser.userId, loginResponse)).rejects.toThrow(
