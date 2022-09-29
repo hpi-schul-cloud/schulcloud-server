@@ -336,6 +336,94 @@
 	},
 	{
 		"_id": {
+			"$oid": "0000d231816abba584714c9f"
+		},
+		"__v": 0,
+		"firstName": "Emil",
+		"lastName": "Extern",
+		"email": "emil.extern@schul-cloud.org",
+		"ldapId": "c6635610-1a20-11ed-861d-0242ac120002",
+		"updatedAt": {
+			"$date": "2020-10-21T15:47:29.456Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"birthday": {
+			"$date": "1977-01-01T11:25:43.556Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		},
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd600"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c99"
+			}
+		],
+		"consent": {
+			"userConsent": {
+				"form": "digital",
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
+				"dateOfPrivacyConsent": {
+					"$date": "2017-01-01T00:06:37.148Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2017-01-01T00:06:37.148Z"
+				}
+			},
+			"parentConsents": [
+				{
+					"_id": {
+						"$oid": "5ece7de4a194604c6e31f435"
+					},
+					"form": "digital",
+					"privacyConsent": true,
+					"termsOfUseConsent": true,
+					"dateOfPrivacyConsent": {
+						"$date": "2017-01-01T00:06:37.148Z"
+					},
+					"dateOfTermsOfUseConsent": {
+						"$date": "2017-01-01T00:06:37.148Z"
+					}
+				}
+			]
+		}
+	},
+	{
+		"_id": {
+			"$oid": "0000d213816abba584710000"
+		},
+		"__v": 0,
+		"firstName": "Admin",
+		"lastName": "Extern",
+		"email": "admin.extern@schul-cloud.org",
+		"updatedAt": {
+			"$date": "2020-10-21T15:47:29.456Z"
+		},
+		"birthday": {
+			"$date": "1977-01-01T11:25:43.556Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		},
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd600"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c96"
+			}
+		]
+	},
+	{
+		"_id": {
 			"$oid": "0000d231816abba584714c9e"
 		},
 		"__v": 0,

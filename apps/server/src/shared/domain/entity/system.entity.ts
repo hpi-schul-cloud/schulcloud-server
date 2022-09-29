@@ -6,6 +6,7 @@ export interface ISystemProperties {
 	type: string;
 	url?: string;
 	alias?: string;
+	displayName?: string;
 	oauthConfig?: OauthConfig;
 	provisioningStrategy?: SystemProvisioningStrategy;
 	provisioningUrl?: string;
@@ -70,6 +71,7 @@ export class System extends BaseEntityWithTimestamps {
 		this.type = props.type;
 		this.url = props.url;
 		this.alias = props.alias;
+		this.displayName = props.displayName;
 		this.oauthConfig = props.oauthConfig;
 		this.provisioningStrategy = props.provisioningStrategy;
 		this.provisioningUrl = props.provisioningUrl;
@@ -83,6 +85,9 @@ export class System extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	alias?: string;
+
+	@Property({ nullable: true })
+	displayName?: string;
 
 	@Property({ nullable: true })
 	oauthConfig?: OauthConfig;

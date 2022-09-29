@@ -3,8 +3,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { systemFactory } from '@shared/testing/factory/system.factory';
 import { SystemRepo } from '@shared/repo';
+import { systemFactory } from '@shared/testing/factory/system.factory';
 
 describe('system repo', () => {
 	let module: TestingModule;
@@ -49,6 +49,7 @@ describe('system repo', () => {
 					'type',
 					'url',
 					'alias',
+					'displayName',
 					'oauthConfig',
 					'_id',
 					'provisioningStrategy',

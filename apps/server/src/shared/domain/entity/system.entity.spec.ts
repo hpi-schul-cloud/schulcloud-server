@@ -29,7 +29,7 @@ describe('System Entity', () => {
 		});
 
 		it('should create a system by passing required and optional properties', () => {
-			const system = systemFactory.withOauthConfig().build({ url: 'SAMPLE_URL', alias: 'SAMPLE_ALIAS' });
+			const system = systemFactory.withOauthConfig().build({ url: 'SAMPLE_URL', alias: 'SAMPLE_ALIAS', displayName: 'SAMPLE_NAME' });
 
 			expect(system instanceof System).toEqual(true);
 			expect(system).toEqual(
@@ -37,6 +37,7 @@ describe('System Entity', () => {
 					type: 'oauth',
 					url: 'SAMPLE_URL',
 					alias: 'SAMPLE_ALIAS',
+					displayName: 'SAMPLE_NAME',
 					provisioningStrategy: SystemProvisioningStrategy.UNDEFINED,
 					provisioningUrl: 'provisioningUrl',
 					oauthConfig: {
