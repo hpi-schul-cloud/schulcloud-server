@@ -121,19 +121,22 @@ When calling other internal micro service for already authorised operations plea
 
 ``` javascript
     this.authorizationService.hasPermission(user, course, PermissionContextBuilder.write([])
+    // next orechstration steps
 ```
 
 ### Example 2 - Execute a single operation with loading ressouces
 
 ``` javascript
     this.checkPermission(userId, ReferenceEntityType.course, courseId, PermissionContextBuilder.read([]));
+    // next orechstration steps
 ```
 
 ### Example 3 - Set permission(s) of user as required
 
 ``` javascript
-    // Multiple permissions can be added. The user need all of them to pass.
+    // Multiple permissions can be added. For a sussesful authorisation, the user need all of them.
     await this.hasPermission(userId, course, PermissionContextBuilder.read([Permissions. COURSE_VIEW]));
+    // next orechstration steps
 ```
 
 ### Example 4 - Define context for multiple places
@@ -214,6 +217,7 @@ They work similar to express middleware and bring is own request context.
 
 It exists hooks can be for all http(s) calls, or for specific type based on CRUD operations.
 Additional it exist the find operations that is a http(s) GET without ID of a specific element.
+Each function that add to the hooks will executed in order. Hooks for all methods first, then hooks for specific methodes.
 
 Each hooks exist for a featherJS service that exposed directly the api endpoints. Additional it exist a global hook pattern for the whole application.
 
