@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HydraService } from '@shared/infra/oauth-provider/hydra/hydra.service';
+import { HydraAdapter } from '@shared/infra/oauth-provider/hydra/hydra.adapter';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
@@ -18,7 +18,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import resetAllMocks = jest.resetAllMocks;
 
-class HydraServiceSpec extends HydraService {
+class HydraAdapterSpec extends HydraAdapter {
 	public async requestSpec<T>(
 		method: Method,
 		url: string,
@@ -39,7 +39,7 @@ const createAxiosResponse = <T>(data: T): AxiosResponse<T> => ({
 
 describe('HydraService', () => {
 	let module: TestingModule;
-	let service: HydraServiceSpec;
+	let service: HydraAdapterSpec;
 
 	let httpService: DeepMocked<HttpService>;
 
@@ -50,7 +50,7 @@ describe('HydraService', () => {
 
 		module = await Test.createTestingModule({
 			providers: [
-				HydraServiceSpec,
+				HydraAdapterSpec,
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
@@ -58,7 +58,7 @@ describe('HydraService', () => {
 			],
 		}).compile();
 
-		service = module.get(HydraServiceSpec);
+		service = module.get(HydraAdapterSpec);
 		httpService = module.get(HttpService);
 	});
 
@@ -461,9 +461,9 @@ describe('HydraService', () => {
 			});
 
 			describe('getLoginRequest', () => {
-				it('should make http request', async () => {
+				it('should send login request', async () => {
 					// Arrange
-					const config: AxiosRequestConfig = {
+					const requestConfig: AxiosRequestConfig = {
 						method: 'GET',
 						url: `${hydraUri}/oauth2/auth/requests/login?login_challenge=${challenge}`,
 					};
@@ -492,12 +492,12 @@ describe('HydraService', () => {
 
 					// Assert
 					expect(response).toEqual(providerLoginResponse);
-					expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
+					expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(requestConfig));
 				});
 			});
 
 			describe('acceptLoginRequest', () => {
-				it('should make http request', async () => {
+				it('should send accept login request', async () => {
 					const body: AcceptLoginRequestBody = {
 						subject: '',
 						force_subject_identifier: '',
@@ -522,7 +522,7 @@ describe('HydraService', () => {
 			});
 
 			describe('rejectLoginRequest', () => {
-				it('should make http request', async () => {
+				it('should send reject login request', async () => {
 					// Arrange
 					const body: RejectRequestBody = {
 						error: 'error',

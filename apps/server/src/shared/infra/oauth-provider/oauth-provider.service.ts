@@ -1,83 +1,50 @@
-import { NotImplementedException } from '@nestjs/common/exceptions/not-implemented.exception';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
 	IntrospectResponse,
-	ProviderLoginResponse,
 	ProviderConsentResponse,
+	ProviderConsentSessionResponse,
+	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 	RejectRequestBody,
-	ProviderConsentSessionResponse,
 } from './dto';
 
 export abstract class OauthProviderService {
-	getLoginRequest(challenge: string): Promise<ProviderLoginResponse> {
-		throw new NotImplementedException();
-	}
+	abstract getLoginRequest(challenge: string): Promise<ProviderLoginResponse>;
 
-	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<ProviderRedirectResponse> {
-		throw new NotImplementedException();
-	}
+	abstract acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<ProviderRedirectResponse>;
 
-	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
-		throw new NotImplementedException();
-	}
+	abstract rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse>;
 
-	getConsentRequest(challenge: string): Promise<ProviderConsentResponse> {
-		throw new NotImplementedException();
-	}
+	abstract getConsentRequest(challenge: string): Promise<ProviderConsentResponse>;
 
-	acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<ProviderRedirectResponse> {
-		throw new NotImplementedException();
-	}
+	abstract acceptConsentRequest(challenge: string, body: AcceptConsentRequestBody): Promise<ProviderRedirectResponse>;
 
-	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
-		throw new NotImplementedException();
-	}
+	abstract rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse>;
 
-	acceptLogoutRequest(challenge: string): Promise<ProviderRedirectResponse> {
-		throw new NotImplementedException();
-	}
+	abstract acceptLogoutRequest(challenge: string): Promise<ProviderRedirectResponse>;
 
-	introspectOAuth2Token(token: string, scope?: string): Promise<IntrospectResponse> {
-		throw new NotImplementedException();
-	}
+	abstract introspectOAuth2Token(token: string, scope?: string): Promise<IntrospectResponse>;
 
-	isInstanceAlive(): Promise<boolean> {
-		throw new NotImplementedException();
-	}
+	abstract isInstanceAlive(): Promise<boolean>;
 
-	listOAuth2Clients(
+	abstract listOAuth2Clients(
 		limit?: number,
 		offset?: number,
 		client_name?: string,
 		owner?: string
-	): Promise<ProviderOauthClient[]> {
-		throw new NotImplementedException();
-	}
+	): Promise<ProviderOauthClient[]>;
 
-	createOAuth2Client(data: ProviderOauthClient): Promise<ProviderOauthClient> {
-		throw new NotImplementedException();
-	}
+	abstract createOAuth2Client(data: ProviderOauthClient): Promise<ProviderOauthClient>;
 
-	getOAuth2Client(id: string): Promise<ProviderOauthClient> {
-		throw new NotImplementedException();
-	}
+	abstract getOAuth2Client(id: string): Promise<ProviderOauthClient>;
 
-	updateOAuth2Client(id: string, data: ProviderOauthClient): Promise<ProviderOauthClient> {
-		throw new NotImplementedException();
-	}
+	abstract updateOAuth2Client(id: string, data: ProviderOauthClient): Promise<ProviderOauthClient>;
 
-	deleteOAuth2Client(id: string): Promise<void> {
-		throw new NotImplementedException();
-	}
+	abstract deleteOAuth2Client(id: string): Promise<void>;
 
-	listConsentSessions(user: string): Promise<ProviderConsentSessionResponse[]> {
-		throw new NotImplementedException();
-	}
+	abstract listConsentSessions(user: string): Promise<ProviderConsentSessionResponse[]>;
 
-	revokeConsentSession(user: string, client: string): Promise<void> {
-		throw new NotImplementedException();
-	}
+	abstract revokeConsentSession(user: string, client: string): Promise<void>;
 }

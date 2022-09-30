@@ -19,7 +19,7 @@ import { OauthProviderService } from '../oauth-provider.service';
 import { ProviderConsentSessionResponse } from '../dto/response/consent-session.response';
 
 @Injectable()
-export class HydraService extends OauthProviderService {
+export class HydraAdapter extends OauthProviderService {
 	private readonly hydraUri: string;
 
 	constructor(private readonly httpService: HttpService) {

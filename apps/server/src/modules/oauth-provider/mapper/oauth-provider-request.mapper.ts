@@ -4,7 +4,7 @@ import { LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
 
 @Injectable()
 export class OauthProviderRequestMapper {
-	static mapCreateAcceptLoginRequestBody(
+	mapCreateAcceptLoginRequestBody(
 		loginRequestBody: LoginRequestBody,
 		currentUserId: string,
 		pseudonym: string

@@ -1,5 +1,6 @@
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
 import { LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
+import { AcceptLoginRequestBody } from '@shared/infra/oauth-provider/dto/index';
 
 describe('OauthProviderRequestMapper', () => {
 	let mapper: OauthProviderRequestMapper;
@@ -8,25 +9,24 @@ describe('OauthProviderRequestMapper', () => {
 	});
 
 	describe('mapCreateAcceptLoginRequestBody', () => {
-		const loginRequestBodyMock: LoginRequestBody = {
-			remember: true,
-			remember_for: 0,
-		};
-
 		it('should create the AcceptLoginRequestBody', () => {
-			const create = OauthProviderRequestMapper.mapCreateAcceptLoginRequestBody(
+			const loginRequestBodyMock: LoginRequestBody = {
+				remember: true,
+				remember_for: 0,
+			};
+
+			const result: AcceptLoginRequestBody = mapper.mapCreateAcceptLoginRequestBody(
 				loginRequestBodyMock,
 				'currentUserId',
 				'pseudonym'
 			);
 
-			expect(create.acr).toBeUndefined();
-			expect(create.remember).toStrictEqual(true);
-			expect(create.remember).toBeTruthy();
-			expect(create.subject).toStrictEqual('currentUserId');
-			expect(create.force_subject_identifier).toStrictEqual('pseudonym');
-			expect(create.context).toBeUndefined();
-			expect(create.amr).toBeUndefined();
+			expect(result).toEqual({
+				remember: true,
+				remember_for: 0,
+				subject: 'currentUserId',
+				force_subject_identifier: 'pseudonym',
+			});
 		});
 	});
 });
