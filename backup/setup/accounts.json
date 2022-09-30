@@ -1341,5 +1341,22 @@
 			"$oid": "0000d213816abba584710000"
 		},
 		"__v": 0
+	},
+	{
+		"_id" : {
+			"$oid": "6335405a1f94d7fc9fc91861"
+		},
+		"createdAt" :  {
+			"$date": "2022-09-29T06:51:06.228Z"
+		},
+		"updatedAt" :  {
+			"$date": "2022-09-29T06:51:06.228Z"
+		},
+		"username" : "expert@schul-cloud.org",
+		"password" : "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+		"userId" : {
+			"$oid": "63354059dc728d001f53fb6d"
+		},
+		"activated" : true
 	}
 ]
