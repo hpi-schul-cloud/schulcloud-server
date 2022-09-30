@@ -106,4 +106,18 @@ describe('FilesStorageHelper', () => {
 			);
 		});
 	});
+
+	describe('unmarkForDelete()', () => {
+		it('should reset deletedSince params', () => {
+			const fileRecords = setupFileRecords();
+			const unmarkedFileRecords = fileStorageHelper.unmarkForDelete(fileRecords);
+			expect(unmarkedFileRecords).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({ ...fileRecords[0], deletedSince: undefined }),
+					expect.objectContaining({ ...fileRecords[1], deletedSince: undefined }),
+					expect.objectContaining({ ...fileRecords[2], deletedSince: undefined }),
+				])
+			);
+		});
+	});
 });
