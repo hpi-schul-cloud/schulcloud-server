@@ -1,13 +1,9 @@
-import { DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, FileRecord } from '@shared/domain';
-import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { FilesStorageHelper } from './files-storage.helper';
-
-let fileRecordRepo: DeepMocked<FileRecordRepo>;
 
 describe('FilesStorageHelper', () => {
 	let module: TestingModule;
