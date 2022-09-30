@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, FileRecord } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { FilesStorageHelper } from './files-storage.helper';
@@ -13,21 +13,11 @@ describe('FilesStorageHelper', () => {
 	beforeAll(async () => {
 		orm = await setupEntities();
 	});
-	let fileRecords: FileRecord[];
-
-	const userId: EntityId = new ObjectId().toHexString();
-	const schoolId: EntityId = new ObjectId().toHexString();
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [FilesStorageHelper],
 		}).compile();
-
-		fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
-		];
 
 		fileStorageHelper = module.get(FilesStorageHelper);
 	});
@@ -70,8 +60,22 @@ describe('FilesStorageHelper', () => {
 		});
 	});
 
+	const setupFileRecords = () => {
+		const userId: EntityId = new ObjectId().toHexString();
+		const schoolId: EntityId = new ObjectId().toHexString();
+
+		const fileRecords = [
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		];
+
+		return fileRecords;
+	};
+
 	describe('getPaths', () => {
 		it('should return paths', () => {
+			const fileRecords = setupFileRecords();
 			const paths = fileStorageHelper.getPaths(fileRecords);
 
 			const fileRecordId1 = fileRecords[0].id;
@@ -91,6 +95,7 @@ describe('FilesStorageHelper', () => {
 
 	describe('markForDelete()', () => {
 		it('should mark files for delete', () => {
+			const fileRecords = setupFileRecords();
 			const markedFileRecords = fileStorageHelper.markForDelete(fileRecords);
 			expect(markedFileRecords).toEqual(
 				expect.arrayContaining([
