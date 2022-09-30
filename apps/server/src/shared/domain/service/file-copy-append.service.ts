@@ -77,6 +77,7 @@ export class FileCopyAppendService {
 		}
 
 		const lesson = lessonCopyStatus.copyEntity;
+		const { elements } = lessonCopyStatus;
 		const legacyFileIds: string[] = [];
 
 		lesson.contents.forEach((item: IComponentProperties) => {
@@ -87,6 +88,14 @@ export class FileCopyAppendService {
 			const contentFileIds = this.extractOldFileIds(item.content.text);
 
 			legacyFileIds.push(...contentFileIds);
+		});
+
+		elements?.map(async (item: CopyStatus) => {
+			if (item.type !== CopyElementType.TASK_GROUP) {
+				return;
+			}
+
+			lessonCopyStatus = await this.copyEmbeddedLegacyFilesOfTasks(lessonCopyStatus, courseId, userId);
 		});
 
 		if (legacyFileIds.length > 0) {
