@@ -25,25 +25,41 @@ export class ProvisioningService {
 
 		switch (system.provisioningStrategy) {
 			case SystemProvisioningStrategy.SANIS: {
-				if (!system.provisioningUrl) {
-					throw new InternalServerErrorException(`Sanis system with id: ${systemId} is missing a provisioning url`);
-				}
-
-				const params: SanisStrategyData = {
-					provisioningUrl: system.provisioningUrl,
-					accessToken,
-					systemId,
-				};
-				return this.sanisStrategy.apply(params);
+				const provisioningDtoPromise = this.provisionSanis(system, systemId, accessToken);
+				return provisioningDtoPromise;
 			}
 			case SystemProvisioningStrategy.ISERV: {
-				const params: IservStrategyData = {
-					idToken,
-				};
-				return this.iservStrategy.apply(params);
+				const provisioningDtoPromise = this.provisionIserv(idToken);
+				return provisioningDtoPromise;
 			}
 			default:
 				throw new InternalServerErrorException('Provisioning Strategy is not defined.');
 		}
+	}
+
+	private provisionIserv(idToken: string): Promise<ProvisioningDto> {
+		const params: IservStrategyData = {
+			idToken,
+		};
+		const provisioningDtoPromise = this.iservStrategy.apply(params);
+		return provisioningDtoPromise;
+	}
+
+	private provisionSanis(
+		system: ProvisioningSystemInputDto,
+		systemId: string,
+		accessToken: string
+	): Promise<ProvisioningDto> {
+		if (!system.provisioningUrl) {
+			throw new InternalServerErrorException(`Sanis system with id: ${systemId} is missing a provisioning url`);
+		}
+
+		const params: SanisStrategyData = {
+			provisioningUrl: system.provisioningUrl,
+			accessToken,
+			systemId,
+		};
+		const provisioningDtoPromise = this.sanisStrategy.apply(params);
+		return provisioningDtoPromise;
 	}
 }
