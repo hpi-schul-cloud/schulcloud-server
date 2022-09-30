@@ -9,7 +9,7 @@ import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto/file-storage.params';
 import { FilesStorageHelper } from '../helper';
-import { FilesStorageService } from './file-storage.service';
+import { FilesStorageService } from './files-storage.service';
 
 describe('FilesStorageService', () => {
 	let module: TestingModule;

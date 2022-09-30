@@ -30,7 +30,7 @@ import { ErrorType, PermissionContexts } from '../files-storage.const';
 import { ICopyFiles } from '../interface';
 import { IFile } from '../interface/file';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
-import { FilesStorageService } from '../service/file-storage.service';
+import { FilesStorageService } from '../service/files-storage.service';
 
 @Injectable()
 export class FilesStorageUC {
