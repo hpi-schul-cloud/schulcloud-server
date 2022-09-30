@@ -7,9 +7,9 @@ import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import {
 	ProviderConsentResponse,
+	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
-	ProviderLoginResponse,
 } from '@shared/infra/oauth-provider/dto';
 import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
 import { ICurrentUser } from '@shared/domain';
@@ -18,6 +18,7 @@ import { IntrospectBody } from '@src/modules/oauth-provider/controller/dto/reque
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import { ApiTags } from '@nestjs/swagger';
+import { OauthProviderUc } from '../uc/oauth-provider.uc';
 import {
 	AcceptQuery,
 	ChallengeParams,
@@ -26,13 +27,12 @@ import {
 	IdParams,
 	ListOauthClientsParams,
 	LoginRequestBody,
+	LoginResponse,
 	OauthClientBody,
 	OauthClientResponse,
 	RedirectBody,
 	RevokeConsentParams,
-	LoginResponse,
 } from './dto';
-import { OauthProviderUc } from '../uc/oauth-provider.uc';
 
 @Controller('oauth2')
 @ApiTags('Oauth2')

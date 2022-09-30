@@ -27,16 +27,16 @@ export class OauthProviderLoginFlowUc {
 	async patchLoginRequest(
 		currentUserId: string,
 		challenge: string,
-		body: LoginRequestBody | RejectBody,
+		body: LoginRequestBody,
 		query: AcceptQuery
 	): Promise<ProviderRedirectResponse> {
 		let redirectResponse: ProviderRedirectResponse;
 		if (query.accept) {
 			const loginResponse: ProviderLoginResponse = await this.oauthProviderService.getLoginRequest(challenge);
 
-			redirectResponse = await this.acceptLoginRequest(currentUserId, loginResponse, body as LoginRequestBody);
+			redirectResponse = await this.acceptLoginRequest(currentUserId, loginResponse, body);
 		} else {
-			redirectResponse = await this.rejectLoginRequest(challenge, body as RejectBody);
+			redirectResponse = await this.rejectLoginRequest(challenge, body);
 		}
 		return redirectResponse;
 	}
