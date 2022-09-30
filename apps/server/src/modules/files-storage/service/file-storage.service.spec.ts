@@ -166,10 +166,11 @@ describe('FilesStorageService', () => {
 				expect(storageClient.delete).toHaveBeenCalledTimes(0);
 			});
 
-			it('should call fileRecordRepo.save on delete error with unmarked file record', async () => {
+			it('should call fileRecordRepo.save on delete error with original file records', async () => {
 				storageClient.delete.mockRejectedValue(new Error());
+				filesStorageHelper.markForDelete.mockReturnValue([]);
 				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow();
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecords);
+				expect(fileRecordRepo.save).toHaveBeenLastCalledWith(fileRecords);
 			});
 		});
 
