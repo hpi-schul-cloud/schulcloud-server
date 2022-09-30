@@ -9,7 +9,7 @@ import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, SingleFileParams } from '../controller/dto/file-storage.params';
 import { FilesStorageHelper } from '../helper';
-import { FilesStorageService } from './file-storage.service';
+import { FilesStorageService } from './files-storage.service';
 
 describe('FilesStorageService', () => {
 	let module: TestingModule;
@@ -18,7 +18,6 @@ describe('FilesStorageService', () => {
 	let storageClient: DeepMocked<S3ClientAdapter>;
 	let filesStorageHelper: DeepMocked<FilesStorageHelper>;
 	let orm: MikroORM;
-	let fileRecord: FileRecord;
 	let fileRecords: FileRecord[];
 
 	const entityId: EntityId = new ObjectId().toHexString();
@@ -27,8 +26,6 @@ describe('FilesStorageService', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-
-		fileRecord = fileRecordFactory.buildWithId({ name: 'text.txt' });
 	});
 
 	afterAll(async () => {
@@ -84,6 +81,94 @@ describe('FilesStorageService', () => {
 		expect(service).toBeDefined();
 	});
 
+	describe('delete()', () => {
+		const mockIsArrayEmptyError = () => {
+			filesStorageHelper.isArrayEmpty.mockImplementation(() => {
+				throw new Error();
+			});
+		};
+
+		beforeEach(() => {
+			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
+			storageClient.delete.mockResolvedValue([]);
+		});
+
+		describe('calls isArrayEmpty', () => {
+			it('should not call save if file records array is empty', async () => {
+				await service.delete(fileRecords);
+
+				expect(filesStorageHelper.isArrayEmpty).toHaveBeenCalledWith(fileRecords);
+			});
+		});
+
+		describe('calls to markForDelete', () => {
+			it('should call with fileRecords in params', async () => {
+				await service.delete(fileRecords);
+
+				expect(filesStorageHelper.markForDelete).toHaveBeenCalledWith(fileRecords);
+			});
+		});
+
+		describe('calls to fileRecordRepo.save()', () => {
+			it('should call with fileRecords in params', async () => {
+				filesStorageHelper.markForDelete.mockReturnValue(fileRecords);
+
+				await service.delete(fileRecords);
+
+				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(1, fileRecords);
+			});
+
+			it('should not call if file records array is empty', async () => {
+				mockIsArrayEmptyError();
+
+				await expect(service.delete([])).rejects.toThrow();
+
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
+			});
+
+			it('should call with original file records one delete error', async () => {
+				storageClient.delete.mockRejectedValue(new Error());
+				filesStorageHelper.markForDelete.mockReturnValue([]);
+
+				await expect(service.delete(fileRecords)).rejects.toThrow();
+				expect(fileRecordRepo.save).toHaveBeenLastCalledWith(fileRecords);
+			});
+
+			it('should throw error if entity not found', async () => {
+				fileRecordRepo.save.mockRejectedValue(new Error());
+
+				await expect(service.delete(fileRecords)).rejects.toThrow();
+			});
+		});
+
+		describe('calls to getPatchs', () => {
+			it('should call with fileRecords in params', async () => {
+				await service.delete(fileRecords);
+
+				expect(filesStorageHelper.getPaths).toHaveBeenCalledWith(fileRecords);
+			});
+		});
+
+		describe('calls to storageClient.delete', () => {
+			it('should call with correct paths', async () => {
+				const paths = ['1', '2'];
+				filesStorageHelper.getPaths.mockReturnValue(paths);
+
+				await service.delete(fileRecords);
+
+				expect(storageClient.delete).toHaveBeenCalledWith(paths);
+			});
+
+			it('should not call if file records array is empty', async () => {
+				mockIsArrayEmptyError();
+
+				await expect(service.delete([])).rejects.toThrow();
+
+				expect(storageClient.delete).toHaveBeenCalledTimes(0);
+			});
+		});
+	});
+
 	describe('deleteFilesOfParent()', () => {
 		let requestParams: FileRecordParams;
 		beforeEach(() => {
@@ -94,6 +179,18 @@ describe('FilesStorageService', () => {
 			};
 			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
 			storageClient.delete.mockResolvedValue([]);
+		});
+
+		it('should return file records and count', async () => {
+			const responseData = await service.deleteFilesOfParent(requestParams);
+			expect(responseData[0]).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({ ...fileRecords[0] }),
+					expect.objectContaining({ ...fileRecords[1] }),
+					expect.objectContaining({ ...fileRecords[2] }),
+				])
+			);
+			expect(responseData[1]).toEqual(fileRecords.length);
 		});
 
 		describe('calls to fileRecordRepo.findBySchoolIdAndParentId()', () => {
@@ -130,9 +227,9 @@ describe('FilesStorageService', () => {
 
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
 					expect.arrayContaining([
-						expect.objectContaining({ ...fileRecord[0] }),
-						expect.objectContaining({ ...fileRecord[1] }),
-						expect.objectContaining({ ...fileRecord[2] }),
+						expect.objectContaining({ ...fileRecords[0] }),
+						expect.objectContaining({ ...fileRecords[1] }),
+						expect.objectContaining({ ...fileRecords[2] }),
 					])
 				);
 			});
@@ -214,7 +311,7 @@ describe('FilesStorageService', () => {
 			requestParams = {
 				fileRecordId: new ObjectId().toHexString(),
 			};
-			fileRecordRepo.findOneByIdMarkedForDelete.mockResolvedValue(fileRecord);
+			fileRecordRepo.findOneByIdMarkedForDelete.mockResolvedValue(fileRecords[0]);
 			storageClient.restore.mockResolvedValue([]);
 		});
 

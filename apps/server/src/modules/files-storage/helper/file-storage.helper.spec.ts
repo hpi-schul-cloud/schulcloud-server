@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
+import { ErrorStatus } from '../error';
 import { FilesStorageHelper } from './files-storage.helper';
 
 describe('FilesStorageHelper', () => {
@@ -35,7 +36,6 @@ describe('FilesStorageHelper', () => {
 	});
 
 	describe('createPath', () => {
-		const errorMessage = `Couldn't create path. SchoolId or FileRecordId is empty.`;
 		it('should create path', () => {
 			const path = fileStorageHelper.createPath('schoolId', 'fileRecordId');
 			expect(path).toBe('schoolId/fileRecordId');
@@ -44,19 +44,19 @@ describe('FilesStorageHelper', () => {
 		it('should throw error on empty schoolId', () => {
 			expect(() => {
 				fileStorageHelper.createPath('', 'fileRecordId');
-			}).toThrowError(errorMessage);
+			}).toThrowError(ErrorStatus.COULD_NOT_CREATE_PATH);
 		});
 
 		it('should throw error on empty fileRecordId', () => {
 			expect(() => {
 				fileStorageHelper.createPath('schoolId', '');
-			}).toThrowError(errorMessage);
+			}).toThrowError(ErrorStatus.COULD_NOT_CREATE_PATH);
 		});
 
 		it('should throw error on empty fileRecordId and schoolId', () => {
 			expect(() => {
 				fileStorageHelper.createPath('', '');
-			}).toThrowError(errorMessage);
+			}).toThrowError(ErrorStatus.COULD_NOT_CREATE_PATH);
 		});
 	});
 
@@ -89,7 +89,7 @@ describe('FilesStorageHelper', () => {
 		it('should throw error on empty fileRecordsArray', () => {
 			expect(() => {
 				fileStorageHelper.getPaths([]);
-			}).toThrowError(`FileRecordsArray is empty. Couldn't get paths`);
+			}).toThrowError(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
 		});
 	});
 
@@ -118,6 +118,21 @@ describe('FilesStorageHelper', () => {
 					expect.objectContaining({ ...fileRecords[2], deletedSince: undefined }),
 				])
 			);
+		});
+	});
+
+	describe('isFileRecordsEmpty', () => {
+		it('should throw error', () => {
+			expect(() => {
+				fileStorageHelper.isArrayEmpty([]);
+			}).toThrowError(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
+		});
+
+		it('should not throw error', () => {
+			const fileRecords = setupFileRecords();
+			expect(() => {
+				fileStorageHelper.isArrayEmpty(fileRecords);
+			}).not.toThrowError(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
 		});
 	});
 });

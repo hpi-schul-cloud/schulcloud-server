@@ -30,7 +30,7 @@ import { ErrorType, PermissionContexts } from '../files-storage.const';
 import { ICopyFiles } from '../interface';
 import { IFile } from '../interface/file';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
-import { FilesStorageService } from '../service/file-storage.service';
+import { FilesStorageService } from '../service/files-storage.service';
 
 @Injectable()
 export class FilesStorageUC {
@@ -229,21 +229,6 @@ export class FilesStorageUC {
 		await this.fileRecordRepo.save(fileRecords);
 	}
 
-	private async delete(fileRecords: FileRecord[]) {
-		this.logger.debug({ action: 'delete', fileRecords });
-
-		await this.markForDelete(fileRecords);
-		try {
-			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
-
-			await this.storageClient.delete(paths);
-		} catch (err) {
-			await this.unmarkForDelete(fileRecords);
-
-			throw new InternalServerErrorException(err, `${FilesStorageUC.name}:delete`);
-		}
-	}
-
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.delete);
 		const [fileRecords, count] = await this.filesStorageService.deleteFilesOfParent(params);
@@ -254,7 +239,7 @@ export class FilesStorageUC {
 	public async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.delete);
-		await this.delete([fileRecord]);
+		await this.filesStorageService.delete([fileRecord]);
 
 		return fileRecord;
 	}

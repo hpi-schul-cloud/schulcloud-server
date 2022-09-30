@@ -17,8 +17,10 @@ export class FilesStorageService {
 		this.logger.setContext(FilesStorageService.name);
 	}
 
-	private async delete(fileRecords: FileRecord[]) {
+	public async delete(fileRecords: FileRecord[]) {
 		this.logger.debug({ action: 'delete', fileRecords });
+
+		this.filesStorageHelper.isArrayEmpty(fileRecords);
 
 		const markedFileRecords = this.filesStorageHelper.markForDelete(fileRecords);
 		await this.fileRecordRepo.save(markedFileRecords);
