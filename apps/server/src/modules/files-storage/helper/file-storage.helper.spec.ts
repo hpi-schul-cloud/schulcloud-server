@@ -106,19 +106,4 @@ describe('FilesStorageHelper', () => {
 			);
 		});
 	});
-
-	describe('isFileRecordsEmpty', () => {
-		it('should throw error', () => {
-			expect(() => {
-				fileStorageHelper.isArrayEmpty([]);
-			}).toThrowError(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
-		});
-
-		it('should not throw error', () => {
-			const fileRecords = setupFileRecords();
-			expect(() => {
-				fileStorageHelper.isArrayEmpty(fileRecords);
-			}).not.toThrowError(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
-		});
-	});
 });

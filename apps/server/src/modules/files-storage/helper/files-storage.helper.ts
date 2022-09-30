@@ -28,10 +28,4 @@ export class FilesStorageHelper {
 
 		return markedFileRecords;
 	}
-
-	public isArrayEmpty(fileRecords: FileRecord[]): void {
-		if (fileRecords.length === 0) {
-			throw new Error(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
-		}
-	}
 }

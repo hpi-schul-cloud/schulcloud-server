@@ -82,23 +82,9 @@ describe('FilesStorageService', () => {
 	});
 
 	describe('delete()', () => {
-		const mockIsArrayEmptyError = () => {
-			filesStorageHelper.isArrayEmpty.mockImplementation(() => {
-				throw new Error();
-			});
-		};
-
 		beforeEach(() => {
 			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
 			storageClient.delete.mockResolvedValue([]);
-		});
-
-		describe('calls isArrayEmpty', () => {
-			it('should not call save if file records array is empty', async () => {
-				await service.delete(fileRecords);
-
-				expect(filesStorageHelper.isArrayEmpty).toHaveBeenCalledWith(fileRecords);
-			});
 		});
 
 		describe('calls to markForDelete', () => {
@@ -116,14 +102,6 @@ describe('FilesStorageService', () => {
 				await service.delete(fileRecords);
 
 				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(1, fileRecords);
-			});
-
-			it('should not call if file records array is empty', async () => {
-				mockIsArrayEmptyError();
-
-				await expect(service.delete([])).rejects.toThrow();
-
-				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
 			});
 
 			it('should call with original file records one delete error', async () => {
@@ -158,14 +136,6 @@ describe('FilesStorageService', () => {
 
 				expect(storageClient.delete).toHaveBeenCalledWith(paths);
 			});
-
-			it('should not call if file records array is empty', async () => {
-				mockIsArrayEmptyError();
-
-				await expect(service.delete([])).rejects.toThrow();
-
-				expect(storageClient.delete).toHaveBeenCalledTimes(0);
-			});
 		});
 	});
 
@@ -198,6 +168,29 @@ describe('FilesStorageService', () => {
 			it('should throw error if entity not found', async () => {
 				fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValue(new Error());
 				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow();
+			});
+		});
+
+		describe('calls to fileStorageService.delete', () => {
+			it('should call with correctly params', async () => {
+				const spy = jest.spyOn(service, 'delete');
+
+				await service.deleteFilesOfParent(requestParams);
+
+				expect(service.delete).toHaveBeenCalledWith(fileRecords);
+
+				spy.mockRestore();
+			});
+
+			it('should call with correctly params', async () => {
+				const spy = jest.spyOn(service, 'delete');
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([[], 0]);
+
+				await service.deleteFilesOfParent(requestParams);
+
+				expect(service.delete).toHaveBeenCalledTimes(0);
+
+				spy.mockRestore();
 			});
 		});
 

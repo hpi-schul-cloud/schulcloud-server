@@ -20,8 +20,6 @@ export class FilesStorageService {
 	public async delete(fileRecords: FileRecord[]) {
 		this.logger.debug({ action: 'delete', fileRecords });
 
-		this.filesStorageHelper.isArrayEmpty(fileRecords);
-
 		const markedFileRecords = this.filesStorageHelper.markForDelete(fileRecords);
 		await this.fileRecordRepo.save(markedFileRecords);
 
@@ -38,7 +36,9 @@ export class FilesStorageService {
 	public async deleteFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
-		await this.delete(fileRecords);
+		if (count > 0) {
+			await this.delete(fileRecords);
+		}
 
 		return [fileRecords, count];
 	}
