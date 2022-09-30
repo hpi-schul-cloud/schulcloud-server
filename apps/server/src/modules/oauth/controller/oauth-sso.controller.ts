@@ -17,6 +17,7 @@ export class OauthSSOController {
 		this.logger.setContext(OauthSSOController.name);
 	}
 
+	// TODO The system lookup must not be part of the path but of the token instead (EW-325)
 	@Get('oauth/:systemId')
 	async startOauthAuthorizationCodeFlow(
 		@Query() query: AuthorizationParams,

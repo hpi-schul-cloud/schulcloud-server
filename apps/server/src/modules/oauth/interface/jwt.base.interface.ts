@@ -11,4 +11,5 @@ export interface IJwt {
 	birthdate?: string;
 	email?: string;
 	uuid: string;
+	preferred_username?: string;
 }
