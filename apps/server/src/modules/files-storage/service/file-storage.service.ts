@@ -28,7 +28,7 @@ export class FilesStorageService {
 
 			await this.storageClient.delete(paths);
 		} catch (err) {
-			await this.fileRecordRepo.save(markedFileRecords);
+			await this.fileRecordRepo.save(fileRecords);
 			throw new InternalServerErrorException(err, `${FilesStorageService.name}:delete`);
 		}
 	}
