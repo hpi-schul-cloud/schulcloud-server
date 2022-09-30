@@ -6,7 +6,7 @@ import { ErrorStatus } from '../error';
 export class FilesStorageHelper {
 	public createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 		if (!schoolId || !fileRecordId) {
-			throw new Error(`Couldn't create path. SchoolId or FileRecordId is empty.`);
+			throw new Error(ErrorStatus.COULD_NOT_CREATE_PATH);
 		}
 
 		return [schoolId, fileRecordId].join('/');
@@ -14,7 +14,7 @@ export class FilesStorageHelper {
 
 	public getPaths(fileRecords: FileRecord[]): string[] {
 		if (fileRecords.length === 0) {
-			throw new Error(`FileRecordsArray is empty. Couldn't get paths.`);
+			throw new Error(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
 		}
 
 		return fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));

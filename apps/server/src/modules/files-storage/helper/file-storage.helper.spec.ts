@@ -36,7 +36,6 @@ describe('FilesStorageHelper', () => {
 	});
 
 	describe('createPath', () => {
-		const errorMessage = `Couldn't create path. SchoolId or FileRecordId is empty.`;
 		it('should create path', () => {
 			const path = fileStorageHelper.createPath('schoolId', 'fileRecordId');
 			expect(path).toBe('schoolId/fileRecordId');
@@ -45,19 +44,19 @@ describe('FilesStorageHelper', () => {
 		it('should throw error on empty schoolId', () => {
 			expect(() => {
 				fileStorageHelper.createPath('', 'fileRecordId');
-			}).toThrowError(errorMessage);
+			}).toThrowError(ErrorStatus.COULD_NOT_CREATE_PATH);
 		});
 
 		it('should throw error on empty fileRecordId', () => {
 			expect(() => {
 				fileStorageHelper.createPath('schoolId', '');
-			}).toThrowError(errorMessage);
+			}).toThrowError(ErrorStatus.COULD_NOT_CREATE_PATH);
 		});
 
 		it('should throw error on empty fileRecordId and schoolId', () => {
 			expect(() => {
 				fileStorageHelper.createPath('', '');
-			}).toThrowError(errorMessage);
+			}).toThrowError(ErrorStatus.COULD_NOT_CREATE_PATH);
 		});
 	});
 
@@ -90,7 +89,7 @@ describe('FilesStorageHelper', () => {
 		it('should throw error on empty fileRecordsArray', () => {
 			expect(() => {
 				fileStorageHelper.getPaths([]);
-			}).toThrowError(`FileRecordsArray is empty. Couldn't get paths`);
+			}).toThrowError(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
 		});
 	});
 
