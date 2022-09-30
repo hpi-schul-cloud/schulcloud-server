@@ -81,6 +81,94 @@ describe('FilesStorageService', () => {
 		expect(service).toBeDefined();
 	});
 
+	describe('delete()', () => {
+		const mockIsArrayEmptyError = () => {
+			filesStorageHelper.isArrayEmpty.mockImplementation(() => {
+				throw new Error();
+			});
+		};
+
+		beforeEach(() => {
+			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
+			storageClient.delete.mockResolvedValue([]);
+		});
+
+		describe('calls isArrayEmpty', () => {
+			it('should not call save if file records array is empty', async () => {
+				await service.delete(fileRecords);
+
+				expect(filesStorageHelper.isArrayEmpty).toHaveBeenCalledWith(fileRecords);
+			});
+		});
+
+		describe('calls to markForDelete', () => {
+			it('should call with fileRecords in params', async () => {
+				await service.delete(fileRecords);
+
+				expect(filesStorageHelper.markForDelete).toHaveBeenCalledWith(fileRecords);
+			});
+		});
+
+		describe('calls to fileRecordRepo.save()', () => {
+			it('should call with fileRecords in params', async () => {
+				filesStorageHelper.markForDelete.mockReturnValue(fileRecords);
+
+				await service.delete(fileRecords);
+
+				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(1, fileRecords);
+			});
+
+			it('should not call if file records array is empty', async () => {
+				mockIsArrayEmptyError();
+
+				await expect(service.delete([])).rejects.toThrow();
+
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
+			});
+
+			it('should call with original file records one delete error', async () => {
+				storageClient.delete.mockRejectedValue(new Error());
+				filesStorageHelper.markForDelete.mockReturnValue([]);
+
+				await expect(service.delete(fileRecords)).rejects.toThrow();
+				expect(fileRecordRepo.save).toHaveBeenLastCalledWith(fileRecords);
+			});
+
+			it('should throw error if entity not found', async () => {
+				fileRecordRepo.save.mockRejectedValue(new Error());
+
+				await expect(service.delete(fileRecords)).rejects.toThrow();
+			});
+		});
+
+		describe('calls to getPatchs', () => {
+			it('should call with fileRecords in params', async () => {
+				await service.delete(fileRecords);
+
+				expect(filesStorageHelper.getPaths).toHaveBeenCalledWith(fileRecords);
+			});
+		});
+
+		describe('calls to storageClient.delete', () => {
+			it('should call with correct paths', async () => {
+				const paths = ['1', '2'];
+				filesStorageHelper.getPaths.mockReturnValue(paths);
+
+				await service.delete(fileRecords);
+
+				expect(storageClient.delete).toHaveBeenCalledWith(paths);
+			});
+
+			it('should not call if file records array is empty', async () => {
+				mockIsArrayEmptyError();
+
+				await expect(service.delete([])).rejects.toThrow();
+
+				expect(storageClient.delete).toHaveBeenCalledTimes(0);
+			});
+		});
+	});
+
 	describe('deleteFilesOfParent()', () => {
 		let requestParams: FileRecordParams;
 		beforeEach(() => {
@@ -110,55 +198,6 @@ describe('FilesStorageService', () => {
 			it('should throw error if entity not found', async () => {
 				fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValue(new Error());
 				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow();
-			});
-		});
-
-		describe('calls to fileRecordRepo.save()', () => {
-			it('should not call save if count equals 0', async () => {
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([[], 0]);
-
-				await service.deleteFilesOfParent(requestParams);
-
-				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
-			});
-
-			it('should call with fileRecords in params', async () => {
-				filesStorageHelper.markForDelete.mockReturnValue(fileRecords);
-
-				await service.deleteFilesOfParent(requestParams);
-
-				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(1, fileRecords);
-			});
-
-			it('should call with original file records one delete error', async () => {
-				storageClient.delete.mockRejectedValue(new Error());
-				filesStorageHelper.markForDelete.mockReturnValue([]);
-
-				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow();
-				expect(fileRecordRepo.save).toHaveBeenLastCalledWith(fileRecords);
-			});
-
-			it('should throw error if entity not found', async () => {
-				fileRecordRepo.save.mockRejectedValue(new Error());
-
-				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow();
-			});
-		});
-
-		describe('calls to storageClient.delete', () => {
-			it('should call with correct paths', async () => {
-				const paths = ['1', '2'];
-				filesStorageHelper.getPaths.mockReturnValue(paths);
-
-				await service.deleteFilesOfParent(requestParams);
-
-				expect(storageClient.delete).toHaveBeenCalledWith(paths);
-			});
-
-			it('should not call save if count equals 0', async () => {
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([[], 0]);
-				await service.deleteFilesOfParent(requestParams);
-				expect(storageClient.delete).toHaveBeenCalledTimes(0);
 			});
 		});
 

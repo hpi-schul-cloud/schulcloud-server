@@ -541,10 +541,15 @@ describe('FilesStorageUC', () => {
 				fileRecordRepo.findOneById.mockRejectedValue(new Error());
 				await expect(filesStorageUC.deleteOneFile(userId, requestParams)).rejects.toThrow();
 			});
+		});
 
-			it('should return file response with deletedSince', async () => {
-				const fileRecordRes = await filesStorageUC.deleteOneFile(userId, requestParams);
-				expect(fileRecordRes).toEqual(expect.objectContaining({ deletedSince: expect.any(Date) as Date }));
+		describe('calls to filesStorageService.delete', () => {
+			it('should call with correct params', async () => {
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecords[0]);
+
+				await filesStorageUC.deleteOneFile(userId, requestParams);
+
+				expect(filesStorageService.delete).toHaveBeenCalledWith([fileRecords[0]]);
 			});
 		});
 

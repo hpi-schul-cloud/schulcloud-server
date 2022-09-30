@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
+import { ErrorStatus } from '../error';
 import { FilesStorageHelper } from './files-storage.helper';
 
 describe('FilesStorageHelper', () => {
@@ -104,6 +105,21 @@ describe('FilesStorageHelper', () => {
 					expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) as Date }),
 				])
 			);
+		});
+	});
+
+	describe('isFileRecordsEmpty', () => {
+		it('should throw error', () => {
+			expect(() => {
+				fileStorageHelper.isArrayEmpty([]);
+			}).toThrowError(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
+		});
+
+		it('should not throw error', () => {
+			const fileRecords = setupFileRecords();
+			expect(() => {
+				fileStorageHelper.isArrayEmpty(fileRecords);
+			}).not.toThrowError(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
 		});
 	});
 });

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, FileRecord } from '@shared/domain';
+import { ErrorStatus } from '../error';
 
 @Injectable()
 export class FilesStorageHelper {
@@ -26,5 +27,11 @@ export class FilesStorageHelper {
 		});
 
 		return markedFileRecords;
+	}
+
+	public isArrayEmpty(fileRecords: FileRecord[]): void {
+		if (fileRecords.length === 0) {
+			throw new Error(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
+		}
 	}
 }
