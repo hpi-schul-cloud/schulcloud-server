@@ -17,20 +17,32 @@ export class FilesStorageService {
 		this.logger.setContext(FilesStorageService.name);
 	}
 
+	private async deleteFiles(fileRecords: FileRecord[]) {
+		const paths = this.filesStorageHelper.getPaths(fileRecords);
+
+		await this.storageClient.delete(paths);
+	}
+
+	private async rollBackFileRecords(fileRecords: FileRecord[], error: unknown) {
+		await this.fileRecordRepo.save(fileRecords);
+		throw new InternalServerErrorException(error, `${FilesStorageService.name}:delete`);
+	}
+
+	private async tryDelete(fileRecords: FileRecord[]): Promise<void> {
+		try {
+			await this.deleteFiles(fileRecords);
+		} catch (error) {
+			await this.rollBackFileRecords(fileRecords, error);
+		}
+	}
+
 	public async delete(fileRecords: FileRecord[]) {
 		this.logger.debug({ action: 'delete', fileRecords });
 
 		const markedFileRecords = this.filesStorageHelper.markForDelete(fileRecords);
 		await this.fileRecordRepo.save(markedFileRecords);
 
-		try {
-			const paths = this.filesStorageHelper.getPaths(fileRecords);
-
-			await this.storageClient.delete(paths);
-		} catch (err) {
-			await this.fileRecordRepo.save(fileRecords);
-			throw new InternalServerErrorException(err, `${FilesStorageService.name}:delete`);
-		}
+		await this.tryDelete(fileRecords);
 	}
 
 	public async deleteFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
