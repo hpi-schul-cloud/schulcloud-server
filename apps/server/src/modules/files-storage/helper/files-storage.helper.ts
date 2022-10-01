@@ -24,4 +24,19 @@ export class FilesStorageHelper {
 
 		return markedFileRecords;
 	}
+
+	public unmarkForDelete(fileRecords: FileRecord[]): FileRecord[] {
+		const unmarkedFileRecords = fileRecords.map((fileRecord) => {
+			fileRecord.unmarkForDelete();
+			return fileRecord;
+		});
+
+		return unmarkedFileRecords;
+	}
+
+	public isArrayEmpty(fileRecords: FileRecord[]): void {
+		if (fileRecords.length === 0) {
+			throw new Error(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
+		}
+	}
 }

@@ -106,4 +106,33 @@ describe('FilesStorageHelper', () => {
 			);
 		});
 	});
+
+	describe('unmarkForDelete()', () => {
+		it('should reset deletedSince params', () => {
+			const fileRecords = setupFileRecords();
+			const unmarkedFileRecords = fileStorageHelper.unmarkForDelete(fileRecords);
+			expect(unmarkedFileRecords).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({ ...fileRecords[0], deletedSince: undefined }),
+					expect.objectContaining({ ...fileRecords[1], deletedSince: undefined }),
+					expect.objectContaining({ ...fileRecords[2], deletedSince: undefined }),
+				])
+			);
+		});
+	});
+
+	describe('isFileRecordsEmpty', () => {
+		it('should throw error', () => {
+			expect(() => {
+				fileStorageHelper.isArrayEmpty([]);
+			}).toThrowError(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
+		});
+
+		it('should not throw error', () => {
+			const fileRecords = setupFileRecords();
+			expect(() => {
+				fileStorageHelper.isArrayEmpty(fileRecords);
+			}).not.toThrowError(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
+		});
+	});
 });
