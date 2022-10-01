@@ -2,12 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
+import { EntityId, FileRecordParentType } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { FileRecordParams } from '../controller/dto/file-storage.params';
 import { FilesStorageHelper } from '../helper';
 import { FilesStorageService } from './files-storage.service';
 
@@ -18,11 +17,16 @@ describe('FilesStorageService', () => {
 	let storageClient: DeepMocked<S3ClientAdapter>;
 	let filesStorageHelper: DeepMocked<FilesStorageHelper>;
 	let orm: MikroORM;
-	let fileRecords: FileRecord[];
 
-	const entityId: EntityId = new ObjectId().toHexString();
 	const userId: EntityId = new ObjectId().toHexString();
 	const schoolId: EntityId = new ObjectId().toHexString();
+	const getFileRecords = () => {
+		return [
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		];
+	};
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -59,18 +63,6 @@ describe('FilesStorageService', () => {
 		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
 		filesStorageHelper = module.get(FilesStorageHelper);
-
-		fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
-		];
-		fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
-
-		fileRecordRepo.save.mockImplementation((entity: FileRecord | FileRecord[]) => {
-			(entity as FileRecord).id = entityId;
-			return Promise.resolve();
-		});
 	});
 
 	afterEach(async () => {
@@ -81,98 +73,108 @@ describe('FilesStorageService', () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('delete()', () => {
-		beforeEach(() => {
-			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
-			storageClient.delete.mockResolvedValue([]);
+	describe('delete is called', () => {
+		const setup = () => {
+			return { fileRecords: getFileRecords() };
+		};
+
+		it('should call markForDelete', async () => {
+			const { fileRecords } = setup();
+			await service.delete(fileRecords);
+
+			expect(filesStorageHelper.markForDelete).toHaveBeenCalledWith(fileRecords);
 		});
 
-		describe('calls to markForDelete', () => {
-			it('should call with fileRecords in params', async () => {
-				await service.delete(fileRecords);
+		it('should call fileRecordRepo.save with marked file records', async () => {
+			const { fileRecords: markedFileRecords } = setup();
+			const fileRecords = [];
 
-				expect(filesStorageHelper.markForDelete).toHaveBeenCalledWith(fileRecords);
-			});
+			filesStorageHelper.markForDelete.mockReturnValue(markedFileRecords);
+
+			await service.delete(fileRecords);
+
+			expect(fileRecordRepo.save).toHaveBeenNthCalledWith(1, markedFileRecords);
 		});
 
-		describe('calls to fileRecordRepo.save()', () => {
-			it('should call with fileRecords in params', async () => {
-				filesStorageHelper.markForDelete.mockReturnValue(fileRecords);
+		it('should call getPaths', async () => {
+			const { fileRecords } = setup();
 
-				await service.delete(fileRecords);
+			await service.delete(fileRecords);
 
-				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(1, fileRecords);
-			});
+			expect(filesStorageHelper.getPaths).toHaveBeenCalledWith(fileRecords);
+		});
 
-			it('should call with original file records one delete error', async () => {
+		it('should call storageClient.delete', async () => {
+			const { fileRecords } = setup();
+			const paths = ['1', '2'];
+			filesStorageHelper.getPaths.mockReturnValue(paths);
+
+			await service.delete(fileRecords);
+
+			expect(storageClient.delete).toHaveBeenCalledWith(paths);
+		});
+
+		describe('storageClient.delete throws error', () => {
+			it('should call fileRecordRepo.save with original file records', async () => {
+				const { fileRecords } = setup();
 				storageClient.delete.mockRejectedValue(new Error());
-				filesStorageHelper.markForDelete.mockReturnValue([]);
 
 				await expect(service.delete(fileRecords)).rejects.toThrow();
-				expect(fileRecordRepo.save).toHaveBeenLastCalledWith(fileRecords);
+				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(2, fileRecords);
 			});
 
 			it('should throw error if entity not found', async () => {
+				const { fileRecords } = setup();
 				fileRecordRepo.save.mockRejectedValue(new Error());
 
 				await expect(service.delete(fileRecords)).rejects.toThrow();
 			});
 		});
-
-		describe('calls to getPatchs', () => {
-			it('should call with fileRecords in params', async () => {
-				await service.delete(fileRecords);
-
-				expect(filesStorageHelper.getPaths).toHaveBeenCalledWith(fileRecords);
-			});
-		});
-
-		describe('calls to storageClient.delete', () => {
-			it('should call with correct paths', async () => {
-				const paths = ['1', '2'];
-				filesStorageHelper.getPaths.mockReturnValue(paths);
-
-				await service.delete(fileRecords);
-
-				expect(storageClient.delete).toHaveBeenCalledWith(paths);
-			});
-		});
 	});
 
-	describe('deleteFilesOfParent()', () => {
-		let requestParams: FileRecordParams;
-		beforeEach(() => {
-			requestParams = {
+	describe('deleteFilesOfParent is called', () => {
+		const setup = () => {
+			const fileRecords = getFileRecords();
+			const requestParams = {
 				schoolId,
 				parentId: userId,
 				parentType: FileRecordParentType.User,
 			};
-			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
-			storageClient.delete.mockResolvedValue([]);
+
+			return { requestParams, fileRecords };
+		};
+
+		it('should call findBySchoolIdAndParentId once', async () => {
+			const { requestParams } = setup();
+			await service.deleteFilesOfParent(requestParams);
+			expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledTimes(1);
 		});
 
-		describe('calls to fileRecordRepo.findBySchoolIdAndParentId()', () => {
-			it('should call once', async () => {
-				await service.deleteFilesOfParent(requestParams);
-				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledTimes(1);
-			});
-
-			it('should call with correctly params', async () => {
-				await service.deleteFilesOfParent(requestParams);
-				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledWith(
-					requestParams.schoolId,
-					requestParams.parentId
-				);
-			});
-
-			it('should throw error if entity not found', async () => {
-				fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValue(new Error());
-				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow();
-			});
+		it('should call findBySchoolIdAndParentId with correctly params', async () => {
+			const { requestParams } = setup();
+			await service.deleteFilesOfParent(requestParams);
+			expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledWith(
+				requestParams.schoolId,
+				requestParams.parentId
+			);
 		});
 
-		describe('calls to fileStorageService.delete', () => {
-			it('should call with correctly params', async () => {
+		it('should throw error if findBySchoolIdAndParentId could not find entity', async () => {
+			const { requestParams } = setup();
+			fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValue(new Error());
+			await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow();
+		});
+
+		describe('findBySchoolIdAndParentId returned fileRecords', () => {
+			const scenarioSetup = () => {
+				const { fileRecords, requestParams } = setup();
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
+
+				return { requestParams, fileRecords };
+			};
+
+			it('should call delete with correct params', async () => {
+				const { requestParams, fileRecords } = scenarioSetup();
 				const spy = jest.spyOn(service, 'delete');
 
 				await service.deleteFilesOfParent(requestParams);
@@ -182,8 +184,26 @@ describe('FilesStorageService', () => {
 				spy.mockRestore();
 			});
 
-			it('should call with correctly params', async () => {
+			it('should return file records and count', async () => {
+				const { requestParams, fileRecords } = scenarioSetup();
+
+				const responseData = await service.deleteFilesOfParent(requestParams);
+				expect(responseData[0]).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({ ...fileRecords[0] }),
+						expect.objectContaining({ ...fileRecords[1] }),
+						expect.objectContaining({ ...fileRecords[2] }),
+					])
+				);
+				expect(responseData[1]).toEqual(fileRecords.length);
+			});
+		});
+
+		describe('findBySchoolIdAndParentId returned empty array', () => {
+			it('should call delete with correct params', async () => {
+				const { requestParams } = setup();
 				const spy = jest.spyOn(service, 'delete');
+
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([[], 0]);
 
 				await service.deleteFilesOfParent(requestParams);
@@ -192,18 +212,6 @@ describe('FilesStorageService', () => {
 
 				spy.mockRestore();
 			});
-		});
-
-		it('should return file records and count', async () => {
-			const responseData = await service.deleteFilesOfParent(requestParams);
-			expect(responseData[0]).toEqual(
-				expect.arrayContaining([
-					expect.objectContaining({ ...fileRecords[0] }),
-					expect.objectContaining({ ...fileRecords[1] }),
-					expect.objectContaining({ ...fileRecords[2] }),
-				])
-			);
-			expect(responseData[1]).toEqual(fileRecords.length);
 		});
 	});
 });

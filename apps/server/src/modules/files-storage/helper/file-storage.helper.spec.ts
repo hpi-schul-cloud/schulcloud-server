@@ -86,10 +86,10 @@ describe('FilesStorageHelper', () => {
 			expect(paths).toEqual(expect.arrayContaining([`${schoolId1}/${fileRecordId1}`, `${schoolId2}/${fileRecordId2}`]));
 		});
 
-		it('should throw error on empty fileRecordsArray', () => {
-			expect(() => {
-				fileStorageHelper.getPaths([]);
-			}).toThrowError(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
+		it('should return empty array on empty fileRecordsArray', () => {
+			const paths = fileStorageHelper.getPaths([]);
+
+			expect(paths).toEqual([]);
 		});
 	});
 

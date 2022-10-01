@@ -13,10 +13,6 @@ export class FilesStorageHelper {
 	}
 
 	public getPaths(fileRecords: FileRecord[]): string[] {
-		if (fileRecords.length === 0) {
-			throw new Error(ErrorStatus.EMPTY_FILE_RECORDS_ARRAY);
-		}
-
 		return fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
 	}
 
