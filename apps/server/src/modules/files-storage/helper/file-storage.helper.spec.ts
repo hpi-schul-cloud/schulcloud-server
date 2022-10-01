@@ -11,6 +11,19 @@ describe('FilesStorageHelper', () => {
 	let fileStorageHelper: FilesStorageHelper;
 	let orm: MikroORM;
 
+	const setupFileRecords = () => {
+		const userId: EntityId = new ObjectId().toHexString();
+		const schoolId: EntityId = new ObjectId().toHexString();
+
+		const fileRecords = [
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		];
+
+		return fileRecords;
+	};
+
 	beforeAll(async () => {
 		orm = await setupEntities();
 	});
@@ -59,19 +72,6 @@ describe('FilesStorageHelper', () => {
 			}).toThrowError(ErrorStatus.COULD_NOT_CREATE_PATH);
 		});
 	});
-
-	const setupFileRecords = () => {
-		const userId: EntityId = new ObjectId().toHexString();
-		const schoolId: EntityId = new ObjectId().toHexString();
-
-		const fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
-		];
-
-		return fileRecords;
-	};
 
 	describe('getPaths', () => {
 		it('should return paths', () => {
