@@ -10,12 +10,14 @@ import {
 } from '../controller/dto/file-storage.params';
 import { PermissionContexts } from '../files-storage.const';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
+import { FilesStorageService } from '../service/files-storage.service';
 
 @Injectable()
 export class FileRecordUC {
 	constructor(
 		private readonly fileRecordRepo: FileRecordRepo,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly filesStorageService: FilesStorageService
 	) {}
 
 	private checkDuplicatedNames(fileRecords: FileRecord[], data: RenameFileParams): void | ConflictException {
@@ -34,15 +36,15 @@ export class FileRecordUC {
 	}
 
 	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
-		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
-		await this.checkPermission(userId, entity.parentType, entity.parentId, PermissionContexts.update);
+		const fileRecord = await this.filesStorageService.getFile(params);
+		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.update);
 
-		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(entity.schoolId, entity.parentId);
+		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(fileRecord.schoolId, fileRecord.parentId);
 
-		this.modifiedFileName(entity, fileRecords, data);
-		await this.fileRecordRepo.save(entity);
+		this.modifiedFileName(fileRecord, fileRecords, data);
+		await this.fileRecordRepo.save(fileRecord);
 
-		return entity;
+		return fileRecord;
 	}
 
 	public async fileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {

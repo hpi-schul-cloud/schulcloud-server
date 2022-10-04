@@ -13,15 +13,18 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
+import { FilesStorageService } from '../service/files-storage.service';
 import { FileRecordUC } from './file-record.uc';
 
 describe('FileRecordUC', () => {
 	let module: TestingModule;
 	let service: FileRecordUC;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
+	let filesStorageService: DeepMocked<FilesStorageService>;
+
 	let orm: MikroORM;
 	let fileParams: FileRecordParams;
-	const userId: EntityId = new ObjectId().toHexString();
+	const userIdX: EntityId = new ObjectId().toHexString();
 	const schoolId: EntityId = new ObjectId().toHexString();
 	const scanResult: ScanResultParams = { virus_detected: false };
 	const scanResultWithVirus: ScanResultParams = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };
@@ -51,11 +54,16 @@ describe('FileRecordUC', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: FilesStorageService,
+					useValue: createMock<FilesStorageService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(FileRecordUC);
 		fileRecordRepo = module.get(FileRecordRepo);
+		filesStorageService = module.get(FilesStorageService);
 	});
 
 	afterEach(async () => {
@@ -72,7 +80,7 @@ describe('FileRecordUC', () => {
 			const fileRecords = fileRecordFactory.buildList(3, { parentId, schoolId });
 			const spy = fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
 
-			await service.fileRecordsOfParent(userId, { schoolId, parentId, parentType: FileRecordParentType.School });
+			await service.fileRecordsOfParent(userIdX, { schoolId, parentId, parentType: FileRecordParentType.School });
 
 			expect(spy).toHaveBeenCalledWith(schoolId, parentId);
 		});
@@ -124,44 +132,57 @@ describe('FileRecordUC', () => {
 		});
 	});
 
-	describe('patch', () => {
-		let fileRecord: FileRecord;
+	describe('patchFilename is called', () => {
+		let fileRecordX: FileRecord;
 		let fileRecords: FileRecord[];
 		let data: RenameFileParams;
-		let params: SingleFileParams;
+		let paramsX: SingleFileParams;
 
 		beforeEach(() => {
 			fileRecords = fileRecordFactory.buildList(3, fileParams);
-			fileRecord = fileRecordFactory.build({ ...fileParams, name: 'test.txt' });
-			fileRecords.push(fileRecord);
-			params = { fileRecordId: fileRecord.id };
+			fileRecordX = fileRecordFactory.build({ ...fileParams, name: 'test.txt' });
+			fileRecords.push(fileRecordX);
+			paramsX = { fileRecordId: fileRecordX.id };
 			data = { fileName: 'test_new_name.txt' };
 			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 3]);
-			fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+			filesStorageService.getFile.mockResolvedValue(fileRecordX);
 		});
 
-		it('should call repo method findById with right parameters', async () => {
+		const setup = () => {
+			const userId = new ObjectId().toHexString();
+
+			const fileRecord = fileRecordFactory.build({ ...fileParams, name: 'test.txt' });
+			const params = { fileRecordId: fileRecord.id };
+
+			filesStorageService.getFile.mockResolvedValueOnce(fileRecord);
+
+			return { userId, params };
+		};
+
+		it('should call service method getFile with right parameters', async () => {
+			const { userId, params } = setup();
 			await service.patchFilename(userId, params, data);
-			expect(fileRecordRepo.findOneById).toHaveBeenCalledWith(fileRecord.id);
+
+			expect(filesStorageService.getFile).toHaveBeenCalledWith(params);
 		});
 
 		it('should call repo method findBySchoolIdAndParentId with right parameters', async () => {
-			await service.patchFilename(userId, params, data);
-			expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.parentId);
+			await service.patchFilename(userIdX, paramsX, data);
+			expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledWith(fileRecordX.schoolId, fileRecordX.parentId);
 		});
 
 		it('should call repo method save()', async () => {
-			await service.patchFilename(userId, params, data);
+			await service.patchFilename(userIdX, paramsX, data);
 			expect(fileRecordRepo.save).toHaveBeenCalled();
 		});
 
 		it('should return fileRecord with new file name', async () => {
-			const result = await service.patchFilename(userId, params, data);
+			const result = await service.patchFilename(userIdX, paramsX, data);
 			expect(result.name).toStrictEqual('test_new_name.txt');
 		});
 
 		it('should throw ConflictException if file name exist', async () => {
-			await expect(service.patchFilename(userId, params, { fileName: 'test.txt' })).rejects.toThrow(
+			await expect(service.patchFilename(userIdX, paramsX, { fileName: 'test.txt' })).rejects.toThrow(
 				new ConflictException('FILE_NAME_EXISTS')
 			);
 		});
