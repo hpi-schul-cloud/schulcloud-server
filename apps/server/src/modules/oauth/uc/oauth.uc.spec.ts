@@ -139,7 +139,7 @@ describe('OAuthUc', () => {
 			});
 			systemRepo.findById.mockRejectedValue(new NotFoundError('Not Found'));
 
-			await expect(service.processOAuth(query, 'unknown id')).rejects.toThrow(NotFoundException);
+			await expect(service.processOAuth(query, 'unknown id')).rejects.toThrow(NotFoundError);
 		});
 	});
 });
