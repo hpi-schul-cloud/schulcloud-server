@@ -213,22 +213,6 @@ export class FilesStorageUC {
 		return newFilename;
 	}
 
-	private async markForDelete(fileRecords: FileRecord[]): Promise<void> {
-		fileRecords.forEach((fileRecord) => {
-			fileRecord.markForDelete();
-		});
-
-		await this.fileRecordRepo.save(fileRecords);
-	}
-
-	private async unmarkForDelete(fileRecords: FileRecord[]): Promise<void> {
-		fileRecords.forEach((fileRecord) => {
-			fileRecord.unmarkForDelete();
-		});
-
-		await this.fileRecordRepo.save(fileRecords);
-	}
-
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.delete);
 		const [fileRecords, count] = await this.filesStorageService.deleteFilesOfParent(params);

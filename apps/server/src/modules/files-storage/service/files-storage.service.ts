@@ -17,22 +17,21 @@ export class FilesStorageService {
 		this.logger.setContext(FilesStorageService.name);
 	}
 
-	private async deleteFiles(fileRecords: FileRecord[]) {
+	// const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+	// getFileById
+
+	private async deleteFilesInFileStorage(fileRecords: FileRecord[]) {
 		const paths = this.filesStorageHelper.getPaths(fileRecords);
 
 		await this.storageClient.delete(paths);
 	}
 
-	private async rollBackFileRecords(fileRecords: FileRecord[], error: unknown) {
-		await this.fileRecordRepo.save(fileRecords);
-		throw new InternalServerErrorException(error, `${FilesStorageService.name}:delete`);
-	}
-
-	private async tryDelete(fileRecords: FileRecord[]): Promise<void> {
+	private async deleteWithRollbackByError(fileRecords: FileRecord[]): Promise<void> {
 		try {
-			await this.deleteFiles(fileRecords);
+			await this.deleteFilesInFileStorage(fileRecords);
 		} catch (error) {
-			await this.rollBackFileRecords(fileRecords, error);
+			await this.fileRecordRepo.save(fileRecords);
+			throw new InternalServerErrorException(error, `${FilesStorageService.name}:delete`);
 		}
 	}
 
@@ -42,7 +41,7 @@ export class FilesStorageService {
 		const markedFileRecords = this.filesStorageHelper.markForDelete(fileRecords);
 		await this.fileRecordRepo.save(markedFileRecords);
 
-		await this.tryDelete(fileRecords);
+		await this.deleteWithRollbackByError(fileRecords);
 	}
 
 	public async deleteFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {

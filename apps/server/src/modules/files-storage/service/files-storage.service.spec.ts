@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, FileRecordParentType } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
@@ -28,13 +29,17 @@ describe('FilesStorageService', () => {
 			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
 		];
 	};
+	const getRequestParams = () => {
+		const requestParams = {
+			schoolId,
+			parentId: userId,
+			parentType: FileRecordParentType.User,
+		};
+		return requestParams;
+	};
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
 	});
 
 	beforeEach(async () => {
@@ -66,6 +71,10 @@ describe('FilesStorageService', () => {
 		filesStorageHelper = module.get(FilesStorageHelper);
 	});
 
+	afterAll(async () => {
+		await orm.close();
+	});
+
 	afterEach(async () => {
 		await module.close();
 	});
@@ -75,118 +84,117 @@ describe('FilesStorageService', () => {
 	});
 
 	describe('delete is called', () => {
-		const setup = () => {
-			return { fileRecords: getFileRecords() };
-		};
+		describe('when valid files exists', () => {
+			const setup = () => {
+				return { fileRecords: getFileRecords() };
+			};
 
-		it('should call markForDelete', async () => {
-			const { fileRecords } = setup();
-			await service.delete(fileRecords);
-
-			expect(filesStorageHelper.markForDelete).toHaveBeenCalledWith(fileRecords);
-		});
-
-		it('should call fileRecordRepo.save with marked file records', async () => {
-			const { fileRecords: markedFileRecords } = setup();
-			const fileRecords = [];
-
-			filesStorageHelper.markForDelete.mockReturnValue(markedFileRecords);
-
-			await service.delete(fileRecords);
-
-			expect(fileRecordRepo.save).toHaveBeenNthCalledWith(1, markedFileRecords);
-		});
-
-		it('should call getPaths', async () => {
-			const { fileRecords } = setup();
-
-			await service.delete(fileRecords);
-
-			expect(filesStorageHelper.getPaths).toHaveBeenCalledWith(fileRecords);
-		});
-
-		it('should call storageClient.delete', async () => {
-			const { fileRecords } = setup();
-			const paths = ['1', '2'];
-			filesStorageHelper.getPaths.mockReturnValue(paths);
-
-			await service.delete(fileRecords);
-
-			expect(storageClient.delete).toHaveBeenCalledWith(paths);
-		});
-
-		describe('storageClient.delete throws error', () => {
-			it('should call fileRecordRepo.save with original file records', async () => {
+			it('should call markForDelete', async () => {
 				const { fileRecords } = setup();
-				storageClient.delete.mockRejectedValue(new Error());
+				await service.delete(fileRecords);
 
-				await expect(service.delete(fileRecords)).rejects.toThrow();
-				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(2, fileRecords);
+				expect(filesStorageHelper.markForDelete).toHaveBeenCalledWith(fileRecords);
 			});
+
+			it('should call fileRecordRepo.save with marked file records', async () => {
+				const { fileRecords: markedFileRecords } = setup();
+				const fileRecords = [];
+
+				filesStorageHelper.markForDelete.mockReturnValue(markedFileRecords);
+
+				await service.delete(fileRecords);
+
+				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(1, markedFileRecords);
+			});
+
+			it('should call getPaths', async () => {
+				const { fileRecords } = setup();
+
+				await service.delete(fileRecords);
+
+				expect(filesStorageHelper.getPaths).toHaveBeenCalledWith(fileRecords);
+			});
+
+			it('should call storageClient.delete', async () => {
+				const { fileRecords } = setup();
+				const paths = ['1', '2'];
+				filesStorageHelper.getPaths.mockReturnValue(paths);
+
+				await service.delete(fileRecords);
+
+				expect(storageClient.delete).toHaveBeenCalledWith(paths);
+			});
+		});
+
+		describe('when repository throw an error', () => {
+			const setup = () => {
+				return { fileRecords: getFileRecords() };
+			};
+
+			it('should throw passing the error', async () => {
+				const { fileRecords } = setup();
+				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
+
+				await expect(service.delete(fileRecords)).rejects.toThrow(new Error('bla'));
+			});
+		});
+
+		describe('when filestorage throw an error', () => {
+			const setup = () => {
+				storageClient.delete.mockRejectedValueOnce(new Error('bla'));
+
+				return { fileRecords: getFileRecords() };
+			};
 
 			it('should throw error if entity not found', async () => {
 				const { fileRecords } = setup();
-				fileRecordRepo.save.mockRejectedValue(new Error());
 
-				await expect(service.delete(fileRecords)).rejects.toThrow();
+				await expect(service.delete(fileRecords)).rejects.toThrow(new InternalServerErrorException('bla'));
+				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(2, fileRecords);
 			});
 		});
 	});
 
 	describe('deleteFilesOfParent is called', () => {
-		const setup = () => {
-			const fileRecords = getFileRecords();
-			const requestParams = {
-				schoolId,
-				parentId: userId,
-				parentType: FileRecordParentType.User,
-			};
+		describe('when valid files exists', () => {
+			let spy: jest.SpyInstance;
 
-			return { requestParams, fileRecords };
-		};
+			afterEach(() => {
+				spy.mockRestore();
+			});
 
-		it('should call findBySchoolIdAndParentId once', async () => {
-			const { requestParams } = setup();
-			await service.deleteFilesOfParent(requestParams);
-			expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledTimes(1);
-		});
+			const setup = () => {
+				const fileRecords = getFileRecords();
+				const requestParams = getRequestParams();
 
-		it('should call findBySchoolIdAndParentId with correctly params', async () => {
-			const { requestParams } = setup();
-			await service.deleteFilesOfParent(requestParams);
-			expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledWith(
-				requestParams.schoolId,
-				requestParams.parentId
-			);
-		});
-
-		it('should throw error if findBySchoolIdAndParentId could not find entity', async () => {
-			const { requestParams } = setup();
-			fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValue(new Error());
-			await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow();
-		});
-
-		describe('findBySchoolIdAndParentId returned fileRecords', () => {
-			const scenarioSetup = () => {
-				const { fileRecords, requestParams } = setup();
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
+				spy = jest.spyOn(service, 'delete');
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 
 				return { requestParams, fileRecords };
 			};
 
+			it('should call findBySchoolIdAndParentId onces with correctly params', async () => {
+				const { requestParams } = setup();
+
+				await service.deleteFilesOfParent(requestParams);
+
+				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenNthCalledWith(
+					1,
+					requestParams.schoolId,
+					requestParams.parentId
+				);
+			});
+
 			it('should call delete with correct params', async () => {
-				const { requestParams, fileRecords } = scenarioSetup();
-				const spy = jest.spyOn(service, 'delete');
+				const { requestParams, fileRecords } = setup();
 
 				await service.deleteFilesOfParent(requestParams);
 
 				expect(service.delete).toHaveBeenCalledWith(fileRecords);
-
-				spy.mockRestore();
 			});
 
 			it('should return file records and count', async () => {
-				const { requestParams, fileRecords } = scenarioSetup();
+				const { requestParams, fileRecords } = setup();
 
 				const responseData = await service.deleteFilesOfParent(requestParams);
 				expect(responseData[0]).toEqual(
@@ -200,17 +208,80 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('findBySchoolIdAndParentId returned empty array', () => {
-			it('should call delete with correct params', async () => {
-				const { requestParams } = setup();
-				const spy = jest.spyOn(service, 'delete');
+		describe('when no files exists', () => {
+			let spy: jest.SpyInstance;
 
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([[], 0]);
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const fileRecords = [];
+				const requestParams = getRequestParams();
+
+				spy = jest.spyOn(service, 'delete');
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+
+				return { requestParams };
+			};
+
+			it('should not call delete', async () => {
+				const { requestParams } = setup();
 
 				await service.deleteFilesOfParent(requestParams);
 
 				expect(service.delete).toHaveBeenCalledTimes(0);
+			});
 
+			it('should return empty counted type', async () => {
+				const { requestParams } = setup();
+
+				const result = await service.deleteFilesOfParent(requestParams);
+
+				expect(result).toEqual([[], 0]);
+			});
+		});
+
+		describe('when repository throw an error', () => {
+			const setup = () => {
+				const requestParams = getRequestParams();
+
+				fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValueOnce(new Error('bla'));
+
+				return { requestParams };
+			};
+
+			it('should pass the error', async () => {
+				const { requestParams } = setup();
+
+				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow(new Error('bla'));
+			});
+		});
+
+		describe('when service.delete throw an error', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const fileRecords = getFileRecords();
+				const requestParams = getRequestParams();
+
+				spy = jest.spyOn(service, 'delete').mockRejectedValue(new Error('bla'));
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+
+				return { requestParams, fileRecords };
+			};
+
+			it('should pass the error', async () => {
+				const { requestParams } = setup();
+
+				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow(new Error('bla'));
+			});
+
+			afterAll(() => {
 				spy.mockRestore();
 			});
 		});
