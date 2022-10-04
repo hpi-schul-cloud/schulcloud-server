@@ -36,8 +36,8 @@ export class ShareTokenController {
 				parentId: body.parentId,
 			},
 			{
-				context: body.context,
-				expiresAt: body.expiresAt,
+				schoolExclusive: body.schoolExclusive,
+				expiresInDays: body.expiresInDays,
 			}
 		);
 

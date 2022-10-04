@@ -91,16 +91,17 @@ describe('ShareTokenUC', () => {
 						parentType: ShareTokenParentType.Course,
 						parentId: course.id,
 					},
-					undefined
+					{}
 				);
 			});
 		});
 
 		describe('when restricted to same school', () => {
 			it('should check parent write permission', async () => {
-				const user = userFactory.buildWithId();
 				const school = schoolFactory.buildWithId();
+				const user = userFactory.buildWithId({ school });
 				const course = courseFactory.buildWithId();
+				authService.getUserWithPermissions.mockResolvedValue(user);
 
 				await uc.createShareToken(
 					user.id,
@@ -109,10 +110,7 @@ describe('ShareTokenUC', () => {
 						parentType: ShareTokenParentType.Course,
 					},
 					{
-						context: {
-							contextId: school.id,
-							contextType: ShareTokenContextType.School,
-						},
+						schoolExclusive: true,
 					}
 				);
 
@@ -128,9 +126,10 @@ describe('ShareTokenUC', () => {
 			});
 
 			it('should check context read permission', async () => {
-				const user = userFactory.buildWithId();
 				const school = schoolFactory.buildWithId();
+				const user = userFactory.buildWithId({ school });
 				const course = courseFactory.buildWithId();
+				authService.getUserWithPermissions.mockResolvedValue(user);
 
 				await uc.createShareToken(
 					user.id,
@@ -139,10 +138,7 @@ describe('ShareTokenUC', () => {
 						parentType: ShareTokenParentType.Course,
 					},
 					{
-						context: {
-							contextId: school.id,
-							contextType: ShareTokenContextType.School,
-						},
+						schoolExclusive: true,
 					}
 				);
 
@@ -158,13 +154,10 @@ describe('ShareTokenUC', () => {
 			});
 
 			it('should call the service', async () => {
-				const user = userFactory.buildWithId();
 				const school = schoolFactory.buildWithId();
+				const user = userFactory.buildWithId({ school });
 				const course = courseFactory.buildWithId();
-				const context = {
-					contextId: school.id,
-					contextType: ShareTokenContextType.School,
-				};
+				authService.getUserWithPermissions.mockResolvedValue(user);
 
 				await uc.createShareToken(
 					user.id,
@@ -173,7 +166,7 @@ describe('ShareTokenUC', () => {
 						parentType: ShareTokenParentType.Course,
 					},
 					{
-						context,
+						schoolExclusive: true,
 					}
 				);
 
@@ -183,25 +176,32 @@ describe('ShareTokenUC', () => {
 						parentId: course.id,
 					},
 					{
-						context,
+						context: {
+							contextId: school.id,
+							contextType: ShareTokenContextType.School,
+						},
 					}
 				);
 			});
 		});
 
 		describe('when an expiration date is given', () => {
-			it('should pass the expiration date to the service', async () => {
+			it.only('should pass the expiration date to the service', async () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
 				const payload = {
 					parentId: course.id,
 					parentType: ShareTokenParentType.Course,
 				};
-				const expiresAt = new Date();
 
-				await uc.createShareToken(user.id, payload, { expiresAt });
+				jest.useFakeTimers('modern');
+				jest.setSystemTime(new Date(2022, 10, 4));
 
-				expect(service.createToken).toHaveBeenCalledWith(payload, { expiresAt });
+				await uc.createShareToken(user.id, payload, { expiresInDays: 7 });
+
+				expect(service.createToken).toHaveBeenCalledWith(payload, { expiresAt: new Date(2022, 10, 11) });
+
+				jest.useRealTimers();
 			});
 		});
 

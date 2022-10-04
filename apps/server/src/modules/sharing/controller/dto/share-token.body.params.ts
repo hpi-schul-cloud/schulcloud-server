@@ -1,11 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ShareTokenParentType } from '@shared/domain';
-import { IsDate, IsEnum, IsMongoId, IsOptional } from 'class-validator';
-import { ShareTokenContextBodyParams } from './share-token-context.body.params';
+import { IsBoolean, IsEnum, IsInt, IsMongoId, IsOptional, IsPositive } from 'class-validator';
 
 export class ShareTokenBodyParams {
 	@IsEnum(ShareTokenParentType)
-	@ApiProperty({ description: 'the type of the object being shared', required: true, nullable: false })
+	@ApiProperty({
+		description: 'the type of the object being shared',
+		required: true,
+		nullable: false,
+		enum: ShareTokenParentType,
+	})
 	parentType!: ShareTokenParentType;
 
 	@IsMongoId()
@@ -16,22 +20,23 @@ export class ShareTokenBodyParams {
 	})
 	parentId!: string;
 
-	@IsDate()
+	@IsInt()
 	@IsOptional()
+	@IsPositive()
 	@ApiProperty({
-		description: 'when defined, the sharetoken will expire at this time.',
+		description: 'when defined, the sharetoken will expire after the given number of days.',
 		required: false,
 		nullable: true,
+		minimum: 1,
 	})
-	expiresAt?: Date;
+	expiresInDays?: number;
 
+	@IsBoolean()
 	@IsOptional()
 	@ApiProperty({
-		description:
-			'when defined, the sharetoken will be usable exclusively by members of this context. For example, when passing a school, only users in the school will be able to use the sharetoken.',
-		type: ShareTokenContextBodyParams,
+		description: 'when defined, the sharetoken will be usable exclusively by members of the users school.',
 		required: false,
 		nullable: true,
 	})
-	context?: ShareTokenContextBodyParams;
+	schoolExclusive?: boolean;
 }

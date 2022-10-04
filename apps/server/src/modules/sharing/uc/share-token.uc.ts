@@ -1,5 +1,14 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { Actions, EntityId, Permission, ShareTokenContext, ShareTokenDO, ShareTokenPayload } from '@shared/domain';
+import {
+	Actions,
+	EntityId,
+	Permission,
+	ShareTokenContext,
+	ShareTokenContextType,
+	ShareTokenDO,
+	ShareTokenPayload,
+} from '@shared/domain';
+import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ShareTokenContextTypeMapper } from '../mapper/context-type.mapper';
 import { ShareTokenParentTypeMapper } from '../mapper/parent-type.mapper';
@@ -9,8 +18,11 @@ import { ShareTokenService } from '../share-token.service';
 export class ShareTokenUC {
 	constructor(
 		private readonly shareTokenService: ShareTokenService,
-		private readonly authorizationService: AuthorizationService
-	) {}
+		private readonly authorizationService: AuthorizationService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(ShareTokenUC.name);
+	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenDO> {
@@ -20,15 +32,26 @@ export class ShareTokenUC {
 	async createShareToken(
 		userId: EntityId,
 		payload: ShareTokenPayload,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		options?: { context?: ShareTokenContext; expiresAt?: Date }
+		options?: { schoolExclusive?: boolean; expiresInDays?: number }
 	): Promise<ShareTokenDO> {
+		this.logger.debug({ action: 'createShareToken', userId, payload, options });
+
 		await this.checkParentWritePermission(userId, payload);
-		if (options?.context) {
-			await this.checkContextReadPermission(userId, options?.context);
+
+		const serviceOptions: { context?: ShareTokenContext; expiresAt?: Date } = {};
+		if (options?.schoolExclusive) {
+			const user = await this.authorizationService.getUserWithPermissions(userId);
+			serviceOptions.context = {
+				contextType: ShareTokenContextType.School,
+				contextId: user.school.id,
+			};
+			await this.checkContextReadPermission(userId, serviceOptions.context);
+		}
+		if (options?.expiresInDays) {
+			serviceOptions.expiresAt = this.nowPlusDays(options?.expiresInDays);
 		}
 
-		const shareToken = await this.shareTokenService.createToken(payload, options);
+		const shareToken = await this.shareTokenService.createToken(payload, serviceOptions);
 		return shareToken;
 	}
 
@@ -46,5 +69,11 @@ export class ShareTokenUC {
 			action: Actions.read,
 			requiredPermissions: [],
 		});
+	}
+
+	private nowPlusDays(days: number) {
+		const date = new Date();
+		date.setDate(date.getDate() + days);
+		return date;
 	}
 }
