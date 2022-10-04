@@ -149,17 +149,6 @@ describe('OauthProviderConsentFlowUc', () => {
 						expect(service.rejectConsentRequest).toHaveBeenCalledWith(challenge, requestBody);
 						expect(service.acceptConsentRequest).not.toHaveBeenCalled();
 					});
-
-					it('rejectConsentRequest: reject when it is an reject request body', async () => {
-						requestBody = {
-							status_code: 500,
-						};
-
-						await uc.patchConsentRequest(challenge, acceptQuery, requestBody, currentUser);
-
-						expect(service.rejectConsentRequest).toHaveBeenCalledWith(challenge, requestBody);
-						expect(service.acceptConsentRequest).not.toHaveBeenCalled();
-					});
 				});
 			});
 		});
