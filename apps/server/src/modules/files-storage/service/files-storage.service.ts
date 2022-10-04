@@ -23,7 +23,15 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	private async deleteFilesInFileStorage(fileRecords: FileRecord[]) {
+	public async getFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+
+		return countedFileRecords;
+	}
+
+	// delete
+	// TODO: name must be improved
+	private async deleteFilesInFileStorageClient(fileRecords: FileRecord[]) {
 		const paths = this.filesStorageHelper.getPaths(fileRecords);
 
 		await this.storageClient.delete(paths);
@@ -31,7 +39,7 @@ export class FilesStorageService {
 
 	private async deleteWithRollbackByError(fileRecords: FileRecord[]): Promise<void> {
 		try {
-			await this.deleteFilesInFileStorage(fileRecords);
+			await this.deleteFilesInFileStorageClient(fileRecords);
 		} catch (error) {
 			await this.fileRecordRepo.save(fileRecords);
 			throw new InternalServerErrorException(error, `${FilesStorageService.name}:delete`);
@@ -57,6 +65,7 @@ export class FilesStorageService {
 		return [fileRecords, count];
 	}
 
+	// restore
 	public async restoreFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
 			params.schoolId,

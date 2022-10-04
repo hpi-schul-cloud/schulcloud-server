@@ -87,7 +87,7 @@ describe('FilesStorageService', () => {
 	});
 
 	describe('getFileById is called', () => {
-		const getFileRecordWithParms = () => {
+		const getFileRecordWithParams = () => {
 			const parentId = new ObjectId().toHexString();
 			const parentSchoolId = new ObjectId().toHexString();
 
@@ -101,7 +101,7 @@ describe('FilesStorageService', () => {
 
 		describe('when valid file exists', () => {
 			const setup = () => {
-				const { params, fileRecord } = getFileRecordWithParms();
+				const { params, fileRecord } = getFileRecordWithParams();
 				fileRecordRepo.findOneById.mockResolvedValueOnce(fileRecord);
 
 				return { params, fileRecord };
@@ -126,7 +126,7 @@ describe('FilesStorageService', () => {
 
 		describe('when repository throw an error', () => {
 			const setup = () => {
-				const { params } = getFileRecordWithParms();
+				const { params } = getFileRecordWithParams();
 
 				fileRecordRepo.findOneById.mockRejectedValueOnce(new Error('bla'));
 
@@ -137,6 +137,68 @@ describe('FilesStorageService', () => {
 				const { params } = setup();
 
 				await expect(service.getFile(params)).rejects.toThrow(new Error('bla'));
+			});
+		});
+	});
+
+	describe('getFilesOfParent is called', () => {
+		const getFileRecordsWithParams = () => {
+			const parentId = new ObjectId().toHexString();
+			const parentSchoolId = new ObjectId().toHexString();
+
+			const fileRecords = [
+				fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
+				fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
+				fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+			];
+
+			const params = {
+				schoolId,
+				parentId: userId,
+				parentType: FileRecordParentType.User,
+			};
+
+			return { params, fileRecords };
+		};
+
+		describe('when valid files exists', () => {
+			const setup = () => {
+				const { params, fileRecords } = getFileRecordsWithParams();
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+
+				return { params, fileRecords };
+			};
+
+			it('should call findOneById', async () => {
+				const { params } = setup();
+
+				await service.getFilesOfParent(params);
+
+				expect(fileRecordRepo.findOneById).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return the matched fileRecord', async () => {
+				const { params, fileRecords } = setup();
+
+				const result = await service.getFilesOfParent(params);
+
+				expect(result).toEqual(fileRecords);
+			});
+		});
+
+		describe('when repository throw an error', () => {
+			const setup = () => {
+				const { params } = getFileRecordsWithParams();
+
+				fileRecordRepo.findOneById.mockRejectedValueOnce(new Error('bla'));
+
+				return { params };
+			};
+
+			it('should pass the error', async () => {
+				const { params } = setup();
+
+				await expect(service.getFilesOfParent(params)).rejects.toThrow(new Error('bla'));
 			});
 		});
 	});
@@ -340,10 +402,6 @@ describe('FilesStorageService', () => {
 				const { requestParams } = setup();
 
 				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow(new Error('bla'));
-			});
-
-			afterAll(() => {
-				spy.mockRestore();
 			});
 		});
 	});
