@@ -186,7 +186,7 @@ describe('ShareTokenUC', () => {
 		});
 
 		describe('when an expiration date is given', () => {
-			it.only('should pass the expiration date to the service', async () => {
+			it('should pass the expiration date to the service', async () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
 				const payload = {
