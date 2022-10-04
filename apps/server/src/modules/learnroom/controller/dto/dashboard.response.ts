@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { DecodeHtmlEntities } from '@shared/controller';
 
 export class DashboardGridSubElementResponse {
 	constructor({ id, title, shortTitle, displayColor }: DashboardGridSubElementResponse) {
@@ -14,6 +15,7 @@ export class DashboardGridSubElementResponse {
 	})
 	id: string;
 
+	@DecodeHtmlEntities()
 	@ApiProperty({
 		description: 'Title of the Grid element',
 	})
@@ -57,6 +59,7 @@ export class DashboardGridElementResponse {
 	})
 	id?: string;
 
+	@DecodeHtmlEntities()
 	@ApiProperty({
 		description: 'Title of the Grid element',
 	})

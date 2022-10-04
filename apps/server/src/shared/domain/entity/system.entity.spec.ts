@@ -26,10 +26,11 @@ describe('System Entity', () => {
 			expect(system instanceof System).toEqual(true);
 		});
 		it('should create a system by passing required and optional properties', () => {
-			const system = systemFactory.build({ url: 'SAMPLE_URL', alias: 'SAMPLE_ALIAS' });
+			const system = systemFactory.build({ url: 'SAMPLE_URL', alias: 'SAMPLE_ALIAS', displayName: 'SAMPLE_NAME' });
 			expect(system instanceof System).toEqual(true);
 			expect(system.url).toEqual('SAMPLE_URL');
 			expect(system.alias).toEqual('SAMPLE_ALIAS');
+			expect(system.displayName).toEqual('SAMPLE_NAME');
 		});
 	});
 });

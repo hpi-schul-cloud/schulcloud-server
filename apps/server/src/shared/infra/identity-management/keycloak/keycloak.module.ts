@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { SystemRepo } from '@shared/repo';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { EncryptionModule } from '@shared/infra/encryption';
+import { SystemModule } from '@src/modules';
 import { KeycloakSettings } from './interface/keycloak-settings.interface';
 import { KeycloakManagementUc } from './uc/Keycloak-management.uc';
 import { KeycloakManagementInputFiles } from './interface';
@@ -13,10 +13,9 @@ import { KeycloakSeedService } from './service/keycloak-seed.service';
 import { OidcIdentityProviderMapper } from './mapper/identity-provider.mapper';
 
 @Module({
-	imports: [LoggerModule, EncryptionModule],
+	imports: [LoggerModule, EncryptionModule, SystemModule],
 	controllers: [],
 	providers: [
-		SystemRepo,
 		KeycloakAdminClient,
 		KeycloakAdministrationService,
 		{
