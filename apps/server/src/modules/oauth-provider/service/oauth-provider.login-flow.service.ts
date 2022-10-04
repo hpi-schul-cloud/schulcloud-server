@@ -4,7 +4,7 @@ import { LtiToolRepo, PseudonymsRepo, RoleRepo, UserRepo } from '@shared/repo';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Permission, PseudonymDO, User } from '@shared/domain';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { AuthorizationService } from '@src/modules';
+import { AuthorizationService } from '@src/modules/authorization';
 
 @Injectable()
 export class OauthProviderLoginFlowService {

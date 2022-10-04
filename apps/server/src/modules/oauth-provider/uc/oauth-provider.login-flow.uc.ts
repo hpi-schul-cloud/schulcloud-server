@@ -32,9 +32,7 @@ export class OauthProviderLoginFlowUc {
 	): Promise<ProviderRedirectResponse> {
 		let redirectResponse: ProviderRedirectResponse;
 		if (query.accept) {
-			const loginResponse: ProviderLoginResponse = await this.oauthProviderService.getLoginRequest(challenge);
-
-			redirectResponse = await this.acceptLoginRequest(currentUserId, loginResponse, body);
+			redirectResponse = await this.acceptLoginRequest(currentUserId, challenge, body);
 		} else {
 			redirectResponse = await this.rejectLoginRequest(challenge, body);
 		}
@@ -43,9 +41,10 @@ export class OauthProviderLoginFlowUc {
 
 	private async acceptLoginRequest(
 		currentUserId: string,
-		loginResponse: ProviderLoginResponse,
+		challenge: string,
 		loginRequestBody: LoginRequestBody
 	): Promise<ProviderRedirectResponse> {
+		const loginResponse: ProviderLoginResponse = await this.oauthProviderService.getLoginRequest(challenge);
 		const pseudonym: PseudonymDO = await this.oauthProviderLoginFlowService.getPseudonym(currentUserId, loginResponse);
 		const acceptLoginRequestBody: AcceptLoginRequestBody =
 			this.oauthProviderRequestMapper.mapCreateAcceptLoginRequestBody(

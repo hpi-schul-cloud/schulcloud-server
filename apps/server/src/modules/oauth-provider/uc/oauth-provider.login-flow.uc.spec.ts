@@ -74,10 +74,10 @@ describe('OauthProviderLoginFlowUc', () => {
 		it('should get the login request', async () => {
 			service.getLoginRequest.mockResolvedValue(providerLoginResponse);
 
-			const response: ProviderLoginResponse = await uc.getLoginRequest('challenge');
+			const result: ProviderLoginResponse = await uc.getLoginRequest('challenge');
 
 			expect(service.getLoginRequest).toHaveBeenCalledWith('challenge');
-			expect(response).toEqual(providerLoginResponse);
+			expect(result).toEqual(providerLoginResponse);
 		});
 	});
 
@@ -130,10 +130,10 @@ describe('OauthProviderLoginFlowUc', () => {
 
 			service.rejectLoginRequest.mockResolvedValue(redirectResponse);
 
-			const response = await uc.patchLoginRequest('userId', 'challenge', rejectBody, query);
+			const result: ProviderRedirectResponse = await uc.patchLoginRequest('userId', 'challenge', rejectBody, query);
 
 			expect(service.rejectLoginRequest).toHaveBeenCalledWith('challenge', rejectBody);
-			expect(response).toStrictEqual(redirectResponse);
+			expect(result).toStrictEqual(redirectResponse);
 		});
 	});
 });
