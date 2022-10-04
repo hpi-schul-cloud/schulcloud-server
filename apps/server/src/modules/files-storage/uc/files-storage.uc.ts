@@ -221,7 +221,7 @@ export class FilesStorageUC {
 	}
 
 	public async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
-		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+		const fileRecord = await this.filesStorageService.getFile(params);
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.delete);
 		await this.filesStorageService.delete([fileRecord]);
 
@@ -279,7 +279,7 @@ export class FilesStorageUC {
 		params: SingleFileParams,
 		copyFileParams: CopyFileParams
 	): Promise<CopyFileResponse> {
-		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+		const fileRecord = await this.filesStorageService.getFile(params);
 		await Promise.all([
 			this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create),
 			this.checkPermission(

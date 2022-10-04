@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, FileRecordParentType } from '@shared/domain';
+import { FileRecordParentType } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
@@ -20,14 +20,16 @@ describe('FilesStorageService', () => {
 	let filesStorageHelper: DeepMocked<FilesStorageHelper>;
 	let orm: MikroORM;
 
-	const userId: EntityId = new ObjectId().toHexString();
-	const schoolId: EntityId = new ObjectId().toHexString();
+	const userId = new ObjectId().toHexString();
+	const schoolId = new ObjectId().toHexString();
 	const getFileRecords = () => {
-		return [
+		const fileRecords = [
 			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
 			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
 			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
 		];
+
+		return fileRecords;
 	};
 	const getRequestParams = () => {
 		const requestParams = {
@@ -35,6 +37,7 @@ describe('FilesStorageService', () => {
 			parentId: userId,
 			parentType: FileRecordParentType.User,
 		};
+
 		return requestParams;
 	};
 
@@ -83,6 +86,61 @@ describe('FilesStorageService', () => {
 		expect(service).toBeDefined();
 	});
 
+	describe('getFileById is called', () => {
+		const getFileRecordWithParms = () => {
+			const parentId = new ObjectId().toHexString();
+			const parentSchoolId = new ObjectId().toHexString();
+
+			const fileRecord = fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' });
+			const params = {
+				fileRecordId: fileRecord.id,
+			};
+
+			return { params, fileRecord };
+		};
+
+		describe('when valid file exists', () => {
+			const setup = () => {
+				const { params, fileRecord } = getFileRecordWithParms();
+				fileRecordRepo.findOneById.mockResolvedValueOnce(fileRecord);
+
+				return { params, fileRecord };
+			};
+
+			it('should call findOneById', async () => {
+				const { params } = setup();
+
+				await service.getFile(params);
+
+				expect(fileRecordRepo.findOneById).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return the matched fileRecord', async () => {
+				const { params, fileRecord } = setup();
+
+				const result = await service.getFile(params);
+
+				expect(result).toEqual(fileRecord);
+			});
+		});
+
+		describe('when repository throw an error', () => {
+			const setup = () => {
+				const { params } = getFileRecordWithParms();
+
+				fileRecordRepo.findOneById.mockRejectedValueOnce(new Error('bla'));
+
+				return { params };
+			};
+
+			it('should pass the error', async () => {
+				const { params } = setup();
+
+				await expect(service.getFile(params)).rejects.toThrow(new Error('bla'));
+			});
+		});
+	});
+
 	describe('delete is called', () => {
 		describe('when valid files exists', () => {
 			const setup = () => {
@@ -128,12 +186,15 @@ describe('FilesStorageService', () => {
 
 		describe('when repository throw an error', () => {
 			const setup = () => {
-				return { fileRecords: getFileRecords() };
+				const fileRecords = getFileRecords();
+
+				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
+
+				return { fileRecords };
 			};
 
-			it('should throw passing the error', async () => {
+			it('should pass the error', async () => {
 				const { fileRecords } = setup();
-				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
 
 				await expect(service.delete(fileRecords)).rejects.toThrow(new Error('bla'));
 			});

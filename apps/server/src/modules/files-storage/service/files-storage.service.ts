@@ -17,8 +17,11 @@ export class FilesStorageService {
 		this.logger.setContext(FilesStorageService.name);
 	}
 
-	// const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
-	// getFileById
+	public async getFile(params: SingleFileParams): Promise<FileRecord> {
+		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+
+		return fileRecord;
+	}
 
 	private async deleteFilesInFileStorage(fileRecords: FileRecord[]) {
 		const paths = this.filesStorageHelper.getPaths(fileRecords);
