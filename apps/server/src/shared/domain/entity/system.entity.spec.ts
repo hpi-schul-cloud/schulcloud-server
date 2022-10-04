@@ -29,7 +29,9 @@ describe('System Entity', () => {
 		});
 
 		it('should create a system by passing required and optional properties', () => {
-			const system = systemFactory.withOauthConfig().build({ url: 'SAMPLE_URL', alias: 'SAMPLE_ALIAS', displayName: 'SAMPLE_NAME' });
+			const system = systemFactory
+				.withOauthConfig()
+				.build({ url: 'SAMPLE_URL', alias: 'SAMPLE_ALIAS', displayName: 'SAMPLE_NAME' });
 
 			expect(system instanceof System).toEqual(true);
 			expect(system).toEqual(

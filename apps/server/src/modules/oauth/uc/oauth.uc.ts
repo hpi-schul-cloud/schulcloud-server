@@ -18,6 +18,13 @@ export class OauthUc {
 		this.logger.setContext(OauthUc.name);
 	}
 
+	private async getOauthResponse(error, systemId: string): Promise<OAuthResponse> {
+		const system: System = await this.systemRepo.findById(systemId);
+		const provider = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
+		const oAuthError = this.oauthService.getOAuthError(error, provider);
+		return oAuthError;
+	}
+
 	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
 		try {
 			this.logger.debug(`Oauth process started for systemId ${systemId}`);
@@ -51,17 +58,7 @@ export class OauthUc {
 
 			return response;
 		} catch (error) {
-			const oauthResponse: OAuthResponse = await this.systemRepo
-				.findById(systemId)
-				.then((system: System) => {
-					const provider = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
-					const oAuthError = this.oauthService.getOAuthError(error, provider);
-					return oAuthError;
-				})
-				.catch(() => {
-					throw new NotFoundException(`No system with id: ${systemId} found`);
-				});
-			return oauthResponse;
+			return await this.getOauthResponse(error, systemId);
 		}
 	}
 }
