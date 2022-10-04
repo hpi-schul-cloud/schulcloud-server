@@ -39,7 +39,12 @@ export class FileRecordUC {
 		const fileRecord = await this.filesStorageService.getFile(params);
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.update);
 
-		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(fileRecord.schoolId, fileRecord.parentId);
+		const fileRecordParams: FileRecordParams = {
+			schoolId: fileRecord.schoolId,
+			parentId: fileRecord.parentId,
+			parentType: fileRecord.parentType,
+		};
+		const [fileRecords] = await this.filesStorageService.getFilesOfParent(fileRecordParams);
 
 		this.modifiedFileName(fileRecord, fileRecords, data);
 		await this.fileRecordRepo.save(fileRecord);
@@ -50,7 +55,7 @@ export class FileRecordUC {
 	public async fileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.read);
 
-		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		const countedFileRecords = await this.filesStorageService.getFilesOfParent(params);
 
 		return countedFileRecords;
 	}

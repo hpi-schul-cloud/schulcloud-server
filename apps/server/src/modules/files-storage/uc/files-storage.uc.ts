@@ -113,7 +113,7 @@ export class FilesStorageUC {
 	}
 
 	private async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: IFile) {
-		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		const [fileRecords] = await this.filesStorageService.getFilesOfParent(params);
 		const fileName = this.checkFilenameExists(fileDescription.name, fileRecords);
 		const entity = this.getNewFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
 		try {
@@ -263,7 +263,7 @@ export class FilesStorageUC {
 			),
 		]);
 
-		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		const [fileRecords, count] = await this.filesStorageService.getFilesOfParent(params);
 
 		if (count === 0) {
 			return [[], 0];
