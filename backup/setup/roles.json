@@ -57,12 +57,11 @@
 			"SUBMISSIONS_EDIT",
 			"SUBMISSIONS_VIEW",
 			"SYSTEM_VIEW",
-			"TEAM_CREATE",
-			"TEAM_EDIT",
 			"TEAM_VIEW",
 			"TOOL_VIEW",
 			"TOPIC_VIEW",
-			"NEXTCLOUD_USER"
+			"NEXTCLOUD_USER",
+			"JOIN_MEETING"
 		],
 		"__v": 0
 	},
@@ -130,6 +129,8 @@
 			"TEACHER_LIST",
 			"TEACHER_SKIP_REGISTRATION",
 			"TEAM_INVITE_EXTERNAL",
+			"TEAM_CREATE",
+			"TEAM_EDIT",
 			"SCHOOL_PERMISSION_VIEW",
 			"SCHOOL_PERMISSION_CHANGE"
 		],
@@ -184,6 +185,8 @@
 			"TEACHER_DELETE",
 			"TEACHER_EDIT",
 			"TEACHER_LIST",
+			"TEAM_CREATE",
+			"TEAM_EDIT",
 			"TOOL_CREATE",
 			"TOOL_EDIT",
 			"YEARS_EDIT"
@@ -238,6 +241,8 @@
 			"USERGROUP_EDIT",
 			"USER_CREATE",
 			"TASK_DASHBOARD_TEACHER_VIEW_V3",
+			"TEAM_CREATE",
+			"TEAM_EDIT",
 			"START_MEETING"
 		],
 		"__v": 2
@@ -260,7 +265,9 @@
 		],
 		"permissions": [
 			"TASK_DASHBOARD_VIEW_V3",
-			"JOIN_MEETING"
+			"JOIN_MEETING",
+			"TEAM_CREATE",
+			"TEAM_EDIT"
 		],
 		"__v": 0
 	},
@@ -326,7 +333,8 @@
 			"NEWS_VIEW",
 			"UPLOAD_FILES",
 			"USE_LIBREOFFICE",
-			"USE_ROCKETCHAT"
+			"USE_ROCKETCHAT",
+			"JOIN_MEETING"
 		],
 		"__v": 0
 	},

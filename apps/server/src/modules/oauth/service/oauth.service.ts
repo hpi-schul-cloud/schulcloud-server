@@ -4,13 +4,16 @@ import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { OauthConfig, System, User } from '@shared/domain';
+import { OauthConfig, User } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { SystemRepo, UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AxiosResponse } from 'axios';
 import { Inject, NotFoundException } from '@nestjs/common';
+
+import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -25,7 +28,7 @@ import { AuthorizationParams } from '../controller/dto/authorization.params';
 export class OAuthService {
 	constructor(
 		private readonly userRepo: UserRepo,
-		private readonly systemRepo: SystemRepo,
+		private readonly systemService: SystemService,
 		private readonly jwtService: FeathersJwtProvider,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
@@ -119,11 +122,17 @@ export class OAuthService {
 		if (oauthConfig && oauthConfig.provider === 'iserv') {
 			return this.iservOauthService.findUserById(systemId, decodedJwt);
 		}
+		// TODO Temporary change - wait for N21-138 merge
+		// This user id resolution is trial and error at the moment. It is ought to be replaced by a proper strategy pattern (N21-138)
+		// See scope of EW-325
 		try {
-			const user = await this.userRepo.findById(decodedJwt.sub);
-			return user;
+			return await this.userRepo.findById(decodedJwt.sub);
 		} catch (error) {
-			throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
+			try {
+				return await this.userRepo.findByLdapIdOrFail(decodedJwt.preferred_username ?? '', systemId);
+			} catch {
+				throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
+			}
 		}
 	}
 
@@ -157,11 +166,11 @@ export class OAuthService {
 	}
 
 	async getOauthConfig(systemId: string): Promise<OauthConfig> {
-		const system: System = await this.systemRepo.findById(systemId);
+		const system: SystemDto = await this.systemService.findOAuthById(systemId);
 		if (system.oauthConfig) {
 			return system.oauthConfig;
 		}
-		throw new NotFoundException(`No OAuthConfig Available in the given System ${system.id}!`);
+		throw new NotFoundException(`No OAuthConfig Available in the given System ${system.id ?? ''}!`);
 	}
 
 	getOAuthError(error: unknown, provider: string): OAuthResponse {
