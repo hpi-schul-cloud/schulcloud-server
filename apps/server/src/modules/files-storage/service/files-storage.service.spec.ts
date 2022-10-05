@@ -53,7 +53,7 @@ describe('FilesStorageService', () => {
 
 		const params = {
 			schoolId,
-			parentId: userId,
+			parentId,
 			parentType: FileRecordParentType.User,
 		};
 
@@ -160,8 +160,8 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('getFilesOfParent is called', () => {
-		describe('when valid files exists', () => {
+	describe('GIVEN getFilesOfParent is called', () => {
+		describe('WHEN valid files exists', () => {
 			const setup = () => {
 				const { params, fileRecords } = getFileRecordsWithParams();
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
@@ -169,20 +169,20 @@ describe('FilesStorageService', () => {
 				return { params, fileRecords };
 			};
 
-			it('should call findOneById', async () => {
+			it('THEN it should call findBySchoolIdAndParentId with right parameters', async () => {
 				const { params } = setup();
 
 				await service.getFilesOfParent(params);
 
-				expect(fileRecordRepo.findOneById).toHaveBeenCalledTimes(1);
+				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenNthCalledWith(1, params.schoolId, params.parentId);
 			});
 
-			it('should return the matched fileRecord', async () => {
+			it('THEN it should return the matched fileRecord', async () => {
 				const { params, fileRecords } = setup();
 
 				const result = await service.getFilesOfParent(params);
 
-				expect(result).toEqual(fileRecords);
+				expect(result).toEqual([fileRecords, 3]);
 			});
 		});
 
@@ -190,7 +190,7 @@ describe('FilesStorageService', () => {
 			const setup = () => {
 				const { params } = getFileRecordsWithParams();
 
-				fileRecordRepo.findOneById.mockRejectedValueOnce(new Error('bla'));
+				fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValueOnce(new Error('bla'));
 
 				return { params };
 			};
@@ -215,6 +215,7 @@ describe('FilesStorageService', () => {
 				return {
 					data,
 					fileRecord,
+					fileRecords,
 					params,
 					spyGetFilesOfParent,
 				};
@@ -229,11 +230,11 @@ describe('FilesStorageService', () => {
 			});
 
 			it('THEN it should call filesStorageHelper.modifiedFileNameInScope with right paramaters', async () => {
-				const { fileRecord, data } = setup();
+				const { fileRecord, fileRecords, data } = setup();
 
 				await service.patchFilename(fileRecord, data);
 
-				expect(filesStorageHelper.modifiedFileNameInScope).toHaveBeenCalledWith(fileRecord, [fileRecord], data);
+				expect(filesStorageHelper.modifiedFileNameInScope).toHaveBeenCalledWith(fileRecord, fileRecords, data.fileName);
 			});
 
 			it('THEN it should call fileRecordRepo.save with right paramaters', async () => {
