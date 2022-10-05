@@ -191,9 +191,9 @@ describe('OauthProviderLoginFlowService', () => {
 				isLocal: true,
 			};
 
-			await service.validateNextcloudPermission('userId', loginResponse);
-
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDoMock);
+
+			await service.validateNextcloudPermission('userId', loginResponse);
 
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith('clientId', true);
 			expect(authorizationService.getUserWithPermissions).not.toHaveBeenCalled();
