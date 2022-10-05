@@ -145,7 +145,12 @@
 			"$oid": "5ebd6dc14a431f75ec9a3e78"
 		},
 		"purpose": "expert",
-                "features" : []
+        "features" : [
+			"rocketChat",
+			"videoconference",
+			"messenger",
+			"messengerSchoolRoom"
+		]
 	},
 	{
 		"_id": {

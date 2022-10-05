@@ -304,5 +304,84 @@
 			"$date": "2020-11-05T11:26:34.133Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id" : {
+			"$oid": "63354427dc728d001f53fdd2"
+		},
+		"schoolIds" : [
+			{
+					"$oid": "5f2987e020834114b8efd6f8"
+			},
+			{
+					"$oid": "5f2987e020834114b8efd6f9"
+			}
+		],
+		"description" : "",
+		"classIds" : [],
+		"color" : "#d32f2f",
+		"features" : [
+			"isTeam",
+			"rocketChat",
+			"videoconference"
+		],
+		"name" : "Team with Expert",
+		"schoolId" : {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"userIds" : [
+			{
+				"userId" : {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"role" : {
+					"$oid": "5bb5c62bfb457b1c3c0c7e14"
+				},
+				"schoolId" : {
+					"$oid": "5f2987e020834114b8efd6f8"
+				}
+			},
+			{
+				"userId" : {
+					"$oid": "63354059dc728d001f53fb6d"
+				},
+				"role" : {
+					"$oid": "5bb5c391fb457b1c3c0c7e10"
+				},
+				"schoolId" : {
+					"$oid": "5f2987e020834114b8efd6f9"
+				}
+			}
+		],
+		"filePermission" : [
+			{
+				"write" : true,
+				"read" : true,
+				"create" : true,
+				"delete" : true,
+				"refPermModel" : "role",
+				"refId" : {
+					"$oid": "5bb5c190fb457b1c3c0c7e0f"
+				}
+			},
+			{
+				"write" : true,
+				"read" : true,
+				"create" : true,
+				"delete" : true,
+				"refPermModel" : "role",
+				"refId" : {
+					"$oid": "5bb5c391fb457b1c3c0c7e10"
+				}
+			}
+		],
+		"invitedUserIds" : [],
+		"createdAt" :  {
+			"$date": "2022-09-29T07:07:19.226Z"
+		},
+		"updatedAt" :  {
+			"$date": "2022-09-29T07:12:07.950Z"
+		},
+		"__v" : 0
 	}
 ]
