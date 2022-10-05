@@ -27,6 +27,7 @@ import {
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
 import { ErrorType, PermissionContexts } from '../files-storage.const';
+import { FilesStorageHelper } from '../helper';
 import { ICopyFiles } from '../interface';
 import { IFile } from '../interface/file';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
@@ -41,7 +42,8 @@ export class FilesStorageUC {
 		private logger: Logger,
 		private readonly authorizationService: AuthorizationService,
 		private readonly httpService: HttpService,
-		private readonly filesStorageService: FilesStorageService
+		private readonly filesStorageService: FilesStorageService,
+		private readonly fileStorageHelper: FilesStorageHelper
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -243,7 +245,7 @@ export class FilesStorageUC {
 	public async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create);
-		await this.restore([fileRecord]);
+		await this.filesStorageService.restore([fileRecord]);
 
 		return fileRecord;
 	}
@@ -345,13 +347,15 @@ export class FilesStorageUC {
 	private async restore(fileRecords: FileRecord[]) {
 		this.logger.debug({ action: 'restore', fileRecords });
 
-		await this.unmarkForDelete(fileRecords);
+		this.fileStorageHelper.unmarkForDelete(fileRecords);
+		await this.fileRecordRepo.save(fileRecords);
 		try {
 			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
 
 			await this.storageClient.restore(paths);
 		} catch (err) {
-			await this.markForDelete(fileRecords);
+			this.fileStorageHelper.markForDelete(fileRecords);
+			await this.fileRecordRepo.save(fileRecords);
 			throw new InternalServerErrorException(err, `${FilesStorageUC.name}:restore`);
 		}
 	}
