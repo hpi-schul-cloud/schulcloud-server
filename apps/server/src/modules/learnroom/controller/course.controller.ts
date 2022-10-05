@@ -35,7 +35,7 @@ export class CourseController {
 	): Promise<StreamableFile> {
 		const result = await this.courseUc.exportCourse(courseId);
 		response.set({
-			'Content-Type': 'application/json',
+			'Content-Type': 'application/zip',
 			'Content-Disposition': 'attachment;',
 		});
 		return new StreamableFile(result);
