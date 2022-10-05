@@ -106,6 +106,10 @@ describe('OauthProviderLoginFlowService', () => {
 	});
 
 	describe('validateNextcloudPermission', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
 		it('should call the services and repos to validate Nextcloud permissions', async () => {
 			const currentUser: ICurrentUser = { userId: new ObjectID(213135).toString() } as ICurrentUser;
 			const role = roleFactory.build({ permissions: ['NEXTCLOUD_USER' as Permission] });
@@ -145,7 +149,7 @@ describe('OauthProviderLoginFlowService', () => {
 			);
 		});
 
-		it('should throw a ForbiddenException, if the user do not have nextcloud permission', async () => {
+		it('should throw a UnauthorizedException, if the user do not have nextcloud permission', async () => {
 			const currentUser: ICurrentUser = { userId: new ObjectID(213135).toString() } as ICurrentUser;
 			const role = roleFactory.build();
 			const user: User = userFactory.buildWithId({ roles: [role] }, currentUser.userId);
@@ -171,6 +175,29 @@ describe('OauthProviderLoginFlowService', () => {
 			await expect(service.validateNextcloudPermission(currentUser.userId, loginResponse)).rejects.toThrow(
 				UnauthorizedException
 			);
+		});
+
+		it('should do nothing when it is not a nextcloud tool', async () => {
+			const loginResponse: ProviderLoginResponse = {
+				challenge: 'challenge',
+				client: {
+					client_id: 'clientId',
+				},
+			} as ProviderLoginResponse;
+			const ltiToolDoMock: LtiToolDO = {
+				id: 'toolId',
+				name: 'NotNextcloud',
+				oAuthClientId: 'oAuthClientId',
+				isLocal: true,
+			};
+
+			await service.validateNextcloudPermission('userId', loginResponse);
+
+			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDoMock);
+
+			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith('clientId', true);
+			expect(authorizationService.getUserWithPermissions).not.toHaveBeenCalled();
+			expect(authorizationService.checkAllPermissions).not.toHaveBeenCalled();
 		});
 	});
 });

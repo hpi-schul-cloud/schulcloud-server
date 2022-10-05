@@ -28,7 +28,7 @@ export class OauthProviderLoginFlowService {
 	}
 
 	// TODO N21-91. Magic Strings are not desireable
-	private async isNextcloudTool(loginResponse: ProviderLoginResponse) {
+	private async isNextcloudTool(loginResponse: ProviderLoginResponse): Promise<boolean> {
 		if (!loginResponse.client?.client_id) {
 			throw new InternalServerErrorException('Could not find oAuthClientId in login response to get the LtiTool');
 		}
@@ -38,7 +38,7 @@ export class OauthProviderLoginFlowService {
 		return isNextcloud;
 	}
 
-	async validateNextcloudPermission(currentUserId: string, loginResponse: ProviderLoginResponse) {
+	async validateNextcloudPermission(currentUserId: string, loginResponse: ProviderLoginResponse): Promise<void> {
 		const isNextcloudTool: boolean = await this.isNextcloudTool(loginResponse);
 		if (isNextcloudTool) {
 			const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
