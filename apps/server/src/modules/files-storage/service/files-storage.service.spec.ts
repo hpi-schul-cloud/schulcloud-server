@@ -18,7 +18,7 @@ describe('FilesStorageService', () => {
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
 	// TODO: should we really mock the helper?
-	let filesStorageHelper: DeepMocked<FilesStorageHelper>;
+	let filesStorageHelper: FilesStorageHelper;
 	let orm: MikroORM;
 
 	const userId = new ObjectId().toHexString();
@@ -53,7 +53,7 @@ describe('FilesStorageService', () => {
 		];
 
 		const params = {
-			schoolId,
+			schoolId: parentSchoolId,
 			parentId,
 			parentType: FileRecordParentType.User,
 		};
@@ -118,8 +118,8 @@ describe('FilesStorageService', () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('getFileById is called', () => {
-		describe('when valid file exists', () => {
+	describe('GIVEN getFileById is called', () => {
+		describe('WHEN valid file exists', () => {
 			const setup = () => {
 				const { params, fileRecord } = getFileRecordWithParams();
 				fileRecordRepo.findOneById.mockResolvedValueOnce(fileRecord);
@@ -127,7 +127,7 @@ describe('FilesStorageService', () => {
 				return { params, fileRecord };
 			};
 
-			it('should call findOneById', async () => {
+			it('THEN it should call findOneById', async () => {
 				const { params } = setup();
 
 				await service.getFile(params);
@@ -135,7 +135,7 @@ describe('FilesStorageService', () => {
 				expect(fileRecordRepo.findOneById).toHaveBeenCalledTimes(1);
 			});
 
-			it('should return the matched fileRecord', async () => {
+			it('THEN it should return the matched fileRecord', async () => {
 				const { params, fileRecord } = setup();
 
 				const result = await service.getFile(params);
@@ -210,10 +210,8 @@ describe('FilesStorageService', () => {
 				const { fileRecords, params } = getFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const data: RenameFileParams = { fileName: 'renamed' };
-				// const modifiedFileRecord = { ...fileRecord, ...{ name: data.fileName } };
 
 				const spyGetFilesOfParent = jest.spyOn(service, 'getFilesOfParent').mockResolvedValueOnce([fileRecords, 1]);
-				// filesStorageHelper.modifiedFileNameInScope.mockResolvedValueOnce(modifiedFileRecord);
 
 				return {
 					data,
@@ -281,13 +279,13 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('delete()', () => {
-		describe('if valid files exists', () => {
+	describe('GIVEN delete is called', () => {
+		describe('WHEN valid files exists', () => {
 			const setup = () => {
 				return { fileRecords: getFileRecords() };
 			};
 
-			it('should call markForDelete', async () => {
+			it('THEN it should call markForDelete', async () => {
 				const { fileRecords } = setup();
 				await service.delete(fileRecords);
 
@@ -305,7 +303,7 @@ describe('FilesStorageService', () => {
 				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(1, markedFileRecords);
 			});
 
-			it('should call getPaths', async () => {
+			it('THEN it should call getPaths', async () => {
 				const { fileRecords } = setup();
 
 				await service.delete(fileRecords);
@@ -313,7 +311,7 @@ describe('FilesStorageService', () => {
 				expect(filesStorageHelper.getPaths).toHaveBeenCalledWith(fileRecords);
 			});
 
-			it('should call storageClient.delete', async () => {
+			it('THEN it should call storageClient.delete', async () => {
 				const { fileRecords } = setup();
 				const paths = ['1', '2'];
 				filesStorageHelper.getPaths.mockReturnValue(paths);
@@ -324,7 +322,7 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('when repository throw an error', () => {
+		describe('WHEN repository throw an error', () => {
 			const setup = () => {
 				const fileRecords = getFileRecords();
 
@@ -333,21 +331,21 @@ describe('FilesStorageService', () => {
 				return { fileRecords };
 			};
 
-			it('should pass the error', async () => {
+			it('THEN it should pass the error', async () => {
 				const { fileRecords } = setup();
 
 				await expect(service.delete(fileRecords)).rejects.toThrow(new Error('bla'));
 			});
 		});
 
-		describe('when filestorage throw an error', () => {
+		describe('WHEN filestorage throw an error', () => {
 			const setup = () => {
 				storageClient.delete.mockRejectedValueOnce(new Error('bla'));
 
 				return { fileRecords: getFileRecords() };
 			};
 
-			it('should throw error if entity not found', async () => {
+			it('THEN it should throw error if entity not found', async () => {
 				const { fileRecords } = setup();
 
 				await expect(service.delete(fileRecords)).rejects.toThrow(new InternalServerErrorException('bla'));
@@ -356,8 +354,8 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('deleteFilesOfParent is called', () => {
-		describe('when valid files exists', () => {
+	describe('GIVEN deleteFilesOfParent is called', () => {
+		describe('WHEN valid files exists', () => {
 			let spy: jest.SpyInstance;
 
 			afterEach(() => {
@@ -374,7 +372,7 @@ describe('FilesStorageService', () => {
 				return { requestParams, fileRecords };
 			};
 
-			it('should call findBySchoolIdAndParentId onces with correctly params', async () => {
+			it('THEN it should call findBySchoolIdAndParentId onces with correctly params', async () => {
 				const { requestParams } = setup();
 
 				await service.deleteFilesOfParent(requestParams);
@@ -386,7 +384,7 @@ describe('FilesStorageService', () => {
 				);
 			});
 
-			it('should call delete with correct params', async () => {
+			it('THEN it should call delete with correct params', async () => {
 				const { requestParams, fileRecords } = setup();
 
 				await service.deleteFilesOfParent(requestParams);
@@ -394,7 +392,7 @@ describe('FilesStorageService', () => {
 				expect(service.delete).toHaveBeenCalledWith(fileRecords);
 			});
 
-			it('should return file records and count', async () => {
+			it('THEN it should return file records and count', async () => {
 				const { requestParams, fileRecords } = setup();
 
 				const responseData = await service.deleteFilesOfParent(requestParams);
@@ -409,7 +407,7 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('when no files exists', () => {
+		describe('WHEN no files exists', () => {
 			let spy: jest.SpyInstance;
 
 			afterEach(() => {
@@ -426,7 +424,7 @@ describe('FilesStorageService', () => {
 				return { requestParams };
 			};
 
-			it('should not call delete', async () => {
+			it('THEN it should not call delete', async () => {
 				const { requestParams } = setup();
 
 				await service.deleteFilesOfParent(requestParams);
@@ -434,7 +432,7 @@ describe('FilesStorageService', () => {
 				expect(service.delete).toHaveBeenCalledTimes(0);
 			});
 
-			it('should return empty counted type', async () => {
+			it('THEN it should return empty counted type', async () => {
 				const { requestParams } = setup();
 
 				const result = await service.deleteFilesOfParent(requestParams);
@@ -443,7 +441,7 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('when repository throw an error', () => {
+		describe('WHEN repository throw an error', () => {
 			const setup = () => {
 				const requestParams = getRequestParams();
 
@@ -452,14 +450,14 @@ describe('FilesStorageService', () => {
 				return { requestParams };
 			};
 
-			it('should pass the error', async () => {
+			it('THEN it should pass the error', async () => {
 				const { requestParams } = setup();
 
 				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow(new Error('bla'));
 			});
 		});
 
-		describe('when service.delete throw an error', () => {
+		describe('WHEN service.delete throw an error', () => {
 			let spy: jest.SpyInstance;
 
 			afterEach(() => {
@@ -476,7 +474,7 @@ describe('FilesStorageService', () => {
 				return { requestParams, fileRecords };
 			};
 
-			it('should pass the error', async () => {
+			it('THEN it should pass the error', async () => {
 				const { requestParams } = setup();
 
 				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow(new Error('bla'));
@@ -539,7 +537,6 @@ describe('FilesStorageService', () => {
 
 				await service.restoreFilesOfParent(requestParams);
 
-				// TODO: is not mocked is a service method it self
 				expect(service.delete).toHaveBeenCalledTimes(0);
 
 				spy.mockRestore();
