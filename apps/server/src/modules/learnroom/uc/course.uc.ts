@@ -3,6 +3,7 @@ import { EntityId, Course, Counted, SortOrder } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import { PaginationParams } from '@shared/controller/';
 import { ImsccFileBuilder } from '@src/modules/learnroom/imscc/imscc-file-builder';
+import { Readable } from 'stream';
 
 @Injectable()
 export class CourseUc {
@@ -12,11 +13,8 @@ export class CourseUc {
 		return this.courseRepo.findAllByUserId(userId, {}, { pagination: options, order: { updatedAt: SortOrder.desc } });
 	}
 
-	async exportCourse(courseId: EntityId, userId?: EntityId) {
+	async exportCourse(courseId: EntityId, userId?: EntityId): Promise<Readable> {
 		const course = await this.courseRepo.findOne(courseId, userId);
-		return new ImsccFileBuilder()
-			.addFilename(`${course.name}-${Date.now().toLocaleString()}.imscc`)
-			.addTitle(course.name)
-			.build();
+		return new ImsccFileBuilder().addTitle(course.name).build();
 	}
 }
