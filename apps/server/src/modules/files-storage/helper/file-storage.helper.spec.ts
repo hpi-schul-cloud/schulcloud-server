@@ -165,4 +165,12 @@ describe('FilesStorageHelper', () => {
 			});
 		});
 	});
+
+	describe('GIVEN modifiedFileNameInScope is called', () => {
+		// TODO: add tests
+	});
+
+	describe('GIVEN mapFileRecordToFileRecordParams is called', () => {
+		// TODO: add tests
+	});
 });
