@@ -444,7 +444,7 @@ describe('HydraService', () => {
 				challenge: 'challenge',
 				client: {
 					client_id: 'client_id',
-					created_at: Date(),
+					created_at: '2020-01-01T00:00:00.000Z',
 					metadata: {},
 				},
 				oidc_context: {},
@@ -467,25 +467,7 @@ describe('HydraService', () => {
 						method: 'GET',
 						url: `${hydraUri}/oauth2/auth/requests/login?login_challenge=${challenge}`,
 					};
-					httpService.request.mockReturnValue(
-						of(
-							createAxiosResponse<ProviderLoginResponse>({
-								challenge: 'challenge',
-								client: {
-									client_id: 'client_id',
-									created_at: Date(),
-									metadata: {},
-								},
-								oidc_context: {},
-								request_url: 'request_url',
-								requested_access_token_audience: ['requested_access_token_audience'],
-								requested_scope: ['requested_scope'],
-								session_id: 'session_id',
-								skip: true,
-								subject: 'subject',
-							})
-						)
-					);
+					httpService.request.mockReturnValue(of(createAxiosResponse<ProviderLoginResponse>(providerLoginResponse)));
 
 					// Act
 					const response: ProviderLoginResponse = await service.getLoginRequest(challenge);

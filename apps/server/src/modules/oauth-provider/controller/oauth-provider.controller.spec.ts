@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotImplementedException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import {
@@ -319,20 +318,11 @@ describe('OauthProviderController', () => {
 				logoutUc.logoutFlow.mockResolvedValue(expectedRedirect);
 				responseMapper.mapRedirectResponse.mockReturnValue(expectedRedirect);
 
-				const redirect = await controller.acceptLogoutRequest(
-					{ challenge: 'challenge_mock' },
-					{ redirect_to: 'www.mock.de' }
-				);
+				const redirect = await controller.acceptLogoutRequest({ challenge: 'challenge_mock' });
 
 				expect(logoutUc.logoutFlow).toHaveBeenCalledWith('challenge_mock');
 				expect(redirect.redirect_to).toEqual(expectedRedirect.redirect_to);
 			});
-		});
-	});
-
-	describe('introspectOAuth2Token', () => {
-		it('should throw', () => {
-			expect(() => controller.introspectOAuth2Token({ token: '' })).toThrow(NotImplementedException);
 		});
 	});
 

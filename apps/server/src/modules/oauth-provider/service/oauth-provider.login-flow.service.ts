@@ -1,7 +1,7 @@
 import { ProviderLoginResponse } from '@shared/infra/oauth-provider/dto';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolRepo, PseudonymsRepo, RoleRepo, UserRepo } from '@shared/repo';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { LtiToolRepo, PseudonymsRepo } from '@shared/repo';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Permission, PseudonymDO, User } from '@shared/domain';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -11,14 +11,12 @@ export class OauthProviderLoginFlowService {
 	constructor(
 		private readonly ltiToolRepo: LtiToolRepo,
 		private readonly pseudonymsRepo: PseudonymsRepo,
-		private readonly userRepo: UserRepo,
-		private readonly roleRepo: RoleRepo,
 		private readonly authorizationService: AuthorizationService
 	) {}
 
 	async getPseudonym(currentUserId: string, loginResponse: ProviderLoginResponse): Promise<PseudonymDO> {
 		if (!loginResponse.client.client_id) {
-			throw new NotFoundException('Could not find oAuthClientId in login response to get the pseudonym');
+			throw new InternalServerErrorException('Could not find oAuthClientId in login response to get the pseudonym');
 		}
 
 		const ltiToolDO: LtiToolDO = await this.ltiToolRepo.findByClientIdAndIsLocal(loginResponse.client.client_id, true);
@@ -29,33 +27,22 @@ export class OauthProviderLoginFlowService {
 		return pseudonym;
 	}
 
-	private async hasNextcloudPermission(currentUserId: string) {
-		const user: User = await this.userRepo.findById(currentUserId, true);
-		const hasPermission: boolean = this.authorizationService.hasAllPermissions(user, [
-			Permission.NEXTCLOUD_USER as string,
-		]);
-
-		return hasPermission;
-	}
-
+	// TODO N21-91. Magic Strings are not desireable
 	private async isNextcloudTool(loginResponse: ProviderLoginResponse) {
-		if (loginResponse.client.client_id) {
-			const ltiToolDO: LtiToolDO = await this.ltiToolRepo.findByClientIdAndIsLocal(
-				loginResponse.client.client_id,
-				true
-			);
-			if (ltiToolDO.name === 'SchulcloudNextcloud') {
-				return true;
-			}
+		if (!loginResponse.client?.client_id) {
+			throw new InternalServerErrorException('Could not find oAuthClientId in login response to get the LtiTool');
 		}
-		return false;
+
+		const ltiToolDO: LtiToolDO = await this.ltiToolRepo.findByClientIdAndIsLocal(loginResponse.client.client_id, true);
+		const isNextcloud: boolean = ltiToolDO.name === 'SchulcloudNextcloud';
+		return isNextcloud;
 	}
 
 	async validateNextcloudPermission(currentUserId: string, loginResponse: ProviderLoginResponse) {
 		const isNextcloudTool: boolean = await this.isNextcloudTool(loginResponse);
-		const hasPermission: boolean = await this.hasNextcloudPermission(currentUserId);
-		if (isNextcloudTool && !hasPermission) {
-			throw new ForbiddenException('You are not allowed to use Nextcloud');
+		if (isNextcloudTool) {
+			const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
+			this.authorizationService.checkAllPermissions(user, [Permission.NEXTCLOUD_USER]);
 		}
 	}
 }

@@ -8,10 +8,9 @@ import {
 	ProviderLoginResponse,
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
-import { AcceptQuery, LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
+import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
 import { OauthProviderLoginFlowService } from '@src/modules/oauth-provider/service/oauth-provider.login-flow.service';
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
-import { RejectBody } from '@src/modules/oauth-provider/controller/dto/request/reject.body';
 
 describe('OauthProviderLoginFlowUc', () => {
 	let module: TestingModule;
@@ -120,7 +119,7 @@ describe('OauthProviderLoginFlowUc', () => {
 
 		it('should reject the login request, if accept query is false', async () => {
 			const query: AcceptQuery = { accept: false };
-			const rejectBody: RejectBody = {
+			const rejectBody: OAuthRejectableBody = {
 				error: 'error',
 				error_debug: 'error_debug',
 				error_description: 'error_description',

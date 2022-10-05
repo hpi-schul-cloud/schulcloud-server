@@ -5,11 +5,10 @@ import {
 	ProviderLoginResponse,
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
-import { AcceptQuery, LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
+import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
 import { OauthProviderLoginFlowService } from '@src/modules/oauth-provider/service/oauth-provider.login-flow.service';
 import { PseudonymDO } from '@shared/domain';
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
-import { RejectBody } from '@src/modules/oauth-provider/controller/dto/request/reject.body';
 
 @Injectable()
 export class OauthProviderLoginFlowUc {
@@ -62,7 +61,7 @@ export class OauthProviderLoginFlowUc {
 
 	private async rejectLoginRequest(
 		challenge: string,
-		rejectRequestBody: RejectBody
+		rejectRequestBody: OAuthRejectableBody
 	): Promise<ProviderRedirectResponse> {
 		const redirectResponse: Promise<ProviderRedirectResponse> = this.oauthProviderService.rejectLoginRequest(
 			challenge,

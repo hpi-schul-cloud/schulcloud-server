@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { OauthProviderLoginFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.login-flow.uc';
@@ -14,7 +14,6 @@ import {
 import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
 import { ICurrentUser } from '@shared/domain';
 import { OauthProviderClientCrudUc } from '@src/modules/oauth-provider/uc/oauth-provider.client-crud.uc';
-import { IntrospectBody } from '@src/modules/oauth-provider/controller/dto/request/introspect.body';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import { ApiTags } from '@nestjs/swagger';
@@ -30,7 +29,6 @@ import {
 	LoginResponse,
 	OauthClientBody,
 	OauthClientResponse,
-	RedirectBody,
 	RevokeConsentParams,
 } from './dto';
 
@@ -134,7 +132,7 @@ export class OauthProviderController {
 
 	@Authenticate('jwt')
 	@Patch('logoutRequest/:challenge')
-	async acceptLogoutRequest(@Param() params: ChallengeParams, @Body() body: RedirectBody): Promise<RedirectResponse> {
+	async acceptLogoutRequest(@Param() params: ChallengeParams): Promise<RedirectResponse> {
 		const redirect: ProviderRedirectResponse = await this.logoutFlowUc.logoutFlow(params.challenge);
 		const mapped: RedirectResponse = this.oauthProviderResponseMapper.mapRedirectResponse(redirect);
 		return mapped;
@@ -184,11 +182,6 @@ export class OauthProviderController {
 	revokeConsentSession(@CurrentUser() currentUser: ICurrentUser, @Param() params: RevokeConsentParams): Promise<void> {
 		const promise: Promise<void> = this.oauthProviderUc.revokeConsentSession(currentUser.userId, params.client);
 		return promise;
-	}
-
-	@Post('introspect')
-	introspectOAuth2Token(@Body() body: IntrospectBody) {
-		throw new NotImplementedException();
 	}
 
 	@Get('baseUrl')

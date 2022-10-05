@@ -2,16 +2,16 @@ import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/
 import {
 	ProviderConsentResponse,
 	ProviderConsentSessionResponse,
+	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
-	ProviderLoginResponse,
 } from '@shared/infra/oauth-provider/dto';
 import {
 	ConsentResponse,
 	ConsentSessionResponse,
+	LoginResponse,
 	OauthClientResponse,
 	RedirectResponse,
-	LoginResponse,
 } from '@src/modules/oauth-provider/controller/dto/';
 
 describe('OauthProviderResponseMapper', () => {
@@ -107,26 +107,40 @@ describe('OauthProviderResponseMapper', () => {
 		expect(result).toEqual(expect.objectContaining(providerOauthClientResponse));
 	});
 
-	it('mapConsentSessionsToResponse', () => {
-		const session: ProviderConsentSessionResponse = {
-			consent_request: {
-				challenge: 'challenge',
-				client: {
+	describe('mapConsentSessionsToResponse', () => {
+		it('should map all attributes', () => {
+			const session: ProviderConsentSessionResponse = {
+				consent_request: {
+					challenge: 'challenge',
+					client: {
+						client_id: 'clientId',
+						client_name: 'clientName',
+					},
+				},
+			};
+
+			const response: ConsentSessionResponse = mapper.mapConsentSessionsToResponse(session);
+
+			expect(response).toEqual(
+				expect.objectContaining<ConsentSessionResponse>({
+					challenge: 'challenge',
 					client_id: 'clientId',
 					client_name: 'clientName',
+				})
+			);
+		});
+
+		it('should map empty response', () => {
+			const session: ProviderConsentSessionResponse = {
+				consent_request: {
+					challenge: 'challenge',
 				},
-			},
-		};
+			};
 
-		const response: ConsentSessionResponse = mapper.mapConsentSessionsToResponse(session);
+			const response: ConsentSessionResponse = mapper.mapConsentSessionsToResponse(session);
 
-		expect(response).toEqual(
-			expect.objectContaining<ConsentSessionResponse>({
-				challenge: 'challenge',
-				client_id: 'clientId',
-				client_name: 'clientName',
-			})
-		);
+			expect(response).toEqual(new ConsentSessionResponse(undefined, undefined, 'challenge'));
+		});
 	});
 
 	it('mapOauthClientResponse', () => {

@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
 import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
-import { LtiToolRepo, PseudonymsRepo, RoleRepo, TeamsRepo, UserRepo } from '@shared/repo';
+import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
 import { UserModule } from '@src/modules/user';
 import { LoggerModule } from '@src/core/logger';
 import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { AuthorizationModule } from '@src/modules/authorization/authorization.module';
-import { PermissionService } from '@shared/domain';
 import { OauthProviderUc } from './uc/oauth-provider.uc';
 import { OauthProviderLoginFlowUc } from './uc/oauth-provider.login-flow.uc';
 import { OauthProviderLoginFlowService } from './service/oauth-provider.login-flow.service';
@@ -28,12 +27,9 @@ import { OauthProviderClientCrudUc } from './uc/oauth-provider.client-crud.uc';
 		OauthProviderResponseMapper,
 		OauthProviderRequestMapper,
 		IdTokenService,
-		PermissionService,
 		PseudonymsRepo,
 		LtiToolRepo,
 		TeamsRepo,
-		UserRepo,
-		RoleRepo,
 	],
 	controllers: [OauthProviderController],
 })
