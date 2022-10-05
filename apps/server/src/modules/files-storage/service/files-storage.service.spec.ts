@@ -17,6 +17,7 @@ describe('FilesStorageService', () => {
 	let service: FilesStorageService;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
+	// TODO: should we really mock the helper?
 	let filesStorageHelper: DeepMocked<FilesStorageHelper>;
 	let orm: MikroORM;
 
@@ -209,8 +210,10 @@ describe('FilesStorageService', () => {
 				const { fileRecords, params } = getFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const data: RenameFileParams = { fileName: 'renamed' };
+				// const modifiedFileRecord = { ...fileRecord, ...{ name: data.fileName } };
 
 				const spyGetFilesOfParent = jest.spyOn(service, 'getFilesOfParent').mockResolvedValueOnce([fileRecords, 1]);
+				// filesStorageHelper.modifiedFileNameInScope.mockResolvedValueOnce(modifiedFileRecord);
 
 				return {
 					data,
@@ -492,7 +495,7 @@ describe('FilesStorageService', () => {
 			const fileRecords = getFileRecords();
 			const requestParams = getRequestParams();
 
-			spy = jest.spyOn(service, 'delete');
+			spy = jest.spyOn(service, 'restore');
 			fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValue([fileRecords, 3]);
 
 			return { requestParams, fileRecords };
@@ -527,7 +530,7 @@ describe('FilesStorageService', () => {
 
 				await service.restoreFilesOfParent(requestParams);
 
-				expect(service.restore).toHaveBeenCalledWith(fileRecords);
+				expect(spy).toHaveBeenCalledWith(fileRecords);
 			});
 
 			it('should call with correctly params', async () => {
@@ -536,6 +539,7 @@ describe('FilesStorageService', () => {
 
 				await service.restoreFilesOfParent(requestParams);
 
+				// TODO: is not mocked is a service method it self
 				expect(service.delete).toHaveBeenCalledTimes(0);
 
 				spy.mockRestore();
