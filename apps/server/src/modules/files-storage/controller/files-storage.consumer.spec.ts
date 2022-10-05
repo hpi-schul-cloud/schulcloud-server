@@ -95,7 +95,7 @@ describe('FilesStorageConsumer', () => {
 			};
 			filesStorageService.copyFilesOfParent.mockResolvedValue([[], 0]);
 			const response = await service.copyFilesOfParent(payload);
-			expect(response).toEqual([]);
+			expect(response.message).toEqual([]);
 		});
 	});
 
@@ -123,7 +123,7 @@ describe('FilesStorageConsumer', () => {
 
 			fileRecordUC.fileRecordsOfParent.mockResolvedValue([fileRecords, fileRecords.length]);
 			const response = await service.fileRecordsOfParent(payload);
-			expect(response[0]).toBeInstanceOf(FileRecordResponse);
+			expect(response.message[0]).toBeInstanceOf(FileRecordResponse);
 		});
 	});
 
@@ -151,7 +151,7 @@ describe('FilesStorageConsumer', () => {
 
 			filesStorageService.deleteFilesOfParent.mockResolvedValue([fileRecords, fileRecords.length]);
 			const response = await service.deleteFilesOfParent(payload);
-			expect(response[0]).toBeInstanceOf(FileRecordResponse);
+			expect(response.message[0]).toBeInstanceOf(FileRecordResponse);
 		});
 	});
 });

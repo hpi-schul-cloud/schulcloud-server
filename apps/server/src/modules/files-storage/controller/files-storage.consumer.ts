@@ -1,6 +1,7 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
+import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
 import { Logger } from '@src/core/logger';
 import { FilesStorageEvents, FilesStorageExchanges, ICopyFileDO, IFileDO } from '@src/shared/infra/rabbitmq';
 import { FilesStorageMapper } from '../mapper/file-record.mapper';
@@ -25,12 +26,14 @@ export class FilesStorageConsumer {
 		routingKey: FilesStorageEvents.COPY_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
-	public async copyFilesOfParent(@RabbitPayload() payload: CopyFilesOfParentPayload): Promise<ICopyFileDO[]> {
+	public async copyFilesOfParent(
+		@RabbitPayload() payload: CopyFilesOfParentPayload
+	): Promise<RpcMessage<ICopyFileDO[]>> {
 		this.logger.debug({ action: 'copyFilesOfParent', payload });
 
 		const { userId, source, target } = payload;
 		const [response] = await this.filesStorageUC.copyFilesOfParent(userId, source, { target });
-		return response;
+		return { message: response };
 	}
 
 	@RabbitRPC({
@@ -38,13 +41,13 @@ export class FilesStorageConsumer {
 		routingKey: FilesStorageEvents.LIST_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
-	public async fileRecordsOfParent(@RabbitPayload() payload: FileRecordParams): Promise<IFileDO[]> {
+	public async fileRecordsOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<IFileDO[]>> {
 		this.logger.debug({ action: 'fileRecordsOfParent', payload });
 
 		const [fileRecords, total] = await this.fileRecordUC.fileRecordsOfParent('REMOVE_IF_MOVED_TO_SERVICE', payload);
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
-		return response.data;
+		return { message: response.data };
 	}
 
 	@RabbitRPC({
@@ -52,12 +55,12 @@ export class FilesStorageConsumer {
 		routingKey: FilesStorageEvents.DELETE_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
-	public async deleteFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<IFileDO[]> {
+	public async deleteFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<IFileDO[]>> {
 		this.logger.debug({ action: 'deleteFilesOfParent', payload });
 
 		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent('REMOVE_IF_MOVED_TO_SERVICE', payload);
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
-		return response.data;
+		return { message: response.data };
 	}
 }
