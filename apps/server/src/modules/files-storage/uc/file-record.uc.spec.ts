@@ -145,14 +145,53 @@ describe('FileRecordUC', () => {
 
 				expect(filesStorageService.getFilesOfParent).toHaveBeenCalledWith(params);
 			});
+
+			it('should return counted file records', async () => {
+				const { userId, params, fileRecords } = setup();
+
+				const result = await service.fileRecordsOfParent(userId, params);
+
+				expect(result).toEqual([fileRecords, fileRecords.length]);
+			});
 		});
 
 		describe('when user is not authorised', () => {
-			// TODO:
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const { fileRecords, params } = getFileRecords();
+
+				filesStorageService.getFilesOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new Error('Bla'));
+
+				return { userId, params, fileRecords };
+			};
+
+			it('should pass the error', async () => {
+				const { userId, params } = setup();
+
+				await expect(service.fileRecordsOfParent(userId, params)).rejects.toThrowError(new Error('Bla'));
+			});
 		});
 
 		describe('when user is authorised but no files existis', () => {
-			// TODO:
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const params = getFileParams();
+				const fileRecords = [];
+
+				filesStorageService.getFilesOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+
+				return { userId, params, fileRecords };
+			};
+
+			it('should return empty counted file records', async () => {
+				const { userId, params } = setup();
+
+				const result = await service.fileRecordsOfParent(userId, params);
+
+				expect(result).toEqual([[], 0]);
+			});
 		});
 	});
 
@@ -227,7 +266,7 @@ describe('FileRecordUC', () => {
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,
-					PermissionContexts.read
+					PermissionContexts.update
 				);
 			});
 
