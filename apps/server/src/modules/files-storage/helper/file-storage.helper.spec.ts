@@ -1,9 +1,11 @@
 import { MikroORM } from '@mikro-orm/core';
+import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { ErrorStatus } from '../error';
+import { ErrorType } from '../files-storage.const';
 import { FilesStorageHelper } from './files-storage.helper';
 
 describe('FilesStorageHelper', () => {
@@ -118,6 +120,49 @@ describe('FilesStorageHelper', () => {
 					expect.objectContaining({ ...fileRecords[2], deletedSince: undefined }),
 				])
 			);
+		});
+	});
+
+	describe('GIVEN checkDuplicatedNames is called', () => {
+		describe('WHEN all fileRecords has different names', () => {
+			const setup = () => {
+				const fileRecords = setupFileRecords();
+				const newFileName = 'renamed';
+
+				return {
+					newFileName,
+					fileRecords,
+				};
+			};
+
+			it('THEN it should do nothing', () => {
+				const { fileRecords, newFileName } = setup();
+
+				const result = fileStorageHelper.checkDuplicatedNames(fileRecords, newFileName);
+
+				expect(result).toBeUndefined();
+			});
+		});
+
+		describe('WHEN fileRecords with new FileName already exist', () => {
+			const setup = () => {
+				const fileRecords = setupFileRecords();
+				const newFileName = 'renamed';
+				fileRecords[0].name = newFileName;
+
+				return {
+					newFileName,
+					fileRecords,
+				};
+			};
+
+			it('THEN it should throw with specific error', () => {
+				const { fileRecords, newFileName } = setup();
+
+				expect(() => fileStorageHelper.checkDuplicatedNames(fileRecords, newFileName)).toThrowError(
+					new ConflictException(ErrorType.FILE_NAME_EXISTS)
+				);
+			});
 		});
 	});
 });

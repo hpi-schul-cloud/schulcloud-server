@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { EntityId, FileRecord } from '@shared/domain';
+import { FileRecordParams } from '../controller/dto';
 import { ErrorStatus } from '../error';
+import { ErrorType } from '../files-storage.const';
 
 @Injectable()
 export class FilesStorageHelper {
@@ -32,5 +34,32 @@ export class FilesStorageHelper {
 		});
 
 		return unmarkedFileRecords;
+	}
+
+	public checkDuplicatedNames(fileRecords: FileRecord[], newFileName: string): void {
+		if (fileRecords.find((item) => item.name === newFileName)) {
+			throw new ConflictException(ErrorType.FILE_NAME_EXISTS);
+		}
+	}
+
+	public modifiedFileNameInScope(
+		fileRecord: FileRecord,
+		fileRecordsInScope: FileRecord[],
+		newFileName: string
+	): FileRecord {
+		this.checkDuplicatedNames(fileRecordsInScope, newFileName);
+		fileRecord.name = newFileName;
+
+		return fileRecord;
+	}
+
+	public mapFileRecordToFileRecordParams(fileRecord: FileRecord): FileRecordParams {
+		const fileRecordParams: FileRecordParams = {
+			schoolId: fileRecord.schoolId,
+			parentId: fileRecord.parentId,
+			parentType: fileRecord.parentType,
+		};
+
+		return fileRecordParams;
 	}
 }

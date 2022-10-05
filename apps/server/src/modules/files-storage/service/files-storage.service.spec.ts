@@ -8,6 +8,7 @@ import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
+import { RenameFileParams } from '../controller/dto';
 import { FilesStorageHelper } from '../helper';
 import { FilesStorageService } from './files-storage.service';
 
@@ -38,6 +39,37 @@ describe('FilesStorageService', () => {
 		};
 
 		return requestParams;
+	};
+
+	const getFileRecordsWithParams = () => {
+		const parentId = new ObjectId().toHexString();
+		const parentSchoolId = new ObjectId().toHexString();
+
+		const fileRecords = [
+			fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
+			fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
+			fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+		];
+
+		const params = {
+			schoolId,
+			parentId: userId,
+			parentType: FileRecordParentType.User,
+		};
+
+		return { params, fileRecords };
+	};
+
+	const getFileRecordWithParams = () => {
+		const parentId = new ObjectId().toHexString();
+		const parentSchoolId = new ObjectId().toHexString();
+
+		const fileRecord = fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' });
+		const params = {
+			fileRecordId: fileRecord.id,
+		};
+
+		return { params, fileRecord };
 	};
 
 	beforeAll(async () => {
@@ -86,18 +118,6 @@ describe('FilesStorageService', () => {
 	});
 
 	describe('getFileById is called', () => {
-		const getFileRecordWithParams = () => {
-			const parentId = new ObjectId().toHexString();
-			const parentSchoolId = new ObjectId().toHexString();
-
-			const fileRecord = fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' });
-			const params = {
-				fileRecordId: fileRecord.id,
-			};
-
-			return { params, fileRecord };
-		};
-
 		describe('when valid file exists', () => {
 			const setup = () => {
 				const { params, fileRecord } = getFileRecordWithParams();
@@ -141,25 +161,6 @@ describe('FilesStorageService', () => {
 	});
 
 	describe('getFilesOfParent is called', () => {
-		const getFileRecordsWithParams = () => {
-			const parentId = new ObjectId().toHexString();
-			const parentSchoolId = new ObjectId().toHexString();
-
-			const fileRecords = [
-				fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
-				fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
-				fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
-			];
-
-			const params = {
-				schoolId,
-				parentId: userId,
-				parentType: FileRecordParentType.User,
-			};
-
-			return { params, fileRecords };
-		};
-
 		describe('when valid files exists', () => {
 			const setup = () => {
 				const { params, fileRecords } = getFileRecordsWithParams();
@@ -198,6 +199,80 @@ describe('FilesStorageService', () => {
 				const { params } = setup();
 
 				await expect(service.getFilesOfParent(params)).rejects.toThrow(new Error('bla'));
+			});
+		});
+	});
+
+	describe('GIVEN patchFilename is called', () => {
+		describe('WHEN file(s) exists and valid params are passed', () => {
+			const setup = () => {
+				const { fileRecords, params } = getFileRecordsWithParams();
+				const fileRecord = fileRecords[0];
+				const data: RenameFileParams = { fileName: 'renamed' };
+
+				const spyGetFilesOfParent = jest.spyOn(service, 'getFilesOfParent').mockResolvedValueOnce([fileRecords, 1]);
+
+				return {
+					data,
+					fileRecord,
+					params,
+					spyGetFilesOfParent,
+				};
+			};
+
+			it('THEN it should call getFilesOfParent with right paramaters', async () => {
+				const { fileRecord, data, spyGetFilesOfParent, params } = setup();
+
+				await service.patchFilename(fileRecord, data);
+
+				expect(spyGetFilesOfParent).toHaveBeenCalledWith(params);
+			});
+
+			it('THEN it should call filesStorageHelper.modifiedFileNameInScope with right paramaters', async () => {
+				const { fileRecord, data } = setup();
+
+				await service.patchFilename(fileRecord, data);
+
+				expect(filesStorageHelper.modifiedFileNameInScope).toHaveBeenCalledWith(fileRecord, [fileRecord], data);
+			});
+
+			it('THEN it should call fileRecordRepo.save with right paramaters', async () => {
+				const { fileRecord, data } = setup();
+
+				await service.patchFilename(fileRecord, data);
+
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecord);
+			});
+
+			it('THEN it should return modified fileRecord', async () => {
+				const { fileRecord, data } = setup();
+
+				const result = await service.patchFilename(fileRecord, data);
+
+				expect(result.name).toEqual(data.fileName);
+			});
+		});
+
+		describe('WHEN repository is throw an error', () => {
+			const setup = () => {
+				const { fileRecord, params } = getFileRecordWithParams();
+				const data: RenameFileParams = { fileName: 'renamed' };
+
+				const spyGetFilesOfParent = jest.spyOn(service, 'getFilesOfParent').mockResolvedValueOnce([[fileRecord], 1]);
+				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
+
+				return {
+					data,
+					fileRecord,
+					params,
+					spyGetFilesOfParent,
+				};
+			};
+
+			it('THEN it should pass the error', async () => {
+				const { fileRecord, data } = setup();
+
+				await expect(service.patchFilename(fileRecord, data)).rejects.toThrowError(new Error('bla'));
 			});
 		});
 	});

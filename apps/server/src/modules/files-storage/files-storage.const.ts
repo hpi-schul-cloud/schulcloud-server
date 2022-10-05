@@ -9,6 +9,7 @@ export const API_VERSION_PATH = '/api/v3';
 export enum ErrorType {
 	FILE_IS_BLOCKED = 'File is blocked.',
 	FILE_NOT_FOUND = 'File not found.',
+	FILE_NAME_EXISTS = 'FILE_NAME_EXISTS',
 }
 
 export const PermissionContexts = {

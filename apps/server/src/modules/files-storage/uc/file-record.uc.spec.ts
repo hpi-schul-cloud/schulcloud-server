@@ -1,9 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
+import { EntityId, FileRecordParentType, ScanStatus } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -26,7 +25,6 @@ describe('FileRecordUC', () => {
 
 	let orm: MikroORM;
 	let fileParamsX: FileRecordParams;
-	const userIdX: EntityId = new ObjectId().toHexString();
 	const schoolIdX: EntityId = new ObjectId().toHexString();
 	const scanResult: ScanResultParams = { virus_detected: false };
 	const scanResultWithVirus: ScanResultParams = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };

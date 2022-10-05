@@ -1,9 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Counted, FileRecord } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { FileRecordParams, SingleFileParams } from '../controller/dto';
+import { FileRecordParams, RenameFileParams, SingleFileParams } from '../controller/dto';
 import { FilesStorageHelper } from '../helper';
 
 @Injectable()
@@ -17,6 +17,7 @@ export class FilesStorageService {
 		this.logger.setContext(FilesStorageService.name);
 	}
 
+	// find
 	public async getFile(params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 
@@ -27,6 +28,17 @@ export class FilesStorageService {
 		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		return countedFileRecords;
+	}
+
+	// update
+	public async patchFilename(fileRecord: FileRecord, data: RenameFileParams) {
+		const fileRecordParams = this.filesStorageHelper.mapFileRecordToFileRecordParams(fileRecord);
+		const [fileRecords] = await this.getFilesOfParent(fileRecordParams);
+
+		const modifiedFileRecord = this.filesStorageHelper.modifiedFileNameInScope(fileRecord, fileRecords, data.fileName);
+		await this.fileRecordRepo.save(modifiedFileRecord);
+
+		return modifiedFileRecord;
 	}
 
 	// delete
