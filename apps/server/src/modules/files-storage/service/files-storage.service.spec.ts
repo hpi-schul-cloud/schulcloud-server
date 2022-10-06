@@ -114,8 +114,12 @@ describe('FilesStorageService', () => {
 		await module.close();
 	});
 
-	it('should be defined', () => {
+	it('service should be defined', () => {
 		expect(service).toBeDefined();
+	});
+
+	it('helper should be defined', () => {
+		expect(filesStorageHelper).toBeDefined();
 	});
 
 	describe('GIVEN getFileById is called', () => {
@@ -144,7 +148,7 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('when repository throw an error', () => {
+		describe('WHEN repository throw an error', () => {
 			const setup = () => {
 				const { params } = getFileRecordWithParams();
 
@@ -153,7 +157,7 @@ describe('FilesStorageService', () => {
 				return { params };
 			};
 
-			it('should pass the error', async () => {
+			it('THEN it should pass the error', async () => {
 				const { params } = setup();
 
 				await expect(service.getFile(params)).rejects.toThrow(new Error('bla'));
@@ -187,7 +191,7 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('if repository throws an error', () => {
+		describe('WHEN repository throws an error', () => {
 			const setup = () => {
 				const { params } = getFileRecordsWithParams();
 
@@ -196,7 +200,7 @@ describe('FilesStorageService', () => {
 				return { params };
 			};
 
-			it('should pass the error', async () => {
+			it('THEN it should pass the error', async () => {
 				const { params } = setup();
 
 				await expect(service.getFilesOfParent(params)).rejects.toThrow(new Error('bla'));
