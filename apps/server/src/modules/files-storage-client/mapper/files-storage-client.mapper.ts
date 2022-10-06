@@ -1,13 +1,13 @@
 import { EntityId, Lesson, Task } from '@shared/domain';
 import { AxiosResponse } from 'axios';
+import { CopyFileDto, FileDto } from '../dto';
 import {
 	CopyFileListResponse,
-	CopyFileResponse,
 	FileRecordListResponse,
 	FileRecordParamsParentTypeEnum,
 	FileRecordResponse,
 } from '../filesStorageApi/v3';
-import { CopyFileDto, FileDto } from '../dto';
+import { ICopyFileDomainObjectProps } from '../interfaces';
 
 export class FilesStorageClientMapper {
 	static mapAxiosToFilesDto(response: AxiosResponse<FileRecordListResponse>, schoolId: EntityId): FileDto[] {
@@ -58,7 +58,7 @@ export class FilesStorageClientMapper {
 		return fileDto;
 	}
 
-	static mapCopyFileResponseToCopyFileDto(response: CopyFileResponse) {
+	static mapCopyFileResponseToCopyFileDto(response: ICopyFileDomainObjectProps) {
 		const dto = new CopyFileDto({
 			id: response.id,
 			sourceId: response.sourceId,
