@@ -1,9 +1,7 @@
-import { EntityId } from '@shared/domain';
-import { FileRecordParamsParentTypeEnum } from '../filesStorageApi/v3';
+import { EntityId, FileRecordParentType } from '@shared/domain';
 
 export interface FileRequestInfo {
-	jwt: string; // todo replace with existing type
 	schoolId: EntityId;
-	parentType: FileRecordParamsParentTypeEnum;
+	parentType: FileRecordParentType;
 	parentId: EntityId;
 }

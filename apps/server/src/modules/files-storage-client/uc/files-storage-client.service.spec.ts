@@ -1,17 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, taskFactory } from '@shared/testing';
+import { schoolFactory, setupEntities, taskFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { FileApi } from '../filesStorageApi/v3';
-import { ErrorMapper, FileParamBuilder, FilesStorageClientMapper } from '../mapper';
+import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';
+import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
+import { FilesStorageProducer } from './files-storage.producer';
 
 describe('FilesStorageClientAdapterService', () => {
 	let module: TestingModule;
 	let service: FilesStorageClientAdapterService;
-	let client: DeepMocked<FileApi>;
+	let client: DeepMocked<FilesStorageProducer>;
 	let orm: MikroORM;
 
 	beforeAll(async () => {
@@ -31,14 +31,14 @@ describe('FilesStorageClientAdapterService', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: 'FileStorageClient',
-					useValue: createMock<FileApi>(),
+					provide: FilesStorageProducer,
+					useValue: createMock<FilesStorageProducer>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(FilesStorageClientAdapterService);
-		client = module.get('FileStorageClient');
+		client = module.get(FilesStorageProducer);
 	});
 
 	afterEach(async () => {
@@ -47,22 +47,20 @@ describe('FilesStorageClientAdapterService', () => {
 
 	describe('copyFilesOfParent', () => {
 		it('Should call all steps.', async () => {
-			const jwt = 'jwt';
-			const schoolId = 'school123';
-			const sourceTask = taskFactory.buildWithId();
-			const targetTask = taskFactory.buildWithId();
+			const userId = 'user1234';
+			const school = schoolFactory.buildWithId();
+			const source = taskFactory.buildWithId({ school });
+			const target = taskFactory.buildWithId({ school });
 
-			const param = FileParamBuilder.build(jwt, schoolId, sourceTask);
-			const target = FileParamBuilder.build(jwt, schoolId, targetTask);
+			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
-			const spy = jest.spyOn(FilesStorageClientMapper, 'mapAxiosToCopyFilesDto').mockImplementation(() => []);
+			const spy = jest
+				.spyOn(FilesStorageClientMapper, 'mapCopyFileListResponseToCopyFilesDto')
+				.mockImplementation(() => []);
 
-			await service.copyFilesOfParent(param, target);
+			await service.copyFilesOfParent(param);
 
-			const expectedOptions = { headers: { Authorization: `Bearer ${jwt}` } };
-			const expectedParams = [schoolId, sourceTask.id, 'tasks', { target }, expectedOptions];
-
-			expect(client.filesStorageControllerCopy).toHaveBeenCalledWith(...expectedParams);
+			expect(client.copyFilesOfParent).toHaveBeenCalledWith(param);
 
 			expect(spy).toBeCalled();
 
@@ -70,103 +68,77 @@ describe('FilesStorageClientAdapterService', () => {
 		});
 
 		it('Should call error mapper if throw an error.', async () => {
-			const jwt = 'jwt';
-			const schoolId = 'school123';
-			const sourceTask = taskFactory.buildWithId();
-			const targetTask = taskFactory.buildWithId();
+			const userId = 'user1234';
+			const school = schoolFactory.buildWithId();
+			const source = taskFactory.buildWithId({ school });
+			const target = taskFactory.buildWithId({ school });
 
-			const param = FileParamBuilder.build(jwt, schoolId, sourceTask);
-			const target = FileParamBuilder.build(jwt, schoolId, targetTask);
+			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
-			const spy = jest
-				.spyOn(ErrorMapper, 'mapErrorToDomainError')
-				.mockImplementation(() => new InternalServerErrorException());
-			client.filesStorageControllerCopy.mockRejectedValue(new Error());
+			client.copyFilesOfParent.mockRejectedValue(new Error());
 
-			await expect(service.copyFilesOfParent(param, target)).rejects.toThrowError();
-			expect(spy).toBeCalled();
-
-			spy.mockRestore();
+			await expect(service.copyFilesOfParent(param)).rejects.toThrowError();
 		});
 	});
 
 	describe('listFilesOfParent', () => {
 		it('Should call all steps.', async () => {
-			const jwt = 'jwt';
 			const schoolId = 'school123';
 			const task = taskFactory.buildWithId();
 
-			const param = FileParamBuilder.build(jwt, schoolId, task);
+			const param = FileParamBuilder.build(schoolId, task);
 
-			const spy = jest.spyOn(FilesStorageClientMapper, 'mapAxiosToFilesDto').mockImplementation(() => []);
+			const spy = jest
+				.spyOn(FilesStorageClientMapper, 'mapfileRecordListResponseToDomainFilesDto')
+				.mockImplementation(() => []);
 
 			await service.listFilesOfParent(param);
 
-			const expectedOptions = { headers: { Authorization: `Bearer ${jwt}` } };
-			const expectedParams = [schoolId, task.id, 'tasks', undefined, undefined, expectedOptions];
-
-			expect(client.filesStorageControllerList).toHaveBeenCalledWith(...expectedParams);
+			expect(client.listFilesOfParent).toHaveBeenCalledWith(param);
 			expect(spy).toBeCalled();
 
 			spy.mockRestore();
 		});
 
 		it('Should call error mapper if throw an error.', async () => {
-			const jwt = 'jwt';
 			const schoolId = 'school123';
 			const task = taskFactory.buildWithId();
 
-			const param = FileParamBuilder.build(jwt, schoolId, task);
+			const param = FileParamBuilder.build(schoolId, task);
 
-			const spy = jest
-				.spyOn(ErrorMapper, 'mapErrorToDomainError')
-				.mockImplementation(() => new InternalServerErrorException());
-			client.filesStorageControllerList.mockRejectedValue(new Error());
+			client.listFilesOfParent.mockRejectedValue(new Error());
 
 			await expect(service.listFilesOfParent(param)).rejects.toThrowError();
-			expect(spy).toBeCalled();
-
-			spy.mockRestore();
 		});
 	});
 
 	describe('deleteFilesOfParent', () => {
 		it('Should call all steps.', async () => {
-			const jwt = 'jwt';
 			const schoolId = 'school123';
 			const task = taskFactory.buildWithId();
 
-			const param = FileParamBuilder.build(jwt, schoolId, task);
+			const param = FileParamBuilder.build(schoolId, task);
 
-			const spy = jest.spyOn(FilesStorageClientMapper, 'mapAxiosToFilesDto').mockImplementation(() => []);
+			const spy = jest
+				.spyOn(FilesStorageClientMapper, 'mapfileRecordListResponseToDomainFilesDto')
+				.mockImplementation(() => []);
 
 			await service.deleteFilesOfParent(param);
 
-			const expectedOptions = { headers: { Authorization: `Bearer ${jwt}` } };
-			const expectedParams = [schoolId, task.id, 'tasks', expectedOptions];
-
-			expect(client.filesStorageControllerDelete).toHaveBeenCalledWith(...expectedParams);
+			expect(client.deleteFilesOfParent).toHaveBeenCalledWith(param);
 			expect(spy).toBeCalled();
 
 			spy.mockRestore();
 		});
 
 		it('Should call error mapper if throw an error.', async () => {
-			const jwt = 'jwt';
 			const schoolId = 'school123';
 			const task = taskFactory.buildWithId();
 
-			const param = FileParamBuilder.build(jwt, schoolId, task);
-
-			const spy = jest
-				.spyOn(ErrorMapper, 'mapErrorToDomainError')
-				.mockImplementation(() => new InternalServerErrorException());
-			client.filesStorageControllerDelete.mockRejectedValue(new Error());
+			const param = FileParamBuilder.build(schoolId, task);
+			client.deleteFilesOfParent.mockRejectedValue(new Error());
 
 			await expect(service.deleteFilesOfParent(param)).rejects.toThrowError();
-			expect(spy).toBeCalled();
-
-			spy.mockRestore();
 		});
 	});
 });

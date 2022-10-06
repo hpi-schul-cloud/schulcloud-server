@@ -1,17 +1,10 @@
-import { AxiosResponse } from 'axios';
-import {
-	CopyFileListResponse,
-	CopyFileResponse,
-	FileRecordListResponse,
-	FileRecordResponse,
-} from '../filesStorageApi/v3';
+import { FileRecordParentType } from '@shared/domain';
+import { ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
 import { FilesStorageClientMapper } from './files-storage-client.mapper';
 
 describe('FilesStorageClientMapper', () => {
 	describe('fileDto mapper', () => {
-		const schoolId = 'school123';
-
-		const record: FileRecordResponse = {
+		const record = {
 			id: 'id123',
 			name: 'name',
 			parentId: 'parent123',
@@ -19,22 +12,14 @@ describe('FilesStorageClientMapper', () => {
 			size: 123,
 			type: 'png',
 			securityCheckStatus: 'pending',
-			parentType: 'tasks',
+			parentType: FileRecordParentType.Task,
 		};
 
-		const list: FileRecordListResponse = { data: [record], total: 1, skip: 0, limit: 100 };
-
-		const response: AxiosResponse<FileRecordListResponse> = {
-			data: list,
-			status: 200,
-			statusText: 'bla',
-			config: {},
-			headers: {},
-		};
+		const response: IFileDomainObjectProps[] = [record];
 
 		describe('mapAxiosToFilesDto', () => {
 			it('Should map to valid file Dtos.', () => {
-				const result = FilesStorageClientMapper.mapAxiosToFilesDto(response, schoolId);
+				const result = FilesStorageClientMapper.mapAxiosToFilesDto(response);
 
 				expect(result).toEqual(
 					expect.objectContaining([
@@ -43,7 +28,6 @@ describe('FilesStorageClientMapper', () => {
 							name: record.name,
 							parentId: record.parentId,
 							parentType: record.parentType,
-							schoolId,
 						},
 					])
 				);
@@ -52,7 +36,7 @@ describe('FilesStorageClientMapper', () => {
 
 		describe('mapfileRecordListResponseToDomainFilesDto', () => {
 			it('Should map to valid file Dtos.', () => {
-				const result = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(list, schoolId);
+				const result = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
 				expect(result).toEqual(
 					expect.objectContaining([
@@ -61,7 +45,6 @@ describe('FilesStorageClientMapper', () => {
 							name: record.name,
 							parentId: record.parentId,
 							parentType: record.parentType,
-							schoolId,
 						},
 					])
 				);
@@ -70,7 +53,7 @@ describe('FilesStorageClientMapper', () => {
 
 		describe('mapFileRecordResponseToFileDto', () => {
 			it('Should map to valid file Dto.', () => {
-				const result = FilesStorageClientMapper.mapFileRecordResponseToFileDto(record, schoolId);
+				const result = FilesStorageClientMapper.mapFileRecordResponseToFileDto(record);
 
 				expect(result).toEqual(
 					expect.objectContaining({
@@ -78,7 +61,6 @@ describe('FilesStorageClientMapper', () => {
 						name: record.name,
 						parentId: record.parentId,
 						parentType: record.parentType,
-						schoolId,
 					})
 				);
 			});
@@ -118,35 +100,13 @@ describe('FilesStorageClientMapper', () => {
 	});
 
 	describe('copyFileDto mapper', () => {
-		const copyFileResponse: CopyFileResponse = {
+		const copyFileResponse: ICopyFileDomainObjectProps = {
 			id: 'id123',
 			sourceId: 'sourceId123',
 			name: 'name',
 		};
 
-		const list: CopyFileListResponse = { data: [copyFileResponse], total: 1, skip: 0, limit: 100 };
-
-		const response: AxiosResponse<CopyFileListResponse> = {
-			data: list,
-			status: 200,
-			statusText: 'bla',
-			config: {},
-			headers: {},
-		};
-
-		describe('mapAxiosToCopyFilesDto', () => {
-			it('Should map to valid copy file Dtos.', () => {
-				const result = FilesStorageClientMapper.mapAxiosToCopyFilesDto(response);
-
-				expect(result).toEqual(
-					expect.objectContaining([
-						{
-							...copyFileResponse,
-						},
-					])
-				);
-			});
-		});
+		const list: ICopyFileDomainObjectProps[] = [copyFileResponse];
 
 		describe('mapCopyFileListResponseToCopyFilesDto', () => {
 			it('Should map to valid file Dtos.', () => {

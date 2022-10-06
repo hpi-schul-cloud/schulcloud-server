@@ -1,107 +1,53 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { ICopyFileDO, IFileDO } from '@shared/infra/rabbitmq';
 import { Logger } from '@src/core/logger';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { CopyFileDto, FileDto } from '../dto';
-import { AxiosJWTOptionBuilder, FilesStorageClientMapper, ErrorMapper } from '../mapper';
-import { CopyFileListResponse, FileApi, FileRecordListResponse } from '../filesStorageApi/v3';
-import { FileRequestInfo, FileRequestOptions } from '../interfaces';
+import { FileRequestInfo } from '../interfaces';
+import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
+import { FilesStorageClientMapper } from '../mapper';
+import { FilesStorageProducer } from './files-storage.producer';
 
 @Injectable()
 export class FilesStorageClientAdapterService {
-	constructor(private logger: Logger, @Inject('FileStorageClient') private readonly fileStorageClient: FileApi) {
+	constructor(private logger: Logger, private readonly fileStorageMQProducer: FilesStorageProducer) {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
 	}
 
-	async copyFilesOfParent(param: FileRequestInfo, target: FileRequestInfo): Promise<CopyFileDto[]> {
-		const options = AxiosJWTOptionBuilder.build(param);
-		const response = await this.copy(param, target, options);
-
-		const fileInfos = FilesStorageClientMapper.mapAxiosToCopyFilesDto(response);
+	async copyFilesOfParent(param: CopyFilesRequestInfo): Promise<CopyFileDto[]> {
+		const response = await this.copy(param);
+		const fileInfos = FilesStorageClientMapper.mapCopyFileListResponseToCopyFilesDto(response);
 
 		return fileInfos;
 	}
 
 	async listFilesOfParent(param: FileRequestInfo): Promise<FileDto[]> {
-		const options = AxiosJWTOptionBuilder.build(param);
-		const response = await this.list(param, options);
-		const fileInfos = FilesStorageClientMapper.mapAxiosToFilesDto(response, param.schoolId);
+		const response = await this.list(param);
+
+		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
 		return fileInfos;
 	}
 
 	async deleteFilesOfParent(param: FileRequestInfo): Promise<FileDto[]> {
-		const options = AxiosJWTOptionBuilder.build(param);
-		const response = await this.delete(param, options);
-		const fileInfos = FilesStorageClientMapper.mapAxiosToFilesDto(response, param.schoolId);
+		const response = await this.delete(param);
+
+		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
 		return fileInfos;
 	}
 
-	private async copy(
-		param: FileRequestInfo,
-		target: FileRequestInfo,
-		options: AxiosRequestConfig<FileRequestOptions>
-	): Promise<AxiosResponse<CopyFileListResponse>> {
-		try {
-			const response = await this.fileStorageClient.filesStorageControllerCopy(
-				param.schoolId,
-				param.parentId,
-				param.parentType,
-				{
-					target,
-				},
-				options
-			);
-
-			return response;
-		} catch (err) {
-			const domainError = ErrorMapper.mapErrorToDomainError(err);
-
-			throw domainError;
-		}
+	private async copy(param: CopyFilesRequestInfo): Promise<ICopyFileDO[]> {
+		const response = await this.fileStorageMQProducer.copyFilesOfParent(param);
+		return response;
 	}
 
-	private async list(
-		param: FileRequestInfo,
-		options: AxiosRequestConfig<FileRequestOptions>
-	): Promise<AxiosResponse<FileRecordListResponse>> {
-		try {
-			const skip = undefined;
-			const limit = undefined;
-			const response = await this.fileStorageClient.filesStorageControllerList(
-				param.schoolId,
-				param.parentId,
-				param.parentType,
-				skip,
-				limit,
-				options
-			);
-
-			return response;
-		} catch (err) {
-			const domainError = ErrorMapper.mapErrorToDomainError(err);
-
-			throw domainError;
-		}
+	private async list(param: FileRequestInfo): Promise<IFileDO[]> {
+		const response = await this.fileStorageMQProducer.listFilesOfParent(param);
+		return response;
 	}
 
-	private async delete(
-		param: FileRequestInfo,
-		options: AxiosRequestConfig<FileRequestOptions>
-	): Promise<AxiosResponse<FileRecordListResponse>> {
-		try {
-			const response = await this.fileStorageClient.filesStorageControllerDelete(
-				param.schoolId,
-				param.parentId,
-				param.parentType,
-				options
-			);
-
-			return response;
-		} catch (err) {
-			const domainError = ErrorMapper.mapErrorToDomainError(err);
-
-			throw domainError;
-		}
+	private async delete(param: FileRequestInfo): Promise<IFileDO[]> {
+		const response = await this.fileStorageMQProducer.deleteFilesOfParent(param);
+		return response;
 	}
 }
