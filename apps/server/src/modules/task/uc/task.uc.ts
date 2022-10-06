@@ -211,7 +211,7 @@ export class TaskUC {
 		return oneWeekAgo;
 	}
 
-	async delete(userId: EntityId, taskId: EntityId, jwt: string) {
+	async delete(userId: EntityId, taskId: EntityId) {
 		const [user, task] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.taskRepo.findById(taskId),
@@ -219,7 +219,7 @@ export class TaskUC {
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
 
-		const params = FileParamBuilder.build(jwt, task.school.id, task);
+		const params = FileParamBuilder.build(task.school.id, task);
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
 
 		await this.taskRepo.delete(task);

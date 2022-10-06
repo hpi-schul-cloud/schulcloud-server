@@ -99,14 +99,14 @@ describe('file copy append service', () => {
 						originalEntity: originalLesson,
 						copyEntity: copyLesson,
 					};
-					const jwt = 'veryveryverylongstringthatissignedandstuff';
-					return { originalCourse, user, copyStatus, copyLesson, jwt };
+
+					return { originalCourse, user, copyStatus, copyLesson };
 				};
 
 				it('should not change status', async () => {
-					const { originalCourse, copyStatus, user, jwt } = setup();
+					const { originalCourse, copyStatus, user } = setup();
 
-					const updatedCopyStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					const updatedCopyStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id);
 					expect(updatedCopyStatus).toEqual(copyStatus);
 				});
 
@@ -147,7 +147,6 @@ describe('file copy append service', () => {
 						originalEntity: originalLesson,
 						copyEntity: copyLesson,
 					};
-					const jwt = 'veryveryverylongstringthatissignedandstuff';
 
 					return {
 						user,
@@ -156,7 +155,7 @@ describe('file copy append service', () => {
 						destinationCourse,
 						originalLesson,
 						copyLesson,
-						jwt,
+						userId: user.id,
 					};
 				};
 
@@ -178,7 +177,7 @@ describe('file copy append service', () => {
 						},
 					};
 
-					const { originalCourse, copyStatus, user, jwt, copyLesson, originalLesson } = setup([
+					const { originalCourse, copyStatus, user, copyLesson, originalLesson, userId } = setup([
 						textContent,
 						geoGebraContent,
 					]);
@@ -191,13 +190,13 @@ describe('file copy append service', () => {
 
 					copyFilesService.copyFilesOfEntity.mockResolvedValue({ entity: copyLesson, response: [] });
 
-					await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					await copyService.copyFiles(copyStatus, originalCourse.id, user.id);
 
 					const updatedCopyLesson = { ...copyLesson };
 					const content = updatedCopyLesson.contents[1].content as unknown as IComponentTextProperties;
 					content.text = '<figure class="image"><img src="/files/file?file=fnew123&amp;name=file.jpg" alt /></figure>';
 
-					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(originalLesson, updatedCopyLesson, jwt);
+					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(originalLesson, updatedCopyLesson, userId);
 				});
 
 				it('should leave embedded file urls untouched, if files were not copied', async () => {
@@ -209,14 +208,14 @@ describe('file copy append service', () => {
 						content: { text: '' },
 					};
 
-					const { originalCourse, copyStatus, user, jwt, copyLesson, originalLesson } = setup([textContent]);
+					const { originalCourse, copyStatus, user, copyLesson, originalLesson, userId } = setup([textContent]);
 
 					fileLegacyService.copyFile.mockResolvedValue({ oldFileId: originalFile.id });
-					const status = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					const status = await copyService.copyFiles(copyStatus, originalCourse.id, user.id);
 
 					copyFilesService.copyFilesOfEntity.mockResolvedValue({ entity: copyLesson, response: [] });
 
-					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(originalLesson, copyLesson, jwt);
+					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(originalLesson, copyLesson, userId);
 					expect(status).toEqual(copyStatus);
 				});
 
@@ -229,10 +228,10 @@ describe('file copy append service', () => {
 						content: { text: '' },
 					};
 
-					const { originalCourse, copyStatus, user, jwt, copyLesson } = setup([textContent]);
+					const { originalCourse, copyStatus, user, copyLesson } = setup([textContent]);
 					const reponse1 = new CopyFileDto({ id: 'id123', sourceId: originalFile.id, name: originalFile.name });
 					copyFilesService.copyFilesOfEntity.mockResolvedValue({ entity: copyLesson, response: [reponse1] });
-					const status = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					const status = await copyService.copyFiles(copyStatus, originalCourse.id, user.id);
 
 					expect(status.status).toEqual('success');
 				});
@@ -263,14 +262,14 @@ describe('file copy append service', () => {
 						originalEntity: originalTask,
 						copyEntity: copiedTask,
 					};
-					const jwt = 'veryveryverylongstringthatissignedandstuff';
-					return { originalTask, originalCourse, copyStatus, user, jwt, originalFile };
+
+					return { originalTask, originalCourse, copyStatus, user, originalFile, userId: user.id };
 				};
 
 				it('should use file legacy service', async () => {
-					const { originalCourse, copyStatus, user, jwt, originalFile } = setup();
+					const { originalCourse, copyStatus, user, originalFile } = setup();
 
-					await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					await copyService.copyFiles(copyStatus, originalCourse.id, user.id);
 					expect(fileLegacyService.copyFile).toHaveBeenCalledWith({
 						fileId: originalFile.id,
 						targetCourseId: originalCourse.id,
@@ -279,7 +278,7 @@ describe('file copy append service', () => {
 				});
 
 				it('should copy embedded files and update the url with the new id', async () => {
-					const { originalCourse, copyStatus, user, jwt, originalFile } = setup();
+					const { originalCourse, copyStatus, user, originalFile, userId } = setup();
 					const newFileId = 'new123';
 
 					fileLegacyService.copyFile.mockResolvedValue({
@@ -299,7 +298,7 @@ describe('file copy append service', () => {
 						],
 					});
 
-					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id);
 					const fileGroupStatus = getSubStatus(updatedStatus, CopyElementType.FILE_GROUP);
 					const file = getSubStatus(fileGroupStatus, CopyElementType.FILE);
 
@@ -310,7 +309,7 @@ describe('file copy append service', () => {
 					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(
 						copyStatus.originalEntity,
 						updatedCopyTask,
-						jwt
+						userId
 					);
 
 					expect(updatedStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
@@ -319,7 +318,7 @@ describe('file copy append service', () => {
 				});
 
 				it('should try to copy embeddedFiles and not update on failure', async () => {
-					const { originalCourse, copyStatus, user, jwt, originalFile } = setup();
+					const { originalCourse, copyStatus, user, originalFile, userId } = setup();
 
 					fileLegacyService.copyFile.mockResolvedValue({
 						oldFileId: originalFile.id,
@@ -330,14 +329,14 @@ describe('file copy append service', () => {
 						response: [],
 					});
 
-					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id);
 					const fileGroupStatus = getSubStatus(updatedStatus, CopyElementType.FILE_GROUP);
 					const file = getSubStatus(fileGroupStatus, CopyElementType.FILE);
 
 					expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalledWith(
 						copyStatus.originalEntity,
 						updatedStatus.copyEntity,
-						jwt
+						userId
 					);
 
 					expect(updatedStatus?.status).toEqual(CopyStatusEnum.FAIL);

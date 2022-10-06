@@ -107,7 +107,6 @@ describe('lesson copy uc', () => {
 			const lessonCopyName = 'Copy';
 			copyHelperService.deriveCopyName.mockReturnValue(lessonCopyName);
 
-			const jwt = 'some-fake-jwt';
 			fileCopyAppendService.copyFiles.mockResolvedValue(status);
 
 			return {
@@ -118,45 +117,45 @@ describe('lesson copy uc', () => {
 				status,
 				lessonCopyName,
 				allLessons,
-				jwt,
+				userId: user.id,
 			};
 		};
 
 		it('should throw if copy feature is deactivated', async () => {
 			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
-			const { course, user, lesson, jwt } = setup();
-			await expect(uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt })).rejects.toThrowError(
+			const { course, user, lesson, userId } = setup();
+			await expect(uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId })).rejects.toThrowError(
 				InternalServerErrorException
 			);
 		});
 
 		it('should fetch correct user', async () => {
-			const { course, user, lesson, jwt } = setup();
-			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+			const { course, user, lesson, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(authorisation.getUserWithPermissions).toBeCalledWith(user.id);
 		});
 
 		it('should fetch correct lesson', async () => {
-			const { course, user, lesson, jwt } = setup();
-			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+			const { course, user, lesson, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(lessonRepo.findById).toBeCalledWith(lesson.id);
 		});
 
 		it('should fetch destination course', async () => {
-			const { course, user, lesson, jwt } = setup();
-			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+			const { course, user, lesson, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(courseRepo.findById).toBeCalledWith(course.id);
 		});
 
 		it('should pass without destination course', async () => {
-			const { user, lesson, jwt } = setup();
-			await uc.copyLesson(user.id, lesson.id, { jwt });
+			const { user, lesson, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { userId });
 			expect(courseRepo.findById).not.toHaveBeenCalled();
 		});
 
 		it('should check authorisation for lesson', async () => {
-			const { course, user, lesson, jwt } = setup();
-			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+			const { course, user, lesson, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(authorisation.hasPermission).toBeCalledWith(user, lesson, {
 				action: Actions.read,
 				requiredPermissions: [Permission.TOPIC_CREATE],
@@ -164,8 +163,8 @@ describe('lesson copy uc', () => {
 		});
 
 		it('should check authorisation for destination course', async () => {
-			const { course, user, lesson, jwt } = setup();
-			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+			const { course, user, lesson, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(authorisation.hasPermission).toBeCalledWith(user, course, {
 				action: Actions.write,
 				requiredPermissions: [],
@@ -173,8 +172,8 @@ describe('lesson copy uc', () => {
 		});
 
 		it('should pass authorisation check without destination course', async () => {
-			const { course, user, lesson, jwt } = setup();
-			await uc.copyLesson(user.id, lesson.id, { jwt });
+			const { course, user, lesson, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { userId });
 			expect(authorisation.hasPermission).not.toBeCalledWith(user, course, {
 				action: Actions.write,
 				requiredPermissions: [],
@@ -182,8 +181,8 @@ describe('lesson copy uc', () => {
 		});
 
 		it('should call copy service', async () => {
-			const { course, user, lesson, lessonCopyName, jwt } = setup();
-			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+			const { course, user, lesson, lessonCopyName, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(lessonCopyService.copyLesson).toBeCalledWith({
 				originalLesson: lesson,
 				destinationCourse: course,
@@ -193,33 +192,33 @@ describe('lesson copy uc', () => {
 		});
 
 		it('should persist copy', async () => {
-			const { course, user, lesson, copy, jwt } = setup();
-			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+			const { course, user, lesson, copy, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(lessonRepo.save).toBeCalledWith(copy);
 		});
 
 		it('should return status', async () => {
-			const { course, user, lesson, status, jwt } = setup();
-			const result = await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+			const { course, user, lesson, status, userId } = setup();
+			const result = await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(result).toEqual(status);
 		});
 
 		it('should use copyHelperService', async () => {
-			const { course, user, lesson, allLessons, jwt } = setup();
-			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+			const { course, user, lesson, allLessons, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			const existingNames = allLessons.map((l) => l.name);
 			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(lesson.name, existingNames);
 		});
 
 		it('should use lessonCopyService ', async () => {
-			const { course, user, lesson, jwt } = setup();
-			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+			const { course, user, lesson, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(lessonCopyService.updateCopiedEmbeddedTasks).toHaveBeenCalled();
 		});
 
 		it('should use findAllByCourseIds to determine existing lesson names', async () => {
-			const { course, user, lesson, jwt } = setup();
-			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+			const { course, user, lesson, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(lessonRepo.findAllByCourseIds).toHaveBeenCalledWith([course.id]);
 		});
 
@@ -231,16 +230,15 @@ describe('lesson copy uc', () => {
 				userRepo.findById.mockResolvedValue(user);
 				lessonRepo.findById.mockResolvedValue(lesson);
 				authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== lesson);
-				const jwt = 'some-fake-jwt';
 
-				return { user, course, lesson, jwt };
+				return { user, course, lesson };
 			};
 
 			it('should throw NotFoundException', async () => {
-				const { course, user, lesson, jwt } = setupWithLessonForbidden();
+				const { course, user, lesson } = setupWithLessonForbidden();
 
 				try {
-					await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+					await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId: 'user123' });
 					throw new Error('should have failed');
 				} catch (err) {
 					expect(err).toBeInstanceOf(ForbiddenException);
@@ -257,16 +255,15 @@ describe('lesson copy uc', () => {
 				lessonRepo.findById.mockResolvedValue(lesson);
 				courseRepo.findById.mockResolvedValue(course);
 				authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== course);
-				const jwt = 'some-fake-jwt';
 
-				return { user, course, lesson, jwt };
+				return { user, course, lesson };
 			};
 
 			it('should throw Forbidden Exception', async () => {
-				const { course, user, lesson, jwt } = setupWithCourseForbidden();
+				const { course, user, lesson } = setupWithCourseForbidden();
 
 				try {
-					await uc.copyLesson(user.id, lesson.id, { courseId: course.id, jwt });
+					await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId: 'user123' });
 					throw new Error('should have failed');
 				} catch (err) {
 					expect(err).toBeInstanceOf(ForbiddenException);
