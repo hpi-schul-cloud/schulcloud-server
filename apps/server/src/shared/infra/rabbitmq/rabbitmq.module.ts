@@ -1,6 +1,6 @@
 import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Global, Module, OnApplicationShutdown } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
 /**
  * https://www.npmjs.com/package/@golevelup/nestjs-rabbitmq#usage
