@@ -26,7 +26,6 @@ export class LtiTool extends BaseEntityWithTimestamps {
 		this.name = props.name;
 		this.oAuthClientId = props.oAuthClientId;
 		this.secret = props.secret;
-		this.oAuthClientId = props.oAuthClientId;
 		this.isLocal = props.isLocal;
 	}
 }
