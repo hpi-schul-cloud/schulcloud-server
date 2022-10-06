@@ -60,8 +60,6 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 		};
 	}
 
-	// close db connection and stop mongo server
-	// NOTE: we have to call close() on this module to make nest call this callback
 	async onModuleDestroy(): Promise<void> {
 		await this.orm.close();
 		await this.mongod.stop();

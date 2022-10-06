@@ -1,6 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -25,7 +24,6 @@ import { ServerTestModule } from '@src/server.module';
 
 describe('Copy timeout (e2e)', () => {
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let configBefore: IConfig;
@@ -47,14 +45,12 @@ describe('Copy timeout (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
-		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
 	});
 
 	afterEach(async () => {
 		await cleanupCollections(em);
 		await app.close();
-		await orm.close();
 		Configuration.reset(configBefore);
 	});
 
