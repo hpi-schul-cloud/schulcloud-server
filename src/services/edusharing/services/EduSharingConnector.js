@@ -84,7 +84,7 @@ class EduSharingConnector {
 				throw Error('authentication error with edu sharing');
 			}
 
-			return result.headers['SET-COOKIE'][0];
+			return result.headers['set-cookie'][0];
 		} catch (err) {
 			logger.error(`Edu-Sharing failed to get session cookie: ${err.statusCode} ${err.message}`);
 			throw new GeneralError('Edu-Sharing Request failed');
