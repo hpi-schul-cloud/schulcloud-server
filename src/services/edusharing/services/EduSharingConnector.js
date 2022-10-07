@@ -172,13 +172,14 @@ class EduSharingConnector {
 			throw new NotFound('Invalid node id');
 		}
 
-		const criterias = [];
-		criterias.push({
+		const criteria = [];
+		criteria.push({ property: 'ngsearchword', values: [''] });
+		criteria.push({
 			property: 'ccm:replicationsourceuuid',
 			values: [uuid],
 		});
 
-		const response = await this.searchEduSharing(criterias, 0, 1);
+		const response = await this.searchEduSharing(criteria, 0, 1);
 
 		if (!response.data || response.data.length !== 1) {
 			throw new NotFound('Item not found');
@@ -254,6 +255,7 @@ class EduSharingConnector {
 		} else if (collection) {
 			sortProperties = 'cclom:title';
 			sortAscending = 'true';
+			criteria.push({ property: 'ngsearchword', values: [''] });
 			criteria.push({
 				property: 'ccm:hpi_lom_relation',
 				values: [`{'kind': 'ispartof', 'resource': {'identifier': ['${collection}']}}`],
