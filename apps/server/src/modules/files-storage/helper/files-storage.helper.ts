@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { EntityId, FileRecord } from '@shared/domain';
-import { FileRecordParams } from '../controller/dto';
+import { EntityId, FileRecord, ScanStatus } from '@shared/domain';
+import { FileRecordParams, ScanResultParams } from '../controller/dto';
 import { ErrorStatus } from '../error';
 import { ErrorType } from '../files-storage.const';
 
@@ -61,5 +61,11 @@ export class FilesStorageHelper {
 		};
 
 		return fileRecordParams;
+	}
+
+	public getStatusFromScanResult(scanResultDto: ScanResultParams): ScanStatus {
+		const status = scanResultDto.virus_detected ? ScanStatus.BLOCKED : ScanStatus.VERIFIED;
+
+		return status;
 	}
 }

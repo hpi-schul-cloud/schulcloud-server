@@ -123,7 +123,7 @@ describe('FilesStorageHelper', () => {
 		});
 	});
 
-	describe('GIVEN checkDuplicatedNames is called', () => {
+	describe('checkDuplicatedNames is called', () => {
 		describe('WHEN all fileRecords has different names', () => {
 			const setup = () => {
 				const fileRecords = setupFileRecords();
@@ -135,7 +135,7 @@ describe('FilesStorageHelper', () => {
 				};
 			};
 
-			it('THEN it should do nothing', () => {
+			it('should do nothing', () => {
 				const { fileRecords, newFileName } = setup();
 
 				const result = fileStorageHelper.checkDuplicatedNames(fileRecords, newFileName);
@@ -156,7 +156,7 @@ describe('FilesStorageHelper', () => {
 				};
 			};
 
-			it('THEN it should throw with specific error', () => {
+			it('should throw with specific error', () => {
 				const { fileRecords, newFileName } = setup();
 
 				expect(() => fileStorageHelper.checkDuplicatedNames(fileRecords, newFileName)).toThrowError(
@@ -166,11 +166,15 @@ describe('FilesStorageHelper', () => {
 		});
 	});
 
-	describe('GIVEN modifiedFileNameInScope is called', () => {
+	describe('modifiedFileNameInScope is called', () => {
 		// TODO: add tests
 	});
 
-	describe('GIVEN mapFileRecordToFileRecordParams is called', () => {
+	describe('mapFileRecordToFileRecordParams is called', () => {
+		// TODO: add tests
+	});
+
+	describe('getStatusFromScanResult is called', () => {
 		// TODO: add tests
 	});
 });
