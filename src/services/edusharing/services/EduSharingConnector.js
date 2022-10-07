@@ -266,7 +266,7 @@ class EduSharingConnector {
 		return response;
 	}
 
-	async searchEduSharing(criterias, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
+	async searchEduSharing(criteria, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
 		try {
 			const url = `${ES_ENDPOINTS.SEARCH}?${[
 				`contentType=FILES`,
@@ -277,7 +277,7 @@ class EduSharingConnector {
 				`propertyFilter=-all-`,
 			].join('&')}`;
 
-			const facettes = ['cclom:general_keyword'];
+			const facets = ['cclom:general_keyword'];
 
 			const options = {
 				method: 'POST',
@@ -288,8 +288,8 @@ class EduSharingConnector {
 					...basicAuthorizationHeaders,
 				},
 				body: JSON.stringify({
-					criterias,
-					facettes,
+					criteria,
+					facets,
 				}),
 				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 			};
