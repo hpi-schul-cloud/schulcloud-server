@@ -1,48 +1,77 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { OauthClientResponse } from '@src/modules/oauth-provider/controller/dto/response/oauth-client.response';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 import { OidcContextResponse } from '@src/modules/oauth-provider/controller/dto/response/oidc-context.response';
+import { OauthClientResponse } from '@src/modules/oauth-provider/controller/dto/response/oauth-client.response';
 
 export class ConsentResponse {
 	constructor(consentResponse: ConsentResponse) {
 		Object.assign(this, consentResponse);
 	}
 
-	@ApiProperty()
+	@IsOptional()
+	@ApiProperty({
+		description:
+			'ACR represents the Authentication AuthorizationContext Class Reference value for this authentication session',
+	})
 	acr?: string;
 
-	@ApiProperty()
+	@IsArray()
+	@IsOptional()
+	@IsString({ each: true })
+	@ApiProperty({ required: false, nullable: false })
 	amr?: string[];
 
-	@ApiProperty()
+	@ApiProperty({
+		description:
+			'Is the id/authorization challenge of the consent authorization request. It is used to identify the session.',
+	})
 	challenge: string | undefined;
 
+	@IsOptional()
 	@ApiProperty()
 	client?: OauthClientResponse;
 
+	@IsOptional()
 	@ApiProperty()
 	context?: object;
 
-	@ApiProperty()
+	@IsOptional()
+	@ApiProperty({ description: 'LoginChallenge is the login challenge this consent challenge belongs to.' })
 	login_challenge?: string;
 
-	@ApiProperty()
+	@IsOptional()
+	@ApiProperty({ description: 'LoginSessionID is the login session ID.' })
 	login_session_id?: string;
 
+	@IsOptional()
 	@ApiProperty()
 	oidc_context?: OidcContextResponse;
 
-	@ApiProperty()
+	@IsOptional()
+	@ApiProperty({
+		description: 'RequestUrl is the original OAuth 2.0 Authorization URL requested by the OAuth 2.0 client.',
+	})
 	request_url?: string;
 
-	@ApiProperty()
+	@IsArray()
+	@IsOptional()
+	@IsString({ each: true })
+	@ApiProperty({ required: false, nullable: false })
 	requested_access_token_audience?: string[];
 
-	@ApiProperty()
+	@IsArray()
+	@IsOptional()
+	@IsString({ each: true })
+	@ApiProperty({ description: 'The request scopes of the login request.', required: false, nullable: false })
 	requested_scope?: string[];
 
-	@ApiProperty()
+	@IsOptional()
+	@ApiProperty({
+		description: 'Skip, if true, implies that the client has requested the same scopes from the same user previously.',
+	})
 	skip?: boolean;
 
-	@ApiProperty()
+	@IsOptional()
+	@ApiProperty({ description: 'Subject is the user id of the end-user that is authenticated.' })
 	subject?: string;
 }

@@ -10,6 +10,7 @@ import {
 	AcceptLoginRequestBody,
 	IntrospectResponse,
 	ProviderConsentResponse,
+	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 	RejectRequestBody,
@@ -18,7 +19,7 @@ import { OauthProviderService } from '../oauth-provider.service';
 import { ProviderConsentSessionResponse } from '../dto/response/consent-session.response';
 
 @Injectable()
-export class HydraService extends OauthProviderService {
+export class HydraAdapter extends OauthProviderService {
 	private readonly hydraUri: string;
 
 	constructor(private readonly httpService: HttpService) {
@@ -30,6 +31,10 @@ export class HydraService extends OauthProviderService {
 		return this.put<ProviderRedirectResponse>('consent', 'accept', challenge, body);
 	}
 
+	acceptLoginRequest(challenge: string, body: AcceptLoginRequestBody): Promise<ProviderRedirectResponse> {
+		return this.put<ProviderRedirectResponse>('login', 'accept', challenge, body);
+	}
+
 	async acceptLogoutRequest(challenge: string): Promise<ProviderRedirectResponse> {
 		const url = `${this.hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=${challenge}`;
 		const response: Promise<ProviderRedirectResponse> = this.request<ProviderRedirectResponse>('PUT', url);
@@ -39,6 +44,10 @@ export class HydraService extends OauthProviderService {
 	getConsentRequest(challenge: string): Promise<ProviderConsentResponse> {
 		const response: Promise<ProviderConsentResponse> = this.get<ProviderConsentResponse>('consent', challenge);
 		return response;
+	}
+
+	getLoginRequest(challenge: string): Promise<ProviderLoginResponse> {
+		return this.get<ProviderLoginResponse>('login', challenge);
 	}
 
 	introspectOAuth2Token(token: string, scope: string): Promise<IntrospectResponse> {
@@ -66,6 +75,10 @@ export class HydraService extends OauthProviderService {
 
 	rejectConsentRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
 		return this.put<ProviderRedirectResponse>('consent', 'reject', challenge, body);
+	}
+
+	rejectLoginRequest(challenge: string, body: RejectRequestBody): Promise<ProviderRedirectResponse> {
+		return this.put<ProviderRedirectResponse>('login', 'reject', challenge, body);
 	}
 
 	revokeConsentSession(user: string, client: string): Promise<void> {
