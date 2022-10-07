@@ -231,38 +231,38 @@ class EduSharingConnector {
 			...instancePermissions.publicGroups,
 		];
 
-		const criterias = [];
+		const criteria = [];
 		if (groups.length) {
-			criterias.push({
+			criteria.push({
 				property: 'ccm:ph_invited',
 				values: groups,
 			});
 		}
 
 		if (Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED') && !collection) {
-			criterias.push({
+			criteria.push({
 				property: 'ccm:hpi_searchable',
 				values: ['1'],
 			});
 		}
 
 		if (Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') === false) {
-			criterias.push({
+			criteria.push({
 				property: 'ccm:hpi_lom_general_aggregationlevel',
 				values: ['1'],
 			});
 		} else if (collection) {
 			sortProperties = 'cclom:title';
 			sortAscending = 'true';
-			criterias.push({
+			criteria.push({
 				property: 'ccm:hpi_lom_relation',
 				values: [`{'kind': 'ispartof', 'resource': {'identifier': ['${collection}']}}`],
 			});
 		} else {
-			criterias.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
+			criteria.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
 		}
 
-		const response = await this.searchEduSharing(criterias, skipCount, maxItems, sortProperties, sortAscending);
+		const response = await this.searchEduSharing(criteria, skipCount, maxItems, sortProperties, sortAscending);
 		return response;
 	}
 
