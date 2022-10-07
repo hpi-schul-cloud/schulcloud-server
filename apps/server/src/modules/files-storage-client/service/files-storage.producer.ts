@@ -16,7 +16,7 @@ import { ErrorMapper } from '../mapper/error.mapper';
 
 @Injectable()
 export class FilesStorageProducer {
-	private timeout = 0;
+	private readonly timeout = 0;
 
 	constructor(
 		private readonly logger: Logger,

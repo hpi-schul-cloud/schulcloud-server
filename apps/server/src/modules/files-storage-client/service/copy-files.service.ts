@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IComponentProperties, Lesson, Task } from '@shared/domain';
 import { CopyFileDto } from '../dto';
+import { FileParamBuilder } from '../mapper';
 import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
@@ -15,7 +16,10 @@ export class CopyFilesService {
 		copyEntity: EntityWithEmbeddedFiles,
 		userId: EntityId
 	): Promise<{ entity: EntityWithEmbeddedFiles; response: CopyFileDto[] }> {
-		const copyFilesOfParentParams = CopyFilesOfParentParamBuilder.build(userId, originalEntity, copyEntity);
+		const source = FileParamBuilder.build(originalEntity.getSchoolId(), originalEntity);
+		const target = FileParamBuilder.build(copyEntity.getSchoolId(), copyEntity);
+
+		const copyFilesOfParentParams = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
 		const response = await this.filesStorageClientAdapterService.copyFilesOfParent(copyFilesOfParentParams);
 

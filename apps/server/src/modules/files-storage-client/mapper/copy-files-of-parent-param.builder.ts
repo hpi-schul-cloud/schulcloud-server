@@ -1,13 +1,13 @@
-import { EntityId, Lesson, Task } from '@shared/domain';
+import { EntityId } from '@shared/domain';
+import { IFileRequestInfo } from '../interfaces';
 import { ICopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
-import { FileParamBuilder } from './files-storage-param.builder';
 
 export class CopyFilesOfParentParamBuilder {
-	static build(userId: EntityId, source: Task | Lesson, target: Task | Lesson): ICopyFilesRequestInfo {
+	static build(userId: EntityId, source: IFileRequestInfo, target: IFileRequestInfo): ICopyFilesRequestInfo {
 		const fileRequestInfo = {
 			userId,
-			source: FileParamBuilder.build(source.getSchoolId(), source),
-			target: FileParamBuilder.build(target.getSchoolId(), target),
+			source,
+			target,
 		};
 
 		return fileRequestInfo;

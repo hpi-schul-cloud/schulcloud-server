@@ -50,8 +50,11 @@ describe('FilesStorageClientAdapterService', () => {
 		it('Should call all steps.', async () => {
 			const userId = new ObjectId().toHexString();
 			const school = schoolFactory.buildWithId();
-			const source = taskFactory.buildWithId({ school });
-			const target = taskFactory.buildWithId({ school });
+			const sourceEntity = taskFactory.buildWithId({ school });
+			const targetEntity = taskFactory.buildWithId({ school });
+
+			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity);
+			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity);
 
 			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
@@ -71,8 +74,11 @@ describe('FilesStorageClientAdapterService', () => {
 		it('Should call error mapper if throw an error.', async () => {
 			const userId = new ObjectId().toHexString();
 			const school = schoolFactory.buildWithId();
-			const source = taskFactory.buildWithId({ school });
-			const target = taskFactory.buildWithId({ school });
+			const sourceEntity = taskFactory.buildWithId({ school });
+			const targetEntity = taskFactory.buildWithId({ school });
+
+			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity);
+			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity);
 
 			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
 

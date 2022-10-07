@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { CopyFilesService } from './uc/copy-files.service';
-import { FilesStorageClientAdapterService } from './uc/files-storage-client.service';
-import { FilesStorageProducer } from './uc/files-storage.producer';
+import { CopyFilesService } from './service/copy-files.service';
+import { FilesStorageClientAdapterService } from './service/files-storage-client.service';
+import { FilesStorageProducer } from './service/files-storage.producer';
 
 @Module({
 	imports: [LoggerModule],
