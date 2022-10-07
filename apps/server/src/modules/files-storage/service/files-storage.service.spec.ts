@@ -7,6 +7,7 @@ import { FileRecordParentType, ScanStatus } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { request } from 'node:http';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { RenameFileParams, ScanResultParams } from '../controller/dto';
 import { FilesStorageHelper } from '../helper';
@@ -592,92 +593,127 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('GIVEN restoreFilesOfParent is called', () => {
-		let spy: jest.SpyInstance;
+	describe('restoreFilesOfParent is called', () => {
+		describe('WHEN valid files exists', () => {
+			let spy: jest.SpyInstance;
 
-		afterEach(() => {
-			spy.mockRestore();
-		});
-
-		const setup = () => {
-			const fileRecords = getFileRecords();
-			const requestParams = getRequestParams();
-
-			spy = jest.spyOn(service, 'restore');
-			fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValue([fileRecords, 3]);
-
-			return { requestParams, fileRecords };
-		};
-
-		describe('calls to fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete()', () => {
-			it('should call once', async () => {
-				const { requestParams } = setup();
-				await service.restoreFilesOfParent(requestParams);
-				expect(fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete).toHaveBeenCalledTimes(1);
+			afterEach(() => {
+				spy.mockRestore();
 			});
 
-			it('should call with correct params', async () => {
+			const setup = () => {
+				const fileRecords = getFileRecords();
+				const requestParams = getRequestParams();
+
+				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([
+					fileRecords,
+					fileRecords.length,
+				]);
+				spy = jest.spyOn(service, 'restore').mockResolvedValueOnce();
+
+				return { requestParams, fileRecords };
+			};
+
+			it('should call repo method findBySchoolIdAndParentIdAndMarkedForDelete with correct params', async () => {
 				const { requestParams } = setup();
+
 				await service.restoreFilesOfParent(requestParams);
+
 				expect(fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete).toHaveBeenCalledWith(
 					requestParams.schoolId,
 					requestParams.parentId
 				);
 			});
 
-			it('should throw error if entity not found', async () => {
+			it('should call service restore with correct params', async () => {
+				const { requestParams, fileRecords } = setup();
+
+				await service.restoreFilesOfParent(requestParams);
+
+				expect(spy).toHaveBeenCalledWith(fileRecords);
+			});
+
+			it('should return counted fileRecords', async () => {
+				const { requestParams, fileRecords } = setup();
+
+				const result = await service.restoreFilesOfParent(requestParams);
+
+				expect(result).toEqual([fileRecords, 3]);
+			});
+		});
+
+		describe('WHEN no files exits', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const requestParams = getRequestParams();
+
+				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([[], 0]);
+				spy = jest.spyOn(service, 'restore').mockResolvedValueOnce();
+
+				return { requestParams };
+			};
+
+			it('should skip service restore call', async () => {
 				const { requestParams } = setup();
-				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockRejectedValue(new Error());
-				await expect(service.restoreFilesOfParent(requestParams)).rejects.toThrow();
-			});
-		});
-
-		describe('calls to fileStorageService.restore', () => {
-			const { requestParams, fileRecords } = setup();
-
-			it('should call with correct params', async () => {
-				await service.restoreFilesOfParent(requestParams);
-
-				expect(service.restore).toHaveBeenCalledWith(fileRecords);
-			});
-
-			it('should have been called zero times if value is empty', async () => {
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([[], 0]);
 
 				await service.restoreFilesOfParent(requestParams);
 
-				expect(service.restore).toHaveBeenCalledTimes(0);
+				expect(spy).toHaveBeenCalledTimes(0);
 			});
-
-			describe('calls to fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete()', () => {
-				it('should call once with correct params', async () => {
-					await service.restoreFilesOfParent(requestParams);
-					expect(fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete).toHaveBeenNthCalledWith(
-						1,
-						requestParams.schoolId,
-						requestParams.parentId
-					);
-				});
-
-				it('should throw error if entity not found', async () => {
-					fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockRejectedValue(new Error());
-					await expect(service.restoreFilesOfParent(requestParams)).rejects.toThrow();
-				});
-			});
-			spy.mockRestore();
 		});
 
-		it('should return file records and count', async () => {
-			const { fileRecords, requestParams } = setup();
-			const responseData = await service.restoreFilesOfParent(requestParams);
-			expect(responseData[0]).toEqual(
-				expect.arrayContaining([
-					expect.objectContaining({ ...fileRecords[0] }),
-					expect.objectContaining({ ...fileRecords[1] }),
-					expect.objectContaining({ ...fileRecords[2] }),
-				])
-			);
-			expect(responseData[1]).toEqual(fileRecords.length);
+		describe('WHEN repository throw an error', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const requestParams = getRequestParams();
+				const error = new Error('bla');
+
+				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockRejectedValueOnce(error);
+				spy = jest.spyOn(service, 'restore').mockResolvedValueOnce();
+
+				return { requestParams, error };
+			};
+
+			it('should skip service restore call', async () => {
+				const { requestParams, error } = setup();
+
+				await expect(service.restoreFilesOfParent(requestParams)).rejects.toThrowError(error);
+			});
+		});
+
+		describe('WHEN repository throw an error', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const fileRecords = getFileRecords();
+				const requestParams = getRequestParams();
+				const error = new Error('bla');
+
+				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([fileRecords, 3]);
+				spy = jest.spyOn(service, 'restore').mockRejectedValueOnce(error);
+
+				return { requestParams, error };
+			};
+
+			it('should skip service restore call', async () => {
+				const { requestParams, error } = setup();
+
+				await expect(service.restoreFilesOfParent(requestParams)).rejects.toThrowError(error);
+			});
 		});
 	});
 });
