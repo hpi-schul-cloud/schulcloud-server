@@ -17,7 +17,6 @@ describe('FilesStorageService', () => {
 	let service: FilesStorageService;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
-	// TODO: should we really mock the helper?
 	let filesStorageHelper: FilesStorageHelper;
 	let orm: MikroORM;
 
@@ -144,7 +143,7 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('when repository throw an error', () => {
+		describe('WHEN repository throws an error', () => {
 			const setup = () => {
 				const { params } = getFileRecordWithParams();
 
@@ -169,7 +168,6 @@ describe('FilesStorageService', () => {
 
 				return { params, fileRecords };
 			};
-
 			it('THEN it should call findBySchoolIdAndParentId with right parameters', async () => {
 				const { params } = setup();
 
@@ -187,7 +185,7 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('if repository throws an error', () => {
+		describe('WHEN repository throws an error', () => {
 			const setup = () => {
 				const { params } = getFileRecordsWithParams();
 
@@ -255,7 +253,7 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('WHEN repository is throw an error', () => {
+		describe('WHEN repository is throwing an error', () => {
 			const setup = () => {
 				const { fileRecord, params } = getFileRecordWithParams();
 				const data: RenameFileParams = { fileName: 'renamed' };
@@ -482,7 +480,7 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('restoreFilesOfParent()', () => {
+	describe('GIVEN restoreFilesOfParent is called', () => {
 		let spy: jest.SpyInstance;
 
 		afterEach(() => {
@@ -506,7 +504,7 @@ describe('FilesStorageService', () => {
 				expect(fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete).toHaveBeenCalledTimes(1);
 			});
 
-			it('should call with correctly params', async () => {
+			it('should call with correct params', async () => {
 				const { requestParams } = setup();
 				await service.restoreFilesOfParent(requestParams);
 				expect(fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete).toHaveBeenCalledWith(
@@ -523,28 +521,42 @@ describe('FilesStorageService', () => {
 		});
 
 		describe('calls to fileStorageService.restore', () => {
-			it('should call with correctly params', async () => {
-				const { requestParams, fileRecords } = setup();
+			const { requestParams, fileRecords } = setup();
 
+			it('should call with correct params', async () => {
 				await service.restoreFilesOfParent(requestParams);
 
-				expect(spy).toHaveBeenCalledWith(fileRecords);
+				expect(service.restore).toHaveBeenCalledWith(fileRecords);
 			});
 
-			it('should call with correctly params', async () => {
-				const { requestParams } = setup();
+			it('should have been called zero times if value is empty', async () => {
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([[], 0]);
 
 				await service.restoreFilesOfParent(requestParams);
 
-				expect(service.delete).toHaveBeenCalledTimes(0);
-
-				spy.mockRestore();
+				expect(service.restore).toHaveBeenCalledTimes(0);
 			});
+
+			describe('calls to fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete()', () => {
+				it('should call once with correct params', async () => {
+					await service.restoreFilesOfParent(requestParams);
+					expect(fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete).toHaveBeenNthCalledWith(
+						1,
+						requestParams.schoolId,
+						requestParams.parentId
+					);
+				});
+
+				it('should throw error if entity not found', async () => {
+					fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockRejectedValue(new Error());
+					await expect(service.restoreFilesOfParent(requestParams)).rejects.toThrow();
+				});
+			});
+			spy.mockRestore();
 		});
 
 		it('should return file records and count', async () => {
-			const { requestParams, fileRecords } = setup();
+			const { fileRecords, requestParams } = setup();
 			const responseData = await service.restoreFilesOfParent(requestParams);
 			expect(responseData[0]).toEqual(
 				expect.arrayContaining([
@@ -554,45 +566,6 @@ describe('FilesStorageService', () => {
 				])
 			);
 			expect(responseData[1]).toEqual(fileRecords.length);
-		});
-	});
-
-	describe('restoreOneFile()', () => {
-		const setup = () => {
-			const fileRecords = getFileRecords();
-			const requestParams = {
-				fileRecordId: new ObjectId().toHexString(),
-			};
-
-			fileRecordRepo.findOneByIdMarkedForDelete.mockResolvedValue(fileRecords[0]);
-
-			return { requestParams, fileRecords };
-		};
-
-		describe('calls to fileRecordRepo.findOneById()', () => {
-			it('when call once', async () => {
-				const { requestParams } = setup();
-				await service.restoreOneFile(requestParams);
-				expect(fileRecordRepo.findOneByIdMarkedForDelete).toHaveBeenCalledTimes(1);
-			});
-
-			it('should call with correctly params', async () => {
-				const { requestParams } = setup();
-				await service.restoreOneFile(requestParams);
-				expect(fileRecordRepo.findOneByIdMarkedForDelete).toHaveBeenCalledWith(requestParams.fileRecordId);
-			});
-
-			it('should throw error if entity not found', async () => {
-				const { requestParams } = setup();
-				fileRecordRepo.findOneByIdMarkedForDelete.mockRejectedValue(new Error());
-				await expect(service.restoreOneFile(requestParams)).rejects.toThrow();
-			});
-
-			it('should return file response with deletedSince', async () => {
-				const { requestParams } = setup();
-				const fileRecordRes = await service.restoreOneFile(requestParams);
-				expect(fileRecordRes).toEqual(expect.objectContaining({ deletedSince: undefined }));
-			});
 		});
 	});
 });
