@@ -17,7 +17,7 @@ const ES_METADATASET =
 const ES_ENDPOINTS = {
 	AUTH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/authentication/v1/validateSession`,
 	NODE: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/node/v1/nodes/-home-/`,
-	SEARCH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/search/v1/queries/-home-/${ES_METADATASET}/ngsearch/`,
+	SEARCH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/search/v1/queries/-home-/${ES_METADATASET}/ngsearch`,
 	RENDERER: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/rendering/v1/details/-home-/`,
 };
 
@@ -173,7 +173,6 @@ class EduSharingConnector {
 		}
 
 		const criterias = [];
-		criterias.push({ property: 'ngsearchword', values: ['*'] });
 		criterias.push({
 			property: 'ccm:replicationsourceuuid',
 			values: [uuid],
@@ -255,7 +254,6 @@ class EduSharingConnector {
 		} else if (collection) {
 			sortProperties = 'cclom:title';
 			sortAscending = 'true';
-			criterias.push({ property: 'ngsearchword', values: ['*'] });
 			criterias.push({
 				property: 'ccm:hpi_lom_relation',
 				values: [`{'kind': 'ispartof', 'resource': {'identifier': ['${collection}']}}`],
