@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 
-const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = require('../errors');
 const { authenticate } = require('@feathersjs/authentication');
 
 const { v4: uuidv4 } = require('uuid');
@@ -8,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
+const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = require('../errors');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
@@ -201,11 +201,15 @@ exports.hasPermissionNoHook = (context, userId, permissionName) => {
 
 exports.hasRoleNoHook = (context, userId, roleName, account = false) => {
 	const userService = context.app.service('/users/');
-	const accountService = context.app.service('/accounts/');
+	// const accountService = context.app.service('/accounts/');
+	const accountService = context.app.service('nest-account-service');
+
 	// What is the account flag for?
 	// if statement can be remove because it has no effect?!
 	if (account) {
-		return accountService.get(userId).then((_account) =>
+		// return accountService.get(userId).then((_account) =>
+		return accountService.findByUserId(userId).then((_account) =>
+			// eslint-disable-next-line promise/no-nesting
 			userService.find({ query: { _id: _account.userId || '', $populate: 'roles' } }).then((user) => {
 				user.data[0].roles = Array.from(user.data[0].roles);
 
