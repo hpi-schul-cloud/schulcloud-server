@@ -86,7 +86,7 @@ describe('OauthProviderLoginFlowService', () => {
 			const pseudonymDO: PseudonymDO = await service.getPseudonym(currentUser.userId, loginResponse);
 
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id, true);
-			expect(pseudonymsRepo.findByUserIdAndToolId).toHaveBeenCalledWith(ltiToolDoMock.id, currentUser.userId);
+			expect(pseudonymsRepo.findByUserIdAndToolId).toHaveBeenCalledWith(currentUser.userId, ltiToolDoMock.id);
 			expect(pseudonymDO).toEqual(pseudonym);
 		});
 
