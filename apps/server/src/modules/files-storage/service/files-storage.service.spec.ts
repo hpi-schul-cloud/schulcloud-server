@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecord, FileRecordParentType, FileSecurityCheck, ScanStatus } from '@shared/domain';
+import { FileRecordParentType, ScanStatus } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
@@ -17,7 +17,6 @@ describe('FilesStorageService', () => {
 	let service: FilesStorageService;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
-	// TODO: should we really mock the helper?
 	let filesStorageHelper: FilesStorageHelper;
 	let orm: MikroORM;
 
@@ -239,7 +238,7 @@ describe('FilesStorageService', () => {
 
 			// TODO: need valid copy
 			it('should call fileRecordRepo.save with right paramaters', async () => {
-				const { fileRecord, fileRecords, data } = setup();
+				const { fileRecord, data } = setup();
 
 				// const modifiedFileRecord = filesStorageHelper.modifiedFileNameInScope(fileRecord, fileRecords, data.fileName);
 				await service.patchFilename(fileRecord, data);
