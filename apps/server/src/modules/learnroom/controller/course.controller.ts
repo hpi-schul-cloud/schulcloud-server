@@ -1,9 +1,10 @@
-import { Controller, Get, Param, Query, Res, StreamableFile } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, Query, Res, StreamableFile } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { PaginationParams } from '@shared/controller/';
 import { ICurrentUser } from '@shared/domain';
 import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 import { CourseUc } from '../uc/course.uc';
 import { CourseMetadataListResponse } from './dto';
 import { CourseMapper } from '../mapper/course.mapper';
@@ -12,7 +13,7 @@ import { CourseMapper } from '../mapper/course.mapper';
 @Authenticate('jwt')
 @Controller('courses')
 export class CourseController {
-	constructor(private readonly courseUc: CourseUc) {}
+	constructor(private readonly courseUc: CourseUc, private readonly configService: ConfigService) {}
 
 	@Get()
 	async findForUser(
@@ -27,15 +28,16 @@ export class CourseController {
 		return result;
 	}
 
-	@Get('export/:courseId')
+	@Get(':courseId/export')
 	async exportCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('courseId') courseId: string,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
+		if (!this.configService.get<boolean>('FEATURE_COURSE_EXPORT_ENABLED')) throw new NotFoundException();
 		const result = await this.courseUc.exportCourse(courseId);
 		response.set({
-			'Content-Type': 'application/zip',
+			'Content-Type': 'application/imscc',
 			'Content-Disposition': 'attachment;',
 		});
 		return new StreamableFile(result);

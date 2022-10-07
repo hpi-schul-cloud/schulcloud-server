@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder } from '@shared/domain';
+import { Course, SortOrder } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import { courseFactory, setupEntities } from '@shared/testing';
 import { CourseUc } from './course.uc';
 
-describe('course uc', () => {
+describe('CourseUc', () => {
 	let service: CourseUc;
 	let repo: DeepMocked<CourseRepo>;
 	let orm: MikroORM;
@@ -54,6 +54,15 @@ describe('course uc', () => {
 			await service.findAllByUser('someUserId', pagination);
 
 			expect(spy).toHaveBeenCalledWith('someUserId', {}, resultingOptions);
+		});
+	});
+
+	describe('exportCourse', () => {
+		it('should create readable stream', async () => {
+			repo.findOne.mockResolvedValueOnce({ name: 'Placeholder' } as Course);
+
+			await expect(service.exportCourse('courseId', 'userId')).resolves.toBeDefined();
+			expect(repo.findOne).toBeCalledTimes(1);
 		});
 	});
 });
