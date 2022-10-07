@@ -1,4 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { FileRecordParentType } from '@shared/domain';
 import { lessonFactory, schoolFactory, setupEntities, taskFactory } from '@shared/testing';
 import { CopyFilesOfParentParamBuilder } from './copy-files-of-parent-param.builder';
@@ -15,7 +16,7 @@ describe('CopyFilesOfParentParamBuilder', () => {
 	});
 
 	it('should throw for not supported parent type', () => {
-		const userId = 'user123';
+		const userId = new ObjectId().toHexString();
 		const source = taskFactory.buildWithId();
 		const target = schoolFactory.buildWithId();
 
@@ -24,14 +25,14 @@ describe('CopyFilesOfParentParamBuilder', () => {
 	});
 
 	it('should build valid file request infos for task over shorthand task', () => {
-		const userId = 'user123';
+		const userId = new ObjectId().toHexString();
 		const source = taskFactory.buildWithId();
 		const target = taskFactory.buildWithId();
 
 		const result = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
 		const expectedResult = {
-			userId: 'user123',
+			userId,
 			source: {
 				parentType: FileRecordParentType.Task,
 				schoolId: source.getSchoolId(),
@@ -48,14 +49,14 @@ describe('CopyFilesOfParentParamBuilder', () => {
 	});
 
 	it('should build valid copy file request infos for lesson over shorthand lesson', () => {
-		const userId = 'user123';
+		const userId = new ObjectId().toHexString();
 		const source = lessonFactory.buildWithId();
 		const target = lessonFactory.buildWithId();
 
 		const result = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
 		const expectedResult = {
-			userId: 'user123',
+			userId,
 			source: {
 				parentType: FileRecordParentType.Lesson,
 				schoolId: source.getSchoolId(),

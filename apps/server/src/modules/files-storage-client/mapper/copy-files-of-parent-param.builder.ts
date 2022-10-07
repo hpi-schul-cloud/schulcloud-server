@@ -1,9 +1,9 @@
 import { EntityId, Lesson, Task } from '@shared/domain';
-import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
+import { ICopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { FileParamBuilder } from './files-storage-param.builder';
 
 export class CopyFilesOfParentParamBuilder {
-	static build(userId: EntityId, source: Task | Lesson, target: Task | Lesson): CopyFilesRequestInfo {
+	static build(userId: EntityId, source: Task | Lesson, target: Task | Lesson): ICopyFilesRequestInfo {
 		const fileRequestInfo = {
 			userId,
 			source: FileParamBuilder.build(source.getSchoolId(), source),

@@ -84,7 +84,7 @@ describe('copy mapper', () => {
 	});
 
 	describe('mapTaskCopyToDomain', () => {
-		const userId = 'user123';
+		const userId = new ObjectId().toHexString();
 
 		describe('should map received params to domain', () => {
 			it('if only course destination is given', () => {
@@ -127,7 +127,7 @@ describe('copy mapper', () => {
 				const params: LessonCopyApiParams = {
 					courseId,
 				};
-				const userId = 'user123';
+				const userId = new ObjectId().toHexString();
 				const result = CopyMapper.mapLessonCopyToDomain(params, userId);
 				const expected: LessonCopyParentParams = {
 					courseId,

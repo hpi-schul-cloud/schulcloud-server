@@ -3,12 +3,6 @@ import { CopyFileDto, FileDto } from '../dto';
 import { ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
 
 export class FilesStorageClientMapper {
-	static mapAxiosToFilesDto(response: IFileDomainObjectProps[]): FileDto[] {
-		const filesDto = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
-
-		return filesDto;
-	}
-
 	static mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: IFileDomainObjectProps[]): FileDto[] {
 		const filesDto = fileRecordListResponse.map((record: IFileDomainObjectProps) => {
 			const fileDto = FilesStorageClientMapper.mapFileRecordResponseToFileDto(record);

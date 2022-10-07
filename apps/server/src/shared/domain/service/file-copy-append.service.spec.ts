@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType, IComponentProperties } from '@shared/domain';
 import { courseFactory, fileFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { CopyFilesService, FilesStorageClientAdapterService } from '@src/modules';
+import { CopyFilesService } from '@src/modules';
 import { CopyFileDto } from '@src/modules/files-storage-client/dto';
 import { IComponentTextProperties, Task } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
@@ -37,7 +37,6 @@ const getSubStatus = (status: CopyStatus | undefined, type: CopyElementType) =>
 describe('file copy append service', () => {
 	let module: TestingModule;
 	let copyService: FileCopyAppendService;
-	let fileServiceAdapter: DeepMocked<FilesStorageClientAdapterService>;
 	let fileLegacyService: DeepMocked<FileLegacyService>;
 	let copyFilesService: DeepMocked<CopyFilesService>;
 
@@ -57,10 +56,6 @@ describe('file copy append service', () => {
 				FileCopyAppendService,
 				CopyHelperService,
 				{
-					provide: FilesStorageClientAdapterService,
-					useValue: createMock<FilesStorageClientAdapterService>(),
-				},
-				{
 					provide: FileLegacyService,
 					useValue: createMock<FileLegacyService>(),
 				},
@@ -72,7 +67,6 @@ describe('file copy append service', () => {
 		}).compile();
 
 		copyService = module.get(FileCopyAppendService);
-		fileServiceAdapter = module.get(FilesStorageClientAdapterService);
 		fileLegacyService = module.get(FileLegacyService);
 		copyFilesService = module.get(CopyFilesService);
 	});

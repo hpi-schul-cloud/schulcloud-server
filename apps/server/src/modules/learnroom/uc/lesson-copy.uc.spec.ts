@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Actions, CopyHelperService, EtherpadService, LessonCopyService, PermissionTypes, User } from '@shared/domain';
@@ -238,7 +239,7 @@ describe('lesson copy uc', () => {
 				const { course, user, lesson } = setupWithLessonForbidden();
 
 				try {
-					await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId: 'user123' });
+					await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId: new ObjectId().toHexString() });
 					throw new Error('should have failed');
 				} catch (err) {
 					expect(err).toBeInstanceOf(ForbiddenException);
@@ -263,7 +264,7 @@ describe('lesson copy uc', () => {
 				const { course, user, lesson } = setupWithCourseForbidden();
 
 				try {
-					await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId: 'user123' });
+					await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId: new ObjectId().toHexString() });
 					throw new Error('should have failed');
 				} catch (err) {
 					expect(err).toBeInstanceOf(ForbiddenException);

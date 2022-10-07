@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { schoolFactory, setupEntities, taskFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
@@ -47,7 +48,7 @@ describe('FilesStorageClientAdapterService', () => {
 
 	describe('copyFilesOfParent', () => {
 		it('Should call all steps.', async () => {
-			const userId = 'user1234';
+			const userId = new ObjectId().toHexString();
 			const school = schoolFactory.buildWithId();
 			const source = taskFactory.buildWithId({ school });
 			const target = taskFactory.buildWithId({ school });
@@ -68,7 +69,7 @@ describe('FilesStorageClientAdapterService', () => {
 		});
 
 		it('Should call error mapper if throw an error.', async () => {
-			const userId = 'user1234';
+			const userId = new ObjectId().toHexString();
 			const school = schoolFactory.buildWithId();
 			const source = taskFactory.buildWithId({ school });
 			const target = taskFactory.buildWithId({ school });

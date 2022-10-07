@@ -17,23 +17,6 @@ describe('FilesStorageClientMapper', () => {
 
 		const response: IFileDomainObjectProps[] = [record];
 
-		describe('mapAxiosToFilesDto', () => {
-			it('Should map to valid file Dtos.', () => {
-				const result = FilesStorageClientMapper.mapAxiosToFilesDto(response);
-
-				expect(result).toEqual(
-					expect.objectContaining([
-						{
-							id: record.id,
-							name: record.name,
-							parentId: record.parentId,
-							parentType: record.parentType,
-						},
-					])
-				);
-			});
-		});
-
 		describe('mapfileRecordListResponseToDomainFilesDto', () => {
 			it('Should map to valid file Dtos.', () => {
 				const result = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);

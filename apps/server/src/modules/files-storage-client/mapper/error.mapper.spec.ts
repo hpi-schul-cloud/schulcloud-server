@@ -38,7 +38,7 @@ describe('ErrorMapper', () => {
 	};
 
 	describe('mapErrorToDomainError', () => {
-		it('Should map 403 axios error response to ForbiddenException.', () => {
+		it('Should map 403 error response to ForbiddenException.', () => {
 			const errorText = 'ForbiddenException ABC';
 			const json = _.toPlainObject(new ForbiddenException(errorText)) as IFileStorageErrors;
 			const result = ErrorMapper.mapErrorToDomainError(json);
@@ -46,7 +46,7 @@ describe('ErrorMapper', () => {
 			expect(result).toStrictEqual(new ForbiddenException(errorText));
 		});
 
-		it('Should map 500 axios error response to InternalServerErrorException.', () => {
+		it('Should map 500 error response to InternalServerErrorException.', () => {
 			const errorText = 'InternalServerErrorException ABC';
 			const json = _.toPlainObject(new InternalServerErrorException(errorText)) as IFileStorageErrors;
 
@@ -55,7 +55,7 @@ describe('ErrorMapper', () => {
 			expect(result).toStrictEqual(new InternalServerErrorException(errorText));
 		});
 
-		it('Should map unkown axios error code to InternalServerErrorException.', () => {
+		it('Should map unknown error code to InternalServerErrorException.', () => {
 			const errorText = 'ForbiddenException ABC';
 			const json = _.toPlainObject(new ConflictException(errorText)) as IFileStorageErrors;
 			const result = ErrorMapper.mapErrorToDomainError(json);
@@ -80,7 +80,7 @@ describe('ErrorMapper', () => {
 			expect(result).toStrictEqual(new ApiValidationError());
 		});
 
-		it('Should map any 400 axios error that is not an ApiValidationError to InternalServerErrorException.', () => {
+		it('Should map any 400 error that is not an ApiValidationError to InternalServerErrorException.', () => {
 			const errorText = 'ForbiddenException ABC';
 			const e = new BadRequestException(errorText);
 			const json = _.toPlainObject(e) as IFileStorageErrors;

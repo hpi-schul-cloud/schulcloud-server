@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Actions, CopyHelperService, PermissionTypes, TaskCopyService, User } from '@shared/domain';
@@ -263,7 +264,11 @@ describe('task copy uc', () => {
 					const { course, lesson, user, task } = setupWithTaskForbidden();
 
 					try {
-						await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, userId: 'user123' });
+						await uc.copyTask(user.id, task.id, {
+							courseId: course.id,
+							lessonId: lesson.id,
+							userId: new ObjectId().toHexString(),
+						});
 						throw new Error('should have failed');
 					} catch (err) {
 						expect(err).toBeInstanceOf(NotFoundException);
@@ -287,7 +292,7 @@ describe('task copy uc', () => {
 					const { course, user, task } = setupWithCourseForbidden();
 
 					try {
-						await uc.copyTask(user.id, task.id, { courseId: course.id, userId: 'user123' });
+						await uc.copyTask(user.id, task.id, { courseId: course.id, userId: new ObjectId().toHexString() });
 						throw new Error('should have failed');
 					} catch (err) {
 						expect(err).toBeInstanceOf(ForbiddenException);
@@ -299,7 +304,7 @@ describe('task copy uc', () => {
 		describe('derive copy name', () => {
 			it('should derive name for copy', async () => {
 				const { course, user, task, allTasks } = setup();
-				await uc.copyTask(user.id, task.id, { courseId: course.id, userId: 'user123' });
+				await uc.copyTask(user.id, task.id, { courseId: course.id, userId: new ObjectId().toHexString() });
 				const existingNames = allTasks.map((t) => t.name);
 				expect(existingNames.length).toEqual(3);
 				expect(copyHelperService.deriveCopyName).toBeCalledWith(task.name, existingNames);
@@ -313,7 +318,11 @@ describe('task copy uc', () => {
 
 			it('should call copy service', async () => {
 				const { course, lesson, user, task, copyName } = setup();
-				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, userId: 'user123' });
+				await uc.copyTask(user.id, task.id, {
+					courseId: course.id,
+					lessonId: lesson.id,
+					userId: new ObjectId().toHexString(),
+				});
 				expect(taskCopyService.copyTaskMetadata).toBeCalledWith({
 					originalTask: task,
 					destinationCourse: course,
@@ -345,7 +354,7 @@ describe('task copy uc', () => {
 				const { lesson, user, task } = setupWithLessonForbidden();
 
 				try {
-					await uc.copyTask(user.id, task.id, { lessonId: lesson.id, userId: 'user123' });
+					await uc.copyTask(user.id, task.id, { lessonId: lesson.id, userId: new ObjectId().toHexString() });
 					throw new Error('should have failed');
 				} catch (err) {
 					expect(err).toBeInstanceOf(ForbiddenException);

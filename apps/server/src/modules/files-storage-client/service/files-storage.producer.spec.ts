@@ -1,6 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -59,7 +60,7 @@ describe('FilesStorageProducer', () => {
 
 	describe('copyFilesOfParent', () => {
 		const params = {
-			userId: 'user123',
+			userId: new ObjectId().toHexString(),
 			source: {
 				parentType: FileRecordParentType.Task,
 				schoolId: '633d59e1c7a36834ad61e525',
