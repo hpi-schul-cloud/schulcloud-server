@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InternalServerErrorException } from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParentType } from '@shared/domain';
+import { FileRecord, FileRecordParentType, FileSecurityCheck, ScanStatus } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { RenameFileParams } from '../controller/dto';
+import { RenameFileParams, ScanResultParams } from '../controller/dto';
 import { FilesStorageHelper } from '../helper';
 import { FilesStorageService } from './files-storage.service';
 
@@ -81,6 +81,7 @@ describe('FilesStorageService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageService,
+				FilesStorageHelper,
 				{
 					provide: S3ClientAdapter,
 					useValue: createMock<S3ClientAdapter>(),
@@ -92,10 +93,6 @@ describe('FilesStorageService', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: FilesStorageHelper,
-					useValue: createMock<FilesStorageHelper>(),
 				},
 			],
 		}).compile();
@@ -122,7 +119,7 @@ describe('FilesStorageService', () => {
 		expect(filesStorageHelper).toBeDefined();
 	});
 
-	describe('GIVEN getFileById is called', () => {
+	describe('getFileById is called', () => {
 		describe('WHEN valid file exists', () => {
 			const setup = () => {
 				const { params, fileRecord } = getFileRecordWithParams();
@@ -131,7 +128,7 @@ describe('FilesStorageService', () => {
 				return { params, fileRecord };
 			};
 
-			it('THEN it should call findOneById', async () => {
+			it('should call findOneById', async () => {
 				const { params } = setup();
 
 				await service.getFile(params);
@@ -139,7 +136,7 @@ describe('FilesStorageService', () => {
 				expect(fileRecordRepo.findOneById).toHaveBeenCalledTimes(1);
 			});
 
-			it('THEN it should return the matched fileRecord', async () => {
+			it('should return the matched fileRecord', async () => {
 				const { params, fileRecord } = setup();
 
 				const result = await service.getFile(params);
@@ -157,7 +154,7 @@ describe('FilesStorageService', () => {
 				return { params };
 			};
 
-			it('THEN it should pass the error', async () => {
+			it('should pass the error', async () => {
 				const { params } = setup();
 
 				await expect(service.getFile(params)).rejects.toThrow(new Error('bla'));
@@ -165,7 +162,7 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('GIVEN getFilesOfParent is called', () => {
+	describe('getFilesOfParent is called', () => {
 		describe('WHEN valid files exists', () => {
 			const setup = () => {
 				const { params, fileRecords } = getFileRecordsWithParams();
@@ -174,7 +171,7 @@ describe('FilesStorageService', () => {
 				return { params, fileRecords };
 			};
 
-			it('THEN it should call findBySchoolIdAndParentId with right parameters', async () => {
+			it('should call findBySchoolIdAndParentId with right parameters', async () => {
 				const { params } = setup();
 
 				await service.getFilesOfParent(params);
@@ -182,7 +179,7 @@ describe('FilesStorageService', () => {
 				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenNthCalledWith(1, params.schoolId, params.parentId);
 			});
 
-			it('THEN it should return the matched fileRecord', async () => {
+			it('should return the matched fileRecord', async () => {
 				const { params, fileRecords } = setup();
 
 				const result = await service.getFilesOfParent(params);
@@ -200,7 +197,7 @@ describe('FilesStorageService', () => {
 				return { params };
 			};
 
-			it('THEN it should pass the error', async () => {
+			it('should pass the error', async () => {
 				const { params } = setup();
 
 				await expect(service.getFilesOfParent(params)).rejects.toThrow(new Error('bla'));
@@ -208,49 +205,49 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('GIVEN patchFilename is called', () => {
+	describe('patchFilename is called', () => {
 		describe('WHEN file(s) exists and valid params are passed', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
 			const setup = () => {
 				const { fileRecords, params } = getFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const data: RenameFileParams = { fileName: 'renamed' };
 
-				const spyGetFilesOfParent = jest.spyOn(service, 'getFilesOfParent').mockResolvedValueOnce([fileRecords, 1]);
+				spy = jest.spyOn(service, 'getFilesOfParent').mockResolvedValueOnce([fileRecords, 1]);
 
 				return {
 					data,
 					fileRecord,
 					fileRecords,
 					params,
-					spyGetFilesOfParent,
 				};
 			};
 
-			it('THEN it should call getFilesOfParent with right paramaters', async () => {
-				const { fileRecord, data, spyGetFilesOfParent, params } = setup();
+			it('should call getFilesOfParent with right paramaters', async () => {
+				const { fileRecord, data } = setup();
+				const fileRecordParams = filesStorageHelper.mapFileRecordToFileRecordParams(fileRecord);
 
 				await service.patchFilename(fileRecord, data);
 
-				expect(spyGetFilesOfParent).toHaveBeenCalledWith(params);
+				expect(spy).toHaveBeenCalledWith(fileRecordParams);
 			});
 
-			it('THEN it should call filesStorageHelper.modifiedFileNameInScope with right paramaters', async () => {
+			// TODO: need valid copy
+			it('should call fileRecordRepo.save with right paramaters', async () => {
 				const { fileRecord, fileRecords, data } = setup();
 
-				await service.patchFilename(fileRecord, data);
-
-				expect(filesStorageHelper.modifiedFileNameInScope).toHaveBeenCalledWith(fileRecord, fileRecords, data.fileName);
-			});
-
-			it('THEN it should call fileRecordRepo.save with right paramaters', async () => {
-				const { fileRecord, data } = setup();
-
+				// const modifiedFileRecord = filesStorageHelper.modifiedFileNameInScope(fileRecord, fileRecords, data.fileName);
 				await service.patchFilename(fileRecord, data);
 
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecord);
 			});
 
-			it('THEN it should return modified fileRecord', async () => {
+			it('should return modified fileRecord', async () => {
 				const { fileRecord, data } = setup();
 
 				const result = await service.patchFilename(fileRecord, data);
@@ -275,7 +272,7 @@ describe('FilesStorageService', () => {
 				};
 			};
 
-			it('THEN it should pass the error', async () => {
+			it('should pass the error', async () => {
 				const { fileRecord, data } = setup();
 
 				await expect(service.patchFilename(fileRecord, data)).rejects.toThrowError(new Error('bla'));
@@ -283,42 +280,152 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('GIVEN delete is called', () => {
-		describe('WHEN valid files exists', () => {
+	describe('updateSecurityStatus is called', () => {
+		describe('WHEN file exists and no virus is found', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
 			const setup = () => {
-				return { fileRecords: getFileRecords() };
+				const { fileRecord } = getFileRecordWithParams();
+				const scanResult: ScanResultParams = { virus_detected: false };
+				const token = fileRecord.securityCheck.requestToken || '';
+
+				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
+				fileRecordRepo.save.mockResolvedValue();
+				spy = jest.spyOn(fileRecord, 'updateSecurityCheckStatus');
+
+				return { scanResult, token, fileRecord };
 			};
 
-			it('THEN it should call markForDelete', async () => {
-				const { fileRecords } = setup();
-				await service.delete(fileRecords);
+			it('should call repo method findBySecurityCheckRequestToken with right parameters', async () => {
+				const { scanResult, token } = setup();
 
-				expect(filesStorageHelper.markForDelete).toHaveBeenCalledWith(fileRecords);
+				await service.updateSecurityStatus(token, scanResult);
+
+				expect(fileRecordRepo.findBySecurityCheckRequestToken).toHaveBeenCalledWith(token);
 			});
 
-			it('should call fileRecordRepo.save with marked file records', async () => {
-				const { fileRecords: markedFileRecords } = setup();
-				const fileRecords = [];
+			it('should call repo method updateSecurityCheckStatus with right parameters', async () => {
+				const { token, scanResult } = setup();
 
-				filesStorageHelper.markForDelete.mockReturnValue(markedFileRecords);
+				await service.updateSecurityStatus(token, scanResult);
+
+				expect(spy).toHaveBeenCalledWith(ScanStatus.VERIFIED, undefined);
+			});
+
+			it('should call repo method save() to persist the result', async () => {
+				const { scanResult, token, fileRecord } = setup();
+
+				await service.updateSecurityStatus(token, scanResult);
+
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecord);
+			});
+		});
+
+		describe('WHEN file exists and a virus is found', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const { fileRecord } = getFileRecordWithParams();
+				const scanResult: ScanResultParams = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };
+				const token = fileRecord.securityCheck.requestToken || '';
+
+				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
+				fileRecordRepo.save.mockResolvedValue();
+				spy = jest.spyOn(fileRecord, 'updateSecurityCheckStatus');
+
+				return { scanResult, token, fileRecord };
+			};
+
+			it('should call repo method updateSecurityCheckStatus with virus detected parameters', async () => {
+				const { scanResult, token } = setup();
+
+				await service.updateSecurityStatus(token, scanResult);
+
+				expect(spy).toHaveBeenCalledWith(ScanStatus.BLOCKED, 'Win.Test.EICAR_HDB-1');
+			});
+
+			it('should call repo method save() to persist the result', async () => {
+				const { scanResult, token, fileRecord } = setup();
+
+				await service.updateSecurityStatus(token, scanResult);
+
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecord);
+			});
+		});
+
+		describe('WHEN no matching file is found', () => {
+			const setup = () => {
+				const { fileRecord } = getFileRecordWithParams();
+				const scanResult: ScanResultParams = { virus_detected: false };
+				const token = fileRecord.securityCheck.requestToken || '';
+				const error = new NotFoundException();
+
+				fileRecordRepo.findBySecurityCheckRequestToken.mockRejectedValueOnce(error);
+
+				return { scanResult, token, error };
+			};
+
+			it('should pass the not found exception', async () => {
+				const { scanResult, token, error } = setup();
+
+				await expect(service.updateSecurityStatus(token, scanResult)).rejects.toThrowError(error);
+			});
+		});
+
+		describe('WHEN repository by call save is throw an error', () => {
+			const setup = () => {
+				const { fileRecord } = getFileRecordWithParams();
+				const scanResult: ScanResultParams = { virus_detected: false };
+				const token = fileRecord.securityCheck.requestToken || '';
+				const error = new Error('bla');
+
+				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
+				fileRecordRepo.save.mockRejectedValueOnce(error);
+
+				return { scanResult, token, error };
+			};
+
+			it('should pass the exception', async () => {
+				const { scanResult, token, error } = setup();
+
+				await expect(service.updateSecurityStatus(token, scanResult)).rejects.toThrowError(error);
+			});
+		});
+	});
+
+	describe('delete is called', () => {
+		describe('WHEN valid files exists', () => {
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+
+				fileRecordRepo.save.mockResolvedValueOnce();
+
+				return { fileRecords };
+			};
+
+			// TODO: test make not really sense
+			it('should call repo save with right parameters', async () => {
+				const { fileRecords } = setup();
+				// const fileRecordsCopy = fileRecords.map((fileRecord): FileRecord => ({ ...fileRecord } as FileRecord));
+
+				const markedFileRecords = filesStorageHelper.markForDelete(fileRecords);
 
 				await service.delete(fileRecords);
 
-				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(1, markedFileRecords);
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(markedFileRecords);
 			});
 
-			it('THEN it should call getPaths', async () => {
+			it('should call storageClient.delete', async () => {
 				const { fileRecords } = setup();
-
-				await service.delete(fileRecords);
-
-				expect(filesStorageHelper.getPaths).toHaveBeenCalledWith(fileRecords);
-			});
-
-			it('THEN it should call storageClient.delete', async () => {
-				const { fileRecords } = setup();
-				const paths = ['1', '2'];
-				filesStorageHelper.getPaths.mockReturnValue(paths);
+				const paths = filesStorageHelper.getPaths(fileRecords);
 
 				await service.delete(fileRecords);
 
@@ -335,21 +442,21 @@ describe('FilesStorageService', () => {
 				return { fileRecords };
 			};
 
-			it('THEN it should pass the error', async () => {
+			it('should pass the error', async () => {
 				const { fileRecords } = setup();
 
 				await expect(service.delete(fileRecords)).rejects.toThrow(new Error('bla'));
 			});
 		});
 
-		describe('WHEN filestorage throw an error', () => {
+		describe('WHEN filestorage client throw an error', () => {
 			const setup = () => {
 				storageClient.delete.mockRejectedValueOnce(new Error('bla'));
 
 				return { fileRecords: getFileRecords() };
 			};
 
-			it('THEN it should throw error if entity not found', async () => {
+			it('should throw error if entity not found', async () => {
 				const { fileRecords } = setup();
 
 				await expect(service.delete(fileRecords)).rejects.toThrow(new InternalServerErrorException('bla'));
@@ -358,7 +465,7 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('GIVEN deleteFilesOfParent is called', () => {
+	describe('deleteFilesOfParent is called', () => {
 		describe('WHEN valid files exists', () => {
 			let spy: jest.SpyInstance;
 
@@ -376,7 +483,7 @@ describe('FilesStorageService', () => {
 				return { requestParams, fileRecords };
 			};
 
-			it('THEN it should call findBySchoolIdAndParentId onces with correctly params', async () => {
+			it('should call findBySchoolIdAndParentId onces with correctly params', async () => {
 				const { requestParams } = setup();
 
 				await service.deleteFilesOfParent(requestParams);
@@ -388,7 +495,7 @@ describe('FilesStorageService', () => {
 				);
 			});
 
-			it('THEN it should call delete with correct params', async () => {
+			it('should call delete with correct params', async () => {
 				const { requestParams, fileRecords } = setup();
 
 				await service.deleteFilesOfParent(requestParams);
@@ -396,7 +503,7 @@ describe('FilesStorageService', () => {
 				expect(service.delete).toHaveBeenCalledWith(fileRecords);
 			});
 
-			it('THEN it should return file records and count', async () => {
+			it('should return file records and count', async () => {
 				const { requestParams, fileRecords } = setup();
 
 				const responseData = await service.deleteFilesOfParent(requestParams);
@@ -428,7 +535,7 @@ describe('FilesStorageService', () => {
 				return { requestParams };
 			};
 
-			it('THEN it should not call delete', async () => {
+			it('should not call delete', async () => {
 				const { requestParams } = setup();
 
 				await service.deleteFilesOfParent(requestParams);
@@ -436,7 +543,7 @@ describe('FilesStorageService', () => {
 				expect(service.delete).toHaveBeenCalledTimes(0);
 			});
 
-			it('THEN it should return empty counted type', async () => {
+			it('should return empty counted type', async () => {
 				const { requestParams } = setup();
 
 				const result = await service.deleteFilesOfParent(requestParams);
@@ -454,7 +561,7 @@ describe('FilesStorageService', () => {
 				return { requestParams };
 			};
 
-			it('THEN it should pass the error', async () => {
+			it('should pass the error', async () => {
 				const { requestParams } = setup();
 
 				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow(new Error('bla'));
@@ -478,7 +585,7 @@ describe('FilesStorageService', () => {
 				return { requestParams, fileRecords };
 			};
 
-			it('THEN it should pass the error', async () => {
+			it('should pass the error', async () => {
 				const { requestParams } = setup();
 
 				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow(new Error('bla'));

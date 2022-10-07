@@ -1,9 +1,9 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Counted, FileRecord } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { FileRecordParams, RenameFileParams, SingleFileParams } from '../controller/dto';
+import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
 import { FilesStorageHelper } from '../helper';
 
 @Injectable()
@@ -39,6 +39,14 @@ export class FilesStorageService {
 		await this.fileRecordRepo.save(modifiedFileRecord);
 
 		return modifiedFileRecord;
+	}
+
+	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
+		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
+		const status = this.filesStorageHelper.getStatusFromScanResult(scanResultDto);
+		fileRecord.updateSecurityCheckStatus(status, scanResultDto.virus_signature);
+
+		await this.fileRecordRepo.save(fileRecord);
 	}
 
 	// delete
