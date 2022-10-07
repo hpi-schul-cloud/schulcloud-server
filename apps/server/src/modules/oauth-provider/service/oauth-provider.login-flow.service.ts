@@ -21,8 +21,8 @@ export class OauthProviderLoginFlowService {
 
 		const ltiToolDO: LtiToolDO = await this.ltiToolRepo.findByClientIdAndIsLocal(loginResponse.client.client_id, true);
 		const pseudonym: PseudonymDO = await this.pseudonymsRepo.findByUserIdAndToolId(
-			ltiToolDO.id as string,
-			currentUserId
+			currentUserId,
+			ltiToolDO.id as string
 		);
 		return pseudonym;
 	}
