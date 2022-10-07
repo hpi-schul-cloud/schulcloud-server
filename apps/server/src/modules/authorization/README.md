@@ -215,7 +215,7 @@ For this reason, we want that the consumer of the RabbitMQ item to call the file
 
 In featherJS all the authorisation is done in hooks. Mostly before hooks and sometimes in after hooks.
 Before and after means before, or after the database operation. For self writen services before, or after the call of the operation that should be executed.
-They work similar to express middleware and bring is own request context.
+They work similar to express middleware and bring their own request context.
 
 It exists hooks that can be used for all http(s) calls, or for specific type based on CRUD operations.
 Additionally it also exists the find operations that are a http(s) GET requests without the ID of a specific element.
