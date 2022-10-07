@@ -44,7 +44,7 @@ They are used for authorisation for now, but should be replaced by domain object
 
 ### Domain Objects
 
-They are not really introduced. They should mapped between the repository layer and the domain.
+They are not really introduced. They should map between the repository layer and the domain.
 > In future they are the base for authorisation and the authorisation service doesn't know anything about entities anymore.
 
 ### Scopes
@@ -88,7 +88,7 @@ For this we want to use system user and roles with own permissions.
 
 ## Rules
 
-The rules are implemented with a strategy pattern and is called from the authorisation service.
+The rules are implemented with a strategy pattern and are called from the authorisation service.
 The implementation should solve the authorisation for a domain object based on the executed action.
 It implements a check for which domain object, entity, or additional conditions should be used.
 
@@ -98,7 +98,7 @@ It implements a check for which domain object, entity, or additional conditions 
 ## User (Role) Permissions vs Scope Based Permissions
 
 The permissions of the user come from his role.
-This permissions have no explicit scope. But *implicit* the roles expert, student, teacher and administrator are in the school scope. The superhero is *implicit* in the scope of the instance.
+This permissions have no explicit scope. But *implicitly* the roles expert, student, teacher and administrator are in the school scope. The superhero is *implicitly* in the scope of the instance.
 
 It exists also scope based permissions. A user can have different (scope)roles in different (domain)scopes. For example in teams where the student can have team member role in one team, or team adminstrator in another.
 
@@ -154,7 +154,7 @@ export const PermissionContexts = {
 
 /** UC **/
 this.hasPermission(userId, course, PermissionContexts.create);
-// do other orechstration steps
+// do other orchestration steps
 
 ```
 
@@ -174,7 +174,7 @@ The authorisation module is the core of authorisation. It collects all needed in
 
 For situations where only the id and the domain object (string) type is known, it is possible to use the *ByReferences methods.
 They load the reference directly.
-> Please keep in mind that it can be have an impact on the performance if you use it wrongly.
+> Please keep in mind that it can have an impact on the performance if you use it wrongly.
 > We keep it as a seperate method to avoid the usage in areas where the domain object should exist, because we see the risk that a developer could be tempted by the ease of only passing the id.
 
 ### shared/domain/rules/*
@@ -195,21 +195,21 @@ An enum that holds all avaible role names.
 
 #### permission.enum
 
-A enum that hold all avaible permission names, however it's mixing all domain scopes atm.
+A enum that holds all avaible permission names, however it's mixing all domain scopes atm.
 
 ## Working other Internal MicroServices
 
 > Example FilesStorageService
 
-We have the files storage service application that are a bundle of modules of this repository.
+We have the files storage service application that is a bundle of modules of this repository.
 The application is startet as additional micro service.
 It exists the need that the server application can call the file service.
 We add a files storage client module to the server.
-This module export a service to call with the file service.
+This module exports a service to communicate with the file service.
 
-For the communication it used http calls, but it is switching to RabbitMQ soon.
-Every operation must already authorised in the UC of the server. It exist no need to do it again in files storage service.
-For this we want that the consumer of the RabbitMQ call the files storage service, services directly without authorisation.
+For the communication it uses http calls, but it will be switching to RabbitMQ soon.
+Every operation must already authorised in the UC of the server. It exists no need to do it again in files storage service.
+For this reason, we want that the consumer of the RabbitMQ item to call the files storage service, services directly without authorisation.
 
 ## Legacy Tech Stack FeatherJS Hooks
 
@@ -217,11 +217,11 @@ In featherJS all the authorisation is done in hooks. Mostly before hooks and som
 Before and after means before, or after the database operation. For self writen services before, or after the call of the operation that should be executed.
 They work similar to express middleware and bring is own request context.
 
-It exists hooks can be for all http(s) calls, or for specific type based on CRUD operations.
-Additional it exist the find operations that is a http(s) GET without ID of a specific element.
-Each function that add to the hooks will executed in order. Hooks for all methods first, then hooks for specific methodes.
+It exists hooks that can be used for all http(s) calls, or for specific type based on CRUD operations.
+Additionally it also exists the find operations that are a http(s) GET requests without the ID of a specific element.
+Each function that adds to the hooks will be executed in order. Hooks for all methods first, then hooks for specific methodes.
 
-Each hooks exist for a featherJS service that exposed directly the api endpoints. Additional it exist a global hook pattern for the whole application.
+Each hooks exists for a featherJS service that exposes directly the api endpoints directly. Additional it exists a global hook pattern for the whole application.
 
 Example: <https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/src/services/lesson/hooks/index.js#L232>
 
@@ -239,7 +239,7 @@ They follow our general target.
     Think about: Move hasPermission checks from rules to a more generic place.
     Remove jwt decorator and cleanup copy logic.
     Move authorisation-context.builder to authorisation module.
-3. Remove inheritance from roles, because we want to write it explizitly into the collection documents.
+3. Remove inheritance from roles, because we want to write it explicitly into the collection documents.
     Moving role api endpoints to nestjs.
     Fixing of dashboard to handle roles in the right way as superhero.
 4. Switching entity based authorisation to domain objects based in steps.
