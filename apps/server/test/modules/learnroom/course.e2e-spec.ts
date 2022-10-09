@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@src/server.module';
 import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
@@ -12,7 +11,6 @@ import { ICurrentUser } from '@shared/domain';
 
 describe('Course Controller (e2e)', () => {
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 
@@ -32,14 +30,12 @@ describe('Course Controller (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
-		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
 	});
 
 	afterEach(async () => {
 		await cleanupCollections(em);
 		await app.close();
-		await orm.close();
 	});
 
 	const setup = () => {

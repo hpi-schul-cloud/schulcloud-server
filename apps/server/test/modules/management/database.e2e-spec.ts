@@ -22,7 +22,6 @@ describe('Database Management Controller (e2e)', () => {
 
 	afterAll(async () => {
 		await app.close();
-		await orm.close();
 	});
 
 	describe('When post to database management route', () => {
