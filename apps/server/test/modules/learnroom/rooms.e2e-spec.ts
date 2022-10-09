@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -24,7 +23,6 @@ import request from 'supertest';
 
 describe('Rooms Controller (e2e)', () => {
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
@@ -51,7 +49,6 @@ describe('Rooms Controller (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
-		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
 		filesStorageClientAdapterService = app.get(FilesStorageClientAdapterService);
 		setConfig();
@@ -60,7 +57,6 @@ describe('Rooms Controller (e2e)', () => {
 	afterEach(async () => {
 		await cleanupCollections(em);
 		await app.close();
-		await orm.close();
 	});
 
 	it('[GET] board', async () => {
