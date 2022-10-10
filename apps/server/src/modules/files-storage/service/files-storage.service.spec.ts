@@ -3,11 +3,11 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParentType, ScanStatus } from '@shared/domain';
+import { FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { request } from 'node:http';
+import _ from 'lodash';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { RenameFileParams, ScanResultParams } from '../controller/dto';
 import { FilesStorageHelper } from '../helper';
@@ -237,14 +237,14 @@ describe('FilesStorageService', () => {
 				expect(spy).toHaveBeenCalledWith(fileRecordParams);
 			});
 
-			// TODO: need valid copy
 			it('should call fileRecordRepo.save with right paramaters', async () => {
 				const { fileRecord, data } = setup();
+				const expectedFileRecord = _.cloneDeep(fileRecord);
+				expectedFileRecord.name = data.fileName;
 
-				// const modifiedFileRecord = filesStorageHelper.modifiedFileNameInScope(fileRecord, fileRecords, data.fileName);
 				await service.patchFilename(fileRecord, data);
 
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecord);
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(expectedFileRecord);
 			});
 
 			it('should return modified fileRecord', async () => {
@@ -411,12 +411,11 @@ describe('FilesStorageService', () => {
 				return { fileRecords };
 			};
 
-			// TODO: test make not really sense
 			it('should call repo save with right parameters', async () => {
 				const { fileRecords } = setup();
-				// const fileRecordsCopy = fileRecords.map((fileRecord): FileRecord => ({ ...fileRecord } as FileRecord));
+				const fileRecordsCopy = fileRecords.map((fileRecord): FileRecord => _.cloneDeep(fileRecord));
 
-				const markedFileRecords = filesStorageHelper.markForDelete(fileRecords);
+				const markedFileRecords = filesStorageHelper.markForDelete(fileRecordsCopy);
 
 				await service.delete(fileRecords);
 
