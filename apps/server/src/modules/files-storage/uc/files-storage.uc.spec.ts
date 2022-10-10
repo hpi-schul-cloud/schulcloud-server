@@ -162,7 +162,7 @@ describe('FilesStorageUC', () => {
 			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
 			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
 		];
-		fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
+		filesStorageService.getFilesOfParent.mockResolvedValue([fileRecords, fileRecords.length]);
 
 		fileRecordRepo.save.mockImplementation((entity: FileRecord | FileRecord[]) => {
 			(entity as FileRecord).id = entityId;
