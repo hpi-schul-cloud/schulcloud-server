@@ -12,6 +12,7 @@ export enum NodeEnvType {
 
 export interface IServerConfig extends ICoreModuleConfig, IUserConfig, IFilesStorageClientConfig, IAccountConfig {
 	NODE_ENV: string;
+	FEATURE_COURSE_EXPORT_ENABLED: boolean;
 }
 
 const config: IServerConfig = {
@@ -25,6 +26,7 @@ const config: IServerConfig = {
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,
+	FEATURE_COURSE_EXPORT_ENABLED: Configuration.get('FEATURE_COURSE_EXPORT_ENABLED') as boolean,
 };
 
 export default () => config;

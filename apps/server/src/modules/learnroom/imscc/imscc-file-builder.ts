@@ -4,7 +4,7 @@ import AdmZip from 'adm-zip';
 import { randomUUID } from 'crypto';
 
 export class ImsccFileBuilder {
-	private readonly zipBuiler = new AdmZip();
+	private readonly zipBuilder = new AdmZip();
 
 	private readonly xmlBuilder = new Builder({
 		rootName: 'manifest',
@@ -57,10 +57,10 @@ export class ImsccFileBuilder {
 		},
 	};
 
-	build(): Readable {
+	async build(): Promise<Readable> {
 		const result = this.xmlBuilder.buildObject(this.manifest);
-		this.zipBuiler.addFile('imsmanifest.xml', Buffer.from(result));
-		return Readable.from(this.zipBuiler.toBuffer());
+		this.zipBuilder.addFile('imsmanifest.xml', Buffer.from(result), 'The required manifest file.');
+		return Readable.from(await this.zipBuilder.toBufferPromise());
 	}
 
 	addTitle(title: string): ImsccFileBuilder {

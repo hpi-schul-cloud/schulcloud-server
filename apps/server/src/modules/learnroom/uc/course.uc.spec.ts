@@ -4,23 +4,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, SortOrder } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import { courseFactory, setupEntities } from '@shared/testing';
+import AdmZip from 'adm-zip';
 import { CourseUc } from './course.uc';
 
 describe('CourseUc', () => {
+	let module: TestingModule;
 	let service: CourseUc;
 	let repo: DeepMocked<CourseRepo>;
 	let orm: MikroORM;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
-	});
-
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				CourseUc,
 				{
@@ -32,6 +27,11 @@ describe('CourseUc', () => {
 
 		service = module.get(CourseUc);
 		repo = module.get(CourseRepo);
+	});
+
+	afterAll(async () => {
+		await orm.close();
+		await module.close();
 	});
 
 	describe('findByUser', () => {
@@ -58,11 +58,31 @@ describe('CourseUc', () => {
 	});
 
 	describe('exportCourse', () => {
-		it('should create readable stream', async () => {
-			repo.findOne.mockResolvedValueOnce({ name: 'Placeholder' } as Course);
+		beforeAll(() => {
+			repo.findOne.mockResolvedValue({ name: 'Placeholder' } as Course);
+		});
 
+		afterAll(() => {
+			repo.findOne.mockRestore();
+		});
+
+		it('should create readable stream', async () => {
 			await expect(service.exportCourse('courseId', 'userId')).resolves.toBeDefined();
 			expect(repo.findOne).toBeCalledTimes(1);
+		});
+
+		it('should create zip archive with imsmanifest.xml a the root', async () => {
+			const stream = await service.exportCourse('courseId');
+			const buffers = [] as unknown[];
+			// eslint-disable-next-line no-restricted-syntax
+			for await (const chunk of stream) {
+				buffers.push(chunk);
+			}
+			const zip = new AdmZip(Buffer.concat(buffers as Uint8Array[]));
+			const manifest = zip.getEntry('imsmanifest.xml');
+
+			expect(manifest).toBeDefined();
+			expect(manifest?.getData().toString()).toContain('Placeholder');
 		});
 	});
 });
