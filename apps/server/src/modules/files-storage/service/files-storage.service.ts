@@ -43,6 +43,7 @@ export class FilesStorageService {
 
 	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
+
 		const status = this.filesStorageHelper.getStatusFromScanResult(scanResultDto);
 		fileRecord.updateSecurityCheckStatus(status, scanResultDto.virus_signature);
 
@@ -52,7 +53,7 @@ export class FilesStorageService {
 	// delete
 	// TODO: name must be improved deleteFilesInFileStorage? nearly same name like the micro service
 	// FilesStorageService as name is wrong FilesService as module and the storage is the storage itself
-	private async deleteFilesInFileStorageClient(fileRecords: FileRecord[]) {
+	private async deleteFilesInFilesStorageClient(fileRecords: FileRecord[]) {
 		const paths = this.filesStorageHelper.getPaths(fileRecords);
 
 		await this.storageClient.delete(paths);
@@ -60,7 +61,7 @@ export class FilesStorageService {
 
 	private async deleteWithRollbackByError(fileRecords: FileRecord[]): Promise<void> {
 		try {
-			await this.deleteFilesInFileStorageClient(fileRecords);
+			await this.deleteFilesInFilesStorageClient(fileRecords);
 		} catch (error) {
 			await this.fileRecordRepo.save(fileRecords);
 			throw new InternalServerErrorException(error, `${FilesStorageService.name}:delete`);
