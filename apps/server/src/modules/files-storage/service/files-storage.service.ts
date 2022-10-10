@@ -87,6 +87,12 @@ export class FilesStorageService {
 		return [fileRecords, count];
 	}
 
+	public async restoreFilesInFileStorageClient(fileRecords: FileRecord[]) {
+		const paths = this.filesStorageHelper.getPaths(fileRecords);
+
+		await this.storageClient.restore(paths);
+	}
+
 	// restore
 	public async restoreFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
@@ -100,19 +106,22 @@ export class FilesStorageService {
 		return [fileRecords, count];
 	}
 
-	public async restore(fileRecords: FileRecord[]) {
-		this.logger.debug({ action: 'restore', fileRecords });
-
-		const unmarkFileRecords = this.filesStorageHelper.unmarkForDelete(fileRecords);
-		await this.fileRecordRepo.save(unmarkFileRecords);
+	private async restoreWithRollbackByError(fileRecords: FileRecord[]): Promise<void> {
 		try {
-			const paths = this.filesStorageHelper.getPaths(fileRecords);
-
-			await this.storageClient.restore(paths);
+			await this.restoreFilesInFileStorageClient(fileRecords);
 		} catch (err) {
 			await this.fileRecordRepo.save(fileRecords);
 			this.filesStorageHelper.markForDelete(fileRecords);
 			throw new InternalServerErrorException(err, `${FilesStorageService.name}:restore`);
 		}
+	}
+
+	public async restore(fileRecords: FileRecord[]) {
+		this.logger.debug({ action: 'restore', fileRecords });
+
+		const unmarkFileRecords = this.filesStorageHelper.unmarkForDelete(fileRecords);
+		await this.fileRecordRepo.save(unmarkFileRecords);
+
+		await this.restoreWithRollbackByError(fileRecords);
 	}
 }
