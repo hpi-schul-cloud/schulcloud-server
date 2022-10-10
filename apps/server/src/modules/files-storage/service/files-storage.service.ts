@@ -110,8 +110,8 @@ export class FilesStorageService {
 		try {
 			await this.restoreFilesInFileStorageClient(fileRecords);
 		} catch (err) {
-			await this.fileRecordRepo.save(fileRecords);
 			this.filesStorageHelper.markForDelete(fileRecords);
+			await this.fileRecordRepo.save(fileRecords);
 			throw new InternalServerErrorException(err, `${FilesStorageService.name}:restore`);
 		}
 	}
