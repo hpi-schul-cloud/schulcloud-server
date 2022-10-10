@@ -1,4 +1,4 @@
-import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Global, Module } from '@nestjs/common';
 import { FilesStorageExchanges } from './exchange/files-storage';
@@ -42,4 +42,13 @@ export class RabbitMQWrapperModule {}
 	imports,
 	exports: [RabbitMQModule],
 })
-export class RabbitMQWrapperTestModule {}
+export class RabbitMQWrapperTestModule {
+	constructor(private readonly amqpConnectionManager: AmqpConnectionManager) {}
+
+	// In tests we need to close connections when the module is destroyed.
+	async onModuleDestroy() {
+		await Promise.all(
+			this.amqpConnectionManager.getConnections().map((connection) => connection.managedConnection.close())
+		);
+	}
+}
