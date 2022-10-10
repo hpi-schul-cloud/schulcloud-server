@@ -142,6 +142,10 @@ describe('FilesStorageUC', () => {
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
+				{
+					provide: FilesStorageHelper,
+					useValue: createMock<FilesStorageHelper>(),
+				},
 			],
 		}).compile();
 

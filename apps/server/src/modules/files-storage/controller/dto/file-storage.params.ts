@@ -1,9 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain';
 import { FileRecordParentType } from '@shared/domain/entity/filerecord.entity';
-import { Allow, IsEnum, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 
 export class FileRecordParams {
+	constructor(fileRecordParams: FileRecordParams) {
+		this.schoolId = fileRecordParams.schoolId;
+		this.parentId = fileRecordParams.parentId;
+		this.parentType = fileRecordParams.parentType;
+	}
+
 	@ApiProperty()
 	@IsMongoId()
 	schoolId!: EntityId;
@@ -52,12 +58,14 @@ export class DownloadFileParams {
 export class ScanResultParams {
 	@ApiProperty()
 	@Allow()
+	// @IsBoolean() ?
 	virus_detected!: boolean;
 
 	@ApiProperty()
 	@Allow()
 	virus_signature?: string;
 }
+
 export class SingleFileParams {
 	@ApiProperty()
 	@IsMongoId()
