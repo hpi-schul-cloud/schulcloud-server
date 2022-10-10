@@ -95,7 +95,7 @@ describe('IservOAuthService', () => {
 					uuid: '',
 					sub: '',
 				})
-			).rejects.toEqual(new OAuthSSOError('Failed to find user with this ldapId', 'sso_user_notfound'));
+			).rejects.toEqual(new OAuthSSOError('Failed to find user with ldapId: unknown', 'sso_user_notfound'));
 		});
 	});
 });
