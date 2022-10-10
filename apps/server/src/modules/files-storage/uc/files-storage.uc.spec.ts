@@ -49,7 +49,6 @@ describe('FilesStorageUC', () => {
 	let filesStorageUC: FilesStorageUC;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let filesStorageService: DeepMocked<FilesStorageService>;
-	let filesStorageHelper: DeepMocked<FilesStorageHelper>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let antivirusService: DeepMocked<AntivirusService>;
 	let httpService: DeepMocked<HttpService>;
@@ -142,10 +141,6 @@ describe('FilesStorageUC', () => {
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
-				{
-					provide: FilesStorageHelper,
-					useValue: createMock<FilesStorageHelper>(),
-				},
 			],
 		}).compile();
 
@@ -156,7 +151,6 @@ describe('FilesStorageUC', () => {
 		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
 		filesStorageService = module.get(FilesStorageService);
-		filesStorageHelper = module.get(FilesStorageHelper);
 		fileRecords = [
 			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
 			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
