@@ -1,9 +1,10 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain';
+import { EntityId, ScanStatus } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
+import { FileRecordParams, ScanResultParams } from '../controller/dto';
 import { ErrorStatus } from '../error';
 import { ErrorType } from '../files-storage.const';
 import { FilesStorageHelper } from './files-storage.helper';
@@ -24,6 +25,15 @@ describe('FilesStorageHelper', () => {
 		];
 
 		return fileRecords;
+	};
+
+	const setupFileRecord = () => {
+		const userId: EntityId = new ObjectId().toHexString();
+		const schoolId: EntityId = new ObjectId().toHexString();
+
+		const fileRecord = fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' });
+
+		return fileRecord;
 	};
 
 	beforeAll(async () => {
@@ -167,14 +177,139 @@ describe('FilesStorageHelper', () => {
 	});
 
 	describe('modifiedFileNameInScope is called', () => {
-		// TODO: add tests
+		describe('WHEN all fileRecords has different names', () => {
+			const setup = () => {
+				const fileRecords = setupFileRecords();
+				const fileRecord = fileRecords[0];
+				const newFileName = 'renamed';
+
+				return {
+					newFileName,
+					fileRecords,
+					fileRecord,
+				};
+			};
+
+			it('should rename fileRecord', () => {
+				const { fileRecords, fileRecord, newFileName } = setup();
+
+				const result = fileStorageHelper.modifiedFileNameInScope(fileRecord, fileRecords, newFileName);
+
+				expect(result.name).toEqual(newFileName);
+			});
+		});
+
+		describe('WHEN fileRecords with new FileName already exist', () => {
+			const setup = () => {
+				const fileRecords = setupFileRecords();
+				const newFileName = 'renamed';
+				fileRecords[0].name = newFileName;
+
+				return {
+					newFileName,
+					fileRecords,
+				};
+			};
+
+			it('should throw with specific error', () => {
+				const { fileRecords, newFileName } = setup();
+
+				expect(() => fileStorageHelper.checkDuplicatedNames(fileRecords, newFileName)).toThrowError(
+					new ConflictException(ErrorType.FILE_NAME_EXISTS)
+				);
+			});
+		});
 	});
 
 	describe('mapFileRecordToFileRecordParams is called', () => {
-		// TODO: add tests
+		const setup = () => {
+			const fileRecord = setupFileRecord();
+
+			return {
+				fileRecord,
+			};
+		};
+
+		it('should return expected instance of params', () => {
+			const { fileRecord } = setup();
+
+			const result = fileStorageHelper.mapFileRecordToFileRecordParams(fileRecord);
+
+			expect(result).toBeInstanceOf(FileRecordParams);
+		});
+
+		it('should return correct mapped values', () => {
+			const { fileRecord } = setup();
+
+			const result = fileStorageHelper.mapFileRecordToFileRecordParams(fileRecord);
+
+			expect(result).toEqual({
+				schoolId: fileRecord.schoolId,
+				parentId: fileRecord.parentId,
+				parentType: fileRecord.parentType,
+			});
+		});
 	});
 
 	describe('getStatusFromScanResult is called', () => {
-		// TODO: add tests
+		describe('WHEN virus is detected', () => {
+			const setup = () => {
+				const scanResultParams: ScanResultParams = {
+					virus_signature: 'bla',
+					virus_detected: true,
+				};
+
+				return {
+					scanResultParams,
+				};
+			};
+
+			it('should return blocked scan status', () => {
+				const { scanResultParams } = setup();
+
+				const result = fileStorageHelper.getStatusFromScanResult(scanResultParams);
+
+				expect(result).toEqual(ScanStatus.BLOCKED);
+			});
+		});
+
+		describe('WHEN no virus is detected', () => {
+			const setup = () => {
+				const scanResultParams: ScanResultParams = {
+					virus_detected: false,
+				};
+
+				return {
+					scanResultParams,
+				};
+			};
+
+			it('should return blocked scan status', () => {
+				const { scanResultParams } = setup();
+
+				const result = fileStorageHelper.getStatusFromScanResult(scanResultParams);
+
+				expect(result).toEqual(ScanStatus.VERIFIED);
+			});
+		});
+
+		describe('WHEN empty scanResult is passed', () => {
+			const setup = () => {
+				const scanResultParams = {};
+
+				return {
+					scanResultParams,
+				};
+			};
+
+			it('should return blocked scan status', () => {
+				const { scanResultParams } = setup();
+
+				// @ts-expect-error type do not match
+				const result = fileStorageHelper.getStatusFromScanResult(scanResultParams);
+
+				expect(result).toEqual(ScanStatus.BLOCKED);
+			});
+		});
 	});
 });
