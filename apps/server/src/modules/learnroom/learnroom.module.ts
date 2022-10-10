@@ -21,6 +21,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { UserModule } from '../user/user.module';
 import { AuthorizationModule } from '../authorization';
 import { FilesStorageClientModule } from '../files-storage-client';
 import { CourseController } from './controller/course.controller';
@@ -37,7 +38,7 @@ import { RoomsService } from './uc/rooms.service';
 import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
-	imports: [AuthorizationModule, FilesStorageClientModule],
+	imports: [AuthorizationModule, FilesStorageClientModule, UserModule],
 	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,

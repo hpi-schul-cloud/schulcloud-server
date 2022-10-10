@@ -1,16 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, SortOrder } from '@shared/domain';
+import { Course, PermissionService, SortOrder } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import { courseFactory, setupEntities } from '@shared/testing';
 import AdmZip from 'adm-zip';
+import { UserService } from '@src/modules/user/service/user.service';
 import { CourseUc } from './course.uc';
 
 describe('CourseUc', () => {
 	let module: TestingModule;
 	let service: CourseUc;
 	let repo: DeepMocked<CourseRepo>;
+	let permissionService: DeepMocked<PermissionService>;
 	let orm: MikroORM;
 
 	beforeAll(async () => {
@@ -22,11 +24,20 @@ describe('CourseUc', () => {
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
 				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
+				{
+					provide: PermissionService,
+					useValue: createMock<PermissionService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(CourseUc);
 		repo = module.get(CourseRepo);
+		permissionService = module.get(PermissionService);
 	});
 
 	afterAll(async () => {
@@ -66,13 +77,10 @@ describe('CourseUc', () => {
 			repo.findOne.mockRestore();
 		});
 
-		it('should create readable stream', async () => {
-			await expect(service.exportCourse('courseId', 'userId')).resolves.toBeDefined();
-			expect(repo.findOne).toBeCalledTimes(1);
-		});
+		it('should create zip archive with imsmanifest.xml at the root', async () => {
+			permissionService.checkUserHasAllSchoolPermissions.mockImplementationOnce(() => {});
 
-		it('should create zip archive with imsmanifest.xml a the root', async () => {
-			const stream = await service.exportCourse('courseId');
+			const stream = await service.exportCourse('courseId', 'userId');
 			const buffers = [] as unknown[];
 			// eslint-disable-next-line no-restricted-syntax
 			for await (const chunk of stream) {
@@ -83,6 +91,14 @@ describe('CourseUc', () => {
 
 			expect(manifest).toBeDefined();
 			expect(manifest?.getData().toString()).toContain('Placeholder');
+		});
+
+		it('should throw if user can not edit course', async () => {
+			permissionService.checkUserHasAllSchoolPermissions.mockImplementationOnce(() => {
+				throw new Error();
+			});
+
+			await expect(service.exportCourse('courseId', 'userId')).rejects.toThrow();
 		});
 	});
 });
