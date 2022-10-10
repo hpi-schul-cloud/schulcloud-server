@@ -7,7 +7,6 @@ import { FileRecordParentType, ScanStatus } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { request } from 'node:http';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { RenameFileParams, ScanResultParams } from '../controller/dto';
 import { FilesStorageHelper } from '../helper';
@@ -713,6 +712,73 @@ describe('FilesStorageService', () => {
 				const { requestParams, error } = setup();
 
 				await expect(service.restoreFilesOfParent(requestParams)).rejects.toThrowError(error);
+			});
+		});
+	});
+
+	describe('restore is called', () => {
+		describe('WHEN valid files exists', () => {
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+
+				fileRecordRepo.save.mockResolvedValueOnce();
+
+				return { fileRecords };
+			};
+
+			it('should call repo save with right parameters', async () => {
+				const { fileRecords } = setup();
+
+				const unmarkedFileRecords = filesStorageHelper.unmarkForDelete(fileRecords);
+
+				await service.restore(fileRecords);
+
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(unmarkedFileRecords);
+			});
+
+			it('should call storageClient.restore', async () => {
+				const { fileRecords } = setup();
+				const paths = filesStorageHelper.getPaths(fileRecords);
+
+				await service.restore(fileRecords);
+
+				expect(storageClient.restore).toHaveBeenCalledWith(paths);
+			});
+		});
+
+		describe('WHEN repository throws an error', () => {
+			const setup = () => {
+				const fileRecords = getFileRecords();
+
+				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
+
+				return { fileRecords };
+			};
+
+			it('should pass the error', async () => {
+				const { fileRecords } = setup();
+
+				await expect(service.restore(fileRecords)).rejects.toThrow(new Error('bla'));
+			});
+		});
+
+		describe('WHEN filestorage client throw an error', () => {
+			const setup = () => {
+				storageClient.restore.mockRejectedValueOnce(new Error('bla'));
+
+				return { fileRecords: getFileRecords() };
+			};
+
+			it('should throw error if entity not found', async () => {
+				const { fileRecords } = setup();
+
+				await expect(service.restore(fileRecords)).rejects.toThrow(new Error('bla'));
+			});
+
+			it('should throw error if entity not found', () => {
+				const { fileRecords } = setup();
+
+				expect(fileRecordRepo.save(fileRecords)).toBeCalledTimes(1);
 			});
 		});
 	});
