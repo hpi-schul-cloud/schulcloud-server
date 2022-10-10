@@ -24,6 +24,7 @@ import {
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
 import { ErrorType } from '../files-storage.const';
+import { FilesStorageHelper } from '../helper';
 import { IGetFileResponse } from '../interface/storage-client';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
@@ -121,6 +122,10 @@ describe('FilesStorageUC', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: FilesStorageHelper,
+					useValue: createMock<FilesStorageHelper>(),
 				},
 			],
 		}).compile();
