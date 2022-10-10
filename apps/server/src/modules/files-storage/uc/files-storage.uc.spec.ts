@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, EntityId, FileRecord, FileRecordParentType, Permission, ScanStatus } from '@shared/domain';
+import { Actions, Counted, EntityId, FileRecord, FileRecordParentType, Permission, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
@@ -23,8 +23,10 @@ import {
 	FileUrlParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
-import { ErrorType } from '../files-storage.const';
+import { ErrorType, PermissionContexts } from '../files-storage.const';
+import { FilesStorageHelper } from '../helper';
 import { IGetFileResponse } from '../interface/storage-client';
+import { FileStorageMapper } from '../mapper/parent-type.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 
@@ -47,6 +49,7 @@ describe('FilesStorageUC', () => {
 	let filesStorageUC: FilesStorageUC;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let filesStorageService: DeepMocked<FilesStorageService>;
+	let filesStorageHelper: DeepMocked<FilesStorageHelper>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let antivirusService: DeepMocked<AntivirusService>;
 	let httpService: DeepMocked<HttpService>;
@@ -64,6 +67,22 @@ describe('FilesStorageUC', () => {
 	const entityId: EntityId = new ObjectId().toHexString();
 	const userId: EntityId = new ObjectId().toHexString();
 	const schoolId: EntityId = new ObjectId().toHexString();
+
+	const getRequestParams = (schoolId1: EntityId, userId1: EntityId) => {
+		return { schoolId: schoolId1, parentId: userId1, parentType: FileRecordParentType.User };
+	};
+
+	const getParams = () => {
+		const userId1: EntityId = new ObjectId().toHexString();
+		const schoolId1: EntityId = new ObjectId().toHexString();
+		const requestParams1 = getRequestParams(schoolId1, userId1);
+
+		return { userId1, schoolId1, requestParams1 };
+	};
+
+	const getFileRecord = () => {
+		return fileRecordFactory.buildWithId({ name: 'text.txt' });
+	};
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -94,6 +113,7 @@ describe('FilesStorageUC', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
+				FilesStorageHelper,
 				{
 					provide: S3ClientAdapter,
 					useValue: createMock<S3ClientAdapter>(),
@@ -132,6 +152,7 @@ describe('FilesStorageUC', () => {
 		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
 		filesStorageService = module.get(FilesStorageService);
+		filesStorageHelper = module.get(FilesStorageHelper);
 		fileRecords = [
 			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
 			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
@@ -478,40 +499,70 @@ describe('FilesStorageUC', () => {
 		});
 	});
 
-	describe('deleteFilesOfParent()', () => {
-		let requestParams: FileRecordParams;
-		beforeEach(() => {
-			requestParams = {
-				schoolId,
-				parentId: userId,
-				parentType: FileRecordParentType.User,
-			};
-			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 1]);
-			storageClient.delete.mockResolvedValue([]);
+	describe('deleteFilesOfParent is called', () => {
+		it('should call authorizationService.checkPermissionByReferences', async () => {
+			const { userId1, requestParams1 } = getParams();
+			const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(requestParams1.parentType);
+
+			await filesStorageUC.deleteFilesOfParent(userId1, requestParams1);
+			expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+				userId1,
+				allowedType,
+				requestParams1.parentId,
+				PermissionContexts.delete
+			);
 		});
 
-		describe('calls to fileStorageService', () => {
-			it('should call with correctly params', async () => {
-				await filesStorageUC.deleteFilesOfParent(userId, requestParams);
-				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledWith(requestParams);
-			});
-		});
-
-		describe('Tests of permission handling', () => {
-			it('should call authorizationService.checkPermissionByReferences', async () => {
-				authorizationService.checkPermissionByReferences.mockResolvedValue();
-				await filesStorageUC.deleteFilesOfParent(userId, requestParams);
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
-					userId,
-					requestParams.parentType,
-					requestParams.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_REMOVE] }
-				);
-			});
-
-			it('should throw Error', async () => {
+		describe('WHEN user is not authorized', () => {
+			const setup = () => {
+				const { requestParams1, userId1 } = getParams();
 				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
-				await expect(filesStorageUC.deleteFilesOfParent(userId, requestParams)).rejects.toThrow();
+
+				return { requestParams1, userId1 };
+			};
+
+			it('should throw forbidden error', async () => {
+				const { requestParams1, userId1 } = setup();
+				await expect(filesStorageUC.deleteFilesOfParent(userId1, requestParams1)).rejects.toThrow(
+					new ForbiddenException()
+				);
+				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('WHEN user is authorized', () => {
+			const setup = () => {
+				const { requestParams1, userId1 } = getParams();
+
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
+
+				return { requestParams1, userId1 };
+			};
+
+			it('should call service with correct params', async () => {
+				const { requestParams1, userId1 } = setup();
+				await filesStorageUC.deleteFilesOfParent(userId1, requestParams1);
+				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledWith(requestParams1);
+			});
+
+			it('should return results of service', async () => {
+				const { requestParams1, userId1 } = setup();
+				const fileRecord1 = getFileRecord();
+				const mockedResult = [[fileRecord1], 0] as Counted<FileRecord[]>;
+
+				filesStorageService.deleteFilesOfParent.mockResolvedValue(mockedResult);
+
+				const result = await filesStorageUC.deleteFilesOfParent(userId1, requestParams1);
+				expect(result).toEqual(mockedResult);
+			});
+
+			it('should return error of service', async () => {
+				const { requestParams1, userId1 } = setup();
+				const error = new Error('test');
+
+				filesStorageService.deleteFilesOfParent.mockRejectedValue(error);
+
+				await expect(filesStorageUC.deleteFilesOfParent(userId1, requestParams1)).rejects.toThrow(error);
 			});
 		});
 	});
