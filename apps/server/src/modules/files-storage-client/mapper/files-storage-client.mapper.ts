@@ -1,4 +1,5 @@
-import { FileRecordParentType, Lesson, Task } from '@shared/domain';
+import { Lesson, Task } from '@shared/domain';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { CopyFileDto, FileDto } from '../dto';
 import { ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
 
@@ -47,9 +48,9 @@ export class FilesStorageClientMapper {
 
 	static mapStringToParentType(input: string): FileRecordParentType {
 		let response: FileRecordParentType;
-		const allowedStrings = ['users', 'courses', 'tasks', 'schools', 'lessons'];
+		const allowedStrings = Object.values(FileRecordParentType);
 
-		if (allowedStrings.includes(input)) {
+		if (allowedStrings.includes(input as FileRecordParentType)) {
 			response = input as FileRecordParentType;
 		} else {
 			throw new Error(`Mapping type is not supported. ${input}`);

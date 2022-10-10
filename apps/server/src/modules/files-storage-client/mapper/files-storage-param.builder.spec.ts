@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { FileRecordParentType } from '@shared/domain';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { FileParamBuilder } from './files-storage-param.builder';
 

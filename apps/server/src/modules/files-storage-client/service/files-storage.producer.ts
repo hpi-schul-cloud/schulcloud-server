@@ -24,17 +24,14 @@ export class FilesStorageProducer {
 		private readonly configService: ConfigService<IFilesStorageClientConfig, true>
 	) {
 		this.logger.setContext(FilesStorageProducer.name);
-		this.timeout = this.configService.get('INCOMING_REQUEST_TIMEOUT');
+		this.timeout = this.configService.get('INCOMING_REQUEST_TIMEOUT_COPY_API');
 	}
 
 	async copyFilesOfParent(payload: ICopyFilesOfParentParams): Promise<ICopyFileDO[]> {
 		this.logger.debug({ action: 'copyFilesOfParent', payload });
-		const response = await this.amqpConnection.request<RpcMessage<ICopyFileDO[]>>({
-			exchange: FilesStorageExchanges.FILES_STORAGE,
-			routingKey: FilesStorageEvents.COPY_FILES_OF_PARENT,
-			payload,
-			timeout: this.timeout,
-		});
+		const response = await this.amqpConnection.request<RpcMessage<ICopyFileDO[]>>(
+			this.createRequest(FilesStorageEvents.COPY_FILES_OF_PARENT, payload)
+		);
 
 		this.checkError(response);
 		return response.message || [];
@@ -42,12 +39,9 @@ export class FilesStorageProducer {
 
 	async listFilesOfParent(payload: IFileRecordParams): Promise<IFileDO[]> {
 		this.logger.debug({ action: 'listFilesOfParent', payload });
-		const response = await this.amqpConnection.request<RpcMessage<IFileDO[]>>({
-			exchange: FilesStorageExchanges.FILES_STORAGE,
-			routingKey: FilesStorageEvents.LIST_FILES_OF_PARENT,
-			payload,
-			timeout: this.timeout,
-		});
+		const response = await this.amqpConnection.request<RpcMessage<IFileDO[]>>(
+			this.createRequest(FilesStorageEvents.LIST_FILES_OF_PARENT, payload)
+		);
 
 		this.checkError(response);
 		return response.message || [];
@@ -55,12 +49,9 @@ export class FilesStorageProducer {
 
 	async deleteFilesOfParent(payload: IFileRecordParams): Promise<IFileDO[]> {
 		this.logger.debug({ action: 'deleteFilesOfParent', payload });
-		const response = await this.amqpConnection.request<RpcMessage<IFileDO[]>>({
-			exchange: FilesStorageExchanges.FILES_STORAGE,
-			routingKey: FilesStorageEvents.DELETE_FILES_OF_PARENT,
-			payload,
-			timeout: this.timeout,
-		});
+		const response = await this.amqpConnection.request<RpcMessage<IFileDO[]>>(
+			this.createRequest(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload)
+		);
 
 		this.checkError(response);
 		return response.message || [];
@@ -72,5 +63,14 @@ export class FilesStorageProducer {
 			const domainError = ErrorMapper.mapErrorToDomainError(error);
 			throw domainError;
 		}
+	}
+
+	private createRequest(event: FilesStorageEvents, payload: IFileRecordParams | ICopyFilesOfParentParams) {
+		return {
+			exchange: FilesStorageExchanges.FILES_STORAGE,
+			routingKey: event,
+			payload,
+			timeout: this.timeout,
+		};
 	}
 }
