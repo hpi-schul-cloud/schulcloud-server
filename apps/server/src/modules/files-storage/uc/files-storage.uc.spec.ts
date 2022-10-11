@@ -777,84 +777,35 @@ describe('FilesStorageUC', () => {
 			});
 		});
 
-		describe('WHEN user is not authorised', () => {
-			// TODO: Add tests
-		});
+		describe('WHEN user is not authorised ', () => {
+			const setup = () => {
+				const { params1, userId1 } = getFileRecordsWithParams();
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 
-		describe('WHEN filesStorageService throw an error', () => {
-			// TODO: Add tests
-		});
-
-		let requestParams: FileRecordParams;
-		beforeEach(() => {
-			requestParams = {
-				schoolId,
-				parentId: userId,
-				parentType: FileRecordParentType.User,
+				return { params1, userId1 };
 			};
-			fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValue([fileRecords, 1]);
-			storageClient.delete.mockResolvedValue([]);
-		});
 
-		describe('calls to fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete()', () => {
-			it('should call once', async () => {
-				await filesStorageUC.restoreFilesOfParent(userId, requestParams);
-				expect(fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete).toHaveBeenCalledTimes(1);
-			});
-
-			it('should call with correctly params', async () => {
-				await filesStorageUC.restoreFilesOfParent(userId, requestParams);
-				expect(fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete).toHaveBeenCalledWith(
-					requestParams.schoolId,
-					requestParams.parentId
-				);
-			});
-
-			it('should throw error if entity not found', async () => {
-				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockRejectedValue(new Error());
-				await expect(filesStorageUC.restoreFilesOfParent(userId, requestParams)).rejects.toThrow();
+			it('should throw forbidden error', async () => {
+				const { params1, userId1 } = setup();
+				await expect(filesStorageUC.restoreFilesOfParent(userId1, params1)).rejects.toThrow(new ForbiddenException());
+				expect(filesStorageService.getFilesOfParent).toHaveBeenCalledTimes(0);
 			});
 		});
 
-		describe('calls to fileRecordRepo.save()', () => {
-			it('should call with correctly params', async () => {
-				await filesStorageUC.restoreFilesOfParent(userId, requestParams);
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecords);
-			});
+		describe('WHEN service throws an error', () => {
+			const setup = () => {
+				const { params1, userId1 } = getFileRecordsWithParams();
+				const error = new Error('test');
 
-			it('should throw error if entity not found', async () => {
-				fileRecordRepo.save.mockRejectedValue(new Error());
-				await expect(filesStorageUC.restoreFilesOfParent(userId, requestParams)).rejects.toThrow();
-			});
+				filesStorageService.restoreFilesOfParent.mockRejectedValueOnce(error);
 
-			it('should call two times if call delete throw an error', async () => {
-				storageClient.restore.mockRejectedValue(new Error());
-				await expect(filesStorageUC.restoreFilesOfParent(userId, requestParams)).rejects.toThrow();
+				return { params1, userId1, error };
+			};
 
-				expect(fileRecordRepo.save).toHaveBeenCalledTimes(2);
-			});
+			it('should return error of service', async () => {
+				const { params1, userId1, error } = setup();
 
-			it('should return file response with deletedSince is undefined', async () => {
-				const [fileRecordsRes] = await filesStorageUC.restoreFilesOfParent(userId, requestParams);
-				expect(fileRecordsRes).toEqual(expect.arrayContaining([expect.objectContaining({ deletedSince: undefined })]));
-			});
-		});
-
-		describe('Tests of permission handling', () => {
-			it('should call authorizationService.checkPermissionByReferences', async () => {
-				authorizationService.checkPermissionByReferences.mockResolvedValue();
-				await filesStorageUC.restoreFilesOfParent(userId, requestParams);
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
-					userId,
-					requestParams.parentType,
-					requestParams.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
-				);
-			});
-
-			it('should throw Error', async () => {
-				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
-				await expect(filesStorageUC.restoreFilesOfParent(userId, requestParams)).rejects.toThrow();
+				await expect(filesStorageUC.restoreFilesOfParent(userId1, params1)).rejects.toThrow(error);
 			});
 		});
 	});
