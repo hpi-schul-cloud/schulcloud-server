@@ -531,7 +531,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
 				const { requestParams1, userId1 } = getParams();
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
 
 				return { requestParams1, userId1 };
 			};
@@ -549,7 +549,7 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { requestParams1, userId1 } = getParams();
 
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 
 				return { requestParams1, userId1 };
 			};
