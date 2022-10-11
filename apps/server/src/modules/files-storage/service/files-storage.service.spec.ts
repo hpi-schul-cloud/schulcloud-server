@@ -9,9 +9,40 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import _ from 'lodash';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { RenameFileParams, ScanResultParams } from '../controller/dto';
+import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
 import { FilesStorageHelper } from '../helper';
 import { FilesStorageService } from './files-storage.service';
+
+const getFileRecordsWithParams = () => {
+	const parentId = new ObjectId().toHexString();
+	const parentSchoolId = new ObjectId().toHexString();
+
+	const fileRecords = [
+		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+	];
+
+	const params: FileRecordParams = {
+		schoolId: parentSchoolId,
+		parentId,
+		parentType: FileRecordParentType.User,
+	};
+
+	return { params, fileRecords };
+};
+
+const getFileRecordWithParams = () => {
+	const parentId = new ObjectId().toHexString();
+	const parentSchoolId = new ObjectId().toHexString();
+
+	const fileRecord = fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' });
+	const params: SingleFileParams = {
+		fileRecordId: fileRecord.id,
+	};
+
+	return { params, fileRecord };
+};
 
 describe('FilesStorageService', () => {
 	let module: TestingModule;
@@ -20,58 +51,6 @@ describe('FilesStorageService', () => {
 	let storageClient: DeepMocked<S3ClientAdapter>;
 	let filesStorageHelper: FilesStorageHelper;
 	let orm: MikroORM;
-
-	const userId = new ObjectId().toHexString();
-	const schoolId = new ObjectId().toHexString();
-	const getFileRecords = () => {
-		const fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
-		];
-
-		return fileRecords;
-	};
-	const getRequestParams = () => {
-		const requestParams = {
-			schoolId,
-			parentId: userId,
-			parentType: FileRecordParentType.User,
-		};
-
-		return requestParams;
-	};
-
-	const getFileRecordsWithParams = () => {
-		const parentId = new ObjectId().toHexString();
-		const parentSchoolId = new ObjectId().toHexString();
-
-		const fileRecords = [
-			fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
-		];
-
-		const params = {
-			schoolId: parentSchoolId,
-			parentId,
-			parentType: FileRecordParentType.User,
-		};
-
-		return { params, fileRecords };
-	};
-
-	const getFileRecordWithParams = () => {
-		const parentId = new ObjectId().toHexString();
-		const parentSchoolId = new ObjectId().toHexString();
-
-		const fileRecord = fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' });
-		const params = {
-			fileRecordId: fileRecord.id,
-		};
-
-		return { params, fileRecord };
-	};
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -434,7 +413,7 @@ describe('FilesStorageService', () => {
 
 		describe('WHEN repository throw an error', () => {
 			const setup = () => {
-				const fileRecords = getFileRecords();
+				const { fileRecords } = getFileRecordsWithParams();
 
 				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
 
@@ -450,9 +429,11 @@ describe('FilesStorageService', () => {
 
 		describe('WHEN filestorage client throw an error', () => {
 			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+
 				storageClient.delete.mockRejectedValueOnce(new Error('bla'));
 
-				return { fileRecords: getFileRecords() };
+				return { fileRecords };
 			};
 
 			it('should throw error if entity not found', async () => {
@@ -473,39 +454,34 @@ describe('FilesStorageService', () => {
 			});
 
 			const setup = () => {
-				const fileRecords = getFileRecords();
-				const requestParams = getRequestParams();
+				const { fileRecords, params } = getFileRecordsWithParams();
 
 				spy = jest.spyOn(service, 'delete');
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 
-				return { requestParams, fileRecords };
+				return { params, fileRecords };
 			};
 
 			it('should call findBySchoolIdAndParentId onces with correctly params', async () => {
-				const { requestParams } = setup();
+				const { params } = setup();
 
-				await service.deleteFilesOfParent(requestParams);
+				await service.deleteFilesOfParent(params);
 
-				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenNthCalledWith(
-					1,
-					requestParams.schoolId,
-					requestParams.parentId
-				);
+				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenNthCalledWith(1, params.schoolId, params.parentId);
 			});
 
 			it('should call delete with correct params', async () => {
-				const { requestParams, fileRecords } = setup();
+				const { params, fileRecords } = setup();
 
-				await service.deleteFilesOfParent(requestParams);
+				await service.deleteFilesOfParent(params);
 
 				expect(service.delete).toHaveBeenCalledWith(fileRecords);
 			});
 
 			it('should return file records and count', async () => {
-				const { requestParams, fileRecords } = setup();
+				const { params, fileRecords } = setup();
 
-				const responseData = await service.deleteFilesOfParent(requestParams);
+				const responseData = await service.deleteFilesOfParent(params);
 				expect(responseData[0]).toEqual(
 					expect.arrayContaining([
 						expect.objectContaining({ ...fileRecords[0] }),
@@ -526,26 +502,26 @@ describe('FilesStorageService', () => {
 
 			const setup = () => {
 				const fileRecords = [];
-				const requestParams = getRequestParams();
+				const { params } = getFileRecordsWithParams();
 
 				spy = jest.spyOn(service, 'delete');
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 
-				return { requestParams };
+				return { params };
 			};
 
 			it('should not call delete', async () => {
-				const { requestParams } = setup();
+				const { params } = setup();
 
-				await service.deleteFilesOfParent(requestParams);
+				await service.deleteFilesOfParent(params);
 
 				expect(service.delete).toHaveBeenCalledTimes(0);
 			});
 
 			it('should return empty counted type', async () => {
-				const { requestParams } = setup();
+				const { params } = setup();
 
-				const result = await service.deleteFilesOfParent(requestParams);
+				const result = await service.deleteFilesOfParent(params);
 
 				expect(result).toEqual([[], 0]);
 			});
@@ -553,17 +529,17 @@ describe('FilesStorageService', () => {
 
 		describe('WHEN repository throw an error', () => {
 			const setup = () => {
-				const requestParams = getRequestParams();
+				const { params } = getFileRecordsWithParams();
 
 				fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValueOnce(new Error('bla'));
 
-				return { requestParams };
+				return { params };
 			};
 
 			it('should pass the error', async () => {
-				const { requestParams } = setup();
+				const { params } = setup();
 
-				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow(new Error('bla'));
+				await expect(service.deleteFilesOfParent(params)).rejects.toThrow(new Error('bla'));
 			});
 		});
 
@@ -575,19 +551,18 @@ describe('FilesStorageService', () => {
 			});
 
 			const setup = () => {
-				const fileRecords = getFileRecords();
-				const requestParams = getRequestParams();
+				const { params, fileRecords } = getFileRecordsWithParams();
 
 				spy = jest.spyOn(service, 'delete').mockRejectedValue(new Error('bla'));
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 
-				return { requestParams, fileRecords };
+				return { params, fileRecords };
 			};
 
 			it('should pass the error', async () => {
-				const { requestParams } = setup();
+				const { params } = setup();
 
-				await expect(service.deleteFilesOfParent(requestParams)).rejects.toThrow(new Error('bla'));
+				await expect(service.deleteFilesOfParent(params)).rejects.toThrow(new Error('bla'));
 			});
 		});
 	});
@@ -601,8 +576,7 @@ describe('FilesStorageService', () => {
 			});
 
 			const setup = () => {
-				const fileRecords = getFileRecords();
-				const requestParams = getRequestParams();
+				const { params, fileRecords } = getFileRecordsWithParams();
 
 				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([
 					fileRecords,
@@ -610,32 +584,32 @@ describe('FilesStorageService', () => {
 				]);
 				spy = jest.spyOn(service, 'restore').mockResolvedValueOnce();
 
-				return { requestParams, fileRecords };
+				return { params, fileRecords };
 			};
 
 			it('should call repo method findBySchoolIdAndParentIdAndMarkedForDelete with correct params', async () => {
-				const { requestParams } = setup();
+				const { params } = setup();
 
-				await service.restoreFilesOfParent(requestParams);
+				await service.restoreFilesOfParent(params);
 
 				expect(fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete).toHaveBeenCalledWith(
-					requestParams.schoolId,
-					requestParams.parentId
+					params.schoolId,
+					params.parentId
 				);
 			});
 
 			it('should call service restore with correct params', async () => {
-				const { requestParams, fileRecords } = setup();
+				const { params, fileRecords } = setup();
 
-				await service.restoreFilesOfParent(requestParams);
+				await service.restoreFilesOfParent(params);
 
 				expect(spy).toHaveBeenCalledWith(fileRecords);
 			});
 
 			it('should return counted fileRecords', async () => {
-				const { requestParams, fileRecords } = setup();
+				const { params, fileRecords } = setup();
 
-				const result = await service.restoreFilesOfParent(requestParams);
+				const result = await service.restoreFilesOfParent(params);
 
 				expect(result).toEqual([fileRecords, 3]);
 			});
@@ -649,18 +623,18 @@ describe('FilesStorageService', () => {
 			});
 
 			const setup = () => {
-				const requestParams = getRequestParams();
+				const { params } = getFileRecordsWithParams();
 
 				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([[], 0]);
 				spy = jest.spyOn(service, 'restore').mockResolvedValueOnce();
 
-				return { requestParams };
+				return { params };
 			};
 
 			it('should skip service restore call', async () => {
-				const { requestParams } = setup();
+				const { params } = setup();
 
-				await service.restoreFilesOfParent(requestParams);
+				await service.restoreFilesOfParent(params);
 
 				expect(spy).toHaveBeenCalledTimes(0);
 			});
@@ -674,19 +648,19 @@ describe('FilesStorageService', () => {
 			});
 
 			const setup = () => {
-				const requestParams = getRequestParams();
+				const { params } = getFileRecordsWithParams();
 				const error = new Error('bla');
 
 				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockRejectedValueOnce(error);
 				spy = jest.spyOn(service, 'restore').mockResolvedValueOnce();
 
-				return { requestParams, error };
+				return { params, error };
 			};
 
 			it('should skip service restore call', async () => {
-				const { requestParams, error } = setup();
+				const { params, error } = setup();
 
-				await expect(service.restoreFilesOfParent(requestParams)).rejects.toThrowError(error);
+				await expect(service.restoreFilesOfParent(params)).rejects.toThrowError(error);
 			});
 		});
 
@@ -698,20 +672,19 @@ describe('FilesStorageService', () => {
 			});
 
 			const setup = () => {
-				const fileRecords = getFileRecords();
-				const requestParams = getRequestParams();
+				const { params, fileRecords } = getFileRecordsWithParams();
 				const error = new Error('bla');
 
 				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([fileRecords, 3]);
 				spy = jest.spyOn(service, 'restore').mockRejectedValueOnce(error);
 
-				return { requestParams, error };
+				return { params, error };
 			};
 
 			it('should skip service restore call', async () => {
-				const { requestParams, error } = setup();
+				const { params, error } = setup();
 
-				await expect(service.restoreFilesOfParent(requestParams)).rejects.toThrowError(error);
+				await expect(service.restoreFilesOfParent(params)).rejects.toThrowError(error);
 			});
 		});
 	});
@@ -733,7 +706,7 @@ describe('FilesStorageService', () => {
 
 				await service.restore(fileRecords);
 
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(unmarkedFileRecords);
+				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(1, unmarkedFileRecords);
 			});
 
 			it('should call storageClient.restore', async () => {
@@ -748,7 +721,7 @@ describe('FilesStorageService', () => {
 
 		describe('WHEN repository throws an error', () => {
 			const setup = () => {
-				const fileRecords = getFileRecords();
+				const { fileRecords } = getFileRecordsWithParams();
 
 				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
 
@@ -764,9 +737,11 @@ describe('FilesStorageService', () => {
 
 		describe('WHEN filestorage client throw an error', () => {
 			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+
 				storageClient.restore.mockRejectedValueOnce(new Error('bla'));
 
-				return { fileRecords: getFileRecords() };
+				return { fileRecords };
 			};
 
 			it('should throw error if entity not found', async () => {
@@ -775,10 +750,14 @@ describe('FilesStorageService', () => {
 				await expect(service.restore(fileRecords)).rejects.toThrow(new Error('bla'));
 			});
 
-			it('should throw error if entity not found', () => {
+			it('should throw error if entity not found', async () => {
 				const { fileRecords } = setup();
 
-				expect(fileRecordRepo.save(fileRecords)).toBeCalledTimes(1);
+				// TODO: Add copy of fileRecors
+
+				await service.restore(fileRecords);
+
+				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(2, fileRecords);
 			});
 		});
 	});
