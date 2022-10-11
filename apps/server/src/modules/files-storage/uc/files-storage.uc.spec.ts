@@ -82,6 +82,25 @@ describe('FilesStorageUC', () => {
 		return fileRecordFactory.buildWithId({ name: 'text.txt' });
 	};
 
+	const getFileRecordsWithParams = () => {
+		const userId1 = new ObjectId().toHexString();
+		const parentSchoolId = new ObjectId().toHexString();
+
+		const fileRecords1 = [
+			fileRecordFactory.buildWithId({ parentId: userId1, schoolId: parentSchoolId, name: 'text.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId1, schoolId: parentSchoolId, name: 'text-two.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId1, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+		];
+
+		const params1: FileRecordParams = {
+			schoolId: parentSchoolId,
+			parentId: userId1,
+			parentType: FileRecordParentType.User,
+		};
+
+		return { params1, fileRecords1, userId1 };
+	};
+
 	beforeAll(async () => {
 		orm = await setupEntities();
 		fileDownloadParams = { fileRecordId: schoolId, fileName: 'text.txt' };
@@ -512,7 +531,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
 				const { requestParams1, userId1 } = getParams();
-				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 
 				return { requestParams1, userId1 };
 			};
@@ -530,7 +549,7 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { requestParams1, userId1 } = getParams();
 
-				authorizationService.checkPermissionByReferences.mockResolvedValue();
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 
 				return { requestParams1, userId1 };
 			};
@@ -619,7 +638,57 @@ describe('FilesStorageUC', () => {
 		});
 	});
 
-	describe('restoreFilesOfParent()', () => {
+	describe('restoreFilesOfParent is called', () => {
+		describe('WHEN user is authorised', () => {
+			const setup = () => {
+				const { params1, userId1, fileRecords1 } = getFileRecordsWithParams();
+
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				filesStorageService.deleteFilesOfParent.mockResolvedValueOnce([fileRecords1, fileRecords1.length]);
+				filesStorageService.delete.mockResolvedValueOnce();
+
+				return { params1, userId1, fileRecords1 };
+			};
+
+			it('should call authorisation with right parameters', async () => {
+				const { params1, userId1 } = setup();
+				const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(params1.parentType);
+
+				await filesStorageUC.deleteFilesOfParent(userId1, params1);
+
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId1,
+					allowedType,
+					params1.parentId,
+					PermissionContexts.delete
+				);
+			});
+
+			it('should call filesStorageService with right parameters', async () => {
+				const { params1, userId1 } = setup();
+
+				await filesStorageUC.deleteFilesOfParent(userId1, params1);
+
+				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledWith(params1);
+			});
+
+			it('should return counted result', async () => {
+				const { params1, userId1, fileRecords1 } = setup();
+
+				const result = await filesStorageUC.deleteFilesOfParent(userId1, params1);
+
+				expect(result).toEqual([fileRecords1, 3]);
+			});
+		});
+
+		describe('WHEN user is not authorised', () => {
+			// TODO: Add tests
+		});
+
+		describe('WHEN filesStorageService throw an error', () => {
+			// TODO: Add tests
+		});
+
 		let requestParams: FileRecordParams;
 		beforeEach(() => {
 			requestParams = {

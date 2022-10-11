@@ -29,10 +29,10 @@ import { FilesStorageService } from '../service/files-storage.service';
 @Injectable()
 export class FilesStorageUC {
 	constructor(
+		private logger: Logger,
 		private readonly storageClient: S3ClientAdapter,
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly antivirusService: AntivirusService,
-		private logger: Logger,
 		private readonly authorizationService: AuthorizationService,
 		private readonly httpService: HttpService,
 		private readonly filesStorageService: FilesStorageService
