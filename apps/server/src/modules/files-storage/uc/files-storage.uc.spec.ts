@@ -24,7 +24,6 @@ import {
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
 import { ErrorType, PermissionContexts } from '../files-storage.const';
-import { FilesStorageHelper } from '../helper';
 import { IGetFileResponse } from '../interface/storage-client';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -112,7 +111,6 @@ describe('FilesStorageUC', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
-				FilesStorageHelper,
 				{
 					provide: S3ClientAdapter,
 					useValue: createMock<S3ClientAdapter>(),
