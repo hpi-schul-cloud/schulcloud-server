@@ -10,9 +10,17 @@ export enum NodeEnvType {
 	MIGRATION = 'migration',
 }
 
-export interface IServerConfig extends ICoreModuleConfig, IUserConfig, IFilesStorageClientConfig, IAccountConfig {
-	NODE_ENV: string;
+interface IFeatureConfig {
 	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: boolean;
+}
+
+export interface IServerConfig
+	extends ICoreModuleConfig,
+		IFeatureConfig,
+		IUserConfig,
+		IFilesStorageClientConfig,
+		IAccountConfig {
+	NODE_ENV: string;
 }
 
 const config: IServerConfig = {
