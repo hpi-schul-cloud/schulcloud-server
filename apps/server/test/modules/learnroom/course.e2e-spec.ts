@@ -60,7 +60,8 @@ describe('Course Controller (e2e)', () => {
 		expect(typeof body.data[0].title).toBe('string');
 	});
 
-	it('[GET] course export', async () => {
+	// TODO: enable feature flag FEATURE_IMSCC_COURSE_EXPORT for test runs
+	it.skip('[GET] course export', async () => {
 		const user = setup();
 		const course = courseFactory.build({ name: 'course #1', students: [user] });
 		await em.persistAndFlush(course);
