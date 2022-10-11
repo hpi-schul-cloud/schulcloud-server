@@ -596,7 +596,7 @@ describe('FilesStorageUC', () => {
 		});
 	});
 
-	describe('deleteOneFile()', () => {
+	describe('deleteOneFile is called', () => {
 		describe('WHEN file is found', () => {
 			const setup = () => {
 				const { fileRecords1, userId1 } = getFileRecordsWithParams();
