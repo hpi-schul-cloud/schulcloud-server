@@ -9,7 +9,7 @@ import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
-import { ErrorType } from '@src/modules/files-storage/files-storage.const';
+import { ErrorType } from '@src/modules/files-storage/error';
 import { config, FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
 import { Request } from 'express';
 import S3rver from 's3rver';

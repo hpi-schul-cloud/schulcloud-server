@@ -20,7 +20,8 @@ import {
 	FileUrlParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
-import { ErrorType, PermissionContexts } from '../files-storage.const';
+import { ErrorType } from '../error';
+import { PermissionContexts } from '../files-storage.const';
 import { ICopyFiles } from '../interface';
 import { IFile } from '../interface/file';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';

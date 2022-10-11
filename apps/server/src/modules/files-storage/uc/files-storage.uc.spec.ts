@@ -23,7 +23,8 @@ import {
 	FileUrlParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
-import { ErrorType, PermissionContexts } from '../files-storage.const';
+import { ErrorType } from '../error';
+import { PermissionContexts } from '../files-storage.const';
 import { IGetFileResponse } from '../interface/storage-client';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
 import { FilesStorageService } from '../service/files-storage.service';

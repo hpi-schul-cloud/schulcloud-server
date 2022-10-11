@@ -5,8 +5,7 @@ import { EntityId, ScanStatus } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { FileRecordParams, ScanResultParams } from '../controller/dto';
-import { ErrorStatus } from '../error';
-import { ErrorType } from '../files-storage.const';
+import { ErrorType } from '../error';
 import { FilesStorageHelper } from './files-storage.helper';
 
 describe('FilesStorageHelper', () => {
@@ -69,19 +68,19 @@ describe('FilesStorageHelper', () => {
 		it('should throw error on empty schoolId', () => {
 			expect(() => {
 				fileStorageHelper.createPath('', 'fileRecordId');
-			}).toThrowError(ErrorStatus.COULD_NOT_CREATE_PATH);
+			}).toThrowError(ErrorType.COULD_NOT_CREATE_PATH);
 		});
 
 		it('should throw error on empty fileRecordId', () => {
 			expect(() => {
 				fileStorageHelper.createPath('schoolId', '');
-			}).toThrowError(ErrorStatus.COULD_NOT_CREATE_PATH);
+			}).toThrowError(ErrorType.COULD_NOT_CREATE_PATH);
 		});
 
 		it('should throw error on empty fileRecordId and schoolId', () => {
 			expect(() => {
 				fileStorageHelper.createPath('', '');
-			}).toThrowError(ErrorStatus.COULD_NOT_CREATE_PATH);
+			}).toThrowError(ErrorType.COULD_NOT_CREATE_PATH);
 		});
 	});
 

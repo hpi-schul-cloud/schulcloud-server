@@ -1,8 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { EntityId, FileRecord, ScanStatus } from '@shared/domain';
 import { FileRecordParams, ScanResultParams } from '../controller/dto';
-import { ErrorStatus } from '../error';
-import { ErrorType } from '../files-storage.const';
+import { ErrorType } from '../error';
 
 // TODO:
 // we should evaluate how we structure helper,
@@ -11,7 +10,7 @@ import { ErrorType } from '../files-storage.const';
 export class FilesStorageHelper {
 	public createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 		if (!schoolId || !fileRecordId) {
-			throw new Error(ErrorStatus.COULD_NOT_CREATE_PATH);
+			throw new Error(ErrorType.COULD_NOT_CREATE_PATH);
 		}
 
 		return [schoolId, fileRecordId].join('/');

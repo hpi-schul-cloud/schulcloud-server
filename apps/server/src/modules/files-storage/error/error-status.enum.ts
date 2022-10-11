@@ -1,3 +1,6 @@
-export enum ErrorStatus {
-	COULD_NOT_CREATE_PATH = `Couldn't create path. SchoolId or FileRecordId is empty.`,
+export enum ErrorType {
+	FILE_IS_BLOCKED = 'FILE_IS_BLOCKED',
+	FILE_NOT_FOUND = 'FILE_NOT_FOUND',
+	FILE_NAME_EXISTS = 'FILE_NAME_EXISTS',
+	COULD_NOT_CREATE_PATH = `COULD_NOT_CREATE_PATH`,
 }
