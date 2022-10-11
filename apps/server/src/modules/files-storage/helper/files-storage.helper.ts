@@ -45,7 +45,7 @@ export class FilesStorageHelper {
 		}
 	}
 
-	public modifiedFileNameInScope(
+	public modifyFileNameInScope(
 		fileRecord: FileRecord,
 		fileRecordsInScope: FileRecord[],
 		newFileName: string

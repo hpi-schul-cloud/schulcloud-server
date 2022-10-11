@@ -35,7 +35,7 @@ export class FilesStorageService {
 		const fileRecordParams = this.filesStorageHelper.mapFileRecordToFileRecordParams(fileRecord);
 		const [fileRecords] = await this.getFilesOfParent(fileRecordParams);
 
-		const modifiedFileRecord = this.filesStorageHelper.modifiedFileNameInScope(fileRecord, fileRecords, data.fileName);
+		const modifiedFileRecord = this.filesStorageHelper.modifyFileNameInScope(fileRecord, fileRecords, data.fileName);
 		await this.fileRecordRepo.save(modifiedFileRecord);
 
 		return modifiedFileRecord;

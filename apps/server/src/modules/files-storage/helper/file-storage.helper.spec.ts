@@ -176,7 +176,7 @@ describe('FilesStorageHelper', () => {
 		});
 	});
 
-	describe('modifiedFileNameInScope is called', () => {
+	describe('modifyFileNameInScope is called', () => {
 		describe('WHEN all fileRecords has different names', () => {
 			const setup = () => {
 				const fileRecords = setupFileRecords();
@@ -193,7 +193,7 @@ describe('FilesStorageHelper', () => {
 			it('should rename fileRecord', () => {
 				const { fileRecords, fileRecord, newFileName } = setup();
 
-				const result = fileStorageHelper.modifiedFileNameInScope(fileRecord, fileRecords, newFileName);
+				const result = fileStorageHelper.modifyFileNameInScope(fileRecord, fileRecords, newFileName);
 
 				expect(result.name).toEqual(newFileName);
 			});
