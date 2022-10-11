@@ -496,17 +496,31 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('deleteFilesOfParent is called', () => {
-		it('should call authorizationService.checkPermissionByReferences', async () => {
-			const { userId1, requestParams1 } = getParams();
-			const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(requestParams1.parentType);
+		describe('WHEN user is authorized', () => {
+			const setup = () => {
+				const { requestParams1, userId1 } = getParams();
 
-			await filesStorageUC.deleteFilesOfParent(userId1, requestParams1);
-			expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
-				userId1,
-				allowedType,
-				requestParams1.parentId,
-				PermissionContexts.delete
-			);
+				return { requestParams1, userId1 };
+			};
+
+			it('should call authorizationService.checkPermissionByReferences', async () => {
+				const { userId1, requestParams1 } = getParams();
+				const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(requestParams1.parentType);
+
+				await filesStorageUC.deleteFilesOfParent(userId1, requestParams1);
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+					userId1,
+					allowedType,
+					requestParams1.parentId,
+					PermissionContexts.delete
+				);
+			});
+
+			it('should call service with correct params', async () => {
+				const { requestParams1, userId1 } = setup();
+				await filesStorageUC.deleteFilesOfParent(userId1, requestParams1);
+				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledWith(requestParams1);
+			});
 		});
 
 		describe('WHEN user is not authorized', () => {
@@ -526,37 +540,37 @@ describe('FilesStorageUC', () => {
 			});
 		});
 
-		describe('WHEN user is authorized', () => {
+		describe('WHEN service deletes successful', () => {
 			const setup = () => {
 				const { requestParams1, userId1 } = getParams();
-
-				authorizationService.checkPermissionByReferences.mockResolvedValue();
-
-				return { requestParams1, userId1 };
-			};
-
-			it('should call service with correct params', async () => {
-				const { requestParams1, userId1 } = setup();
-				await filesStorageUC.deleteFilesOfParent(userId1, requestParams1);
-				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledWith(requestParams1);
-			});
-
-			it('should return results of service', async () => {
-				const { requestParams1, userId1 } = setup();
 				const fileRecord1 = getFileRecord();
 				const mockedResult = [[fileRecord1], 0] as Counted<FileRecord[]>;
 
 				filesStorageService.deleteFilesOfParent.mockResolvedValue(mockedResult);
 
+				return { requestParams1, userId1, mockedResult };
+			};
+
+			it('should return results of service', async () => {
+				const { requestParams1, userId1, mockedResult } = setup();
+
 				const result = await filesStorageUC.deleteFilesOfParent(userId1, requestParams1);
 				expect(result).toEqual(mockedResult);
 			});
+		});
 
-			it('should return error of service', async () => {
-				const { requestParams1, userId1 } = setup();
+		describe('WHEN service throws error', () => {
+			const setup = () => {
+				const { requestParams1, userId1 } = getParams();
 				const error = new Error('test');
 
 				filesStorageService.deleteFilesOfParent.mockRejectedValue(error);
+
+				return { requestParams1, userId1, error };
+			};
+
+			it('should return error of service', async () => {
+				const { requestParams1, userId1, error } = setup();
 
 				await expect(filesStorageUC.deleteFilesOfParent(userId1, requestParams1)).rejects.toThrow(error);
 			});
