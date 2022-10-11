@@ -561,19 +561,19 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN service deletes successful', () => {
 			const setup = () => {
-				const { requestParams1, userId1 } = getParams();
-				const fileRecord1 = getFileRecord();
+				const { params1, userId1, fileRecords1 } = getFileRecordsWithParams();
+				const fileRecord1 = fileRecords1[0];
 				const mockedResult = [[fileRecord1], 0] as Counted<FileRecord[]>;
 
 				filesStorageService.deleteFilesOfParent.mockResolvedValueOnce(mockedResult);
 
-				return { requestParams1, userId1, mockedResult };
+				return { params1, userId1, mockedResult };
 			};
 
 			it('should return results of service', async () => {
-				const { requestParams1, userId1, mockedResult } = setup();
+				const { params1, userId1, mockedResult } = setup();
 
-				const result = await filesStorageUC.deleteFilesOfParent(userId1, requestParams1);
+				const result = await filesStorageUC.deleteFilesOfParent(userId1, params1);
 				expect(result).toEqual(mockedResult);
 			});
 		});
