@@ -955,7 +955,7 @@
 			"default": false,
 			"description": "Toggle for copy course feature."
 		},
-		"FEATURE_COURSE_EXPORT_ENABLED": {
+		"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for the IMSCC course download feature."
