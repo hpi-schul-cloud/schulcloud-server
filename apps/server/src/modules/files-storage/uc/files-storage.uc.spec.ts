@@ -644,8 +644,7 @@ describe('FilesStorageUC', () => {
 				const { params1, userId1, fileRecords1 } = getFileRecordsWithParams();
 
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
-				filesStorageService.deleteFilesOfParent.mockResolvedValueOnce([fileRecords1, fileRecords1.length]);
-				filesStorageService.delete.mockResolvedValueOnce();
+				filesStorageService.restoreFilesOfParent.mockResolvedValueOnce([fileRecords1, fileRecords1.length]);
 
 				return { params1, userId1, fileRecords1 };
 			};
@@ -654,28 +653,28 @@ describe('FilesStorageUC', () => {
 				const { params1, userId1 } = setup();
 				const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(params1.parentType);
 
-				await filesStorageUC.deleteFilesOfParent(userId1, params1);
+				await filesStorageUC.restoreFilesOfParent(userId1, params1);
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId1,
 					allowedType,
 					params1.parentId,
-					PermissionContexts.delete
+					PermissionContexts.create
 				);
 			});
 
 			it('should call filesStorageService with right parameters', async () => {
 				const { params1, userId1 } = setup();
 
-				await filesStorageUC.deleteFilesOfParent(userId1, params1);
+				await filesStorageUC.restoreFilesOfParent(userId1, params1);
 
-				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledWith(params1);
+				expect(filesStorageService.restoreFilesOfParent).toHaveBeenCalledWith(params1);
 			});
 
 			it('should return counted result', async () => {
 				const { params1, userId1, fileRecords1 } = setup();
 
-				const result = await filesStorageUC.deleteFilesOfParent(userId1, params1);
+				const result = await filesStorageUC.restoreFilesOfParent(userId1, params1);
 
 				expect(result).toEqual([fileRecords1, 3]);
 			});
