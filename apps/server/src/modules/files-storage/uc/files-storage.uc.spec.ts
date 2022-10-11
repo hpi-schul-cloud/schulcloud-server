@@ -526,7 +526,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
 				const { requestParams1, userId1 } = getParams();
-				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 
 				return { requestParams1, userId1 };
 			};
@@ -546,7 +546,7 @@ describe('FilesStorageUC', () => {
 				const fileRecord1 = getFileRecord();
 				const mockedResult = [[fileRecord1], 0] as Counted<FileRecord[]>;
 
-				filesStorageService.deleteFilesOfParent.mockResolvedValue(mockedResult);
+				filesStorageService.deleteFilesOfParent.mockResolvedValueOnce(mockedResult);
 
 				return { requestParams1, userId1, mockedResult };
 			};
@@ -564,7 +564,7 @@ describe('FilesStorageUC', () => {
 				const { requestParams1, userId1 } = getParams();
 				const error = new Error('test');
 
-				filesStorageService.deleteFilesOfParent.mockRejectedValue(error);
+				filesStorageService.deleteFilesOfParent.mockRejectedValueOnce(error);
 
 				return { requestParams1, userId1, error };
 			};
@@ -578,14 +578,26 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('deleteOneFile()', () => {
-		let requestParams: SingleFileParams;
-		beforeEach(() => {
-			requestParams = {
-				fileRecordId: new ObjectId().toHexString(),
-			};
-			fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
-			storageClient.delete.mockResolvedValue([]);
-		});
+		// let requestParams: SingleFileParams;
+		// beforeEach(() => {
+		// 	requestParams = {
+		// 		fileRecordId: new ObjectId().toHexString(),
+		// 	};
+		// 	fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+		// 	storageClient.delete.mockResolvedValue([]);
+		// });
+
+		// describe('WHEN file is found', () => {
+		// 	describe('WHEN user is authorized', () => {
+		// 		describe('WHEN delete throws an error', () => {});
+		// 		describe('WHEN delete was successful', () => {});
+		// 	});
+		// 	describe('WHEN user is not authorized', () => {});
+		// });
+
+		// describe('WHEN file is not found', () => {});
+
+		describe('WHEN file is found', () => {});
 
 		describe('calls to fileRecordRepo.findOneById()', () => {
 			it('should call once', async () => {
