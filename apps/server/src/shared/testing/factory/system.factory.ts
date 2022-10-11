@@ -30,6 +30,7 @@ export const systemFactory = SystemFactory.define(System, ({ sequence }) => {
 		type: 'iserv',
 		url: 'http://mock.de',
 		alias: `system #${sequence}`,
+		displayName: `system #${sequence}DisplayName`,
 		provisioningStrategy: SystemProvisioningStrategy.PLACEHOLDER,
 	};
 });

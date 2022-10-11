@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -67,7 +66,6 @@ class API {
 describe('Task Controller (e2e)', () => {
 	describe('without permissions', () => {
 		let app: INestApplication;
-		let orm: MikroORM;
 		let api: API;
 
 		const setConfig = () => {
@@ -81,12 +79,10 @@ describe('Task Controller (e2e)', () => {
 
 			app = moduleFixture.createNestApplication();
 			await app.init();
-			orm = app.get(MikroORM);
 			api = new API(app, '/tasks');
 		});
 
 		afterAll(async () => {
-			await orm.close();
 			await app.close();
 		});
 
@@ -102,7 +98,6 @@ describe('Task Controller (e2e)', () => {
 
 	describe('As user with write permissions in courses', () => {
 		let app: INestApplication;
-		let orm: MikroORM;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
 		let api: API;
@@ -127,14 +122,12 @@ describe('Task Controller (e2e)', () => {
 
 			app = module.createNestApplication();
 			await app.init();
-			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
 			api = new API(app, '/tasks');
 			filesStorageClientAdapterService = app.get(FilesStorageClientAdapterService);
 		});
 
 		afterAll(async () => {
-			await orm.close();
 			await app.close();
 		});
 
@@ -663,7 +656,6 @@ describe('Task Controller (e2e)', () => {
 
 	describe('As user with read permissions in courses', () => {
 		let app: INestApplication;
-		let orm: MikroORM;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
 		let api: API;
@@ -684,13 +676,11 @@ describe('Task Controller (e2e)', () => {
 
 			app = module.createNestApplication();
 			await app.init();
-			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
 			api = new API(app, '/tasks');
 		});
 
 		afterAll(async () => {
-			await orm.close();
 			await app.close();
 		});
 

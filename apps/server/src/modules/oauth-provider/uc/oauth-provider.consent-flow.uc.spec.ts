@@ -6,15 +6,12 @@ import {
 	AcceptConsentRequestBody,
 	ProviderConsentResponse,
 	ProviderRedirectResponse,
-	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import { ICurrentUser } from '@shared/domain';
 import { ForbiddenException } from '@nestjs/common';
 import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
 import { IdToken } from '@src/modules/oauth-provider/interface/id-token';
-import resetAllMocks = jest.resetAllMocks;
-import clearAllMocks = jest.clearAllMocks;
 
 describe('OauthProviderConsentFlowUc', () => {
 	let module: TestingModule;
@@ -46,6 +43,10 @@ describe('OauthProviderConsentFlowUc', () => {
 		await module.close();
 	});
 
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('consent', () => {
 		let challenge: string;
 		let currentUser: ICurrentUser;
@@ -60,10 +61,6 @@ describe('OauthProviderConsentFlowUc', () => {
 			};
 		});
 
-		afterEach(() => {
-			resetAllMocks();
-		});
-
 		describe('getConsentRequest', () => {
 			it('should call service', async () => {
 				await uc.getConsentRequest(challenge);
@@ -73,7 +70,7 @@ describe('OauthProviderConsentFlowUc', () => {
 		});
 
 		describe('patchConsentRequest', () => {
-			let requestBody: ConsentRequestBody | RejectRequestBody;
+			let requestBody: ConsentRequestBody;
 			let acceptQuery: AcceptQuery;
 
 			beforeEach(() => {
@@ -85,10 +82,6 @@ describe('OauthProviderConsentFlowUc', () => {
 				acceptQuery = { accept: true };
 				consentResponse.requested_scope = requestBody.grant_scope;
 				service.getConsentRequest.mockResolvedValue(consentResponse);
-			});
-
-			afterEach(() => {
-				clearAllMocks();
 			});
 
 			describe('acceptConsentRequest', () => {
@@ -106,6 +99,7 @@ describe('OauthProviderConsentFlowUc', () => {
 
 				it('should call service', async () => {
 					const expectedResult: ProviderRedirectResponse = { redirect_to: 'http://blub' };
+
 					service.acceptConsentRequest.mockResolvedValue(expectedResult);
 
 					const providerRedirectResponse: ProviderRedirectResponse = await uc.patchConsentRequest(
@@ -122,10 +116,10 @@ describe('OauthProviderConsentFlowUc', () => {
 				});
 
 				it('should generate idtoken and set this as json to session', async () => {
-					const jsonStringifySpy = jest.spyOn(JSON, 'stringify');
 					const idToken: IdToken = { userId: currentUser.userId, schoolId: 'schoolId' };
+					consentResponse = { ...consentResponse, client: { client_id: 'clientId' }, requested_scope: ['openid'] };
+
 					idTokenService.createIdToken.mockResolvedValue(idToken);
-					consentResponse = { ...consentResponse, client: { client_id: 'clientId' } };
 					service.getConsentRequest.mockResolvedValue(consentResponse);
 
 					await uc.patchConsentRequest(challenge, acceptQuery, requestBody, currentUser);
@@ -135,33 +129,40 @@ describe('OauthProviderConsentFlowUc', () => {
 						consentResponse.requested_scope,
 						consentResponse.client?.client_id
 					);
-					expect(jsonStringifySpy).toHaveBeenCalledWith(idToken);
 					expect(service.acceptConsentRequest).toHaveBeenCalledWith(
 						challenge,
-						expect.objectContaining<AcceptConsentRequestBody>({ session: { id_token: JSON.stringify(idToken) } })
+						expect.objectContaining<AcceptConsentRequestBody>({ session: { id_token: idToken } })
 					);
 				});
 
-				describe('rejectConsentRequest', () => {
-					it('rejectConsentRequest: reject when accept in query is false', async () => {
-						acceptQuery = { accept: false };
+				it('should generate idtoken when requested_scope and client_id are undefined', async () => {
+					const idToken: IdToken = { userId: currentUser.userId, schoolId: 'schoolId' };
+					const consentResponse2: ProviderConsentResponse = {
+						challenge: 'challenge',
+						subject: currentUser.userId,
+					};
 
-						await uc.patchConsentRequest(challenge, acceptQuery, requestBody, currentUser);
+					idTokenService.createIdToken.mockResolvedValue(idToken);
+					service.getConsentRequest.mockResolvedValue(consentResponse2);
 
-						expect(service.rejectConsentRequest).toHaveBeenCalledWith(challenge, requestBody);
-						expect(service.acceptConsentRequest).not.toHaveBeenCalled();
-					});
+					await uc.patchConsentRequest(challenge, acceptQuery, requestBody, currentUser);
 
-					it('rejectConsentRequest: reject when it is an reject request body', async () => {
-						requestBody = {
-							status_code: '500',
-						};
+					expect(idTokenService.createIdToken).toHaveBeenCalledWith(currentUser.userId, [], '');
+					expect(service.acceptConsentRequest).toHaveBeenCalledWith(
+						challenge,
+						expect.objectContaining<AcceptConsentRequestBody>({ session: { id_token: idToken } })
+					);
+				});
+			});
 
-						await uc.patchConsentRequest(challenge, acceptQuery, requestBody, currentUser);
+			describe('rejectConsentRequest', () => {
+				it('rejectConsentRequest: reject when accept in query is false', async () => {
+					acceptQuery = { accept: false };
 
-						expect(service.rejectConsentRequest).toHaveBeenCalledWith(challenge, requestBody);
-						expect(service.acceptConsentRequest).not.toHaveBeenCalled();
-					});
+					await uc.patchConsentRequest(challenge, acceptQuery, requestBody, currentUser);
+
+					expect(service.rejectConsentRequest).toHaveBeenCalledWith(challenge, requestBody);
+					expect(service.acceptConsentRequest).not.toHaveBeenCalled();
 				});
 			});
 		});
