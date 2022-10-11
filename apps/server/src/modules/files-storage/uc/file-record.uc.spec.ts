@@ -95,7 +95,7 @@ describe('FileRecordUC', () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('fileRecordsOfParent is called', () => {
+	describe('getFileRecordsOfParent is called', () => {
 		describe('when user is authorised and valid files existis', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
@@ -110,7 +110,7 @@ describe('FileRecordUC', () => {
 			it('should call authorisation with right parameters', async () => {
 				const { userId, params } = setup();
 
-				await service.fileRecordsOfParent(userId, params);
+				await service.getFileRecordsOfParent(userId, params);
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
@@ -123,7 +123,7 @@ describe('FileRecordUC', () => {
 			it('should call service method getFilesOfParent with right parameters', async () => {
 				const { userId, params } = setup();
 
-				await service.fileRecordsOfParent(userId, params);
+				await service.getFileRecordsOfParent(userId, params);
 
 				expect(filesStorageService.getFilesOfParent).toHaveBeenCalledWith(params);
 			});
@@ -131,7 +131,7 @@ describe('FileRecordUC', () => {
 			it('should return counted file records', async () => {
 				const { userId, params, fileRecords } = setup();
 
-				const result = await service.fileRecordsOfParent(userId, params);
+				const result = await service.getFileRecordsOfParent(userId, params);
 
 				expect(result).toEqual([fileRecords, fileRecords.length]);
 			});
@@ -151,7 +151,7 @@ describe('FileRecordUC', () => {
 			it('should pass the error', async () => {
 				const { userId, params } = setup();
 
-				await expect(service.fileRecordsOfParent(userId, params)).rejects.toThrowError(new Error('Bla'));
+				await expect(service.getFileRecordsOfParent(userId, params)).rejects.toThrowError(new Error('Bla'));
 			});
 		});
 
@@ -170,7 +170,7 @@ describe('FileRecordUC', () => {
 			it('should return empty counted file records', async () => {
 				const { userId, params } = setup();
 
-				const result = await service.fileRecordsOfParent(userId, params);
+				const result = await service.getFileRecordsOfParent(userId, params);
 
 				expect(result).toEqual([[], 0]);
 			});

@@ -27,7 +27,7 @@ export class FileRecordUC {
 		return modifiedFileRecord;
 	}
 
-	public async fileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async getFileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.read);
 
 		const countedFileRecords = await this.filesStorageService.getFilesOfParent(params);
