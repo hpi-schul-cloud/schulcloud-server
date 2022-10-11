@@ -1,4 +1,4 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { EntityId } from '../types/entity-id';
@@ -38,6 +38,7 @@ export class ShareToken extends BaseEntityWithTimestamps {
 		return this._contextId?.toHexString();
 	}
 
+	@Index({ options: { expireAfterSeconds: 0 } })
 	@Property({ nullable: true })
 	expiresAt?: Date;
 

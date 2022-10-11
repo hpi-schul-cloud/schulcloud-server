@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotImplementedException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
 import {
@@ -10,16 +9,24 @@ import {
 	ConsentRequestBody,
 	ConsentResponse,
 	ConsentSessionResponse,
+	LoginRequestBody,
+	LoginResponse,
 	OauthClientBody,
 	OauthClientResponse,
+	RedirectResponse,
 } from '@src/modules/oauth-provider/controller/dto';
-import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
-import { ProviderConsentResponse, ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto';
+import {
+	ProviderConsentResponse,
+	ProviderConsentSessionResponse,
+	ProviderLoginResponse,
+	ProviderRedirectResponse,
+} from '@shared/infra/oauth-provider/dto';
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import { ICurrentUser } from '@shared/domain';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderController } from './oauth-provider.controller';
 import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
+import { OauthProviderLoginFlowUc } from '../uc/oauth-provider.login-flow.uc';
 
 describe('OauthProviderController', () => {
 	let module: TestingModule;
@@ -27,6 +34,7 @@ describe('OauthProviderController', () => {
 
 	let oauthProviderUc: DeepMocked<OauthProviderUc>;
 	let logoutUc: DeepMocked<OauthProviderLogoutFlowUc>;
+	let loginUc: DeepMocked<OauthProviderLoginFlowUc>;
 	let consentUc: DeepMocked<OauthProviderConsentFlowUc>;
 	let crudUc: DeepMocked<OauthProviderClientCrudUc>;
 	let responseMapper: DeepMocked<OauthProviderResponseMapper>;
@@ -60,6 +68,10 @@ describe('OauthProviderController', () => {
 					provide: OauthProviderResponseMapper,
 					useValue: createMock<OauthProviderResponseMapper>(),
 				},
+				{
+					provide: OauthProviderLoginFlowUc,
+					useValue: createMock<OauthProviderLoginFlowUc>(),
+				},
 			],
 		}).compile();
 
@@ -69,6 +81,7 @@ describe('OauthProviderController', () => {
 		logoutUc = module.get(OauthProviderLogoutFlowUc);
 		responseMapper = module.get(OauthProviderResponseMapper);
 		consentUc = module.get(OauthProviderConsentFlowUc);
+		loginUc = module.get(OauthProviderLoginFlowUc);
 	});
 
 	afterAll(async () => {
@@ -298,22 +311,6 @@ describe('OauthProviderController', () => {
 		});
 	});
 
-	describe('Login Flow', () => {
-		describe('getLoginRequest', () => {
-			it('should throw', () => {
-				expect(() => controller.getLoginRequest({ challenge: '' })).toThrow(NotImplementedException);
-			});
-		});
-
-		describe('patchLoginRequest', () => {
-			it('should throw', () => {
-				expect(() => controller.patchLoginRequest({ challenge: '' }, { accept: false }, {})).toThrow(
-					NotImplementedException
-				);
-			});
-		});
-	});
-
 	describe('Logout Flow', () => {
 		describe('acceptLogoutRequest', () => {
 			it('should call uc and return redirect string', async () => {
@@ -321,10 +318,7 @@ describe('OauthProviderController', () => {
 				logoutUc.logoutFlow.mockResolvedValue(expectedRedirect);
 				responseMapper.mapRedirectResponse.mockReturnValue(expectedRedirect);
 
-				const redirect = await controller.acceptLogoutRequest(
-					{ challenge: 'challenge_mock' },
-					{ redirect_to: 'www.mock.de' }
-				);
+				const redirect = await controller.acceptLogoutRequest({ challenge: 'challenge_mock' });
 
 				expect(logoutUc.logoutFlow).toHaveBeenCalledWith('challenge_mock');
 				expect(redirect.redirect_to).toEqual(expectedRedirect.redirect_to);
@@ -332,9 +326,68 @@ describe('OauthProviderController', () => {
 		});
 	});
 
-	describe('introspectOAuth2Token', () => {
-		it('should throw', () => {
-			expect(() => controller.introspectOAuth2Token({ token: '' })).toThrow(NotImplementedException);
+	describe('Login Flow', () => {
+		let params: ChallengeParams;
+		describe('getLoginRequest', () => {
+			it('should get the login request response', async () => {
+				params = { challenge: 'challenge' };
+				const loginResponse: LoginResponse = {
+					challenge: 'challenge',
+					client: {},
+					oidc_context: {},
+					request_url: 'request_url',
+					requested_access_token_audience: ['requested_access_token_audience'],
+					requested_scope: ['requested_scope'],
+					session_id: 'session_id',
+					skip: true,
+					subject: 'subject',
+				} as LoginResponse;
+				const providerLoginResponse: ProviderLoginResponse = {
+					challenge: 'challenge',
+					client: {},
+					oidc_context: {},
+					request_url: 'request_url',
+					requested_access_token_audience: ['requested_access_token_audience'],
+					requested_scope: ['requested_scope'],
+					session_id: 'session_id',
+					skip: true,
+					subject: 'subject',
+				} as ProviderLoginResponse;
+
+				loginUc.getLoginRequest.mockResolvedValue(providerLoginResponse);
+				responseMapper.mapLoginResponse.mockReturnValue(loginResponse);
+
+				const response = await controller.getLoginRequest(params);
+
+				expect(loginUc.getLoginRequest).toHaveBeenCalledWith(params.challenge);
+				expect(response).toEqual(providerLoginResponse);
+			});
+		});
+
+		describe('patchLoginRequest', () => {
+			it('should patch the login request', async () => {
+				const query: AcceptQuery = {
+					accept: true,
+				};
+				const loginRequestBody: LoginRequestBody = {
+					remember: true,
+					remember_for: 0,
+				};
+				const providerRedirectResponse: ProviderRedirectResponse = {
+					redirect_to: 'redirect_to',
+				};
+				const redirectResponse: RedirectResponse = {
+					redirect_to: providerRedirectResponse.redirect_to,
+				};
+				const expected = [currentUser.userId, params.challenge, loginRequestBody, query];
+
+				loginUc.patchLoginRequest.mockResolvedValue(providerRedirectResponse);
+				responseMapper.mapRedirectResponse.mockReturnValue(redirectResponse);
+
+				const response = await controller.patchLoginRequest(params, query, loginRequestBody, currentUser);
+				expect(loginUc.patchLoginRequest).toHaveBeenCalledWith(...expected);
+				expect(response.redirect_to).toStrictEqual(redirectResponse.redirect_to);
+			});
 		});
 	});
 

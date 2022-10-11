@@ -38,6 +38,14 @@
 			{
 				"title": "Rocket.Chat",
 				"file": "rocket-chat.md"
+			},
+			{
+				"title": "Configuration",
+				"file": "../../../../README.md"
+			},
+			{
+				"title": "Authorisation",
+				"file": "../src/modules/authorization/README.md"
 			}
 		]
 	}

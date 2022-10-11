@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser, ShareTokenContextType } from '@shared/domain';
+import { ICurrentUser } from '@shared/domain';
 import { shareTokenFactory } from '@shared/testing';
 import { ShareTokenUC } from '../uc';
 import { ShareTokenController } from './share-token.controller';
@@ -56,17 +56,13 @@ describe('ShareTokenController', () => {
 	describe('creating a token', () => {
 		const setup = () => {
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			const schoolId = '1234567890abcdef12345678';
 			const shareToken = shareTokenFactory.withId().build();
 			uc.createShareToken.mockResolvedValue(shareToken);
 			const body = {
 				parentType: shareToken.payload.parentType,
 				parentId: shareToken.payload.parentId,
-				expiresAt: new Date(Date.now() + 10000),
-				context: {
-					contextType: ShareTokenContextType.School,
-					contextId: schoolId,
-				},
+				expiresInDays: 7,
+				schoolExclusive: true,
 			};
 
 			return { currentUser, body, shareToken };
@@ -84,8 +80,8 @@ describe('ShareTokenController', () => {
 					parentType: body.parentType,
 				},
 				{
-					context: body.context,
-					expiresAt: body.expiresAt,
+					schoolExclusive: true,
+					expiresInDays: 7,
 				}
 			);
 		});

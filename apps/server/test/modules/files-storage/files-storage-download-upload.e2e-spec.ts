@@ -1,5 +1,4 @@
 import { createMock } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -65,7 +64,6 @@ const createRndInt = (max) => Math.floor(Math.random() * max);
 describe('files-storage controller (e2e)', () => {
 	let module: TestingModule;
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let api: API;
@@ -110,13 +108,11 @@ describe('files-storage controller (e2e)', () => {
 		const a = await app.init();
 		await a.listen(appPort);
 
-		orm = app.get(MikroORM);
 		em = module.get(EntityManager);
 		api = new API(app);
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await app.close();
 		await s3instance.close();
 		await module.close();

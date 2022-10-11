@@ -8,6 +8,11 @@ metadata:
 data:
   update.sh: |
     #! /bin/bash
+    # necessary for secret handling and legacy indexes
+    git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
+    cd /schulcloud-server
+    git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    npm install
     until mongo $DATABASE__URL --eval "print(\"waited for connection\")"
       do
         sleep 1
@@ -108,26 +113,6 @@ data:
           }
         }
       }
-    },
-    {
-    	"_id": {
-    		"$oid": "62c7f233f35a554ba3ed42f1"
-    	},
-    	"__v": 0,
-    	"updatedAt": {
-    		"$date": "2022-07-12T14:01:58.588Z"
-    	},
-    	"type": "oidc",
-    	"alias": "oidcmock",
-    	"config": {
-    		"clientId": "${OIDCMOCK__CLIENT_ID}",
-    		"clientSecret": "${OIDCMOCK__CLIENT_SECRET}",
-    		"authorizationUrl": "${OIDCMOCK__BASE_URL}/connect/authorize",
-    		"tokenUrl": "${OIDCMOCK__BASE_URL}/connect/token",
-    		"logoutUrl": "${OIDCMOCK__BASE_URL}/connect/endsession",
-    		"userinfoUrl": "${OIDCMOCK__BASE_URL}/connect/userinfo",
-    		"defaultScopes": "openid profile email"
-    	}
     }]);'
     mongo $DATABASE__URL --eval 'db.storageproviders.insert( {
                                        "isShared" : true,
@@ -151,6 +136,7 @@ data:
       {
             "_id": ObjectId("'$ISERV_SYSTEM_ID'"),
             "alias" : "Schulserver",
+            "displayName" : "Schulserver",
             "ldapConfig" : {
               "active" : true,
               "federalState": ObjectId("0000b186816abba584714c58"),
@@ -184,6 +170,7 @@ data:
           {
             "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
             "alias" : "SANIS",
+            "displayName" : "SANIS",
             "type" : "oauth",
             "oauthConfig": {
               "clientId": "'$SANIS_CLIENT_ID'",
@@ -201,10 +188,91 @@ data:
             }
           }
       ]);'
+      mongo $DATABASE__URL --eval 'db.accounts.insert ([
+          {
+            "_id": ObjectId("632d776240633294deaa1837"),
+            "username": "iserv.testlehrer@iserv.n21.dbildungscloud.de",
+            "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "userId": ObjectId("632d765840633294deaa1833"),
+            "__v": 0
+          },
+          {
+            "_id": ObjectId("632d7a9540633294deaa183e"),
+            "username": "iserv.testschueler@iserv.n21.dbildungscloud.de",
+            "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "userId": ObjectId("632d77a940633294deaa183a"),
+            "__v": 0
+          },
+          {
+            "_id": ObjectId("0000d213816abba58471abcd"),
+            "username": "max.mustermann@iserv.n21.dbildungscloud.de",
+            "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "userId": ObjectId("0000d213816abba584711234"),
+            "__v": 0
+          }
+      ]);'
+      mongo $DATABASE__URL --eval 'db.users.insert ([
+          {
+            "_id": ObjectId("632d765840633294deaa1833"),
+            "__v": 0,
+            "firstName": "Iserv",
+            "lastName": "Testlehrer",
+            "email": "iserv.testlehrer@iserv.n21.dbildungscloud.de",
+            "ldapId": "5fee8bdf-ad12-442c-9674-1770ce9f810b",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "birthday": ISODate("1979-01-01T11:25:43.556Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "preferences": {
+              "firstLogin": true
+            },
+            "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
+            "roles": [
+              ObjectId("0000d186816abba584714c98")
+            ]
+          },
+          {
+            "_id": ObjectId("632d77a940633294deaa183a"),
+            "__v": 0,
+            "firstName": "Iserv",
+            "lastName": "Testschueler",
+            "email": "iserv.testschueler@iserv.n21.dbildungscloud.de",
+            "ldapId": "7c5ca4fd-f564-4dd9-98e4-07eaf7ec4480",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "birthday": ISODate("1979-01-01T11:25:43.556Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "preferences": {
+              "firstLogin": true
+            },
+            "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
+            "roles": [
+                ObjectId("0000d186816abba584714c99")
+            ]
+          },
+          {
+            "_id": ObjectId("0000d213816abba584711234"),
+            "__v": 0,
+            "firstName": "Max",
+            "lastName": "Mustermann",
+            "email": "max.mustermann@iserv.n21.dbildungscloud.de",
+            "ldapId": "5190046d-aeed-424e-bfd7-8f281ae494a1",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "birthday": ISODate("1979-01-01T11:25:43.556Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "preferences": {
+                "firstLogin": true
+            },
+            "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
+            "roles": [
+                ObjectId("0000d186816abba584714c96")
+            ]
+          }
+      ]);'
     fi
     # this is crucial, until we have all entities in nest!
-    git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
-    cd /schulcloud-server
-    git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    npm install
     npm run syncIndexes

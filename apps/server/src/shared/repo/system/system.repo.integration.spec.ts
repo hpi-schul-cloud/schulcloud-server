@@ -3,8 +3,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { systemFactory } from '@shared/testing/factory/system.factory';
 import { SystemRepo } from '@shared/repo';
+import { systemFactory } from '@shared/testing/factory/system.factory';
 
 describe('system repo', () => {
 	let module: TestingModule;
@@ -43,7 +43,17 @@ describe('system repo', () => {
 			await em.persistAndFlush([system]);
 			const result = await repo.findById(system.id);
 			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'type', 'url', 'alias', 'oauthConfig', '_id', 'provisioningStrategy'].sort()
+				[
+					'createdAt',
+					'updatedAt',
+					'type',
+					'url',
+					'alias',
+					'displayName',
+					'oauthConfig',
+					'_id',
+					'provisioningStrategy',
+				].sort()
 			);
 		});
 
