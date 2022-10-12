@@ -232,7 +232,7 @@ export class FilesStorageUC {
 	}
 
 	public async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
-		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
+		const fileRecord = await this.filesStorageService.getMarkForDeletedFile(params);
 
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create);
 		await this.filesStorageService.restore([fileRecord]);
@@ -255,7 +255,7 @@ export class FilesStorageUC {
 			),
 		]);
 
-		const [fileRecords, count] = await this.filesStorageService.getFilesOfParent(params);
+		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		if (count === 0) {
 			return [[], 0];
@@ -271,7 +271,7 @@ export class FilesStorageUC {
 		params: SingleFileParams,
 		copyFileParams: CopyFileParams
 	): Promise<CopyFileResponse> {
-		const fileRecord = await this.filesStorageService.getFile(params);
+		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 		await Promise.all([
 			this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create),
 			this.checkPermission(
