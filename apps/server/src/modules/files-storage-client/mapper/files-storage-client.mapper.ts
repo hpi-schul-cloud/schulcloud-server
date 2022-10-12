@@ -1,7 +1,7 @@
 import { Lesson, Task } from '@shared/domain';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { CopyFileDto, FileDto } from '../dto';
-import { ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
+import { EntitiesWithFiles, ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
 
 export class FilesStorageClientMapper {
 	static mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: IFileDomainObjectProps[]): FileDto[] {
@@ -59,7 +59,7 @@ export class FilesStorageClientMapper {
 		return response;
 	}
 
-	static mapEntityToParentType(entity: Task | Lesson): FileRecordParentType {
+	static mapEntityToParentType(entity: EntitiesWithFiles): FileRecordParentType {
 		if (entity instanceof Lesson) return FileRecordParentType.Lesson;
 
 		if (entity instanceof Task) return FileRecordParentType.Task;

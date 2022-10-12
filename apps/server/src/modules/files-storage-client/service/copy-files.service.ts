@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IComponentProperties, Lesson, Task } from '@shared/domain';
 import { CopyFileDto } from '../dto';
+import { EntityWithEmbeddedFiles } from '../interfaces';
 import { FileParamBuilder } from '../mapper';
 import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
-
-type EntityWithEmbeddedFiles = Task | Lesson;
 
 @Injectable()
 export class CopyFilesService {

@@ -1,9 +1,9 @@
-import { EntityId, Lesson, Task } from '@shared/domain';
-import { IFileRequestInfo } from '../interfaces';
+import { EntityId } from '@shared/domain';
+import { EntitiesWithFiles, IFileRequestInfo } from '../interfaces';
 import { FilesStorageClientMapper } from './files-storage-client.mapper';
 
 export class FileParamBuilder {
-	static build(schoolId: EntityId, parent: Task | Lesson): IFileRequestInfo {
+	static build(schoolId: EntityId, parent: EntitiesWithFiles): IFileRequestInfo {
 		const parentType = FilesStorageClientMapper.mapEntityToParentType(parent);
 		const fileRequestInfo = {
 			parentType,
