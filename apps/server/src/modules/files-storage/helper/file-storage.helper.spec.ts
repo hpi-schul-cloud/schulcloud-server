@@ -10,7 +10,7 @@ import { FilesStorageHelper } from './files-storage.helper';
 
 describe('FilesStorageHelper', () => {
 	let module: TestingModule;
-	let fileStorageHelper: FilesStorageHelper;
+	let filesStorageHelper: FilesStorageHelper;
 	let orm: MikroORM;
 
 	const setupFileRecords = () => {
@@ -44,7 +44,7 @@ describe('FilesStorageHelper', () => {
 			providers: [FilesStorageHelper],
 		}).compile();
 
-		fileStorageHelper = module.get(FilesStorageHelper);
+		filesStorageHelper = module.get(FilesStorageHelper);
 	});
 
 	afterEach(async () => {
@@ -56,30 +56,30 @@ describe('FilesStorageHelper', () => {
 	});
 
 	it('should be defined', () => {
-		expect(fileStorageHelper).toBeDefined();
+		expect(filesStorageHelper).toBeDefined();
 	});
 
 	describe('createPath', () => {
 		it('should create path', () => {
-			const path = fileStorageHelper.createPath('schoolId', 'fileRecordId');
+			const path = filesStorageHelper.createPath('schoolId', 'fileRecordId');
 			expect(path).toBe('schoolId/fileRecordId');
 		});
 
 		it('should throw error on empty schoolId', () => {
 			expect(() => {
-				fileStorageHelper.createPath('', 'fileRecordId');
+				filesStorageHelper.createPath('', 'fileRecordId');
 			}).toThrowError(ErrorType.COULD_NOT_CREATE_PATH);
 		});
 
 		it('should throw error on empty fileRecordId', () => {
 			expect(() => {
-				fileStorageHelper.createPath('schoolId', '');
+				filesStorageHelper.createPath('schoolId', '');
 			}).toThrowError(ErrorType.COULD_NOT_CREATE_PATH);
 		});
 
 		it('should throw error on empty fileRecordId and schoolId', () => {
 			expect(() => {
-				fileStorageHelper.createPath('', '');
+				filesStorageHelper.createPath('', '');
 			}).toThrowError(ErrorType.COULD_NOT_CREATE_PATH);
 		});
 	});
@@ -87,7 +87,7 @@ describe('FilesStorageHelper', () => {
 	describe('getPaths', () => {
 		it('should return paths', () => {
 			const fileRecords = setupFileRecords();
-			const paths = fileStorageHelper.getPaths(fileRecords);
+			const paths = filesStorageHelper.getPaths(fileRecords);
 
 			const fileRecordId1 = fileRecords[0].id;
 			const fileRecordId2 = fileRecords[1].id;
@@ -98,7 +98,7 @@ describe('FilesStorageHelper', () => {
 		});
 
 		it('should return empty array on empty fileRecordsArray', () => {
-			const paths = fileStorageHelper.getPaths([]);
+			const paths = filesStorageHelper.getPaths([]);
 
 			expect(paths).toEqual([]);
 		});
@@ -107,7 +107,7 @@ describe('FilesStorageHelper', () => {
 	describe('markForDelete()', () => {
 		it('should mark files for delete', () => {
 			const fileRecords = setupFileRecords();
-			const markedFileRecords = fileStorageHelper.markForDelete(fileRecords);
+			const markedFileRecords = filesStorageHelper.markForDelete(fileRecords);
 			expect(markedFileRecords).toEqual(
 				expect.arrayContaining([
 					expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) as Date }),
@@ -121,7 +121,7 @@ describe('FilesStorageHelper', () => {
 	describe('unmarkForDelete()', () => {
 		it('should reset deletedSince params', () => {
 			const fileRecords = setupFileRecords();
-			const unmarkedFileRecords = fileStorageHelper.unmarkForDelete(fileRecords);
+			const unmarkedFileRecords = filesStorageHelper.unmarkForDelete(fileRecords);
 			expect(unmarkedFileRecords).toEqual(
 				expect.arrayContaining([
 					expect.objectContaining({ ...fileRecords[0], deletedSince: undefined }),
@@ -147,7 +147,7 @@ describe('FilesStorageHelper', () => {
 			it('should do nothing', () => {
 				const { fileRecords, newFileName } = setup();
 
-				const result = fileStorageHelper.checkDuplicatedNames(fileRecords, newFileName);
+				const result = filesStorageHelper.checkDuplicatedNames(fileRecords, newFileName);
 
 				expect(result).toBeUndefined();
 			});
@@ -168,7 +168,7 @@ describe('FilesStorageHelper', () => {
 			it('should throw with specific error', () => {
 				const { fileRecords, newFileName } = setup();
 
-				expect(() => fileStorageHelper.checkDuplicatedNames(fileRecords, newFileName)).toThrowError(
+				expect(() => filesStorageHelper.checkDuplicatedNames(fileRecords, newFileName)).toThrowError(
 					new ConflictException(ErrorType.FILE_NAME_EXISTS)
 				);
 			});
@@ -192,7 +192,7 @@ describe('FilesStorageHelper', () => {
 			it('should rename fileRecord', () => {
 				const { fileRecords, fileRecord, newFileName } = setup();
 
-				const result = fileStorageHelper.modifyFileNameInScope(fileRecord, fileRecords, newFileName);
+				const result = filesStorageHelper.modifyFileNameInScope(fileRecord, fileRecords, newFileName);
 
 				expect(result.name).toEqual(newFileName);
 			});
@@ -213,7 +213,7 @@ describe('FilesStorageHelper', () => {
 			it('should throw with specific error', () => {
 				const { fileRecords, newFileName } = setup();
 
-				expect(() => fileStorageHelper.checkDuplicatedNames(fileRecords, newFileName)).toThrowError(
+				expect(() => filesStorageHelper.checkDuplicatedNames(fileRecords, newFileName)).toThrowError(
 					new ConflictException(ErrorType.FILE_NAME_EXISTS)
 				);
 			});
@@ -232,7 +232,7 @@ describe('FilesStorageHelper', () => {
 		it('should return expected instance of params', () => {
 			const { fileRecord } = setup();
 
-			const result = fileStorageHelper.mapFileRecordToFileRecordParams(fileRecord);
+			const result = filesStorageHelper.mapFileRecordToFileRecordParams(fileRecord);
 
 			expect(result).toBeInstanceOf(FileRecordParams);
 		});
@@ -240,7 +240,7 @@ describe('FilesStorageHelper', () => {
 		it('should return correct mapped values', () => {
 			const { fileRecord } = setup();
 
-			const result = fileStorageHelper.mapFileRecordToFileRecordParams(fileRecord);
+			const result = filesStorageHelper.mapFileRecordToFileRecordParams(fileRecord);
 
 			expect(result).toEqual({
 				schoolId: fileRecord.schoolId,
@@ -266,7 +266,7 @@ describe('FilesStorageHelper', () => {
 			it('should return blocked scan status', () => {
 				const { scanResultParams } = setup();
 
-				const result = fileStorageHelper.getStatusFromScanResult(scanResultParams);
+				const result = filesStorageHelper.getStatusFromScanResult(scanResultParams);
 
 				expect(result).toEqual(ScanStatus.BLOCKED);
 			});
@@ -286,7 +286,7 @@ describe('FilesStorageHelper', () => {
 			it('should return blocked scan status', () => {
 				const { scanResultParams } = setup();
 
-				const result = fileStorageHelper.getStatusFromScanResult(scanResultParams);
+				const result = filesStorageHelper.getStatusFromScanResult(scanResultParams);
 
 				expect(result).toEqual(ScanStatus.VERIFIED);
 			});
@@ -305,7 +305,7 @@ describe('FilesStorageHelper', () => {
 				const { scanResultParams } = setup();
 
 				// @ts-expect-error type do not match
-				const result = fileStorageHelper.getStatusFromScanResult(scanResultParams);
+				const result = filesStorageHelper.getStatusFromScanResult(scanResultParams);
 
 				expect(result).toEqual(ScanStatus.BLOCKED);
 			});
