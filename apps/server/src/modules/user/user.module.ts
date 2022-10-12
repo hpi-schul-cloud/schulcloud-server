@@ -13,6 +13,6 @@ import { UserUc } from './uc';
 	imports: [SchoolModule, RoleModule],
 	controllers: [UserController],
 	providers: [UserRepo, PermissionService, UserUc, UserService, RoleRepo, RoleUc, SchoolRepo, RoleService],
-	exports: [UserUc, UserService, PermissionService],
+	exports: [UserUc, UserService],
 })
 export class UserModule {}
