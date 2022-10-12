@@ -77,7 +77,6 @@ export class FileCopyAppendService {
 		}
 
 		const lesson = lessonCopyStatus.copyEntity;
-		const { elements } = lessonCopyStatus;
 		const legacyFileIds: string[] = [];
 
 		lesson.contents.forEach((item: IComponentProperties) => {
