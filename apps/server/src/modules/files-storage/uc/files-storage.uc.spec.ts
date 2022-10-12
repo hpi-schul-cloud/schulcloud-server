@@ -44,6 +44,38 @@ function createObservable<T = unknown>(data: T, headers: AxiosResponseHeaders = 
 	return of(createAxiosResponse(data, headers));
 }
 
+const getFileRecordsWithParams = () => {
+	const userId1 = new ObjectId().toHexString();
+	const schoolId = new ObjectId().toHexString();
+
+	const fileRecords1 = [
+		fileRecordFactory.buildWithId({ parentId: userId1, schoolId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId1, schoolId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId1, schoolId, name: 'text-tree.txt' }),
+	];
+
+	const params1: FileRecordParams = {
+		schoolId,
+		parentId: userId1,
+		parentType: FileRecordParentType.User,
+	};
+
+	return { params1, fileRecords1, userId1 };
+};
+
+const getFileRecordWithParams = () => {
+	const userId1 = new ObjectId().toHexString();
+	const schoolId = new ObjectId().toHexString();
+
+	const fileRecord1 = fileRecordFactory.buildWithId({ parentId: userId1, schoolId, name: 'text.txt' });
+
+	const params1: SingleFileParams = {
+		fileRecordId: FileRecordParentType.User,
+	};
+
+	return { params1, fileRecord1, userId1 };
+};
+
 describe('FilesStorageUC', () => {
 	let module: TestingModule;
 	let filesStorageUC: FilesStorageUC;
@@ -77,29 +109,6 @@ describe('FilesStorageUC', () => {
 		const requestParams1 = getRequestParams(schoolId1, userId1);
 
 		return { userId1, schoolId1, requestParams1 };
-	};
-
-	const getFileRecord = () => {
-		return fileRecordFactory.buildWithId({ name: 'text.txt' });
-	};
-
-	const getFileRecordsWithParams = () => {
-		const userId1 = new ObjectId().toHexString();
-		const parentSchoolId = new ObjectId().toHexString();
-
-		const fileRecords1 = [
-			fileRecordFactory.buildWithId({ parentId: userId1, schoolId: parentSchoolId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId1, schoolId: parentSchoolId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId1, schoolId: parentSchoolId, name: 'text-tree.txt' }),
-		];
-
-		const params1: FileRecordParams = {
-			schoolId: parentSchoolId,
-			parentId: userId1,
-			parentType: FileRecordParentType.User,
-		};
-
-		return { params1, fileRecords1, userId1 };
 	};
 
 	beforeAll(async () => {
@@ -812,52 +821,108 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('restoreOneFile()', () => {
-		let requestParams: SingleFileParams;
-		beforeEach(() => {
-			requestParams = {
-				fileRecordId: new ObjectId().toHexString(),
+		describe('WHEN user is authorised', () => {
+			const setup = () => {
+				const { params1, userId1, fileRecord1 } = getFileRecordWithParams();
+
+				filesStorageService.getMarkForDeletedFile.mockResolvedValueOnce(fileRecord1);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				filesStorageService.restore.mockResolvedValueOnce();
+
+				return { params1, userId1, fileRecord1 };
 			};
-			fileRecordRepo.findOneByIdMarkedForDelete.mockResolvedValue(fileRecord);
-			storageClient.restore.mockResolvedValue([]);
-		});
 
-		describe('calls to fileRecordRepo.findOneById()', () => {
-			it('should call once', async () => {
-				await filesStorageUC.restoreOneFile(userId, requestParams);
-				expect(fileRecordRepo.findOneByIdMarkedForDelete).toHaveBeenCalledTimes(1);
+			it('should call filesStorageService.getMarkForDeletedFile with right parameters', async () => {
+				const { params1, userId1 } = setup();
+
+				await filesStorageUC.restoreOneFile(userId1, params1);
+
+				expect(filesStorageService.getMarkForDeletedFile).toHaveBeenCalledWith(params1);
 			});
 
-			it('should call with correctly params', async () => {
-				await filesStorageUC.restoreOneFile(userId, requestParams);
-				expect(fileRecordRepo.findOneByIdMarkedForDelete).toHaveBeenCalledWith(requestParams.fileRecordId);
-			});
+			it('should call authorisation with right parameters', async () => {
+				const { params1, userId1, fileRecord1 } = setup();
+				const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord1.parentType);
 
-			it('should throw error if entity not found', async () => {
-				fileRecordRepo.findOneByIdMarkedForDelete.mockRejectedValue(new Error());
-				await expect(filesStorageUC.restoreOneFile(userId, requestParams)).rejects.toThrow();
-			});
+				await filesStorageUC.restoreOneFile(userId1, params1);
 
-			it('should return file response with deletedSince', async () => {
-				const fileRecordRes = await filesStorageUC.restoreOneFile(userId, requestParams);
-				expect(fileRecordRes).toEqual(expect.objectContaining({ deletedSince: undefined }));
-			});
-		});
-
-		describe('Tests of permission handling', () => {
-			it('should call authorizationService.checkPermissionByReferences', async () => {
-				authorizationService.checkPermissionByReferences.mockResolvedValue();
-				await filesStorageUC.restoreOneFile(userId, requestParams);
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
-					userId,
-					fileRecord.parentType,
-					fileRecord.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId1,
+					allowedType,
+					fileRecord1.parentId,
+					PermissionContexts.create
 				);
 			});
 
-			it('should throw Error', async () => {
-				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
-				await expect(filesStorageUC.restoreOneFile(userId, requestParams)).rejects.toThrow();
+			it('should call filesStorageService with right parameters', async () => {
+				const { params1, userId1, fileRecord1 } = setup();
+
+				await filesStorageUC.restoreOneFile(userId1, params1);
+
+				expect(filesStorageService.restore).toHaveBeenCalledWith([fileRecord1]);
+			});
+
+			it('should return counted result', async () => {
+				const { params1, userId1, fileRecord1 } = setup();
+
+				const result = await filesStorageUC.restoreOneFile(userId1, params1);
+
+				expect(result).toEqual(fileRecord1);
+			});
+		});
+
+		describe('WHEN user is not authorised ', () => {
+			const setup = () => {
+				const { params1, userId1, fileRecord1 } = getFileRecordWithParams();
+
+				filesStorageService.getMarkForDeletedFile.mockResolvedValueOnce(fileRecord1);
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+
+				return { params1, userId1 };
+			};
+
+			it('should throw forbidden error', async () => {
+				const { params1, userId1 } = setup();
+
+				await expect(filesStorageUC.restoreOneFile(userId1, params1)).rejects.toThrow(new ForbiddenException());
+
+				expect(filesStorageService.restore).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('WHEN service getMarkForDeletedFile throws an error', () => {
+			const setup = () => {
+				const { params1, userId1 } = getFileRecordWithParams();
+				const error = new Error('test');
+
+				filesStorageService.getMarkForDeletedFile.mockRejectedValueOnce(error);
+
+				return { params1, userId1, error };
+			};
+
+			it('should return error of service', async () => {
+				const { params1, userId1, error } = setup();
+
+				await expect(filesStorageUC.restoreOneFile(userId1, params1)).rejects.toThrow(error);
+			});
+		});
+
+		describe('WHEN service restore throws an error', () => {
+			const setup = () => {
+				const { params1, userId1, fileRecord1 } = getFileRecordWithParams();
+				const error = new Error('test');
+
+				filesStorageService.getMarkForDeletedFile.mockResolvedValueOnce(fileRecord1);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				filesStorageService.restore.mockRejectedValueOnce(error);
+
+				return { params1, userId1, error };
+			};
+
+			it('should return error of service', async () => {
+				const { params1, userId1, error } = setup();
+
+				await expect(filesStorageUC.restoreOneFile(userId1, params1)).rejects.toThrow(error);
 			});
 		});
 	});
