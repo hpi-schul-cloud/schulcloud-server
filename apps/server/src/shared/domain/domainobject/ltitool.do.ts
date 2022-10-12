@@ -2,6 +2,16 @@ import { EntityId } from '@shared/domain/types';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
 import { BaseWithTimestampsDO } from './base.do';
 
+export class CustomLtiProperty {
+	key: string;
+	value: string;
+
+	constructor(key: string, value: string) {
+		this.key = key;
+		this.value = value;
+	}
+}
+
 export class LtiToolDO extends BaseWithTimestampsDO {
 	name: string;
 
@@ -23,7 +33,7 @@ export class LtiToolDO extends BaseWithTimestampsDO {
 
 	privacy_permission: LtiPrivacyPermission = LtiPrivacyPermission.ANONYMOUS;
 
-	customs: Record<string, string>[];
+	customs: CustomLtiProperty[];
 
 	isTemplate = false;
 

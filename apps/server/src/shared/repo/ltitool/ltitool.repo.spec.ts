@@ -149,7 +149,7 @@ describe('LtiTool Repo', () => {
 				isTemplate: false,
 				key: 'key',
 				openNewTab: false,
-				originToolId: 'originToolId',
+				originToolId: undefined,
 				privacy_permission: LtiPrivacyPermission.NAME,
 				roles: [LtiRoleType.INSTRUCTOR, LtiRoleType.LEARNER],
 				url: 'url',

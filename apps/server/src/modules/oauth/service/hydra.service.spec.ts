@@ -202,16 +202,16 @@ describe('HydraService', () => {
 	});
 
 	describe('generateConfig', () => {
-		let ltiToolDo: LtiToolDO;
+		let ltiToolDoMock: LtiToolDO;
 
 		beforeEach(() => {
-			ltiToolDo = new LtiToolDO({
+			ltiToolDoMock = new LtiToolDO({
 				id: new ObjectId().toHexString(),
 				name: 'ToolName',
 				isLocal: true,
 				oAuthClientId: '12345',
 				secret: 'mocksecret',
-				customs: [{ test: 'test' }],
+				customs: [{ key: 'key', value: 'value' }],
 				isHidden: false,
 				isTemplate: false,
 				key: 'key',
@@ -232,8 +232,8 @@ describe('HydraService', () => {
 
 		it('should throw if oauth fields on lti tool are not set', async () => {
 			// Arrange
-			ltiToolDo.oAuthClientId = undefined;
-			ltiToolRepo.findByOauthClientId.mockResolvedValue(ltiToolDo);
+			ltiToolDoMock.oAuthClientId = undefined;
+			ltiToolRepo.findByOauthClientId.mockResolvedValue(ltiToolDoMock);
 
 			// Act & Assert
 			await expect(service.generateConfig(oauthConfig.clientId)).rejects.toThrow(InternalServerErrorException);
@@ -241,7 +241,7 @@ describe('HydraService', () => {
 
 		it('should generate hydra oauth config', async () => {
 			// Arrange
-			ltiToolRepo.findByOauthClientId.mockResolvedValue(ltiToolDo);
+			ltiToolRepo.findByOauthClientId.mockResolvedValue(ltiToolDoMock);
 
 			// Act
 			const result: OauthConfig = await service.generateConfig(oauthConfig.clientId);

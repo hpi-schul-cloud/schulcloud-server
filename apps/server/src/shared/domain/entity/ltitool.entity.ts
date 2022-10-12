@@ -22,6 +22,11 @@ export enum LtiPrivacyPermission {
 	PSEUDONYMOUS = 'pseudonymous',
 }
 
+export interface CustomLtiProperty {
+	key: string;
+	value: string;
+}
+
 @Entity({ tableName: 'ltitools' })
 export class LtiTool extends BaseEntityWithTimestamps {
 	@Property({ nullable: false })
@@ -60,7 +65,7 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	privacy_permission: LtiPrivacyPermission = LtiPrivacyPermission.ANONYMOUS;
 
 	@Property({ nullable: false })
-	customs: Record<string, string>[] = [];
+	customs: CustomLtiProperty[] = [];
 
 	@Property({ nullable: false, default: false })
 	isTemplate = false;
