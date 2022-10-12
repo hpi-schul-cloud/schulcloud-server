@@ -6,6 +6,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, roleFactory } from '@shared/testing';
 import { TeamsRepo } from '@shared/repo';
 import { teamFactory } from '@shared/testing/factory/team.factory';
+import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 
 describe('team repo', () => {
 	let module: TestingModule;
@@ -87,6 +88,41 @@ describe('team repo', () => {
 			const idA = new ObjectId().toHexString();
 
 			await expect(repo.findById(idA)).rejects.toThrow(NotFoundError);
+		});
+	});
+
+	describe('findByUserId', () => {
+		it('should return right keys', async () => {
+			// Arrange
+			const team = teamFactory.buildWithId();
+			await em.persistAndFlush([team]);
+
+			// Act
+			const result = await repo.findByUserId(team.teamUsers[0].user.id);
+
+			// Assert
+			expect(result[0]).toBeDefined();
+			expect(Object.keys(result[0]).sort()).toEqual(['name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort());
+		});
+
+		it('should return teams which contains a specific userId', async () => {
+			// Arrange
+			const teamUser = teamUserFactory.buildWithId();
+			const team1 = teamFactory.withTeamUser(teamUser).build();
+			const team2 = teamFactory.withTeamUser(teamUser).build();
+			const team3 = teamFactory.buildWithId();
+			await em.persistAndFlush([team1, team2, team3]);
+
+			// Act
+			const result = await repo.findByUserId(teamUser.user.id);
+
+			// Assert
+			expect(result.length).toEqual([team1, team2].length);
+			result.forEach((team: Team) => {
+				expect(team.teamUsers.flatMap((user) => user.userId).includes(teamUser.userId)).toBeTruthy();
+			});
+			expect(result.some((team: Team) => team.id === team3.id)).toBeFalsy();
+			expect(Object.keys(result[0]).sort()).toEqual(['name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort());
 		});
 	});
 });

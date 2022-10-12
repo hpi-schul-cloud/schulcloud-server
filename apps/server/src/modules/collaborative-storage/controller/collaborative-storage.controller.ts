@@ -11,7 +11,7 @@ import { TeamRoleDto } from './dto/team-role.params';
  * Class for providing access to an external collaborative storage.
  *
  */
-@ApiTags('collaborative-storage')
+@ApiTags('Collaborative-Storage')
 @Authenticate('jwt')
 @Controller('collaborative-storage')
 export class CollaborativeStorageController {

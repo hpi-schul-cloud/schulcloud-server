@@ -289,6 +289,10 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.finished.remove(user);
 	}
 
+	getSchoolId(): EntityId {
+		return this.school.id;
+	}
+
 	publish() {
 		this.private = false;
 		this.availableDate = new Date(Date.now());

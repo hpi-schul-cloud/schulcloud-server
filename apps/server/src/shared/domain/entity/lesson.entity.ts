@@ -1,11 +1,13 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ILearnroomElement } from '@shared/domain/interface';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
 import { Task } from './task.entity';
+import { User } from './user.entity';
 
 export interface ILessonProperties {
 	name: string;
@@ -64,10 +66,11 @@ export interface IComponentInternalProperties {
 }
 
 export interface IComponentProperties {
-	title: string;
+	title?: string;
 	hidden: boolean;
 	component: ComponentType;
-	content:
+	user?: User;
+	content?:
 		| IComponentTextProperties
 		| IComponentGeogebraProperties
 		| IComponentLernstoreProperties
@@ -162,6 +165,14 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		}
 		const materials = this.materials.getItems();
 		return materials;
+	}
+
+	getSchoolId(): EntityId {
+		if (!this.courseGroup) {
+			return this.course.school.id;
+		}
+
+		return this.courseGroup.school.id;
 	}
 
 	publish() {

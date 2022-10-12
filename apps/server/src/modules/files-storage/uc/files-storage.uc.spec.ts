@@ -126,9 +126,9 @@ describe('FilesStorageUC', () => {
 		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
 		fileRecords = [
-			fileRecordFactory.build({ parentId: userId, schoolId, name: 'text.txt' }),
-			fileRecordFactory.build({ parentId: userId, schoolId, name: 'text-two.txt' }),
-			fileRecordFactory.build({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
 		];
 		fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
 
@@ -776,9 +776,7 @@ describe('FilesStorageUC', () => {
 		describe('calls to fileRecordRepo.save()', () => {
 			it('should call with correctly params', async () => {
 				await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(
-					expect.objectContaining({ parentType: FileRecordParentType.Task })
-				);
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(expect.objectContaining({ name: 'text.txt' }));
 			});
 
 			it('should throw error if entity not saved', async () => {
@@ -794,10 +792,10 @@ describe('FilesStorageUC', () => {
 				expect(fileRecordRepo.delete).toHaveBeenCalledTimes(1);
 			});
 
-			it('should return file response with parentType equal task', async () => {
-				const [fileRecordsRes] = await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
-				expect(fileRecordsRes).toEqual(
-					expect.arrayContaining([expect.objectContaining({ parentType: FileRecordParentType.Task })])
+			it('should return file response with source file id', async () => {
+				const fileRecordsRes = await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
+				expect(fileRecordsRes[0]).toEqual(
+					expect.arrayContaining([expect.objectContaining({ sourceId: fileRecords[1].id })])
 				);
 			});
 		});
@@ -937,9 +935,9 @@ describe('FilesStorageUC', () => {
 				await expect(service.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
 			});
 
-			it('should return file response with parentType equal task', async () => {
+			it('should return file response with id', async () => {
 				const fileRecordRes = await service.copyOneFile(userId, requestParams, copyFileParams);
-				expect(fileRecordRes).toEqual(expect.objectContaining({ parentType: FileRecordParentType.Task }));
+				expect(fileRecordRes).toEqual(expect.objectContaining({ id: expect.any(String) as string }));
 			});
 
 			it('should call fileRecordRepo.delete if call storageClient.copy throw an error', async () => {
@@ -969,11 +967,6 @@ describe('FilesStorageUC', () => {
 
 				expect(fileRecordRepo.save).toHaveBeenCalledTimes(1);
 				expect(fileRecordRepo.delete).toHaveBeenCalledTimes(1);
-			});
-
-			it('should return file response with parentType equal task', async () => {
-				const fileRecordsRes = await service.copyOneFile(userId, requestParams, copyFileParams);
-				expect(fileRecordsRes).toEqual(expect.objectContaining({ parentType: FileRecordParentType.Task }));
 			});
 		});
 

@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,7 +13,6 @@ import request from 'supertest';
 
 describe('News Controller (e2e)', () => {
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	const user = {
 		userId: '0000d224816abba584714c9c',
@@ -63,7 +61,6 @@ describe('News Controller (e2e)', () => {
 
 		app = module.createNestApplication();
 		await app.init();
-		orm = module.get(MikroORM);
 		em = module.get(EntityManager);
 	});
 
@@ -73,7 +70,6 @@ describe('News Controller (e2e)', () => {
 
 	afterAll(async () => {
 		await app.close();
-		await orm.close();
 	});
 
 	const newTestNews = (targetModel: NewsTargetModel, targetId: EntityId, unpublished = false): News => {

@@ -1,5 +1,4 @@
 import { createMock } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -80,7 +79,6 @@ const createRndInt = (max) => Math.floor(Math.random() * max);
 
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let api: API;
@@ -120,13 +118,11 @@ describe(`${baseRouteName} (api)`, () => {
 
 		app = module.createNestApplication();
 		await app.init();
-		orm = app.get(MikroORM);
 		em = module.get(EntityManager);
 		api = new API(app);
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await app.close();
 		await s3instance.close();
 	});
@@ -249,37 +245,10 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(Array.isArray(result.data)).toBe(true);
 				expect(result.data[0]).toBeDefined();
 				expect(result.data[0]).toStrictEqual({
-					creatorId: expect.any(String) as string,
 					id: expect.any(String) as string,
 					name: expect.any(String) as string,
-					parentId: targetParentId,
-					parentType: FileRecordParentType.Course,
-					type: 'text/plain',
-					securityCheckStatus: 'pending',
-					size: expect.any(Number) as number,
+					sourceId: expect.any(String) as string,
 				});
-			});
-
-			it('should return elements of requested scope', async () => {
-				const otherParentId = new ObjectId().toHexString();
-				await Promise.all([
-					api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test2.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test3.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${otherParentId}`, 'other1.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${otherParentId}`, 'other2.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${otherParentId}`, 'other3.txt'),
-				]);
-
-				const { result } = await api.copy(`/${validId}/schools/${validId}`, copyFilesParams);
-
-				const resultData: FileRecordResponse[] = result.data;
-				const ids: EntityId[] = resultData.map((o) => o.parentId);
-
-				expect(result.total).toEqual(3);
-				expect(ids.sort()).toEqual(
-					[copyFilesParams.target.parentId, copyFilesParams.target.parentId, copyFilesParams.target.parentId].sort()
-				);
 			});
 		});
 	});
@@ -370,14 +339,9 @@ describe(`${baseRouteName} (api)`, () => {
 				const { result } = await api.copyFile(`/${fileRecordId}`, copyFileParams);
 
 				expect(result).toStrictEqual({
-					creatorId: expect.any(String) as string,
 					id: expect.any(String) as string,
 					name: expect.any(String) as string,
-					parentId: targetParentId,
-					parentType: FileRecordParentType.Course,
-					type: 'text/plain',
-					securityCheckStatus: 'pending',
-					size: expect.any(Number) as number,
+					sourceId: expect.any(String) as string,
 				});
 			});
 

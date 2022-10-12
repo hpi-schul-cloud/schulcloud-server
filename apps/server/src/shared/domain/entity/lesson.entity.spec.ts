@@ -1,6 +1,13 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from 'bson';
-import { courseFactory, lessonFactory, materialFactory, setupEntities, taskFactory } from '../../testing';
+import {
+	courseFactory,
+	courseGroupFactory,
+	lessonFactory,
+	materialFactory,
+	setupEntities,
+	taskFactory,
+} from '../../testing';
 import { ComponentType } from './lesson.entity';
 import { Material } from './materials.entity';
 import { Task } from './task.entity';
@@ -210,6 +217,24 @@ describe('Lesson Entity', () => {
 			const lesson = lessonFactory.build({ hidden: false });
 			lesson.unpublish();
 			expect(lesson.hidden).toEqual(true);
+		});
+	});
+
+	describe('getSchoolId', () => {
+		it('schould return schoolId from course group', () => {
+			const courseGroup = courseGroupFactory.build();
+			const lesson = lessonFactory.build({ courseGroup });
+			const schoolId = lesson.getSchoolId();
+
+			expect(schoolId).toEqual(courseGroup.school.id);
+		});
+
+		it('schould return schoolId from course', () => {
+			const course = courseFactory.build();
+			const lesson = lessonFactory.build({ course });
+			const schoolId = lesson.getSchoolId();
+
+			expect(schoolId).toEqual(course.school.id);
 		});
 	});
 });

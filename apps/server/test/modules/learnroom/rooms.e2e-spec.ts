@@ -1,5 +1,5 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -15,6 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { BoardResponse, CopyApiResponse } from '@src/modules/learnroom/controller/dto';
 import { ServerTestModule } from '@src/server.module';
 import { Request } from 'express';
@@ -22,9 +23,9 @@ import request from 'supertest';
 
 describe('Rooms Controller (e2e)', () => {
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
+	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 	const setConfig = () => {
 		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
@@ -34,6 +35,8 @@ describe('Rooms Controller (e2e)', () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
+			.overrideProvider(FilesStorageClientAdapterService)
+			.useValue(createMock<FilesStorageClientAdapterService>())
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {
@@ -46,15 +49,14 @@ describe('Rooms Controller (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
-		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
+		filesStorageClientAdapterService = app.get(FilesStorageClientAdapterService);
 		setConfig();
 	});
 
 	afterEach(async () => {
 		await cleanupCollections(em);
 		await app.close();
-		await orm.close();
 	});
 
 	it('[GET] board', async () => {
@@ -242,10 +244,33 @@ describe('Rooms Controller (e2e)', () => {
 
 			currentUser = mapUserToCurrentUser(teacher);
 
+			filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue([]);
+
 			const response = await request(app.getHttpServer())
 				.post(`/rooms/${course.id}/copy`)
 				.set('Authorization', 'jwt')
 				.send();
+
+			expect(response.status).toEqual(201);
+		});
+	});
+
+	describe('[POST] lesson copy', () => {
+		it('should return 201', async () => {
+			const roles = roleFactory.buildList(1, { permissions: [Permission.TOPIC_CREATE] });
+			const teacher = userFactory.build({ roles });
+			const course = courseFactory.build({ teachers: [teacher] });
+			const lesson = lessonFactory.build({ course });
+
+			await em.persistAndFlush([lesson]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+
+			const response = await request(app.getHttpServer())
+				.post(`/rooms/lessons/${lesson.id}/copy`)
+				.set('Authorization', 'jwt')
+				.send({ courseId: course.id });
 
 			expect(response.status).toEqual(201);
 		});

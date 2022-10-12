@@ -1,87 +1,167 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { getMockRes } from '@jest-mock/express';
 import { Test, TestingModule } from '@nestjs/testing';
-import { System } from '@shared/domain';
+import { ICurrentUser, System } from '@shared/domain';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
+import { HydraOauthUc } from '@src/modules/oauth/uc';
+import { Request } from 'express';
+import { UnauthorizedException } from '@nestjs/common';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationParams } from './dto/authorization.params';
 import { OauthSSOController } from './oauth-sso.controller';
 
 describe('OAuthController', () => {
-	Configuration.set('HOST', 'https://mock.de');
+	let module: TestingModule;
 	let controller: OauthSSOController;
-	let oauthUc: OauthUc;
-	const defaultJWT =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
-	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${
-		Configuration.get('HOST') as string
-	}/dashboard`;
+	let oauthUc: DeepMocked<OauthUc>;
+	let hydraOauthUc: DeepMocked<HydraOauthUc>;
 
-	const generateMock = async (oauthUcMock) => {
-		const module: TestingModule = await Test.createTestingModule({
+	const mockHost = 'https://mock.de';
+	const defaultJWT = 'JWT_mock';
+	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${mockHost}/dashboard`;
+
+	const dateNow: Date = new Date('2020-01-01T00:00:00.000Z');
+	const dateExpires: Date = new Date('2020-01-02T00:00:00.000Z');
+
+	const cookieProperties = {
+		expires: dateExpires,
+		httpOnly: false,
+		sameSite: 'lax',
+		secure: false,
+	};
+
+	beforeAll(async () => {
+		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
+			switch (key) {
+				case 'HOST':
+					return mockHost;
+				case 'COOKIE__HTTP_ONLY':
+					return cookieProperties.httpOnly;
+				case 'COOKIE__SAME_SITE':
+					return cookieProperties.sameSite;
+				case 'COOKIE__SECURE':
+					return cookieProperties.secure;
+				case 'COOKIE__EXPIRES_SECONDS':
+					return 86400000; // One day in ms
+				default:
+					return 'nonexistent case';
+			}
+		});
+		jest.useFakeTimers('modern');
+		jest.setSystemTime(dateNow);
+
+		module = await Test.createTestingModule({
 			controllers: [OauthSSOController],
-			imports: [],
 			providers: [
 				{
 					provide: OauthUc,
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					useValue: oauthUcMock,
+					useValue: createMock<OauthUc>(),
 				},
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: HydraOauthUc,
+					useValue: createMock<HydraOauthUc>(),
 				},
 			],
 		}).compile();
 
 		controller = module.get(OauthSSOController);
 		oauthUc = module.get(OauthUc);
-	};
+		hydraOauthUc = module.get(HydraOauthUc);
+	});
 
-	it('should be defined', async () => {
-		await generateMock({
-			startOauth: jest.fn(),
-		});
+	it('should be defined', () => {});
+
+	afterAll(async () => {
+		await module.close();
+		jest.useRealTimers();
+		jest.clearAllMocks();
+	});
+
+	it('should be defined', () => {
 		expect(controller).toBeDefined();
 	});
 
-	describe('startOauthFlow', () => {
+	describe('startOauthAuthorizationCodeFlow', () => {
 		const defaultAuthCode = '43534543jnj543342jn2';
 		const query: AuthorizationParams = { code: defaultAuthCode };
 		const system: System = systemFactory.build();
 		system.id = '4345345';
+
 		it('should redirect to mock.de', async () => {
 			const { res } = getMockRes();
-			await generateMock({
-				startOauth: jest.fn(() => ({
-					jwt: '1111',
-					idToken: '2222',
-					logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
-					redirect: `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${
-						Configuration.get('HOST') as string
-					}/dashboard`,
-				})),
-			});
-			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
 			const expected = [query, system.id];
-			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
-			expect(res.cookie).toBeCalledWith('jwt', '1111');
+			oauthUc.processOAuth.mockResolvedValue({
+				jwt: '1111',
+				idToken: '2222',
+				logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
+				redirect: `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${mockHost}/dashboard`,
+				provider: 'iserv',
+			});
+
+			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
+			expect(oauthUc.processOAuth).toHaveBeenCalledWith(...expected);
+			expect(res.cookie).toBeCalledWith('jwt', '1111', cookieProperties);
 			expect(res.redirect).toBeCalledWith(iservRedirectMock);
 		});
+
 		it('should redirect to empty string', async () => {
+			// Arrange
 			const { res } = getMockRes();
-			await generateMock({
-				startOauth: jest.fn(() => ({
-					idToken: '2222',
-					logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
-				})),
+			oauthUc.processOAuth.mockResolvedValue({
+				idToken: '2222',
+				redirect: '',
+				provider: 'iserv',
 			});
-			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
-			expect(res.cookie).toBeCalledWith('jwt', '');
+
+			// Act
+			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
+
+			// Assert
+			expect(res.cookie).toBeCalledWith('jwt', '', cookieProperties);
 			expect(res.redirect).toBeCalledWith('');
+		});
+	});
+
+	describe('getHydraOauthToken', () => {
+		it('should call the hydraOauthUc', async () => {
+			const authParams: AuthorizationParams = {
+				code: 'code',
+			};
+			const oauthClientId = 'clientId';
+
+			await controller.getHydraOauthToken(authParams, oauthClientId);
+
+			expect(hydraOauthUc.getOauthToken).toBeCalledWith(authParams, oauthClientId);
+		});
+	});
+
+	describe('requestAuthToken', () => {
+		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+		const oauthClientId = 'clientId';
+
+		it('should call the hydraOauthUc', async () => {
+			const request: Request = {
+				headers: { authorization: 'Bearer token123' },
+			} as Request;
+
+			await controller.requestAuthToken(currentUser, request, oauthClientId);
+
+			expect(hydraOauthUc.requestAuthCode).toBeCalledWith(currentUser.userId, expect.any(String), oauthClientId);
+		});
+
+		it('should throw UnauthorizedException', async () => {
+			const request: Request = {
+				headers: { authorization: '1551 token123' },
+			} as Request;
+
+			await expect(controller.requestAuthToken(currentUser, request, '')).rejects.toThrow(UnauthorizedException);
 		});
 	});
 });
