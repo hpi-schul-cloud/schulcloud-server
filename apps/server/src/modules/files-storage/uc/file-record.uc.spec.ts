@@ -178,7 +178,6 @@ describe('FileRecordUC', () => {
 	});
 
 	describe('updateSecurityStatus is called', () => {
-		// TODO: Need to be refactored
 		describe('WHEN matching file exists', () => {
 			const setup = () => {
 				const { fileRecord } = getFileRecord();
