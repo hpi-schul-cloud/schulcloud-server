@@ -6,20 +6,20 @@ import { BaseEntityWithTimestamps } from './base.entity';
 export type ILtiToolProperties = Readonly<Omit<LtiTool, keyof BaseEntityWithTimestamps>>;
 
 export enum LtiRoleType {
-	'LEARNER' = 'Learner',
-	'INSTRUCTOR' = 'Instructor',
-	'CONTENT_DEVELOPER' = 'ContentDeveloper',
-	'ADMINISTRATOR' = 'Administrator',
-	'MENTOR' = 'Mentor',
-	'TEACHING_ASSISTANT' = 'TeachingAssistant',
+	LEARNER = 'Learner',
+	INSTRUCTOR = 'Instructor',
+	CONTENT_DEVELOPER = 'ContentDeveloper',
+	ADMINISTRATOR = 'Administrator',
+	MENTOR = 'Mentor',
+	TEACHING_ASSISTANT = 'TeachingAssistant',
 }
 
 export enum LtiPrivacyPermission {
-	'ANONYMOUS' = 'anonymous',
-	'E-MAIL' = 'e-mail',
-	'NAME' = 'name',
-	'PUBLIC' = 'public',
-	'PSEUDONYMOUS' = 'pseudonymous',
+	ANONYMOUS = 'anonymous',
+	EMAIL = 'e-mail',
+	NAME = 'name',
+	PUBLIC = 'public',
+	PSEUDONYMOUS = 'pseudonymous',
 }
 
 @Entity({ tableName: 'ltitools' })

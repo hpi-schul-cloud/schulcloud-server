@@ -5,7 +5,7 @@ import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { LtiToolRepo } from '@shared/repo';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { OauthConfig } from '@shared/domain';
+import { LtiPrivacyPermission, LtiRoleType, OauthConfig } from '@shared/domain';
 import { of } from 'rxjs';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -202,14 +202,38 @@ describe('HydraService', () => {
 	});
 
 	describe('generateConfig', () => {
+		let ltiToolDo: LtiToolDO;
+
+		beforeEach(() => {
+			ltiToolDo = new LtiToolDO({
+				id: new ObjectId().toHexString(),
+				name: 'ToolName',
+				isLocal: true,
+				oAuthClientId: '12345',
+				secret: 'mocksecret',
+				customs: [{ test: 'test' }],
+				isHidden: false,
+				isTemplate: false,
+				key: 'key',
+				openNewTab: false,
+				originToolId: 'originToolId',
+				privacy_permission: LtiPrivacyPermission.NAME,
+				roles: [LtiRoleType.INSTRUCTOR, LtiRoleType.LEARNER],
+				url: 'url',
+				friendlyUrl: 'friendlyUrl',
+				frontchannel_logout_uri: 'frontchannel_logout_uri',
+				logo_url: 'logo_url',
+				lti_message_type: 'lti_message_type',
+				lti_version: 'lti_version',
+				resource_link_id: 'resource_link_id',
+				skipConsent: true,
+			});
+		});
+
 		it('should throw if oauth fields on lti tool are not set', async () => {
 			// Arrange
-			ltiToolRepo.findByOauthClientId.mockResolvedValue(
-				new LtiToolDO({
-					id: new ObjectId().toHexString(),
-					name: 'ToolName',
-				})
-			);
+			ltiToolDo.oAuthClientId = undefined;
+			ltiToolRepo.findByOauthClientId.mockResolvedValue(ltiToolDo);
 
 			// Act & Assert
 			await expect(service.generateConfig(oauthConfig.clientId)).rejects.toThrow(InternalServerErrorException);
@@ -217,14 +241,7 @@ describe('HydraService', () => {
 
 		it('should generate hydra oauth config', async () => {
 			// Arrange
-			ltiToolRepo.findByOauthClientId.mockResolvedValue(
-				new LtiToolDO({
-					id: new ObjectId().toHexString(),
-					name: 'ToolName',
-					oAuthClientId: oauthConfig.clientId,
-					secret: oauthConfig.clientSecret,
-				})
-			);
+			ltiToolRepo.findByOauthClientId.mockResolvedValue(ltiToolDo);
 
 			// Act
 			const result: OauthConfig = await service.generateConfig(oauthConfig.clientId);
