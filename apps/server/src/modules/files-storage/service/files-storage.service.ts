@@ -57,8 +57,6 @@ export class FilesStorageService {
 	}
 
 	// delete
-	// TODO: name must be improved deleteFilesInFileStorage? nearly same name like the micro service
-	// FilesStorageService as name is wrong FilesService as module and the storage is the storage itself
 	private async deleteFilesInFilesStorageClient(fileRecords: FileRecord[]) {
 		const paths = this.filesStorageHelper.getPaths(fileRecords);
 
