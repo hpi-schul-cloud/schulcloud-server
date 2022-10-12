@@ -18,7 +18,9 @@ export class FilesStorageHelper {
 	}
 
 	public getPaths(fileRecords: FileRecord[]): string[] {
-		return fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
+		const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
+
+		return paths;
 	}
 
 	public markForDelete(fileRecords: FileRecord[]): FileRecord[] {
