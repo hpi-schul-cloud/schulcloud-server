@@ -108,11 +108,11 @@ describe('FilesStorageService', () => {
 			};
 
 			it('should call findOneById', async () => {
-				const { params } = setup();
+				const { params, fileRecord } = setup();
 
 				await service.getFile(params);
 
-				expect(fileRecordRepo.findOneById).toHaveBeenCalledTimes(1);
+				expect(fileRecordRepo.findOneById).toHaveBeenCalledWith(fileRecord.id);
 			});
 
 			it('should return the matched fileRecord', async () => {
@@ -142,7 +142,46 @@ describe('FilesStorageService', () => {
 	});
 
 	describe('getMarkForDeletedFile is called', () => {
-		// TODO: Add tests
+		describe('WHEN marked file exists', () => {
+			const setup = () => {
+				const { params, fileRecord } = getFileRecordWithParams();
+				fileRecordRepo.findOneByIdMarkedForDelete.mockResolvedValueOnce(fileRecord);
+
+				return { params, fileRecord };
+			};
+
+			it('should call findOneByIdMarkedForDelete', async () => {
+				const { params, fileRecord } = setup();
+
+				await service.getMarkForDeletedFile(params);
+
+				expect(fileRecordRepo.findOneByIdMarkedForDelete).toHaveBeenCalledWith(fileRecord.id);
+			});
+
+			it('should return the matched fileRecord', async () => {
+				const { params, fileRecord } = setup();
+
+				const result = await service.getMarkForDeletedFile(params);
+
+				expect(result).toEqual(fileRecord);
+			});
+		});
+
+		describe('WHEN repository throws an error', () => {
+			const setup = () => {
+				const { params } = getFileRecordWithParams();
+
+				fileRecordRepo.findOneByIdMarkedForDelete.mockRejectedValueOnce(new Error('test'));
+
+				return { params };
+			};
+
+			it('should pass the error', async () => {
+				const { params } = setup();
+
+				await expect(service.getMarkForDeletedFile(params)).rejects.toThrow(new Error('test'));
+			});
+		});
 	});
 
 	describe('getFilesOfParent is called', () => {
@@ -396,13 +435,16 @@ describe('FilesStorageService', () => {
 
 			it('should call repo save with right parameters', async () => {
 				const { fileRecords } = setup();
-				const fileRecordsCopy = fileRecords.map((fileRecord): FileRecord => _.cloneDeep(fileRecord));
-
-				const markedFileRecords = filesStorageHelper.markForDelete(fileRecordsCopy);
 
 				await service.delete(fileRecords);
 
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(markedFileRecords);
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(
+					expect.arrayContaining([
+						expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) as Date }),
+						expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) as Date }),
+						expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) as Date }),
+					])
+				);
 			});
 
 			it('should call storageClient.delete', async () => {
