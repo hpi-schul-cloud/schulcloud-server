@@ -537,6 +537,7 @@ describe('FilesStorageUC', () => {
 				const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(requestParams1.parentType);
 
 				await filesStorageUC.deleteFilesOfParent(userId1, requestParams1);
+
 				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
 					userId1,
 					allowedType,
@@ -547,7 +548,9 @@ describe('FilesStorageUC', () => {
 
 			it('should call service with correct params', async () => {
 				const { requestParams1, userId1 } = setup();
+
 				await filesStorageUC.deleteFilesOfParent(userId1, requestParams1);
+
 				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledWith(requestParams1);
 			});
 		});
@@ -562,9 +565,11 @@ describe('FilesStorageUC', () => {
 
 			it('should throw forbidden error', async () => {
 				const { requestParams1, userId1 } = setup();
+
 				await expect(filesStorageUC.deleteFilesOfParent(userId1, requestParams1)).rejects.toThrow(
 					new ForbiddenException()
 				);
+
 				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledTimes(0);
 			});
 		});
@@ -584,6 +589,7 @@ describe('FilesStorageUC', () => {
 				const { params1, userId1, mockedResult } = setup();
 
 				const result = await filesStorageUC.deleteFilesOfParent(userId1, params1);
+
 				expect(result).toEqual(mockedResult);
 			});
 		});
@@ -622,6 +628,7 @@ describe('FilesStorageUC', () => {
 				const { userId1, requestParams } = setup();
 
 				await filesStorageUC.deleteOneFile(userId1, requestParams);
+
 				expect(filesStorageService.getFile).toHaveBeenCalledTimes(1);
 			});
 
@@ -629,6 +636,7 @@ describe('FilesStorageUC', () => {
 				const { userId1, requestParams } = setup();
 
 				await filesStorageUC.deleteOneFile(userId1, requestParams);
+
 				expect(filesStorageService.getFile).toHaveBeenCalledWith(requestParams);
 			});
 		});
@@ -713,6 +721,7 @@ describe('FilesStorageUC', () => {
 				const { userId1, requestParams, fileRecord1 } = setup();
 
 				await filesStorageUC.deleteOneFile(userId1, requestParams);
+
 				expect(filesStorageService.delete).toHaveBeenCalledWith([fileRecord1]);
 			});
 
@@ -720,6 +729,7 @@ describe('FilesStorageUC', () => {
 				const { userId1, requestParams, fileRecord1 } = setup();
 
 				const result = await filesStorageUC.deleteOneFile(userId1, requestParams);
+
 				expect(result).toEqual(fileRecord1);
 			});
 		});
