@@ -96,7 +96,7 @@ describe('FileRecordUC', () => {
 	});
 
 	describe('getFileRecordsOfParent is called', () => {
-		describe('when user is authorised and valid files existis', () => {
+		describe('when user is authorised and valid files exist', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const { fileRecords, params } = getFileRecords();
@@ -155,7 +155,7 @@ describe('FileRecordUC', () => {
 			});
 		});
 
-		describe('when user is authorised but no files existis', () => {
+		describe('when user is authorised but no files exist', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const params = getFileParams();
@@ -199,7 +199,7 @@ describe('FileRecordUC', () => {
 			});
 		});
 
-		describe('WHEN service is throw an error', () => {
+		describe('WHEN service throws an error', () => {
 			const setup = () => {
 				const { fileRecord } = getFileRecord();
 				const scanResult: ScanResultParams = { virus_detected: false };
