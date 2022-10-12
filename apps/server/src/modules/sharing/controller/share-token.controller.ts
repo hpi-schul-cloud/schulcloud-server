@@ -2,9 +2,9 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ShareTokenMapper } from '../mapper/share-token.mapper';
+import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';
 import { ShareTokenUC } from '../uc';
-import { ShareTokenBodyParams, ShareTokenResponse, ShareTokenUrlParams } from './dto';
+import { ShareTokenBodyParams, ShareTokenInfoResponse, ShareTokenResponse, ShareTokenUrlParams } from './dto';
 
 @ApiTags('ShareToken')
 @Authenticate('jwt')
@@ -14,17 +14,17 @@ export class ShareTokenController {
 
 	@Get(':token')
 	async lookupShareToken(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: ShareTokenUrlParams
-	): Promise<ShareTokenResponse> {
-		const shareToken = await this.shareTokenUC.lookupShareToken(currentUser.userId, urlParams.token);
+		@Param() urlParams: ShareTokenUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<ShareTokenInfoResponse> {
+		const shareTokenInfo = await this.shareTokenUC.lookupShareToken(currentUser.userId, urlParams.token);
 
-		const response = ShareTokenMapper.mapToResponse(shareToken);
+		const response = ShareTokenInfoResponseMapper.mapToResponse(shareTokenInfo);
 
 		return response;
 	}
 
-	@Post('')
+	@Post()
 	async createShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: ShareTokenBodyParams
@@ -41,7 +41,7 @@ export class ShareTokenController {
 			}
 		);
 
-		const response = ShareTokenMapper.mapToResponse(shareToken);
+		const response = ShareTokenResponseMapper.mapToResponse(shareToken);
 
 		return Promise.resolve(response);
 	}

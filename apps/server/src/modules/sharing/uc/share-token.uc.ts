@@ -1,4 +1,4 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
 	Actions,
 	EntityId,
@@ -6,27 +6,46 @@ import {
 	ShareTokenContext,
 	ShareTokenContextType,
 	ShareTokenDO,
+	ShareTokenParentType,
 	ShareTokenPayload,
 } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
-import { ShareTokenContextTypeMapper } from '../mapper/context-type.mapper';
-import { ShareTokenParentTypeMapper } from '../mapper/parent-type.mapper';
+import { ShareTokenContextTypeMapper, ShareTokenParentTypeMapper } from '../mapper';
+import { ParentInfoLoader } from '../parent-info.loader';
 import { ShareTokenService } from '../share-token.service';
+
+export interface ShareTokenInfo {
+	parentType: ShareTokenParentType;
+	parentName: string;
+}
 
 @Injectable()
 export class ShareTokenUC {
 	constructor(
 		private readonly shareTokenService: ShareTokenService,
 		private readonly authorizationService: AuthorizationService,
+		private readonly parentInfoLoader: ParentInfoLoader,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(ShareTokenUC.name);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenDO> {
-		return Promise.reject(new NotImplementedException());
+	async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfo> {
+		const shareToken = await this.shareTokenService.lookupToken(token);
+
+		if (shareToken.context) {
+			await this.checkContextReadPermission(userId, shareToken.context);
+		}
+
+		const parentInfo = await this.parentInfoLoader.loadParentInfo(shareToken.payload);
+
+		const shareTokenInfo: ShareTokenInfo = {
+			parentType: shareToken.payload.parentType,
+			parentName: parentInfo.name,
+		};
+
+		return shareTokenInfo;
 	}
 
 	async createShareToken(
