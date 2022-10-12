@@ -10,7 +10,6 @@ import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectID } from 'bson';
 import { AuthorizationService } from '@src/modules';
-import { ObjectId } from '@mikro-orm/mongodb';
 
 describe('OauthProviderLoginFlowService', () => {
 	let module: TestingModule;
