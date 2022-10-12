@@ -1,5 +1,5 @@
 import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { ILtiToolProperties, LtiTool } from '@shared/domain/index';
+import { ILtiToolProperties, LTI_PRIVACY_PERMISSION, LTI_ROLE_TYPE, LtiTool } from '@shared/domain/index';
 import { DeepPartial } from 'fishery';
 
 class LtiToolFactory extends BaseFactory<LtiTool, ILtiToolProperties> {
@@ -31,5 +31,21 @@ export const ltiToolFactory = LtiToolFactory.define(LtiTool, ({ sequence }) => {
 		isLocal: true,
 		oAuthClientId: 'clientId',
 		secret: 'secret',
+		customs: [{ test: 'test' }],
+		isHidden: false,
+		isTemplate: false,
+		key: 'key',
+		openNewTab: false,
+		originToolId: 'originToolId',
+		privacy_permission: LTI_PRIVACY_PERMISSION.NAME,
+		roles: [LTI_ROLE_TYPE.INSTRUCTOR, LTI_ROLE_TYPE.LEARNER],
+		url: 'url',
+		friendlyUrl: 'friendlyUrl',
+		frontchannel_logout_uri: 'frontchannel_logout_uri',
+		logo_url: 'logo_url',
+		lti_message_type: 'lti_message_type',
+		lti_version: 'lti_version',
+		resource_link_id: 'resource_link_id',
+		skipConsent: true,
 	};
 });

@@ -1,31 +1,123 @@
-import { Entity, Property } from '@mikro-orm/core';
-import { Optional } from '@nestjs/common';
+import { Entity, Enum, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { EntityId } from '@shared/domain';
 
 export type ILtiToolProperties = Readonly<Omit<LtiTool, keyof BaseEntityWithTimestamps>>;
 
+export enum LTI_ROLE_TYPE {
+	'LEARNER' = 'Learner',
+	'INSTRUCTOR' = 'Instructor',
+	'CONTENT_DEVELOPER' = 'ContentDeveloper',
+	'ADMINISTRATOR' = 'Administrator',
+	'MENTOR' = 'Mentor',
+	'TEACHING_ASSISTANT' = 'TeachingAssistant',
+}
+
+export enum LTI_PRIVACY_PERMISSION {
+	'ANONYMOUS' = 'anonymous',
+	'E-MAIL' = 'e-mail',
+	'NAME' = 'name',
+	'PUBLIC' = 'public',
+	'PSEUDONYMOUS' = 'pseudonymous',
+}
+
 @Entity({ tableName: 'ltitools' })
 export class LtiTool extends BaseEntityWithTimestamps {
-	@Property()
+	@Property({ nullable: false })
 	name: string;
 
-	@Property()
-	@Optional()
+	@Property({ nullable: false })
+	url: string;
+
+	@Property({ nullable: true })
+	key: string = 'none';
+
+	@Property({ nullable: false, default: 'none' })
+	secret: string = 'none';
+
+	@Property({ nullable: true })
+	logo_url?: string;
+
+	@Property({ nullable: true })
+	lti_message_type?: string;
+
+	@Property({ nullable: true })
+	lti_version?: string;
+
+	@Property({ nullable: true })
+	resource_link_id?: string;
+
+	@Enum({ array: true, items: () => LTI_ROLE_TYPE })
+	@Property({ nullable: false })
+	roles: LTI_ROLE_TYPE[] = [];
+
+	@Enum({
+		items: () => LTI_PRIVACY_PERMISSION,
+		default: LTI_PRIVACY_PERMISSION.ANONYMOUS,
+		nullable: false,
+	})
+	privacy_permission: LTI_PRIVACY_PERMISSION = LTI_PRIVACY_PERMISSION.ANONYMOUS;
+
+	@Property({ nullable: false })
+	customs: Record<string, string>[] = [];
+
+	@Property({ nullable: false, default: false })
+	isTemplate: boolean = false;
+
+	@Property({ nullable: true })
+	isLocal?: boolean;
+
+	@Property({ nullable: true, fieldName: 'originTool' })
+	_originToolId?: ObjectId;
+
+	@Property({ persist: false, getter: true })
+	get originToolId(): EntityId | undefined {
+		return this._originToolId?.toHexString();
+	}
+
+	@Property({ nullable: true })
 	oAuthClientId?: string;
 
-	@Property()
-	@Optional()
-	secret?: string;
+	@Property({ nullable: true })
+	@Unique({ options: { sparse: true } })
+	friendlyUrl?: string;
 
-	@Property()
-	@Optional()
-	isLocal?: boolean;
+	@Property({ nullable: true })
+	skipConsent?: boolean;
+
+	@Property({ nullable: false, default: false })
+	openNewTab: boolean = false;
+
+	@Property({ nullable: true })
+	frontchannel_logout_uri?: string;
+
+	@Property({ nullable: false, default: false })
+	isHidden: boolean = false;
 
 	constructor(props: ILtiToolProperties) {
 		super();
 		this.name = props.name;
-		this.oAuthClientId = props.oAuthClientId;
+		this.url = props.url;
+		this.key = props.key;
 		this.secret = props.secret;
+		this.logo_url = props.logo_url;
+		this.lti_message_type = props.lti_message_type;
+		this.lti_version = props.lti_version;
+		this.resource_link_id = props.resource_link_id;
+		this.roles = props.roles;
+		this.privacy_permission = props.privacy_permission;
+		this.customs = props.customs;
+		this.isTemplate = props.isTemplate;
 		this.isLocal = props.isLocal;
+		if (props.originToolId !== undefined) {
+			this._originToolId = new ObjectId(props.originToolId);
+		}
+		this.oAuthClientId = props.oAuthClientId;
+		this.friendlyUrl = props.friendlyUrl;
+		this.skipConsent = props.skipConsent;
+		this.openNewTab = props.openNewTab;
+		this.frontchannel_logout_uri = props.frontchannel_logout_uri;
+		this.isHidden = props.isHidden;
 	}
 }
