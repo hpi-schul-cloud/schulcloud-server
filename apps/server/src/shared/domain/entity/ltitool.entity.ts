@@ -1,11 +1,11 @@
 import { Entity, Enum, Property, Unique } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from './base.entity';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
+import { BaseEntityWithTimestamps } from './base.entity';
 
 export type ILtiToolProperties = Readonly<Omit<LtiTool, keyof BaseEntityWithTimestamps>>;
 
-export enum LTI_ROLE_TYPE {
+export enum LtiRoleType {
 	'LEARNER' = 'Learner',
 	'INSTRUCTOR' = 'Instructor',
 	'CONTENT_DEVELOPER' = 'ContentDeveloper',
@@ -14,7 +14,7 @@ export enum LTI_ROLE_TYPE {
 	'TEACHING_ASSISTANT' = 'TeachingAssistant',
 }
 
-export enum LTI_PRIVACY_PERMISSION {
+export enum LtiPrivacyPermission {
 	'ANONYMOUS' = 'anonymous',
 	'E-MAIL' = 'e-mail',
 	'NAME' = 'name',
@@ -31,10 +31,10 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	url: string;
 
 	@Property({ nullable: true })
-	key: string = 'none';
+	key = 'none';
 
 	@Property({ nullable: false, default: 'none' })
-	secret: string = 'none';
+	secret = 'none';
 
 	@Property({ nullable: true })
 	logo_url?: string;
@@ -48,22 +48,22 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	resource_link_id?: string;
 
-	@Enum({ array: true, items: () => LTI_ROLE_TYPE })
+	@Enum({ array: true, items: () => LtiRoleType })
 	@Property({ nullable: false })
-	roles: LTI_ROLE_TYPE[] = [];
+	roles: LtiRoleType[] = [];
 
 	@Enum({
-		items: () => LTI_PRIVACY_PERMISSION,
-		default: LTI_PRIVACY_PERMISSION.ANONYMOUS,
+		items: () => LtiPrivacyPermission,
+		default: LtiPrivacyPermission.ANONYMOUS,
 		nullable: false,
 	})
-	privacy_permission: LTI_PRIVACY_PERMISSION = LTI_PRIVACY_PERMISSION.ANONYMOUS;
+	privacy_permission: LtiPrivacyPermission = LtiPrivacyPermission.ANONYMOUS;
 
 	@Property({ nullable: false })
 	customs: Record<string, string>[] = [];
 
 	@Property({ nullable: false, default: false })
-	isTemplate: boolean = false;
+	isTemplate = false;
 
 	@Property({ nullable: true })
 	isLocal?: boolean;
@@ -87,13 +87,13 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	skipConsent?: boolean;
 
 	@Property({ nullable: false, default: false })
-	openNewTab: boolean = false;
+	openNewTab = false;
 
 	@Property({ nullable: true })
 	frontchannel_logout_uri?: string;
 
 	@Property({ nullable: false, default: false })
-	isHidden: boolean = false;
+	isHidden = false;
 
 	constructor(props: ILtiToolProperties) {
 		super();

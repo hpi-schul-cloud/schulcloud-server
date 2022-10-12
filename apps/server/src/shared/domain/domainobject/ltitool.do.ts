@@ -1,14 +1,15 @@
+import { EntityId } from '@shared/domain/types';
+import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
 import { BaseWithTimestampsDO } from './base.do';
-import { EntityId, LTI_PRIVACY_PERMISSION, LTI_ROLE_TYPE } from '@shared/domain';
 
 export class LtiToolDO extends BaseWithTimestampsDO {
 	name: string;
 
 	url: string;
 
-	key: string = 'none';
+	key = 'none';
 
-	secret: string = 'none';
+	secret = 'none';
 
 	logo_url?: string;
 
@@ -18,13 +19,13 @@ export class LtiToolDO extends BaseWithTimestampsDO {
 
 	resource_link_id?: string;
 
-	roles: LTI_ROLE_TYPE[] = [];
+	roles: LtiRoleType[] = [];
 
-	privacy_permission: LTI_PRIVACY_PERMISSION = LTI_PRIVACY_PERMISSION.ANONYMOUS;
+	privacy_permission: LtiPrivacyPermission = LtiPrivacyPermission.ANONYMOUS;
 
 	customs: Record<string, string>[];
 
-	isTemplate: boolean = false;
+	isTemplate = false;
 
 	isLocal?: boolean;
 
@@ -36,11 +37,11 @@ export class LtiToolDO extends BaseWithTimestampsDO {
 
 	skipConsent?: boolean;
 
-	openNewTab: boolean = false;
+	openNewTab = false;
 
 	frontchannel_logout_uri?: string;
 
-	isHidden: boolean = false;
+	isHidden = false;
 
 	constructor(props: LtiToolDO) {
 		super(props);

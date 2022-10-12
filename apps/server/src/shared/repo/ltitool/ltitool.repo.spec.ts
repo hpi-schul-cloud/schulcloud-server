@@ -1,12 +1,13 @@
 import { EntityProperties } from '@shared/repo';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
 import { NotFoundError } from '@mikro-orm/core';
-import { ILtiToolProperties, LTI_PRIVACY_PERMISSION, LTI_ROLE_TYPE, LtiTool } from '@shared/domain';
+import { ILtiToolProperties, LtiTool } from '@shared/domain';
+import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
 import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';
@@ -149,8 +150,8 @@ describe('LtiTool Repo', () => {
 				key: 'key',
 				openNewTab: false,
 				originToolId: 'originToolId',
-				privacy_permission: LTI_PRIVACY_PERMISSION.NAME,
-				roles: [LTI_ROLE_TYPE.INSTRUCTOR, LTI_ROLE_TYPE.LEARNER],
+				privacy_permission: LtiPrivacyPermission.NAME,
+				roles: [LtiRoleType.INSTRUCTOR, LtiRoleType.LEARNER],
 				url: 'url',
 				friendlyUrl: 'friendlyUrl',
 				frontchannel_logout_uri: 'frontchannel_logout_uri',

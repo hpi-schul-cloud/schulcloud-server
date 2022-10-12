@@ -1,5 +1,5 @@
 import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { ILtiToolProperties, LTI_PRIVACY_PERMISSION, LTI_ROLE_TYPE, LtiTool } from '@shared/domain/index';
+import { ILtiToolProperties, LtiPrivacyPermission, LtiRoleType, LtiTool } from '@shared/domain/index';
 import { DeepPartial } from 'fishery';
 
 class LtiToolFactory extends BaseFactory<LtiTool, ILtiToolProperties> {
@@ -37,8 +37,8 @@ export const ltiToolFactory = LtiToolFactory.define(LtiTool, ({ sequence }) => {
 		key: 'key',
 		openNewTab: false,
 		originToolId: 'originToolId',
-		privacy_permission: LTI_PRIVACY_PERMISSION.NAME,
-		roles: [LTI_ROLE_TYPE.INSTRUCTOR, LTI_ROLE_TYPE.LEARNER],
+		privacy_permission: LtiPrivacyPermission.NAME,
+		roles: [LtiRoleType.INSTRUCTOR, LtiRoleType.LEARNER],
 		url: 'url',
 		friendlyUrl: 'friendlyUrl',
 		frontchannel_logout_uri: 'frontchannel_logout_uri',
