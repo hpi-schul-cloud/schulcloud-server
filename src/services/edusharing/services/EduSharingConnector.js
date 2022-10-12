@@ -1,5 +1,5 @@
 const request = require('request-promise-native');
-const html_parser = require('node-html-parser');
+const htmlParser = require('node-html-parser');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
@@ -84,7 +84,7 @@ class EduSharingConnector {
 				throw Error('authentication error with edu sharing');
 			}
 
-			for (let cookie of result.headers['set-cookie']) {
+			for (const cookie of result.headers['set-cookie']) {
 				if (cookie.startsWith('JSESSIONID')) {
 					return cookie;
 				}
@@ -333,7 +333,7 @@ class EduSharingConnector {
 	}
 
 	async getRendererForNode(nodeUuid) {
-	    try {
+		try {
 			const url = `${ES_ENDPOINTS.RENDERER}${nodeUuid}`
 			const options = {
 				method: 'GET',
@@ -348,16 +348,16 @@ class EduSharingConnector {
 			const response = await this.eduSharingRequest(options);
 			const parsed = JSON.parse(response);
 			if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
-				const root = html_parser.parse(parsed.detailsSnippet);
+				const root = htmlParser.parse(parsed.detailsSnippet);
 				const iframe = root.querySelector('.edusharing_rendering_content_wrapper')
 				if (iframe == null) {
-					throw new GeneralError('no iframe found')
+					throw new GeneralError('no iframe found');
 				}
 				return iframe.toString();
 			} else {
 				throw new GeneralError(`Unexpected answer from Edu-Sharing: ${response}`);
 			}
-	    } catch (err) {
+		} catch (err) {
 			logger.error('Edu-Sharing failed getting renderer: ', err, err.message);
 			return Promise.reject(err);
 		}
