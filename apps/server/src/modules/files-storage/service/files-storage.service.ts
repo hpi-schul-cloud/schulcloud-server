@@ -24,7 +24,7 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	public async getMarkForDeletedFile(params: SingleFileParams) {
+	public async getFileMarkedForDelete(params: SingleFileParams) {
 		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
 
 		return fileRecord;

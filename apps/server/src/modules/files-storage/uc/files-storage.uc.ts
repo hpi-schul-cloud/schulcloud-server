@@ -232,7 +232,7 @@ export class FilesStorageUC {
 	}
 
 	public async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
-		const fileRecord = await this.filesStorageService.getMarkForDeletedFile(params);
+		const fileRecord = await this.filesStorageService.getFileMarkedForDelete(params);
 
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create);
 		await this.filesStorageService.restore([fileRecord]);

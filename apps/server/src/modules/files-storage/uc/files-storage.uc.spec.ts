@@ -825,7 +825,7 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { params1, userId1, fileRecord1 } = getFileRecordWithParams();
 
-				filesStorageService.getMarkForDeletedFile.mockResolvedValueOnce(fileRecord1);
+				filesStorageService.getFileMarkedForDelete.mockResolvedValueOnce(fileRecord1);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 				filesStorageService.restore.mockResolvedValueOnce();
 
@@ -837,7 +837,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.restoreOneFile(userId1, params1);
 
-				expect(filesStorageService.getMarkForDeletedFile).toHaveBeenCalledWith(params1);
+				expect(filesStorageService.getFileMarkedForDelete).toHaveBeenCalledWith(params1);
 			});
 
 			it('should call authorisation with right parameters', async () => {
@@ -875,7 +875,7 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { params1, userId1, fileRecord1 } = getFileRecordWithParams();
 
-				filesStorageService.getMarkForDeletedFile.mockResolvedValueOnce(fileRecord1);
+				filesStorageService.getFileMarkedForDelete.mockResolvedValueOnce(fileRecord1);
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 
 				return { params1, userId1 };
@@ -895,7 +895,7 @@ describe('FilesStorageUC', () => {
 				const { params1, userId1 } = getFileRecordWithParams();
 				const error = new Error('test');
 
-				filesStorageService.getMarkForDeletedFile.mockRejectedValueOnce(error);
+				filesStorageService.getFileMarkedForDelete.mockRejectedValueOnce(error);
 
 				return { params1, userId1, error };
 			};
@@ -912,7 +912,7 @@ describe('FilesStorageUC', () => {
 				const { params1, userId1, fileRecord1 } = getFileRecordWithParams();
 				const error = new Error('test');
 
-				filesStorageService.getMarkForDeletedFile.mockResolvedValueOnce(fileRecord1);
+				filesStorageService.getFileMarkedForDelete.mockResolvedValueOnce(fileRecord1);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 				filesStorageService.restore.mockRejectedValueOnce(error);
 

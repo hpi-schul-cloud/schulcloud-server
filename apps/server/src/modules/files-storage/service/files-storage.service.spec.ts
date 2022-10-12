@@ -141,7 +141,7 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('getMarkForDeletedFile is called', () => {
+	describe('getFileMarkedForDelete is called', () => {
 		describe('WHEN marked file exists', () => {
 			const setup = () => {
 				const { params, fileRecord } = getFileRecordWithParams();
@@ -153,7 +153,7 @@ describe('FilesStorageService', () => {
 			it('should call findOneByIdMarkedForDelete', async () => {
 				const { params, fileRecord } = setup();
 
-				await service.getMarkForDeletedFile(params);
+				await service.getFileMarkedForDelete(params);
 
 				expect(fileRecordRepo.findOneByIdMarkedForDelete).toHaveBeenCalledWith(fileRecord.id);
 			});
@@ -161,7 +161,7 @@ describe('FilesStorageService', () => {
 			it('should return the matched fileRecord', async () => {
 				const { params, fileRecord } = setup();
 
-				const result = await service.getMarkForDeletedFile(params);
+				const result = await service.getFileMarkedForDelete(params);
 
 				expect(result).toEqual(fileRecord);
 			});
@@ -179,7 +179,7 @@ describe('FilesStorageService', () => {
 			it('should pass the error', async () => {
 				const { params } = setup();
 
-				await expect(service.getMarkForDeletedFile(params)).rejects.toThrow(new Error('test'));
+				await expect(service.getFileMarkedForDelete(params)).rejects.toThrow(new Error('test'));
 			});
 		});
 	});
