@@ -334,7 +334,7 @@ class EduSharingConnector {
 
 	async getRendererForNode(nodeUuid) {
 		try {
-			const url = `${ES_ENDPOINTS.RENDERER}${nodeUuid}`
+			const url = `${ES_ENDPOINTS.RENDERER}${nodeUuid}`;
 			const options = {
 				method: 'GET',
 				url,
