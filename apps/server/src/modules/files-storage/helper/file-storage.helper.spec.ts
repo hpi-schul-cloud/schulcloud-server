@@ -201,19 +201,21 @@ describe('FilesStorageHelper', () => {
 		describe('WHEN fileRecords with new FileName already exist', () => {
 			const setup = () => {
 				const fileRecords = setupFileRecords();
+				const fileRecord = fileRecords[0];
 				const newFileName = 'renamed';
-				fileRecords[0].name = newFileName;
+				fileRecord.name = newFileName;
 
 				return {
 					newFileName,
 					fileRecords,
+					fileRecord,
 				};
 			};
 
 			it('should throw with specific error', () => {
-				const { fileRecords, newFileName } = setup();
+				const { fileRecords, fileRecord, newFileName } = setup();
 
-				expect(() => filesStorageHelper.checkDuplicatedNames(fileRecords, newFileName)).toThrowError(
+				expect(() => filesStorageHelper.modifyFileNameInScope(fileRecord, fileRecords, newFileName)).toThrowError(
 					new ConflictException(ErrorType.FILE_NAME_EXISTS)
 				);
 			});

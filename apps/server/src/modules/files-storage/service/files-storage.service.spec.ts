@@ -185,7 +185,7 @@ describe('FilesStorageService', () => {
 	});
 
 	describe('getFilesOfParent is called', () => {
-		describe('WHEN valid files exists', () => {
+		describe('WHEN valid files exist', () => {
 			const setup = () => {
 				const { params, fileRecords } = getFileRecordsWithParams();
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
