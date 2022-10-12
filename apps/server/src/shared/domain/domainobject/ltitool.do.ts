@@ -4,6 +4,7 @@ import { BaseWithTimestampsDO } from './base.do';
 
 export class CustomLtiProperty {
 	key: string;
+
 	value: string;
 
 	constructor(key: string, value: string) {
