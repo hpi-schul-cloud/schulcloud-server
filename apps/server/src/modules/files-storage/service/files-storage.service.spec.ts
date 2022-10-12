@@ -614,7 +614,7 @@ describe('FilesStorageService', () => {
 	});
 
 	describe('restoreFilesOfParent is called', () => {
-		describe('WHEN valid files exists', () => {
+		describe('WHEN valid files exist', () => {
 			let spy: jest.SpyInstance;
 
 			afterEach(() => {
@@ -661,7 +661,7 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('WHEN no files exits', () => {
+		describe('WHEN no files exist', () => {
 			let spy: jest.SpyInstance;
 
 			afterEach(() => {
@@ -710,7 +710,7 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('WHEN repository throw an error', () => {
+		describe('WHEN repository throws an error', () => {
 			let spy: jest.SpyInstance;
 
 			afterEach(() => {
@@ -736,7 +736,7 @@ describe('FilesStorageService', () => {
 	});
 
 	describe('restore is called', () => {
-		describe('WHEN valid files exists', () => {
+		describe('WHEN valid files exist', () => {
 			const setup = () => {
 				const { fileRecords } = getFileRecordsWithParams();
 
