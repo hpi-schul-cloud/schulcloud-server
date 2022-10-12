@@ -686,7 +686,7 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('WHEN repository throw an error', () => {
+		describe('WHEN repository throws an error', () => {
 			let spy: jest.SpyInstance;
 
 			afterEach(() => {
@@ -703,14 +703,14 @@ describe('FilesStorageService', () => {
 				return { params, error };
 			};
 
-			it('should skip service restore call', async () => {
+			it('should pass the error', async () => {
 				const { params, error } = setup();
 
 				await expect(service.restoreFilesOfParent(params)).rejects.toThrowError(error);
 			});
 		});
 
-		describe('WHEN repository throws an error', () => {
+		describe('WHEN service throws an error', () => {
 			let spy: jest.SpyInstance;
 
 			afterEach(() => {
@@ -727,7 +727,7 @@ describe('FilesStorageService', () => {
 				return { params, error };
 			};
 
-			it('should skip service restore call', async () => {
+			it('should pass the error', async () => {
 				const { params, error } = setup();
 
 				await expect(service.restoreFilesOfParent(params)).rejects.toThrowError(error);
