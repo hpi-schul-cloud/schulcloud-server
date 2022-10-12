@@ -1,15 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain';
 import { FileRecordParentType } from '@shared/domain/entity/filerecord.entity';
-import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { Allow, IsEnum, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 
 export class FileRecordParams {
-	constructor(fileRecordParams: FileRecordParams) {
-		this.schoolId = fileRecordParams.schoolId;
-		this.parentId = fileRecordParams.parentId;
-		this.parentType = fileRecordParams.parentType;
-	}
-
 	@ApiProperty()
 	@IsMongoId()
 	schoolId!: EntityId;

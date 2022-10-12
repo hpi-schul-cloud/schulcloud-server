@@ -1,5 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { EntityId, FileRecord, ScanStatus } from '@shared/domain';
+import { plainToClass } from 'class-transformer';
 import { FileRecordParams, ScanResultParams } from '../controller/dto';
 import { ErrorType } from '../error';
 
@@ -57,7 +58,7 @@ export class FilesStorageHelper {
 
 	// TODO: look like a mapper and should be located on this place, constructor for params added?
 	public mapFileRecordToFileRecordParams(fileRecord: FileRecord): FileRecordParams {
-		const fileRecordParams = new FileRecordParams({
+		const fileRecordParams = plainToClass(FileRecordParams, {
 			schoolId: fileRecord.schoolId,
 			parentId: fileRecord.parentId,
 			parentType: fileRecord.parentType,
