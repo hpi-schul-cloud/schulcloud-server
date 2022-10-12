@@ -4,15 +4,21 @@ import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
-import { FilesStorageHelper } from '../helper';
+import {
+	getPaths,
+	getStatusFromScanResult,
+	mapFileRecordToFileRecordParams,
+	markForDelete,
+	modifyFileNameInScope,
+	unmarkForDelete,
+} from '../helper';
 
 @Injectable()
 export class FilesStorageService {
 	constructor(
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly storageClient: S3ClientAdapter,
-		private logger: Logger,
-		private readonly filesStorageHelper: FilesStorageHelper
+		private logger: Logger
 	) {
 		this.logger.setContext(FilesStorageService.name);
 	}
@@ -38,10 +44,10 @@ export class FilesStorageService {
 
 	// update
 	public async patchFilename(fileRecord: FileRecord, data: RenameFileParams) {
-		const fileRecordParams = this.filesStorageHelper.mapFileRecordToFileRecordParams(fileRecord);
+		const fileRecordParams = mapFileRecordToFileRecordParams(fileRecord);
 		const [fileRecords] = await this.getFilesOfParent(fileRecordParams);
 
-		const modifiedFileRecord = this.filesStorageHelper.modifyFileNameInScope(fileRecord, fileRecords, data.fileName);
+		const modifiedFileRecord = modifyFileNameInScope(fileRecord, fileRecords, data.fileName);
 		await this.fileRecordRepo.save(modifiedFileRecord);
 
 		return modifiedFileRecord;
@@ -50,7 +56,7 @@ export class FilesStorageService {
 	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 
-		const status = this.filesStorageHelper.getStatusFromScanResult(scanResultDto);
+		const status = getStatusFromScanResult(scanResultDto);
 		fileRecord.updateSecurityCheckStatus(status, scanResultDto.virus_signature);
 
 		await this.fileRecordRepo.save(fileRecord);
@@ -58,7 +64,7 @@ export class FilesStorageService {
 
 	// delete
 	private async deleteFilesInFilesStorageClient(fileRecords: FileRecord[]) {
-		const paths = this.filesStorageHelper.getPaths(fileRecords);
+		const paths = getPaths(fileRecords);
 
 		await this.storageClient.delete(paths);
 	}
@@ -75,7 +81,7 @@ export class FilesStorageService {
 	public async delete(fileRecords: FileRecord[]) {
 		this.logger.debug({ action: 'delete', fileRecords });
 
-		const markedFileRecords = this.filesStorageHelper.markForDelete(fileRecords);
+		const markedFileRecords = markForDelete(fileRecords);
 		await this.fileRecordRepo.save(markedFileRecords);
 
 		await this.deleteWithRollbackByError(fileRecords);
@@ -93,7 +99,7 @@ export class FilesStorageService {
 
 	// restore
 	private async restoreFilesInFileStorageClient(fileRecords: FileRecord[]) {
-		const paths = this.filesStorageHelper.getPaths(fileRecords);
+		const paths = getPaths(fileRecords);
 
 		await this.storageClient.restore(paths);
 	}
@@ -102,7 +108,7 @@ export class FilesStorageService {
 		try {
 			await this.restoreFilesInFileStorageClient(fileRecords);
 		} catch (err) {
-			this.filesStorageHelper.markForDelete(fileRecords);
+			markForDelete(fileRecords);
 			await this.fileRecordRepo.save(fileRecords);
 			throw new InternalServerErrorException(err, `${FilesStorageService.name}:restore`);
 		}
@@ -123,9 +129,17 @@ export class FilesStorageService {
 	public async restore(fileRecords: FileRecord[]) {
 		this.logger.debug({ action: 'restore', fileRecords });
 
-		const unmarkFileRecords = this.filesStorageHelper.unmarkForDelete(fileRecords);
+		const unmarkFileRecords = unmarkForDelete(fileRecords);
 		await this.fileRecordRepo.save(unmarkFileRecords);
 
 		await this.restoreWithRollbackByError(fileRecords);
 	}
 }
+
+// function mapFileRecordToFileRecordParams(fileRecord: FileRecord) {
+// 	throw new Error('Function not implemented.');
+// }
+
+// function getStatusFromScanResult(scanResultDto: ScanResultParams) {
+// 	throw new Error('Function not implemented.');
+// }

@@ -10,7 +10,7 @@ import { Logger } from '@src/core/logger';
 import _ from 'lodash';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
-import { FilesStorageHelper } from '../helper';
+import { getPaths, mapFileRecordToFileRecordParams, unmarkForDelete } from '../helper';
 import { FilesStorageService } from './files-storage.service';
 
 const getFileRecordsWithParams = () => {
@@ -49,7 +49,6 @@ describe('FilesStorageService', () => {
 	let service: FilesStorageService;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
-	let filesStorageHelper: FilesStorageHelper;
 	let orm: MikroORM;
 
 	beforeAll(async () => {
@@ -60,7 +59,6 @@ describe('FilesStorageService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageService,
-				FilesStorageHelper,
 				{
 					provide: S3ClientAdapter,
 					useValue: createMock<S3ClientAdapter>(),
@@ -79,7 +77,6 @@ describe('FilesStorageService', () => {
 		service = module.get(FilesStorageService);
 		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
-		filesStorageHelper = module.get(FilesStorageHelper);
 	});
 
 	afterAll(async () => {
@@ -92,10 +89,6 @@ describe('FilesStorageService', () => {
 
 	it('service should be defined', () => {
 		expect(service).toBeDefined();
-	});
-
-	it('helper should be defined', () => {
-		expect(filesStorageHelper).toBeDefined();
 	});
 
 	describe('getFileById is called', () => {
@@ -252,7 +245,7 @@ describe('FilesStorageService', () => {
 
 			it('should call getFilesOfParent with right paramaters', async () => {
 				const { fileRecord, data } = setup();
-				const fileRecordParams = filesStorageHelper.mapFileRecordToFileRecordParams(fileRecord);
+				const fileRecordParams = mapFileRecordToFileRecordParams(fileRecord);
 
 				await service.patchFilename(fileRecord, data);
 
@@ -449,7 +442,7 @@ describe('FilesStorageService', () => {
 
 			it('should call storageClient.delete', async () => {
 				const { fileRecords } = setup();
-				const paths = filesStorageHelper.getPaths(fileRecords);
+				const paths = getPaths(fileRecords);
 
 				await service.delete(fileRecords);
 
@@ -748,7 +741,7 @@ describe('FilesStorageService', () => {
 			it('should call repo save with right parameters', async () => {
 				const { fileRecords } = setup();
 
-				const unmarkedFileRecords = filesStorageHelper.unmarkForDelete(fileRecords);
+				const unmarkedFileRecords = unmarkForDelete(fileRecords);
 
 				await service.restore(fileRecords);
 
@@ -757,7 +750,7 @@ describe('FilesStorageService', () => {
 
 			it('should call storageClient.restore', async () => {
 				const { fileRecords } = setup();
-				const paths = filesStorageHelper.getPaths(fileRecords);
+				const paths = getPaths(fileRecords);
 
 				await service.restore(fileRecords);
 
