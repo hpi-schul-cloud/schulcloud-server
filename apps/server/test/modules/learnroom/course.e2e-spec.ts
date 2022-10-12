@@ -8,6 +8,7 @@ import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dt
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { userFactory, courseFactory, cleanupCollections, roleFactory, mapUserToCurrentUser } from '@shared/testing';
 import { ICurrentUser, Permission } from '@shared/domain';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 describe('Course Controller (e2e)', () => {
 	let app: INestApplication;
@@ -60,8 +61,8 @@ describe('Course Controller (e2e)', () => {
 		expect(typeof body.data[0].title).toBe('string');
 	});
 
-	// TODO: enable feature flag FEATURE_IMSCC_COURSE_EXPORT for test runs
-	it.skip('[GET] course export', async () => {
+	it('[GET] course export', async () => {
+		if (!Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) return;
 		const user = setup();
 		const course = courseFactory.build({ name: 'course #1', students: [user] });
 		await em.persistAndFlush(course);
