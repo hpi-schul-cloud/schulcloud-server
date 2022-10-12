@@ -757,13 +757,15 @@ describe('FilesStorageService', () => {
 			it('should save the rollback', async () => {
 				const { fileRecords } = setup();
 
-				const copyFileRecords = _.cloneDeep(fileRecords);
-				const expectedFileRecords = filesStorageHelper.markForDelete(copyFileRecords);
-
-				await service.restore(fileRecords);
-
 				await expect(service.restore(fileRecords)).rejects.toThrow(new Error('bla'));
-				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(2, expectedFileRecords);
+				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(
+					2,
+					expect.arrayContaining([
+						expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) as Date }),
+						expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) as Date }),
+						expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) as Date }),
+					])
+				);
 			});
 		});
 	});
