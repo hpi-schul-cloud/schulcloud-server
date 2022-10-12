@@ -7,7 +7,8 @@ import { ServerTestModule } from '@src/server.module';
 import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { userFactory, courseFactory, cleanupCollections, roleFactory, mapUserToCurrentUser } from '@shared/testing';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser, Permission } from '@shared/domain';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 describe('Course Controller (e2e)', () => {
 	let app: INestApplication;
@@ -39,7 +40,7 @@ describe('Course Controller (e2e)', () => {
 	});
 
 	const setup = () => {
-		const roles = roleFactory.buildList(1, { permissions: [] });
+		const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_EDIT] });
 		const user = userFactory.build({ roles });
 
 		return user;
@@ -58,5 +59,19 @@ describe('Course Controller (e2e)', () => {
 		expect(response.status).toEqual(200);
 		const body = response.body as CourseMetadataListResponse;
 		expect(typeof body.data[0].title).toBe('string');
+	});
+
+	it('[GET] course export', async () => {
+		if (!Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) return;
+		const user = setup();
+		const course = courseFactory.build({ name: 'course #1', students: [user] });
+		await em.persistAndFlush(course);
+		em.clear();
+		currentUser = mapUserToCurrentUser(user);
+
+		const response = await request(app.getHttpServer()).get(`/courses/${course.id}/export`);
+
+		expect(response.status).toEqual(200);
+		expect(response.body).toBeDefined();
 	});
 });
