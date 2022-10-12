@@ -141,6 +141,10 @@ describe('FilesStorageService', () => {
 		});
 	});
 
+	describe('getMarkForDeletedFile is called', () => {
+		// TODO: Add tests
+	});
+
 	describe('getFilesOfParent is called', () => {
 		describe('WHEN valid files exists', () => {
 			const setup = () => {
@@ -744,20 +748,22 @@ describe('FilesStorageService', () => {
 				return { fileRecords };
 			};
 
-			it('should throw error if entity not found', async () => {
+			it('should pass the error', async () => {
 				const { fileRecords } = setup();
 
 				await expect(service.restore(fileRecords)).rejects.toThrow(new Error('bla'));
 			});
 
-			it('should throw error if entity not found', async () => {
+			it('should save the rollback', async () => {
 				const { fileRecords } = setup();
 
-				// TODO: Add copy of fileRecors
+				const copyFileRecords = _.cloneDeep(fileRecords);
+				const expectedFileRecords = filesStorageHelper.markForDelete(copyFileRecords);
 
 				await service.restore(fileRecords);
 
-				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(2, fileRecords);
+				await expect(service.restore(fileRecords)).rejects.toThrow(new Error('bla'));
+				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(2, expectedFileRecords);
 			});
 		});
 	});

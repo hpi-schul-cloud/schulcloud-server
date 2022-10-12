@@ -24,6 +24,12 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
+	public async getMarkForDeletedFile(params: SingleFileParams) {
+		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
+
+		return fileRecord;
+	}
+
 	public async getFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
