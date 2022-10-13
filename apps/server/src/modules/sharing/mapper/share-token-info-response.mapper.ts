@@ -1,12 +1,10 @@
-import { ShareTokenParentType } from '@shared/domain';
 import { ShareTokenInfoResponse } from '../controller/dto';
+import { ShareTokenInfoDto } from '../uc/dto';
 
 export class ShareTokenInfoResponseMapper {
-	static mapToResponse(shareTokenInfo: {
-		parentType: ShareTokenParentType;
-		parentName: string;
-	}): ShareTokenInfoResponse {
+	static mapToResponse(shareTokenInfo: ShareTokenInfoDto): ShareTokenInfoResponse {
 		const dto = new ShareTokenInfoResponse({
+			token: shareTokenInfo.token,
 			parentType: shareTokenInfo.parentType,
 			parentName: shareTokenInfo.parentName,
 		});

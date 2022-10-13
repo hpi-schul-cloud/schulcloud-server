@@ -6,7 +6,6 @@ import {
 	ShareTokenContext,
 	ShareTokenContextType,
 	ShareTokenDO,
-	ShareTokenParentType,
 	ShareTokenPayload,
 } from '@shared/domain';
 import { Logger } from '@src/core/logger';
@@ -14,11 +13,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { ShareTokenContextTypeMapper, ShareTokenParentTypeMapper } from '../mapper';
 import { ParentInfoLoader } from '../parent-info.loader';
 import { ShareTokenService } from '../share-token.service';
-
-export interface ShareTokenInfo {
-	parentType: ShareTokenParentType;
-	parentName: string;
-}
+import { ShareTokenInfoDto } from './dto';
 
 @Injectable()
 export class ShareTokenUC {
@@ -31,7 +26,7 @@ export class ShareTokenUC {
 		this.logger.setContext(ShareTokenUC.name);
 	}
 
-	async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfo> {
+	async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfoDto> {
 		const shareToken = await this.shareTokenService.lookupToken(token);
 
 		if (shareToken.context) {
@@ -40,7 +35,8 @@ export class ShareTokenUC {
 
 		const parentInfo = await this.parentInfoLoader.loadParentInfo(shareToken.payload);
 
-		const shareTokenInfo: ShareTokenInfo = {
+		const shareTokenInfo: ShareTokenInfoDto = {
+			token,
 			parentType: shareToken.payload.parentType,
 			parentName: parentInfo.name,
 		};
