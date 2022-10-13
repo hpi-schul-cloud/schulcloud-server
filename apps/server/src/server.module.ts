@@ -27,6 +27,7 @@ import {
 	RocketChatModule,
 	SystemModule,
 	TaskModule,
+	ToolModule,
 	VideoConferenceModule,
 } from '@src/modules';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
@@ -69,6 +70,7 @@ const serverModules = [
 	VideoConferenceModule,
 	OauthProviderModule,
 	SharingModule,
+	ToolModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
