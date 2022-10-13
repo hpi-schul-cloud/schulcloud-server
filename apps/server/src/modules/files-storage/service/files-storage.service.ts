@@ -14,9 +14,11 @@ import {
 } from '../controller/dto';
 import {
 	createPath,
+	deriveStatusFromSource,
 	getNewFileRecord,
 	getPaths,
 	getStatusFromScanResult,
+	isStatusBlocked,
 	mapFileRecordToFileRecordParams,
 	markForDelete,
 	modifyFileNameInScope,
@@ -176,21 +178,20 @@ export class FilesStorageService {
 
 		await Promise.all(
 			sourceFileRecords.map(async (item) => {
-				if (item.securityCheck.status !== ScanStatus.BLOCKED && !item.deletedSince) {
-					const entity = getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
-					if (item.securityCheck.status !== ScanStatus.PENDING) {
-						entity.securityCheck = item.securityCheck;
-					}
+				if (isStatusBlocked(item) && item.deletedSince) return;
 
-					await this.fileRecordRepo.save(entity);
-					newRecords.push(entity);
-					responseEntities.push(new CopyFileResponse({ id: entity.id, sourceId: item.id, name: entity.name }));
-					paths.push({
-						//
-						sourcePath: createPath(item.schoolId, item.id),
-						targetPath: createPath(entity.schoolId, entity.id),
-					});
-				}
+				const entity = getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
+
+				entity.securityCheck = deriveStatusFromSource(item, entity);
+
+				await this.fileRecordRepo.save(entity);
+				newRecords.push(entity);
+				responseEntities.push(new CopyFileResponse({ id: entity.id, sourceId: item.id, name: entity.name }));
+				paths.push({
+					//
+					sourcePath: createPath(item.schoolId, item.id),
+					targetPath: createPath(entity.schoolId, entity.id),
+				});
 			})
 		);
 
