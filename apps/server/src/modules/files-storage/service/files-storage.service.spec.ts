@@ -10,7 +10,7 @@ import { Logger } from '@src/core/logger';
 import _ from 'lodash';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
-import { getPaths, mapFileRecordToFileRecordParams, unmarkForDelete } from '../helper';
+import { mapFileRecordToFileRecordParams, getPaths, unmarkForDelete } from '../helper';
 import { FilesStorageService } from './files-storage.service';
 
 const getFileRecordsWithParams = () => {

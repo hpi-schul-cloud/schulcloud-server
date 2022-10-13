@@ -135,11 +135,3 @@ export class FilesStorageService {
 		await this.restoreWithRollbackByError(fileRecords);
 	}
 }
-
-// function mapFileRecordToFileRecordParams(fileRecord: FileRecord) {
-// 	throw new Error('Function not implemented.');
-// }
-
-// function getStatusFromScanResult(scanResultDto: ScanResultParams) {
-// 	throw new Error('Function not implemented.');
-// }
