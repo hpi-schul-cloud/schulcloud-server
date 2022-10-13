@@ -12,6 +12,7 @@ export const setupEntities = async (entities: EntityClass<AnyEntity>[] = ALL_ENT
 		dbName: 'dummy',
 		entities,
 		allowGlobalContext: true,
+		connect: false,
 	});
 	return orm;
 };
