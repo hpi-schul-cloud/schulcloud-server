@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParentType, ScanStatus } from '@shared/domain';
+import { FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
@@ -904,6 +904,43 @@ describe('FilesStorageService', () => {
 				const { userId, sourceParams, copyFilesOfParentParams, error } = setup();
 
 				await expect(service.copyFilesOfParent(userId, sourceParams, copyFilesOfParentParams)).rejects.toThrow(error);
+			});
+		});
+	});
+
+	describe('copyFileRecords is called', () => {
+		describe('WHEN new fileRecord is saved successfully', () => {
+			const setup = () => {
+				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+
+				return { sourceFile, userId, params };
+			};
+
+			it('should call save with file record', async () => {
+				const { userId, sourceFile, params } = setup();
+
+				await service.copyFileRecord(sourceFile, params, userId);
+
+				expect(fileRecordRepo.save).toBeCalledWith(expect.any(FileRecord) as FileRecord);
+			});
+		});
+
+		describe('WHEN save throws error', () => {
+			const setup = () => {
+				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				const error = new Error('test');
+
+				fileRecordRepo.save.mockRejectedValueOnce(error);
+
+				return { sourceFile, userId, params, error };
+			};
+
+			it('should pass error', async () => {
+				const { userId, sourceFile, params, error } = setup();
+
+				await expect(service.copyFileRecord(sourceFile, params, userId)).rejects.toThrow(error);
 			});
 		});
 	});

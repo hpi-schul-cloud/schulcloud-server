@@ -166,6 +166,20 @@ export class FilesStorageService {
 		return [response, count];
 	}
 
+	public async copyFileRecord(
+		sourceFile: FileRecord,
+		targetParams: FileRecordParams,
+		userId: EntityId
+	): Promise<FileRecord> {
+		const entity = getNewFileRecord(sourceFile.name, sourceFile.size, sourceFile.mimeType, targetParams, userId);
+
+		entity.securityCheck = deriveStatusFromSource(sourceFile, entity);
+
+		await this.fileRecordRepo.save(entity);
+
+		return entity;
+	}
+
 	public async copyFiles(
 		userId: EntityId,
 		sourceFileRecords: FileRecord[],
@@ -180,17 +194,14 @@ export class FilesStorageService {
 			sourceFileRecords.map(async (item) => {
 				if (isStatusBlocked(item) && item.deletedSince) return;
 
-				const entity = getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
+				const targetFile = await this.copyFileRecord(item, targetParams, userId);
 
-				entity.securityCheck = deriveStatusFromSource(item, entity);
-
-				await this.fileRecordRepo.save(entity);
-				newRecords.push(entity);
-				responseEntities.push(new CopyFileResponse({ id: entity.id, sourceId: item.id, name: entity.name }));
+				newRecords.push(targetFile);
+				responseEntities.push(new CopyFileResponse({ id: targetFile.id, sourceId: item.id, name: targetFile.name }));
 				paths.push({
 					//
 					sourcePath: createPath(item.schoolId, item.id),
-					targetPath: createPath(entity.schoolId, entity.id),
+					targetPath: createPath(targetFile.schoolId, targetFile.id),
 				});
 			})
 		);
