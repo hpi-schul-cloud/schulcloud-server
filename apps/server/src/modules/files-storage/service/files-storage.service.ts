@@ -14,6 +14,7 @@ import {
 } from '../controller/dto';
 import {
 	createPath,
+	getNewFileRecord,
 	getPaths,
 	getStatusFromScanResult,
 	mapFileRecordToFileRecordParams,
@@ -147,20 +148,6 @@ export class FilesStorageService {
 	}
 
 	// copy
-	private getNewFileRecord(name: string, size: number, mimeType: string, params: FileRecordParams, userId: string) {
-		const entity = new FileRecord({
-			size,
-			name,
-			mimeType,
-			parentType: params.parentType,
-			parentId: params.parentId,
-			creatorId: userId,
-			schoolId: params.schoolId,
-		});
-
-		return entity;
-	}
-
 	public async copyFilesOfParent(
 		userId: string,
 		params: FileRecordParams,
@@ -190,7 +177,7 @@ export class FilesStorageService {
 		await Promise.all(
 			sourceFileRecords.map(async (item) => {
 				if (item.securityCheck.status !== ScanStatus.BLOCKED && !item.deletedSince) {
-					const entity = this.getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
+					const entity = getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
 					if (item.securityCheck.status !== ScanStatus.PENDING) {
 						entity.securityCheck = item.securityCheck;
 					}

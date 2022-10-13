@@ -30,3 +30,23 @@ export function mapFileRecordToFileRecordParams(fileRecord: FileRecord): FileRec
 
 	return fileRecordParams;
 }
+
+export function getNewFileRecord(
+	name: string,
+	size: number,
+	mimeType: string,
+	params: FileRecordParams,
+	userId: string
+) {
+	const entity = new FileRecord({
+		size,
+		name,
+		mimeType,
+		parentType: params.parentType,
+		parentId: params.parentId,
+		creatorId: userId,
+		schoolId: params.schoolId,
+	});
+
+	return entity;
+}
