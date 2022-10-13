@@ -1,11 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import {
-	BadRequestException,
-	Injectable,
-	InternalServerErrorException,
-	NotAcceptableException,
-	NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
@@ -26,20 +20,23 @@ import {
 	FileUrlParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
-import { ErrorType, PermissionContexts } from '../files-storage.const';
+import { ErrorType } from '../error';
+import { PermissionContexts } from '../files-storage.const';
 import { ICopyFiles } from '../interface';
 import { IFile } from '../interface/file';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
+import { FilesStorageService } from '../service/files-storage.service';
 
 @Injectable()
 export class FilesStorageUC {
 	constructor(
+		private logger: Logger,
 		private readonly storageClient: S3ClientAdapter,
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly antivirusService: AntivirusService,
-		private logger: Logger,
 		private readonly authorizationService: AuthorizationService,
-		private readonly httpService: HttpService
+		private readonly httpService: HttpService,
+		private readonly filesStorageService: FilesStorageService
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -111,7 +108,7 @@ export class FilesStorageUC {
 	}
 
 	private async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: IFile) {
-		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		const [fileRecords] = await this.filesStorageService.getFilesOfParent(params);
 		const fileName = this.checkFilenameExists(fileDescription.name, fileRecords);
 		const entity = this.getNewFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
 		try {
@@ -211,71 +208,34 @@ export class FilesStorageUC {
 		return newFilename;
 	}
 
-	private async markForDelete(fileRecords: FileRecord[]): Promise<void> {
-		fileRecords.forEach((fileRecord) => {
-			fileRecord.markForDelete();
-		});
-
-		await this.fileRecordRepo.save(fileRecords);
-	}
-
-	private async unmarkForDelete(fileRecords: FileRecord[]): Promise<void> {
-		fileRecords.forEach((fileRecord) => {
-			fileRecord.unmarkForDelete();
-		});
-
-		await this.fileRecordRepo.save(fileRecords);
-	}
-
-	private async delete(fileRecords: FileRecord[]) {
-		this.logger.debug({ action: 'delete', fileRecords });
-
-		await this.markForDelete(fileRecords);
-		try {
-			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
-
-			await this.storageClient.delete(paths);
-		} catch (err) {
-			await this.unmarkForDelete(fileRecords);
-
-			throw new InternalServerErrorException(err, `${FilesStorageUC.name}:delete`);
-		}
-	}
-
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.delete);
-		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
-		if (count > 0) {
-			await this.delete(fileRecords);
-		}
+		const [fileRecords, count] = await this.filesStorageService.deleteFilesOfParent(params);
 
 		return [fileRecords, count];
 	}
 
 	public async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
-		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+		const fileRecord = await this.filesStorageService.getFile(params);
+
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.delete);
-		await this.delete([fileRecord]);
+		await this.filesStorageService.delete([fileRecord]);
 
 		return fileRecord;
 	}
 
 	public async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
-		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
-			params.schoolId,
-			params.parentId
-		);
-		if (count > 0) {
-			await this.restore(fileRecords);
-		}
+		const [fileRecords, count] = await this.filesStorageService.restoreFilesOfParent(params);
+
 		return [fileRecords, count];
 	}
 
 	public async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
-		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
+		const fileRecord = await this.filesStorageService.getFileMarkedForDelete(params);
+
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create);
-		await this.restore([fileRecord]);
+		await this.filesStorageService.restore([fileRecord]);
 
 		return fileRecord;
 	}
@@ -371,20 +331,6 @@ export class FilesStorageUC {
 		} catch (error) {
 			await this.fileRecordRepo.delete(newRecords);
 			throw error;
-		}
-	}
-
-	private async restore(fileRecords: FileRecord[]) {
-		this.logger.debug({ action: 'restore', fileRecords });
-
-		await this.unmarkForDelete(fileRecords);
-		try {
-			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
-
-			await this.storageClient.restore(paths);
-		} catch (err) {
-			await this.markForDelete(fileRecords);
-			throw new InternalServerErrorException(err, `${FilesStorageUC.name}:restore`);
 		}
 	}
 }

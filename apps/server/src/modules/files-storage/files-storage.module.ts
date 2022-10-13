@@ -20,7 +20,9 @@ import { S3ClientAdapter } from './client/s3-client.adapter';
 import { FileSecurityController } from './controller/file-security.controller';
 import { FilesStorageController } from './controller/files-storage.controller';
 import fileStorageConfig from './files-storage.config';
+import { FilesStorageHelper } from './helper';
 import { S3Config } from './interface/config';
+import { FilesStorageService } from './service/files-storage.service';
 import { FileRecordUC } from './uc/file-record.uc';
 import { FilesStorageUC } from './uc/files-storage.uc';
 
@@ -54,6 +56,8 @@ const imports = [
 const providers = [
 	FilesStorageUC,
 	FileRecordUC,
+	FilesStorageService,
+	FilesStorageHelper,
 	{
 		provide: 'S3_Client',
 		useFactory: (configProvider: S3Config) => {
