@@ -10,6 +10,7 @@ import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
+import resetAllMocks = jest.resetAllMocks;
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -56,6 +57,10 @@ describe('OAuthUc', () => {
 		testSystem = systemFactory.withOauthConfig().buildWithId();
 	});
 
+	afterEach(() => {
+		resetAllMocks();
+	});
+
 	describe('processOAuth', () => {
 		const code = '43534543jnj543342jn2';
 		const query: AuthorizationParams = { code };
@@ -95,7 +100,7 @@ describe('OAuthUc', () => {
 			expect(response.jwt).toStrictEqual(jwt);
 		});
 
-		it('should throw error if oauthconfig is missing', async () => {
+		it('should oauthResponse with error when oauthconfig is missing', async () => {
 			const system: System = systemFactory.buildWithId();
 			const errorResponse: OAuthResponse = {
 				provider: 'unknown-provider',
@@ -113,10 +118,30 @@ describe('OAuthUc', () => {
 			expect(response).toEqual(errorResponse);
 		});
 
-		it('should return a error response if processOAuth failed and the provider cannot be fetched from the system', async () => {
+		it('should return an error response that contains the provider when internal error occurred', async () => {
 			const system: System = systemFactory.withOauthConfig().buildWithId();
+
 			const errorResponse: OAuthResponse = {
 				provider: system.oauthConfig?.provider,
+				errorcode: 'sso_internal_error',
+				redirect: 'errorRedirect',
+			} as OAuthResponse;
+
+			oauthService.checkAuthorizationCode.mockReturnValue(code);
+			systemRepo.findById.mockResolvedValue(system);
+			oauthService.requestToken.mockRejectedValue(new OAuthSSOError());
+			oauthService.getOAuthError.mockReturnValue(errorResponse);
+
+			const response: OAuthResponse = await service.processOAuth(query, system.id);
+
+			expect(oauthService.getOAuthError).toHaveBeenCalledWith(expect.any(Error), system.oauthConfig?.provider);
+			expect(response).toEqual(errorResponse);
+		});
+
+		it('should return an error response if processOAuth failed and the provider cannot be fetched from the system', async () => {
+			const system: System = systemFactory.buildWithId();
+			const errorResponse: OAuthResponse = {
+				provider: 'unknown-provider',
 				errorcode: 'sso_internal_error',
 				redirect: 'errorRedirect',
 			} as OAuthResponse;
