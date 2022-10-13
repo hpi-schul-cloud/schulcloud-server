@@ -78,17 +78,19 @@ const setIdToken = (hook) => {
 						email: scope.includes('email') ? user.email : undefined,
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
-						userRole: scope.includes('bilo')
-							? user.roles.data.map((roles) => ({
-									roleName: roles.name,
-							  }))
-							: undefined,
+						userRole: scope.includes('bilo') ? user.role : undefined,
+						fedState: scope.includes('bilo') ? user.schoolId.federalState : undefined,
+						// userRole: scope.includes('bilo')
+						// 	? user.roles.data.map((roles) => ({
+						// 			roleName: roles.name,
+						// 	  }))
+						// 	: undefined,
 						schoolId: user.schoolId,
-						federalState: scope.includes('bilo')
-							? user.schoolId.federalState.data.map((federalState) => ({
-									federalStateName: federalState.name,
-							  }))
-							: undefined,
+						// federalState: scope.includes('bilo')
+						// 	? user.schoolId.federalState.data.map((federalState) => ({
+						// 			federalStateName: federalState.name,
+						// 	  }))
+						// 	: undefined,
 						groups: scope.includes('groups')
 							? userTeams.data.map((team) => ({
 									gid: team._id,
