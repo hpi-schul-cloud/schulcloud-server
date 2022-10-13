@@ -79,7 +79,7 @@ const setIdToken = (hook) => {
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
 						userRole: scope.includes('bilo') ? user.roles : undefined,
-						fedState: scope.includes('bilo') ? user.schoolId.getFederalState() : undefined,
+						fedState: scope.includes('bilo') ? user.schoolId.federalState : undefined,
 						// userRole: scope.includes('bilo')
 						// 	? user.roles.data.map((roles) => ({
 						// 			roleName: roles.name,
