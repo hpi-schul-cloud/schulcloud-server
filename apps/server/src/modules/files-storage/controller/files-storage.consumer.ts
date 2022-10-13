@@ -5,15 +5,15 @@ import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
 import { Logger } from '@src/core/logger';
 import { FilesStorageEvents, FilesStorageExchanges, ICopyFileDO, IFileDO } from '@src/shared/infra/rabbitmq';
 import { FilesStorageMapper } from '../mapper/file-record.mapper';
-import { FileRecordUC } from '../uc/file-record.uc';
+import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from '../uc/files-storage.uc';
 import { CopyFilesOfParentPayload, FileRecordParams } from './dto';
 
 @Injectable()
 export class FilesStorageConsumer {
 	constructor(
+		private readonly filesStorageService: FilesStorageService,
 		private readonly filesStorageUC: FilesStorageUC,
-		private readonly fileRecordUC: FileRecordUC,
 		private logger: Logger,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		private readonly orm: MikroORM // don't remove it, we need it for @UseRequestContext
@@ -41,10 +41,10 @@ export class FilesStorageConsumer {
 		routingKey: FilesStorageEvents.LIST_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
-	public async fileRecordsOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<IFileDO[]>> {
-		this.logger.debug({ action: 'fileRecordsOfParent', payload });
+	public async getFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<IFileDO[]>> {
+		this.logger.debug({ action: 'getFilesOfParent', payload });
 
-		const [fileRecords, total] = await this.fileRecordUC.fileRecordsOfParent('REMOVE_IF_MOVED_TO_SERVICE', payload);
+		const [fileRecords, total] = await this.filesStorageService.getFilesOfParent(payload);
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return { message: response.data };
@@ -58,7 +58,7 @@ export class FilesStorageConsumer {
 	public async deleteFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<IFileDO[]>> {
 		this.logger.debug({ action: 'deleteFilesOfParent', payload });
 
-		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent('REMOVE_IF_MOVED_TO_SERVICE', payload);
+		const [fileRecords, total] = await this.filesStorageService.deleteFilesOfParent(payload);
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return { message: response.data };
