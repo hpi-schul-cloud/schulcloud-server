@@ -18,23 +18,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "0000d213816abba58471abcd"
-		},
-		"username": "max.mustermann@iserv.n21.dbildungscloud.de",
-		"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
-		"updatedAt": {
-			"$date": "2022-02-11T11:40:29.456Z"
-		},
-		"createdAt": {
-			"$date": "2022-02-11T10:30:37.148Z"
-		},
-		"userId": {
-			"$oid": "0000d213816abba584711234"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
 			"$oid": "0000d225816abba584714c9d"
 		},
 		"username": "schueler@schul-cloud.org",
@@ -1358,5 +1341,22 @@
 			"$oid": "0000d213816abba584710000"
 		},
 		"__v": 0
+	},
+	{
+		"_id" : {
+			"$oid": "6335405a1f94d7fc9fc91861"
+		},
+		"createdAt" :  {
+			"$date": "2022-09-29T06:51:06.228Z"
+		},
+		"updatedAt" :  {
+			"$date": "2022-09-29T06:51:06.228Z"
+		},
+		"username" : "expert@schul-cloud.org",
+		"password" : "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+		"userId" : {
+			"$oid": "63354059dc728d001f53fb6d"
+		},
+		"activated" : true
 	}
 ]

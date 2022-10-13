@@ -1,22 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HydraService } from '@shared/infra/oauth-provider/hydra/hydra.service';
+import { HydraAdapter } from '@shared/infra/oauth-provider/hydra/hydra.adapter';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, Method } from 'axios';
 import {
 	AcceptConsentRequestBody,
+	AcceptLoginRequestBody,
+	IntrospectResponse,
 	ProviderConsentResponse,
+	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 	RejectRequestBody,
-	IntrospectResponse,
 } from '@shared/infra/oauth-provider/dto';
 import { of } from 'rxjs';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import resetAllMocks = jest.resetAllMocks;
 
-class HydraServiceSpec extends HydraService {
+class HydraAdapterSpec extends HydraAdapter {
 	public async requestSpec<T>(
 		method: Method,
 		url: string,
@@ -37,7 +39,7 @@ const createAxiosResponse = <T>(data: T): AxiosResponse<T> => ({
 
 describe('HydraService', () => {
 	let module: TestingModule;
-	let service: HydraServiceSpec;
+	let service: HydraAdapterSpec;
 
 	let httpService: DeepMocked<HttpService>;
 
@@ -48,7 +50,7 @@ describe('HydraService', () => {
 
 		module = await Test.createTestingModule({
 			providers: [
-				HydraServiceSpec,
+				HydraAdapterSpec,
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
@@ -56,7 +58,7 @@ describe('HydraService', () => {
 			],
 		}).compile();
 
-		service = module.get(HydraServiceSpec);
+		service = module.get(HydraAdapterSpec);
 		httpService = module.get(HttpService);
 	});
 
@@ -433,6 +435,96 @@ describe('HydraService', () => {
 							},
 						})
 					);
+				});
+			});
+		});
+
+		describe('Login Flow', () => {
+			const providerLoginResponse: ProviderLoginResponse = {
+				challenge: 'challenge',
+				client: {
+					client_id: 'client_id',
+					created_at: '2020-01-01T00:00:00.000Z',
+					metadata: {},
+				},
+				oidc_context: {},
+				request_url: 'request_url',
+				requested_access_token_audience: ['requested_access_token_audience'],
+				requested_scope: ['requested_scope'],
+				session_id: 'session_id',
+				skip: true,
+				subject: 'subject',
+			};
+
+			afterEach(() => {
+				resetAllMocks();
+			});
+
+			describe('getLoginRequest', () => {
+				it('should send login request', async () => {
+					// Arrange
+					const requestConfig: AxiosRequestConfig = {
+						method: 'GET',
+						url: `${hydraUri}/oauth2/auth/requests/login?login_challenge=${challenge}`,
+					};
+					httpService.request.mockReturnValue(of(createAxiosResponse<ProviderLoginResponse>(providerLoginResponse)));
+
+					// Act
+					const response: ProviderLoginResponse = await service.getLoginRequest(challenge);
+
+					// Assert
+					expect(response).toEqual(providerLoginResponse);
+					expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(requestConfig));
+				});
+			});
+
+			describe('acceptLoginRequest', () => {
+				it('should send accept login request', async () => {
+					const body: AcceptLoginRequestBody = {
+						subject: '',
+						force_subject_identifier: '',
+						remember_for: 0,
+						remember: true,
+					};
+					const config: AxiosRequestConfig = {
+						method: 'PUT',
+						url: `${hydraUri}/oauth2/auth/requests/login/accept?login_challenge=${challenge}`,
+						data: body,
+					};
+					const expectedRedirectTo = 'redirectTo';
+					httpService.request.mockReturnValue(
+						of(createAxiosResponse<ProviderRedirectResponse>({ redirect_to: expectedRedirectTo }))
+					);
+
+					const result: ProviderRedirectResponse = await service.acceptLoginRequest(challenge, body);
+
+					expect(result.redirect_to).toEqual(expectedRedirectTo);
+					expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
+				});
+			});
+
+			describe('rejectLoginRequest', () => {
+				it('should send reject login request', async () => {
+					// Arrange
+					const body: RejectRequestBody = {
+						error: 'error',
+					};
+					const config: AxiosRequestConfig = {
+						method: 'PUT',
+						url: `${hydraUri}/oauth2/auth/requests/login/reject?login_challenge=${challenge}`,
+						data: body,
+					};
+					const expectedRedirectTo = 'redirectTo';
+					httpService.request.mockReturnValue(
+						of(createAxiosResponse<ProviderRedirectResponse>({ redirect_to: expectedRedirectTo }))
+					);
+
+					// Act
+					const result: ProviderRedirectResponse = await service.rejectLoginRequest(challenge, body);
+
+					// Assert
+					expect(result.redirect_to).toEqual(expectedRedirectTo);
+					expect(httpService.request).toHaveBeenCalledWith(expect.objectContaining(config));
 				});
 			});
 		});

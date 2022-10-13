@@ -32,6 +32,7 @@ import {
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
+import { SharingModule } from './modules/sharing/sharing.module';
 
 const serverModules = [
 	ConfigModule.forRoot({
@@ -67,6 +68,7 @@ const serverModules = [
 	RoleModule,
 	VideoConferenceModule,
 	OauthProviderModule,
+	SharingModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

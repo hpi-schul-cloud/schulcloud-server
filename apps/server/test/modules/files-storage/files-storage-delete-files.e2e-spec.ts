@@ -1,5 +1,4 @@
 import { createMock } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -74,7 +73,6 @@ const createRndInt = (max) => Math.floor(Math.random() * max);
 
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let api: API;
@@ -114,13 +112,11 @@ describe(`${baseRouteName} (api)`, () => {
 
 		app = module.createNestApplication();
 		await app.init();
-		orm = app.get(MikroORM);
 		em = module.get(EntityManager);
 		api = new API(app);
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await app.close();
 		await s3instance.close();
 	});

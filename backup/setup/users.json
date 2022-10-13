@@ -69,36 +69,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "0000d213816abba584711234"
-		},
-		"__v": 0,
-		"firstName": "Max",
-		"lastName": "Mustermann",
-		"email": "max.mustermann@iserv.n21.dbildungscloud.de",
-		"ldapId": "5190046d-aeed-424e-bfd7-8f281ae494a1",
-		"updatedAt": {
-			"$date": "2022-02-11T11:40:29.456Z"
-		},
-		"birthday": {
-			"$date": "1979-01-01T11:25:43.556Z"
-		},
-		"createdAt": {
-			"$date": "2022-02-11T10:30:37.148Z"
-		},
-		"preferences": {
-			"firstLogin": true
-		},
-		"schoolId": {
-			"$oid": "5f2987e020834114b8efd6f8"
-		},
-		"roles": [
-			{
-				"$oid": "0000d186816abba584714c96"
-			}
-		]
-	},
-	{
-		"_id": {
 			"$oid": "0000d213816abba584714c0b"
 		},
 		"__v": 0,
@@ -5829,5 +5799,84 @@
 		"preferences": {
 			"firstLogin": true
 		}
+	},
+	{
+		"_id" : {
+			"$oid": "63354059dc728d001f53fb6d"
+		},
+		"consent" : {
+			"parentConsents" : [],
+			"userConsent" : {
+				"form" : "digital",
+				"privacyConsent" : false,
+				"termsOfUseConsent" : false,
+				"dateOfPrivacyConsent" : {
+					"$date": "2022-09-29T06:51:06.241Z"
+				},
+				"dateOfTermsOfUseConsent" : {
+					"$date": "2022-09-29T06:51:06.241Z"
+				}
+			}
+		},
+		"roles" : [
+		{
+			"$oid": "5bd0066a90a9ee0cb4947a9c"
+		}
+		],
+		"emailSearchValues" : [
+			"e",
+			"ex",
+			"exp",
+			"xpe",
+			"per",
+			"ert",
+			"rt@",
+			"t@s",
+			"@sc",
+			"sch",
+			"chu",
+			"hul",
+			"c",
+			"cl",
+			"clo",
+			"lou",
+			"oud",
+			"ud.",
+			"d.o",
+			".or",
+			"org"
+		],
+		"firstNameSearchValues" : [
+			"R",
+			"Ru",
+			"Ruf",
+			"ufu",
+			"fus"
+		],
+		"lastNameSearchValues" : [
+			"E",
+			"Ex",
+			"Exp",
+			"xpe",
+			"per",
+			"ert"
+		],
+		"forcePasswordChange" : false,
+		"features" : [],
+		"deletedAt" : null,
+		"firstName" : "Rufus",
+		"lastName" : "Expert",
+		"email" : "expert@schul-cloud.org",
+		"schoolId" : {
+			"$oid": "5f2987e020834114b8efd6f9"
+		},
+		"parents" : [],
+		"createdAt" : {
+			"$date": "2022-09-29T06:51:05.969Z"
+		},
+		"updatedAt" : {
+			"$date": "2022-09-29T06:51:06.242Z"
+		},
+		"__v" : 0
 	}
 ]

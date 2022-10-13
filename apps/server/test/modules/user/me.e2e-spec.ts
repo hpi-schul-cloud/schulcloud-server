@@ -38,7 +38,6 @@ class API {
 describe(baseRouteName, () => {
 	describe('with user is not logged in', () => {
 		let app: INestApplication;
-		let orm: MikroORM;
 		let em: EntityManager;
 		let api: API;
 
@@ -56,13 +55,11 @@ describe(baseRouteName, () => {
 
 			app = module.createNestApplication();
 			await app.init();
-			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
 			api = new API(app, baseRouteName);
 		});
 
 		afterAll(async () => {
-			await orm.close();
 			await app.close();
 		});
 

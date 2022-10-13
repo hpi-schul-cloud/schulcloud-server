@@ -167,3 +167,9 @@ Feel free to find related documentation:
 ## Configuration
 
 <https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/config/README.md>
+
+## NestJS Modules
+
+### Authorisation
+
+<https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/apps/server/src/modules/authorization/README.md>
