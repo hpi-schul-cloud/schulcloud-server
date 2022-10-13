@@ -4,7 +4,7 @@ import {
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
-import { AcceptQuery } from '@src/modules/oauth-provider/controller/dto';
+import { AcceptQuery, ConsentRequestBody } from '@src/modules/oauth-provider/controller/dto';
 import { ICurrentUser } from '@shared/domain';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
@@ -26,22 +26,24 @@ export class OauthProviderConsentFlowUc {
 	async patchConsentRequest(
 		challenge: string,
 		query: AcceptQuery,
-		body: AcceptConsentRequestBody | RejectRequestBody,
+		body: ConsentRequestBody,
 		currentUser: ICurrentUser
 	): Promise<ProviderRedirectResponse> {
 		const consentResponse = await this.oauthProviderService.getConsentRequest(challenge);
 		this.validateSubject(currentUser, consentResponse);
 
-		if (query.accept && this.isAcceptConsentRequest(body)) {
-			return this.acceptConsentRequest(
+		let response: Promise<ProviderRedirectResponse>;
+		if (query.accept) {
+			response = this.acceptConsentRequest(
 				challenge,
 				body,
 				currentUser.userId,
 				consentResponse.requested_scope,
 				consentResponse.client?.client_id
 			);
+		} else {
+			response = this.rejectConsentRequest(challenge, body);
 		}
-		const response = this.rejectConsentRequest(challenge, body as RejectRequestBody);
 		return response;
 	}
 
@@ -63,7 +65,7 @@ export class OauthProviderConsentFlowUc {
 		const idToken: IdToken = await this.idTokenService.createIdToken(userId, requested_scope || [], client_id || '');
 		if (idToken) {
 			body.session = {
-				id_token: JSON.stringify(idToken),
+				id_token: idToken,
 			};
 		}
 
@@ -79,12 +81,5 @@ export class OauthProviderConsentFlowUc {
 		if (response.subject !== currentUser.userId) {
 			throw new ForbiddenException("You want to patch another user's consent");
 		}
-	}
-
-	private isAcceptConsentRequest(object: unknown): object is AcceptConsentRequestBody {
-		if ((object as AcceptConsentRequestBody).grant_scope) {
-			return true;
-		}
-		return false;
 	}
 }

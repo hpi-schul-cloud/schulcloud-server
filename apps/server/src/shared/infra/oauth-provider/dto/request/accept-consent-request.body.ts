@@ -1,3 +1,5 @@
+import { IdToken } from '@src/modules/oauth-provider/interface/id-token';
+
 export interface AcceptConsentRequestBody {
 	grant_access_token_audience?: string[];
 
@@ -12,6 +14,6 @@ export interface AcceptConsentRequestBody {
 	session?: {
 		access_token?: string;
 
-		id_token?: string;
+		id_token?: IdToken;
 	};
 }

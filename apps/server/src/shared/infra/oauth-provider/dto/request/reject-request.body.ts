@@ -7,5 +7,5 @@ export interface RejectRequestBody {
 
 	error_hint?: string;
 
-	status_code?: string;
+	status_code?: number;
 }
