@@ -121,7 +121,7 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<FileRecordListResponse> {
-		const [fileRecords, total] = await this.fileRecordUC.fileRecordsOfParent(currentUser.userId, params);
+		const [fileRecords, total] = await this.fileRecordUC.getFileRecordsOfParent(currentUser.userId, params);
 		const { skip, limit } = pagination;
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total, skip, limit);
 
