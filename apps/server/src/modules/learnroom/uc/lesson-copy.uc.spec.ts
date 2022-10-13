@@ -3,13 +3,14 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Actions, CopyHelperService, EtherpadService, LessonCopyService, PermissionTypes, User } from '@shared/domain';
+import { Actions, CopyHelperService, EtherpadService, PermissionTypes, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
+import { LessonCopyService } from '../service';
 import { LessonCopyUC } from './lesson-copy.uc';
 
 describe('lesson copy uc', () => {

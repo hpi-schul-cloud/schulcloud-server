@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, BoardCopyService, CopyHelperService, LessonCopyService, TaskCopyService } from '@shared/domain';
+import { Board, CopyElementType, CopyHelperService, CopyStatusEnum, TaskCopyService } from '@shared/domain';
 import {
 	boardFactory,
 	courseFactory,
@@ -10,9 +10,10 @@ import {
 	setupEntities,
 	taskBoardElementFactory,
 	taskFactory,
-	userFactory,
+	userFactory
 } from '@shared/testing';
-import { CopyElementType, CopyStatusEnum } from '../types';
+import { BoardCopyService } from './board-copy.service';
+import { LessonCopyService } from './lesson-copy.service';
 
 describe('board copy service', () => {
 	let module: TestingModule;

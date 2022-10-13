@@ -3,18 +3,20 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-	ComponentType,
+	BaseEntity, ComponentType,
 	CopyElementType,
+	CopyHelperService,
 	CopyStatus,
 	CopyStatusEnum,
 	EntityId,
+	EtherpadService,
 	IComponentEtherpadProperties,
-	IComponentGeogebraProperties,
-	IComponentNexboardProperties,
+	IComponentGeogebraProperties, IComponentInternalProperties, IComponentNexboardProperties,
 	IComponentProperties,
 	Lesson,
 	Material,
-	TaskCopyService,
+	NexboardService,
+	TaskCopyService
 } from '@shared/domain';
 import {
 	courseFactory,
@@ -22,13 +24,9 @@ import {
 	materialFactory,
 	setupEntities,
 	taskFactory,
-	userFactory,
+	userFactory
 } from '@shared/testing';
-import { BaseEntity, IComponentInternalProperties } from '../entity';
-import { CopyHelperService } from './copy-helper.service';
-import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
-import { NexboardService } from './nexboard.service';
 
 describe('lesson copy service', () => {
 	let module: TestingModule;

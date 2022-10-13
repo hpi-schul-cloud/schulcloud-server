@@ -9,6 +9,8 @@ export type CourseCopyParams = {
 	copyName?: string;
 };
 
+// WIP - completely move service and spec to learnroom module
+
 @Injectable()
 export class CourseCopyService {
 	constructor(private readonly copyHelperService: CopyHelperService) {}

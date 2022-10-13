@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { PaginationParams } from '@shared/controller/';
 import { Actions, Counted, Course, EntityId, Permission, SortOrder } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
-import { PaginationParams } from '@shared/controller/';
+import { AuthorizationService } from '@src/modules/authorization';
+import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { ImsccFileBuilder } from '@src/modules/learnroom/imscc/imscc-file-builder';
 import { Readable } from 'stream';
-import { AuthorizationService } from '../../authorization';
-import { AllowedAuthorizationEntityType } from '../../authorization/interfaces';
 
 @Injectable()
 export class CourseUc {

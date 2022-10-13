@@ -1,20 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import {
-	Actions,
-	Board,
-	BoardCopyService,
-	CopyHelperService,
-	CopyStatus,
-	Course,
-	EntityId,
-	LessonCopyService,
-	Permission,
-} from '@shared/domain';
-import { CourseCopyService } from '@shared/domain/service/course-copy.service';
+import { Actions, Board, CopyHelperService, CopyStatus, Course, EntityId, Permission } from '@shared/domain';
+import { CourseCopyService as SharedCourseCopyService } from '@shared/domain/service/course-copy.service';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { BoardRepo, CourseRepo } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { AuthorizationService } from '@src/modules/authorization';
+import { BoardCopyService, LessonCopyService } from '../service';
 import { RoomsService } from './rooms.service';
 
 @Injectable()
@@ -23,7 +14,7 @@ export class CourseCopyUC {
 		private readonly courseRepo: CourseRepo,
 		private readonly boardRepo: BoardRepo,
 		private readonly authorisation: AuthorizationService,
-		private readonly courseCopyService: CourseCopyService,
+		private readonly courseCopyService: SharedCourseCopyService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly roomsService: RoomsService,
 		private readonly copyHelperService: CopyHelperService,

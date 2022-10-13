@@ -4,8 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, SortOrder } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import { courseFactory, setupEntities } from '@shared/testing';
-import AdmZip from 'adm-zip';
 import { AuthorizationService } from '@src/modules';
+import AdmZip from 'adm-zip';
 import { CourseUc } from './course.uc';
 
 describe('CourseUc', () => {

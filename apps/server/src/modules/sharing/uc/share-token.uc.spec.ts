@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, Permission, ShareTokenContextType, ShareTokenParentType } from '@shared/domain';
 import { courseFactory, schoolFactory, setupEntities, shareTokenFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
-import { ShareTokenService } from '../share-token.service';
+import { CourseCopyService } from '@src/modules/learnroom';
+import { ParentInfoLoader, ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
 
 describe('ShareTokenUC', () => {
@@ -31,6 +31,14 @@ describe('ShareTokenUC', () => {
 				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: ParentInfoLoader,
+					useValue: createMock<ParentInfoLoader>(),
+				},
+				{
+					provide: CourseCopyService,
+					useValue: createMock<CourseCopyService>(),
 				},
 				{
 					provide: Logger,
@@ -227,11 +235,6 @@ describe('ShareTokenUC', () => {
 	});
 
 	describe('look up a sharetoken', () => {
-		it('should throw NotImplemented for now', async () => {
-			const user = userFactory.buildWithId();
-			const shareToken = shareTokenFactory.build();
-			service.lookupToken.mockResolvedValue(shareToken);
-			await expect(uc.lookupShareToken(user.id, shareToken.token)).rejects.toThrow(NotImplementedException);
-		});
+		it.todo('implement tests');
 	});
 });

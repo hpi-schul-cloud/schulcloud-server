@@ -5,18 +5,17 @@ import { ForbiddenException, InternalServerErrorException } from '@nestjs/common
 import { Test } from '@nestjs/testing';
 import {
 	Actions,
-	BoardCopyService,
 	CopyElementType,
 	CopyHelperService,
 	CopyStatusEnum,
 	CourseCopyService,
-	LessonCopyService,
 	Permission,
 } from '@shared/domain';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { boardFactory, courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { BoardCopyService, LessonCopyService } from '../service';
 import { CourseCopyUC } from './course-copy.uc';
 import { RoomsService } from './rooms.service';
 
