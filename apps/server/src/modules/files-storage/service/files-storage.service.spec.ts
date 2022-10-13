@@ -4,13 +4,14 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParentType, ScanStatus } from '@shared/domain';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import _ from 'lodash';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
-import { mapFileRecordToFileRecordParams, getPaths, unmarkForDelete } from '../helper';
+import { getPaths, mapFileRecordToFileRecordParams, unmarkForDelete } from '../helper';
 import { FilesStorageService } from './files-storage.service';
 
 const getFileRecordsWithParams = () => {
@@ -29,7 +30,7 @@ const getFileRecordsWithParams = () => {
 		parentType: FileRecordParentType.User,
 	};
 
-	return { params, fileRecords };
+	return { params, fileRecords, parentId };
 };
 
 const getFileRecordWithParams = () => {
@@ -70,6 +71,10 @@ describe('FilesStorageService', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: AntivirusService,
+					useValue: createMock<AntivirusService>(),
 				},
 			],
 		}).compile();
@@ -801,6 +806,104 @@ describe('FilesStorageService', () => {
 						expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) as Date }),
 					])
 				);
+			});
+		});
+	});
+
+	describe('copyFilesOfParent is called', () => {
+		describe('WHEN no file is found', () => {
+			const setup = () => {
+				const { fileRecords, params: sourceParams, parentId: userId } = getFileRecordsWithParams();
+				const { params } = getFileRecordsWithParams();
+				const copyFilesOfParentParams = { target: params };
+
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([[], 0]);
+
+				return { sourceParams, copyFilesOfParentParams, fileRecords, userId };
+			};
+
+			it('should return empty response if entities not found', async () => {
+				const { userId, sourceParams, copyFilesOfParentParams } = setup();
+
+				const result = await service.copyFilesOfParent(userId, sourceParams, copyFilesOfParentParams);
+
+				expect(result).toEqual([[], 0]);
+			});
+		});
+
+		describe('WHEN files exist and copyFiles copied files successfully', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const { fileRecords: sourceFileRecords, params: sourceParams, parentId: userId } = getFileRecordsWithParams();
+				const { fileRecords: targetFileRecords, params } = getFileRecordsWithParams();
+				const copyFilesOfParentParams = { target: params };
+
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([sourceFileRecords, sourceFileRecords.length]);
+				spy = jest.spyOn(service, 'copyFiles');
+				spy.mockResolvedValueOnce(targetFileRecords);
+
+				return { sourceParams, copyFilesOfParentParams, sourceFileRecords, targetFileRecords, userId };
+			};
+
+			it('should call findBySchoolIdAndParentId onces with correctly params', async () => {
+				const { userId, sourceParams, copyFilesOfParentParams } = setup();
+
+				await service.copyFilesOfParent(userId, sourceParams, copyFilesOfParentParams);
+
+				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenNthCalledWith(
+					1,
+					sourceParams.schoolId,
+					sourceParams.parentId
+				);
+			});
+
+			it('should call copyFiles with correct params', async () => {
+				const { userId, sourceParams, copyFilesOfParentParams, sourceFileRecords } = setup();
+
+				await service.copyFilesOfParent(userId, sourceParams, copyFilesOfParentParams);
+
+				expect(service.copyFiles).toHaveBeenCalledWith(userId, sourceFileRecords, copyFilesOfParentParams.target);
+			});
+
+			it('should return file records and count', async () => {
+				const { userId, sourceParams, copyFilesOfParentParams, targetFileRecords } = setup();
+
+				const responseData = await service.copyFilesOfParent(userId, sourceParams, copyFilesOfParentParams);
+
+				expect(responseData[0]).toEqual(targetFileRecords);
+				expect(responseData[1]).toEqual(targetFileRecords.length);
+			});
+		});
+
+		describe('WHEN copyFiles throws error', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const { fileRecords: sourceFileRecords, params: sourceParams, parentId: userId } = getFileRecordsWithParams();
+				const { params } = getFileRecordsWithParams();
+				const copyFilesOfParentParams = { target: params };
+				const error = new Error('test');
+
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([sourceFileRecords, sourceFileRecords.length]);
+				spy = jest.spyOn(service, 'copyFiles');
+				spy.mockRejectedValueOnce(error);
+
+				return { sourceParams, copyFilesOfParentParams, userId, error };
+			};
+
+			it('should pass error', async () => {
+				const { userId, sourceParams, copyFilesOfParentParams, error } = setup();
+
+				await expect(service.copyFilesOfParent(userId, sourceParams, copyFilesOfParentParams)).rejects.toThrow(error);
 			});
 		});
 	});

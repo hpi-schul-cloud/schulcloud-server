@@ -255,15 +255,9 @@ export class FilesStorageUC {
 			),
 		]);
 
-		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		const response = await this.filesStorageService.copyFilesOfParent(userId, params, copyFilesParams);
 
-		if (count === 0) {
-			return [[], 0];
-		}
-
-		const response = await this.copy(userId, fileRecords, copyFilesParams.target);
-
-		return [response, count];
+		return response;
 	}
 
 	public async copyOneFile(

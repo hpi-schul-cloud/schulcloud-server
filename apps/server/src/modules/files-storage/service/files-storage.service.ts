@@ -1,10 +1,19 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Counted, FileRecord } from '@shared/domain';
+import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
 import {
+	CopyFileResponse,
+	CopyFilesOfParentParams,
+	FileRecordParams,
+	RenameFileParams,
+	ScanResultParams,
+	SingleFileParams,
+} from '../controller/dto';
+import {
+	createPath,
 	getPaths,
 	getStatusFromScanResult,
 	mapFileRecordToFileRecordParams,
@@ -12,12 +21,14 @@ import {
 	modifyFileNameInScope,
 	unmarkForDelete,
 } from '../helper';
+import { ICopyFiles } from '../interface';
 
 @Injectable()
 export class FilesStorageService {
 	constructor(
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly storageClient: S3ClientAdapter,
+		private readonly antivirusService: AntivirusService,
 		private logger: Logger
 	) {
 		this.logger.setContext(FilesStorageService.name);
@@ -133,5 +144,83 @@ export class FilesStorageService {
 		await this.fileRecordRepo.save(unmarkFileRecords);
 
 		await this.restoreWithRollbackByError(fileRecords);
+	}
+
+	// copy
+	private getNewFileRecord(name: string, size: number, mimeType: string, params: FileRecordParams, userId: string) {
+		const entity = new FileRecord({
+			size,
+			name,
+			mimeType,
+			parentType: params.parentType,
+			parentId: params.parentId,
+			creatorId: userId,
+			schoolId: params.schoolId,
+		});
+
+		return entity;
+	}
+
+	public async copyFilesOfParent(
+		userId: string,
+		params: FileRecordParams,
+		copyFilesParams: CopyFilesOfParentParams
+	): Promise<Counted<CopyFileResponse[]>> {
+		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+
+		if (count === 0) {
+			return [[], 0];
+		}
+
+		const response = await this.copyFiles(userId, fileRecords, copyFilesParams.target);
+
+		return [response, count];
+	}
+
+	public async copyFiles(
+		userId: EntityId,
+		sourceFileRecords: FileRecord[],
+		targetParams: FileRecordParams
+	): Promise<CopyFileResponse[]> {
+		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
+		const responseEntities: CopyFileResponse[] = [];
+		const newRecords: FileRecord[] = [];
+		const paths: Array<ICopyFiles> = [];
+
+		await Promise.all(
+			sourceFileRecords.map(async (item) => {
+				if (item.securityCheck.status !== ScanStatus.BLOCKED && !item.deletedSince) {
+					const entity = this.getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
+					if (item.securityCheck.status !== ScanStatus.PENDING) {
+						entity.securityCheck = item.securityCheck;
+					}
+
+					await this.fileRecordRepo.save(entity);
+					newRecords.push(entity);
+					responseEntities.push(new CopyFileResponse({ id: entity.id, sourceId: item.id, name: entity.name }));
+					paths.push({
+						//
+						sourcePath: createPath(item.schoolId, item.id),
+						targetPath: createPath(entity.schoolId, entity.id),
+					});
+				}
+			})
+		);
+
+		try {
+			await this.storageClient.copy(paths);
+			const pendedFileRecords = newRecords.filter((item) => {
+				if (item.securityCheck.status === ScanStatus.PENDING) {
+					return this.antivirusService.send(item);
+				}
+				return false;
+			});
+
+			await Promise.all(pendedFileRecords);
+			return responseEntities;
+		} catch (error) {
+			await this.fileRecordRepo.delete(newRecords);
+			throw error;
+		}
 	}
 }
