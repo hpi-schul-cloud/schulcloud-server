@@ -1,6 +1,5 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext, ScanStatus } from '@shared/domain';
-import { FileRecordRepo } from '@shared/repo';
+import { Injectable } from '@nestjs/common';
+import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
 import {
 	FileRecordParams,
@@ -10,61 +9,35 @@ import {
 } from '../controller/dto/file-storage.params';
 import { PermissionContexts } from '../files-storage.const';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
+import { FilesStorageService } from '../service/files-storage.service';
 
 @Injectable()
 export class FileRecordUC {
 	constructor(
-		private readonly fileRecordRepo: FileRecordRepo,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly filesStorageService: FilesStorageService
 	) {}
 
-	private checkDuplicatedNames(fileRecords: FileRecord[], data: RenameFileParams): void | ConflictException {
-		if (fileRecords.find((item) => item.name === data.fileName)) {
-			throw new ConflictException('FILE_NAME_EXISTS');
-		}
-	}
-
-	private modifiedFileName(
-		entity: FileRecord,
-		fileRecordsInScope: FileRecord[],
-		data: RenameFileParams
-	): void | ConflictException {
-		this.checkDuplicatedNames(fileRecordsInScope, data);
-		entity.name = data.fileName;
-	}
-
 	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
-		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
-		await this.checkPermission(userId, entity.parentType, entity.parentId, PermissionContexts.update);
+		const fileRecord = await this.filesStorageService.getFile(params);
+		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.update);
 
-		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(entity.schoolId, entity.parentId);
+		const modifiedFileRecord = await this.filesStorageService.patchFilename(fileRecord, data);
 
-		this.modifiedFileName(entity, fileRecords, data);
-		await this.fileRecordRepo.save(entity);
-
-		return entity;
+		return modifiedFileRecord;
 	}
 
-	public async fileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async getFileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.read);
 
-		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		const countedFileRecords = await this.filesStorageService.getFilesOfParent(params);
 
 		return countedFileRecords;
 	}
 
-	private getStatusFromScanResult(scanResultDto: ScanResultParams) {
-		const status = scanResultDto.virus_detected ? ScanStatus.BLOCKED : ScanStatus.VERIFIED;
-
-		return status;
-	}
-
 	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
-		const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
-		const status = this.getStatusFromScanResult(scanResultDto);
-		entity.updateSecurityCheckStatus(status, scanResultDto.virus_signature);
-
-		await this.fileRecordRepo.save(entity);
+		// No authorisation is possible atm.
+		await this.filesStorageService.updateSecurityStatus(token, scanResultDto);
 	}
 
 	private async checkPermission(

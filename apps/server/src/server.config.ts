@@ -10,7 +10,16 @@ export enum NodeEnvType {
 	MIGRATION = 'migration',
 }
 
-export interface IServerConfig extends ICoreModuleConfig, IUserConfig, IFilesStorageClientConfig, IAccountConfig {
+interface IFeatureConfig {
+	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: boolean;
+}
+
+export interface IServerConfig
+	extends ICoreModuleConfig,
+		IFeatureConfig,
+		IUserConfig,
+		IFilesStorageClientConfig,
+		IAccountConfig {
 	NODE_ENV: string;
 }
 
@@ -25,6 +34,7 @@ const config: IServerConfig = {
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,
+	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED') as boolean,
 };
 
 export default () => config;
