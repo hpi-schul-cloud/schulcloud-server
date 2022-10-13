@@ -24,6 +24,7 @@ export class FilesStorageConsumer {
 	@RabbitRPC({
 		exchange: FilesStorageExchanges.FILES_STORAGE,
 		routingKey: FilesStorageEvents.COPY_FILES_OF_PARENT,
+		queue: FilesStorageEvents.COPY_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
 	public async copyFilesOfParent(
@@ -39,6 +40,7 @@ export class FilesStorageConsumer {
 	@RabbitRPC({
 		exchange: FilesStorageExchanges.FILES_STORAGE,
 		routingKey: FilesStorageEvents.LIST_FILES_OF_PARENT,
+		queue: FilesStorageEvents.LIST_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
 	public async getFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<IFileDO[]>> {
@@ -53,6 +55,7 @@ export class FilesStorageConsumer {
 	@RabbitRPC({
 		exchange: FilesStorageExchanges.FILES_STORAGE,
 		routingKey: FilesStorageEvents.DELETE_FILES_OF_PARENT,
+		queue: FilesStorageEvents.DELETE_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
 	public async deleteFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<IFileDO[]>> {
