@@ -40,11 +40,6 @@ describe('SanisResponseMapper', () => {
 		],
 	});
 
-	const RoleMapping = {
-		[SanisRole.LEHR]: RoleName.TEACHER,
-		[SanisRole.LERN]: RoleName.STUDENT,
-		[SanisRole.SYSA]: RoleName.ADMINISTRATOR,
-	};
 	beforeAll(() => {
 		mapper = new SanisResponseMapper();
 	});

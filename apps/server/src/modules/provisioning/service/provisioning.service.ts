@@ -16,12 +16,7 @@ export class ProvisioningService {
 	) {}
 
 	async process(accessToken: string, idToken: string, systemId: string): Promise<ProvisioningDto> {
-		let system: ProvisioningSystemInputDto;
-		try {
-			system = ProvisioningSystemInputMapper.mapToInternal(await this.systemService.findById(systemId));
-		} catch (e) {
-			throw new NotFoundException(`System with id "${systemId}" does not exist.`);
-		}
+		const system: ProvisioningSystemInputDto = await this.determineInput(systemId);
 
 		switch (system.provisioningStrategy) {
 			case SystemProvisioningStrategy.SANIS: {
@@ -34,6 +29,16 @@ export class ProvisioningService {
 			}
 			default:
 				throw new InternalServerErrorException('Provisioning Strategy is not defined.');
+		}
+	}
+
+	private async determineInput(systemId: string): Promise<ProvisioningSystemInputDto> {
+		try {
+			const systemDto = await this.systemService.findById(systemId);
+			const inputDto: ProvisioningSystemInputDto = ProvisioningSystemInputMapper.mapToInternal(systemDto);
+			return inputDto;
+		} catch (e) {
+			throw new NotFoundException(`System with id "${systemId}" does not exist.`);
 		}
 	}
 

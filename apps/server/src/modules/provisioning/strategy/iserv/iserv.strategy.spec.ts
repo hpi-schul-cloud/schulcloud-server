@@ -2,7 +2,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
 import { UUID } from 'bson';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import jwt, { DecodeOptions, JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { Test, TestingModule } from '@nestjs/testing';
 
 const params = {
@@ -63,7 +63,7 @@ describe('IservStrategy', () => {
 	});
 
 	describe('getType', () => {
-		it('should return type SANIS', () => {
+		it('should return type ISERV', () => {
 			const retType: SystemProvisioningStrategy = iservStrategy.getType();
 			expect(retType).toEqual(SystemProvisioningStrategy.ISERV);
 		});

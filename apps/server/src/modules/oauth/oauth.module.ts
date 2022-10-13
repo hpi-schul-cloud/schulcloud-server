@@ -4,7 +4,7 @@ import { EncryptionModule } from '@shared/infra/encryption';
 import { LtiToolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { HydraOauthUc } from '@src/modules/oauth/uc/hydraOauth.uc';
+import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { ProvisioningModule } from '@src/modules/provisioning/provisioning.module';
 import { AuthorizationModule } from '../authorization';

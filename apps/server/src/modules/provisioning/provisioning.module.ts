@@ -12,6 +12,8 @@ import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/is
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { AccountModule } from '@src/modules/account/account.module';
 import { UserModule } from '@src/modules/user/user.module';
+import { SanisSchoolService } from '@src/modules/provisioning/strategy/sanis/service/sanis-school.service';
+import { SanisUserService } from '@src/modules/provisioning/strategy/sanis/service/sanis-user.service';
 import { ProvisioningService } from './service/provisioning.service';
 
 @Module({
@@ -20,6 +22,8 @@ import { ProvisioningService } from './service/provisioning.service';
 	providers: [
 		ProvisioningService,
 		SanisProvisioningStrategy,
+		SanisSchoolService,
+		SanisUserService,
 		IservProvisioningStrategy,
 		Logger,
 		SanisResponseMapper,

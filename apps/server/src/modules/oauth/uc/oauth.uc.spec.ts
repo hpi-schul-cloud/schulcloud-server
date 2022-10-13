@@ -7,8 +7,7 @@ import { setupEntities, systemFactory, userFactory } from '@shared/testing/index
 import { System, User } from '@shared/domain/index';
 import { SystemRepo } from '@shared/repo/index';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { NotFoundException } from '@nestjs/common';
-import { OauthUc } from '.';
+import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
 
@@ -61,7 +60,7 @@ describe('OAuthUc', () => {
 		const code = '43534543jnj543342jn2';
 		const query: AuthorizationParams = { code };
 
-		it('should do the process successfully', async () => {
+		it('should return a valid jwt', async () => {
 			const jwt = 'schulcloudJwt';
 			const redirect = 'redirect';
 			const baseResponse: OAuthResponse = {
