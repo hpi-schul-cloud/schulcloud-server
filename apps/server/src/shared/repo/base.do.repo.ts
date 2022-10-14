@@ -27,12 +27,9 @@ export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity, P> {
 		return new Type(props);
 	}
 
-	async save(entityDos: T | T[]): Promise<T | T[]> {
-		const isArray = Array.isArray(entityDos);
-		const dos: T[] = isArray ? entityDos : [entityDos];
-
+	async saveAll(entityDos: T[]): Promise<T[]> {
 		const entities: E[] = await Promise.all(
-			dos.map(async (d) => {
+			entityDos.map(async (d) => {
 				const entityProps: EntityProperties<P> = this.mapDOToEntityWithId(d);
 				const newEntity: E = this.entityFactory(this.getConstructor(), entityProps);
 
@@ -56,7 +53,17 @@ export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity, P> {
 
 		await this._em.persistAndFlush(entities);
 
-		return isArray ? entities.map((entity) => this.mapEntityToDO(entity)) : this.mapEntityToDO(entities[0]);
+		const savedDos: T[] = entities.map((entity) => this.mapEntityToDO(entity));
+		return savedDos;
+	}
+
+	async save(entityDo: T): Promise<T> {
+		const savedDos: T[] = await this.saveAll([entityDo]);
+		return savedDos[0];
+	}
+
+	async deleteById(id: EntityId): Promise<void> {
+		await this._em.nativeDelete(this.entityName, id as FilterQuery<E>);
 	}
 
 	async delete(entityDos: T | T[]): Promise<void> {

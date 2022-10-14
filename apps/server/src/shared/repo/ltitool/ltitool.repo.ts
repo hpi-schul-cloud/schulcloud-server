@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo, EntityProperties } from '@shared/repo/base.do.repo';
-import { EntityName } from '@mikro-orm/core';
+import { EntityName, FilterQuery } from '@mikro-orm/core';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { ILtiToolProperties, LtiTool } from '@shared/domain';
+import { IFindOptions, ILtiToolProperties, LtiTool, Page, SortOrder } from '@shared/domain';
 
 @Injectable()
 export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperties> {
@@ -12,6 +12,23 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 
 	getConstructor(): { new (I): LtiTool } {
 		return LtiTool;
+	}
+
+	async find(query: FilterQuery<LtiTool>, options?: IFindOptions<LtiTool>): Promise<Page<LtiToolDO>> {
+		const pagination = options?.pagination || {};
+		const order = options?.order || {};
+
+		if (order._id == null) {
+			order._id = SortOrder.asc;
+		}
+
+		const [entities, total]: [LtiTool[], number] = await this._em.findAndCount(LtiTool, query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order,
+		});
+
+		return { data: entities.map((entity) => this.mapEntityToDO(entity)), total };
 	}
 
 	async findByName(name: string): Promise<LtiToolDO> {
