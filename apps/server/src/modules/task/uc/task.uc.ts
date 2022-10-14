@@ -6,10 +6,12 @@ import {
 	EntityId,
 	IPagination,
 	ITaskStatus,
+	ITaskUpdate,
 	Lesson,
 	Permission,
 	PermissionContextBuilder,
 	SortOrder,
+	Task,
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
@@ -102,10 +104,7 @@ export class TaskUC {
 		}
 		await this.taskRepo.save(task);
 
-		// add status
-		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])
-			? task.createTeacherStatusForUser(user)
-			: task.createStudentStatusForUser(user);
+		const status = this.createStatus(user, task);
 
 		const result = new TaskWithStatusVo(task, status);
 
@@ -224,5 +223,73 @@ export class TaskUC {
 
 		await this.taskRepo.delete(task);
 		return true;
+	}
+
+	async find(userId: EntityId, taskId: EntityId) {
+		const [user, task] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.taskRepo.findById(taskId),
+		]);
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([]));
+
+		const status = this.createStatus(user, task);
+
+		const result = new TaskWithStatusVo(task, status);
+		return result;
+	}
+
+	async create(userId: EntityId, courseId: EntityId): Promise<TaskWithStatusVo> {
+		const [user, course] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.courseRepo.findById(courseId),
+		]);
+
+		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([])); // TODO speficic permission for individual task creation?
+
+		const task = new Task({
+			name: 'Draft', // TODO
+			school: user.school,
+			creator: user,
+			course,
+		});
+		await this.taskRepo.save(task);
+
+		const status = this.createStatus(user, task);
+		const taskWithStatusVo = new TaskWithStatusVo(task, status);
+
+		return taskWithStatusVo;
+	}
+
+	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
+		const [user, task] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.taskRepo.findById(taskId),
+		]);
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
+
+		// eslint-disable-next-line no-restricted-syntax
+		for (const [key, value] of Object.entries(params)) {
+			if (value) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				task[key] = value;
+			}
+		}
+		await this.taskRepo.save(task);
+
+		const status = this.createStatus(user, task);
+		const result = new TaskWithStatusVo(task, status);
+		return result;
+	}
+
+	private createStatus(user: User, task: Task) {
+		let status: ITaskStatus;
+		if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_VIEW_V3])) {
+			status = task.createTeacherStatusForUser(user);
+		} else if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
+			status = task.createTeacherStatusForUser(user);
+		} else {
+			throw new UnauthorizedException();
+		}
+		return status;
 	}
 }

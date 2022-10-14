@@ -1077,4 +1077,26 @@ describe('TaskUC', () => {
 			expect(fileStorageClientAdapterService.deleteFilesOfParent).toBeCalledWith(params);
 		});
 	});
+
+	describe('create task', () => {
+		let course: Course;
+		beforeEach(() => {
+			user = userFactory.buildWithId();
+			course = courseFactory.build({ teachers: [user] });
+
+			userRepo.findById.mockResolvedValue(user);
+			taskRepo.save.mockResolvedValue();
+		});
+
+		it.todo('should check for permission to create the task');
+		it.todo('should throw UnauthorizedException when not permitted');
+		it.todo('should save the task');
+		it.todo('should return the task and its status');
+	});
+	describe('update task', () => {
+		it.todo('should throw UnauthorizedException when not permitted');
+	});
+	describe('find task', () => {
+		it.todo('should throw UnauthorizedException when not permitted');
+	});
 });

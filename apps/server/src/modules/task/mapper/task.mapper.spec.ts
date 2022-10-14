@@ -1,7 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
-import { ITaskStatus, Task, TaskParentDescriptions } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions } from '@shared/domain';
 import { setupEntities, taskFactory } from '@shared/testing';
-import { TaskResponse, TaskStatusResponse } from '../controller/dto';
+import { TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
@@ -73,5 +74,21 @@ describe('task.mapper', () => {
 			expect(spy).toHaveBeenCalled();
 			expect(result).toStrictEqual(expected);
 		});
+	});
+
+	describe('mapUpdateTaskToDomain', () => {
+		it('should correctly map params to dto', () => {
+			const params: TaskUpdateParams = {
+				name: 'test name',
+				courseId: new ObjectId().toHexString(),
+			};
+			const result = TaskMapper.mapUpdateTaskToDomain(params);
+			const expected: ITaskUpdate = {
+				name: params.name,
+				courseId: params.courseId,
+				lessonId: params.lessonId,
+			};
+			expect(result).toStrictEqual(expected);
+		})
 	});
 });

@@ -11,7 +11,7 @@ import serverConfig from '@src/server.config';
 import { TaskMapper } from '../mapper/task.mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
-import { TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
+import { TaskListResponse, TaskResponse, TaskUrlParams, TaskCreateParams, TaskUpdateParams } from './dto';
 import { TaskCopyApiParams } from './dto/task-copy.params';
 
 @ApiTags('Task')
@@ -94,5 +94,38 @@ export class TaskController {
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
+	}
+
+	@Get(':taskId')
+	async find(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
+		const taskWithSatusVo = await this.taskUc.find(currentUser.userId, urlParams.taskId);
+
+		const response = TaskMapper.mapToResponse(taskWithSatusVo);
+		return response;
+	}
+
+	@Post()
+	async create(@Body() params: TaskCreateParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
+		const taskWithSatusVo = await this.taskUc.create(currentUser.userId, params.courseId);
+
+		const response = TaskMapper.mapToResponse(taskWithSatusVo);
+		return response;
+	}
+
+	@Patch(':taskId')
+	async update(
+		@Param() urlParams: TaskUrlParams,
+		@Body() params: TaskUpdateParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<TaskResponse> {
+		const taskWithSatusVo = await this.taskUc.update(
+			currentUser.userId,
+			urlParams.taskId,
+			TaskMapper.mapUpdateTaskToDomain(params)
+		);
+
+		const response = TaskMapper.mapToResponse(taskWithSatusVo);
+
+		return response;
 	}
 }
