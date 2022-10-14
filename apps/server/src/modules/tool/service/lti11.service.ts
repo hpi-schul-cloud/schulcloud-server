@@ -9,7 +9,7 @@ export class Lti11Service {
 	constructor(private readonly pseudonymRepo: PseudonymsRepo) {}
 
 	createConsumer(ltiKey: string, ltiSecret: string): OAuth {
-		return new OAuth({
+		const oauth: OAuth = new OAuth({
 			consumer: {
 				key: ltiKey,
 				secret: ltiSecret,
@@ -18,9 +18,10 @@ export class Lti11Service {
 			hash_function: (base_string: string, key: string) =>
 				CryptoJS.HmacSHA1(base_string, key).toString(CryptoJS.enc.Base64),
 		});
+		return oauth;
 	}
 
-	async getUserId(userId: string, toolId: string, options: LtiPrivacyPermission): Promise<string> {
+	async getUserIdOrPseudonym(userId: string, toolId: string, options: LtiPrivacyPermission): Promise<string> {
 		if (options === LtiPrivacyPermission.PSEUDONYMOUS) {
 			const pseudonym: PseudonymDO = await this.pseudonymRepo.findByUserIdAndToolId(userId, toolId);
 			return pseudonym.pseudonym;

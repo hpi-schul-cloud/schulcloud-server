@@ -97,7 +97,7 @@ describe('Lti11Uc', () => {
 				ltiToolRepo.findById.mockResolvedValue(ltiTool);
 				ltiRoleMapper.mapRoleToLtiRole.mockReturnValue(LtiRole.LEARNER);
 				userService.getUser.mockResolvedValue(userDto);
-				lti11Service.getUserId.mockResolvedValue(currentUser.userId);
+				lti11Service.getUserIdOrPseudonym.mockResolvedValue(currentUser.userId);
 				userService.getDisplayName.mockResolvedValue(userName);
 				lti11Service.createConsumer.mockReturnValue(oauth);
 				oauth.authorize.mockReturnValue(authorization);
@@ -154,7 +154,7 @@ describe('Lti11Uc', () => {
 				const result: Authorization = await useCase.getLaunchParameters(currentUser, 'toolId', courseId);
 
 				expect(result).toEqual(authorization);
-				expect(oauth.authorize).toHaveBeenCalledWith(expect.objectContaining(expectedRequestData));
+				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
 			it('should use tool with pseudonymous privacy_permission', async () => {

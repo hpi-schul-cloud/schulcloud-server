@@ -48,7 +48,7 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 			customs: entity.customs,
 			isTemplate: entity.isTemplate,
 			isLocal: entity.isLocal,
-			originToolId: entity.originToolId?.toString(),
+			originToolId: entity.originToolId,
 			oAuthClientId: entity.oAuthClientId,
 			friendlyUrl: entity.friendlyUrl,
 			skipConsent: entity.skipConsent,

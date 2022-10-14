@@ -21,13 +21,11 @@ export class Lti11Uc {
 
 	async getLaunchParameters(currentUser: ICurrentUser, toolId: string, courseId: string): Promise<Authorization> {
 		const tool: LtiToolDO = await this.ltiToolRepo.findById(toolId);
-
 		if (tool.lti_version !== 'LTI-1p0' || !tool.lti_message_type) {
 			throw new InternalServerErrorException(`Tool ${toolId} is not a valid Lti v1.1 tool`);
 		}
 
 		const ltiRole: LtiRole | undefined = this.ltiRoleMapper.mapRoleToLtiRole(currentUser.roles[0] as RoleName);
-		const user: UserDto = await this.userService.getUser(currentUser.userId);
 
 		const payload = new Lti11PayloadDto({
 			lti_version: tool.lti_version,
@@ -38,8 +36,8 @@ export class Lti11Uc {
 			launch_presentation_locale: 'en',
 		});
 
-		payload.user_id = await this.lti11Service.getUserId(currentUser.userId, toolId, tool.privacy_permission);
-
+		const user: UserDto = await this.userService.getUser(currentUser.userId);
+		payload.user_id = await this.lti11Service.getUserIdOrPseudonym(currentUser.userId, toolId, tool.privacy_permission);
 		if (tool.privacy_permission === LtiPrivacyPermission.NAME) {
 			payload.lis_person_name_full = await this.userService.getDisplayName(user);
 		}

@@ -21,10 +21,11 @@ describe('Lti11ResponseMapper', () => {
 				oauth_version: 'version',
 				oauth_signature_method: 'signature_method',
 			};
+			const expectedResponse: Lti11LaunchResponse = new Lti11LaunchResponse(authorization);
 
 			const result: Lti11LaunchResponse = mapper.mapAuthorizationToResponse(authorization);
 
-			expect(result).toEqual(expect.objectContaining(new Lti11LaunchResponse(authorization)));
+			expect(result).toEqual(expectedResponse);
 		});
 	});
 });
