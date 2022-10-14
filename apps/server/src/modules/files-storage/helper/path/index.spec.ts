@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { createPath, getPaths } from '.';
+import { createICopyFiles, createPath, getPaths } from '.';
 import { ErrorType } from '../../error';
 
 describe('Path Helper', () => {
@@ -15,6 +15,19 @@ describe('Path Helper', () => {
 	afterAll(async () => {
 		await orm.close();
 	});
+
+	const setupFileRecords = () => {
+		const userId: EntityId = new ObjectId().toHexString();
+		const schoolId: EntityId = new ObjectId().toHexString();
+
+		const fileRecords = [
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		];
+
+		return fileRecords;
+	};
 
 	describe('createPath', () => {
 		it('should create path', () => {
@@ -42,21 +55,12 @@ describe('Path Helper', () => {
 	});
 
 	describe('getPaths', () => {
-		const setupFileRecords = () => {
-			const userId: EntityId = new ObjectId().toHexString();
-			const schoolId: EntityId = new ObjectId().toHexString();
-
-			const fileRecords = [
-				fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-				fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-				fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
-			];
-
-			return fileRecords;
+		const setup = () => {
+			return { fileRecords: setupFileRecords() };
 		};
 
 		it('should return paths', () => {
-			const fileRecords = setupFileRecords();
+			const { fileRecords } = setup();
 
 			const paths = getPaths(fileRecords);
 
@@ -72,6 +76,27 @@ describe('Path Helper', () => {
 			const paths = getPaths([]);
 
 			expect(paths).toEqual([]);
+		});
+	});
+
+	describe('createICopyFiles is called', () => {
+		const setup = () => {
+			return { fileRecords: setupFileRecords() };
+		};
+
+		it('should return iCopyFiles', () => {
+			const { fileRecords } = setup();
+			const sourceFile = fileRecords[0];
+			const targetFile = fileRecords[1];
+
+			const expectedICopyFiles = {
+				sourcePath: createPath(sourceFile.schoolId, sourceFile.id),
+				targetPath: createPath(targetFile.schoolId, targetFile.id),
+			};
+
+			const result = createICopyFiles(sourceFile, targetFile);
+
+			expect(result).toEqual(expectedICopyFiles);
 		});
 	});
 });

@@ -13,6 +13,7 @@ import {
 	SingleFileParams,
 } from '../controller/dto';
 import {
+	createICopyFiles,
 	createPath,
 	deriveStatusFromSource,
 	getNewFileRecord,
@@ -161,7 +162,7 @@ export class FilesStorageService {
 			return [[], 0];
 		}
 
-		const response = await this.copyFiles(userId, fileRecords, copyFilesParams.target);
+		const response = await this.copy(userId, fileRecords, copyFilesParams.target);
 
 		return [response, count];
 	}
@@ -180,15 +181,34 @@ export class FilesStorageService {
 		return entity;
 	}
 
-	public async copyFiles(
+	public async sendToAntiVirusService(sourceFile: FileRecord) {
+		if (sourceFile.securityCheck.status === ScanStatus.PENDING) {
+			await this.antivirusService.send(sourceFile);
+		}
+	}
+
+	public async tryCopyFiles(sourceFile: FileRecord, targetFile: FileRecord): Promise<CopyFileResponse> {
+		try {
+			const paths = createICopyFiles(sourceFile, targetFile);
+
+			await this.storageClient.copy([paths]);
+
+			await this.sendToAntiVirusService(sourceFile);
+
+			return new CopyFileResponse({ id: targetFile.id, sourceId: sourceFile.id, name: targetFile.name });
+		} catch (error) {
+			await this.fileRecordRepo.delete([targetFile]);
+			throw error;
+		}
+	}
+
+	public async copy(
 		userId: EntityId,
 		sourceFileRecords: FileRecord[],
 		targetParams: FileRecordParams
 	): Promise<CopyFileResponse[]> {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
 		const responseEntities: CopyFileResponse[] = [];
-		const newRecords: FileRecord[] = [];
-		const paths: Array<ICopyFiles> = [];
 
 		await Promise.all(
 			sourceFileRecords.map(async (item) => {
@@ -196,30 +216,12 @@ export class FilesStorageService {
 
 				const targetFile = await this.copyFileRecord(item, targetParams, userId);
 
-				newRecords.push(targetFile);
-				responseEntities.push(new CopyFileResponse({ id: targetFile.id, sourceId: item.id, name: targetFile.name }));
-				paths.push({
-					//
-					sourcePath: createPath(item.schoolId, item.id),
-					targetPath: createPath(targetFile.schoolId, targetFile.id),
-				});
+				const fileResponse = await this.tryCopyFiles(item, targetFile);
+
+				responseEntities.push(fileResponse);
 			})
 		);
 
-		try {
-			await this.storageClient.copy(paths);
-			const pendedFileRecords = newRecords.filter((item) => {
-				if (item.securityCheck.status === ScanStatus.PENDING) {
-					return this.antivirusService.send(item);
-				}
-				return false;
-			});
-
-			await Promise.all(pendedFileRecords);
-			return responseEntities;
-		} catch (error) {
-			await this.fileRecordRepo.delete(newRecords);
-			throw error;
-		}
+		return responseEntities;
 	}
 }

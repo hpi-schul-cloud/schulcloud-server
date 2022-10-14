@@ -10,8 +10,14 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import _ from 'lodash';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
-import { getPaths, mapFileRecordToFileRecordParams, unmarkForDelete } from '../helper';
+import {
+	CopyFileResponse,
+	FileRecordParams,
+	RenameFileParams,
+	ScanResultParams,
+	SingleFileParams,
+} from '../controller/dto';
+import { createICopyFiles, getPaths, mapFileRecordToFileRecordParams, unmarkForDelete } from '../helper';
 import { FilesStorageService } from './files-storage.service';
 
 const getFileRecordsWithParams = () => {
@@ -50,6 +56,7 @@ describe('FilesStorageService', () => {
 	let service: FilesStorageService;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
+	let antivirusService: DeepMocked<AntivirusService>;
 	let orm: MikroORM;
 
 	beforeAll(async () => {
@@ -82,6 +89,7 @@ describe('FilesStorageService', () => {
 		service = module.get(FilesStorageService);
 		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
+		antivirusService = module.get(AntivirusService);
 	});
 
 	afterAll(async () => {
@@ -844,7 +852,7 @@ describe('FilesStorageService', () => {
 				const copyFilesOfParentParams = { target: params };
 
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([sourceFileRecords, sourceFileRecords.length]);
-				spy = jest.spyOn(service, 'copyFiles');
+				spy = jest.spyOn(service, 'copy');
 				spy.mockResolvedValueOnce(targetFileRecords);
 
 				return { sourceParams, copyFilesOfParentParams, sourceFileRecords, targetFileRecords, userId };
@@ -862,12 +870,12 @@ describe('FilesStorageService', () => {
 				);
 			});
 
-			it('should call copyFiles with correct params', async () => {
+			it('should call copy with correct params', async () => {
 				const { userId, sourceParams, copyFilesOfParentParams, sourceFileRecords } = setup();
 
 				await service.copyFilesOfParent(userId, sourceParams, copyFilesOfParentParams);
 
-				expect(service.copyFiles).toHaveBeenCalledWith(userId, sourceFileRecords, copyFilesOfParentParams.target);
+				expect(service.copy).toHaveBeenCalledWith(userId, sourceFileRecords, copyFilesOfParentParams.target);
 			});
 
 			it('should return file records and count', async () => {
@@ -880,7 +888,7 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('WHEN copyFiles throws error', () => {
+		describe('WHEN copy throws error', () => {
 			let spy: jest.SpyInstance;
 
 			afterEach(() => {
@@ -894,7 +902,7 @@ describe('FilesStorageService', () => {
 				const error = new Error('test');
 
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([sourceFileRecords, sourceFileRecords.length]);
-				spy = jest.spyOn(service, 'copyFiles');
+				spy = jest.spyOn(service, 'copy');
 				spy.mockRejectedValueOnce(error);
 
 				return { sourceParams, copyFilesOfParentParams, userId, error };
@@ -941,6 +949,191 @@ describe('FilesStorageService', () => {
 				const { userId, sourceFile, params, error } = setup();
 
 				await expect(service.copyFileRecord(sourceFile, params, userId)).rejects.toThrow(error);
+			});
+		});
+	});
+
+	describe('tryCopyFiles is called', () => {
+		describe('WHEN storage client copies file successfully', () => {
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				const targetFile = fileRecords[1];
+
+				return { sourceFile, targetFile };
+			};
+
+			it('should call copy with correct params', async () => {
+				const { sourceFile, targetFile } = setup();
+
+				await service.tryCopyFiles(sourceFile, targetFile);
+
+				const expectedParams = createICopyFiles(sourceFile, targetFile);
+
+				expect(storageClient.copy).toBeCalledWith([expectedParams]);
+			});
+
+			it('should return file response', async () => {
+				const { sourceFile, targetFile } = setup();
+
+				const result = await service.tryCopyFiles(sourceFile, targetFile);
+
+				const expectedFileResponse = new CopyFileResponse({
+					id: targetFile.id,
+					sourceId: sourceFile.id,
+					name: targetFile.name,
+				});
+
+				expect(result).toEqual(expectedFileResponse);
+			});
+		});
+
+		describe('WHEN storage client throws error', () => {
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				const targetFile = fileRecords[1];
+				const error = new Error('test');
+
+				storageClient.copy.mockRejectedValueOnce(error);
+
+				return { sourceFile, targetFile, error };
+			};
+
+			it('should delete file record', async () => {
+				const { sourceFile, targetFile, error } = setup();
+
+				await expect(service.tryCopyFiles(sourceFile, targetFile)).rejects.toThrow(error);
+
+				expect(fileRecordRepo.delete).toBeCalledWith([targetFile]);
+			});
+		});
+
+		describe('WHEN anti virus service resolves', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				const targetFile = fileRecords[1];
+
+				spy = jest.spyOn(service, 'sendToAntiVirusService').mockResolvedValueOnce();
+
+				return { sourceFile, targetFile };
+			};
+
+			it('should call copy with correct params', async () => {
+				const { sourceFile, targetFile } = setup();
+
+				await service.tryCopyFiles(sourceFile, targetFile);
+
+				expect(service.sendToAntiVirusService).toBeCalledWith(sourceFile);
+			});
+		});
+
+		describe('WHEN anti virus service throws error', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				const targetFile = fileRecords[1];
+				const error = new Error('test');
+
+				spy = jest.spyOn(service, 'sendToAntiVirusService').mockRejectedValueOnce(error);
+
+				return { sourceFile, targetFile, error };
+			};
+
+			it('should delete file record', async () => {
+				const { sourceFile, targetFile, error } = setup();
+
+				await expect(service.tryCopyFiles(sourceFile, targetFile)).rejects.toThrow(error);
+
+				expect(fileRecordRepo.delete).toBeCalledWith([targetFile]);
+			});
+		});
+	});
+
+	describe('sendToAntiVirusService is called', () => {
+		describe('WHEN security status is pending', () => {
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				sourceFile.securityCheck.status = ScanStatus.PENDING;
+
+				return { sourceFile };
+			};
+
+			it('should call send with correct params', async () => {
+				const { sourceFile } = setup();
+
+				await service.sendToAntiVirusService(sourceFile);
+
+				expect(antivirusService.send).toBeCalledWith(sourceFile);
+			});
+		});
+
+		describe('WHEN security status is verfied', () => {
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				sourceFile.securityCheck.status = ScanStatus.VERIFIED;
+
+				return { sourceFile };
+			};
+
+			it('should call send with correct params', async () => {
+				const { sourceFile } = setup();
+
+				await service.sendToAntiVirusService(sourceFile);
+
+				expect(antivirusService.send).toBeCalledTimes(0);
+			});
+		});
+
+		describe('WHEN security status is blocked', () => {
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				sourceFile.securityCheck.status = ScanStatus.BLOCKED;
+
+				return { sourceFile };
+			};
+
+			it('should call send with correct params', async () => {
+				const { sourceFile } = setup();
+
+				await service.sendToAntiVirusService(sourceFile);
+
+				expect(antivirusService.send).toBeCalledTimes(0);
+			});
+		});
+
+		describe('WHEN service throws error', () => {
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				sourceFile.securityCheck.status = ScanStatus.PENDING;
+				const error = new Error('test');
+
+				antivirusService.send.mockRejectedValueOnce(error);
+
+				return { sourceFile, error };
+			};
+
+			it('should pass error', async () => {
+				const { sourceFile, error } = setup();
+
+				await expect(service.sendToAntiVirusService(sourceFile)).rejects.toThrow(error);
 			});
 		});
 	});
