@@ -13,30 +13,19 @@ import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { S3ClientAdapter } from './client/s3-client.adapter';
-import fileStorageConfig from './files-storage.config';
+import { config, s3Config } from './files-storage.config';
 import { FilesStorageHelper } from './helper';
 import { S3Config } from './interface/config';
 import { FilesStorageService } from './service/files-storage.service';
 import { FileRecordUC } from './uc/file-record.uc';
 import { FilesStorageUC } from './uc/files-storage.uc';
 
-// The configurations lookup
-// config/development.json for development
-// config/test.json for tests
-export const config: S3Config = {
-	endpoint: Configuration.get('FILES_STORAGE__S3_ENDPOINT') as string,
-	region: Configuration.get('FILES_STORAGE__S3_REGION') as string,
-	bucket: Configuration.get('FILES_STORAGE__S3_BUCKET') as string,
-	accessKeyId: Configuration.get('FILES_STORAGE__S3_ACCESS_KEY_ID') as string,
-	secretAccessKey: Configuration.get('FILES_STORAGE__S3_SECRET_ACCESS_KEY') as string,
-};
-
 const imports = [
-	AuthorizationModule, //After refactoring, move to FilesStorageApiModule AuthorizationModule,
+	AuthorizationModule, // After refactoring, move to FilesStorageApiModule AuthorizationModule,
 	LoggerModule,
 	ConfigModule.forRoot({
 		isGlobal: true,
-		load: [fileStorageConfig],
+		load: [config],
 	}),
 	HttpModule,
 	AntivirusModule.forRoot({
@@ -69,7 +58,7 @@ const providers = [
 	},
 	{
 		provide: 'S3_Config',
-		useValue: config,
+		useValue: s3Config,
 	},
 	S3ClientAdapter,
 	FileRecordRepo,

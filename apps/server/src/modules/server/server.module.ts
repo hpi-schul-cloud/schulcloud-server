@@ -30,7 +30,7 @@ import {
 	VideoConferenceModule,
 } from '@src/modules';
 import { SharingModule } from '@src/modules/sharing/sharing.module';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from './../../config';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '../../config';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
 
