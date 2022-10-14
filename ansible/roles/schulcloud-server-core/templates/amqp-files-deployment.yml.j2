@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-files-amqp-deployment
+  name: amqp-files-deployment
   namespace: {{ NAMESPACE }}
   labels:
-    app: api-files-amqp
+    app: amqp-files
 spec:
   replicas: {{ API_FILE_STORAGE_REPLICAS|default("1", true) }}
   strategy:
@@ -16,11 +16,11 @@ spec:
   paused: false
   selector:
     matchLabels:
-      app: api-files-amqp
+      app: amqp-files
   template:
     metadata:
       labels:
-        app: api-files-amqp
+        app: amqp-files
     spec:
       securityContext:
         runAsUser: 1000
@@ -28,7 +28,7 @@ spec:
         fsGroup: 1000
         runAsNonRoot: true
       containers:
-      - name: api-files-amqp
+      - name: amqp-files
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         envFrom:
