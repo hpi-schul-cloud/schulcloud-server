@@ -68,7 +68,7 @@
 		"nest:start:files-storage-amqp": "nest start files-storage-amqp",
 		"nest:start:files-storage-amqp:dev": "nest start files-storage-amqp --watch",
 		"nest:start:files-storage-amqp:debug": "nest start files-storage-amqp --debug --watch",
-		"nest:start:files-storage-amqp:prod": "node dist/apps/server/files-storage-amqp.server",
+		"nest:start:files-storage-amqp:prod": "node dist/apps/server/files-storage.amqp",
 		"nest:start:console": "nest start console --",
 		"nest:start:console:dev": "nest start console --watch --",
 		"nest:start:console:debug": "nest start console --debug --watch --",
