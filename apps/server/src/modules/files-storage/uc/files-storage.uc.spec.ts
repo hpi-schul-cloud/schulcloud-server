@@ -1081,6 +1081,26 @@ describe('FilesStorageUC', () => {
 				expect(result).toEqual([[fileResponse], 1]);
 			});
 		});
+
+		describe('WHEN service copy throws error', () => {
+			const setup = () => {
+				const { params1: sourceParams, userId1 } = getFileRecordsWithParams();
+				const targetParams = getTargetParams();
+
+				const error = new Error('test');
+
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
+				filesStorageService.copyFilesOfParent.mockRejectedValueOnce(error);
+
+				return { sourceParams, targetParams, userId1, error };
+			};
+
+			it('should pass error', async () => {
+				const { sourceParams, targetParams, userId1, error } = setup();
+
+				await expect(filesStorageUC.copyFilesOfParent(userId1, sourceParams, targetParams)).rejects.toThrow(error);
+			});
+		});
 	});
 
 	describe('copyOneFile()', () => {
