@@ -55,14 +55,14 @@ export class LtiTool extends BaseEntityWithTimestamps {
 
 	@Enum({ array: true, items: () => LtiRoleType })
 	@Property({ nullable: false })
-	roles: LtiRoleType[] = [];
+	roles: LtiRoleType[];
 
 	@Enum({
 		items: () => LtiPrivacyPermission,
 		default: LtiPrivacyPermission.ANONYMOUS,
 		nullable: false,
 	})
-	privacy_permission: LtiPrivacyPermission = LtiPrivacyPermission.ANONYMOUS;
+	privacy_permission: LtiPrivacyPermission;
 
 	@Property({ nullable: false })
 	customs: CustomLtiProperty[] = [];
@@ -111,8 +111,8 @@ export class LtiTool extends BaseEntityWithTimestamps {
 		this.lti_version = props.lti_version;
 		this.resource_link_id = props.resource_link_id;
 		this.roles = props.roles;
-		this.privacy_permission = props.privacy_permission;
-		this.customs = props.customs;
+		this.privacy_permission = props.privacy_permission || LtiPrivacyPermission.ANONYMOUS;
+		this.customs = props.customs || [];
 		this.isTemplate = props.isTemplate;
 		this.isLocal = props.isLocal;
 		if (props.originToolId !== undefined) {

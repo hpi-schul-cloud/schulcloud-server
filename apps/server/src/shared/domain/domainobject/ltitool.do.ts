@@ -18,9 +18,9 @@ export class LtiToolDO extends BaseWithTimestampsDO {
 
 	url: string;
 
-	key = 'none';
+	key: string;
 
-	secret = 'none';
+	secret: string;
 
 	logo_url?: string;
 
@@ -30,13 +30,13 @@ export class LtiToolDO extends BaseWithTimestampsDO {
 
 	resource_link_id?: string;
 
-	roles: LtiRoleType[] = [];
+	roles: LtiRoleType[];
 
-	privacy_permission: LtiPrivacyPermission = LtiPrivacyPermission.ANONYMOUS;
+	privacy_permission: LtiPrivacyPermission;
 
 	customs: CustomLtiProperty[];
 
-	isTemplate = false;
+	isTemplate: boolean;
 
 	isLocal?: boolean;
 
@@ -48,11 +48,11 @@ export class LtiToolDO extends BaseWithTimestampsDO {
 
 	skipConsent?: boolean;
 
-	openNewTab = false;
+	openNewTab: boolean;
 
 	frontchannel_logout_uri?: string;
 
-	isHidden = false;
+	isHidden: boolean;
 
 	constructor(props: LtiToolDO) {
 		super(props);
