@@ -272,8 +272,6 @@ describe('file copy append service', () => {
 					],
 				};
 
-				const jwt = 'veryveryverylongstringthatissignedandstuff';
-
 				return {
 					user,
 					copyStatus,
@@ -284,14 +282,13 @@ describe('file copy append service', () => {
 					originalTask,
 					copyTask,
 					originalFile,
-					jwt,
 				};
 			};
 
 			it('should copy files of sub-elements', async () => {
-				const { originalCourse, copyStatus, user, jwt, originalFile } = setup();
+				const { originalCourse, copyStatus, user, originalFile } = setup();
 
-				await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+				await copyService.copyFiles(copyStatus, originalCourse.id, user.id);
 				expect(fileLegacyService.copyFile).toHaveBeenCalledWith({
 					fileId: originalFile.id,
 					targetCourseId: originalCourse.id,
