@@ -272,7 +272,8 @@ const restrictToUsersSchool = async (context) => {
 	const userService = context.app.service('users');
 	const { schoolId: usersSchoolId } = await userService.get(context.params.account.userId);
 
-	const targetAccount = await context.app.service('accountModel').get(context.id);
+	// const targetAccount = await context.app.service('accountModel').get(context.id);
+	const targetAccount = await context.app.service('nest-account-service').findById(context.id);
 	const { schoolId: targetSchoolId } = await userService.get(targetAccount.userId);
 	if (!equalIds(usersSchoolId, targetSchoolId)) {
 		throw new NotFound('this account doesnt exist');
