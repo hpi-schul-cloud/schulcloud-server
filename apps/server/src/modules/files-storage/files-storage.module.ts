@@ -3,23 +3,16 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { HttpModule } from '@nestjs/axios';
-import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
+import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
+import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { FileRecordRepo } from '@shared/repo';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
-import { CoreModule } from '@src/core';
-import { Logger } from '@src/core/logger';
-import { AuthModule } from '@src/modules/authentication/auth.module';
+import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { S3ClientAdapter } from './client/s3-client.adapter';
-import { FileSecurityController } from './controller/file-security.controller';
-import { FilesStorageConsumer } from './controller/files-storage.consumer';
-import { FilesStorageController } from './controller/files-storage.controller';
 import fileStorageConfig from './files-storage.config';
 import { FilesStorageHelper } from './helper';
 import { S3Config } from './interface/config';
@@ -39,14 +32,13 @@ export const config: S3Config = {
 };
 
 const imports = [
+	AuthorizationModule, //After refactoring, move to FilesStorageApiModule AuthorizationModule,
+	LoggerModule,
 	ConfigModule.forRoot({
 		isGlobal: true,
 		load: [fileStorageConfig],
 	}),
 	HttpModule,
-	AuthorizationModule,
-	AuthModule,
-	CoreModule,
 	AntivirusModule.forRoot({
 		enabled: Configuration.get('ENABLE_FILE_SECURITY_CHECK') as boolean,
 		filesServiceBaseUrl: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
@@ -55,9 +47,8 @@ const imports = [
 	}),
 ];
 const providers = [
-	FilesStorageUC,
+	FilesStorageUC, // After refactoring, move to FilesStorageApiModule  FilesStorageUC, FileRecordUC
 	FileRecordUC,
-	FilesStorageConsumer,
 	FilesStorageService,
 	FilesStorageHelper,
 	{
@@ -82,10 +73,7 @@ const providers = [
 	},
 	S3ClientAdapter,
 	FileRecordRepo,
-	Logger,
 ];
-
-const controllers = [FilesStorageController, FileSecurityController];
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
@@ -110,21 +98,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			// debug: true, // use it for locally debugging of querys
 		}),
 	],
-	controllers,
 	providers,
+	exports: [FilesStorageService, FilesStorageUC, FileRecordUC], // After refactoring, remove  FilesStorageUC, FileRecordUC
 })
 export class FilesStorageModule {}
-
-@Module({
-	imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }), RabbitMQWrapperTestModule],
-	controllers,
-	providers,
-})
-export class FilesStorageTestModule {
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
-		return {
-			module: FilesStorageTestModule,
-			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
-		};
-	}
-}

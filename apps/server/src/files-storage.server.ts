@@ -8,8 +8,8 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { FilesStorageApiModule } from '@src/modules/files-storage/files-storage-api.module';
 import { API_VERSION_PATH } from '@src/modules/files-storage/files-storage.const';
-import { FilesStorageModule } from '@src/modules/files-storage/files-storage.module';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
 async function bootstrap() {
@@ -19,7 +19,7 @@ async function bootstrap() {
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(FilesStorageModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create(FilesStorageApiModule, nestExpressAdapter);
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
