@@ -37,7 +37,7 @@ export class CourseCopyService {
 	}: {
 		userId: EntityId;
 		courseId: EntityId;
-		newName: string;
+		newName?: string;
 		jwt: string;
 	}): Promise<CopyStatus> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -51,9 +51,9 @@ export class CourseCopyService {
 		const [existingCourses] = await this.courseRepo.findAllByUserId(userId);
 		const existingNames = existingCourses.map((course: Course) => course.name);
 
-		const copyName = this.copyHelperService.deriveCopyName(newName, existingNames);
+		const copyName = this.copyHelperService.deriveCopyName(newName ?? originalCourse.name, existingNames);
 
-		const statusCourse = this.copyCourseInternal(user, originalCourse, copyName);
+		const statusCourse = this.copyCourseEntity(user, originalCourse, copyName);
 		const courseCopy = statusCourse.copyEntity as Course;
 		await this.courseRepo.save(courseCopy);
 
@@ -75,7 +75,7 @@ export class CourseCopyService {
 		return statusCourse;
 	}
 
-	private copyCourseInternal(user: User, originalCourse: Course, copyName?: string | undefined): CopyStatus {
+	private copyCourseEntity(user: User, originalCourse: Course, copyName?: string | undefined): CopyStatus {
 		const copy = new Course({
 			school: user.school,
 			name: copyName ?? originalCourse.name,

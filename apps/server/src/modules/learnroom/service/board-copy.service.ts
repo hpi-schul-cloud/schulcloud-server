@@ -1,5 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { Board, BoardElement, BoardElementType, CopyElementType, CopyHelperService, CopyStatus, Course, Lesson, Task, TaskCopyService, User } from '@shared/domain';
+import {
+	Board,
+	BoardElement,
+	BoardElementType,
+	CopyElementType,
+	CopyHelperService,
+	CopyStatus,
+	Course,
+	Lesson,
+	Task,
+	TaskCopyService,
+	User,
+} from '@shared/domain';
 import { LessonCopyService } from './lesson-copy.service';
 
 export type BoardCopyParams = {

@@ -8,6 +8,7 @@ import {
 	ShareTokenContext,
 	ShareTokenContextType,
 	ShareTokenDO,
+	ShareTokenParentType,
 	ShareTokenPayload,
 } from '@shared/domain';
 import { Logger } from '@src/core/logger';
@@ -75,24 +76,16 @@ export class ShareTokenUC {
 	}
 
 	async importShareToken(userId: EntityId, token: string, newName: string, jwt: string): Promise<CopyStatus> {
-		// this.checkFeatureEnabled();
+		// WIP this.checkFeatureEnabled();
 
-		// 1. lookup token
 		const shareToken = await this.shareTokenService.lookupToken(token);
 
-		// 2. authorization
-		// - token context permitted?
 		if (shareToken.context) {
 			await this.checkContextReadPermission(userId, shareToken.context);
 		}
 
-		// - permitted to create copy? (COURSE_CREATE)
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		// make independent of parent type?
-		this.authorizationService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
+		await this.checkCreatePermission(userId, shareToken.payload.parentType);
 
-		// 3. learnroom module service => ask to copy
-		// - courseCopyService.copyCourse(user, course, newName);
 		const result = await this.courseCopyService.copyCourse({
 			userId,
 			courseId: shareToken.payload.parentId,
@@ -100,8 +93,6 @@ export class ShareTokenUC {
 			jwt,
 		});
 
-		//
-		// 4. return copy result
 		return result;
 	}
 
@@ -121,6 +112,15 @@ export class ShareTokenUC {
 		});
 	}
 
+	private async checkCreatePermission(userId: EntityId, parentType: ShareTokenParentType) {
+		// checks if parent type is supported
+		ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(parentType);
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		this.authorizationService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
+	}
+
 	private nowPlusDays(days: number) {
 		const date = new Date();
 		date.setDate(date.getDate() + days);
@@ -128,7 +128,7 @@ export class ShareTokenUC {
 	}
 
 	private checkFeatureEnabled() {
-		const enabled = Configuration.get('FEATURE_COURSE_IMPORT_ENABLED') as boolean;
+		const enabled = Configuration.get('FEATURE_COURSE_IMPORT') as boolean;
 		if (!enabled) {
 			throw new InternalServerErrorException('Import Feature not enabled');
 		}

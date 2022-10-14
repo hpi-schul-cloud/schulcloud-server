@@ -8,7 +8,13 @@ import { CopyMapper } from '@src/modules/learnroom/mapper/copy.mapper';
 import serverConfig from '@src/server.config';
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';
 import { ShareTokenUC } from '../uc';
-import { ShareTokenBodyParams, ShareTokenInfoResponse, ShareTokenResponse, ShareTokenUrlParams } from './dto';
+import {
+	ShareTokenBodyParams,
+	ShareTokenImportBodyParams,
+	ShareTokenInfoResponse,
+	ShareTokenResponse,
+	ShareTokenUrlParams,
+} from './dto';
 
 @ApiTags('ShareToken')
 @Authenticate('jwt')
@@ -55,7 +61,7 @@ export class ShareTokenController {
 	async importShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: ShareTokenUrlParams,
-		@Body() body: { newName: string },
+		@Body() body: ShareTokenImportBodyParams,
 		@JWT() jwt: string
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.shareTokenUC.importShareToken(currentUser.userId, urlParams.token, body.newName, jwt);
