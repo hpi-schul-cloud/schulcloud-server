@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { ICoreModuleConfig } from '@src/core';
+import { AvailableLogLevel } from '@src/core/logger';
 import type { IAccountConfig, IFilesStorageClientConfig, IUserConfig } from '@src/modules/';
-import { AvailableLogLevel } from './core/logger';
 
 export enum NodeEnvType {
 	TEST = 'test',

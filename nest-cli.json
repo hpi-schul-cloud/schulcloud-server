@@ -15,15 +15,13 @@
 				}
 			}
 		],
-		"assets": [
-			"static-assets/*"
-		]
+		"assets": ["static-assets/*"]
 	},
 	"projects": {
 		"server": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "main",
+			"entryFile": "api.server",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
@@ -51,6 +49,15 @@
 			"type": "application",
 			"root": "apps/server",
 			"entryFile": "files-storage.server",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"files-storage-amqp": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "files-storage.amqp",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"

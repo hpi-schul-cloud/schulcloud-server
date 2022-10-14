@@ -7,7 +7,7 @@ import { EncryptionModule } from '@shared/infra/encryption';
 import { FileSystemModule } from '@shared/infra/file-system';
 import { KeycloakControllerModule } from '@shared/infra/identity-management/keycloak/controller/keycloak.controller.module';
 import { LoggerModule } from '@src/core/logger';
-import serverConfig from '@src/server.config';
+import serverConfig from '@src/modules/server/server.config';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';

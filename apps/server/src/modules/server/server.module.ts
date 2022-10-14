@@ -29,10 +29,10 @@ import {
 	TaskModule,
 	VideoConferenceModule,
 } from '@src/modules';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
+import { SharingModule } from '@src/modules/sharing/sharing.module';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from './../../config';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
-import { SharingModule } from './modules/sharing/sharing.module';
 
 const serverModules = [
 	ConfigModule.forRoot({

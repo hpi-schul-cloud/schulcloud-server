@@ -12,13 +12,13 @@ import { MikroORM } from '@mikro-orm/core';
 import { Logger } from '@nestjs/common';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
+import { AccountUc } from '@src/modules/account/uc/account.uc';
+import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
 import { RocketChatService } from '@src/modules/rocketchat';
+import { ServerModule } from '@src/modules/server/server.module';
 import { join } from 'path';
-import { AccountService } from './modules/account/services/account.service';
-import { AccountValidationService } from './modules/account/services/account.validation.service';
-import { AccountUc } from './modules/account/uc/account.uc';
-import { CollaborativeStorageUc } from './modules/collaborative-storage/uc/collaborative-storage.uc';
-import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
 
 async function bootstrap() {
@@ -89,7 +89,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
-	const port = 3030;
+	const port = 3031;
 	rootExpress.listen(port);
 
 	console.log('#################################');
