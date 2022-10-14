@@ -1137,4 +1137,162 @@ describe('FilesStorageService', () => {
 			});
 		});
 	});
+
+	describe('copy is called', () => {
+		describe('WHEN source files scan status is BLOCKED', () => {
+			const setup = () => {
+				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const fileRecord = fileRecords[0];
+				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
+
+				return { fileRecord, userId, params };
+			};
+
+			it('should return empty array', async () => {
+				const { fileRecord, params, userId } = setup();
+
+				const result = await service.copy(userId, [fileRecord], params);
+
+				expect(result.length).toBe(0);
+			});
+		});
+
+		describe('WHEN source file is marked for delete', () => {
+			const setup = () => {
+				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const fileRecord = fileRecords[0];
+				fileRecord.deletedSince = new Date();
+
+				return { fileRecord, userId, params };
+			};
+
+			it('should return empty array', async () => {
+				const { fileRecord, params, userId } = setup();
+
+				const result = await service.copy(userId, [fileRecord], params);
+
+				expect(result.length).toBe(0);
+			});
+		});
+
+		describe('WHEN file records and files copied successfully', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				const targetFile = fileRecords[1];
+
+				spy = jest.spyOn(service, 'copyFileRecord').mockResolvedValueOnce(targetFile);
+
+				const fileResponse = new CopyFileResponse({
+					id: targetFile.id,
+					sourceId: sourceFile.id,
+					name: targetFile.name,
+				});
+				spy = jest.spyOn(service, 'tryCopyFiles').mockResolvedValueOnce(fileResponse);
+
+				return { sourceFile, targetFile, userId, params, fileResponse };
+			};
+
+			it('should call copyFileRecord with correct params', async () => {
+				const { sourceFile, params, userId } = setup();
+
+				await service.copy(userId, [sourceFile], params);
+
+				expect(service.copyFileRecord).toHaveBeenCalledWith(sourceFile, params, userId);
+			});
+
+			it('should call tryCopyFiles with correct params', async () => {
+				const { sourceFile, targetFile, params, userId } = setup();
+
+				await service.copy(userId, [sourceFile], params);
+
+				expect(service.tryCopyFiles).toHaveBeenCalledWith(sourceFile, targetFile);
+			});
+
+			it('should return file response array', async () => {
+				const { sourceFile, params, userId, fileResponse } = setup();
+
+				const result = await service.copy(userId, [sourceFile], params);
+
+				expect(result).toEqual([fileResponse]);
+			});
+		});
+
+		describe('WHEN one copy file record throws error', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				const targetFile = fileRecords[1];
+				const error = new Error('test');
+
+				spy = jest.spyOn(service, 'copyFileRecord');
+				spy.mockRejectedValueOnce(error).mockResolvedValueOnce(targetFile);
+
+				const fileResponse = new CopyFileResponse({
+					id: targetFile.id,
+					sourceId: sourceFile.id,
+					name: targetFile.name,
+				});
+				spy = jest.spyOn(service, 'tryCopyFiles').mockResolvedValue(fileResponse);
+
+				return { sourceFile, targetFile, userId, params, fileResponse };
+			};
+
+			it('should return one file response', async () => {
+				const { sourceFile, params, userId, fileResponse } = setup();
+
+				const result = await service.copy(userId, [sourceFile, sourceFile], params);
+
+				expect(result).toEqual([fileResponse]);
+			});
+		});
+
+		describe('WHEN one copy files throws error', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				const targetFile = fileRecords[1];
+				const error = new Error('test');
+
+				spy = jest.spyOn(service, 'copyFileRecord');
+				spy.mockResolvedValue(targetFile);
+
+				const fileResponse = new CopyFileResponse({
+					id: targetFile.id,
+					sourceId: sourceFile.id,
+					name: targetFile.name,
+				});
+				spy = jest.spyOn(service, 'tryCopyFiles');
+				spy.mockRejectedValueOnce(error).mockResolvedValue(fileResponse);
+
+				return { sourceFile, targetFile, userId, params, fileResponse };
+			};
+
+			it('should return one file response', async () => {
+				const { sourceFile, params, userId, fileResponse } = setup();
+
+				const result = await service.copy(userId, [sourceFile, sourceFile], params);
+
+				expect(result).toEqual([fileResponse]);
+			});
+		});
+	});
 });
