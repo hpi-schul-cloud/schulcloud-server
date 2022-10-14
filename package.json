@@ -56,7 +56,7 @@
 		"nest:start": "nest start server",
 		"nest:start:dev": "nest start server --watch",
 		"nest:start:debug": "nest start server --debug --watch",
-		"nest:start:prod": "node dist/apps/server/main",
+		"nest:start:prod": "node dist/apps/server/api.server",
 		"nest:start:management": "nest start management",
 		"nest:start:management:dev": "nest start management --watch",
 		"nest:start:management:debug": "nest start management --debug --watch",
