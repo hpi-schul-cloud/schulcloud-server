@@ -111,6 +111,18 @@ describe('FilesStorageUC', () => {
 		return { userId1, schoolId1, requestParams1 };
 	};
 
+	const getTargetParams = () => {
+		const targetParentId: EntityId = new ObjectId().toHexString();
+
+		return {
+			target: {
+				schoolId,
+				parentId: targetParentId,
+				parentType: FileRecordParentType.Task,
+			},
+		};
+	};
+
 	beforeAll(async () => {
 		orm = await setupEntities();
 		fileDownloadParams = { fileRecordId: schoolId, fileName: 'text.txt' };
@@ -938,18 +950,6 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('copyFilesOfParent()', () => {
-		const getTargetParams = () => {
-			const targetParentId: EntityId = new ObjectId().toHexString();
-
-			return {
-				target: {
-					schoolId,
-					parentId: targetParentId,
-					parentType: FileRecordParentType.Task,
-				},
-			};
-		};
-
 		describe('WHEN user has all permissions', () => {
 			const setup = () => {
 				const { requestParams1: sourceParams, userId1 } = getParams();
@@ -1004,6 +1004,7 @@ describe('FilesStorageUC', () => {
 				const { sourceParams, targetParams, userId1, error } = setup();
 
 				await expect(filesStorageUC.copyFilesOfParent(userId1, sourceParams, targetParams)).rejects.toThrow(error);
+				expect(filesStorageService.copyFilesOfParent).toHaveBeenCalledTimes(0);
 			});
 		});
 
@@ -1022,6 +1023,7 @@ describe('FilesStorageUC', () => {
 				const { sourceParams, targetParams, userId1, error } = setup();
 
 				await expect(filesStorageUC.copyFilesOfParent(userId1, sourceParams, targetParams)).rejects.toThrow(error);
+				expect(filesStorageService.copyFilesOfParent).toHaveBeenCalledTimes(0);
 			});
 		});
 
@@ -1040,6 +1042,7 @@ describe('FilesStorageUC', () => {
 				const { sourceParams, targetParams, userId1, error } = setup();
 
 				await expect(filesStorageUC.copyFilesOfParent(userId1, sourceParams, targetParams)).rejects.toThrow(error);
+				expect(filesStorageService.copyFilesOfParent).toHaveBeenCalledTimes(0);
 			});
 		});
 
@@ -1081,169 +1084,208 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('copyOneFile()', () => {
-		let requestParams: SingleFileParams;
-		let copyFileParams: CopyFileParams;
-		const targetParentId: EntityId = new ObjectId().toHexString();
+		const getParamsForCopyOneFile = () => {
+			const { userId1, fileRecords1 } = getFileRecordsWithParams();
+			const targetParams = getTargetParams();
+			const fileRecord1 = fileRecords1[0];
 
-		beforeEach(() => {
-			requestParams = {
-				fileRecordId: new ObjectId().toHexString(),
+			const fileRecordId: EntityId = new ObjectId().toHexString();
+			const singleFileParams = {
+				fileRecordId,
 			};
-			copyFileParams = {
-				target: {
-					schoolId,
-					parentId: targetParentId,
-					parentType: FileRecordParentType.Task,
-				},
-				fileNamePrefix: 'copy from',
+			const copyFileParams = { ...targetParams, fileNamePrefix: 'copy from' };
+
+			return { singleFileParams, copyFileParams, userId1, fileRecord1 };
+		};
+
+		describe('WHEN user has all permissions', () => {
+			const setup = () => {
+				const { singleFileParams, copyFileParams, userId1, fileRecord1 } = getParamsForCopyOneFile();
+
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord1);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
+
+				return { singleFileParams, copyFileParams, userId1, fileRecord1 };
 			};
-			fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
-			storageClient.copy.mockResolvedValue([]);
-		});
 
-		describe('calls to fileRecordRepo.findOneById()', () => {
-			it('should call once', async () => {
-				await filesStorageUC.copyOneFile(userId, requestParams, copyFileParams);
-				expect(fileRecordRepo.findOneById).toHaveBeenCalledTimes(1);
-			});
+			it('should call authorizationService.checkPermissionByReferences with file record params', async () => {
+				const { copyFileParams, singleFileParams, userId1, fileRecord1 } = setup();
 
-			it('should call with correctly params', async () => {
-				await filesStorageUC.copyOneFile(userId, requestParams, copyFileParams);
-				expect(fileRecordRepo.findOneById).toHaveBeenCalledWith(requestParams.fileRecordId);
-			});
+				await filesStorageUC.copyOneFile(userId1, singleFileParams, copyFileParams);
 
-			it('should throw error if entity not found', async () => {
-				fileRecordRepo.findOneById.mockRejectedValue(new Error());
-				await expect(filesStorageUC.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
-			});
-
-			it('should return file response with id', async () => {
-				const fileRecordRes = await filesStorageUC.copyOneFile(userId, requestParams, copyFileParams);
-				expect(fileRecordRes).toEqual(expect.objectContaining({ id: expect.any(String) as string }));
-			});
-
-			it('should call fileRecordRepo.delete if call storageClient.copy throw an error', async () => {
-				storageClient.copy.mockRejectedValue(new Error());
-				await expect(filesStorageUC.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
-
-				expect(fileRecordRepo.delete).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('calls to fileRecordRepo.save()', () => {
-			it('should call with correctly params', async () => {
-				await filesStorageUC.copyOneFile(userId, requestParams, copyFileParams);
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(
-					expect.objectContaining({ parentType: FileRecordParentType.Task })
-				);
-			});
-
-			it('should throw error if entity not saved', async () => {
-				fileRecordRepo.save.mockRejectedValue(new Error());
-				await expect(filesStorageUC.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
-			});
-
-			it('should call fileRecordRepo.delete if call storageClient.copy throw an error', async () => {
-				storageClient.copy.mockRejectedValue(new Error());
-				await expect(filesStorageUC.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
-
-				expect(fileRecordRepo.save).toHaveBeenCalledTimes(1);
-				expect(fileRecordRepo.delete).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('copy with securityCheck and deletedSince', () => {
-			it('should not call fileRecordRepo.save if file has ScanStatus.BLOCKED', async () => {
-				fileRecord = fileRecordFactory.build({ parentId: userId, schoolId });
-				fileRecord.updateSecurityCheckStatus(ScanStatus.BLOCKED, 'virus');
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
-
-				await filesStorageUC.copyOneFile(userId, requestParams, copyFileParams);
-				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
-			});
-
-			it('should not call fileRecordRepo.save if set deletedSince', async () => {
-				fileRecord = fileRecordFactory.build({ parentId: userId, schoolId, deletedSince: new Date() });
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
-				await filesStorageUC.copyOneFile(userId, requestParams, copyFileParams);
-
-				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
-			});
-
-			it('should call fileRecordRepo.save for entity if file has ScanStatus.VERIFIED', async () => {
-				fileRecord = fileRecordFactory.build({ parentId: userId, schoolId });
-				fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, '');
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
-				await filesStorageUC.copyOneFile(userId, requestParams, copyFileParams);
-				expect(fileRecordRepo.save).toHaveBeenCalledTimes(1);
-			});
-
-			it('should call fileRecordRepo.save for entity if file has ScanStatus.PENDING', async () => {
-				fileRecord = fileRecordFactory.build({ parentId: userId, schoolId });
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
-				await filesStorageUC.copyOneFile(userId, requestParams, copyFileParams);
-				expect(fileRecordRepo.save).toHaveBeenCalledTimes(1);
-			});
-
-			it('should call storageClient.copy', async () => {
-				fileRecord = fileRecordFactory.build({ parentId: userId, schoolId });
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
-				await filesStorageUC.copyOneFile(userId, requestParams, copyFileParams);
-
-				expect(storageClient.copy).toHaveBeenCalledWith([
-					{
-						sourcePath: expect.any(String) as string,
-						targetPath: expect.any(String) as string,
-					},
-				]);
-			});
-
-			it('should call antivirusService.send for on entity if file has ScanStatus.PENDING', async () => {
-				fileRecord = fileRecordFactory.build({ parentId: userId, schoolId });
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
-				await filesStorageUC.copyOneFile(userId, requestParams, copyFileParams);
-
-				expect(antivirusService.send).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('Tests of permission handling', () => {
-			it('should call authorizationService.checkPermissionByReferences', async () => {
-				authorizationService.checkPermissionByReferences.mockResolvedValue();
-				await filesStorageUC.copyOneFile(userId, requestParams, copyFileParams);
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
-					userId,
-					fileRecord.parentType,
-					fileRecord.parentId,
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenNthCalledWith(
+					1,
+					userId1,
+					fileRecord1.parentType,
+					fileRecord1.parentId,
 					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
-			it('should call authorizationService.checkPermissionByReferences by copyFileParams', async () => {
-				authorizationService.checkPermissionByReferences.mockResolvedValue();
-				await filesStorageUC.copyOneFile(userId, requestParams, copyFileParams);
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
-					userId,
+			it('should call authorizationService.checkPermissionByReferences with copyFilesParams', async () => {
+				const { copyFileParams, singleFileParams, userId1 } = setup();
+
+				await filesStorageUC.copyOneFile(userId1, singleFileParams, copyFileParams);
+
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenNthCalledWith(
+					2,
+					userId1,
 					copyFileParams.target.parentType,
 					copyFileParams.target.parentId,
 					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
+		});
 
-			it('should throw Error if first check true', async () => {
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
-				await expect(filesStorageUC.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
-			});
-			it('should throw Error if second check true', async () => {
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
-				await expect(filesStorageUC.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
-			});
+		describe('WHEN user has no permission for source file', () => {
+			const setup = () => {
+				const { singleFileParams, copyFileParams, userId1, fileRecord1 } = getParamsForCopyOneFile();
+
+				const error = new ForbiddenException();
+
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord1);
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error).mockResolvedValueOnce();
+
+				return { singleFileParams, copyFileParams, userId1, fileRecord1, error };
+			};
+
 			it('should throw Error', async () => {
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
-				await expect(filesStorageUC.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
+				const { copyFileParams, singleFileParams, userId1, error } = setup();
+
+				await expect(filesStorageUC.copyOneFile(userId1, singleFileParams, copyFileParams)).rejects.toThrow(error);
+				expect(filesStorageService.copy).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('WHEN user has no permission for target file', () => {
+			const setup = () => {
+				const { singleFileParams, copyFileParams, userId1, fileRecord1 } = getParamsForCopyOneFile();
+
+				const error = new ForbiddenException();
+
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord1);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockRejectedValueOnce(error);
+
+				return { singleFileParams, copyFileParams, userId1, fileRecord1, error };
+			};
+
+			it('should throw Error', async () => {
+				const { copyFileParams, singleFileParams, userId1, error } = setup();
+
+				await expect(filesStorageUC.copyOneFile(userId1, singleFileParams, copyFileParams)).rejects.toThrow(error);
+				expect(filesStorageService.copy).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('WHEN user has no permission at all', () => {
+			const setup = () => {
+				const { singleFileParams, copyFileParams, userId1, fileRecord1 } = getParamsForCopyOneFile();
+
+				const error = new ForbiddenException();
+
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord1);
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error).mockRejectedValueOnce(error);
+
+				return { singleFileParams, copyFileParams, userId1, fileRecord1, error };
+			};
+
+			it('should throw Error', async () => {
+				const { copyFileParams, singleFileParams, userId1, error } = setup();
+
+				await expect(filesStorageUC.copyOneFile(userId1, singleFileParams, copyFileParams)).rejects.toThrow(error);
+				expect(filesStorageService.copy).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('WHEN source file is successfully found', () => {
+			const setup = () => {
+				const { singleFileParams, copyFileParams, userId1, fileRecord1 } = getParamsForCopyOneFile();
+
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord1);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
+
+				return { singleFileParams, copyFileParams, userId1 };
+			};
+
+			it('should call findOneById with correct params', async () => {
+				const { copyFileParams, singleFileParams, userId1 } = setup();
+
+				await filesStorageUC.copyOneFile(userId1, singleFileParams, copyFileParams);
+
+				expect(fileRecordRepo.findOneById).toHaveBeenCalledWith(singleFileParams.fileRecordId);
+			});
+		});
+
+		describe('WHEN find source file throws error', () => {
+			const setup = () => {
+				const { singleFileParams, copyFileParams, userId1, fileRecord1 } = getParamsForCopyOneFile();
+				const error = new Error('test');
+
+				fileRecordRepo.findOneById.mockRejectedValueOnce(error);
+
+				return { singleFileParams, copyFileParams, userId1, fileRecord1, error };
+			};
+
+			it('should call authorizationService.checkPermissionByReferences with file record params', async () => {
+				const { copyFileParams, singleFileParams, userId1, error } = setup();
+
+				await expect(filesStorageUC.copyOneFile(userId1, singleFileParams, copyFileParams)).rejects.toThrow(error);
+
+				expect(filesStorageService.copy).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('WHEN service copies files successfully', () => {
+			const setup = () => {
+				const { singleFileParams, copyFileParams, userId1, fileRecord1 } = getParamsForCopyOneFile();
+
+				const fileResponse = new CopyFileResponse({
+					id: fileRecord1.id,
+					sourceId: singleFileParams.fileRecordId,
+					name: fileRecord1.name,
+				});
+
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord1);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
+				filesStorageService.copy.mockResolvedValueOnce([fileResponse]);
+
+				return { singleFileParams, copyFileParams, userId1, fileResponse, fileRecord1 };
+			};
+
+			it('should call service with correct params', async () => {
+				const { copyFileParams, singleFileParams, userId1, fileRecord1 } = setup();
+
+				await filesStorageUC.copyOneFile(userId1, singleFileParams, copyFileParams);
+
+				expect(filesStorageService.copy).toHaveBeenCalledWith(userId1, [fileRecord1], copyFileParams.target);
+			});
+
+			it('should return copied files responses', async () => {
+				const { copyFileParams, singleFileParams, userId1, fileResponse } = setup();
+
+				const result = await filesStorageUC.copyOneFile(userId1, singleFileParams, copyFileParams);
+
+				expect(result).toEqual(fileResponse);
+			});
+		});
+
+		describe('WHEN service throws error', () => {
+			const setup = () => {
+				const { singleFileParams, copyFileParams, userId1, fileRecord1 } = getParamsForCopyOneFile();
+
+				const error = new Error('test');
+
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord1);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
+				filesStorageService.copy.mockRejectedValueOnce(error);
+
+				return { singleFileParams, copyFileParams, userId1, fileRecord1, error };
+			};
+
+			it('should pass error', async () => {
+				const { copyFileParams, singleFileParams, userId1, error } = setup();
+
+				await expect(filesStorageUC.copyOneFile(userId1, singleFileParams, copyFileParams)).rejects.toThrow(error);
 			});
 		});
 	});
