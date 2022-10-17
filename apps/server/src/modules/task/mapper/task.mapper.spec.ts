@@ -83,12 +83,13 @@ describe('task.mapper', () => {
 				courseId: new ObjectId().toHexString(),
 			};
 			const result = TaskMapper.mapUpdateTaskToDomain(params);
+
 			const expected: ITaskUpdate = {
 				name: params.name,
 				courseId: params.courseId,
 				lessonId: params.lessonId,
 			};
 			expect(result).toStrictEqual(expected);
-		})
+		});
 	});
 });

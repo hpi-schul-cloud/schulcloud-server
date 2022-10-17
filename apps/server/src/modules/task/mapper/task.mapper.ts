@@ -28,7 +28,7 @@ export class TaskMapper {
 	}
 
 	static mapUpdateTaskToDomain(params: TaskUpdateParams): ITaskUpdate {
-		const dto = {
+		const dto: ITaskUpdate = {
 			name: params.name,
 			courseId: params.courseId,
 			lessonId: params.lessonId,
