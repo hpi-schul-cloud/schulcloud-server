@@ -5,9 +5,6 @@ import { ApiProperty } from '@nestjs/swagger';
 // TODO open api doc
 export class LtiToolBody {
 	@ApiProperty()
-	id?: string;
-
-	@ApiProperty()
 	name: string;
 
 	@ApiProperty()
@@ -68,7 +65,6 @@ export class LtiToolBody {
 	isHidden: boolean;
 
 	constructor(props: LtiToolBody) {
-		this.id = props.id;
 		this.secret = props.secret;
 		this.name = props.name;
 		this.url = props.url;

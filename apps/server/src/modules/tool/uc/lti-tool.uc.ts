@@ -30,11 +30,14 @@ export class LtiToolUc {
 		return savedTool;
 	}
 
-	async updateLtiTool(currentUser: ICurrentUser, tool: Partial<LtiToolDO>): Promise<LtiToolDO> {
+	async updateLtiTool(currentUser: ICurrentUser, toolId: string, tool: Partial<LtiToolDO>): Promise<LtiToolDO> {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_EDIT]);
 
-		throw new NotImplementedException();
+		const toolFromDb: LtiToolDO = await this.ltiToolRepo.findById(toolId);
+		const updatedTool: LtiToolDO = Object.assign(toolFromDb, tool);
+
+		return updatedTool;
 	}
 
 	async deleteLtiTool(currentUser: ICurrentUser, toolId: string): Promise<void> {

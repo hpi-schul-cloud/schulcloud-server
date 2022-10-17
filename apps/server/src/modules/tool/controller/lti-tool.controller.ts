@@ -47,7 +47,7 @@ export class LtiToolController {
 		@Body() body: LtiToolBody
 	): Promise<LtiToolResponse> {
 		const ltiToolDO = this.ltiToolMapper.mapLtiToolBodyToDO(body);
-		const updatedLtiTool: LtiToolDO = await this.ltiToolUc.updateLtiTool(currentUser, ltiToolDO);
+		const updatedLtiTool: LtiToolDO = await this.ltiToolUc.updateLtiTool(currentUser, params.toolId, ltiToolDO);
 		const mapped: LtiToolResponse = this.ltiToolResponseMapper.mapDoToResponse(updatedLtiTool);
 		return mapped;
 	}

@@ -85,9 +85,7 @@ describe('LtiToolController', () => {
 	}
 
 	describe('findLtiTool', () => {
-		it('should call the ltiToolUc', async () => {
-			const { currentUser } = setup();
-		});
+		it('should call the ltiToolUc', async () => {});
 
 		it('should call the ltiToolResponseMapper', async () => {});
 
@@ -163,7 +161,43 @@ describe('LtiToolController', () => {
 	});
 
 	describe('updateLtiTool', () => {
-		it('', async () => {});
+		it('should call the ltiToolMapper', async () => {
+			const { currentUser, toolIdParams, ltiToolBody } = setup();
+
+			await controller.updateLtiTool(currentUser, toolIdParams, ltiToolBody);
+
+			expect(ltiToolMapper.mapLtiToolBodyToDO).toHaveBeenCalledWith(ltiToolBody);
+		});
+
+		it('should call the ltiToolUc', async () => {
+			const { currentUser, toolIdParams, ltiToolBody, ltiToolDO } = setup();
+			ltiToolMapper.mapLtiToolBodyToDO.mockReturnValue(ltiToolDO);
+
+			await controller.updateLtiTool(currentUser, toolIdParams, ltiToolBody);
+
+			expect(ltiToolUc.updateLtiTool).toHaveBeenCalledWith(currentUser, ltiToolDO);
+		});
+
+		it('should call the ltiToolResponseMapper', async () => {
+			const { currentUser, toolIdParams, ltiToolBody, ltiToolDO } = setup();
+			ltiToolMapper.mapLtiToolBodyToDO.mockReturnValue(ltiToolDO);
+			ltiToolUc.updateLtiTool.mockResolvedValue(ltiToolDO);
+
+			await controller.updateLtiTool(currentUser, toolIdParams, ltiToolBody);
+
+			expect(ltiToolResponseMapper.mapDoToResponse).toHaveBeenCalledWith(ltiToolDO);
+		});
+
+		it('should return a ltiToolReponse', async () => {
+			const { currentUser, toolIdParams, ltiToolBody, ltiToolDO, ltiToolResponse } = setup();
+			ltiToolMapper.mapLtiToolBodyToDO.mockReturnValue(ltiToolDO);
+			ltiToolUc.updateLtiTool.mockResolvedValue(ltiToolDO);
+			ltiToolResponseMapper.mapDoToResponse.mockReturnValue(ltiToolResponse);
+
+			const response: LtiToolResponse = await controller.updateLtiTool(currentUser, toolIdParams, ltiToolBody);
+
+			expect(response).toBeDefined();
+		});
 	});
 
 	describe('deleteLtiTool', () => {
