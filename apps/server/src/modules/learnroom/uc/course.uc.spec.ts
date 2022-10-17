@@ -1,17 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, SortOrder } from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
+import { Course, Lesson, SortOrder } from '@shared/domain';
+import { CourseRepo, LessonRepo } from '@shared/repo';
 import { courseFactory, setupEntities } from '@shared/testing';
-import AdmZip from 'adm-zip';
 import { AuthorizationService } from '@src/modules';
 import { CourseUc } from './course.uc';
 
 describe('CourseUc', () => {
 	let module: TestingModule;
 	let service: CourseUc;
-	let repo: DeepMocked<CourseRepo>;
+	let courseRepo: DeepMocked<CourseRepo>;
+	let lessonRepo: DeepMocked<LessonRepo>;
 	let authService: DeepMocked<AuthorizationService>;
 	let orm: MikroORM;
 
@@ -25,6 +25,10 @@ describe('CourseUc', () => {
 					useValue: createMock<CourseRepo>(),
 				},
 				{
+					provide: LessonRepo,
+					useValue: createMock<LessonRepo>(),
+				},
+				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
@@ -32,7 +36,8 @@ describe('CourseUc', () => {
 		}).compile();
 
 		service = module.get(CourseUc);
-		repo = module.get(CourseRepo);
+		courseRepo = module.get(CourseRepo);
+		lessonRepo = module.get(LessonRepo);
 		authService = module.get(AuthorizationService);
 	});
 
@@ -44,7 +49,7 @@ describe('CourseUc', () => {
 	describe('findByUser', () => {
 		it('should return courses of user', async () => {
 			const courses = courseFactory.buildList(5);
-			repo.findAllByUserId.mockResolvedValue([courses, 5]);
+			courseRepo.findAllByUserId.mockResolvedValue([courses, 5]);
 
 			const [array, count] = await service.findAllByUser('someUserId');
 			expect(count).toEqual(5);
@@ -53,7 +58,7 @@ describe('CourseUc', () => {
 
 		it('should pass on options correctly', async () => {
 			const courses = courseFactory.buildList(5);
-			const spy = repo.findAllByUserId.mockResolvedValue([courses, 5]);
+			const spy = courseRepo.findAllByUserId.mockResolvedValue([courses, 5]);
 
 			const pagination = { skip: 1, limit: 2 };
 			const resultingOptions = { pagination, order: { updatedAt: SortOrder.desc } };
@@ -66,27 +71,28 @@ describe('CourseUc', () => {
 
 	describe('exportCourse', () => {
 		beforeAll(() => {
-			repo.findOne.mockResolvedValue({ name: 'Placeholder' } as Course);
+			courseRepo.findOne.mockResolvedValue({ name: 'Placeholder' } as Course);
 		});
 
 		afterAll(() => {
-			repo.findOne.mockRestore();
+			courseRepo.findOne.mockRestore();
 		});
 
-		it('should create zip archive with imsmanifest.xml at the root', async () => {
-			authService.checkPermissionByReferences.mockImplementationOnce(() => Promise.resolve());
+		it('should return buffer', async () => {
+			authService.checkPermissionByReferences.mockImplementationOnce(async () => Promise.resolve());
+			lessonRepo.findAllByCourseIds.mockImplementationOnce(async () =>
+				Promise.resolve([
+					[
+						{
+							id: 'placeholder-id',
+							name: 'placeholder-name',
+						} as Lesson,
+					],
+					0,
+				])
+			);
 
-			const stream = await service.exportCourse('courseId', 'userId');
-			const buffers = [] as unknown[];
-			// eslint-disable-next-line no-restricted-syntax
-			for await (const chunk of stream) {
-				buffers.push(chunk);
-			}
-			const zip = new AdmZip(Buffer.concat(buffers as Uint8Array[]));
-			const manifest = zip.getEntry('imsmanifest.xml');
-
-			expect(manifest).toBeDefined();
-			expect(manifest?.getData().toString()).toContain('Placeholder');
+			await expect(service.exportCourse('courseId', 'userId')).resolves.toBeInstanceOf(Buffer);
 		});
 
 		it('should throw if user can not edit course', async () => {

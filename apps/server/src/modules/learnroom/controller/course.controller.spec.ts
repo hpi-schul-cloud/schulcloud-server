@@ -3,7 +3,6 @@ import { ICurrentUser, Course } from '@shared/domain';
 import { NotFoundException } from '@nestjs/common';
 import { Response } from 'express';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Readable } from 'stream';
 import { ConfigService } from '@nestjs/config';
 import { CourseController } from './course.controller';
 import { CourseUc } from '../uc/course.uc';
@@ -71,7 +70,7 @@ describe('CourseController', () => {
 
 	describe('exportCourse', () => {
 		it('should return an imscc file', async () => {
-			ucMock.exportCourse.mockResolvedValueOnce({} as Readable);
+			ucMock.exportCourse.mockResolvedValueOnce({} as Buffer);
 			configServiceMock.get.mockReturnValue(true);
 
 			await expect(

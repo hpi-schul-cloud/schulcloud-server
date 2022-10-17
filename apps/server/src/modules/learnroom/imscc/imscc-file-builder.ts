@@ -1,7 +1,17 @@
-import { Readable } from 'stream';
-import { Builder } from 'xml2js';
 import AdmZip from 'adm-zip';
-import { randomUUID } from 'crypto';
+
+import { Builder } from 'xml2js';
+import { ImsccMetadataElement } from './imscc-metadata-element';
+import {
+	ImsccOrganizationElement,
+	IImsccOrganizationProps,
+	ImsccOrganizationWrapperElement,
+} from './imscc-organization-element';
+import { IImsccResourceProps, ImsccResourceElement, ImsccResourceWrapperElement } from './imscc-resource-element';
+
+export type IImsccFileBuilderOptions = {
+	title: string;
+};
 
 export class ImsccFileBuilder {
 	private readonly zipBuilder = new AdmZip();
@@ -10,61 +20,46 @@ export class ImsccFileBuilder {
 		rootName: 'manifest',
 	});
 
-	private readonly manifest = {
-		metadata: {
-			schema: '1EdTech Thin Common Cartridge',
-			schemaVersion: '1.3.2',
-			lom: {
-				$: {
-					xmlns: 'http://ltsc.ieee.org/xsd/LOM',
-					'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-					'xsi:schemaLocation': 'http://ltsc.ieee.org/xsd/LOM http://www.imsglobal.org/xsd/imsmd_loose_v1p3p2.xsd',
-				},
-				general: {
-					title: null as null | { string: string },
-				},
-			},
-		},
-		organizations: {
-			organization: [
-				{
-					$: {
-						identifier: 'placeholder-org',
-						structure: 'rooted-hierarchy',
-					},
-					item: [
-						{
-							$: {
-								identifier: randomUUID().toString(),
-							},
-							title: 'Placeholder',
-						},
-					],
-				},
-			],
-		},
-		resources: {
-			resource: [
-				{
-					$: {
-						identifier: randomUUID().toString(),
-						type: 'webcontent',
-						href: 'placeholder.html',
-					},
-					file: 'placeholder.html',
-				},
-			],
-		},
-	};
+	private metadata: ImsccMetadataElement;
 
-	async build(): Promise<Readable> {
-		const result = this.xmlBuilder.buildObject(this.manifest);
-		this.zipBuilder.addFile('imsmanifest.xml', Buffer.from(result), 'The required manifest file.');
-		return Readable.from(await this.zipBuilder.toBufferPromise());
+	private organizations = [] as ImsccOrganizationElement[];
+
+	private resources = [] as ImsccResourceElement[];
+
+	constructor(options: IImsccFileBuilderOptions) {
+		this.metadata = new ImsccMetadataElement({
+			title: options.title,
+		});
 	}
 
-	addTitle(title: string): ImsccFileBuilder {
-		this.manifest.metadata.lom.general.title = { string: title };
+	get manifest(): string {
+		return this.xmlBuilder.buildObject({
+			metadata: this.metadata.transform(),
+			organizations: new ImsccOrganizationWrapperElement(this.organizations).transform(),
+			resources: new ImsccResourceWrapperElement(this.resources).transform(),
+		});
+	}
+
+	async build(): Promise<Buffer> {
+		this.zipBuilder.addFile('imsmanifest.xml', Buffer.from(this.manifest));
+		return this.zipBuilder.toBufferPromise();
+	}
+
+	addOrganizations(props: IImsccOrganizationProps | IImsccOrganizationProps[]): ImsccFileBuilder {
+		if (Array.isArray(props)) {
+			props.map((prop) => this.organizations.push(new ImsccOrganizationElement(prop)));
+		} else {
+			this.organizations.push(new ImsccOrganizationElement(props));
+		}
+		return this;
+	}
+
+	addResources(props: IImsccResourceProps | IImsccResourceProps[]): ImsccFileBuilder {
+		if (Array.isArray(props)) {
+			props.map((prop) => this.resources.push(new ImsccResourceElement(prop)));
+		} else {
+			this.resources.push(new ImsccResourceElement(props));
+		}
 		return this;
 	}
 }
