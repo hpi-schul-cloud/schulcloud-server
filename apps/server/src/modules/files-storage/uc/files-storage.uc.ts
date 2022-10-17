@@ -160,30 +160,15 @@ export class FilesStorageUC {
 		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
 	}
 
-	private checkFileName(entity: FileRecord, params: DownloadFileParams): void | NotFoundException {
-		if (entity.name !== params.fileName) {
-			this.logger.warn(`could not find file with id: ${entity.id} by filename`);
-			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
-		}
-	}
-
-	private checkScanStatus(entity: FileRecord): void | NotAcceptableException {
-		if (entity.securityCheck.status === ScanStatus.BLOCKED) {
-			this.logger.warn(`file is blocked with id: ${entity.id}`);
-			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED);
-		}
-	}
-
 	public async download(userId: EntityId, params: DownloadFileParams) {
-		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
+		const singleFileParams = { fileRecordId: params.fileRecordId };
+		const fileRecord = await this.filesStorageService.getFile(singleFileParams);
 
-		await this.checkPermission(userId, entity.parentType, entity.parentId, PermissionContexts.read);
+		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.read);
 
-		this.checkFileName(entity, params);
-		this.checkScanStatus(entity);
-		const res = await this.downloadFile(entity.schoolId, entity.id);
+		const response = this.filesStorageService.download(fileRecord, params);
 
-		return res;
+		return response;
 	}
 
 	public async downloadBySecurityToken(token: string) {

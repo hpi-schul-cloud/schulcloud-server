@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
@@ -7,11 +7,13 @@ import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileResponse,
 	CopyFilesOfParentParams,
+	DownloadFileParams,
 	FileRecordParams,
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
 } from '../controller/dto';
+import { ErrorType } from '../error';
 import {
 	createICopyFiles,
 	createPath,
@@ -25,7 +27,7 @@ import {
 	modifyFileNameInScope,
 	unmarkForDelete,
 } from '../helper';
-import { ICopyFiles } from '../interface';
+import { IGetFileResponse } from '../interface';
 
 @Injectable()
 export class FilesStorageService {
@@ -75,6 +77,37 @@ export class FilesStorageService {
 		fileRecord.updateSecurityCheckStatus(status, scanResultDto.virus_signature);
 
 		await this.fileRecordRepo.save(fileRecord);
+	}
+
+	// download
+	private checkFileName(entity: FileRecord, params: DownloadFileParams): void | NotFoundException {
+		if (entity.name !== params.fileName) {
+			this.logger.warn(`could not find file with id: ${entity.id} by filename`);
+			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
+		}
+	}
+
+	private checkScanStatus(entity: FileRecord): void | NotAcceptableException {
+		if (entity.securityCheck.status === ScanStatus.BLOCKED) {
+			this.logger.warn(`file is blocked with id: ${entity.id}`);
+			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED);
+		}
+	}
+
+	public async downloadFile(schoolId: EntityId, fileRecordId: EntityId): Promise<IGetFileResponse> {
+		const pathToFile = createPath(schoolId, fileRecordId);
+		const res = await this.storageClient.get(pathToFile);
+
+		return res;
+	}
+
+	public async download(fileRecord: FileRecord, params: DownloadFileParams): Promise<IGetFileResponse> {
+		this.checkFileName(fileRecord, params);
+		this.checkScanStatus(fileRecord);
+
+		const response = await this.downloadFile(fileRecord.schoolId, fileRecord.id);
+
+		return response;
 	}
 
 	// delete
