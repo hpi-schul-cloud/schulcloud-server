@@ -73,7 +73,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api/v1', feathersExpress);
 	rootExpress.use('/api/v3', nestExpress);
-	rootExpress.use(express.static(join(__dirname, 'static-assets')));
+	rootExpress.use(express.static(join(__dirname, '../static-assets')));
 
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated
