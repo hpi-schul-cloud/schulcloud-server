@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
-import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext, ScanStatus } from '@shared/domain';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
@@ -18,11 +18,9 @@ import {
 	DownloadFileParams,
 	FileRecordParams,
 	FileUrlParams,
-	SingleFileParams,
+	SingleFileParams
 } from '../controller/dto/file-storage.params';
-import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
-import { ICopyFiles } from '../interface';
 import { IFile } from '../interface/file';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -143,13 +141,6 @@ export class FilesStorageUC {
 		return pathToFile;
 	}
 
-	private async downloadFile(schoolId: EntityId, fileRecordId: EntityId) {
-		const pathToFile = this.createPath(schoolId, fileRecordId);
-		const res = await this.storageClient.get(pathToFile);
-
-		return res;
-	}
-
 	private async checkPermission(
 		userId: EntityId,
 		parentType: FileRecordParentType,
@@ -172,8 +163,8 @@ export class FilesStorageUC {
 	}
 
 	public async downloadBySecurityToken(token: string) {
-		const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
-		const res = await this.downloadFile(entity.schoolId, entity.id);
+		const fileRecord = await this.filesStorageService.getFileBySecurityCheckRequestToken(token);
+		const res = await this.filesStorageService.downloadFile(fileRecord.schoolId, fileRecord.id);
 
 		return res;
 	}

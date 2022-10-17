@@ -14,7 +14,6 @@ import { AxiosResponse, AxiosResponseHeaders } from 'axios';
 import { Busboy } from 'busboy';
 import { Request } from 'express';
 import { Observable, of } from 'rxjs';
-import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { CopyFileResponse } from '../controller/dto';
 import { FileRecordParams, FileUrlParams, SingleFileParams } from '../controller/dto/file-storage.params';
@@ -86,7 +85,6 @@ describe('FilesStorageUC', () => {
 	let fileUploadParams: FileRecordParams;
 	let uploadFromUrlParams: FileRecordParams & FileUrlParams;
 	const url = 'http://localhost/test.jpg';
-	let response: IGetFileResponse;
 	const entityId: EntityId = new ObjectId().toHexString();
 	const userId: EntityId = new ObjectId().toHexString();
 	const schoolId: EntityId = new ObjectId().toHexString();
@@ -132,7 +130,6 @@ describe('FilesStorageUC', () => {
 		};
 
 		fileRecord = fileRecordFactory.buildWithId({ name: 'text.txt' });
-		response = createMock<IGetFileResponse>();
 	});
 
 	afterAll(async () => {
@@ -485,12 +482,7 @@ describe('FilesStorageUC', () => {
 				const { fileRecord1, params1, userId1 } = getFileRecordWithParams();
 				const fileDownloadParams1 = { ...params1, fileName: fileRecord1.name };
 
-				const fileResponse = {
-					data: new Readable(),
-					contentLength: 14,
-					contentType: 'contentType',
-					etag: 'etag',
-				};
+				const fileResponse = createMock<IGetFileResponse>();
 
 				filesStorageService.getFile.mockResolvedValueOnce(fileRecord1);
 				filesStorageService.download.mockResolvedValueOnce(fileResponse);
@@ -516,33 +508,90 @@ describe('FilesStorageUC', () => {
 		});
 	});
 
-	describe('downloadBySecurityToken()', () => {
-		let token: string;
-		beforeEach(() => {
-			fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValue(fileRecord);
-			storageClient.get.mockResolvedValue(response);
-			token = fileRecord.securityCheck.requestToken || '';
+	describe('downloadBySecurityToken is called', () => {
+		describe('WHEN file is found', () => {
+			const setup = () => {
+				const { fileRecord1 } = getFileRecordWithParams();
+				const token = 'token';
+
+				filesStorageService.getFileBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord1);
+
+				return { fileRecord1, token };
+			};
+
+			it('should call getFile with correct params', async () => {
+				const { token } = setup();
+
+				await filesStorageUC.downloadBySecurityToken(token);
+
+				expect(filesStorageService.getFileBySecurityCheckRequestToken).toHaveBeenCalledWith(token);
+			});
 		});
 
-		describe('calls to fileRecordRepo.findBySecurityCheckRequestToken()', () => {
-			it('should return file response', async () => {
+		describe('WHEN getFile throws error', () => {
+			const setup = () => {
+				const token = 'token';
+				const error = new Error('test');
+
+				filesStorageService.getFileBySecurityCheckRequestToken.mockRejectedValueOnce(error);
+
+				return { error, token };
+			};
+
+			it('should pass error', async () => {
+				const { token, error } = setup();
+
+				await expect(filesStorageUC.downloadBySecurityToken(token)).rejects.toThrow(error);
+
+				expect(filesStorageService.getFileBySecurityCheckRequestToken).toHaveBeenCalledWith(token);
+			});
+		});
+
+		describe('WHEN file is found', () => {
+			const setup = () => {
+				const { fileRecord1 } = getFileRecordWithParams();
+				const token = 'token';
+				const fileResponse = createMock<IGetFileResponse>();
+
+				filesStorageService.getFileBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord1);
+				filesStorageService.downloadFile.mockResolvedValueOnce(fileResponse);
+
+				return { fileResponse, token, fileRecord1 };
+			};
+
+			it('should call downloadFile with correct params', async () => {
+				const { token, fileRecord1 } = setup();
+
+				await filesStorageUC.downloadBySecurityToken(token);
+
+				expect(filesStorageService.downloadFile).toHaveBeenCalledWith(fileRecord1.schoolId, fileRecord1.id);
+			});
+
+			it('should return correct response', async () => {
+				const { token, fileResponse } = setup();
+
 				const result = await filesStorageUC.downloadBySecurityToken(token);
-				expect(result).toStrictEqual(response);
-			});
 
-			it('should call once', async () => {
-				await filesStorageUC.downloadBySecurityToken(token);
-				expect(fileRecordRepo.findBySecurityCheckRequestToken).toHaveBeenCalledTimes(1);
+				expect(result).toEqual(fileResponse);
 			});
+		});
 
-			it('should call with params', async () => {
-				await filesStorageUC.downloadBySecurityToken(token);
-				expect(fileRecordRepo.findBySecurityCheckRequestToken).toHaveBeenCalledWith(token);
-			});
+		describe('WHEN downloadFile throws error', () => {
+			const setup = () => {
+				const { fileRecord1 } = getFileRecordWithParams();
+				const token = 'token';
+				const error = new Error('test');
 
-			it('should throw error if entity not found', async () => {
-				fileRecordRepo.findBySecurityCheckRequestToken.mockRejectedValue(new Error());
-				await expect(filesStorageUC.downloadBySecurityToken(token)).rejects.toThrow();
+				filesStorageService.getFileBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord1);
+				filesStorageService.downloadFile.mockRejectedValueOnce(error);
+
+				return { token, error };
+			};
+
+			it('should call downloadFile with correct params', async () => {
+				const { token, error } = setup();
+
+				await expect(filesStorageUC.downloadBySecurityToken(token)).rejects.toThrowError(error);
 			});
 		});
 	});

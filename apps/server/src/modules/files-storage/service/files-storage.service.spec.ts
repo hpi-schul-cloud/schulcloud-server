@@ -9,7 +9,6 @@ import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import _ from 'lodash';
-import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileResponse,
@@ -20,6 +19,7 @@ import {
 } from '../controller/dto';
 import { ErrorType } from '../error';
 import { createICopyFiles, createPath, getPaths, mapFileRecordToFileRecordParams, unmarkForDelete } from '../helper';
+import { IGetFileResponse } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
 const getFileRecordsWithParams = () => {
@@ -51,15 +51,6 @@ const getFileRecordWithParams = () => {
 	};
 
 	return { params, fileRecord };
-};
-
-const getIGetFileResponse = () => {
-	return {
-		data: new Readable(),
-		contentLength: 14,
-		contentType: 'contentType',
-		etag: 'etag',
-	};
 };
 
 describe('FilesStorageService', () => {
@@ -115,7 +106,7 @@ describe('FilesStorageService', () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('getFileById is called', () => {
+	describe('getFile is called', () => {
 		describe('WHEN valid file exists', () => {
 			const setup = () => {
 				const { params, fileRecord } = getFileRecordWithParams();
@@ -154,6 +145,51 @@ describe('FilesStorageService', () => {
 				const { params } = setup();
 
 				await expect(service.getFile(params)).rejects.toThrow(new Error('bla'));
+			});
+		});
+	});
+
+	describe('getFileBySecurityCheckRequestToken is called', () => {
+		describe('WHEN valid file exists', () => {
+			const setup = () => {
+				const { fileRecord } = getFileRecordWithParams();
+				const token = 'token';
+				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
+
+				return { fileRecord, token };
+			};
+
+			it('should call findOneById', async () => {
+				const { token } = setup();
+
+				await service.getFileBySecurityCheckRequestToken(token);
+
+				expect(fileRecordRepo.findBySecurityCheckRequestToken).toHaveBeenCalledWith(token);
+			});
+
+			it('should return the matched fileRecord', async () => {
+				const { fileRecord, token } = setup();
+
+				const result = await service.getFileBySecurityCheckRequestToken(token);
+
+				expect(result).toEqual(fileRecord);
+			});
+		});
+
+		describe('WHEN repository throws an error', () => {
+			const setup = () => {
+				const error = new Error('test');
+				const token = 'token';
+
+				fileRecordRepo.findBySecurityCheckRequestToken.mockRejectedValueOnce(error);
+
+				return { error, token };
+			};
+
+			it('should pass the error', async () => {
+				const { error, token } = setup();
+
+				await expect(service.getFileBySecurityCheckRequestToken(token)).rejects.toThrow(error);
 			});
 		});
 	});
@@ -506,7 +542,7 @@ describe('FilesStorageService', () => {
 					fileName: fileRecord.name,
 				};
 
-				const expectedResponse = getIGetFileResponse();
+				const expectedResponse = createMock<IGetFileResponse>();
 
 				spy = jest.spyOn(service, 'downloadFile').mockResolvedValueOnce(expectedResponse);
 
@@ -558,7 +594,7 @@ describe('FilesStorageService', () => {
 				const { fileRecords } = getFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 
-				const expectedResponse = getIGetFileResponse();
+				const expectedResponse = createMock<IGetFileResponse>();
 
 				storageClient.get.mockResolvedValueOnce(expectedResponse);
 

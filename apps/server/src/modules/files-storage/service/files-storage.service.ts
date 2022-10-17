@@ -47,6 +47,12 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
+	public async getFileBySecurityCheckRequestToken(token: string): Promise<FileRecord> {
+		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
+
+		return fileRecord;
+	}
+
 	public async getFileMarkedForDelete(params: SingleFileParams) {
 		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
 
