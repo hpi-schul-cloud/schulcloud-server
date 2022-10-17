@@ -1,21 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ICurrentUser, LtiPrivacyPermission, LtiRoleType } from '@shared/domain';
+import { ICurrentUser, IFindOptions, LtiPrivacyPermission, LtiRoleType, SortOrder } from '@shared/domain';
 import { LtiToolController } from '@src/modules/tool/controller/lti-tool.controller';
 import { LtiToolMapper } from '@src/modules/tool/mapper/lti-tool.mapper';
-import { LtiToolResponseMapper } from '@src/modules/tool/mapper/lti-tool-response.mapper';
 import { LtiToolUc } from '@src/modules/tool/uc/lti-tool.uc';
 import { ToolIdParams } from '@src/modules/tool/controller/dto/tool-id.params';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolResponse } from '@src/modules/tool/controller/dto/lti-tool.response';
 import { LtiToolBody } from '@src/modules/tool/controller/dto/lti-tool.body';
+import { LtiToolParams } from '@src/modules/tool/controller/dto/lti-tool.params';
+import { PaginationParams } from '@shared/controller';
+import { SortLtiToolParams } from '@src/modules/tool/controller/dto/lti-tool-sort.params';
+import { LtiToolSearchListResponse } from '@src/modules/tool/controller/dto/lti-tool-search-list.response';
 
 describe('LtiToolController', () => {
 	let module: TestingModule;
 	let controller: LtiToolController;
 
 	let ltiToolUc: DeepMocked<LtiToolUc>;
-	let ltiToolResponseMapper: DeepMocked<LtiToolResponseMapper>;
 	let ltiToolMapper: DeepMocked<LtiToolMapper>;
 
 	beforeAll(async () => {
@@ -27,10 +29,6 @@ describe('LtiToolController', () => {
 					useValue: createMock<LtiToolUc>(),
 				},
 				{
-					provide: LtiToolResponseMapper,
-					useValue: createMock<LtiToolResponseMapper>(),
-				},
-				{
 					provide: LtiToolMapper,
 					useValue: createMock<LtiToolMapper>(),
 				},
@@ -39,7 +37,6 @@ describe('LtiToolController', () => {
 
 		controller = module.get(LtiToolController);
 		ltiToolUc = module.get(LtiToolUc);
-		ltiToolResponseMapper = module.get(LtiToolResponseMapper);
 		ltiToolMapper = module.get(LtiToolMapper);
 	});
 
@@ -49,7 +46,7 @@ describe('LtiToolController', () => {
 
 	function setup() {
 		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-		let toolIdParams: ToolIdParams = { toolId: 'toolId' };
+		const toolIdParams: ToolIdParams = { toolId: 'toolId' };
 		const ltiToolDO: LtiToolDO = new LtiToolDO({
 			id: 'id',
 			name: 'name',
@@ -74,7 +71,8 @@ describe('LtiToolController', () => {
 			skipConsent: false,
 		});
 		const ltiToolResponse: LtiToolResponse = new LtiToolResponse(ltiToolDO as LtiToolResponse);
-		const ltiToolBody: LtiToolBody = new LtiToolBody(ltiToolDO as LtiToolDO);
+		const ltiToolBody: LtiToolBody = new LtiToolBody(ltiToolDO);
+
 		return {
 			currentUser,
 			toolIdParams,
@@ -85,11 +83,78 @@ describe('LtiToolController', () => {
 	}
 
 	describe('findLtiTool', () => {
-		it('should call the ltiToolUc', async () => {});
+		function setupFind() {
+			const { currentUser, ltiToolDO, ltiToolResponse } = setup();
+			const filterQuery: LtiToolParams = new LtiToolParams({});
+			const pagination: PaginationParams = new PaginationParams(0, 1);
+			const sortingQuery: SortLtiToolParams = new SortLtiToolParams(SortOrder.asc);
+			const filter: IFindOptions<LtiToolDO> = { pagination: { skip: 0, limit: 1 }, order: { name: SortOrder.asc } };
 
-		it('should call the ltiToolResponseMapper', async () => {});
+			ltiToolMapper.mapSortingQueryToDomain.mockReturnValue(filter.order);
+			ltiToolMapper.mapLtiToolFilterQueryToDO.mockReturnValue({});
+			ltiToolUc.findLtiTool.mockResolvedValue({ data: [ltiToolDO], total: 1 });
+			ltiToolMapper.mapDoToResponse.mockReturnValue(ltiToolResponse);
 
-		it('should return a ltiToolResponse', async () => {});
+			return {
+				currentUser,
+				ltiToolDO,
+				ltiToolResponse,
+				filterQuery,
+				pagination,
+				sortingQuery,
+				filter,
+			};
+		}
+
+		beforeEach(() => {
+			jest.clearAllMocks();
+		});
+
+		it('should call the ltiToolUc', async () => {
+			const { currentUser, filterQuery, pagination, sortingQuery, filter } = setupFind();
+
+			await controller.findLtiTool(currentUser, filterQuery, pagination, sortingQuery);
+
+			expect(ltiToolUc.findLtiTool).toHaveBeenCalledWith(currentUser, {}, filter);
+		});
+
+		it('should call the ltiToolResponseMapper.mapSortingQueryToDomain', async () => {
+			const { currentUser, filterQuery, pagination, sortingQuery } = setupFind();
+
+			await controller.findLtiTool(currentUser, filterQuery, pagination, sortingQuery);
+
+			expect(ltiToolMapper.mapSortingQueryToDomain).toHaveBeenCalledWith(sortingQuery);
+		});
+
+		it('should call the ltiToolResponseMapper.mapLtiToolFilterQueryToDO', async () => {
+			const { currentUser, filterQuery, pagination, sortingQuery } = setupFind();
+
+			await controller.findLtiTool(currentUser, filterQuery, pagination, sortingQuery);
+
+			expect(ltiToolMapper.mapLtiToolFilterQueryToDO).toHaveBeenCalledWith(filterQuery);
+		});
+
+		it('should call the ltiToolResponseMapper.mapDoToResponse', async () => {
+			const { currentUser, filterQuery, pagination, sortingQuery, ltiToolDO } = setupFind();
+
+			await controller.findLtiTool(currentUser, filterQuery, pagination, sortingQuery);
+
+			expect(ltiToolMapper.mapDoToResponse).toBeCalledTimes(1);
+			expect(ltiToolMapper.mapDoToResponse).toHaveBeenCalledWith(ltiToolDO);
+		});
+
+		it('should return a ltiToolResponse', async () => {
+			const { currentUser, filterQuery, pagination, sortingQuery, ltiToolResponse } = setupFind();
+
+			const result: LtiToolSearchListResponse = await controller.findLtiTool(
+				currentUser,
+				filterQuery,
+				pagination,
+				sortingQuery
+			);
+
+			expect(result).toEqual(new LtiToolSearchListResponse([ltiToolResponse], 1, 0, 1));
+		});
 	});
 
 	describe('getLtiTool', () => {
@@ -101,19 +166,19 @@ describe('LtiToolController', () => {
 			expect(ltiToolUc.getLtiTool).toHaveBeenCalledWith(currentUser, toolIdParams.toolId);
 		});
 
-		it('should call the ltiToolResponseMapper', async () => {
+		it('should call ltiToolMapper.mapDoToResponse', async () => {
 			const { currentUser, toolIdParams, ltiToolDO } = setup();
 			ltiToolUc.getLtiTool.mockResolvedValue(ltiToolDO);
 
 			await controller.getLtiTool(currentUser, toolIdParams);
 
-			expect(ltiToolResponseMapper.mapDoToResponse).toHaveBeenCalledWith(ltiToolDO);
+			expect(ltiToolMapper.mapDoToResponse).toHaveBeenCalledWith(ltiToolDO);
 		});
 
 		it('should return a ltiToolResponse', async () => {
 			const { currentUser, toolIdParams, ltiToolDO, ltiToolResponse } = setup();
 			ltiToolUc.getLtiTool.mockResolvedValue(ltiToolDO);
-			ltiToolResponseMapper.mapDoToResponse.mockReturnValue(ltiToolResponse);
+			ltiToolMapper.mapDoToResponse.mockReturnValue(ltiToolResponse);
 
 			const response: LtiToolResponse = await controller.getLtiTool(currentUser, toolIdParams);
 
@@ -122,7 +187,7 @@ describe('LtiToolController', () => {
 	});
 
 	describe('createLtiTool', () => {
-		it('should call the ltiToolMapper', async () => {
+		it('should call ltiToolMapper.mapLtiToolBodyToDO', async () => {
 			const { currentUser, ltiToolBody } = setup();
 
 			await controller.createLtiTool(currentUser, ltiToolBody);
@@ -139,17 +204,17 @@ describe('LtiToolController', () => {
 			expect(ltiToolUc.createLtiTool).toHaveBeenCalledWith(currentUser, ltiToolDO);
 		});
 
-		it('should call the ltiToolResponseMapper', async () => {
+		it('should call ltiToolMapper.mapDoToResponse', async () => {
 			const { currentUser, ltiToolBody, ltiToolDO } = setup();
 			ltiToolMapper.mapLtiToolBodyToDO.mockReturnValue(ltiToolDO);
 			ltiToolUc.createLtiTool.mockResolvedValue(ltiToolDO);
 
 			await controller.createLtiTool(currentUser, ltiToolBody);
 
-			expect(ltiToolResponseMapper.mapDoToResponse).toHaveBeenCalledWith(ltiToolDO);
+			expect(ltiToolMapper.mapDoToResponse).toHaveBeenCalledWith(ltiToolDO);
 		});
 
-		it('should call the ltiToolResponseMapper', async () => {
+		it('should return the ltiToolResponse', async () => {
 			const { currentUser, ltiToolBody, ltiToolDO, ltiToolResponse } = setup();
 			ltiToolMapper.mapLtiToolBodyToDO.mockReturnValue(ltiToolDO);
 			ltiToolUc.createLtiTool.mockResolvedValue(ltiToolDO);
@@ -161,7 +226,7 @@ describe('LtiToolController', () => {
 	});
 
 	describe('updateLtiTool', () => {
-		it('should call the ltiToolMapper', async () => {
+		it('should call ltiToolMapper.mapLtiToolBodyToDO', async () => {
 			const { currentUser, toolIdParams, ltiToolBody } = setup();
 
 			await controller.updateLtiTool(currentUser, toolIdParams, ltiToolBody);
@@ -175,24 +240,24 @@ describe('LtiToolController', () => {
 
 			await controller.updateLtiTool(currentUser, toolIdParams, ltiToolBody);
 
-			expect(ltiToolUc.updateLtiTool).toHaveBeenCalledWith(currentUser, ltiToolDO);
+			expect(ltiToolUc.updateLtiTool).toHaveBeenCalledWith(currentUser, toolIdParams.toolId, ltiToolDO);
 		});
 
-		it('should call the ltiToolResponseMapper', async () => {
+		it('should call ltiToolMapper.mapDoToResponse', async () => {
 			const { currentUser, toolIdParams, ltiToolBody, ltiToolDO } = setup();
 			ltiToolMapper.mapLtiToolBodyToDO.mockReturnValue(ltiToolDO);
 			ltiToolUc.updateLtiTool.mockResolvedValue(ltiToolDO);
 
 			await controller.updateLtiTool(currentUser, toolIdParams, ltiToolBody);
 
-			expect(ltiToolResponseMapper.mapDoToResponse).toHaveBeenCalledWith(ltiToolDO);
+			expect(ltiToolMapper.mapDoToResponse).toHaveBeenCalledWith(ltiToolDO);
 		});
 
-		it('should return a ltiToolReponse', async () => {
+		it('should return a ltiToolResponse', async () => {
 			const { currentUser, toolIdParams, ltiToolBody, ltiToolDO, ltiToolResponse } = setup();
 			ltiToolMapper.mapLtiToolBodyToDO.mockReturnValue(ltiToolDO);
 			ltiToolUc.updateLtiTool.mockResolvedValue(ltiToolDO);
-			ltiToolResponseMapper.mapDoToResponse.mockReturnValue(ltiToolResponse);
+			ltiToolMapper.mapDoToResponse.mockReturnValue(ltiToolResponse);
 
 			const response: LtiToolResponse = await controller.updateLtiTool(currentUser, toolIdParams, ltiToolBody);
 
@@ -204,12 +269,12 @@ describe('LtiToolController', () => {
 		it('should call the ltiToolUc', async () => {
 			const { currentUser, toolIdParams } = setup();
 
-			controller.deleteLtiTool(currentUser, toolIdParams);
+			await controller.deleteLtiTool(currentUser, toolIdParams);
 
 			expect(ltiToolUc.deleteLtiTool).toHaveBeenCalledWith(currentUser, toolIdParams.toolId);
 		});
 
-		it('should return a promise after deletion', async () => {
+		it('should return a promise after deletion', () => {
 			const { currentUser, toolIdParams } = setup();
 			ltiToolUc.deleteLtiTool.mockResolvedValue(Promise.resolve());
 

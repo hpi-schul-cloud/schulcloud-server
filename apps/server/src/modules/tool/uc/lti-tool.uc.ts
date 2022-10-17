@@ -1,17 +1,23 @@
 import { LtiToolRepo } from '@shared/repo';
-import { NotImplementedException } from '@nestjs/common';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { ICurrentUser, Permission, User } from '@shared/domain';
-import { AuthorizationService } from '@src/modules';
+import { ICurrentUser, IFindOptions, Page, Permission, User } from '@shared/domain';
+import { AuthorizationService } from '@src/modules/authorization';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class LtiToolUc {
 	constructor(private readonly ltiToolRepo: LtiToolRepo, private readonly authorizationService: AuthorizationService) {}
 
-	async findLtiTool(currentUser: ICurrentUser): Promise<LtiToolDO> {
+	async findLtiTool(
+		currentUser: ICurrentUser,
+		query: Partial<LtiToolDO>,
+		options: IFindOptions<LtiToolDO>
+	): Promise<Page<LtiToolDO>> {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_VIEW]);
 
-		throw new NotImplementedException();
+		const tool: Promise<Page<LtiToolDO>> = this.ltiToolRepo.find(query, options);
+		return tool;
 	}
 
 	async getLtiTool(currentUser: ICurrentUser, toolId: string): Promise<LtiToolDO> {
@@ -34,8 +40,10 @@ export class LtiToolUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_EDIT]);
 
+		// TODO: extract patching to anywhere else?
 		const toolFromDb: LtiToolDO = await this.ltiToolRepo.findById(toolId);
-		const updatedTool: LtiToolDO = Object.assign(toolFromDb, tool);
+		let updatedTool: LtiToolDO = Object.assign(toolFromDb, tool);
+		updatedTool = await this.ltiToolRepo.save(updatedTool);
 
 		return updatedTool;
 	}

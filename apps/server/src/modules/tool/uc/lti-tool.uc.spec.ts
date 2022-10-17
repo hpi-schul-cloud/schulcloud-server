@@ -1,19 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser, LtiPrivacyPermission, RoleName } from '@shared/domain';
-import { Lti11Service } from '@src/modules/tool/service/lti11.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { LtiRoleMapper } from '@src/modules/tool/mapper/lti-role.mapper';
 import { LtiToolRepo } from '@shared/repo';
-import { UserService } from '@src/modules/user/service/user.service';
-import { LtiRole } from '@src/modules/tool/interface/lti-role.enum';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
-import { Lti11Uc } from './lti11.uc';
-import { CustomLtiProperty } from '@src/modules/tool/controller/dto/custom-lti-property.body';
 import { LtiToolUc } from '@src/modules/tool/uc/lti-tool.uc';
 import { AuthorizationService } from '@src/modules';
+import { userFactory } from '@shared/testing';
+import { ICurrentUser, User } from '@shared/domain';
 
+// TODO: test me
 describe('LtiToolUc', () => {
 	let module: TestingModule;
 	let uc: LtiToolUc;
@@ -45,8 +38,20 @@ describe('LtiToolUc', () => {
 		await module.close();
 	});
 
+	function setup() {
+		const user: User = userFactory.buildWithId();
+		const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+		return { user, currentUser };
+	}
+
 	describe('findLtiTool', () => {});
-	describe('getLtiTool', () => {});
+
+	describe('getLtiTool', () => {
+		it('should call the authorizationService', () => {
+			// authorizationService.
+		});
+	});
+
 	describe('createLtiTool', () => {});
 	describe('updateLtiTool', () => {});
 	describe('deleteLtiTool', () => {});

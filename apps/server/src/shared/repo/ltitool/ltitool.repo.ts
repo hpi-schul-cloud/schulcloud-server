@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo, EntityProperties } from '@shared/repo/base.do.repo';
-import { EntityName, FilterQuery } from '@mikro-orm/core';
+import { EntityName } from '@mikro-orm/core';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { IFindOptions, ILtiToolProperties, LtiTool, Page, SortOrder } from '@shared/domain';
+import { IFindOptions, ILtiToolProperties, IPagination, LtiTool, Page, SortOrder, SortOrderMap } from '@shared/domain';
+import { LtiToolScope } from '@shared/repo/ltitool/ltitool.scope';
 
 @Injectable()
 export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperties> {
@@ -14,15 +15,19 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		return LtiTool;
 	}
 
-	async find(query: FilterQuery<LtiTool>, options?: IFindOptions<LtiTool>): Promise<Page<LtiToolDO>> {
-		const pagination = options?.pagination || {};
-		const order = options?.order || {};
+	async find(query: Partial<LtiToolDO>, options?: IFindOptions<LtiTool>): Promise<Page<LtiToolDO>> {
+		const pagination: IPagination = options?.pagination || {};
+		const order: SortOrderMap<LtiTool> = options?.order || {};
+		const scope: LtiToolScope = new LtiToolScope()
+			.byName(query.name)
+			.byHidden(query.isHidden)
+			.byTemplate(query.isTemplate);
 
 		if (order._id == null) {
 			order._id = SortOrder.asc;
 		}
 
-		const [entities, total]: [LtiTool[], number] = await this._em.findAndCount(LtiTool, query, {
+		const [entities, total]: [LtiTool[], number] = await this._em.findAndCount(LtiTool, scope.query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
 			orderBy: order,

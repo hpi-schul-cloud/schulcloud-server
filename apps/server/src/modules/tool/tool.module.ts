@@ -1,15 +1,29 @@
 import { Module } from '@nestjs/common';
 import { LtiToolRepo, PseudonymsRepo } from '@shared/repo';
-import { Lti11ResponseMapper } from '@src/modules/tool/mapper/lti11-response.mapper';
 import { LoggerModule } from '@src/core/logger';
+import { AuthorizationModule } from '@src/modules/authorization';
+import { Lti11ResponseMapper } from './mapper/lti11-response.mapper';
+import { LtiToolMapper } from './mapper/lti-tool.mapper';
+import { LtiToolController } from './controller/lti-tool.controller';
+import { ToolController } from './controller/tool.controller';
+import { LtiToolUc } from './uc/lti-tool.uc';
 import { Lti11Uc } from './uc/lti11.uc';
 import { LtiRoleMapper } from './mapper/lti-role.mapper';
 import { Lti11Service } from './service/lti11.service';
 import { UserModule } from '../user';
-import { LtiToolMapper } from '@src/modules/tool/mapper/lti-tool.mapper';
 
 @Module({
-	imports: [UserModule, LoggerModule],
-	providers: [Lti11Service, Lti11Uc, LtiRoleMapper, Lti11ResponseMapper, LtiToolRepo, PseudonymsRepo, LtiToolMapper],
+	controllers: [LtiToolController, ToolController],
+	imports: [UserModule, LoggerModule, AuthorizationModule],
+	providers: [
+		Lti11Service,
+		Lti11Uc,
+		LtiRoleMapper,
+		Lti11ResponseMapper,
+		LtiToolUc,
+		LtiToolRepo,
+		PseudonymsRepo,
+		LtiToolMapper,
+	],
 })
 export class ToolModule {}

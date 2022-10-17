@@ -1,66 +1,97 @@
 import { EntityId, LtiPrivacyPermission, LtiRoleType } from '@shared/domain';
-import { CustomLtiProperty } from './custom-lti-property.body';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsBoolean, IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
+import { CustomLtiProperty } from './custom-lti-property.body';
 
 // TODO open api doc
 export class LtiToolBody {
+	@IsString()
 	@ApiProperty()
 	name: string;
 
+	@IsString()
 	@ApiProperty()
 	url: string;
 
+	@IsString()
 	@ApiProperty()
 	key: string;
 
+	@IsString()
 	@ApiProperty()
 	secret: string;
 
+	@IsOptional()
+	@IsString()
 	@ApiProperty()
 	logo_url?: string;
 
+	@IsOptional()
+	@IsString()
 	@ApiProperty()
 	lti_message_type?: string;
 
+	@IsOptional()
+	@IsString()
 	@ApiProperty()
 	lti_version?: string;
 
+	@IsOptional()
+	@IsString()
 	@ApiProperty()
 	resource_link_id?: string;
 
+	@IsArray()
+	@IsEnum(LtiRoleType, { each: true })
 	@ApiProperty()
 	roles: LtiRoleType[];
 
+	@IsEnum(LtiPrivacyPermission)
 	@ApiProperty()
 	privacy_permission: LtiPrivacyPermission;
 
+	@IsArray()
 	@ApiProperty()
 	customs: CustomLtiProperty[];
 
+	@IsBoolean()
 	@ApiProperty()
 	isTemplate: boolean;
 
+	@IsOptional()
+	@IsBoolean()
 	@ApiProperty()
 	isLocal?: boolean;
 
+	@IsMongoId()
 	@ApiProperty()
 	originToolId?: EntityId;
 
+	@IsString()
 	@ApiProperty()
 	oAuthClientId?: string;
 
+	@IsOptional()
+	@IsString()
 	@ApiProperty()
 	friendlyUrl?: string;
 
+	@IsOptional()
+	@IsBoolean()
 	@ApiProperty()
 	skipConsent?: boolean;
 
+	@IsBoolean()
 	@ApiProperty()
 	openNewTab: boolean;
 
+	@IsOptional()
+	@IsString()
 	@ApiProperty()
 	frontchannel_logout_uri?: string;
 
+	@IsOptional()
+	@IsBoolean()
 	@ApiProperty()
 	isHidden: boolean;
 

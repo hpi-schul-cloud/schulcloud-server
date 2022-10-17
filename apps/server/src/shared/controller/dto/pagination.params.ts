@@ -12,4 +12,9 @@ export class PaginationParams {
 	@Max(100)
 	@ApiPropertyOptional({ description: 'Page limit, defaults to 10.', minimum: 1, maximum: 99 })
 	limit?: number = 10;
+
+	constructor(skip?: number, limit?: number) {
+		this.skip = skip;
+		this.limit = limit;
+	}
 }

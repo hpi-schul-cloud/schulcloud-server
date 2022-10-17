@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain/types';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
-import { BaseWithTimestampsDO } from './base.do';
 import { CustomLtiProperty } from '@shared/domain/domainobject/custom-lti-property';
+import { BaseWithTimestampsDO } from './base.do';
 
 export class LtiToolDO extends BaseWithTimestampsDO {
 	name: string;
