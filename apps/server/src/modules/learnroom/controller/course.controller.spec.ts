@@ -71,6 +71,7 @@ describe('CourseController', () => {
 	describe('exportCourse', () => {
 		it('should return an imscc file', async () => {
 			ucMock.exportCourse.mockResolvedValueOnce({} as Buffer);
+
 			configServiceMock.get.mockReturnValue(true);
 
 			await expect(

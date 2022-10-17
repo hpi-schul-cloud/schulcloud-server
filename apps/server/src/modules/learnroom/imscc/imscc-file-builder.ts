@@ -1,5 +1,4 @@
 import AdmZip from 'adm-zip';
-
 import { Builder } from 'xml2js';
 import { ImsccMetadataElement } from './imscc-metadata-element';
 import {

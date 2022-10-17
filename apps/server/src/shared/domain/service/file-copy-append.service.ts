@@ -51,12 +51,12 @@ export class FileCopyAppendService {
 		if (type === CopyElementType.LESSON && copyEntity instanceof Lesson && originalEntity instanceof Lesson) {
 			const status = await this.copyEmbeddedLegacyFilesOfLessons(copyStatus, courseId, userId);
 
-			return this.copyFilesOfEntity(status, originalEntity, copyEntity, jwt);
+			copyStatus = await this.copyFilesOfEntity(status, originalEntity, copyEntity, jwt);
 		}
 		if (type === CopyElementType.TASK && copyEntity instanceof Task && originalEntity instanceof Task) {
 			const status = await this.copyEmbeddedLegacyFilesOfTasks(copyStatus, courseId, userId);
 
-			return this.copyFilesOfEntity(status, originalEntity, copyEntity, jwt);
+			copyStatus = await this.copyFilesOfEntity(status, originalEntity, copyEntity, jwt);
 		}
 		if (copyStatus.elements && copyStatus.elements.length > 0) {
 			copyStatus.elements = await Promise.all(
