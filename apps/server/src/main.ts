@@ -1,25 +1,26 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
-import express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import express from 'express';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { MikroORM } from '@mikro-orm/core';
 import { Logger } from '@nestjs/common';
+import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
 import { RocketChatService } from '@src/modules/rocketchat';
-import { enableOpenApiDocs } from '@shared/controller/swagger';
-import { MikroORM } from '@mikro-orm/core';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { join } from 'path';
-import { ServerModule } from './server.module';
-import { AccountUc } from './modules/account/uc/account.uc';
 import { AccountService } from './modules/account/services/account.service';
-import legacyAppPromise = require('../../../src/app');
 import { AccountValidationService } from './modules/account/services/account.validation.service';
+import { AccountUc } from './modules/account/uc/account.uc';
 import { CollaborativeStorageUc } from './modules/collaborative-storage/uc/collaborative-storage.uc';
+import { ServerModule } from './server.module';
+import legacyAppPromise = require('../../../src/app');
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -29,6 +30,10 @@ async function bootstrap() {
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 	const orm = nestApp.get(MikroORM);
+
+	// WinstonLogger
+	const app = await NestFactory.create(nestApp);
+	app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
