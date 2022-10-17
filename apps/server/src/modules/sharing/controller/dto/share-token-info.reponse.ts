@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { DecodeHtmlEntities } from '@shared/controller';
 import { ShareTokenParentType } from '@shared/domain';
 
 export class ShareTokenInfoResponse {
@@ -15,5 +16,6 @@ export class ShareTokenInfoResponse {
 	parentType: ShareTokenParentType;
 
 	@ApiProperty()
+	@DecodeHtmlEntities()
 	parentName: string;
 }
