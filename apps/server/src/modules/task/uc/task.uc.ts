@@ -1,4 +1,5 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import {
 	Actions,
 	Counted,
@@ -226,6 +227,7 @@ export class TaskUC {
 	}
 
 	async find(userId: EntityId, taskId: EntityId) {
+		this.checkIndividualTaskEnabled();
 		const [user, task] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.taskRepo.findById(taskId),
@@ -239,6 +241,7 @@ export class TaskUC {
 	}
 
 	async create(userId: EntityId, courseId: EntityId): Promise<TaskWithStatusVo> {
+		this.checkIndividualTaskEnabled();
 		const [user, course] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.courseRepo.findById(courseId),
@@ -261,6 +264,7 @@ export class TaskUC {
 	}
 
 	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
+		this.checkIndividualTaskEnabled();
 		const [user, task] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.taskRepo.findById(taskId),
@@ -291,5 +295,12 @@ export class TaskUC {
 			throw new UnauthorizedException();
 		}
 		return status;
+	}
+
+	private checkIndividualTaskEnabled() {
+		const enabled = Configuration.get('FEATURE_TASK_INDIVIDUAL') as boolean;
+		if (!enabled) {
+			throw new InternalServerErrorException('Feature not enabled');
+		}
 	}
 }

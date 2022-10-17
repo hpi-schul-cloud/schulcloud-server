@@ -1033,7 +1033,12 @@
 					}
 				}
 			}
-		}
+		},
+        "FEATURE_TASK_INDIVIDUAL": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable the task assignment to individuals"
+        }
 	},
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
