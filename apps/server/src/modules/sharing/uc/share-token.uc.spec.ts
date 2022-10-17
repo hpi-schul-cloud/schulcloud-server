@@ -7,7 +7,8 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { CourseCopyService } from '@src/modules/learnroom';
-import { ParentInfoLoader, ShareTokenService } from '../service';
+import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
+import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
 
 describe('ShareTokenUC', () => {
@@ -33,8 +34,8 @@ describe('ShareTokenUC', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: ParentInfoLoader,
-					useValue: createMock<ParentInfoLoader>(),
+					provide: MetadataLoader,
+					useValue: createMock<MetadataLoader>(),
 				},
 				{
 					provide: CourseCopyService,

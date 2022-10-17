@@ -36,6 +36,7 @@ import { RoomsService } from './uc/rooms.service';
 import { RoomsUc } from './uc/rooms.uc';
 import { BoardCopyService } from './service/board-copy.service';
 import { LessonCopyService } from './service/lesson-copy.service';
+import { MetadataLoader } from './service/metadata-loader.service';
 
 @Module({
 	imports: [AuthorizationModule, FilesStorageClientModule],
@@ -72,7 +73,8 @@ import { LessonCopyService } from './service/lesson-copy.service';
 		Logger,
 		FileCopyAppendService,
 		SharedCourseCopyService,
+		MetadataLoader,
 	],
-	exports: [CourseCopyService],
+	exports: [CourseCopyService, MetadataLoader],
 })
 export class LearnroomModule {}

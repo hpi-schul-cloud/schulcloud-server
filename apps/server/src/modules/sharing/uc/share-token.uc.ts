@@ -4,6 +4,7 @@ import {
 	Actions,
 	CopyStatus,
 	EntityId,
+	LearnroomMetadata,
 	Permission,
 	ShareTokenContext,
 	ShareTokenContextType,
@@ -14,8 +15,10 @@ import {
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { CourseCopyService } from '@src/modules/learnroom';
+import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
 import { ShareTokenContextTypeMapper, ShareTokenParentTypeMapper } from '../mapper';
-import { ParentInfoLoader, ShareTokenService } from '../service';
+import { MetadataTypeMapper } from '../mapper/metadata-type.mapper';
+import { ShareTokenService } from '../service';
 import { ShareTokenInfoDto } from './dto';
 
 @Injectable()
@@ -23,7 +26,7 @@ export class ShareTokenUC {
 	constructor(
 		private readonly shareTokenService: ShareTokenService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly parentInfoLoader: ParentInfoLoader,
+		private readonly metadataLoader: MetadataLoader,
 		private readonly courseCopyService: CourseCopyService,
 
 		private readonly logger: Logger
@@ -64,12 +67,12 @@ export class ShareTokenUC {
 			await this.checkContextReadPermission(userId, shareToken.context);
 		}
 
-		const parentInfo = await this.parentInfoLoader.loadParentInfo(shareToken.payload);
+		const metadata: LearnroomMetadata = await this.loadMetadata(shareToken.payload);
 
 		const shareTokenInfo: ShareTokenInfoDto = {
 			token,
 			parentType: shareToken.payload.parentType,
-			parentName: parentInfo.name,
+			parentName: metadata.title,
 		};
 
 		return shareTokenInfo;
@@ -119,6 +122,16 @@ export class ShareTokenUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		this.authorizationService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
+	}
+
+	private async loadMetadata(payload: ShareTokenPayload): Promise<LearnroomMetadata> {
+		const learnroomType = MetadataTypeMapper.mapToAlloweMetadataType(payload.parentType);
+		const metadata = await this.metadataLoader.loadMetadata({
+			type: learnroomType,
+			id: payload.parentId,
+		});
+
+		return metadata;
 	}
 
 	private nowPlusDays(days: number) {
