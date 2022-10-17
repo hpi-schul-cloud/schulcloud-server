@@ -2,11 +2,11 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
-import { ToolIdParams } from 'apps/server/src/modules/tool/controller/dto/tool-id.params';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
 import { Lti11Uc } from '../uc/lti11.uc';
+import { ToolIdParams } from '@src/modules/tool/controller/dto/tool-id.params';
 
 @Controller('tools')
 @Authenticate('jwt')

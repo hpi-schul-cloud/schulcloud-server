@@ -2,16 +2,21 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/commo
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
 import { LtiToolResponse } from '@src/modules/tool/controller/dto/lti-tool.response';
-import { ToolIdParams } from '@src/modules/tool/controller/dto/tool-id.params';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolUc } from '@src/modules/tool/uc/lti-tool.uc';
 import { LtiToolResponseMapper } from '@src/modules/tool/mapper/lti-tool-response.mapper';
 import { LtiToolBody } from '@src/modules/tool/controller/dto/lti-tool.body';
+import { LtiToolMapper } from '@src/modules/tool/mapper/lti-tool.mapper';
+import { ToolIdParams } from './dto/tool-id.params';
 
 @Controller('ltitools')
 @Authenticate('jwt')
 export class LtiToolController {
-	constructor(private readonly ltiToolUc: LtiToolUc, private readonly ltiToolResponseMapper: LtiToolResponseMapper) {}
+	constructor(
+		private readonly ltiToolUc: LtiToolUc,
+		private readonly ltiToolResponseMapper: LtiToolResponseMapper,
+		private readonly ltiToolMapper: LtiToolMapper
+	) {}
 
 	@Get()
 	async findLtiTool(@CurrentUser() currentUser: ICurrentUser): Promise<LtiToolResponse> {
@@ -29,9 +34,9 @@ export class LtiToolController {
 
 	@Post()
 	async createLtiTool(@CurrentUser() currentUser: ICurrentUser, @Body() body: LtiToolBody): Promise<LtiToolResponse> {
-		// mapBody to Uc Input
-		const tool: LtiToolDO = await this.ltiToolUc.createLtiTool(currentUser);
-		const mapped: LtiToolResponse = this.ltiToolResponseMapper.mapDoToResponse(tool);
+		const ltiToolDO = this.ltiToolMapper.mapLtiToolBodyToDO(body);
+		const createdLtiTool: LtiToolDO = await this.ltiToolUc.createLtiTool(currentUser, ltiToolDO);
+		const mapped: LtiToolResponse = this.ltiToolResponseMapper.mapDoToResponse(createdLtiTool);
 		return mapped;
 	}
 
@@ -41,9 +46,9 @@ export class LtiToolController {
 		@Param() params: ToolIdParams,
 		@Body() body: LtiToolBody
 	): Promise<LtiToolResponse> {
-		// mapBody to Uc Input
-		const tool: LtiToolDO = await this.ltiToolUc.updateLtiTool(currentUser);
-		const mapped: LtiToolResponse = this.ltiToolResponseMapper.mapDoToResponse(tool);
+		const ltiToolDO = this.ltiToolMapper.mapLtiToolBodyToDO(body);
+		const updatedLtiTool: LtiToolDO = await this.ltiToolUc.updateLtiTool(currentUser, ltiToolDO);
+		const mapped: LtiToolResponse = this.ltiToolResponseMapper.mapDoToResponse(updatedLtiTool);
 		return mapped;
 	}
 

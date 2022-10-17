@@ -7,9 +7,10 @@ import { LtiToolRepo } from '@shared/repo';
 import { UserService } from '@src/modules/user/service/user.service';
 import { LtiRole } from '@src/modules/tool/interface/lti-role.enum';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { CustomLtiProperty, LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
 import { Lti11Uc } from './lti11.uc';
+import { CustomLtiProperty } from '@src/modules/tool/controller/dto/custom-lti-property.body';
 
 describe('Lti11Uc', () => {
 	let module: TestingModule;

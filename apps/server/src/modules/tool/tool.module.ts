@@ -6,9 +6,10 @@ import { Lti11Uc } from './uc/lti11.uc';
 import { LtiRoleMapper } from './mapper/lti-role.mapper';
 import { Lti11Service } from './service/lti11.service';
 import { UserModule } from '../user';
+import { LtiToolMapper } from '@src/modules/tool/mapper/lti-tool.mapper';
 
 @Module({
 	imports: [UserModule, LoggerModule],
-	providers: [Lti11Service, Lti11Uc, LtiRoleMapper, Lti11ResponseMapper, LtiToolRepo, PseudonymsRepo],
+	providers: [Lti11Service, Lti11Uc, LtiRoleMapper, Lti11ResponseMapper, LtiToolRepo, PseudonymsRepo, LtiToolMapper],
 })
 export class ToolModule {}
