@@ -18,6 +18,7 @@ export class Logger implements ILogger {
 	 * It implements @ILogger which provides the logger methods.
 	 * CAUTION: PREPARE STRINGS AS LOG DATA, DO NOT LOG COMPLEX DATA STRUCTURES
 	 */
+	private context = '';
 
 	constructor(
 		private readonly configService: ConfigService<ILoggerConfig, true>,
@@ -27,34 +28,27 @@ export class Logger implements ILogger {
 		// this.setLogLevels(logLevels as LogLevel[]);
 	}
 
-	log(message: unknown, context?: string | undefined): unknown {
-		return this.logger.log('info', message);
+	log(message: unknown, context?: string | undefined): void {
+		this.logger.log('info', message);
 	}
 
-	warn(message: unknown, context?: string | undefined): unknown {
-		return this.logger.warn(message);
+	warn(message: unknown, context?: string | undefined): void {
+		this.logger.warn(this.context, message);
 	}
 
-	debug(message: unknown, context?: string | undefined): unknown {
-		return this.logger.debug(message);
+	debug(message: unknown, context?: string | undefined): void {
+		this.logger.debug(this.context, message);
 	}
 
-	verbose?(message: unknown, context?: string | undefined): unknown {
-		return this.logger.verbose(message);
+	verbose(message: unknown, context?: string | undefined): void {
+		this.logger.verbose(this.context, message);
 	}
 
 	http(message: RequestLoggingBody, context?: string): void {
-		this.logger.http(message);
+		this.logger.http(this.context, message);
 	}
 
-	setContext(name: string) {}
-
-	error(message: unknown, trace?: unknown): void {
-		// const result = {
-		// 	message,
-		// 	trace,
-		// };
-		// const stringifiedMessage = util.inspect(result).replace(/\n/g, '').replace(/\\n/g, '');
-		// super.error(stringifiedMessage);
+	setContext(name: string) {
+		this.context = name;
 	}
 }
