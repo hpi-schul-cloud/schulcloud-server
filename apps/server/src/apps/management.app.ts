@@ -8,8 +8,8 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { ManagementServerModule } from './modules/management/management-server.module';
-import { enableOpenApiDocs } from './shared/controller/swagger';
+import { ManagementServerModule } from '@src/modules/management/management-server.module';
+import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
 async function bootstrap() {
 	sourceMapInstall();

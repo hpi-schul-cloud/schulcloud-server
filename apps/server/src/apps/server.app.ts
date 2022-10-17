@@ -19,7 +19,7 @@ import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/co
 import { RocketChatService } from '@src/modules/rocketchat';
 import { ServerModule } from '@src/modules/server/server.module';
 import { join } from 'path';
-import legacyAppPromise = require('../../../src/app');
+import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap() {
 	sourceMapInstall();

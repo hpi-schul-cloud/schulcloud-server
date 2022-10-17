@@ -14,6 +14,7 @@ import { SchoolModule } from '@src/modules/school/school.module';
 import { UserModule } from '@src/modules/user';
 // todo: MUST BE CHECKED BEFORE MERGE
 // import { FilesModule } from '@src/modules/files';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import {
 	AuthModule,
 	CollaborativeStorageModule,
@@ -30,7 +31,6 @@ import {
 	VideoConferenceModule,
 } from '@src/modules';
 import { SharingModule } from '@src/modules/sharing/sharing.module';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '../../config';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
 

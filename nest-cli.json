@@ -21,7 +21,7 @@
 		"server": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "api.server",
+			"entryFile": "apps/server.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
@@ -30,7 +30,7 @@
 		"management": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "management",
+			"entryFile": "apps/management.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
@@ -48,7 +48,7 @@
 		"files-storage": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "files-storage.server",
+			"entryFile": "apps/files-storage.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
@@ -57,7 +57,7 @@
 		"files-storage-amqp": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "files-storage.amqp",
+			"entryFile": "apps/files-storage-consumer.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
