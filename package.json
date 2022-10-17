@@ -60,7 +60,7 @@
 		"nest:start:management": "nest start management",
 		"nest:start:management:dev": "nest start management --watch",
 		"nest:start:management:debug": "nest start management --debug --watch",
-		"nest:start:management:prod": "node dist/apps/server/management.app",
+		"nest:start:management:prod": "node dist/apps/server/apps/management.app",
 		"nest:start:files-storage": "nest start files-storage",
 		"nest:start:files-storage:dev": "nest start files-storage --watch",
 		"nest:start:files-storage:debug": "nest start files-storage --debug --watch",
