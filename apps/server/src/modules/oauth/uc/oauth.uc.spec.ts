@@ -110,11 +110,11 @@ describe('OAuthUc', () => {
 
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
 			systemRepo.findById.mockResolvedValue(system);
-			oauthService.getOAuthError.mockReturnValue(errorResponse);
+			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
 			const response: OAuthResponse = await service.processOAuth(query, system.id);
 
-			expect(oauthService.getOAuthError).toHaveBeenCalledWith(expect.any(Error), 'unknown-provider');
+			expect(oauthService.getOAuthErrorResponse).toHaveBeenCalledWith(expect.any(Error), 'unknown-provider');
 			expect(response).toEqual(errorResponse);
 		});
 
@@ -130,11 +130,11 @@ describe('OAuthUc', () => {
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
 			systemRepo.findById.mockResolvedValue(system);
 			oauthService.requestToken.mockRejectedValue(new OAuthSSOError());
-			oauthService.getOAuthError.mockReturnValue(errorResponse);
+			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
 			const response: OAuthResponse = await service.processOAuth(query, system.id);
 
-			expect(oauthService.getOAuthError).toHaveBeenCalledWith(expect.any(Error), system.oauthConfig?.provider);
+			expect(oauthService.getOAuthErrorResponse).toHaveBeenCalledWith(expect.any(Error), system.oauthConfig?.provider);
 			expect(response).toEqual(errorResponse);
 		});
 
@@ -150,7 +150,7 @@ describe('OAuthUc', () => {
 				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
 			});
 			systemRepo.findById.mockResolvedValue(system);
-			oauthService.getOAuthError.mockReturnValue(errorResponse);
+			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
 			const response: OAuthResponse = await service.processOAuth(query, '');
 

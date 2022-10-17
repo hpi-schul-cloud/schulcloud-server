@@ -13,4 +13,10 @@ export class SchoolRepo extends BaseRepo<School> {
 
 		return school;
 	}
+
+	async findByExternalId(externalId: string, systemId: string): Promise<School | null> {
+		const school: School | null = await this._em.findOne(School, { externalId, systems: systemId });
+
+		return school;
+	}
 }

@@ -1,5 +1,5 @@
 import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SanisResponse } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { HttpService } from '@nestjs/axios';
@@ -35,7 +35,7 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrateg
 		const school: SchoolDto = await this.sanisSchoolService.provisionSchool(data, params.systemId);
 
 		if (!school.id) {
-			throw new UnprocessableEntityException(
+			throw new InternalServerErrorException(
 				`Provisioning of sanis strategy: ${data.pid} failed. No school id supplied.`
 			);
 		}

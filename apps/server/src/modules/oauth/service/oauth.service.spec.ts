@@ -315,7 +315,7 @@ describe('OAuthService', () => {
 		it('should return a login url string within an error', () => {
 			const generalError: Error = new Error('foo');
 
-			const response: OAuthResponse = service.getOAuthError(generalError, 'provider');
+			const response: OAuthResponse = service.getOAuthErrorResponse(generalError, 'provider');
 
 			expect(response.provider).toStrictEqual('provider');
 			expect(response.errorcode).toStrictEqual('oauth_login_failed');
@@ -325,7 +325,7 @@ describe('OAuthService', () => {
 		it('should return a login url string within an error', () => {
 			const specialError: OAuthSSOError = new OAuthSSOError('foo', 'special_error_code');
 
-			const response = service.getOAuthError(specialError, 'provider');
+			const response = service.getOAuthErrorResponse(specialError, 'provider');
 
 			expect(response.provider).toStrictEqual('provider');
 			expect(response.errorcode).toStrictEqual('special_error_code');

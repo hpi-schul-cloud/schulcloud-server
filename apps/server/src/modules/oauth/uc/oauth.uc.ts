@@ -23,7 +23,7 @@ export class OauthUc {
 			const oAuthResponsePromise = this.process(query, systemId);
 			return await oAuthResponsePromise;
 		} catch (error) {
-			return await this.getOauthResponse(error, systemId);
+			return await this.getOauthErrorResponse(error, systemId);
 		}
 	}
 
@@ -59,10 +59,10 @@ export class OauthUc {
 		return oauthConfig;
 	}
 
-	private async getOauthResponse(error, systemId: string): Promise<OAuthResponse> {
+	private async getOauthErrorResponse(error, systemId: string): Promise<OAuthResponse> {
 		const system: System = await this.systemRepo.findById(systemId);
 		const provider = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
-		const oAuthError = this.oauthService.getOAuthError(error, provider);
+		const oAuthError = this.oauthService.getOAuthErrorResponse(error, provider);
 		return oAuthError;
 	}
 }

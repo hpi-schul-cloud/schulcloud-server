@@ -157,6 +157,7 @@ export class OAuthService {
 		const HOST = Configuration.get('HOST') as string;
 
 		// iserv strategy
+		// TODO: move to client in https://ticketsystem.dbildungscloud.de/browse/N21-381
 		let redirect: string;
 		if (provider === 'iserv') {
 			redirect = `${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`;
@@ -167,7 +168,7 @@ export class OAuthService {
 		return redirect;
 	}
 
-	getOAuthError(error: unknown, provider: string): OAuthResponse {
+	getOAuthErrorResponse(error: unknown, provider: string): OAuthResponse {
 		this.logger.error(error);
 
 		const oauthResponse = new OAuthResponse();

@@ -17,13 +17,10 @@ export class SanisSchoolService {
 
 	async provisionSchool(data: SanisResponse, systemId: EntityId): Promise<SchoolDto> {
 		const school: ProvisioningSchoolOutputDto = this.responseMapper.mapToSchoolDto(data, systemId);
-		try {
-			const schoolEntity: School = await this.schoolRepo.findByExternalIdOrFail(school.externalId, systemId);
+		const schoolEntity: School | null = await this.schoolRepo.findByExternalId(school.externalId, systemId);
+		if (schoolEntity instanceof School) {
 			school.id = schoolEntity.id;
-		} catch (e) {
-			// ignore NotFoundException and create new school
 		}
-
 		const savedSchool: SchoolDto = await this.schoolUc.saveProvisioningSchoolOutputDto(school);
 		return savedSchool;
 	}
