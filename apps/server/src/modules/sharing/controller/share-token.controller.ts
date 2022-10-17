@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { RequestTimeout } from '@shared/common';
+import { Body, Controller, ForbiddenException, Get, InternalServerErrorException, Param, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiValidationError, RequestTimeout } from '@shared/common';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { CopyApiResponse } from '@src/modules/learnroom/controller/dto';
@@ -22,6 +22,11 @@ import {
 export class ShareTokenController {
 	constructor(private readonly shareTokenUC: ShareTokenUC) {}
 
+	@ApiOperation({ summary: 'Create a share token.' })
+	@ApiResponse({ status: 200, type: ShareTokenResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post()
 	async createShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -44,6 +49,10 @@ export class ShareTokenController {
 		return Promise.resolve(response);
 	}
 
+	@ApiOperation({ summary: 'Look up a share token.' })
+	@ApiResponse({ status: 200, type: ShareTokenInfoResponse })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get(':token')
 	async lookupShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -56,6 +65,11 @@ export class ShareTokenController {
 		return response;
 	}
 
+	@ApiOperation({ summary: 'Import a share token payload.' })
+	@ApiResponse({ status: 200, type: CopyApiResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post(':token/import')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async importShareToken(
