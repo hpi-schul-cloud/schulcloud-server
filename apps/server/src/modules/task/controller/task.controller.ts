@@ -7,7 +7,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 // todo  @src/modules/learnroom/* must be replaced
 import { CopyApiResponse } from '@src/modules/learnroom/controller/dto/copy.response';
 import { CopyMapper } from '@src/modules/learnroom/mapper/copy.mapper';
-import serverConfig from '@src/modules/server/server.config';
+import { serverConfig } from '@src/modules/server/server.config';
 import { TaskMapper } from '../mapper/task.mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';

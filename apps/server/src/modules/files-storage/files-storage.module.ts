@@ -11,7 +11,7 @@ import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { FileRecordRepo } from '@shared/repo';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '../authorization';
+import { AuthorizationModule } from '@src/modules/authorization';
 import { S3ClientAdapter } from './client/s3-client.adapter';
 import { config, s3Config } from './files-storage.config';
 import { FilesStorageHelper } from './helper';

@@ -4,8 +4,8 @@ import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-
 import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { AuthModule } from '../authentication';
-import { AuthorizationModule } from '../authorization';
+import { AuthModule } from '@src/modules/authentication';
+import { AuthorizationModule } from '@src/modules/authorization';
 import { FileSecurityController } from './controller/file-security.controller';
 import { FilesStorageConsumer } from './controller/files-storage.consumer';
 import { FilesStorageController } from './controller/files-storage.controller';

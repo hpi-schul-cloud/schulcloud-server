@@ -8,8 +8,7 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { FilesStorageApiModule } from '@src/modules/files-storage/files-storage-api.module';
-import { API_VERSION_PATH } from '@src/modules/files-storage/files-storage.const';
+import { API_VERSION_PATH, FilesStorageApiModule } from '@src/modules/files-storage';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
 async function bootstrap() {

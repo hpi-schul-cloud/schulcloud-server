@@ -36,4 +36,4 @@ const config: IServerConfig = {
 	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED') as boolean,
 };
 
-export default () => config;
+export const serverConfig = () => config;
