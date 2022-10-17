@@ -1168,7 +1168,6 @@ describe('TaskUC', () => {
 			});
 		});
 		describe('find task', () => {
-			let course: Course;
 			let task: Task;
 			beforeEach(() => {
 				user = userFactory.buildWithId();

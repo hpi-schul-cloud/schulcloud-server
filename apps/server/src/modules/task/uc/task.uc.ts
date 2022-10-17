@@ -296,7 +296,6 @@ export class TaskUC {
 	}
 
 	private createStatus(user: User, task: Task) {
-		let status: ITaskStatus;
 		if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
 			return task.createTeacherStatusForUser(user);
 		}
