@@ -9,11 +9,11 @@ import { FilesStorageAMQPModule } from './modules/files-storage/files-storage-am
 async function bootstrap() {
 	sourceMapInstall();
 
-	const nestApp = await NestFactory.createApplicationContext(FilesStorageAMQPModule);
+	const nestApp = await NestFactory.createMicroservice(FilesStorageAMQPModule);
 	await nestApp.init();
 
-	console.log('#################################');
+	console.log('#########################################');
 	console.log(`### Start Files Storage AMQP Consumer ###`);
-	console.log('#################################');
+	console.log('#########################################');
 }
 void bootstrap();
