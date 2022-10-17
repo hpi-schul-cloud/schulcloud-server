@@ -1,3 +1,3 @@
 export interface IImsccElement {
-	getElement(): Record<string, unknown>;
+	transform(): Record<string, unknown>;
 }

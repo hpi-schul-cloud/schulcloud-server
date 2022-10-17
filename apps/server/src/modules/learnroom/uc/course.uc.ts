@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Actions, Counted, Course, EntityId, Permission, SortOrder } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { PaginationParams } from '@shared/controller/';
-import { ImsccFileBuilder } from '@src/modules/learnroom/imscc/imscc-file-builder';
-import { Readable } from 'stream';
+import { ImsccFileBuilder } from '../imscc';
 import { AuthorizationService } from '../../authorization';
 import { AllowedAuthorizationEntityType } from '../../authorization/interfaces';
 

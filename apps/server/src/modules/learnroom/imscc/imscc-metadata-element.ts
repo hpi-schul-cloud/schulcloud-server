@@ -1,14 +1,13 @@
 import { IImsccElement } from './imscc-element.interface';
 
 export type IImsccMetadataProps = {
-	identifier: string | number;
 	title: string;
 };
 
 export class ImsccMetadataElement implements IImsccElement {
 	constructor(private readonly props: IImsccMetadataProps) {}
 
-	getElement(): Record<string, unknown> {
+	transform(): Record<string, unknown> {
 		return {
 			schema: '1EdTech Thin Common Cartridge',
 			schemaVersion: '1.3.2',
