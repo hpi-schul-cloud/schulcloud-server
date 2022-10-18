@@ -16,7 +16,7 @@ import {
 } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { TaskListResponse } from '@src/modules/task/controller/dto';
+import { TaskListResponse, TaskResponse } from '@src/modules/task/controller/dto';
 import { ServerTestModule } from '@src/server.module';
 import { ObjectID } from 'bson';
 import { Request } from 'express';
@@ -1027,11 +1027,103 @@ describe('Task Controller (e2e)', () => {
 		});
 	});
 
+	describe('When individual assignment task feature is enabled', () => {
+		let app: INestApplication;
+		let em: EntityManager;
+		let currentUser: ICurrentUser;
+
+		const setup = (permission) => {
+			const roles = roleFactory.buildList(1, {
+				permissions: [permission],
+			});
+			const user = userFactory.build({ roles });
+
+			return user;
+		};
+
+		beforeAll(async () => {
+			const module: TestingModule = await Test.createTestingModule({
+				imports: [ServerTestModule],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue({
+					canActivate(context: ExecutionContext) {
+						const req: Request = context.switchToHttp().getRequest();
+						req.user = currentUser;
+						return true;
+					},
+				})
+				.compile();
+
+			app = module.createNestApplication();
+			await app.init();
+			em = module.get(EntityManager);
+		});
+
+		afterAll(async () => {
+			await app.close();
+		});
+
+		beforeEach(async () => {
+			await cleanupCollections(em);
+			Configuration.set('FEATURE_TASK_ASSIGNMENT_ENABLED', true);
+		});
+
+		it('GET :id should return existing task', async () => {
+			const user = setup(Permission.HOMEWORK_VIEW);
+			const task = taskFactory.build({ name: 'original name', creator: user });
+
+			await em.persistAndFlush([user, task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const response = await request(app.getHttpServer())
+				.get(`/tasks/${task.id}`)
+				.set('Accept', 'application/json')
+				.expect(200);
+
+			expect((response.body as TaskResponse).id).toEqual(task.id);
+		});
+		it('POST should create a draft task', async () => {
+			const user = setup(Permission.HOMEWORK_CREATE);
+			const course = courseFactory.build({ teachers: [user] });
+
+			await em.persistAndFlush([user, course]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const response = await request(app.getHttpServer())
+				.post(`/tasks`)
+				.set('Accept', 'application/json')
+				.send({ courseId: course.id })
+				.expect(201);
+
+			expect((response.body as TaskResponse).status.isDraft).toEqual(true);
+		});
+		it('PATCH :id should update a task', async () => {
+			const user = setup(Permission.HOMEWORK_EDIT);
+			const task = taskFactory.build({ name: 'original name', creator: user });
+
+			await em.persistAndFlush([user, task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const response = await request(app.getHttpServer())
+				.patch(`/tasks/${task.id}`)
+				.set('Accept', 'application/json')
+				.send({ name: 'updated name' })
+				.expect(201);
+
+			expect((response.body as TaskResponse).name).toEqual('updated name');
+		});
+	});
 	describe('When individual assignment Task feature is not enabled', () => {
 		let app: INestApplication;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
-		let api: API;
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({

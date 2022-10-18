@@ -1105,7 +1105,7 @@ describe('TaskUC', () => {
 				await service.create(user.id, course.id);
 				expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
 					action: Actions.write,
-					requiredPermissions: [], // TODO specific permission?
+					requiredPermissions: [Permission.HOMEWORK_CREATE],
 				});
 			});
 			it('should save the task', async () => {
@@ -1148,7 +1148,7 @@ describe('TaskUC', () => {
 				await service.update(user.id, task.id, params);
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 					action: Actions.write,
-					requiredPermissions: [],
+					requiredPermissions: [Permission.HOMEWORK_EDIT],
 				});
 			});
 			it('should save the task', async () => {
@@ -1179,7 +1179,7 @@ describe('TaskUC', () => {
 				await service.find(user.id, task.id);
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 					action: Actions.read,
-					requiredPermissions: [],
+					requiredPermissions: [Permission.HOMEWORK_VIEW],
 				});
 			});
 			it('should return the task with its status', async () => {

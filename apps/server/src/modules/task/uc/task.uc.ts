@@ -239,9 +239,15 @@ export class TaskUC {
 			this.taskRepo.findById(taskId),
 		]);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([]));
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
 
-		return this.getTaskWithStatus(user, task);
+		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])
+			? task.createTeacherStatusForUser(user)
+			: task.createStudentStatusForUser(user);
+
+		const result = new TaskWithStatusVo(task, status);
+
+		return result;
 	}
 
 	async create(userId: EntityId, courseId: EntityId): Promise<TaskWithStatusVo> {
@@ -252,7 +258,11 @@ export class TaskUC {
 			this.courseRepo.findById(courseId),
 		]);
 
-		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([])); // TODO speficic permission for individual task creation?
+		this.authorizationService.checkPermission(
+			user,
+			course,
+			PermissionContextBuilder.write([Permission.HOMEWORK_CREATE])
+		);
 
 		const task = new Task({
 			name: 'Draft', // TODO
@@ -263,7 +273,10 @@ export class TaskUC {
 
 		await this.taskRepo.save(task);
 
-		return this.getTaskWithStatus(user, task);
+		const status = task.createTeacherStatusForUser(user);
+		const taskWithStatusVo = new TaskWithStatusVo(task, status);
+
+		return taskWithStatusVo;
 	}
 
 	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
@@ -274,7 +287,7 @@ export class TaskUC {
 			this.taskRepo.findById(taskId),
 		]);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([Permission.HOMEWORK_EDIT]));
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const [key, value] of Object.entries(params)) {
@@ -285,24 +298,10 @@ export class TaskUC {
 		}
 		await this.taskRepo.save(task);
 
-		return this.getTaskWithStatus(user, task);
-	}
-
-	private getTaskWithStatus(user: User, task: Task) {
-		const status = this.createStatus(user, task);
+		const status = task.createTeacherStatusForUser(user);
 		const taskWithStatusVo = new TaskWithStatusVo(task, status);
 
 		return taskWithStatusVo;
-	}
-
-	private createStatus(user: User, task: Task) {
-		if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
-			return task.createTeacherStatusForUser(user);
-		}
-		if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_VIEW_V3])) {
-			return task.createStudentStatusForUser(user);
-		}
-		throw new UnauthorizedException();
 	}
 
 	private checkIndividualTaskEnabled() {
