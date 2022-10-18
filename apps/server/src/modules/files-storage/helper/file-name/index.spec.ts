@@ -3,7 +3,7 @@ import { ConflictException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { checkDuplicatedNames, modifyFileNameInScope } from '.';
+import { checkDuplicatedNames, hasDuplicateName, modifyFileNameInScope, resolveFileNameDuplicates } from '.';
 import { ErrorType } from '../../error';
 
 describe('File Name Helper', () => {
@@ -116,6 +116,114 @@ describe('File Name Helper', () => {
 				expect(() => modifyFileNameInScope(fileRecord, fileRecords, newFileName)).toThrowError(
 					new ConflictException(ErrorType.FILE_NAME_EXISTS)
 				);
+			});
+		});
+	});
+
+	describe('hasDuplicateName is called', () => {
+		describe('WHEN all fileRecords have different names', () => {
+			const setup = () => {
+				const fileRecords = setupFileRecords();
+				const newFileName = 'renamed';
+
+				return {
+					newFileName,
+					fileRecords,
+				};
+			};
+
+			it('should return undefined', () => {
+				const { fileRecords, newFileName } = setup();
+
+				const result = hasDuplicateName(fileRecords, newFileName);
+
+				expect(result).toBeUndefined();
+			});
+		});
+
+		describe('WHEN fileRecords with new FileName already exist', () => {
+			const setup = () => {
+				const fileRecords = setupFileRecords();
+				const newFileName = 'renamed';
+				fileRecords[1].name = newFileName;
+
+				return {
+					newFileName,
+					fileRecords,
+				};
+			};
+
+			it('should return file record with duplicate name', () => {
+				const { fileRecords, newFileName } = setup();
+
+				const result = hasDuplicateName(fileRecords, newFileName);
+
+				expect(result).toEqual(fileRecords[1]);
+			});
+		});
+	});
+
+	describe('resolveFileNameDuplicates is called', () => {
+		describe('WHEN no duplicate exists', () => {
+			const setup = () => {
+				const fileRecords = setupFileRecords();
+				const newFileName = 'renamed';
+
+				return {
+					newFileName,
+					fileRecords,
+				};
+			};
+
+			it('should return original file name', () => {
+				const { newFileName, fileRecords } = setup();
+
+				const result = resolveFileNameDuplicates(newFileName, fileRecords);
+
+				expect(result).toBe(newFileName);
+			});
+		});
+
+		describe('WHEN one fileRecord with file name already exist', () => {
+			const setup = () => {
+				const fileRecords = setupFileRecords();
+				const newFileName = 'renamed';
+				fileRecords[0].name = newFileName;
+
+				return {
+					newFileName,
+					fileRecords,
+				};
+			};
+
+			it('should return file name with (1) suffix', () => {
+				const { fileRecords, newFileName } = setup();
+
+				const result = resolveFileNameDuplicates(newFileName, fileRecords);
+
+				expect(result).toBe(`${newFileName} (1)`);
+			});
+		});
+
+		describe('WHEN two fileRecords with file name already exist', () => {
+			const setup = () => {
+				const fileRecords = setupFileRecords();
+				const newFileName = 'renamed';
+				fileRecords[0].name = newFileName;
+				fileRecords[1].name = `${newFileName} (1)`;
+
+				return {
+					newFileName,
+					fileRecords,
+				};
+			};
+
+			it('should return file name with (1) suffix', () => {
+				const { fileRecords, newFileName } = setup();
+
+				const result = resolveFileNameDuplicates(newFileName, fileRecords);
+
+				expect(result).toBe(`${newFileName} (2)`);
 			});
 		});
 	});
