@@ -39,6 +39,8 @@ export class ShareTokenUC {
 		payload: ShareTokenPayload,
 		options?: { schoolExclusive?: boolean; expiresInDays?: number }
 	): Promise<ShareTokenDO> {
+		this.checkFeatureEnabled();
+
 		this.logger.debug({ action: 'createShareToken', userId, payload, options });
 
 		await this.checkParentWritePermission(userId, payload);
@@ -61,6 +63,10 @@ export class ShareTokenUC {
 	}
 
 	async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfoDto> {
+		this.checkFeatureEnabled();
+
+		this.logger.debug({ action: 'lookupShareToken', userId, token });
+
 		const shareToken = await this.shareTokenService.lookupToken(token);
 
 		if (shareToken.context) {
@@ -79,7 +85,9 @@ export class ShareTokenUC {
 	}
 
 	async importShareToken(userId: EntityId, token: string, newName: string, jwt: string): Promise<CopyStatus> {
-		// WIP this.checkFeatureEnabled();
+		this.checkFeatureEnabled();
+
+		this.logger.debug({ action: 'importShareToken', userId, token, newName });
 
 		const shareToken = await this.shareTokenService.lookupToken(token);
 
@@ -141,7 +149,7 @@ export class ShareTokenUC {
 	}
 
 	private checkFeatureEnabled() {
-		const enabled = Configuration.get('FEATURE_COURSE_IMPORT') as boolean;
+		const enabled = Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean;
 		if (!enabled) {
 			throw new InternalServerErrorException('Import Feature not enabled');
 		}

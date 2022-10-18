@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser, ShareTokenParentType } from '@shared/domain';
-import { shareTokenFactory } from '@shared/testing';
+import { CopyElementType, CopyStatus, CopyStatusEnum, ICurrentUser, ShareTokenParentType } from '@shared/domain';
+import { courseFactory, setupEntities, shareTokenFactory } from '@shared/testing';
 import { ShareTokenUC } from '../uc';
 import { ShareTokenInfoDto } from '../uc/dto';
 import { ShareTokenController } from './share-token.controller';
@@ -9,6 +9,10 @@ import { ShareTokenController } from './share-token.controller';
 describe('ShareTokenController', () => {
 	let controller: ShareTokenController;
 	let uc: DeepMocked<ShareTokenUC>;
+
+	beforeAll(async () => {
+		await setupEntities();
+	});
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -97,6 +101,47 @@ describe('ShareTokenController', () => {
 			const response = await controller.lookupShareToken(currentUser, { token: shareTokenInfo.token });
 
 			expect(response).toMatchObject(shareTokenInfo);
+		});
+	});
+
+	describe('importing a share token', () => {
+		const setup = () => {
+			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const token = 'ctuW1FG0RsTo';
+			const course = courseFactory.buildWithId();
+			const status: CopyStatus = {
+				id: '634d78fc28c2e527f9255119',
+				title: 'Spanisch',
+				type: CopyElementType.COURSE,
+				status: CopyStatusEnum.SUCCESS,
+				copyEntity: course,
+			};
+			uc.importShareToken.mockResolvedValue(status);
+			const newName = 'NewName';
+			const jwt = 'some-example-jwt';
+
+			return { currentUser, token, newName, jwt, status };
+		};
+
+		it('should call the use case', async () => {
+			const { currentUser, token, newName, jwt } = setup();
+
+			await controller.importShareToken(currentUser, { token }, { newName }, jwt);
+
+			expect(uc.importShareToken).toBeCalledWith(currentUser.userId, token, newName, jwt);
+		});
+
+		it('should return the status response', async () => {
+			const { currentUser, token, newName, jwt, status } = setup();
+
+			const result = await controller.importShareToken(currentUser, { token }, { newName }, jwt);
+
+			expect(result).toEqual({
+				id: status.copyEntity?.id,
+				title: status.title,
+				type: status.type,
+				status: status.status,
+			});
 		});
 	});
 });

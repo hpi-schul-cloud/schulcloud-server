@@ -1,20 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import {
-	Board,
-	CopyElementType,
-	CopyHelperService,
-	CopyStatus,
-	CopyStatusEnum,
-	Course,
-	EntityId,
-	User,
-} from '@shared/domain';
+import { Board, CopyHelperService, CopyStatus, Course, EntityId } from '@shared/domain';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { BoardRepo, CourseRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
-import { RoomsService } from '../uc/rooms.service';
 import { BoardCopyService } from './board-copy.service';
+import { CourseEntityCopyService } from './course-entity-copy.service';
 import { LessonCopyService } from './lesson-copy.service';
+import { RoomsService } from './rooms.service';
 
 @Injectable()
 export class CourseCopyService {
@@ -22,6 +14,7 @@ export class CourseCopyService {
 		private readonly courseRepo: CourseRepo,
 		private readonly boardRepo: BoardRepo,
 		private readonly roomsService: RoomsService,
+		private readonly courseEntityCopyService: CourseEntityCopyService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly fileCopyAppendService: FileCopyAppendService,
@@ -53,7 +46,7 @@ export class CourseCopyService {
 
 		const copyName = this.copyHelperService.deriveCopyName(newName ?? originalCourse.name, existingNames);
 
-		const statusCourse = this.copyCourseEntity(user, originalCourse, copyName);
+		const statusCourse = this.courseEntityCopyService.copyCourse({ user, originalCourse, copyName });
 		const courseCopy = statusCourse.copyEntity as Course;
 		await this.courseRepo.save(courseCopy);
 
@@ -73,52 +66,5 @@ export class CourseCopyService {
 		statusCourse.status = this.copyHelperService.deriveStatusFromElements(statusCourse.elements);
 
 		return statusCourse;
-	}
-
-	private copyCourseEntity(user: User, originalCourse: Course, copyName?: string | undefined): CopyStatus {
-		const copy = new Course({
-			school: user.school,
-			name: copyName ?? originalCourse.name,
-			color: originalCourse.color,
-			teachers: [user],
-			startDate: user.school.schoolYear?.startDate,
-			untilDate: user.school.schoolYear?.endDate,
-		});
-
-		const elements = [
-			{
-				// WIP check types under @shred/domain
-				type: CopyElementType.METADATA,
-				status: CopyStatusEnum.SUCCESS,
-			},
-			{
-				type: CopyElementType.USER_GROUP, // teachers, substitutionTeachers, students,...
-				status: CopyStatusEnum.NOT_DOING,
-			},
-			{
-				type: CopyElementType.LTITOOL_GROUP,
-				status: CopyStatusEnum.NOT_DOING,
-			},
-			{
-				type: CopyElementType.TIME_GROUP,
-				status: CopyStatusEnum.NOT_DOING,
-			},
-		];
-
-		const courseGroupsExist = originalCourse.getCourseGroupItems().length > 0;
-		if (courseGroupsExist) {
-			elements.push({ type: CopyElementType.COURSEGROUP_GROUP, status: CopyStatusEnum.NOT_IMPLEMENTED });
-		}
-
-		const status = {
-			title: copy.name,
-			type: CopyElementType.COURSE,
-			status: this.copyHelperService.deriveStatusFromElements(elements),
-			copyEntity: copy,
-			originalEntity: originalCourse,
-			elements,
-		};
-
-		return status;
 	}
 }
