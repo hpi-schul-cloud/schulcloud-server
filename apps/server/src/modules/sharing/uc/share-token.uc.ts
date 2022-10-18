@@ -78,8 +78,13 @@ export class ShareTokenUC {
 		return shareTokenInfo;
 	}
 
-	async importShareToken(userId: EntityId, token: string, newName: string, jwt: string): Promise<CopyStatus> {
-		// WIP this.checkFeatureEnabled();
+	async importShareToken(
+		userId: EntityId,
+		token: string,
+		newName: string | undefined,
+		jwt: string
+	): Promise<CopyStatus> {
+		this.checkFeatureEnabled();
 
 		const shareToken = await this.shareTokenService.lookupToken(token);
 
@@ -141,7 +146,7 @@ export class ShareTokenUC {
 	}
 
 	private checkFeatureEnabled() {
-		const enabled = Configuration.get('FEATURE_COURSE_IMPORT') as boolean;
+		const enabled = Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean;
 		if (!enabled) {
 			throw new InternalServerErrorException('Import Feature not enabled');
 		}
