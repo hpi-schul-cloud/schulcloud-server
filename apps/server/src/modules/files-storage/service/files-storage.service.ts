@@ -25,6 +25,7 @@ import {
 	mapFileRecordToFileRecordParams,
 	markForDelete,
 	modifyFileNameInScope,
+	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
 import { IFile, IGetFileResponse } from '../interface';
@@ -81,6 +82,15 @@ export class FilesStorageService {
 			await this.fileRecordRepo.delete(fileRecord);
 			throw error;
 		}
+	}
+
+	public async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: IFile) {
+		const [fileRecords] = await this.getFileRecordsOfParent(params);
+		const fileName = resolveFileNameDuplicates(fileDescription.name, fileRecords);
+		const fileRecord = getNewFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
+
+		await this.fileRecordRepo.save(fileRecord);
+		await this.tryToCreateFileInStorage(fileRecord, params, fileDescription);
 	}
 
 	// update
