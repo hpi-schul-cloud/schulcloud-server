@@ -1310,7 +1310,7 @@ describe('FilesStorageService', () => {
 				return { sourceFile, targetFile, error };
 			};
 
-			it('should delete file record', async () => {
+			it('should pass error and delete file record', async () => {
 				const { sourceFile, targetFile, error } = setup();
 
 				await expect(service.tryCopyFiles(sourceFile, targetFile)).rejects.toThrow(error);
