@@ -27,7 +27,7 @@ import {
 	modifyFileNameInScope,
 	unmarkForDelete,
 } from '../helper';
-import { IGetFileResponse } from '../interface';
+import { IFile, IGetFileResponse } from '../interface';
 
 @Injectable()
 export class FilesStorageService {
@@ -63,6 +63,24 @@ export class FilesStorageService {
 		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		return countedFileRecords;
+	}
+
+	// upload
+	public async tryToCreateFileInStorage(
+		fileRecord: FileRecord,
+		params: FileRecordParams,
+		fileDescription: IFile
+	): Promise<FileRecord> {
+		try {
+			const filePath = createPath(params.schoolId, fileRecord.id);
+			await this.storageClient.create(filePath, fileDescription);
+			await this.antivirusService.send(fileRecord);
+
+			return fileRecord;
+		} catch (error) {
+			await this.fileRecordRepo.delete(fileRecord);
+			throw error;
+		}
 	}
 
 	// update

@@ -19,7 +19,7 @@ import {
 } from '../controller/dto';
 import { ErrorType } from '../error';
 import { createICopyFiles, createPath, getPaths, mapFileRecordToFileRecordParams, unmarkForDelete } from '../helper';
-import { IGetFileResponse } from '../interface';
+import { IFile, IGetFileResponse } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
 const getFileRecordsWithParams = () => {
@@ -276,6 +276,104 @@ describe('FilesStorageService', () => {
 				const { params } = setup();
 
 				await expect(service.getFileRecordsOfParent(params)).rejects.toThrow(new Error('bla'));
+			});
+		});
+	});
+
+	describe('tryToCreateFileInStorage is called', () => {
+		describe('storage client creates file successfully', () => {
+			const setup = () => {
+				const { params, fileRecords } = getFileRecordsWithParams();
+				const fileRecord = fileRecords[0];
+				const fileDescription = createMock<IFile>();
+
+				return { params, fileRecord, fileDescription };
+			};
+
+			it('should call client storage create with correct params', async () => {
+				const { params, fileRecord, fileDescription } = setup();
+
+				await service.tryToCreateFileInStorage(fileRecord, params, fileDescription);
+
+				const filePath = createPath(params.schoolId, fileRecord.id);
+
+				expect(storageClient.create).toHaveBeenCalledWith(filePath, fileDescription);
+			});
+
+			it('should return file record', async () => {
+				const { params, fileRecord, fileDescription } = setup();
+
+				const result = await service.tryToCreateFileInStorage(fileRecord, params, fileDescription);
+
+				expect(result).toEqual(fileRecord);
+			});
+		});
+
+		describe('storage client throws error', () => {
+			const setup = () => {
+				const { params, fileRecords } = getFileRecordsWithParams();
+				const fileRecord = fileRecords[0];
+				const fileDescription = createMock<IFile>();
+				const error = new Error('test');
+
+				storageClient.create.mockRejectedValueOnce(error);
+
+				return { params, fileRecord, fileDescription, error };
+			};
+
+			it('should not call antivirus service', async () => {
+				const { params, fileRecord, fileDescription, error } = setup();
+
+				await expect(service.tryToCreateFileInStorage(fileRecord, params, fileDescription)).rejects.toThrow(error);
+
+				expect(antivirusService.send).toHaveBeenCalledTimes(0);
+			});
+
+			it('should call file record repo delete', async () => {
+				const { params, fileRecord, fileDescription, error } = setup();
+
+				await expect(service.tryToCreateFileInStorage(fileRecord, params, fileDescription)).rejects.toThrow(error);
+
+				expect(fileRecordRepo.delete).toHaveBeenCalledWith(fileRecord);
+			});
+		});
+
+		describe('file record is send to antivirus successfully', () => {
+			const setup = () => {
+				const { params, fileRecords } = getFileRecordsWithParams();
+				const fileRecord = fileRecords[0];
+				const fileDescription = createMock<IFile>();
+
+				return { params, fileRecord, fileDescription };
+			};
+
+			it('should call anitvirus send with correct params', async () => {
+				const { params, fileRecord, fileDescription } = setup();
+
+				await service.tryToCreateFileInStorage(fileRecord, params, fileDescription);
+
+				expect(antivirusService.send).toHaveBeenCalledWith(fileRecord);
+			});
+		});
+
+		describe('antivirus throws error', () => {
+			const setup = () => {
+				const { params, fileRecords } = getFileRecordsWithParams();
+				const fileRecord = fileRecords[0];
+				const fileDescription = createMock<IFile>();
+				const error = new Error('test');
+
+				antivirusService.send.mockRejectedValueOnce(error);
+
+				return { params, fileRecord, fileDescription, error };
+			};
+
+			it('should call file record repo delete', async () => {
+				const { params, fileRecord, fileDescription, error } = setup();
+
+				await expect(service.tryToCreateFileInStorage(fileRecord, params, fileDescription)).rejects.toThrow(error);
+
+				expect(fileRecordRepo.delete).toHaveBeenCalledWith(fileRecord);
 			});
 		});
 	});
