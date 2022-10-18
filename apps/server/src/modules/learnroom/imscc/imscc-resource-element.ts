@@ -1,4 +1,4 @@
-import { IImsccElement } from './imscc-element.interface';
+import {IImsccElement} from './imscc-element.interface';
 
 export type IImsccResourceProps = {
 	identifier: string | number;
@@ -22,14 +22,3 @@ export class ImsccResourceElement implements IImsccElement {
 	}
 }
 
-export class ImsccResourceWrapperElement implements IImsccElement {
-	constructor(private readonly resourceElements: ImsccResourceElement[]) {}
-
-	transform(): Record<string, unknown> {
-		return {
-			resource: this.resourceElements.map((resourceElement) => {
-				return resourceElement.transform();
-			}),
-		};
-	}
-}

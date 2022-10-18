@@ -4,9 +4,11 @@ import { ImsccMetadataElement } from './imscc-metadata-element';
 import {
 	ImsccOrganizationElement,
 	IImsccOrganizationProps,
-	ImsccOrganizationWrapperElement,
+	
 } from './imscc-organization-element';
-import { IImsccResourceProps, ImsccResourceElement, ImsccResourceWrapperElement } from './imscc-resource-element';
+import { IImsccResourceProps, ImsccResourceElement } from './imscc-resource-element';
+import {ImsccResourceWrapperElement} from "@src/modules/learnroom/imscc/imscc-resource-wrapper-element";
+import {ImsccOrganizationWrapperElement} from "@src/modules/learnroom/imscc/imscc-organization-wrapper-element";
 
 export type IImsccFileBuilderOptions = {
 	title: string;
