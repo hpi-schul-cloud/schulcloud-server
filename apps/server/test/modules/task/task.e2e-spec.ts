@@ -1104,9 +1104,10 @@ describe('Task Controller (e2e)', () => {
 		});
 		it('PATCH :id should update a task', async () => {
 			const user = setup(Permission.HOMEWORK_EDIT);
-			const task = taskFactory.build({ name: 'original name', creator: user });
+			const course = courseFactory.build({ teachers: [user] });
+			const task = taskFactory.build({ name: 'original name', creator: user, course });
 
-			await em.persistAndFlush([user, task]);
+			await em.persistAndFlush([user, course, task]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
@@ -1114,8 +1115,8 @@ describe('Task Controller (e2e)', () => {
 			const response = await request(app.getHttpServer())
 				.patch(`/tasks/${task.id}`)
 				.set('Accept', 'application/json')
-				.send({ name: 'updated name' })
-				.expect(201);
+				.send({ name: 'updated name', courseId: course.id })
+				.expect(200);
 
 			expect((response.body as TaskResponse).name).toEqual('updated name');
 		});
