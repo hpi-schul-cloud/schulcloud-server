@@ -7,7 +7,9 @@ export function createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 		throw new Error(ErrorType.COULD_NOT_CREATE_PATH);
 	}
 
-	return [schoolId, fileRecordId].join('/');
+	const path = [schoolId, fileRecordId].join('/');
+
+	return path;
 }
 
 export function getPaths(fileRecords: FileRecord[]): string[] {
