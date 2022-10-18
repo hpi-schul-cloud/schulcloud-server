@@ -134,6 +134,8 @@ class SupportJWTService {
 			const currentUserId = params.account.userId.toString();
 
 			const account = await accountModel.findOne({ userId }).select(['_id', 'systemId']).lean().exec();
+			// const account = await this.app.service('nest-account-service').findByUserId(userId);
+			// if (!account && !account.id) {
 			if (!account && !account._id) {
 				throw new Error(`Account for user with the id ${userId} does not exist.`);
 			}
