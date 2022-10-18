@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { createICopyFiles, createPath, getPaths } from '.';
-import { ErrorType } from '../../error';
+import { ErrorType } from '../error';
 
 describe('Path Helper', () => {
 	let orm: MikroORM;

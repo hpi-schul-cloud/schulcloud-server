@@ -3,7 +3,7 @@ import { EntityId, FileRecord } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { getNewFileRecord, mapFileRecordToFileRecordParams, markForDelete, unmarkForDelete } from '.';
-import { FileRecordParams } from '../../controller/dto';
+import { FileRecordParams } from '../controller/dto';
 
 describe('File Record Helper', () => {
 	let orm: MikroORM;

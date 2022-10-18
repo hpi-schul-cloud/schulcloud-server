@@ -1,7 +1,7 @@
 import { ConflictException } from '@nestjs/common';
 import { FileRecord } from '@shared/domain';
 import path from 'path';
-import { ErrorType } from '../../error';
+import { ErrorType } from '../error';
 
 export function checkDuplicatedNames(fileRecords: FileRecord[], newFileName: string): void {
 	if (fileRecords.find((item) => item.name === newFileName)) {

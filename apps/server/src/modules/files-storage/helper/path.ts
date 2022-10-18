@@ -1,6 +1,6 @@
 import { EntityId, FileRecord } from '@shared/domain';
-import { ErrorType } from '../../error';
-import { ICopyFiles } from '../../interface';
+import { ErrorType } from '../error';
+import { ICopyFiles } from '../interface';
 
 export function createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 	if (!schoolId || !fileRecordId) {
