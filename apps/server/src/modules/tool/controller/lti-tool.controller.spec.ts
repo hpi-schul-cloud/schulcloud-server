@@ -4,14 +4,14 @@ import { ICurrentUser, IFindOptions, LtiPrivacyPermission, LtiRoleType, SortOrde
 import { LtiToolController } from '@src/modules/tool/controller/lti-tool.controller';
 import { LtiToolMapper } from '@src/modules/tool/mapper/lti-tool.mapper';
 import { LtiToolUc } from '@src/modules/tool/uc/lti-tool.uc';
-import { ToolIdParams } from '@src/modules/tool/controller/dto/tool-id.params';
+import { ToolIdParams } from '@src/modules/tool/controller/dto/request/tool-id.params';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolResponse } from '@src/modules/tool/controller/dto/lti-tool.response';
-import { LtiToolBody } from '@src/modules/tool/controller/dto/lti-tool.body';
-import { LtiToolParams } from '@src/modules/tool/controller/dto/lti-tool.params';
+import { LtiToolResponse } from '@src/modules/tool/controller/dto/response/lti-tool.response';
+import { LtiToolPostBody } from '@src/modules/tool/controller/dto/request/lti-tool-post.body';
+import { LtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool.params';
 import { PaginationParams } from '@shared/controller';
-import { SortLtiToolParams } from '@src/modules/tool/controller/dto/lti-tool-sort.params';
-import { LtiToolSearchListResponse } from '@src/modules/tool/controller/dto/lti-tool-search-list.response';
+import { SortLtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool-sort.params';
+import { LtiToolSearchListResponse } from '@src/modules/tool/controller/dto/response/lti-tool-search-list.response';
 
 describe('LtiToolController', () => {
 	let module: TestingModule;
@@ -71,7 +71,7 @@ describe('LtiToolController', () => {
 			skipConsent: false,
 		});
 		const ltiToolResponse: LtiToolResponse = new LtiToolResponse(ltiToolDO as LtiToolResponse);
-		const ltiToolBody: LtiToolBody = new LtiToolBody(ltiToolDO);
+		const ltiToolBody: LtiToolPostBody = new LtiToolPostBody(ltiToolDO);
 
 		return {
 			currentUser,

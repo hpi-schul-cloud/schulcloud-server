@@ -1,5 +1,5 @@
 import { PaginationResponse } from '@shared/controller';
-import { LtiToolResponse } from '@src/modules/tool/controller/dto/lti-tool.response';
+import { LtiToolResponse } from '@src/modules/tool/controller/dto/response/lti-tool.response';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class LtiToolSearchListResponse extends PaginationResponse<LtiToolResponse[]> {

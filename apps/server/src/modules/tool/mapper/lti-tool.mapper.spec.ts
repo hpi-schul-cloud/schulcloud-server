@@ -1,8 +1,8 @@
 import { LtiToolMapper } from '@src/modules/tool/mapper/lti-tool.mapper';
-import { LtiToolParams } from '@src/modules/tool/controller/dto/lti-tool.params';
+import { LtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool.params';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolResponse } from '@src/modules/tool/controller/dto/lti-tool.response';
+import { LtiToolResponse } from '@src/modules/tool/controller/dto/response/lti-tool.response';
 import { InternalServerErrorException } from '@nestjs/common';
 
 describe('LtiToolMapper', () => {

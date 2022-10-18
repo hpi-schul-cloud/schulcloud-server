@@ -1,6 +1,6 @@
 import { Lti11ResponseMapper } from '@src/modules/tool/mapper/lti11-response.mapper';
 import { Authorization } from 'oauth-1.0a';
-import { Lti11LaunchResponse } from '@src/modules/tool/controller/dto/lti11-launch.response';
+import { Lti11LaunchResponse } from '@src/modules/tool/controller/dto/response/lti11-launch.response';
 
 describe('Lti11ResponseMapper', () => {
 	let mapper: Lti11ResponseMapper;

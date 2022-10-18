@@ -11,6 +11,7 @@ import { Lti11Uc } from './uc/lti11.uc';
 import { LtiRoleMapper } from './mapper/lti-role.mapper';
 import { Lti11Service } from './service/lti11.service';
 import { UserModule } from '../user';
+import { LtiToolSortingMapper } from '@shared/repo/ltitool/lti-tool-sorting.mapper';
 
 @Module({
 	controllers: [LtiToolController, ToolController],
@@ -24,6 +25,7 @@ import { UserModule } from '../user';
 		LtiToolRepo,
 		PseudonymsRepo,
 		LtiToolMapper,
+		LtiToolSortingMapper,
 	],
 })
 export class ToolModule {}

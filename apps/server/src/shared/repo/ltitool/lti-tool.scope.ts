@@ -10,14 +10,14 @@ export class LtiToolScope extends Scope<LtiTool> {
 	}
 
 	byTemplate(isTemplate: boolean | undefined): LtiToolScope {
-		if (isTemplate) {
+		if (isTemplate !== undefined) {
 			this.addQuery({ isTemplate });
 		}
 		return this;
 	}
 
 	byHidden(isHidden: boolean | undefined): LtiToolScope {
-		if (isHidden) {
+		if (isHidden !== undefined) {
 			this.addQuery({ isHidden });
 		}
 		return this;

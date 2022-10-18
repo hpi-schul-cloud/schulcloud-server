@@ -1,20 +1,16 @@
 import { SortingParams } from '@shared/controller';
 import { IsEnum, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { SortOrder } from '@shared/domain/interface';
 
 export enum LtiToolSortOrder {
+	ID = 'id',
 	NAME = 'name',
 	URL = 'url',
-	KEY = 'key',
-	SECRET = 'secret',
 	LOGO_URL = 'logo_url',
 	LTI_MESSAGE_TYPE = 'lti_message_type',
 	LTI_VERSION = 'lti_version',
 	RESOURCE_LINK_ID = 'resource_link_id',
-	ROLES = 'roles',
 	PRIVACY_PERMISSION = 'privacy_permission',
-	CUSTOMS = 'customs',
 	IS_TEMPLATE = 'isTemplate',
 	IS_LOCAL = 'isLocal',
 	ORIGIN_TOOL_ID = 'originToolId',
@@ -31,9 +27,4 @@ export class SortLtiToolParams extends SortingParams<LtiToolSortOrder> {
 	@IsEnum(LtiToolSortOrder)
 	@ApiPropertyOptional({ enum: LtiToolSortOrder })
 	sortBy?: LtiToolSortOrder;
-
-	constructor(sortOrder: SortOrder, sortBy?: LtiToolSortOrder) {
-		super(sortOrder);
-		this.sortBy = sortBy;
-	}
 }

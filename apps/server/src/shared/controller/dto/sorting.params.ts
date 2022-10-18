@@ -16,8 +16,4 @@ export abstract class SortingParams<T> {
 	@IsEnum(SortOrder)
 	@ApiPropertyOptional({ enum: SortOrder })
 	sortOrder: SortOrder = SortOrder.asc;
-
-	constructor(sortOrder: SortOrder) {
-		this.sortOrder = sortOrder;
-	}
 }

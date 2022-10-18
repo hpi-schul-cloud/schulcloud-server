@@ -9,7 +9,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { ILtiToolProperties, LtiTool } from '@shared/domain';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
+import { LtiToolRepo } from '@shared/repo/ltitool/lti-tool.repo';
 import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';
 
 class LtiToolRepoSpec extends LtiToolRepo {
@@ -123,6 +123,8 @@ describe('LtiTool Repo', () => {
 			await expect(repo.findByOauthClientId(oAuthClientId)).rejects.toThrow(NotFoundError);
 		});
 	});
+
+	describe('find', () => {});
 
 	describe('mapEntityToDO', () => {
 		it('should return a domain object', () => {

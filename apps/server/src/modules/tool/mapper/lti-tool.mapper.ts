@@ -1,15 +1,22 @@
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolParams } from '@src/modules/tool/controller/dto/lti-tool.params';
+import { LtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool.params';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { LtiToolResponse } from '@src/modules/tool/controller/dto/lti-tool.response';
-import { LtiToolSortOrder, SortLtiToolParams } from '@src/modules/tool/controller/dto/lti-tool-sort.params';
+import { LtiToolResponse } from '@src/modules/tool/controller/dto/response/lti-tool.response';
+import { LtiToolSortOrder, SortLtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool-sort.params';
 import { SortOrderMap } from '@shared/domain';
-import { LtiToolBody } from '@src/modules/tool/controller/dto/lti-tool.body';
+import { LtiToolPostBody } from '@src/modules/tool/controller/dto/request/lti-tool-post.body';
+import { LtiToolPatchBody } from '@src/modules/tool/controller/dto/request/lti-tool-patch.body';
 
 @Injectable()
 export class LtiToolMapper {
-	mapLtiToolBodyToDO(body: LtiToolBody): LtiToolDO {
+	mapLtiToolBodyToDO(body: LtiToolPostBody): LtiToolDO {
 		const ltiTool: LtiToolDO = new LtiToolDO({ ...body });
+		return ltiTool;
+	}
+
+	// TODO: test
+	mapLtiToolPatchToDO(body: LtiToolPatchBody): Partial<LtiToolDO> {
+		const ltiTool: Partial<LtiToolDO> = { ...body };
 		return ltiTool;
 	}
 

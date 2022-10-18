@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Authorization } from 'oauth-1.0a';
 import { ICurrentUser } from '@shared/domain';
-import { Lti11LaunchResponse } from '@src/modules/tool/controller/dto/lti11-launch.response';
+import { Lti11LaunchResponse } from '@src/modules/tool/controller/dto/response/lti11-launch.response';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { ToolController } from './tool.controller';

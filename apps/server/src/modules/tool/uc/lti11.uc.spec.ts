@@ -10,7 +10,7 @@ import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
 import { Lti11Uc } from './lti11.uc';
-import { CustomLtiProperty } from '@src/modules/tool/controller/dto/custom-lti-property.body';
+import { CustomLtiPropertyParameter } from '@src/modules/tool/controller/dto/request/custom-lti-property.params';
 
 describe('Lti11Uc', () => {
 	let module: TestingModule;
@@ -230,7 +230,10 @@ describe('Lti11Uc', () => {
 
 			it('should use tool with custom fields', async () => {
 				const { currentUser, ltiTool, authorization } = setup();
-				ltiTool.customs = [new CustomLtiProperty('field1', 'value1'), new CustomLtiProperty('field2', 'value2')];
+				ltiTool.customs = [
+					new CustomLtiPropertyParameter('field1', 'value1'),
+					new CustomLtiPropertyParameter('field2', 'value2'),
+				];
 				const expectedRequestData: RequestOptions = {
 					url: ltiTool.url,
 					method: 'POST',

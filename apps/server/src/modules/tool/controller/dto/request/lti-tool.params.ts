@@ -1,25 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { StringToBoolean } from '@shared/controller';
+import { Transform } from 'class-transformer';
 
 export class LtiToolParams {
 	@IsOptional()
 	@IsString()
-	@ApiProperty()
+	@ApiProperty({ required: false })
 	name?: string;
 
 	@IsOptional()
 	@IsBoolean()
-	@ApiProperty()
+	@StringToBoolean()
+	@ApiProperty({ required: false })
 	isTemplate?: boolean;
 
 	@IsOptional()
 	@IsBoolean()
-	@ApiProperty()
+	@StringToBoolean()
+	@ApiProperty({ required: false })
 	isHidden?: boolean;
-
-	constructor(props: LtiToolParams) {
-		this.name = props.name;
-		this.isTemplate = props.isTemplate;
-		this.isHidden = props.isHidden;
-	}
 }

@@ -5,9 +5,9 @@ import { HttpModule } from '@nestjs/axios';
 import { LoggerModule } from '@src/core/logger';
 import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
 import { PseudonymsRepo } from '@shared/repo/index';
-import { LtiToolRepo } from '@shared/repo/ltitool/index';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
+import { ToolModule } from '@src/modules/tool';
 
 const storageStrategy: Provider = {
 	provide: 'ICollaborativeStorageStrategy',
@@ -15,12 +15,11 @@ const storageStrategy: Provider = {
 };
 
 @Module({
-	imports: [HttpModule, LoggerModule],
+	imports: [HttpModule, LoggerModule, ToolModule],
 	providers: [
 		CollaborativeStorageAdapter,
 		CollaborativeStorageAdapterMapper,
 		PseudonymsRepo,
-		LtiToolRepo,
 		NextcloudStrategy,
 		NextcloudClient,
 		storageStrategy,

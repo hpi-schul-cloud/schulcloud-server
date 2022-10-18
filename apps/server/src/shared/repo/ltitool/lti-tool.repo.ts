@@ -2,11 +2,32 @@ import { Injectable } from '@nestjs/common';
 import { BaseDORepo, EntityProperties } from '@shared/repo/base.do.repo';
 import { EntityName } from '@mikro-orm/core';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { IFindOptions, ILtiToolProperties, IPagination, LtiTool, Page, SortOrder, SortOrderMap } from '@shared/domain';
-import { LtiToolScope } from '@shared/repo/ltitool/ltitool.scope';
+import {
+	IFindOptions,
+	ILtiToolProperties,
+	IPagination,
+	LtiPrivacyPermission,
+	LtiTool,
+	Page,
+	SortOrder,
+	SortOrderMap,
+} from '@shared/domain';
+import { LtiToolScope } from '@shared/repo/ltitool/lti-tool.scope';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Logger } from '@src/core/logger';
+import { LtiToolSortingMapper } from '@shared/repo/ltitool/lti-tool-sorting.mapper';
+import { QueryOrderMap } from '@mikro-orm/core/enums';
 
 @Injectable()
 export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperties> {
+	constructor(
+		protected readonly _em: EntityManager,
+		protected readonly logger: Logger,
+		protected readonly sortingMapper: LtiToolSortingMapper
+	) {
+		super(_em, logger);
+	}
+
 	get entityName(): EntityName<LtiTool> {
 		return LtiTool;
 	}
@@ -15,10 +36,11 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		return LtiTool;
 	}
 
-	async find(query: Partial<LtiToolDO>, options?: IFindOptions<LtiTool>): Promise<Page<LtiToolDO>> {
+	async find(query: Partial<LtiToolDO>, options?: IFindOptions<LtiToolDO>): Promise<Page<LtiToolDO>> {
 		const pagination: IPagination = options?.pagination || {};
 		const order: SortOrderMap<LtiTool> = options?.order || {};
 		const scope: LtiToolScope = new LtiToolScope()
+			.allowEmptyQuery(true)
 			.byName(query.name)
 			.byHidden(query.isHidden)
 			.byTemplate(query.isTemplate);
@@ -65,8 +87,8 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 			lti_message_type: entity.lti_message_type,
 			lti_version: entity.lti_version,
 			resource_link_id: entity.resource_link_id,
-			roles: entity.roles,
-			privacy_permission: entity.privacy_permission,
+			roles: entity.roles || [],
+			privacy_permission: entity.privacy_permission || LtiPrivacyPermission.ANONYMOUS,
 			customs: entity.customs,
 			isTemplate: entity.isTemplate,
 			isLocal: entity.isLocal,

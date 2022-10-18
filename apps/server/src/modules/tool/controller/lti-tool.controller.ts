@@ -6,12 +6,13 @@ import { PaginationParams } from '@shared/controller';
 import { ApiTags } from '@nestjs/swagger';
 import { LtiToolMapper } from '../mapper/lti-tool.mapper';
 import { LtiToolUc } from '../uc/lti-tool.uc';
-import { LtiToolParams } from './dto/lti-tool.params';
-import { LtiToolBody } from './dto/lti-tool.body';
-import { LtiToolResponse } from './dto/lti-tool.response';
-import { SortLtiToolParams } from './dto/lti-tool-sort.params';
-import { LtiToolSearchListResponse } from './dto/lti-tool-search-list.response';
-import { ToolIdParams } from './dto/tool-id.params';
+import { LtiToolParams } from 'apps/server/src/modules/tool/controller/dto/request/lti-tool.params';
+import { LtiToolPostBody } from '@src/modules/tool/controller/dto/request/lti-tool-post.body';
+import { LtiToolResponse } from 'apps/server/src/modules/tool/controller/dto/response/lti-tool.response';
+import { SortLtiToolParams } from 'apps/server/src/modules/tool/controller/dto/request/lti-tool-sort.params';
+import { LtiToolSearchListResponse } from 'apps/server/src/modules/tool/controller/dto/response/lti-tool-search-list.response';
+import { ToolIdParams } from 'apps/server/src/modules/tool/controller/dto/request/tool-id.params';
+import { LtiToolPatchBody } from '@src/modules/tool/controller/dto/request/lti-tool-patch.body';
 
 @ApiTags('LtiTools')
 @Controller('ltitools')
@@ -52,7 +53,10 @@ export class LtiToolController {
 	}
 
 	@Post()
-	async createLtiTool(@CurrentUser() currentUser: ICurrentUser, @Body() body: LtiToolBody): Promise<LtiToolResponse> {
+	async createLtiTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() body: LtiToolPostBody
+	): Promise<LtiToolResponse> {
 		const ltiToolDO = this.ltiToolMapper.mapLtiToolBodyToDO(body);
 		const createdLtiTool: LtiToolDO = await this.ltiToolUc.createLtiTool(currentUser, ltiToolDO);
 		const mapped: LtiToolResponse = this.ltiToolMapper.mapDoToResponse(createdLtiTool);
@@ -63,9 +67,9 @@ export class LtiToolController {
 	async updateLtiTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams,
-		@Body() body: LtiToolBody
+		@Body() body: LtiToolPatchBody
 	): Promise<LtiToolResponse> {
-		const ltiToolDO = this.ltiToolMapper.mapLtiToolBodyToDO(body);
+		const ltiToolDO: Partial<LtiToolDO> = this.ltiToolMapper.mapLtiToolPatchToDO(body);
 		const updatedLtiTool: LtiToolDO = await this.ltiToolUc.updateLtiTool(currentUser, params.toolId, ltiToolDO);
 		const mapped: LtiToolResponse = this.ltiToolMapper.mapDoToResponse(updatedLtiTool);
 		return mapped;
