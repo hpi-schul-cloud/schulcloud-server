@@ -267,17 +267,17 @@ export class FilesStorageService {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
 		const responseEntities: CopyFileResponse[] = [];
 
-		await Promise.allSettled(
-			sourceFileRecords.map(async (sourceFile) => {
-				if (isStatusBlocked(sourceFile) || sourceFile.deletedSince) return;
+		const promises = sourceFileRecords.map(async (sourceFile) => {
+			if (isStatusBlocked(sourceFile) || sourceFile.deletedSince) return;
 
-				const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
+			const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
 
-				const fileResponse = await this.tryCopyFiles(sourceFile, targetFile);
+			const fileResponse = await this.tryCopyFiles(sourceFile, targetFile);
 
-				responseEntities.push(fileResponse);
-			})
-		);
+			responseEntities.push(fileResponse);
+		});
+
+		await Promise.allSettled(promises);
 
 		return responseEntities;
 	}
