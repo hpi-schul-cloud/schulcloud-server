@@ -10,7 +10,7 @@ export class LtiToolDO extends BaseWithTimestampsDO {
 
 	key: string;
 
-	secret?: string;
+	secret: string;
 
 	logo_url?: string;
 
