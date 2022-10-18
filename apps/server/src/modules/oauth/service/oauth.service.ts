@@ -128,7 +128,7 @@ export class OAuthService {
 			const user: User = await this.userRepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
 			return user;
 		} catch (error) {
-			throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
+			throw new OAuthSSOError(`Failed to find user with Id ${provisioningDto.externalUserId}`, 'sso_user_notfound');
 		}
 	}
 

@@ -20,7 +20,7 @@ import { RoleRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { AccountUc } from '@src/modules/account/uc/account.uc';
 
-describe('SanisStrategy', () => {
+describe('SanisUserService', () => {
 	let module: TestingModule;
 	let sanisUserService: SanisUserService;
 	let orm: MikroORM;

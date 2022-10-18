@@ -28,11 +28,10 @@ export class SanisUserService {
 		}
 
 		let createNewAccount = false;
-		try {
-			const userEntity: UserDO = await this.userRepo.findByExternalIdOrFail(user.externalId, systemId);
+		const userEntity: UserDO | null = await this.userRepo.findByExternalId(user.externalId, systemId);
+		if (userEntity) {
 			user.id = userEntity.id;
-		} catch (e) {
-			// ignore NotFoundException and create new user
+		} else {
 			createNewAccount = true;
 		}
 		const savedUser: UserDO = await this.userRepo.save(user);

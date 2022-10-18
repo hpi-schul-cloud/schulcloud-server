@@ -26,17 +26,24 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 	}
 
 	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDO> {
+		const userDo: UserDO | null = await this.findByExternalId(externalId, systemId);
+
+		if (!userDo) {
+			throw new NotFoundError(`User entity with externalId: ${externalId} and systemId: ${systemId} not found.`);
+		}
+
+		return userDo;
+	}
+
+	async findByExternalId(externalId: string, systemId: string): Promise<UserDO | null> {
 		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
 		const userEntity: User | undefined = userEntitys.find((user: User): boolean => {
 			const { systems } = user.school;
 			return systems && !!systems.getItems().find((system: System): boolean => system.id === systemId);
 		});
 
-		if (!userEntity) {
-			throw new NotFoundError(`User entity with externalId: ${externalId} and systemId: ${systemId} not found.`);
-		}
-
-		return this.mapEntityToDO(userEntity);
+		const userDo: UserDO | null = userEntity ? this.mapEntityToDO(userEntity) : null;
+		return userDo;
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {
