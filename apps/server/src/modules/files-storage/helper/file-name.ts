@@ -33,8 +33,7 @@ export function resolveFileNameDuplicates(filename: string, fileRecords: FileRec
 
 	while (hasDuplicateName(fileRecords, newFilename)) {
 		counter += 1;
-		filenameObj.name = `${filenameObj.name} (${counter})`;
-		newFilename = path.format(filenameObj);
+		newFilename = `${filenameObj.name} (${counter})${filenameObj.ext}`;
 	}
 
 	return newFilename;

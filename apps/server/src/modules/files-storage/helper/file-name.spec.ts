@@ -187,6 +187,27 @@ describe('File Name Helper', () => {
 		describe('WHEN one fileRecord with file name already exist', () => {
 			const setup = () => {
 				const fileRecords = setupFileRecords();
+				const newFileName = 'renamed.jpeg';
+				fileRecords[0].name = newFileName;
+
+				return {
+					newFileName,
+					fileRecords,
+				};
+			};
+
+			it('should return file name with (1) suffix', () => {
+				const { fileRecords, newFileName } = setup();
+
+				const result = resolveFileNameDuplicates(newFileName, fileRecords);
+
+				expect(result).toBe(`renamed (1).jpeg`);
+			});
+		});
+
+		describe('WHEN one fileRecord with same name but without file type suffix already exist', () => {
+			const setup = () => {
+				const fileRecords = setupFileRecords();
 				const newFileName = 'renamed';
 				fileRecords[0].name = newFileName;
 
@@ -201,16 +222,16 @@ describe('File Name Helper', () => {
 
 				const result = resolveFileNameDuplicates(newFileName, fileRecords);
 
-				expect(result).toBe(`${newFileName} (1)`);
+				expect(result).toBe(`renamed (1)`);
 			});
 		});
 
 		describe('WHEN two fileRecords with file name already exist', () => {
 			const setup = () => {
 				const fileRecords = setupFileRecords();
-				const newFileName = 'renamed';
+				const newFileName = 'renamed.jpeg';
 				fileRecords[0].name = newFileName;
-				fileRecords[1].name = `${newFileName} (1)`;
+				fileRecords[1].name = `renamed (1).jpeg`;
 
 				return {
 					newFileName,
@@ -223,7 +244,7 @@ describe('File Name Helper', () => {
 
 				const result = resolveFileNameDuplicates(newFileName, fileRecords);
 
-				expect(result).toBe(`${newFileName} (2)`);
+				expect(result).toBe(`renamed (2).jpeg`);
 			});
 		});
 	});
