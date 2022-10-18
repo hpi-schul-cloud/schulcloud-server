@@ -39,7 +39,7 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	key: string;
 
 	@Property({ nullable: false, default: 'none' })
-	secret?: string;
+	secret: string;
 
 	@Property({ nullable: true })
 	logo_url?: string;
