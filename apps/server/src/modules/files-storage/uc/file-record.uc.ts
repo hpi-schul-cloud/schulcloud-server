@@ -19,7 +19,7 @@ export class FileRecordUC {
 	) {}
 
 	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
-		const fileRecord = await this.filesStorageService.getFile(params);
+		const fileRecord = await this.filesStorageService.getFileRecord(params);
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.update);
 
 		const modifiedFileRecord = await this.filesStorageService.patchFilename(fileRecord, data);
@@ -30,7 +30,7 @@ export class FileRecordUC {
 	public async getFileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.read);
 
-		const countedFileRecords = await this.filesStorageService.getFilesOfParent(params);
+		const countedFileRecords = await this.filesStorageService.getFileRecordsOfParent(params);
 
 		return countedFileRecords;
 	}

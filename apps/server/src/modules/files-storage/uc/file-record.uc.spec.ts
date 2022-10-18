@@ -101,7 +101,7 @@ describe('FileRecordUC', () => {
 				const userId = new ObjectId().toHexString();
 				const { fileRecords, params } = getFileRecords();
 
-				filesStorageService.getFilesOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 
 				return { userId, params, fileRecords };
@@ -125,7 +125,7 @@ describe('FileRecordUC', () => {
 
 				await service.getFileRecordsOfParent(userId, params);
 
-				expect(filesStorageService.getFilesOfParent).toHaveBeenCalledWith(params);
+				expect(filesStorageService.getFileRecordsOfParent).toHaveBeenCalledWith(params);
 			});
 
 			it('should return counted file records', async () => {
@@ -142,7 +142,7 @@ describe('FileRecordUC', () => {
 				const userId = new ObjectId().toHexString();
 				const { fileRecords, params } = getFileRecords();
 
-				filesStorageService.getFilesOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new Error('Bla'));
 
 				return { userId, params, fileRecords };
@@ -161,7 +161,7 @@ describe('FileRecordUC', () => {
 				const params = getFileParams();
 				const fileRecords = [];
 
-				filesStorageService.getFilesOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 
 				return { userId, params, fileRecords };
@@ -226,7 +226,7 @@ describe('FileRecordUC', () => {
 				const { fileRecord, params } = getFileRecord();
 				const data: RenameFileParams = { fileName: 'test_new_name.txt' };
 
-				filesStorageService.getFile.mockResolvedValueOnce(fileRecord);
+				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 				filesStorageService.patchFilename.mockResolvedValueOnce(fileRecord);
 
@@ -237,7 +237,7 @@ describe('FileRecordUC', () => {
 				const { userId, params, data } = setup();
 				await service.patchFilename(userId, params, data);
 
-				expect(filesStorageService.getFile).toHaveBeenCalledWith(params);
+				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(params);
 			});
 
 			it('should call authorisation with right parameters', async () => {

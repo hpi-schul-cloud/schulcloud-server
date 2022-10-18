@@ -18,7 +18,7 @@ import {
 	DownloadFileParams,
 	FileRecordParams,
 	FileUrlParams,
-	SingleFileParams
+	SingleFileParams,
 } from '../controller/dto/file-storage.params';
 import { PermissionContexts } from '../files-storage.const';
 import { IFile } from '../interface/file';
@@ -106,7 +106,7 @@ export class FilesStorageUC {
 	}
 
 	private async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: IFile) {
-		const [fileRecords] = await this.filesStorageService.getFilesOfParent(params);
+		const [fileRecords] = await this.filesStorageService.getFileRecordsOfParent(params);
 		const fileName = this.checkFilenameExists(fileDescription.name, fileRecords);
 		const entity = this.getNewFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
 		try {
@@ -153,7 +153,7 @@ export class FilesStorageUC {
 
 	public async download(userId: EntityId, params: DownloadFileParams) {
 		const singleFileParams = { fileRecordId: params.fileRecordId };
-		const fileRecord = await this.filesStorageService.getFile(singleFileParams);
+		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
 
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.read);
 
@@ -163,7 +163,7 @@ export class FilesStorageUC {
 	}
 
 	public async downloadBySecurityToken(token: string) {
-		const fileRecord = await this.filesStorageService.getFileBySecurityCheckRequestToken(token);
+		const fileRecord = await this.filesStorageService.getFileRecordBySecurityCheckRequestToken(token);
 		const res = await this.filesStorageService.downloadFile(fileRecord.schoolId, fileRecord.id);
 
 		return res;
@@ -192,7 +192,7 @@ export class FilesStorageUC {
 	}
 
 	public async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
-		const fileRecord = await this.filesStorageService.getFile(params);
+		const fileRecord = await this.filesStorageService.getFileRecord(params);
 
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.delete);
 		await this.filesStorageService.delete([fileRecord]);
@@ -208,7 +208,7 @@ export class FilesStorageUC {
 	}
 
 	public async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
-		const fileRecord = await this.filesStorageService.getFileMarkedForDelete(params);
+		const fileRecord = await this.filesStorageService.getFileRecordMarkedForDelete(params);
 
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create);
 		await this.filesStorageService.restore([fileRecord]);

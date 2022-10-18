@@ -41,25 +41,25 @@ export class FilesStorageService {
 	}
 
 	// find
-	public async getFile(params: SingleFileParams): Promise<FileRecord> {
+	public async getFileRecord(params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 
 		return fileRecord;
 	}
 
-	public async getFileBySecurityCheckRequestToken(token: string): Promise<FileRecord> {
+	public async getFileRecordBySecurityCheckRequestToken(token: string): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 
 		return fileRecord;
 	}
 
-	public async getFileMarkedForDelete(params: SingleFileParams) {
+	public async getFileRecordMarkedForDelete(params: SingleFileParams) {
 		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
 
 		return fileRecord;
 	}
 
-	public async getFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async getFileRecordsOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		return countedFileRecords;
@@ -68,7 +68,7 @@ export class FilesStorageService {
 	// update
 	public async patchFilename(fileRecord: FileRecord, data: RenameFileParams) {
 		const fileRecordParams = mapFileRecordToFileRecordParams(fileRecord);
-		const [fileRecords] = await this.getFilesOfParent(fileRecordParams);
+		const [fileRecords] = await this.getFileRecordsOfParent(fileRecordParams);
 
 		const modifiedFileRecord = modifyFileNameInScope(fileRecord, fileRecords, data.fileName);
 		await this.fileRecordRepo.save(modifiedFileRecord);
@@ -142,7 +142,7 @@ export class FilesStorageService {
 	}
 
 	public async deleteFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
-		const [fileRecords, count] = await this.getFilesOfParent(params);
+		const [fileRecords, count] = await this.getFileRecordsOfParent(params);
 
 		if (count > 0) {
 			await this.delete(fileRecords);

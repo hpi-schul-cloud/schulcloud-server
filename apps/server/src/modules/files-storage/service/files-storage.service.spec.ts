@@ -118,7 +118,7 @@ describe('FilesStorageService', () => {
 			it('should call findOneById', async () => {
 				const { params, fileRecord } = setup();
 
-				await service.getFile(params);
+				await service.getFileRecord(params);
 
 				expect(fileRecordRepo.findOneById).toHaveBeenCalledWith(fileRecord.id);
 			});
@@ -126,7 +126,7 @@ describe('FilesStorageService', () => {
 			it('should return the matched fileRecord', async () => {
 				const { params, fileRecord } = setup();
 
-				const result = await service.getFile(params);
+				const result = await service.getFileRecord(params);
 
 				expect(result).toEqual(fileRecord);
 			});
@@ -144,7 +144,7 @@ describe('FilesStorageService', () => {
 			it('should pass the error', async () => {
 				const { params } = setup();
 
-				await expect(service.getFile(params)).rejects.toThrow(new Error('bla'));
+				await expect(service.getFileRecord(params)).rejects.toThrow(new Error('bla'));
 			});
 		});
 	});
@@ -162,7 +162,7 @@ describe('FilesStorageService', () => {
 			it('should call findOneById', async () => {
 				const { token } = setup();
 
-				await service.getFileBySecurityCheckRequestToken(token);
+				await service.getFileRecordBySecurityCheckRequestToken(token);
 
 				expect(fileRecordRepo.findBySecurityCheckRequestToken).toHaveBeenCalledWith(token);
 			});
@@ -170,7 +170,7 @@ describe('FilesStorageService', () => {
 			it('should return the matched fileRecord', async () => {
 				const { fileRecord, token } = setup();
 
-				const result = await service.getFileBySecurityCheckRequestToken(token);
+				const result = await service.getFileRecordBySecurityCheckRequestToken(token);
 
 				expect(result).toEqual(fileRecord);
 			});
@@ -189,7 +189,7 @@ describe('FilesStorageService', () => {
 			it('should pass the error', async () => {
 				const { error, token } = setup();
 
-				await expect(service.getFileBySecurityCheckRequestToken(token)).rejects.toThrow(error);
+				await expect(service.getFileRecordBySecurityCheckRequestToken(token)).rejects.toThrow(error);
 			});
 		});
 	});
@@ -206,7 +206,7 @@ describe('FilesStorageService', () => {
 			it('should call findOneByIdMarkedForDelete', async () => {
 				const { params, fileRecord } = setup();
 
-				await service.getFileMarkedForDelete(params);
+				await service.getFileRecordMarkedForDelete(params);
 
 				expect(fileRecordRepo.findOneByIdMarkedForDelete).toHaveBeenCalledWith(fileRecord.id);
 			});
@@ -214,7 +214,7 @@ describe('FilesStorageService', () => {
 			it('should return the matched fileRecord', async () => {
 				const { params, fileRecord } = setup();
 
-				const result = await service.getFileMarkedForDelete(params);
+				const result = await service.getFileRecordMarkedForDelete(params);
 
 				expect(result).toEqual(fileRecord);
 			});
@@ -232,7 +232,7 @@ describe('FilesStorageService', () => {
 			it('should pass the error', async () => {
 				const { params } = setup();
 
-				await expect(service.getFileMarkedForDelete(params)).rejects.toThrow(new Error('test'));
+				await expect(service.getFileRecordMarkedForDelete(params)).rejects.toThrow(new Error('test'));
 			});
 		});
 	});
@@ -249,7 +249,7 @@ describe('FilesStorageService', () => {
 			it('should call findBySchoolIdAndParentId with right parameters', async () => {
 				const { params } = setup();
 
-				await service.getFilesOfParent(params);
+				await service.getFileRecordsOfParent(params);
 
 				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenNthCalledWith(1, params.schoolId, params.parentId);
 			});
@@ -257,7 +257,7 @@ describe('FilesStorageService', () => {
 			it('should return the matched fileRecord', async () => {
 				const { params, fileRecords } = setup();
 
-				const result = await service.getFilesOfParent(params);
+				const result = await service.getFileRecordsOfParent(params);
 
 				expect(result).toEqual([fileRecords, 3]);
 			});
@@ -275,7 +275,7 @@ describe('FilesStorageService', () => {
 			it('should pass the error', async () => {
 				const { params } = setup();
 
-				await expect(service.getFilesOfParent(params)).rejects.toThrow(new Error('bla'));
+				await expect(service.getFileRecordsOfParent(params)).rejects.toThrow(new Error('bla'));
 			});
 		});
 	});
