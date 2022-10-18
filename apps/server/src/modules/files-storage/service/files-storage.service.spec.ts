@@ -106,7 +106,7 @@ describe('FilesStorageService', () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('getFile is called', () => {
+	describe('getFileRecord is called', () => {
 		describe('WHEN valid file exists', () => {
 			const setup = () => {
 				const { params, fileRecord } = getFileRecordWithParams();
@@ -149,7 +149,7 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('getFileBySecurityCheckRequestToken is called', () => {
+	describe('getFileRecordBySecurityCheckRequestToken is called', () => {
 		describe('WHEN valid file exists', () => {
 			const setup = () => {
 				const { fileRecord } = getFileRecordWithParams();
@@ -194,7 +194,7 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('getFileMarkedForDelete is called', () => {
+	describe('getFileRecordMarkedForDelete is called', () => {
 		describe('WHEN marked file exists', () => {
 			const setup = () => {
 				const { params, fileRecord } = getFileRecordWithParams();
@@ -237,7 +237,7 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('getFilesOfParent is called', () => {
+	describe('getFileRecordsOfParent is called', () => {
 		describe('WHEN valid files exist', () => {
 			const setup = () => {
 				const { params, fileRecords } = getFileRecordsWithParams();
@@ -293,7 +293,7 @@ describe('FilesStorageService', () => {
 				const fileRecord = fileRecords[0];
 				const data: RenameFileParams = { fileName: 'renamed' };
 
-				spy = jest.spyOn(service, 'getFilesOfParent').mockResolvedValueOnce([fileRecords, 1]);
+				spy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
 
 				return {
 					data,
@@ -336,7 +336,9 @@ describe('FilesStorageService', () => {
 				const { fileRecord, params } = getFileRecordWithParams();
 				const data: RenameFileParams = { fileName: 'renamed' };
 
-				const spyGetFilesOfParent = jest.spyOn(service, 'getFilesOfParent').mockResolvedValueOnce([[fileRecord], 1]);
+				const spyGetFilesOfParent = jest
+					.spyOn(service, 'getFileRecordsOfParent')
+					.mockResolvedValueOnce([[fileRecord], 1]);
 				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
 
 				return {
