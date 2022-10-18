@@ -6,7 +6,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParentType } from '@shared/domain';
-import { FilesStorageEvents, FilesStorageExchanges } from '@shared/infra/rabbitmq';
+import { FilesStorageEvents, FilesStorageExchange } from '@shared/infra/rabbitmq';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { ErrorMapper } from '../mapper/error.mapper';
@@ -79,7 +79,7 @@ describe('FilesStorageProducer', () => {
 			const res = await service.copyFilesOfParent(params);
 
 			const expectedParams = {
-				exchange: FilesStorageExchanges.FILES_STORAGE,
+				exchange: FilesStorageExchange,
 				routingKey: FilesStorageEvents.COPY_FILES_OF_PARENT,
 				payload: params,
 				timeout,
@@ -119,7 +119,7 @@ describe('FilesStorageProducer', () => {
 			const res = await service.listFilesOfParent(param);
 
 			const expectedParams = {
-				exchange: FilesStorageExchanges.FILES_STORAGE,
+				exchange: FilesStorageExchange,
 				routingKey: FilesStorageEvents.LIST_FILES_OF_PARENT,
 				payload: param,
 				timeout,
@@ -156,7 +156,7 @@ describe('FilesStorageProducer', () => {
 			const res = await service.deleteFilesOfParent(param);
 
 			const expectedParams = {
-				exchange: FilesStorageExchanges.FILES_STORAGE,
+				exchange: FilesStorageExchange,
 				routingKey: FilesStorageEvents.DELETE_FILES_OF_PARENT,
 				payload: param,
 				timeout,

@@ -5,7 +5,7 @@ import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
 import { Logger } from '@src/core/logger';
 import {
 	FilesStorageEvents,
-	FilesStorageExchanges,
+	FilesStorageExchange,
 	ICopyFileDO,
 	ICopyFilesOfParentParams,
 	IFileDO,
@@ -73,7 +73,7 @@ export class FilesStorageProducer {
 
 	private createRequest(event: FilesStorageEvents, payload: IFileRecordParams | ICopyFilesOfParentParams) {
 		return {
-			exchange: FilesStorageExchanges.FILES_STORAGE,
+			exchange: FilesStorageExchange,
 			routingKey: event,
 			payload,
 			timeout: this.timeout,
