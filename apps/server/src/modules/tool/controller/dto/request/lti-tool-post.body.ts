@@ -4,7 +4,6 @@ import { IsArray, IsBoolean, IsEnum, IsMongoId, IsOptional, IsString, ValidateNe
 import { CustomLtiPropertyParameter } from '@src/modules/tool/controller/dto/request/custom-lti-property.params';
 import { Type } from 'class-transformer';
 
-// TODO open api doc
 export class LtiToolPostBody {
 	@IsString()
 	@ApiProperty({ required: true })
@@ -57,7 +56,6 @@ export class LtiToolPostBody {
 	@IsOptional()
 	@IsArray()
 	@ApiProperty({ required: true })
-	@Type(() => CustomLtiPropertyParameter)
 	customs: CustomLtiPropertyParameter[] = [];
 
 	@IsBoolean()

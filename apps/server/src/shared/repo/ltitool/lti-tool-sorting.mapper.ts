@@ -5,6 +5,7 @@ import { QueryOrderMap } from '@mikro-orm/core/enums';
 
 @Injectable()
 export class LtiToolSortingMapper {
+	// TODO test
 	mapDOSortOrderToQueryOrder(sort: SortOrderMap<LtiToolDO>): QueryOrderMap<LtiTool> {
 		const queryOrderMap: QueryOrderMap<LtiTool> = {
 			_id: sort.id,

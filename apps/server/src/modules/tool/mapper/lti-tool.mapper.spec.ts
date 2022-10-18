@@ -1,9 +1,11 @@
 import { LtiToolMapper } from '@src/modules/tool/mapper/lti-tool.mapper';
-import { LtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool.params';
-import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain';
+import { LtiPrivacyPermission, LtiRoleType, SortOrder, SortOrderMap } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolResponse } from '@src/modules/tool/controller/dto/response/lti-tool.response';
 import { InternalServerErrorException } from '@nestjs/common';
+import { LtiToolPostBody } from '@src/modules/tool/controller/dto/request/lti-tool-post.body';
+import { LtiToolPatchBody } from '@src/modules/tool/controller/dto/request/lti-tool-patch.body';
+import { LtiToolSortOrder, SortLtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool-sort.params';
 
 describe('LtiToolMapper', () => {
 	let mapper: LtiToolMapper;
@@ -12,9 +14,9 @@ describe('LtiToolMapper', () => {
 		mapper = new LtiToolMapper();
 	});
 
-	describe('mapLtiToolBodyToDO', () => {
-		it('should map controller body to uc do', () => {
-			const ltiToolBody: LtiToolParams = {
+	describe('mapLtiToolPostBodyToDO', () => {
+		it('should map controller post body to uc do', () => {
+			const ltiToolBody: LtiToolPostBody = {
 				customs: [{ key: 'key', value: 'value' }],
 				friendlyUrl: 'friendlyUrl',
 				frontchannel_logout_uri: 'frontchannel_logout_uri',
@@ -38,9 +40,63 @@ describe('LtiToolMapper', () => {
 			};
 			const expectedResponse: LtiToolDO = new LtiToolDO({ ...ltiToolBody });
 
-			const result: LtiToolDO = mapper.mapLtiToolBodyToDO(ltiToolBody);
+			const result: LtiToolDO = mapper.mapLtiToolPostBodyToDO(ltiToolBody);
 
 			expect(result).toEqual(expectedResponse);
+		});
+	});
+
+	describe('mapLtiToolPatchBodyToDO', () => {
+		it('should map controller patch body to uc do', () => {
+			const ltiToolBody: LtiToolPatchBody = {
+				customs: [{ key: 'key', value: 'value' }],
+				friendlyUrl: 'friendlyUrl',
+				frontchannel_logout_uri: 'frontchannel_logout_uri',
+				isHidden: false,
+				isLocal: false,
+				isTemplate: false,
+				lti_message_type: 'lti_message_type',
+				lti_version: 'lti_version',
+				oAuthClientId: 'oAuthClientId',
+				openNewTab: false,
+				originToolId: 'originToolId',
+				privacy_permission: LtiPrivacyPermission.EMAIL,
+				resource_link_id: 'resource_link_id',
+				roles: [LtiRoleType.LEARNER, LtiRoleType.MENTOR],
+				skipConsent: false,
+				name: 'name',
+				url: 'url',
+				key: 'key',
+				secret: 'secret',
+				logo_url: 'logo_url',
+			};
+
+			const result: Partial<LtiToolDO> = mapper.mapLtiToolPatchBodyToDO(ltiToolBody);
+
+			expect(result).toEqual(ltiToolBody);
+		});
+	});
+
+	describe('mapSortingQueryToDomain', () => {
+		it('should map controller sorting query to domain sort order map', () => {
+			const sortingQuery: SortLtiToolParams = {
+				sortBy: LtiToolSortOrder.ID,
+				sortOrder: SortOrder.asc,
+			};
+
+			const result: SortOrderMap<LtiToolDO> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
+
+			expect(result).toEqual({ id: SortOrder.asc });
+		});
+
+		it('should map controller sorting query to undefined', () => {
+			const sortingQuery: SortLtiToolParams = {
+				sortOrder: SortOrder.asc,
+			};
+
+			const result: SortOrderMap<LtiToolDO> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
+
+			expect(result).toBeUndefined();
 		});
 	});
 

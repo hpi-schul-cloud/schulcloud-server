@@ -116,7 +116,7 @@ describe('BaseDORepo', () => {
 			const testDO1 = new TestDO({ name: 'test1' });
 			const testDO2 = new TestDO({ name: 'test2' });
 
-			await repo.save([testDO1, testDO2]);
+			await repo.saveAll([testDO1, testDO2]);
 			em.clear();
 
 			const result = await em.find(TestEntity, {});
@@ -141,7 +141,6 @@ describe('BaseDORepo', () => {
 			expect(result[0].name).toEqual(testDO.name);
 		});
 	});
-
 	describe('delete', () => {
 		it('should remove and flush a single entity', async () => {
 			const testEntity = new TestEntity();

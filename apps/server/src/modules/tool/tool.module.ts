@@ -27,5 +27,6 @@ import { LtiToolSortingMapper } from '@shared/repo/ltitool/lti-tool-sorting.mapp
 		LtiToolMapper,
 		LtiToolSortingMapper,
 	],
+	exports: [LtiToolRepo],
 })
 export class ToolModule {}

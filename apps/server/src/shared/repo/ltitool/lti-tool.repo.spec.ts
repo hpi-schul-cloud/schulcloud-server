@@ -11,6 +11,7 @@ import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo } from '@shared/repo/ltitool/lti-tool.repo';
 import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';
+import { LtiToolSortingMapper } from '@shared/repo/ltitool/lti-tool-sorting.mapper';
 
 class LtiToolRepoSpec extends LtiToolRepo {
 	mapEntityToDOSpec(entity: LtiTool): LtiToolDO {
@@ -27,6 +28,8 @@ describe('LtiTool Repo', () => {
 	let repo: LtiToolRepoSpec;
 	let em: EntityManager;
 
+	let sortingMapper;
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
@@ -36,10 +39,15 @@ describe('LtiTool Repo', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: LtiToolSortingMapper,
+					useValue: createMock<LtiToolSortingMapper>(),
+				},
 			],
 		}).compile();
 		repo = module.get(LtiToolRepoSpec);
 		em = module.get(EntityManager);
+		sortingMapper = module.get(LtiToolSortingMapper);
 	});
 
 	afterAll(async () => {

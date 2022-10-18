@@ -9,13 +9,12 @@ import { LtiToolPatchBody } from '@src/modules/tool/controller/dto/request/lti-t
 
 @Injectable()
 export class LtiToolMapper {
-	mapLtiToolBodyToDO(body: LtiToolPostBody): LtiToolDO {
+	mapLtiToolPostBodyToDO(body: LtiToolPostBody): LtiToolDO {
 		const ltiTool: LtiToolDO = new LtiToolDO({ ...body });
 		return ltiTool;
 	}
 
-	// TODO: test
-	mapLtiToolPatchToDO(body: LtiToolPatchBody): Partial<LtiToolDO> {
+	mapLtiToolPatchBodyToDO(body: LtiToolPatchBody): Partial<LtiToolDO> {
 		const ltiTool: Partial<LtiToolDO> = { ...body };
 		return ltiTool;
 	}
@@ -34,9 +33,6 @@ export class LtiToolMapper {
 		if (sortBy == null) {
 			return undefined;
 		}
-		if (!Object.values(LtiToolSortOrder).includes(sortBy)) {
-			throw new BadRequestException();
-		}
 
 		const result: SortOrderMap<LtiToolDO> = {
 			[sortBy]: sortingQuery.sortOrder,
@@ -44,6 +40,7 @@ export class LtiToolMapper {
 		return result;
 	}
 
+	// TODO: tests
 	mapLtiToolFilterQueryToDO(scope: LtiToolParams): Partial<LtiToolDO> {
 		const queryDO: Partial<LtiToolDO> = { ...scope };
 		return queryDO;

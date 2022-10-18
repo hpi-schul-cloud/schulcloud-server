@@ -10,7 +10,6 @@ import {
 	LtiTool,
 	Page,
 	SortOrder,
-	SortOrderMap,
 } from '@shared/domain';
 import { LtiToolScope } from '@shared/repo/ltitool/lti-tool.scope';
 import { EntityManager } from '@mikro-orm/mongodb';
@@ -36,9 +35,10 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		return LtiTool;
 	}
 
+	// TODO test
 	async find(query: Partial<LtiToolDO>, options?: IFindOptions<LtiToolDO>): Promise<Page<LtiToolDO>> {
 		const pagination: IPagination = options?.pagination || {};
-		const order: SortOrderMap<LtiTool> = options?.order || {};
+		const order: QueryOrderMap<LtiTool> = this.sortingMapper.mapDOSortOrderToQueryOrder(options?.order || {});
 		const scope: LtiToolScope = new LtiToolScope()
 			.allowEmptyQuery(true)
 			.byName(query.name)

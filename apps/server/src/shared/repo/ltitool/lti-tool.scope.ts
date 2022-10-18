@@ -1,6 +1,7 @@
 import { LtiTool } from '@shared/domain';
 import { Scope } from '../scope';
 
+// TODO: tests
 export class LtiToolScope extends Scope<LtiTool> {
 	byName(name: string | undefined): LtiToolScope {
 		if (name) {

@@ -4,21 +4,20 @@ import { IsArray, IsBoolean, IsEnum, IsMongoId, IsOptional, IsString, ValidateNe
 import { CustomLtiPropertyParameter } from '@src/modules/tool/controller/dto/request/custom-lti-property.params';
 import { Type } from 'class-transformer';
 
-// TODO open api doc
 export class LtiToolPatchBody {
 	@IsOptional()
 	@IsString()
-	@ApiProperty({ required: true })
+	@ApiProperty({ required: false })
 	name?: string;
 
 	@IsOptional()
 	@IsString()
-	@ApiProperty({ required: true })
+	@ApiProperty({ required: false })
 	url?: string;
 
 	@IsOptional()
 	@IsString()
-	@ApiProperty({ required: true })
+	@ApiProperty({ required: false })
 	key?: string;
 
 	@IsOptional()
@@ -49,24 +48,23 @@ export class LtiToolPatchBody {
 	@IsOptional()
 	@IsArray()
 	@IsEnum(LtiRoleType, { each: true })
-	@ApiProperty({ required: true })
+	@ApiProperty({ required: false })
 	roles?: LtiRoleType[];
 
 	@IsOptional()
 	@IsEnum(LtiPrivacyPermission)
-	@ApiProperty({ required: true })
+	@ApiProperty({ required: false })
 	privacy_permission?: LtiPrivacyPermission;
 
 	@ValidateNested({ each: true })
 	@IsOptional()
 	@IsArray()
-	@ApiProperty({ required: true })
-	@Type(() => CustomLtiPropertyParameter)
+	@ApiProperty({ required: false })
 	customs?: CustomLtiPropertyParameter[];
 
 	@IsOptional()
 	@IsBoolean()
-	@ApiProperty({ required: true })
+	@ApiProperty({ required: false })
 	isTemplate?: boolean;
 
 	@IsOptional()
@@ -96,7 +94,7 @@ export class LtiToolPatchBody {
 
 	@IsOptional()
 	@IsBoolean()
-	@ApiProperty({ required: true })
+	@ApiProperty({ required: false })
 	openNewTab?: boolean;
 
 	@IsOptional()
@@ -106,6 +104,6 @@ export class LtiToolPatchBody {
 
 	@IsOptional()
 	@IsBoolean()
-	@ApiProperty({ required: true })
+	@ApiProperty({ required: false })
 	isHidden?: boolean;
 }

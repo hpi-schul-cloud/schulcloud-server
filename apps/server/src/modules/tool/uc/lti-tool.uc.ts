@@ -4,6 +4,7 @@ import { ICurrentUser, IFindOptions, Page, Permission, User } from '@shared/doma
 import { AuthorizationService } from '@src/modules/authorization';
 import { Injectable } from '@nestjs/common';
 
+// TODO tests
 @Injectable()
 export class LtiToolUc {
 	constructor(private readonly ltiToolRepo: LtiToolRepo, private readonly authorizationService: AuthorizationService) {}

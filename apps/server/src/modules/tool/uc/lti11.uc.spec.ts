@@ -231,8 +231,8 @@ describe('Lti11Uc', () => {
 			it('should use tool with custom fields', async () => {
 				const { currentUser, ltiTool, authorization } = setup();
 				ltiTool.customs = [
-					new CustomLtiPropertyParameter('field1', 'value1'),
-					new CustomLtiPropertyParameter('field2', 'value2'),
+					{ key: 'field1', value: 'value1' },
+					{ key: 'field2', value: 'value2' },
 				];
 				const expectedRequestData: RequestOptions = {
 					url: ltiTool.url,

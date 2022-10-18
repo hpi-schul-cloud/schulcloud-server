@@ -2,7 +2,6 @@ import { EntityId, LtiPrivacyPermission, LtiRoleType } from '@shared/domain';
 import { CustomLtiProperty } from '@shared/domain/domainobject/custom-lti-property';
 import { ApiProperty } from '@nestjs/swagger';
 
-// TODO: open api doc
 export class LtiToolResponse {
 	@ApiProperty()
 	id: string;
