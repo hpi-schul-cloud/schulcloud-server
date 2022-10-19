@@ -1080,9 +1080,8 @@ describe('TaskUC', () => {
 	});
 
 	describe('Individual task assignment feature', () => {
-		let configurationSpy: jest.SpyInstance;
 		beforeEach(() => {
-			configurationSpy = jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
+			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
 				if (config === 'FEATURE_TASK_ASSIGNMENT_ENABLED') {
 					return true;
 				}
@@ -1092,7 +1091,6 @@ describe('TaskUC', () => {
 
 		describe('create task', () => {
 			let course: Course;
-			let task: Task;
 			beforeEach(() => {
 				user = userFactory.buildWithId();
 				course = courseFactory.build({ teachers: [user] });

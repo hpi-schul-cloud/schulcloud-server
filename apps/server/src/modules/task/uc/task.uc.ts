@@ -91,10 +91,8 @@ export class TaskUC {
 	}
 
 	async changeFinishedForUser(userId: EntityId, taskId: EntityId, isFinished: boolean): Promise<TaskWithStatusVo> {
-		const [user, task] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.taskRepo.findById(taskId),
-		]);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([]));
 
@@ -217,10 +215,8 @@ export class TaskUC {
 	}
 
 	async delete(userId: EntityId, taskId: EntityId, jwt: string) {
-		const [user, task] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.taskRepo.findById(taskId),
-		]);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
 
@@ -234,10 +230,8 @@ export class TaskUC {
 	async find(userId: EntityId, taskId: EntityId) {
 		this.checkIndividualTaskEnabled();
 
-		const [user, task] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.taskRepo.findById(taskId),
-		]);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
 
@@ -253,10 +247,8 @@ export class TaskUC {
 	async create(userId: EntityId, courseId: EntityId): Promise<TaskWithStatusVo> {
 		this.checkIndividualTaskEnabled();
 
-		const [user, course] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.courseRepo.findById(courseId),
-		]);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const course = await this.courseRepo.findById(courseId);
 
 		this.authorizationService.checkPermission(
 			user,
@@ -282,10 +274,8 @@ export class TaskUC {
 	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
 		this.checkIndividualTaskEnabled();
 
-		const [user, task] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.taskRepo.findById(taskId),
-		]);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([Permission.HOMEWORK_EDIT]));
 
