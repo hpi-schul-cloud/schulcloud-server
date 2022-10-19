@@ -13,7 +13,8 @@ import { FilesStorageExchange } from './exchange';
 
 const imports = [
 	RabbitMQModule.forRoot(RabbitMQModule, {
-		prefetchCount: 1,
+		// Please don't change the global prefetch count, if you need constraint, change it at channel level
+		prefetchCount: 5,
 		exchanges: [
 			{
 				name: Configuration.get('MAIL_SEND_EXCHANGE') as string,
