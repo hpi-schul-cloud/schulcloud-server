@@ -4,10 +4,12 @@ import { CourseExportService } from '@src/modules/learnroom/service/course-expor
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LessonService } from '@src/modules/lesson/service';
-import {courseFactory, lessonFactory, setupEntities} from '@shared/testing';
+import { courseFactory, lessonFactory, setupEntities } from '@shared/testing';
 import { Course, Lesson } from '@shared/domain';
+import { MikroORM } from '@mikro-orm/core';
 
 describe('CourseExportService', () => {
+	let orm: MikroORM;
 	let module: TestingModule;
 	let courseExportService: CourseExportService;
 	let courseServiceMock: DeepMocked<CourseService>;
@@ -17,7 +19,7 @@ describe('CourseExportService', () => {
 	let lessons: Lesson[];
 
 	beforeAll(async () => {
-		await setupEntities();
+		orm = await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				CourseExportService,
@@ -40,6 +42,7 @@ describe('CourseExportService', () => {
 
 	afterAll(async () => {
 		await module.close();
+		await orm.close();
 	});
 
 	describe('exportCourse', () => {
