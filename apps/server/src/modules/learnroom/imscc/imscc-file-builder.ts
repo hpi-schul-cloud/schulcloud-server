@@ -2,10 +2,10 @@ import AdmZip from 'adm-zip';
 import { Builder } from 'xml2js';
 import { ImsccMetadataElement } from './imscc-metadata-element';
 import {
-	ImsccOrganizationElement,
+	ImsccOrganizationItemElement,
 	IImsccOrganizationProps,
 	
-} from './imscc-organization-element';
+} from './imscc-organization-item-element';
 import { IImsccResourceProps, ImsccResourceElement } from './imscc-resource-element';
 import {ImsccResourceWrapperElement} from "@src/modules/learnroom/imscc/imscc-resource-wrapper-element";
 import {ImsccOrganizationWrapperElement} from "@src/modules/learnroom/imscc/imscc-organization-wrapper-element";
@@ -23,7 +23,7 @@ export class ImsccFileBuilder {
 
 	private metadata: ImsccMetadataElement;
 
-	private organizations = [] as ImsccOrganizationElement[];
+	private organizations = [] as ImsccOrganizationItemElement[];
 
 	private resources = [] as ImsccResourceElement[];
 
@@ -48,9 +48,9 @@ export class ImsccFileBuilder {
 
 	addOrganizations(props: IImsccOrganizationProps | IImsccOrganizationProps[]): ImsccFileBuilder {
 		if (Array.isArray(props)) {
-			props.map((prop) => this.organizations.push(new ImsccOrganizationElement(prop)));
+			props.map((prop) => this.organizations.push(new ImsccOrganizationItemElement(prop)));
 		} else {
-			this.organizations.push(new ImsccOrganizationElement(props));
+			this.organizations.push(new ImsccOrganizationItemElement(props));
 		}
 		return this;
 	}

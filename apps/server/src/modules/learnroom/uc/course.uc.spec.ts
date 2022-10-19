@@ -68,39 +68,4 @@ describe('CourseUc', () => {
 			expect(spy).toHaveBeenCalledWith('someUserId', {}, resultingOptions);
 		});
 	});
-
-	describe('exportCourse', () => {
-		beforeAll(() => {
-			courseRepo.findOne.mockResolvedValue({ name: 'Placeholder' } as Course);
-		});
-
-		afterAll(() => {
-			courseRepo.findOne.mockRestore();
-		});
-
-		it('should return buffer', async () => {
-			authService.checkPermissionByReferences.mockImplementationOnce(async () => Promise.resolve());
-			lessonRepo.findAllByCourseIds.mockImplementationOnce(async () =>
-				Promise.resolve([
-					[
-						{
-							id: 'placeholder-id',
-							name: 'placeholder-name',
-						} as Lesson,
-					],
-					0,
-				])
-			);
-
-			await expect(service.exportCourse('courseId', 'userId')).resolves.toBeInstanceOf(Buffer);
-		});
-
-		it('should throw if user can not edit course', async () => {
-			authService.checkPermissionByReferences.mockImplementationOnce(() => {
-				throw new Error();
-			});
-
-			await expect(service.exportCourse('courseId', 'userId')).rejects.toThrow();
-		});
-	});
 });

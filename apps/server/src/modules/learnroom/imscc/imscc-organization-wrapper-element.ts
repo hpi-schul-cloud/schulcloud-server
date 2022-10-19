@@ -1,8 +1,8 @@
 import { IImsccElement } from './imscc-element.interface';
-import { ImsccOrganizationElement } from './imscc-organization-element';
+import { ImsccOrganizationItemElement } from './imscc-organization-item-element';
 
 export class ImsccOrganizationWrapperElement implements IImsccElement {
-	constructor(private readonly organizationElements: ImsccOrganizationElement[]) {}
+	constructor(private readonly organizationElements: ImsccOrganizationItemElement[]) {}
 
 	transform(): Record<string, unknown> {
 		return {

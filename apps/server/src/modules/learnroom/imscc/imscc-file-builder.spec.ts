@@ -1,7 +1,7 @@
 import AdmZip from 'adm-zip';
 import { parseStringPromise } from 'xml2js';
 import { IImsccFileBuilderOptions, ImsccFileBuilder } from './imscc-file-builder';
-import { IImsccOrganizationProps } from './imscc-organization-element';
+import { IImsccOrganizationProps } from './imscc-organization-item-element';
 import { IImsccResourceProps } from './imscc-resource-element';
 
 describe('ImsccFileBuilder', () => {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Lesson } from '@shared/domain';
+import { Counted, EntityId, Lesson } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
@@ -19,5 +19,9 @@ export class LessonService {
 
 	async findById(lessonId: EntityId): Promise<Lesson> {
 		return this.lessonRepo.findById(lessonId);
+	}
+
+	async findByCourseIds(courseIds: EntityId[]): Promise<Counted<Lesson[]>> {
+		return this.lessonRepo.findAllByCourseIds(courseIds);
 	}
 }

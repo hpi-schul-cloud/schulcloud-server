@@ -5,7 +5,7 @@ export type IImsccOrganizationProps = {
 	title: string;
 };
 
-export class ImsccOrganizationElement implements IImsccElement {
+export class ImsccOrganizationItemElement implements IImsccElement {
 	constructor(private readonly props: IImsccOrganizationProps) {}
 
 	transform(): Record<string, unknown> {
