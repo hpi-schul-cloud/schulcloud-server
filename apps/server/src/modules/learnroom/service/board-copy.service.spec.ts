@@ -10,7 +10,7 @@ import {
 	setupEntities,
 	taskBoardElementFactory,
 	taskFactory,
-	userFactory
+	userFactory,
 } from '@shared/testing';
 import { BoardCopyService } from './board-copy.service';
 import { LessonCopyService } from './lesson-copy.service';

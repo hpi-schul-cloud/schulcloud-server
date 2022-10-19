@@ -2,13 +2,24 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { Injectable } from '@nestjs/common';
 import {
 	BaseEntity,
-	ComponentType, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum, Course, EntityId, EtherpadService, IComponentEtherpadProperties,
+	ComponentType,
+	CopyElementType,
+	CopyHelperService,
+	CopyStatus,
+	CopyStatusEnum,
+	Course,
+	EntityId,
+	EtherpadService,
+	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
 	IComponentInternalProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
 	Lesson,
-	Material, NexboardService, TaskCopyService, User
+	Material,
+	NexboardService,
+	TaskCopyService,
+	User,
 } from '@shared/domain';
 import { randomBytes } from 'crypto';
 
