@@ -104,36 +104,6 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	public async addRequestStreamToRequestPipe(
-		userId: EntityId,
-		params: FileRecordParams,
-		req: Request
-	): Promise<FileRecord> {
-		const result = await new Promise((resolve, reject) => {
-			const requestStream = busboy({ headers: req.headers, defParamCharset: 'utf8' });
-
-			// eslint-disable-next-line @typescript-eslint/no-misused-promises
-			requestStream.on('file', async (_name, file, info): Promise<void> => {
-				const fileDescription: IFile = createFile(info, req, file);
-
-				try {
-					const record = await this.uploadFile(userId, params, fileDescription);
-					resolve(record);
-				} catch (error) {
-					requestStream.emit('error', error);
-				}
-			});
-
-			requestStream.on('error', (e) => {
-				reject(new BadRequestException(e, `${FilesStorageService.name}:upload requestStream`));
-			});
-
-			req.pipe(requestStream);
-		});
-
-		return result as FileRecord;
-	}
-
 	// update
 	public async patchFilename(fileRecord: FileRecord, data: RenameFileParams) {
 		const fileRecordParams = mapFileRecordToFileRecordParams(fileRecord);

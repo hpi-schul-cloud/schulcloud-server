@@ -21,6 +21,7 @@ import {
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
 import { PermissionContexts } from '../files-storage.const';
+import { createFile } from '../helper';
 import { IFile } from '../interface/file';
 import { FilesStorageMapper } from '../mapper/files-storage.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -49,12 +50,7 @@ export class FilesStorageUC {
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			requestStream.on('file', async (_name, file, info): Promise<void> => {
-				const fileDescription: IFile = {
-					name: info.filename,
-					buffer: file,
-					size: Number(req.get('content-length')),
-					mimeType: info.mimeType,
-				};
+				const fileDescription: IFile = createFile(info, req, file);
 
 				try {
 					const record = await this.filesStorageService.uploadFile(userId, params, fileDescription);
