@@ -18,6 +18,7 @@ import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { CopyFileResponse } from '../controller/dto';
 import { FileRecordParams, FileUrlParams, SingleFileParams } from '../controller/dto/file-storage.params';
 import { PermissionContexts } from '../files-storage.const';
+import { createFile } from '../helper';
 import { IFile } from '../interface';
 import { IGetFileResponse } from '../interface/storage-client';
 import { FilesStorageMapper } from '../mapper/files-storage.mapper';
@@ -293,13 +294,14 @@ describe('FilesStorageUC', () => {
 				const fileRecord1 = fileRecords1[0];
 				const request1 = getRequest();
 				const buffer = Buffer.from('abc');
+				const fileInfo = {
+					filename: fileRecord1.name,
+					encoding: '7-bit',
+					mimeType: fileRecord1.mimeType,
+				};
 
 				const mockBusboyEvent = (requestStream: DeepMocked<Busboy>) => {
-					requestStream.emit('file', 'file', buffer, {
-						filename: fileRecord1.name,
-						encoding: '7-bit',
-						mimeType: fileRecord1.mimeType,
-					});
+					requestStream.emit('file', 'file', buffer, fileInfo);
 					return requestStream;
 				};
 
@@ -309,7 +311,7 @@ describe('FilesStorageUC', () => {
 
 				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord1);
 
-				return { params1, userId1, request1, size, fileRecord1, buffer };
+				return { params1, userId1, request1, fileRecord1, buffer, fileInfo };
 			};
 
 			it('should call checkPermissionByReferences', async () => {
@@ -327,16 +329,11 @@ describe('FilesStorageUC', () => {
 			});
 
 			it('should call uploadFile with correct params', async () => {
-				const { params1, userId1, request1, size, fileRecord1, buffer } = setup();
+				const { params1, userId1, request1, buffer, fileInfo } = setup();
 
 				await filesStorageUC.upload(userId1, params1, request1);
 
-				const fileDescription: IFile = {
-					name: fileRecord1.name,
-					buffer,
-					size: Number(size),
-					mimeType: fileRecord1.mimeType,
-				};
+				const fileDescription: IFile = createFile(fileInfo, request1, buffer);
 
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId1, params1, fileDescription);
 			});

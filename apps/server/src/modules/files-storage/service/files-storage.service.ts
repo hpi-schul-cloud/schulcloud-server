@@ -23,6 +23,7 @@ import {
 } from '../controller/dto';
 import { ErrorType } from '../error';
 import {
+	createFile,
 	createICopyFiles,
 	createPath,
 	deriveStatusFromSource,
@@ -113,12 +114,7 @@ export class FilesStorageService {
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			requestStream.on('file', async (_name, file, info): Promise<void> => {
-				const fileDescription: IFile = {
-					name: info.filename,
-					buffer: file,
-					size: Number(req.get('content-length')),
-					mimeType: info.mimeType,
-				};
+				const fileDescription: IFile = createFile(info, req, file);
 
 				try {
 					const record = await this.uploadFile(userId, params, fileDescription);
