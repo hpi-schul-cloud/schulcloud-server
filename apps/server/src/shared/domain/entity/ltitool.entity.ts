@@ -101,13 +101,12 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	@Property({ nullable: false, default: false })
 	isHidden: boolean;
 
-	// TODO: tests
 	constructor(props: ILtiToolProperties) {
 		super();
 		this.name = props.name;
 		this.url = props.url;
-		this.key = props.key || 'none';
-		this.secret = props.secret || 'none';
+		this.key = props.key;
+		this.secret = props.secret;
 		this.logo_url = props.logo_url;
 		this.lti_message_type = props.lti_message_type;
 		this.lti_version = props.lti_version;
@@ -123,8 +122,8 @@ export class LtiTool extends BaseEntityWithTimestamps {
 		this.oAuthClientId = props.oAuthClientId;
 		this.friendlyUrl = props.friendlyUrl;
 		this.skipConsent = props.skipConsent;
-		this.openNewTab = props.openNewTab || false;
+		this.openNewTab = props.openNewTab;
 		this.frontchannel_logout_uri = props.frontchannel_logout_uri;
-		this.isHidden = props.isHidden || false;
+		this.isHidden = props.isHidden;
 	}
 }

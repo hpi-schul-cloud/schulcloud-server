@@ -184,7 +184,7 @@ describe('LtiTool Repo', () => {
 					name: SortOrder.asc,
 				};
 
-				repo.find(queryLtiToolDO, options);
+				await repo.find(queryLtiToolDO, options);
 
 				expect(sortingMapper.mapDOSortOrderToQueryOrder).toHaveBeenCalledWith(options.order);
 			});
@@ -193,7 +193,7 @@ describe('LtiTool Repo', () => {
 				const { queryLtiToolDO, options } = await setupFind();
 				options.order = undefined;
 
-				repo.find(queryLtiToolDO, options);
+				await repo.find(queryLtiToolDO, options);
 
 				expect(sortingMapper.mapDOSortOrderToQueryOrder).toHaveBeenCalledWith({});
 			});
@@ -201,7 +201,7 @@ describe('LtiTool Repo', () => {
 
 		describe('pagination', () => {
 			it('should return all ltiTools when options with pagination is set to undefined', async () => {
-				const { queryLtiToolDO, options, ltiTools } = await setupFind();
+				const { queryLtiToolDO, ltiTools } = await setupFind();
 
 				const page: Page<LtiToolDO> = await repo.find(queryLtiToolDO, undefined);
 
@@ -210,7 +210,6 @@ describe('LtiTool Repo', () => {
 
 			it('should return one ltiTool when pagination has a limit of 1', async () => {
 				const { queryLtiToolDO, options } = await setupFind();
-
 				options.pagination = { limit: 1 };
 
 				const page: Page<LtiToolDO> = await repo.find(queryLtiToolDO, options);
@@ -220,7 +219,6 @@ describe('LtiTool Repo', () => {
 
 			it('should return no ltiTool when pagination has a limit of 1 and skip is set to 2', async () => {
 				const { queryLtiToolDO, options } = await setupFind();
-
 				options.pagination = { limit: 1, skip: 3 };
 
 				const page: Page<LtiToolDO> = await repo.find(queryLtiToolDO, options);

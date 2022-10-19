@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { StringToBoolean } from '@shared/controller';
-import { Transform } from 'class-transformer';
 
 export class LtiToolParams {
 	@IsOptional()

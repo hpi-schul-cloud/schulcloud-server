@@ -7,11 +7,11 @@ import { IservOAuthService } from '@src/modules/oauth/service/iserv-oauth.servic
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydraOauth.uc';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
+import { ToolModule } from '@src/modules/tool';
 import { AuthorizationModule } from '../authorization';
 import { SystemModule } from '../system';
 import { OauthSSOController } from './controller/oauth-sso.controller';
 import { OauthUc } from './uc/oauth.uc';
-import { ToolModule } from '@src/modules/tool';
 
 @Module({
 	imports: [LoggerModule, AuthorizationModule, HttpModule, EncryptionModule, SystemModule, ToolModule],

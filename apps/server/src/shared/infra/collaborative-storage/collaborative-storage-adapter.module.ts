@@ -6,8 +6,8 @@ import { LoggerModule } from '@src/core/logger';
 import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
 import { PseudonymsRepo } from '@shared/repo/index';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
 import { ToolModule } from '@src/modules/tool';
+import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
 
 const storageStrategy: Provider = {
 	provide: 'ICollaborativeStorageStrategy',

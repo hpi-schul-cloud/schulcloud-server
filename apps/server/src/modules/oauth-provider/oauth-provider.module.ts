@@ -5,6 +5,7 @@ import { UserModule } from '@src/modules/user';
 import { LoggerModule } from '@src/core/logger';
 import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
 import { AuthorizationModule } from '@src/modules/authorization/authorization.module';
+import { ToolModule } from '@src/modules/tool';
 import { OauthProviderUc } from './uc/oauth-provider.uc';
 import { OauthProviderLoginFlowUc } from './uc/oauth-provider.login-flow.uc';
 import { OauthProviderLoginFlowService } from './service/oauth-provider.login-flow.service';
@@ -14,7 +15,6 @@ import { OauthProviderResponseMapper } from './mapper/oauth-provider-response.ma
 import { OauthProviderController } from './controller/oauth-provider.controller';
 import { OauthProviderConsentFlowUc } from './uc/oauth-provider.consent-flow.uc';
 import { OauthProviderClientCrudUc } from './uc/oauth-provider.client-crud.uc';
-import { ToolModule } from '@src/modules/tool';
 
 @Module({
 	imports: [OauthProviderServiceModule, UserModule, LoggerModule, AuthorizationModule, ToolModule],

@@ -1,8 +1,8 @@
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool.params';
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LtiToolResponse } from '@src/modules/tool/controller/dto/response/lti-tool.response';
-import { LtiToolSortOrder, SortLtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool-sort.params';
+import { SortLtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool-sort.params';
 import { SortOrderMap } from '@shared/domain';
 import { LtiToolPostBody } from '@src/modules/tool/controller/dto/request/lti-tool-post.body';
 import { LtiToolPatchBody } from '@src/modules/tool/controller/dto/request/lti-tool-patch.body';

@@ -1,7 +1,6 @@
-import { LtiToolSortingMapper } from '@shared/repo/ltitool/lti-tool-sorting.mapper';
 import { LtiToolScope } from '@shared/repo/ltitool/lti-tool.scope';
 
-describe('LtiToolSortingMapper', () => {
+describe('LtiToolScope', () => {
 	let scope: LtiToolScope;
 
 	beforeEach(() => {
