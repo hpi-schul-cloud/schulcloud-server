@@ -44,7 +44,9 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 					// Update
 					this.removeProtectedEntityFields(newEntity);
 
-					const fetchedEntity: E = await this._em.findOneOrFail(this.entityName, domainObject.id as FilterQuery<E>);
+					const fetchedEntity: E = await this._em.findOneOrFail(this.entityName, {
+						id: domainObject.id,
+					} as FilterQuery<E>);
 					result = this._em.assign(fetchedEntity, newEntity);
 					this.logger.debug(`Updated entity with id ${result.id}`);
 				}
