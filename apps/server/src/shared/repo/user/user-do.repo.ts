@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { BaseDORepo, EntityProperties } from '@shared/repo/index';
-import { EntityId, IUserProperties, Role, School, System, User } from '@shared/domain/index';
-import { EntityName, FilterQuery, NotFoundError, Reference } from '@mikro-orm/core';
+import { BaseDORepo, EntityProperties } from '@shared/repo';
+import { EntityId, IUserProperties, Role, School, System, User } from '@shared/domain';
+import { EntityName, FilterQuery, Reference } from '@mikro-orm/core';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 
 @Injectable()
@@ -10,8 +10,8 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		return User;
 	}
 
-	getConstructor(): { new (I): User } {
-		return User;
+	entityFactory(props: IUserProperties): User {
+		return new User(props);
 	}
 
 	async findById(id: EntityId, populate = false): Promise<UserDO> {
@@ -23,16 +23,6 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		}
 
 		return this.mapEntityToDO(userEntity);
-	}
-
-	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDO> {
-		const userDo: UserDO | null = await this.findByExternalId(externalId, systemId);
-
-		if (!userDo) {
-			throw new NotFoundError(`User entity with externalId: ${externalId} and systemId: ${systemId} not found.`);
-		}
-
-		return userDo;
 	}
 
 	async findByExternalId(externalId: string, systemId: string): Promise<UserDO | null> {

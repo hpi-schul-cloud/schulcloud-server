@@ -58,8 +58,22 @@ describe('LtiTool Repo', () => {
 		expect(repo.entityName).toBe(LtiTool);
 	});
 
-	it('should implement getConstructor', () => {
-		expect(repo.getConstructor()).toBe(LtiTool);
+	describe('entityFactory', () => {
+		const props: ILtiToolProperties = {
+			name: 'toolName',
+		};
+
+		it('should return new entity of type LtiTool', () => {
+			const result: LtiTool = repo.entityFactory(props);
+
+			expect(result).toBeInstanceOf(LtiTool);
+		});
+
+		it('should return new entity with values from properties', () => {
+			const result: LtiTool = repo.entityFactory(props);
+
+			expect(result).toEqual(expect.objectContaining(props));
+		});
 	});
 
 	describe('findByUserAndTool', () => {

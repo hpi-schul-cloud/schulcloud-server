@@ -106,7 +106,7 @@ describe('SanisUserService', () => {
 		mapper.mapSanisRoleToRoleName.mockReturnValue(RoleName.ADMINISTRATOR);
 		roleRepo.findByName.mockResolvedValue(userRole);
 		mapper.mapToUserDO.mockReturnValue(userDO);
-		userRepo.findByExternalIdOrFail.mockResolvedValue(userDOwithID);
+		userRepo.findByExternalId.mockResolvedValue(userDOwithID);
 		userRepo.save.mockResolvedValue(userDOwithID);
 		accountUc.saveAccount.mockResolvedValue();
 
@@ -133,7 +133,7 @@ describe('SanisUserService', () => {
 	describe('provisionUser', () => {
 		it('should save new user', async () => {
 			const { sanisResponse, system, school, userDOwithID } = setup();
-			userRepo.findByExternalIdOrFail.mockRejectedValueOnce('Not Found');
+			userRepo.findByExternalId.mockResolvedValue(null);
 
 			const result = await sanisUserService.provisionUser(sanisResponse, system.id, school.id);
 

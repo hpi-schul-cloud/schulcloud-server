@@ -38,8 +38,8 @@ describe('BaseDORepo', () => {
 			return TestEntity;
 		}
 
-		getConstructor(): { new (I): TestEntity } {
-			return TestEntity;
+		entityFactory(props: ITestEntityProperties): TestEntity {
+			return new TestEntity(props);
 		}
 
 		mapEntityToDO(entity: TestEntity): TestDO {
@@ -87,17 +87,27 @@ describe('BaseDORepo', () => {
 		await module.close();
 	});
 
-	describe('defined', () => {
-		it('repo should be defined', () => {
-			expect(repo).toBeDefined();
-		});
-
-		it('entity manager should be defined', () => {
-			expect(em).toBeDefined();
-		});
-
+	describe('entityName', () => {
 		it('should implement entityName getter', () => {
 			expect(repo.entityName).toBe(TestEntity);
+		});
+	});
+
+	describe('entityFactory', () => {
+		const props: ITestEntityProperties = {
+			name: 'name',
+		};
+
+		it('should return new entity of type TestEntity', () => {
+			const result: TestEntity = repo.entityFactory(props);
+
+			expect(result).toBeInstanceOf(TestEntity);
+		});
+
+		it('should return new entity with values from properties', () => {
+			const result: TestEntity = repo.entityFactory(props);
+
+			expect(result).toEqual(expect.objectContaining(props));
 		});
 	});
 
@@ -110,19 +120,6 @@ describe('BaseDORepo', () => {
 
 			const result = await em.find(TestEntity, {});
 			expect(result).toHaveLength(1);
-		});
-
-		it('should persist and flush a new entity array', async () => {
-			const testDO1 = new TestDO({ name: 'test1' });
-			const testDO2 = new TestDO({ name: 'test2' });
-
-			await repo.save([testDO1, testDO2]);
-			em.clear();
-
-			const result = await em.find(TestEntity, {});
-			expect(result).toHaveLength(2);
-			expect(result[0].name).toEqual('test1');
-			expect(result[1].name).toEqual('test2');
 		});
 
 		it('should persist and flush a single updated entity', async () => {
@@ -139,6 +136,21 @@ describe('BaseDORepo', () => {
 			expect(result[0].createdAt).toEqual(testEntity.createdAt);
 			expect(result[0].updatedAt.getTime()).toBeGreaterThanOrEqual(testEntity.updatedAt.getTime());
 			expect(result[0].name).toEqual(testDO.name);
+		});
+	});
+
+	describe('saveAll', () => {
+		it('should save an entity array', async () => {
+			const testDO1 = new TestDO({ name: 'test1' });
+			const testDO2 = new TestDO({ name: 'test2' });
+
+			await repo.saveAll([testDO1, testDO2]);
+			em.clear();
+
+			const result = await em.find(TestEntity, {});
+			expect(result).toHaveLength(2);
+			expect(result[0].name).toEqual('test1');
+			expect(result[1].name).toEqual('test2');
 		});
 	});
 

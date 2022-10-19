@@ -110,7 +110,7 @@ describe('SanisSchoolService', () => {
 		mapper.mapSanisRoleToRoleName.mockReturnValue(RoleName.ADMINISTRATOR);
 		mapper.mapToUserDO.mockReturnValue(userDO);
 		mapper.mapToSchoolDto.mockReturnValue(schoolProvisioningDto);
-		schoolRepo.findByExternalIdOrFail.mockResolvedValue(school);
+		schoolRepo.findByExternalId.mockResolvedValue(school);
 		schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDto);
 
 		return {
@@ -134,7 +134,7 @@ describe('SanisSchoolService', () => {
 		beforeEach(() => {
 			const { schoolProvisioningDto, school, schoolDto } = setup();
 			mapper.mapToSchoolDto.mockReturnValue(schoolProvisioningDto);
-			schoolRepo.findByExternalIdOrFail.mockResolvedValue(school);
+			schoolRepo.findByExternalId.mockResolvedValue(school);
 			schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDto);
 		});
 
@@ -148,7 +148,7 @@ describe('SanisSchoolService', () => {
 
 		it('should save new school', async () => {
 			const { sanisResponse, system, schoolDto, schoolProvisioningDto } = setup();
-			schoolRepo.findByExternalIdOrFail.mockRejectedValueOnce('Not Found');
+			schoolRepo.findByExternalId.mockResolvedValue(null);
 
 			const result: SchoolDto = await sanisSchoolService.provisionSchool(sanisResponse, system.id);
 

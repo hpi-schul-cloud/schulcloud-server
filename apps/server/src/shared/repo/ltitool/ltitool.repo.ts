@@ -10,8 +10,8 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		return LtiTool;
 	}
 
-	getConstructor(): { new (I): LtiTool } {
-		return LtiTool;
+	entityFactory(props: ILtiToolProperties): LtiTool {
+		return new LtiTool(props);
 	}
 
 	async findByName(name: string): Promise<LtiToolDO> {

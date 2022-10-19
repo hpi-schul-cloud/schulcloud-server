@@ -1,4 +1,4 @@
-import { EntityManager, NotFoundError } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { School, SchoolRolePermission, SchoolRoles, SchoolYear, System } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -67,7 +67,7 @@ describe('school repo', () => {
 		expect(createdSchool.id).toBeDefined();
 	});
 
-	describe('findByExternalIdOrFail', () => {
+	describe('findByExternalId', () => {
 		it('should find school by external ID', async () => {
 			const system: System = systemFactory.buildWithId();
 			const schoolEntity: School = schoolFactory.build({ externalId: 'externalId' });
@@ -75,17 +75,21 @@ describe('school repo', () => {
 
 			await em.persistAndFlush(schoolEntity);
 
-			const result: School = await repo.findByExternalIdOrFail(
+			const result: School | null = await repo.findByExternalId(
 				schoolEntity.externalId as string,
 				schoolEntity.systems[0].id
 			);
 
 			expect(result).toEqual(schoolEntity);
 		});
-		it('should throw NotFoundError when no school is found', async () => {
-			await expect(
-				repo.findByExternalIdOrFail(new ObjectId().toHexString(), new ObjectId().toHexString())
-			).rejects.toThrow(NotFoundError);
+
+		it('should return null when no school is found', async () => {
+			const result: School | null = await repo.findByExternalId(
+				new ObjectId().toHexString(),
+				new ObjectId().toHexString()
+			);
+
+			expect(result).toBeNull();
 		});
 	});
 });

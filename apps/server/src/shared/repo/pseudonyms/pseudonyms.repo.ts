@@ -11,8 +11,8 @@ export class PseudonymsRepo extends BaseDORepo<PseudonymDO, Pseudonym, IPseudony
 		return Pseudonym;
 	}
 
-	getConstructor(): { new (I): Pseudonym } {
-		return Pseudonym;
+	entityFactory(props: IPseudonymProperties): Pseudonym {
+		return new Pseudonym(props);
 	}
 
 	async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise<PseudonymDO> {

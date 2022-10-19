@@ -57,8 +57,34 @@ describe('UserRepo', () => {
 		expect(repo.entityName).toBe(User);
 	});
 
-	it('should implement getConstructor', () => {
-		expect(repo.getConstructor()).toBe(User);
+	describe('entityFactory', () => {
+		const props: IUserProperties = {
+			email: 'email@email.email',
+			firstName: 'firstName',
+			lastName: 'lastName',
+			school: schoolFactory.buildWithId(),
+			roles: [roleFactory.buildWithId()],
+		};
+
+		it('should return new entity of type User', () => {
+			const result: User = repo.entityFactory(props);
+
+			expect(result).toBeInstanceOf(User);
+		});
+
+		it('should return new entity with values from properties', () => {
+			const result: User = repo.entityFactory(props);
+
+			expect(result).toEqual(
+				expect.objectContaining({
+					email: props.email,
+					firstName: props.firstName,
+					lastName: props.lastName,
+					school: props.school,
+				})
+			);
+			expect(result.roles.getItems()).toEqual(props.roles);
+		});
 	});
 
 	describe('findById', () => {
@@ -99,7 +125,7 @@ describe('UserRepo', () => {
 		});
 	});
 
-	describe('findByExternalIdOrFail', () => {
+	describe('findByExternalId', () => {
 		const externalId = 'externalId';
 		let system: System;
 		let school: School;
@@ -115,23 +141,31 @@ describe('UserRepo', () => {
 		});
 
 		it('should find a user by its external id', async () => {
-			const result: UserDO = await repo.findByExternalIdOrFail(user.externalId as string, system.id);
+			const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
 
-			expect(result.id).toEqual(user.id);
-			expect(result.externalId).toEqual(user.externalId);
-			expect(result.schoolId).toEqual(school.id);
+			expect(result).toEqual(
+				expect.objectContaining({
+					id: user.id,
+					externalId: user.externalId,
+					schoolId: school.id,
+				})
+			);
 		});
 
-		it('should reject if no user with external id was found', async () => {
+		it('should return null if no user with external id was found', async () => {
 			await em.nativeDelete(User, {});
 
-			await expect(repo.findByExternalIdOrFail(user.externalId as string, system.id)).rejects.toThrow(NotFoundError);
+			const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
+
+			expect(result).toBeNull();
 		});
 
-		it('should reject if school has no corresponding system', async () => {
+		it('should return null if school has no corresponding system', async () => {
 			school.systems.removeAll();
 
-			await expect(repo.findByExternalIdOrFail(user.externalId as string, system.id)).rejects.toThrow(NotFoundError);
+			const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
+
+			expect(result).toBeNull();
 		});
 	});
 

@@ -59,8 +59,24 @@ describe('Pseudonym Repo', () => {
 		expect(repo.entityName).toBe(Pseudonym);
 	});
 
-	it('should implement getConstructor', () => {
-		expect(repo.getConstructor()).toBe(Pseudonym);
+	describe('entityFactory', () => {
+		const props: IPseudonymProperties = {
+			pseudonym: 'pseudonym',
+			toolId: new ObjectId(),
+			userId: new ObjectId(),
+		};
+
+		it('should return new entity of type Pseudonym', () => {
+			const result: Pseudonym = repo.entityFactory(props);
+
+			expect(result).toBeInstanceOf(Pseudonym);
+		});
+
+		it('should return new entity with values from properties', () => {
+			const result: Pseudonym = repo.entityFactory(props);
+
+			expect(result).toEqual(expect.objectContaining(props));
+		});
 	});
 
 	describe('findByUserAndTool', () => {

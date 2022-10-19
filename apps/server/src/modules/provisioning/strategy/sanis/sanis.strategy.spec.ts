@@ -13,7 +13,7 @@ import {
 } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { of } from 'rxjs';
 import { UUID } from 'bson';
-import { UnprocessableEntityException } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, RoleName, School, System } from '@shared/domain';
@@ -170,7 +170,7 @@ describe('SanisStrategy', () => {
 
 			const apply = () => sanisStrategy.apply(sanisParams);
 
-			await expect(apply()).rejects.toThrow(UnprocessableEntityException);
+			await expect(apply()).rejects.toThrow(InternalServerErrorException);
 		});
 	});
 

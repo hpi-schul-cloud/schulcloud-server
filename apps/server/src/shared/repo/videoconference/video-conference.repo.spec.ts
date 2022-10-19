@@ -64,8 +64,28 @@ describe('Video Conference Repo', () => {
 		expect(repo.entityName).toBe(VideoConference);
 	});
 
-	it('should implement getConstructor', () => {
-		expect(repo.getConstructor()).toBe(VideoConference);
+	describe('entityFactory', () => {
+		const props: IVideoConferenceProperties = {
+			target: 'teams',
+			targetModel: TargetModels.EVENTS,
+			options: new VideoConferenceOptions({
+				everybodyJoinsAsModerator: false,
+				everyAttendeJoinsMuted: false,
+				moderatorMustApproveJoinRequests: false,
+			}),
+		};
+
+		it('should return new entity of type VideoConference', () => {
+			const result: VideoConference = repo.entityFactory(props);
+
+			expect(result).toBeInstanceOf(VideoConference);
+		});
+
+		it('should return new entity with values from properties', () => {
+			const result: VideoConference = repo.entityFactory(props);
+
+			expect(result).toEqual(expect.objectContaining(props));
+		});
 	});
 
 	describe('findByScopeId', () => {

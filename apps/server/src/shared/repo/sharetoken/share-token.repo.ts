@@ -16,8 +16,8 @@ export class ShareTokenRepo extends BaseDORepo<ShareTokenDO, ShareToken, IShareT
 		return ShareToken;
 	}
 
-	getConstructor() {
-		return ShareToken;
+	entityFactory(props: IShareTokenProperties): ShareToken {
+		return new ShareToken(props);
 	}
 
 	async findOneByToken(token: ShareTokenString): Promise<ShareTokenDO> {

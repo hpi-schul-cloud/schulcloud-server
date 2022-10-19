@@ -21,8 +21,8 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		return VideoConference;
 	}
 
-	getConstructor(): { new (I): VideoConference } {
-		return VideoConference;
+	entityFactory(props: IVideoConferenceProperties): VideoConference {
+		return new VideoConference(props);
 	}
 
 	async findByScopeId(target: string, videoConferenceScope: VideoConferenceScope): Promise<VideoConferenceDO> {
