@@ -41,7 +41,7 @@
 		"ADMIN_USER": "dbildungscloud",
 		"ADMIN_PASSWORD": "dBildungscloud"
 	},
-	"NEST_AVAILABLE_LOG_LEVELS": "",
+	"AVAILABLE_LOG_LEVELS": "",
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
 	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": false
