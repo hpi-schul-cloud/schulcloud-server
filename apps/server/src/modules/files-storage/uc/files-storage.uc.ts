@@ -22,7 +22,7 @@ import {
 } from '../controller/dto/file-storage.params';
 import { PermissionContexts } from '../files-storage.const';
 import { IFile } from '../interface/file';
-import { FileStorageMapper } from '../mapper/parent-type.mapper';
+import { FilesStorageMapper } from '../mapper/files-storage.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 
 @Injectable()
@@ -149,7 +149,7 @@ export class FilesStorageUC {
 		parentId: EntityId,
 		context: IPermissionContext
 	) {
-		const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
+		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
 		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
 	}
 

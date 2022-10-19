@@ -20,7 +20,7 @@ import { FileRecordParams, FileUrlParams, SingleFileParams } from '../controller
 import { PermissionContexts } from '../files-storage.const';
 import { IFile } from '../interface';
 import { IGetFileResponse } from '../interface/storage-client';
-import { FileStorageMapper } from '../mapper/parent-type.mapper';
+import { FilesStorageMapper } from '../mapper/files-storage.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 
@@ -317,7 +317,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.upload(userId1, params1, request1);
 
-				const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(params1.parentType);
+				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(params1.parentType);
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId1,
 					allowedType,
@@ -456,7 +456,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.download(userId1, fileDownloadParams1);
 
-				const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord1.parentType);
+				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord1.parentType);
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId1,
 					allowedType,
@@ -632,7 +632,7 @@ describe('FilesStorageUC', () => {
 
 			it('should call authorizationService.checkPermissionByReferences', async () => {
 				const { userId1, requestParams1 } = getParams();
-				const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(requestParams1.parentType);
+				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(requestParams1.parentType);
 
 				await filesStorageUC.deleteFilesOfParent(userId1, requestParams1);
 
@@ -773,7 +773,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.deleteOneFile(userId1, requestParams);
 
-				const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(requestParams.parentType);
+				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(requestParams.parentType);
 
 				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
 					userId1,
@@ -866,7 +866,7 @@ describe('FilesStorageUC', () => {
 
 			it('should call authorisation with right parameters', async () => {
 				const { params1, userId1 } = setup();
-				const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(params1.parentType);
+				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(params1.parentType);
 
 				await filesStorageUC.restoreFilesOfParent(userId1, params1);
 
@@ -950,7 +950,7 @@ describe('FilesStorageUC', () => {
 
 			it('should call authorisation with right parameters', async () => {
 				const { params1, userId1, fileRecord1 } = setup();
-				const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord1.parentType);
+				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord1.parentType);
 
 				await filesStorageUC.restoreOneFile(userId1, params1);
 

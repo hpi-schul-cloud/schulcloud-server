@@ -2,7 +2,7 @@ import { NotImplementedException } from '@nestjs/common';
 import { FileRecordParentType } from '@shared/domain';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 
-export class FileStorageMapper {
+export class FilesStorageMapper {
 	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AllowedAuthorizationEntityType {
 		const types: Map<FileRecordParentType, AllowedAuthorizationEntityType> = new Map();
 		types.set(FileRecordParentType.Task, AllowedAuthorizationEntityType.Task);
