@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, Counted, EntityId, FileRecord, FileRecordParentType, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
@@ -11,12 +11,14 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AxiosResponse, AxiosResponseHeaders } from 'axios';
+import { Busboy } from 'busboy';
 import { Request } from 'express';
 import { Observable, of } from 'rxjs';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { CopyFileResponse } from '../controller/dto';
 import { FileRecordParams, FileUrlParams, SingleFileParams } from '../controller/dto/file-storage.params';
 import { PermissionContexts } from '../files-storage.const';
+import { IFile } from '../interface';
 import { IGetFileResponse } from '../interface/storage-client';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -285,12 +287,29 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('upload is called', () => {
-		describe('WHEN user is authorized', () => {
+		describe('WHEN user is authorized, busboy emits event and file is uploaded successfully', () => {
 			const setup = () => {
-				const { params1, userId1 } = getFileRecordsWithParams();
+				const { params1, userId1, fileRecords1 } = getFileRecordsWithParams();
+				const fileRecord1 = fileRecords1[0];
 				const request1 = getRequest();
+				const buffer = Buffer.from('abc');
 
-				return { params1, userId1, request1 };
+				const mockBusboyEvent = (requestStream: DeepMocked<Busboy>) => {
+					requestStream.emit('file', 'file', buffer, {
+						filename: fileRecord1.name,
+						encoding: '7-bit',
+						mimeType: fileRecord1.mimeType,
+					});
+					return requestStream;
+				};
+
+				const size = request1.headers['content-length'];
+				request1.get.mockReturnValue(size);
+				request1.pipe.mockImplementation(mockBusboyEvent as never);
+
+				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord1);
+
+				return { params1, userId1, request1, size, fileRecord1, buffer };
 			};
 
 			it('should call checkPermissionByReferences', async () => {
@@ -305,6 +324,90 @@ describe('FilesStorageUC', () => {
 					params1.parentId,
 					PermissionContexts.create
 				);
+			});
+
+			it('should call uploadFile with correct params', async () => {
+				const { params1, userId1, request1, size, fileRecord1, buffer } = setup();
+
+				await filesStorageUC.upload(userId1, params1, request1);
+
+				const fileDescription: IFile = {
+					name: fileRecord1.name,
+					buffer,
+					size: Number(size),
+					mimeType: fileRecord1.mimeType,
+				};
+
+				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId1, params1, fileDescription);
+			});
+
+			it('should call uploadFile with correct params', async () => {
+				const { params1, userId1, request1, fileRecord1 } = setup();
+
+				const result = await filesStorageUC.upload(userId1, params1, request1);
+
+				expect(result).toEqual(fileRecord1);
+			});
+		});
+
+		describe('WHEN user is authorized and busboy emits error', () => {
+			const setup = () => {
+				const { params1, userId1 } = getFileRecordsWithParams();
+				const request1 = getRequest();
+				const error = new Error('test');
+
+				const mockBusboyEvent = (requestStream: DeepMocked<Busboy>) => {
+					requestStream.emit('error', error);
+
+					return requestStream;
+				};
+
+				const size = request1.headers['content-length'];
+				request1.get.mockReturnValue(size);
+				request1.pipe.mockImplementation(mockBusboyEvent as never);
+
+				return { params1, userId1, request1, error };
+			};
+
+			it('should pass error', async () => {
+				const { params1, userId1, request1, error } = setup();
+
+				const expectedError = new BadRequestException(error, `${FilesStorageUC.name}:upload requestStream`);
+
+				await expect(filesStorageUC.upload(userId1, params1, request1)).rejects.toThrow(expectedError);
+			});
+		});
+
+		describe('WHEN user is authorized, busboy emits event and storage client throws error', () => {
+			const setup = () => {
+				const { params1, userId1, fileRecords1 } = getFileRecordsWithParams();
+				const fileRecord1 = fileRecords1[0];
+				const request1 = getRequest();
+				const buffer = Buffer.from('abc');
+
+				const mockBusboyEvent = (requestStream: DeepMocked<Busboy>) => {
+					requestStream.emit('file', 'file', buffer, {
+						filename: fileRecord1.name,
+						encoding: '7-bit',
+						mimeType: fileRecord1.mimeType,
+					});
+					return requestStream;
+				};
+
+				const size = request1.headers['content-length'];
+				request1.get.mockReturnValue(size);
+				request1.pipe.mockImplementation(mockBusboyEvent as never);
+
+				const error = new Error('test');
+				filesStorageService.uploadFile.mockRejectedValueOnce(error);
+
+				return { params1, userId1, request1, error };
+			};
+
+			it('should pass error', async () => {
+				const { params1, userId1, request1, error } = setup();
+
+				await expect(filesStorageUC.upload(userId1, params1, request1)).rejects.toThrowError(error);
 			});
 		});
 
@@ -323,52 +426,6 @@ describe('FilesStorageUC', () => {
 				const { params1, userId1, request1, error } = setup();
 
 				await expect(filesStorageUC.upload(userId1, params1, request1)).rejects.toThrowError(error);
-			});
-		});
-
-		describe('WHEN request is added to request stream successfully', () => {
-			const setup = () => {
-				const { params1, userId1, fileRecords1 } = getFileRecordsWithParams();
-				const fileRecord1 = fileRecords1[0];
-				const request1 = getRequest();
-
-				filesStorageService.addRequestStreamToRequestPipe.mockResolvedValueOnce(fileRecord1);
-
-				return { params1, userId1, request1, fileRecord1 };
-			};
-
-			it('should call addRequestStreamToRequestPipe with correct params', async () => {
-				const { params1, userId1, request1 } = setup();
-
-				await filesStorageUC.upload(userId1, params1, request1);
-
-				expect(filesStorageService.addRequestStreamToRequestPipe).toHaveBeenCalledWith(userId1, params1, request1);
-			});
-
-			it('should return file record', async () => {
-				const { params1, userId1, request1, fileRecord1 } = setup();
-
-				const result = await filesStorageUC.upload(userId1, params1, request1);
-
-				expect(result).toEqual(fileRecord1);
-			});
-		});
-
-		describe('WHEN service throws error', () => {
-			const setup = () => {
-				const { params1, userId1 } = getFileRecordsWithParams();
-				const request1 = getRequest();
-				const error = new Error('test');
-
-				filesStorageService.addRequestStreamToRequestPipe.mockRejectedValueOnce(error);
-
-				return { params1, userId1, request1, error };
-			};
-
-			it('should pass error', async () => {
-				const { params1, userId1, request1, error } = setup();
-
-				await expect(filesStorageUC.upload(userId1, params1, request1)).rejects.toThrow(error);
 			});
 		});
 	});

@@ -39,10 +39,45 @@ export class FilesStorageUC {
 		this.logger.setContext(FilesStorageUC.name);
 	}
 
+	private async addRequestStreamToRequestPipe(
+		userId: EntityId,
+		params: FileRecordParams,
+		req: Request
+	): Promise<FileRecord> {
+		const result = await new Promise((resolve, reject) => {
+			const requestStream = busboy({ headers: req.headers, defParamCharset: 'utf8' });
+
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
+			requestStream.on('file', async (_name, file, info): Promise<void> => {
+				const fileDescription: IFile = {
+					name: info.filename,
+					buffer: file,
+					size: Number(req.get('content-length')),
+					mimeType: info.mimeType,
+				};
+
+				try {
+					const record = await this.filesStorageService.uploadFile(userId, params, fileDescription);
+					resolve(record);
+				} catch (error) {
+					requestStream.emit('error', error);
+				}
+			});
+
+			requestStream.on('error', (e) => {
+				reject(new BadRequestException(e, `${FilesStorageUC.name}:upload requestStream`));
+			});
+
+			req.pipe(requestStream);
+		});
+
+		return result as FileRecord;
+	}
+
 	public async upload(userId: EntityId, params: FileRecordParams, req: Request) {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 
-		const result = await this.filesStorageService.addRequestStreamToRequestPipe(userId, params, req);
+		const result = await this.addRequestStreamToRequestPipe(userId, params, req);
 
 		return result;
 	}
