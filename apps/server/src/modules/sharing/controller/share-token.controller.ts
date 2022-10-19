@@ -1,4 +1,14 @@
-import { Body, Controller, ForbiddenException, Get, InternalServerErrorException, Param, Post } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	ForbiddenException,
+	Get,
+	InternalServerErrorException,
+	NotFoundException,
+	NotImplementedException,
+	Param,
+	Post,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestTimeout } from '@shared/common';
 import { ICurrentUser } from '@shared/domain';
@@ -23,7 +33,7 @@ export class ShareTokenController {
 	constructor(private readonly shareTokenUC: ShareTokenUC) {}
 
 	@ApiOperation({ summary: 'Create a share token.' })
-	@ApiResponse({ status: 200, type: ShareTokenResponse })
+	@ApiResponse({ status: 201, type: ShareTokenResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
@@ -52,6 +62,7 @@ export class ShareTokenController {
 	@ApiOperation({ summary: 'Look up a share token.' })
 	@ApiResponse({ status: 200, type: ShareTokenInfoResponse })
 	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get(':token')
 	async lookupShareToken(
@@ -66,10 +77,11 @@ export class ShareTokenController {
 	}
 
 	@ApiOperation({ summary: 'Import a share token payload.' })
-	@ApiResponse({ status: 200, type: CopyApiResponse })
-	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 201, type: CopyApiResponse })
 	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@ApiResponse({ status: 501, type: NotImplementedException })
 	@Post(':token/import')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async importShareToken(
@@ -80,7 +92,6 @@ export class ShareTokenController {
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.shareTokenUC.importShareToken(currentUser.userId, urlParams.token, body.newName, jwt);
 
-		// WIP we have to find a better way to share the mapper
 		const response = CopyMapper.mapToResponse(copyStatus);
 
 		return response;

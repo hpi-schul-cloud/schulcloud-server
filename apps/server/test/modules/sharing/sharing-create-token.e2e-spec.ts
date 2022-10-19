@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -40,7 +41,7 @@ class API {
 	}
 }
 
-describe(`${baseRouteName} (api)`, () => {
+describe(`share token creation (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
@@ -70,6 +71,10 @@ describe(`${baseRouteName} (api)`, () => {
 		await app.close();
 	});
 
+	beforeEach(() => {
+		Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
+	});
+
 	const setup = async () => {
 		await cleanupCollections(em);
 		const school = schoolFactory.build();
@@ -87,32 +92,43 @@ describe(`${baseRouteName} (api)`, () => {
 		return { course };
 	};
 
+	describe('with the feature disabled', () => {
+		it('should return status 500', async () => {
+			Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
+			const { course } = await setup();
+
+			const response = await api.post({ parentId: course.id, parentType: ShareTokenParentType.Course });
+
+			expect(response.status).toEqual(500);
+		});
+	});
+
 	describe('with ivalid request data', () => {
-		it('should return status 401 on empty parent id', async () => {
+		it('should return status 400 on empty parent id', async () => {
 			const response = await api.post({
 				parentId: '',
 				parentType: ShareTokenParentType.Course,
 			});
 
-			expect(response.status).toEqual(401);
+			expect(response.status).toEqual(400);
 		});
 
-		it('should return status 401 when parent id is not found', async () => {
+		it('should return status 403 when parent id is not found', async () => {
 			const response = await api.post({
 				parentId: '000011112222333344445555',
 				parentType: ShareTokenParentType.Course,
 			});
 
-			expect(response.status).toEqual(401);
+			expect(response.status).toEqual(403);
 		});
 
-		it('should return status 401 on invalid parent id', async () => {
+		it('should return status 400 on invalid parent id', async () => {
 			const response = await api.post({
 				parentId: 'foobar',
 				parentType: ShareTokenParentType.Course,
 			});
 
-			expect(response.status).toEqual(401);
+			expect(response.status).toEqual(400);
 		});
 
 		it('should return status 400 on invalid parent type', async () => {
