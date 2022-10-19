@@ -1,8 +1,16 @@
-import { Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
+import {
+	BadRequestException,
+	Injectable,
+	InternalServerErrorException,
+	NotAcceptableException,
+	NotFoundException,
+} from '@nestjs/common';
 import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import busboy from 'busboy';
+import { Request } from 'express';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileResponse,
@@ -91,6 +99,41 @@ export class FilesStorageService {
 
 		await this.fileRecordRepo.save(fileRecord);
 		await this.tryToCreateFileInStorage(fileRecord, params, fileDescription);
+	}
+
+	public async addRequestStreamToRequestPipe(
+		userId: EntityId,
+		params: FileRecordParams,
+		req: Request
+	): Promise<FileRecord> {
+		const result = await new Promise((resolve, reject) => {
+			const requestStream = busboy({ headers: req.headers, defParamCharset: 'utf8' });
+
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
+			requestStream.on('file', async (_name, file, info): Promise<void> => {
+				const fileDescription: IFile = {
+					name: info.filename,
+					buffer: file,
+					size: Number(req.get('content-length')),
+					mimeType: info.mimeType,
+				};
+
+				try {
+					const record = await this.uploadFile(userId, params, fileDescription);
+					resolve(record);
+				} catch (error) {
+					requestStream.emit('error', error);
+				}
+			});
+
+			requestStream.on('error', (e) => {
+				reject(new BadRequestException(e, `${FilesStorageService.name}:upload requestStream`));
+			});
+
+			req.pipe(requestStream);
+		});
+
+		return result as FileRecord;
 	}
 
 	// update

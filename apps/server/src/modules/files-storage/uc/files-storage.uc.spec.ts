@@ -11,7 +11,6 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AxiosResponse, AxiosResponseHeaders } from 'axios';
-import { Busboy } from 'busboy';
 import { Request } from 'express';
 import { Observable, of } from 'rxjs';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
@@ -69,6 +68,16 @@ const getFileRecordWithParams = () => {
 	return { params1, fileRecord1, userId1 };
 };
 
+const getRequest = () => {
+	return createMock<Request>({
+		headers: {
+			connection: 'keep-alive',
+			'content-length': '10699',
+			'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20',
+		},
+	});
+};
+
 describe('FilesStorageUC', () => {
 	let module: TestingModule;
 	let filesStorageUC: FilesStorageUC;
@@ -76,8 +85,6 @@ describe('FilesStorageUC', () => {
 	let filesStorageService: DeepMocked<FilesStorageService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let httpService: DeepMocked<HttpService>;
-	let request: DeepMocked<Request>;
-	let storageClient: DeepMocked<S3ClientAdapter>;
 	let orm: MikroORM;
 	let fileRecord: FileRecord;
 	let fileRecords: FileRecord[];
@@ -174,7 +181,6 @@ describe('FilesStorageUC', () => {
 		filesStorageUC = module.get(FilesStorageUC);
 		authorizationService = module.get(AuthorizationService);
 		httpService = module.get(HttpService);
-		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
 		filesStorageService = module.get(FilesStorageService);
 		fileRecords = [
@@ -278,130 +284,91 @@ describe('FilesStorageUC', () => {
 		});
 	});
 
-	describe('upload()', () => {
-		const mockBusboyEvent = (requestStream: DeepMocked<Busboy>) => {
-			requestStream.emit('file', 'file', Buffer.from('abc'), {
-				filename: 'text.txt',
-				encoding: '7-bit',
-				mimeType: 'text/plain',
-			});
-			return requestStream;
-		};
+	describe('upload is called', () => {
+		describe('WHEN user is authorized', () => {
+			const setup = () => {
+				const { params1, userId1 } = getFileRecordsWithParams();
+				const request1 = getRequest();
 
-		beforeEach(() => {
-			request = createMock<Request>({
-				headers: {
-					connection: 'keep-alive',
-					'content-length': '10699',
-					'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20',
-				},
-			});
+				return { params1, userId1, request1 };
+			};
 
-			request.get.mockReturnValue('1234');
-			request.pipe.mockImplementation(mockBusboyEvent as never);
-		});
+			it('should call checkPermissionByReferences', async () => {
+				const { params1, userId1, request1 } = setup();
 
-		it('should call request.get()', async () => {
-			await filesStorageUC.upload(userId, fileUploadParams, request);
-			expect(request.get).toBeCalledWith('content-length');
-			expect(request.get).toHaveBeenCalledTimes(1);
-		});
+				await filesStorageUC.upload(userId1, params1, request1);
 
-		it('should call request.pipe()', async () => {
-			await filesStorageUC.upload(userId, fileUploadParams, request);
-			expect(request.pipe).toHaveBeenCalledTimes(1);
-		});
-
-		it('should call fileRecordRepo.uploadFile', async () => {
-			await filesStorageUC.upload(userId, fileUploadParams, request);
-			expect(storageClient.create).toHaveBeenCalledTimes(1);
-		});
-
-		it('should call fileRecordRepo.uploadFile with params', async () => {
-			await filesStorageUC.upload(userId, fileUploadParams, request);
-
-			const storagePath = [schoolId, entityId].join('/');
-
-			expect(storageClient.create).toBeCalledWith(storagePath, {
-				buffer: Buffer.from('abc'),
-				name: 'text.txt',
-				size: 1234,
-				mimeType: 'text/plain',
-			});
-		});
-
-		it('should return instance of FileRecord', async () => {
-			const result = await filesStorageUC.upload(userId, fileUploadParams, request);
-			expect(result).toBeInstanceOf(FileRecord);
-		});
-
-		describe('save() with FileName Handling', () => {
-			it('should call fileRecordRepo.save', async () => {
-				await filesStorageUC.upload(userId, fileUploadParams, request);
-				expect(fileRecordRepo.save).toHaveBeenCalledTimes(1);
-			});
-
-			it('should return filename with increment (1)', async () => {
-				const result = await filesStorageUC.upload(userId, fileUploadParams, request);
-				expect(result.name).toStrictEqual('text (1).txt');
-			});
-
-			it('should return filename with increment (2)', async () => {
-				fileRecords[1].name = 'text (1).txt';
-
-				const result = await filesStorageUC.upload(userId, fileUploadParams, request);
-				expect(result.name).toStrictEqual('text (2).txt');
-			});
-
-			it('should return filename with increment (1) but filename and filename (2) exists', async () => {
-				fileRecords[2].name = 'text (2).txt';
-
-				const result = await filesStorageUC.upload(userId, fileUploadParams, request);
-				expect(result.name).toStrictEqual('text (1).txt');
-			});
-		});
-
-		describe('Tests of permission handling', () => {
-			it('should call authorizationService.hasPermissionByReferences', async () => {
-				authorizationService.checkPermissionByReferences.mockResolvedValue();
-				await filesStorageUC.upload(userId, fileUploadParams, request);
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
-					userId,
-					fileUploadParams.parentType,
-					fileUploadParams.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+				const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(params1.parentType);
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId1,
+					allowedType,
+					params1.parentId,
+					PermissionContexts.create
 				);
 			});
+		});
 
-			it('should throw Error', async () => {
-				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
-				await expect(filesStorageUC.upload(userId, fileUploadParams, request)).rejects.toThrow();
+		describe('WHEN user is not authorized', () => {
+			const setup = () => {
+				const { params1, userId1 } = getFileRecordsWithParams();
+				const request1 = getRequest();
+				const error = new ForbiddenException();
+
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error);
+
+				return { params1, userId1, request1, error };
+			};
+
+			it('should pass error', async () => {
+				const { params1, userId1, request1, error } = setup();
+
+				await expect(filesStorageUC.upload(userId1, params1, request1)).rejects.toThrowError(error);
 			});
 		});
 
-		describe('Error Handling()', () => {
-			beforeEach(() => {
-				storageClient.create.mockRejectedValue(new Error());
+		describe('WHEN request is added to request stream successfully', () => {
+			const setup = () => {
+				const { params1, userId1, fileRecords1 } = getFileRecordsWithParams();
+				const fileRecord1 = fileRecords1[0];
+				const request1 = getRequest();
+
+				filesStorageService.addRequestStreamToRequestPipe.mockResolvedValueOnce(fileRecord1);
+
+				return { params1, userId1, request1, fileRecord1 };
+			};
+
+			it('should call addRequestStreamToRequestPipe with correct params', async () => {
+				const { params1, userId1, request1 } = setup();
+
+				await filesStorageUC.upload(userId1, params1, request1);
+
+				expect(filesStorageService.addRequestStreamToRequestPipe).toHaveBeenCalledWith(userId1, params1, request1);
 			});
 
-			it('should throw Error', async () => {
-				await expect(filesStorageUC.upload(userId, fileUploadParams, request)).rejects.toThrow();
+			it('should return file record', async () => {
+				const { params1, userId1, request1, fileRecord1 } = setup();
+
+				const result = await filesStorageUC.upload(userId1, params1, request1);
+
+				expect(result).toEqual(fileRecord1);
 			});
+		});
 
-			it('should call fileRecordRepo.removeAndFlush', async () => {
-				await expect(filesStorageUC.upload(userId, fileUploadParams, request)).rejects.toThrow();
+		describe('WHEN service throws error', () => {
+			const setup = () => {
+				const { params1, userId1 } = getFileRecordsWithParams();
+				const request1 = getRequest();
+				const error = new Error('test');
 
-				expect(fileRecordRepo.delete).toBeCalledWith(
-					expect.objectContaining({
-						id: entityId,
-						name: 'text (1).txt',
-						size: 1234,
-						parentType: FileRecordParentType.User,
-						mimeType: 'text/plain',
-						createdAt: expect.any(Date) as Date,
-						updatedAt: expect.any(Date) as Date,
-					})
-				);
+				filesStorageService.addRequestStreamToRequestPipe.mockRejectedValueOnce(error);
+
+				return { params1, userId1, request1, error };
+			};
+
+			it('should pass error', async () => {
+				const { params1, userId1, request1, error } = setup();
+
+				await expect(filesStorageUC.upload(userId1, params1, request1)).rejects.toThrow(error);
 			});
 		});
 	});
