@@ -10,7 +10,6 @@ import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
 import { Lti11Uc } from './lti11.uc';
-import { CustomLtiPropertyParameter } from '@src/modules/tool/controller/dto/request/custom-lti-property.params';
 
 describe('Lti11Uc', () => {
 	let module: TestingModule;

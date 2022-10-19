@@ -62,7 +62,7 @@ export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity, P> {
 		return savedDos[0];
 	}
 
-	// TODO test
+	// TODO: est
 	async deleteById(id: EntityId): Promise<void> {
 		await this._em.nativeDelete(this.entityName, id as FilterQuery<E>);
 	}

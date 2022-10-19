@@ -35,7 +35,6 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		return LtiTool;
 	}
 
-	// TODO test
 	async find(query: Partial<LtiToolDO>, options?: IFindOptions<LtiToolDO>): Promise<Page<LtiToolDO>> {
 		const pagination: IPagination = options?.pagination || {};
 		const order: QueryOrderMap<LtiTool> = this.sortingMapper.mapDOSortOrderToQueryOrder(options?.order || {});

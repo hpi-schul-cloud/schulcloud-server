@@ -6,12 +6,28 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { LtiToolPostBody } from '@src/modules/tool/controller/dto/request/lti-tool-post.body';
 import { LtiToolPatchBody } from '@src/modules/tool/controller/dto/request/lti-tool-patch.body';
 import { LtiToolSortOrder, SortLtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool-sort.params';
+import { LtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool.params';
+import { CustomLtiPropertyParameter } from '@src/modules/tool/controller/dto/request/custom-lti-property.params';
 
 describe('LtiToolMapper', () => {
 	let mapper: LtiToolMapper;
 
 	beforeAll(() => {
 		mapper = new LtiToolMapper();
+	});
+
+	describe('mapLtiToolFilterQueryToDO', () => {
+		it('should map params to partial do', () => {
+			const params: LtiToolParams = {
+				name: 'name',
+				isTemplate: false,
+				isHidden: true,
+			};
+
+			const doPartial = mapper.mapLtiToolFilterQueryToDO(params);
+
+			expect(doPartial).toEqual(expect.objectContaining(params));
+		});
 	});
 
 	describe('mapLtiToolPostBodyToDO', () => {
@@ -48,8 +64,9 @@ describe('LtiToolMapper', () => {
 
 	describe('mapLtiToolPatchBodyToDO', () => {
 		it('should map controller patch body to uc do', () => {
+			const customProperty: CustomLtiPropertyParameter = { key: 'key', value: 'value' };
 			const ltiToolBody: LtiToolPatchBody = {
-				customs: [{ key: 'key', value: 'value' }],
+				customs: [customProperty],
 				friendlyUrl: 'friendlyUrl',
 				frontchannel_logout_uri: 'frontchannel_logout_uri',
 				isHidden: false,

@@ -3,10 +3,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
 import { NotFoundError } from '@mikro-orm/core';
-import { ILtiToolProperties, LtiTool } from '@shared/domain';
+import { IFindOptions, ILtiToolProperties, LtiTool, Page, SortOrder } from '@shared/domain';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo } from '@shared/repo/ltitool/lti-tool.repo';
@@ -28,7 +28,7 @@ describe('LtiTool Repo', () => {
 	let repo: LtiToolRepoSpec;
 	let em: EntityManager;
 
-	let sortingMapper;
+	let sortingMapper: DeepMocked<LtiToolSortingMapper>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -57,6 +57,34 @@ describe('LtiTool Repo', () => {
 	afterEach(async () => {
 		await cleanupCollections(em);
 	});
+
+	function setup() {
+		const ltiToolDO: LtiToolDO = new LtiToolDO({
+			id: 'testId',
+			updatedAt: new Date('2022-07-20'),
+			createdAt: new Date('2022-07-20'),
+			name: 'ltiTool',
+			oAuthClientId: 'clientId',
+			secret: 'secret',
+			isLocal: true,
+			customs: [],
+			isHidden: false,
+			isTemplate: false,
+			key: 'key',
+			openNewTab: false,
+			originToolId: undefined,
+			privacy_permission: LtiPrivacyPermission.NAME,
+			roles: [LtiRoleType.INSTRUCTOR, LtiRoleType.LEARNER],
+			url: 'url',
+			friendlyUrl: 'friendlyUrl',
+			frontchannel_logout_uri: 'frontchannel_logout_uri',
+		});
+		const queryLtiToolDO: Partial<LtiToolDO> = { name: 'ltiTool-*' };
+		return {
+			ltiToolDO,
+			queryLtiToolDO,
+		};
+	}
 
 	it('should be defined', () => {
 		expect(repo).toBeDefined();
@@ -132,7 +160,102 @@ describe('LtiTool Repo', () => {
 		});
 	});
 
-	describe('find', () => {});
+	describe('find', () => {
+		async function setupFind() {
+			const { queryLtiToolDO } = setup();
+			queryLtiToolDO.name = '.';
+
+			const options: IFindOptions<LtiToolDO> = {};
+
+			await em.nativeDelete(LtiTool, {});
+			const ltiToolA: LtiTool = ltiToolFactory.withName('A').buildWithId();
+			const ltiToolB: LtiTool = ltiToolFactory.withName('B').buildWithId();
+			const ltiToolC: LtiTool = ltiToolFactory.withName('B').buildWithId();
+			const ltiTools: LtiTool[] = [ltiToolA, ltiToolB, ltiToolC];
+			await em.persistAndFlush([ltiToolA, ltiToolB, ltiToolC]);
+
+			return { queryLtiToolDO, options, ltiTools };
+		}
+
+		describe('sortingMapper', () => {
+			it('should call mapDOSortOrderToQueryOrder with options.order', async () => {
+				const { queryLtiToolDO, options } = await setupFind();
+				options.order = {
+					name: SortOrder.asc,
+				};
+
+				repo.find(queryLtiToolDO, options);
+
+				expect(sortingMapper.mapDOSortOrderToQueryOrder).toHaveBeenCalledWith(options.order);
+			});
+
+			it('should call mapDOSortOrderToQueryOrder with an empty object', async () => {
+				const { queryLtiToolDO, options } = await setupFind();
+				options.order = undefined;
+
+				repo.find(queryLtiToolDO, options);
+
+				expect(sortingMapper.mapDOSortOrderToQueryOrder).toHaveBeenCalledWith({});
+			});
+		});
+
+		describe('pagination', () => {
+			it('should return all ltiTools when options with pagination is set to undefined', async () => {
+				const { queryLtiToolDO, options, ltiTools } = await setupFind();
+
+				const page: Page<LtiToolDO> = await repo.find(queryLtiToolDO, undefined);
+
+				expect(page.data.length).toBe(ltiTools.length);
+			});
+
+			it('should return one ltiTool when pagination has a limit of 1', async () => {
+				const { queryLtiToolDO, options } = await setupFind();
+
+				options.pagination = { limit: 1 };
+
+				const page: Page<LtiToolDO> = await repo.find(queryLtiToolDO, options);
+
+				expect(page.data.length).toBe(1);
+			});
+
+			it('should return no ltiTool when pagination has a limit of 1 and skip is set to 2', async () => {
+				const { queryLtiToolDO, options } = await setupFind();
+
+				options.pagination = { limit: 1, skip: 3 };
+
+				const page: Page<LtiToolDO> = await repo.find(queryLtiToolDO, options);
+
+				expect(page.data.length).toBe(0);
+			});
+		});
+
+		describe('order', () => {
+			it('should return ltiTools ordered by default _id when no order is specified', async () => {
+				const { queryLtiToolDO, options, ltiTools } = await setupFind();
+				sortingMapper.mapDOSortOrderToQueryOrder.mockReturnValue({});
+
+				const page: Page<LtiToolDO> = await repo.find(queryLtiToolDO, options);
+
+				expect(page.data[0].name).toEqual(ltiTools[0].name);
+				expect(page.data[1].name).toEqual(ltiTools[1].name);
+				expect(page.data[2].name).toEqual(ltiTools[2].name);
+			});
+
+			it('should return ltiTools ordered by name ascending', async () => {
+				const { queryLtiToolDO, options, ltiTools } = await setupFind();
+
+				options.order = {
+					name: SortOrder.asc,
+				};
+
+				const page: Page<LtiToolDO> = await repo.find(queryLtiToolDO, options);
+
+				expect(page.data[0].name).toEqual(ltiTools[0].name);
+				expect(page.data[1].name).toEqual(ltiTools[1].name);
+				expect(page.data[2].name).toEqual(ltiTools[2].name);
+			});
+		});
+	});
 
 	describe('mapEntityToDO', () => {
 		it('should return a domain object', () => {
@@ -146,30 +269,11 @@ describe('LtiTool Repo', () => {
 
 	describe('mapDOToEntity', () => {
 		it('should map DO to Entity', () => {
-			const testDO: LtiToolDO = new LtiToolDO({
-				id: 'testId',
-				updatedAt: new Date('2022-07-20'),
-				createdAt: new Date('2022-07-20'),
-				name: 'toolName',
-				oAuthClientId: 'clientId',
-				secret: 'secret',
-				isLocal: true,
-				customs: [],
-				isHidden: false,
-				isTemplate: false,
-				key: 'key',
-				openNewTab: false,
-				originToolId: undefined,
-				privacy_permission: LtiPrivacyPermission.NAME,
-				roles: [LtiRoleType.INSTRUCTOR, LtiRoleType.LEARNER],
-				url: 'url',
-				friendlyUrl: 'friendlyUrl',
-				frontchannel_logout_uri: 'frontchannel_logout_uri',
-			});
+			const { ltiToolDO } = setup();
 
-			const result: EntityProperties<ILtiToolProperties> = repo.mapDOToEntitySpec(testDO);
+			const result: EntityProperties<ILtiToolProperties> = repo.mapDOToEntitySpec(ltiToolDO);
 
-			expect(testDO).toEqual(expect.objectContaining(result));
+			expect(ltiToolDO).toEqual(expect.objectContaining(result));
 		});
 	});
 });

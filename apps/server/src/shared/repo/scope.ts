@@ -32,7 +32,6 @@ export class Scope<T> {
 		this._queries.push(query);
 	}
 
-	// TODO tests
 	allowEmptyQuery(isEmptyQueryAllowed: boolean) {
 		this._allowEmptyQuery = isEmptyQueryAllowed;
 		return this;

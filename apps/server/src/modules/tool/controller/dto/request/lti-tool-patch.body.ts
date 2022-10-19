@@ -2,7 +2,6 @@ import { EntityId, LtiPrivacyPermission, LtiRoleType } from '@shared/domain';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { CustomLtiPropertyParameter } from '@src/modules/tool/controller/dto/request/custom-lti-property.params';
-import { Type } from 'class-transformer';
 
 export class LtiToolPatchBody {
 	@IsOptional()

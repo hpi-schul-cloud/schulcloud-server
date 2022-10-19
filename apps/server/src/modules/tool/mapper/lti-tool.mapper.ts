@@ -40,7 +40,6 @@ export class LtiToolMapper {
 		return result;
 	}
 
-	// TODO: tests
 	mapLtiToolFilterQueryToDO(scope: LtiToolParams): Partial<LtiToolDO> {
 		const queryDO: Partial<LtiToolDO> = { ...scope };
 		return queryDO;

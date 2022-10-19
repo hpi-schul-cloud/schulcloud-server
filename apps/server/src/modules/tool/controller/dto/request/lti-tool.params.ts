@@ -20,4 +20,9 @@ export class LtiToolParams {
 	@StringToBoolean()
 	@ApiProperty({ required: false })
 	isHidden?: boolean;
+
+	@IsOptional()
+	@IsString()
+	@ApiProperty({ required: false })
+	friendlyUrl?: string;
 }

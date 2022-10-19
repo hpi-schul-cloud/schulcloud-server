@@ -141,6 +141,7 @@ describe('BaseDORepo', () => {
 			expect(result[0].name).toEqual(testDO.name);
 		});
 	});
+
 	describe('delete', () => {
 		it('should remove and flush a single entity', async () => {
 			const testEntity = new TestEntity();
@@ -167,6 +168,19 @@ describe('BaseDORepo', () => {
 
 			expect(await em.findOne(TestEntity, testEntity1.id)).toBeNull();
 			expect(await em.findOne(TestEntity, testEntity2.id)).toBeNull();
+		});
+	});
+
+	describe('deleteById', () => {
+		it('should nativeDelete a single entity with the given id', async () => {
+			const testEntity = new TestEntity();
+			await em.persistAndFlush(testEntity);
+			em.clear();
+
+			await repo.deleteById(testEntity.id);
+			em.clear();
+
+			expect(await em.findOne(TestEntity, testEntity.id)).toBeNull();
 		});
 	});
 
