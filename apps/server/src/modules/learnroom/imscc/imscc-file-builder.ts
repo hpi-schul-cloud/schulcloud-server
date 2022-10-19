@@ -1,14 +1,10 @@
 import AdmZip from 'adm-zip';
 import { Builder } from 'xml2js';
+import { ImsccResourceWrapperElement } from '@src/modules/learnroom/imscc/imscc-resource-wrapper-element';
+import { ImsccOrganizationWrapperElement } from '@src/modules/learnroom/imscc/imscc-organization-wrapper-element';
 import { ImsccMetadataElement } from './imscc-metadata-element';
-import {
-	ImsccOrganizationItemElement,
-	IImsccOrganizationProps,
-	
-} from './imscc-organization-item-element';
-import { IImsccResourceProps, ImsccResourceElement } from './imscc-resource-element';
-import {ImsccResourceWrapperElement} from "@src/modules/learnroom/imscc/imscc-resource-wrapper-element";
-import {ImsccOrganizationWrapperElement} from "@src/modules/learnroom/imscc/imscc-organization-wrapper-element";
+import { ImsccOrganizationItemElement, IImsccOrganizationProps } from './imscc-organization-item-element';
+import { IImsccResourceProps, ImsccResourceItemElement } from './imscc-resource-item-element';
 
 export type IImsccFileBuilderOptions = {
 	title: string;
@@ -25,7 +21,7 @@ export class ImsccFileBuilder {
 
 	private organizations = [] as ImsccOrganizationItemElement[];
 
-	private resources = [] as ImsccResourceElement[];
+	private resources = [] as ImsccResourceItemElement[];
 
 	constructor(options: IImsccFileBuilderOptions) {
 		this.metadata = new ImsccMetadataElement({
@@ -46,7 +42,7 @@ export class ImsccFileBuilder {
 		return this.zipBuilder.toBufferPromise();
 	}
 
-	addOrganizations(props: IImsccOrganizationProps | IImsccOrganizationProps[]): ImsccFileBuilder {
+	addOrganizationItems(props: IImsccOrganizationProps | IImsccOrganizationProps[]): ImsccFileBuilder {
 		if (Array.isArray(props)) {
 			props.map((prop) => this.organizations.push(new ImsccOrganizationItemElement(prop)));
 		} else {
@@ -55,11 +51,11 @@ export class ImsccFileBuilder {
 		return this;
 	}
 
-	addResources(props: IImsccResourceProps | IImsccResourceProps[]): ImsccFileBuilder {
+	addResourceItems(props: IImsccResourceProps | IImsccResourceProps[]): ImsccFileBuilder {
 		if (Array.isArray(props)) {
-			props.map((prop) => this.resources.push(new ImsccResourceElement(prop)));
+			props.map((prop) => this.resources.push(new ImsccResourceItemElement(prop)));
 		} else {
-			this.resources.push(new ImsccResourceElement(props));
+			this.resources.push(new ImsccResourceItemElement(props));
 		}
 		return this;
 	}

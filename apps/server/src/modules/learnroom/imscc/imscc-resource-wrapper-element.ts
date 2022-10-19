@@ -1,8 +1,8 @@
 import { IImsccElement } from './imscc-element.interface';
-import { ImsccResourceElement } from './imscc-resource-element';
+import { ImsccResourceItemElement } from './imscc-resource-item-element';
 
 export class ImsccResourceWrapperElement implements IImsccElement {
-	constructor(private readonly resourceElements: ImsccResourceElement[]) {}
+	constructor(private readonly resourceElements: ImsccResourceItemElement[]) {}
 
 	transform(): Record<string, unknown> {
 		return {

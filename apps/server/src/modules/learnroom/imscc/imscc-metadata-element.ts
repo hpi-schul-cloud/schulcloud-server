@@ -9,7 +9,7 @@ export class ImsccMetadataElement implements IImsccElement {
 
 	transform(): Record<string, unknown> {
 		return {
-			schema: '1EdTech Thin Common Cartridge',
+			schema: '1EdTech Common Cartridge',
 			schemaVersion: '1.3.2',
 			lom: {
 				$: {

@@ -2,7 +2,7 @@ import AdmZip from 'adm-zip';
 import { parseStringPromise } from 'xml2js';
 import { IImsccFileBuilderOptions, ImsccFileBuilder } from './imscc-file-builder';
 import { IImsccOrganizationProps } from './imscc-organization-item-element';
-import { IImsccResourceProps } from './imscc-resource-element';
+import { IImsccResourceProps } from './imscc-resource-item-element';
 
 describe('ImsccFileBuilder', () => {
 	const builderOptions: IImsccFileBuilderOptions = {
@@ -32,13 +32,13 @@ describe('ImsccFileBuilder', () => {
 
 	describe('build', () => {
 		it('should return a buffer', async () => {
-			builder.addOrganizations(organizationProps).addResources(resourceProps);
+			builder.addOrganizationItems(organizationProps).addResourceItems(resourceProps);
 
 			await expect(builder.build()).resolves.toBeInstanceOf(Buffer);
 		});
 
 		it('should place manifest in root directory', async () => {
-			const buffer = await builder.addOrganizations(organizationProps).addResources(resourceProps).build();
+			const buffer = await builder.addOrganizationItems(organizationProps).addResourceItems(resourceProps).build();
 			const archive = new AdmZip(buffer);
 			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 
@@ -50,7 +50,7 @@ describe('ImsccFileBuilder', () => {
 
 	describe('addOrganizations', () => {
 		it('should add an organization element to the manifest', () => {
-			builder.addOrganizations(organizationProps).addOrganizations([organizationProps]);
+			builder.addOrganizationItems(organizationProps).addOrganizationItems([organizationProps]);
 
 			expect(builder.manifest).toContain(builderOptions.title);
 			expect(builder.manifest).toContain(organizationProps.title);
@@ -59,7 +59,7 @@ describe('ImsccFileBuilder', () => {
 
 	describe('addResources', () => {
 		it('should add a resource element to the manifest', () => {
-			builder.addResources(resourceProps).addResources([resourceProps]);
+			builder.addResourceItems(resourceProps).addResourceItems([resourceProps]);
 
 			expect(builder.manifest).toContain(builderOptions.title);
 			expect(builder.manifest).toContain(resourceProps.identifier);

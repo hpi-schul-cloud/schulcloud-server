@@ -14,7 +14,7 @@ export class CourseExportService {
 		return new ImsccFileBuilder({
 			title: course.name,
 		})
-			.addOrganizations(
+			.addOrganizationItems(
 				lessons.map((lesson) => {
 					return {
 						identifier: lesson.id,
@@ -22,7 +22,7 @@ export class CourseExportService {
 					};
 				})
 			)
-			.addResources({
+			.addResourceItems({
 				identifier: 'placeholder-identifier',
 				type: 'webcontent',
 				href: 'placeholder.html',
