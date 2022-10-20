@@ -1,14 +1,18 @@
-import { FileInfo } from 'busboy';
+import { AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { Readable } from 'stream';
 import { IFile } from '../interface';
 
-export function createFile(info: FileInfo, request: Request, buffer: Buffer | Blob | ReadableStream | Readable) {
+export function createFile(
+	filename: string,
+	transaction: Request | AxiosResponse,
+	buffer: Buffer | Blob | ReadableStream | Readable
+): IFile {
 	const file: IFile = {
-		name: info.filename,
+		name: decodeURI(filename),
 		buffer,
-		size: Number(request.get('content-length')),
-		mimeType: info.mimeType,
+		size: Number(transaction.headers['content-length']),
+		mimeType: transaction.headers['content-type'] || '',
 	};
 
 	return file;

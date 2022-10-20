@@ -1,16 +1,8 @@
-import {
-	BadRequestException,
-	Injectable,
-	InternalServerErrorException,
-	NotAcceptableException,
-	NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import busboy from 'busboy';
-import { Request } from 'express';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileResponse,
@@ -23,7 +15,6 @@ import {
 } from '../controller/dto';
 import { ErrorType } from '../error';
 import {
-	createFile,
 	createICopyFiles,
 	createPath,
 	deriveStatusFromSource,

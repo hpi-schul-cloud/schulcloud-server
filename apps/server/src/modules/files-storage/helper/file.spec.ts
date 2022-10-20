@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { fileRecordFactory } from '@shared/testing';
-import { FileInfo } from 'busboy';
+import { AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { IFile } from '../interface';
 import { createFile } from './file';
@@ -10,16 +10,18 @@ describe('File Helper', () => {
 		const setup = () => {
 			const fileRecord = fileRecordFactory.build();
 
-			const fileInfo: FileInfo = {
-				filename: fileRecord.name,
-				encoding: '7-bit',
-				mimeType: fileRecord.mimeType,
-			};
-
 			const size = 10699;
 			const request = createMock<Request>({
-				get: () => {
-					return `${size}`;
+				headers: {
+					'content-length': `${size}`,
+					'content-type': fileRecord.mimeType,
+				},
+			});
+
+			const response = createMock<AxiosResponse>({
+				headers: {
+					'content-length': `${size}`,
+					'content-type': fileRecord.mimeType,
 				},
 			});
 
@@ -32,13 +34,21 @@ describe('File Helper', () => {
 				mimeType: fileRecord.mimeType,
 			};
 
-			return { fileInfo, request, buffer, expectedFile };
+			return { fileRecord, request, response, buffer, expectedFile };
 		};
 
-		it('should return file', () => {
-			const { fileInfo, request, buffer, expectedFile } = setup();
+		it('should return file from request', () => {
+			const { fileRecord, request, buffer, expectedFile } = setup();
 
-			const result = createFile(fileInfo, request, buffer);
+			const result = createFile(fileRecord.name, request, buffer);
+
+			expect(result).toEqual(expectedFile);
+		});
+
+		it('should return file from response', () => {
+			const { fileRecord, response, buffer, expectedFile } = setup();
+
+			const result = createFile(fileRecord.name, response, buffer);
 
 			expect(result).toEqual(expectedFile);
 		});

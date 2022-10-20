@@ -305,13 +305,11 @@ describe('FilesStorageUC', () => {
 					return requestStream;
 				};
 
-				const size = request1.headers['content-length'];
-				request1.get.mockReturnValue(size);
 				request1.pipe.mockImplementation(mockBusboyEvent as never);
 
 				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord1);
 
-				return { params1, userId1, request1, fileRecord1, buffer, fileInfo };
+				return { params1, userId1, request1, fileRecord1, buffer };
 			};
 
 			it('should call checkPermissionByReferences', async () => {
@@ -329,11 +327,11 @@ describe('FilesStorageUC', () => {
 			});
 
 			it('should call uploadFile with correct params', async () => {
-				const { params1, userId1, request1, buffer, fileInfo } = setup();
+				const { params1, userId1, request1, buffer, fileRecord1 } = setup();
 
 				await filesStorageUC.upload(userId1, params1, request1);
 
-				const fileDescription: IFile = createFile(fileInfo, request1, buffer);
+				const fileDescription: IFile = createFile(fileRecord1.name, request1, buffer);
 
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId1, params1, fileDescription);
 			});

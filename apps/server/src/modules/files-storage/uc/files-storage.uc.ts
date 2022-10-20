@@ -50,7 +50,7 @@ export class FilesStorageUC {
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			requestStream.on('file', async (_name, file, info): Promise<void> => {
-				const fileDescription: IFile = createFile(info, req, file);
+				const fileDescription: IFile = createFile(info.filename, req, file);
 
 				try {
 					const record = await this.filesStorageService.uploadFile(userId, params, fileDescription);
@@ -88,12 +88,8 @@ export class FilesStorageUC {
 				})
 			);
 
-			const fileDescription: IFile = {
-				name: decodeURI(params.fileName),
-				buffer: response.data,
-				size: Number(response.headers['content-length']),
-				mimeType: response.headers['content-type'],
-			};
+			const fileDescription: IFile = createFile(params.fileName, response, response.data);
+
 			const result = await this.uploadFile(userId, params, fileDescription);
 
 			return result;
