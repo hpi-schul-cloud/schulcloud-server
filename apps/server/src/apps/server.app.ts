@@ -17,7 +17,7 @@ import { AccountValidationService } from '@src/modules/account/services/account.
 import { AccountUc } from '@src/modules/account/uc/account.uc';
 import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
 import { RocketChatService } from '@src/modules/rocketchat';
-import { ServerModule } from '@src/modules/server/server.module';
+import { ServerModule } from '@src/modules/server';
 import { join } from 'path';
 import legacyAppPromise = require('../../../../src/app');
 
