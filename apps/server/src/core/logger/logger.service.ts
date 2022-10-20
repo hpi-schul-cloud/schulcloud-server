@@ -51,4 +51,8 @@ export class Logger implements ILogger {
 	setContext(name: string) {
 		this.context = name;
 	}
+
+	error(message: unknown, trace?: string[] | string | undefined, context?: string[] | string | undefined): void {
+		this.logger.error(this.context, message);
+	}
 }
