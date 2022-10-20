@@ -3,14 +3,20 @@ const local = require('@feathersjs/authentication-local');
 const { BadRequest, GeneralError, SilentError } = require('../../../errors');
 const logger = require('../../../logger/index');
 const globalHooks = require('../../../hooks');
-const { ObjectId } = require('../../../helper/compare');
+// const { ObjectId } = require('../../../helper/compare');
 
 const MAX_LIVE_TIME = 6 * 60 * 60 * 1000; // 6 hours
 
 class ChangePasswordService {
-	constructor(passwordRecoveryModel, accountModel) {
+	// constructor(passwordRecoveryModel, accountModel) {
+	// accountModel wird durch accountService ersetzt
+	// constructor(passwordRecoveryModel, accountService) {
+	constructor(passwordRecoveryModel, app) {
 		this.passwordRecoveryModel = passwordRecoveryModel;
-		this.accountModel = accountModel;
+		// this.accountModel = accountModel; // wird durch accountService ersetzt
+		// this.accountService = accountService;
+		this.app = app;
+
 		this.errors = {
 			inputValidation: 'Malformed request body.',
 			expired: 'Token expired!',
@@ -39,7 +45,9 @@ class ChangePasswordService {
 		}
 		try {
 			await Promise.all([
-				this.accountModel.updateOne({ _id: pwrecover.account }, { $set: { password } }).lean().exec(),
+				// this.accountModel.updateOne({ _id: pwrecover.account }, { $set: { password } }).lean().exec(),
+				// this.app.service('nest-account-service').updatePassword(pwrecover.account, password),
+				this.app.service('nest-account-service').updatePassword(pwrecover.account, password),
 				this.passwordRecoveryModel
 					.updateOne({ token }, { $set: { changed: true } })
 					.lean()
