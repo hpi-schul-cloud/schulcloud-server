@@ -9,12 +9,9 @@ const MAX_LIVE_TIME = 6 * 60 * 60 * 1000; // 6 hours
 
 class ChangePasswordService {
 	// constructor(passwordRecoveryModel, accountModel) {
-	// accountModel wird durch accountService ersetzt
-	// constructor(passwordRecoveryModel, accountService) {
 	constructor(passwordRecoveryModel, app) {
 		this.passwordRecoveryModel = passwordRecoveryModel;
-		// this.accountModel = accountModel; // wird durch accountService ersetzt
-		// this.accountService = accountService;
+		// this.accountModel = accountModel;
 		this.app = app;
 
 		this.errors = {
@@ -46,7 +43,6 @@ class ChangePasswordService {
 		try {
 			await Promise.all([
 				// this.accountModel.updateOne({ _id: pwrecover.account }, { $set: { password } }).lean().exec(),
-				// this.app.service('nest-account-service').updatePassword(pwrecover.account, password),
 				this.app.service('nest-account-service').updatePassword(pwrecover.account, password),
 				this.passwordRecoveryModel
 					.updateOne({ token }, { $set: { changed: true } })
