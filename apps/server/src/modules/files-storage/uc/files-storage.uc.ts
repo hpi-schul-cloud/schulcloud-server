@@ -22,8 +22,8 @@ import {
 } from '../controller/dto/file-storage.params';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
-import { createFile } from '../helper';
 import { IFile } from '../interface/file';
+import { FileBuilder } from '../mapper';
 import { FilesStorageMapper } from '../mapper/files-storage.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 
@@ -51,7 +51,7 @@ export class FilesStorageUC {
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			requestStream.on('file', async (_name, file, info): Promise<void> => {
-				const fileDescription: IFile = createFile(info.filename, req, file);
+				const fileDescription: IFile = FileBuilder.buildFromRequest(info, req, file);
 
 				try {
 					const record = await this.filesStorageService.uploadFile(userId, params, fileDescription);
@@ -98,7 +98,7 @@ export class FilesStorageUC {
 		try {
 			const response = await this.getResponse(params);
 
-			const fileDescription: IFile = createFile(params.fileName, response, response.data);
+			const fileDescription: IFile = FileBuilder.buildFromResponse(params.fileName, response);
 
 			const result = await this.filesStorageService.uploadFile(userId, params, fileDescription);
 

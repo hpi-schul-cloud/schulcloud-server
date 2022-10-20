@@ -14,14 +14,15 @@ import { AxiosResponse, AxiosResponseHeaders } from 'axios';
 import { Busboy } from 'busboy';
 import { Request } from 'express';
 import { Observable, of } from 'rxjs';
+import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { CopyFileResponse } from '../controller/dto';
 import { FileRecordParams, SingleFileParams } from '../controller/dto/file-storage.params';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
-import { createFile } from '../helper';
 import { IFile } from '../interface';
 import { IGetFileResponse } from '../interface/storage-client';
+import { FileBuilder } from '../mapper';
 import { FilesStorageMapper } from '../mapper/files-storage.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
@@ -78,6 +79,9 @@ const getRequest = () => {
 			connection: 'keep-alive',
 			'content-length': '10699',
 			'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20',
+		},
+		get: () => {
+			return `10699`;
 		},
 	});
 };
@@ -175,7 +179,10 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('uploadFromUrl is called', () => {
-		const createAxiosResponse1 = <T = unknown>(data: T, headers: AxiosResponseHeaders = {}): AxiosResponse<T> => {
+		const createAxiosResponse1 = <T = unknown>(
+			data: Readable,
+			headers: AxiosResponseHeaders = {}
+		): AxiosResponse<Readable> => {
 			return {
 				data,
 				status: 0,
@@ -203,21 +210,21 @@ describe('FilesStorageUC', () => {
 				'content-length': '10699',
 				'content-type': 'image/jpeg',
 			};
-			const buffer = Buffer.from('abc');
-			const response = createAxiosResponse1(buffer, headers);
+			const readable = Readable.from('abc');
+			const response = createAxiosResponse1(readable, headers);
 
-			return { fileRecord1, userId1, uploadFromUrlParams1, buffer, response };
+			return { fileRecord1, userId1, uploadFromUrlParams1, response };
 		};
 
 		describe('WHEN user is authorised, httpService gets response and file uploads successfully', () => {
 			const setup = () => {
-				const { fileRecord1, userId1, uploadFromUrlParams1, buffer, response } = getUploadFromUrlParams();
+				const { fileRecord1, userId1, uploadFromUrlParams1, response } = getUploadFromUrlParams();
 
 				httpService.get.mockReturnValueOnce(of(response));
 
 				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord1);
 
-				return { uploadFromUrlParams1, userId1, response, buffer, fileRecord1 };
+				return { uploadFromUrlParams1, userId1, response, fileRecord1 };
 			};
 
 			it('should call authorizationService with correct params', async () => {
@@ -247,11 +254,11 @@ describe('FilesStorageUC', () => {
 			});
 
 			it('should call uploadFile get with correct params', async () => {
-				const { uploadFromUrlParams1, userId1, response, buffer } = setup();
+				const { uploadFromUrlParams1, userId1, response } = setup();
 
 				await filesStorageUC.uploadFromUrl(userId1, uploadFromUrlParams1);
 
-				const expectedFileDescription = createFile(uploadFromUrlParams1.fileName, response, buffer);
+				const expectedFileDescription = FileBuilder.buildFromResponse(uploadFromUrlParams1.fileName, response);
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(
 					userId1,
 					uploadFromUrlParams1,
@@ -350,7 +357,7 @@ describe('FilesStorageUC', () => {
 
 				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord1);
 
-				return { params1, userId1, request1, fileRecord1, buffer };
+				return { params1, userId1, request1, fileRecord1, buffer, fileInfo };
 			};
 
 			it('should call checkPermissionByReferences', async () => {
@@ -368,11 +375,11 @@ describe('FilesStorageUC', () => {
 			});
 
 			it('should call uploadFile with correct params', async () => {
-				const { params1, userId1, request1, buffer, fileRecord1 } = setup();
+				const { params1, userId1, request1, buffer, fileInfo } = setup();
 
 				await filesStorageUC.upload(userId1, params1, request1);
 
-				const fileDescription: IFile = createFile(fileRecord1.name, request1, buffer);
+				const fileDescription: IFile = FileBuilder.buildFromRequest(fileInfo, request1, buffer);
 
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId1, params1, fileDescription);
 			});
