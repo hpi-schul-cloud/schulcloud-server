@@ -5,9 +5,9 @@ import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';
-import path from 'path';
 import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
@@ -20,6 +20,7 @@ import {
 	FileUrlParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
+import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { createFile } from '../helper';
 import { IFile } from '../interface/file';
@@ -78,61 +79,34 @@ export class FilesStorageUC {
 		return result;
 	}
 
+	private async getResponse(params: FileRecordParams & FileUrlParams): Promise<AxiosResponse<internal.Readable, any>> {
+		const config: AxiosRequestConfig = {
+			headers: params.headers,
+			responseType: 'stream',
+		};
+
+		const responseStream = this.httpService.get<internal.Readable>(encodeURI(params.url), config);
+
+		const response = await firstValueFrom(responseStream);
+
+		return response;
+	}
+
 	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
+
 		try {
-			const response = await firstValueFrom(
-				this.httpService.get<internal.Readable>(encodeURI(params.url), {
-					headers: params.headers,
-					responseType: 'stream',
-				})
-			);
+			const response = await this.getResponse(params);
 
 			const fileDescription: IFile = createFile(params.fileName, response, response.data);
 
-			const result = await this.uploadFile(userId, params, fileDescription);
+			const result = await this.filesStorageService.uploadFile(userId, params, fileDescription);
 
 			return result;
 		} catch (error) {
 			this.logger.warn(`could not find file by url: ${params.url}`, error);
-			throw new NotFoundException('FILE_NOT_FOUND');
+			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
-	}
-
-	private async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: IFile) {
-		const [fileRecords] = await this.filesStorageService.getFileRecordsOfParent(params);
-		const fileName = this.checkFilenameExists(fileDescription.name, fileRecords);
-		const entity = this.getNewFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
-		try {
-			await this.fileRecordRepo.save(entity);
-			const filePath = this.createPath(params.schoolId, entity.id);
-			await this.storageClient.create(filePath, fileDescription);
-			await this.antivirusService.send(entity);
-
-			return entity;
-		} catch (error) {
-			await this.fileRecordRepo.delete(entity);
-			throw error;
-		}
-	}
-
-	private getNewFileRecord(name: string, size: number, mimeType: string, params: FileRecordParams, userId: string) {
-		const entity = new FileRecord({
-			size,
-			name,
-			mimeType,
-			parentType: params.parentType,
-			parentId: params.parentId,
-			creatorId: userId,
-			schoolId: params.schoolId,
-		});
-		return entity;
-	}
-
-	private createPath(schoolId: EntityId, fileRecordId: EntityId): string {
-		const pathToFile = [schoolId, fileRecordId].join('/');
-
-		return pathToFile;
 	}
 
 	private async checkPermission(
@@ -161,21 +135,6 @@ export class FilesStorageUC {
 		const res = await this.filesStorageService.downloadFile(fileRecord.schoolId, fileRecord.id);
 
 		return res;
-	}
-
-	private checkFilenameExists(filename: string, fileRecords: FileRecord[]): string {
-		let counter = 0;
-		const filenameObj = path.parse(filename);
-		const { name } = filenameObj;
-		let newFilename = path.format(filenameObj);
-		// eslint-disable-next-line @typescript-eslint/no-loop-func
-		while (fileRecords.find((item: FileRecord) => item.name === newFilename)) {
-			counter += 1;
-			filenameObj.base = counter > 0 ? `${name} (${counter})${filenameObj.ext}` : `${name}${filenameObj.ext}`;
-			newFilename = path.format(filenameObj);
-		}
-
-		return newFilename;
 	}
 
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {

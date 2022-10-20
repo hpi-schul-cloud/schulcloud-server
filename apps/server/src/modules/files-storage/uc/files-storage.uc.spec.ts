@@ -16,7 +16,8 @@ import { Request } from 'express';
 import { Observable, of } from 'rxjs';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { CopyFileResponse } from '../controller/dto';
-import { FileRecordParams, FileUrlParams, SingleFileParams } from '../controller/dto/file-storage.params';
+import { FileRecordParams, SingleFileParams } from '../controller/dto/file-storage.params';
+import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { createFile } from '../helper';
 import { IFile } from '../interface';
@@ -89,15 +90,6 @@ describe('FilesStorageUC', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let httpService: DeepMocked<HttpService>;
 	let orm: MikroORM;
-	let fileRecord: FileRecord;
-	let fileRecords: FileRecord[];
-
-	let fileUploadParams: FileRecordParams;
-	let uploadFromUrlParams: FileRecordParams & FileUrlParams;
-	const url = 'http://localhost/test.jpg';
-	const entityId: EntityId = new ObjectId().toHexString();
-	const userId: EntityId = new ObjectId().toHexString();
-	const schoolId: EntityId = new ObjectId().toHexString();
 
 	const getRequestParams = (schoolId1: EntityId, userId1: EntityId) => {
 		return { schoolId: schoolId1, parentId: userId1, parentType: FileRecordParentType.User };
@@ -113,10 +105,11 @@ describe('FilesStorageUC', () => {
 
 	const getTargetParams = () => {
 		const targetParentId: EntityId = new ObjectId().toHexString();
+		const schoolId1: EntityId = new ObjectId().toHexString();
 
 		return {
 			target: {
-				schoolId,
+				schoolId: schoolId1,
 				parentId: targetParentId,
 				parentType: FileRecordParentType.Task,
 			},
@@ -125,21 +118,6 @@ describe('FilesStorageUC', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-		fileUploadParams = {
-			schoolId,
-			parentId: userId,
-			parentType: FileRecordParentType.User,
-		};
-		uploadFromUrlParams = {
-			...fileUploadParams,
-			url,
-			fileName: 'test.jpg',
-			headers: {
-				authorization: 'custom jwt',
-			},
-		};
-
-		fileRecord = fileRecordFactory.buildWithId({ name: 'text.txt' });
 	});
 
 	afterAll(async () => {
@@ -186,17 +164,6 @@ describe('FilesStorageUC', () => {
 		httpService = module.get(HttpService);
 		fileRecordRepo = module.get(FileRecordRepo);
 		filesStorageService = module.get(FilesStorageService);
-		fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
-		];
-		filesStorageService.getFileRecordsOfParent.mockResolvedValue([fileRecords, fileRecords.length]);
-
-		fileRecordRepo.save.mockImplementation((entity: FileRecord | FileRecord[]) => {
-			(entity as FileRecord).id = entityId;
-			return Promise.resolve();
-		});
 	});
 
 	afterEach(async () => {
@@ -207,82 +174,156 @@ describe('FilesStorageUC', () => {
 		expect(filesStorageUC).toBeDefined();
 	});
 
-	describe('upload from link()', () => {
-		beforeEach(() => {
-			httpService.get.mockReturnValue(
-				createObservable(
-					{},
-					{
-						connection: 'keep-alive',
-						'content-length': '10699',
-						'content-type': 'image/jpeg',
-					}
-				)
-			);
-		});
+	describe('uploadFromUrl is called', () => {
+		const createAxiosResponse1 = <T = unknown>(data: T, headers: AxiosResponseHeaders = {}): AxiosResponse<T> => {
+			return {
+				data,
+				status: 0,
+				statusText: '',
+				headers,
+				config: {},
+			};
+		};
 
-		it('should call request.get()', async () => {
-			await filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams);
+		const getUploadFromUrlParams = () => {
+			const { params1, userId1, fileRecords1 } = getFileRecordsWithParams();
+			const fileRecord1 = fileRecords1[0];
 
-			expect(httpService.get).toBeCalledWith(url, {
-				headers: { authorization: 'custom jwt' },
-				responseType: 'stream',
+			const uploadFromUrlParams1 = {
+				...params1,
+				url: 'http://localhost/test.jpg',
+				fileName: 'test.jpg',
+				headers: {
+					authorization: 'custom jwt',
+				},
+			};
+
+			const headers = {
+				connection: 'keep-alive',
+				'content-length': '10699',
+				'content-type': 'image/jpeg',
+			};
+			const buffer = Buffer.from('abc');
+			const response = createAxiosResponse1(buffer, headers);
+
+			return { fileRecord1, userId1, uploadFromUrlParams1, buffer, response };
+		};
+
+		describe('WHEN user is authorised, httpService gets response and file uploads successfully', () => {
+			const setup = () => {
+				const { fileRecord1, userId1, uploadFromUrlParams1, buffer, response } = getUploadFromUrlParams();
+
+				httpService.get.mockReturnValueOnce(of(response));
+
+				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord1);
+
+				return { uploadFromUrlParams1, userId1, response, buffer, fileRecord1 };
+			};
+
+			it('should call authorizationService with correct params', async () => {
+				const { uploadFromUrlParams1, userId1 } = setup();
+
+				await filesStorageUC.uploadFromUrl(userId1, uploadFromUrlParams1);
+
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+					userId1,
+					uploadFromUrlParams1.parentType,
+					uploadFromUrlParams1.parentId,
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+				);
 			});
-			expect(httpService.get).toHaveBeenCalledTimes(1);
+
+			it('should call httpService get with correct params', async () => {
+				const { uploadFromUrlParams1, userId1 } = setup();
+
+				await filesStorageUC.uploadFromUrl(userId1, uploadFromUrlParams1);
+
+				const expectedConfig = {
+					headers: uploadFromUrlParams1.headers,
+					responseType: 'stream',
+				};
+
+				expect(httpService.get).toHaveBeenCalledWith(uploadFromUrlParams1.url, expectedConfig);
+			});
+
+			it('should call uploadFile get with correct params', async () => {
+				const { uploadFromUrlParams1, userId1, response, buffer } = setup();
+
+				await filesStorageUC.uploadFromUrl(userId1, uploadFromUrlParams1);
+
+				const expectedFileDescription = createFile(uploadFromUrlParams1.fileName, response, buffer);
+				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(
+					userId1,
+					uploadFromUrlParams1,
+					expectedFileDescription
+				);
+			});
+
+			it('should call uploadFile get with correct params', async () => {
+				const { uploadFromUrlParams1, userId1, fileRecord1 } = setup();
+
+				const result = await filesStorageUC.uploadFromUrl(userId1, uploadFromUrlParams1);
+
+				expect(result).toEqual(fileRecord1);
+			});
 		});
 
-		it('should return instance of FileRecord', async () => {
-			const result = await filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams);
-			expect(result).toBeInstanceOf(FileRecord);
-			expect(result).toEqual(
-				expect.objectContaining({
-					createdAt: expect.any(Date) as Date,
-					id: expect.any(String) as string,
-					name: 'test.jpg',
-					parentType: 'users',
-					securityCheck: {
-						createdAt: expect.any(Date) as Date,
-						reason: 'not yet scanned',
-						requestToken: expect.any(String) as string,
-						status: 'pending',
-						updatedAt: expect.any(Date) as Date,
-					},
-					size: 10699,
-					updatedAt: expect.any(Date) as Date,
-				})
-			);
+		describe('WHEN user is not authorised', () => {
+			const setup = () => {
+				const { userId1, uploadFromUrlParams1 } = getUploadFromUrlParams();
+				const error = new Error('test');
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error);
+
+				return { uploadFromUrlParams1, userId1, error };
+			};
+
+			it('should pass error', async () => {
+				const { uploadFromUrlParams1, userId1, error } = setup();
+
+				await expect(filesStorageUC.uploadFromUrl(userId1, uploadFromUrlParams1)).rejects.toThrow(error);
+			});
 		});
 
-		it('should throw Error', async () => {
-			httpService.get.mockResolvedValue(
-				createObservable({
+		describe('WHEN httpService throws error', () => {
+			const setup = () => {
+				const { userId1, uploadFromUrlParams1 } = getUploadFromUrlParams();
+
+				const error = createObservable({
 					isAxiosError: true,
 					code: '404',
 					response: {},
 					name: 'errorText',
 					message: 'errorText',
 					toJSON: () => ({}),
-				}) as never
-			);
+				}) as never;
+				httpService.get.mockResolvedValue(error);
 
-			await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow(NotFoundException);
+				return { uploadFromUrlParams1, userId1 };
+			};
+
+			it('should pass error', async () => {
+				const { uploadFromUrlParams1, userId1 } = setup();
+
+				await expect(filesStorageUC.uploadFromUrl(userId1, uploadFromUrlParams1)).rejects.toThrowError();
+			});
 		});
 
-		describe('Tests of permission handling', () => {
-			it('should call authorizationService.hasPermissionByReferences', async () => {
-				authorizationService.checkPermissionByReferences.mockResolvedValue();
-				await filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams);
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
-					userId,
-					fileUploadParams.parentType,
-					fileUploadParams.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
-				);
-			});
+		describe('WHEN uploadFile throws error', () => {
+			const setup = () => {
+				const { userId1, uploadFromUrlParams1, response } = getUploadFromUrlParams();
+				const error = new Error('test');
 
-			it('should throw Error', async () => {
-				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
-				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow();
+				httpService.get.mockReturnValueOnce(of(response));
+				filesStorageService.uploadFile.mockRejectedValueOnce(error);
+
+				return { uploadFromUrlParams1, userId1 };
+			};
+
+			it('should pass error', async () => {
+				const { uploadFromUrlParams1, userId1 } = setup();
+
+				const expectedError = new NotFoundException(ErrorType.FILE_NOT_FOUND);
+				await expect(filesStorageUC.uploadFromUrl(userId1, uploadFromUrlParams1)).rejects.toThrow(expectedError);
 			});
 		});
 	});
@@ -756,7 +797,7 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { fileRecords1, userId1 } = getFileRecordsWithParams();
 				const fileRecord1 = fileRecords1[0];
-				const requestParams = { fileRecordId: fileRecord1.id, parentType: fileRecord.parentType };
+				const requestParams = { fileRecordId: fileRecord1.id, parentType: fileRecord1.parentType };
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord1);
 
