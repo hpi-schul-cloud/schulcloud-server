@@ -15,6 +15,7 @@ export class TaskMapper {
 			courseId: taskDesc.courseId,
 			createdAt: task.createdAt,
 			updatedAt: task.updatedAt,
+			lessonHidden: false,
 			status: statusDto,
 		});
 
@@ -23,6 +24,7 @@ export class TaskMapper {
 
 		dto.displayColor = taskDesc.color;
 		dto.description = taskDesc.lessonName;
+		dto.lessonHidden = taskDesc.lessonHidden;
 
 		return dto;
 	}
