@@ -57,13 +57,20 @@ const createUser = async (userId, roleName = 'student', schoolId = '5f2987e02083
 	});
 };
 
-const createAccount = (userId) =>
-	accountModel.create({
+const createAccount = async (userId) => {
+	const app = await appPromise();
+	return app.service('nest-account-service').save({
 		username: userId + AT,
 		password: TEST_HASH,
 		userId,
 		activated: true,
 	});
+	// accountModel.create({
+	// 	username: userId + AT,
+	// 	password: TEST_HASH,
+	// 	userId,
+	// 	activated: true,})
+};
 
 const setupUser = async (roleName, schoolId) => {
 	const userId = new ObjectId();
@@ -81,9 +88,11 @@ const setupUser = async (roleName, schoolId) => {
 const deleteUser = async (userId) => {
 	if (typeof userId === 'object' && userId.userId !== undefined) userId = userId.userId;
 
+	const app = await appPromise();
 	const email = userId + AT;
 	await userModel.deleteOne({ email }); // todo: add error handling if not exist
-	await accountModel.deleteOne({ username: email });
+	// await accountModel.deleteOne({ username: email });
+	await app.service('nest-account-service').deleteByUserId(userId);
 };
 
 module.exports = {

@@ -13,18 +13,22 @@ const {
 } = require('../../../../src/services/teams/hooks/helpers.js');
 
 const { teamUserModel } = require('../../../../src/services/teams/model');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('hook helpers', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('ifSuperhero', () => {
