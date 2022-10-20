@@ -285,12 +285,30 @@ describe('LtiToolUc', () => {
 			});
 		});
 
-		it('should call the ltiToolRepo', async () => {
+		it('should call findById method of the ltiToolRepo', async () => {
+			const { currentUser, toolId } = setup();
+
+			await uc.deleteLtiTool(currentUser, toolId);
+
+			expect(ltiToolRepo.findById).toHaveBeenCalledWith(toolId);
+		});
+
+		it('should call deleteById method of the ltiToolRepo', async () => {
 			const { currentUser, toolId } = setup();
 
 			await uc.deleteLtiTool(currentUser, toolId);
 
 			expect(ltiToolRepo.deleteById).toHaveBeenCalledWith(toolId);
+		});
+
+		it('should return the deleted ltiToolDO', async () => {
+			const { currentUser, toolId, ltiToolDO } = setup();
+			ltiToolRepo.findById.mockResolvedValue(ltiToolDO);
+			ltiToolRepo.deleteById.mockResolvedValue(Promise.resolve());
+
+			const deletedDO: LtiToolDO = await uc.deleteLtiTool(currentUser, toolId);
+
+			expect(deletedDO).toEqual(ltiToolDO);
 		});
 	});
 });

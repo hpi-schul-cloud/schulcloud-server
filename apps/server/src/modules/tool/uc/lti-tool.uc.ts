@@ -51,9 +51,9 @@ export class LtiToolUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_EDIT]);
 
-		// TODO feathers returns the deleted object and the superhero dashboard relies on this, remove after new tool implementation
+		// TODO: N21-301 feathers returns the deleted object and the superhero dashboard relies on this, remove after new tool implementation
 		const tool: Promise<LtiToolDO> = this.ltiToolRepo.findById(toolId);
-		const promise: Promise<void> = this.ltiToolRepo.deleteById(toolId);
+		await this.ltiToolRepo.deleteById(toolId);
 		return tool;
 	}
 }

@@ -274,13 +274,13 @@ describe('LtiToolController', () => {
 			expect(ltiToolUc.deleteLtiTool).toHaveBeenCalledWith(currentUser, toolIdParams.toolId);
 		});
 
-		it('should return a promise after deletion', () => {
-			const { currentUser, toolIdParams } = setup();
-			ltiToolUc.deleteLtiTool.mockResolvedValue(Promise.resolve());
+		it('should return a ltiToolResponse after deletion', async () => {
+			const { currentUser, toolIdParams, ltiToolDO } = setup();
+			ltiToolUc.deleteLtiTool.mockResolvedValue(ltiToolDO);
 
-			const promise: Promise<void> = controller.deleteLtiTool(currentUser, toolIdParams);
+			const response: LtiToolResponse = await controller.deleteLtiTool(currentUser, toolIdParams);
 
-			expect(promise).toBeDefined();
+			expect(response).toBeDefined();
 		});
 	});
 });
