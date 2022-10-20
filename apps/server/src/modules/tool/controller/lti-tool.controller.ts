@@ -76,8 +76,12 @@ export class LtiToolController {
 	}
 
 	@Delete(':toolId')
-	deleteLtiTool(@CurrentUser() currentUser: ICurrentUser, @Param() params: ToolIdParams): Promise<void> {
-		const promise: Promise<void> = this.ltiToolUc.deleteLtiTool(currentUser, params.toolId);
-		return promise;
+	async deleteLtiTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ToolIdParams
+	): Promise<LtiToolResponse> {
+		const tool: LtiToolDO = await this.ltiToolUc.deleteLtiTool(currentUser, params.toolId);
+		const mapped: LtiToolResponse = this.ltiToolMapper.mapDoToResponse(tool);
+		return mapped;
 	}
 }

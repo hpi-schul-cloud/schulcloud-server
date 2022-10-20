@@ -47,11 +47,13 @@ export class LtiToolUc {
 		return updatedTool;
 	}
 
-	async deleteLtiTool(currentUser: ICurrentUser, toolId: string): Promise<void> {
+	async deleteLtiTool(currentUser: ICurrentUser, toolId: string): Promise<LtiToolDO> {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_EDIT]);
 
+		// TODO feathers returns the deleted object and the superhero dashboard relies on this, remove after new tool implementation
+		const tool: Promise<LtiToolDO> = this.ltiToolRepo.findById(toolId);
 		const promise: Promise<void> = this.ltiToolRepo.deleteById(toolId);
-		return promise;
+		return tool;
 	}
 }
