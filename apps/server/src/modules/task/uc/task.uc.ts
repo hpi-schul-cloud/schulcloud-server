@@ -295,7 +295,7 @@ export class TaskUC {
 	}
 
 	private checkIndividualTaskEnabled() {
-		const enabled = Configuration.get('FEATURE_TASK_ASSIGNMENT_ENABLED') as boolean;
+		const enabled = Configuration.get('FEATURE_NEW_TASK_ENABLED') as boolean;
 		if (!enabled) {
 			throw new InternalServerErrorException('Feature not enabled');
 		}

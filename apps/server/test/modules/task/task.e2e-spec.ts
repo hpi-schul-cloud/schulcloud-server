@@ -1066,7 +1066,7 @@ describe('Task Controller (e2e)', () => {
 
 		beforeEach(async () => {
 			await cleanupCollections(em);
-			Configuration.set('FEATURE_TASK_ASSIGNMENT_ENABLED', true);
+			Configuration.set('FEATURE_NEW_TASK_ENABLED', true);
 		});
 
 		it('GET :id should return existing task', async () => {
@@ -1151,7 +1151,7 @@ describe('Task Controller (e2e)', () => {
 
 		beforeEach(async () => {
 			await cleanupCollections(em);
-			Configuration.set('FEATURE_TASK_ASSIGNMENT_ENABLED', false);
+			Configuration.set('FEATURE_NEW_TASK_ENABLED', false);
 		});
 
 		const setup = () => {

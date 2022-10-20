@@ -1033,7 +1033,7 @@
 				}
 			}
 		},
-        "FEATURE_TASK_ASSIGNMENT_ENABLED": {
+        "FEATURE_NEW_TASK_ENABLED": {
           "type": "boolean",
           "default": false,
           "description": "Enable the task assignment to individuals"

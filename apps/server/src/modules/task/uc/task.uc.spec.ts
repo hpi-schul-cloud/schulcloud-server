@@ -1082,7 +1082,7 @@ describe('TaskUC', () => {
 	describe('Individual task assignment feature', () => {
 		beforeEach(() => {
 			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
-				if (config === 'FEATURE_TASK_ASSIGNMENT_ENABLED') {
+				if (config === 'FEATURE_NEW_TASK_ENABLED') {
 					return true;
 				}
 				return null;
