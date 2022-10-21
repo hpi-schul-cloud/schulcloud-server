@@ -26,12 +26,10 @@ export class CourseCopyService {
 		userId,
 		courseId,
 		newName,
-		jwt,
 	}: {
 		userId: EntityId;
 		courseId: EntityId;
 		newName?: string | undefined;
-		jwt: string;
 	}): Promise<CopyStatus> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
@@ -56,7 +54,7 @@ export class CourseCopyService {
 			const boardCopy = statusBoard.copyEntity as Board;
 			await this.boardRepo.save(boardCopy);
 			statusBoard = this.lessonCopyService.updateCopiedEmbeddedTasks(statusBoard);
-			statusBoard = await this.fileCopyAppendService.copyFiles(statusBoard, courseCopy.id, userId, jwt);
+			statusBoard = await this.fileCopyAppendService.copyFiles(statusBoard, courseCopy.id, userId);
 			const updatedBoardCopy = statusBoard.copyEntity as Board;
 			await this.boardRepo.save(updatedBoardCopy);
 		}

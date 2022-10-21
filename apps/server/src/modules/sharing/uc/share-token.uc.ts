@@ -84,7 +84,7 @@ export class ShareTokenUC {
 		return shareTokenInfo;
 	}
 
-	async importShareToken(userId: EntityId, token: string, newName: string, jwt: string): Promise<CopyStatus> {
+	async importShareToken(userId: EntityId, token: string, newName: string): Promise<CopyStatus> {
 		this.checkFeatureEnabled();
 
 		this.logger.debug({ action: 'importShareToken', userId, token, newName });
@@ -101,7 +101,6 @@ export class ShareTokenUC {
 			userId,
 			courseId: shareToken.payload.parentId,
 			newName,
-			jwt,
 		});
 
 		return result;
