@@ -12,9 +12,10 @@ export class LtiToolPostBody {
 	@ApiProperty({ required: true })
 	url!: string;
 
+	@IsOptional()
 	@IsString()
-	@ApiProperty({ required: true })
-	key!: string;
+	@ApiProperty({ required: false })
+	key?: string;
 
 	/**
 	 * Is optional for the moment, because when a teacher adds a tool to a course the secret will not be transferred.
@@ -48,7 +49,7 @@ export class LtiToolPostBody {
 	@IsOptional()
 	@IsArray()
 	@IsEnum(LtiRoleType, { each: true })
-	@ApiProperty({ required: true })
+	@ApiProperty({ required: false })
 	roles: LtiRoleType[] = [];
 
 	@IsOptional()
