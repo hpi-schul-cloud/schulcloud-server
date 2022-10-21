@@ -55,7 +55,7 @@ describe('course copy uc', () => {
 				status: CopyStatusEnum.SUCCESS,
 				copyEntity: courseCopy,
 			};
-			const jwt = 'some-great-jwt';
+
 			courseCopyService.copyCourse.mockResolvedValue(status);
 
 			return {
@@ -65,20 +65,19 @@ describe('course copy uc', () => {
 				courseCopy,
 				boardCopy,
 				allCourses,
-				jwt,
 				status,
 			};
 		};
 
 		it('should throw if copy feature is deactivated', async () => {
 			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
-			const { course, user, jwt } = setup();
-			await expect(uc.copyCourse(user.id, course.id, jwt)).rejects.toThrowError(InternalServerErrorException);
+			const { course, user } = setup();
+			await expect(uc.copyCourse(user.id, course.id)).rejects.toThrowError(InternalServerErrorException);
 		});
 
 		it('should check permission to create a course', async () => {
-			const { course, user, jwt } = setup();
-			await uc.copyCourse(user.id, course.id, jwt);
+			const { course, user } = setup();
+			await uc.copyCourse(user.id, course.id);
 			expect(authorization.checkPermissionByReferences).toBeCalledWith(
 				user.id,
 				AllowedAuthorizationEntityType.Course,
@@ -91,14 +90,14 @@ describe('course copy uc', () => {
 		});
 
 		it('should call course copy service', async () => {
-			const { course, user, jwt } = setup();
-			await uc.copyCourse(user.id, course.id, jwt);
-			expect(courseCopyService.copyCourse).toBeCalledWith({ userId: user.id, courseId: course.id, jwt });
+			const { course, user } = setup();
+			await uc.copyCourse(user.id, course.id);
+			expect(courseCopyService.copyCourse).toBeCalledWith({ userId: user.id, courseId: course.id });
 		});
 
 		it('should return status', async () => {
-			const { course, user, status, jwt } = setup();
-			const result = await uc.copyCourse(user.id, course.id, jwt);
+			const { course, user, status } = setup();
+			const result = await uc.copyCourse(user.id, course.id);
 			expect(result).toEqual(status);
 		});
 
@@ -109,15 +108,14 @@ describe('course copy uc', () => {
 				authorization.checkPermissionByReferences.mockImplementation(() => {
 					throw new ForbiddenException();
 				});
-				const jwt = 'some-jwt-token';
-				return { user, course, jwt };
+				return { user, course };
 			};
 
 			it('should throw ForbiddenException', async () => {
-				const { course, user, jwt } = setupWithCourseForbidden();
+				const { course, user } = setupWithCourseForbidden();
 
 				try {
-					await uc.copyCourse(user.id, course.id, jwt);
+					await uc.copyCourse(user.id, course.id);
 					throw new Error('should have failed');
 				} catch (err) {
 					expect(err).toBeInstanceOf(ForbiddenException);

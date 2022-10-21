@@ -7,31 +7,27 @@ import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
+import { AuthModule } from '@src/modules/authentication';
+import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
+import { FilesStorageClientModule } from '@src/modules/files-storage-client';
+import { LearnroomModule } from '@src/modules/learnroom';
+import { LessonApiModule } from '@src/modules/lesson';
+import { NewsModule } from '@src/modules/news';
+import { OauthModule } from '@src/modules/oauth';
+import { OauthProviderModule } from '@src/modules/oauth-provider';
 import { ProvisioningModule } from '@src/modules/provisioning';
+import { RocketChatModule } from '@src/modules/rocketchat';
 import { RoleModule } from '@src/modules/role/role.module';
 import { SchoolModule } from '@src/modules/school/school.module';
+import { SharingApiModule } from '@src/modules/sharing/sharing.module';
+import { SystemModule } from '@src/modules/system';
+import { TaskModule } from '@src/modules/task';
 import { UserModule } from '@src/modules/user';
-// todo: MUST BE CHECKED BEFORE MERGE
-// import { FilesModule } from '@src/modules/files';
-import {
-	AuthModule,
-	CollaborativeStorageModule,
-	FilesStorageClientModule,
-	ImportUserModule,
-	LearnroomModule,
-	LessonApiModule,
-	NewsModule,
-	OauthModule,
-	OauthProviderModule,
-	RocketChatModule,
-	SharingApiModule,
-	SystemModule,
-	TaskModule,
-	VideoConferenceModule,
-} from '@src/modules';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
-import serverConfig from './server.config';
+import { ImportUserModule } from '@src/modules/user-import';
+import { VideoConferenceModule } from '@src/modules/video-conference';
+import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
 
 const serverModules = [

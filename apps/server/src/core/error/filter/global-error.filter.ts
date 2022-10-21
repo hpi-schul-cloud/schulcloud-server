@@ -1,5 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
+import { IError, RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
 import { ILogger, Logger } from '@src/core/logger';
 import { Response } from 'express';
 import _ from 'lodash';
@@ -114,18 +115,23 @@ const writeErrorLog = (error: unknown, logger: ILogger): void => {
 };
 
 @Catch()
-export class GlobalErrorFilter<T = unknown> implements ExceptionFilter<T> {
+export class GlobalErrorFilter<T extends IError | undefined> implements ExceptionFilter<T> {
 	constructor(private logger: Logger) {
 		this.logger.setContext('Error');
 	}
 
-	// eslint-disable-next-line class-methods-use-this
-	catch(error: T, host: ArgumentsHost): void {
-		const ctx = host.switchToHttp();
-		const response = ctx.getResponse<Response>();
+	// eslint-disable-next-line consistent-return
+	catch(error: T, host: ArgumentsHost): void | RpcMessage<unknown> {
+		const contextType = host.getType<'http' | 'rmq'>();
 		writeErrorLog(error, this.logger);
 		const errorResponse: ErrorResponse = this.createErrorResponse(error);
-		response.status(errorResponse.code).json(errorResponse);
+		if (contextType === 'http') {
+			const ctx = host.switchToHttp();
+			const response = ctx.getResponse<Response>();
+			response.status(errorResponse.code).json(errorResponse);
+		} else if (contextType === 'rmq') {
+			return { message: undefined, error };
+		}
 	}
 
 	createErrorResponse(error: T): ErrorResponse {

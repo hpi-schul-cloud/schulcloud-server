@@ -12,7 +12,7 @@ export class CourseCopyUC {
 		private readonly courseCopyService: CourseCopyService
 	) {}
 
-	async copyCourse(userId: EntityId, courseId: EntityId, jwt: string): Promise<CopyStatus> {
+	async copyCourse(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
 		this.checkFeatureEnabled();
 
 		await this.authorization.checkPermissionByReferences(userId, AllowedAuthorizationEntityType.Course, courseId, {
@@ -20,7 +20,7 @@ export class CourseCopyUC {
 			requiredPermissions: [Permission.COURSE_CREATE],
 		});
 
-		const result = await this.courseCopyService.copyCourse({ userId, courseId, jwt });
+		const result = await this.courseCopyService.copyCourse({ userId, courseId });
 
 		return result;
 	}

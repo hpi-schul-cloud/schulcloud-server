@@ -2,9 +2,9 @@ import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { ICurrentUser } from '@shared/domain';
-import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { LessonCopyUC } from '@src/modules/learnroom/uc/lesson-copy.uc';
-import serverConfig from '@src/server.config';
+import { serverConfig } from '@src/modules/server/server.config';
 import { CopyMapper } from '../mapper/copy.mapper';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { CourseCopyUC } from '../uc/course-copy.uc';
@@ -68,10 +68,9 @@ export class RoomsController {
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: RoomUrlParams,
-		@JWT() jwt: string
+		@Param() urlParams: RoomUrlParams
 	): Promise<CopyApiResponse> {
-		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId, jwt);
+		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
 	}
@@ -81,13 +80,12 @@ export class RoomsController {
 	async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: LessonUrlParams,
-		@Body() params: LessonCopyApiParams,
-		@JWT() jwt: string
+		@Body() params: LessonCopyApiParams
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.lessonCopyUc.copyLesson(
 			currentUser.userId,
 			urlParams.lessonId,
-			CopyMapper.mapLessonCopyToDomain(params, jwt)
+			CopyMapper.mapLessonCopyToDomain(params, currentUser.userId)
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
