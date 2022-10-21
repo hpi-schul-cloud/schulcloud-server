@@ -239,6 +239,74 @@ describe('file copy append service', () => {
 			});
 		});
 
+		describe('when copying files in tasks attached to lesson', () => {
+			const setup = () => {
+				const user = userFactory.build();
+
+				const originalCourse = courseFactory.build({ school: user.school });
+				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalLesson = lessonFactory.build({
+					course: originalCourse,
+				});
+				const copyLesson = lessonFactory.build({ course: originalCourse });
+
+				const originalFile = fileFactory.buildWithId({ name: 'file.jpg' });
+				const description = getEmbeddedHtml(originalFile);
+				const originalTask = taskFactory.buildWithId({
+					school: user.school,
+					description,
+				});
+				const copyTask = taskFactory.buildWithId({
+					school: user.school,
+					course: originalCourse,
+					lesson: copyLesson,
+					description,
+				});
+
+				const copyStatus: CopyStatus = {
+					type: CopyElementType.LESSON,
+					title: 'Tolle Lesson',
+					status: CopyStatusEnum.SUCCESS,
+					originalEntity: originalLesson,
+					copyEntity: copyLesson,
+					elements: [
+						{
+							type: CopyElementType.TASK,
+							status: CopyStatusEnum.SUCCESS,
+							originalEntity: originalTask,
+							copyEntity: copyTask,
+						},
+					],
+				};
+
+				const jwt = 'veryveryverylongstringthatissignedandstuff';
+
+				return {
+					user,
+					copyStatus,
+					originalCourse,
+					destinationCourse,
+					originalLesson,
+					copyLesson,
+					originalTask,
+					copyTask,
+					originalFile,
+					jwt,
+				};
+			};
+
+			it('should copy files of sub-elements', async () => {
+				const { originalCourse, copyStatus, user, jwt, originalFile } = setup();
+
+				await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+				expect(fileLegacyService.copyFile).toHaveBeenCalledWith({
+					fileId: originalFile.id,
+					targetCourseId: originalCourse.id,
+					userId: user.id,
+				});
+			});
+		});
+
 		describe('copying files in tasks', () => {
 			describe('when files are present', () => {
 				const setup = () => {
