@@ -1,8 +1,7 @@
-import { EntityId } from '@shared/domain';
 import { IImsccElement } from './imscc-element.interface';
 
 export type IImsccOrganizationProps = {
-	identifier: EntityId;
+	identifier: string;
 	title: string;
 };
 

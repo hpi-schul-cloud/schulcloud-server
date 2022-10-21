@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId, Lesson } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
 import { CourseService } from './course.service';
-import { ImsccFileBuilder } from '../imscc';
+import { IImsccOrganizationProps, ImsccFileBuilder } from '../imscc';
 
 @Injectable()
 export class CourseExportService {
@@ -14,19 +14,21 @@ export class CourseExportService {
 		return new ImsccFileBuilder({
 			title: course.name,
 		})
-			.addOrganizationItems(
-				lessons.map((lesson) => {
-					return {
-						identifier: lesson.id,
-						title: lesson.name,
-					};
-				})
-			)
+			.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
 			.addResourceItems({
 				identifier: 'placeholder-identifier',
 				type: 'webcontent',
 				href: 'placeholder.html',
 			})
 			.build();
+	}
+
+	private mapLessonsToOrganizationItems(lessons: Lesson[]): IImsccOrganizationProps[] {
+		return lessons.map((lesson) => {
+			return {
+				identifier: lesson.id,
+				title: lesson.name,
+			};
+		});
 	}
 }

@@ -1,7 +1,7 @@
 import { IImsccElement } from './imscc-element.interface';
 
 export type IImsccResourceProps = {
-	identifier: string | number;
+	identifier: string;
 	type: string;
 	href: string;
 };
