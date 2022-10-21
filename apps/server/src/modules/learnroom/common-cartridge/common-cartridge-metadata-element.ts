@@ -1,11 +1,11 @@
-import { IImsccElement } from './imscc-element.interface';
+import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 
-export type IImsccMetadataProps = {
+export type ICommonCartridgeMetadataProps = {
 	title: string;
 };
 
-export class ImsccMetadataElement implements IImsccElement {
-	constructor(private readonly props: IImsccMetadataProps) {}
+export class CommonCartridgeMetadataElement implements ICommonCartridgeElement {
+	constructor(private readonly props: ICommonCartridgeMetadataProps) {}
 
 	transform(): Record<string, unknown> {
 		return {

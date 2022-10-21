@@ -1,6 +1,6 @@
 import AdmZip from 'adm-zip';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseExportService } from '@src/modules/learnroom/service/course-export.service';
+import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LessonService } from '@src/modules/lesson/service';
@@ -8,10 +8,10 @@ import { courseFactory, lessonFactory, setupEntities } from '@shared/testing';
 import { Course, Lesson } from '@shared/domain';
 import { MikroORM } from '@mikro-orm/core';
 
-describe('CourseExportService', () => {
+describe('CommonCartridgeExportService', () => {
 	let orm: MikroORM;
 	let module: TestingModule;
-	let courseExportService: CourseExportService;
+	let courseExportService: CommonCartridgeExportService;
 	let courseServiceMock: DeepMocked<CourseService>;
 	let lessonServiceMock: DeepMocked<LessonService>;
 
@@ -22,7 +22,7 @@ describe('CourseExportService', () => {
 		orm = await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
-				CourseExportService,
+				CommonCartridgeExportService,
 				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
@@ -33,7 +33,7 @@ describe('CourseExportService', () => {
 				},
 			],
 		}).compile();
-		courseExportService = module.get(CourseExportService);
+		courseExportService = module.get(CommonCartridgeExportService);
 		courseServiceMock = module.get(CourseService);
 		lessonServiceMock = module.get(LessonService);
 		course = courseFactory.buildWithId();

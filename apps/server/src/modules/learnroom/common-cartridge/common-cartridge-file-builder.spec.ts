@@ -1,26 +1,26 @@
 import AdmZip from 'adm-zip';
 import { parseStringPromise } from 'xml2js';
-import { IImsccFileBuilderOptions, ImsccFileBuilder } from './imscc-file-builder';
-import { IImsccOrganizationProps } from './imscc-organization-item-element';
-import { IImsccResourceProps } from './imscc-resource-item-element';
+import { ICommonCartridgeFileBuilderOptions, CommonCartridgeFileBuilder } from './common-cartridge-file-builder';
+import { ICommonCartridgeOrganizationProps } from './common-cartridge-organization-item-element';
+import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
 
-describe('ImsccFileBuilder', () => {
-	const builderOptions: IImsccFileBuilderOptions = {
+describe('CommonCartridgeFileBuilder', () => {
+	const builderOptions: ICommonCartridgeFileBuilderOptions = {
 		title: 'Placeholder Title',
 	};
-	const organizationProps: IImsccOrganizationProps = {
+	const organizationProps: ICommonCartridgeOrganizationProps = {
 		identifier: 'organization-identifier',
 		title: 'organization-title',
 	};
-	const resourceProps: IImsccResourceProps = {
+	const resourceProps: ICommonCartridgeResourceProps = {
 		identifier: 'resource-identifier',
 		type: 'webcontent',
 		href: 'placeholder.html',
 	};
-	let builder: ImsccFileBuilder;
+	let builder: CommonCartridgeFileBuilder;
 
 	beforeEach(() => {
-		builder = new ImsccFileBuilder(builderOptions);
+		builder = new CommonCartridgeFileBuilder(builderOptions);
 	});
 
 	describe('manifest', () => {

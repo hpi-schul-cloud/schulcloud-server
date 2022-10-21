@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CourseExportService } from '@src/modules/learnroom/service/course-export.service';
+import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
 import { AuthorizationService } from '@src/modules';
 import { CourseExportUc } from './course-export.uc';
 
 describe('CourseExportUc', () => {
 	let module: TestingModule;
 	let courseExportUc: CourseExportUc;
-	let courseExportServiceMock: DeepMocked<CourseExportService>;
+	let courseExportServiceMock: DeepMocked<CommonCartridgeExportService>;
 	let authorizationServiceMock: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
@@ -15,8 +15,8 @@ describe('CourseExportUc', () => {
 			providers: [
 				CourseExportUc,
 				{
-					provide: CourseExportService,
-					useValue: createMock<CourseExportService>(),
+					provide: CommonCartridgeExportService,
+					useValue: createMock<CommonCartridgeExportService>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -25,7 +25,7 @@ describe('CourseExportUc', () => {
 			],
 		}).compile();
 		courseExportUc = module.get(CourseExportUc);
-		courseExportServiceMock = module.get(CourseExportService);
+		courseExportServiceMock = module.get(CommonCartridgeExportService);
 		authorizationServiceMock = module.get(AuthorizationService);
 	});
 

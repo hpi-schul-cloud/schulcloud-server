@@ -1,8 +1,8 @@
-import { IImsccElement } from './imscc-element.interface';
-import { ImsccOrganizationItemElement } from './imscc-organization-item-element';
+import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeOrganizationItemElement } from './common-cartridge-organization-item-element';
 
-export class ImsccOrganizationWrapperElement implements IImsccElement {
-	constructor(private readonly organizationElements: ImsccOrganizationItemElement[]) {}
+export class CommonCartridgeOrganizationWrapperElement implements ICommonCartridgeElement {
+	constructor(private readonly organizationElements: CommonCartridgeOrganizationItemElement[]) {}
 
 	transform(): Record<string, unknown> {
 		return {
