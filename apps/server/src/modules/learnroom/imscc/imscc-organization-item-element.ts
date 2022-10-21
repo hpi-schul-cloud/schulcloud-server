@@ -1,7 +1,8 @@
+import { EntityId } from '@shared/domain';
 import { IImsccElement } from './imscc-element.interface';
 
 export type IImsccOrganizationProps = {
-	identifier: string | number;
+	identifier: EntityId;
 	title: string;
 };
 
@@ -11,7 +12,7 @@ export class ImsccOrganizationItemElement implements IImsccElement {
 	transform(): Record<string, unknown> {
 		return {
 			$: {
-				identifier: this.props.identifier,
+				identifier: `i${this.props.identifier}`,
 			},
 			title: this.props.title,
 		};

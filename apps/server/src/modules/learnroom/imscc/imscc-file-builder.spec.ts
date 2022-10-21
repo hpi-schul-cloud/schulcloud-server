@@ -16,7 +16,6 @@ describe('ImsccFileBuilder', () => {
 		identifier: 'resource-identifier',
 		type: 'webcontent',
 		href: 'placeholder.html',
-		file: 'placeholder.html',
 	};
 	let builder: ImsccFileBuilder;
 

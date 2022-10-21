@@ -26,7 +26,6 @@ export class CourseExportService {
 				identifier: 'placeholder-identifier',
 				type: 'webcontent',
 				href: 'placeholder.html',
-				file: 'placeholder.html',
 			})
 			.build();
 	}

@@ -11,6 +11,8 @@ export type IImsccFileBuilderOptions = {
 };
 
 export class ImsccFileBuilder {
+	private options: IImsccFileBuilderOptions;
+
 	private readonly zipBuilder = new AdmZip();
 
 	private readonly xmlBuilder = new Builder({
@@ -24,6 +26,7 @@ export class ImsccFileBuilder {
 	private resources = [] as ImsccResourceItemElement[];
 
 	constructor(options: IImsccFileBuilderOptions) {
+		this.options = options;
 		this.metadata = new ImsccMetadataElement({
 			title: options.title,
 		});
@@ -31,6 +34,15 @@ export class ImsccFileBuilder {
 
 	get manifest(): string {
 		return this.xmlBuilder.buildObject({
+			$: {
+				identifier: this.options.title,
+				xmlns: 'http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1',
+				'xmlns:lommanifest': 'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest',
+				'xmlns:lomresource': 'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource',
+				'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+				'xsi:schemaLocation':
+					'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lomresource_v1p0.xsd http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imscp_v1p2_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lommanifest_v1p0.xsd',
+			},
 			metadata: this.metadata.transform(),
 			organizations: new ImsccOrganizationWrapperElement(this.organizations).transform(),
 			resources: new ImsccResourceWrapperElement(this.resources).transform(),

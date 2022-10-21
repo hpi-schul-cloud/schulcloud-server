@@ -4,7 +4,6 @@ export type IImsccResourceProps = {
 	identifier: string | number;
 	type: string;
 	href: string;
-	file: string;
 };
 
 export class ImsccResourceItemElement implements IImsccElement {
@@ -15,9 +14,12 @@ export class ImsccResourceItemElement implements IImsccElement {
 			$: {
 				identifier: this.props.identifier,
 				type: this.props.type,
-				href: this.props.href,
 			},
-			file: this.props.file,
+			file: {
+				$: {
+					href: this.props.href,
+				},
+			},
 		};
 	}
 }
