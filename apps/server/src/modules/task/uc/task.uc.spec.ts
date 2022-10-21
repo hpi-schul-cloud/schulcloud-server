@@ -1055,17 +1055,17 @@ describe('TaskUC', () => {
 				throw new ForbiddenException();
 			});
 			await expect(async () => {
-				await service.delete(user.id, task.id, 'jwt');
+				await service.delete(user.id, task.id);
 			}).rejects.toThrow(new ForbiddenException());
 		});
 
 		it('should call TaskRepo.delete() with Task', async () => {
-			await service.delete(user.id, task.id, 'jwt');
+			await service.delete(user.id, task.id);
 			expect(taskRepo.delete).toBeCalledWith(task);
 		});
 
 		it('should call authorizationService.hasPermission() with User Task Aktion.write', async () => {
-			await service.delete(user.id, task.id, 'jwt');
+			await service.delete(user.id, task.id);
 			expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 				action: Actions.write,
 				requiredPermissions: [],
@@ -1073,8 +1073,8 @@ describe('TaskUC', () => {
 		});
 
 		it('should call fileStorageClientAdapterService.deleteFilesOfParent', async () => {
-			await service.delete(user.id, task.id, 'jwt');
-			const params = FileParamBuilder.build('jwt', task.school.id, task);
+			await service.delete(user.id, task.id);
+			const params = FileParamBuilder.build(task.school.id, task);
 			expect(fileStorageClientAdapterService.deleteFilesOfParent).toBeCalledWith(params);
 		});
 	});

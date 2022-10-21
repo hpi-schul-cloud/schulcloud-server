@@ -18,6 +18,7 @@ import { AuthModule } from '@src/modules/authentication/auth.module';
 import { AuthorizationModule } from '../authorization';
 import { S3ClientAdapter } from './client/s3-client.adapter';
 import { FileSecurityController } from './controller/file-security.controller';
+import { FilesStorageConsumer } from './controller/files-storage.consumer';
 import { FilesStorageController } from './controller/files-storage.controller';
 import fileStorageConfig from './files-storage.config';
 import { FilesStorageHelper } from './helper';
@@ -56,6 +57,7 @@ const imports = [
 const providers = [
 	FilesStorageUC,
 	FileRecordUC,
+	FilesStorageConsumer,
 	FilesStorageService,
 	FilesStorageHelper,
 	{

@@ -1,6 +1,7 @@
 import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Global, Module } from '@nestjs/common';
+import { FilesStorageExchanges } from './exchange/files-storage';
 
 /**
  * https://www.npmjs.com/package/@golevelup/nestjs-rabbitmq#usage
@@ -19,6 +20,10 @@ const imports = [
 			},
 			{
 				name: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
+				type: 'direct',
+			},
+			{
+				name: FilesStorageExchanges.FILES_STORAGE,
 				type: 'direct',
 			},
 		],
