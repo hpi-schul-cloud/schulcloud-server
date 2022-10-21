@@ -4,7 +4,7 @@ import request from 'supertest';
 import { Request } from 'express';
 import { EntityManager } from '@mikro-orm/mongodb';
 
-import { ServerTestModule } from '@src/server.module';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ICurrentUser, User, LanguageType } from '@shared/domain';
 import { ApiValidationError } from '@shared/common';

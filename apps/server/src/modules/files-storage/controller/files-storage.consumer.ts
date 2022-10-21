@@ -3,7 +3,7 @@ import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
 import { Logger } from '@src/core/logger';
-import { FilesStorageEvents, FilesStorageExchanges, ICopyFileDO, IFileDO } from '@src/shared/infra/rabbitmq';
+import { FilesStorageEvents, FilesStorageExchange, ICopyFileDO, IFileDO } from '@src/shared/infra/rabbitmq';
 import { FilesStorageMapper } from '../mapper/file-record.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from '../uc/files-storage.uc';
@@ -22,7 +22,7 @@ export class FilesStorageConsumer {
 	}
 
 	@RabbitRPC({
-		exchange: FilesStorageExchanges.FILES_STORAGE,
+		exchange: FilesStorageExchange,
 		routingKey: FilesStorageEvents.COPY_FILES_OF_PARENT,
 		queue: FilesStorageEvents.COPY_FILES_OF_PARENT,
 	})
@@ -38,7 +38,7 @@ export class FilesStorageConsumer {
 	}
 
 	@RabbitRPC({
-		exchange: FilesStorageExchanges.FILES_STORAGE,
+		exchange: FilesStorageExchange,
 		routingKey: FilesStorageEvents.LIST_FILES_OF_PARENT,
 		queue: FilesStorageEvents.LIST_FILES_OF_PARENT,
 	})
@@ -53,7 +53,7 @@ export class FilesStorageConsumer {
 	}
 
 	@RabbitRPC({
-		exchange: FilesStorageExchanges.FILES_STORAGE,
+		exchange: FilesStorageExchange,
 		routingKey: FilesStorageEvents.DELETE_FILES_OF_PARENT,
 		queue: FilesStorageEvents.DELETE_FILES_OF_PARENT,
 	})

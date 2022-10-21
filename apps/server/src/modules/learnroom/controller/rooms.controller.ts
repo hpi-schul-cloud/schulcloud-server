@@ -4,7 +4,7 @@ import { RequestTimeout } from '@shared/common';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { LessonCopyUC } from '@src/modules/learnroom/uc/lesson-copy.uc';
-import serverConfig from '@src/server.config';
+import { serverConfig } from '@src/modules/server/server.config';
 import { CopyMapper } from '../mapper/copy.mapper';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { CourseCopyUC } from '../uc/course-copy.uc';
