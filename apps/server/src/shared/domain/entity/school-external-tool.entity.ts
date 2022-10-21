@@ -1,0 +1,35 @@
+import { CustomParameterEntry } from '@shared/domain/entity/external-tool/custom-parameter/custom-parameter-entry';
+import { Embedded, Entity, Property } from '@mikro-orm/core';
+import { ExternalTool } from '@shared/domain';
+import { BaseEntityWithTimestamps } from './base.entity';
+import { School } from './school.entity';
+
+export interface ISchoolExternalToolProperties {
+	tool: ExternalTool;
+	school: School;
+	schoolParameters?: CustomParameterEntry[];
+	toolVersion: number;
+}
+
+@Entity({ tableName: 'school_external_tools' })
+export class SchoolExternalTool extends BaseEntityWithTimestamps {
+	@Property()
+	tool: ExternalTool;
+
+	@Property()
+	school: School;
+
+	@Embedded(() => CustomParameterEntry, { array: true })
+	schoolParameters: CustomParameterEntry[];
+
+	@Property()
+	toolVersion: number;
+
+	constructor(props: ISchoolExternalToolProperties) {
+		super();
+		this.tool = props.tool;
+		this.school = props.school;
+		this.schoolParameters = props.schoolParameters ?? [];
+		this.toolVersion = props.toolVersion;
+	}
+}

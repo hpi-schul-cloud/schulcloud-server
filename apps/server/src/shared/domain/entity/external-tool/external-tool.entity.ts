@@ -1,4 +1,5 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Property } from '@mikro-orm/core';
+import { BasicToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from '@shared/domain';
 import { CustomParameter } from './custom-parameter/custom-parameter';
 import { ExternalToolConfig } from './config/external-tool-config';
 import { BaseEntityWithTimestamps } from '../base.entity';
@@ -28,10 +29,10 @@ export class ExternalTool extends BaseEntityWithTimestamps {
 	@Property()
 	logoUrl?: string;
 
-	@Property()
-	config: ExternalToolConfig;
+	@Embedded()
+	config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
 
-	@Property()
+	@Embedded(() => CustomParameter, { array: true })
 	parameters?: CustomParameter[];
 
 	@Property()

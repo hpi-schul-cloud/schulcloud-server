@@ -1,4 +1,4 @@
-import { Embeddable } from '@mikro-orm/core';
+import { Embeddable, Enum, Property } from '@mikro-orm/core';
 import { CustomParameterScope } from './custom-parameter-scope.enum';
 import { CustomParameterLocation } from './custom-parameter-location.enum';
 import { CustomParameterType } from './custom-parameter-type.enum';
@@ -14,15 +14,21 @@ export class CustomParameter {
 		this.regex = props.regex;
 	}
 
+	@Property()
 	name: string;
 
+	@Property()
 	default: string;
 
+	@Property()
 	regex: string;
 
+	@Enum()
 	scope: CustomParameterScope;
 
+	@Enum()
 	location: CustomParameterLocation;
 
+	@Enum()
 	type: CustomParameterType;
 }

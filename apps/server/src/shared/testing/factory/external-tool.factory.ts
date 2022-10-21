@@ -1,12 +1,12 @@
 import { DeepPartial } from 'fishery';
 import { ExternalTool, IExternalToolProperties } from '@shared/domain/entity/external-tool/external-tool.entity';
-import { BasicConfig, Lti11Config, LtiMessageType, Oauth2Config, ToolConfigType } from '@shared/domain';
+import { BasicToolConfig, Lti11ToolConfig, LtiMessageType, Oauth2ToolConfig, ToolConfigType } from '@shared/domain';
 import { BaseFactory } from './base.factory';
 
 export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalToolProperties> {
 	withBasicConfig(): this {
 		const params: DeepPartial<IExternalToolProperties> = {
-			config: new BasicConfig({
+			config: new BasicToolConfig({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',
 			}),
@@ -16,7 +16,7 @@ export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalTool
 
 	withOauth2Config(): this {
 		const params: DeepPartial<IExternalToolProperties> = {
-			config: new Oauth2Config({
+			config: new Oauth2ToolConfig({
 				type: ToolConfigType.OAUTH2,
 				baseUrl: '',
 				clientSecret: '',
@@ -30,7 +30,7 @@ export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalTool
 
 	withLti11Config(): this {
 		const params: DeepPartial<IExternalToolProperties> = {
-			config: new Lti11Config({
+			config: new Lti11ToolConfig({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',
 				key: '',
@@ -53,7 +53,7 @@ export const externalToolFactory = ExternalToolFactory.define<ExternalTool, IExt
 			name: `external-tool-${sequence}`,
 			url: '',
 			logoUrl: '',
-			config: new BasicConfig({
+			config: new BasicToolConfig({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',
 			}),
