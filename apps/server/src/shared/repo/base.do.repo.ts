@@ -14,15 +14,9 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 
 	abstract entityFactory(props: P): E;
 
-	protected abstract mapDOToEntity(entityDO: DO): EntityProperties<P>;
-
 	protected abstract mapEntityToDO(entity: E): DO;
 
-	protected mapDOToEntityWithId(entityDO: DO): EntityProperties<P> {
-		const entityProps: EntityProperties<P> = this.mapDOToEntity(entityDO);
-		entityProps.id = entityDO.id;
-		return entityProps;
-	}
+	protected abstract mapDOToEntityProperties(entityDO: DO): EntityProperties<P>;
 
 	async save(entityDo: DO): Promise<DO> {
 		const savedDos: DO[] = await this.saveAll([entityDo]);
@@ -30,34 +24,48 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 	}
 
 	async saveAll(entityDos: DO[]): Promise<DO[]> {
-		const entities: E[] = await Promise.all(
-			entityDos.map(async (domainObject: DO): Promise<E> => {
-				const entityProps: EntityProperties<P> = this.mapDOToEntityWithId(domainObject);
-				const newEntity: E = this.entityFactory(entityProps);
+		const promises: Promise<E>[] = entityDos.map(async (domainObject: DO): Promise<E> => {
+			let entity: E;
+			if (!domainObject.id) {
+				entity = this.createEntity(domainObject);
+			} else {
+				entity = await this.updateEntity(domainObject);
+			}
+			return entity;
+		});
 
-				let result: E;
-				if (!domainObject.id) {
-					// Create
-					result = this._em.create(this.entityName, newEntity);
-					this.logger.debug(`Created new entity with id ${result.id}`);
-				} else {
-					// Update
-					this.removeProtectedEntityFields(newEntity);
-
-					const fetchedEntity: E = await this._em.findOneOrFail(this.entityName, {
-						id: domainObject.id,
-					} as FilterQuery<E>);
-					result = this._em.assign(fetchedEntity, newEntity);
-					this.logger.debug(`Updated entity with id ${result.id}`);
-				}
-				return result;
-			})
-		);
-
+		const entities: E[] = await Promise.all(promises);
 		await this._em.persistAndFlush(entities);
 
 		const savedDos: DO[] = entities.map((entity) => this.mapEntityToDO(entity));
 		return savedDos;
+	}
+
+	private createEntity(domainObject: DO): E {
+		const newEntity: E = this.createNewEntityFromDO(domainObject);
+
+		const created: E = this._em.create(this.entityName, newEntity);
+		this.logger.debug(`Created new entity with id ${created.id}`);
+		return created;
+	}
+
+	private async updateEntity(domainObject: DO): Promise<E> {
+		const newEntity: E = this.createNewEntityFromDO(domainObject);
+
+		this.removeProtectedEntityFields(newEntity);
+
+		const fetchedEntity: E = await this._em.findOneOrFail(this.entityName, {
+			id: domainObject.id,
+		} as FilterQuery<E>);
+		const updated: E = this._em.assign(fetchedEntity, newEntity);
+		this.logger.debug(`Updated entity with id ${updated.id}`);
+		return updated;
+	}
+
+	private createNewEntityFromDO(domainObject: DO) {
+		const entityProps: EntityProperties<P> = this.mapDOToEntityProperties(domainObject);
+		const newEntity: E = this.entityFactory(entityProps);
+		return newEntity;
 	}
 
 	/**
@@ -71,19 +79,26 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 		});
 	}
 
-	async delete(entityDOs: DO | DO[]): Promise<number[]> {
-		const dos: DO[] = Array.isArray(entityDOs) ? entityDOs : [entityDOs];
+	async deleteById(id: string | string[]): Promise<number> {
+		const ids: string[] = Array.isArray(id) ? id : [id];
 
-		return Promise.all(
-			dos.map(async (domainObject: DO): Promise<number> => {
-				const entityProps: EntityProperties<P> = this.mapDOToEntityWithId(domainObject);
-				return this._em.nativeDelete(this.entityName, entityProps.id as FilterQuery<E>);
-			})
-		);
+		let total = 0;
+		const promises: Promise<void>[] = ids.map(async (entityId: string): Promise<void> => {
+			const deleted: number = await this.deleteEntityById(entityId);
+			total += deleted;
+		});
+
+		await Promise.all(promises);
+		return total;
+	}
+
+	private deleteEntityById(id: string): Promise<number> {
+		const promise: Promise<number> = this._em.nativeDelete(this.entityName, { id } as FilterQuery<E>);
+		return promise;
 	}
 
 	async findById(id: EntityId): Promise<DO> {
-		const entity: E = await this._em.findOneOrFail(this.entityName, id as FilterQuery<E>);
+		const entity: E = await this._em.findOneOrFail(this.entityName, { id } as FilterQuery<E>);
 		return this.mapEntityToDO(entity);
 	}
 }

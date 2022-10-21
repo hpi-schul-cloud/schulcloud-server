@@ -22,8 +22,8 @@ class VideoConferenceRepoSpec extends VideoConferenceRepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntitySpec(entityDO: VideoConferenceDO): EntityProperties<IVideoConferenceProperties> {
-		return super.mapDOToEntity(entityDO);
+	mapDOToEntityPropertiesSpec(entityDO: VideoConferenceDO): EntityProperties<IVideoConferenceProperties> {
+		return super.mapDOToEntityProperties(entityDO);
 	}
 }
 
@@ -136,8 +136,8 @@ describe('Video Conference Repo', () => {
 		});
 	});
 
-	describe('mapDOToEntity', () => {
-		it('should map DO to Entity', () => {
+	describe('mapDOToEntityProperties', () => {
+		it('should map DO to Entity Properties', () => {
 			// Arrange
 			const testDO: VideoConferenceDO = new VideoConferenceDO({
 				id: 'testId',
@@ -153,7 +153,7 @@ describe('Video Conference Repo', () => {
 			});
 
 			// Act
-			const result: EntityProperties<IVideoConferenceProperties> = repo.mapDOToEntitySpec(testDO);
+			const result: EntityProperties<IVideoConferenceProperties> = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			// Assert
 			expect(result.id).toEqual(testDO.id);

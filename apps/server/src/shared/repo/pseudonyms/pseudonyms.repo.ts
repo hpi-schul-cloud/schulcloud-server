@@ -24,15 +24,6 @@ export class PseudonymsRepo extends BaseDORepo<PseudonymDO, Pseudonym, IPseudony
 		return this.mapEntityToDO(entity);
 	}
 
-	protected mapDOToEntity(entityDO: PseudonymDO): EntityProperties<IPseudonymProperties> {
-		return {
-			id: entityDO.id,
-			pseudonym: entityDO.pseudonym,
-			toolId: new ObjectId(entityDO.toolId),
-			userId: new ObjectId(entityDO.userId),
-		};
-	}
-
 	protected mapEntityToDO(entity: Pseudonym): PseudonymDO {
 		return new PseudonymDO({
 			id: entity.id,
@@ -42,5 +33,14 @@ export class PseudonymsRepo extends BaseDORepo<PseudonymDO, Pseudonym, IPseudony
 			toolId: entity.toolId.toHexString(),
 			userId: entity.userId.toHexString(),
 		});
+	}
+
+	protected mapDOToEntityProperties(entityDO: PseudonymDO): EntityProperties<IPseudonymProperties> {
+		return {
+			id: entityDO.id,
+			pseudonym: entityDO.pseudonym,
+			toolId: new ObjectId(entityDO.toolId),
+			userId: new ObjectId(entityDO.userId),
+		};
 	}
 }

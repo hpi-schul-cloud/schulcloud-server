@@ -49,7 +49,7 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		});
 	}
 
-	protected mapDOToEntity(entityDO: VideoConferenceDO): EntityProperties<IVideoConferenceProperties> {
+	protected mapDOToEntityProperties(entityDO: VideoConferenceDO): EntityProperties<IVideoConferenceProperties> {
 		return {
 			id: entityDO.id,
 			target: entityDO.target,

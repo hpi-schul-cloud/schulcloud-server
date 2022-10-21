@@ -42,7 +42,7 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		});
 	}
 
-	protected mapDOToEntity(entityDO: LtiToolDO): EntityProperties<LtiToolDO> {
+	protected mapDOToEntityProperties(entityDO: LtiToolDO): EntityProperties<ILtiToolProperties> {
 		return {
 			id: entityDO.id,
 			name: entityDO.name,

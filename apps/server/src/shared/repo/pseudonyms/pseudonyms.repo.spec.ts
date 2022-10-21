@@ -17,8 +17,8 @@ class PseudonymsRepoSpec extends PseudonymsRepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntitySpec(entityDO: PseudonymDO): EntityProperties<IPseudonymProperties> {
-		return super.mapDOToEntity(entityDO);
+	mapDOToEntityPropertiesSpec(entityDO: PseudonymDO): EntityProperties<IPseudonymProperties> {
+		return super.mapDOToEntityProperties(entityDO);
 	}
 }
 
@@ -125,8 +125,8 @@ describe('Pseudonym Repo', () => {
 		});
 	});
 
-	describe('mapDOToEntity', () => {
-		it('should map DO to Entity', () => {
+	describe('mapDOToEntityProperties', () => {
+		it('should map DO to Entity Properties', () => {
 			// Arrange
 			const testDO: PseudonymDO = new PseudonymDO({
 				id: 'testId',
@@ -138,7 +138,7 @@ describe('Pseudonym Repo', () => {
 			});
 
 			// Act
-			const result: EntityProperties<IPseudonymProperties> = repo.mapDOToEntitySpec(testDO);
+			const result: EntityProperties<IPseudonymProperties> = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			// Assert
 			expect(result.id).toEqual(testDO.id);

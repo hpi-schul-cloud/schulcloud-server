@@ -8,15 +8,15 @@ import { createMock } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { IUserProperties, LanguageType, Role, School, System, User } from '@shared/domain/index';
+import { IUserProperties, LanguageType, Role, School, System, User } from '@shared/domain';
 
 class UserRepoSpec extends UserDORepo {
 	mapEntityToDOSpec(entity: User): UserDO {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntitySpec(entityDO: UserDO): EntityProperties<IUserProperties> {
-		return super.mapDOToEntity(entityDO);
+	mapDOToEntityPropertiesSpec(entityDO: UserDO): EntityProperties<IUserProperties> {
+		return super.mapDOToEntityProperties(entityDO);
 	}
 }
 
@@ -219,8 +219,8 @@ describe('UserRepo', () => {
 		});
 	});
 
-	describe('mapDOToEntity', () => {
-		it('should map DO to Entity', () => {
+	describe('mapDOToEntityProperties', () => {
+		it('should map DO to Entity Properties', () => {
 			const testDO: UserDO = new UserDO({
 				id: 'testId',
 				email: 'email@email.email',
@@ -235,7 +235,7 @@ describe('UserRepo', () => {
 				preferences: { firstLogin: true },
 			});
 
-			const result: EntityProperties<IUserProperties> = repo.mapDOToEntitySpec(testDO);
+			const result: EntityProperties<IUserProperties> = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			expect(result).toEqual(
 				expect.objectContaining({

@@ -46,7 +46,7 @@ describe('BaseDORepo', () => {
 			return new TestDO({ id: entity.id, name: entity.name });
 		}
 
-		mapDOToEntity(entityDO: TestDO): ITestEntityProperties & IBaseEntityProps {
+		mapDOToEntityProperties(entityDO: TestDO): ITestEntityProperties & IBaseEntityProps {
 			return {
 				id: entityDO.id as string,
 				name: entityDO.name,
@@ -154,32 +154,54 @@ describe('BaseDORepo', () => {
 		});
 	});
 
-	describe('delete', () => {
-		it('should remove and flush a single entity', async () => {
-			const testEntity = new TestEntity();
-			await em.persistAndFlush(testEntity);
-			em.clear();
+	describe('deleteById', () => {
+		describe('single entity', () => {
+			it('should remove a single entity', async () => {
+				const testEntity = new TestEntity();
+				await em.persistAndFlush(testEntity);
+				em.clear();
 
-			const testDo = await repo.findById(testEntity.id);
-			await repo.delete(testDo);
-			em.clear();
+				await repo.deleteById(testEntity.id);
+				em.clear();
 
-			expect(await em.findOne(TestEntity, testEntity.id)).toBeNull();
+				expect(await em.findOne(TestEntity, testEntity.id)).toBeNull();
+			});
+
+			it('should remove a single entity and return 1', async () => {
+				const testEntity = new TestEntity();
+				await em.persistAndFlush(testEntity);
+				em.clear();
+
+				const result: number = await repo.deleteById(testEntity.id);
+
+				expect(result).toEqual(1);
+			});
 		});
 
-		it('should remove and flush an array of entities', async () => {
-			const testEntity1 = new TestEntity();
-			const testEntity2 = new TestEntity();
-			await em.persistAndFlush([testEntity1, testEntity2]);
-			em.clear();
+		describe('multiple entities', () => {
+			it('should remove an array of entities', async () => {
+				const testEntity1 = new TestEntity();
+				const testEntity2 = new TestEntity();
+				await em.persistAndFlush([testEntity1, testEntity2]);
+				em.clear();
 
-			const testDo1 = await repo.findById(testEntity1.id);
-			const testDo2 = await repo.findById(testEntity2.id);
-			await repo.delete([testDo1, testDo2]);
-			em.clear();
+				await repo.deleteById([testEntity1.id, testEntity2.id]);
+				em.clear();
 
-			expect(await em.findOne(TestEntity, testEntity1.id)).toBeNull();
-			expect(await em.findOne(TestEntity, testEntity2.id)).toBeNull();
+				expect(await em.findOne(TestEntity, testEntity1.id)).toBeNull();
+				expect(await em.findOne(TestEntity, testEntity2.id)).toBeNull();
+			});
+
+			it('should remove a two entity and return 2', async () => {
+				const testEntity1 = new TestEntity();
+				const testEntity2 = new TestEntity();
+				await em.persistAndFlush([testEntity1, testEntity2]);
+				em.clear();
+
+				const result: number = await repo.deleteById([testEntity1.id, testEntity2.id]);
+
+				expect(result).toEqual(2);
+			});
 		});
 	});
 
@@ -190,9 +212,9 @@ describe('BaseDORepo', () => {
 			await em.persistAndFlush([testEntity1, testEntity2]);
 			em.clear();
 
-			const result = await repo.findById(testEntity1.id);
+			const result: TestDO = await repo.findById(testEntity1.id);
 
-			expect(result).toEqual(repo.mapEntityToDO(testEntity1));
+			expect(result.id).toEqual(testEntity1.id);
 		});
 
 		it('should throw if entity not found', async () => {
@@ -205,7 +227,7 @@ describe('BaseDORepo', () => {
 
 			await expect(async () => {
 				await repo.findById(unknownId);
-			}).rejects.toThrow(`TestEntity not found ('${unknownId}')`);
+			}).rejects.toThrow('TestEntity not found');
 		});
 	});
 });

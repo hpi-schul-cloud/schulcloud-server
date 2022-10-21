@@ -8,7 +8,7 @@ import {
 	ShareTokenPayload,
 	ShareTokenString,
 } from '@shared/domain';
-import { BaseDORepo } from '../base.do.repo';
+import { BaseDORepo, EntityProperties } from '../base.do.repo';
 
 @Injectable()
 export class ShareTokenRepo extends BaseDORepo<ShareTokenDO, ShareToken, IShareTokenProperties> {
@@ -49,16 +49,17 @@ export class ShareTokenRepo extends BaseDORepo<ShareTokenDO, ShareToken, IShareT
 		return domainObject;
 	}
 
-	protected mapDOToEntity(domainObject: ShareTokenDO): ShareToken {
-		const entity = new ShareToken({
+	protected mapDOToEntityProperties(domainObject: ShareTokenDO): EntityProperties<IShareTokenProperties> {
+		const properties: EntityProperties<IShareTokenProperties> = {
+			id: domainObject.id,
 			token: domainObject.token,
 			parentType: domainObject.payload.parentType,
 			parentId: domainObject.payload.parentId,
 			contextType: domainObject.context?.contextType,
 			contextId: domainObject.context?.contextId,
 			expiresAt: domainObject.expiresAt,
-		});
+		};
 
-		return entity;
+		return properties;
 	}
 }
