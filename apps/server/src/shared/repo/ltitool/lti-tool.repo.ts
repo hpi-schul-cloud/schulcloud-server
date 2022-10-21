@@ -54,7 +54,9 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 			orderBy: order,
 		});
 
-		return { data: entities.map((entity) => this.mapEntityToDO(entity)), total };
+		const entityDos = entities.map((entity) => this.mapEntityToDO(entity));
+		const page = new Page<LtiToolDO>(entityDos, total);
+		return page;
 	}
 
 	async findByName(name: string): Promise<LtiToolDO> {

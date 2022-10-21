@@ -142,7 +142,7 @@
 		},
 		"name": "superhero",
 		"updatedAt": {
-			"$date": "2022-09-22T13:14:23.839Z"
+			"$date": "2022-10-21T13:01:54.525Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -189,7 +189,8 @@
 			"TEAM_EDIT",
 			"TOOL_CREATE",
 			"TOOL_EDIT",
-			"YEARS_EDIT"
+			"YEARS_EDIT",
+			"TOOL_ADMIN"
 		],
 		"__v": 2
 	},
@@ -199,7 +200,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2022-10-21T12:14:02.862Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"

@@ -60,12 +60,13 @@ export class LtiToolPostBody {
 	@ValidateNested({ each: true })
 	@IsOptional()
 	@IsArray()
-	@ApiProperty({ required: true })
+	@ApiProperty({ required: false })
 	customs: CustomLtiPropertyParameter[] = [];
 
+	@IsOptional()
 	@IsBoolean()
-	@ApiProperty({ required: true })
-	isTemplate!: boolean;
+	@ApiProperty({ required: false })
+	isTemplate?: boolean;
 
 	@IsOptional()
 	@IsBoolean()
@@ -102,7 +103,8 @@ export class LtiToolPostBody {
 	@ApiProperty({ required: false })
 	frontchannel_logout_uri?: string;
 
+	@IsOptional()
 	@IsBoolean()
-	@ApiProperty({ required: true })
-	isHidden!: boolean;
+	@ApiProperty({ required: false })
+	isHidden?: boolean;
 }

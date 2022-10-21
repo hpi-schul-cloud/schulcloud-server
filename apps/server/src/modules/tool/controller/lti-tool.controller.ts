@@ -13,6 +13,7 @@ import { LtiToolUc } from '../uc/lti-tool.uc';
 import { LtiToolParams } from './dto/request/lti-tool.params';
 import { SortLtiToolParams } from './dto/request/lti-tool-sort.params';
 import { LtiToolResponse } from './dto/response/lti-tool.response';
+import { CourseIdBody } from './dto/request/course-id.body';
 
 @ApiTags('LtiTools')
 @Controller('ltitools')
@@ -55,10 +56,11 @@ export class LtiToolController {
 	@Post()
 	async createLtiTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() body: LtiToolPostBody
+		@Body() body: LtiToolPostBody,
+		@Body() courseIdBody: CourseIdBody
 	): Promise<LtiToolResponse> {
 		const ltiToolDO = this.ltiToolMapper.mapLtiToolPostBodyToDO(body);
-		const createdLtiTool: LtiToolDO = await this.ltiToolUc.createLtiTool(currentUser, ltiToolDO);
+		const createdLtiTool: LtiToolDO = await this.ltiToolUc.createLtiTool(currentUser, ltiToolDO, courseIdBody.courseId);
 		const mapped: LtiToolResponse = this.ltiToolMapper.mapDoToResponse(createdLtiTool);
 		return mapped;
 	}

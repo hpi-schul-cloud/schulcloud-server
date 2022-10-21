@@ -17,7 +17,7 @@ export abstract class BasePermissionManager extends AuthorisationUtils implement
 		this.permissions = [...this.permissions, ...permissions];
 	}
 
-	hasPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {
+	hasPermission(user: User, entity: PermissionTypes, context: IPermissionContext): boolean {
 		const permissions = this.selectPermissions(user, entity, context);
 		const permission = this.selectStrategie.match(permissions);
 

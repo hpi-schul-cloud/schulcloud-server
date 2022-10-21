@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ICurrentUser, IFindOptions, LtiPrivacyPermission, LtiRoleType, SortOrder } from '@shared/domain';
+import { ICurrentUser, IFindOptions, LtiPrivacyPermission, LtiRoleType, Page, SortOrder } from '@shared/domain';
 import { LtiToolController } from '@src/modules/tool/controller/lti-tool.controller';
 import { LtiToolMapper } from '@src/modules/tool/mapper/lti-tool.mapper';
 import { LtiToolUc } from '@src/modules/tool/uc/lti-tool.uc';
@@ -12,6 +12,8 @@ import { LtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool
 import { PaginationParams } from '@shared/controller';
 import { LtiToolSortOrder, SortLtiToolParams } from '@src/modules/tool/controller/dto/request/lti-tool-sort.params';
 import { LtiToolSearchListResponse } from '@src/modules/tool/controller/dto/response/lti-tool-search-list.response';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseIdBody } from '@src/modules/tool/controller/dto/request/course-id.body';
 
 describe('LtiToolController', () => {
 	let module: TestingModule;
@@ -47,6 +49,8 @@ describe('LtiToolController', () => {
 	function setup() {
 		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 		const toolIdParams: ToolIdParams = { toolId: 'toolId' };
+		const courseIdParams = new CourseIdBody();
+		courseIdParams.courseId = new ObjectId().toHexString();
 		const ltiToolDO: LtiToolDO = new LtiToolDO({
 			id: 'id',
 			name: 'name',
@@ -75,6 +79,7 @@ describe('LtiToolController', () => {
 
 		return {
 			currentUser,
+			courseIdParams,
 			toolIdParams,
 			ltiToolDO,
 			ltiToolResponse,
@@ -92,7 +97,7 @@ describe('LtiToolController', () => {
 
 			ltiToolMapper.mapSortingQueryToDomain.mockReturnValue(filter.order);
 			ltiToolMapper.mapLtiToolFilterQueryToDO.mockReturnValue({});
-			ltiToolUc.findLtiTool.mockResolvedValue({ data: [ltiToolDO], total: 1 });
+			ltiToolUc.findLtiTool.mockResolvedValue(new Page<LtiToolDO>([ltiToolDO], 1));
 			ltiToolMapper.mapDoToResponse.mockReturnValue(ltiToolResponse);
 
 			return {
@@ -188,38 +193,38 @@ describe('LtiToolController', () => {
 
 	describe('createLtiTool', () => {
 		it('should call ltiToolMapper.mapLtiToolPostBodyToDO', async () => {
-			const { currentUser, ltiToolBody } = setup();
+			const { currentUser, ltiToolBody, courseIdParams } = setup();
 
-			await controller.createLtiTool(currentUser, ltiToolBody);
+			await controller.createLtiTool(currentUser, ltiToolBody, courseIdParams);
 
 			expect(ltiToolMapper.mapLtiToolPostBodyToDO).toHaveBeenCalledWith(ltiToolBody);
 		});
 
 		it('should call the ltiToolUc', async () => {
-			const { currentUser, ltiToolBody, ltiToolDO } = setup();
+			const { currentUser, ltiToolBody, ltiToolDO, courseIdParams } = setup();
 			ltiToolMapper.mapLtiToolPostBodyToDO.mockReturnValue(ltiToolDO);
 
-			await controller.createLtiTool(currentUser, ltiToolBody);
+			await controller.createLtiTool(currentUser, ltiToolBody, courseIdParams);
 
-			expect(ltiToolUc.createLtiTool).toHaveBeenCalledWith(currentUser, ltiToolDO);
+			expect(ltiToolUc.createLtiTool).toHaveBeenCalledWith(currentUser, ltiToolDO, courseIdParams.courseId);
 		});
 
 		it('should call ltiToolMapper.mapDoToResponse', async () => {
-			const { currentUser, ltiToolBody, ltiToolDO } = setup();
+			const { currentUser, ltiToolBody, ltiToolDO, courseIdParams } = setup();
 			ltiToolMapper.mapLtiToolPostBodyToDO.mockReturnValue(ltiToolDO);
 			ltiToolUc.createLtiTool.mockResolvedValue(ltiToolDO);
 
-			await controller.createLtiTool(currentUser, ltiToolBody);
+			await controller.createLtiTool(currentUser, ltiToolBody, courseIdParams);
 
 			expect(ltiToolMapper.mapDoToResponse).toHaveBeenCalledWith(ltiToolDO);
 		});
 
 		it('should return the ltiToolResponse', async () => {
-			const { currentUser, ltiToolBody, ltiToolDO, ltiToolResponse } = setup();
+			const { currentUser, ltiToolBody, ltiToolDO, ltiToolResponse, courseIdParams } = setup();
 			ltiToolMapper.mapLtiToolPostBodyToDO.mockReturnValue(ltiToolDO);
 			ltiToolUc.createLtiTool.mockResolvedValue(ltiToolDO);
 
-			const response: LtiToolResponse = await controller.createLtiTool(currentUser, ltiToolBody);
+			const response: LtiToolResponse = await controller.createLtiTool(currentUser, ltiToolBody, courseIdParams);
 
 			expect(response).toEqual(ltiToolResponse);
 		});

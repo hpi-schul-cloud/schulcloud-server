@@ -134,9 +134,20 @@ describe('LtiToolMapper', () => {
 			expect(result).toEqual(expectedResponse);
 		});
 
-		it('result should contain openNewTab=false when it is undefined in the do', () => {
+		it('result should contain key="none" when it is undefined in the do', () => {
 			const { ltiToolPostBody } = setup();
 			ltiToolPostBody.key = undefined;
+
+			const expectedResponse: LtiToolDO = new LtiToolDO({ ...(ltiToolPostBody as LtiToolDO) });
+
+			const result: LtiToolDO = mapper.mapLtiToolPostBodyToDO(ltiToolPostBody);
+
+			expect(result).toEqual(expectedResponse);
+		});
+
+		it('result should contain isHidden=false when it is undefined in the do', () => {
+			const { ltiToolPostBody } = setup();
+			ltiToolPostBody.isHidden = undefined;
 
 			const expectedResponse: LtiToolDO = new LtiToolDO({ ...(ltiToolPostBody as LtiToolDO) });
 

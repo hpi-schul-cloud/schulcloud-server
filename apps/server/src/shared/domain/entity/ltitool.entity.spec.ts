@@ -53,5 +53,12 @@ describe('Ltitool Entity', () => {
 
 			expect(ltiTool.originToolId).toEqual(ltiTool._originToolId?.toHexString());
 		});
+
+		it('should return undefined', () => {
+			const ltiTool: LtiTool = ltiToolFactory.withName('someTool').buildWithId();
+			ltiTool._originToolId = undefined;
+
+			expect(ltiTool.originToolId).toBeUndefined();
+		});
 	});
 });

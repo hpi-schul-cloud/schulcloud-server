@@ -26,7 +26,7 @@ export class LtiToolDO extends BaseWithTimestampsDO {
 
 	customs: CustomLtiProperty[];
 
-	isTemplate: boolean;
+	isTemplate?: boolean;
 
 	isLocal?: boolean;
 

@@ -43,7 +43,7 @@ export class LtiToolResponse {
 	customs: CustomLtiProperty[];
 
 	@ApiProperty()
-	isTemplate: boolean;
+	isTemplate?: boolean;
 
 	@ApiProperty()
 	isLocal?: boolean;

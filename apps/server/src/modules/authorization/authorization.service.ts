@@ -42,7 +42,7 @@ export class AuthorizationService extends BasePermissionManager {
 		]);
 	}
 
-	checkPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {
+	checkPermission(user: User, entity: PermissionTypes, context: IPermissionContext): void {
 		if (!this.hasPermission(user, entity, context)) {
 			throw new ForbiddenException();
 		}

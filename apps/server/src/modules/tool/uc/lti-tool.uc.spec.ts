@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { LtiToolRepo } from '@shared/repo';
+import { CourseRepo, LtiToolRepo } from '@shared/repo';
 import { LtiToolUc } from '@src/modules/tool/uc/lti-tool.uc';
 import { AuthorizationService } from '@src/modules';
-import { setupEntities, userFactory } from '@shared/testing';
+import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import {
+	Actions,
+	Course,
 	ICurrentUser,
 	IFindOptions,
 	LtiPrivacyPermission,
@@ -17,6 +19,7 @@ import {
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { MikroORM } from '@mikro-orm/core';
 import { CustomLtiProperty } from '@shared/domain/domainobject/custom-lti-property';
+import { LtiToolService } from '../service/lti-tool.service';
 
 describe('LtiToolUc', () => {
 	let module: TestingModule;
@@ -25,6 +28,8 @@ describe('LtiToolUc', () => {
 
 	let ltiToolRepo: DeepMocked<LtiToolRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let courseRepo: DeepMocked<CourseRepo>;
+	let ltiToolService: DeepMocked<LtiToolService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -39,12 +44,22 @@ describe('LtiToolUc', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
+				},
+				{
+					provide: LtiToolService,
+					useValue: createMock<LtiToolService>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(LtiToolUc);
 		ltiToolRepo = module.get(LtiToolRepo);
 		authorizationService = module.get(AuthorizationService);
+		courseRepo = module.get(CourseRepo);
+		ltiToolService = module.get(LtiToolService);
 	});
 
 	afterAll(async () => {
@@ -52,9 +67,14 @@ describe('LtiToolUc', () => {
 		await orm.close();
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	function setup() {
 		const user: User = userFactory.buildWithId();
-		const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+		const course: Course = courseFactory.buildWithId();
+		const currentUser: ICurrentUser = { userId: user.id, schoolId: 'schoolId' } as ICurrentUser;
 		const toolId = 'toolId';
 		const ltiToolName = 'ltiToolName';
 		const query: Partial<LtiToolDO> = {
@@ -84,11 +104,11 @@ describe('LtiToolUc', () => {
 			openNewTab: true,
 			privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 		});
-		const page: Page<LtiToolDO> = {
-			data: [ltiToolDO],
-			total: 1,
-		};
-		return { user, currentUser, query, options, page, toolId, ltiToolDO };
+		const page: Page<LtiToolDO> = new Page<LtiToolDO>([ltiToolDO], 1);
+
+		ltiToolRepo.findById.mockResolvedValue(ltiToolDO);
+
+		return { user, currentUser, query, options, page, toolId, ltiToolDO, course };
 	}
 
 	describe('findLtiTool', () => {
@@ -117,6 +137,15 @@ describe('LtiToolUc', () => {
 			await uc.findLtiTool(currentUser, query, options);
 
 			expect(ltiToolRepo.find).toHaveBeenCalledWith(query, options);
+		});
+
+		it('should call the filterFindBBB method of the ltiToolService', async () => {
+			const { currentUser, query, options, page } = setup();
+			ltiToolRepo.find.mockResolvedValue(page);
+
+			await uc.findLtiTool(currentUser, query, options);
+
+			expect(ltiToolService.filterFindBBB).toHaveBeenCalledWith(page, currentUser.schoolId);
 		});
 
 		it('should return a page of ltiToolDo', async () => {
@@ -157,6 +186,15 @@ describe('LtiToolUc', () => {
 			expect(ltiToolRepo.findById).toHaveBeenCalledWith(toolId);
 		});
 
+		it('should call the filterGetBBB method of the ltiToolService', async () => {
+			const { currentUser, toolId, ltiToolDO } = setup();
+			ltiToolRepo.findById.mockResolvedValue(ltiToolDO);
+
+			await uc.getLtiTool(currentUser, toolId);
+
+			expect(ltiToolService.filterGetBBB).toHaveBeenCalledWith(ltiToolDO, currentUser.schoolId);
+		});
+
 		it('should return a ltiToolDo', async () => {
 			const { currentUser, ltiToolDO, toolId } = setup();
 			ltiToolRepo.findById.mockResolvedValue(ltiToolDO);
@@ -177,14 +215,47 @@ describe('LtiToolUc', () => {
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
 			});
 
-			it('should call checkAllPermissions', async () => {
+			it('should call checkAllPermissions for tool admin, when accessed outside of course', async () => {
 				const { currentUser, ltiToolDO, user } = setup();
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
 				await uc.createLtiTool(currentUser, ltiToolDO);
 
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_CREATE]);
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [
+					Permission.TOOL_CREATE,
+					Permission.TOOL_ADMIN,
+				]);
 			});
+
+			it('should call checkPermission for teachers, when accessed from course', async () => {
+				const { currentUser, ltiToolDO, user, course } = setup();
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				courseRepo.findById.mockResolvedValue(course);
+
+				await uc.createLtiTool(currentUser, ltiToolDO, course.id);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, course, {
+					action: Actions.write,
+					requiredPermissions: [Permission.TOOL_CREATE],
+				});
+			});
+		});
+
+		it('should call the ltiToolService to add the secret', async () => {
+			const { currentUser, ltiToolDO } = setup();
+
+			await uc.createLtiTool(currentUser, ltiToolDO);
+
+			expect(ltiToolService.addSecret).toHaveBeenCalledWith(ltiToolDO);
+		});
+
+		it('should call setupBBB method of the ltiToolService', async () => {
+			const { currentUser, ltiToolDO, course } = setup();
+			courseRepo.findById.mockResolvedValue(course);
+
+			await uc.createLtiTool(currentUser, ltiToolDO, course.id);
+
+			expect(ltiToolService.setupBBB).toHaveBeenCalledWith(ltiToolDO, course.id);
 		});
 
 		it('should call the ltiToolRepo', async () => {
