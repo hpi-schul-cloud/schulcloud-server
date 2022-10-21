@@ -29,6 +29,7 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 
 	constructor(props: Lti11ToolConfig) {
 		super(props);
+		this.type = ToolConfigType.LTI11;
 		this.key = props.key;
 		this.secret = props.secret;
 		this.resource_link = props.resource_link;

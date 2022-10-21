@@ -46,21 +46,18 @@ export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalTool
 	}
 }
 
-export const externalToolFactory = ExternalToolFactory.define<ExternalTool, IExternalToolProperties>(
-	ExternalTool,
-	({ sequence }): IExternalToolProperties => {
-		return {
-			name: `external-tool-${sequence}`,
-			url: '',
-			logoUrl: '',
-			config: new BasicToolConfig({
-				type: ToolConfigType.BASIC,
-				baseUrl: 'mockBaseUrl',
-			}),
-			parameters: [],
-			isHidden: false,
-			openNewTab: true,
-			version: 0,
-		};
-	}
-);
+export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ sequence }): IExternalToolProperties => {
+	return {
+		name: `external-tool-${sequence}`,
+		url: '',
+		logoUrl: '',
+		config: new BasicToolConfig({
+			type: ToolConfigType.BASIC,
+			baseUrl: 'mockBaseUrl',
+		}),
+		parameters: [],
+		isHidden: false,
+		openNewTab: true,
+		version: 0,
+	};
+});

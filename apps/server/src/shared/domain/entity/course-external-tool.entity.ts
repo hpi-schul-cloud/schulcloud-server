@@ -1,5 +1,5 @@
 import { CustomParameterEntry } from '@shared/domain/entity/external-tool/custom-parameter/custom-parameter-entry';
-import { Embedded, Entity, OneToMany, Property } from '@mikro-orm/core';
+import { Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { SchoolExternalTool } from './school-external-tool.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Course } from './course.entity';
@@ -13,10 +13,10 @@ export interface ICourseExternalToolProperties {
 
 @Entity({ tableName: 'course_external_tools' })
 export class CourseExternalTool extends BaseEntityWithTimestamps {
-	@Property()
+	@ManyToOne()
 	schoolTool: SchoolExternalTool;
 
-	@Property()
+	@ManyToOne()
 	course: Course;
 
 	@Embedded(() => CustomParameterEntry, { array: true })
