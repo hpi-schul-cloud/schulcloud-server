@@ -131,13 +131,6 @@ describe('SanisSchoolService', () => {
 	});
 
 	describe('provisionSchool', () => {
-		beforeEach(() => {
-			const { schoolProvisioningDto, school, schoolDto } = setup();
-			mapper.mapToSchoolDto.mockReturnValue(schoolProvisioningDto);
-			schoolRepo.findByExternalId.mockResolvedValue(school);
-			schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDto);
-		});
-
 		it('should call the school uc', async () => {
 			const { sanisResponse, system, schoolProvisioningDto } = setup();
 
@@ -147,13 +140,13 @@ describe('SanisSchoolService', () => {
 		});
 
 		it('should save new school', async () => {
-			const { sanisResponse, system, schoolDto, schoolProvisioningDto } = setup();
+			const { sanisResponse, system, schoolDto } = setup();
 			schoolRepo.findByExternalId.mockResolvedValue(null);
 
 			const result: SchoolDto = await sanisSchoolService.provisionSchool(sanisResponse, system.id);
 
 			expect(result).toEqual(schoolDto);
-			expect(schoolProvisioningDto.id).toBeUndefined();
+			expect(schoolUc.saveProvisioningSchoolOutputDto).toHaveBeenCalledWith(expect.objectContaining({ id: undefined }));
 		});
 
 		it('should update school', async () => {
