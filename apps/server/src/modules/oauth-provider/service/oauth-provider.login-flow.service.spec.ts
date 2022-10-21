@@ -96,7 +96,7 @@ describe('OauthProviderLoginFlowService', () => {
 				skip: true,
 				subject: 'subject',
 			} as ProviderLoginResponse;
-			ltiToolDoMock = { ...ltiToolDoMock, id: 'toolId', name: 'name', oAuthClientId: 'oAuthClientId' };
+			ltiToolDoMock = { ...ltiToolDoMock, name: 'name' };
 			const pseudonym: PseudonymDO = {
 				pseudonym: 'pseudonym',
 				toolId: 'toolId',
@@ -195,7 +195,7 @@ describe('OauthProviderLoginFlowService', () => {
 					client_id: 'clientId',
 				},
 			} as ProviderLoginResponse;
-			ltiToolDoMock = { ...ltiToolDoMock, id: 'toolId', name: 'NotNextcloud', oAuthClientId: 'oAuthClientId' };
+			ltiToolDoMock = { ...ltiToolDoMock, name: 'NotNextcloud' };
 
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDoMock);
 
