@@ -1,6 +1,7 @@
 import { NotImplementedException } from '@nestjs/common';
 import { FileRecordParentType } from '@shared/domain';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { DownloadFileParams, SingleFileParams } from '../controller/dto';
 
 export class FilesStorageMapper {
 	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AllowedAuthorizationEntityType {
@@ -17,5 +18,11 @@ export class FilesStorageMapper {
 			throw new NotImplementedException();
 		}
 		return res;
+	}
+
+	static mapToSingleFileParams(params: DownloadFileParams): SingleFileParams {
+		const singleFileParams = { fileRecordId: params.fileRecordId };
+
+		return singleFileParams;
 	}
 }

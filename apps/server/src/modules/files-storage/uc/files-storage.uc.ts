@@ -120,7 +120,7 @@ export class FilesStorageUC {
 	}
 
 	public async download(userId: EntityId, params: DownloadFileParams) {
-		const singleFileParams = { fileRecordId: params.fileRecordId };
+		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
 		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
 
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.read);

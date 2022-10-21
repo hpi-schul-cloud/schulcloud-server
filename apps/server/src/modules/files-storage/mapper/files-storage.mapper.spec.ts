@@ -1,6 +1,8 @@
 import { NotImplementedException } from '@nestjs/common';
 import { FileRecordParentType } from '@shared/domain';
+import { fileRecordFactory } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { DownloadFileParams, SingleFileParams } from '../controller/dto';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
@@ -26,6 +28,25 @@ describe('FilesStorageMapper', () => {
 				FilesStorageMapper.mapToAllowedAuthorizationEntityType('' as FileRecordParentType);
 			};
 			expect(exec).toThrowError(NotImplementedException);
+		});
+	});
+
+	describe('mapToSingleFileParams is called', () => {
+		const setup = () => {
+			const { id: fileRecordId, name: fileName } = fileRecordFactory.buildWithId();
+			const downloadFileParams: DownloadFileParams = { fileRecordId, fileName };
+
+			return { downloadFileParams, fileRecordId };
+		};
+
+		it('should return single file params', () => {
+			const { downloadFileParams, fileRecordId } = setup();
+
+			const epectedSingleFileParams: SingleFileParams = { fileRecordId };
+
+			const result = FilesStorageMapper.mapToSingleFileParams(downloadFileParams);
+
+			expect(result).toEqual(epectedSingleFileParams);
 		});
 	});
 });
