@@ -18,7 +18,7 @@ import {
 	createICopyFiles,
 	createPath,
 	deriveStatusFromSource,
-	getNewFileRecord,
+	createFileRecord,
 	getPaths,
 	getStatusFromScanResult,
 	isStatusBlocked,
@@ -87,7 +87,7 @@ export class FilesStorageService {
 	public async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: IFile): Promise<FileRecord> {
 		const [fileRecords] = await this.getFileRecordsOfParent(params);
 		const fileName = resolveFileNameDuplicates(fileDescription.name, fileRecords);
-		const fileRecord = getNewFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
+		const fileRecord = createFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
 
 		await this.fileRecordRepo.save(fileRecord);
 		await this.tryToCreateFileInStorage(fileRecord, params, fileDescription);
@@ -241,7 +241,7 @@ export class FilesStorageService {
 		targetParams: FileRecordParams,
 		userId: EntityId
 	): Promise<FileRecord> {
-		const entity = getNewFileRecord(sourceFile.name, sourceFile.size, sourceFile.mimeType, targetParams, userId);
+		const entity = createFileRecord(sourceFile.name, sourceFile.size, sourceFile.mimeType, targetParams, userId);
 
 		entity.securityCheck = deriveStatusFromSource(sourceFile, entity);
 

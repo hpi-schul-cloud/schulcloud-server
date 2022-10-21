@@ -20,7 +20,7 @@ export function unmarkForDelete(fileRecords: FileRecord[]): FileRecord[] {
 	return unmarkedFileRecords;
 }
 
-export function getNewFileRecord(
+export function createFileRecord(
 	name: string,
 	size: number,
 	mimeType: string,

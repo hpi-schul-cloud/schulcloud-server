@@ -21,7 +21,7 @@ import { ErrorType } from '../error';
 import {
 	createICopyFiles,
 	createPath,
-	getNewFileRecord,
+	createFileRecord,
 	getPaths,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
@@ -403,7 +403,7 @@ describe('FilesStorageService', () => {
 			fileDescription.size = 122;
 			fileDescription.mimeType = 'mimeType';
 
-			const fileRecord = getNewFileRecord(
+			const fileRecord = createFileRecord(
 				fileDescription.name,
 				fileDescription.size,
 				fileDescription.mimeType,

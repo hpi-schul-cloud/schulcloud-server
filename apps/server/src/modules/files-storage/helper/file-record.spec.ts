@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityId, FileRecord } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { getNewFileRecord, markForDelete, unmarkForDelete } from '.';
+import { createFileRecord, markForDelete, unmarkForDelete } from '.';
 
 describe('File Record Helper', () => {
 	let orm: MikroORM;
@@ -78,7 +78,7 @@ describe('File Record Helper', () => {
 		it('should return new fileRecord', () => {
 			const { name, size, mimeType, fileRecord, fileRecordParams, userId } = setup();
 
-			const newFileRecord = getNewFileRecord(name, size, mimeType, fileRecordParams, userId);
+			const newFileRecord = createFileRecord(name, size, mimeType, fileRecordParams, userId);
 
 			const expectedObject = {
 				size,
