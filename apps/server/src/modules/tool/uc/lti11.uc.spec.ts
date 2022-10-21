@@ -9,8 +9,8 @@ import { LtiRole } from '@src/modules/tool/interface/lti-role.enum';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
-import { Lti11Uc } from './lti11.uc';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Lti11Uc } from './lti11.uc';
 
 describe('Lti11Uc', () => {
 	let module: TestingModule;
