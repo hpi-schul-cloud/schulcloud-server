@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { IComponentProperties, Lesson, Task } from '@shared/domain';
+import { EntityId, IComponentProperties, Lesson, Task } from '@shared/domain';
 import { CopyFileDto } from '../dto';
-import { FileParamBuilder } from '../mapper/files-storage-param.builder';
+import { EntityWithEmbeddedFiles } from '../interfaces';
+import { FileParamBuilder } from '../mapper';
+import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
-
-type EntityWithEmbeddedFiles = Task | Lesson;
 
 @Injectable()
 export class CopyFilesService {
@@ -13,12 +13,14 @@ export class CopyFilesService {
 	async copyFilesOfEntity(
 		originalEntity: EntityWithEmbeddedFiles,
 		copyEntity: EntityWithEmbeddedFiles,
-		jwt: string
+		userId: EntityId
 	): Promise<{ entity: EntityWithEmbeddedFiles; response: CopyFileDto[] }> {
-		const sourceParams = FileParamBuilder.build(jwt, originalEntity.getSchoolId(), originalEntity);
-		const targetParams = FileParamBuilder.build(jwt, copyEntity.getSchoolId(), copyEntity);
+		const source = FileParamBuilder.build(originalEntity.getSchoolId(), originalEntity);
+		const target = FileParamBuilder.build(copyEntity.getSchoolId(), copyEntity);
 
-		const response = await this.filesStorageClientAdapterService.copyFilesOfParent(sourceParams, targetParams);
+		const copyFilesOfParentParams = CopyFilesOfParentParamBuilder.build(userId, source, target);
+
+		const response = await this.filesStorageClientAdapterService.copyFilesOfParent(copyFilesOfParentParams);
 
 		const entity = this.replaceUrlsOfEntity(response, copyEntity);
 

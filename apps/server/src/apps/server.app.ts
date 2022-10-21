@@ -12,15 +12,15 @@ import { MikroORM } from '@mikro-orm/core';
 import { Logger } from '@nestjs/common';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
+import { AccountUc } from '@src/modules/account/uc/account.uc';
+import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
 import { RocketChatService } from '@src/modules/rocketchat';
+import { ServerModule } from '@src/modules/server';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { join } from 'path';
-import { AccountService } from './modules/account/services/account.service';
-import { AccountValidationService } from './modules/account/services/account.validation.service';
-import { AccountUc } from './modules/account/uc/account.uc';
-import { CollaborativeStorageUc } from './modules/collaborative-storage/uc/collaborative-storage.uc';
-import { ServerModule } from './server.module';
-import legacyAppPromise = require('../../../src/app');
+import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -54,9 +54,9 @@ async function bootstrap() {
 	// provide NestJS mail service to feathers app
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-mail'] = {
-		async send(data: Mail): Promise<void> {
+		send(data: Mail): void {
 			const mailService = nestApp.get(MailService);
-			await mailService.send(data);
+			mailService.send(data);
 		},
 	};
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
@@ -77,7 +77,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api/v1', feathersExpress);
 	rootExpress.use('/api/v3', nestExpress);
-	rootExpress.use(express.static(join(__dirname, 'static-assets')));
+	rootExpress.use(express.static(join(__dirname, '../static-assets')));
 
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated

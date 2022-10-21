@@ -1,5 +1,5 @@
-import { Injectable, Inject } from '@nestjs/common';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { Mail } from './mail.interface';
 
@@ -15,7 +15,7 @@ export class MailService {
 		@Inject('MAIL_SERVICE_OPTIONS') private readonly options: MailServiceOptions
 	) {}
 
-	public async send(data: Mail): Promise<void> {
-		await this.amqpConnection.publish(this.options.exchange, this.options.routingKey, data, { persistent: true });
+	public send(data: Mail): void {
+		this.amqpConnection.publish(this.options.exchange, this.options.routingKey, data, { persistent: true });
 	}
 }

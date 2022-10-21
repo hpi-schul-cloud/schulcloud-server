@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { ICoreModuleConfig } from '@src/core';
+import { AvailableLogLevel } from '@src/core/logger';
 import type { IAccountConfig, IFilesStorageClientConfig, IUserConfig } from '@src/modules/';
-import { AvailableLogLevel } from './core/logger';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -29,7 +29,6 @@ const config: IServerConfig = {
 	LOG_LEVEL: Configuration.get('LOG_LEVEL') as string,
 	AVAILABLE_LOG_LEVELS: (Configuration.get('AVAILABLE_LOG_LEVELS') as string).split(',') as AvailableLogLevel[],
 	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(','),
-	FILE_STORAGE_BASE_URL: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
 	NODE_ENV: Configuration.get('NODE_ENV') as NodeEnvType,
 	LOGIN_BLOCK_TIME: Configuration.get('LOGIN_BLOCK_TIME') as number,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
@@ -38,4 +37,4 @@ const config: IServerConfig = {
 	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED') as boolean,
 };
 
-export default () => config;
+export const serverConfig = () => config;
