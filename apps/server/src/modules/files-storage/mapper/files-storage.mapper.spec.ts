@@ -2,7 +2,7 @@ import { NotImplementedException } from '@nestjs/common';
 import { FileRecordParentType } from '@shared/domain';
 import { fileRecordFactory } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
-import { DownloadFileParams, SingleFileParams } from '../controller/dto';
+import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller/dto';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
@@ -47,6 +47,36 @@ describe('FilesStorageMapper', () => {
 			const result = FilesStorageMapper.mapToSingleFileParams(downloadFileParams);
 
 			expect(result).toEqual(epectedSingleFileParams);
+		});
+	});
+
+	describe('mapFileRecordToFileRecordParams is called', () => {
+		const setup = () => {
+			const fileRecord = fileRecordFactory.buildWithId();
+
+			return {
+				fileRecord,
+			};
+		};
+
+		it('should return expected instance of params', () => {
+			const { fileRecord } = setup();
+
+			const result = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
+
+			expect(result).toBeInstanceOf(FileRecordParams);
+		});
+
+		it('should return correct mapped values', () => {
+			const { fileRecord } = setup();
+
+			const result = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
+
+			expect(result).toEqual({
+				schoolId: fileRecord.schoolId,
+				parentId: fileRecord.parentId,
+				parentType: fileRecord.parentType,
+			});
 		});
 	});
 });

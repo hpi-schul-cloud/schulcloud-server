@@ -20,17 +20,6 @@ export function unmarkForDelete(fileRecords: FileRecord[]): FileRecord[] {
 	return unmarkedFileRecords;
 }
 
-// TODO: look like a mapper and should be located on this place, constructor for params added?
-export function mapFileRecordToFileRecordParams(fileRecord: FileRecord): FileRecordParams {
-	const fileRecordParams = plainToClass(FileRecordParams, {
-		schoolId: fileRecord.schoolId,
-		parentId: fileRecord.parentId,
-		parentType: fileRecord.parentType,
-	});
-
-	return fileRecordParams;
-}
-
 export function getNewFileRecord(
 	name: string,
 	size: number,

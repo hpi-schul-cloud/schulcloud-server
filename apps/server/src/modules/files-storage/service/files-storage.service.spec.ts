@@ -23,11 +23,11 @@ import {
 	createPath,
 	getNewFileRecord,
 	getPaths,
-	mapFileRecordToFileRecordParams,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
 import { IFile, IGetFileResponse } from '../interface';
+import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
 
 const getFileRecordsWithParams = () => {
@@ -574,7 +574,7 @@ describe('FilesStorageService', () => {
 
 			it('should call getFilesOfParent with right paramaters', async () => {
 				const { fileRecord, data } = setup();
-				const fileRecordParams = mapFileRecordToFileRecordParams(fileRecord);
+				const fileRecordParams = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
 
 				await service.patchFilename(fileRecord, data);
 

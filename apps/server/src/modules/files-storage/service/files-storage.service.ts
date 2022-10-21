@@ -22,13 +22,13 @@ import {
 	getPaths,
 	getStatusFromScanResult,
 	isStatusBlocked,
-	mapFileRecordToFileRecordParams,
 	markForDelete,
 	modifyFileNameInScope,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
 import { IFile, IGetFileResponse } from '../interface';
+import { FilesStorageMapper } from '../mapper';
 
 @Injectable()
 export class FilesStorageService {
@@ -97,7 +97,7 @@ export class FilesStorageService {
 
 	// update
 	public async patchFilename(fileRecord: FileRecord, data: RenameFileParams) {
-		const fileRecordParams = mapFileRecordToFileRecordParams(fileRecord);
+		const fileRecordParams = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
 		const [fileRecords] = await this.getFileRecordsOfParent(fileRecordParams);
 
 		const modifiedFileRecord = modifyFileNameInScope(fileRecord, fileRecords, data.fileName);

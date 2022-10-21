@@ -2,8 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityId, FileRecord } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { getNewFileRecord, mapFileRecordToFileRecordParams, markForDelete, unmarkForDelete } from '.';
-import { FileRecordParams } from '../controller/dto';
+import { getNewFileRecord, markForDelete, unmarkForDelete } from '.';
 
 describe('File Record Helper', () => {
 	let orm: MikroORM;
@@ -19,15 +18,6 @@ describe('File Record Helper', () => {
 		];
 
 		return { fileRecords, userId };
-	};
-
-	const setupFileRecord = () => {
-		const userId: EntityId = new ObjectId().toHexString();
-		const schoolId: EntityId = new ObjectId().toHexString();
-
-		const fileRecord = fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' });
-
-		return fileRecord;
 	};
 
 	beforeAll(async () => {
@@ -67,36 +57,6 @@ describe('File Record Helper', () => {
 					expect.objectContaining({ ...fileRecords[2], deletedSince: undefined }),
 				])
 			);
-		});
-	});
-
-	describe('mapFileRecordToFileRecordParams is called', () => {
-		const setup = () => {
-			const fileRecord = setupFileRecord();
-
-			return {
-				fileRecord,
-			};
-		};
-
-		it('should return expected instance of params', () => {
-			const { fileRecord } = setup();
-
-			const result = mapFileRecordToFileRecordParams(fileRecord);
-
-			expect(result).toBeInstanceOf(FileRecordParams);
-		});
-
-		it('should return correct mapped values', () => {
-			const { fileRecord } = setup();
-
-			const result = mapFileRecordToFileRecordParams(fileRecord);
-
-			expect(result).toEqual({
-				schoolId: fileRecord.schoolId,
-				parentId: fileRecord.parentId,
-				parentType: fileRecord.parentType,
-			});
 		});
 	});
 
