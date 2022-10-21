@@ -10,8 +10,8 @@ export class LessonService {
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
 
-	async deleteLesson(lesson: Lesson, jwt: string): Promise<void> {
-		const params = FileParamBuilder.build(jwt, lesson.getSchoolId(), lesson);
+	async deleteLesson(lesson: Lesson): Promise<void> {
+		const params = FileParamBuilder.build(lesson.getSchoolId(), lesson);
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
 
 		await this.lessonRepo.delete(lesson);

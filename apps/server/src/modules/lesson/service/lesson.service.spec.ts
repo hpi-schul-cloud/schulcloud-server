@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { FileRecordParentType } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { FileRecordParamsParentTypeEnum } from '@src/modules/files-storage-client/filesStorageApi/v3';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
@@ -52,13 +52,11 @@ describe('LessonService', () => {
 
 	it('delete lesson', async () => {
 		const lesson = lessonFactory.buildWithId();
-		const jwt = 'jwt123';
-		const parentType = FileRecordParamsParentTypeEnum.Lessons;
+		const parentType = FileRecordParentType.Lesson;
 
-		await lessonService.deleteLesson(lesson, jwt);
+		await lessonService.deleteLesson(lesson);
 
 		expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith({
-			jwt,
 			schoolId: null,
 			parentType,
 			parentId: lesson.id,

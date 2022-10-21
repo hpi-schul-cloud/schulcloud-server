@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { MailService } from './mail.service';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Mail } from './mail.interface';
+import { MailService } from './mail.service';
 
 describe('MailService', () => {
 	let service: MailService;
@@ -29,10 +29,10 @@ describe('MailService', () => {
 		expect(service).toBeDefined();
 	});
 
-	it('should send given data to queue', async () => {
+	it('should send given data to queue', () => {
 		const data: Mail = { mail: { plainTextContent: 'content', subject: 'Test' }, recipients: ['test@example.com'] };
 		const amqpConnectionSpy = jest.spyOn(amqpConnection, 'publish');
-		await service.send(data);
+		service.send(data);
 		const expectedParams = [mailServiceOptions.exchange, mailServiceOptions.routingKey, data, { persistent: true }];
 		expect(amqpConnectionSpy).toHaveBeenCalledWith(...expectedParams);
 	});

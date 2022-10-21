@@ -115,7 +115,7 @@ export class FilesStorageUC {
 			await this.fileRecordRepo.save(entity);
 			const filePath = this.createPath(params.schoolId, entity.id);
 			await this.storageClient.create(filePath, fileDescription);
-			await this.antivirusService.send(entity);
+			this.antivirusService.send(entity);
 
 			return entity;
 		} catch (error) {
