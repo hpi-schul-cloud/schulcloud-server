@@ -214,7 +214,7 @@ export class TaskUC {
 		return oneWeekAgo;
 	}
 
-	async delete(userId: EntityId, taskId: EntityId, jwt: string) {
+	async delete(userId: EntityId, taskId: EntityId) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
