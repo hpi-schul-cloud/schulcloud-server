@@ -34,6 +34,9 @@ export class TaskResponse {
 	courseName: string = '' as string;
 
 	@ApiProperty()
+	lessonName?: string;
+
+	@ApiProperty()
 	courseId: string = '' as string;
 
 	@ApiPropertyOptional()
