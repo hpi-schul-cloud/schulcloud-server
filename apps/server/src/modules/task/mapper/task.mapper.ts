@@ -1,5 +1,5 @@
-import { TaskWithStatusVo, ITaskUpdate } from '@shared/domain';
-import { TaskResponse, TaskUpdateParams } from '../controller/dto';
+import { TaskWithStatusVo } from '@shared/domain';
+import { TaskResponse } from '../controller/dto';
 import { TaskStatusMapper } from './task-status.mapper';
 
 export class TaskMapper {
@@ -15,6 +15,7 @@ export class TaskMapper {
 			courseId: taskDesc.courseId,
 			createdAt: task.createdAt,
 			updatedAt: task.updatedAt,
+			lessonHidden: false,
 			status: statusDto,
 		});
 
@@ -23,16 +24,8 @@ export class TaskMapper {
 
 		dto.displayColor = taskDesc.color;
 		dto.description = taskDesc.lessonName;
+		dto.lessonHidden = taskDesc.lessonHidden;
 
-		return dto;
-	}
-
-	static mapUpdateTaskToDomain(params: TaskUpdateParams): ITaskUpdate {
-		const dto: ITaskUpdate = {
-			name: params.name,
-			courseId: params.courseId,
-			lessonId: params.lessonId,
-		};
 		return dto;
 	}
 }
