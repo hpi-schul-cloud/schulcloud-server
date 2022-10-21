@@ -42,7 +42,7 @@ export class Logger implements ILogger {
 		this.logger.http(this.createMessage(message, context));
 	}
 
-	error(message: unknown, trace?: string[] | string | undefined, context?: string | undefined): void {
+	error(message: unknown, trace?: unknown, context?: string | undefined): void {
 		const result = {
 			message,
 			trace,
