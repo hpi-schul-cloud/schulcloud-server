@@ -1,4 +1,5 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import {
 	Actions,
 	Counted,
@@ -6,10 +7,12 @@ import {
 	EntityId,
 	IPagination,
 	ITaskStatus,
+	ITaskUpdate,
 	Lesson,
 	Permission,
 	PermissionContextBuilder,
 	SortOrder,
+	Task,
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
@@ -88,10 +91,8 @@ export class TaskUC {
 	}
 
 	async changeFinishedForUser(userId: EntityId, taskId: EntityId, isFinished: boolean): Promise<TaskWithStatusVo> {
-		const [user, task] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.taskRepo.findById(taskId),
-		]);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([]));
 
@@ -102,6 +103,8 @@ export class TaskUC {
 		}
 		await this.taskRepo.save(task);
 
+		// TODO fix student case - why have student as fallback?
+		//  should be based on permission too and use this.createStatus() instead
 		// add status
 		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])
 			? task.createTeacherStatusForUser(user)
@@ -212,10 +215,8 @@ export class TaskUC {
 	}
 
 	async delete(userId: EntityId, taskId: EntityId, jwt: string) {
-		const [user, task] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.taskRepo.findById(taskId),
-		]);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
 
@@ -224,5 +225,79 @@ export class TaskUC {
 
 		await this.taskRepo.delete(task);
 		return true;
+	}
+
+	async find(userId: EntityId, taskId: EntityId) {
+		this.checkIndividualTaskEnabled();
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
+
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
+
+		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])
+			? task.createTeacherStatusForUser(user)
+			: task.createStudentStatusForUser(user);
+
+		const result = new TaskWithStatusVo(task, status);
+
+		return result;
+	}
+
+	async create(userId: EntityId, courseId: EntityId): Promise<TaskWithStatusVo> {
+		this.checkIndividualTaskEnabled();
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const course = await this.courseRepo.findById(courseId);
+
+		this.authorizationService.checkPermission(
+			user,
+			course,
+			PermissionContextBuilder.write([Permission.HOMEWORK_CREATE])
+		);
+
+		const task = new Task({
+			name: 'Draft', // TODO
+			school: user.school,
+			creator: user,
+			course,
+		});
+
+		await this.taskRepo.save(task);
+
+		const status = task.createTeacherStatusForUser(user);
+		const taskWithStatusVo = new TaskWithStatusVo(task, status);
+
+		return taskWithStatusVo;
+	}
+
+	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
+		this.checkIndividualTaskEnabled();
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
+
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([Permission.HOMEWORK_EDIT]));
+
+		// eslint-disable-next-line no-restricted-syntax
+		for (const [key, value] of Object.entries(params)) {
+			if (value) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				task[key] = value;
+			}
+		}
+		await this.taskRepo.save(task);
+
+		const status = task.createTeacherStatusForUser(user);
+		const taskWithStatusVo = new TaskWithStatusVo(task, status);
+
+		return taskWithStatusVo;
+	}
+
+	private checkIndividualTaskEnabled() {
+		const enabled = Configuration.get('FEATURE_NEW_TASK_ENABLED') as boolean;
+		if (!enabled) {
+			throw new InternalServerErrorException('Feature not enabled');
+		}
 	}
 }
