@@ -39,7 +39,7 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	key: string;
 
 	@Property({ nullable: false, default: 'none' })
-	secret: string;
+	secret?: string;
 
 	@Property({ nullable: true })
 	logo_url?: string;
@@ -93,7 +93,7 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	skipConsent?: boolean;
 
 	@Property({ nullable: false, default: false })
-	openNewTab: boolean;
+	openNewTab?: boolean;
 
 	@Property({ nullable: true })
 	frontchannel_logout_uri?: string;
@@ -122,7 +122,7 @@ export class LtiTool extends BaseEntityWithTimestamps {
 		this.oAuthClientId = props.oAuthClientId;
 		this.friendlyUrl = props.friendlyUrl;
 		this.skipConsent = props.skipConsent;
-		this.openNewTab = props.openNewTab;
+		this.openNewTab = props.openNewTab || false;
 		this.frontchannel_logout_uri = props.frontchannel_logout_uri;
 		this.isHidden = props.isHidden;
 	}

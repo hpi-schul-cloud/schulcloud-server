@@ -10,6 +10,7 @@ import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
 import { Lti11Uc } from './lti11.uc';
+import { InternalServerErrorException } from '@nestjs/common';
 
 describe('Lti11Uc', () => {
 	let module: TestingModule;
@@ -56,61 +57,61 @@ describe('Lti11Uc', () => {
 		await module.close();
 	});
 
+	const setup = () => {
+		const userName = 'userName';
+		const currentUser: ICurrentUser = { userId: 'userId', roles: [RoleName.USER] } as ICurrentUser;
+		const userDto: UserDto = new UserDto({
+			email: 'email',
+			firstName: 'firstName',
+			lastName: 'lastName',
+			roleIds: ['roleId'],
+			schoolId: 'schoolId',
+		});
+		const ltiTool: LtiToolDO = new LtiToolDO({
+			name: 'name',
+			url: 'url',
+			key: 'key',
+			secret: 'secret',
+			roles: [],
+			privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
+			customs: [],
+			isTemplate: false,
+			openNewTab: false,
+			isHidden: false,
+			lti_version: 'LTI-1p0',
+			lti_message_type: 'messageType',
+			resource_link_id: 'linkId',
+		});
+		const authorization: Authorization = {
+			oauth_consumer_key: 'key',
+			oauth_nonce: 'nonce',
+			oauth_body_hash: 'body_hash',
+			oauth_signature: 'signature',
+			oauth_timestamp: 100,
+			oauth_token: 'token',
+			oauth_version: 'version',
+			oauth_signature_method: 'signature_method',
+		};
+
+		ltiToolRepo.findById.mockResolvedValue(ltiTool);
+		ltiRoleMapper.mapRoleToLtiRole.mockReturnValue(LtiRole.LEARNER);
+		userService.getUser.mockResolvedValue(userDto);
+		lti11Service.getUserIdOrPseudonym.mockResolvedValue(currentUser.userId);
+		userService.getDisplayName.mockResolvedValue(userName);
+		lti11Service.createConsumer.mockReturnValue(oauth);
+		oauth.authorize.mockReturnValue(authorization);
+
+		return {
+			userName,
+			currentUser,
+			userDto,
+			ltiTool,
+			authorization,
+		};
+	};
+
 	describe('getLaunchParameters', () => {
 		describe('build oauth1 authorization parameters and payload', () => {
-			const setup = () => {
-				const userName = 'userName';
-				const currentUser: ICurrentUser = { userId: 'userId', roles: [RoleName.USER] } as ICurrentUser;
-				const userDto: UserDto = new UserDto({
-					email: 'email',
-					firstName: 'firstName',
-					lastName: 'lastName',
-					roleIds: ['roleId'],
-					schoolId: 'schoolId',
-				});
-				const ltiTool: LtiToolDO = new LtiToolDO({
-					name: 'name',
-					url: 'url',
-					key: 'key',
-					secret: 'secret',
-					roles: [],
-					privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
-					customs: [],
-					isTemplate: false,
-					openNewTab: false,
-					isHidden: false,
-					lti_version: 'LTI-1p0',
-					lti_message_type: 'messageType',
-					resource_link_id: 'linkId',
-				});
-				const authorization: Authorization = {
-					oauth_consumer_key: 'key',
-					oauth_nonce: 'nonce',
-					oauth_body_hash: 'body_hash',
-					oauth_signature: 'signature',
-					oauth_timestamp: 100,
-					oauth_token: 'token',
-					oauth_version: 'version',
-					oauth_signature_method: 'signature_method',
-				};
-
-				ltiToolRepo.findById.mockResolvedValue(ltiTool);
-				ltiRoleMapper.mapRoleToLtiRole.mockReturnValue(LtiRole.LEARNER);
-				userService.getUser.mockResolvedValue(userDto);
-				lti11Service.getUserIdOrPseudonym.mockResolvedValue(currentUser.userId);
-				userService.getDisplayName.mockResolvedValue(userName);
-				lti11Service.createConsumer.mockReturnValue(oauth);
-				oauth.authorize.mockReturnValue(authorization);
-
-				return {
-					userName,
-					currentUser,
-					userDto,
-					ltiTool,
-					authorization,
-				};
-			};
-
 			it('should use tool with resource_link_id', async () => {
 				const { currentUser, ltiTool, authorization } = setup();
 				const expectedRequestData: RequestOptions = {
@@ -257,7 +258,7 @@ describe('Lti11Uc', () => {
 		});
 
 		it('should throw when trying to access a lti tool that is not v1.1', async () => {
-			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+			const { currentUser } = setup();
 			const ltiTool: LtiToolDO = new LtiToolDO({
 				name: 'name',
 				url: 'url',
@@ -275,7 +276,18 @@ describe('Lti11Uc', () => {
 
 			const func = () => useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
 
-			await expect(func).rejects.toThrow();
+			await expect(func).rejects.toThrow(InternalServerErrorException);
+		});
+
+		it('should throw when trying to access a lti tool that has no secret configured', async () => {
+			const { currentUser, ltiTool } = setup();
+			ltiTool.secret = undefined;
+
+			ltiToolRepo.findById.mockResolvedValue(ltiTool);
+
+			const func = () => useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+
+			await expect(func).rejects.toThrow(InternalServerErrorException);
 		});
 	});
 });

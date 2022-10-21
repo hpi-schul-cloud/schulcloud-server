@@ -21,7 +21,7 @@ export class Lti11Uc {
 
 	async getLaunchParameters(currentUser: ICurrentUser, toolId: string, courseId: string): Promise<Authorization> {
 		const tool: LtiToolDO = await this.ltiToolRepo.findById(toolId);
-		if (tool.lti_version !== 'LTI-1p0' || !tool.lti_message_type) {
+		if (tool.lti_version !== 'LTI-1p0' || !tool.lti_message_type || !tool.secret) {
 			throw new InternalServerErrorException(`Tool ${toolId} is not a valid Lti v1.1 tool`);
 		}
 

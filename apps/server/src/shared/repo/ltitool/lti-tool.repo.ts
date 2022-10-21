@@ -95,7 +95,7 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 			oAuthClientId: entity.oAuthClientId,
 			friendlyUrl: entity.friendlyUrl,
 			skipConsent: entity.skipConsent,
-			openNewTab: entity.openNewTab,
+			openNewTab: entity.openNewTab || false,
 			frontchannel_logout_uri: entity.frontchannel_logout_uri,
 			isHidden: entity.isHidden,
 		});

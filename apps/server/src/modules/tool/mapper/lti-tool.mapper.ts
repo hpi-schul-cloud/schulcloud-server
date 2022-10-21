@@ -10,7 +10,7 @@ import { LtiToolPatchBody } from '@src/modules/tool/controller/dto/request/lti-t
 @Injectable()
 export class LtiToolMapper {
 	mapLtiToolPostBodyToDO(body: LtiToolPostBody): LtiToolDO {
-		const ltiTool: LtiToolDO = new LtiToolDO({ ...body });
+		const ltiTool: LtiToolDO = new LtiToolDO({ openNewTab: false, ...body });
 		return ltiTool;
 	}
 
@@ -24,7 +24,7 @@ export class LtiToolMapper {
 			throw new InternalServerErrorException('Missing id of ltiToolDO');
 		}
 
-		const ltiTool: LtiToolResponse = new LtiToolResponse({ ...tool, id: tool.id });
+		const ltiTool: LtiToolResponse = new LtiToolResponse({ ...tool, id: tool.id, _id: tool.id });
 		return ltiTool;
 	}
 

@@ -29,15 +29,19 @@ describe('Ltitool Entity', () => {
 		});
 
 		it('should create a ltiTool with defaults for undefined properties', () => {
-			const ltiTool: LtiTool = ltiToolFactory
-				.withName('someTool')
-				.buildWithId({ privacy_permission: undefined, customs: undefined, roles: undefined });
+			const ltiTool: LtiTool = ltiToolFactory.withName('someTool').buildWithId({
+				privacy_permission: undefined,
+				customs: undefined,
+				roles: undefined,
+				openNewTab: undefined,
+			});
 
 			expect(ltiTool).toEqual(
 				expect.objectContaining({
 					privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 					customs: [],
 					roles: [],
+					openNewTab: false,
 				})
 			);
 		});

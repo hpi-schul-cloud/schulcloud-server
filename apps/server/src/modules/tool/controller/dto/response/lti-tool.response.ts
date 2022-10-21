@@ -6,6 +6,12 @@ export class LtiToolResponse {
 	@ApiProperty()
 	id: string;
 
+	/**
+	 * Will be return for the old clients. The new model and ui will not have this property.
+	 */
+	@ApiProperty()
+	_id: string;
+
 	@ApiProperty()
 	name: string;
 
@@ -65,6 +71,7 @@ export class LtiToolResponse {
 
 	constructor(props: LtiToolResponse) {
 		this.id = props.id;
+		this._id = props._id;
 		this.name = props.name;
 		this.url = props.url;
 		this.key = props.key;

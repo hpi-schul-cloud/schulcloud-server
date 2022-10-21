@@ -116,7 +116,18 @@ describe('LtiToolMapper', () => {
 		it('should map controller post body to uc do', () => {
 			const { ltiToolPostBody } = setup();
 
-			const expectedResponse: LtiToolDO = new LtiToolDO({ ...ltiToolPostBody });
+			const expectedResponse: LtiToolDO = new LtiToolDO({ ...(ltiToolPostBody as LtiToolDO) });
+
+			const result: LtiToolDO = mapper.mapLtiToolPostBodyToDO(ltiToolPostBody);
+
+			expect(result).toEqual(expectedResponse);
+		});
+
+		it('result should contain openNewTab=false when it is undefined in the do', () => {
+			const { ltiToolPostBody } = setup();
+			ltiToolPostBody.openNewTab = undefined;
+
+			const expectedResponse: LtiToolDO = new LtiToolDO({ ...(ltiToolPostBody as LtiToolDO) });
 
 			const result: LtiToolDO = mapper.mapLtiToolPostBodyToDO(ltiToolPostBody);
 
@@ -161,7 +172,7 @@ describe('LtiToolMapper', () => {
 		it('should map do to response', () => {
 			const { ltiToolDo } = setup();
 
-			const expectedResponse: LtiToolResponse = new LtiToolResponse({ ...ltiToolDo, id: 'id' });
+			const expectedResponse: LtiToolResponse = new LtiToolResponse({ ...ltiToolDo, id: 'id', _id: 'id' });
 
 			const result: LtiToolResponse = mapper.mapDoToResponse(ltiToolDo);
 

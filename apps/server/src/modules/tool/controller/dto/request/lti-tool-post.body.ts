@@ -16,9 +16,14 @@ export class LtiToolPostBody {
 	@ApiProperty({ required: true })
 	key!: string;
 
+	/**
+	 * Is optional for the moment, because when a teacher adds a tool to a course the secret will not be transferred.
+	 * SHD tool creation and adding tool to a course are using the same endpoint.
+	 */
+	@IsOptional()
 	@IsString()
 	@ApiProperty({ required: false })
-	secret!: string;
+	secret?: string;
 
 	@IsOptional()
 	@IsString()
@@ -71,6 +76,7 @@ export class LtiToolPostBody {
 	@ApiProperty({ required: false })
 	originToolId?: EntityId;
 
+	@IsOptional()
 	@IsString()
 	@ApiProperty({ required: false })
 	oAuthClientId?: string;
@@ -85,16 +91,16 @@ export class LtiToolPostBody {
 	@ApiProperty({ required: false })
 	skipConsent?: boolean;
 
+	@IsOptional()
 	@IsBoolean()
-	@ApiProperty({ required: true })
-	openNewTab!: boolean;
+	@ApiProperty({ required: false })
+	openNewTab?: boolean;
 
 	@IsOptional()
 	@IsString()
 	@ApiProperty({ required: false })
 	frontchannel_logout_uri?: string;
 
-	@IsOptional()
 	@IsBoolean()
 	@ApiProperty({ required: true })
 	isHidden!: boolean;
