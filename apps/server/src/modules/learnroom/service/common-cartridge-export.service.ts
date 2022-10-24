@@ -12,6 +12,7 @@ export class CommonCartridgeExportService {
 		const course = await this.courseService.findById(courseId);
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 		return new CommonCartridgeFileBuilder({
+			identifier: `i${course.id}`,
 			title: course.name,
 		})
 			.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))

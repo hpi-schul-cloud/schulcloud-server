@@ -13,6 +13,7 @@ import {
 } from './common-cartridge-resource-item-element';
 
 export type ICommonCartridgeFileBuilderOptions = {
+	identifier: string;
 	title: string;
 };
 
@@ -46,7 +47,7 @@ export class CommonCartridgeFileBuilder {
 	get manifest(): string {
 		return this.xmlBuilder.buildObject({
 			$: {
-				identifier: this.options.title,
+				identifier: this.options.identifier,
 				xmlns: 'http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1',
 				'xmlns:lommanifest': 'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest',
 				'xmlns:lomresource': 'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource',

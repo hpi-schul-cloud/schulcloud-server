@@ -11,7 +11,7 @@ export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeE
 	transform(): Record<string, unknown> {
 		return {
 			$: {
-				identifier: `i${this.props.identifier}`,
+				identifier: this.props.identifier,
 			},
 			title: this.props.title,
 		};

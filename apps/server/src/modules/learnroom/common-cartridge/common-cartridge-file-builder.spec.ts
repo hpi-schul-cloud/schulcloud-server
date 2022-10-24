@@ -6,6 +6,7 @@ import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-
 
 describe('CommonCartridgeFileBuilder', () => {
 	const builderOptions: ICommonCartridgeFileBuilderOptions = {
+		identifier: 'Placeholder Identifier',
 		title: 'Placeholder Title',
 	};
 	const organizationProps: ICommonCartridgeOrganizationProps = {
