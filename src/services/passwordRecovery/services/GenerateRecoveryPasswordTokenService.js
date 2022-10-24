@@ -17,7 +17,6 @@ class GenerateRecoveryPasswordTokenService {
 	}
 
 	setup(app) {
-		// this.accountsService = app.service('/accounts');
 		this.accountsService = app.service('nest-account-service');
 	}
 
@@ -30,11 +29,6 @@ class GenerateRecoveryPasswordTokenService {
 	async create(data) {
 		if (data && data.username) {
 			const { username } = data;
-			// const accounts = await this.accountsService.find({
-			// 	query: {
-			// 		username,
-			// 	},
-			// });
 			const accountsResult = await this.accountsService.searchByUsernameExactMatch(username);
 			const { accounts, total } = accountsResult;
 
@@ -55,40 +49,32 @@ class GenerateRecoveryPasswordTokenService {
 
 const sendInfo = (context) => {
 	if (context.path === 'passwordRecovery') {
-		return (
-			context.app
-				// .service('/accounts')
-				// .get(context.data.account, {
-				// 	query: {
-				// 		$populate: ['userId'],
-				// 	},
-				// })
-				.service('/users')
-				.get(context.data.user)
-				.then((user) => {
-					const recoveryLink = `${HOST}/pwrecovery/${context.result.token}`;
-					const mailContent = `Sehr geehrte/r ${user.firstName} ${user.lastName}, \n
+		return context.app
+			.service('/users')
+			.get(context.data.user)
+			.then((user) => {
+				const recoveryLink = `${HOST}/pwrecovery/${context.result.token}`;
+				const mailContent = `Sehr geehrte/r ${user.firstName} ${user.lastName}, \n
 							Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:
 							${recoveryLink}\n
 							Bitte beachten Sie das der Link nur für 6 Stunden gültig ist. Danach müssen sie ein neuen Link anfordern.\n
 							Mit Freundlichen Grüßen
 							Ihr ${SC_SHORT_TITLE} Team`;
 
-					globalHooks.sendEmail(context, {
-						subject: `Passwort zurücksetzen für die ${SC_SHORT_TITLE}`,
-						emails: [user.email],
-						content: {
-							text: mailContent,
-						},
-					});
-					logger.info(`send password recovery information to userId ${user._id}`);
-					return context;
-				})
-				.catch((err) => {
-					logger.warning(err);
-					throw new NotFound('User Account Not Found');
-				})
-		);
+				globalHooks.sendEmail(context, {
+					subject: `Passwort zurücksetzen für die ${SC_SHORT_TITLE}`,
+					emails: [user.email],
+					content: {
+						text: mailContent,
+					},
+				});
+				logger.info(`send password recovery information to userId ${user._id}`);
+				return context;
+			})
+			.catch((err) => {
+				logger.warning(err);
+				throw new NotFound('User Account Not Found');
+			});
 	}
 	return context;
 };

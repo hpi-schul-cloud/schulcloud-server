@@ -101,11 +101,6 @@ class EMailAddressActivationService {
 
 	async update(id, data, params) {
 		const { entry, user } = data;
-		// const [account] = await this.app.service('/accounts').find({
-		// 	query: {
-		// 		userId: user._id,
-		// 	},
-		// });
 		const account = await this.app.service('nest-account-service').findByUserId(user._id);
 		if (!account) throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
 
@@ -120,7 +115,6 @@ class EMailAddressActivationService {
 
 			// update user and account
 			await this.app.service('users').patch(account.userId, { email });
-			// await this.app.service('/accounts').patch(account._id, { username: email });
 			await this.app.service('nest-account-service').updateUsername(account._id, email);
 			// set activation link as consumed
 			await setEntryState(this, entry._id, STATE.SUCCESS);

@@ -201,13 +201,11 @@ exports.hasPermissionNoHook = (context, userId, permissionName) => {
 
 exports.hasRoleNoHook = (context, userId, roleName, account = false) => {
 	const userService = context.app.service('/users/');
-	// const accountService = context.app.service('/accounts/');
 	const accountService = context.app.service('nest-account-service');
 
 	// What is the account flag for?
 	// if statement can be remove because it has no effect?!
 	if (account) {
-		// return accountService.get(userId).then((_account) =>
 		return accountService.findByUserId(userId).then((_account) =>
 			// eslint-disable-next-line promise/no-nesting
 			userService.find({ query: { _id: _account.userId || '', $populate: 'roles' } }).then((user) => {

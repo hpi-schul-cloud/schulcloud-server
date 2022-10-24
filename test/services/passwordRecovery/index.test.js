@@ -6,8 +6,6 @@ const testObjects = require('../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const passwordRecovery = require('../../../src/services/passwordRecovery/model');
 
-const PORT = 0;
-
 describe('passwordRecovery service', () => {
 	let app;
 	let nestServices;

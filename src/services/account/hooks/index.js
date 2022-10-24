@@ -272,7 +272,6 @@ const restrictToUsersSchool = async (context) => {
 	const userService = context.app.service('users');
 	const { schoolId: usersSchoolId } = await userService.get(context.params.account.userId);
 
-	// const targetAccount = await context.app.service('accountModel').get(context.id);
 	const targetAccount = await context.app.service('nest-account-service').findById(context.id);
 	const { schoolId: targetSchoolId } = await userService.get(targetAccount.userId);
 	if (!equalIds(usersSchoolId, targetSchoolId)) {
@@ -282,11 +281,8 @@ const restrictToUsersSchool = async (context) => {
 };
 
 const validateUserName = async (context) => {
-	// const accountService = context.app.service('accounts');
 	const accountService = context.app.service('nest-account-service');
 
-	// const { systemId } = context.method === 'create' ? context.data : await accountService.get(context.id);
-	// const { systemId } = context.method === 'create' ? context.data : await accountService.findByUserId(context.id);
 	const { systemId } = context.method === 'create' ? context.data : await accountService.findById(context.id);
 	if (systemId) {
 		return context;

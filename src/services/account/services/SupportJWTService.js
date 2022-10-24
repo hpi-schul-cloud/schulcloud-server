@@ -7,7 +7,6 @@ const { ObjectId } = require('mongoose').Types;
 const { BadRequest } = require('../../../errors');
 const { hasPermission } = require('../../../hooks/index');
 const { authenticationSecret, audience: audienceName } = require('../../authentication/logic');
-const accountModel = require('../model');
 const logger = require('../../../logger');
 
 const { addTokenToWhitelistWithIdAndJti } = require('../../authentication/logic/whitelist');
@@ -133,10 +132,8 @@ class SupportJWTService {
 			const requestedUserId = userId.toString();
 			const currentUserId = params.account.userId.toString();
 
-			// const account = await accountModel.findOne({ userId }).select(['_id', 'systemId']).lean().exec();
 			const account = await this.app.service('nest-account-service').findByUserId(userId);
 			if (!account && !account.id) {
-				// if (!account && !account._id) {
 				throw new Error(`Account for user with the id ${userId} does not exist.`);
 			}
 
