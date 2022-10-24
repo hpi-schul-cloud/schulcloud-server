@@ -23,13 +23,13 @@ import {
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { CopyApiResponse } from '@src/modules/learnroom/controller/dto';
+import { ServerTestModule } from '@src/modules/server';
 import { ShareTokenService } from '@src/modules/sharing';
 import {
 	ShareTokenImportBodyParams,
 	ShareTokenResponse,
 	ShareTokenUrlParams,
 } from '@src/modules/sharing/controller/dto';
-import { ServerTestModule } from '@src/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 

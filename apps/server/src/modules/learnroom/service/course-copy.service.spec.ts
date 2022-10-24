@@ -121,7 +121,6 @@ describe('course copy service', () => {
 				copyEntity: courseCopy,
 			};
 
-			const jwt = 'some-great-jwt';
 			courseEntityCopyService.copyCourse.mockReturnValue(status);
 
 			return {
@@ -134,86 +133,85 @@ describe('course copy service', () => {
 				courseCopyName,
 				allCourses,
 				boardCopyStatus,
-				jwt,
 			};
 		};
 
 		it('should fetch the user', async () => {
-			const { course, user, jwt } = setup();
-			await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, user } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(authorization.getUserWithPermissions).toBeCalledWith(user.id);
 		});
 
 		it('should fetch original course', async () => {
-			const { course, user, jwt } = setup();
-			await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, user } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(courseRepo.findById).toBeCalledWith(course.id);
 		});
 
 		it('should fetch original board', async () => {
-			const { course, user, jwt } = setup();
-			await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, user } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(boardRepo.findByCourseId).toBeCalledWith(course.id);
 		});
 
 		it('should persist course copy', async () => {
-			const { course, courseCopy, user, jwt } = setup();
-			await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, courseCopy, user } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(courseRepo.save).toBeCalledWith(courseCopy);
 		});
 
 		it('should try to copy files copies from original task to task copy', async () => {
-			const { course, user, jwt } = setup();
-			await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, user } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(fileCopyAppendService.copyFiles).toBeCalled();
 		});
 
 		it('should call board copy service', async () => {
-			const { course, courseCopy, originalBoard, user, jwt } = setup();
-			await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, courseCopy, originalBoard, user } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(boardCopyService.copyBoard).toBeCalledWith({ originalBoard, destinationCourse: courseCopy, user });
 		});
 
 		it('should persist board copy', async () => {
-			const { course, user, boardCopy, jwt } = setup();
-			await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, user, boardCopy } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(boardRepo.save).toBeCalledWith(boardCopy);
 		});
 
 		it('should return status', async () => {
-			const { course, user, status, jwt } = setup();
-			const result = await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, user, status } = setup();
+			const result = await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(result).toEqual(status);
 		});
 
 		it('should ensure course has up to date board', async () => {
-			const { course, user, originalBoard, jwt } = setup();
-			await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, user, originalBoard } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(roomsService.updateBoard).toHaveBeenCalledWith(originalBoard, course.id, user.id);
 		});
 
 		it('should use deriveCopyName from copyHelperService', async () => {
-			const { course, user, allCourses, jwt } = setup();
-			await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, user, allCourses } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
 			const allCourseNames = allCourses.map((c) => c.name);
 			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(course.name, allCourseNames);
 		});
 
 		it('should use deriveStatusFromElements from copyHelperService', async () => {
-			const { course, user, jwt } = setup();
-			const result = await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, user } = setup();
+			const result = await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalledWith(result.elements);
 		});
 
 		it('should use lessonCopyService.updateCopiedEmbeddedTasks', async () => {
-			const { course, user, jwt } = setup();
-			await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, user } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(lessonCopyService.updateCopiedEmbeddedTasks).toHaveBeenCalled();
 		});
 
 		it('should use findAllByUserId to determine existing course names', async () => {
-			const { course, user, jwt } = setup();
-			await service.copyCourse({ userId: user.id, courseId: course.id, jwt });
+			const { course, user } = setup();
+			await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(courseRepo.findAllByUserId).toHaveBeenCalledWith(user.id);
 		});
 	});

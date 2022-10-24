@@ -118,23 +118,22 @@ describe('ShareTokenController', () => {
 			};
 			uc.importShareToken.mockResolvedValue(status);
 			const newName = 'NewName';
-			const jwt = 'some-example-jwt';
 
-			return { currentUser, token, newName, jwt, status };
+			return { currentUser, token, newName, status };
 		};
 
 		it('should call the use case', async () => {
-			const { currentUser, token, newName, jwt } = setup();
+			const { currentUser, token, newName } = setup();
 
-			await controller.importShareToken(currentUser, { token }, { newName }, jwt);
+			await controller.importShareToken(currentUser, { token }, { newName });
 
-			expect(uc.importShareToken).toBeCalledWith(currentUser.userId, token, newName, jwt);
+			expect(uc.importShareToken).toBeCalledWith(currentUser.userId, token, newName);
 		});
 
 		it('should return the status response', async () => {
-			const { currentUser, token, newName, jwt, status } = setup();
+			const { currentUser, token, newName, status } = setup();
 
-			const result = await controller.importShareToken(currentUser, { token }, { newName }, jwt);
+			const result = await controller.importShareToken(currentUser, { token }, { newName });
 
 			expect(result).toEqual({
 				id: status.copyEntity?.id,

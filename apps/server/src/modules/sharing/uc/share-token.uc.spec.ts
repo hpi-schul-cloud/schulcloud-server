@@ -343,6 +343,18 @@ describe('ShareTokenUC', () => {
 				);
 			});
 		});
+
+		describe('when not restricted to same school', () => {
+			it('should not check context read permission', async () => {
+				const { user } = setup();
+				const shareToken = shareTokenFactory.build();
+				service.lookupToken.mockResolvedValue(shareToken);
+
+				await uc.lookupShareToken(user.id, shareToken.token);
+
+				expect(authorization.checkPermissionByReferences).not.toHaveBeenCalled();
+			});
+		});
 	});
 
 	describe('import share token', () => {
@@ -363,66 +375,63 @@ describe('ShareTokenUC', () => {
 			};
 			courseCopyService.copyCourse.mockResolvedValue(status);
 
-			const jwt = 'some-example-jwt';
-
-			return { user, school, shareToken, status, jwt };
+			return { user, school, shareToken, status };
 		};
 
 		it('should throw if the feature is not enabled', async () => {
-			const { user, shareToken, jwt } = setup();
+			const { user, shareToken } = setup();
 			Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
 
-			await expect(uc.importShareToken(user.id, shareToken.token, 'NewName', jwt)).rejects.toThrowError();
+			await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError();
 		});
 
 		it('should load the share token', async () => {
-			const { user, shareToken, jwt } = setup();
+			const { user, shareToken } = setup();
 
-			await uc.importShareToken(user.id, shareToken.token, 'NewName', jwt);
+			await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
 			expect(service.lookupToken).toBeCalledWith(shareToken.token);
 		});
 
 		it('should check the permission to create the course', async () => {
-			const { user, shareToken, jwt } = setup();
+			const { user, shareToken } = setup();
 
-			await uc.importShareToken(user.id, shareToken.token, 'NewName', jwt);
+			await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
 			expect(authorization.checkAllPermissions).toBeCalledWith(user, [Permission.COURSE_CREATE]);
 		});
 
 		it('should use the service to copy the course', async () => {
-			const { user, shareToken, jwt } = setup();
+			const { user, shareToken } = setup();
 			const newName = 'NewName';
 
-			await uc.importShareToken(user.id, shareToken.token, newName, jwt);
+			await uc.importShareToken(user.id, shareToken.token, newName);
 
 			expect(courseCopyService.copyCourse).toBeCalledWith({
 				userId: user.id,
 				courseId: shareToken.payload.parentId,
 				newName,
-				jwt,
 			});
 		});
 
 		it('should return the result', async () => {
-			const { user, shareToken, status, jwt } = setup();
+			const { user, shareToken, status } = setup();
 			const newName = 'NewName';
 
-			const result = await uc.importShareToken(user.id, shareToken.token, newName, jwt);
+			const result = await uc.importShareToken(user.id, shareToken.token, newName);
 
 			expect(result).toEqual(status);
 		});
 
 		describe('when restricted to same school', () => {
 			it('should check context read permission', async () => {
-				const { user, school, jwt } = setup();
+				const { user, school } = setup();
 				const shareToken = shareTokenFactory.build({
 					context: { contextType: ShareTokenContextType.School, contextId: school.id },
 				});
 				service.lookupToken.mockResolvedValue(shareToken);
 
-				await uc.importShareToken(user.id, shareToken.token, 'NewName', jwt);
+				await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
 				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
@@ -433,6 +442,18 @@ describe('ShareTokenUC', () => {
 						requiredPermissions: [],
 					}
 				);
+			});
+		});
+
+		describe('when not restricted to same school', () => {
+			it('should not check context read permission', async () => {
+				const { user } = setup();
+				const shareToken = shareTokenFactory.build();
+				service.lookupToken.mockResolvedValue(shareToken);
+
+				await uc.importShareToken(user.id, shareToken.token, 'NewName');
+
+				expect(authorization.checkPermissionByReferences).not.toHaveBeenCalled();
 			});
 		});
 	});
