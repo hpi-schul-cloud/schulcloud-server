@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType, IComponentProperties, IComponentTextProperties, Lesson, Task } from '@shared/domain';
-import { courseFactory, fileFactory, lessonFactory, setupEntities, schoolFactory, taskFactory } from '@shared/testing';
+import { courseFactory, fileFactory, lessonFactory, schoolFactory, setupEntities, taskFactory } from '@shared/testing';
 import { CopyFilesService } from './copy-files.service';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 

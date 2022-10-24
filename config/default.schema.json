@@ -297,6 +297,11 @@
 				"S3_SECRET_ACCESS_KEY": {
 					"type": "string",
 					"description": "Secret key to S3"
+				},
+				"EXCHANGE": {
+					"type": "string",
+					"default": "files-storage",
+					"description": "rabbitmq exchange name for antivirus"
 				}
 			}
 		},
@@ -1032,7 +1037,12 @@
 					}
 				}
 			}
-		}
+		},
+        "FEATURE_NEW_TASK_ENABLED": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable the task assignment to individuals"
+        }
 	},
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",

@@ -13,7 +13,7 @@ import {
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ShareTokenBodyParams, ShareTokenResponse } from '@src/modules/sharing/controller/dto';
-import { ServerTestModule } from '@src/server.module';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
