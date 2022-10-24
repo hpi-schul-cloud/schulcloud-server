@@ -6,9 +6,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser, System } from '@shared/domain';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
-import { HydraOauthUc } from '@src/modules/oauth/uc';
 import { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
+import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationParams } from './dto/authorization.params';
 import { OauthSSOController } from './oauth-sso.controller';
@@ -106,13 +106,13 @@ describe('OAuthController', () => {
 			});
 
 			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
+
 			expect(oauthUc.processOAuth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).toBeCalledWith('jwt', '1111', cookieProperties);
 			expect(res.redirect).toBeCalledWith(iservRedirectMock);
 		});
 
 		it('should redirect to empty string', async () => {
-			// Arrange
 			const { res } = getMockRes();
 			oauthUc.processOAuth.mockResolvedValue({
 				idToken: '2222',
@@ -120,10 +120,8 @@ describe('OAuthController', () => {
 				provider: 'iserv',
 			});
 
-			// Act
 			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
 
-			// Assert
 			expect(res.cookie).toBeCalledWith('jwt', '', cookieProperties);
 			expect(res.redirect).toBeCalledWith('');
 		});

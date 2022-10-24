@@ -33,7 +33,6 @@ describe('HydraOauthUc', () => {
 	};
 	const defaultDecodedJWT: IJwt = {
 		sub: 'subMock',
-		uuid: 'uuidMock',
 	};
 
 	const JWTMock = 'jwtMock';

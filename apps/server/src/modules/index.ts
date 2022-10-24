@@ -13,5 +13,8 @@ export * from './user-import';
 export * from './system';
 export * from './collaborative-storage';
 export * from './video-conference';
+export * from './provisioning';
 export * from './oauth-provider';
 export * from './lesson';
+export * from './school';
+export * from './role';
