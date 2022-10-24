@@ -1,20 +1,43 @@
 import { Injectable } from '@nestjs/common';
-import { OauthClientResponse } from '@src/modules/oauth-provider/controller/dto/response/oauth-client.response';
-import { OauthClient } from '@shared/infra/oauth-provider/dto/index';
+import {
+	ProviderConsentResponse,
+	ProviderConsentSessionResponse,
+	ProviderLoginResponse,
+	ProviderOauthClient,
+	ProviderRedirectResponse,
+} from '@shared/infra/oauth-provider/dto';
+import {
+	ConsentResponse,
+	ConsentSessionResponse,
+	LoginResponse,
+	OauthClientResponse,
+	RedirectResponse,
+} from '@src/modules/oauth-provider/controller/dto';
 
 @Injectable()
 export class OauthProviderResponseMapper {
-	mapOauthClientToClientResponse(client: OauthClient): OauthClientResponse {
-		return new OauthClientResponse({
-			client_id: client.client_id,
-			client_name: client.client_name,
-			redirect_uris: client.redirect_uris,
-			token_endpoint_auth_method: client.token_endpoint_auth_method,
-			subject_type: client.subject_type,
-			scope: client.scope,
-			frontchannel_logout_uri: client.frontchannel_logout_uri,
-			grant_types: client.grant_types,
-			response_types: client.response_types,
-		});
+	mapRedirectResponse(redirect: ProviderRedirectResponse): RedirectResponse {
+		return new RedirectResponse({ ...redirect });
+	}
+
+	mapConsentResponse(consent: ProviderConsentResponse): ConsentResponse {
+		return new ConsentResponse({ ...consent });
+	}
+
+	mapOauthClientResponse(oauthClient: ProviderOauthClient): OauthClientResponse {
+		delete oauthClient.client_secret;
+		return new OauthClientResponse({ ...oauthClient });
+	}
+
+	mapConsentSessionsToResponse(session: ProviderConsentSessionResponse): ConsentSessionResponse {
+		return new ConsentSessionResponse(
+			session.consent_request.client?.client_id,
+			session.consent_request.client?.client_name,
+			session.consent_request.challenge
+		);
+	}
+
+	mapLoginResponse(providerLoginResponse: ProviderLoginResponse): LoginResponse {
+		return new LoginResponse({ ...providerLoginResponse });
 	}
 }

@@ -3,7 +3,6 @@ import { Collection } from '@mikro-orm/core';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, Role, School, System, User } from '@shared/domain';
-import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo/user/user.repo';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
@@ -16,6 +15,9 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { schoolFactory } from '@shared/testing';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
+import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { NotFoundException } from '@nestjs/common';
 import { IservOAuthService } from './iserv-oauth.service';
 import { OAuthService } from './oauth.service';
@@ -68,7 +70,7 @@ describe('OAuthService', () => {
 	let defaultErrorResponse: OAuthResponse;
 
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
-	let systemRepo: DeepMocked<SystemRepo>;
+	let systemService: DeepMocked<SystemService>;
 	let userRepo: DeepMocked<UserRepo>;
 	let feathersJwtProvider: DeepMocked<FeathersJwtProvider>;
 	let iservOAuthService: DeepMocked<IservOAuthService>;
@@ -98,8 +100,8 @@ describe('OAuthService', () => {
 					},
 				},
 				{
-					provide: SystemRepo,
-					useValue: createMock<SystemRepo>(),
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 				{
 					provide: UserRepo,
@@ -122,7 +124,7 @@ describe('OAuthService', () => {
 		service = module.get(OAuthService);
 
 		oAuthEncryptionService = module.get(SymetricKeyEncryptionService);
-		systemRepo = module.get(SystemRepo);
+		systemService = module.get(SystemService);
 		userRepo = module.get(UserRepo);
 		feathersJwtProvider = module.get(FeathersJwtProvider);
 		iservOAuthService = module.get(IservOAuthService);
@@ -137,6 +139,8 @@ describe('OAuthService', () => {
 	beforeEach(() => {
 		defaultSystem = systemFactory.withOauthConfig().build();
 		defaultOauthConfig = defaultSystem.oauthConfig as OauthConfig;
+		defaultSystem.id = '1';
+
 		defaultAuthCode = '43534543jnj543342jn2';
 		defaultQuery = { code: defaultAuthCode };
 		defaultErrorQuery = { error: 'oauth_login_failed' };
@@ -235,14 +239,29 @@ describe('OAuthService', () => {
 
 		// Init mocks
 		oAuthEncryptionService.decrypt.mockReturnValue(defaultDecryptedSecret);
-		systemRepo.findById.mockImplementation((id: string): Promise<System> => {
+		systemService.findById.mockImplementation((id: string): Promise<SystemDto> => {
 			if (id === defaultIservSystemId) {
-				return Promise.resolve(defaultIservSystem);
+				return Promise.resolve(SystemMapper.mapFromEntityToDto(defaultIservSystem));
 			}
-			return Promise.resolve(systemFactory.withOauthConfig().build());
+			return Promise.resolve(SystemMapper.mapFromEntityToDto(systemFactory.withOauthConfig().build()));
+		});
+		systemService.findOAuthById.mockImplementation((id: string): Promise<SystemDto> => {
+			if (id === defaultIservSystemId) {
+				return Promise.resolve(SystemMapper.mapFromEntityToDto(defaultIservSystem));
+			}
+			return Promise.resolve(SystemMapper.mapFromEntityToDto(systemFactory.withOauthConfig().build()));
 		});
 		userRepo.findById.mockImplementation((sub: string): Promise<User> => {
-			if (sub === '') {
+			if (sub === '' || sub === 'extern') {
+				throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
+			}
+			if (sub) {
+				return Promise.resolve(defaultUser);
+			}
+			throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
+		});
+		userRepo.findByLdapIdOrFail.mockImplementation((sub: string, systemId: string): Promise<User> => {
+			if (sub === '' || systemId === '') {
 				throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
 			}
 			if (sub) {
@@ -331,10 +350,10 @@ describe('OAuthService', () => {
 		it('should return the user according to the uuid(LdapId)', async () => {
 			const user: User = await service.findUser(defaultDecodedJWT, oauthConfig, defaultIservSystemId);
 
+			// Assert
 			expect(iservOAuthService.findUserById).toHaveBeenCalled();
 			expect(user).toBe(defaultIservUser);
 		});
-
 		it('should return the user according to the id', async () => {
 			oauthConfig.provider = 'sanis';
 
@@ -343,7 +362,13 @@ describe('OAuthService', () => {
 			expect(userRepo.findById).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});
-
+		it('should return the user by its external id, if local was not successful', async () => {
+			defaultDecodedJWT.sub = 'extern';
+			defaultDecodedJWT.preferred_username = 'extern';
+			const user = await service.findUser(defaultDecodedJWT, defaultOauthConfig, defaultSystem.id);
+			expect(userRepo.findByLdapIdOrFail).toHaveBeenCalled();
+			expect(user).toBe(defaultUser);
+		});
 		it('should return an error if no User is found by this Id', async () => {
 			oauthConfig.provider = 'sanis';
 			defaultDecodedJWT.sub = '';
@@ -401,7 +426,7 @@ describe('OAuthService', () => {
 		});
 		it('should throw a NotFoundException', async () => {
 			const system = systemFactory.build();
-			systemRepo.findById.mockResolvedValue(system);
+			systemService.findOAuthById.mockResolvedValue(system);
 			await expect(service.getOauthConfig(system.id)).rejects.toThrow(NotFoundException);
 		});
 	});

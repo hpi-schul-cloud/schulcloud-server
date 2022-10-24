@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { isEmail, validateOrReject } from 'class-validator';
+import { ConfigService } from '@nestjs/config';
 import {
 	AuthorizationError,
 	EntityNotFoundError,
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import bcrypt from 'bcryptjs';
 import {
 	Account,
 	EntityId,
@@ -21,9 +20,12 @@ import {
 import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import { ConfigService } from '@nestjs/config';
+import bcrypt from 'bcryptjs';
+import { isEmail, validateOrReject } from 'class-validator';
 
+import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
+import { IAccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -34,10 +36,8 @@ import {
 	PatchMyAccountParams,
 } from '../controller/dto';
 import { AccountResponseMapper } from '../mapper';
-import { AccountSaveDto } from '../services/dto';
 import { AccountValidationService } from '../services/account.validation.service';
-import { BruteForcePrevention } from '../../../imports-from-feathers';
-import { IAccountConfig } from '../account-config';
+import { AccountSaveDto } from '../services/dto';
 
 type UserPreferences = {
 	// first login completed
@@ -248,7 +248,10 @@ export class AccountUc {
 		if (params.passwordNew) {
 			account.password = params.passwordNew;
 			updateAccount = true;
+		} else {
+			account.password = undefined;
 		}
+
 		if (params.email && user.email !== params.email) {
 			const newMail = params.email.toLowerCase();
 			await this.checkUniqueEmail(account, user, newMail);

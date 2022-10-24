@@ -2,8 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Request } from 'express';
 import request from 'supertest';
-import { MikroORM } from '@mikro-orm/core';
-import { ServerTestModule } from '@src/server.module';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import {
 	cleanupCollections,
@@ -48,7 +47,6 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 
 describe('ImportUser Controller (e2e)', () => {
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 
@@ -90,11 +88,9 @@ describe('ImportUser Controller (e2e)', () => {
 		await app.init();
 
 		em = app.get(EntityManager);
-		orm = app.get(MikroORM);
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await app.close();
 	});
 

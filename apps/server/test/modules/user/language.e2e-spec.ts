@@ -2,10 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 
-import { ServerTestModule } from '@src/server.module';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ICurrentUser, User, LanguageType } from '@shared/domain';
 import { ApiValidationError } from '@shared/common';
@@ -40,7 +39,6 @@ class API {
 describe(baseRouteName, () => {
 	describe('with user is not logged in', () => {
 		let app: INestApplication;
-		let orm: MikroORM;
 		let em: EntityManager;
 		let api: API;
 
@@ -58,13 +56,11 @@ describe(baseRouteName, () => {
 
 			app = module.createNestApplication();
 			await app.init();
-			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
 			api = new API(app, baseRouteName);
 		});
 
 		afterAll(async () => {
-			await orm.close();
 			await app.close();
 		});
 
@@ -87,7 +83,6 @@ describe(baseRouteName, () => {
 
 	describe('with bad request data', () => {
 		let app: INestApplication;
-		let orm: MikroORM;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
 		let api: API;
@@ -108,13 +103,11 @@ describe(baseRouteName, () => {
 
 			app = module.createNestApplication();
 			await app.init();
-			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
 			api = new API(app, baseRouteName);
 		});
 
 		afterAll(async () => {
-			await orm.close();
 			await app.close();
 		});
 
@@ -144,7 +137,6 @@ describe(baseRouteName, () => {
 
 	describe('without valid request data', () => {
 		let app: INestApplication;
-		let orm: MikroORM;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
 		let api: API;
@@ -165,13 +157,11 @@ describe(baseRouteName, () => {
 
 			app = module.createNestApplication();
 			await app.init();
-			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
 			api = new API(app, baseRouteName);
 		});
 
 		afterAll(async () => {
-			await orm.close();
 			await app.close();
 		});
 

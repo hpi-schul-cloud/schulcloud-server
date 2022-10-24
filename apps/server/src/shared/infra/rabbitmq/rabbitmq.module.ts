@@ -1,6 +1,7 @@
-import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Global, Module } from '@nestjs/common';
+import { FilesStorageExchange } from './exchange';
 
 /**
  * https://www.npmjs.com/package/@golevelup/nestjs-rabbitmq#usage
@@ -12,6 +13,8 @@ import { Global, Module } from '@nestjs/common';
 
 const imports = [
 	RabbitMQModule.forRoot(RabbitMQModule, {
+		// Please don't change the global prefetch count, if you need constraint, change it at channel level
+		prefetchCount: 5,
 		exchanges: [
 			{
 				name: Configuration.get('MAIL_SEND_EXCHANGE') as string,
@@ -19,6 +22,10 @@ const imports = [
 			},
 			{
 				name: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
+				type: 'direct',
+			},
+			{
+				name: FilesStorageExchange,
 				type: 'direct',
 			},
 		],
@@ -37,4 +44,13 @@ export class RabbitMQWrapperModule {}
 	imports,
 	exports: [RabbitMQModule],
 })
-export class RabbitMQWrapperTestModule {}
+export class RabbitMQWrapperTestModule {
+	constructor(private readonly amqpConnectionManager: AmqpConnectionManager) {}
+
+	// In tests we need to close connections when the module is destroyed.
+	async onModuleDestroy() {
+		await Promise.all(
+			this.amqpConnectionManager.getConnections().map((connection) => connection.managedConnection.close())
+		);
+	}
+}

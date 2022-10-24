@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -13,8 +12,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordListResponse, ScanResultParams } from '@src/modules/files-storage/controller/dto';
-import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
 import { Request } from 'express';
 import request from 'supertest';
 
@@ -44,7 +43,6 @@ class API {
 
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let api: API;
@@ -66,13 +64,11 @@ describe(`${baseRouteName} (api)`, () => {
 
 		app = module.createNestApplication();
 		await app.init();
-		orm = app.get(MikroORM);
 		em = module.get(EntityManager);
 		api = new API(app);
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await app.close();
 	});
 

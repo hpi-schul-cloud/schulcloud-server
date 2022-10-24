@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
-import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { ServerTestModule } from '@src/server.module';
+import { EntityManager } from '@mikro-orm/core';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { accountFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import {
@@ -19,7 +19,6 @@ describe('Account Controller (e2e)', () => {
 	const basePath = '/account';
 
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 
 	let adminAccount: Account;
@@ -88,7 +87,6 @@ describe('Account Controller (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
-		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
 		await setup();
 	});
@@ -96,7 +94,6 @@ describe('Account Controller (e2e)', () => {
 	afterEach(async () => {
 		// await cleanupCollections(em);
 		await app.close();
-		await orm.close();
 	});
 
 	describe('[PATCH] me/password', () => {

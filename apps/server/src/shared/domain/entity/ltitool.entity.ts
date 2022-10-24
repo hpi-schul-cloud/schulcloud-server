@@ -17,10 +17,15 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	@Optional()
 	secret?: string;
 
+	@Property()
+	@Optional()
+	isLocal?: boolean;
+
 	constructor(props: ILtiToolProperties) {
 		super();
 		this.name = props.name;
 		this.oAuthClientId = props.oAuthClientId;
 		this.secret = props.secret;
+		this.isLocal = props.isLocal;
 	}
 }

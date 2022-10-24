@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseDORepo, EntityProperties } from '@shared/repo/base.do.repo';
 import { EntityName } from '@mikro-orm/core';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { ILtiToolProperties, LtiTool } from '@shared/domain/index';
+import { ILtiToolProperties, LtiTool } from '@shared/domain';
 
 @Injectable()
 export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperties> {
@@ -22,7 +22,11 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 
 	async findByOauthClientId(oAuthClientId: string): Promise<LtiToolDO> {
 		const entity = await this._em.findOneOrFail(LtiTool, { oAuthClientId });
+		return this.mapEntityToDO(entity);
+	}
 
+	async findByClientIdAndIsLocal(oAuthClientId: string, isLocal: boolean): Promise<LtiToolDO> {
+		const entity = await this._em.findOneOrFail(LtiTool, { oAuthClientId, isLocal });
 		return this.mapEntityToDO(entity);
 	}
 
@@ -34,6 +38,7 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 			name: entity.name,
 			oAuthClientId: entity.oAuthClientId,
 			secret: entity.secret,
+			isLocal: entity.isLocal,
 		});
 	}
 
@@ -43,6 +48,7 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 			name: entityDO.name,
 			oAuthClientId: entityDO.oAuthClientId,
 			secret: entityDO.secret,
+			isLocal: entityDO.isLocal,
 		};
 	}
 }

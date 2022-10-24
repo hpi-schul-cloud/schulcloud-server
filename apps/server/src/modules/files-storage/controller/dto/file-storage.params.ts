@@ -52,12 +52,14 @@ export class DownloadFileParams {
 export class ScanResultParams {
 	@ApiProperty()
 	@Allow()
+	// @IsBoolean() ?
 	virus_detected!: boolean;
 
 	@ApiProperty()
 	@Allow()
 	virus_signature?: string;
 }
+
 export class SingleFileParams {
 	@ApiProperty()
 	@IsMongoId()
@@ -85,4 +87,15 @@ export class CopyFileParams {
 	@ApiProperty()
 	@IsString()
 	fileNamePrefix!: string;
+}
+
+export class CopyFilesOfParentPayload {
+	@IsMongoId()
+	userId!: EntityId;
+
+	@ValidateNested()
+	source!: FileRecordParams;
+
+	@ValidateNested()
+	target!: FileRecordParams;
 }

@@ -18,23 +18,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "0000d213816abba58471abcd"
-		},
-		"username": "max.mustermann@iserv.n21.dbildungscloud.de",
-		"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
-		"updatedAt": {
-			"$date": "2022-02-11T11:40:29.456Z"
-		},
-		"createdAt": {
-			"$date": "2022-02-11T10:30:37.148Z"
-		},
-		"userId": {
-			"$oid": "0000d213816abba584711234"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
 			"$oid": "0000d225816abba584714c9d"
 		},
 		"username": "schueler@schul-cloud.org",
@@ -67,6 +50,42 @@
 		},
 		"userId": {
 			"$oid": "0000d231816abba584714c9c"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "0000d231816abba584714caa"
+		},
+		"username": "c6635610-1a20-11ed-861d-0242ac120002",
+		"password": "",
+		"systemId": "62c7f233f35a554ba3ed42f1",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"userId": {
+			"$oid": "0000d231816abba584714c9f"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "0000d231816abba584714c00"
+		},
+		"username": "c6635610-1a20-11ed-861d-0242ac120000",
+		"password": "",
+		"systemId": "62c7f233f35a554ba3ed42f1",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"userId": {
+			"$oid": "0000d224816abba584714c00"
 		},
 		"__v": 0
 	},
@@ -1305,5 +1324,39 @@
 			"$date": "2020-11-05T06:47:45.652Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "0000d213816abba584714c00"
+		},
+		"username": "admin.extern@schul-cloud.org",
+		"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"userId": {
+			"$oid": "0000d213816abba584710000"
+		},
+		"__v": 0
+	},
+	{
+		"_id" : {
+			"$oid": "6335405a1f94d7fc9fc91861"
+		},
+		"createdAt" :  {
+			"$date": "2022-09-29T06:51:06.228Z"
+		},
+		"updatedAt" :  {
+			"$date": "2022-09-29T06:51:06.228Z"
+		},
+		"username" : "expert@schul-cloud.org",
+		"password" : "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+		"userId" : {
+			"$oid": "63354059dc728d001f53fb6d"
+		},
+		"activated" : true
 	}
 ]

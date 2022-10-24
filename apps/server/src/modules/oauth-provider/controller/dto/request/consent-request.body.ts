@@ -1,7 +1,8 @@
 import { IsArray, IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { OAuthRejectableBody } from './oauth-rejectable.body';
 
-export class ConsentRequestBody {
+export class ConsentRequestBody extends OAuthRejectableBody {
 	@IsArray()
 	@IsString({ each: true })
 	@IsOptional()

@@ -31,7 +31,7 @@ export class CourseCopyUC {
 		private readonly fileCopyAppendService: FileCopyAppendService
 	) {}
 
-	async copyCourse(userId: EntityId, courseId: EntityId, jwt: string): Promise<CopyStatus> {
+	async copyCourse(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
 		this.featureEnabled();
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalCourse = await this.courseRepo.findById(courseId);
@@ -58,7 +58,7 @@ export class CourseCopyUC {
 			const boardCopy = statusBoard.copyEntity as Board;
 			await this.boardRepo.save(boardCopy);
 			statusBoard = this.lessonCopyService.updateCopiedEmbeddedTasks(statusBoard);
-			statusBoard = await this.fileCopyAppendService.copyFiles(statusBoard, courseCopy.id, userId, jwt);
+			statusBoard = await this.fileCopyAppendService.copyFiles(statusBoard, courseCopy.id, userId);
 			const updatedBoardCopy = statusBoard.copyEntity as Board;
 			await this.boardRepo.save(updatedBoardCopy);
 		}

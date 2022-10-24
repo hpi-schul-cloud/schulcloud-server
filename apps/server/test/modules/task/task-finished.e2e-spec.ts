@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,7 +13,7 @@ import {
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
-import { ServerTestModule } from '@src/server.module';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
@@ -44,7 +43,6 @@ class API {
 describe('Task controller (e2e)', () => {
 	describe('task/finished without permission', () => {
 		let app: INestApplication;
-		let orm: MikroORM;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
 		let api: API;
@@ -65,13 +63,11 @@ describe('Task controller (e2e)', () => {
 
 			app = module.createNestApplication();
 			await app.init();
-			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
 			api = new API(app, '/tasks/finished');
 		});
 
 		afterAll(async () => {
-			await orm.close();
 			await app.close();
 		});
 
@@ -97,7 +93,6 @@ describe('Task controller (e2e)', () => {
 
 	describe(`task/finished with ${Permission.TASK_DASHBOARD_TEACHER_VIEW_V3} permission`, () => {
 		let app: INestApplication;
-		let orm: MikroORM;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
 		let api: API;
@@ -118,14 +113,12 @@ describe('Task controller (e2e)', () => {
 
 			app = module.createNestApplication();
 			await app.init();
-			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
 
 			api = new API(app, '/tasks/finished');
 		});
 
 		afterAll(async () => {
-			await orm.close();
 			await app.close();
 		});
 
@@ -189,7 +182,6 @@ describe('Task controller (e2e)', () => {
 
 	describe(`task/finished with ${Permission.TASK_DASHBOARD_VIEW_V3} permission`, () => {
 		let app: INestApplication;
-		let orm: MikroORM;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
 		let api: API;
@@ -210,14 +202,12 @@ describe('Task controller (e2e)', () => {
 
 			app = module.createNestApplication();
 			await app.init();
-			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
 
 			api = new API(app, '/tasks/finished');
 		});
 
 		afterAll(async () => {
-			await orm.close();
 			await app.close();
 		});
 

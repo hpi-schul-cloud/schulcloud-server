@@ -1,5 +1,4 @@
 import { createMock } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,9 +7,9 @@ import { EntityId, FileRecord, ICurrentUser, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { FilesStorageTestModule, s3Config } from '@src/modules/files-storage';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
-import { ErrorType } from '@src/modules/files-storage/files-storage.const';
-import { config, FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
+import { ErrorType } from '@src/modules/files-storage/error';
 import { Request } from 'express';
 import S3rver from 's3rver';
 import request from 'supertest';
@@ -65,7 +64,6 @@ const createRndInt = (max) => Math.floor(Math.random() * max);
 describe('files-storage controller (e2e)', () => {
 	let module: TestingModule;
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let api: API;
@@ -76,7 +74,7 @@ describe('files-storage controller (e2e)', () => {
 	beforeAll(async () => {
 		const port = 10000 + createRndInt(10000);
 		appPort = 10000 + createRndInt(10000);
-		const overridetS3Config = Object.assign(config, { endpoint: `http://localhost:${port}` });
+		const overridetS3Config = Object.assign(s3Config, { endpoint: `http://localhost:${port}` });
 
 		s3instance = new S3rver({
 			directory: `/tmp/s3rver_test_directory${port}`,
@@ -110,13 +108,11 @@ describe('files-storage controller (e2e)', () => {
 		const a = await app.init();
 		await a.listen(appPort);
 
-		orm = app.get(MikroORM);
 		em = module.get(EntityManager);
 		api = new API(app);
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await app.close();
 		await s3instance.close();
 		await module.close();

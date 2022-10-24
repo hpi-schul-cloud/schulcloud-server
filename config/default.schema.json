@@ -297,6 +297,11 @@
 				"S3_SECRET_ACCESS_KEY": {
 					"type": "string",
 					"description": "Secret key to S3"
+				},
+				"EXCHANGE": {
+					"type": "string",
+					"default": "files-storage",
+					"description": "rabbitmq exchange name for antivirus"
 				}
 			}
 		},
@@ -935,6 +940,11 @@
 			"default": false,
 			"description": "Toggle for course sharing feature."
 		},
+		"FEATURE_COURSE_SHARE_NEW": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the new course sharing feature."
+		},
 		"FEATURE_LESSON_SHARE": {
 			"type": "boolean",
 			"default": false,
@@ -954,6 +964,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for copy course feature."
+		},
+		"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the IMSCC course download feature."
 		},
 		"GHOST_BASE_URL": {
 			"type": "string",
@@ -998,13 +1013,7 @@
 					"description": "Expiration in seconds from now"
 				}
 			},
-			"required": [
-				"SAME_SITE",
-				"HTTP_ONLY",
-				"HOST_ONLY",
-				"SECURE",
-				"EXPIRES_SECONDS"
-			],
+			"required": ["SAME_SITE", "HTTP_ONLY", "HOST_ONLY", "SECURE", "EXPIRES_SECONDS"],
 			"allOf": [
 				{
 					"$ref": "#/properties/COOKIE/definitions/SAME_SITE_SECURE_VALID"
@@ -1028,7 +1037,12 @@
 					}
 				}
 			}
-		}
+		},
+        "FEATURE_NEW_TASK_ENABLED": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable the task assignment to individuals"
+        }
 	},
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
