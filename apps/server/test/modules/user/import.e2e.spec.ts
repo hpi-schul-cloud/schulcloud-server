@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Request } from 'express';
 import request from 'supertest';
-import { ServerTestModule } from '@src/server.module';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import {
 	cleanupCollections,

@@ -1,25 +1,25 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
-import express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import express from 'express';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { Logger } from '@nestjs/common';
-import { Mail, MailService } from '@shared/infra/mail';
-import { RocketChatService } from '@src/modules/rocketchat';
-import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { MikroORM } from '@mikro-orm/core';
+import { Logger } from '@nestjs/common';
+import { enableOpenApiDocs } from '@shared/controller/swagger';
+import { Mail, MailService } from '@shared/infra/mail';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
+import { AccountUc } from '@src/modules/account/uc/account.uc';
+import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
+import { RocketChatService } from '@src/modules/rocketchat';
+import { ServerModule } from '@src/modules/server';
 import { join } from 'path';
-import { ServerModule } from './server.module';
-import { AccountUc } from './modules/account/uc/account.uc';
-import { AccountService } from './modules/account/services/account.service';
-import legacyAppPromise = require('../../../src/app');
-import { AccountValidationService } from './modules/account/services/account.validation.service';
-import { CollaborativeStorageUc } from './modules/collaborative-storage/uc/collaborative-storage.uc';
+import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -50,9 +50,9 @@ async function bootstrap() {
 	// provide NestJS mail service to feathers app
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-mail'] = {
-		async send(data: Mail): Promise<void> {
+		send(data: Mail): void {
 			const mailService = nestApp.get(MailService);
-			await mailService.send(data);
+			mailService.send(data);
 		},
 	};
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
@@ -73,7 +73,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api/v1', feathersExpress);
 	rootExpress.use('/api/v3', nestExpress);
-	rootExpress.use(express.static(join(__dirname, 'static-assets')));
+	rootExpress.use(express.static(join(__dirname, '../static-assets')));
 
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated
