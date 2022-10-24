@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { FileRecordParamsParentTypeEnum } from '../filesStorageApi/v3';
 import { FileParamBuilder } from './files-storage-param.builder';
 
 describe('FileParamBuilder', () => {
@@ -15,25 +15,22 @@ describe('FileParamBuilder', () => {
 	});
 
 	it('Should throw for not supported parent type', () => {
-		const jwt = 'jwt';
 		const schoolId = '123';
 		const parentType = 'abc';
 		const parentId = '123';
 
 		// @ts-expect-error: Test case
-		expect(() => FileParamBuilder.build(jwt, schoolId, parentType, parentId)).toThrowError();
+		expect(() => FileParamBuilder.build(schoolId, parentType, parentId)).toThrowError();
 	});
 
 	it('should build valid file request infos for task over shorthand task', () => {
-		const jwt = 'jwt';
 		const schoolId = '123';
-		const parentType = FileRecordParamsParentTypeEnum.Tasks;
+		const parentType = FileRecordParentType.Task;
 		const task = taskFactory.buildWithId();
 
-		const result = FileParamBuilder.build(jwt, schoolId, task);
+		const result = FileParamBuilder.build(schoolId, task);
 
 		const expectedResult = {
-			jwt,
 			schoolId,
 			parentType,
 			parentId: task.id,
@@ -43,15 +40,13 @@ describe('FileParamBuilder', () => {
 	});
 
 	it('should build valid file request infos for lesson over shorthand lesson', () => {
-		const jwt = 'jwt';
 		const schoolId = '123';
-		const parentType = FileRecordParamsParentTypeEnum.Lessons;
+		const parentType = FileRecordParentType.Lesson;
 		const lesson = lessonFactory.buildWithId();
 
-		const result = FileParamBuilder.build(jwt, schoolId, lesson);
+		const result = FileParamBuilder.build(schoolId, lesson);
 
 		const expectedResult = {
-			jwt,
 			schoolId,
 			parentType,
 			parentId: lesson.id,

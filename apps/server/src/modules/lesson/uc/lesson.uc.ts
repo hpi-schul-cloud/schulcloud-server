@@ -10,7 +10,7 @@ export class LessonUC {
 		private readonly lessonService: LessonService
 	) {}
 
-	async delete(userId: EntityId, lessonId: EntityId, jwt: string) {
+	async delete(userId: EntityId, lessonId: EntityId) {
 		const [user, lesson] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.lessonService.findById(lessonId),
@@ -18,7 +18,7 @@ export class LessonUC {
 
 		this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([Permission.TOPIC_EDIT]));
 
-		await this.lessonService.deleteLesson(lesson, jwt);
+		await this.lessonService.deleteLesson(lesson);
 
 		return true;
 	}
