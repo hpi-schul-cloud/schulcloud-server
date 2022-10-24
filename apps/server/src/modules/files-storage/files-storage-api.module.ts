@@ -8,8 +8,7 @@ import { AuthModule } from '@src/modules/authentication';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { FileSecurityController, FilesStorageController } from './controller';
 import { FilesStorageModule } from './files-storage.module';
-import { FileRecordUC } from './uc/file-record.uc';
-import { FilesStorageUC } from './uc/files-storage.uc';
+import { FileRecordUC, FilesStorageUC } from './uc';
 
 @Module({
 	imports: [

@@ -2,8 +2,7 @@ import { Body, Controller, Get, Param, Put, Req, StreamableFile } from '@nestjs/
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { FilesStorageInternalActions } from '../files-storage.const';
-import { FileRecordUC } from '../uc/file-record.uc';
-import { FilesStorageUC } from '../uc/files-storage.uc';
+import { FileRecordUC, FilesStorageUC } from '../uc';
 import { ScanResultParams } from './dto';
 
 @ApiTags('file-security')
