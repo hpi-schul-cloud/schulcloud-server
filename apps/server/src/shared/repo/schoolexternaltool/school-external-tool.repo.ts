@@ -1,8 +1,9 @@
 import { BaseRepo } from '@shared/repo';
-import { EntityId, SchoolExternalTool } from '@shared/domain';
+import { SchoolExternalTool } from '@shared/domain/entity/school-external-tool.entity';
 import { EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { EntityId } from '@shared/domain/types/entity-id';
 
 @Injectable()
 export class SchoolExternalToolRepo extends BaseRepo<SchoolExternalTool> {

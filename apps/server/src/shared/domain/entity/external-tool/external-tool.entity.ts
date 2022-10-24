@@ -1,6 +1,5 @@
 import { Embedded, Entity, Property } from '@mikro-orm/core';
-import { ExternalToolConfig } from '@shared/domain';
-import { BasicToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
+import { ExternalToolConfig } from '@shared/domain/entity/external-tool/config/external-tool-config';
 import { CustomParameter } from './custom-parameter/custom-parameter';
 import { BaseEntityWithTimestamps } from '../base.entity';
 

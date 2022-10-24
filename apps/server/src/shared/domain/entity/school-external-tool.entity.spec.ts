@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { setupEntities } from '@shared/testing/index';
+import { externalToolFactory, schoolFactory, setupEntities } from '@shared/testing/index';
 import { SchoolExternalTool } from '@shared/domain';
 import { schoolExternalToolFactory } from '@shared/testing/factory/school-external-tool.factory';
 
@@ -24,6 +24,16 @@ describe('ExternalTool Entity', () => {
 		it('should create an external school Tool by passing required properties', () => {
 			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 			expect(schoolExternalTool instanceof SchoolExternalTool).toEqual(true);
+		});
+
+		it('should set schoolParameters to empty when is undefined', () => {
+			const schoolExternalTool = new SchoolExternalTool({
+				toolVersion: 1,
+				school: schoolFactory.buildWithId(),
+				tool: externalToolFactory.buildWithId(),
+				schoolParameters: undefined,
+			});
+			expect(schoolExternalTool.schoolParameters).toEqual([]);
 		});
 	});
 });
