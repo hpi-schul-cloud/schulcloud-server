@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LtiToolRepo, PseudonymsRepo } from '@shared/repo';
-import { ICurrentUser, Permission, PseudonymDO, User } from '@shared/domain';
+import { ICurrentUser, LtiPrivacyPermission, LtiRoleType, Permission, PseudonymDO, User } from '@shared/domain';
 import { OauthProviderLoginFlowService } from '@src/modules/oauth-provider/service/oauth-provider.login-flow.service';
 import { ProviderLoginResponse } from '@shared/infra/oauth-provider/dto';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
@@ -19,6 +19,8 @@ describe('OauthProviderLoginFlowService', () => {
 	let ltiToolRepo: DeepMocked<LtiToolRepo>;
 	let pseudonymsRepo: DeepMocked<PseudonymsRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+
+	let ltiToolDoMock: LtiToolDO;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -46,6 +48,32 @@ describe('OauthProviderLoginFlowService', () => {
 		orm = await setupEntities();
 	});
 
+	beforeEach(() => {
+		ltiToolDoMock = new LtiToolDO({
+			id: 'toolId',
+			name: 'SchulcloudNextcloud',
+			isLocal: true,
+			oAuthClientId: 'oAuthClientId',
+			secret: 'mocksecret',
+			customs: [{ key: 'key', value: 'value' }],
+			isHidden: false,
+			isTemplate: false,
+			key: 'key',
+			openNewTab: false,
+			originToolId: 'originToolId',
+			privacy_permission: LtiPrivacyPermission.NAME,
+			roles: [LtiRoleType.INSTRUCTOR, LtiRoleType.LEARNER],
+			url: 'url',
+			friendlyUrl: 'friendlyUrl',
+			frontchannel_logout_uri: 'frontchannel_logout_uri',
+			logo_url: 'logo_url',
+			lti_message_type: 'lti_message_type',
+			lti_version: 'lti_version',
+			resource_link_id: 'resource_link_id',
+			skipConsent: true,
+		});
+	});
+
 	afterAll(async () => {
 		await module.close();
 		await orm.close();
@@ -67,13 +95,8 @@ describe('OauthProviderLoginFlowService', () => {
 				session_id: 'session_id',
 				skip: true,
 				subject: 'subject',
-			} as ProviderLoginResponse;
-			const ltiToolDoMock: LtiToolDO = {
-				id: 'toolId',
-				name: 'name',
-				oAuthClientId: 'oAuthClientId',
-				isLocal: true,
 			};
+			ltiToolDoMock = { ...ltiToolDoMock, id: 'toolId', name: 'name', oAuthClientId: 'oAuthClientId' };
 			const pseudonym: PseudonymDO = {
 				pseudonym: 'pseudonym',
 				toolId: 'toolId',
@@ -121,12 +144,6 @@ describe('OauthProviderLoginFlowService', () => {
 				},
 				oidc_context: {},
 			} as ProviderLoginResponse;
-			const ltiToolDoMock: LtiToolDO = {
-				id: 'toolId',
-				name: 'SchulcloudNextcloud',
-				oAuthClientId: 'oAuthClientId',
-				isLocal: true,
-			};
 
 			authorizationService.getUserWithPermissions.mockResolvedValue(user);
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDoMock);
@@ -159,12 +176,6 @@ describe('OauthProviderLoginFlowService', () => {
 					client_id: 'clientId',
 				},
 			} as ProviderLoginResponse;
-			const ltiToolDoMock: LtiToolDO = {
-				id: 'toolId',
-				name: 'SchulcloudNextcloud',
-				oAuthClientId: 'oAuthClientId',
-				isLocal: true,
-			};
 
 			authorizationService.getUserWithPermissions.mockResolvedValue(user);
 			authorizationService.checkAllPermissions.mockImplementation(() => {
@@ -184,12 +195,7 @@ describe('OauthProviderLoginFlowService', () => {
 					client_id: 'clientId',
 				},
 			} as ProviderLoginResponse;
-			const ltiToolDoMock: LtiToolDO = {
-				id: 'toolId',
-				name: 'NotNextcloud',
-				oAuthClientId: 'oAuthClientId',
-				isLocal: true,
-			};
+			ltiToolDoMock = { ...ltiToolDoMock, id: 'toolId', name: 'NotNextcloud', oAuthClientId: 'oAuthClientId' };
 
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDoMock);
 
