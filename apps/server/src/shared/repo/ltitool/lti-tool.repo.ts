@@ -31,8 +31,8 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		return LtiTool;
 	}
 
-	getConstructor(): { new (I): LtiTool } {
-		return LtiTool;
+	entityFactory(props: ILtiToolProperties): LtiTool {
+		return new LtiTool(props);
 	}
 
 	async find(query: Partial<LtiToolDO>, options?: IFindOptions<LtiToolDO>): Promise<Page<LtiToolDO>> {
@@ -101,7 +101,7 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		});
 	}
 
-	protected mapDOToEntity(entityDO: LtiToolDO): EntityProperties<ILtiToolProperties> {
+	protected mapDOToEntityProperties(entityDO: LtiToolDO): EntityProperties<ILtiToolProperties> {
 		return {
 			id: entityDO.id,
 			name: entityDO.name,

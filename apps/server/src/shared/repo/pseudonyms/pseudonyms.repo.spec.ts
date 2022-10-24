@@ -17,8 +17,8 @@ class PseudonymsRepoSpec extends PseudonymsRepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntitySpec(entityDO: PseudonymDO): EntityProperties<IPseudonymProperties> {
-		return super.mapDOToEntity(entityDO);
+	mapDOToEntityPropertiesSpec(entityDO: PseudonymDO): EntityProperties<IPseudonymProperties> {
+		return super.mapDOToEntityProperties(entityDO);
 	}
 }
 
@@ -59,8 +59,24 @@ describe('Pseudonym Repo', () => {
 		expect(repo.entityName).toBe(Pseudonym);
 	});
 
-	it('should implement getConstructor', () => {
-		expect(repo.getConstructor()).toBe(Pseudonym);
+	describe('entityFactory', () => {
+		const props: IPseudonymProperties = {
+			pseudonym: 'pseudonym',
+			toolId: new ObjectId(),
+			userId: new ObjectId(),
+		};
+
+		it('should return new entity of type Pseudonym', () => {
+			const result: Pseudonym = repo.entityFactory(props);
+
+			expect(result).toBeInstanceOf(Pseudonym);
+		});
+
+		it('should return new entity with values from properties', () => {
+			const result: Pseudonym = repo.entityFactory(props);
+
+			expect(result).toEqual(expect.objectContaining(props));
+		});
 	});
 
 	describe('findByUserAndTool', () => {
@@ -109,8 +125,8 @@ describe('Pseudonym Repo', () => {
 		});
 	});
 
-	describe('mapDOToEntity', () => {
-		it('should map DO to Entity', () => {
+	describe('mapDOToEntityProperties', () => {
+		it('should map DO to Entity Properties', () => {
 			// Arrange
 			const testDO: PseudonymDO = new PseudonymDO({
 				id: 'testId',
@@ -122,7 +138,7 @@ describe('Pseudonym Repo', () => {
 			});
 
 			// Act
-			const result: EntityProperties<IPseudonymProperties> = repo.mapDOToEntitySpec(testDO);
+			const result: EntityProperties<IPseudonymProperties> = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			// Assert
 			expect(result.id).toEqual(testDO.id);

@@ -54,7 +54,7 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	resource_link_id?: string;
 
 	@Enum({ array: true, items: () => LtiRoleType })
-	@Property({ nullable: false })
+	@Property({ nullable: true })
 	roles?: LtiRoleType[];
 
 	@Enum({

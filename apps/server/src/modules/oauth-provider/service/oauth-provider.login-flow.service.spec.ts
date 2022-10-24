@@ -95,7 +95,7 @@ describe('OauthProviderLoginFlowService', () => {
 				session_id: 'session_id',
 				skip: true,
 				subject: 'subject',
-			} as ProviderLoginResponse;
+			};
 			ltiToolDoMock = { ...ltiToolDoMock, name: 'name' };
 			const pseudonym: PseudonymDO = {
 				pseudonym: 'pseudonym',

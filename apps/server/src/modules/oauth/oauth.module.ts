@@ -1,22 +1,21 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { EncryptionModule } from '@shared/infra/encryption';
-import { UserRepo } from '@shared/repo';
+import { LtiToolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { IservOAuthService } from '@src/modules/oauth/service/iserv-oauth.service';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { HydraOauthUc } from '@src/modules/oauth/uc/hydraOauth.uc';
+import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
+import { ProvisioningModule } from '@src/modules/provisioning/provisioning.module';
 import { ToolModule } from '@src/modules/tool';
 import { AuthorizationModule } from '../authorization';
-import { SystemModule } from '../system';
 import { OauthSSOController } from './controller/oauth-sso.controller';
 import { OauthUc } from './uc/oauth.uc';
 
 @Module({
-	imports: [LoggerModule, AuthorizationModule, HttpModule, EncryptionModule, SystemModule, ToolModule],
+	imports: [LoggerModule, AuthorizationModule, HttpModule, ProvisioningModule, EncryptionModule, ToolModule],
 	controllers: [OauthSSOController],
-	providers: [OauthUc, HydraOauthUc, UserRepo, OAuthService, HydraSsoService, IservOAuthService],
+	providers: [OauthUc, HydraOauthUc, UserRepo, SystemRepo, OAuthService, HydraSsoService],
 	exports: [OauthUc],
 })
 export class OauthModule {}

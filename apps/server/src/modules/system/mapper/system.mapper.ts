@@ -12,6 +12,7 @@ export class SystemMapper {
 			alias: entity.alias,
 			displayName: entity.displayName ?? entity.alias,
 			provisioningStrategy: entity.provisioningStrategy,
+			provisioningUrl: entity.provisioningUrl,
 			oauthConfig: SystemMapper.mapFromOauthConfigEntityToDto(entity.oauthConfig),
 			oidcConfig: SystemMapper.mapFromOidcConfigEntityToDto(entity.config),
 		});
