@@ -2,14 +2,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/index';
-import { MikroORM } from '@mikro-orm/core';
+import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { setupEntities, systemFactory, userFactory } from '@shared/testing/index';
 import { System, User } from '@shared/domain/index';
 import { SystemRepo } from '@shared/repo/index';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { OauthUc } from '.';
+import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
+import resetAllMocks = jest.resetAllMocks;
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -56,12 +57,15 @@ describe('OAuthUc', () => {
 		testSystem = systemFactory.withOauthConfig().buildWithId();
 	});
 
+	afterEach(() => {
+		resetAllMocks();
+	});
+
 	describe('processOAuth', () => {
 		const code = '43534543jnj543342jn2';
 		const query: AuthorizationParams = { code };
 
-		it('should do the process successfully', async () => {
-			// Arrange
+		it('should return a valid jwt', async () => {
 			const jwt = 'schulcloudJwt';
 			const redirect = 'redirect';
 			const baseResponse: OAuthResponse = {
@@ -79,16 +83,14 @@ describe('OAuthUc', () => {
 				refresh_token: 'refreshToken',
 				id_token: 'idToken',
 			});
-			oauthService.validateToken.mockResolvedValue({ sub: 'sub', uuid: 'uuid' });
+			oauthService.validateToken.mockResolvedValue({ sub: 'sub' });
 			oauthService.findUser.mockResolvedValue(user);
 			oauthService.getJwtForUser.mockResolvedValue(jwt);
 			oauthService.buildResponse.mockReturnValue(baseResponse);
-			oauthService.getRedirect.mockReturnValue(baseResponse);
+			oauthService.getRedirectUrl.mockReturnValue(redirect);
 
-			// Act
 			const response: OAuthResponse = await service.processOAuth(query, testSystem.id);
 
-			// Assert
 			expect(response).toEqual(
 				expect.objectContaining({
 					jwt,
@@ -98,11 +100,48 @@ describe('OAuthUc', () => {
 			expect(response.jwt).toStrictEqual(jwt);
 		});
 
-		it('should return a error response if processOAuth failed and the provider cannot be fetched from the system', async () => {
-			// Arrange
+		it('should oauthResponse with error when oauthconfig is missing', async () => {
+			const system: System = systemFactory.buildWithId();
+			const errorResponse: OAuthResponse = {
+				provider: 'unknown-provider',
+				errorcode: 'sso_internal_error',
+				redirect: 'errorRedirect',
+			};
+
+			oauthService.checkAuthorizationCode.mockReturnValue(code);
+			systemRepo.findById.mockResolvedValue(system);
+			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
+
+			const response: OAuthResponse = await service.processOAuth(query, system.id);
+
+			expect(oauthService.getOAuthErrorResponse).toHaveBeenCalledWith(expect.any(Error), 'unknown-provider');
+			expect(response).toEqual(errorResponse);
+		});
+
+		it('should return an error response that contains the provider when internal error occurred', async () => {
 			const system: System = systemFactory.withOauthConfig().buildWithId();
+
 			const errorResponse: OAuthResponse = {
 				provider: system.oauthConfig?.provider,
+				errorcode: 'sso_internal_error',
+				redirect: 'errorRedirect',
+			} as OAuthResponse;
+
+			oauthService.checkAuthorizationCode.mockReturnValue(code);
+			systemRepo.findById.mockResolvedValue(system);
+			oauthService.requestToken.mockRejectedValue(new OAuthSSOError());
+			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
+
+			const response: OAuthResponse = await service.processOAuth(query, system.id);
+
+			expect(oauthService.getOAuthErrorResponse).toHaveBeenCalledWith(expect.any(Error), system.oauthConfig?.provider);
+			expect(response).toEqual(errorResponse);
+		});
+
+		it('should return an error response if processOAuth failed and the provider cannot be fetched from the system', async () => {
+			const system: System = systemFactory.buildWithId();
+			const errorResponse: OAuthResponse = {
+				provider: 'unknown-provider',
 				errorcode: 'sso_internal_error',
 				redirect: 'errorRedirect',
 			} as OAuthResponse;
@@ -111,13 +150,20 @@ describe('OAuthUc', () => {
 				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
 			});
 			systemRepo.findById.mockResolvedValue(system);
-			oauthService.getOAuthError.mockReturnValue(errorResponse);
+			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
-			// Act
 			const response: OAuthResponse = await service.processOAuth(query, '');
 
-			// Assert
 			expect(response).toEqual(errorResponse);
+		});
+
+		it('should throw if no system was found', async () => {
+			oauthService.checkAuthorizationCode.mockImplementation(() => {
+				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
+			});
+			systemRepo.findById.mockRejectedValue(new NotFoundError('Not Found'));
+
+			await expect(service.processOAuth(query, 'unknown id')).rejects.toThrow(NotFoundError);
 		});
 	});
 });
