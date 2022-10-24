@@ -63,7 +63,7 @@ Each usecase defines what needs to be done to authorize it, and what needs to be
 
 A service is a public part of a domain module, that provides an interface for logic. It might be a simple class doing simple calculations, an interface to a complex hierarchy of classes within a module, or anything in between.
 
-The domain layer might also define other classes to be used internally by its services, as well as the interface definitions for the repository layer. That way, the domain does not have to depend on the repositories, and the repositories have to depend on the domain instead (dependency inversion)
+The domain layer might also define other classes, types, and interfaces to be used internally by its services, as well as the interface definitions for the repository layer. That way, the domain does not have to depend on the repositories, and the repositories have to depend on the domain instead (dependency inversion)
 
 TODO: the exact way of implementing the interfaces between repositories and domain layer is still in active discussion and development within the architecture chapter
 
@@ -89,9 +89,11 @@ The datamodel itself is defined through Entities, that have to be mapped into do
 
 ## Modules
 
-Each domain module comprises of a number of public services, that are explicitly exported from the module for external use.
+Each domain module comprises of a number of public services, that are explicitly exported from the module for external use. Along with these services it should export any types and interfaces needed outside the module.
 
-In addition, it contains any classes it needs internally to function, including any repositories or other internal classes that should not be accessed from outside the module.
+TODO: since nestJs modules can only export injectables, the method of exporting types and interfaces is not defined yet, and implementation detail for now. One possible solution is to put an index file into the module folder, that defines the types that may be imported from the outside. This also allows us to define a linter rule in the future that prevents access to any files deeper than the index file.
+
+In addition, it contains any classes it needs internally to function, including any repositories or other internal classes that should not be accessed from outside the module. *No Class may be provided in more than one module!*
 
 ```js
 @Module({
@@ -101,7 +103,7 @@ In addition, it contains any classes it needs internally to function, including 
 export class ExampleModule {}
 ```
 
-The controllers and the corresponding usecases are seperated into api modules
+The controllers and the corresponding usecases, along with the api tests for these routes, are seperated into api modules
 
 ```js
 @Module({
