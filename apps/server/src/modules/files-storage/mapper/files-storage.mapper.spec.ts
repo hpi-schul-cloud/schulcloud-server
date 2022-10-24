@@ -2,7 +2,7 @@ import { NotImplementedException } from '@nestjs/common';
 import { FileRecordParentType } from '@shared/domain';
 import { fileRecordFactory } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
-import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller/dto';
+import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {

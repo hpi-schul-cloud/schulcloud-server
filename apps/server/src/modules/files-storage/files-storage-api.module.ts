@@ -1,4 +1,4 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
@@ -6,8 +6,7 @@ import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AuthModule } from '@src/modules/authentication';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { FileSecurityController } from './controller/file-security.controller';
-import { FilesStorageController } from './controller/files-storage.controller';
+import { FileSecurityController, FilesStorageController } from './controller';
 import { FilesStorageModule } from './files-storage.module';
 import { FileRecordUC } from './uc/file-record.uc';
 import { FilesStorageUC } from './uc/files-storage.uc';

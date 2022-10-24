@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { FileRecordListResponse, FileRecordResponse } from '../controller/dto';
+import { FileRecordListResponse, FileRecordResponse } from '../controller';
 import { FilesStorageMapper } from './file-record.mapper';
 
 describe('FilesStorageMapper', () => {

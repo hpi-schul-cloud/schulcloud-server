@@ -11,15 +11,15 @@ import { Request } from 'express';
 import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { CopyFileResponse } from '../controller/dto';
 import {
 	CopyFileParams,
+	CopyFileResponse,
 	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileRecordParams,
 	FileUrlParams,
 	SingleFileParams,
-} from '../controller/dto/file-storage.params';
+} from '../controller';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { IFile } from '../interface/file';

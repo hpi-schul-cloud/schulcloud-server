@@ -6,9 +6,7 @@ import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AuthModule } from '@src/modules/authentication';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { FileSecurityController } from './controller/file-security.controller';
-import { FilesStorageConsumer } from './controller/files-storage.consumer';
-import { FilesStorageController } from './controller/files-storage.controller';
+import { FileSecurityController, FilesStorageConsumer, FilesStorageController } from './controller';
 import { FilesStorageModule } from './files-storage.module';
 
 const imports = [

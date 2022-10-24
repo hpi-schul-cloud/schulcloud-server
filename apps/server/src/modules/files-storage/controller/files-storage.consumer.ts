@@ -32,6 +32,7 @@ export class FilesStorageConsumer {
 
 		const { userId, source, target } = payload;
 		const [response] = await this.filesStorageService.copyFilesOfParent(userId, source, { target });
+
 		return { message: response };
 	}
 

@@ -1,5 +1,5 @@
 import { FileRecord } from '@shared/domain';
-import { FileRecordListResponse, FileRecordResponse } from '../controller/dto';
+import { FileRecordListResponse, FileRecordResponse } from '../controller';
 
 export class FilesStorageMapper {
 	static mapToFileRecordResponse(fileRecord: FileRecord): FileRecordResponse {
