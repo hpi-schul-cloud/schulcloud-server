@@ -3,6 +3,7 @@ import { BaseDORepo, EntityProperties } from '@shared/repo/base.do.repo';
 import { EntityName } from '@mikro-orm/core';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import {
+	BaseEntityWithTimestamps,
 	IFindOptions,
 	ILtiToolProperties,
 	IPagination,
@@ -19,6 +20,12 @@ import { QueryOrderMap } from '@mikro-orm/core/enums';
 
 @Injectable()
 export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperties> {
+	protected mapDOToEntityProperties(
+		entityDO: LtiToolDO
+	): EntityProperties<Readonly<Omit<LtiTool, keyof BaseEntityWithTimestamps>>> {
+		throw new Error('Method not implemented.');
+	}
+
 	constructor(
 		protected readonly _em: EntityManager,
 		protected readonly logger: Logger,
@@ -33,6 +40,10 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 
 	getConstructor(): { new (I): LtiTool } {
 		return LtiTool;
+	}
+
+	entityFactory(props: Readonly<Omit<LtiTool, keyof BaseEntityWithTimestamps>>): LtiTool {
+		return new LtiTool(props);
 	}
 
 	async find(query: Partial<LtiToolDO>, options?: IFindOptions<LtiToolDO>): Promise<Page<LtiToolDO>> {
