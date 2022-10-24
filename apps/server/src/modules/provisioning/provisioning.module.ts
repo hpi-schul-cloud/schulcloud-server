@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PermissionService } from '@shared/domain';
+import { PermissionService } from '@shared/domain/service/permission.service';
 import { RoleRepo, SchoolRepo } from '@shared/repo';
 import { Logger, LoggerModule } from '@src/core/logger';
 import { SchoolModule } from '@src/modules/school/school.module';
@@ -12,12 +12,12 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { AccountModule } from '@src/modules/account/account.module';
 import { SanisSchoolService } from '@src/modules/provisioning/strategy/sanis/service/sanis-school.service';
 import { SanisUserService } from '@src/modules/provisioning/strategy/sanis/service/sanis-user.service';
-import { ProvisioningService } from '@src/modules/provisioning';
+import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
 import { UserModule } from '@src/modules/user';
-import { RoleModule } from '@src/modules';
+import { RoleModule } from '@src/modules/role';
 
 @Module({
-	imports: [AccountModule, SchoolModule, UserModule, RoleModule, SystemModule, LoggerModule, HttpModule],
+	imports: [AccountModule, SchoolModule, UserModule, RoleModule, SystemModule, HttpModule, LoggerModule],
 	controllers: [],
 	providers: [
 		ProvisioningService,
