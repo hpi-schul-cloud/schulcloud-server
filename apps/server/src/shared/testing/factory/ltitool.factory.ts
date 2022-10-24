@@ -1,5 +1,5 @@
 import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { ILtiToolProperties, LtiPrivacyPermission, LtiRoleType, LtiTool } from '@shared/domain';
+import { ILtiToolProperties, LtiPrivacyPermission, LtiRoleType, LtiTool } from '@shared/domain/';
 import { DeepPartial } from 'fishery';
 import { CustomLtiProperty } from '@shared/domain/domainobject/ltitool.do';
 

@@ -154,7 +154,7 @@ describe('LtiTool Repo', () => {
 
 	describe('mapEntityToDO', () => {
 		it('should return a domain object', () => {
-			const testEntity: LtiTool = ltiToolFactory.buildWithId();
+			const testEntity = ltiToolFactory.buildWithId();
 
 			const ltiToolDO: LtiToolDO = repo.mapEntityToDOSpec(testEntity);
 
