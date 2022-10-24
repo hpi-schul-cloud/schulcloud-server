@@ -75,7 +75,7 @@ export class FilesStorageService {
 		try {
 			const filePath = createPath(params.schoolId, fileRecord.id);
 			await this.storageClient.create(filePath, fileDescription);
-			await this.antivirusService.send(fileRecord);
+			this.antivirusService.send(fileRecord);
 
 			return fileRecord;
 		} catch (error) {

@@ -363,27 +363,6 @@ describe('FilesStorageService', () => {
 				expect(antivirusService.send).toHaveBeenCalledWith(fileRecord);
 			});
 		});
-
-		describe('antivirus throws error', () => {
-			const setup = () => {
-				const { params, fileRecords } = getFileRecordsWithParams();
-				const fileRecord = fileRecords[0];
-				const fileDescription = createMock<IFile>();
-				const error = new Error('test');
-
-				antivirusService.send.mockRejectedValueOnce(error as never);
-
-				return { params, fileRecord, fileDescription, error };
-			};
-
-			it('should call file record repo delete', async () => {
-				const { params, fileRecord, fileDescription, error } = setup();
-
-				await expect(service.tryToCreateFileInStorage(fileRecord, params, fileDescription)).rejects.toThrow(error);
-
-				expect(fileRecordRepo.delete).toHaveBeenCalledWith(fileRecord);
-			});
-		});
 	});
 
 	describe('uploadFile is called', () => {
@@ -1596,25 +1575,6 @@ describe('FilesStorageService', () => {
 				await service.sendToAntiVirusService(sourceFile);
 
 				expect(antivirusService.send).toBeCalledTimes(0);
-			});
-		});
-
-		describe('WHEN service throws error', () => {
-			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.PENDING;
-				const error = new Error('test');
-
-				antivirusService.send.mockRejectedValueOnce(error as never);
-
-				return { sourceFile, error };
-			};
-
-			it('should pass error', async () => {
-				const { sourceFile, error } = setup();
-
-				await expect(service.sendToAntiVirusService(sourceFile)).rejects.toThrow(error);
 			});
 		});
 	});
