@@ -1,10 +1,8 @@
-import { MikroORM } from '@mikro-orm/core';
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import {
 	Account,
 	EntityId,
@@ -14,13 +12,16 @@ import {
 	Role,
 	RoleName,
 	School,
-	User,
-	SchoolRoles,
 	SchoolRolePermission,
+	SchoolRoles,
+	User,
 } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { BruteForcePrevention } from '@src/imports-from-feathers';
+import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { ObjectId } from 'bson';
 import {
 	AccountByIdBodyParams,
@@ -30,9 +31,8 @@ import {
 	AccountSearchType,
 } from '../controller/dto';
 import { AccountEntityToDtoMapper, AccountResponseMapper } from '../mapper';
-import { AccountUc } from './account.uc';
 import { AccountValidationService } from '../services/account.validation.service';
-import { BruteForcePrevention } from '../../../imports-from-feathers';
+import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {
 	let module: TestingModule;

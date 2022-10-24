@@ -16,8 +16,8 @@ import {
 } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { TaskListResponse, TaskResponse } from '@src/modules/task/controller/dto';
-import { ServerTestModule } from '@src/server.module';
 import { ObjectID } from 'bson';
 import { Request } from 'express';
 import request from 'supertest';

@@ -3,11 +3,11 @@ import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
 import { ICurrentUser } from '@shared/domain';
-import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 // todo  @src/modules/learnroom/* must be replaced
 import { CopyApiResponse } from '@src/modules/learnroom/controller/dto/copy.response';
 import { CopyMapper } from '@src/modules/learnroom/mapper/copy.mapper';
-import serverConfig from '@src/server.config';
+import { serverConfig } from '@src/modules/server/server.config';
 import { TaskMapper } from '../mapper/task.mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
@@ -69,12 +69,8 @@ export class TaskController {
 	}
 
 	@Delete(':taskId')
-	async delete(
-		@Param() urlParams: TaskUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
-		@JWT() jwt: string
-	): Promise<boolean> {
-		const result = await this.taskUc.delete(currentUser.userId, urlParams.taskId, jwt);
+	async delete(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
+		const result = await this.taskUc.delete(currentUser.userId, urlParams.taskId);
 
 		return result;
 	}
@@ -84,13 +80,12 @@ export class TaskController {
 	async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: TaskUrlParams,
-		@Body() params: TaskCopyApiParams,
-		@JWT() jwt: string
+		@Body() params: TaskCopyApiParams
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.taskCopyUc.copyTask(
 			currentUser.userId,
 			urlParams.taskId,
-			CopyMapper.mapTaskCopyToDomain(params, jwt)
+			CopyMapper.mapTaskCopyToDomain(params, currentUser.userId)
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;

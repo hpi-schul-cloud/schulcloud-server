@@ -26,12 +26,11 @@ describe('lesson controller', () => {
 	describe('delete lesson', () => {
 		it('should call uc', async () => {
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			const jwt = 'jwt';
 			const lessonParams = { lessonId: 'lessonId' };
 
-			await lessonController.delete(lessonParams, currentUser, jwt);
+			await lessonController.delete(lessonParams, currentUser);
 
-			expect(lessonUc.delete).toHaveBeenCalledWith(currentUser.userId, lessonParams.lessonId, jwt);
+			expect(lessonUc.delete).toHaveBeenCalledWith(currentUser.userId, lessonParams.lessonId);
 		});
 	});
 });
