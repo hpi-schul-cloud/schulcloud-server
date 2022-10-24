@@ -2,7 +2,13 @@ import { NotImplementedException } from '@nestjs/common';
 import { FileRecord, FileRecordParentType } from '@shared/domain';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { plainToClass } from 'class-transformer';
-import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller';
+import {
+	DownloadFileParams,
+	FileRecordListResponse,
+	FileRecordParams,
+	FileRecordResponse,
+	SingleFileParams,
+} from '../controller';
 
 export class FilesStorageMapper {
 	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AllowedAuthorizationEntityType {
@@ -36,5 +42,23 @@ export class FilesStorageMapper {
 		});
 
 		return fileRecordParams;
+	}
+
+	static mapToFileRecordResponse(fileRecord: FileRecord): FileRecordResponse {
+		return new FileRecordResponse(fileRecord);
+	}
+
+	static mapToFileRecordListResponse(
+		fileRecords: FileRecord[],
+		total: number,
+		skip?: number,
+		limit?: number
+	): FileRecordListResponse {
+		const responseFileRecords = fileRecords.map((fileRecord) => {
+			return FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+		});
+
+		const response = new FileRecordListResponse(responseFileRecords, total, skip, limit);
+		return response;
 	}
 }
