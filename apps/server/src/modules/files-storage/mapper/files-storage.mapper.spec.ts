@@ -1,11 +1,28 @@
+import { MikroORM } from '@mikro-orm/core';
 import { NotImplementedException } from '@nestjs/common';
 import { FileRecordParentType } from '@shared/domain';
-import { fileRecordFactory } from '@shared/testing';
+import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
-import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller/dto';
+import {
+	DownloadFileParams,
+	FileRecordListResponse,
+	FileRecordParams,
+	FileRecordResponse,
+	SingleFileParams,
+} from '../controller/dto';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
+	let orm: MikroORM;
+
+	beforeAll(async () => {
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
+	});
+
 	describe('mapToAllowedAuthorizationEntityType()', () => {
 		it('should return allowed type equal Course', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.Course);
@@ -77,6 +94,60 @@ describe('FilesStorageMapper', () => {
 				parentId: fileRecord.parentId,
 				parentType: fileRecord.parentType,
 			});
+		});
+	});
+
+	describe('mapToFileRecordResponse is called', () => {
+		it('should return FileRecordResponse DO', () => {
+			const fileRecord = fileRecordFactory.buildWithId();
+
+			const result = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+
+			expect(result).toEqual(
+				expect.objectContaining({
+					creatorId: expect.any(String) as string,
+					deletedSince: undefined,
+					id: expect.any(String) as string,
+					name: 'file-record #1',
+					parentId: expect.any(String) as string,
+					parentType: 'courses',
+					securityCheckStatus: 'pending',
+					size: expect.any(Number) as number,
+					type: 'application/octet-stream',
+				})
+			);
+		});
+	});
+
+	describe('mapToFileRecordListResponse is called', () => {
+		it('should return instance of FileRecordListResponse', () => {
+			const fileRecords = fileRecordFactory.buildList(3);
+
+			const result = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
+
+			expect(result).toBeInstanceOf(FileRecordListResponse);
+		});
+		it('should contains props [data, total, skip, limit]', () => {
+			const fileRecords = fileRecordFactory.buildList(3);
+
+			const result = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length, 0, 5);
+
+			expect(result).toEqual(
+				expect.objectContaining({
+					data: expect.any(Array) as FileRecordResponse[],
+					total: fileRecords.length,
+					skip: 0,
+					limit: 5,
+				})
+			);
+		});
+		it('should contains instances of FileRecordResponse', () => {
+			const fileRecords = fileRecordFactory.buildList(3);
+
+			const result = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
+
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data[0]).toBeInstanceOf(FileRecordResponse);
 		});
 	});
 });
