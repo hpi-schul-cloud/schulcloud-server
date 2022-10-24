@@ -22,15 +22,16 @@ const createExpectedResponse = (
 	expected.id = task.id;
 	expected.name = task.name;
 	expected.availableDate = task.availableDate;
-	expected.duedate = task.dueDate;
 	expected.createdAt = task.createdAt;
+	expected.description = task.description;
+	expected.duedate = task.dueDate;
 	expected.updatedAt = task.updatedAt;
 	expected.status = expectedStatus;
 
 	expected.courseName = descriptions.courseName;
 	expected.courseId = descriptions.courseId;
 	expected.displayColor = descriptions.color;
-	expected.description = descriptions.lessonName;
+	expected.lessonName = descriptions.lessonName;
 
 	return expected;
 };
