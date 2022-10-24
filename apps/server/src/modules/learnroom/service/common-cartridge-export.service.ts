@@ -27,7 +27,7 @@ export class CommonCartridgeExportService {
 	private mapLessonsToOrganizationItems(lessons: Lesson[]): ICommonCartridgeOrganizationProps[] {
 		return lessons.map((lesson) => {
 			return {
-				identifier: lesson.id,
+				identifier: `i_${lesson.id}`,
 				title: lesson.name,
 			};
 		});
