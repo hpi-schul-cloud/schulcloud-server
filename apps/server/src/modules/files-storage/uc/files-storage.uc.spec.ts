@@ -1250,7 +1250,7 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
 
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
 
 				return { singleFileParams, copyFileParams, userId, fileRecord };
@@ -1291,7 +1291,7 @@ describe('FilesStorageUC', () => {
 
 				const error = new ForbiddenException();
 
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error).mockResolvedValueOnce();
 
 				return { singleFileParams, copyFileParams, userId, fileRecord, error };
@@ -1311,7 +1311,7 @@ describe('FilesStorageUC', () => {
 
 				const error = new ForbiddenException();
 
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockRejectedValueOnce(error);
 
 				return { singleFileParams, copyFileParams, userId, fileRecord, error };
@@ -1331,7 +1331,7 @@ describe('FilesStorageUC', () => {
 
 				const error = new ForbiddenException();
 
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error).mockRejectedValueOnce(error);
 
 				return { singleFileParams, copyFileParams, userId, fileRecord, error };
@@ -1349,7 +1349,7 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
 
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
 
 				return { singleFileParams, copyFileParams, userId };
@@ -1360,7 +1360,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
 
-				expect(fileRecordRepo.findOneById).toHaveBeenCalledWith(singleFileParams.fileRecordId);
+				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(singleFileParams);
 			});
 		});
 
@@ -1369,7 +1369,7 @@ describe('FilesStorageUC', () => {
 				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
 				const error = new Error('test');
 
-				fileRecordRepo.findOneById.mockRejectedValueOnce(error);
+				filesStorageService.getFileRecord.mockRejectedValueOnce(error);
 
 				return { singleFileParams, copyFileParams, userId, fileRecord, error };
 			};
@@ -1393,7 +1393,7 @@ describe('FilesStorageUC', () => {
 					name: fileRecord.name,
 				});
 
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
 				filesStorageService.copy.mockResolvedValueOnce([fileResponse]);
 
@@ -1423,7 +1423,7 @@ describe('FilesStorageUC', () => {
 
 				const error = new Error('test');
 
-				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
 				filesStorageService.copy.mockRejectedValueOnce(error);
 
