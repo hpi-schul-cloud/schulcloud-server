@@ -7,7 +7,7 @@ import { TeamRolePermissionsDto } from '@shared/infra/collaborative-storage/dto/
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
 import { setupEntities, userFactory } from '@shared/testing/index';
-import { PseudonymDO, RoleName, User } from '@shared/domain/index';
+import { LtiPrivacyPermission, LtiRoleType, PseudonymDO, RoleName, User } from '@shared/domain/index';
 import { MikroORM } from '@mikro-orm/core';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo/ltitool/index';
@@ -84,6 +84,23 @@ describe('NextCloud Adapter Strategy', () => {
 			updatedAt: new Date('2022-07-20'),
 			isLocal: true,
 			oAuthClientId: 'oauthClientId',
+			secret: 'secret',
+			customs: [{ key: 'key', value: 'value' }],
+			isHidden: false,
+			isTemplate: false,
+			key: 'key',
+			openNewTab: false,
+			originToolId: 'originToolId',
+			privacy_permission: LtiPrivacyPermission.NAME,
+			roles: [LtiRoleType.INSTRUCTOR, LtiRoleType.LEARNER],
+			url: 'url',
+			friendlyUrl: 'friendlyUrl',
+			frontchannel_logout_uri: 'frontchannel_logout_uri',
+			logo_url: 'logo_url',
+			lti_message_type: 'lti_message_type',
+			lti_version: 'lti_version',
+			resource_link_id: 'resource_link_id',
+			skipConsent: true,
 		});
 		ltiToolRepo.findByName.mockResolvedValue(nextcloudTool);
 	});
