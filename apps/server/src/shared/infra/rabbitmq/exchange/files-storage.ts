@@ -1,13 +1,12 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityId } from '@shared/domain';
 
-export enum FilesStorageExchanges {
-	'FILES_STORAGE' = 'files-storage',
-}
+export const FilesStorageExchange = Configuration.get('FILES_STORAGE__EXCHANGE') as string;
 
 export enum FilesStorageEvents {
-	'COPY_FILES_OF_PARENT' = 'COPY_FILES_OF_PARENT',
-	'LIST_FILES_OF_PARENT' = 'LIST_FILES_OF_PARENT',
-	'DELETE_FILES_OF_PARENT' = 'DELETE_FILES_OF_PARENT',
+	'COPY_FILES_OF_PARENT' = 'copy-files-of-parent',
+	'LIST_FILES_OF_PARENT' = 'list-files-of-parent',
+	'DELETE_FILES_OF_PARENT' = 'delete-files-of-parent',
 }
 
 export enum ScanStatus {

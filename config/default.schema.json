@@ -297,6 +297,11 @@
 				"S3_SECRET_ACCESS_KEY": {
 					"type": "string",
 					"description": "Secret key to S3"
+				},
+				"EXCHANGE": {
+					"type": "string",
+					"default": "files-storage",
+					"description": "rabbitmq exchange name for antivirus"
 				}
 			}
 		},

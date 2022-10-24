@@ -9,7 +9,7 @@ import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycl
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { FilesModule } from '@src/modules/files';
 import { ManagementModule } from '@src/modules/management/management.module';
-import serverConfig from '@src/server.config';
+import { serverConfig } from '@src/modules/server';
 import { ConsoleModule } from 'nestjs-console';
 import { ServerConsole } from './server.console';
 

@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { ICoreModuleConfig } from '@src/core';
+import { AvailableLogLevel } from '@src/core/logger';
 import type { IAccountConfig, IFilesStorageClientConfig, IUserConfig } from '@src/modules/';
-import { AvailableLogLevel } from './core/logger';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -36,4 +36,4 @@ const config: IServerConfig = {
 	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED') as boolean,
 };
 
-export default () => config;
+export const serverConfig = () => config;
