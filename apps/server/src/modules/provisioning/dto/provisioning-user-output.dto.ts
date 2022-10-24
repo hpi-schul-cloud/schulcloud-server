@@ -11,6 +11,7 @@ export class ProvisioningUserOutputDto {
 		this.lastName = user.lastName;
 		this.roleNames = user.roleNames;
 		this.schoolId = user.schoolId;
+		this.externalId = user.externalId;
 	}
 
 	id?: EntityId;
@@ -24,4 +25,6 @@ export class ProvisioningUserOutputDto {
 	roleNames: RoleName[];
 
 	schoolId: EntityId;
+
+	externalId: string;
 }

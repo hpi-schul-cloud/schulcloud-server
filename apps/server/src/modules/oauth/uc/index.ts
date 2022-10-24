@@ -1,2 +1,2 @@
 export * from './oauth.uc';
-export * from './hydraOauth.uc';
+export * from './hydra-oauth.uc';

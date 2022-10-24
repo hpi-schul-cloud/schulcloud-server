@@ -5,7 +5,8 @@ import { BaseEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 /**
- * @deprecated This repo is do not use it for new repos. Please use {@link BaseDORepo}
+ * This repo will be replaced in the future by a more domain driven repo, which is currently discussed in the arc chapter.
+ * An example for a possible implementation is the {@link BaseDORepo}.
  */
 @Injectable()
 export abstract class BaseRepo<T extends BaseEntity> {

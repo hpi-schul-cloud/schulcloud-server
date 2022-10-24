@@ -8,6 +8,7 @@ export class FeathersJwtProvider {
 
 	async generateJwt(userId: EntityId): Promise<string> {
 		const service = this.feathersServiceProvider.getService('accounts/supportJWT');
+		// This feathers service catches its own errors, so the promise does not get rejected
 		const jwt = (await service.create({ userId }, { account: { userId } })) as Promise<string>;
 		return jwt;
 	}
