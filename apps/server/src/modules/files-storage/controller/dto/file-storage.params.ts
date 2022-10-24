@@ -88,3 +88,14 @@ export class CopyFileParams {
 	@IsString()
 	fileNamePrefix!: string;
 }
+
+export class CopyFilesOfParentPayload {
+	@IsMongoId()
+	userId!: EntityId;
+
+	@ValidateNested()
+	source!: FileRecordParams;
+
+	@ValidateNested()
+	target!: FileRecordParams;
+}

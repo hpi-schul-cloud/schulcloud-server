@@ -1,33 +1,12 @@
-import { EntityId, Lesson, Task } from '@shared/domain';
-import { AxiosResponse } from 'axios';
-import {
-	CopyFileListResponse,
-	CopyFileResponse,
-	FileRecordListResponse,
-	FileRecordParamsParentTypeEnum,
-	FileRecordResponse,
-} from '../filesStorageApi/v3';
+import { Lesson, Task } from '@shared/domain';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { CopyFileDto, FileDto } from '../dto';
+import { EntitiesWithFiles, ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
 
 export class FilesStorageClientMapper {
-	static mapAxiosToFilesDto(response: AxiosResponse<FileRecordListResponse>, schoolId: EntityId): FileDto[] {
-		const filesDto = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response.data, schoolId);
-
-		return filesDto;
-	}
-
-	static mapAxiosToCopyFilesDto(response: AxiosResponse<CopyFileListResponse>): CopyFileDto[] {
-		const copyFilesDto = FilesStorageClientMapper.mapCopyFileListResponseToCopyFilesDto(response.data);
-
-		return copyFilesDto;
-	}
-
-	static mapfileRecordListResponseToDomainFilesDto(
-		fileRecordListResponse: FileRecordListResponse,
-		schoolId: EntityId
-	): FileDto[] {
-		const filesDto = fileRecordListResponse.data.map((record) => {
-			const fileDto = FilesStorageClientMapper.mapFileRecordResponseToFileDto(record, schoolId);
+	static mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: IFileDomainObjectProps[]): FileDto[] {
+		const filesDto = fileRecordListResponse.map((record: IFileDomainObjectProps) => {
+			const fileDto = FilesStorageClientMapper.mapFileRecordResponseToFileDto(record);
 
 			return fileDto;
 		});
@@ -35,8 +14,8 @@ export class FilesStorageClientMapper {
 		return filesDto;
 	}
 
-	static mapCopyFileListResponseToCopyFilesDto(copyFileListResponse: CopyFileListResponse): CopyFileDto[] {
-		const filesDto = copyFileListResponse.data.map((response) => {
+	static mapCopyFileListResponseToCopyFilesDto(copyFileListResponse: ICopyFileDomainObjectProps[]): CopyFileDto[] {
+		const filesDto = copyFileListResponse.map((response) => {
 			const fileDto = FilesStorageClientMapper.mapCopyFileResponseToCopyFileDto(response);
 
 			return fileDto;
@@ -45,20 +24,19 @@ export class FilesStorageClientMapper {
 		return filesDto;
 	}
 
-	static mapFileRecordResponseToFileDto(fileRecordResponse: FileRecordResponse, schoolId: EntityId) {
+	static mapFileRecordResponseToFileDto(fileRecordResponse: IFileDomainObjectProps) {
 		const parentType = FilesStorageClientMapper.mapStringToParentType(fileRecordResponse.parentType);
 		const fileDto = new FileDto({
 			id: fileRecordResponse.id,
 			name: fileRecordResponse.name,
 			parentType,
 			parentId: fileRecordResponse.parentId,
-			schoolId,
 		});
 
 		return fileDto;
 	}
 
-	static mapCopyFileResponseToCopyFileDto(response: CopyFileResponse) {
+	static mapCopyFileResponseToCopyFileDto(response: ICopyFileDomainObjectProps) {
 		const dto = new CopyFileDto({
 			id: response.id,
 			sourceId: response.sourceId,
@@ -68,12 +46,12 @@ export class FilesStorageClientMapper {
 		return dto;
 	}
 
-	static mapStringToParentType(input: string): FileRecordParamsParentTypeEnum {
-		let response: FileRecordParamsParentTypeEnum;
-		const allowedStrings = ['users', 'courses', 'tasks', 'schools', 'lessons'];
+	static mapStringToParentType(input: string): FileRecordParentType {
+		let response: FileRecordParentType;
+		const allowedStrings = Object.values(FileRecordParentType);
 
-		if (allowedStrings.includes(input)) {
-			response = input as FileRecordParamsParentTypeEnum;
+		if (allowedStrings.includes(input as FileRecordParentType)) {
+			response = input as FileRecordParentType;
 		} else {
 			throw new Error(`Mapping type is not supported. ${input}`);
 		}
@@ -81,10 +59,10 @@ export class FilesStorageClientMapper {
 		return response;
 	}
 
-	static mapEntityToParentType(entity: Task | Lesson): FileRecordParamsParentTypeEnum {
-		if (entity instanceof Lesson) return FileRecordParamsParentTypeEnum.Lessons;
+	static mapEntityToParentType(entity: EntitiesWithFiles): FileRecordParentType {
+		if (entity instanceof Lesson) return FileRecordParentType.Lesson;
 
-		if (entity instanceof Task) return FileRecordParamsParentTypeEnum.Tasks;
+		if (entity instanceof Task) return FileRecordParentType.Task;
 
 		throw new Error(`Mapping type is not supported.`);
 	}

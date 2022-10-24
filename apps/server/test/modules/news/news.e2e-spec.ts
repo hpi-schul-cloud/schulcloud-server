@@ -6,7 +6,7 @@ import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
 import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from '@src/modules/news/controller/dto';
-import { ServerTestModule } from '@src/server.module';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import moment from 'moment';
 import request from 'supertest';
