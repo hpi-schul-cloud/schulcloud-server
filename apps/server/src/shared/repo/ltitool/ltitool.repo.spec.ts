@@ -62,6 +62,20 @@ describe('LtiTool Repo', () => {
 	describe('entityFactory', () => {
 		const props: ILtiToolProperties = {
 			name: 'toolName',
+			oAuthClientId: 'clientId',
+			secret: 'secret',
+			isLocal: true,
+			customs: [],
+			isHidden: false,
+			isTemplate: false,
+			key: 'key',
+			openNewTab: false,
+			originToolId: undefined,
+			privacy_permission: LtiPrivacyPermission.NAME,
+			roles: [LtiRoleType.INSTRUCTOR, LtiRoleType.LEARNER],
+			url: 'url',
+			friendlyUrl: 'friendlyUrl',
+			frontchannel_logout_uri: 'frontchannel_logout_uri',
 		};
 
 		it('should return new entity of type LtiTool', () => {
