@@ -62,13 +62,14 @@ describe('Scan Status Helper', () => {
 				};
 			};
 
-			it('should return blocked scan status', () => {
+			it('should return verified scan status', () => {
 				const { scanResultParams } = setup();
 
 				// @ts-expect-error type do not match
 				const result = getStatusFromScanResult(scanResultParams);
 
-				expect(result).toEqual(ScanStatus.BLOCKED);
+				// Otherwise large files can not be processed
+				expect(result).toEqual(ScanStatus.VERIFIED);
 			});
 		});
 	});

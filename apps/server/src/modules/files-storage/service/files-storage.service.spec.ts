@@ -371,7 +371,7 @@ describe('FilesStorageService', () => {
 				const fileDescription = createMock<IFile>();
 				const error = new Error('test');
 
-				antivirusService.send.mockRejectedValueOnce(error);
+				antivirusService.send.mockRejectedValueOnce(error as never);
 
 				return { params, fileRecord, fileDescription, error };
 			};
@@ -1606,7 +1606,7 @@ describe('FilesStorageService', () => {
 				sourceFile.securityCheck.status = ScanStatus.PENDING;
 				const error = new Error('test');
 
-				antivirusService.send.mockRejectedValueOnce(error);
+				antivirusService.send.mockRejectedValueOnce(error as never);
 
 				return { sourceFile, error };
 			};
