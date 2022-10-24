@@ -34,6 +34,9 @@ export class TaskResponse {
 	@DecodeHtmlEntities()
 	courseName: string = '' as string;
 
+	@ApiPropertyOptional()
+	lessonName?: string;
+
 	@ApiProperty()
 	courseId: string = '' as string;
 

@@ -18,12 +18,14 @@ export class TaskMapper {
 			lessonHidden: false,
 			status: statusDto,
 		});
-
+		dto.description = task.description;
 		dto.availableDate = task.availableDate;
 		dto.duedate = task.dueDate;
 
 		dto.displayColor = taskDesc.color;
-		dto.description = taskDesc.lessonName;
+		if (taskDesc.lessonName) {
+			dto.lessonName = taskDesc.lessonName;
+		}
 		dto.lessonHidden = taskDesc.lessonHidden;
 
 		return dto;
