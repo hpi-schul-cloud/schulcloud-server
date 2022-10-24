@@ -33,7 +33,7 @@ export class TaskResponse {
 	@DecodeHtmlEntities()
 	courseName: string = '' as string;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	lessonName?: string;
 
 	@ApiProperty()
