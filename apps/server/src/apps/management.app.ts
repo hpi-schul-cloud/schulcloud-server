@@ -8,9 +8,8 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { enableOpenApiDocs } from './shared/controller/swagger';
-import { FilesStorageModule } from './modules/files-storage/files-storage.module';
-import { API_VERSION_PATH } from './modules/files-storage/files-storage.const';
+import { ManagementServerModule } from '@src/modules/management';
+import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -19,10 +18,10 @@ async function bootstrap() {
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(FilesStorageModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create(ManagementServerModule, nestExpressAdapter);
 
 	// customize nest app settings
-	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
+	nestApp.enableCors();
 	enableOpenApiDocs(nestApp, 'docs');
 
 	await nestApp.init();
@@ -30,15 +29,15 @@ async function bootstrap() {
 	// mount instances
 	const rootExpress = express();
 
-	const port = 4444;
-	const basePath = API_VERSION_PATH;
+	const port = 3333;
+	const basePath = '/api';
 
 	// exposed alias mounts
 	rootExpress.use(basePath, nestExpress);
 	rootExpress.listen(port);
 
 	console.log('#################################');
-	console.log(`### Start Files Storage Server   ###`);
+	console.log(`### Start Management Server   ###`);
 	console.log(`### Port:     ${port}            ###`);
 	console.log(`### Base path: ${basePath}           ###`);
 	console.log('#################################');

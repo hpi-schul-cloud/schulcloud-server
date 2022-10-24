@@ -3,7 +3,7 @@ import { Controller, ExecutionContext, ForbiddenException, Get, INestApplication
 import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@shared/domain';
-import { ServerTestModule } from '@src/server.module';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { MikroORM } from '@mikro-orm/core';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { Authenticate, CurrentUser, JWT } from './auth.decorator';
