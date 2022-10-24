@@ -16,7 +16,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 
 export type LessonCopyParentParams = {
 	courseId?: EntityId;
-	jwt: string;
+	userId: string;
 };
 
 @Injectable()
@@ -59,7 +59,7 @@ export class LessonCopyUC {
 			const lessonCopy = status.copyEntity;
 			await this.lessonRepo.save(lessonCopy);
 			status = this.lessonCopyService.updateCopiedEmbeddedTasks(status);
-			status = await this.fileCopyAppendService.copyFiles(status, lessonCopy.course.id, userId, parentParams.jwt);
+			status = await this.fileCopyAppendService.copyFiles(status, lessonCopy.course.id, userId);
 			const updatedLesson = status.copyEntity as Lesson;
 			await this.lessonRepo.save(updatedLesson);
 		}

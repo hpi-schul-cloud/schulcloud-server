@@ -17,7 +17,7 @@ import {
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { BoardResponse, CopyApiResponse } from '@src/modules/learnroom/controller/dto';
-import { ServerTestModule } from '@src/server.module';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 

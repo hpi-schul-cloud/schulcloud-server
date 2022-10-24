@@ -19,7 +19,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 export type TaskCopyParentParams = {
 	courseId?: EntityId;
 	lessonId?: EntityId;
-	jwt: string;
+	userId: string;
 };
 
 @Injectable()
@@ -73,7 +73,7 @@ export class TaskCopyUC {
 				status,
 				status.originalEntity,
 				status.copyEntity,
-				parentParams.jwt
+				parentParams.userId
 			);
 		}
 
