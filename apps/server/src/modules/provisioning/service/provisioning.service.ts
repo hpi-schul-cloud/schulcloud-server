@@ -4,6 +4,7 @@ import { ProvisioningSystemInputDto } from '@src/modules/provisioning/dto/provis
 import { ProvisioningSystemInputMapper } from '@src/modules/provisioning/mapper/provisioning-system-input.mapper';
 import { SanisProvisioningStrategy, SanisStrategyData } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
 import { IservProvisioningStrategy, IservStrategyData } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
+import { OidcProvisioningStrategy, OidcStrategyData } from '@src/modules/provisioning/strategy/oidc/oidc.strategy';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
 
@@ -12,7 +13,8 @@ export class ProvisioningService {
 	constructor(
 		private readonly systemService: SystemService,
 		private readonly sanisStrategy: SanisProvisioningStrategy,
-		private readonly iservStrategy: IservProvisioningStrategy
+		private readonly iservStrategy: IservProvisioningStrategy,
+		private readonly oidcProvisioningStrategy: OidcProvisioningStrategy,
 	) {}
 
 	async process(accessToken: string, idToken: string, systemId: string): Promise<ProvisioningDto> {
@@ -25,6 +27,10 @@ export class ProvisioningService {
 			}
 			case SystemProvisioningStrategy.ISERV: {
 				const provisioningDtoPromise = this.provisionIserv(idToken);
+				return provisioningDtoPromise;
+			}
+			case SystemProvisioningStrategy.OIDC: {
+				const provisioningDtoPromise = this.provisionOidc(idToken);
 				return provisioningDtoPromise;
 			}
 			default:
@@ -65,6 +71,14 @@ export class ProvisioningService {
 			systemId,
 		};
 		const provisioningDtoPromise = this.sanisStrategy.apply(params);
+		return provisioningDtoPromise;
+	}
+
+	private provisionOidc(idToken: string): Promise<ProvisioningDto> {
+		const params: OidcStrategyData = {
+			idToken,
+		};
+		const provisioningDtoPromise = this.iservStrategy.apply(params);
 		return provisioningDtoPromise;
 	}
 }
