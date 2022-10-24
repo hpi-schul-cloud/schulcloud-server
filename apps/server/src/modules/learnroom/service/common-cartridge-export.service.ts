@@ -11,17 +11,20 @@ export class CommonCartridgeExportService {
 	async exportCourse(courseId: EntityId): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
-		return new CommonCartridgeFileBuilder({
-			identifier: `i${course.id}`,
-			title: course.name,
-		})
-			.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
-			.addResourceItems({
-				identifier: 'placeholder-identifier',
-				type: 'webcontent',
-				href: 'placeholder.html',
+		return (
+			new CommonCartridgeFileBuilder({
+				identifier: `i${course.id}`,
+				title: course.name,
 			})
-			.build();
+				.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
+				// we are adding one resource here for testing purpose
+				.addResourceItems({
+					identifier: 'placeholder-identifier',
+					type: 'webcontent',
+					href: 'placeholder.html',
+				})
+				.build()
+		);
 	}
 
 	private mapLessonsToOrganizationItems(lessons: Lesson[]): ICommonCartridgeOrganizationProps[] {
