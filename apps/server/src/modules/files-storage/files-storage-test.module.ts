@@ -6,11 +6,10 @@ import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AuthModule } from '@src/modules/authentication';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { FileSecurityController, FilesStorageConsumer, FilesStorageController } from './controller';
-import { FilesStorageModule } from './files-storage.module';
+import { FilesStorageApiModule } from './files-storage-api.module';
 
 const imports = [
-	FilesStorageModule,
+	FilesStorageApiModule,
 	MongoMemoryDatabaseModule.forRoot(),
 	RabbitMQWrapperTestModule,
 	AuthorizationModule,
@@ -18,8 +17,8 @@ const imports = [
 	CoreModule,
 	LoggerModule,
 ];
-const controllers = [FilesStorageController, FileSecurityController];
-const providers = [FilesStorageConsumer];
+const controllers = [];
+const providers = [];
 @Module({
 	imports,
 	controllers,
