@@ -1,8 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -10,7 +8,6 @@ import busboy from 'busboy';
 import { Request } from 'express';
 import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileParams,
 	CopyFileResponse,
@@ -31,9 +28,6 @@ import { FilesStorageService } from '../service/files-storage.service';
 export class FilesStorageUC {
 	constructor(
 		private logger: Logger,
-		private readonly storageClient: S3ClientAdapter,
-		private readonly fileRecordRepo: FileRecordRepo,
-		private readonly antivirusService: AntivirusService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly httpService: HttpService,
 		private readonly filesStorageService: FilesStorageService
@@ -194,7 +188,7 @@ export class FilesStorageUC {
 		params: SingleFileParams,
 		copyFileParams: CopyFileParams
 	): Promise<CopyFileResponse> {
-		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+		const fileRecord = await this.filesStorageService.getFileRecord(params);
 		await Promise.all([
 			this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create),
 			this.checkPermission(

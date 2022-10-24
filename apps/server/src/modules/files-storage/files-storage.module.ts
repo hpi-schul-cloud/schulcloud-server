@@ -78,6 +78,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 	],
 	providers,
-	exports: [FilesStorageService, S3ClientAdapter, FileRecordRepo],
+	exports: [FilesStorageService],
 })
 export class FilesStorageModule {}
