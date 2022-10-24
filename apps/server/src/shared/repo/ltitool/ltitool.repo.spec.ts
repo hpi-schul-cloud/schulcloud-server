@@ -16,8 +16,8 @@ class LtiToolRepoSpec extends LtiToolRepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntitySpec(entityDO: LtiToolDO): EntityProperties<ILtiToolProperties> {
-		return super.mapDOToEntity(entityDO);
+	mapDOToEntityPropertiesSpec(entityDO: LtiToolDO): EntityProperties<ILtiToolProperties> {
+		return super.mapDOToEntityProperties(entityDO);
 	}
 }
 
@@ -58,8 +58,22 @@ describe('LtiTool Repo', () => {
 		expect(repo.entityName).toBe(LtiTool);
 	});
 
-	it('should implement getConstructor', () => {
-		expect(repo.getConstructor()).toBe(LtiTool);
+	describe('entityFactory', () => {
+		const props: ILtiToolProperties = {
+			name: 'toolName',
+		};
+
+		it('should return new entity of type LtiTool', () => {
+			const result: LtiTool = repo.entityFactory(props);
+
+			expect(result).toBeInstanceOf(LtiTool);
+		});
+
+		it('should return new entity with values from properties', () => {
+			const result: LtiTool = repo.entityFactory(props);
+
+			expect(result).toEqual(expect.objectContaining(props));
+		});
 	});
 
 	describe('findByUserAndTool', () => {
@@ -147,8 +161,8 @@ describe('LtiTool Repo', () => {
 		});
 	});
 
-	describe('mapDOToEntity', () => {
-		it('should map DO to Entity', () => {
+	describe('mapDOToEntityProperties', () => {
+		it('should map DO to Entity Properties', () => {
 			const testDO: LtiToolDO = new LtiToolDO({
 				id: 'testId',
 				updatedAt: new Date('2022-07-20'),
@@ -159,7 +173,7 @@ describe('LtiTool Repo', () => {
 				isLocal: true,
 			});
 
-			const result: EntityProperties<ILtiToolProperties> = repo.mapDOToEntitySpec(testDO);
+			const result: EntityProperties<ILtiToolProperties> = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			expect(result.id).toEqual(testDO.id);
 			expect(result.name).toEqual(testDO.name);
