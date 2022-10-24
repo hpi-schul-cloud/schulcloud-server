@@ -44,8 +44,8 @@ export class CourseCopyService {
 
 		const copyName = this.copyHelperService.deriveCopyName(newName || originalCourse.name, existingNames);
 
-		const statusCourse = this.courseEntityCopyService.copyCourse({ user, originalCourse, copyName });
-		const courseCopy = statusCourse.copyEntity as Course;
+		const courseStatus = this.courseEntityCopyService.copyCourse({ user, originalCourse, copyName });
+		const courseCopy = courseStatus.copyEntity as Course;
 		await this.courseRepo.save(courseCopy);
 
 		let statusBoard = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
@@ -59,10 +59,10 @@ export class CourseCopyService {
 			await this.boardRepo.save(updatedBoardCopy);
 		}
 
-		statusCourse.elements ||= [];
-		statusCourse.elements.push(statusBoard);
-		statusCourse.status = this.copyHelperService.deriveStatusFromElements(statusCourse.elements);
+		courseStatus.elements ||= [];
+		courseStatus.elements.push(statusBoard);
+		courseStatus.status = this.copyHelperService.deriveStatusFromElements(courseStatus.elements);
 
-		return statusCourse;
+		return courseStatus;
 	}
 }
