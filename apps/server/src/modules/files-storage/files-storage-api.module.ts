@@ -1,4 +1,7 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AuthModule } from '@src/modules/authentication';
@@ -10,7 +13,20 @@ import { FileRecordUC } from './uc/file-record.uc';
 import { FilesStorageUC } from './uc/files-storage.uc';
 
 @Module({
-	imports: [AuthorizationModule, FilesStorageModule, AuthModule, CoreModule, LoggerModule],
+	imports: [
+		AuthorizationModule,
+		FilesStorageModule,
+		AuthModule,
+		CoreModule,
+		LoggerModule,
+		HttpModule,
+		AntivirusModule.forRoot({
+			enabled: Configuration.get('ENABLE_FILE_SECURITY_CHECK') as boolean,
+			filesServiceBaseUrl: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
+			exchange: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
+			routingKey: Configuration.get('ANTIVIRUS_ROUTING_KEY') as string,
+		}),
+	],
 	controllers: [FilesStorageController, FileSecurityController],
 	providers: [FilesStorageUC, FileRecordUC],
 })

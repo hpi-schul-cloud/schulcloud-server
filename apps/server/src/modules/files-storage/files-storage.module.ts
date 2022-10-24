@@ -2,7 +2,6 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { HttpModule } from '@nestjs/axios';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
@@ -22,7 +21,6 @@ const imports = [
 		isGlobal: true,
 		load: [config],
 	}),
-	HttpModule,
 	AntivirusModule.forRoot({
 		enabled: Configuration.get('ENABLE_FILE_SECURITY_CHECK') as boolean,
 		filesServiceBaseUrl: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
@@ -80,6 +78,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 	],
 	providers,
-	exports: [FilesStorageService],
+	exports: [FilesStorageService, S3ClientAdapter, FileRecordRepo],
 })
 export class FilesStorageModule {}
