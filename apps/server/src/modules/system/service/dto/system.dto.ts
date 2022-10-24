@@ -11,6 +11,7 @@ export class SystemDto {
 		this.alias = system.alias;
 		this.displayName = system.displayName;
 		this.provisioningStrategy = system.provisioningStrategy;
+		this.provisioningUrl = system.provisioningUrl;
 		this.oauthConfig = system.oauthConfig;
 		this.oidcConfig = system.oidcConfig;
 	}
@@ -26,6 +27,8 @@ export class SystemDto {
 	displayName?: string;
 
 	provisioningStrategy?: SystemProvisioningStrategy;
+
+	provisioningUrl?: string;
 
 	oauthConfig?: OauthConfigDto;
 

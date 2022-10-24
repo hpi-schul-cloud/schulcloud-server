@@ -6,6 +6,7 @@ export class ProvisioningSystemInputMapper {
 	static mapToInternal(dto: SystemDto) {
 		return new ProvisioningSystemInputDto({
 			provisioningStrategy: dto.provisioningStrategy || SystemProvisioningStrategy.UNDEFINED,
+			provisioningUrl: dto.provisioningUrl || undefined,
 		});
 	}
 }
