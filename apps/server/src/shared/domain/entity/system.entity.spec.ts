@@ -1,6 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { setupEntities } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { System } from './system.entity';
 
 describe('System Entity', () => {
@@ -23,14 +24,40 @@ describe('System Entity', () => {
 
 		it('should create a system by passing required properties', () => {
 			const system = systemFactory.build();
+
 			expect(system instanceof System).toEqual(true);
 		});
+
 		it('should create a system by passing required and optional properties', () => {
-			const system = systemFactory.build({ url: 'SAMPLE_URL', alias: 'SAMPLE_ALIAS', displayName: 'SAMPLE_NAME' });
+			const system = systemFactory
+				.withOauthConfig()
+				.build({ url: 'SAMPLE_URL', alias: 'SAMPLE_ALIAS', displayName: 'SAMPLE_NAME' });
+
 			expect(system instanceof System).toEqual(true);
-			expect(system.url).toEqual('SAMPLE_URL');
-			expect(system.alias).toEqual('SAMPLE_ALIAS');
-			expect(system.displayName).toEqual('SAMPLE_NAME');
+			expect(system).toEqual(
+				expect.objectContaining({
+					type: 'oauth',
+					url: 'SAMPLE_URL',
+					alias: 'SAMPLE_ALIAS',
+					displayName: 'SAMPLE_NAME',
+					provisioningStrategy: SystemProvisioningStrategy.UNDEFINED,
+					provisioningUrl: 'provisioningUrl',
+					oauthConfig: {
+						clientId: '12345',
+						clientSecret: 'mocksecret',
+						tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+						grantType: 'authorization_code',
+						redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
+						scope: 'openid uuid',
+						responseType: 'code',
+						authEndpoint: 'mock_authEndpoint',
+						provider: 'mock_type',
+						logoutEndpoint: 'mock_logoutEndpoint',
+						issuer: 'mock_issuer',
+						jwksEndpoint: 'mock_jwksEndpoint',
+					},
+				})
+			);
 		});
 	});
 });

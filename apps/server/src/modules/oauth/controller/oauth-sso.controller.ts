@@ -3,10 +3,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { Logger } from '@src/core/logger';
 import { CookieOptions, Request, Response } from 'express';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { HydraOauthUc } from '@src/modules/oauth/uc/hydraOauth.uc';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
+import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
 
@@ -41,7 +41,8 @@ export class OauthSSOController {
 		@Query() query: AuthorizationParams,
 		@Param('oauthClientId') oauthClientId: string
 	): Promise<OauthTokenResponse> {
-		return this.hydraUc.getOauthToken(query, oauthClientId);
+		const oauthToken = this.hydraUc.getOauthToken(query, oauthClientId);
+		return oauthToken;
 	}
 
 	@Get('auth/:oauthClientId')
