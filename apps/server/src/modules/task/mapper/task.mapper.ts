@@ -17,12 +17,14 @@ export class TaskMapper {
 			updatedAt: task.updatedAt,
 			status: statusDto,
 		});
-
+		dto.description = task.description;
 		dto.availableDate = task.availableDate;
 		dto.duedate = task.dueDate;
 
 		dto.displayColor = taskDesc.color;
-		dto.description = taskDesc.lessonName;
+		if (taskDesc.lessonName) {
+			dto.lessonName = taskDesc.lessonName;
+		}
 
 		return dto;
 	}
