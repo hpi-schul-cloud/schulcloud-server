@@ -931,7 +931,7 @@ describe('ImportUser Controller (e2e)', () => {
 					({ user, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]));
 					school.officialSchoolNumber = 'foo';
 					school.inMaintenanceSince = new Date();
-					school.ldapSchoolIdentifier = 'foo';
+					school.externalId = 'foo';
 					school.inUserMigration = true;
 					currentUser = mapUserToCurrentUser(user);
 				});
@@ -968,7 +968,7 @@ describe('ImportUser Controller (e2e)', () => {
 				describe('POST user/import/startSync', () => {
 					it('should remove inMaintenanceSince from school', async () => {
 						const school = schoolFactory.buildWithId({
-							ldapSchoolIdentifier: 'foo',
+							externalId: 'foo',
 							inMaintenanceSince: new Date(),
 							inUserMigration: false,
 						});

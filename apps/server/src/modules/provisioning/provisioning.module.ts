@@ -1,34 +1,37 @@
 import { Module } from '@nestjs/common';
-import { PermissionService } from '@shared/domain';
-import { UserRepo } from '@shared/repo';
+import { PermissionService } from '@shared/domain/service/permission.service';
+import { RoleRepo, SchoolRepo } from '@shared/repo';
 import { Logger, LoggerModule } from '@src/core/logger';
-import { PlaceholderResponseMapper } from '@src/modules/provisioning/strategy/placeholder/placeholder-response.mapper';
-import { PlaceholderProvisioningStrategy } from '@src/modules/provisioning/strategy/placeholder/placeholder.strategy';
-import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
-import { RoleModule } from '@src/modules/role/role.module';
-import { RoleUc } from '@src/modules/role/uc/role.uc';
 import { SchoolModule } from '@src/modules/school/school.module';
-import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { SystemModule } from '@src/modules/system/system.module';
-import { SystemUc } from '@src/modules/system/uc/system.uc';
+import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
+import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
+import { HttpModule } from '@nestjs/axios';
+import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { AccountModule } from '@src/modules/account/account.module';
+import { SanisSchoolService } from '@src/modules/provisioning/strategy/sanis/service/sanis-school.service';
+import { SanisUserService } from '@src/modules/provisioning/strategy/sanis/service/sanis-user.service';
+import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
 import { UserModule } from '@src/modules/user';
-import { UserUc } from '@src/modules/user/uc';
+import { RoleModule } from '@src/modules/role';
 
 @Module({
-	imports: [UserModule, SchoolModule, RoleModule, SystemModule, LoggerModule],
+	imports: [AccountModule, SchoolModule, UserModule, RoleModule, SystemModule, HttpModule, LoggerModule],
 	controllers: [],
 	providers: [
-		ProvisioningUc,
-		UserUc,
-		SchoolUc,
-		RoleUc,
-		SystemUc,
-		PlaceholderProvisioningStrategy,
+		ProvisioningService,
+		SanisProvisioningStrategy,
+		SanisSchoolService,
+		SanisUserService,
+		IservProvisioningStrategy,
 		Logger,
-		PlaceholderResponseMapper,
-		UserRepo,
+		SanisResponseMapper,
+		SchoolRepo,
+		UserDORepo,
+		RoleRepo,
 		PermissionService,
 	],
-	exports: [ProvisioningUc],
+	exports: [ProvisioningService],
 })
 export class ProvisioningModule {}
