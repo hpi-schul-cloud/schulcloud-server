@@ -1,4 +1,4 @@
-import { CopyStatus, CopyStatusEnum, Lesson, Task } from '@shared/domain';
+import { CopyStatus, CopyStatusEnum, EntityId, Lesson, Task } from '@shared/domain';
 import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
 import { LessonCopyParentParams } from '@src/modules/learnroom/uc/lesson-copy.uc';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
@@ -26,20 +26,20 @@ export class CopyMapper {
 		return dto;
 	}
 
-	static mapLessonCopyToDomain(params: LessonCopyApiParams, jwt: string): LessonCopyParentParams {
+	static mapLessonCopyToDomain(params: LessonCopyApiParams, userId: EntityId): LessonCopyParentParams {
 		const dto = {
 			courseId: params.courseId,
-			jwt,
+			userId,
 		};
 
 		return dto;
 	}
 
-	static mapTaskCopyToDomain(params: TaskCopyApiParams, jwt: string): TaskCopyParentParams {
+	static mapTaskCopyToDomain(params: TaskCopyApiParams, userId: EntityId): TaskCopyParentParams {
 		const dto = {
 			courseId: params.courseId,
 			lessonId: params.lessonId,
-			jwt,
+			userId,
 		};
 
 		return dto;

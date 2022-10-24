@@ -12,8 +12,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
-import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
 import { Request } from 'express';
 import request from 'supertest';
 

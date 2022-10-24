@@ -1,6 +1,7 @@
 import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Global, Module } from '@nestjs/common';
+import { FilesStorageExchange } from './exchange';
 
 /**
  * https://www.npmjs.com/package/@golevelup/nestjs-rabbitmq#usage
@@ -12,6 +13,8 @@ import { Global, Module } from '@nestjs/common';
 
 const imports = [
 	RabbitMQModule.forRoot(RabbitMQModule, {
+		// Please don't change the global prefetch count, if you need constraint, change it at channel level
+		prefetchCount: 5,
 		exchanges: [
 			{
 				name: Configuration.get('MAIL_SEND_EXCHANGE') as string,
@@ -19,6 +22,10 @@ const imports = [
 			},
 			{
 				name: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
+				type: 'direct',
+			},
+			{
+				name: FilesStorageExchange,
 				type: 'direct',
 			},
 		],

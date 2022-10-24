@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ServiceUnavailableException } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NodeEnvType } from '@src/server.config';
-import { KeycloakManagementController } from './keycloak-management.controller';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@src/core/logger';
+import { NodeEnvType } from '@src/modules/server/server.config';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
+import { KeycloakManagementController } from './keycloak-management.controller';
 
 describe('KeycloakManagementController', () => {
 	let uc: DeepMocked<KeycloakManagementUc>;
