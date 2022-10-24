@@ -12,7 +12,7 @@ import {
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
-} from '../controller';
+} from '../controller/dto';
 import { ErrorType } from '../error';
 import {
 	createICopyFiles,

@@ -16,7 +16,7 @@ import {
 	FileRecordParams,
 	FileUrlParams,
 	SingleFileParams,
-} from '../controller';
+} from '../controller/dto';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { IFile } from '../interface/file';

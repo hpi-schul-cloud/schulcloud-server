@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParentType } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller';
+import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
 import { PermissionContexts } from '../files-storage.const';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FileRecordUC } from './file-record.uc';

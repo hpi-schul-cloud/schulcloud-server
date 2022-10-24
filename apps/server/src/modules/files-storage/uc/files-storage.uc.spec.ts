@@ -16,7 +16,7 @@ import { Request } from 'express';
 import { Observable, of } from 'rxjs';
 import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { CopyFileResponse, FileRecordParams, SingleFileParams } from '../controller';
+import { CopyFileResponse, FileRecordParams, SingleFileParams } from '../controller/dto';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { IFile } from '../interface';

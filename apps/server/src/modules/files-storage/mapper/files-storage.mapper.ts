@@ -8,7 +8,7 @@ import {
 	FileRecordParams,
 	FileRecordResponse,
 	SingleFileParams,
-} from '../controller';
+} from '../controller/dto';
 
 export class FilesStorageMapper {
 	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AllowedAuthorizationEntityType {

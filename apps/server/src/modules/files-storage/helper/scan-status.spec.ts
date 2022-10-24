@@ -1,7 +1,7 @@
 import { ScanStatus } from '@shared/domain';
 import { fileRecordFactory } from '@shared/testing';
 import { deriveStatusFromSource, getStatusFromScanResult, isStatusBlocked } from '.';
-import { ScanResultParams } from '../controller';
+import { ScanResultParams } from '../controller/dto';
 
 describe('Scan Status Helper', () => {
 	const getFileRecords = () => {
