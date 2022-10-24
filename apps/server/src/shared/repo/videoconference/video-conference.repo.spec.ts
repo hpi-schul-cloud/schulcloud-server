@@ -22,8 +22,8 @@ class VideoConferenceRepoSpec extends VideoConferenceRepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntitySpec(entityDO: VideoConferenceDO): EntityProperties<IVideoConferenceProperties> {
-		return super.mapDOToEntity(entityDO);
+	mapDOToEntityPropertiesSpec(entityDO: VideoConferenceDO): EntityProperties<IVideoConferenceProperties> {
+		return super.mapDOToEntityProperties(entityDO);
 	}
 }
 
@@ -64,8 +64,28 @@ describe('Video Conference Repo', () => {
 		expect(repo.entityName).toBe(VideoConference);
 	});
 
-	it('should implement getConstructor', () => {
-		expect(repo.getConstructor()).toBe(VideoConference);
+	describe('entityFactory', () => {
+		const props: IVideoConferenceProperties = {
+			target: 'teams',
+			targetModel: TargetModels.EVENTS,
+			options: new VideoConferenceOptions({
+				everybodyJoinsAsModerator: false,
+				everyAttendeJoinsMuted: false,
+				moderatorMustApproveJoinRequests: false,
+			}),
+		};
+
+		it('should return new entity of type VideoConference', () => {
+			const result: VideoConference = repo.entityFactory(props);
+
+			expect(result).toBeInstanceOf(VideoConference);
+		});
+
+		it('should return new entity with values from properties', () => {
+			const result: VideoConference = repo.entityFactory(props);
+
+			expect(result).toEqual(expect.objectContaining(props));
+		});
 	});
 
 	describe('findByScopeId', () => {
@@ -116,8 +136,8 @@ describe('Video Conference Repo', () => {
 		});
 	});
 
-	describe('mapDOToEntity', () => {
-		it('should map DO to Entity', () => {
+	describe('mapDOToEntityProperties', () => {
+		it('should map DO to Entity Properties', () => {
 			// Arrange
 			const testDO: VideoConferenceDO = new VideoConferenceDO({
 				id: 'testId',
@@ -133,7 +153,7 @@ describe('Video Conference Repo', () => {
 			});
 
 			// Act
-			const result: EntityProperties<IVideoConferenceProperties> = repo.mapDOToEntitySpec(testDO);
+			const result: EntityProperties<IVideoConferenceProperties> = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			// Assert
 			expect(result.id).toEqual(testDO.id);

@@ -21,8 +21,8 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		return VideoConference;
 	}
 
-	getConstructor(): { new (I): VideoConference } {
-		return VideoConference;
+	entityFactory(props: IVideoConferenceProperties): VideoConference {
+		return new VideoConference(props);
 	}
 
 	async findByScopeId(target: string, videoConferenceScope: VideoConferenceScope): Promise<VideoConferenceDO> {
@@ -49,7 +49,7 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		});
 	}
 
-	protected mapDOToEntity(entityDO: VideoConferenceDO): EntityProperties<IVideoConferenceProperties> {
+	protected mapDOToEntityProperties(entityDO: VideoConferenceDO): EntityProperties<IVideoConferenceProperties> {
 		return {
 			id: entityDO.id,
 			target: entityDO.target,

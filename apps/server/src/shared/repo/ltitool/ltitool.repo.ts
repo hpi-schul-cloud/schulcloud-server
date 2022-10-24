@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseDORepo, EntityProperties } from '@shared/repo/base.do.repo';
 import { EntityName } from '@mikro-orm/core';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { ILtiToolProperties, LtiTool } from '@shared/domain';
+import { ILtiToolProperties, LtiTool, LtiPrivacyPermission } from '@shared/domain';
 
 @Injectable()
 export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperties> {
@@ -10,8 +10,8 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		return LtiTool;
 	}
 
-	getConstructor(): { new (I): LtiTool } {
-		return LtiTool;
+	entityFactory(props: ILtiToolProperties): LtiTool {
+		return new LtiTool(props);
 	}
 
 	async findByName(name: string): Promise<LtiToolDO> {
@@ -43,8 +43,8 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 			lti_message_type: entity.lti_message_type,
 			lti_version: entity.lti_version,
 			resource_link_id: entity.resource_link_id,
-			roles: entity.roles,
-			privacy_permission: entity.privacy_permission,
+			roles: entity.roles || [],
+			privacy_permission: entity.privacy_permission || LtiPrivacyPermission.ANONYMOUS,
 			customs: entity.customs,
 			isTemplate: entity.isTemplate,
 			isLocal: entity.isLocal,
@@ -58,7 +58,7 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		});
 	}
 
-	protected mapDOToEntity(entityDO: LtiToolDO): EntityProperties<ILtiToolProperties> {
+	protected mapDOToEntityProperties(entityDO: LtiToolDO): EntityProperties<ILtiToolProperties> {
 		return {
 			id: entityDO.id,
 			name: entityDO.name,

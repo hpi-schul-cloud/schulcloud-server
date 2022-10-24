@@ -36,10 +36,10 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	url: string;
 
 	@Property({ nullable: true })
-	key = 'none';
+	key: string;
 
 	@Property({ nullable: false, default: 'none' })
-	secret = 'none';
+	secret: string;
 
 	@Property({ nullable: true })
 	logo_url?: string;
@@ -54,21 +54,21 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	resource_link_id?: string;
 
 	@Enum({ array: true, items: () => LtiRoleType })
-	@Property({ nullable: false })
-	roles: LtiRoleType[];
+	@Property({ nullable: true })
+	roles?: LtiRoleType[];
 
 	@Enum({
 		items: () => LtiPrivacyPermission,
 		default: LtiPrivacyPermission.ANONYMOUS,
 		nullable: false,
 	})
-	privacy_permission: LtiPrivacyPermission;
+	privacy_permission?: LtiPrivacyPermission;
 
 	@Property({ nullable: false })
-	customs: CustomLtiProperty[] = [];
+	customs: CustomLtiProperty[];
 
 	@Property({ nullable: false, default: false })
-	isTemplate = false;
+	isTemplate: boolean;
 
 	@Property({ nullable: true })
 	isLocal?: boolean;
@@ -92,28 +92,28 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	skipConsent?: boolean;
 
 	@Property({ nullable: false, default: false })
-	openNewTab = false;
+	openNewTab: boolean;
 
 	@Property({ nullable: true })
 	frontchannel_logout_uri?: string;
 
 	@Property({ nullable: false, default: false })
-	isHidden = false;
+	isHidden: boolean;
 
 	constructor(props: ILtiToolProperties) {
 		super();
 		this.name = props.name;
 		this.url = props.url;
-		this.key = props.key;
-		this.secret = props.secret;
+		this.key = props.key || 'none';
+		this.secret = props.secret || 'none';
 		this.logo_url = props.logo_url;
 		this.lti_message_type = props.lti_message_type;
 		this.lti_version = props.lti_version;
 		this.resource_link_id = props.resource_link_id;
-		this.roles = props.roles;
+		this.roles = props.roles || [];
 		this.privacy_permission = props.privacy_permission || LtiPrivacyPermission.ANONYMOUS;
 		this.customs = props.customs || [];
-		this.isTemplate = props.isTemplate;
+		this.isTemplate = props.isTemplate || false;
 		this.isLocal = props.isLocal;
 		if (props.originToolId !== undefined) {
 			this._originToolId = new ObjectId(props.originToolId);
@@ -121,8 +121,8 @@ export class LtiTool extends BaseEntityWithTimestamps {
 		this.oAuthClientId = props.oAuthClientId;
 		this.friendlyUrl = props.friendlyUrl;
 		this.skipConsent = props.skipConsent;
-		this.openNewTab = props.openNewTab;
+		this.openNewTab = props.openNewTab || false;
 		this.frontchannel_logout_uri = props.frontchannel_logout_uri;
-		this.isHidden = props.isHidden;
+		this.isHidden = props.isHidden || false;
 	}
 }

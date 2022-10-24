@@ -13,7 +13,7 @@ export interface IImportUserProperties {
 	system: System;
 	// external identifiers
 	ldapDn: string;
-	ldapId: string;
+	externalId: string;
 	// descriptive properties
 	firstName: string;
 	lastName: string;
@@ -31,7 +31,7 @@ export enum MatchCreator {
 }
 
 @Entity({ tableName: 'importusers' })
-@Unique({ properties: ['school', 'ldapId'] })
+@Unique({ properties: ['school', 'externalId'] })
 @Unique({ properties: ['school', 'ldapDn'] })
 @Unique({ properties: ['school', 'email'] })
 export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithSchool {
@@ -40,7 +40,7 @@ export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithS
 		this.school = wrap(props.school).toReference();
 		this.system = wrap(props.system).toReference();
 		this.ldapDn = props.ldapDn;
-		this.ldapId = props.ldapId;
+		this.externalId = props.externalId;
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
 		this.email = props.email;
@@ -72,8 +72,8 @@ export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithS
 		return null;
 	}
 
-	@Property()
-	ldapId: string;
+	@Property({ fieldName: 'ldapId' })
+	externalId: string;
 
 	@Property()
 	firstName: string;
