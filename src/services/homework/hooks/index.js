@@ -331,6 +331,26 @@ const logDeletionPermit = (context) => {
 	logger.alert(`user ${context.params.account.userId} permitted to delete homework ${context.id}`);
 };
 
+const addLessonInfoToSingle = async (data) => Promise.resolve(data);
+
+const addLessonInfo = async (hook) => {
+	let data = hook.result.data || hook.result;
+	const isSingle = !Array.isArray(data);
+	data = isSingle ? [data] : data;
+
+	data = await Promise.all(
+		data.map(async () => {
+			addLessonInfoToSingle(data);
+		})
+	);
+
+	if (isSingle) {
+		data = data[0];
+	}
+	hook.result.data ? (hook.result.data = data) : (hook.result = data);
+	return Promise.resolve(hook);
+};
+
 exports.before = () => ({
 	all: [authenticate('jwt')],
 	find: [
@@ -365,7 +385,7 @@ exports.before = () => ({
 exports.after = {
 	all: [],
 	find: [iff(isProvider('external'), [hasViewPermissionAfter, addStats])],
-	get: [iff(isProvider('external'), [hasViewPermissionAfter, addStats])],
+	get: [iff(isProvider('external'), [hasViewPermissionAfter, addStats, addLessonInfo])],
 	create: [],
 	update: [],
 	patch: [],
