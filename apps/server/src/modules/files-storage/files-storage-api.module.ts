@@ -6,10 +6,12 @@ import { AuthorizationModule } from '@src/modules/authorization';
 import { FileSecurityController } from './controller/file-security.controller';
 import { FilesStorageController } from './controller/files-storage.controller';
 import { FilesStorageModule } from './files-storage.module';
+import { FileRecordUC } from './uc/file-record.uc';
+import { FilesStorageUC } from './uc/files-storage.uc';
 
 @Module({
 	imports: [AuthorizationModule, FilesStorageModule, AuthModule, CoreModule, LoggerModule],
 	controllers: [FilesStorageController, FileSecurityController],
-	// providers: [FilesStorageUC, FileRecordUC],
+	providers: [FilesStorageUC, FileRecordUC],
 })
 export class FilesStorageApiModule {}

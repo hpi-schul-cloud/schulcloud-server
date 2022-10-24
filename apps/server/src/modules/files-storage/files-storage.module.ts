@@ -11,16 +11,12 @@ import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { FileRecordRepo } from '@shared/repo';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '@src/modules/authorization';
 import { S3ClientAdapter } from './client/s3-client.adapter';
 import { config, s3Config } from './files-storage.config';
 import { S3Config } from './interface/config';
 import { FilesStorageService } from './service/files-storage.service';
-import { FileRecordUC } from './uc/file-record.uc';
-import { FilesStorageUC } from './uc/files-storage.uc';
 
 const imports = [
-	AuthorizationModule, // After refactoring, move to FilesStorageApiModule AuthorizationModule,
 	LoggerModule,
 	ConfigModule.forRoot({
 		isGlobal: true,
@@ -35,8 +31,6 @@ const imports = [
 	}),
 ];
 const providers = [
-	FilesStorageUC, // After refactoring, move to FilesStorageApiModule  FilesStorageUC, FileRecordUC
-	FileRecordUC,
 	FilesStorageService,
 	{
 		provide: 'S3_Client',
@@ -86,6 +80,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 	],
 	providers,
-	exports: [FilesStorageService, FilesStorageUC, FileRecordUC], // After refactoring, remove  FilesStorageUC, FileRecordUC
+	exports: [FilesStorageService],
 })
 export class FilesStorageModule {}
