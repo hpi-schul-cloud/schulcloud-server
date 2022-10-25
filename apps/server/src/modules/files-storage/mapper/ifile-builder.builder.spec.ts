@@ -69,7 +69,7 @@ describe('File Builder', () => {
 		it('should return file from request', () => {
 			const { response, expectedFile, fileRecord } = setup();
 
-			const result: IFile = IFileBuilder.buildFromAxiosResponse(fileRecord.name, response);
+			const result = IFileBuilder.buildFromAxiosResponse(fileRecord.name, response);
 
 			expect(result).toEqual(expectedFile);
 		});
