@@ -4,7 +4,7 @@ import { AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { Readable } from 'stream';
 import { IFile } from '../interface';
-import { FileBuilder } from './file-builder.mapper';
+import { IFileBuilder } from './ifile-builder.builder';
 
 describe('File Builder', () => {
 	describe('buildFromRequest is called', () => {
@@ -39,13 +39,13 @@ describe('File Builder', () => {
 		it('should return file from request', () => {
 			const { fileInfo, request, buffer, expectedFile } = setup();
 
-			const result = FileBuilder.buildFromRequest(fileInfo, request, buffer);
+			const result = IFileBuilder.buildFromRequest(fileInfo, request, buffer);
 
 			expect(result).toEqual(expectedFile);
 		});
 	});
 
-	describe('buildFromResponse is called', () => {
+	describe('buildFromAxiosResponse is called', () => {
 		const setup = () => {
 			const fileRecord = fileRecordFactory.build();
 			const readable = Readable.from('abc');
@@ -69,7 +69,7 @@ describe('File Builder', () => {
 		it('should return file from request', () => {
 			const { response, expectedFile, fileRecord } = setup();
 
-			const result: IFile = FileBuilder.buildFromResponse(fileRecord.name, response);
+			const result: IFile = IFileBuilder.buildFromAxiosResponse(fileRecord.name, response);
 
 			expect(result).toEqual(expectedFile);
 		});

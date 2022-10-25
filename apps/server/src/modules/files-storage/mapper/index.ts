@@ -1,2 +1,2 @@
-export * from './file-builder.mapper';
+export * from './ifile-builder.builder';
 export * from './files-storage.mapper';

@@ -4,7 +4,7 @@ import { Request } from 'express';
 import internal, { Readable } from 'stream';
 import { IFile } from '../interface';
 
-export class FileBuilder {
+export class IFileBuilder {
 	private static buildFile(
 		name: string,
 		buffer: Buffer | Blob | ReadableStream | Readable,
@@ -27,15 +27,15 @@ export class FileBuilder {
 		buffer: Buffer | Blob | ReadableStream | Readable
 	): IFile {
 		const size = Number(request.get('content-length'));
-		const file = FileBuilder.buildFile(fileInfo.filename, buffer, size, fileInfo.mimeType);
+		const file = IFileBuilder.buildFile(fileInfo.filename, buffer, size, fileInfo.mimeType);
 
 		return file;
 	}
 
-	public static buildFromResponse(name: string, response: AxiosResponse<internal.Readable>): IFile {
+	public static buildFromAxiosResponse(name: string, response: AxiosResponse<internal.Readable>): IFile {
 		const size = Number(response.headers['content-length']);
 		const mimeType = response.headers['content-type'];
-		const file = FileBuilder.buildFile(name, response.data, size, mimeType);
+		const file = IFileBuilder.buildFile(name, response.data, size, mimeType);
 
 		return file;
 	}

@@ -21,7 +21,7 @@ import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { IFile } from '../interface';
 import { IGetFileResponse } from '../interface/storage-client';
-import { FileBuilder } from '../mapper';
+import { IFileBuilder } from '../mapper';
 import { FilesStorageMapper } from '../mapper/files-storage.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
@@ -257,7 +257,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams);
 
-				const expectedFileDescription = FileBuilder.buildFromResponse(uploadFromUrlParams.fileName, response);
+				const expectedFileDescription = IFileBuilder.buildFromAxiosResponse(uploadFromUrlParams.fileName, response);
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(
 					userId,
 					uploadFromUrlParams,
@@ -378,7 +378,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.upload(userId, params, request);
 
-				const fileDescription: IFile = FileBuilder.buildFromRequest(fileInfo, request, buffer);
+				const fileDescription: IFile = IFileBuilder.buildFromRequest(fileInfo, request, buffer);
 
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId, params, fileDescription);
 			});
