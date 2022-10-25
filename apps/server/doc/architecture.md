@@ -57,29 +57,15 @@ The Domain Layer contains the business logic of the application. As mentioned ab
 
 ![API Layer Dependencies](../../assets/domain-layer.png)
 
-The entry point for any call to the domain layer is always a usecase (UC). A usecase is the description of a single business process within the domain.
+Any operation within the system is defined by a *usecase (UC)*. It describes how an external actor, for example a user, can interact with the system.
 
-A usecase **only does orchestration**
+Each usecase defines what needs to be done to authorize it, and what needs to be done to fulfill it. To this end, it orchestrates *services*.
 
-It might:
+A service is a public part of a domain module, that provides an interface for logic. It might be a simple class doing simple calculations, an interface to a complex hierarchy of classes within a module, or anything in between.
 
-- make calls to repository or factory interfaces to get the business objects it needs (that are implemented in the repository layer)
-- use business objects and domain services to perform actions or get data it needs
-- make authorisation checks using the authorisation service
-- make calls to services of other modules that are explicitly exported by that module
-- make calls to a repository interface to persist changes it made (implemented in the repository layer)
-- make calls to a different infra service interface defined in the domain layer (implemented by the repository layer) to perform actions that are implemented outside the domain (like sending an email to a user)
-- use a mapper to transform its data into a DTO it wants to return
+The domain layer might also define other classes, types, and interfaces to be used internally by its services, as well as the interface definitions for the repository layer. That way, the domain does not have to depend on the repositories, and the repositories have to depend on the domain instead (dependency inversion)
 
-It should not:
-
-- call other usecases
-- perform any logic or data transformations itself
-- do any error handling by itself
-- make any decisions by itself
-- do anything that is not strictly orchestration
-
-As mentioned, the domain layer also contains a number of other objects, services, or type definitions that implement various business logic, as well as interfaces for things it cant implement itself.
+TODO: the exact way of implementing the interfaces between repositories and domain layer is still in active discussion and development within the architecture chapter
 
 ### API Layer
 
@@ -100,6 +86,37 @@ The Repository Layer is responsible for outgoing requests to external services. 
 In order to access these external systems without knowing them, the domain layer may define interfaces that describe how it would like to use external services in its own domain language. The repositories implement these interfaces, recieving and returning exclusively objects or dtos defined in the domain.
 
 The datamodel itself is defined through Entities, that have to be mapped into domain objects before they can be returned to the domain layer. We use MikroORM to create, persist and load the entities and their references among each other.
+
+## Modules
+
+Each domain module comprises of a number of public services, that are explicitly exported from the module for external use. Along with these services it should export any types and interfaces needed outside the module.
+
+TODO: since nestJs modules can only export injectables, the method of exporting types and interfaces is not defined yet, and implementation detail for now. One possible solution is to put an index file into the module folder, that defines the types that may be imported from the outside. This also allows us to define a linter rule in the future that prevents access to any files deeper than the index file.
+
+In addition, it contains any classes it needs internally to function, including any repositories or other internal classes that should not be accessed from outside the module. *No Class may be provided in more than one module!*
+
+```js
+@Module({
+  providers: [InternalRepo, PublicService],
+  exports: [PublicService],
+})
+export class ExampleModule {}
+```
+
+The controllers and the corresponding usecases, along with the api tests for these routes, are seperated into api modules
+
+```js
+@Module({
+  imports: [ExampleModule]
+  providers: [ExampleUc],
+  controllers: [ExampleController],
+})
+export class ExampleApiModule {}
+```
+
+This allows us to include the domain modules in different server deployments, without each of them having all api definitions. This also means that no usecase can ever be imported, as only services are ever exported, enforcing a seperation of concerns between logic and orchestration.
+
+Notice that in the above example, the `PublicService` can be used anywhere within the ApiModule, including in the `ExampleUc`, whereas the `InternalRepo` can not.
 
 ## Horizontal Architecture
 

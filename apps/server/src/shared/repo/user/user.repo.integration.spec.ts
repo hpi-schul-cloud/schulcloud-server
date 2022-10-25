@@ -55,7 +55,7 @@ describe('user repo', () => {
 					'school',
 					'_id',
 					'ldapDn',
-					'ldapId',
+					'externalId',
 					'forcePasswordChange',
 					'preferences',
 					'language',
@@ -102,7 +102,7 @@ describe('user repo', () => {
 		});
 	});
 
-	describe('findByLdapIdorFail', () => {
+	describe('findByExternalIdorFail', () => {
 		let sys: System;
 		let userA: User;
 		let userB: User;
@@ -112,12 +112,12 @@ describe('user repo', () => {
 			const school = schoolFactory.build({ systems: [sys] });
 			// const school = schoolFactory.withSystem().build();
 
-			userA = userFactory.build({ school, ldapId: '111' });
-			userB = userFactory.build({ ldapId: '111' });
+			userA = userFactory.build({ school, externalId: '111' });
+			userB = userFactory.build({ externalId: '111' });
 			await em.persistAndFlush([userA, userB]);
 		});
 		it('should return right keys', async () => {
-			const result = await repo.findByLdapIdOrFail(userA.ldapId as string, sys.id);
+			const result = await repo.findByExternalIdOrFail(userA.externalId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
 				[
 					'createdAt',
@@ -129,7 +129,7 @@ describe('user repo', () => {
 					'school',
 					'_id',
 					'ldapDn',
-					'ldapId',
+					'externalId',
 					'forcePasswordChange',
 					'preferences',
 					'language',
@@ -140,14 +140,14 @@ describe('user repo', () => {
 
 		it('should return user matched by id', async () => {
 			await em.persistAndFlush([userA, userB]);
-			const result = await repo.findByLdapIdOrFail(userA.ldapId as string, sys.id);
+			const result = await repo.findByExternalIdOrFail(userA.externalId as string, sys.id);
 			expect(result).toEqual(userA);
 		});
 
-		it('should throw an error if user by ldapid doesnt exist', async () => {
+		it('should throw an error if user by externalid doesnt exist', async () => {
 			const idA = new ObjectId().toHexString();
 			const idB = new ObjectId().toHexString();
-			await expect(repo.findByLdapIdOrFail(idA, idB)).rejects.toEqual(undefined);
+			await expect(repo.findByExternalIdOrFail(idA, idB)).rejects.toEqual(undefined);
 		});
 	});
 

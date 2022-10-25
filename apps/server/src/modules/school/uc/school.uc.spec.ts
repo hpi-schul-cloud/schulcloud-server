@@ -31,7 +31,7 @@ describe('SchoolUc', () => {
 	});
 
 	beforeEach(() => {
-		schoolDto = new SchoolDto({ name: 'schule1234' });
+		schoolDto = new SchoolDto({ name: 'schule1234', externalId: 'externeSchule1234', systemIds: [] });
 
 		schoolService.createOrUpdateSchool.mockImplementation((): Promise<SchoolDto> => {
 			return Promise.resolve(schoolDto);
@@ -40,10 +40,8 @@ describe('SchoolUc', () => {
 
 	describe('createOrUpdate', () => {
 		it('should call schoolService', async () => {
-			// Act
 			await schoolUc.createOrUpdate(schoolDto);
 
-			// Assert
 			expect(schoolService.createOrUpdateSchool).toHaveBeenCalledWith(
 				expect.objectContaining({ name: schoolDto.name })
 			);
@@ -56,24 +54,23 @@ describe('SchoolUc', () => {
 		});
 
 		it('should call save', async () => {
-			// Arrange
-			const dto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({ name: schoolDto.name });
+			const dto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({
+				name: schoolDto.name,
+				externalId: schoolDto.externalId as string,
+				systemIds: [],
+			});
 			schoolUc.createOrUpdate = jest.fn();
 
-			// Act
 			await schoolUc.saveProvisioningSchoolOutputDto(dto);
 
-			// Assert
 			expect(schoolUc.createOrUpdate).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
 		});
 	});
 
 	describe('hasFeature', () => {
 		it('should call hasFeature', async () => {
-			// Act
 			await schoolUc.hasFeature('schoolId', SchoolFeatures.VIDEOCONFERENCE);
 
-			// Assert
 			expect(schoolService.hasFeature).toHaveBeenCalledWith('schoolId', SchoolFeatures.VIDEOCONFERENCE);
 		});
 	});
