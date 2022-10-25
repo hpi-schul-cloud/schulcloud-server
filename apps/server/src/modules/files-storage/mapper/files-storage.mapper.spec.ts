@@ -58,7 +58,6 @@ describe('FilesStorageMapper', () => {
 
 		it('should return single file params', () => {
 			const { downloadFileParams, fileRecordId } = setup();
-
 			const epectedSingleFileParams: SingleFileParams = { fileRecordId };
 
 			const result = FilesStorageMapper.mapToSingleFileParams(downloadFileParams);
