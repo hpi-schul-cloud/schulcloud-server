@@ -77,7 +77,7 @@ describe('OAuthUc', () => {
 			const user: User = userFactory.buildWithId();
 
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			systemService.findById.mockResolvedValue(testSystem);
+			systemService.findOAuthById.mockResolvedValue(testSystem);
 			oauthService.requestToken.mockResolvedValue({
 				access_token: 'accessToken',
 				refresh_token: 'refreshToken',
@@ -109,7 +109,7 @@ describe('OAuthUc', () => {
 			};
 
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			systemService.findById.mockResolvedValue(system);
+			systemService.findOAuthById.mockResolvedValue(system);
 			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
 			const response: OAuthResponse = await service.processOAuth(query, system.id);
@@ -128,7 +128,7 @@ describe('OAuthUc', () => {
 			} as OAuthResponse;
 
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			systemService.findById.mockResolvedValue(system);
+			systemService.findOAuthById.mockResolvedValue(system);
 			oauthService.requestToken.mockRejectedValue(new OAuthSSOError());
 			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
@@ -149,7 +149,7 @@ describe('OAuthUc', () => {
 			oauthService.checkAuthorizationCode.mockImplementation(() => {
 				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
 			});
-			systemService.findById.mockResolvedValue(system);
+			systemService.findOAuthById.mockResolvedValue(system);
 			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
 			const response: OAuthResponse = await service.processOAuth(query, '');
@@ -161,7 +161,7 @@ describe('OAuthUc', () => {
 			oauthService.checkAuthorizationCode.mockImplementation(() => {
 				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
 			});
-			systemService.findById.mockRejectedValue(new NotFoundError('Not Found'));
+			systemService.findOAuthById.mockRejectedValue(new NotFoundError('Not Found'));
 
 			await expect(service.processOAuth(query, 'unknown id')).rejects.toThrow(NotFoundError);
 		});
