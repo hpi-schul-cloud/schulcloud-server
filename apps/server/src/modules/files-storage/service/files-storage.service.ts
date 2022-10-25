@@ -67,7 +67,7 @@ export class FilesStorageService {
 	}
 
 	// upload
-	public async tryToCreateFileInStorageAndRollbackOnError(
+	public async createFileInStorageAndRollbackOnError(
 		fileRecord: FileRecord,
 		params: FileRecordParams,
 		fileDescription: IFile
@@ -90,7 +90,7 @@ export class FilesStorageService {
 		const fileRecord = createFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
 
 		await this.fileRecordRepo.save(fileRecord);
-		await this.tryToCreateFileInStorageAndRollbackOnError(fileRecord, params, fileDescription);
+		await this.createFileInStorageAndRollbackOnError(fileRecord, params, fileDescription);
 
 		return fileRecord;
 	}
