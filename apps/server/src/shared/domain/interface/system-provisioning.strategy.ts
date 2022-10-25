@@ -1,4 +1,5 @@
 export enum SystemProvisioningStrategy {
-	PLACEHOLDER = 'placeholder',
+	SANIS = 'sanis',
+	ISERV = 'iserv',
 	UNDEFINED = 'undefined',
 }

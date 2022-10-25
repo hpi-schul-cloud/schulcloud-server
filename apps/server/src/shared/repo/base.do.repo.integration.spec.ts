@@ -38,15 +38,15 @@ describe('BaseDORepo', () => {
 			return TestEntity;
 		}
 
-		getConstructor(): { new (I): TestEntity } {
-			return TestEntity;
+		entityFactory(props: ITestEntityProperties): TestEntity {
+			return new TestEntity(props);
 		}
 
 		mapEntityToDO(entity: TestEntity): TestDO {
 			return new TestDO({ id: entity.id, name: entity.name });
 		}
 
-		mapDOToEntity(entityDO: TestDO): ITestEntityProperties & IBaseEntityProps {
+		mapDOToEntityProperties(entityDO: TestDO): ITestEntityProperties & IBaseEntityProps {
 			return {
 				id: entityDO.id as string,
 				name: entityDO.name,
@@ -87,17 +87,27 @@ describe('BaseDORepo', () => {
 		await module.close();
 	});
 
-	describe('defined', () => {
-		it('repo should be defined', () => {
-			expect(repo).toBeDefined();
-		});
-
-		it('entity manager should be defined', () => {
-			expect(em).toBeDefined();
-		});
-
+	describe('entityName', () => {
 		it('should implement entityName getter', () => {
 			expect(repo.entityName).toBe(TestEntity);
+		});
+	});
+
+	describe('entityFactory', () => {
+		const props: ITestEntityProperties = {
+			name: 'name',
+		};
+
+		it('should return new entity of type TestEntity', () => {
+			const result: TestEntity = repo.entityFactory(props);
+
+			expect(result).toBeInstanceOf(TestEntity);
+		});
+
+		it('should return new entity with values from properties', () => {
+			const result: TestEntity = repo.entityFactory(props);
+
+			expect(result).toEqual(expect.objectContaining(props));
 		});
 	});
 
@@ -110,19 +120,6 @@ describe('BaseDORepo', () => {
 
 			const result = await em.find(TestEntity, {});
 			expect(result).toHaveLength(1);
-		});
-
-		it('should persist and flush a new entity array', async () => {
-			const testDO1 = new TestDO({ name: 'test1' });
-			const testDO2 = new TestDO({ name: 'test2' });
-
-			await repo.save([testDO1, testDO2]);
-			em.clear();
-
-			const result = await em.find(TestEntity, {});
-			expect(result).toHaveLength(2);
-			expect(result[0].name).toEqual('test1');
-			expect(result[1].name).toEqual('test2');
 		});
 
 		it('should persist and flush a single updated entity', async () => {
@@ -142,32 +139,69 @@ describe('BaseDORepo', () => {
 		});
 	});
 
-	describe('delete', () => {
-		it('should remove and flush a single entity', async () => {
-			const testEntity = new TestEntity();
-			await em.persistAndFlush(testEntity);
+	describe('saveAll', () => {
+		it('should save an entity array', async () => {
+			const testDO1 = new TestDO({ name: 'test1' });
+			const testDO2 = new TestDO({ name: 'test2' });
+
+			await repo.saveAll([testDO1, testDO2]);
 			em.clear();
 
-			const testDo = await repo.findById(testEntity.id);
-			await repo.delete(testDo);
-			em.clear();
+			const result = await em.find(TestEntity, {});
+			expect(result).toHaveLength(2);
+			expect(result[0].name).toEqual('test1');
+			expect(result[1].name).toEqual('test2');
+		});
+	});
 
-			expect(await em.findOne(TestEntity, testEntity.id)).toBeNull();
+	describe('deleteById', () => {
+		describe('single entity', () => {
+			it('should remove a single entity', async () => {
+				const testEntity = new TestEntity();
+				await em.persistAndFlush(testEntity);
+				em.clear();
+
+				await repo.deleteById(testEntity.id);
+				em.clear();
+
+				expect(await em.findOne(TestEntity, testEntity.id)).toBeNull();
+			});
+
+			it('should remove a single entity and return 1', async () => {
+				const testEntity = new TestEntity();
+				await em.persistAndFlush(testEntity);
+				em.clear();
+
+				const result: number = await repo.deleteById(testEntity.id);
+
+				expect(result).toEqual(1);
+			});
 		});
 
-		it('should remove and flush an array of entities', async () => {
-			const testEntity1 = new TestEntity();
-			const testEntity2 = new TestEntity();
-			await em.persistAndFlush([testEntity1, testEntity2]);
-			em.clear();
+		describe('multiple entities', () => {
+			it('should remove an array of entities', async () => {
+				const testEntity1 = new TestEntity();
+				const testEntity2 = new TestEntity();
+				await em.persistAndFlush([testEntity1, testEntity2]);
+				em.clear();
 
-			const testDo1 = await repo.findById(testEntity1.id);
-			const testDo2 = await repo.findById(testEntity2.id);
-			await repo.delete([testDo1, testDo2]);
-			em.clear();
+				await repo.deleteById([testEntity1.id, testEntity2.id]);
+				em.clear();
 
-			expect(await em.findOne(TestEntity, testEntity1.id)).toBeNull();
-			expect(await em.findOne(TestEntity, testEntity2.id)).toBeNull();
+				expect(await em.findOne(TestEntity, testEntity1.id)).toBeNull();
+				expect(await em.findOne(TestEntity, testEntity2.id)).toBeNull();
+			});
+
+			it('should remove a two entity and return 2', async () => {
+				const testEntity1 = new TestEntity();
+				const testEntity2 = new TestEntity();
+				await em.persistAndFlush([testEntity1, testEntity2]);
+				em.clear();
+
+				const result: number = await repo.deleteById([testEntity1.id, testEntity2.id]);
+
+				expect(result).toEqual(2);
+			});
 		});
 	});
 
@@ -178,9 +212,9 @@ describe('BaseDORepo', () => {
 			await em.persistAndFlush([testEntity1, testEntity2]);
 			em.clear();
 
-			const result = await repo.findById(testEntity1.id);
+			const result: TestDO = await repo.findById(testEntity1.id);
 
-			expect(result).toEqual(repo.mapEntityToDO(testEntity1));
+			expect(result.id).toEqual(testEntity1.id);
 		});
 
 		it('should throw if entity not found', async () => {
@@ -193,7 +227,7 @@ describe('BaseDORepo', () => {
 
 			await expect(async () => {
 				await repo.findById(unknownId);
-			}).rejects.toThrow(`TestEntity not found ('${unknownId}')`);
+			}).rejects.toThrow('TestEntity not found');
 		});
 	});
 });

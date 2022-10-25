@@ -19,7 +19,7 @@ describe('SystemService', () => {
 	const keycloak = systemFactory.buildWithId({
 		type: SystemTypeEnum.KEYCLOAK,
 		alias: 'Keycloak',
-		provisioningStrategy: SystemProvisioningStrategy.PLACEHOLDER,
+		provisioningStrategy: SystemProvisioningStrategy.UNDEFINED,
 		url: 'http://mock.de',
 		oauthConfig: {
 			clientId: 'keycloak',
