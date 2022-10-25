@@ -333,7 +333,7 @@ const logDeletionPermit = (context) => {
 
 const addLessonInfoToSingle = async (hook, data) => {
 	const { lessonId } = data;
-	if (lessonId === undefined) {
+	if (lessonId === undefined || lessonId === null) {
 		return Promise.resolve(data);
 	}
 
