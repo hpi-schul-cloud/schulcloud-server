@@ -14,7 +14,7 @@ export class ProvisioningService {
 		private readonly systemService: SystemService,
 		private readonly sanisStrategy: SanisProvisioningStrategy,
 		private readonly iservStrategy: IservProvisioningStrategy,
-		private readonly oidcProvisioningStrategy: OidcProvisioningStrategy,
+		private readonly oidcProvisioningStrategy: OidcProvisioningStrategy
 	) {}
 
 	async process(accessToken: string, idToken: string, systemId: string): Promise<ProvisioningDto> {

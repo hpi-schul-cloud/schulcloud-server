@@ -29,7 +29,7 @@ describe('OidcStrategy', () => {
 	});
 
 	describe('apply', () => {
-		const preferredUsername = "testid";
+		const preferredUsername = 'testid';
 
 		beforeAll(() => {
 			jest.spyOn(jwt, 'decode').mockImplementation(() => {
