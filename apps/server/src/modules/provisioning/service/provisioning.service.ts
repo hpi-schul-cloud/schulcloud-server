@@ -14,7 +14,7 @@ export class ProvisioningService {
 		private readonly systemService: SystemService,
 		private readonly sanisStrategy: SanisProvisioningStrategy,
 		private readonly iservStrategy: IservProvisioningStrategy,
-		private readonly oidcProvisioningStrategy: OidcProvisioningStrategy
+		private readonly oidcStrategy: OidcProvisioningStrategy
 	) {}
 
 	async process(accessToken: string, idToken: string, systemId: string): Promise<ProvisioningDto> {
@@ -78,7 +78,7 @@ export class ProvisioningService {
 		const params: OidcStrategyData = {
 			idToken,
 		};
-		const provisioningDtoPromise = this.iservStrategy.apply(params);
+		const provisioningDtoPromise = this.oidcStrategy.apply(params);
 		return provisioningDtoPromise;
 	}
 }
