@@ -250,9 +250,9 @@ export class FilesStorageService {
 		return entity;
 	}
 
-	public async sendToAntiVirusService(sourceFile: FileRecord) {
+	public sendToAntiVirusService(sourceFile: FileRecord) {
 		if (sourceFile.securityCheck.status === ScanStatus.PENDING) {
-			await this.antivirusService.send(sourceFile);
+			this.antivirusService.send(sourceFile);
 		}
 	}
 
@@ -262,7 +262,7 @@ export class FilesStorageService {
 
 			await this.storageClient.copy([paths]);
 
-			await this.sendToAntiVirusService(sourceFile);
+			this.sendToAntiVirusService(sourceFile);
 
 			return new CopyFileResponse({ id: targetFile.id, sourceId: sourceFile.id, name: targetFile.name });
 		} catch (error) {

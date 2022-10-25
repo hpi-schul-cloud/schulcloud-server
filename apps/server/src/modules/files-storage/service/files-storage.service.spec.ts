@@ -374,9 +374,10 @@ describe('FilesStorageService', () => {
 				const fileRecord = fileRecords[0];
 				const fileDescription = createMock<IFile>();
 				const error = new Error('test');
-				const serverError = new InternalServerErrorException(error, AntivirusService.name);
 
-				antivirusService.send.mockRejectedValueOnce(serverError as never);
+				antivirusService.send.mockImplementation(() => {
+					throw error;
+				});
 
 				return { params, fileRecord, fileDescription, error };
 			};
@@ -1509,7 +1510,7 @@ describe('FilesStorageService', () => {
 				const sourceFile = fileRecords[0];
 				const targetFile = fileRecords[1];
 
-				spy = jest.spyOn(service, 'sendToAntiVirusService').mockResolvedValueOnce();
+				spy = jest.spyOn(service, 'sendToAntiVirusService');
 
 				return { sourceFile, targetFile };
 			};
@@ -1536,7 +1537,9 @@ describe('FilesStorageService', () => {
 				const targetFile = fileRecords[1];
 				const error = new Error('test');
 
-				spy = jest.spyOn(service, 'sendToAntiVirusService').mockRejectedValueOnce(error);
+				spy = jest.spyOn(service, 'sendToAntiVirusService').mockImplementation(() => {
+					throw error;
+				});
 
 				return { sourceFile, targetFile, error };
 			};
@@ -1561,10 +1564,10 @@ describe('FilesStorageService', () => {
 				return { sourceFile };
 			};
 
-			it('should call send with correct params', async () => {
+			it('should call send with correct params', () => {
 				const { sourceFile } = setup();
 
-				await service.sendToAntiVirusService(sourceFile);
+				service.sendToAntiVirusService(sourceFile);
 
 				expect(antivirusService.send).toBeCalledWith(sourceFile);
 			});
@@ -1579,10 +1582,10 @@ describe('FilesStorageService', () => {
 				return { sourceFile };
 			};
 
-			it('should call send with correct params', async () => {
+			it('should call send with correct params', () => {
 				const { sourceFile } = setup();
 
-				await service.sendToAntiVirusService(sourceFile);
+				service.sendToAntiVirusService(sourceFile);
 
 				expect(antivirusService.send).toBeCalledTimes(0);
 			});
@@ -1597,10 +1600,10 @@ describe('FilesStorageService', () => {
 				return { sourceFile };
 			};
 
-			it('should call send with correct params', async () => {
+			it('should call send with correct params', () => {
 				const { sourceFile } = setup();
 
-				await service.sendToAntiVirusService(sourceFile);
+				service.sendToAntiVirusService(sourceFile);
 
 				expect(antivirusService.send).toBeCalledTimes(0);
 			});
@@ -1613,15 +1616,17 @@ describe('FilesStorageService', () => {
 				sourceFile.securityCheck.status = ScanStatus.PENDING;
 				const error = new Error('test');
 
-				antivirusService.send.mockRejectedValueOnce(error as never);
+				antivirusService.send.mockImplementation(() => {
+					throw error;
+				});
 
 				return { sourceFile, error };
 			};
 
-			it('should pass error', async () => {
+			it('should pass error', () => {
 				const { sourceFile, error } = setup();
 
-				await expect(service.sendToAntiVirusService(sourceFile)).rejects.toThrow(error);
+				expect(() => service.sendToAntiVirusService(sourceFile)).toThrow(error);
 			});
 		});
 	});
