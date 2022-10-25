@@ -178,10 +178,7 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('uploadFromUrl is called', () => {
-		const createResponse = <T = unknown>(
-			data: Readable,
-			headers: AxiosResponseHeaders = {}
-		): AxiosResponse<Readable> => {
+		const createResponse = (data: Readable, headers: AxiosResponseHeaders = {}): AxiosResponse<Readable> => {
 			return {
 				data,
 				status: 0,
