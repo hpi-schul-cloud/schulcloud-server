@@ -6,7 +6,6 @@ import { BadRequestException, ForbiddenException, NotFoundException } from '@nes
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, Counted, EntityId, FileRecord, FileRecordParentType, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -88,7 +87,6 @@ const getRequest = () => {
 describe('FilesStorageUC', () => {
 	let module: TestingModule;
 	let filesStorageUC: FilesStorageUC;
-	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let filesStorageService: DeepMocked<FilesStorageService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let httpService: DeepMocked<HttpService>;
@@ -136,10 +134,6 @@ describe('FilesStorageUC', () => {
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
-					provide: FileRecordRepo,
-					useValue: createMock<FileRecordRepo>(),
-				},
-				{
 					provide: FilesStorageService,
 					useValue: createMock<FilesStorageService>(),
 				},
@@ -165,7 +159,6 @@ describe('FilesStorageUC', () => {
 		filesStorageUC = module.get(FilesStorageUC);
 		authorizationService = module.get(AuthorizationService);
 		httpService = module.get(HttpService);
-		fileRecordRepo = module.get(FileRecordRepo);
 		filesStorageService = module.get(FilesStorageService);
 	});
 
