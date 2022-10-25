@@ -73,7 +73,9 @@ export class FilesStorageUC {
 		return result;
 	}
 
-	private async getResponse(params: FileRecordParams & FileUrlParams): Promise<AxiosResponse<internal.Readable, any>> {
+	private async getResponse(
+		params: FileRecordParams & FileUrlParams
+	): Promise<AxiosResponse<internal.Readable, unknown>> {
 		const config: AxiosRequestConfig = {
 			headers: params.headers,
 			responseType: 'stream',
