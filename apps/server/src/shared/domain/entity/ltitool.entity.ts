@@ -76,7 +76,6 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	@Property({ nullable: true, fieldName: 'originTool' })
 	_originToolId?: ObjectId;
 
-	// TODO tests
 	@Property({ persist: false, getter: true })
 	get originToolId(): EntityId | undefined {
 		return this._originToolId?.toHexString();

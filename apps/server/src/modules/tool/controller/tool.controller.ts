@@ -8,6 +8,11 @@ import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Lti11LaunchQuery } from './dto/request/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/response/lti11-launch.response';
+import { Lti11LaunchQuery } from './dto/lti11-launch.query';
+import { Lti11LaunchResponse } from './dto/lti11-launch.response';
+import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
+import { Lti11LaunchParams } from './dto/lti11-launch.params';
+import { Lti11Uc } from '../uc/lti11.uc';
 
 @ApiTags('Tools')
 @Controller('tools')
@@ -18,7 +23,7 @@ export class ToolController {
 	@Get('lti11/:toolId/launch')
 	async getLti11LaunchParameters(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolIdParams,
+		@Param() params: Lti11LaunchParams,
 		@Query() query: Lti11LaunchQuery
 	): Promise<Lti11LaunchResponse> {
 		const authorization: Authorization = await this.lti11Uc.getLaunchParameters(

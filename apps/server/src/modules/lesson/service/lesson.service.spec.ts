@@ -72,4 +72,15 @@ describe('LessonService', () => {
 
 		expect(lessonRepo.findById).toHaveBeenCalledWith(lesson.id);
 	});
+
+	describe('findByCourseIds', () => {
+		it('should call findByCourseIds from lesson repo', async () => {
+			const courseIds = ['course-1', 'course-2'];
+			lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+
+			await expect(lessonService.findByCourseIds(courseIds)).resolves.not.toThrow();
+			expect(lessonRepo.findAllByCourseIds).toBeCalledTimes(1);
+			expect(lessonRepo.findAllByCourseIds).toBeCalledWith(courseIds);
+		});
+	});
 });

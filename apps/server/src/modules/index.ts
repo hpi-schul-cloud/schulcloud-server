@@ -16,6 +16,7 @@ export * from './video-conference';
 export * from './provisioning';
 export * from './oauth-provider';
 export * from './lesson';
+export * from './tool';
 export * from './school';
 export * from './role';
 export * from './tool';

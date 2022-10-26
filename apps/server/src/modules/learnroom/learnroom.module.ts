@@ -23,11 +23,15 @@ import {
 import { Logger } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { FilesStorageClientModule } from '../files-storage-client';
+import { LessonModule } from '../lesson';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
+import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
+import { CourseService } from './service/course.service';
 import { CourseCopyUC } from './uc/course-copy.uc';
+import { CourseExportUc } from './uc/course-export.uc';
 import { CourseUc } from './uc/course.uc';
 import { DashboardUc } from './uc/dashboard.uc';
 import { LessonCopyUC } from './uc/lesson-copy.uc';
@@ -37,7 +41,7 @@ import { RoomsService } from './uc/rooms.service';
 import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
-	imports: [AuthorizationModule, FilesStorageClientModule],
+	imports: [AuthorizationModule, FilesStorageClientModule, LessonModule],
 	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,
@@ -70,6 +74,9 @@ import { RoomsUc } from './uc/rooms.uc';
 		FeathersServiceProvider,
 		Logger,
 		FileCopyAppendService,
+		CourseService,
+		CommonCartridgeExportService,
+		CourseExportUc,
 	],
 })
 export class LearnroomModule {}
