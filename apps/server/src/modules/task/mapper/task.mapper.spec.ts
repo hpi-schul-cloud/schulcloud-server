@@ -32,6 +32,7 @@ const createExpectedResponse = (
 	expected.courseId = descriptions.courseId;
 	expected.displayColor = descriptions.color;
 	expected.lessonName = descriptions.lessonName;
+	expected.lessonHidden = descriptions.lessonHidden;
 
 	return expected;
 };
@@ -56,6 +57,7 @@ describe('task.mapper', () => {
 				courseId: 'course ID #1',
 				color: '#F0F0F0',
 				lessonName: 'a task description',
+				lessonHidden: false,
 			};
 
 			const spy = jest.spyOn(task, 'getParentData').mockReturnValue(descriptions);
