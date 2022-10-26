@@ -139,7 +139,7 @@ describe('reference.loader', () => {
 			expect(teamsRepo.findById).toBeCalledWith(entityId, true);
 		});
 
-		it('should call teamsRepo.findById', async () => {
+		it('should call submissionRepo.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.Submission, entityId);
 
 			expect(submissionRepo.findById).toBeCalledWith(entityId, true);
