@@ -289,8 +289,9 @@ describe('FilesStorageUC', () => {
 
 			it('should pass error', async () => {
 				const { uploadFromUrlParams, userId } = setup();
+				const error = new NotFoundException(ErrorType.FILE_NOT_FOUND);
 
-				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrowError();
+				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrowError(error);
 			});
 		});
 
