@@ -1,7 +1,7 @@
 import { PseudonymDO, Team } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
 import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
-import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
+import { LtiToolRepo, PseudonymsRepo, TeamRepo } from '@shared/repo';
 import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { UserService } from '@src/modules/user/service/user.service';
@@ -18,7 +18,7 @@ export class IdTokenService {
 	constructor(
 		private readonly pseudonymsRepo: PseudonymsRepo,
 		private readonly ltiToolRepo: LtiToolRepo,
-		private readonly teamsRepo: TeamsRepo,
+		private readonly teamRepo: TeamRepo,
 		private readonly userService: UserService,
 		private readonly logger: Logger
 	) {
@@ -29,7 +29,7 @@ export class IdTokenService {
 	async createIdToken(userId: string, scopes: string[], clientId: string): Promise<IdToken> {
 		let teams: Team[] = [];
 		if (scopes.includes(OauthScope.GROUPS)) {
-			teams = await this.teamsRepo.findByUserId(userId);
+			teams = await this.teamRepo.findByUserId(userId);
 		}
 
 		const userDto: UserDto = await this.userService.getUser(userId);

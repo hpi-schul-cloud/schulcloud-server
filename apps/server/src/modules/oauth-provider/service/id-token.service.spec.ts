@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
-import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
+import { LtiToolRepo, PseudonymsRepo, TeamRepo } from '@shared/repo';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
@@ -36,7 +36,7 @@ describe('IdTokenService', () => {
 	let idTokenService: IdTokenServiceSpec;
 	let pseudonymRepo: DeepMocked<PseudonymsRepo>;
 	let ltiToolRepo: DeepMocked<LtiToolRepo>;
-	let teamsRepo: DeepMocked<TeamsRepo>;
+	let teamRepo: DeepMocked<TeamRepo>;
 	let userService: DeepMocked<UserService>;
 
 	const userId = 'userId';
@@ -67,8 +67,8 @@ describe('IdTokenService', () => {
 					useValue: createMock<LtiToolRepo>(),
 				},
 				{
-					provide: TeamsRepo,
-					useValue: createMock<TeamsRepo>(),
+					provide: TeamRepo,
+					useValue: createMock<TeamRepo>(),
 				},
 				{
 					provide: UserService,
@@ -84,7 +84,7 @@ describe('IdTokenService', () => {
 		idTokenService = module.get(IdTokenServiceSpec);
 		pseudonymRepo = module.get(PseudonymsRepo);
 		ltiToolRepo = module.get(LtiToolRepo);
-		teamsRepo = module.get(TeamsRepo);
+		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 		orm = await setupEntities();
 	});
@@ -114,18 +114,18 @@ describe('IdTokenService', () => {
 			userService.getUser.mockResolvedValue(userDto);
 		});
 
-		it('should call teamsRepo if scopes contains groups', async () => {
+		it('should call teamRepo if scopes contains groups', async () => {
 			await idTokenService.createIdToken(userId, scopes, clientId);
 
-			expect(teamsRepo.findByUserId).toHaveBeenCalledWith(userId);
+			expect(teamRepo.findByUserId).toHaveBeenCalledWith(userId);
 		});
 
-		it('should not call teamsRepo if scopes does not contain groups', async () => {
+		it('should not call teamRepo if scopes does not contain groups', async () => {
 			scopes = scopes.filter((scope: string) => scope !== OauthScope.GROUPS);
 
 			await idTokenService.createIdToken(userId, scopes, clientId);
 
-			expect(teamsRepo.findByUserId).not.toHaveBeenCalled();
+			expect(teamRepo.findByUserId).not.toHaveBeenCalled();
 		});
 
 		describe('tests id token and scopes', () => {
@@ -135,7 +135,7 @@ describe('IdTokenService', () => {
 			beforeEach(() => {
 				teams = [teamFactory.buildWithId()];
 				expectedName = 'Max Mustermann';
-				teamsRepo.findByUserId.mockResolvedValue(teams);
+				teamRepo.findByUserId.mockResolvedValue(teams);
 				ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDo);
 				pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(pseudonymDo);
 				userService.getUser.mockResolvedValue(userDto);

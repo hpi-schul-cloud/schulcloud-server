@@ -20,7 +20,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
-import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, TeamRepo, UserRepo } from '@shared/repo';
 import { CalendarService } from '@shared/infra/calendar';
 import {
 	BBBBaseResponse,
@@ -71,7 +71,7 @@ export class VideoConferenceUc {
 		private readonly bbbService: BBBService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly videoConferenceRepo: VideoConferenceRepo,
-		private readonly teamsRepo: TeamsRepo,
+		private readonly teamRepo: TeamRepo,
 		private readonly courseRepo: CourseRepo,
 		private readonly userRepo: UserRepo,
 		private readonly calendarService: CalendarService,
@@ -324,7 +324,7 @@ export class VideoConferenceUc {
 				return roles.includes(RoleName.EXPERT);
 			}
 			case VideoConferenceScope.EVENT: {
-				const team: Team = await this.teamsRepo.findById(scopeId);
+				const team: Team = await this.teamRepo.findById(scopeId);
 				const teamUser: TeamUser | undefined = team.teamUsers.find(
 					(userInTeam: TeamUser) => userInTeam.user.id === currentUser.userId
 				);

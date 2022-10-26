@@ -1,1 +1,1 @@
-export * from './teams.repo';
+export * from './team.repo';

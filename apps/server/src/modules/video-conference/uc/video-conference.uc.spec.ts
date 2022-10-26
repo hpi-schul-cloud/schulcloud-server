@@ -3,7 +3,7 @@ import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IScopeInfo, VideoConferenceUc } from '@src/modules/video-conference/uc/video-conference.uc';
 import { AuthorizationService } from '@src/modules';
-import { CourseRepo, TeamsRepo, UserRepo, VideoConferenceRepo } from '@shared/repo';
+import { CourseRepo, TeamRepo, UserRepo, VideoConferenceRepo } from '@shared/repo';
 import { CalendarService } from '@shared/infra/calendar';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
@@ -71,7 +71,7 @@ describe('VideoConferenceUc', () => {
 	let bbbService: DeepMocked<BBBService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
-	let teamsRepo: DeepMocked<TeamsRepo>;
+	let teamRepo: DeepMocked<TeamRepo>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let userRepo: DeepMocked<UserRepo>;
 	let calendarService: DeepMocked<CalendarService>;
@@ -132,8 +132,8 @@ describe('VideoConferenceUc', () => {
 					useValue: createMock<VideoConferenceRepo>(),
 				},
 				{
-					provide: TeamsRepo,
-					useValue: createMock<TeamsRepo>(),
+					provide: TeamRepo,
+					useValue: createMock<TeamRepo>(),
 				},
 				{
 					provide: CourseRepo,
@@ -160,7 +160,7 @@ describe('VideoConferenceUc', () => {
 		calendarService = module.get(CalendarService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		userRepo = module.get(UserRepo);
-		teamsRepo = module.get(TeamsRepo);
+		teamRepo = module.get(TeamRepo);
 		bbbService = module.get(BBBService);
 	});
 
@@ -196,7 +196,7 @@ describe('VideoConferenceUc', () => {
 		userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
 		userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
 
-		teamsRepo.findById.mockResolvedValue(team);
+		teamRepo.findById.mockResolvedValue(team);
 		schoolUc.hasFeature.mockResolvedValue(true);
 		courseRepo.findById.mockResolvedValue(course);
 		calendarService.findEvent.mockResolvedValue(event);
@@ -484,7 +484,7 @@ describe('VideoConferenceUc', () => {
 			expect(videoConferenceRepo.findByScopeId).toHaveBeenCalledWith(eventId, VideoConferenceScope.EVENT);
 			expect(bbbService.join).toHaveBeenCalledWith(builderEvent.build());
 			expect(userRepo.findById).toHaveBeenCalledWith(defaultCurrentUser.userId);
-			expect(teamsRepo.findById).toHaveBeenCalledWith(event.teamId);
+			expect(teamRepo.findById).toHaveBeenCalledWith(event.teamId);
 
 			expect(result.state).toEqual(VideoConferenceState.RUNNING);
 			expect(result.permission).toEqual(Permission.JOIN_MEETING);
@@ -537,7 +537,7 @@ describe('VideoConferenceUc', () => {
 			expect(videoConferenceRepo.findByScopeId).toHaveBeenCalledWith(eventId, VideoConferenceScope.EVENT);
 			expect(bbbService.join).toHaveBeenCalledWith(builderEvent.build());
 			expect(userRepo.findById).toHaveBeenCalledWith(defaultCurrentUser.userId);
-			expect(teamsRepo.findById).toHaveBeenCalledWith(event.teamId);
+			expect(teamRepo.findById).toHaveBeenCalledWith(event.teamId);
 
 			expect(result.state).toEqual(VideoConferenceState.RUNNING);
 			expect(result.permission).toEqual(Permission.JOIN_MEETING);
