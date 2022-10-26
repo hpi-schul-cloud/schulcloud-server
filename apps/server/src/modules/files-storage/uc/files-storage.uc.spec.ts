@@ -334,12 +334,10 @@ describe('FilesStorageUC', () => {
 					mimeType: fileRecord.mimeType,
 				};
 
-				const mockBusboyEvent = (requestStream: DeepMocked<Busboy>) => {
+				request.pipe.mockImplementation((requestStream) => {
 					requestStream.emit('file', 'file', readable, fileInfo);
 					return requestStream;
-				};
-
-				request.pipe.mockImplementation(mockBusboyEvent as never);
+				});
 
 				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord);
 
@@ -385,15 +383,14 @@ describe('FilesStorageUC', () => {
 				const request = getRequest();
 				const error = new Error('test');
 
-				const mockBusboyEvent = (requestStream: DeepMocked<Busboy>) => {
+				const size = request.headers['content-length'];
+
+				request.get.mockReturnValue(size);
+				request.pipe.mockImplementation((requestStream) => {
 					requestStream.emit('error', error);
 
 					return requestStream;
-				};
-
-				const size = request.headers['content-length'];
-				request.get.mockReturnValue(size);
-				request.pipe.mockImplementation(mockBusboyEvent as never);
+				});
 
 				return { params, userId, request, error };
 			};
@@ -414,18 +411,18 @@ describe('FilesStorageUC', () => {
 				const request = getRequest();
 				const buffer = Buffer.from('abc');
 
-				const mockBusboyEvent = (requestStream: DeepMocked<Busboy>) => {
+				const size = request.headers['content-length'];
+
+				request.get.mockReturnValue(size);
+				request.pipe.mockImplementation((requestStream) => {
 					requestStream.emit('file', 'file', buffer, {
 						filename: fileRecord.name,
 						encoding: '7-bit',
 						mimeType: fileRecord.mimeType,
 					});
-					return requestStream;
-				};
 
-				const size = request.headers['content-length'];
-				request.get.mockReturnValue(size);
-				request.pipe.mockImplementation(mockBusboyEvent as never);
+					return requestStream;
+				});
 
 				const error = new Error('test');
 				filesStorageService.uploadFile.mockRejectedValueOnce(error);
