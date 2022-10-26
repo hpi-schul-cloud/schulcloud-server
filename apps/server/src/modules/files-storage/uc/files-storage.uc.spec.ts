@@ -12,7 +12,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { AxiosResponse, AxiosResponseHeaders } from 'axios';
 import { Busboy } from 'busboy';
 import { Request } from 'express';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { CopyFileResponse, FileRecordParams, SingleFileParams } from '../controller/dto';
@@ -25,19 +25,17 @@ import { FilesStorageMapper } from '../mapper/files-storage.mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 
-function createAxiosResponse<T = unknown>(data: T, headers: AxiosResponseHeaders = {}): AxiosResponse<T> {
-	return {
+const createAxiosResponse = (data: Readable, headers: AxiosResponseHeaders = {}): AxiosResponse<Readable> => {
+	const response: AxiosResponse<Readable> = {
 		data,
 		status: 0,
 		statusText: '',
 		headers,
 		config: {},
 	};
-}
 
-function createObservable<T = unknown>(data: T, headers: AxiosResponseHeaders = {}): Observable<AxiosResponse<T>> {
-	return of(createAxiosResponse(data, headers));
-}
+	return response;
+};
 
 const getFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
@@ -72,7 +70,7 @@ const getFileRecordWithParams = () => {
 };
 
 const getRequest = () => {
-	const request: Request = createMock<Request>({
+	const request: DeepMocked<Request> = createMock<Request>({
 		headers: {
 			connection: 'keep-alive',
 			'content-length': '10699',
@@ -173,16 +171,6 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('uploadFromUrl is called', () => {
-		const createResponse = (data: Readable, headers: AxiosResponseHeaders = {}): AxiosResponse<Readable> => {
-			return {
-				data,
-				status: 0,
-				statusText: '',
-				headers,
-				config: {},
-			};
-		};
-
 		const getUploadFromUrlParams = () => {
 			const { params, userId, fileRecords } = getFileRecordsWithParams();
 			const fileRecord = fileRecords[0];
@@ -202,7 +190,7 @@ describe('FilesStorageUC', () => {
 				'content-type': 'image/jpeg',
 			};
 			const readable = Readable.from('abc');
-			const response = createResponse(readable, headers);
+			const response = createAxiosResponse(readable, headers);
 
 			return { fileRecord, userId, uploadFromUrlParams, response };
 		};
@@ -286,7 +274,7 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { userId, uploadFromUrlParams } = getUploadFromUrlParams();
 
-				const error = createObservable({
+				const error = of({
 					isAxiosError: true,
 					code: '404',
 					response: {},
@@ -294,7 +282,7 @@ describe('FilesStorageUC', () => {
 					message: 'errorText',
 					toJSON: () => ({}),
 				}) as never;
-				httpService.get.mockResolvedValue(error);
+				httpService.get.mockResolvedValueOnce(error);
 
 				return { uploadFromUrlParams, userId };
 			};
@@ -332,7 +320,7 @@ describe('FilesStorageUC', () => {
 				const { params, userId, fileRecords } = getFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const request = getRequest();
-				const buffer = Buffer.from('abc');
+				const readable = Readable.from('abc');
 				const fileInfo = {
 					filename: fileRecord.name,
 					encoding: '7-bit',
@@ -340,7 +328,7 @@ describe('FilesStorageUC', () => {
 				};
 
 				const mockBusboyEvent = (requestStream: DeepMocked<Busboy>) => {
-					requestStream.emit('file', 'file', buffer, fileInfo);
+					requestStream.emit('file', 'file', readable, fileInfo);
 					return requestStream;
 				};
 
@@ -348,7 +336,7 @@ describe('FilesStorageUC', () => {
 
 				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord);
 
-				return { params, userId, request, fileRecord, buffer, fileInfo };
+				return { params, userId, request, fileRecord, buffer: readable, fileInfo };
 			};
 
 			it('should call checkPermissionByReferences', async () => {
