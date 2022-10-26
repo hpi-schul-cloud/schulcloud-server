@@ -3,11 +3,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Authorization } from 'oauth-1.0a';
 import { ICurrentUser } from '@shared/domain';
 import { Lti11LaunchResponse } from '@src/modules/tool/controller/dto/response/lti11-launch.response';
+import { Lti11LaunchParams } from '@src/modules/tool/controller/dto/request/lti11-launch.params';
+import { Lti11LaunchQuery } from '@src/modules/tool/controller/dto/request/lti11-launch.query';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { ToolController } from './tool.controller';
-import { Lti11LaunchParams } from '@src/modules/tool/controller/dto/request/lti11-launch.params';
-import { Lti11LaunchQuery } from '@src/modules/tool/controller/dto/request/lti11-launch.query';
 
 describe('ToolController', () => {
 	let module: TestingModule;
