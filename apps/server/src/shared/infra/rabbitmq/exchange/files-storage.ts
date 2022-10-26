@@ -21,6 +21,7 @@ export enum FileRecordParentType {
 	'Course' = 'courses',
 	'Task' = 'tasks',
 	'Lesson' = 'lessons',
+	'Submission' = 'submissions',
 }
 
 export interface ICopyFilesOfParentParams {
