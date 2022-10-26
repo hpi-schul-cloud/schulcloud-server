@@ -72,7 +72,7 @@ const getFileRecordWithParams = () => {
 };
 
 const getRequest = () => {
-	return createMock<Request>({
+	const request: Request = createMock<Request>({
 		headers: {
 			connection: 'keep-alive',
 			'content-length': '10699',
@@ -82,6 +82,8 @@ const getRequest = () => {
 			return `10699`;
 		},
 	});
+
+	return request;
 };
 
 describe('FilesStorageUC', () => {
