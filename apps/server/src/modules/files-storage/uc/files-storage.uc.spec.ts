@@ -9,7 +9,7 @@ import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
-import { AxiosResponse, AxiosResponseHeaders } from 'axios';
+import { AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders } from 'axios';
 import { Busboy } from 'busboy';
 import { Request } from 'express';
 import { of } from 'rxjs';
@@ -224,7 +224,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams);
 
-				const expectedConfig = {
+				const expectedConfig: AxiosRequestConfig = {
 					headers: uploadFromUrlParams.headers,
 					responseType: 'stream',
 				};
