@@ -58,7 +58,7 @@ export class Lti11Uc {
 
 	private buildRequestOptions(
 		tool: LtiToolDO,
-		payload: Promise<Lti11PayloadDto>,
+		payload: Lti11PayloadDto,
 		customFields: Record<string, string>
 	): RequestOptions {
 		const requestData: RequestOptions = {
@@ -71,7 +71,7 @@ export class Lti11Uc {
 
 	async getLaunchParameters(currentUser: ICurrentUser, toolId: string, courseId: string): Promise<Authorization> {
 		const tool: LtiToolDO = await this.ltiToolRepo.findById(toolId);
-		const payload = this.createPayload(currentUser, tool, courseId, toolId);
+		const payload = await this.createPayload(currentUser, tool, courseId, toolId);
 		const customFields = this.createCustomFields(tool);
 		const requestData = this.buildRequestOptions(tool, payload, customFields);
 		const consumer: OAuth = this.lti11Service.createConsumer(tool.key, tool.secret);

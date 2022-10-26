@@ -111,7 +111,7 @@ describe('Lti11Uc', () => {
 				};
 			};
 
-			it('should use tool with resource_link_id', async () => {
+			it('should return authorization with resource link id from tool', async () => {
 				const { currentUser, ltiTool, authorization } = setup();
 				const expectedRequestData: RequestOptions = {
 					url: ltiTool.url,
@@ -133,7 +133,7 @@ describe('Lti11Uc', () => {
 				expect(oauth.authorize).toHaveBeenCalledWith(expect.objectContaining(expectedRequestData));
 			});
 
-			it('should use courseId as resource_link_id, if tool has none', async () => {
+			it('should return authorization with courseId as resource_link_id, if tool has none', async () => {
 				const { currentUser, ltiTool, authorization } = setup();
 				const courseId = 'courseId';
 				ltiTool.resource_link_id = undefined;
@@ -157,7 +157,7 @@ describe('Lti11Uc', () => {
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
-			it('should use tool with pseudonymous privacy_permission', async () => {
+			it('should return authorization with pseudonymous privacy_permission', async () => {
 				const { currentUser, ltiTool, authorization } = setup();
 				const expectedRequestData: RequestOptions = {
 					url: ltiTool.url,
@@ -179,7 +179,7 @@ describe('Lti11Uc', () => {
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
-			it('should use tool with name privacy_permission', async () => {
+			it('should return authorization with name privacy_permission', async () => {
 				const { currentUser, ltiTool, authorization, userName } = setup();
 				ltiTool.privacy_permission = LtiPrivacyPermission.NAME;
 				const expectedRequestData: RequestOptions = {
@@ -203,7 +203,7 @@ describe('Lti11Uc', () => {
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
-			it('should use tool with email privacy_permission', async () => {
+			it('should return authorization with email privacy_permission', async () => {
 				const { currentUser, ltiTool, authorization, userDto } = setup();
 				ltiTool.privacy_permission = LtiPrivacyPermission.EMAIL;
 				const expectedRequestData: RequestOptions = {
@@ -227,7 +227,7 @@ describe('Lti11Uc', () => {
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
-			it('should use tool with custom fields', async () => {
+			it('should return authorization with custom fields', async () => {
 				const { currentUser, ltiTool, authorization } = setup();
 				ltiTool.customs = [new CustomLtiProperty('field1', 'value1'), new CustomLtiProperty('field2', 'value2')];
 				const expectedRequestData: RequestOptions = {
@@ -253,7 +253,7 @@ describe('Lti11Uc', () => {
 			});
 		});
 
-		it('should throw when trying to access a lti tool that is not v1.1', async () => {
+		it('should throw when trying to access an lti tool that is not v1.1', async () => {
 			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 			const ltiTool: LtiToolDO = new LtiToolDO({
 				name: 'name',
