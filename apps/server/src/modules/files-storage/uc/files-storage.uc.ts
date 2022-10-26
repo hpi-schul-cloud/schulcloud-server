@@ -3,10 +3,10 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import internal from 'stream';
 import {
 	CopyFileParams,
@@ -84,6 +84,10 @@ export class FilesStorageUC {
 		const responseStream = this.httpService.get<internal.Readable>(encodeURI(params.url), config);
 
 		const response = await firstValueFrom(responseStream);
+
+		response.data.on('error', (error) => {
+			throw error;
+		});
 
 		return response;
 	}

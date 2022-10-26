@@ -274,15 +274,21 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { userId, uploadFromUrlParams } = getUploadFromUrlParams();
 
-				const error = of({
-					isAxiosError: true,
-					code: '404',
-					response: {},
-					name: 'errorText',
-					message: 'errorText',
-					toJSON: () => ({}),
-				}) as never;
-				httpService.get.mockResolvedValueOnce(error);
+				const headers: AxiosResponseHeaders = {};
+				const config: AxiosRequestConfig = {};
+				const errorResponse: AxiosResponse = {
+					data: {},
+					status: 404,
+					statusText: 'errorText',
+					headers,
+					config,
+					request: {},
+				};
+
+				httpService.get.mockImplementation(() => {
+					const observable = of(errorResponse);
+					return observable;
+				});
 
 				return { uploadFromUrlParams, userId };
 			};
