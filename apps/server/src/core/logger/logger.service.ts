@@ -1,8 +1,9 @@
-import { ConsoleLogger, Injectable, LogLevel, Scope } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable, Scope } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import util from 'util';
-import { ILoggerConfig, RequestLoggingBody } from './interfaces';
-import { AvailableLogLevel, ILogger } from './interfaces/logger.interface';
+import { Logger as WinstonLogger } from 'winston';
+import { RequestLoggingBody } from './interfaces';
+import { ILogger } from './interfaces/logger.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 /**
@@ -10,33 +11,59 @@ import { AvailableLogLevel, ILogger } from './interfaces/logger.interface';
  * Must implement ILogger but must not extend ConsoleLogger (this can be changed).
  * Transient injection: Wherever injected, a separate instance will be created, that can be provided with a custom context.
  */
-export class Logger extends ConsoleLogger implements ILogger {
+export class Logger implements ILogger {
 	/**
 	 * This Logger Service can be injected into every Class,
 	 * use setContext() with CustomProviderClass.name that will be added to every log.
 	 * It implements @ILogger which provides the logger methods.
 	 * CAUTION: PREPARE STRINGS AS LOG DATA, DO NOT LOG COMPLEX DATA STRUCTURES
 	 */
-	constructor(private readonly configService: ConfigService<ILoggerConfig, true>) {
-		super();
-		const logLevels = this.configService.get<AvailableLogLevel[]>('AVAILABLE_LOG_LEVELS');
-		this.setLogLevels(logLevels as LogLevel[]);
+	private context = '';
+
+	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
+
+	log(message: unknown, context?: string | undefined): void {
+		this.logger.log('info', this.createMessage(message, context));
+	}
+
+	warn(message: unknown, context?): void {
+		if (typeof context === 'undefined' || typeof context === 'string') {
+			this.logger.warn(this.createMessage(message, context));
+		} else {
+			this.logger.warn(this.createMessage(message));
+		}
+	}
+
+	debug(message: unknown, context?: string | undefined): void {
+		this.logger.debug(this.createMessage(message, context));
+	}
+
+	verbose(message: unknown, context?: string | undefined): void {
+		this.logger.verbose(this.createMessage(message, context));
 	}
 
 	http(message: RequestLoggingBody, context?: string): void {
-		const logLevel = 'http';
-		if (!this.isLevelEnabled(logLevel as LogLevel)) {
-			return;
-		}
-		this.printMessages([JSON.stringify(message)], context || this.context, 'HTTP Request' as LogLevel);
+		this.logger.http(this.createMessage(message, context));
 	}
 
-	error(message: unknown, trace?: unknown): void {
+	error(message: unknown, trace?: unknown, context?: string | undefined): void {
 		const result = {
 			message,
 			trace,
 		};
-		const stringifiedMessage = util.inspect(result).replace(/\n/g, '').replace(/\\n/g, '');
-		super.error(stringifiedMessage);
+		this.logger.error(this.createMessage(result, context));
+	}
+
+	setContext(name: string) {
+		this.context = name;
+	}
+
+	private createMessage(message: unknown, context?: string | undefined) {
+		return { message: this.stringifiedMessage(message), context: context || this.context };
+	}
+
+	private stringifiedMessage(message: unknown) {
+		const stringifiedMessage = util.inspect(message).replace(/\n/g, '').replace(/\\n/g, '');
+		return stringifiedMessage;
 	}
 }

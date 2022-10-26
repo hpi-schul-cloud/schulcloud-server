@@ -8,7 +8,8 @@ export interface IFileStorageConfig extends ICoreModuleConfig {}
 const fileStorageConfig: IFileStorageConfig = {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('FILES_STORAGE__INCOMING_REQUEST_TIMEOUT') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
-	AVAILABLE_LOG_LEVELS: (Configuration.get('NEST_AVAILABLE_LOG_LEVELS') as string).split(',') as AvailableLogLevel[],
+	AVAILABLE_LOG_LEVELS: (Configuration.get('AVAILABLE_LOG_LEVELS') as string).split(',') as AvailableLogLevel[],
+	LOG_LEVEL: Configuration.get('LOG_LEVEL') as string,
 };
 
 // The configurations lookup

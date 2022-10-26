@@ -38,7 +38,8 @@
 		"CLIENT_SECRET": "erwin-credentials-mock-client-secret"
 	},
 	"INCOMING_REQUEST_TIMEOUT_API": 60000,
-	"NEST_AVAILABLE_LOG_LEVELS": "log,error,warn,debug,verbose,http",
+	"AVAILABLE_LOG_LEVELS": "error",
+	"LOG_LEVEL": "debug",
 	"FEATURE_COPY_SERVICE_ENABLED": true,
 	"COOKIE": {
 		"SAME_SITE": "lax",

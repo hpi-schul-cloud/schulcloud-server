@@ -854,7 +854,7 @@
 			"description": "Log level for api.",
 			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
-		"NEST_AVAILABLE_LOG_LEVELS": {
+		"AVAILABLE_LOG_LEVELS": {
 			"type": "string",
 			"default": "error,http",
 			"description": "Nest Log level for api. Different log level can be activated separately by adding the value to the comma separated list. For example 'log,error,warn,debug,verbose,http' The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'."
