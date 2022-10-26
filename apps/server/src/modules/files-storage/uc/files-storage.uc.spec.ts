@@ -1231,7 +1231,7 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
 
-				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
+				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
 
 				return { singleFileParams, copyFileParams, userId, fileRecord };
@@ -1272,7 +1272,7 @@ describe('FilesStorageUC', () => {
 
 				const error = new ForbiddenException();
 
-				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
+				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error).mockResolvedValueOnce();
 
 				return { singleFileParams, copyFileParams, userId, fileRecord, error };
