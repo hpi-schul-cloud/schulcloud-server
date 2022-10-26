@@ -1,4 +1,4 @@
-import { EntityProperties } from '@shared/repo';
+import { EntityProperties, LtiToolRepo } from '@shared/repo';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -9,7 +9,6 @@ import { NotFoundError } from '@mikro-orm/core';
 import { IFindOptions, ILtiToolProperties, LtiTool, Page, SortOrder } from '@shared/domain';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolRepo } from '@shared/repo/ltitool/lti-tool.repo';
 import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';
 import { LtiToolSortingMapper } from '@shared/repo/ltitool/lti-tool-sorting.mapper';
 
@@ -18,8 +17,8 @@ class LtiToolRepoSpec extends LtiToolRepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntitySpec(entityDO: LtiToolDO): EntityProperties<ILtiToolProperties> {
-		return super.mapDOToEntity(entityDO);
+	mapDOToEntityPropertiesSpec(entityDO: LtiToolDO): EntityProperties<ILtiToolProperties> {
+		return super.mapDOToEntityProperties(entityDO);
 	}
 }
 
@@ -59,6 +58,23 @@ describe('LtiTool Repo', () => {
 	});
 
 	function setup() {
+		const props: ILtiToolProperties = {
+			name: 'toolName',
+			oAuthClientId: 'clientId',
+			secret: 'secret',
+			isLocal: true,
+			customs: [],
+			isHidden: false,
+			isTemplate: false,
+			key: 'key',
+			openNewTab: false,
+			originToolId: undefined,
+			privacy_permission: LtiPrivacyPermission.NAME,
+			roles: [LtiRoleType.INSTRUCTOR, LtiRoleType.LEARNER],
+			url: 'url',
+			friendlyUrl: 'friendlyUrl',
+			frontchannel_logout_uri: 'frontchannel_logout_uri',
+		};
 		const ltiToolDO: LtiToolDO = new LtiToolDO({
 			id: 'testId',
 			updatedAt: new Date('2022-07-20'),
@@ -83,20 +99,22 @@ describe('LtiTool Repo', () => {
 		return {
 			ltiToolDO,
 			queryLtiToolDO,
+			props,
 		};
 	}
 
-	it('should be defined', () => {
-		expect(repo).toBeDefined();
-		expect(typeof repo.findById).toEqual('function');
+	it('should return new entity of type LtiTool', () => {
+		const { props } = setup();
+		const result: LtiTool = repo.entityFactory(props);
+
+		expect(result).toBeInstanceOf(LtiTool);
 	});
 
-	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(LtiTool);
-	});
+	it('should return new entity with values from properties', () => {
+		const { props } = setup();
+		const result: LtiTool = repo.entityFactory(props);
 
-	it('should implement getConstructor', () => {
-		expect(repo.getConstructor()).toBe(LtiTool);
+		expect(result).toEqual(expect.objectContaining(props));
 	});
 
 	describe('findByUserAndTool', () => {
@@ -104,9 +122,9 @@ describe('LtiTool Repo', () => {
 			const entity: LtiTool = ltiToolFactory.buildWithId();
 			await em.persistAndFlush(entity);
 
-			const result = await repo.findByName(entity.name);
+			const result: LtiToolDO[] = await repo.findByName(entity.name);
 
-			expect(result.id).toEqual(entity.id);
+			expect(result[0].id).toEqual(entity.id);
 		});
 
 		it('should throw an error if the ltitool was not found', async () => {
@@ -265,11 +283,11 @@ describe('LtiTool Repo', () => {
 		});
 	});
 
-	describe('mapDOToEntity', () => {
-		it('should map DO to Entity', () => {
+	describe('mapDOToEntityProperties', () => {
+		it('should map DO to Entity Properties', () => {
 			const { ltiToolDO } = setup();
 
-			const result: EntityProperties<ILtiToolProperties> = repo.mapDOToEntitySpec(ltiToolDO);
+			const result: EntityProperties<ILtiToolProperties> = repo.mapDOToEntityPropertiesSpec(ltiToolDO);
 
 			expect(ltiToolDO).toEqual(expect.objectContaining(result));
 		});

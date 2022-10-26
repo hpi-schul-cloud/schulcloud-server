@@ -1,10 +1,11 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CustomLtiProperty, LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo } from '@shared/repo';
 import { ICurrentUser, LtiPrivacyPermission, RoleName } from '@shared/domain';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { CustomLtiProperty } from '@shared/domain/domainobject/custom-lti-property';
 import { Lti11Service } from '../service/lti11.service';
 import { Lti11PayloadDto } from './dto/lti11-payload.dto';
 import { LtiRole } from '../interface/lti-role.enum';

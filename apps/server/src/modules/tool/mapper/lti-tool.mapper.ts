@@ -10,7 +10,7 @@ import { LtiToolPatchBody } from '@src/modules/tool/controller/dto/request/lti-t
 @Injectable()
 export class LtiToolMapper {
 	mapLtiToolPostBodyToDO(body: LtiToolPostBody): LtiToolDO {
-		const ltiTool: LtiToolDO = new LtiToolDO({ openNewTab: false, key: 'none', ...body });
+		const ltiTool: LtiToolDO = new LtiToolDO({ openNewTab: false, key: 'none', secret: 'none', ...body });
 		return ltiTool;
 	}
 

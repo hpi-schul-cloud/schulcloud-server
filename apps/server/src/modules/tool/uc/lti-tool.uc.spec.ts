@@ -304,7 +304,7 @@ describe('LtiToolUc', () => {
 		it('should return the deleted ltiToolDO', async () => {
 			const { currentUser, toolId, ltiToolDO } = setup();
 			ltiToolRepo.findById.mockResolvedValue(ltiToolDO);
-			ltiToolRepo.deleteById.mockResolvedValue(Promise.resolve());
+			ltiToolRepo.deleteById.mockResolvedValue(Promise.resolve(1));
 
 			const deletedDO: LtiToolDO = await uc.deleteLtiTool(currentUser, toolId);
 

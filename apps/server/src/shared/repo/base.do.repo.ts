@@ -79,12 +79,10 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 		});
 	}
 
-	async deleteById(id: string | string[]): Promise<number> {
-		const ids: string[] = Array.isArray(id) ? id : [id];
-
+	async deleteByIds(ids: string[]): Promise<number> {
 		let total = 0;
 		const promises: Promise<void>[] = ids.map(async (entityId: string): Promise<void> => {
-			const deleted: number = await this.deleteEntityById(entityId);
+			const deleted: number = await this.delete(entityId);
 			total += deleted;
 		});
 
@@ -92,9 +90,12 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 		return total;
 	}
 
-	private deleteEntityById(id: string): Promise<number> {
-		const promise: Promise<number> = this._em.nativeDelete(this.entityName, { id } as FilterQuery<E>);
-		return promise;
+	async deleteById(id: EntityId): Promise<number> {
+		return this.delete(id);
+	}
+
+	private async delete(id: EntityId): Promise<number> {
+		return this._em.nativeDelete(this.entityName, id as FilterQuery<E>);
 	}
 
 	async findById(id: EntityId): Promise<DO> {

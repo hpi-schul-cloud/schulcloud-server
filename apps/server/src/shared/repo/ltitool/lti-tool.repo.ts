@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo, EntityProperties } from '@shared/repo/base.do.repo';
-import { EntityName } from '@mikro-orm/core';
+import { EntityName, NotFoundError } from '@mikro-orm/core';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import {
 	IFindOptions,
@@ -57,10 +57,13 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		return { data: entities.map((entity) => this.mapEntityToDO(entity)), total };
 	}
 
-	async findByName(name: string): Promise<LtiToolDO> {
-		const entity = await this._em.findOneOrFail(LtiTool, { name });
-
-		return this.mapEntityToDO(entity);
+	async findByName(name: string): Promise<LtiToolDO[]> {
+		const entities: LtiTool[] = await this._em.find(LtiTool, { name });
+		if (entities.length === 0) {
+			throw new NotFoundError(`LtiTool with ${name} was not found.`);
+		}
+		const dos: LtiToolDO[] = entities.map((entity) => this.mapEntityToDO(entity));
+		return dos;
 	}
 
 	async findByOauthClientId(oAuthClientId: string): Promise<LtiToolDO> {
@@ -81,7 +84,7 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 			name: entity.name,
 			url: entity.url,
 			key: entity.key,
-			secret: entity.secret,
+			secret: entity.secret || 'none',
 			logo_url: entity.logo_url,
 			lti_message_type: entity.lti_message_type,
 			lti_version: entity.lti_version,

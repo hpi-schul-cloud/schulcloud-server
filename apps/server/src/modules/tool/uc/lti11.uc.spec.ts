@@ -7,9 +7,11 @@ import { LtiToolRepo } from '@shared/repo';
 import { UserService } from '@src/modules/user/service/user.service';
 import { LtiRole } from '@src/modules/tool/interface/lti-role.enum';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { CustomLtiProperty, LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { CustomLtiProperty } from '@shared/domain/domainobject/custom-lti-property';
 import { Lti11Uc } from './lti11.uc';
+import { InternalServerErrorException } from '@nestjs/common';
 
 describe('Lti11Uc', () => {
 	let module: TestingModule;
@@ -254,7 +256,7 @@ describe('Lti11Uc', () => {
 		});
 
 		it('should throw when trying to access an lti tool that is not v1.1', async () => {
-			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser: ICurrentUser = { userId: 'userId', roles: [RoleName.USER] } as ICurrentUser;
 			const ltiTool: LtiToolDO = new LtiToolDO({
 				name: 'name',
 				url: 'url',
@@ -272,7 +274,7 @@ describe('Lti11Uc', () => {
 
 			const func = () => useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
 
-			await expect(func).rejects.toThrow();
+			await expect(func).rejects.toThrow(InternalServerErrorException);
 		});
 	});
 });

@@ -30,7 +30,6 @@ import { VideoConferenceModule } from '@src/modules/video-conference';
 import { ToolModule } from '@src/modules/tool';
 import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
-import { ToolModule } from '@src/modules/tool/tool.module';
 
 const serverModules = [
 	ConfigModule.forRoot({
