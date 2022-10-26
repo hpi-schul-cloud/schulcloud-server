@@ -7,6 +7,7 @@ import {
 	FileRecordRepo,
 	LessonRepo,
 	SchoolRepo,
+	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
@@ -34,6 +35,7 @@ import { ReferenceLoader } from './reference.loader';
 		SchoolRepo,
 		LessonRepo,
 		TeamsRepo,
+		SubmissionRepo,
 	],
 	exports: [FeathersAuthorizationService, FeathersJwtProvider, AuthorizationService],
 })
