@@ -1442,7 +1442,7 @@ describe('FilesStorageService', () => {
 		});
 	});
 
-	describe('tryCopyFiles is called', () => {
+	describe('copyFilesWithRollbackOnError is called', () => {
 		describe('WHEN storage client copies file successfully', () => {
 			const setup = () => {
 				const { fileRecords } = getFileRecordsWithParams();
@@ -1455,7 +1455,7 @@ describe('FilesStorageService', () => {
 			it('should call copy with correct params', async () => {
 				const { sourceFile, targetFile } = setup();
 
-				await service.tryCopyFiles(sourceFile, targetFile);
+				await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
 				const expectedParams = createICopyFiles(sourceFile, targetFile);
 
@@ -1465,7 +1465,7 @@ describe('FilesStorageService', () => {
 			it('should return file response', async () => {
 				const { sourceFile, targetFile } = setup();
 
-				const result = await service.tryCopyFiles(sourceFile, targetFile);
+				const result = await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
 				const expectedFileResponse = new CopyFileResponse({
 					id: targetFile.id,
@@ -1492,7 +1492,7 @@ describe('FilesStorageService', () => {
 			it('should pass error and delete file record', async () => {
 				const { sourceFile, targetFile, error } = setup();
 
-				await expect(service.tryCopyFiles(sourceFile, targetFile)).rejects.toThrow(error);
+				await expect(service.copyFilesWithRollbackOnError(sourceFile, targetFile)).rejects.toThrow(error);
 
 				expect(fileRecordRepo.delete).toBeCalledWith([targetFile]);
 			});
@@ -1518,7 +1518,7 @@ describe('FilesStorageService', () => {
 			it('should call copy with correct params', async () => {
 				const { sourceFile, targetFile } = setup();
 
-				await service.tryCopyFiles(sourceFile, targetFile);
+				await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
 				expect(service.sendToAntiVirusService).toBeCalledWith(sourceFile);
 			});
@@ -1547,7 +1547,7 @@ describe('FilesStorageService', () => {
 			it('should delete file record', async () => {
 				const { sourceFile, targetFile, error } = setup();
 
-				await expect(service.tryCopyFiles(sourceFile, targetFile)).rejects.toThrow(error);
+				await expect(service.copyFilesWithRollbackOnError(sourceFile, targetFile)).rejects.toThrow(error);
 
 				expect(fileRecordRepo.delete).toBeCalledWith([targetFile]);
 			});
@@ -1687,7 +1687,7 @@ describe('FilesStorageService', () => {
 					sourceId: sourceFile.id,
 					name: targetFile.name,
 				});
-				spy = jest.spyOn(service, 'tryCopyFiles').mockResolvedValueOnce(fileResponse);
+				spy = jest.spyOn(service, 'copyFilesWithRollbackOnError').mockResolvedValueOnce(fileResponse);
 
 				return { sourceFile, targetFile, userId, params, fileResponse };
 			};
@@ -1700,12 +1700,12 @@ describe('FilesStorageService', () => {
 				expect(service.copyFileRecord).toHaveBeenCalledWith(sourceFile, params, userId);
 			});
 
-			it('should call tryCopyFiles with correct params', async () => {
+			it('should call copyFilesWithRollbackOnError with correct params', async () => {
 				const { sourceFile, targetFile, params, userId } = setup();
 
 				await service.copy(userId, [sourceFile], params);
 
-				expect(service.tryCopyFiles).toHaveBeenCalledWith(sourceFile, targetFile);
+				expect(service.copyFilesWithRollbackOnError).toHaveBeenCalledWith(sourceFile, targetFile);
 			});
 
 			it('should return file response array', async () => {
@@ -1738,7 +1738,7 @@ describe('FilesStorageService', () => {
 					sourceId: sourceFile.id,
 					name: targetFile.name,
 				});
-				spy = jest.spyOn(service, 'tryCopyFiles').mockResolvedValue(fileResponse);
+				spy = jest.spyOn(service, 'copyFilesWithRollbackOnError').mockResolvedValue(fileResponse);
 
 				return { sourceFile, targetFile, userId, params, fileResponse };
 			};
@@ -1773,7 +1773,7 @@ describe('FilesStorageService', () => {
 					sourceId: sourceFile.id,
 					name: targetFile.name,
 				});
-				spy = jest.spyOn(service, 'tryCopyFiles');
+				spy = jest.spyOn(service, 'copyFilesWithRollbackOnError');
 				spy.mockRejectedValueOnce(error).mockResolvedValue(fileResponse);
 
 				return { sourceFile, targetFile, userId, params, fileResponse };

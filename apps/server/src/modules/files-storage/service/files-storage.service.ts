@@ -256,7 +256,7 @@ export class FilesStorageService {
 		}
 	}
 
-	public async tryCopyFiles(sourceFile: FileRecord, targetFile: FileRecord): Promise<CopyFileResponse> {
+	public async copyFilesWithRollbackOnError(sourceFile: FileRecord, targetFile: FileRecord): Promise<CopyFileResponse> {
 		try {
 			const paths = createICopyFiles(sourceFile, targetFile);
 
@@ -284,7 +284,7 @@ export class FilesStorageService {
 
 			const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
 
-			const fileResponse = await this.tryCopyFiles(sourceFile, targetFile);
+			const fileResponse = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
 			responseEntities.push(fileResponse);
 		});
