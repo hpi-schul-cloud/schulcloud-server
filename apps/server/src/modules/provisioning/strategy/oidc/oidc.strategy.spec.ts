@@ -1,9 +1,8 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
+import { OidcProvisioningStrategy } from '@src/modules/provisioning/strategy/oidc/oidc.strategy';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import jwt from 'jsonwebtoken';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OidcProvisioningStrategy } from './oidc.strategy';
 
 const params = {
 	idToken: 'oidcIdToken',
@@ -11,7 +10,7 @@ const params = {
 
 describe('OidcStrategy', () => {
 	let module: TestingModule;
-	let oidcStrategy: IservProvisioningStrategy;
+	let oidcStrategy: OidcProvisioningStrategy;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -33,7 +32,7 @@ describe('OidcStrategy', () => {
 
 		beforeAll(() => {
 			jest.spyOn(jwt, 'decode').mockImplementation(() => {
-				return { preferredUsername };
+				return { preferred_username: preferredUsername };
 			});
 		});
 
