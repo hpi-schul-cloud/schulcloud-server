@@ -96,9 +96,9 @@ describe('LtiTool Repo', () => {
 			const entity: LtiTool = ltiToolFactory.buildWithId();
 			await em.persistAndFlush(entity);
 
-			const result = await repo.findByName(entity.name);
+			const result: LtiToolDO[] = await repo.findByName(entity.name);
 
-			expect(result.id).toEqual(entity.id);
+			expect(result[0].id).toEqual(entity.id);
 		});
 
 		it('should throw an error if the ltitool was not found', async () => {
