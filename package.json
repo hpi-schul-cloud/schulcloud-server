@@ -135,6 +135,7 @@
 		"cross-env": "^7.0.0",
 		"crypto-js": "^4.0.0",
 		"disposable-email-domains": "^1.0.56",
+		"engine.io": "^6.2.0",
 		"es6-promisify": "^7.0.0",
 		"eslint-plugin-react": "^7.24.0",
 		"eslint-plugin-react-hooks": "^4.2.0",
