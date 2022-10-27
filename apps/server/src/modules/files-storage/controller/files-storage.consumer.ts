@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
 import { Logger } from '@src/core/logger';
 import { FilesStorageEvents, FilesStorageExchange, ICopyFileDO, IFileDO } from '@src/shared/infra/rabbitmq';
-import { FilesStorageMapper } from '../mapper/files-storage.mapper';
+import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { CopyFilesOfParentPayload, FileRecordParams } from './dto';
 

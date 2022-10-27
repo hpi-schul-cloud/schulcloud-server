@@ -10,7 +10,6 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders } from 'axios';
-import { Busboy } from 'busboy';
 import { Request } from 'express';
 import { of } from 'rxjs';
 import { Readable } from 'stream';
@@ -20,8 +19,7 @@ import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { IFile } from '../interface';
 import { IGetFileResponse } from '../interface/storage-client';
-import { IFileBuilder } from '../mapper';
-import { FilesStorageMapper } from '../mapper/files-storage.mapper';
+import { FilesStorageMapper, IFileBuilder } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 

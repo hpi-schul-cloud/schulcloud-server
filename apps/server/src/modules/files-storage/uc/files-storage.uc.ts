@@ -3,10 +3,10 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
-import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
 import {
 	CopyFileParams,
@@ -20,7 +20,7 @@ import {
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { IFile } from '../interface/file';
-import { FilesStorageMapper } from '../mapper/files-storage.mapper';
+import { FilesStorageMapper } from '../mapper';
 import { IFileBuilder } from '../mapper/ifile-builder.builder';
 import { FilesStorageService } from '../service/files-storage.service';
 

@@ -3,7 +3,7 @@ import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
 import { PermissionContexts } from '../files-storage.const';
-import { FilesStorageMapper } from '../mapper/files-storage.mapper';
+import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 
 @Injectable()
