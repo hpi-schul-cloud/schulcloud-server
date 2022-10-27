@@ -281,9 +281,16 @@ const restrictToUsersSchool = async (context) => {
 };
 
 const validateUserName = async (context) => {
-	const accountService = context.app.service('nest-account-service');
+	let account;
 
-	const { systemId } = context.method === 'create' ? context.data : await accountService.findById(context.id);
+	if (context.method === 'create') {
+		account = context.data;
+	} else {
+		account = await context.app.service('nest-account-service').findById(context.id);
+	}
+
+	const { systemId } = account;
+
 	if (systemId) {
 		return context;
 	}

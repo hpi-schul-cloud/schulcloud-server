@@ -406,30 +406,16 @@ describe('AccountService', () => {
 	});
 
 	describe('updatePassword', () => {
-		it('should update password but no other information', async () => {
-			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+		it('should update password', async () => {
 			const newPassword = 'newPassword';
 			const ret = await accountService.updatePassword(mockTeacherAccount.id, newPassword);
 
 			expect(ret).toBeDefined();
-			expect(ret).toMatchObject({
-				...mockTeacherAccountDto,
-				password: bcrypt.hash(newPassword, 10),
-			});
-		});
-		it('should update an existing password and set update date', async () => {
-			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
-			const newPassword = 'newPassword';
-			const theNewDate = new Date(2020, 1, 2);
-			jest.setSystemTime(theNewDate);
-			const ret = await accountService.updatePassword(mockTeacherAccount.id, newPassword);
-
-			expect(ret).toBeDefined();
-			expect(ret).toMatchObject({
-				...mockTeacherAccountDto,
-				updatedAt: theNewDate,
-				password: bcrypt.hash(newPassword, 10),
-			});
+			if (ret.password) {
+				await expect(bcrypt.compare(newPassword, ret.password)).resolves.toBe(true);
+			} else {
+				fail('return password is undefined');
+			}
 		});
 	});
 
