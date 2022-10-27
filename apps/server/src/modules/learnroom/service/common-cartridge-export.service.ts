@@ -23,12 +23,6 @@ export class CommonCartridgeExportService {
 			title: course.name,
 		})
 			.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
-			// we are adding one resource here for testing purpose
-			.addResourceItems({
-				identifier: 'placeholder-identifier',
-				type: 'webcontent',
-				href: 'placeholder.html',
-			})
 			.addAssignments(this.mapTasksToAssignments(tasks));
 		return builder.build();
 	}

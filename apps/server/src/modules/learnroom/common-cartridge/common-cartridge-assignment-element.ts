@@ -7,7 +7,7 @@ export type ICommonCartridgeAssignmentProps = {
 };
 
 export class CommonCartridgeAssignmentElement implements ICommonCartridgeElement {
-	constructor(readonly props: ICommonCartridgeAssignmentProps) {}
+	constructor(private readonly props: ICommonCartridgeAssignmentProps) {}
 
 	transform(): Record<string, unknown> {
 		return {
@@ -32,25 +32,18 @@ export class CommonCartridgeAssignmentElement implements ICommonCartridgeElement
 					},
 					_: this.props.description,
 				},
-				gradable: true,
-				submission_formats: {
-					format: [
-						{
-							$: {
-								type: 'html',
-							},
+				extensions: {
+					assignment: {
+						$: {
+							identifier: `${this.props.identifier}-canvas`,
+							xmlns: 'http://canvas.instructure.com/xsd/cccv1p0',
+							'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+							'xsi:schemaLocation':
+								'http://canvas.instructure.com/xsd/cccv1p0 http://canvas.instructure.com/xsd/cccv1p0.xsd',
 						},
-						{
-							$: {
-								type: 'text',
-							},
-						},
-						{
-							$: {
-								type: 'file',
-							},
-						},
-					],
+						title: this.props.title,
+						submission_types: 'not_graded',
+					},
 				},
 			},
 		};
