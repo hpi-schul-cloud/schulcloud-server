@@ -10,8 +10,8 @@ import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { CustomLtiProperty } from '@shared/domain/domainobject/custom-lti-property';
-import { Lti11Uc } from './lti11.uc';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Lti11Uc } from './lti11.uc';
 
 describe('Lti11Uc', () => {
 	let module: TestingModule;
