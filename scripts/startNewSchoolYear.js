@@ -5,10 +5,10 @@ const { info, error } = require('../src/logger');
 const { yearModel, schoolModel } = require('../src/services/school/model');
 const federalStateModel = require('../src/services/federalState/model');
 
-const exceptFederalStateNames = ['Brandenburg'];
+const exceptFederalStateNames = [''];
 
-const NEXT_SCHOOL_YEAR = '2021/22';
-const MAINTENANCE_START_DATE = new Date('2021-08-01');
+const NEXT_SCHOOL_YEAR = '2022/23';
+const MAINTENANCE_START_DATE = new Date('2022-08-01');
 
 appPromise
 	.then(async () => {
@@ -41,6 +41,7 @@ appPromise
 				{
 					federalState: { $in: federalStateIds },
 					ldapSchoolIdentifier: { $exists: false },
+					currentYear: { $exists: true },
 				},
 				{ currentYear: nextSchoolYearId._id }
 			)

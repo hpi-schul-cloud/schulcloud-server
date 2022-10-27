@@ -13,6 +13,7 @@ export class TaskResponse {
 		this.courseId = courseId;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+		this.lessonHidden = false;
 		this.status = status;
 	}
 
@@ -33,12 +34,18 @@ export class TaskResponse {
 	@DecodeHtmlEntities()
 	courseName: string = '' as string;
 
+	@ApiPropertyOptional()
+	lessonName?: string;
+
 	@ApiProperty()
 	courseId: string = '' as string;
 
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
 	description?: string; // TODO: change this, since this is NOT the tasks description, but the name of its lesson
+
+	@ApiProperty()
+	lessonHidden: boolean;
 
 	@ApiPropertyOptional()
 	displayColor?: string;
