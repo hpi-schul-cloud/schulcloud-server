@@ -36,6 +36,9 @@ export class TaskMapper {
 			name: params.name,
 			courseId: params.courseId,
 			lessonId: params.lessonId,
+			description: params.description,
+			availableDate: params.availableDate,
+			dueDate: params.dueDate,
 		};
 		return dto;
 	}
