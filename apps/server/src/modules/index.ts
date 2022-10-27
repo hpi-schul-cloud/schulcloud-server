@@ -17,5 +17,6 @@ export * from './provisioning';
 export * from './oauth-provider';
 export * from './lesson';
 export * from './sharing';
+export * from './tool';
 export * from './school';
 export * from './role';
