@@ -129,7 +129,7 @@ export class KeycloakConsole {
 					// eslint-disable-next-line no-await-in-loop
 					await this.delay(delay * 1000);
 				} else {
-					throw err;
+					break;
 				}
 			}
 		}
