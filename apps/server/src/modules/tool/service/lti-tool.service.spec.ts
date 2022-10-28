@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LtiToolRepo } from '@shared/repo';
-import { LtiPrivacyPermission, Page, SchoolFeatures } from '@shared/domain';
+import { LtiPrivacyPermission, SchoolFeatures } from '@shared/domain';
 import { LtiToolService } from '@src/modules/tool/service/lti-tool.service';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { ForbiddenException } from '@nestjs/common';
+import { Page } from '@shared/domain/types/page';
 
 describe('LtiToolService', () => {
 	let module: TestingModule;
@@ -46,6 +47,7 @@ describe('LtiToolService', () => {
 		const courseId = 'courseId';
 		const url = 'url';
 		const ltiToolDo: LtiToolDO = {
+			isTemplate: false,
 			name: 'name',
 			url,
 			key: 'key',
