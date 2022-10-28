@@ -173,7 +173,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		this.checkFeatureEnabled(currentUser.school);
 		const { school } = currentUser;
-		if (!school.ldapSchoolIdentifier || school.inUserMigration !== true || !school.inMaintenanceSince) {
+		if (!school.externalId || school.inUserMigration !== true || !school.inMaintenanceSince) {
 			throw new BadRequestException('School cannot exit from user migration mode');
 		}
 		school.inUserMigration = false;
@@ -204,7 +204,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		this.checkFeatureEnabled(currentUser.school);
 		const { school } = currentUser;
-		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.ldapSchoolIdentifier) {
+		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.externalId) {
 			throw new BadRequestException('Sync cannot be activated for school');
 		}
 		school.inMaintenanceSince = undefined;
@@ -219,18 +219,18 @@ export class UserImportUc {
 	}
 
 	private async updateUserAndAccount(importUser: ImportUser, school: School): Promise<[User, Account] | undefined> {
-		if (!importUser.user || !importUser.loginName || !school.ldapSchoolIdentifier) {
+		if (!importUser.user || !importUser.loginName || !school.externalId) {
 			return;
 		}
 		const { user } = importUser;
 		user.ldapDn = importUser.ldapDn;
-		user.ldapId = importUser.ldapId;
+		user.externalId = importUser.externalId;
 
 		const account: AccountDto = await this.accountService.findByUserIdOrFail(user.id);
 
 		account.systemId = importUser.system.id;
 		account.password = undefined;
-		account.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;
+		account.username = `${school.externalId}/${importUser.loginName}`;
 
 		await this.userRepo.save(user);
 		await this.accountService.save(account);

@@ -3,14 +3,15 @@ import { ICurrentUser, Course } from '@shared/domain';
 import { NotFoundException } from '@nestjs/common';
 import { Response } from 'express';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Readable } from 'stream';
 import { ConfigService } from '@nestjs/config';
+import { CourseExportUc } from '@src/modules/learnroom/uc/course-export.uc';
 import { CourseController } from './course.controller';
 import { CourseUc } from '../uc/course.uc';
 
 describe('CourseController', () => {
 	let controller: CourseController;
-	let ucMock: DeepMocked<CourseUc>;
+	let courseUcMock: DeepMocked<CourseUc>;
+	let courseExportUcMock: DeepMocked<CourseExportUc>;
 	let configServiceMock: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
@@ -23,29 +24,34 @@ describe('CourseController', () => {
 					useValue: createMock<CourseUc>(),
 				},
 				{
+					provide: CourseExportUc,
+					useValue: createMock<CourseExportUc>(),
+				},
+				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
 			],
 		}).compile();
 
-		ucMock = module.get(CourseUc);
+		courseUcMock = module.get(CourseUc);
+		courseExportUcMock = module.get(CourseExportUc);
 		configServiceMock = module.get(ConfigService);
 		controller = module.get(CourseController);
 	});
 
 	beforeEach(() => {
-		ucMock.findAllByUser.mockClear();
+		courseUcMock.findAllByUser.mockClear();
 	});
 
 	describe('findForUser', () => {
 		it('should call uc', async () => {
-			ucMock.findAllByUser.mockResolvedValueOnce([[], 0]);
+			courseUcMock.findAllByUser.mockResolvedValueOnce([[], 0]);
 
 			const currentUser = { userId: 'userId' } as ICurrentUser;
 			await controller.findForUser(currentUser, { skip: 0, limit: 50 });
 
-			expect(ucMock.findAllByUser).toHaveBeenCalledWith('userId', { skip: 0, limit: 50 });
+			expect(courseUcMock.findAllByUser).toHaveBeenCalledWith('userId', { skip: 0, limit: 50 });
 		});
 
 		it('should map result to response', async () => {
@@ -59,7 +65,7 @@ describe('CourseController', () => {
 					};
 				},
 			} as Course;
-			ucMock.findAllByUser.mockResolvedValueOnce([[courseMock], 1]);
+			courseUcMock.findAllByUser.mockResolvedValueOnce([[courseMock], 1]);
 
 			const currentUser = { userId: 'userId' } as ICurrentUser;
 			const result = await controller.findForUser(currentUser, { skip: 0, limit: 100 });
@@ -71,7 +77,8 @@ describe('CourseController', () => {
 
 	describe('exportCourse', () => {
 		it('should return an imscc file', async () => {
-			ucMock.exportCourse.mockResolvedValueOnce({} as Readable);
+			courseExportUcMock.exportCourse.mockResolvedValueOnce({} as Buffer);
+
 			configServiceMock.get.mockReturnValue(true);
 
 			await expect(

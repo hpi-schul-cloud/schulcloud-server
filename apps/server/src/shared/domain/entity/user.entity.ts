@@ -1,4 +1,4 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Reference } from '@mikro-orm/core';
 import { IEntityWithSchool } from '../interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
@@ -16,9 +16,9 @@ export interface IUserProperties {
 	firstName: string;
 	lastName: string;
 	school: School;
-	roles: Role[];
+	roles: (Role | Reference<Role>)[];
 	ldapDn?: string;
-	ldapId?: string;
+	externalId?: string;
 	language?: LanguageType;
 	forcePasswordChange?: boolean;
 	preferences?: Record<string, unknown>;
@@ -28,7 +28,7 @@ export interface IUserProperties {
 @Entity({ tableName: 'users' })
 @Index({ properties: ['id', 'email'] })
 @Index({ properties: ['firstName', 'lastName'] })
-@Index({ properties: ['ldapId', 'school'] })
+@Index({ properties: ['externalId', 'school'] })
 @Index({ properties: ['school', 'ldapDn'] })
 @Index({ properties: ['school', 'roles'] })
 @Index({
@@ -72,9 +72,8 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 	@Index()
 	ldapDn?: string;
 
-	@Property({ nullable: true })
-	@Index()
-	ldapId?: string;
+	@Property({ nullable: true, fieldName: 'ldapId' })
+	externalId?: string;
 
 	@Property({ nullable: true })
 	@Index()
@@ -110,7 +109,7 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 		this.school = props.school;
 		this.roles.set(props.roles);
 		this.ldapDn = props.ldapDn;
-		this.ldapId = props.ldapId;
+		this.externalId = props.externalId;
 		this.forcePasswordChange = props.forcePasswordChange;
 		this.language = props.language;
 		this.preferences = props.preferences ?? {};

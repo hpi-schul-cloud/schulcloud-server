@@ -1,4 +1,4 @@
-import { ISystemProperties, System } from '@shared/domain';
+import { ISystemProperties, OauthConfig, System } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
@@ -6,7 +6,7 @@ import { BaseFactory } from './base.factory';
 export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 	withOauthConfig(): this {
 		const params: DeepPartial<ISystemProperties> = {
-			oauthConfig: {
+			oauthConfig: new OauthConfig({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
@@ -19,7 +19,7 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 				logoutEndpoint: 'mock_logoutEndpoint',
 				issuer: 'mock_issuer',
 				jwksEndpoint: 'mock_jwksEndpoint',
-			},
+			}),
 		};
 		return this.params(params);
 	}
@@ -27,10 +27,11 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 
 export const systemFactory = SystemFactory.define(System, ({ sequence }) => {
 	return {
-		type: 'iserv',
+		type: 'oauth',
 		url: 'http://mock.de',
 		alias: `system #${sequence}`,
 		displayName: `system #${sequence}DisplayName`,
-		provisioningStrategy: SystemProvisioningStrategy.PLACEHOLDER,
+		provisioningStrategy: SystemProvisioningStrategy.UNDEFINED,
+		provisioningUrl: 'provisioningUrl',
 	};
 });
