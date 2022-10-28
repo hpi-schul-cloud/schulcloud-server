@@ -98,7 +98,7 @@ export class TaskController {
 
 	@Post()
 	async create(@Body() params: TaskCreateParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
-		const taskWithSatusVo = await this.taskUc.create(currentUser.userId, params.courseId);
+		const taskWithSatusVo = await this.taskUc.create(currentUser.userId, TaskMapper.mapTaskCreateToDomain(params));
 
 		const response = TaskMapper.mapToResponse(taskWithSatusVo);
 		return response;
@@ -113,7 +113,7 @@ export class TaskController {
 		const taskWithSatusVo = await this.taskUc.update(
 			currentUser.userId,
 			urlParams.taskId,
-			TaskMapper.mapUpdateTaskToDomain(params)
+			TaskMapper.mapTaskUpdateToDomain(params)
 		);
 
 		const response = TaskMapper.mapToResponse(taskWithSatusVo);

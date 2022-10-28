@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
+import { ITaskUpdate } from '@shared/domain';
 import { SanitizeHtml } from '@shared/controller';
-import { dateType } from 'aws-sdk/clients/iam';
 
-export class TaskUpdateParams {
+export class TaskUpdateParams implements ITaskUpdate {
 	@IsString()
 	@IsMongoId()
 	@ApiProperty({
@@ -32,6 +32,7 @@ export class TaskUpdateParams {
 	name!: string;
 
 	@IsString()
+	@IsOptional()
 	@SanitizeHtml({ keep: 'richtext' })
 	@ApiPropertyOptional({
 		description: 'The description of the task',
@@ -39,6 +40,7 @@ export class TaskUpdateParams {
 	description?: string;
 
 	@IsDate()
+	@IsOptional()
 	@ApiPropertyOptional({
 		description: 'Date until the task is published',
 		type: Date,
@@ -46,6 +48,7 @@ export class TaskUpdateParams {
 	availableDate?: Date;
 
 	@IsDate()
+	@IsOptional()
 	@ApiPropertyOptional({
 		description: 'Date until the task submissions can be sent',
 		type: Date,

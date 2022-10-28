@@ -1,7 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
+import { ITaskCreate } from '@shared/domain';
+import { SanitizeHtml } from '@shared/controller';
 
-export class TaskCreateParams {
+export class TaskCreateParams implements ITaskCreate {
 	@IsString()
 	@IsMongoId()
 	@ApiProperty({
@@ -11,4 +13,45 @@ export class TaskCreateParams {
 		nullable: false,
 	})
 	courseId!: string;
+
+	@IsString()
+	@IsMongoId()
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'The id of an lesson object.',
+		pattern: '[a-f0-9]{24}',
+	})
+	lessonId?: string;
+
+	@IsString()
+	@SanitizeHtml()
+	@ApiProperty({
+		description: 'The title of the task',
+		required: true,
+	})
+	name!: string;
+
+	@IsString()
+	@IsOptional()
+	@SanitizeHtml({ keep: 'richtext' })
+	@ApiPropertyOptional({
+		description: 'The description of the task',
+	})
+	description?: string;
+
+	@IsDate()
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Date until the task is published',
+		type: Date,
+	})
+	availableDate?: Date;
+
+	@IsDate()
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Date until the task submissions can be sent',
+		type: Date,
+	})
+	dueDate?: Date;
 }

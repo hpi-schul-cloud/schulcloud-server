@@ -1,5 +1,5 @@
-import { ITaskUpdate, TaskWithStatusVo } from '@shared/domain';
-import { TaskResponse, TaskUpdateParams } from '../controller/dto';
+import { ITaskCreate, ITaskUpdate, TaskWithStatusVo } from '@shared/domain';
+import { TaskCreateParams, TaskResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskStatusMapper } from './task-status.mapper';
 
 export class TaskMapper {
@@ -31,9 +31,21 @@ export class TaskMapper {
 		return dto;
 	}
 
-	static mapUpdateTaskToDomain(params: TaskUpdateParams): ITaskUpdate {
+	static mapTaskUpdateToDomain(params: TaskUpdateParams): ITaskUpdate {
 		const dto: ITaskUpdate = {
 			name: params.name,
+			courseId: params.courseId,
+			lessonId: params.lessonId,
+			description: params.description,
+			availableDate: params.availableDate,
+			dueDate: params.dueDate,
+		};
+		return dto;
+	}
+
+	static mapTaskCreateToDomain(params: TaskCreateParams): ITaskCreate {
+		const dto: ITaskCreate = {
+			name: params.name || 'Draft',
 			courseId: params.courseId,
 			lessonId: params.lessonId,
 			description: params.description,

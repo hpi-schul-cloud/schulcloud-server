@@ -28,6 +28,7 @@ const getSanitizeHtmlOptions = (options?: SanitizeDecoratorOptions): sanitize.IO
 			},
 		};
 	} else {
+		// plain text
 		sanitizeHtmlOptions = { allowedTags: [], allowedAttributes: {} };
 	}
 

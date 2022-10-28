@@ -6,6 +6,8 @@ import {
 	Course,
 	EntityId,
 	IPagination,
+	ITaskCreate,
+	ITaskProperties,
 	ITaskStatus,
 	ITaskUpdate,
 	Lesson,
@@ -214,21 +216,37 @@ export class TaskUC {
 		return oneWeekAgo;
 	}
 
-	async delete(userId: EntityId, taskId: EntityId) {
+	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
+		this.checkNewTaskEnabled();
+
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const task = await this.taskRepo.findById(taskId);
+		const course = await this.courseRepo.findById(params.courseId);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
+		this.authorizationService.checkPermission(
+			user,
+			course,
+			PermissionContextBuilder.write([Permission.HOMEWORK_CREATE])
+		);
 
-		const params = FileParamBuilder.build(task.school.id, task);
-		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
+		const taskParams: ITaskProperties = {
+			...params,
+			school: user.school,
+			creator: user,
+			course,
+		};
 
-		await this.taskRepo.delete(task);
-		return true;
+		const task = new Task(taskParams);
+
+		await this.taskRepo.save(task);
+
+		const status = task.createTeacherStatusForUser(user);
+		const taskWithStatusVo = new TaskWithStatusVo(task, status);
+
+		return taskWithStatusVo;
 	}
 
 	async find(userId: EntityId, taskId: EntityId) {
-		this.checkIndividualTaskEnabled();
+		this.checkNewTaskEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
@@ -244,35 +262,8 @@ export class TaskUC {
 		return result;
 	}
 
-	async create(userId: EntityId, courseId: EntityId): Promise<TaskWithStatusVo> {
-		this.checkIndividualTaskEnabled();
-
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const course = await this.courseRepo.findById(courseId);
-
-		this.authorizationService.checkPermission(
-			user,
-			course,
-			PermissionContextBuilder.write([Permission.HOMEWORK_CREATE])
-		);
-
-		const task = new Task({
-			name: 'Draft', // TODO
-			school: user.school,
-			creator: user,
-			course,
-		});
-
-		await this.taskRepo.save(task);
-
-		const status = task.createTeacherStatusForUser(user);
-		const taskWithStatusVo = new TaskWithStatusVo(task, status);
-
-		return taskWithStatusVo;
-	}
-
 	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
-		this.checkIndividualTaskEnabled();
+		this.checkNewTaskEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
@@ -294,7 +285,20 @@ export class TaskUC {
 		return taskWithStatusVo;
 	}
 
-	private checkIndividualTaskEnabled() {
+	async delete(userId: EntityId, taskId: EntityId) {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
+
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
+
+		const params = FileParamBuilder.build(task.school.id, task);
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
+
+		await this.taskRepo.delete(task);
+		return true;
+	}
+
+	private checkNewTaskEnabled() {
 		const enabled = Configuration.get('FEATURE_NEW_TASK_ENABLED') as boolean;
 		if (!enabled) {
 			throw new InternalServerErrorException('Feature not enabled');

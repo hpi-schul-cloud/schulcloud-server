@@ -8,6 +8,7 @@ import {
 	cleanupCollections,
 	courseFactory,
 	fileFactory,
+	lessonFactory,
 	mapUserToCurrentUser,
 	roleFactory,
 	submissionFactory,
@@ -1105,20 +1106,35 @@ describe('Task Controller (e2e)', () => {
 		it('PATCH :id should update a task', async () => {
 			const user = setup(Permission.HOMEWORK_EDIT);
 			const course = courseFactory.build({ teachers: [user] });
-			const task = taskFactory.build({ name: 'original name', creator: user, course });
+			const lesson = lessonFactory.build({ course });
+			const task = taskFactory.build({ name: 'original name', creator: user, course, lesson });
 
-			await em.persistAndFlush([user, course, task]);
+			await em.persistAndFlush([user, course, lesson, task]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
 
+			const updateTaskParams = {
+				name: 'updated name',
+				courseId: course.id,
+				lessonId: lesson.id,
+				description: '<p>test</p>',
+				availableDate: '2022-10-28T08:28:12.981Z',
+				dueDate: '2023-10-28T08:28:12.981Z',
+			};
 			const response = await request(app.getHttpServer())
 				.patch(`/tasks/${task.id}`)
 				.set('Accept', 'application/json')
-				.send({ name: 'updated name', courseId: course.id })
+				.send(updateTaskParams)
 				.expect(200);
 
-			expect((response.body as TaskResponse).name).toEqual('updated name');
+			const responseTask = response.body as TaskResponse;
+			expect(responseTask.name).toEqual(updateTaskParams.name);
+			expect(responseTask.description).toEqual(updateTaskParams.description);
+			expect(responseTask.availableDate).toEqual(updateTaskParams.availableDate);
+			expect(responseTask.duedate).toEqual(updateTaskParams.dueDate);
+			expect(responseTask.courseId).toEqual(updateTaskParams.courseId);
+			expect(responseTask.lessonName).toEqual(lesson.name);
 		});
 	});
 	describe('When individual assignment Task feature is not enabled', () => {

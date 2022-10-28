@@ -84,13 +84,19 @@ describe('task.mapper', () => {
 			const params: TaskUpdateParams = {
 				name: 'test name',
 				courseId: new ObjectId().toHexString(),
+				description: 'test',
+				dueDate: new Date('2023-05-28T08:00:00.000+00:00'),
+				availableDate: new Date('2022-05-28T08:00:00.000+00:00'),
 			};
-			const result = TaskMapper.mapUpdateTaskToDomain(params);
+			const result = TaskMapper.mapTaskUpdateToDomain(params);
 
 			const expected: ITaskUpdate = {
 				name: params.name,
 				courseId: params.courseId,
 				lessonId: params.lessonId,
+				description: params.description,
+				dueDate: params.dueDate,
+				availableDate: params.availableDate,
 			};
 			expect(result).toStrictEqual(expected);
 		});
