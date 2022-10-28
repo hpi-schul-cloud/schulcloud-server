@@ -152,6 +152,7 @@ data:
               }
             },
             "type" : "ldap",
+            "provisioningStrategy": "iserv",
             "oauthConfig": {
               "clientId": "'$ISERV_CLIENT_ID'",
               "clientSecret": "'$ISERV_CLIENT_SECRET'",
@@ -172,19 +173,21 @@ data:
             "alias" : "SANIS",
             "displayName" : "SANIS",
             "type" : "oauth",
+            "provisioningStrategy": "sanis",
+            "provisioningUrl": "https://api-dienste.niedersachsen-login.schule/v1/person-info",
             "oauthConfig": {
               "clientId": "'$SANIS_CLIENT_ID'",
               "clientSecret": "'$SANIS_CLIENT_SECRET'",
-              "tokenEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/token",
+              "tokenEndpoint": "https://auth.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/token",
               "grantType": "authorization_code",
               "scope": "openid",
               "responseType": "code",
               "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/'$SANIS_SYSTEM_ID'",
-              "authEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/auth",
+              "authEndpoint": "https://auth.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/auth",
               "provider": "sanis",
-              "logoutEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/logout",
-              "jwksEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/certs",
-              "issuer": "https://auth.niedersachsen-login.schule/auth/realms/SANIS"
+              "logoutEndpoint": "https://auth.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/logout",
+              "jwksEndpoint": "https://auth.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/certs",
+              "issuer": "https://auth.niedersachsen-login.schule/realms/SANIS"
             }
           }
       ]);'
