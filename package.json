@@ -192,7 +192,7 @@
 		"universal-analytics": "^0.5.1",
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^8.3.0",
-		"winston": "^3.7.2",
+		"winston": "^3.8.2",
 		"xml2js-es6-promise": "^1.1.1"
 	},
 	"devDependencies": {
