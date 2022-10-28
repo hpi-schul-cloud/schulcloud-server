@@ -14,6 +14,7 @@ export class LtiToolMapper {
 			isHidden: false,
 			openNewTab: false,
 			key: 'none',
+			secret: 'none',
 			...body,
 		});
 		return ltiTool;

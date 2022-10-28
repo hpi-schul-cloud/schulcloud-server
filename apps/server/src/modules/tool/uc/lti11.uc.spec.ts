@@ -7,8 +7,9 @@ import { LtiToolRepo } from '@shared/repo';
 import { UserService } from '@src/modules/user/service/user.service';
 import { LtiRole } from '@src/modules/tool/interface/lti-role.enum';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { CustomLtiProperty } from '@shared/domain/domainobject/custom-lti-property';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Lti11Uc } from './lti11.uc';
 
@@ -57,62 +58,62 @@ describe('Lti11Uc', () => {
 		await module.close();
 	});
 
-	const setup = () => {
-		const userName = 'userName';
-		const currentUser: ICurrentUser = { userId: 'userId', roles: [RoleName.USER] } as ICurrentUser;
-		const userDto: UserDto = new UserDto({
-			email: 'email',
-			firstName: 'firstName',
-			lastName: 'lastName',
-			roleIds: ['roleId'],
-			schoolId: 'schoolId',
-		});
-		const ltiTool: LtiToolDO = new LtiToolDO({
-			name: 'name',
-			url: 'url',
-			key: 'key',
-			secret: 'secret',
-			roles: [],
-			privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
-			customs: [],
-			isTemplate: false,
-			openNewTab: false,
-			isHidden: false,
-			lti_version: 'LTI-1p0',
-			lti_message_type: 'messageType',
-			resource_link_id: 'linkId',
-		});
-		const authorization: Authorization = {
-			oauth_consumer_key: 'key',
-			oauth_nonce: 'nonce',
-			oauth_body_hash: 'body_hash',
-			oauth_signature: 'signature',
-			oauth_timestamp: 100,
-			oauth_token: 'token',
-			oauth_version: 'version',
-			oauth_signature_method: 'signature_method',
-		};
-
-		ltiToolRepo.findById.mockResolvedValue(ltiTool);
-		ltiRoleMapper.mapRoleToLtiRole.mockReturnValue(LtiRole.LEARNER);
-		userService.getUser.mockResolvedValue(userDto);
-		lti11Service.getUserIdOrPseudonym.mockResolvedValue(currentUser.userId);
-		userService.getDisplayName.mockResolvedValue(userName);
-		lti11Service.createConsumer.mockReturnValue(oauth);
-		oauth.authorize.mockReturnValue(authorization);
-
-		return {
-			userName,
-			currentUser,
-			userDto,
-			ltiTool,
-			authorization,
-		};
-	};
-
 	describe('getLaunchParameters', () => {
 		describe('build oauth1 authorization parameters and payload', () => {
-			it('should use tool with resource_link_id', async () => {
+			const setup = () => {
+				const userName = 'userName';
+				const currentUser: ICurrentUser = { userId: 'userId', roles: [RoleName.USER] } as ICurrentUser;
+				const userDto: UserDto = new UserDto({
+					email: 'email',
+					firstName: 'firstName',
+					lastName: 'lastName',
+					roleIds: ['roleId'],
+					schoolId: 'schoolId',
+				});
+				const ltiTool: LtiToolDO = new LtiToolDO({
+					name: 'name',
+					url: 'url',
+					key: 'key',
+					secret: 'secret',
+					roles: [],
+					privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
+					customs: [],
+					isTemplate: false,
+					openNewTab: false,
+					isHidden: false,
+					lti_version: 'LTI-1p0',
+					lti_message_type: 'messageType',
+					resource_link_id: 'linkId',
+				});
+				const authorization: Authorization = {
+					oauth_consumer_key: 'key',
+					oauth_nonce: 'nonce',
+					oauth_body_hash: 'body_hash',
+					oauth_signature: 'signature',
+					oauth_timestamp: 100,
+					oauth_token: 'token',
+					oauth_version: 'version',
+					oauth_signature_method: 'signature_method',
+				};
+
+				ltiToolRepo.findById.mockResolvedValue(ltiTool);
+				ltiRoleMapper.mapRoleToLtiRole.mockReturnValue(LtiRole.LEARNER);
+				userService.getUser.mockResolvedValue(userDto);
+				lti11Service.getUserIdOrPseudonym.mockResolvedValue(currentUser.userId);
+				userService.getDisplayName.mockResolvedValue(userName);
+				lti11Service.createConsumer.mockReturnValue(oauth);
+				oauth.authorize.mockReturnValue(authorization);
+
+				return {
+					userName,
+					currentUser,
+					userDto,
+					ltiTool,
+					authorization,
+				};
+			};
+
+			it('should return authorization with resource link id from tool', async () => {
 				const { currentUser, ltiTool, authorization } = setup();
 				const expectedRequestData: RequestOptions = {
 					url: ltiTool.url,
@@ -134,7 +135,7 @@ describe('Lti11Uc', () => {
 				expect(oauth.authorize).toHaveBeenCalledWith(expect.objectContaining(expectedRequestData));
 			});
 
-			it('should use courseId as resource_link_id, if tool has none', async () => {
+			it('should return authorization with courseId as resource_link_id, if tool has none', async () => {
 				const { currentUser, ltiTool, authorization } = setup();
 				const courseId = 'courseId';
 				ltiTool.resource_link_id = undefined;
@@ -158,7 +159,7 @@ describe('Lti11Uc', () => {
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
-			it('should use tool with pseudonymous privacy_permission', async () => {
+			it('should return authorization with pseudonymous privacy_permission', async () => {
 				const { currentUser, ltiTool, authorization } = setup();
 				const expectedRequestData: RequestOptions = {
 					url: ltiTool.url,
@@ -180,7 +181,7 @@ describe('Lti11Uc', () => {
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
-			it('should use tool with name privacy_permission', async () => {
+			it('should return authorization with name privacy_permission', async () => {
 				const { currentUser, ltiTool, authorization, userName } = setup();
 				ltiTool.privacy_permission = LtiPrivacyPermission.NAME;
 				const expectedRequestData: RequestOptions = {
@@ -204,7 +205,7 @@ describe('Lti11Uc', () => {
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
-			it('should use tool with email privacy_permission', async () => {
+			it('should return authorization with email privacy_permission', async () => {
 				const { currentUser, ltiTool, authorization, userDto } = setup();
 				ltiTool.privacy_permission = LtiPrivacyPermission.EMAIL;
 				const expectedRequestData: RequestOptions = {
@@ -228,12 +229,9 @@ describe('Lti11Uc', () => {
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
-			it('should use tool with custom fields', async () => {
+			it('should return authorization with custom fields', async () => {
 				const { currentUser, ltiTool, authorization } = setup();
-				ltiTool.customs = [
-					{ key: 'field1', value: 'value1' },
-					{ key: 'field2', value: 'value2' },
-				];
+				ltiTool.customs = [new CustomLtiProperty('field1', 'value1'), new CustomLtiProperty('field2', 'value2')];
 				const expectedRequestData: RequestOptions = {
 					url: ltiTool.url,
 					method: 'POST',
@@ -257,8 +255,8 @@ describe('Lti11Uc', () => {
 			});
 		});
 
-		it('should throw when trying to access a lti tool that is not v1.1', async () => {
-			const { currentUser } = setup();
+		it('should throw when trying to access an lti tool that is not v1.1', async () => {
+			const currentUser: ICurrentUser = { userId: 'userId', roles: [RoleName.USER] } as ICurrentUser;
 			const ltiTool: LtiToolDO = new LtiToolDO({
 				name: 'name',
 				url: 'url',
@@ -271,17 +269,6 @@ describe('Lti11Uc', () => {
 				openNewTab: false,
 				isHidden: false,
 			});
-
-			ltiToolRepo.findById.mockResolvedValue(ltiTool);
-
-			const func = () => useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
-
-			await expect(func).rejects.toThrow(InternalServerErrorException);
-		});
-
-		it('should throw when trying to access a lti tool that has no secret configured', async () => {
-			const { currentUser, ltiTool } = setup();
-			ltiTool.secret = undefined;
 
 			ltiToolRepo.findById.mockResolvedValue(ltiTool);
 

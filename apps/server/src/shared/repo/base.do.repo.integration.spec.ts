@@ -185,7 +185,7 @@ describe('BaseDORepo', () => {
 				await em.persistAndFlush([testEntity1, testEntity2]);
 				em.clear();
 
-				await repo.deleteById([testEntity1.id, testEntity2.id]);
+				await repo.deleteByIds([testEntity1.id, testEntity2.id]);
 				em.clear();
 
 				expect(await em.findOne(TestEntity, testEntity1.id)).toBeNull();
@@ -198,7 +198,7 @@ describe('BaseDORepo', () => {
 				await em.persistAndFlush([testEntity1, testEntity2]);
 				em.clear();
 
-				const result: number = await repo.deleteById([testEntity1.id, testEntity2.id]);
+				const result: number = await repo.deleteByIds([testEntity1.id, testEntity2.id]);
 
 				expect(result).toEqual(2);
 			});

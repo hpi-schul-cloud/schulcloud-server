@@ -54,7 +54,7 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	resource_link_id?: string;
 
 	@Enum({ array: true, items: () => LtiRoleType })
-	@Property({ nullable: false })
+	@Property({ nullable: true })
 	roles?: LtiRoleType[];
 
 	@Enum({
@@ -92,7 +92,7 @@ export class LtiTool extends BaseEntityWithTimestamps {
 	skipConsent?: boolean;
 
 	@Property({ nullable: false, default: false })
-	openNewTab?: boolean;
+	openNewTab: boolean;
 
 	@Property({ nullable: true })
 	frontchannel_logout_uri?: string;
@@ -104,8 +104,8 @@ export class LtiTool extends BaseEntityWithTimestamps {
 		super();
 		this.name = props.name;
 		this.url = props.url;
-		this.key = props.key;
-		this.secret = props.secret;
+		this.key = props.key || 'none';
+		this.secret = props.secret || 'none';
 		this.logo_url = props.logo_url;
 		this.lti_message_type = props.lti_message_type;
 		this.lti_version = props.lti_version;
@@ -123,6 +123,6 @@ export class LtiTool extends BaseEntityWithTimestamps {
 		this.skipConsent = props.skipConsent;
 		this.openNewTab = props.openNewTab || false;
 		this.frontchannel_logout_uri = props.frontchannel_logout_uri;
-		this.isHidden = props.isHidden;
+		this.isHidden = props.isHidden || false;
 	}
 }

@@ -4,7 +4,7 @@ const { info, error } = require('../src/logger');
 
 const { yearModel, schoolModel } = require('../src/services/school/model');
 
-const NEXT_SCHOOL_YEAR = '2021/22';
+const NEXT_SCHOOL_YEAR = '2022/23';
 
 appPromise
 	.then(async () => {

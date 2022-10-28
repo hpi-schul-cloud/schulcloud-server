@@ -74,7 +74,7 @@ describe('LtiToolController', () => {
 			roles: [LtiRoleType.LEARNER, LtiRoleType.MENTOR],
 			skipConsent: false,
 		});
-		const ltiToolResponse: LtiToolResponse = new LtiToolResponse(ltiToolDO as LtiToolResponse);
+		const ltiToolResponse: LtiToolResponse = new LtiToolResponse({ ...ltiToolDO, _id: 'id' } as LtiToolResponse);
 		const ltiToolBody: LtiToolPostBody = ltiToolDO;
 
 		return {
