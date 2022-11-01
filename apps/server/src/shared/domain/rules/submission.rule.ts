@@ -19,39 +19,41 @@ export class SubmissionRule extends BasePermission<Submission> {
 
 	public hasPermission(user: User, entity: Submission, context: IPermissionContext): boolean {
 		const { action, requiredPermissions } = context;
-		const hasPermission = this.utils.hasAllPermissions(user, requiredPermissions);
+		const hasGeneralPermission = this.utils.hasAllPermissions(user, requiredPermissions);
+
+		let hasSpecificPermission = false;
 		const isCreator = this.utils.hasAccessToEntity(user, entity, ['student']);
 
-		let hasSubmissionPermission = false;
-
-		if (action === Actions.read) {
-			hasSubmissionPermission = this.submissionReadPermission(user, entity);
+		if (isCreator) {
+			hasSpecificPermission = true;
+		} else if (action === Actions.read) {
+			hasSpecificPermission = this.hasReadPermission(user, entity);
 		} else if (action === Actions.write) {
-			hasSubmissionPermission = this.submissionWritePermission(user, entity);
+			hasSpecificPermission = this.hasWritePermission(user, entity);
 		}
 
-		const result = hasPermission && (isCreator || hasSubmissionPermission);
+		const result = hasGeneralPermission && hasSpecificPermission;
 
 		return result;
 	}
 
-	private submissionReadPermission(user: User, entity: Submission): boolean {
+	private hasReadPermission(user: User, entity: Submission): boolean {
 		let hasParentReadPermission = false;
 		if (entity.task && entity.task.publicSubmissions) {
-			hasParentReadPermission = this.parentPermission(user, entity, Actions.read);
+			hasParentReadPermission = this.hasParentPermission(user, entity, Actions.read);
 		} else {
-			hasParentReadPermission = this.parentPermission(user, entity, Actions.write);
+			hasParentReadPermission = this.hasParentPermission(user, entity, Actions.write);
 		}
 		return hasParentReadPermission;
 	}
 
-	private submissionWritePermission(user: User, entity: Submission): boolean {
-		const hasParentWritePermission = this.parentPermission(user, entity, Actions.write);
+	private hasWritePermission(user: User, entity: Submission): boolean {
+		const hasParentWritePermission = this.hasParentPermission(user, entity, Actions.write);
 
 		return hasParentWritePermission;
 	}
 
-	private parentPermission(user: User, entity: Submission, action: Actions) {
+	private hasParentPermission(user: User, entity: Submission, action: Actions) {
 		let hasParentPermission = false;
 
 		if (entity.task) {
