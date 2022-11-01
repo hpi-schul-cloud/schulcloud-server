@@ -277,20 +277,29 @@ export class FilesStorageService {
 		targetParams: FileRecordParams
 	): Promise<CopyFileResponse[]> {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
-		const responseEntities: CopyFileResponse[] = [];
 
 		const promises = sourceFileRecords.map(async (sourceFile) => {
-			if (isStatusBlocked(sourceFile) || sourceFile.deletedSince) return;
+			if (isStatusBlocked(sourceFile)) return Promise.reject(new Error(ErrorType.FILE_IS_BLOCKED));
+			if (sourceFile.deletedSince) return Promise.reject(new Error(ErrorType.FILE_NOT_FOUND));
 
 			const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
 
 			const fileResponse = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
-			responseEntities.push(fileResponse);
+			return fileResponse;
 		});
 
-		await Promise.allSettled(promises);
+		const resolvedResponses = await Promise.allSettled(promises).then((results) => {
+			const isFulfilled = (
+				input: PromiseSettledResult<CopyFileResponse>
+			): input is PromiseFulfilledResult<CopyFileResponse> => input.status === 'fulfilled';
 
-		return responseEntities;
+			const resolvedPromises: PromiseFulfilledResult<CopyFileResponse>[] = results.filter(isFulfilled);
+			const fileResponses = resolvedPromises.map((result) => result.value);
+
+			return fileResponses;
+		});
+
+		return resolvedResponses;
 	}
 }
