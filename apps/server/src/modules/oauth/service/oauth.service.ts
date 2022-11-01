@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { HttpService } from '@nestjs/axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
@@ -128,18 +128,7 @@ export class OAuthService {
 			const user: User = await this.userRepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
 			return user;
 		} catch (error) {
-			let additionalInfo = '';
-			const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
-			const email = decodedToken?.email as string;
-			if (email) {
-				const usersWithEmail: User[] = await this.userRepo.findByEmail(email);
-				const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
-				additionalInfo = ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
-			}
-			throw new OAuthSSOError(
-				`Failed to find user with Id ${provisioningDto.externalUserId} ${additionalInfo}`,
-				'sso_user_notfound'
-			);
+			throw new OAuthSSOError(`Failed to find user with Id ${provisioningDto.externalUserId}`, 'sso_user_notfound');
 		}
 	}
 
