@@ -1,7 +1,6 @@
 import { Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
@@ -15,10 +14,10 @@ import {
 } from '../controller/dto';
 import { ErrorType } from '../error';
 import {
+	createFileRecord,
 	createICopyFiles,
 	createPath,
 	deriveStatusFromSource,
-	createFileRecord,
 	getPaths,
 	getStatusFromScanResult,
 	isStatusBlocked,
@@ -29,6 +28,7 @@ import {
 } from '../helper';
 import { IFile, IGetFileResponse } from '../interface';
 import { FilesStorageMapper } from '../mapper';
+import { FileRecordRepo } from '../repo';
 
 @Injectable()
 export class FilesStorageService {

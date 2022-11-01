@@ -5,7 +5,6 @@ import { InternalServerErrorException, NotAcceptableException, NotFoundException
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import _ from 'lodash';
@@ -28,6 +27,7 @@ import {
 } from '../helper';
 import { IFile, IGetFileResponse } from '../interface';
 import { FilesStorageMapper } from '../mapper';
+import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
 const getFileRecordsWithParams = () => {
