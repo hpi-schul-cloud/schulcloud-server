@@ -24,7 +24,8 @@ describe('UserUcMapper', () => {
 		roleIds = ['roleId1', 'roleId2'];
 		provisioningUserOutputDto = new ProvisioningUserOutputDto({
 			id: 'asdhjasd',
-			email: 'email',
+			email: '',
+			externalId: 'external1234',
 			lastName: 'lastName',
 			firstName: 'firstName',
 			roleNames: [],
@@ -33,18 +34,17 @@ describe('UserUcMapper', () => {
 	});
 
 	it('mapFromProvisioningUserOutputDtoToUserDto', () => {
-		// Act
 		const resultDto: UserDto = UserUcMapper.mapFromProvisioningUserOutputDtoToUserDto(
 			provisioningUserOutputDto,
 			roleIds
 		);
 
-		// Assert
 		expect(resultDto.id).toEqual(provisioningUserOutputDto.id);
 		expect(resultDto.email).toEqual(provisioningUserOutputDto.email);
 		expect(resultDto.firstName).toEqual(provisioningUserOutputDto.firstName);
 		expect(resultDto.lastName).toEqual(provisioningUserOutputDto.lastName);
 		expect(resultDto.roleIds).toEqual(roleIds);
 		expect(resultDto.schoolId).toEqual(provisioningUserOutputDto.schoolId);
+		expect(resultDto.externalId).toEqual(provisioningUserOutputDto.externalId);
 	});
 });

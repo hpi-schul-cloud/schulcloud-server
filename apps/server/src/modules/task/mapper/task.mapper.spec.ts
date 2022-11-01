@@ -1,7 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
-import { ITaskStatus, Task, TaskParentDescriptions } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions } from '@shared/domain';
 import { setupEntities, taskFactory } from '@shared/testing';
-import { TaskResponse, TaskStatusResponse } from '../controller/dto';
+import { TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
@@ -21,15 +22,17 @@ const createExpectedResponse = (
 	expected.id = task.id;
 	expected.name = task.name;
 	expected.availableDate = task.availableDate;
-	expected.duedate = task.dueDate;
 	expected.createdAt = task.createdAt;
+	expected.description = task.description;
+	expected.duedate = task.dueDate;
 	expected.updatedAt = task.updatedAt;
 	expected.status = expectedStatus;
 
 	expected.courseName = descriptions.courseName;
 	expected.courseId = descriptions.courseId;
 	expected.displayColor = descriptions.color;
-	expected.description = descriptions.lessonName;
+	expected.lessonName = descriptions.lessonName;
+	expected.lessonHidden = descriptions.lessonHidden;
 
 	return expected;
 };
@@ -54,6 +57,7 @@ describe('task.mapper', () => {
 				courseId: 'course ID #1',
 				color: '#F0F0F0',
 				lessonName: 'a task description',
+				lessonHidden: false,
 			};
 
 			const spy = jest.spyOn(task, 'getParentData').mockReturnValue(descriptions);
@@ -71,6 +75,23 @@ describe('task.mapper', () => {
 			const expected = createExpectedResponse(task, status, descriptions);
 
 			expect(spy).toHaveBeenCalled();
+			expect(result).toStrictEqual(expected);
+		});
+	});
+
+	describe('mapUpdateTaskToDomain', () => {
+		it('should correctly map params to dto', () => {
+			const params: TaskUpdateParams = {
+				name: 'test name',
+				courseId: new ObjectId().toHexString(),
+			};
+			const result = TaskMapper.mapUpdateTaskToDomain(params);
+
+			const expected: ITaskUpdate = {
+				name: params.name,
+				courseId: params.courseId,
+				lessonId: params.lessonId,
+			};
 			expect(result).toStrictEqual(expected);
 		});
 	});

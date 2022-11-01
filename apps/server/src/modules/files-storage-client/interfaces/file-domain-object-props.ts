@@ -1,10 +1,9 @@
 import { EntityId } from '@shared/domain';
-import { FileRecordParamsParentTypeEnum } from '../filesStorageApi/v3';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 
 export interface IFileDomainObjectProps {
 	id: EntityId;
 	name: string;
-	parentType: FileRecordParamsParentTypeEnum;
+	parentType: FileRecordParentType;
 	parentId: EntityId;
-	schoolId: EntityId;
 }

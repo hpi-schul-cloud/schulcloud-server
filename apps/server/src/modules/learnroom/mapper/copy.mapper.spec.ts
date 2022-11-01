@@ -84,7 +84,7 @@ describe('copy mapper', () => {
 	});
 
 	describe('mapTaskCopyToDomain', () => {
-		const jwt = 'jwt';
+		const userId = new ObjectId().toHexString();
 
 		describe('should map received params to domain', () => {
 			it('if only course destination is given', () => {
@@ -92,11 +92,11 @@ describe('copy mapper', () => {
 				const params: TaskCopyApiParams = {
 					courseId,
 				};
-				const result = CopyMapper.mapTaskCopyToDomain(params, jwt);
+				const result = CopyMapper.mapTaskCopyToDomain(params, userId);
 				const expected: TaskCopyParentParams = {
 					courseId,
 					lessonId: undefined,
-					jwt,
+					userId,
 				};
 
 				expect(result).toStrictEqual(expected);
@@ -108,11 +108,11 @@ describe('copy mapper', () => {
 					courseId,
 					lessonId,
 				};
-				const result = CopyMapper.mapTaskCopyToDomain(params, jwt);
+				const result = CopyMapper.mapTaskCopyToDomain(params, userId);
 				const expected: TaskCopyParentParams = {
 					courseId,
 					lessonId,
-					jwt,
+					userId,
 				};
 
 				expect(result).toStrictEqual(expected);
@@ -127,11 +127,11 @@ describe('copy mapper', () => {
 				const params: LessonCopyApiParams = {
 					courseId,
 				};
-				const jwt = 'some-jwt-fake';
-				const result = CopyMapper.mapLessonCopyToDomain(params, jwt);
+				const userId = new ObjectId().toHexString();
+				const result = CopyMapper.mapLessonCopyToDomain(params, userId);
 				const expected: LessonCopyParentParams = {
 					courseId,
-					jwt,
+					userId,
 				};
 
 				expect(result).toStrictEqual(expected);
