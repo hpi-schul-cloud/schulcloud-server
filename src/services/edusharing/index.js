@@ -3,7 +3,7 @@ const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
 const hooks = require('./hooks');
-const rendererHooks = require('./hooks/renderer.hooks');
+const playerHooks = require('./hooks/player.hooks');
 const merlinHooks = require('./hooks/merlin.hooks');
 const EduSharingConnector = require('./services/EduSharingConnector');
 const MerlinTokenGenerator = require('./services/MerlinTokenGenerator');
@@ -18,9 +18,9 @@ class EduSharing {
 	}
 }
 
-class EduSharingRenderer {
+class EduSharingPlayer {
     get(uuid) {
-        return EduSharingConnector.getRendererForNode(uuid);
+        return EduSharingConnector.getPlayerForNode(uuid);
     }
 }
 
@@ -32,7 +32,7 @@ class MerlinToken {
 
 module.exports = (app) => {
 	const eduSharingRoute = '/edu-sharing';
-	const eduSharingRendererRoute = '/edu-sharing/renderer';
+	const eduSharingPlayerRoute = '/edu-sharing/player';
 	const merlinRoute = '/edu-sharing/merlinToken';
 	const docRoute = '/edu-sharing/api';
 
@@ -42,11 +42,11 @@ module.exports = (app) => {
 	const eduSharingService = app.service(eduSharingRoute);
 	eduSharingService.hooks(hooks);
 
-	app.use(eduSharingRendererRoute, new EduSharingRenderer(), (req, res) => {
+	app.use(eduSharingPlayerRoute, new EduSharingPlayer(), (req, res) => {
 	    res.send(res.data);
 	});
-	const eduSharingRendererService = app.service(eduSharingRendererRoute);
-	eduSharingRendererService.hooks(rendererHooks);
+	const eduSharingPlayerService = app.service(eduSharingPlayerRoute);
+	eduSharingPlayerService.hooks(playerHooks);
 
 	app.use(merlinRoute, new MerlinToken(), (req, res) => {
 		res.send(res.data);

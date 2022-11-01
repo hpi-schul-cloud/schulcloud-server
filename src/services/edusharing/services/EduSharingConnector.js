@@ -121,6 +121,7 @@ class EduSharingConnector {
 			}
 		} catch (err) {
 			if (err.statusCode === 404) {
+				// an empty search returns 200, so this might not be needed anymore
 				return null;
 			}
 			logger.error(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, options);
@@ -332,7 +333,7 @@ class EduSharingConnector {
 		}
 	}
 
-	async getRendererForNode(nodeUuid) {
+	async getPlayerForNode(nodeUuid) {
 	    try {
 			const url = `${ES_ENDPOINTS.RENDERER}${nodeUuid}`
 			const options = {
@@ -349,16 +350,20 @@ class EduSharingConnector {
 			const parsed = JSON.parse(response);
 			if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
 				const root = html_parser.parse(parsed.detailsSnippet);
-				const iframe = root.querySelector('.edusharing_rendering_content_wrapper')
-				if (iframe == null) {
-					throw new GeneralError('no iframe found')
+				const content = root.querySelector('.edusharing_rendering_content_wrapper');
+				const iframe = content.querySelector('iframe');
+				const iframe_src = iframe.getAttribute('src');
+				const script = content.querySelector('script');
+				const script_src = script.getAttribute('src');
+				if (iframe_src === null || script_src === null) {
+					throw new GeneralError('Could not find player in answer from Edu-Sharing');
 				}
-				return iframe.toString();
+				return { 'iframe_src': iframe_src, 'script_src': script_src };
 			} else {
 				throw new GeneralError(`Unexpected answer from Edu-Sharing: ${response}`);
 			}
 	    } catch (err) {
-			logger.error('Edu-Sharing failed getting renderer: ', err, err.message);
+			logger.error('Edu-Sharing failed getting player: ', err, err.message);
 			return Promise.reject(err);
 		}
 	}
