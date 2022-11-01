@@ -27,7 +27,7 @@ export class Logger implements ILogger {
 	}
 
 	warn(message: unknown, context?: string | undefined): void {
-		this.logger.warn(this.createMessage(message, context));
+		this.logger.warning(this.createMessage(message, context));
 	}
 
 	debug(message: unknown, context?: string | undefined): void {

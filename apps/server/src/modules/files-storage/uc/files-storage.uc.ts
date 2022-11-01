@@ -102,7 +102,7 @@ export class FilesStorageUC {
 
 			return result;
 		} catch (error) {
-			this.logger.warn(`could not find file by url: ${params.url}`, error);
+			this.logger.warn(`could not find file by url: ${params.url} ${JSON.stringify(error)}`);
 			throw new NotFoundException('FILE_NOT_FOUND');
 		}
 	}
@@ -115,7 +115,7 @@ export class FilesStorageUC {
 			await this.fileRecordRepo.save(entity);
 			const filePath = this.createPath(params.schoolId, entity.id);
 			await this.storageClient.create(filePath, fileDescription);
-			await this.antivirusService.send(entity);
+			this.antivirusService.send(entity);
 
 			return entity;
 		} catch (error) {

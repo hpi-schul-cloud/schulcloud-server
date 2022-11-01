@@ -6,14 +6,17 @@ import { ILoggerConfig } from './interfaces';
 import { Logger } from './logger.service';
 
 const availableLevels = {
-	error: 0,
-	http: 1,
-	warn: 2,
-	info: 3,
-	verbose: 4,
-	debug: 5,
-	silly: 6,
+	emerg: 0,
+	alert: 1,
+	crit: 2,
+	error: 3,
+	http: 4,
+	warning: 5,
+	notice: 6,
+	info: 7,
+	debug: 8,
 };
+
 @Module({
 	imports: [
 		WinstonModule.forRootAsync({
@@ -22,7 +25,7 @@ const availableLevels = {
 					levels: availableLevels,
 					transports: [
 						new winston.transports.Console({
-							level: configService.get<string>('LOG_LEVEL'),
+							level: configService.get<string>('NEST_LOG_LEVEL'),
 							format: winston.format.combine(
 								winston.format.timestamp(),
 								winston.format.ms(),
