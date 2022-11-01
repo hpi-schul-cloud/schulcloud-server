@@ -170,20 +170,13 @@ describe('OAuthUc', () => {
 		it('should throw if no system.id exist', async () => {
 			const errorResponse: OAuthResponse = {
 				provider: 'unknown-provider',
-
 				errorcode: 'sso_internal_error',
-
 				redirect: 'errorRedirect',
 			} as OAuthResponse;
-
 			oauthService.checkAuthorizationCode.mockReturnValue('ignore');
-
 			systemService.findOAuthById.mockResolvedValue({ id: undefined, type: 'ignore' });
-
 			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
-
 			const response: OAuthResponse = await service.processOAuth(query, 'brokenId');
-
 			expect(response).toEqual(errorResponse);
 		});
 	});

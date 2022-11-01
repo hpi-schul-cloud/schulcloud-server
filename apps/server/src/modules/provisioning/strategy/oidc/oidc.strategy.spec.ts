@@ -1,10 +1,11 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OidcProvisioningStrategy } from '@src/modules/provisioning/strategy/oidc/oidc.strategy';
+import { IservStrategyData } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import jwt from 'jsonwebtoken';
 import { Test, TestingModule } from '@nestjs/testing';
 
-const params = {
+const params: IservStrategyData = {
 	idToken: 'oidcIdToken',
 };
 
@@ -19,30 +20,14 @@ describe('OidcStrategy', () => {
 		oidcStrategy = module.get(OidcProvisioningStrategy);
 	});
 
-	afterEach(() => {
-		jest.resetAllMocks();
-	});
-
-	afterAll(() => {
-		jest.clearAllMocks();
-	});
-
 	describe('apply', () => {
 		const preferredUsername = 'testid';
 
-		beforeAll(() => {
+		it('should apply strategy', async () => {
 			jest.spyOn(jwt, 'decode').mockImplementation(() => {
 				return { preferred_username: preferredUsername };
 			});
-		});
-
-		afterAll(() => {
-			jest.clearAllMocks();
-		});
-
-		it('should apply strategy', async () => {
 			const result = await oidcStrategy.apply(params);
-
 			expect(result.externalUserId).toEqual(preferredUsername);
 		});
 
