@@ -6,6 +6,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { CourseUc } from '../uc/course.uc';
+import { CourseExportUc } from '../uc/course-export.uc';
 import { CourseMetadataListResponse } from './dto';
 import { CourseMapper } from '../mapper/course.mapper';
 
@@ -13,7 +14,11 @@ import { CourseMapper } from '../mapper/course.mapper';
 @Authenticate('jwt')
 @Controller('courses')
 export class CourseController {
-	constructor(private readonly courseUc: CourseUc, private readonly configService: ConfigService) {}
+	constructor(
+		private readonly courseUc: CourseUc,
+		private readonly courseExportUc: CourseExportUc,
+		private readonly configService: ConfigService
+	) {}
 
 	@Get()
 	async findForUser(
@@ -35,7 +40,7 @@ export class CourseController {
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
 		if (!this.configService.get<boolean>('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) throw new NotFoundException();
-		const result = await this.courseUc.exportCourse(courseId, currentUser.userId);
+		const result = await this.courseExportUc.exportCourse(courseId, currentUser.userId);
 		response.set({
 			'Content-Type': 'application/zip',
 			'Content-Disposition': 'attachment;',

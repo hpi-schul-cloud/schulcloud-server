@@ -1,4 +1,4 @@
-import { TaskWithStatusVo, ITaskUpdate } from '@shared/domain';
+import { ITaskUpdate, TaskWithStatusVo } from '@shared/domain';
 import { TaskResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskStatusMapper } from './task-status.mapper';
 
@@ -15,14 +15,18 @@ export class TaskMapper {
 			courseId: taskDesc.courseId,
 			createdAt: task.createdAt,
 			updatedAt: task.updatedAt,
+			lessonHidden: false,
 			status: statusDto,
 		});
-
+		dto.description = task.description;
 		dto.availableDate = task.availableDate;
 		dto.duedate = task.dueDate;
 
 		dto.displayColor = taskDesc.color;
-		dto.description = taskDesc.lessonName;
+		if (taskDesc.lessonName) {
+			dto.lessonName = taskDesc.lessonName;
+		}
+		dto.lessonHidden = taskDesc.lessonHidden;
 
 		return dto;
 	}
