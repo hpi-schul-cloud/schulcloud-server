@@ -6,14 +6,12 @@ import { EntityId, FileRecordParentType } from '@shared/domain';
 import { courseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { FilesStorageService } from '../service/files-storage.service';
-import { FilesStorageUC } from '../uc/files-storage.uc';
 import { FileRecordResponse } from './dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
 
 describe('FilesStorageConsumer', () => {
 	let module: TestingModule;
 	let filesStorageService: DeepMocked<FilesStorageService>;
-	let filesStorageUC: DeepMocked<FilesStorageUC>;
 	let service: FilesStorageConsumer;
 	let orm: MikroORM;
 
@@ -36,10 +34,6 @@ describe('FilesStorageConsumer', () => {
 					useValue: createMock<FilesStorageService>(),
 				},
 				{
-					provide: FilesStorageUC,
-					useValue: createMock<FilesStorageUC>(),
-				},
-				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -51,7 +45,6 @@ describe('FilesStorageConsumer', () => {
 		}).compile();
 
 		filesStorageService = module.get(FilesStorageService);
-		filesStorageUC = module.get(FilesStorageUC);
 		service = module.get(FilesStorageConsumer);
 	});
 
@@ -73,7 +66,7 @@ describe('FilesStorageConsumer', () => {
 					},
 				};
 				await service.copyFilesOfParent(payload);
-				expect(filesStorageUC.copyFilesOfParent).toBeCalledWith(payload.userId, payload.source, {
+				expect(filesStorageService.copyFilesOfParent).toBeCalledWith(payload.userId, payload.source, {
 					target: payload.target,
 				});
 			});
@@ -94,7 +87,7 @@ describe('FilesStorageConsumer', () => {
 					},
 				};
 				const responseData = [{ id: '1', sourceId: '2', name: 'test.txt' }];
-				filesStorageUC.copyFilesOfParent.mockResolvedValue([responseData, responseData.length]);
+				filesStorageService.copyFilesOfParent.mockResolvedValue([responseData, responseData.length]);
 				const response = await service.copyFilesOfParent(payload);
 				expect(response.message).toEqual(responseData);
 			});
@@ -116,7 +109,7 @@ describe('FilesStorageConsumer', () => {
 						schoolId: targetCourse.school.id,
 					},
 				};
-				filesStorageUC.copyFilesOfParent.mockResolvedValue([[], 0]);
+				filesStorageService.copyFilesOfParent.mockResolvedValue([[], 0]);
 				const response = await service.copyFilesOfParent(payload);
 				expect(response.message).toEqual([]);
 			});
@@ -132,9 +125,9 @@ describe('FilesStorageConsumer', () => {
 					parentType: FileRecordParentType.Course,
 					schoolId,
 				};
-				filesStorageService.getFilesOfParent.mockResolvedValue([[], 0]);
+				filesStorageService.getFileRecordsOfParent.mockResolvedValue([[], 0]);
 				await service.getFilesOfParent(payload);
-				expect(filesStorageService.getFilesOfParent).toBeCalledWith(payload);
+				expect(filesStorageService.getFileRecordsOfParent).toBeCalledWith(payload);
 			});
 
 			it('should return array instances of FileRecordResponse', async () => {
@@ -146,7 +139,7 @@ describe('FilesStorageConsumer', () => {
 
 				const fileRecords = fileRecordFactory.buildList(3, payload);
 
-				filesStorageService.getFilesOfParent.mockResolvedValue([fileRecords, fileRecords.length]);
+				filesStorageService.getFileRecordsOfParent.mockResolvedValue([fileRecords, fileRecords.length]);
 				const response = await service.getFilesOfParent(payload);
 				expect(response.message[0]).toBeInstanceOf(FileRecordResponse);
 			});
@@ -159,7 +152,7 @@ describe('FilesStorageConsumer', () => {
 					parentType: FileRecordParentType.Course,
 					schoolId,
 				};
-				filesStorageService.getFilesOfParent.mockResolvedValue([[], 0]);
+				filesStorageService.getFileRecordsOfParent.mockResolvedValue([[], 0]);
 				const response = await service.getFilesOfParent(payload);
 				expect(response).toStrictEqual({ message: [] });
 			});
