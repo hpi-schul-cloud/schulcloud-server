@@ -2,7 +2,6 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import util from 'util';
 import { Logger as WinstonLogger } from 'winston';
-import { IContextLogTransformer } from '../interfaces/context-log-transformer';
 import { RequestLoggingBody } from './interfaces';
 import { ILogger } from './interfaces/logger.interface';
 
@@ -23,8 +22,8 @@ export class Logger implements ILogger {
 
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
-	log(transformer: IContextLogTransformer): void {
-		this.logger.log('info', transformer.getMessage());
+	log(message: unknown, context?: string | undefined): void {
+		this.logger.log('info', this.createMessage(message, context));
 	}
 
 	warn(message: unknown, context?): void {
