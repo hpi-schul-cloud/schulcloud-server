@@ -33,26 +33,31 @@ describe('TeamRule', () => {
 	});
 
 	beforeEach(() => {
-		role = roleFactory.build({ permissions: [permissionA] });
-		teamRole = roleFactory.build({ permissions: [permissionB] });
-		user = userFactory.build({ roles: [role] });
+		role = roleFactory.buildWithId({ permissions: [permissionA] });
+		teamRole = roleFactory.buildWithId({ permissions: [permissionB] });
+		user = userFactory.buildWithId({ roles: [role] });
 		entity = teamFactory.withRoleAndUserId(teamRole, user.id).build();
 	});
 
 	describe('isApplicable', () => {
 		it('should return truthy', () => {
-			expect(() => service.isApplicable(entity.teamUsers[0].user, entity)).toBeTruthy();
+			expect(() => service.isApplicable(user, entity)).toBeTruthy();
 		});
 	});
 
 	describe('hasPermission', () => {
 		it('should return "true" if user in scope', () => {
-			const res = service.hasPermission(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionB]));
+			const res = service.hasPermission(user, entity, PermissionContextBuilder.read([permissionB]));
 			expect(res).toBe(true);
 		});
 
+		it('should return "false" if user has global permission', () => {
+			const res = service.hasPermission(user, entity, PermissionContextBuilder.read([permissionA]));
+			expect(res).toBe(false);
+		});
+
 		it('should return "false" if user has not permission', () => {
-			const res = service.hasPermission(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionC]));
+			const res = service.hasPermission(user, entity, PermissionContextBuilder.read([permissionC]));
 			expect(res).toBe(false);
 		});
 	});
