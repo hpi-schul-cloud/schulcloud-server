@@ -36,12 +36,12 @@ describe('ExternalToolRepo', () => {
 	}
 
 	it('getEntityName should return ExternalTool', () => {
-		const entityName = repo.entityName;
+		const { entityName } = repo;
 		expect(entityName).toEqual(ExternalTool);
 	});
 
 	describe('findByName', () => {
-		it('should find a external tool with given schoolToolId and courseId', async () => {
+		it('should find an external tool with given toolName', async () => {
 			const { externalTool } = await setup();
 
 			const result: ExternalTool | null = await repo.findByName(externalTool.name);
@@ -59,7 +59,7 @@ describe('ExternalToolRepo', () => {
 	});
 
 	describe('findAllByConfigType', () => {
-		it('should find two external tools with given toolConfigType', async () => {
+		it('should find all external tools with given toolConfigType', async () => {
 			const { externalOauthTool, externalOauthTool2 } = await setup();
 
 			const result: ExternalTool[] = await repo.findAllByConfigType(ToolConfigType.OAUTH2);

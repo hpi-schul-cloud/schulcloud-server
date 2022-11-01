@@ -39,12 +39,12 @@ describe('SchoolExternalToolRepo', () => {
 	}
 
 	it('getEntityName should return SchoolExternalTool', () => {
-		const entityName = repo.entityName;
+		const { entityName } = repo;
 		expect(entityName).toEqual(SchoolExternalTool);
 	});
 
 	describe('findByToolIdAndSchoolId', () => {
-		it('should find a schoolExternalTool with given schoolToolId and courseId', async () => {
+		it('should find a schoolExternalTool with given toolId and schoolId', async () => {
 			const { toolId, schoolId, schoolExternalTool } = await setup();
 
 			const result: SchoolExternalTool | null = await repo.findByToolIdAndSchoolId(toolId, schoolId);
@@ -63,7 +63,7 @@ describe('SchoolExternalToolRepo', () => {
 	});
 
 	describe('findAllByToolId', () => {
-		it('should find two schoolExternalTools with the given toolId', async () => {
+		it('should find all schoolExternalTools with the given toolId', async () => {
 			const { toolId, schoolExternalTool, schoolExternalTool2 } = await setup();
 
 			const result: SchoolExternalTool[] = await repo.findAllByToolId(toolId);
@@ -82,7 +82,7 @@ describe('SchoolExternalToolRepo', () => {
 	});
 
 	describe('findAllBySchoolId', () => {
-		it('should find two schoolExternalTools with given schoolId', async () => {
+		it('should find all schoolExternalTools with given schoolId', async () => {
 			const { schoolExternalTool, schoolExternalTool2, schoolId } = await setup();
 
 			const result: SchoolExternalTool[] = await repo.findAllBySchoolId(schoolId);
