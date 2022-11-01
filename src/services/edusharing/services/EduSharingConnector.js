@@ -1,5 +1,5 @@
 const request = require('request-promise-native');
-const html_parser = require('node-html-parser');
+const htmlParser = require('node-html-parser');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
@@ -84,7 +84,7 @@ class EduSharingConnector {
 				throw Error('authentication error with edu sharing');
 			}
 
-			for (let cookie of result.headers['set-cookie']) {
+			for (const cookie of result.headers['set-cookie']) {
 				if (cookie.startsWith('JSESSIONID')) {
 					return cookie;
 				}
