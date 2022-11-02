@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Submission, User } from '../entity';
-import { IPermissionContext } from '../interface/permission';
+import { IPermissionContext, PermissionTypes } from '../interface/permission';
 import { Actions } from './actions.enum';
 import { BasePermission } from './base-permission';
 import { TaskRule } from './task.rule';
@@ -11,7 +11,7 @@ export class SubmissionRule extends BasePermission<Submission> {
 		super();
 	}
 
-	public isApplicable(user: User, entity: Submission): boolean {
+	public isApplicable(user: User, entity: PermissionTypes): boolean {
 		const isMatched = entity instanceof Submission;
 
 		return isMatched;
@@ -20,37 +20,30 @@ export class SubmissionRule extends BasePermission<Submission> {
 	public hasPermission(user: User, entity: Submission, context: IPermissionContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasGeneralPermission = this.utils.hasAllPermissions(user, requiredPermissions);
-
-		let hasSpecificPermission = false;
-		const isCreator = this.utils.hasAccessToEntity(user, entity, ['student']);
-
-		if (isCreator) {
-			hasSpecificPermission = true;
-		} else if (action === Actions.read) {
-			hasSpecificPermission = this.hasReadPermission(user, entity);
-		} else if (action === Actions.write) {
-			hasSpecificPermission = this.hasWritePermission(user, entity);
-		}
+		const hasSpecificPermission = this.hasSpecificPermission(user, entity, action);
 
 		const result = hasGeneralPermission && hasSpecificPermission;
 
 		return result;
 	}
 
-	private hasReadPermission(user: User, entity: Submission): boolean {
-		let hasParentReadPermission = false;
-		if (entity.task && entity.task.publicSubmissions) {
-			hasParentReadPermission = this.hasParentPermission(user, entity, Actions.read);
-		} else {
-			hasParentReadPermission = this.hasParentPermission(user, entity, Actions.write);
-		}
-		return hasParentReadPermission;
-	}
-
-	private hasWritePermission(user: User, entity: Submission): boolean {
+	private hasSpecificPermission(user: User, entity: Submission, action: Actions): boolean {
+		const isCreator = this.utils.hasAccessToEntity(user, entity, ['student']);
+		const isTeamMember = this.utils.hasAccessToEntity(user, entity, ['teamMembers']);
+		const isInCourseGroup =
+			!!entity.courseGroup && this.utils.hasAccessToEntity(user, entity.courseGroup, ['students']);
 		const hasParentWritePermission = this.hasParentPermission(user, entity, Actions.write);
+		const hasParentReadPermission = this.hasParentPermission(user, entity, Actions.read);
+		const areSubmissionsPublic = !!entity.task && !!entity.task.publicSubmissions;
 
-		return hasParentWritePermission;
+		const hasSpecificPermission =
+			isCreator ||
+			isTeamMember ||
+			isInCourseGroup ||
+			hasParentWritePermission ||
+			(action === Actions.read && hasParentReadPermission && areSubmissionsPublic);
+
+		return hasSpecificPermission;
 	}
 
 	private hasParentPermission(user: User, entity: Submission, action: Actions) {
