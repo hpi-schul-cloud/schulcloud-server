@@ -74,7 +74,7 @@
 		"nest:test:spec": "jest \"\\.spec\\.ts$\"",
 		"nest:test:e2e": "jest \"\\.e2e-spec\\.ts$\"",
 		"nest:test:watch": "jest --watch",
-		"nest:test:cov": "jest --coverage",
+		"nest:test:cov": "jest --maxWorkers=50% --coverage",
 		"nest:test:debug": "jest --runInBand",
 		"nest:lint": "eslint apps --ignore-path .gitignore",
 		"nest:lint:fix": "eslint apps --fix --ignore-path .gitignore",
