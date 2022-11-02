@@ -20,6 +20,10 @@ describe('OidcStrategy', () => {
 		oidcStrategy = module.get(OidcProvisioningStrategy);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('apply', () => {
 		const preferredUsername = 'testid';
 
