@@ -48,19 +48,19 @@ export class CourseCopyService {
 		const courseCopy = courseStatus.copyEntity as Course;
 		await this.courseRepo.save(courseCopy);
 
-		let statusBoard = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
+		let boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
 
-		if (statusBoard && statusBoard.copyEntity) {
-			const boardCopy = statusBoard.copyEntity as Board;
+		if (boardStatus && boardStatus.copyEntity) {
+			const boardCopy = boardStatus.copyEntity as Board;
 			await this.boardRepo.save(boardCopy);
-			statusBoard = this.lessonCopyService.updateCopiedEmbeddedTasks(statusBoard);
-			statusBoard = await this.fileCopyAppendService.copyFiles(statusBoard, courseCopy.id, userId);
-			const updatedBoardCopy = statusBoard.copyEntity as Board;
+			boardStatus = this.lessonCopyService.updateCopiedEmbeddedTasks(boardStatus);
+			boardStatus = await this.fileCopyAppendService.copyFiles(boardStatus, courseCopy.id, userId);
+			const updatedBoardCopy = boardStatus.copyEntity as Board;
 			await this.boardRepo.save(updatedBoardCopy);
 		}
 
 		courseStatus.elements ||= [];
-		courseStatus.elements.push(statusBoard);
+		courseStatus.elements.push(boardStatus);
 		courseStatus.status = this.copyHelperService.deriveStatusFromElements(courseStatus.elements);
 
 		return courseStatus;
