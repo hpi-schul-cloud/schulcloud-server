@@ -1,6 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import bcrypt from 'bcryptjs';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Role, School, User, RoleName, Permission } from '@shared/domain';
 import { AccountRepo } from '@shared/repo';
@@ -401,6 +402,20 @@ describe('AccountService', () => {
 				...mockTeacherAccountDto,
 				lasttriedFailedLogin: theNewDate,
 			});
+		});
+	});
+
+	describe('updatePassword', () => {
+		it('should update password', async () => {
+			const newPassword = 'newPassword';
+			const ret = await accountService.updatePassword(mockTeacherAccount.id, newPassword);
+
+			expect(ret).toBeDefined();
+			if (ret.password) {
+				await expect(bcrypt.compare(newPassword, ret.password)).resolves.toBe(true);
+			} else {
+				fail('return password is undefined');
+			}
 		});
 	});
 
