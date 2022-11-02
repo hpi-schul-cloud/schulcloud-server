@@ -19,6 +19,7 @@ import {
 	createPath,
 	deriveStatusFromSource,
 	getPaths,
+	getResolvedValues,
 	getStatusFromScanResult,
 	isStatusBlocked,
 	markForDelete,
@@ -289,13 +290,8 @@ export class FilesStorageService {
 			return fileResponse;
 		});
 
-		const resolvedResponses = await Promise.allSettled(promises).then((results) => {
-			const isFulfilled = (
-				input: PromiseSettledResult<CopyFileResponse>
-			): input is PromiseFulfilledResult<CopyFileResponse> => input.status === 'fulfilled';
-
-			const resolvedPromises: PromiseFulfilledResult<CopyFileResponse>[] = results.filter(isFulfilled);
-			const fileResponses = resolvedPromises.map((result) => result.value);
+		const resolvedResponses = await Promise.allSettled(promises).then((result) => {
+			const fileResponses = getResolvedValues(result);
 
 			return fileResponses;
 		});
