@@ -1489,19 +1489,12 @@ describe('FilesStorageService', () => {
 			});
 		});
 
-		describe('WHEN anti virus service resolves', () => {
-			let spy: jest.SpyInstance;
-
-			afterEach(() => {
-				spy.mockRestore();
-			});
-
+		describe('WHEN source files security status is pending', () => {
 			const setup = () => {
 				const { fileRecords } = getFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
+				sourceFile.securityCheck.status = ScanStatus.PENDING;
 				const targetFile = fileRecords[1];
-
-				spy = jest.spyOn(service, 'sendToAntiVirusService');
 
 				return { sourceFile, targetFile };
 			};
@@ -1511,24 +1504,56 @@ describe('FilesStorageService', () => {
 
 				await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
-				expect(service.sendToAntiVirusService).toBeCalledWith(sourceFile);
+				expect(antivirusService.send).toBeCalledWith(sourceFile);
+			});
+		});
+
+		describe('WHEN source files security status is VERIFIED', () => {
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				sourceFile.securityCheck.status = ScanStatus.VERIFIED;
+				const targetFile = fileRecords[1];
+
+				return { sourceFile, targetFile };
+			};
+
+			it('should call copy with correct params', async () => {
+				const { sourceFile, targetFile } = setup();
+
+				await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
+
+				expect(antivirusService.send).toBeCalledTimes(0);
+			});
+		});
+
+		describe('WHEN source files security status is BLOCKED', () => {
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				sourceFile.securityCheck.status = ScanStatus.BLOCKED;
+				const targetFile = fileRecords[1];
+
+				return { sourceFile, targetFile };
+			};
+
+			it('should call copy with correct params', async () => {
+				const { sourceFile, targetFile } = setup();
+
+				await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
+
+				expect(antivirusService.send).toBeCalledTimes(0);
 			});
 		});
 
 		describe('WHEN anti virus service throws error', () => {
-			let spy: jest.SpyInstance;
-
-			afterEach(() => {
-				spy.mockRestore();
-			});
-
 			const setup = () => {
 				const { fileRecords } = getFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 				const targetFile = fileRecords[1];
 				const error = new Error('test');
 
-				spy = jest.spyOn(service, 'sendToAntiVirusService').mockImplementation(() => {
+				antivirusService.send.mockImplementation(() => {
 					throw error;
 				});
 
@@ -1541,83 +1566,6 @@ describe('FilesStorageService', () => {
 				await expect(service.copyFilesWithRollbackOnError(sourceFile, targetFile)).rejects.toThrow(error);
 
 				expect(fileRecordRepo.delete).toBeCalledWith([targetFile]);
-			});
-		});
-	});
-
-	describe('sendToAntiVirusService is called', () => {
-		describe('WHEN security status is pending', () => {
-			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.PENDING;
-
-				return { sourceFile };
-			};
-
-			it('should call send with correct params', () => {
-				const { sourceFile } = setup();
-
-				service.sendToAntiVirusService(sourceFile);
-
-				expect(antivirusService.send).toBeCalledWith(sourceFile);
-			});
-		});
-
-		describe('WHEN security status is verfied', () => {
-			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.VERIFIED;
-
-				return { sourceFile };
-			};
-
-			it('should call send with correct params', () => {
-				const { sourceFile } = setup();
-
-				service.sendToAntiVirusService(sourceFile);
-
-				expect(antivirusService.send).toBeCalledTimes(0);
-			});
-		});
-
-		describe('WHEN security status is blocked', () => {
-			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.BLOCKED;
-
-				return { sourceFile };
-			};
-
-			it('should call send with correct params', () => {
-				const { sourceFile } = setup();
-
-				service.sendToAntiVirusService(sourceFile);
-
-				expect(antivirusService.send).toBeCalledTimes(0);
-			});
-		});
-
-		describe('WHEN service throws error', () => {
-			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.PENDING;
-				const error = new Error('test');
-
-				antivirusService.send.mockImplementation(() => {
-					throw error;
-				});
-
-				return { sourceFile, error };
-			};
-
-			it('should pass error', () => {
-				const { sourceFile, error } = setup();
-
-				expect(() => service.sendToAntiVirusService(sourceFile)).toThrow(error);
 			});
 		});
 	});

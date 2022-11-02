@@ -253,7 +253,7 @@ export class FilesStorageService {
 		return entity;
 	}
 
-	public sendToAntiVirusService(sourceFile: FileRecord) {
+	private sendToAntiVirusService(sourceFile: FileRecord) {
 		if (sourceFile.securityCheck.status === ScanStatus.PENDING) {
 			this.antivirusService.send(sourceFile);
 		}
