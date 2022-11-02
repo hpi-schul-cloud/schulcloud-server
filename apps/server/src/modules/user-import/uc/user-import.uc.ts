@@ -185,7 +185,7 @@ export class UserImportUc {
 		const { school } = currentUser;
 		// official school number is used to find the correct school in the central LDAP
 		if (
-			(useCentralLdap = false && !school.officialSchoolNumber) ||
+			(useCentralLdap && !school.officialSchoolNumber) ||
 			(school.inUserMigration !== undefined && school.inUserMigration !== null)
 		) {
 			throw new BadRequestException('School cannot be set in user migration');
