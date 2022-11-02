@@ -1,19 +1,23 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+	BaseEntity,
 	ComponentType,
 	CopyElementType,
+	CopyHelperService,
 	CopyStatus,
 	CopyStatusEnum,
 	EntityId,
+	EtherpadService,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
+	IComponentInternalProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
 	Lesson,
 	Material,
+	NexboardService,
 	TaskCopyService,
 } from '@shared/domain';
 import {
@@ -24,11 +28,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { BaseEntity, IComponentInternalProperties } from '../entity';
-import { CopyHelperService } from './copy-helper.service';
-import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
-import { NexboardService } from './nexboard.service';
 
 describe('lesson copy service', () => {
 	let module: TestingModule;
@@ -39,14 +39,8 @@ describe('lesson copy service', () => {
 	let nexboardService: DeepMocked<NexboardService>;
 	let configurationSpy: jest.SpyInstance;
 
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	beforeEach(async () => {
