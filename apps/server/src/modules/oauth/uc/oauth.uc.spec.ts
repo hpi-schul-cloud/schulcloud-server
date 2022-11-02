@@ -8,7 +8,6 @@ import { System, User } from '@shared/domain/index';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { SystemService } from '@src/modules/system/service/system.service';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
 import resetAllMocks = jest.resetAllMocks;
