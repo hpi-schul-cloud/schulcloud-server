@@ -1614,17 +1614,5 @@ describe('TaskRepo', () => {
 				await repo.findById(unknownId);
 			}).rejects.toThrow();
 		});
-
-		it('should populate files', async () => {
-			const file = fileFactory.buildWithId({});
-			const task = taskFactory.build({ files: [file] });
-
-			await em.persistAndFlush([task, file]);
-			em.clear();
-
-			const foundTask = await repo.findById(task.id);
-			expect(foundTask.files.isInitialized()).toEqual(true);
-			expect(foundTask.files[0].name).toEqual(file.name);
-		});
 	});
 });
