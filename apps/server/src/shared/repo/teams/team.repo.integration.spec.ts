@@ -3,8 +3,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, Team } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, roleFactory } from '@shared/testing';
 import { TeamsRepo } from '@shared/repo';
+import { cleanupCollections, roleFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 
@@ -27,6 +27,7 @@ describe('team repo', () => {
 	});
 
 	afterEach(async () => {
+		em.clear();
 		await cleanupCollections(em);
 	});
 
@@ -63,8 +64,6 @@ describe('team repo', () => {
 
 			const team: Team = teamFactory.withRoleAndUserId(role, userId).buildWithId();
 			await em.persistAndFlush(team);
-
-			em.clear();
 
 			// Act
 			const result = await repo.findById(team.id, true);

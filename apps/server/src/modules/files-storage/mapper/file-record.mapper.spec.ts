@@ -20,14 +20,14 @@ describe('FilesStorageMapper', () => {
 			const result = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
 			expect(result).toEqual(
 				expect.objectContaining({
-					creatorId: expect.any(String) as string,
+					creatorId: expect.any(String),
 					deletedSince: undefined,
-					id: expect.any(String) as string,
+					id: expect.any(String),
 					name: 'file-record #1',
-					parentId: expect.any(String) as string,
+					parentId: expect.any(String),
 					parentType: 'courses',
 					securityCheckStatus: 'pending',
-					size: expect.any(Number) as number,
+					size: expect.any(Number),
 					type: 'application/octet-stream',
 				})
 			);

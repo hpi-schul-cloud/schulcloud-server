@@ -235,7 +235,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Course,
 				};
 
-				jest.useFakeTimers('modern');
+				jest.useFakeTimers();
 				jest.setSystemTime(new Date(2022, 10, 4));
 
 				await uc.createShareToken(user.id, payload, { expiresInDays: 7 });
