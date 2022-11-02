@@ -39,7 +39,7 @@ export class BoardRepo extends BaseRepo<Board> {
 		await board.references.init();
 		const elements = board.references.getItems();
 		const taskElements = elements.filter((el) => el instanceof TaskBoardElement);
-		await this._em.populate(taskElements, ['target', 'target.files']);
+		await this._em.populate(taskElements, ['target']);
 		const lessonElements = elements.filter((el) => el instanceof LessonBoardElement);
 		await this._em.populate(lessonElements, ['target']);
 		return board;
