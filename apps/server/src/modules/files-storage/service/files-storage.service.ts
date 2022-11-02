@@ -290,11 +290,8 @@ export class FilesStorageService {
 			return fileResponse;
 		});
 
-		const resolvedResponses = await Promise.allSettled(promises).then((result) => {
-			const fileResponses = getResolvedValues(result);
-
-			return fileResponses;
-		});
+		const settledPromises = await Promise.allSettled(promises);
+		const resolvedResponses = getResolvedValues(settledPromises);
 
 		return resolvedResponses;
 	}
