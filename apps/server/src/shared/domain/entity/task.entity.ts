@@ -1,5 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { School } from '@shared/domain/entity/school.entity';
+import { InputFormat } from '@shared/domain/types/richtext.types';
 import type { IEntityWithSchool } from '../interface';
 import type { ILearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
@@ -42,6 +43,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@Property()
 	description: string;
 
+	@Property()
+	descriptionInputFormat: InputFormat;
+
 	@Property({ nullable: true })
 	availableDate?: Date;
 
@@ -82,6 +86,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		super();
 		this.name = props.name;
 		this.description = props.description || '';
+		this.descriptionInputFormat = props.descriptionInputFormat || InputFormat.RICH_TEXT_CK4;
 		this.availableDate = props.availableDate;
 		this.dueDate = props.dueDate;
 		if (props.private !== undefined) this.private = props.private;

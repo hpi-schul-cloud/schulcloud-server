@@ -1,8 +1,9 @@
-import type { Course, File, Lesson, School, Submission, User } from '@shared/domain/';
+import type { Course, File, InputFormat, Lesson, School, Submission, User } from '@shared/domain/';
 
 interface ITask {
 	name: string;
 	description?: string;
+	descriptionInputFormat?: InputFormat;
 	availableDate?: Date;
 	dueDate?: Date;
 }

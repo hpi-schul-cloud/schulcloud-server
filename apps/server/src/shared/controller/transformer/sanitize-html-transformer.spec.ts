@@ -1,16 +1,17 @@
 import { NotImplementedException } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { SanitizeHtml } from './sanitize-html.transformer';
+import { InputFormat } from '@shared/domain';
 
 describe('SanitizeHtmlTransformer Decorator', () => {
 	class WithHtmlDto {
 		@SanitizeHtml()
 		title!: string;
 
-		@SanitizeHtml({ keep: 'inline' })
+		@SanitizeHtml(InputFormat.RICHTEXT_SIMPLE)
 		excerpt?: string;
 
-		@SanitizeHtml({ keep: 'richtext' })
+		@SanitizeHtml(InputFormat.RICH_TEXT)
 		content!: string;
 	}
 

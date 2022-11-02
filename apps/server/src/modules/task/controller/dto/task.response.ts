@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
+import type { RichText } from '@shared/domain';
 import { TaskStatusResponse } from './task-status.response';
 
 /**
@@ -40,9 +41,11 @@ export class TaskResponse {
 	@ApiProperty()
 	courseId: string = '' as string;
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({
+		description: 'Task description object, with props content: string and type: input format types',
+	})
 	@DecodeHtmlEntities()
-	description?: string; // TODO: change this, since this is NOT the tasks description, but the name of its lesson
+	description?: RichText;
 
 	@ApiProperty()
 	lessonHidden: boolean;

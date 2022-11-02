@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
-import { ITaskUpdate } from '@shared/domain';
+import { InputFormat, ITaskUpdate } from '@shared/domain';
 import { SanitizeHtml } from '@shared/controller';
 
 export class TaskUpdateParams implements ITaskUpdate {
@@ -33,7 +33,7 @@ export class TaskUpdateParams implements ITaskUpdate {
 
 	@IsString()
 	@IsOptional()
-	@SanitizeHtml({ keep: 'richtext' })
+	@SanitizeHtml(InputFormat.RICH_TEXT_CK5)
 	@ApiPropertyOptional({
 		description: 'The description of the task',
 	})
