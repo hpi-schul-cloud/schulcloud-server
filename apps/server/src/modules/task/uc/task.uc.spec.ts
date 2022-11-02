@@ -1142,7 +1142,7 @@ describe('TaskUC', () => {
 			it('should check for permission to update the task', async () => {
 				const params = {
 					name: 'test',
-					courseId: course.id
+					courseId: course.id,
 				};
 				await service.update(user.id, task.id, params);
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
@@ -1153,7 +1153,7 @@ describe('TaskUC', () => {
 			it('should save the task', async () => {
 				const params = {
 					name: 'test',
-					courseId: course.id
+					courseId: course.id,
 				};
 				await service.update(user.id, task.id, params);
 				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name });
@@ -1161,7 +1161,7 @@ describe('TaskUC', () => {
 			it('should return the updated task', async () => {
 				const params = {
 					name: 'test',
-					courseId: course.id
+					courseId: course.id,
 				};
 				const result = await service.update(user.id, task.id, params);
 				expect(result.task).toEqual({ ...task, name: params.name });

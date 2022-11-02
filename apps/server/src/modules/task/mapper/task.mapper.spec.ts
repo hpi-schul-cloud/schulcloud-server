@@ -1,9 +1,9 @@
-import {MikroORM} from '@mikro-orm/core';
-import {ObjectId} from '@mikro-orm/mongodb';
-import {InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions} from '@shared/domain';
-import {setupEntities, taskFactory} from '@shared/testing';
-import {TaskResponse, TaskStatusResponse, TaskUpdateParams} from '../controller/dto';
-import {TaskMapper} from './task.mapper';
+import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions } from '@shared/domain';
+import { setupEntities, taskFactory } from '@shared/testing';
+import { TaskResponse, TaskStatusResponse, TaskCreateParams, TaskUpdateParams } from '../controller/dto';
+import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
 	task: Task,
@@ -27,7 +27,7 @@ const createExpectedResponse = (
 		expected.description = {
 			content: task.description,
 			type: task.descriptionInputFormat || InputFormat.RICH_TEXT_CK4,
-		}
+		};
 	}
 	expected.duedate = task.dueDate;
 	expected.updatedAt = task.updatedAt;
@@ -84,9 +84,33 @@ describe('task.mapper', () => {
 		});
 	});
 
-	describe('mapUpdateTaskToDomain', () => {
+	describe('mapTaskUpdateToDomain', () => {
 		it('should correctly map params to dto', () => {
 			const params: TaskUpdateParams = {
+				name: 'test name',
+				courseId: new ObjectId().toHexString(),
+				description: 'test',
+				dueDate: new Date('2023-05-28T08:00:00.000+00:00'),
+				availableDate: new Date('2022-05-28T08:00:00.000+00:00'),
+			};
+			const result = TaskMapper.mapTaskUpdateToDomain(params);
+
+			const expected: ITaskUpdate = {
+				name: params.name,
+				courseId: params.courseId,
+				lessonId: params.lessonId,
+				description: params.description,
+				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
+				dueDate: params.dueDate,
+				availableDate: params.availableDate,
+			};
+			expect(result).toStrictEqual(expected);
+		});
+	});
+
+	describe('mapTaskCreateToDomain', () => {
+		it('should correctly map params to dto', () => {
+			const params: TaskCreateParams = {
 				name: 'test name',
 				courseId: new ObjectId().toHexString(),
 				description: 'test',
