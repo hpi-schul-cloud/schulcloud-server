@@ -1,4 +1,4 @@
-import { FileRecordParentType } from '@shared/domain';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { FileDto } from './file.dto';
 
 describe('FileDto', () => {

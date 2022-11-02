@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, Counted, EntityId, FileRecord, FileRecordParentType, Permission } from '@shared/domain';
+import { Actions, Counted, EntityId, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
@@ -15,11 +15,11 @@ import { of } from 'rxjs';
 import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { CopyFileResponse, FileRecordParams, SingleFileParams } from '../controller/dto';
+import { FileRecord, FileRecordParentType } from '../entity/filerecord.entity';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
-import { IFile } from '../interface';
 import { IGetFileResponse } from '../interface/storage-client';
-import { FilesStorageMapper, IFileBuilder } from '../mapper';
+import { FilesStorageMapper, FileDtoBuilder } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 
@@ -235,7 +235,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams);
 
-				const expectedFileDescription = IFileBuilder.buildFromAxiosResponse(uploadFromUrlParams.fileName, response);
+				const expectedFileDescription = FileDtoBuilder.buildFromAxiosResponse(uploadFromUrlParams.fileName, response);
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(
 					userId,
 					uploadFromUrlParams,
@@ -361,7 +361,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.upload(userId, params, request);
 
-				const fileDescription: IFile = IFileBuilder.buildFromRequest(fileInfo, request, buffer);
+				const fileDescription = FileDtoBuilder.buildFromRequest(fileInfo, request, buffer);
 
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId, params, fileDescription);
 			});

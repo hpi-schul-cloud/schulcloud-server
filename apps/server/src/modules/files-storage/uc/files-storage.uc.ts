@@ -20,9 +20,7 @@ import {
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
-import { IFile } from '../interface/file';
-import { FilesStorageMapper } from '../mapper';
-import { IFileBuilder } from '../mapper/ifile-builder.builder';
+import { FilesStorageMapper, FileDtoBuilder } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 
 @Injectable()
@@ -46,10 +44,10 @@ export class FilesStorageUC {
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			requestStream.on('file', async (_name, file, info): Promise<void> => {
-				const fileDescription: IFile = IFileBuilder.buildFromRequest(info, req, file);
+				const fileDto = FileDtoBuilder.buildFromRequest(info, req, file);
 
 				try {
-					const record = await this.filesStorageService.uploadFile(userId, params, fileDescription);
+					const record = await this.filesStorageService.uploadFile(userId, params, fileDto);
 					resolve(record);
 				} catch (error) {
 					requestStream.emit('error', error);
@@ -99,9 +97,9 @@ export class FilesStorageUC {
 		try {
 			const response = await this.getResponse(params);
 
-			const fileDescription: IFile = IFileBuilder.buildFromAxiosResponse(params.fileName, response);
+			const fileDto = FileDtoBuilder.buildFromAxiosResponse(params.fileName, response);
 
-			const result = await this.filesStorageService.uploadFile(userId, params, fileDescription);
+			const result = await this.filesStorageService.uploadFile(userId, params, fileDto);
 
 			return result;
 		} catch (error) {

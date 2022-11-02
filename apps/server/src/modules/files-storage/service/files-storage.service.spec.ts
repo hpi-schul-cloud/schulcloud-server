@@ -3,7 +3,6 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
@@ -16,6 +15,8 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../controller/dto';
+import { FileDto } from '../dto';
+import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import {
 	createICopyFiles,
@@ -25,7 +26,7 @@ import {
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
-import { IFile, IGetFileResponse } from '../interface';
+import { IGetFileResponse } from '../interface';
 import { FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
@@ -293,7 +294,7 @@ describe('FilesStorageService', () => {
 			const setup = () => {
 				const { params, fileRecords } = getFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				const fileDescription = createMock<IFile>();
+				const fileDescription = createMock<FileDto>();
 
 				return { params, fileRecord, fileDescription };
 			};
@@ -321,7 +322,7 @@ describe('FilesStorageService', () => {
 			const setup = () => {
 				const { params, fileRecords } = getFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				const fileDescription = createMock<IFile>();
+				const fileDescription = createMock<FileDto>();
 				const error = new Error('test');
 
 				storageClient.create.mockRejectedValueOnce(error);
@@ -354,7 +355,7 @@ describe('FilesStorageService', () => {
 			const setup = () => {
 				const { params, fileRecords } = getFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				const fileDescription = createMock<IFile>();
+				const fileDescription = createMock<FileDto>();
 
 				return { params, fileRecord, fileDescription };
 			};
@@ -372,7 +373,7 @@ describe('FilesStorageService', () => {
 			const setup = () => {
 				const { params, fileRecords } = getFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				const fileDescription = createMock<IFile>();
+				const fileDescription = createMock<FileDto>();
 				const error = new Error('test');
 
 				antivirusService.send.mockImplementation(() => {
@@ -406,7 +407,7 @@ describe('FilesStorageService', () => {
 		const getUploadFileParams = () => {
 			const { params, fileRecords, parentId: userId } = getFileRecordsWithParams();
 
-			const fileDescription = createMock<IFile>();
+			const fileDescription = createMock<FileDto>();
 			fileDescription.name = fileRecords[0].name;
 			fileDescription.size = 122;
 			fileDescription.mimeType = 'mimeType';

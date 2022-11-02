@@ -12,6 +12,7 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../controller/dto';
+import { FileDto } from '../dto';
 import { FileRecord, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import {
@@ -28,7 +29,7 @@ import {
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
-import { IFile, IGetFileResponse } from '../interface';
+import { IGetFileResponse } from '../interface';
 import { FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
@@ -72,7 +73,7 @@ export class FilesStorageService {
 	public async createFileInStorageAndRollbackOnError(
 		fileRecord: FileRecord,
 		params: FileRecordParams,
-		fileDescription: IFile
+		fileDescription: FileDto
 	): Promise<FileRecord> {
 		try {
 			const filePath = createPath(params.schoolId, fileRecord.id);
@@ -86,7 +87,7 @@ export class FilesStorageService {
 		}
 	}
 
-	public async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: IFile): Promise<FileRecord> {
+	public async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: FileDto): Promise<FileRecord> {
 		const [fileRecords] = await this.getFileRecordsOfParent(params);
 		const fileName = resolveFileNameDuplicates(fileDescription.name, fileRecords);
 		const fileRecord = createFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
