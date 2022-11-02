@@ -75,16 +75,5 @@
 			"$date": "2022-09-22T13:01:17.867Z"
 		},
 		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "63565a9429ef295458434b09"
-		},
-		"state": "up",
-		"name": "CreateExternalToolCollections",
-		"createdAt": {
-			"$date": "2022-10-21T11:52:36.879Z"
-		},
-		"__v": 0
 	}
 ]
