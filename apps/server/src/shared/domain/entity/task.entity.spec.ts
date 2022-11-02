@@ -637,36 +637,6 @@ describe('Task Entity', () => {
 		});
 	});
 
-	describe('getFileNames', () => {
-		it('should throw if files are not loaded', () => {
-			const task = taskFactory.build();
-			task.files.set([orm.em.getReference(File, new ObjectId().toHexString())]);
-
-			expect(() => task.getFileNames()).toThrowError();
-		});
-
-		describe('when files are loaded', () => {
-			it('should return empty array if property files does not exist', () => {
-				const user = userFactory.buildWithId({});
-				const task = taskFactory.build({ creator: user });
-				expect(task.getFileNames()).toEqual([]);
-			});
-
-			it('should return empty array if files array is empty', () => {
-				const user = userFactory.buildWithId({});
-				const task = taskFactory.build({ creator: user, files: [] });
-				expect(task.getFileNames()).toEqual([]);
-			});
-
-			it('should return array with correct file name', () => {
-				const user = userFactory.buildWithId({});
-				const file = fileFactory.buildWithId({ creator: user });
-				const task = taskFactory.build({ creator: user, files: [file] });
-				expect(task.getFileNames()).toEqual([file.name]);
-			});
-		});
-	});
-
 	describe('finishForUser', () => {
 		it('should add the user to the finished collection', () => {
 			const user = userFactory.build();
