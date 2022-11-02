@@ -33,7 +33,6 @@ export class FilesStorageMapper {
 		return singleFileParams;
 	}
 
-	// TODO: constructor for params added?
 	static mapFileRecordToFileRecordParams(fileRecord: FileRecord): FileRecordParams {
 		const fileRecordParams = plainToClass(FileRecordParams, {
 			schoolId: fileRecord.schoolId,
