@@ -55,7 +55,7 @@ export class ImportUserResponse {
 	match?: UserMatchResponse;
 
 	@ApiProperty({ description: 'manual flag to apply it as filter' })
-	flagged = false;
+	flagged: boolean = false;
 }
 
 export class ImportUserListResponse extends PaginationResponse<ImportUserResponse[]> {
