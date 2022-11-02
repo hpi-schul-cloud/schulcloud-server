@@ -183,13 +183,17 @@ export class UserImportUc {
 	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const { school } = currentUser;
-		if (!school.officialSchoolNumber || (school.inUserMigration !== undefined && school.inUserMigration !== null)) {
+		// official school number is used to find the correct school in the central LDAP
+		if (
+			(useCentralLdap = false && !school.officialSchoolNumber) ||
+			(school.inUserMigration !== undefined && school.inUserMigration !== null)
+		) {
 			throw new BadRequestException('School cannot be set in user migration');
 		}
 
 		school.inUserMigration = true;
 		school.inMaintenanceSince = new Date();
-		school.ldapSchoolIdentifier = school.officialSchoolNumber;
+		school.externalId = school.officialSchoolNumber;
 		if (useCentralLdap) {
 			const migrationSystem = await this.getMigrationSystem();
 			if (!school.systems.contains(migrationSystem)) {
