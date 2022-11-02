@@ -1,9 +1,8 @@
 const { ObjectId } = require('mongoose').Types;
 
 const { BadRequest } = require('../../../../src/errors');
-const rolesModel = require('../../../../src/services/role/model.js');
+const rolesModel = require('../../../../src/services/role/model');
 const { userModel } = require('../../../../src/services/user/model');
-const accountModel = require('../../../../src/services/account/model.js');
 const appPromise = require('../../../../src/app');
 
 const { TEST_PW, TEST_HASH } = require('../../../../config/globals');
@@ -57,13 +56,15 @@ const createUser = async (userId, roleName = 'student', schoolId = '5f2987e02083
 	});
 };
 
-const createAccount = (userId) =>
-	accountModel.create({
+const createAccount = async (userId) => {
+	const app = await appPromise();
+	return app.service('nest-account-service').save({
 		username: userId + AT,
 		password: TEST_HASH,
 		userId,
 		activated: true,
 	});
+};
 
 const setupUser = async (roleName, schoolId) => {
 	const userId = new ObjectId();
@@ -81,9 +82,10 @@ const setupUser = async (roleName, schoolId) => {
 const deleteUser = async (userId) => {
 	if (typeof userId === 'object' && userId.userId !== undefined) userId = userId.userId;
 
+	const app = await appPromise();
 	const email = userId + AT;
 	await userModel.deleteOne({ email }); // todo: add error handling if not exist
-	await accountModel.deleteOne({ username: email });
+	await app.service('nest-account-service').deleteByUserId(userId);
 };
 
 module.exports = {
