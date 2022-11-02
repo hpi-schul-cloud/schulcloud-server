@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser, Permission, Task } from '@shared/domain';
+import { ICurrentUser, InputFormat, Permission, Task } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -194,7 +194,7 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
 			const user = setup();
 			const course = courseFactory.build({ teachers: [user] });
-			const task = taskFactory.build({ course });
+			const task = taskFactory.build({ course, description: '<p>test</p>', descriptionInputFormat: InputFormat.RICH_TEXT_CK5 });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -207,6 +207,7 @@ describe('Task Controller (e2e)', () => {
 			expect(result.data[0]).toHaveProperty('displayColor');
 			expect(result.data[0]).toHaveProperty('name');
 			expect(result.data[0]).toHaveProperty('description');
+			expect(result.data[0].description).toEqual({ content: '<p>test</p>', type: InputFormat.RICH_TEXT_CK5});
 		});
 
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
@@ -1098,7 +1099,7 @@ describe('Task Controller (e2e)', () => {
 			const response = await request(app.getHttpServer())
 				.post(`/tasks`)
 				.set('Accept', 'application/json')
-				.send({ courseId: course.id })
+				.send({ name: 'test', courseId: course.id })
 				.expect(201);
 
 			expect((response.body as TaskResponse).status.isDraft).toEqual(true);
@@ -1130,7 +1131,7 @@ describe('Task Controller (e2e)', () => {
 
 			const responseTask = response.body as TaskResponse;
 			expect(responseTask.name).toEqual(updateTaskParams.name);
-			expect(responseTask.description).toEqual(updateTaskParams.description);
+			expect(responseTask.description).toEqual({ content: updateTaskParams.description, type: InputFormat.RICH_TEXT_CK5 });
 			expect(responseTask.availableDate).toEqual(updateTaskParams.availableDate);
 			expect(responseTask.duedate).toEqual(updateTaskParams.dueDate);
 			expect(responseTask.courseId).toEqual(updateTaskParams.courseId);
@@ -1190,7 +1191,7 @@ describe('Task Controller (e2e)', () => {
 
 			currentUser = mapUserToCurrentUser(teacher);
 
-			const params = { courseId: course.id };
+			const params = { name: 'test', courseId: course.id };
 			await request(app.getHttpServer()).post(`/tasks`).set('Accept', 'application/json').send(params).expect(500);
 		});
 

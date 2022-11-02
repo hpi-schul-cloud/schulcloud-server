@@ -1100,7 +1100,7 @@ describe('TaskUC', () => {
 			});
 
 			it('should check for permission to create the task', async () => {
-				await service.create(user.id, course.id);
+				await service.create(user.id, { name: 'test', courseId: course.id });
 				expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
 					action: Actions.write,
 					requiredPermissions: [Permission.HOMEWORK_CREATE],
@@ -1108,21 +1108,21 @@ describe('TaskUC', () => {
 			});
 			it('should save the task', async () => {
 				const taskMock = {
-					name: 'Draft', // TODO
+					name: 'test',
 					creator: user,
 					course,
 				};
-				await service.create(user.id, course.id);
+				await service.create(user.id, { name: 'test', courseId: course.id });
 				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
 			});
 			it('should return the task and its status', async () => {
 				const taskMock = {
-					name: 'Draft', // TODO
+					name: 'test',
 					creator: user,
 					course,
 				};
 				authorizationService.hasPermission.mockReturnValue(true);
-				const result = await service.create(user.id, course.id);
+				const result = await service.create(user.id, { name: 'test', courseId: course.id });
 				expect(result.task).toEqual(expect.objectContaining(taskMock));
 				expect(result.status.isDraft).toEqual(true);
 			});
@@ -1142,6 +1142,7 @@ describe('TaskUC', () => {
 			it('should check for permission to update the task', async () => {
 				const params = {
 					name: 'test',
+					courseId: course.id
 				};
 				await service.update(user.id, task.id, params);
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
@@ -1152,6 +1153,7 @@ describe('TaskUC', () => {
 			it('should save the task', async () => {
 				const params = {
 					name: 'test',
+					courseId: course.id
 				};
 				await service.update(user.id, task.id, params);
 				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name });
@@ -1159,6 +1161,7 @@ describe('TaskUC', () => {
 			it('should return the updated task', async () => {
 				const params = {
 					name: 'test',
+					courseId: course.id
 				};
 				const result = await service.update(user.id, task.id, params);
 				expect(result.task).toEqual({ ...task, name: params.name });

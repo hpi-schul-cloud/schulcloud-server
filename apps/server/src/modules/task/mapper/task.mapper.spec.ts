@@ -1,9 +1,9 @@
-import { MikroORM } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions } from '@shared/domain';
-import { setupEntities, taskFactory } from '@shared/testing';
-import { TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../controller/dto';
-import { TaskMapper } from './task.mapper';
+import {MikroORM} from '@mikro-orm/core';
+import {ObjectId} from '@mikro-orm/mongodb';
+import {InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions} from '@shared/domain';
+import {setupEntities, taskFactory} from '@shared/testing';
+import {TaskResponse, TaskStatusResponse, TaskUpdateParams} from '../controller/dto';
+import {TaskMapper} from './task.mapper';
 
 const createExpectedResponse = (
 	task: Task,
@@ -23,7 +23,12 @@ const createExpectedResponse = (
 	expected.name = task.name;
 	expected.availableDate = task.availableDate;
 	expected.createdAt = task.createdAt;
-	expected.description = task.description;
+	if (task.description) {
+		expected.description = {
+			content: task.description,
+			type: task.descriptionInputFormat || InputFormat.RICH_TEXT_CK4,
+		}
+	}
 	expected.duedate = task.dueDate;
 	expected.updatedAt = task.updatedAt;
 	expected.status = expectedStatus;
@@ -95,6 +100,7 @@ describe('task.mapper', () => {
 				courseId: params.courseId,
 				lessonId: params.lessonId,
 				description: params.description,
+				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
 				dueDate: params.dueDate,
 				availableDate: params.availableDate,
 			};
