@@ -8,26 +8,20 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import _ from 'lodash';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import {
-	CopyFileResponse,
-	FileRecordParams,
-	RenameFileParams,
-	ScanResultParams,
-	SingleFileParams,
-} from '../controller/dto';
+import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
 import { FileDto } from '../dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import {
+	createFileRecord,
 	createICopyFiles,
 	createPath,
-	createFileRecord,
 	getPaths,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
 import { IGetFileResponse } from '../interface';
-import { FilesStorageMapper } from '../mapper';
+import { CopyFileResponseBuilder, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
@@ -1468,11 +1462,7 @@ describe('FilesStorageService', () => {
 
 				const result = await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
-				const expectedFileResponse = new CopyFileResponse({
-					id: targetFile.id,
-					sourceId: sourceFile.id,
-					name: targetFile.name,
-				});
+				const expectedFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
 
 				expect(result).toEqual(expectedFileResponse);
 			});
@@ -1683,11 +1673,7 @@ describe('FilesStorageService', () => {
 
 				spy = jest.spyOn(service, 'copyFileRecord').mockResolvedValueOnce(targetFile);
 
-				const fileResponse = new CopyFileResponse({
-					id: targetFile.id,
-					sourceId: sourceFile.id,
-					name: targetFile.name,
-				});
+				const fileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
 				spy = jest.spyOn(service, 'copyFilesWithRollbackOnError').mockResolvedValueOnce(fileResponse);
 
 				return { sourceFile, targetFile, userId, params, fileResponse };
@@ -1734,11 +1720,7 @@ describe('FilesStorageService', () => {
 				spy = jest.spyOn(service, 'copyFileRecord');
 				spy.mockRejectedValueOnce(error).mockResolvedValueOnce(targetFile);
 
-				const fileResponse = new CopyFileResponse({
-					id: targetFile.id,
-					sourceId: sourceFile.id,
-					name: targetFile.name,
-				});
+				const fileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
 				spy = jest.spyOn(service, 'copyFilesWithRollbackOnError').mockResolvedValue(fileResponse);
 
 				return { sourceFile, targetFile, userId, params, fileResponse };
@@ -1769,11 +1751,7 @@ describe('FilesStorageService', () => {
 				spy = jest.spyOn(service, 'copyFileRecord');
 				spy.mockResolvedValue(targetFile);
 
-				const fileResponse = new CopyFileResponse({
-					id: targetFile.id,
-					sourceId: sourceFile.id,
-					name: targetFile.name,
-				});
+				const fileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
 				spy = jest.spyOn(service, 'copyFilesWithRollbackOnError');
 				spy.mockRejectedValueOnce(error).mockResolvedValue(fileResponse);
 

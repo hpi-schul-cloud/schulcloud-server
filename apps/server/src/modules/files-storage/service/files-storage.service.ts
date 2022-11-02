@@ -30,7 +30,7 @@ import {
 	unmarkForDelete,
 } from '../helper';
 import { IGetFileResponse } from '../interface';
-import { FilesStorageMapper } from '../mapper';
+import { FilesStorageMapper, CopyFileResponseBuilder } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
 @Injectable()
@@ -264,10 +264,10 @@ export class FilesStorageService {
 			const paths = createICopyFiles(sourceFile, targetFile);
 
 			await this.storageClient.copy([paths]);
-
 			this.sendToAntiVirusService(sourceFile);
+			const copyFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
 
-			return new CopyFileResponse({ id: targetFile.id, sourceId: sourceFile.id, name: targetFile.name });
+			return copyFileResponse;
 		} catch (error) {
 			await this.fileRecordRepo.delete([targetFile]);
 			throw error;

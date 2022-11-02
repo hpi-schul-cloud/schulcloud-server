@@ -14,12 +14,12 @@ import { Request } from 'express';
 import { of } from 'rxjs';
 import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { CopyFileResponse, FileRecordParams, SingleFileParams } from '../controller/dto';
+import { FileRecordParams, SingleFileParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { IGetFileResponse } from '../interface/storage-client';
-import { FilesStorageMapper, FileDtoBuilder } from '../mapper';
+import { CopyFileResponseBuilder, FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 
@@ -1163,11 +1163,7 @@ describe('FilesStorageUC', () => {
 				const sourceFile = fileRecords[0];
 				const targetFile = fileRecords[1];
 
-				const fileResponse = new CopyFileResponse({
-					id: targetFile.id,
-					sourceId: sourceFile.id,
-					name: targetFile.name,
-				});
+				const fileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
 
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
 				filesStorageService.copyFilesOfParent.mockResolvedValueOnce([[fileResponse], 1]);
@@ -1369,11 +1365,11 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
 
-				const fileResponse = new CopyFileResponse({
-					id: fileRecord.id,
-					sourceId: singleFileParams.fileRecordId,
-					name: fileRecord.name,
-				});
+				const fileResponse = CopyFileResponseBuilder.build(
+					fileRecord.id,
+					singleFileParams.fileRecordId,
+					fileRecord.name
+				);
 
 				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
