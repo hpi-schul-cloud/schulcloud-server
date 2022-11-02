@@ -194,7 +194,11 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
 			const user = setup();
 			const course = courseFactory.build({ teachers: [user] });
-			const task = taskFactory.build({ course, description: '<p>test</p>', descriptionInputFormat: InputFormat.RICH_TEXT_CK5 });
+			const task = taskFactory.build({
+				course,
+				description: '<p>test</p>',
+				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
+			});
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -207,7 +211,7 @@ describe('Task Controller (e2e)', () => {
 			expect(result.data[0]).toHaveProperty('displayColor');
 			expect(result.data[0]).toHaveProperty('name');
 			expect(result.data[0]).toHaveProperty('description');
-			expect(result.data[0].description).toEqual({ content: '<p>test</p>', type: InputFormat.RICH_TEXT_CK5});
+			expect(result.data[0].description).toEqual({ content: '<p>test</p>', type: InputFormat.RICH_TEXT_CK5 });
 		});
 
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
@@ -1131,7 +1135,10 @@ describe('Task Controller (e2e)', () => {
 
 			const responseTask = response.body as TaskResponse;
 			expect(responseTask.name).toEqual(updateTaskParams.name);
-			expect(responseTask.description).toEqual({ content: updateTaskParams.description, type: InputFormat.RICH_TEXT_CK5 });
+			expect(responseTask.description).toEqual({
+				content: updateTaskParams.description,
+				type: InputFormat.RICH_TEXT_CK5,
+			});
 			expect(responseTask.availableDate).toEqual(updateTaskParams.availableDate);
 			expect(responseTask.duedate).toEqual(updateTaskParams.dueDate);
 			expect(responseTask.courseId).toEqual(updateTaskParams.courseId);
