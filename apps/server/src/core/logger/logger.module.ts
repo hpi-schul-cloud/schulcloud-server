@@ -10,11 +10,10 @@ const availableLevels = {
 	alert: 1,
 	crit: 2,
 	error: 3,
-	http: 4,
-	warning: 5,
-	notice: 6,
-	info: 7,
-	debug: 8,
+	warning: 4,
+	notice: 5,
+	info: 6,
+	debug: 7,
 };
 
 @Module({

@@ -39,7 +39,7 @@ export class Logger implements ILogger {
 	}
 
 	http(message: RequestLoggingBody, context?: string): void {
-		this.logger.http(this.createMessage(message, context));
+		this.logger.notice(this.createMessage(message, context));
 	}
 
 	error(message: unknown, trace?: unknown, context?: string | undefined): void {
