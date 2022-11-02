@@ -2,7 +2,6 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	courseFactory,
-	fileFactory,
 	lessonFactory,
 	schoolFactory,
 	setupEntities,
@@ -10,7 +9,6 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { File } from './file.entity';
 import { Submission } from './submission.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';

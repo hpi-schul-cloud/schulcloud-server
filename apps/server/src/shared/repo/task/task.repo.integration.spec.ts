@@ -5,7 +5,6 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cleanupCollections,
 	courseFactory,
-	fileFactory,
 	lessonFactory,
 	submissionFactory,
 	taskFactory,

@@ -3,15 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyHelperService, TaskCopyService } from '@shared/domain';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
-import {
-	courseFactory,
-	fileFactory,
-	lessonFactory,
-	schoolFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '../../testing';
+import { courseFactory, lessonFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '../../testing';
 import { Task } from '../entity';
 
 describe('task copy service', () => {
