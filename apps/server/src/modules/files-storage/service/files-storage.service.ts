@@ -121,13 +121,13 @@ export class FilesStorageService {
 	// download
 	private checkFileName(entity: FileRecord, params: DownloadFileParams): void | NotFoundException {
 		if (entity.name !== params.fileName) {
-			this.logger.warn(`could not find file with id: ${entity.id} by filename`);
+			this.logger.debug(`could not find file with id: ${entity.id} by filename`);
 			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
 	}
 
 	private checkScanStatus(entity: FileRecord): void | NotAcceptableException {
-		if (entity.securityCheck.status === ScanStatus.BLOCKED) {
+		if (isStatusBlocked(entity)) {
 			this.logger.warn(`file is blocked with id: ${entity.id}`);
 			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED);
 		}
@@ -282,11 +282,9 @@ export class FilesStorageService {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
 
 		const promises = sourceFileRecords.map(async (sourceFile) => {
-			if (isStatusBlocked(sourceFile)) return Promise.reject(new Error(ErrorType.FILE_IS_BLOCKED));
-			if (sourceFile.deletedSince) return Promise.reject(new Error(ErrorType.FILE_NOT_FOUND));
+			this.checkScanStatus(sourceFile);
 
 			const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
-
 			const fileResponse = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
 			return fileResponse;
