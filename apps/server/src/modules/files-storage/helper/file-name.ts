@@ -1,6 +1,6 @@
 import { ConflictException } from '@nestjs/common';
-import { FileRecord } from '@shared/domain';
 import path from 'path';
+import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 
 export function checkDuplicatedNames(fileRecords: FileRecord[], newFileName: string): void {

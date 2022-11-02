@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext } from '@shared/domain';
+import { Counted, EntityId, IPermissionContext } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
+import { FileRecord, FileRecordParentType } from '../entity';
 import { PermissionContexts } from '../files-storage.const';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';

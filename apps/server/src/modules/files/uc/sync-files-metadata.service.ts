@@ -2,7 +2,8 @@
 
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, FileRecord } from '@shared/domain';
+import { EntityId } from '@shared/domain';
+import { FileRecord } from '@src/modules/files-storage/entity/filerecord.entity';
 import { FileRecordRepo } from '@src/modules/files-storage/repo/filerecord.repo';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
 import { SyncFileItem, SyncTargetFile } from '../types';

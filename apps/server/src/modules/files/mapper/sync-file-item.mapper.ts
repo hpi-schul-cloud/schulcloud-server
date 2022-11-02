@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FileRecord, FileRecordParentType } from '@shared/domain';
+import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { SyncFileItem, SyncFileItemData, SyncSourceFileData } from '../types';
 import { SyncSourceFileMapper } from './sync-source-file.mapper';
 import { SyncTargetFileMapper } from './sync-target-file.mapper';

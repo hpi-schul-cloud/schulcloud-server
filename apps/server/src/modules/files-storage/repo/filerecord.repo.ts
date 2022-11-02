@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, FileRecord, IFindOptions, SortOrder } from '@shared/domain';
+import { Counted, EntityId, IFindOptions, SortOrder } from '@shared/domain';
 import { BaseRepo } from '@shared/repo';
+import { FileRecord } from '../entity';
 import { FileRecordScope } from './filerecord-scope';
 
 @Injectable()

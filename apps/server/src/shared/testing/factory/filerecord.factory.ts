@@ -1,4 +1,9 @@
-import { FileRecord, FileRecordParentType, FileSecurityCheck, IFileRecordProperties } from '@shared/domain';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
+import {
+	FileRecord,
+	IFileRecordProperties,
+	FileSecurityCheck,
+} from '@src/modules/files-storage/entity/filerecord.entity';
 import { ObjectId } from 'bson';
 
 import { BaseFactory } from './base.factory';

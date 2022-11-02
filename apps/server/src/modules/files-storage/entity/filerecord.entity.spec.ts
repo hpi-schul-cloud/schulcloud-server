@@ -1,8 +1,13 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { FileRecordParentType, ScanStatus } from '.';
-import { FileRecord, FileSecurityCheck, IFileRecordProperties } from './filerecord.entity';
+import {
+	FileRecordParentType,
+	ScanStatus,
+	FileRecord,
+	FileSecurityCheck,
+	IFileRecordProperties,
+} from './filerecord.entity';
 
 describe('FileRecord Entity', () => {
 	let orm: MikroORM;

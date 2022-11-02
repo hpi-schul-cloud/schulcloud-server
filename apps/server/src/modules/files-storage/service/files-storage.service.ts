@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
-import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
+import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
@@ -12,6 +12,7 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../controller/dto';
+import { FileRecord, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import {
 	createFileRecord,

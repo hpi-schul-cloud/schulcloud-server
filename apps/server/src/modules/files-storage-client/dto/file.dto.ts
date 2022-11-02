@@ -1,4 +1,5 @@
-import { EntityId, FileRecordParentType } from '@shared/domain';
+import { EntityId } from '@shared/domain';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { IFileDomainObjectProps } from '../interfaces';
 
 export class FileDto {

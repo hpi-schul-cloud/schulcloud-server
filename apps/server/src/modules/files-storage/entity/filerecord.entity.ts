@@ -1,8 +1,8 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { v4 as uuid } from 'uuid';
-import type { EntityId } from '../types/entity-id';
-import { BaseEntity } from './base.entity';
+import type { EntityId } from '../../../shared/domain/types/entity-id';
+import { BaseEntity } from '../../../shared/domain/entity/base.entity';
 
 export enum ScanStatus {
 	PENDING = 'pending',
