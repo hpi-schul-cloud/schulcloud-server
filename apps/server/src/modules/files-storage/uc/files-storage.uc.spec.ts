@@ -15,7 +15,7 @@ import { of } from 'rxjs';
 import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { CopyFileResponse, FileRecordParams, SingleFileParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity/filerecord.entity';
+import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { IGetFileResponse } from '../interface/storage-client';

@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { EntityId, FileRecordParentType, ICurrentUser, Permission } from '@shared/domain';
+import { EntityId, ICurrentUser, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import {
 	cleanupCollections,
@@ -25,6 +25,7 @@ import {
 import { Request } from 'express';
 import S3rver from 's3rver';
 import request from 'supertest';
+import { FileRecordParentType } from '../../entity';
 
 const baseRouteName = '/file/copy';
 

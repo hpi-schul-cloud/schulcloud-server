@@ -1,6 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
 import { NotImplementedException } from '@nestjs/common';
-import { FileRecordParentType } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import {
@@ -10,6 +9,7 @@ import {
 	FileRecordResponse,
 	SingleFileParams,
 } from '../controller/dto';
+import { FileRecordParentType } from '../entity';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {

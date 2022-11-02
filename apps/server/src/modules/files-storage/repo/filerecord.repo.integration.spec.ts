@@ -4,8 +4,8 @@ import { cleanupCollections, fileRecordFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { FileRecord, FileRecordParentType } from '@shared/domain';
 import { FileRecordRepo } from './filerecord.repo';
+import { FileRecord, FileRecordParentType } from '../entity';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
