@@ -1,9 +1,6 @@
 // jest.config.ts
 import type { Config } from '@jest/types';
 
-const { pathsToModuleNameMapper } = require('ts-jest');
-const { compilerOptions } = require('./tsconfig.json');
-
 // Sync object
 const config: Config.InitialOptions = {
 	moduleFileExtensions: ['js', 'json', 'ts'],
@@ -48,6 +45,5 @@ const config: Config.InitialOptions = {
 		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',
 		'^@src/(.*)$': '<rootDir>/apps/server/src/$1',
 	},
-	maxWorkers: 2, // limited for not taking all workers within of a single github action
 };
 export default config;
