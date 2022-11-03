@@ -54,6 +54,8 @@ export class ImportUserResponse {
 	@ApiPropertyOptional({ description: 'assignemnt to a local user account' })
 	match?: UserMatchResponse;
 
+	// explicit type is needed for OpenAPI generator
+	// eslint-disable-next-line @typescript-eslint/no-inferrable-types
 	@ApiProperty({ description: 'manual flag to apply it as filter' })
 	flagged: boolean = false;
 }

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -577,7 +577,7 @@ describe('[ImportUserModule]', () => {
 				const result = uc.startSchoolInUserMigration(currentUser.id);
 				await expect(result).rejects.toThrowError(BadRequestException);
 			});
-			it('should not throw if school has no school numer but its own LDAP', async () => {
+			it('should not throw if school has no school number but its own LDAP', async () => {
 				school.officialSchoolNumber = undefined;
 				const result = uc.startSchoolInUserMigration(currentUser.id, false);
 				await expect(result).resolves.toBe(undefined);
