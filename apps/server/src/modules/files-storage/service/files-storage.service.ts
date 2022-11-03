@@ -1,4 +1,10 @@
-import { Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
+import {
+	ConflictException,
+	Injectable,
+	InternalServerErrorException,
+	NotAcceptableException,
+	NotFoundException,
+} from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { Logger } from '@src/core/logger';
@@ -25,7 +31,6 @@ import {
 	getStatusFromScanResult,
 	isStatusBlocked,
 	markForDelete,
-	modifyFileNameInScope,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
@@ -99,14 +104,21 @@ export class FilesStorageService {
 	}
 
 	// update
+	private checkDuplicatedNames(fileRecords: FileRecord[], newFileName: string): void {
+		if (fileRecords.find((item) => item.name === newFileName)) {
+			throw new ConflictException(ErrorType.FILE_NAME_EXISTS);
+		}
+	}
+
 	public async patchFilename(fileRecord: FileRecord, data: RenameFileParams) {
 		const fileRecordParams = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
 		const [fileRecords] = await this.getFileRecordsOfParent(fileRecordParams);
 
-		const modifiedFileRecord = modifyFileNameInScope(fileRecord, fileRecords, data.fileName);
-		await this.fileRecordRepo.save(modifiedFileRecord);
+		this.checkDuplicatedNames(fileRecords, data.fileName);
+		fileRecord.setName(data.fileName);
+		await this.fileRecordRepo.save(fileRecord);
 
-		return modifiedFileRecord;
+		return fileRecord;
 	}
 
 	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {

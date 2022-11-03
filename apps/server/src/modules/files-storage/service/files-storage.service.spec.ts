@@ -1,7 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
+import {
+	ConflictException,
+	InternalServerErrorException,
+	NotAcceptableException,
+	NotFoundException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
@@ -625,6 +630,37 @@ describe('FilesStorageService', () => {
 				const { fileRecord, data } = setup();
 
 				await expect(service.patchFilename(fileRecord, data)).rejects.toThrowError(new Error('bla'));
+			});
+		});
+
+		describe('WHEN file name allready exists', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const { fileRecords, params } = getFileRecordsWithParams();
+				const fileRecord = fileRecords[0];
+				const data: RenameFileParams = { fileName: fileRecords[0].name };
+
+				spy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
+
+				return {
+					data,
+					fileRecord,
+					fileRecords,
+					params,
+				};
+			};
+
+			it('should pass the error', async () => {
+				const { fileRecord, data } = setup();
+				const expectedError = new ConflictException(ErrorType.FILE_NAME_EXISTS);
+
+				await expect(service.patchFilename(fileRecord, data)).rejects.toThrowError(expectedError);
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
 			});
 		});
 	});

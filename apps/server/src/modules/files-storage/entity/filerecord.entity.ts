@@ -169,4 +169,8 @@ export class FileRecord extends BaseEntity {
 	unmarkForDelete(): void {
 		this.deletedSince = undefined;
 	}
+
+	setName(name: string): void {
+		this.name = name;
+	}
 }

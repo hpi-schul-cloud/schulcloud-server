@@ -118,4 +118,21 @@ describe('FileRecord Entity', () => {
 			expect(securityCheck.requestToken).toEqual(securityCheck.requestToken);
 		});
 	});
+
+	describe('setName is called', () => {
+		const setup = () => {
+			const fileRecord = fileRecordFactory.build();
+			const newName = 'newName';
+
+			return { fileRecord, newName };
+		};
+
+		it('should set name', () => {
+			const { fileRecord, newName } = setup();
+
+			fileRecord.setName(newName);
+
+			expect(fileRecord.name).toBe(newName);
+		});
+	});
 });
