@@ -40,6 +40,10 @@ describe('FilesStorageMapper', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.User);
 			expect(result).toBe(AllowedAuthorizationEntityType.User);
 		});
+		it('should return allowed type equal Submission', () => {
+			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.Submission);
+			expect(result).toBe(AllowedAuthorizationEntityType.Submission);
+		});
 		it('should throw Error', () => {
 			const exec = () => {
 				FilesStorageMapper.mapToAllowedAuthorizationEntityType('' as FileRecordParentType);
