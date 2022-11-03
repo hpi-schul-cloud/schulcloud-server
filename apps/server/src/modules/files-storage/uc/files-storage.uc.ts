@@ -18,7 +18,7 @@ import {
 	DownloadFileParams,
 	FileRecordParams,
 	FileUrlParams,
-	SingleFileParams,
+	SingleFileParams
 } from '../controller/dto/file-storage.params';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
@@ -102,7 +102,7 @@ export class FilesStorageUC {
 
 			return result;
 		} catch (error) {
-			this.logger.warn(`could not find file by url: ${params.url} ${JSON.stringify(error)}`);
+			this.logger.warn(`could not find file by url: ${params.url}`, error);
 			throw new NotFoundException('FILE_NOT_FOUND');
 		}
 	}
