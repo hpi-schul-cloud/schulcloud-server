@@ -1,4 +1,4 @@
-import { Embedded, Entity, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Property, Unique } from '@mikro-orm/core';
 import { ExternalToolConfig } from '@shared/domain/entity/external-tool/config/external-tool-config';
 import { CustomParameter } from './custom-parameter/custom-parameter';
 import { BaseEntityWithTimestamps } from '../base.entity';
@@ -19,6 +19,7 @@ export class ExternalTool extends BaseEntityWithTimestamps {
 		this.version = props.version;
 	}
 
+	@Unique()
 	@Property()
 	name: string;
 

@@ -1,3 +1,3 @@
 export enum LtiMessageType {
-	IDK = '',
+	BASIC_LTI_LAUNCH_REQUEST = 'basic-lti-launch-request',
 }

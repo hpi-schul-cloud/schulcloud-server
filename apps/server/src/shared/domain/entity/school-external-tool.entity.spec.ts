@@ -1,6 +1,16 @@
 import { MikroORM } from '@mikro-orm/core';
 import { externalToolFactory, schoolFactory, setupEntities } from '@shared/testing/index';
-import { SchoolExternalTool } from '@shared/domain';
+import {
+	BasicToolConfig,
+	CustomParameter,
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	ExternalTool,
+	ExternalToolConfig,
+	SchoolExternalTool,
+	ToolConfigType,
+} from '@shared/domain';
 import { schoolExternalToolFactory } from '@shared/testing/factory/school-external-tool.factory';
 
 describe('ExternalTool Entity', () => {
@@ -27,12 +37,35 @@ describe('ExternalTool Entity', () => {
 		});
 
 		it('should set schoolParameters to empty when is undefined', () => {
-			const schoolExternalTool = new SchoolExternalTool({
-				toolVersion: 1,
-				school: schoolFactory.buildWithId(),
-				tool: externalToolFactory.buildWithId(),
-				schoolParameters: undefined,
+			const externalToolConfig: ExternalToolConfig = new BasicToolConfig({
+				type: ToolConfigType.OAUTH2,
+				baseUrl: 'mockBaseUrl',
 			});
+			const customParameter: CustomParameter = new CustomParameter({
+				name: 'parameterName',
+				default: 'mock',
+				location: CustomParameterLocation.PATH,
+				scope: CustomParameterScope.SCHOOL,
+				type: CustomParameterType.STRING,
+				regex: 'mockRegex',
+			});
+			const externalTool: ExternalTool = new ExternalTool({
+				name: 'toolName',
+				url: 'mockUrl',
+				logoUrl: 'mockLogoUrl',
+				config: externalToolConfig,
+				parameters: [customParameter],
+				isHidden: true,
+				openNewTab: true,
+				version: 1,
+			});
+			const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
+				tool: externalTool,
+				school: schoolFactory.buildWithId(),
+				schoolParameters: [],
+				toolVersion: 1,
+			});
+
 			expect(schoolExternalTool.schoolParameters).toEqual([]);
 		});
 	});
