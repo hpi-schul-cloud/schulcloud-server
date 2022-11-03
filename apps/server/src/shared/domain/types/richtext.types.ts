@@ -3,7 +3,7 @@ import { InputFormat } from '@shared/domain/types/input-format.types';
 
 export class RichText {
 	constructor({ content, type }: RichText) {
-		this.content = content || '';
+		this.content = content;
 		this.type = type || InputFormat.PLAIN_TEXT;
 	}
 
@@ -15,4 +15,3 @@ export class RichText {
 	})
 	type: InputFormat;
 }
-

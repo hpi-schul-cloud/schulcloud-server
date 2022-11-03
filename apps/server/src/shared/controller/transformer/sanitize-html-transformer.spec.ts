@@ -8,6 +8,9 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		@SanitizeHtml()
 		title!: string;
 
+		@SanitizeHtml(InputFormat.PLAIN_TEXT)
+		title2!: string;
+
 		@SanitizeHtml(InputFormat.RICHTEXT_SIMPLE)
 		excerpt?: string;
 
@@ -29,6 +32,10 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 			const plainString = { title: '<b>html text</b>' };
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.title).toEqual('html text');
+
+			const plainString2 = { title2: '<b>html text</b>' };
+			const instance2 = plainToClass(WithHtmlDto, plainString2);
+			expect(instance2.title2).toEqual('html text');
 		});
 	});
 

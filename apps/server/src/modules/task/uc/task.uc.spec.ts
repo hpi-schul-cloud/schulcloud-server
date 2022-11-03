@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
 import { Actions, Course, ITaskStatus, Lesson, Permission, SortOrder, Task, User } from '@shared/domain';
@@ -1079,7 +1079,7 @@ describe('TaskUC', () => {
 		});
 	});
 
-	describe('Individual task assignment feature', () => {
+	describe('Single task', () => {
 		beforeEach(() => {
 			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
 				if (config === 'FEATURE_NEW_TASK_ENABLED') {
@@ -1132,10 +1132,12 @@ describe('TaskUC', () => {
 			let task: Task;
 			beforeEach(() => {
 				user = userFactory.buildWithId();
-				course = courseFactory.build({ teachers: [user] });
+				course = courseFactory.buildWithId({ teachers: [user] });
+
 				task = taskFactory.build({ course });
 				userRepo.findById.mockResolvedValue(user);
 				courseRepo.findById.mockResolvedValue(course);
+
 				taskRepo.findById.mockResolvedValue(task);
 				taskRepo.save.mockResolvedValue();
 			});
@@ -1150,13 +1152,49 @@ describe('TaskUC', () => {
 					requiredPermissions: [Permission.HOMEWORK_EDIT],
 				});
 			});
-			it('should save the task', async () => {
+			it('should check authorization for course', async () => {
+				const newCourse = courseFactory.buildWithId({ teachers: [user] });
+				courseRepo.findById.mockResolvedValue(newCourse);
+				const params = {
+					name: 'test',
+					courseId: course.id,
+				};
+				await service.update(user.id, task.id, params);
+				expect(authorizationService.checkPermission).toBeCalledWith(user, newCourse, {
+					action: Actions.write,
+					requiredPermissions: [],
+				});
+			});
+			it('should save the task with course', async () => {
 				const params = {
 					name: 'test',
 					courseId: course.id,
 				};
 				await service.update(user.id, task.id, params);
 				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name });
+			});
+			it('should save the task with course and lesson', async () => {
+				const lesson = lessonFactory.buildWithId({ course });
+				lessonRepo.findById.mockResolvedValue(lesson);
+				const params = {
+					name: 'test',
+					courseId: course.id,
+					lessonId: lesson.id,
+				};
+				await service.update(user.id, task.id, params);
+				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name, lessonId: lesson.id });
+			});
+			it('should throw if lesson does not belong to course', async () => {
+				const lesson = lessonFactory.buildWithId();
+				lessonRepo.findById.mockResolvedValue(lesson);
+				const params = {
+					name: 'test',
+					courseId: course.id,
+					lessonId: lesson.id,
+				};
+				await expect(async () => {
+					await service.update(user.id, task.id, params);
+				}).rejects.toThrow(BadRequestException);
 			});
 			it('should return the updated task', async () => {
 				const params = {

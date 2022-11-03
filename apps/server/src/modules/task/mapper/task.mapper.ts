@@ -1,4 +1,4 @@
-import { InputFormat, ITaskCreate, ITaskUpdate, TaskWithStatusVo } from '@shared/domain';
+import { InputFormat, ITaskCreate, ITaskUpdate, RichText, TaskWithStatusVo } from '@shared/domain';
 import { TaskCreateParams, TaskResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskStatusMapper } from './task-status.mapper';
 
@@ -19,10 +19,10 @@ export class TaskMapper {
 			status: statusDto,
 		});
 		if (task.description) {
-			dto.description = {
+			dto.description = new RichText({
 				content: task.description,
 				type: task.descriptionInputFormat || InputFormat.RICH_TEXT_CK4,
-			};
+			});
 		}
 		dto.availableDate = task.availableDate;
 		dto.duedate = task.dueDate;

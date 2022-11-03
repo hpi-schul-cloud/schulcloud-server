@@ -1,6 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
 import { Transform, TransformFnParams } from 'class-transformer';
-import sanitize, {AllowedAttribute} from 'sanitize-html';
+import sanitize, { AllowedAttribute } from 'sanitize-html';
 import { InputFormat } from '@shared/domain';
 
 export type IInputFormatsConfig = {

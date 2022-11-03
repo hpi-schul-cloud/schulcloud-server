@@ -1,5 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { School } from '@shared/domain/entity/school.entity';
+import { InputFormat } from '@shared/domain/types/input-format.types';
 import type { IEntityWithSchool } from '../interface';
 import type { ILearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
@@ -10,7 +11,6 @@ import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
 import type { User } from './user.entity';
 import type { ITaskProperties, ITaskStatus } from '../types/task.types';
-import {InputFormat} from "@shared/domain/types/input-format.types";
 
 export class TaskWithStatusVo {
 	task!: Task;

@@ -43,7 +43,7 @@ export class TaskResponse {
 
 	@ApiPropertyOptional({
 		description: 'Task description object, with props content: string and type: input format types',
-		type: RichText
+		type: RichText,
 	})
 	@DecodeHtmlEntities()
 	description?: RichText;

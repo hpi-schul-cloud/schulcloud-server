@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import {
 	Actions,
 	Counted,
@@ -21,7 +21,6 @@ import {
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import {BadRequest} from "@feathersjs/errors";
 
 @Injectable()
 export class TaskUC {
@@ -280,22 +279,17 @@ export class TaskUC {
 			}
 		}
 
-		if (params.courseId) {
-			const course = await this.courseRepo.findById(params.courseId);
-			// TODO - check if this permission works as it should
-			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([Permission.HOMEWORK_EDIT]));
-			task.course = course;
+		const course = await this.courseRepo.findById(params.courseId);
+		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+		task.course = course;
 
-
-			if (params.lessonId) {
-				const lesson = await this.lessonRepo.findById(params.lessonId);
-				if (lesson.course.id !== params.courseId) {
-					throw new BadRequest('Lesson does not belong to Course');
-				}
-				// TODO
-				this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([Permission.HOMEWORK_EDIT]));
-				task.lesson = lesson;
+		if (params.lessonId) {
+			const lesson = await this.lessonRepo.findById(params.lessonId);
+			if (!task.course || lesson.course.id !== task.course.id) {
+				throw new BadRequestException('Lesson does not belong to Course');
 			}
+			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+			task.lesson = lesson;
 		}
 
 		await this.taskRepo.save(task);
