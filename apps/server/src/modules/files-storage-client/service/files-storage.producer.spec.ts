@@ -5,10 +5,10 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParentType } from '@shared/domain';
 import { FilesStorageEvents, FilesStorageExchange } from '@shared/infra/rabbitmq';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { ErrorMapper } from '../mapper/error.mapper';
 import { FilesStorageProducer } from './files-storage.producer';
 

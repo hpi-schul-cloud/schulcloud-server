@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParentType } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, fileFactory, fileRecordFactory, taskFactory } from '@shared/testing';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { SyncFilesRepo } from './sync-files.repo';
 
 // Temporary functionality for migration to new fileservice
