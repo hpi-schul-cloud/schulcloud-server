@@ -21,7 +21,7 @@ import { ProvisioningModule } from '@src/modules/provisioning';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { RoleModule } from '@src/modules/role/role.module';
 import { SchoolModule } from '@src/modules/school/school.module';
-import { SharingModule } from '@src/modules/sharing/sharing.module';
+import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemModule } from '@src/modules/system';
 import { TaskModule } from '@src/modules/task';
 import { UserModule } from '@src/modules/user';
@@ -65,7 +65,7 @@ const serverModules = [
 	RoleModule,
 	VideoConferenceModule,
 	OauthProviderModule,
-	SharingModule,
+	SharingApiModule,
 	ToolModule,
 ];
 
