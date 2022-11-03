@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { CopyHelperService } from '@shared/domain';
 import { Course, User } from '@shared/domain/entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/types';
-import { CopyHelperService } from './copy-helper.service';
 
 export type CourseCopyParams = {
 	originalCourse: Course;
@@ -9,8 +9,10 @@ export type CourseCopyParams = {
 	copyName?: string;
 };
 
+// WIP - completely move service and spec to learnroom module
+
 @Injectable()
-export class CourseCopyService {
+export class CourseEntityCopyService {
 	constructor(private readonly copyHelperService: CopyHelperService) {}
 
 	copyCourse(params: CourseCopyParams): CopyStatus {

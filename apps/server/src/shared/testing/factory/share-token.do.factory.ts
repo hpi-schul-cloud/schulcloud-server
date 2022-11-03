@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { EntityId, ShareTokenDO, ShareTokenParentType } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { Factory } from 'fishery';
