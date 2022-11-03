@@ -4,21 +4,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, Team } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, roleFactory } from '@shared/testing';
-import { TeamRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 
 describe('team repo', () => {
 	let module: TestingModule;
-	let repo: TeamRepo;
+	let repo: TeamsRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [TeamRepo],
+			providers: [TeamsRepo],
 		}).compile();
-		repo = module.get(TeamRepo);
+		repo = module.get(TeamsRepo);
 		em = module.get(EntityManager);
 	});
 

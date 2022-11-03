@@ -12,7 +12,7 @@ import {
 	SchoolRepo,
 	SubmissionRepo,
 	TaskRepo,
-	TeamRepo,
+	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
@@ -28,7 +28,7 @@ describe('reference.loader', () => {
 	let taskRepo: DeepMocked<TaskRepo>;
 	let schoolRepo: DeepMocked<SchoolRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
-	let teamRepo: DeepMocked<TeamRepo>;
+	let teamsRepo: DeepMocked<TeamsRepo>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
@@ -67,8 +67,8 @@ describe('reference.loader', () => {
 					useValue: createMock<LessonRepo>(),
 				},
 				{
-					provide: TeamRepo,
-					useValue: createMock<TeamRepo>(),
+					provide: TeamsRepo,
+					useValue: createMock<TeamsRepo>(),
 				},
 				{
 					provide: SubmissionRepo,
@@ -84,7 +84,7 @@ describe('reference.loader', () => {
 		taskRepo = await module.get(TaskRepo);
 		schoolRepo = await module.get(SchoolRepo);
 		lessonRepo = await module.get(LessonRepo);
-		teamRepo = await module.get(TeamRepo);
+		teamsRepo = await module.get(TeamsRepo);
 		submissionRepo = await module.get(SubmissionRepo);
 	});
 
@@ -133,10 +133,10 @@ describe('reference.loader', () => {
 			expect(lessonRepo.findById).toBeCalledWith(entityId);
 		});
 
-		it('should call teamRepo.findById', async () => {
+		it('should call teamsRepo.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.Team, entityId);
 
-			expect(teamRepo.findById).toBeCalledWith(entityId, true);
+			expect(teamsRepo.findById).toBeCalledWith(entityId, true);
 		});
 
 		it('should call submissionRepo.findById', async () => {

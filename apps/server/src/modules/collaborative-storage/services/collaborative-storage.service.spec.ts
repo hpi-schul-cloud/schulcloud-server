@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CollaborativeStorageService } from '@src/modules/collaborative-storage/services/collaborative-storage.service';
-import { TeamRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { RoleName, Team } from '@shared/domain';
@@ -24,7 +24,7 @@ describe('Collaborative Storage Service', () => {
 	let adapter: DeepMocked<CollaborativeStorageAdapter>;
 	let authService: DeepMocked<AuthorizationService>;
 	let roleService: DeepMocked<RoleService>;
-	let teamRepo: DeepMocked<TeamRepo>;
+	let teamRepo: DeepMocked<TeamsRepo>;
 
 	let mockId: string;
 	let roleDto: RoleDto;
@@ -44,8 +44,8 @@ describe('Collaborative Storage Service', () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
-					provide: TeamRepo,
-					useValue: createMock<TeamRepo>(),
+					provide: TeamsRepo,
+					useValue: createMock<TeamsRepo>(),
 				},
 				{
 					provide: CollaborativeStorageAdapter,
@@ -61,7 +61,7 @@ describe('Collaborative Storage Service', () => {
 		adapter = module.get(CollaborativeStorageAdapter);
 		authService = module.get(AuthorizationService);
 		roleService = module.get(RoleService);
-		teamRepo = module.get(TeamRepo);
+		teamRepo = module.get(TeamsRepo);
 		orm = await setupEntities();
 	});
 

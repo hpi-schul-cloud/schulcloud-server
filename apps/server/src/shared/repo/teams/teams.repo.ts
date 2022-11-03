@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()
-export class TeamRepo extends BaseRepo<Team> {
+export class TeamsRepo extends BaseRepo<Team> {
 	get entityName() {
 		return Team;
 	}

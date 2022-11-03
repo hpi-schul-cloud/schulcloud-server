@@ -9,7 +9,7 @@ import {
 	SchoolRepo,
 	SubmissionRepo,
 	TaskRepo,
-	TeamRepo,
+	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
 import { AuthorizationService } from './authorization.service';
@@ -34,7 +34,7 @@ import { ReferenceLoader } from './reference.loader';
 		FileRecordRepo,
 		SchoolRepo,
 		LessonRepo,
-		TeamRepo,
+		TeamsRepo,
 		SubmissionRepo,
 	],
 	exports: [FeathersAuthorizationService, FeathersJwtProvider, AuthorizationService],
