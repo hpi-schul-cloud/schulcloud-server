@@ -9,10 +9,6 @@ import { Logger } from './logger.service';
 describe('Logger', () => {
 	let service: Logger;
 	let winstonLogger: DeepMocked<WinstonLogger>;
-	const msg = {
-		request: { url: '/', method: 'POST', params: {}, query: {} },
-		error: undefined,
-	};
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -29,28 +25,35 @@ describe('Logger', () => {
 		winstonLogger = module.get(WINSTON_MODULE_PROVIDER);
 	});
 
-	describe('WHEN http requests logging', () => {
-		it('should call winstonLogger.http', () => {
-			service.http(msg);
-
-			expect(winstonLogger.http).toBeCalled();
-		});
-
-		it('should call winstonLogger.http with params', () => {
-			service.http(msg, 'HTTP TEST');
-			const expectedParams = {
-				context: 'HTTP TEST',
-				message: "{  request: { url: '/', method: 'POST', params: {}, query: {} },  error: undefined}",
-			};
-			expect(winstonLogger.http).toBeCalledWith(expectedParams);
-		});
-	});
-
 	describe('WHEN error logging', () => {
 		it('should call winstonLogger.error', () => {
 			const error = new Error('custom error');
 			service.error(error.message, error.stack);
 			expect(winstonLogger.error).toBeCalled();
+		});
+	});
+
+	describe('WHEN warn logging', () => {
+		it('should call winstonLogger.warning', () => {
+			const error = new Error('custom error');
+			service.warn(error.message, error.stack);
+			expect(winstonLogger.warning).toBeCalled();
+		});
+	});
+
+	describe('WHEN debug logging', () => {
+		it('should call winstonLogger.debug', () => {
+			const error = new Error('custom error');
+			service.debug(error.message, error.stack);
+			expect(winstonLogger.debug).toBeCalled();
+		});
+	});
+
+	describe('WHEN verbose logging', () => {
+		it('should call winstonLogger.verbose', () => {
+			const error = new Error('custom error');
+			service.verbose(error.message, error.stack);
+			expect(winstonLogger.verbose).toBeCalled();
 		});
 	});
 });
