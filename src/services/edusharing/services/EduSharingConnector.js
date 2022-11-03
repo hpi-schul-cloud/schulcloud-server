@@ -309,17 +309,6 @@ class EduSharingConnector {
 					if (node.preview && node.preview.url) {
 						node.preview.url = await this.getImage(`${node.preview.url}&crop=true&maxWidth=300&maxHeight=300`);
 					}
-
-					// workaround for Edu-Sharing bug, where arrays are as strings "['a,b,c']"
-					if (
-						node.properties &&
-						node.properties['cclom:general_keyword'] &&
-						node.properties['cclom:general_keyword'][0]
-					) {
-						node.properties['cclom:general_keyword'] = node.properties['cclom:general_keyword'][0]
-							.slice(1, -1)
-							.split(',');
-					}
 				});
 				await Promise.allSettled(promises);
 			} else {
