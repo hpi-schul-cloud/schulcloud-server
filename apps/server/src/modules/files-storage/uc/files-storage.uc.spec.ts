@@ -14,7 +14,7 @@ import { Request } from 'express';
 import { of } from 'rxjs';
 import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { FileRecordParams, SingleFileParams } from '../controller/dto';
+import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
@@ -1412,6 +1412,182 @@ describe('FilesStorageUC', () => {
 				const { copyFileParams, singleFileParams, userId, error } = setup();
 
 				await expect(filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams)).rejects.toThrow(error);
+			});
+		});
+	});
+
+	describe('getFileRecordsOfParent is called', () => {
+		describe('when user is authorised and valid files exist', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const { fileRecords, params } = getFileRecordsWithParams();
+
+				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+
+				return { userId, params, fileRecords };
+			};
+
+			it('should call authorisation with right parameters', async () => {
+				const { userId, params } = setup();
+
+				await filesStorageUC.getFileRecordsOfParent(userId, params);
+
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					params.parentType,
+					params.parentId,
+					PermissionContexts.read
+				);
+			});
+
+			it('should call service method getFilesOfParent with right parameters', async () => {
+				const { userId, params } = setup();
+
+				await filesStorageUC.getFileRecordsOfParent(userId, params);
+
+				expect(filesStorageService.getFileRecordsOfParent).toHaveBeenCalledWith(params);
+			});
+
+			it('should return counted file records', async () => {
+				const { userId, params, fileRecords } = setup();
+
+				const result = await filesStorageUC.getFileRecordsOfParent(userId, params);
+
+				expect(result).toEqual([fileRecords, fileRecords.length]);
+			});
+		});
+
+		describe('when user is not authorised', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const { fileRecords, params } = getFileRecordsWithParams();
+
+				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new Error('Bla'));
+
+				return { userId, params, fileRecords };
+			};
+
+			it('should pass the error', async () => {
+				const { userId, params } = setup();
+
+				await expect(filesStorageUC.getFileRecordsOfParent(userId, params)).rejects.toThrowError(new Error('Bla'));
+			});
+		});
+
+		describe('when user is authorised but no files exist', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const { params } = getFileRecordsWithParams();
+				const fileRecords = [];
+
+				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+
+				return { userId, params, fileRecords };
+			};
+
+			it('should return empty counted file records', async () => {
+				const { userId, params } = setup();
+
+				const result = await filesStorageUC.getFileRecordsOfParent(userId, params);
+
+				expect(result).toEqual([[], 0]);
+			});
+		});
+	});
+
+	describe('updateSecurityStatus is called', () => {
+		describe('WHEN matching file exists', () => {
+			const setup = () => {
+				const { fileRecord } = getFileRecordWithParams();
+				const scanResult: ScanResultParams = { virus_detected: false };
+				const token = fileRecord.securityCheck.requestToken || '';
+
+				filesStorageService.updateSecurityStatus.mockResolvedValueOnce();
+
+				return { scanResult, token };
+			};
+
+			it('should call service method updateSecurityStatus with right parameters', async () => {
+				const { scanResult, token } = setup();
+
+				await filesStorageUC.updateSecurityStatus(token, scanResult);
+
+				expect(filesStorageService.updateSecurityStatus).toHaveBeenCalledWith(token, scanResult);
+			});
+		});
+
+		describe('WHEN service throws an error', () => {
+			const setup = () => {
+				const { fileRecord } = getFileRecordWithParams();
+				const scanResult: ScanResultParams = { virus_detected: false };
+				const token = fileRecord.securityCheck.requestToken || '';
+
+				filesStorageService.updateSecurityStatus.mockRejectedValueOnce(new Error('bla'));
+
+				return { scanResult, token };
+			};
+
+			it('should pass this error', async () => {
+				const { scanResult, token } = setup();
+
+				await expect(filesStorageUC.updateSecurityStatus(token, scanResult)).rejects.toThrowError(new Error('bla'));
+
+				expect(filesStorageService.updateSecurityStatus).toHaveBeenCalledWith(token, scanResult);
+			});
+		});
+	});
+
+	describe('patchFilename is called', () => {
+		describe('WHEN user is authorised and single file exists', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const { fileRecord, params } = getFileRecordWithParams();
+				const data: RenameFileParams = { fileName: 'test_new_name.txt' };
+
+				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				filesStorageService.patchFilename.mockResolvedValueOnce(fileRecord);
+
+				return { userId, params, fileRecord, data };
+			};
+
+			it('should call service method getFile with right parameters', async () => {
+				const { userId, params, data } = setup();
+				await filesStorageUC.patchFilename(userId, params, data);
+
+				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(params);
+			});
+
+			it('should call authorisation with right parameters', async () => {
+				const { userId, params, data, fileRecord } = setup();
+
+				await filesStorageUC.patchFilename(userId, params, data);
+
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					fileRecord.parentType,
+					fileRecord.parentId,
+					PermissionContexts.update
+				);
+			});
+
+			it('should call service method patchFilename with right parameters', async () => {
+				const { userId, params, fileRecord, data } = setup();
+
+				await filesStorageUC.patchFilename(userId, params, data);
+
+				expect(filesStorageService.patchFilename).toHaveBeenCalledWith(fileRecord, data);
+			});
+
+			it('should return modified fileRecord', async () => {
+				const { userId, params, fileRecord, data } = setup();
+
+				const result = await filesStorageUC.patchFilename(userId, params, data);
+
+				expect(result).toEqual(fileRecord);
 			});
 		});
 	});

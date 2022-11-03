@@ -15,6 +15,8 @@ import {
 	DownloadFileParams,
 	FileRecordParams,
 	FileUrlParams,
+	RenameFileParams,
+	ScanResultParams,
 	SingleFileParams,
 } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
@@ -207,5 +209,27 @@ export class FilesStorageUC {
 		const response = await this.filesStorageService.copy(userId, [fileRecord], copyFileParams.target);
 
 		return response[0];
+	}
+
+	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
+		const fileRecord = await this.filesStorageService.getFileRecord(params);
+		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.update);
+
+		const modifiedFileRecord = await this.filesStorageService.patchFilename(fileRecord, data);
+
+		return modifiedFileRecord;
+	}
+
+	public async getFileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.read);
+
+		const countedFileRecords = await this.filesStorageService.getFileRecordsOfParent(params);
+
+		return countedFileRecords;
+	}
+
+	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
+		// No authorisation is possible atm.
+		await this.filesStorageService.updateSecurityStatus(token, scanResultDto);
 	}
 }
