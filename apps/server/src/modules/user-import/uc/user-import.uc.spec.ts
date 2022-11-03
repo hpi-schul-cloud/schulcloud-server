@@ -566,11 +566,7 @@ describe('[ImportUserModule]', () => {
 				schoolParams.systems.add(system);
 				expect(schoolRepoSaveSpy).toHaveBeenCalledWith(schoolParams);
 			});
-			it('should throw if system id from configuration is wrong format', async () => {
-				configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue('foo');
-				const result = uc.startSchoolInUserMigration(currentUser.id);
-				await expect(result).rejects.toThrowError(InternalServerErrorException);
-			});
+
 			it('should throw if school is already in inUserMigration', async () => {
 				school.inUserMigration = true;
 				const result = uc.startSchoolInUserMigration(currentUser.id);
@@ -580,6 +576,11 @@ describe('[ImportUserModule]', () => {
 				school.officialSchoolNumber = undefined;
 				const result = uc.startSchoolInUserMigration(currentUser.id);
 				await expect(result).rejects.toThrowError(BadRequestException);
+			});
+			it('should not throw if school has no school numer but its own LDAP', async () => {
+				school.officialSchoolNumber = undefined;
+				const result = uc.startSchoolInUserMigration(currentUser.id, false);
+				await expect(result).resolves.toBe(undefined);
 			});
 		});
 
