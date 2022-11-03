@@ -21,6 +21,7 @@ import {
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import {BadRequest} from "@feathersjs/errors";
 
 @Injectable()
 export class TaskUC {
@@ -222,6 +223,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const course = await this.courseRepo.findById(params.courseId);
 
+		// TODO is this permissiosn checking parent correctly?
 		this.authorizationService.checkPermission(
 			user,
 			course,
@@ -277,6 +279,25 @@ export class TaskUC {
 				task[key] = value;
 			}
 		}
+
+		if (params.courseId) {
+			const course = await this.courseRepo.findById(params.courseId);
+			// TODO - check if this permission works as it should
+			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([Permission.HOMEWORK_EDIT]));
+			task.course = course;
+
+
+			if (params.lessonId) {
+				const lesson = await this.lessonRepo.findById(params.lessonId);
+				if (lesson.course.id !== params.courseId) {
+					throw new BadRequest('Lesson does not belong to Course');
+				}
+				// TODO
+				this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([Permission.HOMEWORK_EDIT]));
+				task.lesson = lesson;
+			}
+		}
+
 		await this.taskRepo.save(task);
 
 		const status = task.createTeacherStatusForUser(user);

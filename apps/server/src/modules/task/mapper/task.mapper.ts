@@ -56,6 +56,7 @@ export class TaskMapper {
 			name: params.name || 'Draft',
 			courseId: params.courseId,
 			lessonId: params.lessonId,
+			description: params.description,
 			availableDate: params.availableDate,
 			dueDate: params.dueDate,
 		};

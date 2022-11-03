@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
-import type { RichText } from '@shared/domain';
+import { RichText } from '@shared/domain';
 import { TaskStatusResponse } from './task-status.response';
 
 /**
@@ -43,6 +43,7 @@ export class TaskResponse {
 
 	@ApiPropertyOptional({
 		description: 'Task description object, with props content: string and type: input format types',
+		type: RichText
 	})
 	@DecodeHtmlEntities()
 	description?: RichText;
