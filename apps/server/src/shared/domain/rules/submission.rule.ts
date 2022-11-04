@@ -3,11 +3,12 @@ import { Submission, User } from '../entity';
 import { IPermissionContext, PermissionTypes } from '../interface/permission';
 import { Actions } from './actions.enum';
 import { BasePermission } from './base-permission';
+import { CourseGroupRule } from './course-group.rule';
 import { TaskRule } from './task.rule';
 
 @Injectable()
 export class SubmissionRule extends BasePermission<Submission> {
-	constructor(private readonly taskRule: TaskRule) {
+	constructor(private readonly taskRule: TaskRule, private readonly courseGroupRule: CourseGroupRule) {
 		super();
 	}
 
@@ -17,42 +18,62 @@ export class SubmissionRule extends BasePermission<Submission> {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Submission, context: IPermissionContext): boolean {
+	public hasPermission(user: User, submission: Submission, context: IPermissionContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasGeneralPermission = this.utils.hasAllPermissions(user, requiredPermissions);
-		const hasSpecificPermission = this.hasSpecificPermission(user, entity, action);
+		const hasSpecificPermission = this.hasSpecificPermission(user, submission, action);
 
 		const result = hasGeneralPermission && hasSpecificPermission;
 
 		return result;
 	}
 
-	private hasSpecificPermission(user: User, entity: Submission, action: Actions): boolean {
-		const isCreator = this.utils.hasAccessToEntity(user, entity, ['student']);
-		const isTeamMember = this.utils.hasAccessToEntity(user, entity, ['teamMembers']);
-		const isInCourseGroup =
-			!!entity.courseGroup && this.utils.hasAccessToEntity(user, entity.courseGroup, ['students']);
-		const hasParentWritePermission = this.hasParentPermission(user, entity, Actions.write);
-		const hasParentReadPermission = this.hasParentPermission(user, entity, Actions.read);
-		const areSubmissionsPublic = !!entity.task && !!entity.task.publicSubmissions;
-
+	private hasSpecificPermission(user: User, submission: Submission, action: Actions): boolean {
 		const hasSpecificPermission =
-			isCreator ||
-			isTeamMember ||
-			isInCourseGroup ||
-			hasParentWritePermission ||
-			(action === Actions.read && hasParentReadPermission && areSubmissionsPublic);
+			this.isCreator(user, submission) ||
+			this.isTeamMember(user, submission) ||
+			this.isInCourseGroup(user, submission) ||
+			this.hasParentTaskWritePermission(user, submission) ||
+			(action === Actions.read &&
+				this.hasParentTaskReadPermission(user, submission) &&
+				!!submission.task.publicSubmissions);
 
 		return hasSpecificPermission;
 	}
 
-	private hasParentPermission(user: User, entity: Submission, action: Actions) {
-		let hasParentPermission = false;
+	private isCreator(user: User, submission: Submission) {
+		const isCreator = this.utils.hasAccessToEntity(user, submission, ['student']);
+		return isCreator;
+	}
 
-		if (entity.task) {
-			hasParentPermission = this.taskRule.hasPermission(user, entity.task, { action, requiredPermissions: [] });
-		}
+	private isTeamMember(user: User, submission: Submission) {
+		const isTeamMember = this.utils.hasAccessToEntity(user, submission, ['teamMembers']);
+		return isTeamMember;
+	}
 
+	private isInCourseGroup(user: User, submission: Submission) {
+		const isInCourseGroup =
+			submission.courseGroup &&
+			this.courseGroupRule.hasPermission(user, submission.courseGroup, {
+				action: Actions.read,
+				requiredPermissions: [],
+			});
+		return isInCourseGroup;
+	}
+
+	private hasParentTaskWritePermission(user: User, submission: Submission) {
+		const hasParentPermission = this.taskRule.hasPermission(user, submission.task, {
+			action: Actions.write,
+			requiredPermissions: [],
+		});
+		return hasParentPermission;
+	}
+
+	private hasParentTaskReadPermission(user: User, submission: Submission) {
+		const hasParentPermission = this.taskRule.hasPermission(user, submission.task, {
+			action: Actions.read,
+			requiredPermissions: [],
+		});
 		return hasParentPermission;
 	}
 }
