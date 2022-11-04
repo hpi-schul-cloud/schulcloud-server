@@ -10,7 +10,7 @@ import { Loggable } from './interfaces/loggable';
  * Must implement ILogger but must not extend ConsoleLogger (this can be changed).
  * Transient injection: Wherever injected, a separate instance will be created, that can be provided with a custom context.
  */
-export class Logger {
+export class LoggerPOC {
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
 	log(loggable: Loggable): void {

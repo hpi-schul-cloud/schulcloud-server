@@ -3,6 +3,7 @@ import { ApiValidationError, BusinessError } from '@shared/common';
 import { FeathersError } from '../../error/interface';
 import { Loggable } from '../interfaces/loggable';
 
+// this file could also be placed in the error module
 export class ErrorLoggable implements Loggable {
 	error: Error;
 
