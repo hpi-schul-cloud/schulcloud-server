@@ -36,6 +36,17 @@ export class FilesStorageUC {
 		this.logger.setContext(FilesStorageUC.name);
 	}
 
+	private async checkPermission(
+		userId: EntityId,
+		parentType: FileRecordParentType,
+		parentId: EntityId,
+		context: IPermissionContext
+	) {
+		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
+		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
+	}
+
+	// upload
 	private async addRequestStreamToRequestPipe(
 		userId: EntityId,
 		params: FileRecordParams,
@@ -110,16 +121,7 @@ export class FilesStorageUC {
 		}
 	}
 
-	private async checkPermission(
-		userId: EntityId,
-		parentType: FileRecordParentType,
-		parentId: EntityId,
-		context: IPermissionContext
-	) {
-		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
-		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
-	}
-
+	// download
 	public async download(userId: EntityId, params: DownloadFileParams) {
 		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
 		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
@@ -138,6 +140,7 @@ export class FilesStorageUC {
 		return res;
 	}
 
+	// delete
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.delete);
 		const [fileRecords, count] = await this.filesStorageService.deleteFilesOfParent(params);
@@ -154,6 +157,7 @@ export class FilesStorageUC {
 		return fileRecord;
 	}
 
+	// restore
 	public async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 		const [fileRecords, count] = await this.filesStorageService.restoreFilesOfParent(params);
@@ -170,6 +174,7 @@ export class FilesStorageUC {
 		return fileRecord;
 	}
 
+	// copy
 	public async copyFilesOfParent(
 		userId: string,
 		params: FileRecordParams,
@@ -211,6 +216,7 @@ export class FilesStorageUC {
 		return response[0];
 	}
 
+	// update
 	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
 		const fileRecord = await this.filesStorageService.getFileRecord(params);
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.update);
@@ -220,16 +226,17 @@ export class FilesStorageUC {
 		return modifiedFileRecord;
 	}
 
+	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
+		// No authorisation is possible atm.
+		await this.filesStorageService.updateSecurityStatus(token, scanResultDto);
+	}
+
+	// get
 	public async getFileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.read);
 
 		const countedFileRecords = await this.filesStorageService.getFileRecordsOfParent(params);
 
 		return countedFileRecords;
-	}
-
-	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
-		// No authorisation is possible atm.
-		await this.filesStorageService.updateSecurityStatus(token, scanResultDto);
 	}
 }
