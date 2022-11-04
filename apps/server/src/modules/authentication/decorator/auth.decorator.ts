@@ -11,6 +11,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { ExtractJwt } from 'passport-jwt';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
+import { JwtExtractor } from '../strategy/jwt-extractor';
 
 const STRATEGIES = ['jwt'] as const;
 type Strategies = typeof STRATEGIES;
@@ -49,12 +50,12 @@ export const CurrentUser = createParamDecorator<any, any, ICurrentUser>((data: u
 });
 
 /**
- * Returns the current authenticated user.
+ * Returns the current JWT.
  * @requires Authenticated
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const JWT = createParamDecorator<any, any, string>((data: unknown, ctx: ExecutionContext) => {
-	const getJWT = ExtractJwt.fromAuthHeaderAsBearerToken();
+	const getJWT = ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), JwtExtractor.fromCookie('jwt')]);
 	const req: Request = ctx.switchToHttp().getRequest();
 	const jwt = getJWT(req) || req.headers.authorization;
 

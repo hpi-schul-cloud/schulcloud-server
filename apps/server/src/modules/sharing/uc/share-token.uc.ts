@@ -1,32 +1,37 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	Actions,
+	CopyStatus,
 	EntityId,
+	LearnroomMetadata,
 	Permission,
 	ShareTokenContext,
 	ShareTokenContextType,
 	ShareTokenDO,
+	ShareTokenParentType,
 	ShareTokenPayload,
 } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
-import { ShareTokenContextTypeMapper } from '../mapper/context-type.mapper';
-import { ShareTokenParentTypeMapper } from '../mapper/parent-type.mapper';
-import { ShareTokenService } from '../share-token.service';
+import { CourseCopyService } from '@src/modules/learnroom';
+import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
+import { ShareTokenContextTypeMapper, ShareTokenParentTypeMapper } from '../mapper';
+import { MetadataTypeMapper } from '../mapper/metadata-type.mapper';
+import { ShareTokenService } from '../service';
+import { ShareTokenInfoDto } from './dto';
 
 @Injectable()
 export class ShareTokenUC {
 	constructor(
 		private readonly shareTokenService: ShareTokenService,
 		private readonly authorizationService: AuthorizationService,
+		private readonly metadataLoader: MetadataLoader,
+		private readonly courseCopyService: CourseCopyService,
+
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(ShareTokenUC.name);
-	}
-
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenDO> {
-		return Promise.reject(new NotImplementedException());
 	}
 
 	async createShareToken(
@@ -34,6 +39,8 @@ export class ShareTokenUC {
 		payload: ShareTokenPayload,
 		options?: { schoolExclusive?: boolean; expiresInDays?: number }
 	): Promise<ShareTokenDO> {
+		this.checkFeatureEnabled();
+
 		this.logger.debug({ action: 'createShareToken', userId, payload, options });
 
 		await this.checkParentWritePermission(userId, payload);
@@ -55,6 +62,50 @@ export class ShareTokenUC {
 		return shareToken;
 	}
 
+	async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfoDto> {
+		this.checkFeatureEnabled();
+
+		this.logger.debug({ action: 'lookupShareToken', userId, token });
+
+		const shareToken = await this.shareTokenService.lookupToken(token);
+
+		if (shareToken.context) {
+			await this.checkContextReadPermission(userId, shareToken.context);
+		}
+
+		const metadata: LearnroomMetadata = await this.loadMetadata(shareToken.payload);
+
+		const shareTokenInfo: ShareTokenInfoDto = {
+			token,
+			parentType: shareToken.payload.parentType,
+			parentName: metadata.title,
+		};
+
+		return shareTokenInfo;
+	}
+
+	async importShareToken(userId: EntityId, token: string, newName: string): Promise<CopyStatus> {
+		this.checkFeatureEnabled();
+
+		this.logger.debug({ action: 'importShareToken', userId, token, newName });
+
+		const shareToken = await this.shareTokenService.lookupToken(token);
+
+		if (shareToken.context) {
+			await this.checkContextReadPermission(userId, shareToken.context);
+		}
+
+		await this.checkCreatePermission(userId, shareToken.payload.parentType);
+
+		const result = await this.courseCopyService.copyCourse({
+			userId,
+			courseId: shareToken.payload.parentId,
+			newName,
+		});
+
+		return result;
+	}
+
 	private async checkParentWritePermission(userId: EntityId, payload: ShareTokenPayload) {
 		const allowedParentType = ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(payload.parentType);
 		await this.authorizationService.checkPermissionByReferences(userId, allowedParentType, payload.parentId, {
@@ -71,9 +122,35 @@ export class ShareTokenUC {
 		});
 	}
 
+	private async checkCreatePermission(userId: EntityId, parentType: ShareTokenParentType) {
+		// checks if parent type is supported
+		ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(parentType);
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		this.authorizationService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
+	}
+
+	private async loadMetadata(payload: ShareTokenPayload): Promise<LearnroomMetadata> {
+		const learnroomType = MetadataTypeMapper.mapToAlloweMetadataType(payload.parentType);
+		const metadata = await this.metadataLoader.loadMetadata({
+			type: learnroomType,
+			id: payload.parentId,
+		});
+
+		return metadata;
+	}
+
 	private nowPlusDays(days: number) {
 		const date = new Date();
 		date.setDate(date.getDate() + days);
 		return date;
+	}
+
+	private checkFeatureEnabled() {
+		const enabled = Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean;
+		if (!enabled) {
+			throw new InternalServerErrorException('Import Feature not enabled');
+		}
 	}
 }

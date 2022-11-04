@@ -1,10 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { RoomsService } from '../service/rooms.service';
 import { RoomBoardDTO } from '../types/room-board.types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
-import { RoomsService } from './rooms.service';
 
 @Injectable()
 export class RoomsUc {

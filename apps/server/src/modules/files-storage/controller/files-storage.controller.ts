@@ -24,8 +24,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
 import { FilesStorageMapper } from '../mapper/file-record.mapper';
-import { FileRecordUC } from '../uc/file-record.uc';
-import { FilesStorageUC } from '../uc/files-storage.uc';
+import { FileRecordUC, FilesStorageUC } from '../uc';
 import {
 	CopyFileListResponse,
 	CopyFileParams,

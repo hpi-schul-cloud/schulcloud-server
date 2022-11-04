@@ -21,12 +21,13 @@ import { ProvisioningModule } from '@src/modules/provisioning';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { RoleModule } from '@src/modules/role/role.module';
 import { SchoolModule } from '@src/modules/school/school.module';
-import { SharingModule } from '@src/modules/sharing/sharing.module';
+import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemModule } from '@src/modules/system';
 import { TaskModule } from '@src/modules/task';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { VideoConferenceModule } from '@src/modules/video-conference';
+import { ToolModule } from '@src/modules/tool';
 import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
 
@@ -64,7 +65,8 @@ const serverModules = [
 	RoleModule,
 	VideoConferenceModule,
 	OauthProviderModule,
-	SharingModule,
+	SharingApiModule,
+	ToolModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
