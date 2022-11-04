@@ -140,7 +140,7 @@ describe('FilesStorageUC delete methods', () => {
 			};
 
 			it('should call authorizationService.checkPermissionByReferences', async () => {
-				const { userId, requestParams } = getParams();
+				const { userId, requestParams } = setup();
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(requestParams.parentType);
 
 				await filesStorageUC.deleteFilesOfParent(userId, requestParams);
