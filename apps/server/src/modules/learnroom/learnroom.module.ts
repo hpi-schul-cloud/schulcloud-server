@@ -16,6 +16,7 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { FilesStorageClientModule } from '../files-storage-client';
 import { LessonModule } from '../lesson';
+import { TaskModule } from '../task';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
@@ -38,7 +39,7 @@ import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
 import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
-	imports: [AuthorizationModule, FilesStorageClientModule, LessonModule],
+	imports: [AuthorizationModule, FilesStorageClientModule, LessonModule, TaskModule],
 	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,
