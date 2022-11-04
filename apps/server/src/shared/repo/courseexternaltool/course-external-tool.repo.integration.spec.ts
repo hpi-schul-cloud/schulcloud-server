@@ -39,7 +39,7 @@ describe('CourseExternalToolRepo', () => {
 	}
 
 	it('getEntityName should return CourseExternalTool', () => {
-		const entityName = repo.entityName;
+		const { entityName } = repo;
 		expect(entityName).toEqual(CourseExternalTool);
 	});
 
