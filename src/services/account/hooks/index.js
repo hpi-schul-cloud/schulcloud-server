@@ -272,7 +272,7 @@ const restrictToUsersSchool = async (context) => {
 	const userService = context.app.service('users');
 	const { schoolId: usersSchoolId } = await userService.get(context.params.account.userId);
 
-	const targetAccount = await context.app.service('accountModel').get(context.id);
+	const targetAccount = await context.app.service('nest-account-service').findById(context.id);
 	const { schoolId: targetSchoolId } = await userService.get(targetAccount.userId);
 	if (!equalIds(usersSchoolId, targetSchoolId)) {
 		throw new NotFound('this account doesnt exist');
@@ -281,8 +281,16 @@ const restrictToUsersSchool = async (context) => {
 };
 
 const validateUserName = async (context) => {
-	const accountService = context.app.service('accounts');
-	const { systemId } = context.method === 'create' ? context.data : await accountService.get(context.id);
+	let account;
+
+	if (context.method === 'create') {
+		account = context.data;
+	} else {
+		account = await context.app.service('nest-account-service').findById(context.id);
+	}
+
+	const { systemId } = account;
+
 	if (systemId) {
 		return context;
 	}

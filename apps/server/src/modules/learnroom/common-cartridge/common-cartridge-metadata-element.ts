@@ -11,10 +11,10 @@ export class CommonCartridgeMetadataElement implements ICommonCartridgeElement {
 		return {
 			schema: 'IMS Common Cartridge',
 			schemaversion: '1.3.0',
-			'lommanifest:lom': {
-				'lommanifest:general': {
-					'lommanifest:title': {
-						'lommanifest:string': this.props.title,
+			'mnf:lom': {
+				'mnf:general': {
+					'mnf:title': {
+						'mnf:string': this.props.title,
 					},
 				},
 			},
