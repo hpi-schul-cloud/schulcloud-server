@@ -1,3 +1,4 @@
+import { FileRecord, FileSecurityCheck } from '@src/modules/files-storage/entity/filerecord.entity';
 import { Account } from './account.entity';
 import { Board } from './board.entity';
 import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
@@ -5,7 +6,6 @@ import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { File } from './file.entity';
-import { FileRecord, FileSecurityCheck } from '../../../modules/files-storage/entity/filerecord.entity';
 import { ImportUser } from './import-user.entity';
 import { Lesson } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
