@@ -8,7 +8,7 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
+import { FileRecordParams } from '../controller/dto';
 import { FileRecordParentType } from '../entity';
 import { PermissionContexts } from '../files-storage.const';
 import { FilesStorageService } from '../service/files-storage.service';
