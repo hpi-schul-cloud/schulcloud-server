@@ -67,15 +67,13 @@ describe('FilesStorageUC', () => {
 		};
 	};
 
+	beforeEach(() => {
+		jest.resetAllMocks();
+	});
+
 	beforeAll(async () => {
 		orm = await setupEntities();
-	});
 
-	afterAll(async () => {
-		await orm.close();
-	});
-
-	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
@@ -111,7 +109,8 @@ describe('FilesStorageUC', () => {
 		filesStorageService = module.get(FilesStorageService);
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
+		await orm.close();
 		await module.close();
 	});
 
@@ -284,45 +283,6 @@ describe('FilesStorageUC', () => {
 			return { singleFileParams, copyFileParams, userId, fileRecord };
 		};
 
-		describe('WHEN user has all permissions', () => {
-			const setup = () => {
-				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
-
-				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
-
-				return { singleFileParams, copyFileParams, userId, fileRecord };
-			};
-
-			it('should call authorizationService.checkPermissionByReferences with file record params', async () => {
-				const { copyFileParams, singleFileParams, userId, fileRecord } = setup();
-
-				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
-
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenNthCalledWith(
-					1,
-					userId,
-					fileRecord.parentType,
-					fileRecord.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
-				);
-			});
-
-			it('should call authorizationService.checkPermissionByReferences with copyFilesParams', async () => {
-				const { copyFileParams, singleFileParams, userId } = setup();
-
-				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
-
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenNthCalledWith(
-					2,
-					userId,
-					copyFileParams.target.parentType,
-					copyFileParams.target.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
-				);
-			});
-		});
-
 		describe('WHEN user has no permission for source file', () => {
 			const setup = () => {
 				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
@@ -383,25 +343,6 @@ describe('FilesStorageUC', () => {
 			});
 		});
 
-		describe('WHEN source file is successfully found', () => {
-			const setup = () => {
-				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
-
-				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockResolvedValueOnce();
-
-				return { singleFileParams, copyFileParams, userId };
-			};
-
-			it('should call findOneById with correct params', async () => {
-				const { copyFileParams, singleFileParams, userId } = setup();
-
-				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
-
-				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(singleFileParams);
-			});
-		});
-
 		describe('WHEN find source file throws error', () => {
 			const setup = () => {
 				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
@@ -437,6 +378,42 @@ describe('FilesStorageUC', () => {
 
 				return { singleFileParams, copyFileParams, userId, fileResponse, fileRecord };
 			};
+
+			it('should call getFileRecord with correct params', async () => {
+				const { copyFileParams, singleFileParams, userId } = setup();
+
+				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
+
+				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(singleFileParams);
+			});
+
+			it('should call authorizationService.checkPermissionByReferences with file record params', async () => {
+				const { copyFileParams, singleFileParams, userId, fileRecord } = setup();
+
+				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
+
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenNthCalledWith(
+					1,
+					userId,
+					fileRecord.parentType,
+					fileRecord.parentId,
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+				);
+			});
+
+			it('should call authorizationService.checkPermissionByReferences with copyFilesParams', async () => {
+				const { copyFileParams, singleFileParams, userId } = setup();
+
+				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
+
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenNthCalledWith(
+					2,
+					userId,
+					copyFileParams.target.parentType,
+					copyFileParams.target.parentId,
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+				);
+			});
 
 			it('should call service with correct params', async () => {
 				const { copyFileParams, singleFileParams, userId, fileRecord } = setup();

@@ -42,13 +42,7 @@ describe('FilesStorageUC', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-	});
 
-	afterAll(async () => {
-		await orm.close();
-	});
-
-	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
@@ -84,7 +78,12 @@ describe('FilesStorageUC', () => {
 		filesStorageService = module.get(FilesStorageService);
 	});
 
-	afterEach(async () => {
+	beforeEach(() => {
+		jest.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await orm.close();
 		await module.close();
 	});
 
