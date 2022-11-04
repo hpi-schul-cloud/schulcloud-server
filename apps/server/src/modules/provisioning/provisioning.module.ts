@@ -15,6 +15,7 @@ import { SanisUserService } from '@src/modules/provisioning/strategy/sanis/servi
 import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
 import { UserModule } from '@src/modules/user';
 import { RoleModule } from '@src/modules/role';
+import { OidcProvisioningStrategy } from './strategy/oidc/oidc.strategy';
 
 @Module({
 	imports: [AccountModule, SchoolModule, UserModule, RoleModule, SystemModule, HttpModule, LoggerModule],
@@ -25,6 +26,7 @@ import { RoleModule } from '@src/modules/role';
 		SanisSchoolService,
 		SanisUserService,
 		IservProvisioningStrategy,
+		OidcProvisioningStrategy,
 		Logger,
 		SanisResponseMapper,
 		SchoolRepo,

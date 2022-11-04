@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ShareTokenContextType, ShareTokenParentType } from '@shared/domain';
-import { ShareTokenRepo } from '@shared/repo/sharetoken';
+import { ShareTokenRepo } from '@shared/repo';
 import { setupEntities, shareTokenFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { ShareTokenService } from './share-token.service';

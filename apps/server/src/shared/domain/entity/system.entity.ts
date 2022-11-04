@@ -102,6 +102,6 @@ export class System extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	ldapConfig?: Record<string, unknown>;
 
-	@Property()
+	@Property({ nullable: true })
 	provisioningUrl?: string;
 }

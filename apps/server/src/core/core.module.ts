@@ -10,5 +10,6 @@ import { ValidationModule } from './validation';
  */
 @Module({
 	imports: [LoggerModule, ErrorModule, ValidationModule, InterceptorModule],
+	exports: [LoggerModule],
 })
 export class CoreModule {}

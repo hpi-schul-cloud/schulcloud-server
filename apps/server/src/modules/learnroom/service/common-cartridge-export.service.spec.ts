@@ -4,9 +4,10 @@ import { CommonCartridgeExportService } from '@src/modules/learnroom/service/com
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LessonService } from '@src/modules/lesson/service';
-import { courseFactory, lessonFactory, setupEntities } from '@shared/testing';
-import { Course, Lesson } from '@shared/domain';
+import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { Course, Lesson, Task } from '@shared/domain';
 import { MikroORM } from '@mikro-orm/core';
+import { TaskService } from '@src/modules/task/service/task.service';
 
 describe('CommonCartridgeExportService', () => {
 	let orm: MikroORM;
@@ -14,9 +15,11 @@ describe('CommonCartridgeExportService', () => {
 	let courseExportService: CommonCartridgeExportService;
 	let courseServiceMock: DeepMocked<CourseService>;
 	let lessonServiceMock: DeepMocked<LessonService>;
+	let taskServiceMock: DeepMocked<TaskService>;
 
 	let course: Course;
 	let lessons: Lesson[];
+	let tasks: Task[];
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -31,13 +34,19 @@ describe('CommonCartridgeExportService', () => {
 					provide: LessonService,
 					useValue: createMock<LessonService>(),
 				},
+				{
+					provide: TaskService,
+					useValue: createMock<TaskService>(),
+				},
 			],
 		}).compile();
 		courseExportService = module.get(CommonCartridgeExportService);
 		courseServiceMock = module.get(CourseService);
 		lessonServiceMock = module.get(LessonService);
+		taskServiceMock = module.get(TaskService);
 		course = courseFactory.buildWithId();
 		lessons = lessonFactory.buildList(5);
+		tasks = taskFactory.buildList(5);
 	});
 
 	afterAll(async () => {
@@ -51,7 +60,8 @@ describe('CommonCartridgeExportService', () => {
 		beforeAll(async () => {
 			courseServiceMock.findById.mockResolvedValueOnce(course);
 			lessonServiceMock.findByCourseIds.mockResolvedValueOnce([lessons, lessons.length]);
-			archive = new AdmZip(await courseExportService.exportCourse(course.id));
+			taskServiceMock.findBySingleParent.mockResolvedValueOnce([tasks, tasks.length]);
+			archive = new AdmZip(await courseExportService.exportCourse(course.id, ''));
 		});
 
 		it('should create manifest file', () => {
@@ -66,6 +76,13 @@ describe('CommonCartridgeExportService', () => {
 			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 			lessons.forEach((lesson) => {
 				expect(manifest).toContain(lesson.name);
+			});
+		});
+
+		it('should add tasks as assignments', () => {
+			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+			tasks.forEach((task) => {
+				expect(manifest).toContain(`i${task.id}`);
 			});
 		});
 	});
