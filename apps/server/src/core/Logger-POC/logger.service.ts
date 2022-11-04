@@ -30,7 +30,7 @@ export class LoggerPOC {
 	}
 
 	http(loggable: Loggable): void {
-		this.logger.http(this.createMessage(loggable));
+		this.logger.notice(this.createMessage(loggable));
 	}
 
 	error(loggable: Loggable): void {
