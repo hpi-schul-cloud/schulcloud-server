@@ -42,7 +42,7 @@ export class TaskUpdateParams implements ITaskUpdate {
 	@IsDate()
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Date until the task is published',
+		description: 'Date since the task is published',
 		type: Date,
 	})
 	availableDate?: Date;

@@ -21,7 +21,6 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 
 	RichText: {
 		allowedTags: [
-			// eslint-disable
 			'b',
 			'i',
 			'em',
@@ -56,7 +55,6 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 			'td',
 			'a',
 			'img',
-			// eslint-enabled
 		],
 		allowedAttributes: {
 			a: ['href', 'name', 'target'],
