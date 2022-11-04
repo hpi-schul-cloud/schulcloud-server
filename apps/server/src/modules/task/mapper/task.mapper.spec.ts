@@ -117,7 +117,7 @@ describe('task.mapper', () => {
 				dueDate: new Date('2023-05-28T08:00:00.000+00:00'),
 				availableDate: new Date('2022-05-28T08:00:00.000+00:00'),
 			};
-			const result = TaskMapper.mapTaskUpdateToDomain(params);
+			const result = TaskMapper.mapTaskCreateToDomain(params);
 
 			const expected: ITaskUpdate = {
 				name: params.name,
