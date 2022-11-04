@@ -50,9 +50,7 @@ describe('FilesStorageService get methods', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-	});
 
-	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageService,
@@ -79,11 +77,12 @@ describe('FilesStorageService get methods', () => {
 		fileRecordRepo = module.get(FileRecordRepo);
 	});
 
-	afterAll(async () => {
-		await orm.close();
+	beforeEach(() => {
+		jest.resetAllMocks();
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
+		await orm.close();
 		await module.close();
 	});
 

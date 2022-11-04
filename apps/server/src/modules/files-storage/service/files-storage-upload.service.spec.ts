@@ -42,9 +42,7 @@ describe('FilesStorageService upload methods', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-	});
 
-	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageService,
@@ -73,11 +71,12 @@ describe('FilesStorageService upload methods', () => {
 		antivirusService = module.get(AntivirusService);
 	});
 
-	afterAll(async () => {
-		await orm.close();
+	beforeEach(() => {
+		jest.resetAllMocks();
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
+		await orm.close();
 		await module.close();
 	});
 

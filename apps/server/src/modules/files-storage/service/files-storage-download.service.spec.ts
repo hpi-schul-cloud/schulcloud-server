@@ -42,9 +42,7 @@ describe('FilesStorageService download methods', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-	});
 
-	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageService,
@@ -71,11 +69,12 @@ describe('FilesStorageService download methods', () => {
 		storageClient = module.get(S3ClientAdapter);
 	});
 
-	afterAll(async () => {
-		await orm.close();
+	beforeEach(() => {
+		jest.resetAllMocks();
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
+		await orm.close();
 		await module.close();
 	});
 
