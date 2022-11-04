@@ -18,7 +18,7 @@ import {
 	DownloadFileParams,
 	FileRecordParams,
 	FileUrlParams,
-	SingleFileParams
+	SingleFileParams,
 } from '../controller/dto/file-storage.params';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
