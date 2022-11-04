@@ -22,24 +22,24 @@ export class Logger implements ILogger {
 
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
-	log(message: unknown, context?): void {
-		this.logger.log('info', this.createMessage(message, JSON.stringify(context)));
+	log(message: unknown, context?: string | undefined): void {
+		this.logger.log('info', this.createMessage(message, context));
 	}
 
-	warn(message: unknown, context?): void {
-		this.logger.warning(this.createMessage(message, JSON.stringify(context)));
+	warn(message: unknown, context?: string | undefined): void {
+		this.logger.warning(this.createMessage(message, context));
 	}
 
-	debug(message: unknown, context?): void {
-		this.logger.debug(this.createMessage(message, JSON.stringify(context)));
+	debug(message: unknown, context?: string | undefined): void {
+		this.logger.debug(this.createMessage(message, context));
 	}
 
-	verbose(message: unknown, context?): void {
-		this.logger.verbose(this.createMessage(message, JSON.stringify(context)));
+	verbose(message: unknown, context?: string | undefined): void {
+		this.logger.verbose(this.createMessage(message, context));
 	}
 
-	http(message: RequestLoggingBody, context?): void {
-		this.logger.notice(this.createMessage(message, JSON.stringify(context)));
+	http(message: RequestLoggingBody, context?: string | undefined): void {
+		this.logger.notice(this.createMessage(message, context));
 	}
 
 	error(message: unknown, trace?: unknown, context?: string | undefined): void {
