@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ShareTokenContext, ShareTokenDO, ShareTokenPayload, ShareTokenString } from '@shared/domain';
-import { ShareTokenRepo } from '@shared/repo/sharetoken';
+import { ShareTokenRepo } from '@shared/repo';
 import { TokenGenerator } from './token-generator.service';
 
 @Injectable()

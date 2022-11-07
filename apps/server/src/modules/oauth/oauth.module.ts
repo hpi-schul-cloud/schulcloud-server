@@ -1,7 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { EncryptionModule } from '@shared/infra/encryption';
-import { LtiToolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { LtiToolRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
@@ -10,11 +10,12 @@ import { ProvisioningModule } from '@src/modules/provisioning/provisioning.modul
 import { AuthorizationModule } from '../authorization';
 import { OauthSSOController } from './controller/oauth-sso.controller';
 import { OauthUc } from './uc/oauth.uc';
+import { SystemModule } from '../system';
 
 @Module({
-	imports: [LoggerModule, AuthorizationModule, HttpModule, ProvisioningModule, EncryptionModule],
+	imports: [LoggerModule, AuthorizationModule, HttpModule, ProvisioningModule, EncryptionModule, SystemModule],
 	controllers: [OauthSSOController],
-	providers: [OauthUc, HydraOauthUc, UserRepo, SystemRepo, OAuthService, HydraSsoService, LtiToolRepo],
+	providers: [OauthUc, HydraOauthUc, UserRepo, OAuthService, HydraSsoService, LtiToolRepo],
 	exports: [OauthUc],
 })
 export class OauthModule {}

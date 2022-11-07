@@ -8,6 +8,7 @@
 			"$date": "2022-07-12T14:01:58.588Z"
 		},
 		"type": "oidc",
+		"provisioningStrategy": "oidc",
 		"alias": "oidcmock",
 		"displayName": "OIDCMOCK",
 		"config": {

@@ -1,13 +1,5 @@
 import { Module } from '@nestjs/common';
-import {
-	BoardCopyService,
-	CopyHelperService,
-	CourseCopyService,
-	EtherpadService,
-	LessonCopyService,
-	NexboardService,
-	TaskCopyService,
-} from '@shared/domain';
+import { CopyHelperService, EtherpadService, NexboardService, TaskCopyService } from '@shared/domain';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
@@ -24,10 +16,17 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { FilesStorageClientModule } from '../files-storage-client';
 import { LessonModule } from '../lesson';
+import { TaskModule } from '../task';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
+import { BoardCopyService } from './service/board-copy.service';
+import { CourseCopyService } from './service/course-copy.service';
+import { CourseEntityCopyService } from './service/course-entity-copy.service';
+import { LessonCopyService } from './service/lesson-copy.service';
+import { MetadataLoader } from './service/metadata-loader.service';
+import { RoomsService } from './service/rooms.service';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CourseService } from './service/course.service';
 import { CourseCopyUC } from './uc/course-copy.uc';
@@ -37,11 +36,10 @@ import { DashboardUc } from './uc/dashboard.uc';
 import { LessonCopyUC } from './uc/lesson-copy.uc';
 import { RoomBoardDTOFactory } from './uc/room-board-dto.factory';
 import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
-import { RoomsService } from './uc/rooms.service';
 import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
-	imports: [AuthorizationModule, FilesStorageClientModule, LessonModule],
+	imports: [AuthorizationModule, FilesStorageClientModule, LessonModule, TaskModule],
 	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,
@@ -66,6 +64,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		TaskCopyService,
 		CopyHelperService,
 		CourseCopyService,
+		CourseEntityCopyService,
 		CourseCopyUC,
 		RoomsService,
 		EtherpadService,
@@ -74,9 +73,11 @@ import { RoomsUc } from './uc/rooms.uc';
 		FeathersServiceProvider,
 		Logger,
 		FileCopyAppendService,
+		MetadataLoader,
 		CourseService,
 		CommonCartridgeExportService,
 		CourseExportUc,
 	],
+	exports: [CourseCopyService, MetadataLoader],
 })
 export class LearnroomModule {}
