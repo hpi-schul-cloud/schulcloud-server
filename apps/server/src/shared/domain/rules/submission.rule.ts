@@ -20,10 +20,9 @@ export class SubmissionRule extends BasePermission<Submission> {
 
 	public hasPermission(user: User, submission: Submission, context: IPermissionContext): boolean {
 		const { action, requiredPermissions } = context;
-		const hasGeneralPermission = this.utils.hasAllPermissions(user, requiredPermissions);
-		const hasSpecificPermission = this.hasSpecificPermission(user, submission, action);
 
-		const result = hasGeneralPermission && hasSpecificPermission;
+		const result =
+			this.utils.hasAllPermissions(user, requiredPermissions) && this.hasSpecificPermission(user, submission, action);
 
 		return result;
 	}

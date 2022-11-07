@@ -64,214 +64,129 @@ describe('SubmissionRule', () => {
 	});
 
 	describe('hasPermission', () => {
-		describe('given user is teacher', () => {
-			describe('given action is "read"', () => {
-				it('should return true if teacher is in course and has required permissions', () => {
-					const course = courseFactory.build({ teachers: [teacher] });
-					const task = taskFactory.build({ course });
-					const submission = submissionFactory.build({ task, student });
+		describe('given user does not have required permissions', () => {
+			it('should return false', () => {
+				const task = taskFactory.build();
+				const submission = submissionFactory.build({ task, student });
 
-					const result = submissionRule.hasPermission(teacher, submission, {
-						action: Actions.read,
-						requiredPermissions: [permissionC],
-					});
-
-					expect(result).toBe(true);
+				const result = submissionRule.hasPermission(student, submission, {
+					action: Actions.write,
+					requiredPermissions: [permissionC],
 				});
 
-				it('should return false if teacher does not have required permission', () => {
-					const course = courseFactory.build({ teachers: [teacher] });
-					const task = taskFactory.build({ course });
-					const submission = submissionFactory.build({ task, student });
-
-					const result = submissionRule.hasPermission(teacher, submission, {
-						action: Actions.read,
-						requiredPermissions: [permissionA],
-					});
-
-					expect(result).toBe(false);
-				});
-
-				it('should return false if teacher is not in course', () => {
-					const task = taskFactory.build();
-					const submission = submissionFactory.build({ task, student });
-
-					const result = submissionRule.hasPermission(teacher, submission, {
-						action: Actions.read,
-						requiredPermissions: [],
-					});
-
-					expect(result).toBe(false);
-				});
-			});
-
-			describe('given action is "write"', () => {
-				it('should return true if teacher is in course and has required permissions', () => {
-					const course = courseFactory.build({ teachers: [teacher] });
-					const task = taskFactory.build({ course });
-					const submission = submissionFactory.build({ task, student });
-
-					const result = submissionRule.hasPermission(teacher, submission, {
-						action: Actions.write,
-						requiredPermissions: [permissionC],
-					});
-
-					expect(result).toBe(true);
-				});
-
-				it('should return false if teacher does not have required permission', () => {
-					const course = courseFactory.build({ teachers: [teacher] });
-					const task = taskFactory.build({ course });
-					const submission = submissionFactory.build({ task, student });
-
-					const result = submissionRule.hasPermission(teacher, submission, {
-						action: Actions.write,
-						requiredPermissions: [permissionA],
-					});
-
-					expect(result).toBe(false);
-				});
-
-				it('should return false if teacher is not in course', () => {
-					const task = taskFactory.build();
-					const submission = submissionFactory.build({ task, student });
-
-					const result = submissionRule.hasPermission(teacher, submission, {
-						action: Actions.write,
-						requiredPermissions: [],
-					});
-
-					expect(result).toBe(false);
-				});
+				expect(result).toBe(false);
 			});
 		});
 
-		describe('given user is student', () => {
-			describe('given action is "read"', () => {
-				it('should return true if student is creator and has required permissions', () => {
-					const task = taskFactory.build();
-					const submission = submissionFactory.build({ task, student });
+		describe('given user has required permissions', () => {
+			describe('given user is student', () => {
+				describe('given action is "write"', () => {
+					it('should return true if user is creator', () => {
+						const task = taskFactory.build();
+						const submission = submissionFactory.build({ task, student });
 
-					const result = submissionRule.hasPermission(student, submission, {
-						action: Actions.read,
-						requiredPermissions: [permissionA],
+						const result = submissionRule.hasPermission(student, submission, {
+							action: Actions.write,
+							requiredPermissions: [permissionA],
+						});
+
+						expect(result).toBe(true);
 					});
 
-					expect(result).toBe(true);
+					it('should return true if user is team member', () => {
+						const task = taskFactory.build();
+						const submission = submissionFactory.build({ task, student: student2, teamMembers: [student] });
+
+						const result = submissionRule.hasPermission(student, submission, {
+							action: Actions.write,
+							requiredPermissions: [permissionA],
+						});
+
+						expect(result).toBe(true);
+					});
+
+					it('should return true if user is in associated course group', () => {
+						const task = taskFactory.build();
+						const courseGroup = courseGroupFactory.build({ students: [student, student2] });
+						const submission = submissionFactory.build({ task, student: student2, courseGroup });
+
+						const result = submissionRule.hasPermission(student, submission, {
+							action: Actions.write,
+							requiredPermissions: [permissionA],
+						});
+
+						expect(result).toBe(true);
+					});
+
+					it('should return false if user is not creator nor team member nor in associated course group (even if submissions are public)', () => {
+						const course = courseFactory.build({ students: [student, student2] });
+						const task = taskFactory.build({ course, publicSubmissions: true });
+						const submission = submissionFactory.build({ task, student: student2 });
+
+						const result = submissionRule.hasPermission(student, submission, {
+							action: Actions.write,
+							requiredPermissions: [permissionA],
+						});
+
+						expect(result).toBe(false);
+					});
 				});
 
-				it('should return true if student is team member and has required permissions', () => {
-					const task = taskFactory.build();
-					const submission = submissionFactory.build({ task, student: student2, teamMembers: [student] });
+				describe('given action is "read"', () => {
+					it('should return true if user is in same course and submissions are public', () => {
+						const course = courseFactory.build({ students: [student, student2] });
+						const task = taskFactory.build({ course, publicSubmissions: true });
+						const submission = submissionFactory.build({ task, student: student2 });
 
-					const result = submissionRule.hasPermission(student, submission, {
-						action: Actions.read,
-						requiredPermissions: [permissionA],
+						const result = submissionRule.hasPermission(student, submission, {
+							action: Actions.read,
+							requiredPermissions: [permissionA],
+						});
+
+						expect(result).toBe(true);
 					});
 
-					expect(result).toBe(true);
-				});
+					it('should return false if user does not have write access nor are submissions public', () => {
+						const course = courseFactory.build({ students: [student, student2] });
+						const task = taskFactory.build({ course });
+						const submission = submissionFactory.build({ task, student: student2 });
 
-				it('should return true if student is in associated course group', () => {
-					const task = taskFactory.build();
-					const courseGroup = courseGroupFactory.build({ students: [student, student2] });
-					const submission = submissionFactory.build({ task, student: student2, courseGroup });
+						const result = submissionRule.hasPermission(student, submission, {
+							action: Actions.read,
+							requiredPermissions: [permissionA],
+						});
 
-					const result = submissionRule.hasPermission(student, submission, {
-						action: Actions.read,
-						requiredPermissions: [permissionA],
+						expect(result).toBe(false);
 					});
-
-					expect(result).toBe(true);
-				});
-
-				it('should return true if student is in same course and submissions are public', () => {
-					const course = courseFactory.build({ students: [student, student2] });
-					const task = taskFactory.build({ course, publicSubmissions: true });
-					const submission = submissionFactory.build({ task, student: student2 });
-
-					const result = submissionRule.hasPermission(student, submission, {
-						action: Actions.read,
-						requiredPermissions: [],
-					});
-
-					expect(result).toBe(true);
-				});
-
-				it('should return false if student does not have required permissions', () => {
-					const task = taskFactory.build();
-					const submission = submissionFactory.build({ task, student });
-
-					const result = submissionRule.hasPermission(student, submission, {
-						action: Actions.read,
-						requiredPermissions: [permissionC],
-					});
-
-					expect(result).toBe(false);
-				});
-
-				it('should return false if student is not creator nor team member nor are submissions public', () => {
-					const course = courseFactory.build({ students: [student, student2] });
-					const task = taskFactory.build({ course });
-					const submission = submissionFactory.build({ task, student: student2 });
-
-					const result = submissionRule.hasPermission(student, submission, {
-						action: Actions.read,
-						requiredPermissions: [],
-					});
-
-					expect(result).toBe(false);
 				});
 			});
 
-			describe('given action is "write"', () => {
-				it('should return true if student is creator and has required permissions', () => {
-					const task = taskFactory.build();
-					const submission = submissionFactory.build({ task, student });
+			describe('given user is teacher', () => {
+				describe('given action is "write" (or "read" respectively)', () => {
+					it('should return true if user is course teacher', () => {
+						const course = courseFactory.build({ teachers: [teacher] });
+						const task = taskFactory.build({ course });
+						const submission = submissionFactory.build({ task, student });
 
-					const result = submissionRule.hasPermission(student, submission, {
-						action: Actions.write,
-						requiredPermissions: [permissionA],
+						const result = submissionRule.hasPermission(teacher, submission, {
+							action: Actions.write,
+							requiredPermissions: [permissionC],
+						});
+
+						expect(result).toBe(true);
 					});
 
-					expect(result).toBe(true);
-				});
+					it('should return false if user is teacher but not in course', () => {
+						const task = taskFactory.build();
+						const submission = submissionFactory.build({ task, student });
 
-				it('should return true if student is team member and has required permissions', () => {
-					const task = taskFactory.build();
-					const submission = submissionFactory.build({ task, student: student2, teamMembers: [student] });
+						const result = submissionRule.hasPermission(teacher, submission, {
+							action: Actions.write,
+							requiredPermissions: [permissionC],
+						});
 
-					const result = submissionRule.hasPermission(student, submission, {
-						action: Actions.write,
-						requiredPermissions: [permissionA],
+						expect(result).toBe(false);
 					});
-
-					expect(result).toBe(true);
-				});
-
-				it('should return false if student is not creator nor team member (even if submissions are public)', () => {
-					const course = courseFactory.build({ students: [student, student2] });
-					const task = taskFactory.build({ course, publicSubmissions: true });
-					const submission = submissionFactory.build({ task, student: student2 });
-
-					const result = submissionRule.hasPermission(student, submission, {
-						action: Actions.write,
-						requiredPermissions: [],
-					});
-
-					expect(result).toBe(false);
-				});
-
-				it('should return false if student does not have required permissions', () => {
-					const task = taskFactory.build();
-					const submission = submissionFactory.build({ task, student });
-
-					const result = submissionRule.hasPermission(student, submission, {
-						action: Actions.write,
-						requiredPermissions: [permissionC],
-					});
-
-					expect(result).toBe(false);
 				});
 			});
 		});
