@@ -49,7 +49,7 @@ describe('FileRecordRepo', () => {
 
 	describe('findOneByIdMarkedForDelete', () => {
 		it('should find an entity by its id and deletedSince is defined', async () => {
-			const fileRecord = fileRecordFactory.build({ deletedSince: new Date() });
+			const fileRecord = fileRecordFactory.markedForDelete().build();
 
 			await em.persistAndFlush(fileRecord);
 			em.clear();
@@ -170,11 +170,10 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should ingnore deletedSince', async () => {
-			const fileRecordsExpired = fileRecordFactory.buildList(3, {
+			const fileRecordsExpired = fileRecordFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId1,
 				parentType: FileRecordParent.Task,
 				parentId: parentId1,
-				deletedSince: new Date(),
 			});
 
 			await em.persistAndFlush([...fileRecords1, ...fileRecordsExpired]);
@@ -196,22 +195,20 @@ describe('FileRecordRepo', () => {
 		let fileRecords1: FileRecord[];
 
 		beforeEach(() => {
-			fileRecords1 = fileRecordFactory.buildList(3, {
+			fileRecords1 = fileRecordFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId1,
 				parentType: FileRecordParent.Task,
 				parentId: parentId1,
-				deletedSince: new Date(),
 			});
 		});
 
 		it('should only find searched parent', async () => {
 			const parentId2 = new ObjectId().toHexString();
 
-			const fileRecords2 = fileRecordFactory.buildList(3, {
+			const fileRecords2 = fileRecordFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId1,
 				parentType: FileRecordParent.Task,
 				parentId: parentId2,
-				deletedSince: new Date(),
 			});
 
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
@@ -227,11 +224,10 @@ describe('FileRecordRepo', () => {
 		it('should only find searched school', async () => {
 			const schoolId2 = new ObjectId().toHexString();
 
-			const fileRecords2 = fileRecordFactory.buildList(3, {
+			const fileRecords2 = fileRecordFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId2,
 				parentType: FileRecordParent.Task,
 				parentId: parentId1,
-				deletedSince: new Date(),
 			});
 
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);

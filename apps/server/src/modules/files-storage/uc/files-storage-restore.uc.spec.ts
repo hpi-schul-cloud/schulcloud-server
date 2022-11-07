@@ -21,9 +21,9 @@ const getFileRecordsWithParams = () => {
 	const schoolId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
@@ -39,7 +39,7 @@ const getFileRecordWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const schoolId = new ObjectId().toHexString();
 
-	const fileRecord = fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' });
+	const fileRecord = fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, schoolId, name: 'text.txt' });
 
 	const params: SingleFileParams = {
 		fileRecordId: fileRecord.id,
@@ -110,7 +110,7 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('restoreFilesOfParent is called', () => {
-		describe('WHEN user is authorised', () => {
+		describe('WHEN user is authorised and files to restore exist', () => {
 			const setup = () => {
 				const { params, userId, fileRecords } = getFileRecordsWithParams();
 
@@ -188,7 +188,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN user is authorised', () => {
 			const setup = () => {
 				const { params, userId, fileRecord } = getFileRecordWithParams();
-
+				console.log(fileRecord);
 				filesStorageService.getFileRecordMarkedForDelete.mockResolvedValueOnce(fileRecord);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 				filesStorageService.restore.mockResolvedValueOnce();

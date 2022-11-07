@@ -17,9 +17,9 @@ const getFileRecordsWithParams = () => {
 	const parentSchoolId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {

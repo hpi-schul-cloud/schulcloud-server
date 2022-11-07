@@ -1,14 +1,23 @@
 import { FileRecordParent } from '@shared/infra/rabbitmq';
 import {
 	FileRecord,
-	IFileRecordProperties,
 	FileSecurityCheck,
+	IFileRecordProperties,
 } from '@src/modules/files-storage/entity/filerecord.entity';
 import { ObjectId } from 'bson';
-
+import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
-export const fileRecordFactory = BaseFactory.define<FileRecord, IFileRecordProperties>(FileRecord, ({ sequence }) => {
+const yesterday = new Date(Date.now() - 86400000);
+
+class FileRecordFactory extends BaseFactory<FileRecord, IFileRecordProperties> {
+	markedForDelete(): this {
+		const params: DeepPartial<IFileRecordProperties> = { deletedSince: yesterday };
+		return this.params(params);
+	}
+}
+
+export const fileRecordFactory = FileRecordFactory.define(FileRecord, ({ sequence }) => {
 	return {
 		size: Math.round(Math.random() * 100000),
 		name: `file-record #${sequence}`,
