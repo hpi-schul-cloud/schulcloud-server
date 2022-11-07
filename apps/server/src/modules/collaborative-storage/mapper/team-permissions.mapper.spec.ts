@@ -1,16 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamPermissionsMapper } from '@src/modules/collaborative-storage/mapper/team-permissions.mapper';
 import { TeamPermissionsBody } from '@src/modules/collaborative-storage/controller/dto/team-permissions.body.params';
+import { TeamPermissionsMapper } from '@src/modules/collaborative-storage/mapper/team-permissions.mapper';
 
 describe('TeamMapper', () => {
 	let module: TestingModule;
 	let mapper: TeamPermissionsMapper;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [TeamPermissionsMapper],
 		}).compile();
 		mapper = module.get(TeamPermissionsMapper);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('Map Team Permissions', () => {

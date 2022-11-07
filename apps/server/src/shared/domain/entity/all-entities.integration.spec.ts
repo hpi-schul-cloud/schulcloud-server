@@ -1,9 +1,11 @@
+import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ALL_ENTITIES } from '.';
 
 describe('BaseRepo', () => {
+	let orm: MikroORM;
 	let em: EntityManager;
 	let module: TestingModule;
 
@@ -14,9 +16,11 @@ describe('BaseRepo', () => {
 		}).compile();
 
 		em = module.get(EntityManager);
+		orm = module.get(MikroORM);
 	});
 
 	afterAll(async () => {
+		await orm.close();
 		await module.close();
 	});
 
@@ -28,7 +32,7 @@ describe('BaseRepo', () => {
 
 	describe('When entities have index definitions', () => {
 		it('should ensure indexes', async () => {
-			await em.getDriver().ensureIndexes();
+			await orm.getSchemaGenerator().ensureIndexes();
 		});
 	});
 });
