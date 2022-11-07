@@ -1,15 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Request } from 'express';
+import request from 'supertest';
 
-import { ServerTestModule } from '@src/modules/server/server.module';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ICurrentUser, LanguageType } from '@shared/domain';
 import { ApiValidationError } from '@shared/common';
-import { userFactory, cleanupCollections, mapUserToCurrentUser, roleFactory } from '@shared/testing';
+import { ICurrentUser, LanguageType } from '@shared/domain';
+import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { ResolvedUserResponse } from '@src/modules/user/controller/dto';
 
 const baseRouteName = '/user/me';
