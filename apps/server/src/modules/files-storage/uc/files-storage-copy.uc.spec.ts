@@ -42,19 +42,19 @@ describe('FilesStorageUC', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let orm: MikroORM;
 
-	const getRequestParams = (schoolId: EntityId, userId: EntityId) => {
+	const createRequestParams = (schoolId: EntityId, userId: EntityId) => {
 		return { schoolId, parentId: userId, parentType: FileRecordParent.User };
 	};
 
-	const getParams = () => {
+	const createParams = () => {
 		const userId: EntityId = new ObjectId().toHexString();
 		const schoolId: EntityId = new ObjectId().toHexString();
-		const requestParams = getRequestParams(schoolId, userId);
+		const requestParams = createRequestParams(schoolId, userId);
 
 		return { userId, schoolId, requestParams };
 	};
 
-	const getTargetParams = () => {
+	const createTargetParams = () => {
 		const targetParentId: EntityId = new ObjectId().toHexString();
 		const schoolId: EntityId = new ObjectId().toHexString();
 
@@ -122,7 +122,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN user has all permissions and service copies files successfully', () => {
 			const setup = () => {
 				const { params: sourceParams, userId, fileRecords } = buildFileRecordsWithParams();
-				const targetParams = getTargetParams();
+				const targetParams = createTargetParams();
 				const sourceFile = fileRecords[0];
 				const targetFile = fileRecords[1];
 
@@ -181,8 +181,8 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN user has no permission for source file', () => {
 			const setup = () => {
-				const { requestParams: sourceParams, userId } = getParams();
-				const targetParams = getTargetParams();
+				const { requestParams: sourceParams, userId } = createParams();
+				const targetParams = createTargetParams();
 				const error = new ForbiddenException();
 
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error).mockResolvedValueOnce();
@@ -200,8 +200,8 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN user has no permission for target file', () => {
 			const setup = () => {
-				const { requestParams: sourceParams, userId } = getParams();
-				const targetParams = getTargetParams();
+				const { requestParams: sourceParams, userId } = createParams();
+				const targetParams = createTargetParams();
 				const error = new ForbiddenException();
 
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce().mockRejectedValueOnce(error);
@@ -219,8 +219,8 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN user has no permission at all', () => {
 			const setup = () => {
-				const { requestParams: sourceParams, userId } = getParams();
-				const targetParams = getTargetParams();
+				const { requestParams: sourceParams, userId } = createParams();
+				const targetParams = createTargetParams();
 				const error = new ForbiddenException();
 
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error).mockRejectedValueOnce(error);
@@ -239,7 +239,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN service copy throws error', () => {
 			const setup = () => {
 				const { params: sourceParams, userId } = buildFileRecordsWithParams();
-				const targetParams = getTargetParams();
+				const targetParams = createTargetParams();
 
 				const error = new Error('test');
 
@@ -258,9 +258,9 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('copyOneFile is called', () => {
-		const getParamsForCopyOneFile = () => {
+		const createParamsForCopyOneFile = () => {
 			const { userId, fileRecords } = buildFileRecordsWithParams();
-			const targetParams = getTargetParams();
+			const targetParams = createTargetParams();
 			const fileRecord = fileRecords[0];
 
 			const fileRecordId: EntityId = new ObjectId().toHexString();
@@ -274,7 +274,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN user has permisson and service copies files successfully', () => {
 			const setup = () => {
-				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
+				const { singleFileParams, copyFileParams, userId, fileRecord } = createParamsForCopyOneFile();
 
 				const fileResponse = CopyFileResponseBuilder.build(
 					fileRecord.id,
@@ -344,7 +344,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN user has no permission for source file', () => {
 			const setup = () => {
-				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
+				const { singleFileParams, copyFileParams, userId, fileRecord } = createParamsForCopyOneFile();
 
 				const error = new ForbiddenException();
 
@@ -364,7 +364,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN user has no permission for target file', () => {
 			const setup = () => {
-				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
+				const { singleFileParams, copyFileParams, userId, fileRecord } = createParamsForCopyOneFile();
 
 				const error = new ForbiddenException();
 
@@ -384,7 +384,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN user has no permission at all', () => {
 			const setup = () => {
-				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
+				const { singleFileParams, copyFileParams, userId, fileRecord } = createParamsForCopyOneFile();
 
 				const error = new ForbiddenException();
 
@@ -404,7 +404,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN find source file throws error', () => {
 			const setup = () => {
-				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
+				const { singleFileParams, copyFileParams, userId, fileRecord } = createParamsForCopyOneFile();
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockRejectedValueOnce(error);
@@ -423,7 +423,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN service throws error', () => {
 			const setup = () => {
-				const { singleFileParams, copyFileParams, userId, fileRecord } = getParamsForCopyOneFile();
+				const { singleFileParams, copyFileParams, userId, fileRecord } = createParamsForCopyOneFile();
 
 				const error = new Error('test');
 

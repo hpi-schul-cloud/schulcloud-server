@@ -68,7 +68,7 @@ const buildFileRecordsWithParams = () => {
 	return { params, fileRecords, userId };
 };
 
-const getRequest = () => {
+const createRequest = () => {
 	const request: DeepMocked<Request> = createMock<Request>({
 		headers: {
 			connection: 'keep-alive',
@@ -144,7 +144,7 @@ describe('FilesStorageUC upload methods', () => {
 	});
 
 	describe('uploadFromUrl is called', () => {
-		const getUploadFromUrlParams = () => {
+		const createUploadFromUrlParams = () => {
 			const { params, userId, fileRecords } = buildFileRecordsWithParams();
 			const fileRecord = fileRecords[0];
 
@@ -170,7 +170,7 @@ describe('FilesStorageUC upload methods', () => {
 
 		describe('WHEN user is authorised, httpService gets response and file uploads successfully', () => {
 			const setup = () => {
-				const { fileRecord, userId, uploadFromUrlParams, response } = getUploadFromUrlParams();
+				const { fileRecord, userId, uploadFromUrlParams, response } = createUploadFromUrlParams();
 
 				httpService.get.mockReturnValueOnce(of(response));
 
@@ -229,7 +229,7 @@ describe('FilesStorageUC upload methods', () => {
 
 		describe('WHEN user is not authorised', () => {
 			const setup = () => {
-				const { userId, uploadFromUrlParams } = getUploadFromUrlParams();
+				const { userId, uploadFromUrlParams } = createUploadFromUrlParams();
 				const error = new Error('test');
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error);
 
@@ -245,7 +245,7 @@ describe('FilesStorageUC upload methods', () => {
 
 		describe('WHEN httpService throws error', () => {
 			const setup = () => {
-				const { userId, uploadFromUrlParams } = getUploadFromUrlParams();
+				const { userId, uploadFromUrlParams } = createUploadFromUrlParams();
 
 				const errorResponse: AxiosResponse = createAxiosErrorResponse();
 
@@ -267,7 +267,7 @@ describe('FilesStorageUC upload methods', () => {
 
 		describe('WHEN uploadFile throws error', () => {
 			const setup = () => {
-				const { userId, uploadFromUrlParams, response } = getUploadFromUrlParams();
+				const { userId, uploadFromUrlParams, response } = createUploadFromUrlParams();
 				const error = new Error('test');
 
 				httpService.get.mockReturnValueOnce(of(response));
@@ -290,7 +290,7 @@ describe('FilesStorageUC upload methods', () => {
 			const setup = () => {
 				const { params, userId, fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				const request = getRequest();
+				const request = createRequest();
 				const readable = Readable.from('abc');
 				const fileInfo = {
 					filename: fileRecord.name,
@@ -344,7 +344,7 @@ describe('FilesStorageUC upload methods', () => {
 		describe('WHEN user is authorized and busboy emits error', () => {
 			const setup = () => {
 				const { params, userId } = buildFileRecordsWithParams();
-				const request = getRequest();
+				const request = createRequest();
 				const error = new Error('test');
 
 				const size = request.headers['content-length'];
@@ -372,7 +372,7 @@ describe('FilesStorageUC upload methods', () => {
 			const setup = () => {
 				const { params, userId, fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				const request = getRequest();
+				const request = createRequest();
 				const buffer = Buffer.from('abc');
 
 				const size = request.headers['content-length'];
@@ -404,7 +404,7 @@ describe('FilesStorageUC upload methods', () => {
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
 				const { params, userId } = buildFileRecordsWithParams();
-				const request = getRequest();
+				const request = createRequest();
 				const error = new ForbiddenException();
 
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error);

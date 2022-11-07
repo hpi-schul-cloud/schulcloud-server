@@ -43,14 +43,14 @@ describe('FilesStorageUC delete methods', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let orm: MikroORM;
 
-	const getRequestParams = (schoolId: EntityId, userId: EntityId) => {
+	const createRequestParams = (schoolId: EntityId, userId: EntityId) => {
 		return { schoolId, parentId: userId, parentType: FileRecordParent.User };
 	};
 
-	const getParams = () => {
+	const createParams = () => {
 		const userId: EntityId = new ObjectId().toHexString();
 		const schoolId: EntityId = new ObjectId().toHexString();
-		const requestParams = getRequestParams(schoolId, userId);
+		const requestParams = createRequestParams(schoolId, userId);
 
 		return { userId, schoolId, requestParams };
 	};
@@ -110,7 +110,7 @@ describe('FilesStorageUC delete methods', () => {
 		describe('WHEN user is authorized and service deletes successful', () => {
 			const setup = () => {
 				const { params, userId, fileRecords } = buildFileRecordsWithParams();
-				const { requestParams } = getParams();
+				const { requestParams } = createParams();
 				const fileRecord = fileRecords[0];
 				const mockedResult = [[fileRecord], 0] as Counted<FileRecord[]>;
 
@@ -153,7 +153,7 @@ describe('FilesStorageUC delete methods', () => {
 
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
-				const { requestParams, userId } = getParams();
+				const { requestParams, userId } = createParams();
 
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 
@@ -173,7 +173,7 @@ describe('FilesStorageUC delete methods', () => {
 
 		describe('WHEN service throws error', () => {
 			const setup = () => {
-				const { requestParams, userId } = getParams();
+				const { requestParams, userId } = createParams();
 				const error = new Error('test');
 
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();

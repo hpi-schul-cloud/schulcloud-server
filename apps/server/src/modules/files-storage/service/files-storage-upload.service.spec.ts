@@ -199,7 +199,7 @@ describe('FilesStorageService upload methods', () => {
 			trySpy.mockRestore();
 		});
 
-		const getUploadFileParams = () => {
+		const createUploadFileParams = () => {
 			const { params, fileRecords, parentId: userId } = buildFileRecordsWithParams();
 
 			const fileDescription = createMock<FileDto>();
@@ -223,7 +223,8 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN storage client creates file successfully', () => {
 			const setup = () => {
-				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } = getUploadFileParams();
+				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } =
+					createUploadFileParams();
 
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
 				trySpy = jest.spyOn(service, 'createFileInStorageAndRollbackOnError').mockResolvedValueOnce(fileRecord);
@@ -242,7 +243,7 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN storage client throws error', () => {
 			const setup = () => {
-				const { params, fileDescription, userId, fileRecord, expectedFileRecord } = getUploadFileParams();
+				const { params, fileDescription, userId, fileRecord, expectedFileRecord } = createUploadFileParams();
 				const error = new Error('test');
 
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockRejectedValueOnce(error);
@@ -263,7 +264,8 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN file record repo saves successfully', () => {
 			const setup = () => {
-				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } = getUploadFileParams();
+				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } =
+					createUploadFileParams();
 
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
 				trySpy = jest.spyOn(service, 'createFileInStorageAndRollbackOnError').mockResolvedValueOnce(fileRecord);
@@ -288,7 +290,8 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN file record repo throws error', () => {
 			const setup = () => {
-				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } = getUploadFileParams();
+				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } =
+					createUploadFileParams();
 				const error = new Error('test');
 
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
@@ -309,7 +312,8 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN file is successfully created in storage', () => {
 			const setup = () => {
-				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } = getUploadFileParams();
+				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } =
+					createUploadFileParams();
 
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
 				trySpy = jest.spyOn(service, 'createFileInStorageAndRollbackOnError').mockResolvedValueOnce(fileRecord);
@@ -336,7 +340,8 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN tryToCreateFileInStorage throws error', () => {
 			const setup = () => {
-				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } = getUploadFileParams();
+				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } =
+					createUploadFileParams();
 				const error = new Error('test');
 
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
