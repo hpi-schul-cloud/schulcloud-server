@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { has } from 'lodash';
 import { Submission, User } from '../entity';
 import { IPermissionContext, PermissionTypes } from '../interface/permission';
 import { Actions } from './actions.enum';
