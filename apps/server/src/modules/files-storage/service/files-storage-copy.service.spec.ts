@@ -85,26 +85,6 @@ describe('FilesStorageService copy methods', () => {
 	});
 
 	describe('copyFilesOfParent is called', () => {
-		describe('WHEN no file is found', () => {
-			const setup = () => {
-				const { fileRecords, params: sourceParams, parentId: userId } = getFileRecordsWithParams();
-				const { params } = getFileRecordsWithParams();
-				const copyFilesOfParentParams = { target: params };
-
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([[], 0]);
-
-				return { sourceParams, copyFilesOfParentParams, fileRecords, userId };
-			};
-
-			it('should return empty response if entities not found', async () => {
-				const { userId, sourceParams, copyFilesOfParentParams } = setup();
-
-				const result = await service.copyFilesOfParent(userId, sourceParams, copyFilesOfParentParams);
-
-				expect(result).toEqual([[], 0]);
-			});
-		});
-
 		describe('WHEN files exist and copyFiles copied files successfully', () => {
 			let spy: jest.SpyInstance;
 
@@ -151,6 +131,26 @@ describe('FilesStorageService copy methods', () => {
 
 				expect(responseData[0]).toEqual(targetFileRecords);
 				expect(responseData[1]).toEqual(targetFileRecords.length);
+			});
+		});
+
+		describe('WHEN no file is found', () => {
+			const setup = () => {
+				const { fileRecords, params: sourceParams, parentId: userId } = getFileRecordsWithParams();
+				const { params } = getFileRecordsWithParams();
+				const copyFilesOfParentParams = { target: params };
+
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([[], 0]);
+
+				return { sourceParams, copyFilesOfParentParams, fileRecords, userId };
+			};
+
+			it('should return empty response if entities not found', async () => {
+				const { userId, sourceParams, copyFilesOfParentParams } = setup();
+
+				const result = await service.copyFilesOfParent(userId, sourceParams, copyFilesOfParentParams);
+
+				expect(result).toEqual([[], 0]);
 			});
 		});
 
@@ -353,42 +353,6 @@ describe('FilesStorageService copy methods', () => {
 	});
 
 	describe('copy is called', () => {
-		describe('WHEN source files scan status is BLOCKED', () => {
-			const setup = () => {
-				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
-				const fileRecord = fileRecords[0];
-				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
-
-				return { fileRecord, userId, params };
-			};
-
-			it('should return empty array', async () => {
-				const { fileRecord, params, userId } = setup();
-
-				const result = await service.copy(userId, [fileRecord], params);
-
-				expect(result.length).toBe(0);
-			});
-		});
-
-		describe('WHEN source file is marked for delete', () => {
-			const setup = () => {
-				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
-				const fileRecord = fileRecords[0];
-				fileRecord.deletedSince = new Date();
-
-				return { fileRecord, userId, params };
-			};
-
-			it('should return empty array', async () => {
-				const { fileRecord, params, userId } = setup();
-
-				const result = await service.copy(userId, [fileRecord], params);
-
-				expect(result.length).toBe(0);
-			});
-		});
-
 		describe('WHEN file records and files copied successfully', () => {
 			let spy: jest.SpyInstance;
 
@@ -431,6 +395,42 @@ describe('FilesStorageService copy methods', () => {
 				const result = await service.copy(userId, [sourceFile], params);
 
 				expect(result).toEqual([fileResponse]);
+			});
+		});
+
+		describe('WHEN source files scan status is BLOCKED', () => {
+			const setup = () => {
+				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const fileRecord = fileRecords[0];
+				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
+
+				return { fileRecord, userId, params };
+			};
+
+			it('should return empty array', async () => {
+				const { fileRecord, params, userId } = setup();
+
+				const result = await service.copy(userId, [fileRecord], params);
+
+				expect(result.length).toBe(0);
+			});
+		});
+
+		describe('WHEN source file is marked for delete', () => {
+			const setup = () => {
+				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const fileRecord = fileRecords[0];
+				fileRecord.deletedSince = new Date();
+
+				return { fileRecord, userId, params };
+			};
+
+			it('should return empty array', async () => {
+				const { fileRecord, params, userId } = setup();
+
+				const result = await service.copy(userId, [fileRecord], params);
+
+				expect(result.length).toBe(0);
 			});
 		});
 

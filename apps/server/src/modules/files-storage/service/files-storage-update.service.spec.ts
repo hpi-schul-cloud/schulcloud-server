@@ -170,7 +170,7 @@ describe('FilesStorageService update methods', () => {
 			});
 		});
 
-		describe('WHEN file name allready exists', () => {
+		describe('WHEN file name already exists', () => {
 			let spy: jest.SpyInstance;
 
 			afterEach(() => {
