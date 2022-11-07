@@ -130,7 +130,7 @@ export class OAuthService {
 		} catch (error) {
 			let additionalInfo = '';
 			const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
-			const email = decodedToken?.email as string;
+			const email = decodedToken?.email as string | undefined;
 			if (email) {
 				const usersWithEmail: User[] = await this.userRepo.findByEmail(email);
 				const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
