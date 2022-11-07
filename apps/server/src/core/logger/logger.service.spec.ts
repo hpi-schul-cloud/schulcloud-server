@@ -8,6 +8,8 @@ import { Logger } from './logger.service';
 
 describe('Logger', () => {
 	let service: Logger;
+	let processStdoutWriteSpy;
+	let processStderrWriteSpy;
 	let winstonLogger: DeepMocked<WinstonLogger>;
 
 	beforeAll(async () => {
@@ -25,11 +27,33 @@ describe('Logger', () => {
 		winstonLogger = module.get(WINSTON_MODULE_PROVIDER);
 	});
 
+	beforeEach(() => {
+		processStdoutWriteSpy = jest.spyOn(process.stdout, 'write');
+		processStderrWriteSpy = jest.spyOn(process.stderr, 'write');
+	});
+
+	afterEach(() => {
+		processStdoutWriteSpy.mockRestore();
+		processStderrWriteSpy.mockRestore();
+	});
+
 	describe('WHEN error logging', () => {
 		it('should call winstonLogger.error', () => {
 			const error = new Error('custom error');
 			service.error(error.message, error.stack);
 			expect(winstonLogger.error).toBeCalled();
+		});
+
+		it('should work also when providing circular references', () => {
+			const a: { name: string; b?: object | undefined } = { name: 'great' };
+			const b = { a };
+			a.b = b;
+			service.error(a);
+			expect(winstonLogger.error).toBeCalledWith(
+				expect.objectContaining({
+					message: expect.stringMatching(/name.*great/) as string,
+				})
+			);
 		});
 	});
 
