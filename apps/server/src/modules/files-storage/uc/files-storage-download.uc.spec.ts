@@ -16,7 +16,7 @@ import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 
-const getFileRecordWithParams = () => {
+const buildFileRecordWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const schoolId = new ObjectId().toHexString();
 
@@ -90,7 +90,7 @@ describe('FilesStorageUC', () => {
 	describe('download is called', () => {
 		describe('WHEN file is found, user is authorized and file is successfully downloaded', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = getFileRecordWithParams();
+				const { fileRecord, params, userId } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 
 				const fileResponse = createMock<IGetFileResponse>();
@@ -145,7 +145,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN getFile throws error', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = getFileRecordWithParams();
+				const { fileRecord, params, userId } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 				const error = new Error('test');
 
@@ -163,7 +163,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = getFileRecordWithParams();
+				const { fileRecord, params, userId } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 				const error = new ForbiddenException();
 
@@ -182,7 +182,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN service throws error', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = getFileRecordWithParams();
+				const { fileRecord, params, userId } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 				const error = new Error('test');
 
@@ -204,7 +204,7 @@ describe('FilesStorageUC', () => {
 	describe('downloadBySecurityToken is called', () => {
 		describe('WHEN file is found and service downloads successfully', () => {
 			const setup = () => {
-				const { fileRecord } = getFileRecordWithParams();
+				const { fileRecord } = buildFileRecordWithParams();
 				const token = 'token';
 				const fileResponse = createMock<IGetFileResponse>();
 
@@ -260,7 +260,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN downloadFile throws error', () => {
 			const setup = () => {
-				const { fileRecord } = getFileRecordWithParams();
+				const { fileRecord } = buildFileRecordWithParams();
 				const token = 'token';
 				const error = new Error('test');
 

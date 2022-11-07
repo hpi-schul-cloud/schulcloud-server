@@ -12,7 +12,7 @@ import { getPaths, unmarkForDelete } from '../helper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
-const getFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const parentSchoolId = new ObjectId().toHexString();
 
@@ -90,7 +90,7 @@ describe('FilesStorageService restore methods', () => {
 			});
 
 			const setup = () => {
-				const { params, fileRecords } = getFileRecordsWithParams();
+				const { params, fileRecords } = buildFileRecordsWithParams();
 
 				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([
 					fileRecords,
@@ -137,7 +137,7 @@ describe('FilesStorageService restore methods', () => {
 			});
 
 			const setup = () => {
-				const { params } = getFileRecordsWithParams();
+				const { params } = buildFileRecordsWithParams();
 
 				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([[], 0]);
 				spy = jest.spyOn(service, 'restore').mockResolvedValueOnce();
@@ -162,7 +162,7 @@ describe('FilesStorageService restore methods', () => {
 			});
 
 			const setup = () => {
-				const { params } = getFileRecordsWithParams();
+				const { params } = buildFileRecordsWithParams();
 				const error = new Error('bla');
 
 				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockRejectedValueOnce(error);
@@ -186,7 +186,7 @@ describe('FilesStorageService restore methods', () => {
 			});
 
 			const setup = () => {
-				const { params, fileRecords } = getFileRecordsWithParams();
+				const { params, fileRecords } = buildFileRecordsWithParams();
 				const error = new Error('bla');
 
 				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([fileRecords, 3]);
@@ -206,7 +206,7 @@ describe('FilesStorageService restore methods', () => {
 	describe('restore is called', () => {
 		describe('WHEN valid files exist', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 
 				fileRecordRepo.save.mockResolvedValueOnce();
 
@@ -235,7 +235,7 @@ describe('FilesStorageService restore methods', () => {
 
 		describe('WHEN repository throws an error', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 
 				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
 
@@ -251,7 +251,7 @@ describe('FilesStorageService restore methods', () => {
 
 		describe('WHEN filestorage client throw an error', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 
 				storageClient.restore.mockRejectedValueOnce(new Error('bla'));
 

@@ -16,7 +16,7 @@ import { CopyFileResponseBuilder } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 
-const getFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const schoolId = new ObjectId().toHexString();
 
@@ -121,7 +121,7 @@ describe('FilesStorageUC', () => {
 	describe('copyFilesOfParent is called', () => {
 		describe('WHEN user has all permissions and service copies files successfully', () => {
 			const setup = () => {
-				const { params: sourceParams, userId, fileRecords } = getFileRecordsWithParams();
+				const { params: sourceParams, userId, fileRecords } = buildFileRecordsWithParams();
 				const targetParams = getTargetParams();
 				const sourceFile = fileRecords[0];
 				const targetFile = fileRecords[1];
@@ -238,7 +238,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN service copy throws error', () => {
 			const setup = () => {
-				const { params: sourceParams, userId } = getFileRecordsWithParams();
+				const { params: sourceParams, userId } = buildFileRecordsWithParams();
 				const targetParams = getTargetParams();
 
 				const error = new Error('test');
@@ -259,7 +259,7 @@ describe('FilesStorageUC', () => {
 
 	describe('copyOneFile is called', () => {
 		const getParamsForCopyOneFile = () => {
-			const { userId, fileRecords } = getFileRecordsWithParams();
+			const { userId, fileRecords } = buildFileRecordsWithParams();
 			const targetParams = getTargetParams();
 			const fileRecord = fileRecords[0];
 

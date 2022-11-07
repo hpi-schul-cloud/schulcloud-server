@@ -17,7 +17,7 @@ import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 
-const getFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const schoolId = new ObjectId().toHexString();
 
@@ -109,7 +109,7 @@ describe('FilesStorageUC delete methods', () => {
 	describe('deleteFilesOfParent is called', () => {
 		describe('WHEN user is authorized and service deletes successful', () => {
 			const setup = () => {
-				const { params, userId, fileRecords } = getFileRecordsWithParams();
+				const { params, userId, fileRecords } = buildFileRecordsWithParams();
 				const { requestParams } = getParams();
 				const fileRecord = fileRecords[0];
 				const mockedResult = [[fileRecord], 0] as Counted<FileRecord[]>;
@@ -193,7 +193,7 @@ describe('FilesStorageUC delete methods', () => {
 	describe('deleteOneFile is called', () => {
 		describe('WHEN user is authorized, file is found and delete was successful ', () => {
 			const setup = () => {
-				const { fileRecords, userId } = getFileRecordsWithParams();
+				const { fileRecords, userId } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const requestParams = { fileRecordId: fileRecord.id, parentType: fileRecord.parentType };
 
@@ -254,7 +254,7 @@ describe('FilesStorageUC delete methods', () => {
 
 		describe('WHEN file is not found', () => {
 			const setup = () => {
-				const { fileRecords, userId } = getFileRecordsWithParams();
+				const { fileRecords, userId } = buildFileRecordsWithParams();
 				const requestParams = { fileRecordId: fileRecords[0].id };
 				const error = new Error('test');
 
@@ -272,7 +272,7 @@ describe('FilesStorageUC delete methods', () => {
 
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
-				const { fileRecords, userId } = getFileRecordsWithParams();
+				const { fileRecords, userId } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const requestParams = { fileRecordId: fileRecord.id, parentType: fileRecord.parentType };
 
@@ -292,7 +292,7 @@ describe('FilesStorageUC delete methods', () => {
 
 		describe('WHEN delete throws error', () => {
 			const setup = () => {
-				const { fileRecords, userId } = getFileRecordsWithParams();
+				const { fileRecords, userId } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const requestParams = { fileRecordId: fileRecord.id };
 				const error = new Error('test');

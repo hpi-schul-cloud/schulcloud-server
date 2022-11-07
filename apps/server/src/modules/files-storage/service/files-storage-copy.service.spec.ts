@@ -13,7 +13,7 @@ import { CopyFileResponseBuilder } from '../mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
-const getFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const parentSchoolId = new ObjectId().toHexString();
 
@@ -93,8 +93,8 @@ describe('FilesStorageService copy methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecords: sourceFileRecords, params: sourceParams, parentId: userId } = getFileRecordsWithParams();
-				const { fileRecords: targetFileRecords, params } = getFileRecordsWithParams();
+				const { fileRecords: sourceFileRecords, params: sourceParams, parentId: userId } = buildFileRecordsWithParams();
+				const { fileRecords: targetFileRecords, params } = buildFileRecordsWithParams();
 				const copyFilesOfParentParams = { target: params };
 
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([sourceFileRecords, sourceFileRecords.length]);
@@ -136,8 +136,8 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN no file is found', () => {
 			const setup = () => {
-				const { fileRecords, params: sourceParams, parentId: userId } = getFileRecordsWithParams();
-				const { params } = getFileRecordsWithParams();
+				const { fileRecords, params: sourceParams, parentId: userId } = buildFileRecordsWithParams();
+				const { params } = buildFileRecordsWithParams();
 				const copyFilesOfParentParams = { target: params };
 
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([[], 0]);
@@ -162,8 +162,8 @@ describe('FilesStorageService copy methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecords: sourceFileRecords, params: sourceParams, parentId: userId } = getFileRecordsWithParams();
-				const { params } = getFileRecordsWithParams();
+				const { fileRecords: sourceFileRecords, params: sourceParams, parentId: userId } = buildFileRecordsWithParams();
+				const { params } = buildFileRecordsWithParams();
 				const copyFilesOfParentParams = { target: params };
 				const error = new Error('test');
 
@@ -185,7 +185,7 @@ describe('FilesStorageService copy methods', () => {
 	describe('copyFileRecords is called', () => {
 		describe('WHEN new fileRecord is saved successfully', () => {
 			const setup = () => {
-				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 
 				return { sourceFile, userId, params };
@@ -202,7 +202,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN save throws error', () => {
 			const setup = () => {
-				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 				const error = new Error('test');
 
@@ -222,7 +222,7 @@ describe('FilesStorageService copy methods', () => {
 	describe('copyFilesWithRollbackOnError is called', () => {
 		describe('WHEN storage client copies file successfully', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 				const targetFile = fileRecords[1];
 
@@ -252,7 +252,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN storage client throws error', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 				const targetFile = fileRecords[1];
 				const error = new Error('test');
@@ -273,7 +273,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN source files security status is pending', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 				sourceFile.securityCheck.status = ScanStatus.PENDING;
 				const targetFile = fileRecords[1];
@@ -292,7 +292,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN source files security status is VERIFIED', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 				sourceFile.securityCheck.status = ScanStatus.VERIFIED;
 				const targetFile = fileRecords[1];
@@ -311,7 +311,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN source files security status is BLOCKED', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 				sourceFile.securityCheck.status = ScanStatus.BLOCKED;
 				const targetFile = fileRecords[1];
@@ -330,7 +330,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN anti virus service throws error', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 				const targetFile = fileRecords[1];
 				const error = new Error('test');
@@ -361,7 +361,7 @@ describe('FilesStorageService copy methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 				const targetFile = fileRecords[1];
 
@@ -400,7 +400,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN source files scan status is BLOCKED', () => {
 			const setup = () => {
-				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
 
@@ -418,7 +418,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN source file is marked for delete', () => {
 			const setup = () => {
-				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				fileRecord.deletedSince = new Date();
 
@@ -442,7 +442,7 @@ describe('FilesStorageService copy methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 				const targetFile = fileRecords[1];
 				const error = new Error('test');
@@ -473,7 +473,7 @@ describe('FilesStorageService copy methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecords, parentId: userId, params } = getFileRecordsWithParams();
+				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 				const targetFile = fileRecords[1];
 				const error = new Error('test');

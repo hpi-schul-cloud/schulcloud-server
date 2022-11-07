@@ -11,7 +11,7 @@ import { FileRecordParent } from '../entity';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
-const getFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const parentSchoolId = new ObjectId().toHexString();
 
@@ -30,7 +30,7 @@ const getFileRecordsWithParams = () => {
 	return { params, fileRecords, parentId };
 };
 
-const getFileRecordWithParams = () => {
+const buildFileRecordWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const parentSchoolId = new ObjectId().toHexString();
 
@@ -93,7 +93,7 @@ describe('FilesStorageService get methods', () => {
 	describe('getFileRecord is called', () => {
 		describe('WHEN valid file exists', () => {
 			const setup = () => {
-				const { params, fileRecord } = getFileRecordWithParams();
+				const { params, fileRecord } = buildFileRecordWithParams();
 				fileRecordRepo.findOneById.mockResolvedValueOnce(fileRecord);
 
 				return { params, fileRecord };
@@ -118,7 +118,7 @@ describe('FilesStorageService get methods', () => {
 
 		describe('WHEN repository throws an error', () => {
 			const setup = () => {
-				const { params } = getFileRecordWithParams();
+				const { params } = buildFileRecordWithParams();
 
 				fileRecordRepo.findOneById.mockRejectedValueOnce(new Error('bla'));
 
@@ -136,7 +136,7 @@ describe('FilesStorageService get methods', () => {
 	describe('getFileRecordBySecurityCheckRequestToken is called', () => {
 		describe('WHEN valid file exists', () => {
 			const setup = () => {
-				const { fileRecord } = getFileRecordWithParams();
+				const { fileRecord } = buildFileRecordWithParams();
 				const token = 'token';
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
 
@@ -181,7 +181,7 @@ describe('FilesStorageService get methods', () => {
 	describe('getFileRecordMarkedForDelete is called', () => {
 		describe('WHEN marked file exists', () => {
 			const setup = () => {
-				const { params, fileRecord } = getFileRecordWithParams();
+				const { params, fileRecord } = buildFileRecordWithParams();
 				fileRecordRepo.findOneByIdMarkedForDelete.mockResolvedValueOnce(fileRecord);
 
 				return { params, fileRecord };
@@ -206,7 +206,7 @@ describe('FilesStorageService get methods', () => {
 
 		describe('WHEN repository throws an error', () => {
 			const setup = () => {
-				const { params } = getFileRecordWithParams();
+				const { params } = buildFileRecordWithParams();
 
 				fileRecordRepo.findOneByIdMarkedForDelete.mockRejectedValueOnce(new Error('test'));
 
@@ -224,7 +224,7 @@ describe('FilesStorageService get methods', () => {
 	describe('getFileRecordsOfParent is called', () => {
 		describe('WHEN valid files exist', () => {
 			const setup = () => {
-				const { params, fileRecords } = getFileRecordsWithParams();
+				const { params, fileRecords } = buildFileRecordsWithParams();
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 
 				return { params, fileRecords };
@@ -249,7 +249,7 @@ describe('FilesStorageService get methods', () => {
 
 		describe('WHEN repository throws an error', () => {
 			const setup = () => {
-				const { params } = getFileRecordsWithParams();
+				const { params } = buildFileRecordsWithParams();
 
 				fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValueOnce(new Error('bla'));
 

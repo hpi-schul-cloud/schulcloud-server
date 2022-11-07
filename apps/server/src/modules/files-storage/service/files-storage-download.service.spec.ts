@@ -15,7 +15,7 @@ import { IGetFileResponse } from '../interface';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
-const getFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const parentSchoolId = new ObjectId().toHexString();
 
@@ -91,7 +91,7 @@ describe('FilesStorageService download methods', () => {
 
 		describe('WHEN file is downloaded successfully', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const params = {
 					fileRecordId: fileRecord.id,
@@ -124,7 +124,7 @@ describe('FilesStorageService download methods', () => {
 
 		describe('WHEN param file name is not matching found file name', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const paramsFileName = 'paramsFileName';
 				const params = {
@@ -149,7 +149,7 @@ describe('FilesStorageService download methods', () => {
 
 		describe('WHEN file records scan status is BLOCKED', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
 				const params = {
@@ -174,7 +174,7 @@ describe('FilesStorageService download methods', () => {
 
 		describe('WHEN download throws error', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const params = {
 					fileRecordId: fileRecord.id,
@@ -197,7 +197,7 @@ describe('FilesStorageService download methods', () => {
 	describe('downloadFile is called', () => {
 		describe('WHEN file is downloaded successfully', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 
 				const expectedResponse = createMock<IGetFileResponse>();
@@ -228,7 +228,7 @@ describe('FilesStorageService download methods', () => {
 
 		describe('WHEN get throws error', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const error = new Error('test');
 

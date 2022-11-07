@@ -49,7 +49,7 @@ const createAxiosErrorResponse = (): AxiosResponse => {
 	return errorResponse;
 };
 
-const getFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const schoolId = new ObjectId().toHexString();
 
@@ -145,7 +145,7 @@ describe('FilesStorageUC upload methods', () => {
 
 	describe('uploadFromUrl is called', () => {
 		const getUploadFromUrlParams = () => {
-			const { params, userId, fileRecords } = getFileRecordsWithParams();
+			const { params, userId, fileRecords } = buildFileRecordsWithParams();
 			const fileRecord = fileRecords[0];
 
 			const uploadFromUrlParams = {
@@ -288,7 +288,7 @@ describe('FilesStorageUC upload methods', () => {
 	describe('upload is called', () => {
 		describe('WHEN user is authorized, busboy emits event and file is uploaded successfully', () => {
 			const setup = () => {
-				const { params, userId, fileRecords } = getFileRecordsWithParams();
+				const { params, userId, fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const request = getRequest();
 				const readable = Readable.from('abc');
@@ -343,7 +343,7 @@ describe('FilesStorageUC upload methods', () => {
 
 		describe('WHEN user is authorized and busboy emits error', () => {
 			const setup = () => {
-				const { params, userId } = getFileRecordsWithParams();
+				const { params, userId } = buildFileRecordsWithParams();
 				const request = getRequest();
 				const error = new Error('test');
 
@@ -370,7 +370,7 @@ describe('FilesStorageUC upload methods', () => {
 
 		describe('WHEN user is authorized, busboy emits event and storage client throws error', () => {
 			const setup = () => {
-				const { params, userId, fileRecords } = getFileRecordsWithParams();
+				const { params, userId, fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const request = getRequest();
 				const buffer = Buffer.from('abc');
@@ -403,7 +403,7 @@ describe('FilesStorageUC upload methods', () => {
 
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
-				const { params, userId } = getFileRecordsWithParams();
+				const { params, userId } = buildFileRecordsWithParams();
 				const request = getRequest();
 				const error = new ForbiddenException();
 

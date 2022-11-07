@@ -13,7 +13,7 @@ import { createFileRecord, createPath, resolveFileNameDuplicates } from '../help
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
-const getFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const parentSchoolId = new ObjectId().toHexString();
 
@@ -87,7 +87,7 @@ describe('FilesStorageService upload methods', () => {
 	describe('createFileInStorageAndRollbackOnError is called', () => {
 		describe('storage client creates file successfully', () => {
 			const setup = () => {
-				const { params, fileRecords } = getFileRecordsWithParams();
+				const { params, fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const fileDescription = createMock<FileDto>();
 
@@ -115,7 +115,7 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('storage client throws error', () => {
 			const setup = () => {
-				const { params, fileRecords } = getFileRecordsWithParams();
+				const { params, fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const fileDescription = createMock<FileDto>();
 				const error = new Error('test');
@@ -148,7 +148,7 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('file record is send to antivirus successfully', () => {
 			const setup = () => {
-				const { params, fileRecords } = getFileRecordsWithParams();
+				const { params, fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const fileDescription = createMock<FileDto>();
 
@@ -166,7 +166,7 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('antivirus throws error', () => {
 			const setup = () => {
-				const { params, fileRecords } = getFileRecordsWithParams();
+				const { params, fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const fileDescription = createMock<FileDto>();
 				const error = new Error('test');
@@ -200,7 +200,7 @@ describe('FilesStorageService upload methods', () => {
 		});
 
 		const getUploadFileParams = () => {
-			const { params, fileRecords, parentId: userId } = getFileRecordsWithParams();
+			const { params, fileRecords, parentId: userId } = buildFileRecordsWithParams();
 
 			const fileDescription = createMock<FileDto>();
 			fileDescription.name = fileRecords[0].name;

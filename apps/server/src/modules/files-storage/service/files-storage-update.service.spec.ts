@@ -15,7 +15,7 @@ import { FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
-const getFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const parentSchoolId = new ObjectId().toHexString();
 
@@ -34,7 +34,7 @@ const getFileRecordsWithParams = () => {
 	return { params, fileRecords, parentId };
 };
 
-const getFileRecordWithParams = () => {
+const buildFileRecordWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const parentSchoolId = new ObjectId().toHexString();
 
@@ -103,7 +103,7 @@ describe('FilesStorageService update methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecords, params } = getFileRecordsWithParams();
+				const { fileRecords, params } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const data: RenameFileParams = { fileName: 'renamed' };
 
@@ -147,7 +147,7 @@ describe('FilesStorageService update methods', () => {
 
 		describe('WHEN repository is throwing an error', () => {
 			const setup = () => {
-				const { fileRecord, params } = getFileRecordWithParams();
+				const { fileRecord, params } = buildFileRecordWithParams();
 				const data: RenameFileParams = { fileName: 'renamed' };
 
 				const spyGetFilesOfParent = jest
@@ -178,7 +178,7 @@ describe('FilesStorageService update methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecords, params } = getFileRecordsWithParams();
+				const { fileRecords, params } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const data: RenameFileParams = { fileName: fileRecords[0].name };
 
@@ -211,7 +211,7 @@ describe('FilesStorageService update methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecord } = getFileRecordWithParams();
+				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: false };
 				const token = fileRecord.securityCheck.requestToken || '';
 
@@ -255,7 +255,7 @@ describe('FilesStorageService update methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecord } = getFileRecordWithParams();
+				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };
 				const token = fileRecord.securityCheck.requestToken || '';
 
@@ -285,7 +285,7 @@ describe('FilesStorageService update methods', () => {
 
 		describe('WHEN no matching file is found', () => {
 			const setup = () => {
-				const { fileRecord } = getFileRecordWithParams();
+				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: false };
 				const token = fileRecord.securityCheck.requestToken || '';
 				const error = new NotFoundException();
@@ -304,7 +304,7 @@ describe('FilesStorageService update methods', () => {
 
 		describe('WHEN repository by call save is throw an error', () => {
 			const setup = () => {
-				const { fileRecord } = getFileRecordWithParams();
+				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: false };
 				const token = fileRecord.securityCheck.requestToken || '';
 				const error = new Error('bla');

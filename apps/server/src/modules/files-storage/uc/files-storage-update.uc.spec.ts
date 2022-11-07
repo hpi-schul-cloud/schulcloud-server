@@ -13,7 +13,7 @@ import { PermissionContexts } from '../files-storage.const';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 
-const getFileRecordWithParams = () => {
+const buildFileRecordWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const schoolId = new ObjectId().toHexString();
 
@@ -87,7 +87,7 @@ describe('FilesStorageUC', () => {
 	describe('updateSecurityStatus is called', () => {
 		describe('WHEN matching file exists', () => {
 			const setup = () => {
-				const { fileRecord } = getFileRecordWithParams();
+				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: false };
 				const token = fileRecord.securityCheck.requestToken || '';
 
@@ -107,7 +107,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN service throws an error', () => {
 			const setup = () => {
-				const { fileRecord } = getFileRecordWithParams();
+				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: false };
 				const token = fileRecord.securityCheck.requestToken || '';
 
@@ -130,7 +130,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN user is authorised and single file exists', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const { fileRecord, params } = getFileRecordWithParams();
+				const { fileRecord, params } = buildFileRecordWithParams();
 				const data: RenameFileParams = { fileName: 'test_new_name.txt' };
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);

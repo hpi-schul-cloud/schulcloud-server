@@ -14,7 +14,7 @@ import { PermissionContexts } from '../files-storage.const';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 
-const getFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const schoolId = new ObjectId().toHexString();
 
@@ -95,7 +95,7 @@ describe('FilesStorageUC', () => {
 		describe('when user is authorised and valid files exist', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const { fileRecords, params } = getFileRecordsWithParams();
+				const { fileRecords, params } = buildFileRecordsWithParams();
 
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
@@ -136,7 +136,7 @@ describe('FilesStorageUC', () => {
 		describe('when user is not authorised', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const { fileRecords, params } = getFileRecordsWithParams();
+				const { fileRecords, params } = buildFileRecordsWithParams();
 
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new Error('Bla'));
@@ -154,7 +154,7 @@ describe('FilesStorageUC', () => {
 		describe('when user is authorised but no files exist', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const { params } = getFileRecordsWithParams();
+				const { params } = buildFileRecordsWithParams();
 				const fileRecords = [];
 
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);

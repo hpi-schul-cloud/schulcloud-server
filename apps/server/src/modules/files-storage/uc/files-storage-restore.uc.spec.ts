@@ -16,7 +16,7 @@ import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 
-const getFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const schoolId = new ObjectId().toHexString();
 
@@ -35,7 +35,7 @@ const getFileRecordsWithParams = () => {
 	return { params, fileRecords, userId };
 };
 
-const getFileRecordWithParams = () => {
+const buildFileRecordWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const schoolId = new ObjectId().toHexString();
 
@@ -112,7 +112,7 @@ describe('FilesStorageUC', () => {
 	describe('restoreFilesOfParent is called', () => {
 		describe('WHEN user is authorised and files to restore exist', () => {
 			const setup = () => {
-				const { params, userId, fileRecords } = getFileRecordsWithParams();
+				const { params, userId, fileRecords } = buildFileRecordsWithParams();
 
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 				filesStorageService.restoreFilesOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
@@ -153,7 +153,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN user is not authorised ', () => {
 			const setup = () => {
-				const { params, userId } = getFileRecordsWithParams();
+				const { params, userId } = buildFileRecordsWithParams();
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 
 				return { params, userId };
@@ -168,7 +168,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN service throws an error', () => {
 			const setup = () => {
-				const { params, userId } = getFileRecordsWithParams();
+				const { params, userId } = buildFileRecordsWithParams();
 				const error = new Error('test');
 
 				filesStorageService.restoreFilesOfParent.mockRejectedValueOnce(error);
@@ -187,8 +187,8 @@ describe('FilesStorageUC', () => {
 	describe('restoreOneFile is called', () => {
 		describe('WHEN user is authorised', () => {
 			const setup = () => {
-				const { params, userId, fileRecord } = getFileRecordWithParams();
-				console.log(fileRecord);
+				const { params, userId, fileRecord } = buildFileRecordWithParams();
+
 				filesStorageService.getFileRecordMarkedForDelete.mockResolvedValueOnce(fileRecord);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 				filesStorageService.restore.mockResolvedValueOnce();
@@ -237,7 +237,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN user is not authorised ', () => {
 			const setup = () => {
-				const { params, userId, fileRecord } = getFileRecordWithParams();
+				const { params, userId, fileRecord } = buildFileRecordWithParams();
 
 				filesStorageService.getFileRecordMarkedForDelete.mockResolvedValueOnce(fileRecord);
 				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
@@ -256,7 +256,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN service getMarkForDeletedFile throws an error', () => {
 			const setup = () => {
-				const { params, userId } = getFileRecordWithParams();
+				const { params, userId } = buildFileRecordWithParams();
 				const error = new Error('test');
 
 				filesStorageService.getFileRecordMarkedForDelete.mockRejectedValueOnce(error);
@@ -273,7 +273,7 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN service restore throws an error', () => {
 			const setup = () => {
-				const { params, userId, fileRecord } = getFileRecordWithParams();
+				const { params, userId, fileRecord } = buildFileRecordWithParams();
 				const error = new Error('test');
 
 				filesStorageService.getFileRecordMarkedForDelete.mockResolvedValueOnce(fileRecord);

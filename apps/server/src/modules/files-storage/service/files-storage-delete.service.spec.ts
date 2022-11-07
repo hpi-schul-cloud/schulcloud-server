@@ -13,7 +13,7 @@ import { getPaths } from '../helper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
-const getFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const parentSchoolId = new ObjectId().toHexString();
 
@@ -85,7 +85,7 @@ describe('FilesStorageService delete methods', () => {
 	describe('delete is called', () => {
 		describe('WHEN valid files exists', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 
 				fileRecordRepo.save.mockResolvedValueOnce();
 
@@ -118,7 +118,7 @@ describe('FilesStorageService delete methods', () => {
 
 		describe('WHEN repository throw an error', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 
 				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
 
@@ -134,7 +134,7 @@ describe('FilesStorageService delete methods', () => {
 
 		describe('WHEN filestorage client throw an error', () => {
 			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 
 				storageClient.delete.mockRejectedValueOnce(new Error('bla'));
 
@@ -159,7 +159,7 @@ describe('FilesStorageService delete methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecords, params } = getFileRecordsWithParams();
+				const { fileRecords, params } = buildFileRecordsWithParams();
 
 				spy = jest.spyOn(service, 'delete');
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
@@ -207,7 +207,7 @@ describe('FilesStorageService delete methods', () => {
 
 			const setup = () => {
 				const fileRecords = [];
-				const { params } = getFileRecordsWithParams();
+				const { params } = buildFileRecordsWithParams();
 
 				spy = jest.spyOn(service, 'delete');
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
@@ -234,7 +234,7 @@ describe('FilesStorageService delete methods', () => {
 
 		describe('WHEN repository throw an error', () => {
 			const setup = () => {
-				const { params } = getFileRecordsWithParams();
+				const { params } = buildFileRecordsWithParams();
 
 				fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValueOnce(new Error('bla'));
 
@@ -256,7 +256,7 @@ describe('FilesStorageService delete methods', () => {
 			});
 
 			const setup = () => {
-				const { params, fileRecords } = getFileRecordsWithParams();
+				const { params, fileRecords } = buildFileRecordsWithParams();
 
 				spy = jest.spyOn(service, 'delete').mockRejectedValue(new Error('bla'));
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
