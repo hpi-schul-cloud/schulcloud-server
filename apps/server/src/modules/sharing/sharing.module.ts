@@ -1,16 +1,23 @@
 import { Module } from '@nestjs/common';
-import { ShareTokenRepo } from '@shared/repo/sharetoken';
+import { CourseRepo, ShareTokenRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '../authorization';
+import { AuthorizationModule } from '@src/modules/authorization';
+import { LearnroomModule } from '@src/modules/learnroom';
 import { ShareTokenController } from './controller/share-token.controller';
-import { ShareTokenService } from './share-token.service';
-import { TokenGenerator } from './token-generator.service';
+import { ShareTokenService, TokenGenerator } from './service';
 import { ShareTokenUC } from './uc';
 
 @Module({
-	imports: [LoggerModule, AuthorizationModule],
-	controllers: [ShareTokenController],
-	providers: [ShareTokenService, TokenGenerator, ShareTokenRepo, ShareTokenUC],
+	imports: [AuthorizationModule, LearnroomModule, LoggerModule],
+	controllers: [],
+	providers: [ShareTokenService, TokenGenerator, ShareTokenRepo, CourseRepo],
 	exports: [ShareTokenService],
 })
 export class SharingModule {}
+
+@Module({
+	imports: [SharingModule, AuthorizationModule, LearnroomModule, LoggerModule],
+	controllers: [ShareTokenController],
+	providers: [ShareTokenUC],
+})
+export class SharingApiModule {}

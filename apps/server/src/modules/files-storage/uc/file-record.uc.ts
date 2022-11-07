@@ -1,14 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
-import {
-	FileRecordParams,
-	RenameFileParams,
-	ScanResultParams,
-	SingleFileParams,
-} from '../controller/dto/file-storage.params';
+import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
 import { PermissionContexts } from '../files-storage.const';
-import { FileStorageMapper } from '../mapper/parent-type.mapper';
+import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 
 @Injectable()
@@ -19,7 +14,7 @@ export class FileRecordUC {
 	) {}
 
 	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
-		const fileRecord = await this.filesStorageService.getFile(params);
+		const fileRecord = await this.filesStorageService.getFileRecord(params);
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.update);
 
 		const modifiedFileRecord = await this.filesStorageService.patchFilename(fileRecord, data);
@@ -30,7 +25,7 @@ export class FileRecordUC {
 	public async getFileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.read);
 
-		const countedFileRecords = await this.filesStorageService.getFilesOfParent(params);
+		const countedFileRecords = await this.filesStorageService.getFileRecordsOfParent(params);
 
 		return countedFileRecords;
 	}
@@ -46,7 +41,7 @@ export class FileRecordUC {
 		parentId: EntityId,
 		context: IPermissionContext
 	) {
-		const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
+		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
 		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
 	}
 }

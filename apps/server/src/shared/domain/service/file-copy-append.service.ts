@@ -9,6 +9,8 @@ import { FileLegacyResponse, FileLegacyService } from './file-legacy.service';
 
 export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
 
+// TODO service is only temporary for handle old and new logic and the afterAll async process,
+// can be deleted in the refactoring steps. The status logic must be moved to fileCopyService.
 @Injectable()
 export class FileCopyAppendService {
 	constructor(

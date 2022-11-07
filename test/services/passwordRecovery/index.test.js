@@ -6,8 +6,6 @@ const testObjects = require('../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const passwordRecovery = require('../../../src/services/passwordRecovery/model');
 
-const PORT = 0;
-
 describe('passwordRecovery service', () => {
 	let app;
 	let nestServices;
@@ -27,9 +25,9 @@ describe('passwordRecovery service', () => {
 
 	before(async () => {
 		app = await appPromise();
-		passwordRecoveryService = app.service('passwordRecovery');
-		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
+		server = await app.listen(0);
+		passwordRecoveryService = app.service('passwordRecovery');
 		savedUser = await testObjects.createTestUser();
 		savedAccount = await testObjects.createTestAccount(newAccount, null, savedUser);
 		await passwordRecoveryService.create({ username: recoveryUsername });

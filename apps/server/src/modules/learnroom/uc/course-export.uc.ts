@@ -21,6 +21,6 @@ export class CourseExportUc {
 				requiredPermissions: [Permission.COURSE_EDIT],
 			}
 		);
-		return this.courseExportService.exportCourse(courseId);
+		return this.courseExportService.exportCourse(courseId, userId);
 	}
 }

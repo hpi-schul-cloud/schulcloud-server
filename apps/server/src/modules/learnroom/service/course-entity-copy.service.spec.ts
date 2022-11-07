@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardCopyService, CopyHelperService, CourseCopyService } from '@shared/domain';
+import { CopyHelperService, Course } from '@shared/domain';
+import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import {
 	boardFactory,
 	courseFactory,
@@ -9,30 +9,24 @@ import {
 	schoolFactory,
 	setupEntities,
 	userFactory,
-} from '../../testing';
-import { Course } from '../entity';
-import { CopyElementType, CopyStatusEnum } from '../types';
+} from '@shared/testing';
+import { BoardCopyService } from './board-copy.service';
+import { CourseEntityCopyService } from './course-entity-copy.service';
 
-describe('course copy service', () => {
+describe('course entity copy service', () => {
 	let module: TestingModule;
-	let copyService: CourseCopyService;
+	let copyService: CourseEntityCopyService;
 	let boardCopyService: DeepMocked<BoardCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				CourseCopyService,
+				CourseEntityCopyService,
 				{
 					provide: BoardCopyService,
 					useValue: createMock<BoardCopyService>(),
@@ -44,7 +38,7 @@ describe('course copy service', () => {
 			],
 		}).compile();
 
-		copyService = module.get(CourseCopyService);
+		copyService = module.get(CourseEntityCopyService);
 		boardCopyService = module.get(BoardCopyService);
 		copyHelperService = module.get(CopyHelperService);
 	});
