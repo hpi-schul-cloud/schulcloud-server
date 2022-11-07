@@ -2,7 +2,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
-import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordParent } from '@src/modules/files-storage/entity/filerecord.entity';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
 import { FileSyncOptions, SyncContext, SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
@@ -21,7 +21,7 @@ export class SyncFilesUc {
 		this.logger.setContext(SyncFilesUc.name);
 	}
 
-	async syncFilesForParentType(parentType: FileRecordParentType, aggregationSize = 5000, numParallelPromises = 50) {
+	async syncFilesForParentType(parentType: FileRecordParent, aggregationSize = 5000, numParallelPromises = 50) {
 		let itemsFound: number;
 		let aggregationsCounter = 0;
 		const options = new FileSyncOptions(aggregationSize, numParallelPromises);

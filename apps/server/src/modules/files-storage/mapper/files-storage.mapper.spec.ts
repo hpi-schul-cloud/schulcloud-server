@@ -9,7 +9,7 @@ import {
 	FileRecordResponse,
 	SingleFileParams,
 } from '../controller/dto';
-import { FileRecordParentType } from '../entity';
+import { FileRecordParent } from '../entity';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
@@ -25,24 +25,24 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapToAllowedAuthorizationEntityType()', () => {
 		it('should return allowed type equal Course', () => {
-			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.Course);
+			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParent.Course);
 			expect(result).toBe(AllowedAuthorizationEntityType.Course);
 		});
 		it('should return allowed type equal Task', () => {
-			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.Task);
+			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParent.Task);
 			expect(result).toBe(AllowedAuthorizationEntityType.Task);
 		});
 		it('should return allowed type equal School', () => {
-			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.School);
+			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParent.School);
 			expect(result).toBe(AllowedAuthorizationEntityType.School);
 		});
 		it('should return allowed type equal User', () => {
-			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.User);
+			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParent.User);
 			expect(result).toBe(AllowedAuthorizationEntityType.User);
 		});
 		it('should throw Error', () => {
 			const exec = () => {
-				FilesStorageMapper.mapToAllowedAuthorizationEntityType('' as FileRecordParentType);
+				FilesStorageMapper.mapToAllowedAuthorizationEntityType('' as FileRecordParent);
 			};
 			expect(exec).toThrowError(NotImplementedException);
 		});

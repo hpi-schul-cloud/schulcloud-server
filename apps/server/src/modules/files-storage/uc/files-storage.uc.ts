@@ -19,7 +19,7 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParent } from '../entity';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { FilesStorageMapper, FileDtoBuilder } from '../mapper';
@@ -38,7 +38,7 @@ export class FilesStorageUC {
 
 	private async checkPermission(
 		userId: EntityId,
-		parentType: FileRecordParentType,
+		parentType: FileRecordParent,
 		parentId: EntityId,
 		context: IPermissionContext
 	) {

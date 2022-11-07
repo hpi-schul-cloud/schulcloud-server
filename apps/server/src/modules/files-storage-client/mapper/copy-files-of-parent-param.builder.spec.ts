@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
+import { FileRecordParent } from '@shared/infra/rabbitmq';
 import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { CopyFilesOfParentParamBuilder } from './copy-files-of-parent-param.builder';
 import { FileParamBuilder } from './files-storage-param.builder';
@@ -29,12 +29,12 @@ describe('CopyFilesOfParentParamBuilder', () => {
 		const expectedResult = {
 			userId,
 			source: {
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				schoolId: sourceEntity.getSchoolId(),
 				parentId: sourceEntity.id,
 			},
 			target: {
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				schoolId: targetEntity.getSchoolId(),
 				parentId: targetEntity.id,
 			},
@@ -56,12 +56,12 @@ describe('CopyFilesOfParentParamBuilder', () => {
 		const expectedResult = {
 			userId,
 			source: {
-				parentType: FileRecordParentType.Lesson,
+				parentType: FileRecordParent.Lesson,
 				schoolId: sourceEntity.getSchoolId(),
 				parentId: sourceEntity.id,
 			},
 			target: {
-				parentType: FileRecordParentType.Lesson,
+				parentType: FileRecordParent.Lesson,
 				schoolId: targetEntity.getSchoolId(),
 				parentId: targetEntity.id,
 			},

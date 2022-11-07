@@ -4,7 +4,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ErrorType } from '../error';
 import {
-	FileRecordParentType,
+	FileRecordParent,
 	ScanStatus,
 	FileRecord,
 	FileSecurityCheck,
@@ -30,7 +30,7 @@ describe('FileRecord Entity', () => {
 				size: Math.round(Math.random() * 100000),
 				name: `file-record #1`,
 				mimeType: 'application/octet-stream',
-				parentType: FileRecordParentType.Course,
+				parentType: FileRecordParent.Course,
 				parentId: new ObjectId(),
 				creatorId: new ObjectId(),
 				schoolId: new ObjectId(),

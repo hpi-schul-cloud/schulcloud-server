@@ -3,7 +3,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecord, FileRecordParent } from '@src/modules/files-storage/entity/filerecord.entity';
 import { FileRecordMapper } from '../mapper/filerecord-mapper';
 
 const tasksQuery = [
@@ -55,11 +55,11 @@ const tasksQuery = [
 export class OrphanedFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
-	async findDuplicatedFileRecords(parentType: FileRecordParentType) {
+	async findDuplicatedFileRecords(parentType: FileRecordParent) {
 		const fileRecords: FileRecord[] = [];
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let results: any[] = [];
-		if (parentType === FileRecordParentType.Lesson) {
+		if (parentType === FileRecordParent.Lesson) {
 			const query = [
 				{
 					$group: {
@@ -101,10 +101,10 @@ export class OrphanedFilesRepo {
 		return a.length !== 0;
 	}
 
-	async findOrphanedFileRecords(parentType: FileRecordParentType): Promise<FileRecord[]> {
+	async findOrphanedFileRecords(parentType: FileRecordParent): Promise<FileRecord[]> {
 		let query;
 
-		if (parentType === FileRecordParentType.Task) {
+		if (parentType === FileRecordParent.Task) {
 			query = tasksQuery;
 		}
 

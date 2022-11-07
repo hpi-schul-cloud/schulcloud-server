@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, fileFactory, fileRecordFactory, taskFactory } from '@shared/testing';
-import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordParent } from '@src/modules/files-storage/entity/filerecord.entity';
 import { SyncFilesRepo } from './sync-files.repo';
 
 // Temporary functionality for migration to new fileservice
@@ -36,7 +36,7 @@ describe('SyncTaskRepo', () => {
 			const task = taskFactory.build({ name: 'task with file' });
 			await em.persistAndFlush(task);
 
-			const result = await repo.findFilesToSync(FileRecordParentType.Task, 50);
+			const result = await repo.findFilesToSync(FileRecordParent.Task, 50);
 
 			expect(result).toHaveLength(0);
 		});
@@ -46,7 +46,7 @@ describe('SyncTaskRepo', () => {
 			const task = taskFactory.build({ name: 'task with file', files });
 			await em.persistAndFlush(task);
 
-			const result = await repo.findFilesToSync(FileRecordParentType.Task, 50);
+			const result = await repo.findFilesToSync(FileRecordParent.Task, 50);
 
 			expect(result).toHaveLength(1);
 			expect(result[0]).toMatchObject({ parentId: task._id });
@@ -63,7 +63,7 @@ describe('SyncTaskRepo', () => {
 			task.files.add(file);
 			await em.persistAndFlush(task);
 
-			const result = await repo.findFilesToSync(FileRecordParentType.Task, 50);
+			const result = await repo.findFilesToSync(FileRecordParent.Task, 50);
 
 			expect(result).toHaveLength(0);
 		});
@@ -79,7 +79,7 @@ describe('SyncTaskRepo', () => {
 			task.files.add(file);
 			await em.persistAndFlush(task);
 
-			const result = await repo.findFilesToSync(FileRecordParentType.Task, 50);
+			const result = await repo.findFilesToSync(FileRecordParent.Task, 50);
 
 			expect(result).toHaveLength(1);
 			expect(result[0]).toMatchObject({ parentId: task._id });

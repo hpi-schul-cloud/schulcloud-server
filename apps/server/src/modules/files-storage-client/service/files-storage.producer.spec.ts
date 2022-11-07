@@ -5,10 +5,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FilesStorageEvents, FilesStorageExchange } from '@shared/infra/rabbitmq';
+import { FileRecordParent, FilesStorageEvents, FilesStorageExchange } from '@shared/infra/rabbitmq';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { ErrorMapper } from '../mapper/error.mapper';
 import { FilesStorageProducer } from './files-storage.producer';
 
@@ -62,12 +61,12 @@ describe('FilesStorageProducer', () => {
 		const params = {
 			userId: new ObjectId().toHexString(),
 			source: {
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				schoolId: '633d59e1c7a36834ad61e525',
 				parentId: '633d59e1c7a36834ad61e526',
 			},
 			target: {
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				schoolId: '633d59e1c7a36834ad61e525',
 				parentId: '633d59e1c7a36834ad61e527',
 			},
@@ -108,7 +107,7 @@ describe('FilesStorageProducer', () => {
 
 	describe('listFilesOfParent', () => {
 		const param = {
-			parentType: FileRecordParentType.Task,
+			parentType: FileRecordParent.Task,
 			schoolId: 'school123',
 			parentId: '633d5acdda646580679dc448',
 		};
@@ -145,7 +144,7 @@ describe('FilesStorageProducer', () => {
 
 	describe('deleteFilesOfParent', () => {
 		const param = {
-			parentType: FileRecordParentType.Task,
+			parentType: FileRecordParent.Task,
 			schoolId: 'school123',
 			parentId: '633d5acdda646580679dc448',
 		};

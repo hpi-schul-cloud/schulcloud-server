@@ -16,7 +16,7 @@ import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecordParentType } from '../../entity';
+import { FileRecordParent } from '../../entity';
 
 const baseRouteName = '/file/list';
 
@@ -166,7 +166,7 @@ describe(`${baseRouteName} (api)`, () => {
 			const fileRecords = fileRecordFactory.buildList(1, {
 				schoolId: validId,
 				parentId: validId,
-				parentType: FileRecordParentType.School,
+				parentType: FileRecordParent.School,
 			});
 
 			await em.persistAndFlush(fileRecords);
@@ -192,11 +192,11 @@ describe(`${baseRouteName} (api)`, () => {
 			const fileRecords = fileRecordFactory.buildList(3, {
 				schoolId: validId,
 				parentId: validId,
-				parentType: FileRecordParentType.School,
+				parentType: FileRecordParent.School,
 			});
 			const otherFileRecords = fileRecordFactory.buildList(3, {
 				schoolId: validId,
-				parentType: FileRecordParentType.School,
+				parentType: FileRecordParent.School,
 			});
 
 			await em.persistAndFlush([...otherFileRecords, ...fileRecords]);

@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LessonRepo } from '@shared/repo';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordParent } from '@src/modules/files-storage/entity/filerecord.entity';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
@@ -52,7 +52,7 @@ describe('LessonService', () => {
 
 	it('delete lesson', async () => {
 		const lesson = lessonFactory.buildWithId();
-		const parentType = FileRecordParentType.Lesson;
+		const parentType = FileRecordParent.Lesson;
 
 		await lessonService.deleteLesson(lesson);
 

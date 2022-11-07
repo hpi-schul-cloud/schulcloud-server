@@ -9,7 +9,7 @@ import { Logger } from '@src/core/logger';
 import _ from 'lodash';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
-import { FileRecordParentType, ScanStatus } from '../entity';
+import { FileRecordParent, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
@@ -28,7 +28,7 @@ const getFileRecordsWithParams = () => {
 	const params: FileRecordParams = {
 		schoolId: parentSchoolId,
 		parentId,
-		parentType: FileRecordParentType.User,
+		parentType: FileRecordParent.User,
 	};
 
 	return { params, fileRecords, parentId };

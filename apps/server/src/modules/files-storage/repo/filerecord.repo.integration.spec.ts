@@ -5,7 +5,7 @@ import { cleanupCollections, fileRecordFactory } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
 import { FileRecordRepo } from './filerecord.repo';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParent } from '../entity';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
@@ -105,7 +105,7 @@ describe('FileRecordRepo', () => {
 		beforeEach(() => {
 			fileRecords1 = fileRecordFactory.buildList(3, {
 				schoolId: schoolId1,
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				parentId: parentId1,
 			});
 		});
@@ -137,7 +137,7 @@ describe('FileRecordRepo', () => {
 			const parentId2 = new ObjectId().toHexString();
 			const fileRecords2 = fileRecordFactory.buildList(3, {
 				schoolId: schoolId1,
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				parentId: parentId2,
 			});
 
@@ -155,7 +155,7 @@ describe('FileRecordRepo', () => {
 			const schoolId2 = new ObjectId().toHexString();
 			const fileRecords2 = fileRecordFactory.buildList(3, {
 				schoolId: schoolId2,
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				parentId: parentId1,
 			});
 
@@ -172,7 +172,7 @@ describe('FileRecordRepo', () => {
 		it('should ingnore deletedSince', async () => {
 			const fileRecordsExpired = fileRecordFactory.buildList(3, {
 				schoolId: schoolId1,
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				parentId: parentId1,
 				deletedSince: new Date(),
 			});
@@ -198,7 +198,7 @@ describe('FileRecordRepo', () => {
 		beforeEach(() => {
 			fileRecords1 = fileRecordFactory.buildList(3, {
 				schoolId: schoolId1,
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				parentId: parentId1,
 				deletedSince: new Date(),
 			});
@@ -209,7 +209,7 @@ describe('FileRecordRepo', () => {
 
 			const fileRecords2 = fileRecordFactory.buildList(3, {
 				schoolId: schoolId1,
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				parentId: parentId2,
 				deletedSince: new Date(),
 			});
@@ -229,7 +229,7 @@ describe('FileRecordRepo', () => {
 
 			const fileRecords2 = fileRecordFactory.buildList(3, {
 				schoolId: schoolId2,
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				parentId: parentId1,
 				deletedSince: new Date(),
 			});
@@ -247,7 +247,7 @@ describe('FileRecordRepo', () => {
 		it('should ingnore if deletedSince is undefined', async () => {
 			const fileRecordsExpired = fileRecordFactory.buildList(3, {
 				schoolId: schoolId1,
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				parentId: parentId1,
 			});
 
@@ -273,7 +273,7 @@ describe('FileRecordRepo', () => {
 
 			fileRecord = fileRecordFactory.build({
 				schoolId,
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 				parentId,
 			});
 		});

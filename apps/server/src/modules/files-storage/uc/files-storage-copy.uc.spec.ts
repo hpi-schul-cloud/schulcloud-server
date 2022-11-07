@@ -11,7 +11,7 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecordParentType } from '../entity';
+import { FileRecordParent } from '../entity';
 import { CopyFileResponseBuilder } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
@@ -29,7 +29,7 @@ const getFileRecordsWithParams = () => {
 	const params: FileRecordParams = {
 		schoolId,
 		parentId: userId,
-		parentType: FileRecordParentType.User,
+		parentType: FileRecordParent.User,
 	};
 
 	return { params, fileRecords, userId };
@@ -43,7 +43,7 @@ describe('FilesStorageUC', () => {
 	let orm: MikroORM;
 
 	const getRequestParams = (schoolId: EntityId, userId: EntityId) => {
-		return { schoolId, parentId: userId, parentType: FileRecordParentType.User };
+		return { schoolId, parentId: userId, parentType: FileRecordParent.User };
 	};
 
 	const getParams = () => {
@@ -62,7 +62,7 @@ describe('FilesStorageUC', () => {
 			target: {
 				schoolId,
 				parentId: targetParentId,
-				parentType: FileRecordParentType.Task,
+				parentType: FileRecordParent.Task,
 			},
 		};
 	};

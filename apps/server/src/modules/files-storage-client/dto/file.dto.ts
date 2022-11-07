@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain';
-import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordParent } from '@shared/infra/rabbitmq';
 import { IFileDomainObjectProps } from '../interfaces';
 
 export class FileDto {
@@ -7,7 +7,7 @@ export class FileDto {
 
 	name: string;
 
-	parentType: FileRecordParentType;
+	parentType: FileRecordParent;
 
 	parentId: EntityId;
 

@@ -1,5 +1,5 @@
 import { Lesson, Task } from '@shared/domain';
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
+import { FileRecordParent } from '@shared/infra/rabbitmq';
 import { CopyFileDto, FileDto } from '../dto';
 import { EntitiesWithFiles, ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
 
@@ -46,12 +46,12 @@ export class FilesStorageClientMapper {
 		return dto;
 	}
 
-	static mapStringToParentType(input: string): FileRecordParentType {
-		let response: FileRecordParentType;
-		const allowedStrings = Object.values(FileRecordParentType);
+	static mapStringToParentType(input: string): FileRecordParent {
+		let response: FileRecordParent;
+		const allowedStrings = Object.values(FileRecordParent);
 
-		if (allowedStrings.includes(input as FileRecordParentType)) {
-			response = input as FileRecordParentType;
+		if (allowedStrings.includes(input as FileRecordParent)) {
+			response = input as FileRecordParent;
 		} else {
 			throw new Error(`Mapping type is not supported. ${input}`);
 		}
@@ -59,10 +59,10 @@ export class FilesStorageClientMapper {
 		return response;
 	}
 
-	static mapEntityToParentType(entity: EntitiesWithFiles): FileRecordParentType {
-		if (entity instanceof Lesson) return FileRecordParentType.Lesson;
+	static mapEntityToParentType(entity: EntitiesWithFiles): FileRecordParent {
+		if (entity instanceof Lesson) return FileRecordParent.Lesson;
 
-		if (entity instanceof Task) return FileRecordParentType.Task;
+		if (entity instanceof Task) return FileRecordParent.Task;
 
 		throw new Error(`Mapping type is not supported.`);
 	}

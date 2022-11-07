@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
+import { FileRecordParent } from '@shared/infra/rabbitmq';
 import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { FileParamBuilder } from './files-storage-param.builder';
 
@@ -25,7 +25,7 @@ describe('FileParamBuilder', () => {
 
 	it('should build valid file request infos for task over shorthand task', () => {
 		const schoolId = '123';
-		const parentType = FileRecordParentType.Task;
+		const parentType = FileRecordParent.Task;
 		const task = taskFactory.buildWithId();
 
 		const result = FileParamBuilder.build(schoolId, task);
@@ -41,7 +41,7 @@ describe('FileParamBuilder', () => {
 
 	it('should build valid file request infos for lesson over shorthand lesson', () => {
 		const schoolId = '123';
-		const parentType = FileRecordParentType.Lesson;
+		const parentType = FileRecordParent.Lesson;
 		const lesson = lessonFactory.buildWithId();
 
 		const result = FileParamBuilder.build(schoolId, lesson);
