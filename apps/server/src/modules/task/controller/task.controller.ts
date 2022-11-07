@@ -25,13 +25,7 @@ export class TaskController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
-		const [tasksWithStatus, total] = await this.taskUc.findAll(currentUser.userId, pagination);
-		const taskresponses = tasksWithStatus.map((taskWithStatus) => {
-			return TaskMapper.mapToResponse(taskWithStatus);
-		});
-		const { skip, limit } = pagination;
-		const result = new TaskListResponse(taskresponses, total, skip, limit);
-		return result;
+		return this.findAllTasks(currentUser, pagination);
 	}
 
 	@Get('finished')
@@ -39,14 +33,24 @@ export class TaskController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
-		const [tasksWithStatus, total] = await this.taskUc.findAllFinished(currentUser.userId, pagination);
+		return this.findAllTasks(currentUser, pagination, true);
+	}
 
-		const taskresponses = tasksWithStatus.map((task) => {
+	private async findAllTasks(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() pagination: PaginationParams,
+		finished = false
+	): Promise<TaskListResponse> {
+		const [tasksWithStatus, total] = finished
+			? await this.taskUc.findAllFinished(currentUser.userId, pagination)
+			: await this.taskUc.findAll(currentUser.userId, pagination);
+
+		const taskResponses = tasksWithStatus.map((task) => {
 			return TaskMapper.mapToResponse(task);
 		});
 
 		const { skip, limit } = pagination;
-		const result = new TaskListResponse(taskresponses, total, skip, limit);
+		const result = new TaskListResponse(taskResponses, total, skip, limit);
 		return result;
 	}
 
@@ -66,13 +70,6 @@ export class TaskController {
 		const response = TaskMapper.mapToResponse(task);
 
 		return response;
-	}
-
-	@Delete(':taskId')
-	async delete(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
-		const result = await this.taskUc.delete(currentUser.userId, urlParams.taskId);
-
-		return result;
 	}
 
 	@Post(':taskId/copy')
@@ -101,7 +98,7 @@ export class TaskController {
 
 	@Post()
 	async create(@Body() params: TaskCreateParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
-		const taskWithSatusVo = await this.taskUc.create(currentUser.userId, params.courseId);
+		const taskWithSatusVo = await this.taskUc.create(currentUser.userId, TaskMapper.mapTaskCreateToDomain(params));
 
 		const response = TaskMapper.mapToResponse(taskWithSatusVo);
 		return response;
@@ -116,11 +113,18 @@ export class TaskController {
 		const taskWithSatusVo = await this.taskUc.update(
 			currentUser.userId,
 			urlParams.taskId,
-			TaskMapper.mapUpdateTaskToDomain(params)
+			TaskMapper.mapTaskUpdateToDomain(params)
 		);
 
 		const response = TaskMapper.mapToResponse(taskWithSatusVo);
 
 		return response;
+	}
+
+	@Delete(':taskId')
+	async delete(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
+		const result = await this.taskUc.delete(currentUser.userId, urlParams.taskId);
+
+		return result;
 	}
 }

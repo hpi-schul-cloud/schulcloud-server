@@ -1,5 +1,5 @@
-import { ITaskUpdate, TaskWithStatusVo } from '@shared/domain';
-import { TaskResponse, TaskUpdateParams } from '../controller/dto';
+import { InputFormat, ITaskCreate, ITaskUpdate, RichText, TaskWithStatusVo } from '@shared/domain';
+import { TaskCreateParams, TaskResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskStatusMapper } from './task-status.mapper';
 
 export class TaskMapper {
@@ -18,7 +18,12 @@ export class TaskMapper {
 			lessonHidden: false,
 			status: statusDto,
 		});
-		dto.description = task.description;
+		if (task.description) {
+			dto.description = new RichText({
+				content: task.description,
+				type: task.descriptionInputFormat || InputFormat.RICH_TEXT_CK4,
+			});
+		}
 		dto.availableDate = task.availableDate;
 		dto.duedate = task.dueDate;
 
@@ -31,12 +36,33 @@ export class TaskMapper {
 		return dto;
 	}
 
-	static mapUpdateTaskToDomain(params: TaskUpdateParams): ITaskUpdate {
+	static mapTaskUpdateToDomain(params: TaskUpdateParams): ITaskUpdate {
 		const dto: ITaskUpdate = {
 			name: params.name,
 			courseId: params.courseId,
 			lessonId: params.lessonId,
+			description: params.description,
+			availableDate: params.availableDate,
+			dueDate: params.dueDate,
 		};
+		if (params.description) {
+			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5;
+		}
+		return dto;
+	}
+
+	static mapTaskCreateToDomain(params: TaskCreateParams): ITaskCreate {
+		const dto: ITaskCreate = {
+			name: params.name || 'Draft',
+			courseId: params.courseId,
+			lessonId: params.lessonId,
+			description: params.description,
+			availableDate: params.availableDate,
+			dueDate: params.dueDate,
+		};
+		if (params.description) {
+			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5;
+		}
 		return dto;
 	}
 }
