@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDate, IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
-import { NewsTargetModel } from '@shared/domain';
+import { InputFormat, NewsTargetModel } from '@shared/domain';
 import { SanitizeHtml } from '@shared/controller';
 
 /**
@@ -15,7 +15,7 @@ export class CreateNewsParams {
 	title!: string;
 
 	@IsString()
-	@SanitizeHtml({ keep: 'richtext' })
+	@SanitizeHtml(InputFormat.RICH_TEXT)
 	@ApiProperty({
 		description: 'Content of the News entity',
 	})
