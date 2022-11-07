@@ -1,6 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { InternalServerErrorException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { ErrorType } from '../error';
 import {
 	FileRecordParentType,
 	ScanStatus,
@@ -120,19 +122,40 @@ describe('FileRecord Entity', () => {
 	});
 
 	describe('setName is called', () => {
-		const setup = () => {
-			const fileRecord = fileRecordFactory.build();
-			const newName = 'newName';
+		describe('WHEN new name has length > 0', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+				const newName = 'newName';
 
-			return { fileRecord, newName };
-		};
+				return { fileRecord, newName };
+			};
 
-		it('should set name', () => {
-			const { fileRecord, newName } = setup();
+			it('should set name', () => {
+				const { fileRecord, newName } = setup();
 
-			fileRecord.setName(newName);
+				fileRecord.setName(newName);
 
-			expect(fileRecord.name).toBe(newName);
+				expect(fileRecord.name).toBe(newName);
+			});
+		});
+
+		describe('WHEN new name is empty string', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+				const newName = '';
+
+				return { fileRecord, newName };
+			};
+
+			it('should throw error and not set name', () => {
+				const { fileRecord, newName } = setup();
+				const error = new InternalServerErrorException(ErrorType.FILE_NAME_EMPTY);
+
+				expect(() => {
+					fileRecord.setName(newName);
+				}).toThrow(error);
+				expect(fileRecord.name).not.toBe(newName);
+			});
 		});
 	});
 });
