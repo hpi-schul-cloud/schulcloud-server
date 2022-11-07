@@ -48,7 +48,7 @@ export class ReferenceLoader {
 		this.repos.set(AllowedAuthorizationEntityType.School, { repo: this.schoolRepo });
 		this.repos.set(AllowedAuthorizationEntityType.Lesson, { repo: this.lessonRepo });
 		this.repos.set(AllowedAuthorizationEntityType.Team, { repo: this.teamsRepo, populate: true });
-		this.repos.set(AllowedAuthorizationEntityType.Submission, { repo: this.submissionRepo, populate: true });
+		this.repos.set(AllowedAuthorizationEntityType.Submission, { repo: this.submissionRepo });
 	}
 
 	private resolveRepo(type: AllowedAuthorizationEntityType): IRepoLoader {
