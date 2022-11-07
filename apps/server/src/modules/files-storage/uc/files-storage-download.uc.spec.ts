@@ -88,14 +88,18 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('download is called', () => {
-		describe('WHEN file is found and user is authorized', () => {
+		describe('WHEN file is found, user is authorized and file is successfully downloaded', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = getFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 
-				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
+				const fileResponse = createMock<IGetFileResponse>();
 
-				return { fileDownloadParams, userId, fileRecord };
+				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
+				filesStorageService.download.mockResolvedValueOnce(fileResponse);
+
+				return { fileDownloadParams, userId, fileRecord, fileResponse };
 			};
 
 			it('should call getFile with correct params', async () => {
@@ -120,6 +124,22 @@ describe('FilesStorageUC', () => {
 					fileRecord.parentId,
 					PermissionContexts.read
 				);
+			});
+
+			it('should call donwload with correct params', async () => {
+				const { fileDownloadParams, userId, fileRecord } = setup();
+
+				await filesStorageUC.download(userId, fileDownloadParams);
+
+				expect(filesStorageService.download).toHaveBeenCalledWith(fileRecord, fileDownloadParams);
+			});
+
+			it('should return correct result', async () => {
+				const { fileDownloadParams, userId, fileResponse } = setup();
+
+				const result = await filesStorageUC.download(userId, fileDownloadParams);
+
+				expect(result).toEqual(fileResponse);
 			});
 		});
 
@@ -160,46 +180,38 @@ describe('FilesStorageUC', () => {
 			});
 		});
 
-		describe('WHEN file is successfully downloaded', () => {
+		describe('WHEN service throws error', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = getFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
-
-				const fileResponse = createMock<IGetFileResponse>();
+				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				filesStorageService.download.mockResolvedValueOnce(fileResponse);
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
+				filesStorageService.download.mockRejectedValueOnce(error);
 
-				return { fileDownloadParams, userId, fileRecord, fileResponse };
+				return { fileDownloadParams, userId, error };
 			};
 
-			it('should call donwload with correct params', async () => {
-				const { fileDownloadParams, userId, fileRecord } = setup();
+			it('should pass error', async () => {
+				const { fileDownloadParams, userId, error } = setup();
 
-				await filesStorageUC.download(userId, fileDownloadParams);
-
-				expect(filesStorageService.download).toHaveBeenCalledWith(fileRecord, fileDownloadParams);
-			});
-
-			it('should return correct result', async () => {
-				const { fileDownloadParams, userId, fileResponse } = setup();
-
-				const result = await filesStorageUC.download(userId, fileDownloadParams);
-
-				expect(result).toEqual(fileResponse);
+				await expect(filesStorageUC.download(userId, fileDownloadParams)).rejects.toThrow(error);
 			});
 		});
 	});
 
 	describe('downloadBySecurityToken is called', () => {
-		describe('WHEN file is found', () => {
+		describe('WHEN file is found and service downloads successfully', () => {
 			const setup = () => {
 				const { fileRecord } = getFileRecordWithParams();
 				const token = 'token';
+				const fileResponse = createMock<IGetFileResponse>();
 
 				filesStorageService.getFileRecordBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
+				filesStorageService.downloadFile.mockResolvedValueOnce(fileResponse);
 
-				return { fileRecord, token };
+				return { fileResponse, token, fileRecord };
 			};
 
 			it('should call getFile with correct params', async () => {
@@ -208,6 +220,22 @@ describe('FilesStorageUC', () => {
 				await filesStorageUC.downloadBySecurityToken(token);
 
 				expect(filesStorageService.getFileRecordBySecurityCheckRequestToken).toHaveBeenCalledWith(token);
+			});
+
+			it('should call downloadFile with correct params', async () => {
+				const { token, fileRecord } = setup();
+
+				await filesStorageUC.downloadBySecurityToken(token);
+
+				expect(filesStorageService.downloadFile).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.id);
+			});
+
+			it('should return correct response', async () => {
+				const { token, fileResponse } = setup();
+
+				const result = await filesStorageUC.downloadBySecurityToken(token);
+
+				expect(result).toEqual(fileResponse);
 			});
 		});
 
@@ -227,35 +255,6 @@ describe('FilesStorageUC', () => {
 				await expect(filesStorageUC.downloadBySecurityToken(token)).rejects.toThrow(error);
 
 				expect(filesStorageService.getFileRecordBySecurityCheckRequestToken).toHaveBeenCalledWith(token);
-			});
-		});
-
-		describe('WHEN file is found', () => {
-			const setup = () => {
-				const { fileRecord } = getFileRecordWithParams();
-				const token = 'token';
-				const fileResponse = createMock<IGetFileResponse>();
-
-				filesStorageService.getFileRecordBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
-				filesStorageService.downloadFile.mockResolvedValueOnce(fileResponse);
-
-				return { fileResponse, token, fileRecord };
-			};
-
-			it('should call downloadFile with correct params', async () => {
-				const { token, fileRecord } = setup();
-
-				await filesStorageUC.downloadBySecurityToken(token);
-
-				expect(filesStorageService.downloadFile).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.id);
-			});
-
-			it('should return correct response', async () => {
-				const { token, fileResponse } = setup();
-
-				const result = await filesStorageUC.downloadBySecurityToken(token);
-
-				expect(result).toEqual(fileResponse);
 			});
 		});
 
