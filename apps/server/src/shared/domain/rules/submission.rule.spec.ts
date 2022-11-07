@@ -64,7 +64,7 @@ describe('SubmissionRule', () => {
 	});
 
 	describe('hasPermission', () => {
-		describe('given user does not have required permissions', () => {
+		describe('when user does not have required permissions', () => {
 			it('should return false', () => {
 				const task = taskFactory.build();
 				const submission = submissionFactory.build({ task, student });
@@ -78,9 +78,9 @@ describe('SubmissionRule', () => {
 			});
 		});
 
-		describe('given user has required permissions', () => {
-			describe('given user is student', () => {
-				describe('given action is "write"', () => {
+		describe('when user has required permissions', () => {
+			describe('when user is student', () => {
+				describe('when action is "write"', () => {
 					it('should return true if user is creator', () => {
 						const task = taskFactory.build();
 						const submission = submissionFactory.build({ task, student });
@@ -132,7 +132,7 @@ describe('SubmissionRule', () => {
 					});
 				});
 
-				describe('given action is "read"', () => {
+				describe('when action is "read"', () => {
 					it('should return true if user is in same course and submissions are public', () => {
 						const course = courseFactory.build({ students: [student, student2] });
 						const task = taskFactory.build({ course, publicSubmissions: true });
@@ -161,8 +161,8 @@ describe('SubmissionRule', () => {
 				});
 			});
 
-			describe('given user is teacher', () => {
-				describe('given action is "write" (or "read" respectively)', () => {
+			describe('when user is teacher', () => {
+				describe('when action is "write" (or "read" respectively)', () => {
 					it('should return true if user is course teacher', () => {
 						const course = courseFactory.build({ teachers: [teacher] });
 						const task = taskFactory.build({ course });
