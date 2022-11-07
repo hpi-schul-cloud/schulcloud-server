@@ -2,7 +2,7 @@ import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 
 export type ICommonCartridgeOrganizationProps = {
 	identifier: string;
-	title: string;
+	title?: string;
 };
 
 export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeElement {

@@ -1,7 +1,13 @@
 import AdmZip from 'adm-zip';
 import { Builder } from 'xml2js';
-import { CommonCartridgeResourceWrapperElement } from '@src/modules/learnroom/common-cartridge/common-cartridge-resource-wrapper-element';
-import { CommonCartridgeOrganizationWrapperElement } from '@src/modules/learnroom/common-cartridge/common-cartridge-organization-wrapper-element';
+import { CommonCartridgeResourceWrapperElement } from './common-cartridge-resource-wrapper-element';
+import { CommonCartridgeOrganizationWrapperElement } from './common-cartridge-organization-wrapper-element';
+import {
+	CommonCartridgeAssignmentElement,
+	ICommonCartridgeAssignmentProps,
+} from './common-cartridge-assignment-element';
+import { CommonCartridgeAssignmentResourceItemElement } from './common-cartridge-assignment-resource-item-element';
+import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 import { CommonCartridgeMetadataElement } from './common-cartridge-metadata-element';
 import {
 	CommonCartridgeOrganizationItemElement,
@@ -27,15 +33,13 @@ export class CommonCartridgeFileBuilder {
 
 	private readonly zipBuilder = new AdmZip();
 
-	private readonly xmlBuilder = new Builder({
-		rootName: 'manifest',
-	});
+	private readonly xmlBuilder = new Builder();
 
 	private metadata: CommonCartridgeMetadataElement;
 
-	private organizations = [] as CommonCartridgeOrganizationItemElement[];
+	private organizations = [] as ICommonCartridgeElement[];
 
-	private resources = [] as CommonCartridgeResourceItemElement[];
+	private resources = [] as ICommonCartridgeElement[];
 
 	constructor(options: ICommonCartridgeFileBuilderOptions) {
 		this.options = options;
@@ -46,18 +50,24 @@ export class CommonCartridgeFileBuilder {
 
 	get manifest(): string {
 		return this.xmlBuilder.buildObject({
-			$: {
-				identifier: this.options.identifier,
-				xmlns: 'http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1',
-				'xmlns:lommanifest': 'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest',
-				'xmlns:lomresource': 'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource',
-				'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-				'xsi:schemaLocation':
-					'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lomresource_v1p0.xsd http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imscp_v1p2_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lommanifest_v1p0.xsd',
+			manifest: {
+				$: {
+					identifier: this.options.identifier,
+					xmlns: 'http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1',
+					'xmlns:mnf': 'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest',
+					'xmlns:res': 'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource',
+					'xmlns:ext': 'http://www.imsglobal.org/xsd/imsccv1p3/imscp_extensionv1p2',
+					'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+					'xsi:schemaLocation':
+						'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lomresource_v1p0.xsd ' +
+						'http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imscp_v1p2_v1p0.xsd ' +
+						'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lommanifest_v1p0.xsd ' +
+						'http://www.imsglobal.org/xsd/imsccv1p3/imscp_extensionv1p2 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_cpextensionv1p2_v1p0.xsd',
+				},
+				metadata: this.metadata.transform(),
+				organizations: new CommonCartridgeOrganizationWrapperElement(this.organizations).transform(),
+				resources: new CommonCartridgeResourceWrapperElement(this.resources).transform(),
 			},
-			metadata: this.metadata.transform(),
-			organizations: new CommonCartridgeOrganizationWrapperElement(this.organizations).transform(),
-			resources: new CommonCartridgeResourceWrapperElement(this.resources).transform(),
 		});
 	}
 
@@ -66,23 +76,31 @@ export class CommonCartridgeFileBuilder {
 		return this.zipBuilder.toBufferPromise();
 	}
 
-	addOrganizationItems(
-		props: ICommonCartridgeOrganizationProps | ICommonCartridgeOrganizationProps[]
-	): CommonCartridgeFileBuilder {
-		if (Array.isArray(props)) {
-			props.map((prop) => this.organizations.push(new CommonCartridgeOrganizationItemElement(prop)));
-		} else {
-			this.organizations.push(new CommonCartridgeOrganizationItemElement(props));
-		}
+	addOrganizationItems(props: ICommonCartridgeOrganizationProps[]): CommonCartridgeFileBuilder {
+		props.map((prop) => this.organizations.push(new CommonCartridgeOrganizationItemElement(prop)));
 		return this;
 	}
 
-	addResourceItems(props: ICommonCartridgeResourceProps | ICommonCartridgeResourceProps[]): CommonCartridgeFileBuilder {
-		if (Array.isArray(props)) {
-			props.map((prop) => this.resources.push(new CommonCartridgeResourceItemElement(prop)));
-		} else {
-			this.resources.push(new CommonCartridgeResourceItemElement(props));
-		}
+	addResourceItems(props: ICommonCartridgeResourceProps[]): CommonCartridgeFileBuilder {
+		props.map((prop) => this.resources.push(new CommonCartridgeResourceItemElement(prop)));
+		return this;
+	}
+
+	addAssignments(props: ICommonCartridgeAssignmentProps[]): CommonCartridgeFileBuilder {
+		props.forEach((prop) => {
+			const assignment = new CommonCartridgeAssignmentElement(prop);
+			const xmlPath = `${prop.identifier}/assignment.xml`;
+			const htmlPath = `${prop.identifier}/assignment.html`;
+			this.zipBuilder.addFile(xmlPath, Buffer.from(this.xmlBuilder.buildObject(assignment.transform())));
+			this.zipBuilder.addFile(htmlPath, Buffer.from(`<h1>${prop.title}</h1>${prop.description}`));
+			this.resources.push(
+				new CommonCartridgeAssignmentResourceItemElement({
+					identifier: prop.identifier,
+					type: 'assignment_xmlv1p0',
+					href: xmlPath,
+				})
+			);
+		});
 		return this;
 	}
 }

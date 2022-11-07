@@ -25,6 +25,9 @@ export class CopyHelperService {
 	}
 
 	deriveCopyName(name: string, existingNames?: string[]): string {
+		if (!existingNames?.includes(name)) {
+			return name;
+		}
 		let num = 1;
 		const matches = name.match(/^(?<name>.*) \((?<number>\d+)\)$/);
 		if (matches && matches.groups) {

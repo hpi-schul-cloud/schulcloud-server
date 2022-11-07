@@ -1,23 +1,35 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
-import { NotImplementedException } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, Permission, ShareTokenContextType, ShareTokenParentType } from '@shared/domain';
+import {
+	Actions,
+	CopyElementType,
+	CopyStatus,
+	CopyStatusEnum,
+	LearnroomMetadata,
+	LearnroomTypes,
+	Permission,
+	ShareTokenContextType,
+	ShareTokenParentType,
+} from '@shared/domain';
 import { courseFactory, schoolFactory, setupEntities, shareTokenFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
-import { ShareTokenService } from '../share-token.service';
+import { CourseCopyService } from '@src/modules/learnroom';
+import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
+import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
 
 describe('ShareTokenUC', () => {
-	let orm: MikroORM;
 	let uc: ShareTokenUC;
 	let service: DeepMocked<ShareTokenService>;
-	let authService: DeepMocked<AuthorizationService>;
+	let metadataLoader: DeepMocked<MetadataLoader>;
+	let courseCopyService: DeepMocked<CourseCopyService>;
+	let authorization: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	beforeEach(async () => {
@@ -33,33 +45,59 @@ describe('ShareTokenUC', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
+					provide: MetadataLoader,
+					useValue: createMock<MetadataLoader>(),
+				},
+				{
+					provide: CourseCopyService,
+					useValue: createMock<CourseCopyService>(),
+				},
+				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
 
-		uc = await module.get(ShareTokenUC);
-		service = await module.get(ShareTokenService);
-		authService = await module.get(AuthorizationService);
-	});
+		uc = module.get(ShareTokenUC);
+		service = module.get(ShareTokenService);
+		metadataLoader = module.get(MetadataLoader);
+		courseCopyService = module.get(CourseCopyService);
+		authorization = module.get(AuthorizationService);
 
-	afterAll(async () => {
-		await orm.close();
+		Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
 	});
 
 	describe('create a sharetoken', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+
+			return { user, course };
+		};
+
+		it('should throw if the feature is not enabled', async () => {
+			const { user, course } = setup();
+			Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
+
+			await expect(
+				uc.createShareToken(user.id, {
+					parentId: course.id,
+					parentType: ShareTokenParentType.Course,
+				})
+			).rejects.toThrowError();
+		});
+
 		describe('when parent is a course', () => {
 			it('should check parent write permission', async () => {
-				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const { user, course } = setup();
 
 				await uc.createShareToken(user.id, {
 					parentId: course.id,
 					parentType: ShareTokenParentType.Course,
 				});
 
-				expect(authService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.Course,
 					course.id,
@@ -71,20 +109,18 @@ describe('ShareTokenUC', () => {
 			});
 
 			it('should not check any other permissions', async () => {
-				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const { user, course } = setup();
 
 				await uc.createShareToken(user.id, {
 					parentId: course.id,
 					parentType: ShareTokenParentType.Course,
 				});
 
-				expect(authService.checkPermissionByReferences).toHaveBeenCalledTimes(1);
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledTimes(1);
 			});
 
 			it('should call the service', async () => {
-				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const { user, course } = setup();
 
 				await uc.createShareToken(user.id, {
 					parentId: course.id,
@@ -106,7 +142,7 @@ describe('ShareTokenUC', () => {
 				const school = schoolFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const course = courseFactory.buildWithId();
-				authService.getUserWithPermissions.mockResolvedValue(user);
+				authorization.getUserWithPermissions.mockResolvedValue(user);
 
 				await uc.createShareToken(
 					user.id,
@@ -119,7 +155,7 @@ describe('ShareTokenUC', () => {
 					}
 				);
 
-				expect(authService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.Course,
 					course.id,
@@ -134,7 +170,7 @@ describe('ShareTokenUC', () => {
 				const school = schoolFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const course = courseFactory.buildWithId();
-				authService.getUserWithPermissions.mockResolvedValue(user);
+				authorization.getUserWithPermissions.mockResolvedValue(user);
 
 				await uc.createShareToken(
 					user.id,
@@ -147,7 +183,7 @@ describe('ShareTokenUC', () => {
 					}
 				);
 
-				expect(authService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.School,
 					school.id,
@@ -162,7 +198,7 @@ describe('ShareTokenUC', () => {
 				const school = schoolFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const course = courseFactory.buildWithId();
-				authService.getUserWithPermissions.mockResolvedValue(user);
+				authorization.getUserWithPermissions.mockResolvedValue(user);
 
 				await uc.createShareToken(
 					user.id,
@@ -226,12 +262,199 @@ describe('ShareTokenUC', () => {
 		});
 	});
 
-	describe('look up a sharetoken', () => {
-		it('should throw NotImplemented for now', async () => {
-			const user = userFactory.buildWithId();
+	describe('lookup a sharetoken', () => {
+		const setup = () => {
+			const school = schoolFactory.buildWithId();
+
+			const user = userFactory.buildWithId({ school });
+			authorization.getUserWithPermissions.mockResolvedValue(user);
+
 			const shareToken = shareTokenFactory.build();
 			service.lookupToken.mockResolvedValue(shareToken);
-			await expect(uc.lookupShareToken(user.id, shareToken.token)).rejects.toThrow(NotImplementedException);
+
+			const metadata: LearnroomMetadata = {
+				id: '634d78fc28c2e527f9255119',
+				type: LearnroomTypes.Course,
+				title: 'course #1',
+				shortTitle: 'c1',
+				displayColor: '#ffffff',
+			};
+			metadataLoader.loadMetadata.mockResolvedValue(metadata);
+
+			return { user, school, shareToken, metadata };
+		};
+
+		it('should throw if the feature is not enabled', async () => {
+			const { user, shareToken } = setup();
+			Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
+
+			await expect(uc.lookupShareToken(user.id, shareToken.token)).rejects.toThrowError();
+		});
+
+		it('should load the share token', async () => {
+			const { user, shareToken } = setup();
+
+			await uc.lookupShareToken(user.id, shareToken.token);
+
+			expect(service.lookupToken).toBeCalledWith(shareToken.token);
+		});
+
+		it('should load payload metadata', async () => {
+			const { user, shareToken } = setup();
+
+			await uc.lookupShareToken(user.id, shareToken.token);
+
+			expect(metadataLoader.loadMetadata).toBeCalledWith({
+				type: LearnroomTypes.Course,
+				id: shareToken.payload.parentId,
+			});
+		});
+
+		it('should return the result', async () => {
+			const { user, shareToken, metadata } = setup();
+
+			const result = await uc.lookupShareToken(user.id, shareToken.token);
+
+			expect(result).toEqual({
+				token: shareToken.token,
+				parentType: ShareTokenParentType.Course,
+				parentName: metadata.title,
+			});
+		});
+
+		describe('when restricted to same school', () => {
+			it('should check context read permission', async () => {
+				const { user, school } = setup();
+				const shareToken = shareTokenFactory.build({
+					context: { contextType: ShareTokenContextType.School, contextId: school.id },
+				});
+				service.lookupToken.mockResolvedValue(shareToken);
+
+				await uc.lookupShareToken(user.id, shareToken.token);
+
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
+					user.id,
+					AllowedAuthorizationEntityType.School,
+					school.id,
+					{
+						action: Actions.read,
+						requiredPermissions: [],
+					}
+				);
+			});
+		});
+
+		describe('when not restricted to same school', () => {
+			it('should not check context read permission', async () => {
+				const { user } = setup();
+				const shareToken = shareTokenFactory.build();
+				service.lookupToken.mockResolvedValue(shareToken);
+
+				await uc.lookupShareToken(user.id, shareToken.token);
+
+				expect(authorization.checkPermissionByReferences).not.toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('import share token', () => {
+		const setup = () => {
+			const school = schoolFactory.buildWithId();
+
+			const user = userFactory.buildWithId({ school });
+			authorization.getUserWithPermissions.mockResolvedValue(user);
+
+			const shareToken = shareTokenFactory.build();
+			service.lookupToken.mockResolvedValue(shareToken);
+
+			const course = courseFactory.buildWithId();
+			const status: CopyStatus = {
+				type: CopyElementType.COURSE,
+				status: CopyStatusEnum.SUCCESS,
+				copyEntity: course,
+			};
+			courseCopyService.copyCourse.mockResolvedValue(status);
+
+			return { user, school, shareToken, status };
+		};
+
+		it('should throw if the feature is not enabled', async () => {
+			const { user, shareToken } = setup();
+			Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
+
+			await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError();
+		});
+
+		it('should load the share token', async () => {
+			const { user, shareToken } = setup();
+
+			await uc.importShareToken(user.id, shareToken.token, 'NewName');
+
+			expect(service.lookupToken).toBeCalledWith(shareToken.token);
+		});
+
+		it('should check the permission to create the course', async () => {
+			const { user, shareToken } = setup();
+
+			await uc.importShareToken(user.id, shareToken.token, 'NewName');
+
+			expect(authorization.checkAllPermissions).toBeCalledWith(user, [Permission.COURSE_CREATE]);
+		});
+
+		it('should use the service to copy the course', async () => {
+			const { user, shareToken } = setup();
+			const newName = 'NewName';
+
+			await uc.importShareToken(user.id, shareToken.token, newName);
+
+			expect(courseCopyService.copyCourse).toBeCalledWith({
+				userId: user.id,
+				courseId: shareToken.payload.parentId,
+				newName,
+			});
+		});
+
+		it('should return the result', async () => {
+			const { user, shareToken, status } = setup();
+			const newName = 'NewName';
+
+			const result = await uc.importShareToken(user.id, shareToken.token, newName);
+
+			expect(result).toEqual(status);
+		});
+
+		describe('when restricted to same school', () => {
+			it('should check context read permission', async () => {
+				const { user, school } = setup();
+				const shareToken = shareTokenFactory.build({
+					context: { contextType: ShareTokenContextType.School, contextId: school.id },
+				});
+				service.lookupToken.mockResolvedValue(shareToken);
+
+				await uc.importShareToken(user.id, shareToken.token, 'NewName');
+
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
+					user.id,
+					AllowedAuthorizationEntityType.School,
+					school.id,
+					{
+						action: Actions.read,
+						requiredPermissions: [],
+					}
+				);
+			});
+		});
+
+		describe('when not restricted to same school', () => {
+			it('should not check context read permission', async () => {
+				const { user } = setup();
+				const shareToken = shareTokenFactory.build();
+				service.lookupToken.mockResolvedValue(shareToken);
+
+				await uc.importShareToken(user.id, shareToken.token, 'NewName');
+
+				expect(authorization.checkPermissionByReferences).not.toHaveBeenCalled();
+			});
 		});
 	});
 });
