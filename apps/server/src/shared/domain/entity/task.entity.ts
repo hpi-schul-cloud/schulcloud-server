@@ -5,7 +5,6 @@ import { ILearnroomElement } from '../interface/learnroom';
 import { EntityId } from '../types/entity-id';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
-import type { File } from './file.entity';
 import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
 import type { User } from './user.entity';
@@ -22,7 +21,6 @@ export interface ITaskProperties {
 	lesson?: Lesson;
 	submissions?: Submission[];
 	finished?: User[];
-	files?: File[];
 	publicSubmissions?: boolean;
 }
 
@@ -102,9 +100,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
 	finished = new Collection<User>(this);
 
-	@ManyToMany('File', undefined, { fieldName: 'fileIds', nullable: true })
-	files = new Collection<File>(this);
-
 	constructor(props: ITaskProperties) {
 		super();
 		this.name = props.name;
@@ -118,7 +113,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
 		this.finished.set(props.finished || []);
-		this.files.set(props.files || []);
 		this.publicSubmissions = props.publicSubmissions || false;
 	}
 
@@ -279,19 +273,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		}
 
 		return descriptions;
-	}
-
-	private getFileItems(): File[] {
-		if (!this.files.isInitialized(true)) {
-			throw new Error('File items are not loaded.');
-		}
-		const files = this.files.getItems();
-		return files;
-	}
-
-	getFileNames(): string[] {
-		const attachedFileIds = this.getFileItems().map((file) => file.name);
-		return attachedFileIds;
 	}
 
 	finishForUser(user: User) {
