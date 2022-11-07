@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LearnroomTypes } from '@shared/domain';
@@ -10,12 +11,15 @@ describe('metadata loader service', () => {
 	let module: TestingModule;
 	let service: MetadataLoader;
 	let courseRepo: DeepMocked<CourseRepo>;
+	let orm: MikroORM;
 
-	beforeAll(async () => {
-		await setupEntities();
+	afterAll(async () => {
+		await orm.close();
+		await module.close();
 	});
 
-	beforeEach(async () => {
+	beforeAll(async () => {
+		orm = await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				MetadataLoader,

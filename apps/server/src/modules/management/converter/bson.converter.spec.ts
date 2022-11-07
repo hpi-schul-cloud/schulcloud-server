@@ -1,11 +1,11 @@
-import { ObjectId } from 'bson';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ObjectId } from 'bson';
 import { BsonConverter } from './bson.converter';
 
 describe('BsonConverter', () => {
 	let converter: BsonConverter;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [BsonConverter],
 		}).compile();

@@ -1,8 +1,8 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { KeycloakConsole } from './keycloak-management.console';
 import { KeycloakManagementUc } from '../../uc/Keycloak-management.uc';
+import { KeycloakConsole } from './keycloak-management.console';
 
 describe('KeycloakConsole', () => {
 	let module: TestingModule;
@@ -27,6 +27,10 @@ describe('KeycloakConsole', () => {
 		writer = module.get(ConsoleWriterService);
 		uc = module.get(KeycloakManagementUc);
 		console = new KeycloakConsole(writer, uc);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('check', () => {
