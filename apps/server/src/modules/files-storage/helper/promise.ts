@@ -4,7 +4,7 @@ export function isFulfilled<T>(input: PromiseSettledResult<T>): input is Promise
 
 export function getResolvedValues<T>(result: PromiseSettledResult<T>[]): T[] {
 	const resolvedPromises: PromiseFulfilledResult<T>[] = result.filter(isFulfilled);
-	const fileResponses = resolvedPromises.map((item) => item.value);
+	const values = resolvedPromises.map((item) => item.value);
 
-	return fileResponses;
+	return values;
 }
