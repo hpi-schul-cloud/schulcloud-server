@@ -1,4 +1,4 @@
-import type { Course, File, InputFormat, Lesson, School, Submission, User } from '@shared/domain/';
+import type { Course, InputFormat, Lesson, School, Submission, User } from '@shared/domain/';
 
 interface ITask {
 	name: string;
@@ -23,7 +23,6 @@ export interface ITaskProperties extends ITask {
 	lesson?: Lesson;
 	creator: User;
 	school: School;
-	files?: File[];
 	finished?: User[];
 	private?: boolean;
 	submissions?: Submission[];
