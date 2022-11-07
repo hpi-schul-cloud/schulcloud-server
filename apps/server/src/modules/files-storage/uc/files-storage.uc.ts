@@ -17,6 +17,7 @@ import {
 	FileUrlParams,
 	SingleFileParams,
 } from '../controller/dto';
+import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { IFile } from '../interface/file';
 import { FilesStorageMapper } from '../mapper';
@@ -108,24 +109,7 @@ export class FilesStorageUC {
 				url: params.url,
 				error: error as Error,
 			});
-			throw new NotFoundException('FILE_NOT_FOUND');
-		}
-	}
-
-	private async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: IFile) {
-		const [fileRecords] = await this.filesStorageService.getFilesOfParent(params);
-		const fileName = this.checkFilenameExists(fileDescription.name, fileRecords);
-		const entity = this.getNewFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
-		try {
-			await this.fileRecordRepo.save(entity);
-			const filePath = this.createPath(params.schoolId, entity.id);
-			await this.storageClient.create(filePath, fileDescription);
-			this.antivirusService.send(entity);
-
-			return entity;
-		} catch (error) {
-			await this.fileRecordRepo.delete(entity);
-			throw error;
+			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
 	}
 
