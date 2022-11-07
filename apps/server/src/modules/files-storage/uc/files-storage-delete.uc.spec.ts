@@ -107,26 +107,7 @@ describe('FilesStorageUC delete methods', () => {
 	});
 
 	describe('deleteFilesOfParent is called', () => {
-		describe('WHEN user is not authorized', () => {
-			const setup = () => {
-				const { requestParams, userId } = getParams();
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
-
-				return { requestParams, userId };
-			};
-
-			it('should throw forbidden error', async () => {
-				const { requestParams, userId } = setup();
-
-				await expect(filesStorageUC.deleteFilesOfParent(userId, requestParams)).rejects.toThrow(
-					new ForbiddenException()
-				);
-
-				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledTimes(0);
-			});
-		});
-
-		describe('WHEN service deletes successful', () => {
+		describe('WHEN user is authorized and service deletes successful', () => {
 			const setup = () => {
 				const { params, userId, fileRecords } = getFileRecordsWithParams();
 				const { requestParams } = getParams();
@@ -170,11 +151,32 @@ describe('FilesStorageUC delete methods', () => {
 			});
 		});
 
+		describe('WHEN user is not authorized', () => {
+			const setup = () => {
+				const { requestParams, userId } = getParams();
+
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+
+				return { requestParams, userId };
+			};
+
+			it('should throw forbidden error', async () => {
+				const { requestParams, userId } = setup();
+
+				await expect(filesStorageUC.deleteFilesOfParent(userId, requestParams)).rejects.toThrow(
+					new ForbiddenException()
+				);
+
+				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledTimes(0);
+			});
+		});
+
 		describe('WHEN service throws error', () => {
 			const setup = () => {
 				const { requestParams, userId } = getParams();
 				const error = new Error('test');
 
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 				filesStorageService.deleteFilesOfParent.mockRejectedValueOnce(error);
 
 				return { requestParams, userId, error };
@@ -189,31 +191,15 @@ describe('FilesStorageUC delete methods', () => {
 	});
 
 	describe('deleteOneFile is called', () => {
-		describe('WHEN file is not found', () => {
-			const setup = () => {
-				const { fileRecords, userId } = getFileRecordsWithParams();
-				const requestParams = { fileRecordId: fileRecords[0].id };
-				const error = new Error('test');
-
-				filesStorageService.getFileRecord.mockRejectedValueOnce(error);
-
-				return { requestParams, userId, error };
-			};
-
-			it('should throw error if entity not found', async () => {
-				const { userId, requestParams, error } = setup();
-
-				await expect(filesStorageUC.deleteOneFile(userId, requestParams)).rejects.toThrow(error);
-			});
-		});
-
-		describe('WHEN user is authorized', () => {
+		describe('WHEN user is authorized, file is found and delete was successful ', () => {
 			const setup = () => {
 				const { fileRecords, userId } = getFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const requestParams = { fileRecordId: fileRecord.id, parentType: fileRecord.parentType };
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				filesStorageService.delete.mockResolvedValueOnce();
 
 				return { requestParams, userId, fileRecord };
 			};
@@ -232,18 +218,6 @@ describe('FilesStorageUC delete methods', () => {
 					PermissionContexts.delete
 				);
 			});
-		});
-
-		describe('WHEN file is found', () => {
-			const setup = () => {
-				const { fileRecords, userId } = getFileRecordsWithParams();
-				const fileRecord = fileRecords[0];
-				const requestParams = { fileRecordId: fileRecord.id };
-
-				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-
-				return { requestParams, userId };
-			};
 
 			it('should call getFile once', async () => {
 				const { userId, requestParams } = setup();
@@ -259,6 +233,40 @@ describe('FilesStorageUC delete methods', () => {
 				await filesStorageUC.deleteOneFile(userId, requestParams);
 
 				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(requestParams);
+			});
+
+			it('should call delete with correct params', async () => {
+				const { userId, requestParams, fileRecord } = setup();
+
+				await filesStorageUC.deleteOneFile(userId, requestParams);
+
+				expect(filesStorageService.delete).toHaveBeenCalledWith([fileRecord]);
+			});
+
+			it('should return fileRecord', async () => {
+				const { userId, requestParams, fileRecord } = setup();
+
+				const result = await filesStorageUC.deleteOneFile(userId, requestParams);
+
+				expect(result).toEqual(fileRecord);
+			});
+		});
+
+		describe('WHEN file is not found', () => {
+			const setup = () => {
+				const { fileRecords, userId } = getFileRecordsWithParams();
+				const requestParams = { fileRecordId: fileRecords[0].id };
+				const error = new Error('test');
+
+				filesStorageService.getFileRecord.mockRejectedValueOnce(error);
+
+				return { requestParams, userId, error };
+			};
+
+			it('should throw error if entity not found', async () => {
+				const { userId, requestParams, error } = setup();
+
+				await expect(filesStorageUC.deleteOneFile(userId, requestParams)).rejects.toThrow(error);
 			});
 		});
 
@@ -282,34 +290,6 @@ describe('FilesStorageUC delete methods', () => {
 			});
 		});
 
-		describe('WHEN delete was successful', () => {
-			const setup = () => {
-				const { fileRecords, userId } = getFileRecordsWithParams();
-				const fileRecord = fileRecords[0];
-				const requestParams = { fileRecordId: fileRecord.id };
-
-				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-
-				return { requestParams, userId, fileRecord };
-			};
-
-			it('should call delete with correct params', async () => {
-				const { userId, requestParams, fileRecord } = setup();
-
-				await filesStorageUC.deleteOneFile(userId, requestParams);
-
-				expect(filesStorageService.delete).toHaveBeenCalledWith([fileRecord]);
-			});
-
-			it('should return fileRecord', async () => {
-				const { userId, requestParams, fileRecord } = setup();
-
-				const result = await filesStorageUC.deleteOneFile(userId, requestParams);
-
-				expect(result).toEqual(fileRecord);
-			});
-		});
-
 		describe('WHEN delete throws error', () => {
 			const setup = () => {
 				const { fileRecords, userId } = getFileRecordsWithParams();
@@ -318,6 +298,7 @@ describe('FilesStorageUC delete methods', () => {
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 				filesStorageService.delete.mockRejectedValueOnce(error);
 
 				return { requestParams, userId, error };
