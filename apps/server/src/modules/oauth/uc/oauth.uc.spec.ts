@@ -5,9 +5,9 @@ import { AuthorizationParams } from '@src/modules/oauth/controller/dto/index';
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { setupEntities, systemFactory, userFactory } from '@shared/testing/index';
 import { System, User } from '@shared/domain/index';
-import { SystemRepo } from '@shared/repo/index';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
+import { SystemService } from '@src/modules/system/service/system.service';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
 import resetAllMocks = jest.resetAllMocks;
@@ -18,7 +18,7 @@ describe('OAuthUc', () => {
 	let service: OauthUc;
 
 	let oauthService: DeepMocked<OAuthService>;
-	let systemRepo: DeepMocked<SystemRepo>;
+	let systemService: DeepMocked<SystemService>;
 
 	let testSystem: System;
 
@@ -33,8 +33,8 @@ describe('OAuthUc', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: SystemRepo,
-					useValue: createMock<SystemRepo>(),
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 				{
 					provide: OAuthService,
@@ -44,7 +44,7 @@ describe('OAuthUc', () => {
 		}).compile();
 
 		service = await module.get(OauthUc);
-		systemRepo = await module.get(SystemRepo);
+		systemService = await module.get(SystemService);
 		oauthService = await module.get(OAuthService);
 	});
 
@@ -77,7 +77,7 @@ describe('OAuthUc', () => {
 			const user: User = userFactory.buildWithId();
 
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			systemRepo.findById.mockResolvedValue(testSystem);
+			systemService.findOAuthById.mockResolvedValue(testSystem);
 			oauthService.requestToken.mockResolvedValue({
 				access_token: 'accessToken',
 				refresh_token: 'refreshToken',
@@ -109,7 +109,7 @@ describe('OAuthUc', () => {
 			};
 
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			systemRepo.findById.mockResolvedValue(system);
+			systemService.findOAuthById.mockResolvedValue(system);
 			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
 			const response: OAuthResponse = await service.processOAuth(query, system.id);
@@ -128,7 +128,7 @@ describe('OAuthUc', () => {
 			} as OAuthResponse;
 
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			systemRepo.findById.mockResolvedValue(system);
+			systemService.findOAuthById.mockResolvedValue(system);
 			oauthService.requestToken.mockRejectedValue(new OAuthSSOError());
 			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
@@ -149,7 +149,7 @@ describe('OAuthUc', () => {
 			oauthService.checkAuthorizationCode.mockImplementation(() => {
 				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
 			});
-			systemRepo.findById.mockResolvedValue(system);
+			systemService.findOAuthById.mockResolvedValue(system);
 			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
 			const response: OAuthResponse = await service.processOAuth(query, '');
@@ -161,9 +161,22 @@ describe('OAuthUc', () => {
 			oauthService.checkAuthorizationCode.mockImplementation(() => {
 				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
 			});
-			systemRepo.findById.mockRejectedValue(new NotFoundError('Not Found'));
+			systemService.findOAuthById.mockRejectedValue(new NotFoundError('Not Found'));
 
 			await expect(service.processOAuth(query, 'unknown id')).rejects.toThrow(NotFoundError);
+		});
+
+		it('should throw if no system.id exist', async () => {
+			const errorResponse: OAuthResponse = {
+				provider: 'unknown-provider',
+				errorcode: 'sso_internal_error',
+				redirect: 'errorRedirect',
+			} as OAuthResponse;
+			oauthService.checkAuthorizationCode.mockReturnValue('ignore');
+			systemService.findOAuthById.mockResolvedValue({ id: undefined, type: 'ignore' });
+			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
+			const response: OAuthResponse = await service.processOAuth(query, 'brokenId');
+			expect(response).toEqual(errorResponse);
 		});
 	});
 });

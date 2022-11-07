@@ -10,6 +10,7 @@ import { AuthorizationModule } from '../authorization';
 import { FilesStorageClientModule } from '../files-storage-client';
 import { TaskController } from './controller';
 import { TaskCopyUC, TaskUC } from './uc';
+import { TaskService } from './service/task.service';
 
 @Module({
 	imports: [AuthorizationModule, FilesStorageClientModule],
@@ -17,6 +18,7 @@ import { TaskCopyUC, TaskUC } from './uc';
 	providers: [
 		TaskUC,
 		TaskRepo,
+		TaskService,
 		LessonRepo,
 		CourseRepo,
 		TaskCopyUC,
@@ -27,5 +29,6 @@ import { TaskCopyUC, TaskUC } from './uc';
 		FileLegacyService,
 		Logger,
 	],
+	exports: [TaskService],
 })
 export class TaskModule {}
