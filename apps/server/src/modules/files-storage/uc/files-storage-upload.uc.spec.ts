@@ -34,6 +34,21 @@ const createAxiosResponse = (data: Readable, headers: AxiosResponseHeaders = {})
 	return response;
 };
 
+const createAxiosErrorResponse = (): AxiosResponse => {
+	const headers: AxiosResponseHeaders = {};
+	const config: AxiosRequestConfig = {};
+	const errorResponse: AxiosResponse = {
+		data: {},
+		status: 404,
+		statusText: 'errorText',
+		headers,
+		config,
+		request: {},
+	};
+
+	return errorResponse;
+};
+
 const getFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const schoolId = new ObjectId().toHexString();
@@ -232,16 +247,7 @@ describe('FilesStorageUC upload methods', () => {
 			const setup = () => {
 				const { userId, uploadFromUrlParams } = getUploadFromUrlParams();
 
-				const headers: AxiosResponseHeaders = {};
-				const config: AxiosRequestConfig = {};
-				const errorResponse: AxiosResponse = {
-					data: {},
-					status: 404,
-					statusText: 'errorText',
-					headers,
-					config,
-					request: {},
-				};
+				const errorResponse: AxiosResponse = createAxiosErrorResponse();
 
 				httpService.get.mockImplementation(() => {
 					const observable = of(errorResponse);
