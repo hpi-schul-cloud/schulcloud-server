@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { has } from 'lodash';
 import { Submission, User } from '../entity';
 import { IPermissionContext, PermissionTypes } from '../interface/permission';
 import { Actions } from './actions.enum';
@@ -22,22 +23,39 @@ export class SubmissionRule extends BasePermission<Submission> {
 		const { action, requiredPermissions } = context;
 
 		const result =
-			this.utils.hasAllPermissions(user, requiredPermissions) && this.hasSpecificPermission(user, submission, action);
+			this.utils.hasAllPermissions(user, requiredPermissions) && this.hasAccessToSubmission(user, submission, action);
 
 		return result;
 	}
 
-	private hasSpecificPermission(user: User, submission: Submission, action: Actions): boolean {
-		const hasSpecificPermission =
+	private hasAccessToSubmission(user: User, submission: Submission, action: Actions): boolean {
+		let hasAccessToSubmission = false;
+
+		if (action === Actions.write) {
+			hasAccessToSubmission = this.hasWriteAccess(user, submission);
+		} else if (action === Actions.read) {
+			hasAccessToSubmission = this.hasReadAccess(user, submission);
+		}
+
+		return hasAccessToSubmission;
+	}
+
+	private hasWriteAccess(user: User, submission: Submission) {
+		const hasWriteAccess =
 			this.isCreator(user, submission) ||
 			this.isTeamMember(user, submission) ||
 			this.isInCourseGroup(user, submission) ||
-			this.hasParentTaskWritePermission(user, submission) ||
-			(action === Actions.read &&
-				this.hasParentTaskReadPermission(user, submission) &&
-				!!submission.task.publicSubmissions);
+			this.hasParentTaskWritePermission(user, submission);
 
-		return hasSpecificPermission;
+		return hasWriteAccess;
+	}
+
+	private hasReadAccess(user: User, submission: Submission) {
+		const hasReadAccess =
+			this.hasWriteAccess(user, submission) ||
+			(this.hasParentTaskReadPermission(user, submission) && !!submission.task.publicSubmissions);
+
+		return hasReadAccess;
 	}
 
 	private isCreator(user: User, submission: Submission) {
