@@ -1,4 +1,5 @@
-import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { AmqpConnection, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Global, Module } from '@nestjs/common';
 import { FilesStorageExchange } from './exchange';
@@ -41,16 +42,12 @@ export class RabbitMQWrapperModule {}
 
 @Global()
 @Module({
-	imports,
-	exports: [RabbitMQModule],
+	providers: [
+		{
+			provide: AmqpConnection,
+			useValue: createMock<AmqpConnection>(),
+		},
+	],
+	exports: [AmqpConnection],
 })
-export class RabbitMQWrapperTestModule {
-	constructor(private readonly amqpConnectionManager: AmqpConnectionManager) {}
-
-	// In tests we need to close connections when the module is destroyed.
-	async onModuleDestroy() {
-		await Promise.all(
-			this.amqpConnectionManager.getConnections().map((connection) => connection.managedConnection.close())
-		);
-	}
-}
+export class RabbitMQWrapperTestModule {}
