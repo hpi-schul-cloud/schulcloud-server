@@ -2,7 +2,6 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	courseFactory,
-	fileFactory,
 	lessonFactory,
 	schoolFactory,
 	setupEntities,
@@ -10,7 +9,6 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { File } from './file.entity';
 import { Submission } from './submission.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';
@@ -633,36 +631,6 @@ describe('Task Entity', () => {
 				const task = taskFactory.build();
 				expect(task.getParentData().courseName).toEqual('');
 				expect(task.getParentData().color).toEqual('#ACACAC');
-			});
-		});
-	});
-
-	describe('getFileNames', () => {
-		it('should throw if files are not loaded', () => {
-			const task = taskFactory.build();
-			task.files.set([orm.em.getReference(File, new ObjectId().toHexString())]);
-
-			expect(() => task.getFileNames()).toThrowError();
-		});
-
-		describe('when files are loaded', () => {
-			it('should return empty array if property files does not exist', () => {
-				const user = userFactory.buildWithId({});
-				const task = taskFactory.build({ creator: user });
-				expect(task.getFileNames()).toEqual([]);
-			});
-
-			it('should return empty array if files array is empty', () => {
-				const user = userFactory.buildWithId({});
-				const task = taskFactory.build({ creator: user, files: [] });
-				expect(task.getFileNames()).toEqual([]);
-			});
-
-			it('should return array with correct file name', () => {
-				const user = userFactory.buildWithId({});
-				const file = fileFactory.buildWithId({ creator: user });
-				const task = taskFactory.build({ creator: user, files: [file] });
-				expect(task.getFileNames()).toEqual([file.name]);
 			});
 		});
 	});
