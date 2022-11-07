@@ -89,6 +89,39 @@ describe('FilesStorageService download methods', () => {
 			spy.mockRestore();
 		});
 
+		describe('WHEN file is downloaded successfully', () => {
+			const setup = () => {
+				const { fileRecords } = getFileRecordsWithParams();
+				const fileRecord = fileRecords[0];
+				const params = {
+					fileRecordId: fileRecord.id,
+					fileName: fileRecord.name,
+				};
+
+				const expectedResponse = createMock<IGetFileResponse>();
+
+				spy = jest.spyOn(service, 'downloadFile').mockResolvedValueOnce(expectedResponse);
+
+				return { fileRecord, params, expectedResponse };
+			};
+
+			it('calls downloadFile with correct params', async () => {
+				const { fileRecord, params } = setup();
+
+				await service.download(fileRecord, params);
+
+				expect(service.downloadFile).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.id);
+			});
+
+			it('returns correct response', async () => {
+				const { fileRecord, params, expectedResponse } = setup();
+
+				const response = await service.download(fileRecord, params);
+
+				expect(response).toEqual(expectedResponse);
+			});
+		});
+
 		describe('WHEN param file name is not matching found file name', () => {
 			const setup = () => {
 				const { fileRecords } = getFileRecordsWithParams();
@@ -136,39 +169,6 @@ describe('FilesStorageService download methods', () => {
 
 				await expect(service.download(fileRecord, params)).rejects.toThrow(error);
 				expect(service.downloadFile).toBeCalledTimes(0);
-			});
-		});
-
-		describe('WHEN file is downloaded successfully', () => {
-			const setup = () => {
-				const { fileRecords } = getFileRecordsWithParams();
-				const fileRecord = fileRecords[0];
-				const params = {
-					fileRecordId: fileRecord.id,
-					fileName: fileRecord.name,
-				};
-
-				const expectedResponse = createMock<IGetFileResponse>();
-
-				spy = jest.spyOn(service, 'downloadFile').mockResolvedValueOnce(expectedResponse);
-
-				return { fileRecord, params, expectedResponse };
-			};
-
-			it('calls downloadFile with correct params', async () => {
-				const { fileRecord, params } = setup();
-
-				await service.download(fileRecord, params);
-
-				expect(service.downloadFile).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.id);
-			});
-
-			it('returns correct response', async () => {
-				const { fileRecord, params, expectedResponse } = setup();
-
-				const response = await service.download(fileRecord, params);
-
-				expect(response).toEqual(expectedResponse);
 			});
 		});
 
