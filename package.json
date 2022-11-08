@@ -163,6 +163,7 @@
 		"mongoose-shortid-nodeps": "git://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
 		"nanoid": "^3.3.4",
+		"nest-winston": "^1.8.0",
 		"nestjs-console": "^7.0.0",
 		"oauth-1.0a": "^2.2.6",
 		"papaparse": "^5.1.1",
@@ -191,7 +192,7 @@
 		"universal-analytics": "^0.5.1",
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^8.3.0",
-		"winston": "^3.7.2",
+		"winston": "^3.8.2",
 		"xml2js-es6-promise": "^1.1.1"
 	},
 	"devDependencies": {
