@@ -18,6 +18,7 @@ import { AccountUc } from '@src/modules/account/uc/account.uc';
 import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
 import { RocketChatService } from '@src/modules/rocketchat';
 import { ServerModule } from '@src/modules/server';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { join } from 'path';
 import legacyAppPromise = require('../../../../src/app');
 
@@ -29,6 +30,9 @@ async function bootstrap() {
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 	const orm = nestApp.get(MikroORM);
+
+	// WinstonLogger
+	nestApp.useLogger(nestApp.get(WINSTON_MODULE_NEST_PROVIDER));
 
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
