@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
 import { IsMongoId, IsString } from 'class-validator';
-import type { UserMatchResponse } from '.';
+import { UserMatchResponse } from './user-match.response';
 import { UserRole } from './user-role';
 
 export class ImportUserResponse {
@@ -45,13 +45,14 @@ export class ImportUserResponse {
 	@ApiProperty({
 		description: 'list of user roles from external system: student, teacher, admin',
 		enum: UserRole,
+		isArray: true,
 	})
 	roleNames: UserRole[];
 
 	@ApiProperty({ description: 'names of classes the user attends from external system' })
 	classNames: string[];
 
-	@ApiPropertyOptional({ description: 'assignemnt to a local user account' })
+	@ApiPropertyOptional({ description: 'assignemnt to a local user account', type: UserMatchResponse })
 	match?: UserMatchResponse;
 
 	// explicit type is needed for OpenAPI generator

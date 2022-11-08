@@ -41,7 +41,7 @@ components:
     ldapUrl:
       type: string
       # accepts ldap and ldaps. accepts domains and ipv4 addresses both with optional port number
-      pattern: ^ldaps?:\/\/([\w\.-]+\.[a-z]+)|((\d{0,3}\.){3}\d{0,3})(:\d+)?$
+      pattern: ^ldaps?:\/\/(([\w\.-]+\.[a-z]+)|((\d{0,3}\.){3}\d{0,3}))(:\d+)?$
     emptyString:
       type: string
       pattern: ^$
