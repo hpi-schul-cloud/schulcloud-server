@@ -2,14 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, IComponentProperties, Lesson, Task } from '@shared/domain';
 import { CopyFileDto } from '../dto';
 import { EntityWithEmbeddedFiles } from '../interfaces';
-import { FileParamBuilder } from '../mapper';
-import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
+import { FileParamBuilder, CopyFilesOfParentParamBuilder } from '../mapper';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
+
+// TODO  missing FileCopyParams  ...passing user instead of userId
 
 @Injectable()
 export class CopyFilesService {
 	constructor(private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService) {}
 
+	// TODO missing Status generation like in the other services
 	async copyFilesOfEntity(
 		originalEntity: EntityWithEmbeddedFiles,
 		copyEntity: EntityWithEmbeddedFiles,
@@ -17,21 +19,15 @@ export class CopyFilesService {
 	): Promise<{ entity: EntityWithEmbeddedFiles; response: CopyFileDto[] }> {
 		const source = FileParamBuilder.build(originalEntity.getSchoolId(), originalEntity);
 		const target = FileParamBuilder.build(copyEntity.getSchoolId(), copyEntity);
-
 		const copyFilesOfParentParams = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
 		const response = await this.filesStorageClientAdapterService.copyFilesOfParent(copyFilesOfParentParams);
-
 		const entity = this.replaceUrlsOfEntity(response, copyEntity);
 
 		return { entity, response };
 	}
 
 	private replaceUrlsOfEntity(responses: CopyFileDto[], entity: EntityWithEmbeddedFiles): EntityWithEmbeddedFiles {
-		if (responses.length === 0) {
-			return entity;
-		}
-
 		responses.forEach((response) => {
 			if (entity instanceof Lesson) {
 				entity = this.replaceUrlsInLessons(entity, response);

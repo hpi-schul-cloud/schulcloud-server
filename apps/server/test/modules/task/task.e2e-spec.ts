@@ -3,11 +3,12 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser, Permission, Task } from '@shared/domain';
+import { ICurrentUser, InputFormat, Permission, Task } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
 	fileFactory,
+	lessonFactory,
 	mapUserToCurrentUser,
 	roleFactory,
 	submissionFactory,
@@ -193,7 +194,11 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
 			const user = setup();
 			const course = courseFactory.build({ teachers: [user] });
-			const task = taskFactory.build({ course });
+			const task = taskFactory.build({
+				course,
+				description: '<p>test</p>',
+				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
+			});
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -206,6 +211,7 @@ describe('Task Controller (e2e)', () => {
 			expect(result.data[0]).toHaveProperty('displayColor');
 			expect(result.data[0]).toHaveProperty('name');
 			expect(result.data[0]).toHaveProperty('description');
+			expect(result.data[0].description).toEqual({ content: '<p>test</p>', type: InputFormat.RICH_TEXT_CK5 });
 		});
 
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
@@ -564,29 +570,6 @@ describe('Task Controller (e2e)', () => {
 					.post(`/tasks/${task.id}/copy`)
 					.set('Authorization', 'jwt')
 					.send(params);
-
-				expect(response.status).toEqual(201);
-			});
-
-			it('should duplicate a task with legacy files in it', async () => {
-				const teacher = setup();
-				const course = courseFactory.build({
-					teachers: [teacher],
-				});
-				const fileOne = fileFactory.build({ creator: teacher });
-				const fileTwo = fileFactory.build({ creator: teacher });
-				const task = taskFactory.build({ creator: teacher, course, files: [fileOne, fileTwo] });
-
-				await em.persistAndFlush([teacher, task, fileOne, fileTwo]);
-				em.clear();
-
-				currentUser = mapUserToCurrentUser(teacher);
-				const params = { courseId: course.id };
-
-				const response = await request(app.getHttpServer())
-					.post(`/tasks/${task.id}/copy`)
-					.send(params)
-					.set('Authorization', 'jwt');
 
 				expect(response.status).toEqual(201);
 			});
@@ -1097,7 +1080,7 @@ describe('Task Controller (e2e)', () => {
 			const response = await request(app.getHttpServer())
 				.post(`/tasks`)
 				.set('Accept', 'application/json')
-				.send({ courseId: course.id })
+				.send({ name: 'test', courseId: course.id })
 				.expect(201);
 
 			expect((response.body as TaskResponse).status.isDraft).toEqual(true);
@@ -1105,20 +1088,38 @@ describe('Task Controller (e2e)', () => {
 		it('PATCH :id should update a task', async () => {
 			const user = setup(Permission.HOMEWORK_EDIT);
 			const course = courseFactory.build({ teachers: [user] });
-			const task = taskFactory.build({ name: 'original name', creator: user, course });
+			const lesson = lessonFactory.build({ course });
+			const task = taskFactory.build({ name: 'original name', creator: user, course, lesson });
 
-			await em.persistAndFlush([user, course, task]);
+			await em.persistAndFlush([user, course, lesson, task]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
 
+			const updateTaskParams = {
+				name: 'updated name',
+				courseId: course.id,
+				lessonId: lesson.id,
+				description: '<p>test</p>',
+				availableDate: '2022-10-28T08:28:12.981Z',
+				dueDate: '2023-10-28T08:28:12.981Z',
+			};
 			const response = await request(app.getHttpServer())
 				.patch(`/tasks/${task.id}`)
 				.set('Accept', 'application/json')
-				.send({ name: 'updated name', courseId: course.id })
+				.send(updateTaskParams)
 				.expect(200);
 
-			expect((response.body as TaskResponse).name).toEqual('updated name');
+			const responseTask = response.body as TaskResponse;
+			expect(responseTask.name).toEqual(updateTaskParams.name);
+			expect(responseTask.description).toEqual({
+				content: updateTaskParams.description,
+				type: InputFormat.RICH_TEXT_CK5,
+			});
+			expect(responseTask.availableDate).toEqual(updateTaskParams.availableDate);
+			expect(responseTask.duedate).toEqual(updateTaskParams.dueDate);
+			expect(responseTask.courseId).toEqual(updateTaskParams.courseId);
+			expect(responseTask.lessonName).toEqual(lesson.name);
 		});
 	});
 	describe('When individual assignment Task feature is not enabled', () => {
@@ -1174,7 +1175,7 @@ describe('Task Controller (e2e)', () => {
 
 			currentUser = mapUserToCurrentUser(teacher);
 
-			const params = { courseId: course.id };
+			const params = { name: 'test', courseId: course.id };
 			await request(app.getHttpServer()).post(`/tasks`).set('Accept', 'application/json').send(params).expect(500);
 		});
 

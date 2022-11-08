@@ -7,7 +7,8 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 const RoleMapping = {
 	[SanisRole.LEHR]: RoleName.TEACHER,
 	[SanisRole.LERN]: RoleName.STUDENT,
-	[SanisRole.SYSA]: RoleName.ADMINISTRATOR,
+	[SanisRole.LEIT]: RoleName.ADMINISTRATOR,
+	[SanisRole.ORGADMIN]: RoleName.ADMINISTRATOR,
 };
 
 @Injectable()
