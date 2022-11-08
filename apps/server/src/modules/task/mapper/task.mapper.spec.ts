@@ -1,8 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions } from '@shared/domain';
+import { InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions } from '@shared/domain';
 import { setupEntities, taskFactory } from '@shared/testing';
-import { TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../controller/dto';
+import { TaskResponse, TaskStatusResponse, TaskCreateParams, TaskUpdateParams } from '../controller/dto';
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
@@ -23,7 +23,12 @@ const createExpectedResponse = (
 	expected.name = task.name;
 	expected.availableDate = task.availableDate;
 	expected.createdAt = task.createdAt;
-	expected.description = task.description;
+	if (task.description) {
+		expected.description = {
+			content: task.description,
+			type: task.descriptionInputFormat || InputFormat.RICH_TEXT_CK4,
+		};
+	}
 	expected.duedate = task.dueDate;
 	expected.updatedAt = task.updatedAt;
 	expected.status = expectedStatus;
@@ -79,18 +84,49 @@ describe('task.mapper', () => {
 		});
 	});
 
-	describe('mapUpdateTaskToDomain', () => {
+	describe('mapTaskUpdateToDomain', () => {
 		it('should correctly map params to dto', () => {
 			const params: TaskUpdateParams = {
 				name: 'test name',
 				courseId: new ObjectId().toHexString(),
+				description: 'test',
+				dueDate: new Date('2023-05-28T08:00:00.000+00:00'),
+				availableDate: new Date('2022-05-28T08:00:00.000+00:00'),
 			};
-			const result = TaskMapper.mapUpdateTaskToDomain(params);
+			const result = TaskMapper.mapTaskUpdateToDomain(params);
 
 			const expected: ITaskUpdate = {
 				name: params.name,
 				courseId: params.courseId,
 				lessonId: params.lessonId,
+				description: params.description,
+				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
+				dueDate: params.dueDate,
+				availableDate: params.availableDate,
+			};
+			expect(result).toStrictEqual(expected);
+		});
+	});
+
+	describe('mapTaskCreateToDomain', () => {
+		it('should correctly map params to dto', () => {
+			const params: TaskCreateParams = {
+				name: 'test name',
+				courseId: new ObjectId().toHexString(),
+				description: 'test',
+				dueDate: new Date('2023-05-28T08:00:00.000+00:00'),
+				availableDate: new Date('2022-05-28T08:00:00.000+00:00'),
+			};
+			const result = TaskMapper.mapTaskCreateToDomain(params);
+
+			const expected: ITaskUpdate = {
+				name: params.name,
+				courseId: params.courseId,
+				lessonId: params.lessonId,
+				description: params.description,
+				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
+				dueDate: params.dueDate,
+				availableDate: params.availableDate,
 			};
 			expect(result).toStrictEqual(expected);
 		});
