@@ -35,37 +35,37 @@ const buildFileRecordsWithParams = () => {
 	return { params, fileRecords, userId };
 };
 
+const createRequestParams = (schoolId: EntityId, userId: EntityId) => {
+	return { schoolId, parentId: userId, parentType: FileRecordParent.User };
+};
+
+const createParams = () => {
+	const userId: EntityId = new ObjectId().toHexString();
+	const schoolId: EntityId = new ObjectId().toHexString();
+	const requestParams = createRequestParams(schoolId, userId);
+
+	return { userId, schoolId, requestParams };
+};
+
+const createTargetParams = () => {
+	const targetParentId: EntityId = new ObjectId().toHexString();
+	const schoolId: EntityId = new ObjectId().toHexString();
+
+	return {
+		target: {
+			schoolId,
+			parentId: targetParentId,
+			parentType: FileRecordParent.Task,
+		},
+	};
+};
+
 describe('FilesStorageUC', () => {
 	let module: TestingModule;
 	let filesStorageUC: FilesStorageUC;
 	let filesStorageService: DeepMocked<FilesStorageService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let orm: MikroORM;
-
-	const createRequestParams = (schoolId: EntityId, userId: EntityId) => {
-		return { schoolId, parentId: userId, parentType: FileRecordParent.User };
-	};
-
-	const createParams = () => {
-		const userId: EntityId = new ObjectId().toHexString();
-		const schoolId: EntityId = new ObjectId().toHexString();
-		const requestParams = createRequestParams(schoolId, userId);
-
-		return { userId, schoolId, requestParams };
-	};
-
-	const createTargetParams = () => {
-		const targetParentId: EntityId = new ObjectId().toHexString();
-		const schoolId: EntityId = new ObjectId().toHexString();
-
-		return {
-			target: {
-				schoolId,
-				parentId: targetParentId,
-				parentType: FileRecordParent.Task,
-			},
-		};
-	};
 
 	beforeEach(() => {
 		jest.resetAllMocks();
