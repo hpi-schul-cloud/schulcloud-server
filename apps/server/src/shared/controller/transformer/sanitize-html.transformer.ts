@@ -1,55 +1,194 @@
 import { NotImplementedException } from '@nestjs/common';
 import { Transform, TransformFnParams } from 'class-transformer';
-import sanitize from 'sanitize-html';
+import sanitize, { AllowedAttribute } from 'sanitize-html';
+import { InputFormat } from '@shared/domain';
 
-type SanitizeDecoratorOptions = { keep: 'inline' | 'richtext' };
+export type IInputFormatsConfig = {
+	allowedTags: string[]; // Note: tag names are not case-sensitive
+	allowedAttributes?: Record<string, AllowedAttribute[]>;
+};
 
-// Note: tag names are not case-sensitive
-const INLINE_TAGS = ['b', 'i', 'em', 'strong', 'small', 's', 'u'];
-const HEADING_TAGS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-const LIST_TAGS = ['ul', 'li', 'ol', 'dl', 'dt', 'dd'];
-const PARAGRAPH_TAGS = ['p', 'pre', 'br', 'hr'];
-const TABLE_TAGS = ['table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'tr', 'td'];
-const OTHER_TAGS = ['a', 'img'];
+const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
+	PlainText: {
+		allowedTags: [],
+		allowedAttributes: {},
+	},
 
-const getSanitizeHtmlOptions = (options?: SanitizeDecoratorOptions): sanitize.IOptions => {
-	let sanitizeHtmlOptions: sanitize.IOptions;
+	RichTextSimple: {
+		allowedTags: ['b', 'i', 'em', 'strong', 'small', 's', 'u'],
+		allowedAttributes: {},
+	},
 
-	if (options?.keep === 'inline') {
-		sanitizeHtmlOptions = {
-			allowedTags: INLINE_TAGS,
-		};
-	} else if (options?.keep === 'richtext') {
-		sanitizeHtmlOptions = {
-			allowedTags: [...INLINE_TAGS, ...HEADING_TAGS, ...LIST_TAGS, ...PARAGRAPH_TAGS, ...TABLE_TAGS, ...OTHER_TAGS],
-			allowedAttributes: {
-				a: ['href', 'name', 'target'],
-				img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
-			},
-		};
-	} else {
-		sanitizeHtmlOptions = { allowedTags: [], allowedAttributes: {} };
+	RichText: {
+		allowedTags: [
+			'b',
+			'i',
+			'em',
+			'strong',
+			'small',
+			's',
+			'u',
+			'h1',
+			'h2',
+			'h3',
+			'h4',
+			'h5',
+			'h6',
+			'ul',
+			'li',
+			'ol',
+			'dl',
+			'dt',
+			'dd',
+			'p',
+			'pre',
+			'br',
+			'hr',
+			'table',
+			'tbody',
+			'td',
+			'tfoot',
+			'th',
+			'thead',
+			'tr',
+			'tr',
+			'td',
+			'a',
+			'img',
+		],
+		allowedAttributes: {
+			a: ['href', 'name', 'target'],
+			img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
+		},
+	},
+
+	// TODO
+	RichTextCk4: {
+		allowedTags: [
+			'b',
+			'i',
+			'em',
+			'strong',
+			'small',
+			's',
+			'u',
+			'h1',
+			'h2',
+			'h3',
+			'h4',
+			'h5',
+			'h6',
+			'ul',
+			'li',
+			'ol',
+			'dl',
+			'dt',
+			'dd',
+			'p',
+			'pre',
+			'br',
+			'hr',
+			'table',
+			'tbody',
+			'td',
+			'tfoot',
+			'th',
+			'thead',
+			'tr',
+			'tr',
+			'td',
+			'a',
+			'img',
+		],
+		allowedAttributes: {
+			a: ['href', 'name', 'target'],
+			img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
+		},
+	},
+
+	// TODO
+	RichTextCk5: {
+		allowedTags: [
+			'b',
+			'i',
+			'em',
+			'strong',
+			'small',
+			's',
+			'u',
+			'h1',
+			'h2',
+			'h3',
+			'h4',
+			'h5',
+			'h6',
+			'ul',
+			'li',
+			'ol',
+			'dl',
+			'dt',
+			'dd',
+			'p',
+			'pre',
+			'br',
+			'hr',
+			'table',
+			'tbody',
+			'td',
+			'tfoot',
+			'th',
+			'thead',
+			'tr',
+			'tr',
+			'td',
+			'a',
+			'img',
+		],
+		allowedAttributes: {
+			a: ['href', 'name', 'target'],
+			img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
+		},
+	},
+
+	// TODO
+	RichTextCk5Simple: {
+		allowedTags: ['b', 'i', 'em', 'strong', 'small', 's', 'u'],
+		allowedAttributes: {},
+	},
+};
+
+export const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IInputFormatsConfig => {
+	switch (inputFormat) {
+		case InputFormat.RICHTEXT_SIMPLE:
+			return inputFormatsSanitizeConfig.RichTextSimple;
+		case InputFormat.RICH_TEXT:
+			return inputFormatsSanitizeConfig.RichText;
+		case InputFormat.RICH_TEXT_CK4:
+			return inputFormatsSanitizeConfig.RichTextCk4;
+		case InputFormat.RICH_TEXT_CK5:
+			return inputFormatsSanitizeConfig.RichTextCk5;
+		case InputFormat.RICH_TEXT_CK5_SIMPLE:
+			return inputFormatsSanitizeConfig.RichTextCk5Simple;
+		case InputFormat.PLAIN_TEXT:
+		default:
+			return inputFormatsSanitizeConfig.PlainText;
 	}
-
-	return sanitizeHtmlOptions;
 };
 
 /**
  * Decorator to sanitize a string by removing unwanted HTML.
  * Place after IsString decorator.
- * Options:
- * `keep: inline` allow only simple inline tags
- * `keep: richtext` allow rich text tags
- * default: strip all HTML tags from string
+ * By default, it will return a plain text
  * @returns
  */
-export function SanitizeHtml(options?: SanitizeDecoratorOptions): PropertyDecorator {
+export function SanitizeHtml(inputFormat?: InputFormat): PropertyDecorator {
 	return Transform((params: TransformFnParams) => {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 		const value = params.obj[params.key];
 
 		if (typeof value === 'string') {
-			const sanitizeHtmlOptions = getSanitizeHtmlOptions(options);
+			const sanitizeHtmlOptions: sanitize.IOptions = getSanitizeHtmlOptions(inputFormat);
+
 			const sanitized = sanitize(value, sanitizeHtmlOptions);
 
 			return sanitized;
