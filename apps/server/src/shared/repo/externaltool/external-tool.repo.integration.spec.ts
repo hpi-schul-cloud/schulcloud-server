@@ -31,8 +31,9 @@ describe('ExternalToolRepo', () => {
 		const externalTool: ExternalTool = externalToolFactory.withBasicConfig().buildWithId();
 		const externalOauthTool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 		const externalOauthTool2: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
-		await em.persistAndFlush([externalTool, externalOauthTool, externalOauthTool2]);
-		return { externalTool, externalOauthTool, externalOauthTool2 };
+		const externalLti11Tool: ExternalTool = externalToolFactory.withLti11Config().buildWithId();
+		await em.persistAndFlush([externalTool, externalOauthTool, externalOauthTool2, externalLti11Tool]);
+		return { externalTool, externalOauthTool, externalOauthTool2, externalLti11Tool };
 	}
 
 	it('getEntityName should return ExternalTool', () => {
@@ -68,8 +69,6 @@ describe('ExternalToolRepo', () => {
 		});
 
 		it('should return an empty array when no externalTools were found', async () => {
-			await setup();
-
 			const result: ExternalTool[] = await repo.findAllByConfigType(ToolConfigType.LTI11);
 
 			expect(result.length).toEqual(0);
