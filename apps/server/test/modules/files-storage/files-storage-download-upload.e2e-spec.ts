@@ -7,9 +7,9 @@ import { EntityId, FileRecord, ICurrentUser, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { FilesStorageTestModule, s3Config } from '@src/modules/files-storage';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
-import { ErrorType } from '@src/modules/files-storage/files-storage.const';
-import { config, FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
+import { ErrorType } from '@src/modules/files-storage/error';
 import { Request } from 'express';
 import S3rver from 's3rver';
 import request from 'supertest';
@@ -74,7 +74,7 @@ describe('files-storage controller (e2e)', () => {
 	beforeAll(async () => {
 		const port = 10000 + createRndInt(10000);
 		appPort = 10000 + createRndInt(10000);
-		const overridetS3Config = Object.assign(config, { endpoint: `http://localhost:${port}` });
+		const overridetS3Config = Object.assign(s3Config, { endpoint: `http://localhost:${port}` });
 
 		s3instance = new S3rver({
 			directory: `/tmp/s3rver_test_directory${port}`,

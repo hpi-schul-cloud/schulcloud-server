@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { FileRecordParentType } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { FileRecordParamsParentTypeEnum } from '@src/modules/files-storage-client/filesStorageApi/v3';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
@@ -52,13 +52,11 @@ describe('LessonService', () => {
 
 	it('delete lesson', async () => {
 		const lesson = lessonFactory.buildWithId();
-		const jwt = 'jwt123';
-		const parentType = FileRecordParamsParentTypeEnum.Lessons;
+		const parentType = FileRecordParentType.Lesson;
 
-		await lessonService.deleteLesson(lesson, jwt);
+		await lessonService.deleteLesson(lesson);
 
 		expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith({
-			jwt,
 			schoolId: null,
 			parentType,
 			parentId: lesson.id,
@@ -73,5 +71,16 @@ describe('LessonService', () => {
 		await lessonService.findById(lesson.id);
 
 		expect(lessonRepo.findById).toHaveBeenCalledWith(lesson.id);
+	});
+
+	describe('findByCourseIds', () => {
+		it('should call findByCourseIds from lesson repo', async () => {
+			const courseIds = ['course-1', 'course-2'];
+			lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+
+			await expect(lessonService.findByCourseIds(courseIds)).resolves.not.toThrow();
+			expect(lessonRepo.findAllByCourseIds).toBeCalledTimes(1);
+			expect(lessonRepo.findAllByCourseIds).toBeCalledWith(courseIds);
+		});
 	});
 });

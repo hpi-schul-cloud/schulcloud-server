@@ -1,15 +1,20 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import {
 	Actions,
 	Counted,
 	Course,
 	EntityId,
 	IPagination,
+	ITaskCreate,
+	ITaskProperties,
 	ITaskStatus,
+	ITaskUpdate,
 	Lesson,
 	Permission,
 	PermissionContextBuilder,
 	SortOrder,
+	Task,
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
@@ -88,10 +93,8 @@ export class TaskUC {
 	}
 
 	async changeFinishedForUser(userId: EntityId, taskId: EntityId, isFinished: boolean): Promise<TaskWithStatusVo> {
-		const [user, task] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.taskRepo.findById(taskId),
-		]);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([]));
 
@@ -102,6 +105,8 @@ export class TaskUC {
 		}
 		await this.taskRepo.save(task);
 
+		// TODO fix student case - why have student as fallback?
+		//  should be based on permission too and use this.createStatus() instead
 		// add status
 		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])
 			? task.createTeacherStatusForUser(user)
@@ -211,18 +216,107 @@ export class TaskUC {
 		return oneWeekAgo;
 	}
 
-	async delete(userId: EntityId, taskId: EntityId, jwt: string) {
-		const [user, task] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.taskRepo.findById(taskId),
-		]);
+	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
+		this.checkNewTaskEnabled();
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const course = await this.courseRepo.findById(params.courseId);
+
+		// TODO is this permissiosn checking parent correctly?
+		this.authorizationService.checkPermission(
+			user,
+			course,
+			PermissionContextBuilder.write([Permission.HOMEWORK_CREATE])
+		);
+
+		const taskParams: ITaskProperties = {
+			...params,
+			school: user.school,
+			creator: user,
+			course,
+		};
+
+		const task = new Task(taskParams);
+
+		await this.taskRepo.save(task);
+
+		const status = task.createTeacherStatusForUser(user);
+		const taskWithStatusVo = new TaskWithStatusVo(task, status);
+
+		return taskWithStatusVo;
+	}
+
+	async find(userId: EntityId, taskId: EntityId) {
+		this.checkNewTaskEnabled();
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
+
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
+
+		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])
+			? task.createTeacherStatusForUser(user)
+			: task.createStudentStatusForUser(user);
+
+		const result = new TaskWithStatusVo(task, status);
+
+		return result;
+	}
+
+	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
+		this.checkNewTaskEnabled();
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
+
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([Permission.HOMEWORK_EDIT]));
+
+		// eslint-disable-next-line no-restricted-syntax
+		for (const [key, value] of Object.entries(params)) {
+			if (value) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				task[key] = value;
+			}
+		}
+
+		const course = await this.courseRepo.findById(params.courseId);
+		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+		task.course = course;
+
+		if (params.lessonId) {
+			const lesson = await this.lessonRepo.findById(params.lessonId);
+			if (!task.course || lesson.course.id !== task.course.id) {
+				throw new BadRequestException('Lesson does not belong to Course');
+			}
+			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+			task.lesson = lesson;
+		}
+
+		await this.taskRepo.save(task);
+
+		const status = task.createTeacherStatusForUser(user);
+		const taskWithStatusVo = new TaskWithStatusVo(task, status);
+
+		return taskWithStatusVo;
+	}
+
+	async delete(userId: EntityId, taskId: EntityId) {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
 
-		const params = FileParamBuilder.build(jwt, task.school.id, task);
+		const params = FileParamBuilder.build(task.school.id, task);
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
 
 		await this.taskRepo.delete(task);
 		return true;
+	}
+
+	private checkNewTaskEnabled() {
+		const enabled = Configuration.get('FEATURE_NEW_TASK_ENABLED') as boolean;
+		if (!enabled) {
+			throw new InternalServerErrorException('Feature not enabled');
+		}
 	}
 }

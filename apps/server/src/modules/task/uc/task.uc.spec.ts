@@ -1,6 +1,7 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
 import { Actions, Course, ITaskStatus, Lesson, Permission, SortOrder, Task, User } from '@shared/domain';
@@ -938,7 +939,7 @@ describe('TaskUC', () => {
 		});
 	});
 
-	describe('updateTaskFinished', () => {
+	describe('changeFinishedForUser', () => {
 		let task: Task;
 
 		beforeEach(() => {
@@ -1054,17 +1055,17 @@ describe('TaskUC', () => {
 				throw new ForbiddenException();
 			});
 			await expect(async () => {
-				await service.delete(user.id, task.id, 'jwt');
+				await service.delete(user.id, task.id);
 			}).rejects.toThrow(new ForbiddenException());
 		});
 
 		it('should call TaskRepo.delete() with Task', async () => {
-			await service.delete(user.id, task.id, 'jwt');
+			await service.delete(user.id, task.id);
 			expect(taskRepo.delete).toBeCalledWith(task);
 		});
 
 		it('should call authorizationService.hasPermission() with User Task Aktion.write', async () => {
-			await service.delete(user.id, task.id, 'jwt');
+			await service.delete(user.id, task.id);
 			expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 				action: Actions.write,
 				requiredPermissions: [],
@@ -1072,9 +1073,159 @@ describe('TaskUC', () => {
 		});
 
 		it('should call fileStorageClientAdapterService.deleteFilesOfParent', async () => {
-			await service.delete(user.id, task.id, 'jwt');
-			const params = FileParamBuilder.build('jwt', task.school.id, task);
+			await service.delete(user.id, task.id);
+			const params = FileParamBuilder.build(task.school.id, task);
 			expect(fileStorageClientAdapterService.deleteFilesOfParent).toBeCalledWith(params);
+		});
+	});
+
+	describe('Single task', () => {
+		beforeEach(() => {
+			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
+				if (config === 'FEATURE_NEW_TASK_ENABLED') {
+					return true;
+				}
+				return null;
+			});
+		});
+
+		describe('create task', () => {
+			let course: Course;
+			beforeEach(() => {
+				user = userFactory.buildWithId();
+				course = courseFactory.build({ teachers: [user] });
+				userRepo.findById.mockResolvedValue(user);
+				courseRepo.findById.mockResolvedValue(course);
+				taskRepo.save.mockResolvedValue();
+			});
+
+			it('should check for permission to create the task', async () => {
+				await service.create(user.id, { name: 'test', courseId: course.id });
+				expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
+					action: Actions.write,
+					requiredPermissions: [Permission.HOMEWORK_CREATE],
+				});
+			});
+			it('should save the task', async () => {
+				const taskMock = {
+					name: 'test',
+					creator: user,
+					course,
+				};
+				await service.create(user.id, { name: 'test', courseId: course.id });
+				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
+			});
+			it('should return the task and its status', async () => {
+				const taskMock = {
+					name: 'test',
+					creator: user,
+					course,
+				};
+				authorizationService.hasPermission.mockReturnValue(true);
+				const result = await service.create(user.id, { name: 'test', courseId: course.id });
+				expect(result.task).toEqual(expect.objectContaining(taskMock));
+				expect(result.status.isDraft).toEqual(true);
+			});
+		});
+		describe('update task', () => {
+			let course: Course;
+			let task: Task;
+			beforeEach(() => {
+				user = userFactory.buildWithId();
+				course = courseFactory.buildWithId({ teachers: [user] });
+
+				task = taskFactory.build({ course });
+				userRepo.findById.mockResolvedValue(user);
+				courseRepo.findById.mockResolvedValue(course);
+
+				taskRepo.findById.mockResolvedValue(task);
+				taskRepo.save.mockResolvedValue();
+			});
+			it('should check for permission to update the task', async () => {
+				const params = {
+					name: 'test',
+					courseId: course.id,
+				};
+				await service.update(user.id, task.id, params);
+				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
+					action: Actions.write,
+					requiredPermissions: [Permission.HOMEWORK_EDIT],
+				});
+			});
+			it('should check authorization for course', async () => {
+				const newCourse = courseFactory.buildWithId({ teachers: [user] });
+				courseRepo.findById.mockResolvedValue(newCourse);
+				const params = {
+					name: 'test',
+					courseId: course.id,
+				};
+				await service.update(user.id, task.id, params);
+				expect(authorizationService.checkPermission).toBeCalledWith(user, newCourse, {
+					action: Actions.write,
+					requiredPermissions: [],
+				});
+			});
+			it('should save the task with course', async () => {
+				const params = {
+					name: 'test',
+					courseId: course.id,
+				};
+				await service.update(user.id, task.id, params);
+				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name });
+			});
+			it('should save the task with course and lesson', async () => {
+				const lesson = lessonFactory.buildWithId({ course });
+				lessonRepo.findById.mockResolvedValue(lesson);
+				const params = {
+					name: 'test',
+					courseId: course.id,
+					lessonId: lesson.id,
+				};
+				await service.update(user.id, task.id, params);
+				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name, lessonId: lesson.id });
+			});
+			it('should throw if lesson does not belong to course', async () => {
+				const lesson = lessonFactory.buildWithId();
+				lessonRepo.findById.mockResolvedValue(lesson);
+				const params = {
+					name: 'test',
+					courseId: course.id,
+					lessonId: lesson.id,
+				};
+				await expect(async () => {
+					await service.update(user.id, task.id, params);
+				}).rejects.toThrow(BadRequestException);
+			});
+			it('should return the updated task', async () => {
+				const params = {
+					name: 'test',
+					courseId: course.id,
+				};
+				const result = await service.update(user.id, task.id, params);
+				expect(result.task).toEqual({ ...task, name: params.name });
+				expect(result.status).toBeDefined();
+			});
+		});
+		describe('find task', () => {
+			let task: Task;
+			beforeEach(() => {
+				user = userFactory.buildWithId();
+				task = taskFactory.build();
+				userRepo.findById.mockResolvedValue(user);
+				taskRepo.findById.mockResolvedValue(task);
+			});
+			it('should check for permission to view the task', async () => {
+				await service.find(user.id, task.id);
+				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
+					action: Actions.read,
+					requiredPermissions: [Permission.HOMEWORK_VIEW],
+				});
+			});
+			it('should return the task with its status', async () => {
+				const result = await service.find(user.id, task.id);
+				expect(result.task).toEqual(task);
+				expect(result.status).toBeDefined();
+			});
 		});
 	});
 });

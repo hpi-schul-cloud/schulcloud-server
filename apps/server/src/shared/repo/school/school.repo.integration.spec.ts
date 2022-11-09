@@ -1,9 +1,10 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { School, SchoolRolePermission, SchoolRoles, SchoolYear } from '@shared/domain';
+import { School, SchoolRolePermission, SchoolRoles, SchoolYear, System } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { schoolFactory } from '@shared/testing';
+import { schoolFactory, systemFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolRepo } from '..';
 import { SchoolYearRepo } from '../schoolyear';
 
@@ -56,16 +57,39 @@ describe('school repo', () => {
 	});
 
 	it('createAndSave', async () => {
-		// Arrange
 		const schoolEntity: School = schoolFactory.build();
 
-		// Act
 		const createdSchool: School = repo.create(schoolEntity);
 		await repo.save(createdSchool);
 
-		// Assert
 		const savedSchoolEntity = await em.find(School, {});
 		expect(savedSchoolEntity[0].id).toBeDefined();
 		expect(createdSchool.id).toBeDefined();
+	});
+
+	describe('findByExternalId', () => {
+		it('should find school by external ID', async () => {
+			const system: System = systemFactory.buildWithId();
+			const schoolEntity: School = schoolFactory.build({ externalId: 'externalId' });
+			schoolEntity.systems.add(system);
+
+			await em.persistAndFlush(schoolEntity);
+
+			const result: School | null = await repo.findByExternalId(
+				schoolEntity.externalId as string,
+				schoolEntity.systems[0].id
+			);
+
+			expect(result).toEqual(schoolEntity);
+		});
+
+		it('should return null when no school is found', async () => {
+			const result: School | null = await repo.findByExternalId(
+				new ObjectId().toHexString(),
+				new ObjectId().toHexString()
+			);
+
+			expect(result).toBeNull();
+		});
 	});
 });

@@ -9,6 +9,8 @@ import { FileLegacyResponse, FileLegacyService } from './file-legacy.service';
 
 export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
 
+// TODO service is only temporary for handle old and new logic and the afterAll async process,
+// can be deleted in the refactoring steps. The status logic must be moved to fileCopyService.
 @Injectable()
 export class FileCopyAppendService {
 	constructor(
@@ -45,23 +47,21 @@ export class FileCopyAppendService {
 		}));
 	}
 
-	async copyFiles(copyStatus: CopyStatus, courseId: EntityId, userId: EntityId, jwt: string): Promise<CopyStatus> {
+	async copyFiles(copyStatus: CopyStatus, courseId: EntityId, userId: EntityId): Promise<CopyStatus> {
 		const { copyEntity, originalEntity, type } = copyStatus;
 
 		if (type === CopyElementType.LESSON && copyEntity instanceof Lesson && originalEntity instanceof Lesson) {
 			const status = await this.copyEmbeddedLegacyFilesOfLessons(copyStatus, courseId, userId);
 
-			return this.copyFilesOfEntity(status, originalEntity, copyEntity, jwt);
+			copyStatus = await this.copyFilesOfEntity(status, originalEntity, copyEntity, userId);
 		}
 		if (type === CopyElementType.TASK && copyEntity instanceof Task && originalEntity instanceof Task) {
 			const status = await this.copyEmbeddedLegacyFilesOfTasks(copyStatus, courseId, userId);
 
-			return this.copyFilesOfEntity(status, originalEntity, copyEntity, jwt);
+			copyStatus = await this.copyFilesOfEntity(status, originalEntity, copyEntity, userId);
 		}
 		if (copyStatus.elements && copyStatus.elements.length > 0) {
-			copyStatus.elements = await Promise.all(
-				copyStatus.elements.map((el) => this.copyFiles(el, courseId, userId, jwt))
-			);
+			copyStatus.elements = await Promise.all(copyStatus.elements.map((el) => this.copyFiles(el, courseId, userId)));
 			copyStatus.status = this.copyHelperService.deriveStatusFromElements(copyStatus.elements);
 		}
 		return copyStatus;
@@ -157,11 +157,16 @@ export class FileCopyAppendService {
 		return taskCopyStatus;
 	}
 
-	async copyFilesOfEntity(copyStatus: CopyStatus, originalEntity: Task | Lesson, entity: Task | Lesson, jwt: string) {
+	async copyFilesOfEntity(
+		copyStatus: CopyStatus,
+		originalEntity: Task | Lesson,
+		entity: Task | Lesson,
+		userId: EntityId
+	) {
 		const { entity: updatedEntity, response } = await this.copyFilesService.copyFilesOfEntity(
 			originalEntity,
 			entity,
-			jwt
+			userId
 		);
 
 		copyStatus.copyEntity = updatedEntity;

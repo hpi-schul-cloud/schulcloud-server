@@ -20,7 +20,8 @@
 		"S3_SECRET_ACCESS_KEY": "miniouser",
 		"S3_BUCKET": "schulcloud",
 		"S3_REGION": "eu-central-1",
-		"INCOMING_REQUEST_TIMEOUT": 600000
+		"INCOMING_REQUEST_TIMEOUT": 600000,
+		"EXCHANGE": "files-storage"
 	},
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
@@ -37,7 +38,6 @@
 		"CLIENT_SECRET": "erwin-credentials-mock-client-secret"
 	},
 	"INCOMING_REQUEST_TIMEOUT_API": 60000,
-	"NEST_AVAILABLE_LOG_LEVELS": "log,error,warn,debug,verbose,http",
 	"FEATURE_COPY_SERVICE_ENABLED": true,
 	"COOKIE": {
 		"SAME_SITE": "lax",
@@ -46,5 +46,6 @@
 		"SECURE": false,
 		"EXPIRES_SECONDS": 2592000000
 	},
-	"HYDRA_URI": "http://localhost:9001"
+	"HYDRA_URI": "http://localhost:9001",
+	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": true
 }

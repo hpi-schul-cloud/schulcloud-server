@@ -87,7 +87,6 @@ describe('user repo', () => {
 			await testObjects.createTestRole({ name: TEST_ROLE, permissions: [] });
 
 			const TEST_EMAIL = `test${Date.now()}@example.com`;
-			await testObjects.createTestUser({ email: TEST_EMAIL });
 
 			const inputUser = {
 				firstName: 'Max',
@@ -95,13 +94,30 @@ describe('user repo', () => {
 				email: TEST_EMAIL,
 				schoolId: school._id,
 				ldapDn: 'Test ldap',
-				ldapId: 'Test ldapId',
 				roles: [TEST_ROLE],
 			};
 			const inputAccount = {
 				username: TEST_EMAIL,
 			};
-			await expect(UserRepo.createUserAndAccount(inputUser, inputAccount)).to.be.rejectedWith(BadRequest);
+
+			const firstLdapId = 'initialLdapId';
+			const inputUserFirst = {
+				...inputUser,
+				ldapId: firstLdapId,
+			};
+			await UserRepo.createUserAndAccount(inputUserFirst, inputAccount);
+
+			const secondLdapId = 'newLdapId';
+			const inputUserSecond = {
+				...inputUser,
+				ldapId: secondLdapId,
+			};
+			try {
+				await UserRepo.createUserAndAccount(inputUserSecond, inputAccount);
+			} catch (error) {
+				expect(error).to.be.an.instanceof(BadRequest);
+				expect(error.message).to.contain(firstLdapId);
+			}
 		});
 	});
 	describe('update user and account', () => {

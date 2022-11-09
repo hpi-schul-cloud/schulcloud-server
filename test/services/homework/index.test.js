@@ -16,6 +16,7 @@ describe('homework service', () => {
 	let homeworkCopyService;
 	let server;
 	let nestServices;
+	// let lessonService;
 
 	const setupPrivateHomework = async () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'] });

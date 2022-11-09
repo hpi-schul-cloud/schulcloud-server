@@ -52,12 +52,11 @@ describe('LessonUC', () => {
 	it('delete', async () => {
 		const user = userFactory.buildWithId();
 		const lesson = lessonFactory.buildWithId();
-		const jwt = 'jwt123';
 
 		authorizationService.getUserWithPermissions.mockResolvedValue(user);
 		lessonService.findById.mockResolvedValue(lesson);
 
-		const result = await lessonUC.delete(user.id, lesson.id, jwt);
+		const result = await lessonUC.delete(user.id, lesson.id);
 
 		expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
 		expect(lessonService.findById).toHaveBeenCalledWith(lesson.id);
@@ -67,7 +66,7 @@ describe('LessonUC', () => {
 			expect.objectContaining({ ...lesson }),
 			PermissionContextBuilder.write([Permission.TOPIC_EDIT])
 		);
-		expect(lessonService.deleteLesson).toHaveBeenCalledWith(expect.objectContaining({ ...lesson }), jwt);
+		expect(lessonService.deleteLesson).toHaveBeenCalledWith(expect.objectContaining({ ...lesson }));
 
 		expect(result).toBe(true);
 	});

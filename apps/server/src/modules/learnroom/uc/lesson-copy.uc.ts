@@ -1,22 +1,15 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import {
-	CopyHelperService,
-	CopyStatus,
-	EntityId,
-	Lesson,
-	LessonCopyService,
-	PermissionContextBuilder,
-	User,
-} from '@shared/domain';
+import { CopyHelperService, CopyStatus, EntityId, Lesson, PermissionContextBuilder, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
+import { LessonCopyService } from '../service';
 
 export type LessonCopyParentParams = {
 	courseId?: EntityId;
-	jwt: string;
+	userId: string;
 };
 
 @Injectable()
@@ -59,7 +52,7 @@ export class LessonCopyUC {
 			const lessonCopy = status.copyEntity;
 			await this.lessonRepo.save(lessonCopy);
 			status = this.lessonCopyService.updateCopiedEmbeddedTasks(status);
-			status = await this.fileCopyAppendService.copyFiles(status, lessonCopy.course.id, userId, parentParams.jwt);
+			status = await this.fileCopyAppendService.copyFiles(status, lessonCopy.course.id, userId);
 			const updatedLesson = status.copyEntity as Lesson;
 			await this.lessonRepo.save(updatedLesson);
 		}

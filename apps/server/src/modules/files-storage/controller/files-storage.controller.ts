@@ -23,8 +23,8 @@ import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
-import { FileRecordUC } from '../uc/file-record.uc';
-import { FilesStorageUC } from '../uc/files-storage.uc';
+import { FilesStorageMapper } from '../mapper/file-record.mapper';
+import { FileRecordUC, FilesStorageUC } from '../uc';
 import {
 	CopyFileListResponse,
 	CopyFileParams,
@@ -58,9 +58,9 @@ export class FilesStorageController {
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
-		const res = await this.filesStorageUC.uploadFromUrl(currentUser.userId, { ...body, ...params });
+		const fileRecord = await this.filesStorageUC.uploadFromUrl(currentUser.userId, { ...body, ...params });
 
-		const response = new FileRecordResponse(res);
+		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
@@ -79,9 +79,9 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request
 	): Promise<FileRecordResponse> {
-		const res = await this.filesStorageUC.upload(currentUser.userId, params, req);
+		const fileRecord = await this.filesStorageUC.upload(currentUser.userId, params, req);
 
-		const response = new FileRecordResponse(res);
+		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
@@ -120,15 +120,9 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<FileRecordListResponse> {
-		const [fileRecords, total] = await this.fileRecordUC.fileRecordsOfParent(currentUser.userId, params);
-
-		const responseFileRecords = fileRecords.map((fileRecord) => {
-			return new FileRecordResponse(fileRecord);
-		});
-
+		const [fileRecords, total] = await this.fileRecordUC.getFileRecordsOfParent(currentUser.userId, params);
 		const { skip, limit } = pagination;
-
-		const response = new FileRecordListResponse(responseFileRecords, total, skip, limit);
+		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total, skip, limit);
 
 		return response;
 	}
@@ -150,9 +144,9 @@ export class FilesStorageController {
 		@Body() renameFileParam: RenameFileParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
-		const res = await this.fileRecordUC.patchFilename(currentUser.userId, params, renameFileParam);
+		const fileRecord = await this.fileRecordUC.patchFilename(currentUser.userId, params, renameFileParam);
 
-		const response = new FileRecordResponse(res);
+		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
@@ -172,12 +166,7 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent(currentUser.userId, params);
-
-		const responseFileRecords = fileRecords.map((fileRecord) => {
-			return new FileRecordResponse(fileRecord);
-		});
-
-		const response = new FileRecordListResponse(responseFileRecords, total);
+		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return response;
 	}
@@ -195,7 +184,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.deleteOneFile(currentUser.userId, params);
 
-		const response = new FileRecordResponse(fileRecord);
+		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
@@ -211,11 +200,7 @@ export class FilesStorageController {
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.restoreFilesOfParent(currentUser.userId, params);
 
-		const responseFileRecords = fileRecords.map((fileRecord) => {
-			return new FileRecordResponse(fileRecord);
-		});
-
-		const response = new FileRecordListResponse(responseFileRecords, total);
+		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return response;
 	}
@@ -231,7 +216,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.restoreOneFile(currentUser.userId, params);
 
-		const response = new FileRecordResponse(fileRecord);
+		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}

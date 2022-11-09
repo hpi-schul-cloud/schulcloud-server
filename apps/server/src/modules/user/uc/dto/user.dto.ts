@@ -9,7 +9,7 @@ export class UserDto {
 		this.roleIds = user.roleIds;
 		this.schoolId = user.schoolId;
 		this.ldapDn = user.ldapDn;
-		this.ldapId = user.ldapId;
+		this.externalId = user.externalId;
 		this.language = user.language;
 		this.forcePasswordChange = user.forcePasswordChange;
 		this.preferences = user.preferences;
@@ -23,13 +23,13 @@ export class UserDto {
 
 	lastName: string;
 
-	roleIds: string[] = [];
+	roleIds: EntityId[] = [];
 
 	schoolId: string;
 
 	ldapDn?: string;
 
-	ldapId?: string;
+	externalId?: string;
 
 	language?: LanguageType;
 

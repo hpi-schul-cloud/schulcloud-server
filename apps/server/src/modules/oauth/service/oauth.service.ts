@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { HttpService } from '@nestjs/axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
@@ -10,16 +10,13 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AxiosResponse } from 'axios';
-import { Inject, NotFoundException } from '@nestjs/common';
-
-import { SystemService } from '@src/modules/system/service/system.service';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { BadRequestException, Inject } from '@nestjs/common';
+import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
+import { FeathersJwtProvider } from '@src/modules/authorization';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
-import { FeathersJwtProvider } from '../../authorization';
-import { IservOAuthService } from './iserv-oauth.service';
 import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthResponse } from './dto/oauth.response';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
@@ -28,12 +25,11 @@ import { AuthorizationParams } from '../controller/dto/authorization.params';
 export class OAuthService {
 	constructor(
 		private readonly userRepo: UserRepo,
-		private readonly systemService: SystemService,
 		private readonly jwtService: FeathersJwtProvider,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
-		private readonly iservOauthService: IservOAuthService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly provisioningService: ProvisioningService
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
@@ -47,13 +43,10 @@ export class OAuthService {
 			return query.code;
 		}
 
-		let errorCode = 'sso_auth_code_step';
-
-		if (query.error) {
-			errorCode = `sso_oauth_${query.error}`;
-			this.logger.error(`SSO Oauth authorization code request return with an error: ${query.code as string}`);
-		}
-		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
+		throw new OAuthSSOError(
+			'Authorization Query Object has no authorization code or error',
+			query.error || 'sso_auth_code_step'
+		);
 	}
 
 	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
@@ -93,6 +86,7 @@ export class OAuthService {
 		} catch (error) {
 			throw new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step');
 		}
+
 		return responseToken.data;
 	}
 
@@ -107,32 +101,45 @@ export class OAuthService {
 
 	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<IJwt> {
 		const publicKey = await this._getPublicKey(oauthConfig);
-		const verifiedJWT = jwt.verify(idToken, publicKey, {
+		const verifiedJWT: string | jwt.JwtPayload = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
 			issuer: oauthConfig.issuer,
 			audience: oauthConfig.clientId,
 		});
-		if (typeof verifiedJWT === 'string' || verifiedJWT instanceof String)
+
+		if (typeof verifiedJWT === 'string') {
 			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
+		}
+
 		return verifiedJWT as IJwt;
 	}
 
-	async findUser(decodedJwt: IJwt, oauthConfig: OauthConfig, systemId: string): Promise<User> {
-		// iserv strategy
-		if (oauthConfig && oauthConfig.provider === 'iserv') {
-			return this.iservOauthService.findUserById(systemId, decodedJwt);
+	async findUser(accessToken: string, idToken: string, systemId: string): Promise<User> {
+		const sub: string | undefined = jwt.decode(idToken, { json: true })?.sub;
+
+		if (!sub) {
+			throw new BadRequestException(`Provided idToken: ${idToken} has no sub.`);
 		}
-		// TODO Temporary change - wait for N21-138 merge
-		// This user id resolution is trial and error at the moment. It is ought to be replaced by a proper strategy pattern (N21-138)
-		// See scope of EW-325
+
+		this.logger.debug(`provisioning is running for user with sub: ${sub} and system with id: ${systemId}`);
+		const provisioningDto: ProvisioningDto = await this.provisioningService.process(accessToken, idToken, systemId);
+
 		try {
-			return await this.userRepo.findById(decodedJwt.sub);
+			const user: User = await this.userRepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
+			return user;
 		} catch (error) {
-			try {
-				return await this.userRepo.findByLdapIdOrFail(decodedJwt.preferred_username ?? '', systemId);
-			} catch {
-				throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
+			let additionalInfo = '';
+			const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
+			const email = decodedToken?.email as string | undefined;
+			if (email) {
+				const usersWithEmail: User[] = await this.userRepo.findByEmail(email);
+				const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
+				additionalInfo = ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
 			}
+			throw new OAuthSSOError(
+				`Failed to find user with Id ${provisioningDto.externalUserId} ${additionalInfo}`,
+				'sso_user_notfound'
+			);
 		}
 	}
 
@@ -149,41 +156,46 @@ export class OAuthService {
 		return response;
 	}
 
-	getRedirect(response: OAuthResponse): OAuthResponse {
+	/**
+	 * Builds the URL from the given parameters.
+	 *
+	 * @param provider
+	 * @param idToken
+	 * @param logoutEndpoint
+	 * @return built redirectUrl
+	 */
+	getRedirectUrl(provider: string, idToken = '', logoutEndpoint = ''): string {
 		const HOST = Configuration.get('HOST') as string;
-		let redirect: string;
-		const oauthResponse: OAuthResponse = new OAuthResponse();
+
 		// iserv strategy
-		if (response.provider === 'iserv') {
-			const idToken = response.idToken as string;
-			const logoutEndpoint = response.logoutEndpoint as string;
+		// TODO: move to client in https://ticketsystem.dbildungscloud.de/browse/N21-381
+		let redirect: string;
+		if (provider === 'iserv') {
 			redirect = `${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`;
 		} else {
 			redirect = `${HOST}/dashboard`;
 		}
-		oauthResponse.redirect = redirect;
-		return oauthResponse;
+
+		return redirect;
 	}
 
-	async getOauthConfig(systemId: string): Promise<OauthConfig> {
-		const system: SystemDto = await this.systemService.findOAuthById(systemId);
-		if (system.oauthConfig) {
-			return system.oauthConfig;
-		}
-		throw new NotFoundException(`No OAuthConfig Available in the given System ${system.id ?? ''}!`);
-	}
-
-	getOAuthError(error: unknown, provider: string): OAuthResponse {
+	getOAuthErrorResponse(error: unknown, provider: string): OAuthResponse {
 		this.logger.error(error);
+
 		const oauthResponse = new OAuthResponse();
+
+		oauthResponse.provider = provider;
+
 		if (error instanceof OAuthSSOError) {
 			oauthResponse.errorcode = error.errorcode;
 		} else {
 			oauthResponse.errorcode = 'oauth_login_failed';
 		}
+
 		oauthResponse.redirect = `${Configuration.get('HOST') as string}/login?error=${
 			oauthResponse.errorcode
 		}&provider=${provider}`;
+
 		return oauthResponse;
 	}
 }

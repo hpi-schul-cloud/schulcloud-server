@@ -20,7 +20,7 @@ import request from 'supertest';
 Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 // eslint-disable-next-line import/first
-import { ServerTestModule } from '@src/server.module';
+import { ServerTestModule } from '@src/modules/server/server.module';
 
 describe('Copy timeout (e2e)', () => {
 	let app: INestApplication;
