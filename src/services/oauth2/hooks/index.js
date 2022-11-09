@@ -70,7 +70,7 @@ const setIdToken = (hook) => {
 				isLocal: true,
 			},
 		}),
-	]).then(([user, userTeams, tools]) =>
+	]).then(([user, roles, userTeams, tools]) =>
 		hook.app
 			.service('pseudonym')
 			.find({
@@ -88,19 +88,9 @@ const setIdToken = (hook) => {
 						email: scope.includes('email') ? user.email : undefined,
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
-						userRole: scope.includes('bilo') ? user.roles.map((role) => this.role = role.name) : undefined,
+						userRole: scope.includes('bilo') ? roles.data.map((role) => ({userRole: role.name})) : undefined,
 						fedState: scope.includes('bilo') ? user.schoolId.federalState : undefined,
-						// userRole: scope.includes('bilo')
-						// 	? user.roles.data.map((roles) => ({
-						// 			roleName: roles.name,
-						// 	  }))
-						// 	: undefined,
 						schoolId: user.schoolId,
-						// federalState: scope.includes('bilo')
-						// 	? user.schoolId.federalState.data.map((federalState) => ({
-						// 			federalStateName: federalState.name,
-						// 	  }))
-						// 	: undefined,
 						groups: scope.includes('groups')
 							? userTeams.data.map((team) => ({
 									gid: team._id,
