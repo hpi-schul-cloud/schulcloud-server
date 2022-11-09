@@ -78,8 +78,8 @@ const setIdToken = (hook) => {
 						email: scope.includes('email') ? user.email : undefined,
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
-						userRole: scope.includes('bilo') ? user.roles.roleName : undefined,
-						fedState: scope.includes('bilo') ? user.schoolId.federalState.name : undefined,
+						userRole: scope.includes('bilo') ? user.roles : undefined,
+						fedState: scope.includes('bilo') ? user.schoolId.federalState : undefined,
 						// userRole: scope.includes('bilo')
 						// 	? user.roles.data.map((roles) => ({
 						// 			roleName: roles.name,
@@ -101,8 +101,9 @@ const setIdToken = (hook) => {
 				};
 				// eslint-disable-next-line no-console
 				console.log('userRole: ', user.roles.data.map((role) => { this.role = role.name}));
+				console.log('userRole: ', user.roles.map((roles) => {this.roles = roles.name}));
 				console.log('userRole: ', user.roles);
-				console.log('userRole: ', user.role);
+				console.log('userRole: ', user.roles.name);
 				console.log('userRole: ', user.roles[0]);
 				console.log('userRole: ', user.roles[0].name);
 				console.log('id_token_bilo: ', hook);
