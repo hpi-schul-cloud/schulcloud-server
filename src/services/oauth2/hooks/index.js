@@ -44,7 +44,6 @@ const setIdToken = (hook) => {
 	// add 'federalState' to Promise - clean solution
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
-		hook.app.service('roles').get(hook.params.account.userId),
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 					{
@@ -79,7 +78,7 @@ const setIdToken = (hook) => {
 						email: scope.includes('email') ? user.email : undefined,
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
-						userRole: scope.includes('bilo') ? user.roles : undefined,
+						userRole: scope.includes('bilo') ? user.roles.map((role) => this.role = role.name) : undefined,
 						fedState: scope.includes('bilo') ? user.schoolId.federalState : undefined,
 						// userRole: scope.includes('bilo')
 						// 	? user.roles.data.map((roles) => ({
@@ -100,14 +99,6 @@ const setIdToken = (hook) => {
 							: undefined,
 					},
 				};
-				// eslint-disable-next-line no-console
-				console.log('userRole: ', user.roles);
-				// eslint-disable-next-line no-console
-				console.log('userRole: ', user.roles.name);
-				// eslint-disable-next-line no-console
-				console.log('userRole: ', user.roles[0]);
-				// eslint-disable-next-line no-console
-				console.log('userRole: ', user.roles[0].name);
 				// eslint-disable-next-line no-console
 				console.log('id_token_bilo: ', hook);
 				return hook;
