@@ -1091,15 +1091,17 @@ describe('TaskUC', () => {
 
 		describe('create task', () => {
 			let course: Course;
-			let lesson: Lesson;
 			beforeEach(() => {
 				user = userFactory.buildWithId();
 				course = courseFactory.buildWithId({ teachers: [user] });
-				lesson = lessonFactory.buildWithId({ course });
 				userRepo.findById.mockResolvedValue(user);
 				courseRepo.findById.mockResolvedValue(course);
-				lessonRepo.findById.mockResolvedValue(lesson);
 				taskRepo.save.mockResolvedValue();
+			});
+			afterEach(() => {
+				userRepo.findById.mockRestore();
+				courseRepo.findById.mockRestore();
+				taskRepo.save.mockRestore();
 			});
 
 			it('should check for permission to create the task', async () => {
@@ -1114,6 +1116,8 @@ describe('TaskUC', () => {
 				});
 			});
 			it('should check for lesson permission to create the task in a lesson', async () => {
+				const lesson = lessonFactory.buildWithId({ course });
+				lessonRepo.findById.mockResolvedValue(lesson);
 				await service.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
 				expect(authorizationService.checkPermission).toBeCalledWith(user, lesson, {
 					action: Actions.write,
@@ -1126,6 +1130,8 @@ describe('TaskUC', () => {
 				await expect(async () => {
 					await service.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
 				}).rejects.toThrow(BadRequestException);
+
+				lessonRepo.findById.mockRestore();
 			});
 			it('should save the task', async () => {
 				const taskMock = {
@@ -1153,6 +1159,8 @@ describe('TaskUC', () => {
 				};
 				await service.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
 				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
+
+				lessonRepo.findById.mockRestore();
 			});
 			it('should return the task and its status', async () => {
 				const taskMock = {
@@ -1180,6 +1188,14 @@ describe('TaskUC', () => {
 				taskRepo.findById.mockResolvedValue(task);
 				taskRepo.save.mockResolvedValue();
 			});
+
+			afterEach(() => {
+				userRepo.findById.mockRestore();
+				courseRepo.findById.mockRestore();
+				taskRepo.save.mockRestore();
+				taskRepo.findById.mockRestore();
+			});
+
 			it('should check for permission to update the task', async () => {
 				const params = {
 					name: 'test',
@@ -1219,6 +1235,8 @@ describe('TaskUC', () => {
 				};
 				await service.update(user.id, task.id, params);
 				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name, lessonId: lesson.id });
+
+				lessonRepo.findById.mockRestore();
 			});
 			it('should throw if lesson does not belong to course', async () => {
 				const lesson = lessonFactory.buildWithId();
@@ -1231,6 +1249,8 @@ describe('TaskUC', () => {
 				await expect(async () => {
 					await service.update(user.id, task.id, params);
 				}).rejects.toThrow(BadRequestException);
+
+				lessonRepo.findById.mockRestore();
 			});
 			it('should return the updated task', async () => {
 				const params = {
