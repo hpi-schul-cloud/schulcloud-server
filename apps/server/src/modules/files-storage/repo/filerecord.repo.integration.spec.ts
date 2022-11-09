@@ -5,7 +5,7 @@ import { cleanupCollections, fileRecordFactory } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
 import { FileRecordRepo } from './filerecord.repo';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { ALL_FILES_STORAGE_ENTITIES, FileRecord, FileRecordParentType } from '../entity';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
@@ -14,7 +14,7 @@ describe('FileRecordRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: ALL_FILES_STORAGE_ENTITIES })],
 			providers: [FileRecordRepo],
 		}).compile();
 		repo = module.get(FileRecordRepo);

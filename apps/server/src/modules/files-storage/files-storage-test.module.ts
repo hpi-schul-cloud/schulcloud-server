@@ -6,11 +6,12 @@ import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AuthModule } from '@src/modules/authentication';
 import { AuthorizationModule } from '@src/modules/authorization';
+import { ALL_FILES_STORAGE_ENTITIES } from './entity';
 import { FilesStorageApiModule } from './files-storage-api.module';
 
 const imports = [
 	FilesStorageApiModule,
-	MongoMemoryDatabaseModule.forRoot(),
+	MongoMemoryDatabaseModule.forRoot({ entities: ALL_FILES_STORAGE_ENTITIES }),
 	RabbitMQWrapperTestModule,
 	AuthorizationModule,
 	AuthModule,
