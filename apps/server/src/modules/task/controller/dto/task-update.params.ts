@@ -12,7 +12,7 @@ export class TaskUpdateParams implements ITaskUpdate {
 		required: true,
 		nullable: false,
 	})
-	courseId!: string;
+	courseId?: string;
 
 	@IsString()
 	@IsMongoId()

@@ -1091,28 +1091,67 @@ describe('TaskUC', () => {
 
 		describe('create task', () => {
 			let course: Course;
+			let lesson: Lesson;
 			beforeEach(() => {
 				user = userFactory.buildWithId();
-				course = courseFactory.build({ teachers: [user] });
+				course = courseFactory.buildWithId({ teachers: [user] });
+				lesson = lessonFactory.buildWithId({ course });
 				userRepo.findById.mockResolvedValue(user);
 				courseRepo.findById.mockResolvedValue(course);
+				lessonRepo.findById.mockResolvedValue(lesson);
 				taskRepo.save.mockResolvedValue();
 			});
 
 			it('should check for permission to create the task', async () => {
+				await service.create(user.id, { name: 'test' });
+				expect(authorizationService.hasAllPermissions).toBeCalledWith(user, [Permission.HOMEWORK_CREATE]);
+			});
+			it('should check for course permission to create the task in a course', async () => {
 				await service.create(user.id, { name: 'test', courseId: course.id });
 				expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
 					action: Actions.write,
-					requiredPermissions: [Permission.HOMEWORK_CREATE],
+					requiredPermissions: [],
 				});
+			});
+			it('should check for lesson permission to create the task in a lesson', async () => {
+				await service.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
+				expect(authorizationService.checkPermission).toBeCalledWith(user, lesson, {
+					action: Actions.write,
+					requiredPermissions: [],
+				});
+			});
+			it('should throw if lesson does not belong to course', async () => {
+				const lesson = lessonFactory.buildWithId();
+				lessonRepo.findById.mockResolvedValue(lesson);
+				await expect(async () => {
+					await service.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
+				}).rejects.toThrow(BadRequestException);
 			});
 			it('should save the task', async () => {
 				const taskMock = {
 					name: 'test',
 					creator: user,
+				};
+				await service.create(user.id, { name: 'test' });
+				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
+			});
+			it('should save the task with course', async () => {
+				const taskMock = {
+					name: 'test',
 					course,
 				};
 				await service.create(user.id, { name: 'test', courseId: course.id });
+				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
+			});
+			it('should save the task with course and lesson', async () => {
+				const lesson = lessonFactory.buildWithId({ course });
+				lessonRepo.findById.mockResolvedValue(lesson);
+				const taskMock = {
+					name: 'test',
+					course,
+					lesson,
+				};
+				await service.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
 				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
 			});
 			it('should return the task and its status', async () => {
@@ -1144,7 +1183,6 @@ describe('TaskUC', () => {
 			it('should check for permission to update the task', async () => {
 				const params = {
 					name: 'test',
-					courseId: course.id,
 				};
 				await service.update(user.id, task.id, params);
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
@@ -1153,14 +1191,12 @@ describe('TaskUC', () => {
 				});
 			});
 			it('should check authorization for course', async () => {
-				const newCourse = courseFactory.buildWithId({ teachers: [user] });
-				courseRepo.findById.mockResolvedValue(newCourse);
 				const params = {
 					name: 'test',
 					courseId: course.id,
 				};
 				await service.update(user.id, task.id, params);
-				expect(authorizationService.checkPermission).toBeCalledWith(user, newCourse, {
+				expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
 					action: Actions.write,
 					requiredPermissions: [],
 				});

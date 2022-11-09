@@ -1010,7 +1010,7 @@ describe('Task Controller (e2e)', () => {
 		});
 	});
 
-	describe('When individual assignment task feature is enabled', () => {
+	describe('When new task feature is enabled', () => {
 		let app: INestApplication;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
@@ -1122,7 +1122,7 @@ describe('Task Controller (e2e)', () => {
 			expect(responseTask.lessonName).toEqual(lesson.name);
 		});
 	});
-	describe('When individual assignment Task feature is not enabled', () => {
+	describe('When new task feature is not enabled', () => {
 		let app: INestApplication;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
