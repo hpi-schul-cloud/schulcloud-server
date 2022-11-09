@@ -10,13 +10,14 @@ const { authConfig } = require('./configuration');
 class SCAuthenticationService extends AuthenticationService {
 	async getUserData(user, account) {
 		return {
-			accountId: account._id,
+			accountId: account._id ? account._id : account.id,
 			systemId: account.systemId,
 			userId: user._id,
 			schoolId: user.schoolId,
 			roles: user.roles,
 		};
 	}
+
 	async getPayload(authResult, params) {
 		let payload = await super.getPayload(authResult, params);
 		const user = await this.app.service('usersModel').get(authResult.account.userId);

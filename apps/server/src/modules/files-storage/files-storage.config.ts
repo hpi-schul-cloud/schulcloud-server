@@ -1,6 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ICoreModuleConfig } from '@src/core';
-import { AvailableLogLevel } from '@src/core/logger';
 import { S3Config } from './interface';
 
 export interface IFileStorageConfig extends ICoreModuleConfig {}
@@ -8,7 +7,7 @@ export interface IFileStorageConfig extends ICoreModuleConfig {}
 const fileStorageConfig: IFileStorageConfig = {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('FILES_STORAGE__INCOMING_REQUEST_TIMEOUT') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
-	AVAILABLE_LOG_LEVELS: (Configuration.get('NEST_AVAILABLE_LOG_LEVELS') as string).split(',') as AvailableLogLevel[],
+	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 };
 
 // The configurations lookup

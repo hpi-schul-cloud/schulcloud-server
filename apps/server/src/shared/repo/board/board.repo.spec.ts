@@ -5,6 +5,7 @@ import {
 	courseFactory,
 	boardFactory,
 	lessonBoardElementFactory,
+	lessonFactory,
 	taskBoardElementFactory,
 	cleanupCollections,
 } from '@shared/testing';
@@ -105,15 +106,17 @@ describe('BoardRepo', () => {
 	});
 
 	it('should populate lesson in element', async () => {
-		const lessonElement = lessonBoardElementFactory.build();
+		const lesson = lessonFactory.build();
+		await em.persistAndFlush(lesson);
+		const lessonElement = lessonBoardElementFactory.build({ target: lesson });
 		const board = boardFactory.build({ references: [lessonElement] });
 		await repo.save(board);
 
 		em.clear();
 
 		const result = await repo.findById(board.id);
-		const lesson = result.references.getItems()[0].target as Lesson;
-		expect(lesson.hidden).toBeDefined();
+		const resultLesson = result.references.getItems()[0].target as Lesson;
+		expect(resultLesson.hidden).toBeDefined();
 	});
 
 	it('should populate task in element', async () => {
