@@ -120,6 +120,7 @@ class EduSharingConnector {
 				throw new GeneralError(`Method not supported: ${options.method}`);
 			}
 		} catch (err) {
+			// what if error is GeneralError?
 			if (err.statusCode === 404) {
 				// an empty search returns 200, so this might not be needed anymore
 				return null;
@@ -310,15 +311,19 @@ class EduSharingConnector {
 						node.preview.url = await this.getImage(`${node.preview.url}&crop=true&maxWidth=300&maxHeight=300`);
 					}
 
-					// workaround for Edu-Sharing bug, where arrays are as strings "['a,b,c']"
+					// workaround for Edu-Sharing bug, where keywords are like "['a,b,c', 'd \n']"
 					if (
 						node.properties &&
 						node.properties['cclom:general_keyword'] &&
 						node.properties['cclom:general_keyword'][0]
 					) {
-						node.properties['cclom:general_keyword'] = node.properties['cclom:general_keyword'][0]
-							.slice(1, -1)
-							.split(',');
+						let clean_keywords = [];
+						for (let dirty_keyword of node.properties['cclom:general_keyword']) {
+							for (let keyword of dirty_keyword.split(',')) {
+								clean_keywords.push(keyword.trim());
+							}
+						}
+						node.properties['cclom:general_keyword'] = clean_keywords;
 					}
 				});
 				await Promise.allSettled(promises);
@@ -349,7 +354,7 @@ class EduSharingConnector {
 			const response = await this.eduSharingRequest(options);
 			const parsed = JSON.parse(response);
 			if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
-				const root = html_parser.parse(parsed.detailsSnippet);
+				const root = htmlParser.parse(parsed.detailsSnippet);
 				const content = root.querySelector('.edusharing_rendering_content_wrapper');
 				const iframe = content.querySelector('iframe');
 				const iframe_src = iframe.getAttribute('src');
