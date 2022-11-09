@@ -89,6 +89,14 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
+	async updatePassword(accountId: EntityId, password: string): Promise<AccountDto> {
+		const account = await this.accountRepo.findById(accountId);
+		account.password = await this.encryptPassword(password);
+		account.updatedAt = new Date();
+		await this.accountRepo.save(account);
+		return AccountEntityToDtoMapper.mapToDto(account);
+	}
+
 	delete(id: EntityId): Promise<void> {
 		return this.accountRepo.deleteById(id);
 	}

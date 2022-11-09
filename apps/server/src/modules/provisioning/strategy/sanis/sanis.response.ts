@@ -3,7 +3,8 @@ import { UUID } from 'bson';
 export enum SanisRole {
 	LEHR = 'Lehr',
 	LERN = 'Lern',
-	SYSA = 'Sysa',
+	LEIT = 'Leit',
+	ORGADMIN = 'Orgadmin',
 }
 
 export class SanisResponseName {

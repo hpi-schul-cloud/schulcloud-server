@@ -77,7 +77,7 @@ describe('SanisSchoolService', () => {
 			personenkontexte: [
 				new SanisResponsePersonenkontext({
 					ktid: new UUID(),
-					rolle: SanisRole.SYSA,
+					rolle: SanisRole.LEIT,
 					organisation: new SanisResponseOrganisation({
 						orgid: schoolUUID,
 						name: 'schoolName',
