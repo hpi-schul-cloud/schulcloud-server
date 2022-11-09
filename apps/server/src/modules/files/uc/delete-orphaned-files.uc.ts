@@ -2,7 +2,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
-import { FileRecord, FileRecordParent } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { OrphanedFilesRepo } from '../repo/orphaned-files.repo';
 import { SyncFilesStorageService } from './sync-files-storage.service';
 
@@ -16,7 +16,7 @@ export class DeleteOrphanedFilesUc {
 		this.logger.setContext(DeleteOrphanedFilesUc.name);
 	}
 
-	async deleteOrphanedFilesForParentType(parentType: FileRecordParent) {
+	async deleteOrphanedFilesForParentType(parentType: FileRecordParentType) {
 		this.logger.log('Start deletion process.');
 
 		const orphanedFileRecords = await this.orphanedFilesRepo.findOrphanedFileRecords(parentType);
@@ -26,7 +26,7 @@ export class DeleteOrphanedFilesUc {
 		this.logger.log(`Finished removing orphaned fileRecords.`);
 	}
 
-	async deleteDuplicatedFilesForParentType(parentType: FileRecordParent) {
+	async deleteDuplicatedFilesForParentType(parentType: FileRecordParentType) {
 		this.logger.log('Start deletion process.');
 
 		const orphanedFileRecords = await this.orphanedFilesRepo.findDuplicatedFileRecords(parentType);

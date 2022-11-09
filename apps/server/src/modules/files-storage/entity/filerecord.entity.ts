@@ -12,7 +12,7 @@ export enum ScanStatus {
 	BLOCKED = 'blocked',
 }
 
-export enum FileRecordParent {
+export enum FileRecordParentType {
 	'User' = 'users',
 	'School' = 'schools',
 	'Course' = 'courses',
@@ -58,7 +58,7 @@ export interface IFileRecordProperties {
 	size: number;
 	name: string;
 	mimeType: string;
-	parentType: FileRecordParent;
+	parentType: FileRecordParentType;
 	parentId: EntityId | ObjectId;
 	creatorId: EntityId | ObjectId;
 	lockedForUserId?: EntityId | ObjectId;
@@ -100,7 +100,7 @@ export class FileRecord extends BaseEntity {
 	securityCheck: FileSecurityCheck;
 
 	@Enum()
-	parentType: FileRecordParent;
+	parentType: FileRecordParentType;
 
 	@Property({ fieldName: 'parent' })
 	_parentId: ObjectId;

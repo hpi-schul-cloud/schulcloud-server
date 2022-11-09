@@ -3,7 +3,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, Task } from '@shared/domain';
-import { FileRecord, FileRecordParent } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { SyncFileItemMapper } from '../mapper';
 import { SyncFileItem, SyncFileItemData } from '../types';
 
@@ -100,10 +100,10 @@ const query = (aggregationSize: number) => [
 export class SyncFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
-	async findFilesToSync(parentType: FileRecordParent, aggregationSize: number): Promise<SyncFileItem[]> {
+	async findFilesToSync(parentType: FileRecordParentType, aggregationSize: number): Promise<SyncFileItem[]> {
 		let itemDataList: SyncFileItemData[] = [];
 
-		if (parentType === FileRecordParent.Task) {
+		if (parentType === FileRecordParentType.Task) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			itemDataList = await this._em.aggregate(Task, query(aggregationSize));
 		}

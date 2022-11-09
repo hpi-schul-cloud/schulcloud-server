@@ -25,7 +25,7 @@ import {
 import { Request } from 'express';
 import S3rver from 's3rver';
 import request from 'supertest';
-import { FileRecordParent } from '../../entity';
+import { FileRecordParentType } from '../../entity';
 
 const baseRouteName = '/file/copy';
 
@@ -154,7 +154,7 @@ describe(`${baseRouteName} (api)`, () => {
 					target: {
 						schoolId: validId,
 						parentId: targetParentId,
-						parentType: FileRecordParent.Course,
+						parentType: FileRecordParentType.Course,
 					},
 				};
 			});
@@ -197,7 +197,7 @@ describe(`${baseRouteName} (api)`, () => {
 					target: {
 						schoolId: 'invalidObjectId',
 						parentId: 'invalidObjectId',
-						parentType: FileRecordParent.Task,
+						parentType: FileRecordParentType.Task,
 					},
 				};
 				const response = await api.copy(`/${validId}/users/${validId}`, copyFilesParams);
@@ -226,7 +226,7 @@ describe(`${baseRouteName} (api)`, () => {
 					target: {
 						schoolId: validId,
 						parentId: targetParentId,
-						parentType: FileRecordParent.Course,
+						parentType: FileRecordParentType.Course,
 					},
 				};
 			});
@@ -279,7 +279,7 @@ describe(`${baseRouteName} (api)`, () => {
 					target: {
 						schoolId: validId,
 						parentId: targetParentId,
-						parentType: FileRecordParent.Course,
+						parentType: FileRecordParentType.Course,
 					},
 					fileNamePrefix: 'copy from',
 				};
@@ -320,7 +320,7 @@ describe(`${baseRouteName} (api)`, () => {
 					target: {
 						schoolId: validId,
 						parentId: targetParentId,
-						parentType: FileRecordParent.Course,
+						parentType: FileRecordParentType.Course,
 					},
 					fileNamePrefix: 'copy from',
 				};
@@ -349,7 +349,7 @@ describe(`${baseRouteName} (api)`, () => {
 			it('should return elements not equal of requested scope', async () => {
 				const otherFileRecords = fileRecordFactory.buildList(3, {
 					schoolId: new ObjectId().toHexString(),
-					parentType: FileRecordParent.School,
+					parentType: FileRecordParentType.School,
 				});
 
 				await em.persistAndFlush(otherFileRecords);

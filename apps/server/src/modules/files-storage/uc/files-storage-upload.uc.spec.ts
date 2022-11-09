@@ -15,7 +15,7 @@ import { of } from 'rxjs';
 import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecordParent } from '../entity';
+import { FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
@@ -62,7 +62,7 @@ const buildFileRecordsWithParams = () => {
 	const params: FileRecordParams = {
 		schoolId,
 		parentId: userId,
-		parentType: FileRecordParent.User,
+		parentType: FileRecordParentType.User,
 	};
 
 	return { params, fileRecords, userId };

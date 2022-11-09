@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FileRecord, FileRecordParent } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { SyncFileItem, SyncFileItemData, SyncSourceFileData } from '../types';
 import { SyncSourceFileMapper } from './sync-source-file.mapper';
 import { SyncTargetFileMapper } from './sync-target-file.mapper';
@@ -9,13 +9,13 @@ import { SyncTargetFileMapper } from './sync-target-file.mapper';
 // Temporary functionality for migration to new fileservice
 // TODO: Remove when BC-1496 is done!
 export class SyncFileItemMapper {
-	static mapResults(itemDataList: SyncFileItemData[], parentType: FileRecordParent): SyncFileItem[] {
+	static mapResults(itemDataList: SyncFileItemData[], parentType: FileRecordParentType): SyncFileItem[] {
 		const items = itemDataList.map((itemData) => this.mapToDomain(itemData, parentType));
 
 		return items;
 	}
 
-	private static mapToDomain(data: SyncFileItemData, parentType: FileRecordParent): SyncFileItem {
+	private static mapToDomain(data: SyncFileItemData, parentType: FileRecordParentType): SyncFileItem {
 		const file = data.file as SyncSourceFileData;
 		const fileRecord = data.filerecord as FileRecord;
 		const source = SyncSourceFileMapper.mapToDomain(file);

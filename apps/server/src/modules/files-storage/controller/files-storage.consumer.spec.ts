@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
 import { courseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { FileRecordParent } from '../entity';
+import { FileRecordParentType } from '../entity';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FileRecordResponse } from './dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
@@ -57,12 +57,12 @@ describe('FilesStorageConsumer', () => {
 					userId: new ObjectId().toHexString(),
 					source: {
 						parentId: new ObjectId().toHexString(),
-						parentType: FileRecordParent.Course,
+						parentType: FileRecordParentType.Course,
 						schoolId,
 					},
 					target: {
 						parentId: new ObjectId().toHexString(),
-						parentType: FileRecordParent.Course,
+						parentType: FileRecordParentType.Course,
 						schoolId,
 					},
 				};
@@ -78,12 +78,12 @@ describe('FilesStorageConsumer', () => {
 					userId: new ObjectId().toHexString(),
 					source: {
 						parentId: sourceCourse.id,
-						parentType: FileRecordParent.Course,
+						parentType: FileRecordParentType.Course,
 						schoolId: sourceCourse.school.id,
 					},
 					target: {
 						parentId: targetCourse.id,
-						parentType: FileRecordParent.Course,
+						parentType: FileRecordParentType.Course,
 						schoolId: targetCourse.school.id,
 					},
 				};
@@ -101,12 +101,12 @@ describe('FilesStorageConsumer', () => {
 					userId: new ObjectId().toHexString(),
 					source: {
 						parentId: sourceCourse.id,
-						parentType: FileRecordParent.Course,
+						parentType: FileRecordParentType.Course,
 						schoolId: sourceCourse.school.id,
 					},
 					target: {
 						parentId: targetCourse.id,
-						parentType: FileRecordParent.Course,
+						parentType: FileRecordParentType.Course,
 						schoolId: targetCourse.school.id,
 					},
 				};
@@ -123,7 +123,7 @@ describe('FilesStorageConsumer', () => {
 			it('should call filesStorageService.fileRecordsOfParent with params', async () => {
 				const payload = {
 					parentId: new ObjectId().toHexString(),
-					parentType: FileRecordParent.Course,
+					parentType: FileRecordParentType.Course,
 					schoolId,
 				};
 				filesStorageService.getFileRecordsOfParent.mockResolvedValue([[], 0]);
@@ -134,7 +134,7 @@ describe('FilesStorageConsumer', () => {
 			it('should return array instances of FileRecordResponse', async () => {
 				const payload = {
 					parentId: new ObjectId().toHexString(),
-					parentType: FileRecordParent.Course,
+					parentType: FileRecordParentType.Course,
 					schoolId: new ObjectId().toHexString(),
 				};
 
@@ -150,7 +150,7 @@ describe('FilesStorageConsumer', () => {
 			it('should return RpcMessage with empty array', async () => {
 				const payload = {
 					parentId: new ObjectId().toHexString(),
-					parentType: FileRecordParent.Course,
+					parentType: FileRecordParentType.Course,
 					schoolId,
 				};
 				filesStorageService.getFileRecordsOfParent.mockResolvedValue([[], 0]);
@@ -166,7 +166,7 @@ describe('FilesStorageConsumer', () => {
 			it('should call filesStorageService.deleteFilesOfParent with params', async () => {
 				const payload = {
 					parentId: new ObjectId().toHexString(),
-					parentType: FileRecordParent.Course,
+					parentType: FileRecordParentType.Course,
 					schoolId,
 				};
 				filesStorageService.deleteFilesOfParent.mockResolvedValue([[], 0]);
@@ -177,7 +177,7 @@ describe('FilesStorageConsumer', () => {
 			it('should return array instances of FileRecordResponse', async () => {
 				const payload = {
 					parentId: new ObjectId().toHexString(),
-					parentType: FileRecordParent.Course,
+					parentType: FileRecordParentType.Course,
 					schoolId: new ObjectId().toHexString(),
 				};
 
@@ -192,7 +192,7 @@ describe('FilesStorageConsumer', () => {
 			it('should return RpcMessage with empty array', async () => {
 				const payload = {
 					parentId: new ObjectId().toHexString(),
-					parentType: FileRecordParent.Course,
+					parentType: FileRecordParentType.Course,
 					schoolId,
 				};
 				filesStorageService.deleteFilesOfParent.mockResolvedValue([[], 0]);

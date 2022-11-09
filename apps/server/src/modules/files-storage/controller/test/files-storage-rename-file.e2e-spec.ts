@@ -16,7 +16,7 @@ import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordResponse, RenameFileParams } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecord, FileRecordParent } from '../../entity';
+import { FileRecord, FileRecordParentType } from '../../entity';
 
 const baseRouteName = '/file/rename/';
 
@@ -85,7 +85,7 @@ describe(`${baseRouteName} (api)`, () => {
 		const fileParams = {
 			schoolId: school.id,
 			parentId: school.id,
-			parentType: FileRecordParent.School,
+			parentType: FileRecordParentType.School,
 		};
 		fileRecords = fileRecordFactory.buildList(3, fileParams);
 		fileRecord = fileRecordFactory.build({ ...fileParams, name: 'test.txt', creatorId: user.id });

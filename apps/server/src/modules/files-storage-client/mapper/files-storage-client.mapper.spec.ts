@@ -1,4 +1,4 @@
-import { FileRecordParent } from '@shared/infra/rabbitmq';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
 import { FilesStorageClientMapper } from './files-storage-client.mapper';
 
@@ -12,7 +12,7 @@ describe('FilesStorageClientMapper', () => {
 			size: 123,
 			type: 'png',
 			securityCheckStatus: 'pending',
-			parentType: FileRecordParent.Task,
+			parentType: FileRecordParentType.Task,
 		};
 
 		const response: IFileDomainObjectProps[] = [record];

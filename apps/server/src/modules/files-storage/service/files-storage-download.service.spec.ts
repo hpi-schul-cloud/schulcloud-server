@@ -8,7 +8,7 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecordParent, ScanStatus } from '../entity';
+import { FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { createPath } from '../helper';
 import { IGetFileResponse } from '../interface';
@@ -28,7 +28,7 @@ const buildFileRecordsWithParams = () => {
 	const params: FileRecordParams = {
 		schoolId: parentSchoolId,
 		parentId,
-		parentType: FileRecordParent.User,
+		parentType: FileRecordParentType.User,
 	};
 
 	return { params, fileRecords, parentId };

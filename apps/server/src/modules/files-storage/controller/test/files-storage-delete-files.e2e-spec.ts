@@ -19,7 +19,7 @@ import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-s
 import { Request } from 'express';
 import S3rver from 's3rver';
 import request from 'supertest';
-import { FileRecordParent } from '../../entity';
+import { FileRecordParentType } from '../../entity';
 
 const baseRouteName = '/file/delete';
 
@@ -317,7 +317,7 @@ describe(`${baseRouteName} (api)`, () => {
 			it('should return elements of requested scope', async () => {
 				const otherFileRecords = fileRecordFactory.buildList(3, {
 					schoolId: new ObjectId().toHexString(),
-					parentType: FileRecordParent.School,
+					parentType: FileRecordParentType.School,
 				});
 
 				await em.persistAndFlush(otherFileRecords);

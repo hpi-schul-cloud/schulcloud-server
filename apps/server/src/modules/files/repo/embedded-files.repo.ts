@@ -3,7 +3,7 @@ import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Counted, File, Lesson, Task } from '@shared/domain';
-import { FileRecordParent } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { SyncFileItemMapper } from '../mapper';
 import { AvailableSyncEntityType, AvailableSyncParentType, SyncFileItem } from '../types';
 
@@ -103,15 +103,15 @@ export class EmbeddedFilesRepo {
 	async findElementsToSyncFiles(type: AvailableSyncParentType, limit: number): Promise<Counted<Task[] | Lesson[]>> {
 		let results: Counted<Task[] | Lesson[]> = [[], 0];
 
-		if (type === FileRecordParent.Task) {
+		if (type === FileRecordParentType.Task) {
 			results = await this._em.findAndCount(Task, tasksQuery, { limit });
-		} else if (type === FileRecordParent.Lesson) {
+		} else if (type === FileRecordParentType.Lesson) {
 			results = await this._em.findAndCount(Lesson, lessonsQuery, { limit });
 		}
 		return results;
 	}
 
-	async findFiles(fileIds: ObjectId[], parentId: ObjectId, parentType: FileRecordParent): Promise<SyncFileItem[]> {
+	async findFiles(fileIds: ObjectId[], parentId: ObjectId, parentType: FileRecordParentType): Promise<SyncFileItem[]> {
 		const query = filesQuery(fileIds, parentId);
 		const result = await this._em.aggregate(File, query);
 
@@ -128,9 +128,9 @@ export class EmbeddedFilesRepo {
 	async createBackUpCollection(type: AvailableSyncParentType) {
 		const date = new Date();
 
-		if (type === FileRecordParent.Task) {
+		if (type === FileRecordParentType.Task) {
 			await this._em.aggregate(Task, [{ $match: {} }, { $out: `homeworks_backup_${date.getTime()}` }]);
-		} else if (type === FileRecordParent.Lesson) {
+		} else if (type === FileRecordParentType.Lesson) {
 			await this._em.aggregate(Lesson, [{ $match: {} }, { $out: `lessons_backup_${date.getTime()}` }]);
 		}
 	}

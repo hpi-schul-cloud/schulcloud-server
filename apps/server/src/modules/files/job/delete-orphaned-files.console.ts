@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { FileRecordParent } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { Command, Console } from 'nestjs-console';
 import { DeleteOrphanedFilesUc } from '../uc';
 
@@ -12,11 +12,11 @@ export class DeleteOrphanedFilesConsole {
 
 	@Command({ command: 'tasks' })
 	async deleteOrphanedFilesForTasks() {
-		await this.deleteOrphanedFilesUc.deleteOrphanedFilesForParentType(FileRecordParent.Task);
+		await this.deleteOrphanedFilesUc.deleteOrphanedFilesForParentType(FileRecordParentType.Task);
 	}
 
 	@Command({ command: 'lessons' })
 	async deleteOrphanedFilesForLessons() {
-		await this.deleteOrphanedFilesUc.deleteDuplicatedFilesForParentType(FileRecordParent.Lesson);
+		await this.deleteOrphanedFilesUc.deleteDuplicatedFilesForParentType(FileRecordParentType.Lesson);
 	}
 }

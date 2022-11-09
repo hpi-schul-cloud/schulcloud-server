@@ -1,11 +1,11 @@
-import { FileRecordParent } from '@shared/infra/rabbitmq';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { FileDto } from './file.dto';
 
 describe('FileDto', () => {
 	it('Should create well formed file dto.', () => {
 		const id = 'id123';
 		const name = 'abc';
-		const parentType = FileRecordParent.Task;
+		const parentType = FileRecordParentType.Task;
 		const parentId = 'parent123';
 
 		const fileDto = new FileDto({

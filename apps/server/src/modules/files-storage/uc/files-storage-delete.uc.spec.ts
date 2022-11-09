@@ -11,7 +11,7 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParent } from '../entity';
+import { FileRecord, FileRecordParentType } from '../entity';
 import { PermissionContexts } from '../files-storage.const';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -30,14 +30,14 @@ const buildFileRecordsWithParams = () => {
 	const params: FileRecordParams = {
 		schoolId,
 		parentId: userId,
-		parentType: FileRecordParent.User,
+		parentType: FileRecordParentType.User,
 	};
 
 	return { params, fileRecords, userId };
 };
 
 const createRequestParams = (schoolId: EntityId, userId: EntityId) => {
-	return { schoolId, parentId: userId, parentType: FileRecordParent.User };
+	return { schoolId, parentId: userId, parentType: FileRecordParentType.User };
 };
 
 const createParams = () => {

@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
-import { FileRecord, FileRecordParent, ScanStatus } from '../../entity';
+import { FileRecord, FileRecordParentType, ScanStatus } from '../../entity';
 
 export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {
@@ -38,7 +38,7 @@ export class FileRecordResponse {
 	type: string;
 
 	@ApiProperty()
-	parentType: FileRecordParent;
+	parentType: FileRecordParentType;
 
 	@ApiPropertyOptional()
 	deletedSince?: Date;

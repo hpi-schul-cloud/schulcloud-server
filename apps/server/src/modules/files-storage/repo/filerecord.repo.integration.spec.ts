@@ -5,7 +5,7 @@ import { cleanupCollections, fileRecordFactory } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
 import { FileRecordRepo } from './filerecord.repo';
-import { FileRecord, FileRecordParent } from '../entity';
+import { FileRecord, FileRecordParentType } from '../entity';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
@@ -105,7 +105,7 @@ describe('FileRecordRepo', () => {
 		beforeEach(() => {
 			fileRecords1 = fileRecordFactory.buildList(3, {
 				schoolId: schoolId1,
-				parentType: FileRecordParent.Task,
+				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
 		});
@@ -137,7 +137,7 @@ describe('FileRecordRepo', () => {
 			const parentId2 = new ObjectId().toHexString();
 			const fileRecords2 = fileRecordFactory.buildList(3, {
 				schoolId: schoolId1,
-				parentType: FileRecordParent.Task,
+				parentType: FileRecordParentType.Task,
 				parentId: parentId2,
 			});
 
@@ -155,7 +155,7 @@ describe('FileRecordRepo', () => {
 			const schoolId2 = new ObjectId().toHexString();
 			const fileRecords2 = fileRecordFactory.buildList(3, {
 				schoolId: schoolId2,
-				parentType: FileRecordParent.Task,
+				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
 
@@ -172,7 +172,7 @@ describe('FileRecordRepo', () => {
 		it('should ingnore deletedSince', async () => {
 			const fileRecordsExpired = fileRecordFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId1,
-				parentType: FileRecordParent.Task,
+				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
 
@@ -197,7 +197,7 @@ describe('FileRecordRepo', () => {
 		beforeEach(() => {
 			fileRecords1 = fileRecordFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId1,
-				parentType: FileRecordParent.Task,
+				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
 		});
@@ -207,7 +207,7 @@ describe('FileRecordRepo', () => {
 
 			const fileRecords2 = fileRecordFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId1,
-				parentType: FileRecordParent.Task,
+				parentType: FileRecordParentType.Task,
 				parentId: parentId2,
 			});
 
@@ -226,7 +226,7 @@ describe('FileRecordRepo', () => {
 
 			const fileRecords2 = fileRecordFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId2,
-				parentType: FileRecordParent.Task,
+				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
 
@@ -243,7 +243,7 @@ describe('FileRecordRepo', () => {
 		it('should ingnore if deletedSince is undefined', async () => {
 			const fileRecordsExpired = fileRecordFactory.buildList(3, {
 				schoolId: schoolId1,
-				parentType: FileRecordParent.Task,
+				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
 
@@ -269,7 +269,7 @@ describe('FileRecordRepo', () => {
 
 			fileRecord = fileRecordFactory.build({
 				schoolId,
-				parentType: FileRecordParent.Task,
+				parentType: FileRecordParentType.Task,
 				parentId,
 			});
 		});

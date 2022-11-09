@@ -1,4 +1,4 @@
-import { FileRecordParent } from '@shared/infra/rabbitmq';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import {
 	FileRecord,
 	FileSecurityCheck,
@@ -23,7 +23,7 @@ export const fileRecordFactory = FileRecordFactory.define(FileRecord, ({ sequenc
 		name: `file-record #${sequence}`,
 		mimeType: 'application/octet-stream',
 		securityCheck: new FileSecurityCheck({}),
-		parentType: FileRecordParent.Course,
+		parentType: FileRecordParentType.Course,
 		parentId: new ObjectId(),
 		creatorId: new ObjectId(),
 		schoolId: new ObjectId(),

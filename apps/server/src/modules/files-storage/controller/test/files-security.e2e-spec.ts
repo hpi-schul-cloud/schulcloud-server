@@ -16,7 +16,7 @@ import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordListResponse, ScanResultParams } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecord, FileRecordParent } from '../../entity';
+import { FileRecord, FileRecordParentType } from '../../entity';
 
 const baseRouteName = '/file-security';
 const scanResult: ScanResultParams = { virus_detected: false };
@@ -93,7 +93,7 @@ describe(`${baseRouteName} (api)`, () => {
 			const fileRecord = fileRecordFactory.build({
 				schoolId: validId,
 				parentId: validId,
-				parentType: FileRecordParent.School,
+				parentType: FileRecordParentType.School,
 			});
 			await em.persistAndFlush(fileRecord);
 			em.clear();
@@ -109,7 +109,7 @@ describe(`${baseRouteName} (api)`, () => {
 			const fileRecord = fileRecordFactory.build({
 				schoolId: validId,
 				parentId: validId,
-				parentType: FileRecordParent.School,
+				parentType: FileRecordParentType.School,
 			});
 			const token = fileRecord.securityCheck.requestToken || '';
 			await em.persistAndFlush(fileRecord);

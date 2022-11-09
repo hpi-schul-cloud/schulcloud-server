@@ -15,7 +15,7 @@ export enum ScanStatus {
 	BLOCKED = 'blocked',
 }
 
-export enum FileRecordParent {
+export enum FileRecordParentType {
 	'User' = 'users',
 	'School' = 'schools',
 	'Course' = 'courses',
@@ -32,7 +32,7 @@ export interface ICopyFilesOfParentParams {
 export interface IFileRecordParams {
 	schoolId: EntityId;
 	parentId: EntityId;
-	parentType: FileRecordParent;
+	parentType: FileRecordParentType;
 }
 
 export interface ICopyFileDO {
@@ -49,6 +49,6 @@ export interface IFileDO {
 	size: number;
 	creatorId: string;
 	type: string;
-	parentType: FileRecordParent;
+	parentType: FileRecordParentType;
 	deletedSince?: Date;
 }
