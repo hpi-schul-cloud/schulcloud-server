@@ -44,11 +44,11 @@ const setIdToken = (hook) => {
 	// add 'federalState' to Promise - clean solution
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
-		scope.includes('userRole')
+		scope.includes('bilo')
 			? hook.app.service('roles').find(
 				{
 					query: {
-						_id : { $in: user.roles },
+						_id : { $in: hook.params.account.userId.roles },
 					},
 				},
 				'name'
