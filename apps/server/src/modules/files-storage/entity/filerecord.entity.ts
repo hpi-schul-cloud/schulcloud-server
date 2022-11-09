@@ -1,6 +1,6 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { type EntityId, BaseEntity } from '@shared/domain';
 import { ErrorType } from '../error';
@@ -173,7 +173,7 @@ export class FileRecord extends BaseEntity {
 
 	setName(name: string): void {
 		if (name.length === 0) {
-			throw new InternalServerErrorException(ErrorType.FILE_NAME_EMPTY);
+			throw new BadRequestException(ErrorType.FILE_NAME_EMPTY);
 		}
 
 		this.name = name;

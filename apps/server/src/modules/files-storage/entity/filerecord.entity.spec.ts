@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ErrorType } from '../error';
 import {
@@ -149,7 +149,7 @@ describe('FileRecord Entity', () => {
 
 			it('should throw error and not set name', () => {
 				const { fileRecord, newName } = setup();
-				const error = new InternalServerErrorException(ErrorType.FILE_NAME_EMPTY);
+				const error = new BadRequestException(ErrorType.FILE_NAME_EMPTY);
 
 				expect(() => {
 					fileRecord.setName(newName);
