@@ -56,8 +56,8 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	private = true;
 
 	@Index()
-	@ManyToOne('User', { fieldName: 'teacherId', nullable: true })
-	creator?: User;
+	@ManyToOne('User', { fieldName: 'teacherId' })
+	creator: User;
 
 	@Index()
 	@ManyToOne('Course', { fieldName: 'courseId', nullable: true })
@@ -94,8 +94,37 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.finished.set(props.finished || []);
 	}
 
+	private getSubmissionItems(): Submission[] {
+		if (!this.submissions.isInitialized(true)) {
+			throw new Error('Submissions items are not loaded.');
+		}
+		const submissions = this.submissions.getItems();
+
+		return submissions;
+	}
+
+	private getFinishedItems(): User[] {
+		if (!this.finished.isInitialized(true)) {
+			throw new Error('Finished items are not loaded.');
+		}
+		const submissions = this.finished.getItems();
+
+		return submissions;
+	}
+
+	private getParent(): Lesson | Course | User {
+		const parent = this.lesson || this.course || this.creator;
+
+		return parent;
+	}
+
 	isFinishedForUser(user: User): boolean {
-		return !!(this.finished?.contains(user) || this.course?.isFinished());
+		const finished = this.getFinishedItems();
+		const finishedCourse = this.course?.isFinished();
+		const finishedForUser = finished.some((finishedUser) => finishedUser.id === user.id);
+		const isFinishedForUser = !!(finishedForUser || finishedCourse);
+
+		return isFinishedForUser;
 	}
 
 	isDraft(): boolean {
@@ -125,31 +154,24 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return false;
 	}
 
-	private getSubmissionItems(): Submission[] {
-		if (!this.submissions.isInitialized(true)) {
-			throw new Error('Submissions items are not loaded.');
-		}
-		const submissions = this.submissions.getItems();
-
-		return submissions;
-	}
-
-	getSubmittedUserIds(): EntityId[] {
-		const submittedUserIds = this.getSubmissionItems().map((submission) => submission.student.id);
+	private getSubmittedUserIds(): EntityId[] {
+		const submissions = this.getSubmissionItems();
+		const submittedUserIds = submissions.map((submission) => submission.student.id);
 		const uniqueSubmittedUserIds = [...new Set(submittedUserIds)];
 
 		return uniqueSubmittedUserIds;
 	}
 
-	getNumberOfSubmittedUsers(): number {
+	private getNumberOfSubmittedUsers(): number {
 		const submittedUserIds = this.getSubmittedUserIds();
 		const count = submittedUserIds.length;
 
 		return count;
 	}
 
-	getGradedUserIds(): EntityId[] {
-		const gradedUserIds = this.getSubmissionItems()
+	private getGradedUserIds(): EntityId[] {
+		const submissions = this.getSubmissionItems();
+		const gradedUserIds = submissions
 			.filter((submission) => submission.isGraded())
 			.map((submission) => submission.student.id);
 		const uniqueGradedUserIds = [...new Set(gradedUserIds)];
@@ -157,7 +179,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return uniqueGradedUserIds;
 	}
 
-	getNumberOfGradedUsers(): number {
+	private getNumberOfGradedUsers(): number {
 		const gradedUserIds = this.getGradedUserIds();
 		const count = gradedUserIds.length;
 
@@ -165,7 +187,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	// attention based on this parent use this.getParent() instant
-	getMaxSubmissions(): number {
+	private getMaxSubmissions(): number {
 		// hack until parents are defined
 		const numberOfStudents = this.course ? this.course.getNumberOfStudents() : 0;
 
