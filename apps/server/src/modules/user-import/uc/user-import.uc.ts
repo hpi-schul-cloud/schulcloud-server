@@ -180,12 +180,9 @@ export class UserImportUc {
 	}
 
 	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
-		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
-		if (!enabled) {
-			throw new InternalServerErrorException('User Migration not enabled');
-		}
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const { school } = currentUser;
+		this.checkFeatureEnabled(school);
 		// official school number is used to find the correct school in the central LDAP
 		if (
 			(useCentralLdap && !school.officialSchoolNumber) ||
