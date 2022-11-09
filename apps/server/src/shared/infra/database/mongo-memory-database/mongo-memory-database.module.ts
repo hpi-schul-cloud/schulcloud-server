@@ -4,17 +4,8 @@ import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions } from './types';
 
-const createMikroOrmModule = async (options: MikroOrmModuleAsyncOptions): Promise<DynamicModule> => {
+const createMikroOrmModule = (options: MikroOrmModuleAsyncOptions): DynamicModule => {
 	const mikroOrmModule = MikroOrmModule.forRootAsync({
-		// providers: [
-		// 	{
-		// 		provide: MongoMemoryServer,
-		// 		useFactory: async () => {
-		// 			const mongo = await MongoMemoryServer.create();
-		// 			return mongo;
-		// 		},
-		// 	},
-		// ],
 		useFactory: () => {
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			const clientUrl = `${process.env.MONGO_TEST_URI}/${String(10000 + Math.floor(Math.random() * 1000))}`;
@@ -25,7 +16,6 @@ const createMikroOrmModule = async (options: MikroOrmModuleAsyncOptions): Promis
 				clientUrl,
 			};
 		},
-		//inject: [MongoMemoryServer],
 	});
 
 	return mikroOrmModule;
