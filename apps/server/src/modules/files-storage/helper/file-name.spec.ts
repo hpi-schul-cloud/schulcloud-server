@@ -3,6 +3,7 @@ import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { hasDuplicateName, resolveFileNameDuplicates } from '.';
+import { ALL_FILES_STORAGE_ENTITIES } from '../entity';
 
 describe('File Name Helper', () => {
 	let orm: MikroORM;
@@ -21,7 +22,7 @@ describe('File Name Helper', () => {
 	};
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities(ALL_FILES_STORAGE_ENTITIES);
 	});
 
 	afterAll(async () => {

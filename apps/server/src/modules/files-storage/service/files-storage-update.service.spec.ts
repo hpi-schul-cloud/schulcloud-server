@@ -9,7 +9,7 @@ import { Logger } from '@src/core/logger';
 import _ from 'lodash';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
-import { FileRecordParentType, ScanStatus } from '../entity';
+import { ALL_FILES_STORAGE_ENTITIES, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
@@ -53,7 +53,7 @@ describe('FilesStorageService update methods', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities(ALL_FILES_STORAGE_ENTITIES);
 
 		module = await Test.createTestingModule({
 			providers: [

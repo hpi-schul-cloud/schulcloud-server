@@ -10,6 +10,7 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { SingleFileParams } from '../controller/dto';
+import { ALL_FILES_STORAGE_ENTITIES } from '../entity';
 import { PermissionContexts } from '../files-storage.const';
 import { IGetFileResponse } from '../interface/storage-client';
 import { FilesStorageMapper } from '../mapper';
@@ -37,7 +38,7 @@ describe('FilesStorageUC', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities(ALL_FILES_STORAGE_ENTITIES);
 
 		module = await Test.createTestingModule({
 			providers: [

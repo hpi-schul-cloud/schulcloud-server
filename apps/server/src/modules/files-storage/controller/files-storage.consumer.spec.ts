@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
 import { courseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { FileRecordParentType } from '../entity';
+import { ALL_FILES_STORAGE_ENTITIES, FileRecordParentType } from '../entity';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FileRecordResponse } from './dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
@@ -26,7 +26,7 @@ describe('FilesStorageConsumer', () => {
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities(ALL_FILES_STORAGE_ENTITIES);
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageConsumer,

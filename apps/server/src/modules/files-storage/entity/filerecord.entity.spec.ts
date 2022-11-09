@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ErrorType } from '../error';
+import { ALL_FILES_STORAGE_ENTITIES } from './all-files-storage-entities';
 import {
 	FileRecordParentType,
 	ScanStatus,
@@ -15,7 +16,7 @@ describe('FileRecord Entity', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities(ALL_FILES_STORAGE_ENTITIES);
 	});
 
 	afterAll(async () => {

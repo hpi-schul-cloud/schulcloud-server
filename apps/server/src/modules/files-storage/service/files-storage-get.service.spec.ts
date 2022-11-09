@@ -7,7 +7,7 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, SingleFileParams } from '../controller/dto';
-import { FileRecordParentType } from '../entity';
+import { ALL_FILES_STORAGE_ENTITIES, FileRecordParentType } from '../entity';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
@@ -49,7 +49,7 @@ describe('FilesStorageService get methods', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities(ALL_FILES_STORAGE_ENTITIES);
 
 		module = await Test.createTestingModule({
 			providers: [
