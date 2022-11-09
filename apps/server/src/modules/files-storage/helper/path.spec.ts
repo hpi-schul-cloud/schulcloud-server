@@ -13,6 +13,10 @@ describe('Path Helper', () => {
 		orm = await setupEntities([FileRecord]);
 	});
 
+	afterAll(async () => {
+		await orm.close();
+	});
+
 	const setupFileRecords = () => {
 		const userId: EntityId = new ObjectId().toHexString();
 		const schoolId: EntityId = new ObjectId().toHexString();
@@ -58,7 +62,6 @@ describe('Path Helper', () => {
 
 		it('should return paths', () => {
 			const { fileRecords } = setup();
-			console.log(fileRecords);
 			const paths = getPaths(fileRecords);
 
 			const fileRecordId1 = fileRecords[0].id;
