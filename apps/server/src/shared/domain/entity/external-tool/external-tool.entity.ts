@@ -42,5 +42,5 @@ export class ExternalTool extends BaseEntityWithTimestamps {
 	openNewTab: boolean;
 
 	@Property()
-	version?: number;
+	version: number;
 }

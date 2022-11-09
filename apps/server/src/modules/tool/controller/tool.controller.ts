@@ -2,9 +2,9 @@ import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ExternalTool, ICurrentUser } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
-import { ExternalToolResponse } from '@src/modules/tool/controller/dto/external-tool.response';
+import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/external-tool.response';
 import { ExternalToolUc } from '@src/modules/tool/uc/external-tool.uc';
-import { ExternalToolParams } from '@src/modules/tool/controller/dto/external-tool-create.params';
+import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
@@ -41,11 +41,8 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ExternalToolResponse> {
 		const externalTool: ExternalTool = await this.externalToolUc.createExternalTool(externalToolParams);
-
+		return null;
 		// const mapped: ExternalToolResponse = this.externalToolMapper.mapExternalToolToResponse(externalTool);
 		// return mapped;
 	}
 }
-// create empty POST endpoint (/)
-// create response
-// request object/parameter

@@ -4,7 +4,7 @@ import { IsString } from 'class-validator';
 
 export class ExternalToolResponse {
 	@ApiProperty()
-	externalToolId!: string;
+	externalToolId: string;
 
 	@ApiProperty()
 	name: string;

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalToolParams } from '@src/modules/tool/controller/dto/external-tool-create.params';
+import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 
 @Injectable()
 export class ExternalToolUc {
