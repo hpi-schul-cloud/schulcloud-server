@@ -186,6 +186,7 @@
 		"serve-favicon": "^2.3.2",
 		"service": "^0.1.4",
 		"socket.io": "^4.5.3",
+		"socket.io-parser": "^3.4.2",
 		"socketio-file-upload": "^0.7.0",
 		"source-map-support": "^0.5.19",
 		"strip-bom": "^4.0.0",
