@@ -76,9 +76,9 @@ describe('course group repo', () => {
 			await em.persistAndFlush(courses);
 
 			const courseGroups = [
-				new CourseGroup({ course: course1 }),
-				new CourseGroup({ course: course2 }),
-				new CourseGroup({ course: course3 }),
+				courseGroupFactory.build({ course: course1 }),
+				courseGroupFactory.build({ course: course2 }),
+				courseGroupFactory.build({ course: course3 }),
 			];
 			await em.persistAndFlush(courseGroups);
 			em.clear();
@@ -95,9 +95,9 @@ describe('course group repo', () => {
 			await em.persistAndFlush(courses);
 
 			const courseGroups = [
-				new CourseGroup({ course: course2 }),
-				new CourseGroup({ course: course2 }),
-				new CourseGroup({ course: course2 }),
+				courseGroupFactory.build({ course: course2 }),
+				courseGroupFactory.build({ course: course2 }),
+				courseGroupFactory.build({ course: course2 }),
 			];
 			await em.persistAndFlush(courseGroups);
 			em.clear();
