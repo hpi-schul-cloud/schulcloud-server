@@ -33,7 +33,7 @@ const config: Config.InitialOptions = {
 			branches: 80,
 			functions: 80,
 			lines: 80,
-			statements: -7,
+			statements: -11,
 		},
 		// add custom paths: './apps/server/path...': { branches: X, functions: ... }
 	},
