@@ -1,8 +1,10 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Reference } from '@mikro-orm/core';
 import { IEntityWithSchool } from '../interface';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
 import type { School } from './school.entity';
+import type { ITaskParent } from './task.entity';
 
 export enum LanguageType {
 	DE = 'de',
@@ -48,7 +50,7 @@ export interface IUserProperties {
 		language_override: 'de',
 	},
 })
-export class User extends BaseEntityWithTimestamps implements IEntityWithSchool {
+export class User extends BaseEntityWithTimestamps implements IEntityWithSchool, ITaskParent {
 	@Property()
 	@Index()
 	// @Unique()
@@ -114,5 +116,11 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 		this.language = props.language;
 		this.preferences = props.preferences ?? {};
 		this.deletedAt = props.deletedAt;
+	}
+
+	getUserIds(): EntityId[] {
+		const userIds = [this.id];
+
+		return userIds;
 	}
 }

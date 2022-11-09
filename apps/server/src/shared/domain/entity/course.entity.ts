@@ -1,10 +1,13 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
-import { LearnroomMetadata, LearnroomTypes } from '../types';
+import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CourseGroup } from './coursegroup.entity';
+import type { ICourseGroupParent } from './coursegroup.entity';
+import type { ILessonParent } from './lesson.entity';
 import type { School } from './school.entity';
+import type { ITaskParent } from './task.entity';
 import type { User } from './user.entity';
 
 export interface ICourseProperties {
@@ -29,7 +32,10 @@ const DEFAULT = {
 };
 
 @Entity({ tableName: 'courses' })
-export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEntityWithSchool {
+export class Course
+	extends BaseEntityWithTimestamps
+	implements ILearnroom, IEntityWithSchool, ITaskParent, ILessonParent, ICourseGroupParent
+{
 	@Property()
 	name: string = DEFAULT.name;
 
@@ -83,6 +89,21 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 		if (props.startDate) this.startDate = props.startDate;
 	}
 
+	private getStudentIds(): EntityId[] {
+		const studentIds = this.students.getIdentifiers('_id');
+		const entityIds = studentIds.map((id) => id.toString());
+
+		return entityIds;
+	}
+
+	getCourseGroupItems(): CourseGroup[] {
+		if (!this.courseGroups.isInitialized(true)) {
+			throw new InternalServerErrorException('Courses trying to access their course groups that are not loaded.');
+		}
+		const courseGroups = this.courseGroups.getItems();
+		return courseGroups;
+	}
+
 	private getShortTitle(): string {
 		if (this.name.length === 1) {
 			return this.name;
@@ -93,14 +114,6 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 			return firstChar;
 		}
 		return firstChar + secondChar;
-	}
-
-	getCourseGroupItems(): CourseGroup[] {
-		if (!this.courseGroups.isInitialized(true)) {
-			throw new InternalServerErrorException('Courses trying to access their course groups that are not loaded.');
-		}
-		const courseGroups = this.courseGroups.getItems();
-		return courseGroups;
 	}
 
 	getMetadata(): LearnroomMetadata {
@@ -115,14 +128,6 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 		};
 	}
 
-	getNumberOfStudents(): number {
-		let length = 0;
-		if (this.students instanceof Collection) {
-			length = this.students.length;
-		}
-		return length;
-	}
-
 	isFinished(): boolean {
 		if (!this.untilDate) {
 			return false;
@@ -130,5 +135,11 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 		const isFinished = this.untilDate < new Date();
 
 		return isFinished;
+	}
+
+	getUserIds(): EntityId[] {
+		const userIds = this.getStudentIds();
+
+		return userIds;
 	}
 }

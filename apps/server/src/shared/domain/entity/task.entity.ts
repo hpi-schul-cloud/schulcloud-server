@@ -30,6 +30,10 @@ export type TaskParentDescriptions = {
 	color: string;
 };
 
+export interface ITaskParent {
+	getUserIds(): EntityId[];
+}
+
 @Entity({ tableName: 'homeworks' })
 @Index({ properties: ['private', 'dueDate', 'finished'] })
 @Index({ properties: ['id', 'private'] })
@@ -103,6 +107,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return submissions;
 	}
 
+	// todo double check that it is populated otherwise switch to getReference
 	private getFinishedItems(): User[] {
 		if (!this.finished.isInitialized(true)) {
 			throw new Error('Finished items are not loaded.');
@@ -112,10 +117,17 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return submissions;
 	}
 
-	private getParent(): Lesson | Course | User {
+	private getParent(): ITaskParent {
 		const parent = this.lesson || this.course || this.creator;
 
 		return parent;
+	}
+
+	private getUserIds(): EntityId[] {
+		const parent = this.getParent();
+		const userIds = parent.getUserIds();
+
+		return userIds;
 	}
 
 	isFinishedForUser(user: User): boolean {
@@ -154,49 +166,44 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return false;
 	}
 
-	private getSubmittedUserIds(): EntityId[] {
-		const submissions = this.getSubmissionItems();
-		const submittedUserIds = submissions.map((submission) => submission.student.id);
-		const uniqueSubmittedUserIds = [...new Set(submittedUserIds)];
-
-		return uniqueSubmittedUserIds;
-	}
-
-	private getNumberOfSubmittedUsers(): number {
-		const submittedUserIds = this.getSubmittedUserIds();
-		const count = submittedUserIds.length;
-
-		return count;
-	}
-
-	private getGradedUserIds(): EntityId[] {
-		const submissions = this.getSubmissionItems();
-		const gradedUserIds = submissions
-			.filter((submission) => submission.isGraded())
-			.map((submission) => submission.student.id);
-		const uniqueGradedUserIds = [...new Set(gradedUserIds)];
-
-		return uniqueGradedUserIds;
-	}
-
-	private getNumberOfGradedUsers(): number {
-		const gradedUserIds = this.getGradedUserIds();
-		const count = gradedUserIds.length;
-
-		return count;
-	}
-
-	// attention based on this parent use this.getParent() instant
+	// not complet valid, it is based on different parameters and can not be calculated on this place
 	private getMaxSubmissions(): number {
-		// hack until parents are defined
-		const numberOfStudents = this.course ? this.course.getNumberOfStudents() : 0;
+		const numberOfStudents = this.getUserIds().length;
 
 		return numberOfStudents;
 	}
 
+	private getSubmittedSubmissions(): Submission[] {
+		const submissions = this.getSubmissionItems();
+		const gradedSubmissions = submissions.filter((submission) => submission.isSubmitted());
+
+		return gradedSubmissions;
+	}
+
+	private getGradedSubmissions(): Submission[] {
+		const submissions = this.getSubmissionItems();
+		const gradedSubmissions = submissions.filter((submission) => submission.isGraded());
+
+		return gradedSubmissions;
+	}
+
+	private isSubmittedForUser(user: User): boolean {
+		const submissions = this.getSubmissionItems();
+		const isSubmitted = submissions.some((submission) => submission.isSubmittedForUser(user));
+
+		return isSubmitted;
+	}
+
+	private isGradedForUser(user: User): boolean {
+		const submissions = this.getSubmissionItems();
+		const graded = submissions.some((submission) => submission.isGradedForUser(user));
+
+		return graded;
+	}
+
 	createTeacherStatusForUser(user: User): ITaskStatus {
-		const submitted = this.getNumberOfSubmittedUsers();
-		const graded = this.getNumberOfGradedUsers();
+		const submitted = this.getSubmittedSubmissions().length;
+		const graded = this.getGradedSubmissions().length;
 		const maxSubmissions = this.getMaxSubmissions();
 		const isDraft = this.isDraft();
 		const isFinished = this.isFinishedForUser(user);
@@ -205,6 +212,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		// work with getParent()
 		let isSubstitutionTeacher = false;
 		if (this.course) {
+			// invalid operations internals of course should not be knowen on this place
 			isSubstitutionTeacher = this.course.substitutionTeachers.contains(user);
 		}
 
@@ -218,20 +226,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		};
 
 		return status;
-	}
-
-	isSubmittedForUser(user: User): boolean {
-		const submissions = this.getSubmissionItems();
-		const isSubmitted = submissions.some((submission) => submission.isSubmittedForUser(user));
-
-		return isSubmitted;
-	}
-
-	isGradedForUser(user: User): boolean {
-		const submissions = this.getSubmissionItems();
-		const graded = submissions.some((submission) => submission.isGradedForUser(user));
-
-		return graded;
 	}
 
 	createStudentStatusForUser(user: User): ITaskStatus {

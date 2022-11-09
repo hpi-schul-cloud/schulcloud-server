@@ -123,36 +123,6 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	describe('getNumberOfStudents', () => {
-		it('should count the number of assigned students', () => {
-			const student1 = userFactory.build();
-			const student2 = userFactory.build();
-			const course = courseFactory.build({ students: [student1, student2] });
-
-			const number = course.getNumberOfStudents();
-
-			expect(number).toEqual(2);
-		});
-
-		it('should return 0 if no student is assigned', () => {
-			const teacher = userFactory.build();
-			const course = courseFactory.build({ teachers: [teacher], students: [] });
-
-			const number = course.getNumberOfStudents();
-
-			expect(number).toEqual(0);
-		});
-
-		it('should return 0 if student not an array', () => {
-			const teacher = userFactory.build();
-			const course = courseFactory.build({ teachers: [teacher], students: undefined });
-
-			const number = course.getNumberOfStudents();
-
-			expect(number).toEqual(0);
-		});
-	});
-
 	describe('isFinished', () => {
 		it('should always return false if no untilDate is set', () => {
 			const course = courseFactory.build({ untilDate: undefined });
