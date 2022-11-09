@@ -11,7 +11,7 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { ALL_FILES_STORAGE_ENTITIES, FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType } from '../entity';
 import { PermissionContexts } from '../files-storage.const';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -56,7 +56,7 @@ describe('FilesStorageUC delete methods', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities(ALL_FILES_STORAGE_ENTITIES);
+		orm = await setupEntities([FileRecord]);
 
 		module = await Test.createTestingModule({
 			providers: [

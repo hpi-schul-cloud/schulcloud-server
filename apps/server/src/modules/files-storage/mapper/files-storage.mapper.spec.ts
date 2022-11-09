@@ -9,14 +9,14 @@ import {
 	FileRecordResponse,
 	SingleFileParams,
 } from '../controller/dto';
-import { ALL_FILES_STORAGE_ENTITIES, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType } from '../entity';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities(ALL_FILES_STORAGE_ENTITIES);
+		orm = await setupEntities([FileRecord]);
 	});
 
 	afterAll(async () => {

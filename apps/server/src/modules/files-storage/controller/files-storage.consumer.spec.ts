@@ -2,10 +2,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain';
+import { ALL_ENTITIES, EntityId } from '@shared/domain';
 import { courseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { ALL_FILES_STORAGE_ENTITIES, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType } from '../entity';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FileRecordResponse } from './dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
@@ -26,7 +26,7 @@ describe('FilesStorageConsumer', () => {
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities(ALL_FILES_STORAGE_ENTITIES);
+		orm = await setupEntities([...ALL_ENTITIES, FileRecord]);
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageConsumer,

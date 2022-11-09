@@ -7,7 +7,7 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { ALL_FILES_STORAGE_ENTITIES, FileRecord, FileRecordParentType, ScanStatus } from '../entity';
+import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { createICopyFiles } from '../helper';
 import { CopyFileResponseBuilder } from '../mapper';
 import { FileRecordRepo } from '../repo';
@@ -41,7 +41,7 @@ describe('FilesStorageService copy methods', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities(ALL_FILES_STORAGE_ENTITIES);
+		orm = await setupEntities([FileRecord]);
 
 		module = await Test.createTestingModule({
 			providers: [

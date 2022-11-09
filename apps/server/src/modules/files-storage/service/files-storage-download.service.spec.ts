@@ -8,7 +8,7 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { ALL_FILES_STORAGE_ENTITIES, FileRecordParentType, ScanStatus } from '../entity';
+import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { createPath } from '../helper';
 import { IGetFileResponse } from '../interface';
@@ -41,7 +41,7 @@ describe('FilesStorageService download methods', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities(ALL_FILES_STORAGE_ENTITIES);
+		orm = await setupEntities([FileRecord]);
 
 		module = await Test.createTestingModule({
 			providers: [
