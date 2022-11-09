@@ -1,37 +1,15 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { School } from '@shared/domain/entity/school.entity';
-import { IEntityWithSchool } from '../interface';
-import { ILearnroomElement } from '../interface/learnroom';
-import { EntityId } from '../types/entity-id';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+import type { IEntityWithSchool } from '../interface';
+import type { ILearnroomElement } from '../interface/learnroom';
+import type { EntityId } from '../types/entity-id';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
 import type { User } from './user.entity';
-
-export interface ITaskProperties {
-	name: string;
-	description?: string;
-	availableDate?: Date;
-	dueDate?: Date;
-	private?: boolean;
-	creator: User;
-	course?: Course;
-	school: School;
-	lesson?: Lesson;
-	submissions?: Submission[];
-	finished?: User[];
-	publicSubmissions?: boolean;
-}
-
-export interface ITaskStatus {
-	submitted: number;
-	maxSubmissions: number;
-	graded: number;
-	isDraft: boolean;
-	isSubstitutionTeacher: boolean;
-	isFinished: boolean;
-}
+import type { ITaskProperties, ITaskStatus } from '../types/task.types';
 
 export class TaskWithStatusVo {
 	task!: Task;
@@ -63,6 +41,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	@Property()
 	description: string;
+
+	@Property()
+	descriptionInputFormat: InputFormat;
 
 	@Property({ nullable: true })
 	availableDate?: Date;
@@ -104,6 +85,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		super();
 		this.name = props.name;
 		this.description = props.description || '';
+		this.descriptionInputFormat = props.descriptionInputFormat || InputFormat.RICH_TEXT_CK4;
 		this.availableDate = props.availableDate;
 		this.dueDate = props.dueDate;
 		if (props.private !== undefined) this.private = props.private;

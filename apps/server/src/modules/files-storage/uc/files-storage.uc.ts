@@ -104,7 +104,11 @@ export class FilesStorageUC {
 
 			return result;
 		} catch (error) {
-			this.logger.warn(`could not find file by url: ${params.url}`, error);
+			this.logger.warn({
+				message: 'could not find file by url',
+				url: params.url,
+				error: error as Error,
+			});
 			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
 	}
