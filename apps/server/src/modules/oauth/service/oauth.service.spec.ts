@@ -215,7 +215,7 @@ describe('OAuthService', () => {
 	describe('findUser', () => {
 		beforeEach(() => {
 			jest.spyOn(jwt, 'decode').mockImplementation((): JwtPayload => {
-				return { sub: new ObjectId().toHexString() };
+				return { sub: new ObjectId().toHexString(), email: 'peter.tester@example.com' };
 			});
 		});
 
@@ -236,10 +236,21 @@ describe('OAuthService', () => {
 			expect(result).toBe(user);
 		});
 
-		it('should throw if no user is found with this id', async () => {
+		it('should throw if no user is found with this id and give helpful context', async () => {
+			const schoolId = '123';
+			const userLdapId = '321-my-current-ldap-id';
 			userRepo.findByExternalIdOrFail.mockRejectedValue(new NotFoundError('User not found'));
+			userRepo.findByEmail.mockResolvedValue([
+				{ school: { id: schoolId, name: 'testschool' }, externalId: userLdapId },
+			] as User[]);
 
-			await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(OAuthSSOError);
+			try {
+				await service.findUser('accessToken', 'idToken', testSystem.id);
+			} catch (error) {
+				expect(error).toBeInstanceOf(OAuthSSOError);
+				expect((error as OAuthSSOError).message).toContain(schoolId);
+				expect((error as OAuthSSOError).message).toContain(userLdapId);
+			}
 		});
 
 		it('should return the user according to the id', async () => {
