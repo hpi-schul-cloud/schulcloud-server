@@ -1,4 +1,3 @@
-import { FileRecord, FileSecurityCheck } from '@src/modules/files-storage/entity/filerecord.entity';
 import { Account } from './account.entity';
 import { Board } from './board.entity';
 import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
@@ -39,8 +38,6 @@ export const ALL_ENTITIES = [
 	DashboardModelEntity,
 	ExternalTool,
 	File,
-	FileRecord,
-	FileSecurityCheck,
 	ImportUser,
 	Lesson,
 	LessonBoardElement,

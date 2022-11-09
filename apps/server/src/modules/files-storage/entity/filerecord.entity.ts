@@ -2,8 +2,7 @@ import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-import { BaseEntity } from '../../../shared/domain/entity/base.entity';
-import type { EntityId } from '../../../shared/domain/types/entity-id';
+import { type EntityId, BaseEntity } from '@shared/domain';
 import { ErrorType } from '../error';
 
 export enum ScanStatus {
