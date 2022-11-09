@@ -100,6 +100,11 @@ const setIdToken = (hook) => {
 					},
 				};
 				// eslint-disable-next-line no-console
+				console.log('userRole: ', user.roles.data.map((role) => { this.role = role.name}));
+				console.log('userRole: ', user.roles);
+				console.log('userRole: ', user.role);
+				console.log('userRole: ', user.roles[0]);
+				console.log('userRole: ', user.roles[0].name);
 				console.log('id_token_bilo: ', hook);
 				return hook;
 			})
