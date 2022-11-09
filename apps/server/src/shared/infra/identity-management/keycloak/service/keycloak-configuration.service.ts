@@ -9,7 +9,7 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { SystemService } from '@src/modules/system/service/system.service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { IdentityProviderConfig } from '../interface';
+import { IdentityProviderConfig, IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
@@ -27,6 +27,7 @@ export class KeycloakConfigurationService {
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly systemService: SystemService,
 		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
+		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService
 	) {}
 
@@ -109,7 +110,7 @@ export class KeycloakConfigurationService {
 		const SC_DOMAIN = Configuration.get('SC_DOMAIN') as string;
 		let redirectUri = `https://${SC_DOMAIN}/api/v3/sso/oauth/`;
 		// TODO grab from well-known endpoint or move to separat environmental variable, see EW-326
-		let kcBaseUrl = `https://idm-${SC_DOMAIN}/realms/${kc.realmName}`;
+		let kcBaseUrl = `${this.kcSettings.baseUrl}/realms/${kc.realmName}`;
 		if (SC_DOMAIN === 'localhost') {
 			redirectUri = `http://localhost:3030/api/v3/sso/oauth/`;
 			kcBaseUrl = `http://localhost:8080/realms/${kc.realmName}`;
