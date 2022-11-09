@@ -75,15 +75,93 @@ export class Submission extends BaseEntityWithTimestamps {
 		}
 	}
 
+	private getTeamMembersItems(): User[] {
+		if (!this.teamMembers.isInitialized(true)) {
+			throw new Error('TeamMember items are not loaded.');
+		}
+		const teamMembers = this.teamMembers.getItems();
+
+		return teamMembers;
+	}
+
+	private getGradeFilesItems(): File[] {
+		if (!this.gradeFiles.isInitialized(true)) {
+			throw new Error('GradeFiles items are not loaded.');
+		}
+		const gradeFiles = this.gradeFiles.getItems();
+
+		return gradeFiles;
+	}
+
+	private isCreator(user: User): boolean {
+		const creator = this.student.id === user.id;
+
+		return creator;
+	}
+
+	private isTeamMember(user: User): boolean {
+		const teamMembers = this.getTeamMembersItems();
+		const isTeamMember = teamMembers.some((teamMember) => teamMember.id === user.id);
+
+		return isTeamMember;
+	}
+
+	private isMemberOf(user: User): boolean {
+		const isCreator = this.isCreator(user);
+		const isTeamMember = this.isTeamMember(user);
+		const isMemberOf = isCreator || isTeamMember;
+
+		return isMemberOf;
+	}
+
+	isSubmitted(): boolean {
+		// Always submitted for now, but can be changed in future.
+		const isSubmitted = true;
+
+		return isSubmitted;
+	}
+
+	isSubmittedForUser(user: User): boolean {
+		const isMemberOf = this.isMemberOf(user);
+		const isSubmitted = this.isSubmitted();
+		const isSubmittedForUser = isMemberOf && isSubmitted;
+
+		return isSubmittedForUser;
+	}
+
+	private gradeExists(): boolean {
+		const gradeExists = typeof this.grade === 'number' && this.grade >= 0;
+
+		return gradeExists;
+	}
+
+	private gradeCommentExists(): boolean {
+		const gradeCommentExists = typeof this.gradeComment === 'string' && this.gradeComment.length > 0;
+
+		return gradeCommentExists;
+	}
+
+	private gradeFilesExists(): boolean {
+		const gradedFiles = this.getGradeFilesItems();
+		const gradeFilesExists = gradedFiles.length > 0;
+
+		return gradeFilesExists;
+	}
+
 	isGraded(): boolean {
-		const isGraded =
-			(typeof this.grade === 'number' && this.grade >= 0) ||
-			(typeof this.gradeComment === 'string' && this.gradeComment.length > 0) ||
-			(this.gradeFiles !== undefined && this.gradeFiles.length > 0);
+		const gradeExists = this.gradeExists();
+		const gradeCommentExists = this.gradeCommentExists();
+		const gradeFilesExists = this.gradeFilesExists();
+		const isGraded = gradeExists || gradeCommentExists || gradeFilesExists;
+
 		return isGraded;
 	}
 
-	getStudentId(): EntityId {
-		return this.student.id;
+	isGradedForUser(user: User): boolean {
+		const isMemberOf = this.isMemberOf(user);
+		const isGraded = this.isGraded();
+		const isGradedForUser = isMemberOf && isGraded;
+
+		return isGradedForUser;
 	}
 }

@@ -110,6 +110,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		if (this.availableDate && this.availableDate > new Date(Date.now())) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -120,6 +121,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		if (this.availableDate && this.availableDate > new Date(Date.now())) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -128,6 +130,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 			throw new Error('Submissions items are not loaded.');
 		}
 		const submissions = this.submissions.getItems();
+
 		return submissions;
 	}
 

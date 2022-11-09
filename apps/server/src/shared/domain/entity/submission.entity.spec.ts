@@ -1,6 +1,5 @@
-import { Collection, MikroORM } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { userFactory, taskFactory, submissionFactory, fileFactory, setupEntities } from '@shared/testing';
-import { File } from './file.entity';
 
 describe('Submission entity', () => {
 	let orm: MikroORM;
@@ -13,59 +12,196 @@ describe('Submission entity', () => {
 		await orm.close();
 	});
 
-	describe('constructor', () => {
-		it('should set student files', () => {
-			const files = fileFactory.buildList(3);
-			const submission = submissionFactory.build({ studentFiles: files });
-			expect(submission.studentFiles).toBeDefined();
-		});
+	// TODO: mock restore beforeEach
 
-		it('should set grade files', () => {
-			const files = fileFactory.buildList(3);
-			const submission = submissionFactory.build({ gradeFiles: files });
-			expect(submission.gradeFiles).toBeDefined();
-		});
-	});
+	describe('isSubmitted is called', () => {
+		describe('when submission exists', () => {
+			const setup = () => {
+				const student = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ task, student });
 
-	describe('isGraded', () => {
-		it('should be graded if grade percentage is set', () => {
-			const student = userFactory.build();
-			const task = taskFactory.build();
-			const submission = submissionFactory.build({ task, student, grade: 50 });
+				return submission;
+			};
 
-			expect(submission.isGraded()).toEqual(true);
-		});
+			it('should be return true.', () => {
+				const submission = setup();
 
-		it('should be graded if grade comment is set', () => {
-			const student = userFactory.build();
-			const task = taskFactory.build();
-			const submission = submissionFactory.build({ task, student, gradeComment: 'well done!' });
-
-			expect(submission.isGraded()).toEqual(true);
-		});
-
-		it('should be graded if grade grade files have been associated', () => {
-			const student = userFactory.build();
-			const task = taskFactory.build();
-			const teacher = userFactory.build();
-			const file = fileFactory.build({ creator: teacher });
-			const submission = submissionFactory.build({ task, student });
-			submission.gradeFiles = new Collection<File>(submission, [file]);
-
-			expect(submission.isGraded()).toEqual(true);
+				expect(submission.isSubmitted()).toEqual(true);
+			});
 		});
 	});
 
-	describe('getStudentId', () => {
-		it('should return the id of the student', () => {
-			const student = userFactory.build();
-			student.id = '0123456789ab';
-			const task = taskFactory.build();
-			const submission = submissionFactory.build({ task, student });
+	describe('isSubmittedForUser is called', () => {
+		describe('when submission exists and user is creator of the submission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ task, student: user });
 
-			const result = submission.getStudentId();
+				return { submission, user };
+			};
 
-			expect(result).toEqual(student.id);
+			it('should be return true.', () => {
+				const { submission, user } = setup();
+
+				expect(submission.isSubmittedForUser(user)).toEqual(true);
+			});
+		});
+
+		describe('when submission exists and user is teamMember of the submission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ task, teamMembers: [user] });
+
+				return { submission, user };
+			};
+
+			it('should be return true.', () => {
+				const { submission, user } = setup();
+
+				expect(submission.isSubmittedForUser(user)).toEqual(true);
+			});
+		});
+
+		describe('when submission exists and user is no member of the submission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ task });
+
+				return { submission, user };
+			};
+
+			it('should be return false.', () => {
+				const { submission, user } = setup();
+
+				expect(submission.isSubmittedForUser(user)).toEqual(false);
+			});
+		});
+	});
+
+	describe('isGraded is called', () => {
+		describe('when no grades exists', () => {
+			const setup = () => {
+				const student = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ task, student });
+
+				return submission;
+			};
+
+			it('should be return false.', () => {
+				const submission = setup();
+
+				expect(submission.isGraded()).toEqual(false);
+			});
+		});
+
+		describe('when grade exists', () => {
+			const setup = () => {
+				const student = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+				const grade = 50;
+				const submission = submissionFactory.buildWithId({ task, student, grade });
+
+				return submission;
+			};
+
+			it('should be return true.', () => {
+				const submission = setup();
+
+				expect(submission.isGraded()).toEqual(true);
+			});
+		});
+
+		describe('when gradeComment exists', () => {
+			const setup = () => {
+				const student = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+				const gradeComment = 'Very good!';
+				const submission = submissionFactory.buildWithId({ task, student, gradeComment });
+
+				return submission;
+			};
+
+			it('should be return true.', () => {
+				const submission = setup();
+
+				expect(submission.isGraded()).toEqual(true);
+			});
+		});
+
+		describe('when gradeFiles exists', () => {
+			const setup = () => {
+				const student = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+				const file = fileFactory.buildWithId();
+				const gradeFiles = [file];
+				const submission = submissionFactory.buildWithId({ task, student, gradeFiles });
+
+				return submission;
+			};
+
+			it('should be return true.', () => {
+				const submission = setup();
+
+				expect(submission.isGraded()).toEqual(true);
+			});
+		});
+	});
+
+	describe('isGradedForUser is called', () => {
+		describe('when grade exists and user is creator of the submission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+				const grade = 50;
+				const submission = submissionFactory.buildWithId({ task, student: user, grade });
+
+				return { submission, user };
+			};
+
+			it('should be return true.', () => {
+				const { submission, user } = setup();
+
+				expect(submission.isGradedForUser(user)).toEqual(true);
+			});
+		});
+
+		describe('when grade exists and user is teamMember of the submission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+				const grade = 50;
+				const submission = submissionFactory.buildWithId({ task, grade, teamMembers: [user] });
+
+				return { submission, user };
+			};
+
+			it('should be return true.', () => {
+				const { submission, user } = setup();
+
+				expect(submission.isGradedForUser(user)).toEqual(true);
+			});
+		});
+
+		describe('when grade exists and user is not a member of the submission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+				const grade = 50;
+				const submission = submissionFactory.buildWithId({ task, grade });
+
+				return { submission, user };
+			};
+
+			it('should be return false.', () => {
+				const { submission, user } = setup();
+
+				expect(submission.isGradedForUser(user)).toEqual(false);
+			});
 		});
 	});
 });
