@@ -199,13 +199,15 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	isSubmittedForUser(user: User): boolean {
-		const submitted = this.getSubmittedUserIds().some((uid) => uid === user.id);
+		const submissions = this.getSubmissionItems();
+		const isSubmitted = submissions.some((submission) => submission.isSubmittedForUser(user));
 
-		return submitted;
+		return isSubmitted;
 	}
 
 	isGradedForUser(user: User): boolean {
-		const graded = this.getGradedUserIds().some((uid) => uid === user.id);
+		const submissions = this.getSubmissionItems();
+		const graded = submissions.some((submission) => submission.isGradedForUser(user));
 
 		return graded;
 	}
