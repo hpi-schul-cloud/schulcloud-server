@@ -82,7 +82,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	creator?: User;
 
 	@Index()
-	@ManyToOne('Course', { fieldName: 'courseId', nullable: true, eager: true })
+	@ManyToOne('Course', { fieldName: 'courseId', nullable: true })
 	course?: Course;
 
 	@Index()

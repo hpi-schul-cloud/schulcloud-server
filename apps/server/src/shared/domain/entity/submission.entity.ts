@@ -23,7 +23,7 @@ export interface ISubmissionProperties {
 @Entity({ tableName: 'submissions' })
 @Index({ properties: ['student', 'teamMembers'] })
 export class Submission extends BaseEntityWithTimestamps {
-	@ManyToOne('Task', { fieldName: 'homeworkId', eager: true })
+	@ManyToOne('Task', { fieldName: 'homeworkId' })
 	@Index()
 	task: Task;
 

@@ -19,7 +19,7 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 	students = new Collection<User>(this);
 
 	@Index()
-	@ManyToOne('Course', { fieldName: 'courseId', eager: true })
+	@ManyToOne('Course', { fieldName: 'courseId' })
 	course: Course;
 
 	@ManyToOne('School', { fieldName: 'schoolId' })
