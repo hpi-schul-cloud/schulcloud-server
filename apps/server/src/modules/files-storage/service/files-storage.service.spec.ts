@@ -19,9 +19,9 @@ import {
 } from '../controller/dto';
 import { ErrorType } from '../error';
 import {
+	createFileRecord,
 	createICopyFiles,
 	createPath,
-	createFileRecord,
 	getPaths,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
@@ -483,8 +483,8 @@ describe('FilesStorageService', () => {
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({
 						...expectedFileRecord,
-						createdAt: expect.any(Date) as Date,
-						updatedAt: expect.any(Date) as Date,
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
 					})
 				);
 			});
@@ -529,8 +529,8 @@ describe('FilesStorageService', () => {
 				expect(service.createFileInStorageAndRollbackOnError).toHaveBeenCalledWith(
 					expect.objectContaining({
 						...expectedFileRecord,
-						createdAt: expect.any(Date) as Date,
-						updatedAt: expect.any(Date) as Date,
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
 					}),
 					params,
 					fileDescription
@@ -935,9 +935,9 @@ describe('FilesStorageService', () => {
 
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
 					expect.arrayContaining([
-						expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) as Date }),
-						expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) as Date }),
-						expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) as Date }),
+						expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) }),
+						expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) }),
+						expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) }),
 					])
 				);
 			});
@@ -1298,9 +1298,9 @@ describe('FilesStorageService', () => {
 				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(
 					2,
 					expect.arrayContaining([
-						expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) as Date }),
-						expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) as Date }),
-						expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) as Date }),
+						expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) }),
+						expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) }),
+						expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) }),
 					])
 				);
 			});
@@ -1419,7 +1419,7 @@ describe('FilesStorageService', () => {
 
 				await service.copyFileRecord(sourceFile, params, userId);
 
-				expect(fileRecordRepo.save).toBeCalledWith(expect.any(FileRecord) as FileRecord);
+				expect(fileRecordRepo.save).toBeCalledWith(expect.any(FileRecord));
 			});
 		});
 

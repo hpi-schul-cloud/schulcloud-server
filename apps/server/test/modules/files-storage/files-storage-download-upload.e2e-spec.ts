@@ -173,14 +173,14 @@ describe('files-storage controller (e2e)', () => {
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 				expect(result).toStrictEqual(
 					expect.objectContaining({
-						id: expect.any(String) as string,
+						id: expect.any(String),
 						name: 'test.txt',
 						parentId: validId,
 						creatorId: currentUser.userId,
 						type: 'text/plain',
 						parentType: 'schools',
 						securityCheckStatus: 'pending',
-						size: expect.any(Number) as number,
+						size: expect.any(Number),
 					})
 				);
 			});
@@ -275,7 +275,7 @@ describe('files-storage controller (e2e)', () => {
 				const { result } = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
 				expect(result).toStrictEqual(
 					expect.objectContaining({
-						id: expect.any(String) as string,
+						id: expect.any(String),
 						name: 'test (1).txt',
 						parentId: validId,
 						creatorId: currentUser.userId,

@@ -36,9 +36,9 @@ describe('File Record Helper', () => {
 
 			expect(markedFileRecords).toEqual(
 				expect.arrayContaining([
-					expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) as Date }),
-					expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) as Date }),
-					expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) as Date }),
+					expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) }),
+					expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) }),
+					expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) }),
 				])
 			);
 		});
@@ -91,7 +91,7 @@ describe('File Record Helper', () => {
 			};
 
 			expect(newFileRecord).toEqual(expect.objectContaining({ ...expectedObject }));
-			expect(newFileRecord).toEqual(expect.any(FileRecord) as FileRecord);
+			expect(newFileRecord).toEqual(expect.any(FileRecord));
 		});
 	});
 });
