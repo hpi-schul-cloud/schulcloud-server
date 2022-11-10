@@ -80,7 +80,7 @@ describe('SubmissionRule', () => {
 	});
 
 	describe('hasPermission', () => {
-		describe('when user does not have required permissions', () => {
+		describe('when user roles do not contain required permissions', () => {
 			const setup = () => {
 				const permission = 'a' as Permission;
 				const user = userFactory.build({ roles: [] });
@@ -101,7 +101,7 @@ describe('SubmissionRule', () => {
 			});
 		});
 
-		describe('when user has required permissions', () => {
+		describe('when user roles contain required permissions', () => {
 			describe('when action is "write"', () => {
 				describe('when user is creator', () => {
 					const setup = () => {
