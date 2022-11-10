@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
+import { EntityId } from '@shared/domain';
+import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { FileRecordMapper } from '../mapper/filerecord-mapper';
 
 const tasksQuery = [

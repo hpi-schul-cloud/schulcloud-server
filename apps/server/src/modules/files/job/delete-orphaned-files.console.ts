@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { FileRecordParentType } from '@shared/domain';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { Command, Console } from 'nestjs-console';
 import { DeleteOrphanedFilesUc } from '../uc';
 

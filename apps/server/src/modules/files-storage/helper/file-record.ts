@@ -1,5 +1,5 @@
-import { FileRecord } from '@shared/domain';
 import { FileRecordParams } from '../controller/dto';
+import { FileRecord } from '../entity';
 
 export function markForDelete(fileRecords: FileRecord[]): FileRecord[] {
 	const markedFileRecords = fileRecords.map((fileRecord) => {

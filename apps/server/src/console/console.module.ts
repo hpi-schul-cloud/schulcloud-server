@@ -8,6 +8,7 @@ import { ConsoleWriterModule } from '@shared/infra/console/console-writer/consol
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { FilesModule } from '@src/modules/files';
+import { FileRecord } from '@src/modules/files-storage/entity';
 import { ManagementModule } from '@src/modules/management/management.module';
 import { serverConfig } from '@src/modules/server';
 import { ConsoleModule } from 'nestjs-console';
@@ -31,7 +32,7 @@ import { ServerConsole } from './server.console';
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: ALL_ENTITIES,
+			entities: [...ALL_ENTITIES, FileRecord],
 			allowGlobalContext: true,
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
