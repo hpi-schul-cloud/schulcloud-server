@@ -13,8 +13,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ShareTokenBodyParams, ShareTokenResponse } from '@src/modules/sharing/controller/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
+import { ShareTokenBodyParams, ShareTokenResponse } from '@src/modules/sharing/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 
@@ -196,7 +196,7 @@ describe(`share token creation (api)`, () => {
 			const response = await api.post({ parentId: course.id, parentType: ShareTokenParentType.Course });
 
 			expect(response.result).toEqual({
-				token: expect.any(String) as string,
+				token: expect.any(String),
 				payload: {
 					parentId: course.id,
 					parentType: ShareTokenParentType.Course,
@@ -227,7 +227,7 @@ describe(`share token creation (api)`, () => {
 				});
 
 				expect(response.result).toEqual({
-					token: expect.any(String) as string,
+					token: expect.any(String),
 					payload: {
 						parentId: course.id,
 						parentType: ShareTokenParentType.Course,
@@ -259,8 +259,8 @@ describe(`share token creation (api)`, () => {
 				});
 
 				expect(response.result).toEqual({
-					token: expect.any(String) as string,
-					expiresAt: expect.any(String) as string,
+					token: expect.any(String),
+					expiresAt: expect.any(String),
 					payload: {
 						parentId: course.id,
 						parentType: ShareTokenParentType.Course,

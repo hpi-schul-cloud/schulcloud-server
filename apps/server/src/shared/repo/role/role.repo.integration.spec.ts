@@ -27,6 +27,7 @@ describe('role repo', () => {
 
 	afterEach(async () => {
 		await em.nativeDelete(Role, {});
+		em.clear();
 		await cleanupCollections(em);
 	});
 
@@ -75,13 +76,12 @@ describe('role repo', () => {
 			const roleB = roleFactory.build({ name: RoleName.TEACHER });
 
 			await em.persistAndFlush([roleA, roleB]);
-			em.clear();
+
 			const result = await repo.findByName(RoleName.STUDENT);
 			expect(result).toEqual(roleA);
 		});
 
 		it('should throw an error if roles by name doesnt exist', async () => {
-			em.clear();
 			await expect(repo.findByName(RoleName.STUDENT)).rejects.toThrow(NotFoundError);
 		});
 	});
