@@ -3,8 +3,8 @@ import { fileRecordFactory } from '@shared/testing';
 import { AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { Readable } from 'stream';
-import { IFile } from '../interface';
-import { IFileBuilder } from './ifile-builder.builder';
+import { FileDto } from '../dto';
+import { FileDtoBuilder } from './file-dto.builder';
 
 describe('File Builder', () => {
 	describe('buildFromRequest is called', () => {
@@ -20,12 +20,12 @@ describe('File Builder', () => {
 
 			const buffer = Buffer.from('abc');
 
-			const expectedFile: IFile = {
+			const expectedFile = new FileDto({
 				name: fileRecord.name,
 				buffer,
 				size,
 				mimeType: fileRecord.mimeType,
-			};
+			});
 
 			const fileInfo = {
 				filename: fileRecord.name,
@@ -39,7 +39,7 @@ describe('File Builder', () => {
 		it('should return file from request', () => {
 			const { fileInfo, request, buffer, expectedFile } = setup();
 
-			const result = IFileBuilder.buildFromRequest(fileInfo, request, buffer);
+			const result = FileDtoBuilder.buildFromRequest(fileInfo, request, buffer);
 
 			expect(result).toEqual(expectedFile);
 		});
@@ -56,12 +56,12 @@ describe('File Builder', () => {
 				headers: { 'content-length': `${size}`, 'content-type': fileRecord.mimeType },
 			});
 
-			const expectedFile: IFile = {
+			const expectedFile = new FileDto({
 				name: fileRecord.name,
 				buffer: readable,
 				size,
 				mimeType: fileRecord.mimeType,
-			};
+			});
 
 			return { fileRecord, response, expectedFile };
 		};
@@ -69,7 +69,7 @@ describe('File Builder', () => {
 		it('should return file from request', () => {
 			const { response, expectedFile, fileRecord } = setup();
 
-			const result = IFileBuilder.buildFromAxiosResponse(fileRecord.name, response);
+			const result = FileDtoBuilder.buildFromAxiosResponse(fileRecord.name, response);
 
 			expect(result).toEqual(expectedFile);
 		});

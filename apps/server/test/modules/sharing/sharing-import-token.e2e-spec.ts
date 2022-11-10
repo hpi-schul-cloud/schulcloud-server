@@ -6,7 +6,6 @@ import { ApiValidationError } from '@shared/common';
 import {
 	CopyElementType,
 	CopyStatusEnum,
-	EntityId,
 	ICurrentUser,
 	Permission,
 	ShareTokenContext,
@@ -147,7 +146,7 @@ describe(`share token import (api)`, () => {
 			const response = await api.post({ token }, { newName });
 
 			const expectedResult: CopyApiResponse = {
-				id: expect.any(String) as EntityId,
+				id: expect.any(String),
 				type: elementType,
 				title: newName,
 				status: CopyStatusEnum.SUCCESS,

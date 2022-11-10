@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
-import { FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain/'; // we do not want entity on this place in future or?
+import { FileRecord, FileRecordParentType, ScanStatus } from '../../entity';
 
 export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {

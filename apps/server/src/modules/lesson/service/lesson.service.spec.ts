@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParentType } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {

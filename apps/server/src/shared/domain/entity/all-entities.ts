@@ -7,7 +7,6 @@ import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { ExternalTool } from './external-tool/external-tool.entity';
 import { File } from './file.entity';
-import { FileRecord, FileSecurityCheck } from './filerecord.entity';
 import { ImportUser } from './import-user.entity';
 import { Lesson } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
@@ -39,8 +38,6 @@ export const ALL_ENTITIES = [
 	DashboardModelEntity,
 	ExternalTool,
 	File,
-	FileRecord,
-	FileSecurityCheck,
 	ImportUser,
 	Lesson,
 	LessonBoardElement,
