@@ -1,8 +1,8 @@
 import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CustomParameterResponseParams {
-	constructor(props: CustomParameterResponseParams) {
+export class CustomParameterResponse {
+	constructor(props: CustomParameterResponse) {
 		this.name = props.name;
 		this.default = props.default;
 		this.location = props.location;

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ExternalToolConfigResponseParams } from '@src/modules/tool/controller/dto/response/external-tool-config-response.params';
-import { CustomParameterResponseParams } from '@src/modules/tool/controller/dto/response/custom-parameter-response.params';
+import { ExternalToolConfigResponse } from '@src/modules/tool/controller/dto/response/external-tool-config.response';
+import { CustomParameterResponse } from '@src/modules/tool/controller/dto/response/custom-parameter.response';
 
 export class ExternalToolResponse {
 	@ApiProperty()
@@ -16,10 +16,10 @@ export class ExternalToolResponse {
 	logoUrl?: string;
 
 	@ApiProperty()
-	config: ExternalToolConfigResponseParams;
+	config: ExternalToolConfigResponse;
 
 	@ApiProperty()
-	parameters: CustomParameterResponseParams;
+	parameters: CustomParameterResponse;
 
 	@ApiProperty()
 	isHidden: boolean;
