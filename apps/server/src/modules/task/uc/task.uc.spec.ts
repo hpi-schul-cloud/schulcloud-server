@@ -1124,6 +1124,13 @@ describe('TaskUC', () => {
 					requiredPermissions: [],
 				});
 			});
+			it('should throw if the user has no permission', async () => {
+				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+				await expect(async () => {
+					await service.create(user.id, { name: 'test' });
+				}).rejects.toThrow(UnauthorizedException);
+				authorizationService.hasAllPermissions.mockRestore();
+			});
 			it('should throw if lesson does not belong to course', async () => {
 				const lesson = lessonFactory.buildWithId();
 				lessonRepo.findById.mockResolvedValue(lesson);

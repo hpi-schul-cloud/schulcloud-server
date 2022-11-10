@@ -1,11 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import {
-	BadRequestException,
-	Injectable,
-	InternalServerErrorException,
-	UnauthorizedException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import {
 	Actions,
 	Counted,
@@ -251,8 +245,6 @@ export class TaskUC {
 			taskParams.lesson = lesson;
 		}
 
-		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
-
 		const task = new Task(taskParams);
 
 		await this.taskRepo.save(task);
@@ -311,8 +303,6 @@ export class TaskUC {
 			task.lesson = lesson;
 		}
 
-		this.taskDateValidation();
-
 		await this.taskRepo.save(task);
 
 		const status = task.createTeacherStatusForUser(user);
@@ -332,12 +322,6 @@ export class TaskUC {
 
 		await this.taskRepo.delete(task);
 		return true;
-	}
-
-	private taskDateValidation(availableDate?: Date, dueDate?: Date) {
-		if (availableDate && dueDate && !(availableDate < dueDate)) {
-			throw new BadRequestException();
-		}
 	}
 
 	private checkNewTaskEnabled() {
