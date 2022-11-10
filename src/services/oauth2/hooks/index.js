@@ -5,6 +5,9 @@ const { Forbidden, MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra');
 
+const Role = require('../../role/services/userRoles');
+const {UserRoles} = require("../../role/services/userRoles");
+
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
 
@@ -44,7 +47,7 @@ const setIdToken = (hook) => {
 	// add 'federalState' to Promise - clean solution
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
-		hook.app.service('roles').get(hook.params.account.userId),
+		// hook.app.service('roles').get(hook.params.account.userId),
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 					{
@@ -61,7 +64,7 @@ const setIdToken = (hook) => {
 				isLocal: true,
 			},
 		}),
-	]).then(([user, roles,  userTeams, tools]) =>
+	]).then(([user, userTeams, tools]) =>
 		hook.app
 			.service('pseudonym')
 			.find({
@@ -73,12 +76,12 @@ const setIdToken = (hook) => {
 			.then((pseudonyms) => {
 				const { pseudonym } = pseudonyms.data[0];
 				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
-				const roleExist = roles;
-				const roleExistName = roles.name;
+				const roles = user.roles.map((role) => this.role = role);
 				// eslint-disable-next-line no-console
-				console.log('Role: ', roleExist);
+				console.log('roles_test: ', roles);
+				const getRoles = new UserRoles().get(user._id);
 				// eslint-disable-next-line no-console
-				console.log('RoleName: ', roleExistName);
+				console.log('get_roles_test: ', getRoles);
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
