@@ -73,13 +73,19 @@ const setIdToken = (hook) => {
 			.then((pseudonyms) => {
 				const { pseudonym } = pseudonyms.data[0];
 				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
+				const roleExist = roles;
+				const roleExistName = roles.name;
+				// eslint-disable-next-line no-console
+				console.log('Role: ', roleExist);
+				// eslint-disable-next-line no-console
+				console.log('RoleName: ', roleExistName);
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
 						email: scope.includes('email') ? user.email : undefined,
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
-						userRole: scope.includes('bilo') ? roles.name : undefined,
+						userRole: scope.includes('bilo') ? user.roles : undefined,
 						fedState: scope.includes('bilo') ? user.schoolId.federalState : undefined,
 						schoolId: user.schoolId,
 						groups: scope.includes('groups')
