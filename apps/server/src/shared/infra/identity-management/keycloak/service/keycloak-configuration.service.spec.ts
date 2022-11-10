@@ -126,7 +126,9 @@ describe('KeycloakConfigurationService Unit', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					useValue: createMock<ConfigService>({
+						get: (key: string) => `${key}-value`,
+					}),
 				},
 				{
 					provide: DefaultEncryptionService,
@@ -225,6 +227,15 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.create.mockResolvedValue({ id: 'new_client_id' });
 			kcApiClientMock.generateNewClientSecret.mockResolvedValue({ type: 'secret', value: 'generated_client_secret' });
 			systemService.find.mockResolvedValue([]);
+			kcApiRealmsMock.makeRequest.mockImplementation(
+				() => async () =>
+					Promise.resolve({
+						token_endpoint: 'tokenEndpoint',
+						authorization_endpoint: 'authEndpoint',
+						end_session_endpoint: 'logoutEndpoint',
+						jwks_uri: 'jwksUrl',
+					})
+			);
 		});
 
 		afterAll(() => {

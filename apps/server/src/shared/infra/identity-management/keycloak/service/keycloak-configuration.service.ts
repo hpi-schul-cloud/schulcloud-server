@@ -8,7 +8,8 @@ import { SystemTypeEnum } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { ConfigService } from '@nestjs/config';
+import { IServerConfig } from '@src/modules/server';
 import { IdentityProviderConfig, IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -26,6 +27,7 @@ export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly systemService: SystemService,
+		private readonly configService: ConfigService<IServerConfig, true>,
 		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
 		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService
@@ -107,20 +109,17 @@ export class KeycloakConfigurationService {
 
 	public async configureClient(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		const SC_DOMAIN = Configuration.get('SC_DOMAIN') as string;
-		let redirectUri = `https://${SC_DOMAIN}/api/v3/sso/oauth/`;
-		// TODO grab from well-known endpoint or move to separat environmental variable, see EW-326
-		let kcBaseUrl = `${this.kcSettings.baseUrl}/realms/${kc.realmName}`;
-		if (SC_DOMAIN === 'localhost') {
-			redirectUri = `http://localhost:3030/api/v3/sso/oauth/`;
-			kcBaseUrl = `http://localhost:8080/realms/${kc.realmName}`;
-		}
-		const cr: ClientRepresentation = {};
-		cr.clientId = clientId;
-		cr.enabled = true;
-		cr.protocol = 'openid-connect';
-		cr.publicClient = false;
-		cr.redirectUris = [`${redirectUri}*`];
+		const scDomain = this.configService.get<string>('SC_DOMAIN');
+		const redirectUri =
+			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth' : `https://${scDomain}/api/v3/sso/oauth`;
+		const kcBaseUrl = `${this.kcSettings.baseUrl}/realms/${kc.realmName}`;
+		const cr: ClientRepresentation = {
+			clientId,
+			enabled: true,
+			protocol: 'openid-connect',
+			publicClient: false,
+			redirectUris: [`${redirectUri}*`],
+		};
 		let defaultClientInternalId = (await kc.clients.find({ clientId }))[0]?.id;
 		if (!defaultClientInternalId) {
 			({ id: defaultClientInternalId } = await kc.clients.create(cr));
@@ -136,7 +135,7 @@ export class KeycloakConfigurationService {
 		} else {
 			[keycloakSystem] = systems;
 		}
-		this.setKeycloakSystemInformation(keycloakSystem, kcBaseUrl, redirectUri, generatedClientSecret.value ?? '');
+		await this.setKeycloakSystemInformation(keycloakSystem, kcBaseUrl, redirectUri, generatedClientSecret.value ?? '');
 		await this.systemService.save(keycloakSystem);
 	}
 
@@ -167,12 +166,20 @@ export class KeycloakConfigurationService {
 		return count;
 	}
 
-	private setKeycloakSystemInformation(
+	private async setKeycloakSystemInformation(
 		keycloakSystem: SystemDto,
 		kcBaseUrl: string,
 		redirectUri: string,
 		generatedClientSecret: string
 	) {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		const getWellKnownRequest = kc.realms.makeRequest<{ realmName: string }, Record<string, unknown>>({
+			method: 'GET',
+			path: '/realms/{realmName}/.well-known/openid-configuration',
+			urlParamKeys: ['realmName'],
+		});
+		const getWellKnownResponse = await getWellKnownRequest({ realmName: kc.realmName });
+
 		keycloakSystem.type = SystemTypeEnum.KEYCLOAK;
 		keycloakSystem.alias = 'Keycloak';
 		keycloakSystem.oauthConfig = {
@@ -182,13 +189,12 @@ export class KeycloakConfigurationService {
 			scope: 'openid profile email',
 			responseType: 'code',
 			provider: 'oauth',
-			// TODO grab from well-known endpoint instead of storing here, see EW-326
-			tokenEndpoint: `${kcBaseUrl}/protocol/openid-connect/token`,
-			redirectUri: `${redirectUri}`,
-			authEndpoint: `${kcBaseUrl}/protocol/openid-connect/auth`,
-			logoutEndpoint: `${kcBaseUrl}/protocol/openid-connect/logout`,
-			jwksEndpoint: `${kcBaseUrl}/protocol/openid-connect/certs`,
-			issuer: `${kcBaseUrl}`,
+			redirectUri,
+			tokenEndpoint: getWellKnownResponse.token_endpoint as string,
+			authEndpoint: getWellKnownResponse.authorization_endpoint as string,
+			logoutEndpoint: getWellKnownResponse.end_session_endpoint as string,
+			jwksEndpoint: getWellKnownResponse.jwks_uri as string,
+			issuer: kcBaseUrl,
 		};
 		return keycloakSystem;
 	}
