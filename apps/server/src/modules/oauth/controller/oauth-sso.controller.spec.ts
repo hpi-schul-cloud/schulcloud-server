@@ -2,13 +2,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { getMockRes } from '@jest-mock/express';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser, System } from '@shared/domain';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
-import { Request } from 'express';
-import { UnauthorizedException } from '@nestjs/common';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
+import { Request } from 'express';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationParams } from './dto/authorization.params';
 import { OauthSSOController } from './oauth-sso.controller';
@@ -50,7 +50,7 @@ describe('OAuthController', () => {
 					return 'nonexistent case';
 			}
 		});
-		jest.useFakeTimers('modern');
+		jest.useFakeTimers();
 		jest.setSystemTime(dateNow);
 
 		module = await Test.createTestingModule({

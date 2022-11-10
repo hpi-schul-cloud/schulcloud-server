@@ -24,7 +24,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
 import { FilesStorageMapper } from '../mapper/file-record.mapper';
-import { FileRecordUC, FilesStorageUC } from '../uc';
+import { FilesStorageUC } from '../uc';
 import {
 	CopyFileListResponse,
 	CopyFileParams,
@@ -44,7 +44,7 @@ import {
 @Authenticate('jwt')
 @Controller('file')
 export class FilesStorageController {
-	constructor(private readonly filesStorageUC: FilesStorageUC, private readonly fileRecordUC: FileRecordUC) {}
+	constructor(private readonly filesStorageUC: FilesStorageUC) {}
 
 	@ApiOperation({ summary: 'Upload file from url' })
 	@ApiResponse({ status: 201, type: FileRecordResponse })
@@ -120,7 +120,7 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<FileRecordListResponse> {
-		const [fileRecords, total] = await this.fileRecordUC.getFileRecordsOfParent(currentUser.userId, params);
+		const [fileRecords, total] = await this.filesStorageUC.getFileRecordsOfParent(currentUser.userId, params);
 		const { skip, limit } = pagination;
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total, skip, limit);
 
@@ -144,7 +144,7 @@ export class FilesStorageController {
 		@Body() renameFileParam: RenameFileParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
-		const fileRecord = await this.fileRecordUC.patchFilename(currentUser.userId, params, renameFileParam);
+		const fileRecord = await this.filesStorageUC.patchFilename(currentUser.userId, params, renameFileParam);
 
 		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
 

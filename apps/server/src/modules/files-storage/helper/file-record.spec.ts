@@ -1,8 +1,9 @@
 import { MikroORM } from '@mikro-orm/core';
-import { EntityId, FileRecord } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { createFileRecord, markForDelete, unmarkForDelete } from '.';
+import { FileRecord } from '../entity';
 
 describe('File Record Helper', () => {
 	let orm: MikroORM;
@@ -21,7 +22,7 @@ describe('File Record Helper', () => {
 	};
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([FileRecord]);
 	});
 
 	afterAll(async () => {
@@ -36,9 +37,9 @@ describe('File Record Helper', () => {
 
 			expect(markedFileRecords).toEqual(
 				expect.arrayContaining([
-					expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) as Date }),
-					expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) as Date }),
-					expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) as Date }),
+					expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) }),
+					expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) }),
+					expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) }),
 				])
 			);
 		});
@@ -91,7 +92,7 @@ describe('File Record Helper', () => {
 			};
 
 			expect(newFileRecord).toEqual(expect.objectContaining({ ...expectedObject }));
-			expect(newFileRecord).toEqual(expect.any(FileRecord) as FileRecord);
+			expect(newFileRecord).toEqual(expect.any(FileRecord));
 		});
 	});
 });

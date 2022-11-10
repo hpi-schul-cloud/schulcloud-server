@@ -1,7 +1,12 @@
-import { Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
-import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
+import {
+	ConflictException,
+	Injectable,
+	InternalServerErrorException,
+	NotAcceptableException,
+	NotFoundException,
+} from '@nestjs/common';
+import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
@@ -13,22 +18,25 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../controller/dto';
+import { FileDto } from '../dto';
+import { FileRecord, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import {
+	createFileRecord,
 	createICopyFiles,
 	createPath,
 	deriveStatusFromSource,
-	createFileRecord,
 	getPaths,
+	getResolvedValues,
 	getStatusFromScanResult,
 	isStatusBlocked,
 	markForDelete,
-	modifyFileNameInScope,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
-import { IFile, IGetFileResponse } from '../interface';
-import { FilesStorageMapper } from '../mapper';
+import { IGetFileResponse } from '../interface';
+import { FilesStorageMapper, CopyFileResponseBuilder } from '../mapper';
+import { FileRecordRepo } from '../repo';
 
 @Injectable()
 export class FilesStorageService {
@@ -70,7 +78,7 @@ export class FilesStorageService {
 	public async createFileInStorageAndRollbackOnError(
 		fileRecord: FileRecord,
 		params: FileRecordParams,
-		fileDescription: IFile
+		fileDescription: FileDto
 	): Promise<FileRecord> {
 		try {
 			const filePath = createPath(params.schoolId, fileRecord.id);
@@ -84,7 +92,7 @@ export class FilesStorageService {
 		}
 	}
 
-	public async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: IFile): Promise<FileRecord> {
+	public async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: FileDto): Promise<FileRecord> {
 		const [fileRecords] = await this.getFileRecordsOfParent(params);
 		const fileName = resolveFileNameDuplicates(fileDescription.name, fileRecords);
 		const fileRecord = createFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
@@ -96,14 +104,21 @@ export class FilesStorageService {
 	}
 
 	// update
+	private checkDuplicatedNames(fileRecords: FileRecord[], newFileName: string): void {
+		if (fileRecords.find((item) => item.name === newFileName)) {
+			throw new ConflictException(ErrorType.FILE_NAME_EXISTS);
+		}
+	}
+
 	public async patchFilename(fileRecord: FileRecord, data: RenameFileParams) {
 		const fileRecordParams = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
 		const [fileRecords] = await this.getFileRecordsOfParent(fileRecordParams);
 
-		const modifiedFileRecord = modifyFileNameInScope(fileRecord, fileRecords, data.fileName);
-		await this.fileRecordRepo.save(modifiedFileRecord);
+		this.checkDuplicatedNames(fileRecords, data.fileName);
+		fileRecord.setName(data.fileName);
+		await this.fileRecordRepo.save(fileRecord);
 
-		return modifiedFileRecord;
+		return fileRecord;
 	}
 
 	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
@@ -118,13 +133,13 @@ export class FilesStorageService {
 	// download
 	private checkFileName(entity: FileRecord, params: DownloadFileParams): void | NotFoundException {
 		if (entity.name !== params.fileName) {
-			this.logger.warn(`could not find file with id: ${entity.id} by filename`);
+			this.logger.debug(`could not find file with id: ${entity.id} by filename`);
 			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
 	}
 
 	private checkScanStatus(entity: FileRecord): void | NotAcceptableException {
-		if (entity.securityCheck.status === ScanStatus.BLOCKED) {
+		if (isStatusBlocked(entity)) {
 			this.logger.warn(`file is blocked with id: ${entity.id}`);
 			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED);
 		}
@@ -250,7 +265,7 @@ export class FilesStorageService {
 		return entity;
 	}
 
-	public sendToAntiVirusService(sourceFile: FileRecord) {
+	private sendToAntiVirusService(sourceFile: FileRecord) {
 		if (sourceFile.securityCheck.status === ScanStatus.PENDING) {
 			this.antivirusService.send(sourceFile);
 		}
@@ -261,10 +276,10 @@ export class FilesStorageService {
 			const paths = createICopyFiles(sourceFile, targetFile);
 
 			await this.storageClient.copy([paths]);
-
 			this.sendToAntiVirusService(sourceFile);
+			const copyFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
 
-			return new CopyFileResponse({ id: targetFile.id, sourceId: sourceFile.id, name: targetFile.name });
+			return copyFileResponse;
 		} catch (error) {
 			await this.fileRecordRepo.delete([targetFile]);
 			throw error;
@@ -277,20 +292,19 @@ export class FilesStorageService {
 		targetParams: FileRecordParams
 	): Promise<CopyFileResponse[]> {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
-		const responseEntities: CopyFileResponse[] = [];
 
 		const promises = sourceFileRecords.map(async (sourceFile) => {
-			if (isStatusBlocked(sourceFile) || sourceFile.deletedSince) return;
+			this.checkScanStatus(sourceFile);
 
 			const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
-
 			const fileResponse = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
-			responseEntities.push(fileResponse);
+			return fileResponse;
 		});
 
-		await Promise.allSettled(promises);
+		const settledPromises = await Promise.allSettled(promises);
+		const resolvedResponses = getResolvedValues(settledPromises);
 
-		return responseEntities;
+		return resolvedResponses;
 	}
 }
