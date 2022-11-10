@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsMongoId, IsOptional, IsString, Validate } from 'class-validator';
 import { InputFormat, ITaskCreate } from '@shared/domain';
+import { IsBeforeConstraint } from '@shared/common';
 import { SanitizeHtml } from '@shared/controller';
 
 export class TaskCreateParams implements ITaskCreate {
@@ -46,6 +47,7 @@ export class TaskCreateParams implements ITaskCreate {
 		description: 'Date since the task is published',
 		type: Date,
 	})
+	@Validate(IsBeforeConstraint, ['dueDate'])
 	availableDate?: Date;
 
 	@IsDate()
