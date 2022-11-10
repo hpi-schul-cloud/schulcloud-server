@@ -6,7 +6,8 @@ import { SanitizeHtml } from '@shared/controller';
 export class TaskUpdateParams implements ITaskUpdate {
 	@IsString()
 	@IsMongoId()
-	@ApiProperty({
+	@IsOptional()
+	@ApiPropertyOptional({
 		description: 'The id of an course object.',
 		pattern: '[a-f0-9]{24}',
 		required: true,

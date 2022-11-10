@@ -1108,6 +1108,13 @@ describe('TaskUC', () => {
 				await service.create(user.id, { name: 'test' });
 				expect(authorizationService.hasAllPermissions).toBeCalledWith(user, [Permission.HOMEWORK_CREATE]);
 			});
+			it('should throw if the user has no permission', async () => {
+				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+				await expect(async () => {
+					await service.create(user.id, { name: 'test' });
+				}).rejects.toThrow(UnauthorizedException);
+				authorizationService.hasAllPermissions.mockRestore();
+			});
 			it('should check for course permission to create the task in a course', async () => {
 				await service.create(user.id, { name: 'test', courseId: course.id });
 				expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
@@ -1123,13 +1130,6 @@ describe('TaskUC', () => {
 					action: Actions.write,
 					requiredPermissions: [],
 				});
-			});
-			it('should throw if the user has no permission', async () => {
-				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
-				await expect(async () => {
-					await service.create(user.id, { name: 'test' });
-				}).rejects.toThrow(UnauthorizedException);
-				authorizationService.hasAllPermissions.mockRestore();
 			});
 			it('should throw if lesson does not belong to course', async () => {
 				const lesson = lessonFactory.buildWithId();
