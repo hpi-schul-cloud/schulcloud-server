@@ -26,6 +26,7 @@ describe('user repo', () => {
 	});
 
 	afterEach(async () => {
+		em.clear();
 		await cleanupCollections(em);
 	});
 
@@ -91,8 +92,6 @@ describe('user repo', () => {
 
 			const user = userFactory.build({ roles: roles1 });
 			await em.persistAndFlush([user]);
-
-			em.clear();
 
 			const result = await repo.findById(user.id, true);
 

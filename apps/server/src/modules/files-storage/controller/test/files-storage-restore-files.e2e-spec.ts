@@ -234,14 +234,14 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(Array.isArray(result.data)).toBe(true);
 				expect(result.data[0]).toBeDefined();
 				expect(result.data[0]).toStrictEqual({
-					creatorId: expect.any(String) as string,
-					id: expect.any(String) as string,
-					name: expect.any(String) as string,
-					parentId: expect.any(String) as string,
+					creatorId: expect.any(String),
+					id: expect.any(String),
+					name: expect.any(String),
+					parentId: expect.any(String),
 					parentType: 'schools',
 					type: 'text/plain',
 					securityCheckStatus: 'pending',
-					size: expect.any(Number) as number,
+					size: expect.any(Number),
 				});
 			});
 
@@ -327,14 +327,14 @@ describe(`${baseRouteName} (api)`, () => {
 				const { result } = await api.restoreFile(`/${fileRecordId}`);
 
 				expect(result).toStrictEqual({
-					creatorId: expect.any(String) as string,
-					id: expect.any(String) as string,
-					name: expect.any(String) as string,
-					parentId: expect.any(String) as string,
+					creatorId: expect.any(String),
+					id: expect.any(String),
+					name: expect.any(String),
+					parentId: expect.any(String),
 					parentType: 'schools',
 					type: 'text/plain',
 					securityCheckStatus: 'pending',
-					size: expect.any(Number) as number,
+					size: expect.any(Number),
 				});
 			});
 

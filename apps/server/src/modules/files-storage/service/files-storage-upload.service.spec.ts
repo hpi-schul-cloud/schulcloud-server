@@ -281,8 +281,8 @@ describe('FilesStorageService upload methods', () => {
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({
 						...expectedFileRecord,
-						createdAt: expect.any(Date) as Date,
-						updatedAt: expect.any(Date) as Date,
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
 					})
 				);
 			});
@@ -329,8 +329,8 @@ describe('FilesStorageService upload methods', () => {
 				expect(service.createFileInStorageAndRollbackOnError).toHaveBeenCalledWith(
 					expect.objectContaining({
 						...expectedFileRecord,
-						createdAt: expect.any(Date) as Date,
-						updatedAt: expect.any(Date) as Date,
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
 					}),
 					params,
 					fileDescription

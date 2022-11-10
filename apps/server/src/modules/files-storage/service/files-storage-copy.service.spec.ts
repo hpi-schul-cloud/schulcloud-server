@@ -196,7 +196,7 @@ describe('FilesStorageService copy methods', () => {
 
 				await service.copyFileRecord(sourceFile, params, userId);
 
-				expect(fileRecordRepo.save).toBeCalledWith(expect.any(FileRecord) as FileRecord);
+				expect(fileRecordRepo.save).toBeCalledWith(expect.any(FileRecord));
 			});
 		});
 

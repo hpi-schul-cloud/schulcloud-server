@@ -246,9 +246,9 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(Array.isArray(result.data)).toBe(true);
 				expect(result.data[0]).toBeDefined();
 				expect(result.data[0]).toStrictEqual({
-					id: expect.any(String) as string,
-					name: expect.any(String) as string,
-					sourceId: expect.any(String) as string,
+					id: expect.any(String),
+					name: expect.any(String),
+					sourceId: expect.any(String),
 				});
 			});
 		});
@@ -340,9 +340,9 @@ describe(`${baseRouteName} (api)`, () => {
 				const { result } = await api.copyFile(`/${fileRecordId}`, copyFileParams);
 
 				expect(result).toStrictEqual({
-					id: expect.any(String) as string,
-					name: expect.any(String) as string,
-					sourceId: expect.any(String) as string,
+					id: expect.any(String),
+					name: expect.any(String),
+					sourceId: expect.any(String),
 				});
 			});
 

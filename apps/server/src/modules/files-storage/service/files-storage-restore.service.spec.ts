@@ -271,9 +271,9 @@ describe('FilesStorageService restore methods', () => {
 				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(
 					2,
 					expect.arrayContaining([
-						expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) as Date }),
-						expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) as Date }),
-						expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) as Date }),
+						expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) }),
+						expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) }),
+						expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) }),
 					])
 				);
 			});
