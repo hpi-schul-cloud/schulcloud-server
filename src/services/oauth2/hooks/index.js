@@ -44,16 +44,16 @@ const setIdToken = (hook) => {
 	// add 'federalState' to Promise - clean solution
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
-		// scope.includes('bilo')
-		// 	? hook.app.service('roles').find(
-		// 		{
-		// 			query: {
-		// 				_id : { $in: hook.params.account.userId.roles },
-		// 			},
-		// 		},
-		// 		'name'
-		// 	)
-		// 	: undefined,
+		scope.includes('bilo')
+			? hook.app.service('roles').find(
+				{
+					query: {
+						_id : { $in: hook.params.account.userId.roles },
+					},
+				},
+				'name'
+			)
+			: undefined,
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 					{
@@ -70,7 +70,7 @@ const setIdToken = (hook) => {
 				isLocal: true,
 			},
 		}),
-	]).then(([user, userTeams, tools]) =>
+	]).then(([user, roles, userTeams, tools]) =>
 		hook.app
 			.service('pseudonym')
 			.find({
@@ -88,12 +88,12 @@ const setIdToken = (hook) => {
 						email: scope.includes('email') ? user.email : undefined,
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
-						// userRole: scope.includes('bilo')
-						// 	? roles.data.map((role) => ({
-						// 			userRole: role.name
-						// 	}))
-						// 	: undefined,
-						userRole: scope.includes('bilo') ? user.roles : undefined,
+						userRole: scope.includes('bilo')
+							? roles.data.map((role) => ({
+									userRole: role.name
+							}))
+							: undefined,
+						// userRole: scope.includes('bilo') ? user.roles : undefined,
 						fedState: scope.includes('bilo') ? user.schoolId.federalState : undefined,
 						schoolId: user.schoolId,
 						groups: scope.includes('groups')
