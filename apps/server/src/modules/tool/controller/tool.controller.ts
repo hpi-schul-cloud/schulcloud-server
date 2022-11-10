@@ -40,8 +40,8 @@ export class ToolController {
 		@Body() externalToolParams: ExternalToolParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ExternalToolResponse> {
-		const externalTool: ExternalTool = await this.externalToolUc.createExternalTool(externalToolParams);
-		throw new NotImplementedException();
+		// const externalTool: ExternalTool = await this.externalToolUc.createExternalTool(externalToolParams);
+		return Promise.reject(new NotImplementedException());
 		// const mapped: ExternalToolResponse = this.externalToolMapper.mapExternalToolToResponse(externalTool);
 		// return mapped;
 	}

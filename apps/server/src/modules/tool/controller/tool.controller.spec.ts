@@ -3,9 +3,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Authorization } from 'oauth-1.0a';
 import { ICurrentUser } from '@shared/domain';
 import { Lti11LaunchResponse } from '@src/modules/tool/controller/dto/lti11-launch.response';
+import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
+import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
+import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
+import { NotImplementedException } from '@nestjs/common';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { ToolController } from './tool.controller';
+import { ExternalToolUc } from '../uc/external-tool.uc';
 
 describe('ToolController', () => {
 	let module: TestingModule;
@@ -13,6 +18,7 @@ describe('ToolController', () => {
 
 	let lti11Uc: DeepMocked<Lti11Uc>;
 	let lti11ResponseMapper: DeepMocked<Lti11ResponseMapper>;
+	let externalToolUc: DeepMocked<ExternalToolUc>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -26,12 +32,17 @@ describe('ToolController', () => {
 					provide: Lti11ResponseMapper,
 					useValue: createMock<Lti11ResponseMapper>(),
 				},
+				{
+					provide: ExternalToolUc,
+					useValue: createMock<ExternalToolUc>(),
+				},
 			],
 		}).compile();
 
 		controller = module.get(ToolController);
 		lti11Uc = module.get(Lti11Uc);
 		lti11ResponseMapper = module.get(Lti11ResponseMapper);
+		externalToolUc = module.get(ExternalToolUc);
 	});
 
 	afterAll(async () => {
@@ -65,6 +76,35 @@ describe('ToolController', () => {
 
 			expect(result).toEqual(expect.objectContaining(authorization));
 			expect(lti11Uc.getLaunchParameters).toHaveBeenCalledWith(currentUser, toolId, courseId);
+		});
+	});
+
+	describe('createExternalTool', () => {
+		const bodyConfig: ExternalToolConfigCreateParams = {
+			type: 'mockType',
+			baseUrl: 'mockUrl',
+		};
+		const bodyParameters: CustomParameterCreateParams = {
+			name: 'mockName',
+			default: 'mockDefault',
+			regex: 'mockRegex',
+			scope: 'mockScope',
+			location: 'mockLocation',
+			type: 'mockType',
+		};
+		const body: ExternalToolParams = {
+			name: 'ExternalTool',
+			url: 'mockUrl',
+			logoUrl: 'mockLogoUrl',
+			config: bodyConfig,
+			parameters: [bodyParameters],
+			isHidden: false,
+			openNewTab: true,
+			version: 1,
+		};
+		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+		it('should throw NotImplementedException', async () => {
+			await expect(controller.createExternalTool(body, currentUser)).rejects.toThrow(NotImplementedException);
 		});
 	});
 });

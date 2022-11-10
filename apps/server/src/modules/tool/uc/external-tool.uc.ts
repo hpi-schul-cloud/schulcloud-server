@@ -4,7 +4,7 @@ import { ExternalTool } from '@shared/domain';
 
 @Injectable()
 export class ExternalToolUc {
-	createExternalTool(body: ExternalToolParams): Promise<ExternalTool> {
-		throw new NotImplementedException();
+	async createExternalTool(body: ExternalToolParams): Promise<ExternalTool> {
+		return Promise.reject(new NotImplementedException());
 	}
 }
