@@ -7,7 +7,6 @@ import { ICurrentUser, InputFormat, Permission, Task } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
-	fileFactory,
 	lessonFactory,
 	mapUserToCurrentUser,
 	roleFactory,
@@ -1131,13 +1130,13 @@ describe('Task Controller (e2e)', () => {
 
 				currentUser = mapUserToCurrentUser(user);
 
-				const response = await request(app.getHttpServer())
+				await request(app.getHttpServer())
 					.post(`/tasks`)
 					.set('Accept', 'application/json')
 					.send({ name: 'test', availableDate: '2022-11-09T15:06:30.771Z', dueDate: '2021-11-09T15:06:30.771Z' })
 					.expect(400);
 			});
-			it('PATCH :id should faild of NOT availableDate < dueDate', async () => {
+			it('PATCH :id should fail if NOT availableDate < dueDate', async () => {
 				const user = setup(Permission.HOMEWORK_EDIT);
 				const task = taskFactory.build({ name: 'original name', creator: user });
 
@@ -1152,7 +1151,7 @@ describe('Task Controller (e2e)', () => {
 					availableDate: '2022-10-28T08:28:12.981Z',
 					dueDate: '2021-10-28T08:28:12.981Z',
 				};
-				const response = await request(app.getHttpServer())
+				await request(app.getHttpServer())
 					.patch(`/tasks/${task.id}`)
 					.set('Accept', 'application/json')
 					.send(updateTaskParams)

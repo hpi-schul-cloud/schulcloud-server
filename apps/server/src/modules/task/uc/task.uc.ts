@@ -21,6 +21,7 @@ import {
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { ValidationError } from '@shared/common';
 
 @Injectable()
 export class TaskUC {
@@ -245,6 +246,8 @@ export class TaskUC {
 			taskParams.lesson = lesson;
 		}
 
+		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
+
 		const task = new Task(taskParams);
 
 		await this.taskRepo.save(task);
@@ -303,6 +306,8 @@ export class TaskUC {
 			task.lesson = lesson;
 		}
 
+		this.taskDateValidation();
+
 		await this.taskRepo.save(task);
 
 		const status = task.createTeacherStatusForUser(user);
@@ -322,6 +327,12 @@ export class TaskUC {
 
 		await this.taskRepo.delete(task);
 		return true;
+	}
+
+	private taskDateValidation(availableDate?: Date, dueDate?: Date) {
+		if (availableDate && dueDate && !(availableDate < dueDate)) {
+			throw new ValidationError('availableDate must be before dueDate');
+		}
 	}
 
 	private checkNewTaskEnabled() {
