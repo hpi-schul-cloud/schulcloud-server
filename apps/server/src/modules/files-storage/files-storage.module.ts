@@ -7,12 +7,13 @@ import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
-import { FileRecordRepo } from '@shared/repo';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { S3ClientAdapter } from './client/s3-client.adapter';
+import { FileRecord, FileSecurityCheck } from './entity';
 import { config, s3Config } from './files-storage.config';
 import { S3Config } from './interface/config';
+import { FileRecordRepo } from './repo';
 import { FilesStorageService } from './service/files-storage.service';
 
 const imports = [
@@ -72,7 +73,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: ALL_ENTITIES,
+			entities: [...ALL_ENTITIES, FileRecord, FileSecurityCheck],
 
 			// debug: true, // use it for locally debugging of querys
 		}),

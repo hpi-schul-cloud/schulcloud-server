@@ -1,4 +1,5 @@
-import { EntityId, FileRecord } from '@shared/domain';
+import { EntityId } from '@shared/domain';
+import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 import { ICopyFiles } from '../interface';
 

@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { FileRecord, FileRecordParentType, ICurrentUser, Permission } from '@shared/domain';
+import { ICurrentUser, Permission } from '@shared/domain';
 import {
 	cleanupCollections,
 	fileRecordFactory,
@@ -16,6 +16,7 @@ import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordResponse, RenameFileParams } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
+import { FileRecord, FileRecordParentType } from '../../entity';
 
 const baseRouteName = '/file/rename/';
 
