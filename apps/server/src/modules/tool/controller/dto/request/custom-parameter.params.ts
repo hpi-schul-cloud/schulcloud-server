@@ -1,7 +1,7 @@
 import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CustomParameterParams {
+export class CustomParameterCreateParams {
 	@IsString()
 	@ApiProperty()
 	name!: string;

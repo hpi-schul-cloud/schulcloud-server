@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
-import { IsString } from 'class-validator';
+import { ExternalToolConfigResponseParams } from '@src/modules/tool/controller/dto/response/external-tool-config-response.params';
+import { CustomParameterResponseParams } from '@src/modules/tool/controller/dto/response/custom-parameter-response.params';
 
 export class ExternalToolResponse {
 	@ApiProperty()
@@ -16,10 +16,10 @@ export class ExternalToolResponse {
 	logoUrl?: string;
 
 	@ApiProperty()
-	config: ExternalToolConfigResponse;
+	config: ExternalToolConfigResponseParams;
 
 	@ApiProperty()
-	parameters: CustomParameterResponse;
+	parameters: CustomParameterResponseParams;
 
 	@ApiProperty()
 	isHidden: boolean;
@@ -41,49 +41,4 @@ export class ExternalToolResponse {
 		this.openNewTab = response.openNewTab;
 		this.version = response.version;
 	}
-}
-// TODO später auslagern 🧁
-export class ExternalToolConfigResponse {
-	constructor(props: ExternalToolConfigResponse) {
-		this.type = props.type;
-		this.baseUrl = props.baseUrl;
-	}
-
-	@ApiProperty()
-	type: ToolConfigType;
-
-	@ApiProperty()
-	baseUrl: string;
-}
-// TODO später auslagern 🧁
-export class CustomParameterResponse {
-	constructor(props: CustomParameterResponse) {
-		this.name = props.name;
-		this.default = props.default;
-		this.location = props.location;
-		this.scope = props.scope;
-		this.type = props.type;
-		this.regex = props.regex;
-	}
-
-	@IsString()
-	@ApiProperty()
-	name: string;
-
-	@IsString()
-	@ApiProperty()
-	default: string;
-
-	@IsString()
-	@ApiProperty()
-	regex: string;
-
-	@ApiProperty()
-	scope: string[];
-
-	@ApiProperty()
-	location: string[];
-
-	@ApiProperty()
-	type: string[];
 }

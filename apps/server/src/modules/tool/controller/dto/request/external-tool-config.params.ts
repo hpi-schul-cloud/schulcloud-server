@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ExternalToolConfigParams {
+export class ExternalToolConfigCreateParams {
 	@ApiProperty()
 	type!: string;
 

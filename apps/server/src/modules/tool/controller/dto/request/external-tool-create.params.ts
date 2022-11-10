@@ -1,9 +1,7 @@
 import { IsBoolean, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-
-class ExternalToolConfigCreateParams {}
-
-class CustomParameterCreateParams {}
+import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
+import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
 
 export class ExternalToolParams {
 	@IsString()
