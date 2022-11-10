@@ -93,7 +93,8 @@ const setIdToken = (hook) => {
 						// 			userRole: role.name
 						// 	}))
 						// 	: undefined,
-						userRole: scope.includes('bilo') ? user.roles.types.name : undefined,
+						// userRole: scope.includes('bilo') ? user.roles.types.name : undefined,
+						userRole: scope.includes('bilo') ? user.roles : undefined,
 						fedState: scope.includes('bilo') ? user.schoolId.federalState : undefined,
 						schoolId: user.schoolId,
 						groups: scope.includes('groups')
