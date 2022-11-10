@@ -11,7 +11,8 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { Readable } from 'stream';
-import { ICopyFiles, IFile, IGetFileResponse, IStorageClient, S3Config } from '../interface';
+import { FileDto } from '../dto';
+import { ICopyFiles, IGetFileResponse, IStorageClient, S3Config } from '../interface';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
@@ -69,7 +70,7 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async create(path: string, file: IFile): Promise<ServiceOutputTypes> {
+	public async create(path: string, file: FileDto): Promise<ServiceOutputTypes> {
 		try {
 			this.logger.log({ action: 'create', params: { path, bucket: this.config.bucket } });
 

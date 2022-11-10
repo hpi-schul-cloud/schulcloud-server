@@ -1,8 +1,8 @@
 /* istanbul ignore file */
 
 import { Injectable } from '@nestjs/common';
-import { FileRecord, FileRecordParentType } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
+import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { OrphanedFilesRepo } from '../repo/orphaned-files.repo';
 import { SyncFilesStorageService } from './sync-files-storage.service';
 
