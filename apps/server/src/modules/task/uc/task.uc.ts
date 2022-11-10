@@ -306,7 +306,7 @@ export class TaskUC {
 			task.lesson = lesson;
 		}
 
-		this.taskDateValidation();
+		this.taskDateValidation(params.availableDate, params.dueDate);
 
 		await this.taskRepo.save(task);
 
