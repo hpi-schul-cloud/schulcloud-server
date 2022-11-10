@@ -243,6 +243,7 @@ describe('SubmissionRule', () => {
 						const permission = 'a' as Permission;
 						const user = buildUserWithPermission(permission);
 						const submission = submissionFactory.build();
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
 						const hasWriteAccessSpy = jest.spyOn(SubmissionRule.prototype as any, 'hasWriteAccess');
 						hasWriteAccessSpy.mockReturnValue(true);
 
