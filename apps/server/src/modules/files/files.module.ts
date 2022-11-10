@@ -1,9 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Module } from '@nestjs/common';
 import { FileStorageAdapter } from '@shared/infra/filestorage';
-import { FileRecordRepo, FilesRepo, StorageProviderRepo } from '@shared/repo';
+import { FilesRepo, StorageProviderRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { S3Config } from '../files-storage/interface';
+import { S3Config } from '@src/modules/files-storage/interface/config';
+import { FileRecordRepo } from '@src/modules/files-storage/repo/filerecord.repo';
 import { DeleteFilesConsole } from './job/delete-files.console';
 import { DeleteOrphanedFilesConsole } from './job/delete-orphaned-files.console';
 import { SyncFilesConsole } from './job/sync-files.console';

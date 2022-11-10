@@ -1,8 +1,9 @@
 import { MikroORM } from '@mikro-orm/core';
-import { EntityId, FileRecord } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { createFileRecord, markForDelete, unmarkForDelete } from '.';
+import { FileRecord } from '../entity';
 
 describe('File Record Helper', () => {
 	let orm: MikroORM;
@@ -21,7 +22,7 @@ describe('File Record Helper', () => {
 	};
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([FileRecord]);
 	});
 
 	afterAll(async () => {

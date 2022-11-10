@@ -4,16 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
-import {
-	CourseGroupRepo,
-	CourseRepo,
-	FileRecordRepo,
-	LessonRepo,
-	SchoolRepo,
-	TaskRepo,
-	TeamsRepo,
-	UserRepo,
-} from '@shared/repo';
+import { CourseGroupRepo, CourseRepo, LessonRepo, SchoolRepo, TaskRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
@@ -51,10 +42,6 @@ describe('reference.loader', () => {
 				{
 					provide: TaskRepo,
 					useValue: createMock<TaskRepo>(),
-				},
-				{
-					provide: FileRecordRepo,
-					useValue: createMock<FileRecordRepo>(),
 				},
 				{
 					provide: SchoolRepo,

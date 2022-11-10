@@ -2,8 +2,8 @@ import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecord } from '@shared/domain';
 import { fileRecordFactory } from '@shared/testing';
+import { FileRecord } from '@src/modules/files-storage/entity/filerecord.entity';
 import { AntivirusService } from './antivirus.service';
 
 describe('AntivirusService', () => {
