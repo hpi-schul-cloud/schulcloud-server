@@ -25,7 +25,6 @@ describe('IservStrategy', () => {
 	});
 
 	afterAll(async () => {
-		jest.clearAllMocks();
 		await module.close();
 	});
 
