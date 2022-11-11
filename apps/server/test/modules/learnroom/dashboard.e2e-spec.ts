@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@src/modules/server/server.module';
-import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardEntity, GridElement, ICurrentUser, Permission } from '@shared/domain';
 import { IDashboardRepo } from '@shared/repo';
-import { courseFactory, userFactory, roleFactory, mapUserToCurrentUser } from '@shared/testing';
+import { courseFactory, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { Request } from 'express';
+import request from 'supertest';
 
 describe('Dashboard Controller (e2e)', () => {
 	let app: INestApplication;
@@ -16,7 +16,7 @@ describe('Dashboard Controller (e2e)', () => {
 	let dashboardRepo: IDashboardRepo;
 	let currentUser: ICurrentUser;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
@@ -36,7 +36,7 @@ describe('Dashboard Controller (e2e)', () => {
 		dashboardRepo = app.get('DASHBOARD_REPO');
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await app.close();
 	});
 

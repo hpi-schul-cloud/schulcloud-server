@@ -1,21 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@src/modules/server/server.module';
-import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { userFactory, courseFactory, cleanupCollections, roleFactory, mapUserToCurrentUser } from '@shared/testing';
-import { ICurrentUser, Permission } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ICurrentUser, Permission } from '@shared/domain';
+import { cleanupCollections, courseFactory, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { Request } from 'express';
+import request from 'supertest';
 
 describe('Course Controller (e2e)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
@@ -34,7 +34,7 @@ describe('Course Controller (e2e)', () => {
 		em = app.get(EntityManager);
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await cleanupCollections(em);
 		await app.close();
 	});

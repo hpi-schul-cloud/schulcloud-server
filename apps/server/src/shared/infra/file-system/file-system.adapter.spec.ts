@@ -3,13 +3,18 @@ import path from 'path';
 import { FileSystemAdapter } from './file-system.adapter';
 
 describe('FileSystemAdapter', () => {
+	let module: TestingModule;
 	let adapter: FileSystemAdapter;
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [FileSystemAdapter],
 		}).compile();
 		adapter = module.get(FileSystemAdapter);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {

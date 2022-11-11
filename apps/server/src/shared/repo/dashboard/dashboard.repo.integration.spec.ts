@@ -1,10 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement, DashboardGridElementModel } from '@shared/domain';
+import { DashboardEntity, DashboardGridElementModel, GridElement } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { courseFactory, userFactory } from '@shared/testing';
-import { DashboardRepo } from './dashboard.repo';
 import { DashboardModelMapper } from './dashboard.model.mapper';
+import { DashboardRepo } from './dashboard.repo';
 
 describe('dashboard repo', () => {
 	let repo: DashboardRepo;
@@ -19,6 +19,10 @@ describe('dashboard repo', () => {
 
 		repo = module.get(DashboardRepo);
 		em = module.get(EntityManager);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should persist a plain dashboard', async () => {

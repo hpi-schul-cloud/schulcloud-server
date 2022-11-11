@@ -5,7 +5,6 @@ import { SortOrder } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { courseFactory, setupEntities } from '@shared/testing';
 import { AuthorizationService } from '@src/modules';
-import AdmZip from 'adm-zip';
 import { CourseUc } from './course.uc';
 
 describe('CourseUc', () => {

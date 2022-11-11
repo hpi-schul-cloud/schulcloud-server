@@ -31,7 +31,7 @@ describe('Rooms Controller (e2e)', () => {
 		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 	};
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
@@ -54,7 +54,7 @@ describe('Rooms Controller (e2e)', () => {
 		setConfig();
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await cleanupCollections(em);
 		await app.close();
 	});
@@ -204,7 +204,7 @@ describe('Rooms Controller (e2e)', () => {
 			const body = response.body as CopyApiResponse;
 			expect(body.id).toBeDefined();
 
-			expect(() => em.findOneOrFail(Course, body.id)).not.toThrow();
+			expect(() => em.findOneOrFail(Course, body.id as string)).not.toThrow();
 		});
 
 		it('should persist board of room copy', async () => {
