@@ -1,11 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
+import { Test, TestingModule } from '@nestjs/testing';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakSettings } from '../interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
+import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
 
 describe('KeycloakIdentityManagement', () => {
+	let module: TestingModule;
 	let idm: IdentityManagementService;
 	let kcAdminClient: KeycloakAdminClient;
 
@@ -38,8 +39,8 @@ describe('KeycloakIdentityManagement', () => {
 		lastName: '2',
 	};
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [
 				KeycloakAdministrationService,
 				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
@@ -70,6 +71,10 @@ describe('KeycloakIdentityManagement', () => {
 		}).compile();
 		idm = module.get<IdentityManagementService>(IdentityManagementService);
 		kcAdminClient = module.get(KeycloakAdminClient);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {

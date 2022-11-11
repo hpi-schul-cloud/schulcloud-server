@@ -16,7 +16,7 @@ describe('rooms controller', () => {
 	let courseCopyUc: CourseCopyUC;
 	let lessonCopyUc: LessonCopyUC;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [],
 			providers: [

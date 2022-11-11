@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum, ICurrentUser, ShareTokenParentType } from '@shared/domain';
 import { courseFactory, setupEntities, shareTokenFactory } from '@shared/testing';
@@ -7,15 +8,13 @@ import { ShareTokenInfoDto } from '../uc/dto';
 import { ShareTokenController } from './share-token.controller';
 
 describe('ShareTokenController', () => {
+	let module: TestingModule;
 	let controller: ShareTokenController;
 	let uc: DeepMocked<ShareTokenUC>;
+	let orm: MikroORM;
 
 	beforeAll(async () => {
-		await setupEntities();
-	});
-
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				{
 					provide: ShareTokenUC,
@@ -27,6 +26,12 @@ describe('ShareTokenController', () => {
 
 		controller = module.get(ShareTokenController);
 		uc = module.get(ShareTokenUC);
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
+		await module.close();
 	});
 
 	it('should be defined', () => {

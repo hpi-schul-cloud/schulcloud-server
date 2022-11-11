@@ -11,7 +11,7 @@ describe('DeleteFilesConsole', () => {
 	let console: DeleteFilesConsole;
 	let deleteFilesUc: DeleteFilesUc;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [DeleteFilesConsole],
 			providers: [

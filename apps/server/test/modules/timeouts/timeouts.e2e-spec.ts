@@ -28,7 +28,7 @@ describe('Copy timeout (e2e)', () => {
 	let currentUser: ICurrentUser;
 	let configBefore: IConfig;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
@@ -48,7 +48,7 @@ describe('Copy timeout (e2e)', () => {
 		em = app.get(EntityManager);
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await cleanupCollections(em);
 		await app.close();
 		Configuration.reset(configBefore);

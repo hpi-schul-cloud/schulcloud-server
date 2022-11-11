@@ -215,8 +215,9 @@ Mocking in unit and integration tests.
 
     describe('XXX', () => {
         let config: DeepMocked<ConfigService>;
+        let app: INestApplication;
 
-        before(async () => {
+        beforeAll(async () => {
             const module: TestingModule = await Test.createTestingModule({
                 providers: [
                     {
@@ -227,14 +228,16 @@ Mocking in unit and integration tests.
             }).compile();
 
             config = module.get(ConfigService);
+            app = module.createNestApplication();
         });
 
         it('XXX', () => {
             config.get.mockReturnValue(['value']);
         })
 
-        after(() => {
+        afterAll(async () => {
             config.get.mockRestore();
+            await app.close();
         })
 
     });
@@ -257,7 +260,7 @@ Mocking in api (.e2e) tests.
 
     describe('XXX', () => {
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             const moduleFixture: TestingModule = await Test.createTestingModule({
                 imports: [ServerTestModule],
             }).compile();
