@@ -1,10 +1,11 @@
 import { Body, Controller, Get, NotImplementedException, Param, Post, Query } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ExternalTool, ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
 import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/external-tool.response';
 import { ExternalToolUc } from '@src/modules/tool/uc/external-tool.uc';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
+import { ExternalToolDO } from '@shared/domain/domainobject/external-tool.do';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
@@ -40,9 +41,28 @@ export class ToolController {
 		@Body() externalToolParams: ExternalToolParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ExternalToolResponse> {
-		const externalTool: ExternalTool = await this.externalToolUc.createExternalTool(externalToolParams);
-		throw new NotImplementedException();
-		// const mapped: ExternalToolResponse = this.externalToolMapper.mapExternalToolToResponse(externalTool);
-		// return mapped;
+		switch (externalToolParams.config.type) {
+			case 'basic': {
+				const externalTool: ExternalToolDO = await this.externalToolUc.createExternalTool(
+					externalToolParams,
+					currentUser
+				);
+				const mapped: ExternalToolResponse = this.ExternalToolDOMapper.mapExternalToolToResponse(externalTool);
+				return mapped;
+				break;
+			}
+			case 'lti11': {
+				// statements;
+				break;
+			}
+			case 'oauth': {
+				// statements;
+				break;
+			}
+			default: {
+				// statements;
+				break;
+			}
+		}
 	}
 }
