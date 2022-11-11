@@ -76,12 +76,22 @@ const setIdToken = (hook) => {
 			.then((pseudonyms) => {
 				const { pseudonym } = pseudonyms.data[0];
 				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
-				const roles = user.roles.map((role) => this.role = role);
+				const roles_id = user.roles.map((role) => this.role = role);
 				// eslint-disable-next-line no-console
-				console.log('roles_test: ', roles);
-				const getRoles = new UserRoles().get(user._id);
+				console.log('roles_test: ', roles_id);
+				const role_names_array = [];
+				roles_id.forEach((role_id) => role_names_array.push(role_id.name));
 				// eslint-disable-next-line no-console
-				console.log('get_roles_test: ', getRoles);
+				console.log('get_roles_test: ', role_names_array);
+				if ((user.roles[0] || {}).name === undefined) {
+					// eslint-disable-next-line no-console
+					console.log('The role of the user is undefined');
+				} else {
+					// eslint-disable-next-line no-console
+					console.log('RoleNameUser: ', user.roles[0].name);
+					// eslint-disable-next-line no-console
+					console.log('RoleNameObject: ', {}.name);
+				}
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
