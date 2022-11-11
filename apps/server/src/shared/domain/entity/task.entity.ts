@@ -127,7 +127,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return studentIds;
 	}
 
-	isFinishedForUser(user: User): boolean {
+	private isFinishedForUser(user: User): boolean {
 		const finishedUserIds = this.getFinishedUserIds();
 		const finishedCourse = this.course?.isFinished();
 		const finishedForUser = finishedUserIds.some((finishedUserId) => finishedUserId === user.id);
@@ -136,12 +136,12 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return isFinishedForUser;
 	}
 
-	isDraft(): boolean {
+	public isDraft(): boolean {
 		// private can be undefined in the database
 		return !!this.private;
 	}
 
-	isPublished(): boolean {
+	public isPublished(): boolean {
 		if (this.isDraft()) {
 			return false;
 		}
@@ -152,7 +152,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return true;
 	}
 
-	isPlanned(): boolean {
+	public isPlanned(): boolean {
 		if (this.isDraft()) {
 			return false;
 		}
@@ -225,7 +225,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return isSubstitutionTeacher;
 	}
 
-	createTeacherStatusForUser(user: User): ITaskStatus {
+	public createTeacherStatusForUser(user: User): ITaskStatus {
 		const submitted = this.getListOfSubmittedUserIds().length;
 		const graded = this.getListOfGradeddUserIds().length;
 		const maxSubmissions = this.getStudentIds().length;
@@ -245,7 +245,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return status;
 	}
 
-	createStudentStatusForUser(user: User): ITaskStatus {
+	public createStudentStatusForUser(user: User): ITaskStatus {
 		const isSubmitted = this.isSubmittedForUser(user);
 		const isGraded = this.isGradedForUser(user);
 		const maxSubmissions = 1;
@@ -266,7 +266,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	// TODO: based on the parent relationship
-	getParentData(): TaskParentDescriptions {
+	public getParentData(): TaskParentDescriptions {
 		let descriptions: TaskParentDescriptions;
 		if (this.course) {
 			descriptions = {
@@ -289,24 +289,24 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return descriptions;
 	}
 
-	finishForUser(user: User) {
+	public finishForUser(user: User) {
 		this.finished.add(user);
 	}
 
-	restoreForUser(user: User) {
+	public restoreForUser(user: User) {
 		this.finished.remove(user);
 	}
 
-	getSchoolId(): EntityId {
+	public getSchoolId(): EntityId {
 		return this.school.id;
 	}
 
-	publish() {
+	public publish() {
 		this.private = false;
 		this.availableDate = new Date(Date.now());
 	}
 
-	unpublish() {
+	public unpublish() {
 		this.private = true;
 	}
 }
