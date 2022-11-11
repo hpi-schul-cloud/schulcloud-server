@@ -5,9 +5,6 @@ const { Forbidden, MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra');
 
-const Role = require('../../role/services/userRoles');
-const {UserRoles} = require("../../role/services/userRoles");
-
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
 
@@ -82,7 +79,9 @@ const setIdToken = (hook) => {
 				// eslint-disable-next-line no-console
 				console.log('RoleNameUser: ', user.roles[0].name);
 				// eslint-disable-next-line no-console
-				console.log('RoleNameObject: ', {}.name);
+				console.log('RoleObjectId: ', user.roles[0].id);
+				// eslint-disable-next-line no-console
+				console.log('RoleNameFromObjectId: ', user.roles[0].id.name);
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
