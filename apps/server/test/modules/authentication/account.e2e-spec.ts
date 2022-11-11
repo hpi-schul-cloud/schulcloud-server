@@ -1,10 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
 import { EntityManager } from '@mikro-orm/core';
-import { ServerTestModule } from '@src/modules/server/server.module';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Account, ICurrentUser, Permission, RoleName, User } from '@shared/domain';
 import { accountFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import {
 	AccountByIdBodyParams,
@@ -13,7 +10,10 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from '@src/modules/account/controller/dto';
-import { Account, ICurrentUser, RoleName, Permission, User } from '@shared/domain';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { Request } from 'express';
+import request from 'supertest';
 
 describe('Account Controller (e2e)', () => {
 	const basePath = '/account';
@@ -71,7 +71,7 @@ describe('Account Controller (e2e)', () => {
 		await em.flush();
 	};
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
@@ -88,10 +88,13 @@ describe('Account Controller (e2e)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+	});
+
+	beforeEach(async () => {
 		await setup();
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		// await cleanupCollections(em);
 		await app.close();
 	});

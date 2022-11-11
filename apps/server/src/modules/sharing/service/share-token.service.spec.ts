@@ -12,17 +12,14 @@ import { TokenGenerator } from './token-generator.service';
 const buildId = () => new ObjectId().toHexString();
 
 describe('ShareTokenService', () => {
+	let module: TestingModule;
 	let orm: MikroORM;
 	let service: ShareTokenService;
 	let generator: DeepMocked<TokenGenerator>;
 	let repo: DeepMocked<ShareTokenRepo>;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				ShareTokenService,
 				{
@@ -39,10 +36,12 @@ describe('ShareTokenService', () => {
 		service = await module.get(ShareTokenService);
 		generator = await module.get(TokenGenerator);
 		repo = await module.get(ShareTokenRepo);
+		orm = await setupEntities();
 	});
 
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 
 	describe('createToken', () => {

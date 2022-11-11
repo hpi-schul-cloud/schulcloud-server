@@ -1,17 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common/';
-import { IDashboardRepo, CourseRepo } from '@shared/repo';
+import { Test, TestingModule } from '@nestjs/testing';
 import {
-	DashboardEntity,
-	GridElement,
-	LearnroomTypes,
-	LearnroomMetadata,
-	EntityId,
-	Course,
-	IFindOptions,
-	SortOrder,
 	Counted,
+	Course,
+	DashboardEntity,
+	EntityId,
+	GridElement,
+	IFindOptions,
+	LearnroomMetadata,
+	LearnroomTypes,
+	SortOrder,
 } from '@shared/domain';
+import { CourseRepo, IDashboardRepo } from '@shared/repo';
 import { DashboardUc } from './dashboard.uc';
 
 const learnroomMock = (id: string, name: string) => {
@@ -29,12 +29,17 @@ const learnroomMock = (id: string, name: string) => {
 };
 
 describe('dashboard uc', () => {
+	let module: TestingModule;
 	let service: DashboardUc;
 	let repo: IDashboardRepo;
 	let courseRepo: CourseRepo;
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	afterAll(async () => {
+		await module.close();
+	});
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			imports: [],
 			providers: [
 				DashboardUc,

@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardRepo, CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
@@ -18,13 +19,16 @@ describe('rooms usecase', () => {
 	let factory: DeepMocked<RoomBoardDTOFactory>;
 	let authorisation: DeepMocked<RoomsAuthorisationService>;
 	let roomsService: DeepMocked<RoomsService>;
+	let module: TestingModule;
+	let orm: MikroORM;
 
-	beforeAll(async () => {
-		await setupEntities();
+	afterAll(async () => {
+		await orm.close();
+		await module.close();
 	});
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			imports: [],
 			providers: [
 				RoomsUc,
@@ -72,6 +76,7 @@ describe('rooms usecase', () => {
 		factory = module.get(RoomBoardDTOFactory);
 		authorisation = module.get(RoomsAuthorisationService);
 		roomsService = module.get(RoomsService);
+		orm = await setupEntities();
 	});
 
 	describe('getBoard', () => {

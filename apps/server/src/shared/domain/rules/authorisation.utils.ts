@@ -91,7 +91,7 @@ export class AuthorisationUtils {
 	 * @param userRefProps Array of properties in the entity the user is associated with
 	 * @returns
 	 */
-	hasAccessToEntity<T, K extends keyof T>(user: User, entity: T, userRefProps: K[]) {
+	hasAccessToEntity<T, K extends keyof T>(user: User, entity: T, userRefProps: K[]): boolean {
 		const res = userRefProps.some((prop) => {
 			const reference = entity[prop];
 			if (reference instanceof Collection) {

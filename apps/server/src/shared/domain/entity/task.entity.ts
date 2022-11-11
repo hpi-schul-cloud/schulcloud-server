@@ -55,6 +55,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@Property()
 	private = true;
 
+	@Property({ nullable: true })
+	publicSubmissions?: boolean;
+
 	@Index()
 	@ManyToOne('User', { fieldName: 'teacherId', nullable: true })
 	creator?: User;
@@ -93,6 +96,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
 		this.finished.set(props.finished || []);
+		this.publicSubmissions = props.publicSubmissions || false;
 	}
 
 	isFinishedForUser(user: User): boolean {
@@ -122,6 +126,10 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 			return true;
 		}
 		return false;
+	}
+
+	areSubmissionsPublic(): boolean {
+		return !!this.publicSubmissions;
 	}
 
 	private getSubmissionItems(): Submission[] {

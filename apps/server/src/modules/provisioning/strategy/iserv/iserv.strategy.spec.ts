@@ -1,9 +1,9 @@
+import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
 import { UUID } from 'bson';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import jwt from 'jsonwebtoken';
-import { Test, TestingModule } from '@nestjs/testing';
 
 const params = {
 	idToken: 'iservIdToken',
@@ -24,8 +24,8 @@ describe('IservStrategy', () => {
 		jest.resetAllMocks();
 	});
 
-	afterAll(() => {
-		jest.clearAllMocks();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('apply', () => {
@@ -35,10 +35,6 @@ describe('IservStrategy', () => {
 			jest.spyOn(jwt, 'decode').mockImplementation(() => {
 				return { uuid: userUUID };
 			});
-		});
-
-		afterAll(() => {
-			jest.clearAllMocks();
 		});
 
 		it('should apply strategy', async () => {

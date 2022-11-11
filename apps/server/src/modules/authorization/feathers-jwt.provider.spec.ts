@@ -1,23 +1,23 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeathersServiceProvider } from '@shared/infra/feathers/feathers-service.provider';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { FeathersJwtProvider } from './feathers-jwt.provider';
 
 describe('FeathersJwtProvider', () => {
 	let jwtProvider: FeathersJwtProvider;
-
+	let module: TestingModule;
 	let feathersJWTService;
 	const userId = new ObjectId().toHexString();
 	const defaultJWT = 'JWT.JWT.JWT';
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		feathersJWTService = {
 			create: jest.fn((data, params) => {
 				const createdJWT = data && params ? defaultJWT : null;
 				return Promise.resolve(createdJWT);
 			}),
 		};
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				FeathersJwtProvider,
 				{
@@ -36,6 +36,10 @@ describe('FeathersJwtProvider', () => {
 		}).compile();
 
 		jwtProvider = await module.resolve<FeathersJwtProvider>(FeathersJwtProvider);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {
