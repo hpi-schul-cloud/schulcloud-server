@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
+import { RabbitMQWrapperTestModule } from '../rabbitmq';
 import { AntivirusModule } from './antivirus.module';
 import { AntivirusService } from './antivirus.service';
 
 describe('AntivirusModule', () => {
+	let module: TestingModule;
+	let antivirusService: AntivirusService;
 	const antivirusModuleOptions = {
 		enabled: false,
 		filesServiceBaseUrl: 'http://localhost',
@@ -11,12 +13,18 @@ describe('AntivirusModule', () => {
 		routingKey: 'routingKey',
 	};
 
-	it('should be initializable with forRoot', async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			imports: [RabbitMQWrapperTestModule, AntivirusModule.forRoot(antivirusModuleOptions)],
 		}).compile();
+		antivirusService = module.get(AntivirusService);
+	});
 
-		const antivirusService = module.get(AntivirusService);
+	afterAll(async () => {
+		await module.close();
+	});
+
+	it('should be initializable with forRoot', () => {
 		expect(antivirusService).toBeDefined();
 	});
 });

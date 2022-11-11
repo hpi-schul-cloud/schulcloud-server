@@ -1,13 +1,14 @@
 import { MikroORM } from '@mikro-orm/core';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { FileRecordListResponse, FileRecordResponse } from '../controller/dto';
+import { FileRecord } from '../entity';
 import { FilesStorageMapper } from './file-record.mapper';
 
 describe('FilesStorageMapper', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([FileRecord]);
 	});
 
 	afterAll(async () => {

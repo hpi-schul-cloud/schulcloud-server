@@ -1,6 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
 import { NotImplementedException } from '@nestjs/common';
-import { FileRecordParentType } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import {
@@ -10,13 +9,14 @@ import {
 	FileRecordResponse,
 	SingleFileParams,
 } from '../controller/dto';
+import { FileRecord, FileRecordParentType } from '../entity';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([FileRecord]);
 	});
 
 	afterAll(async () => {
@@ -28,18 +28,27 @@ describe('FilesStorageMapper', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.Course);
 			expect(result).toBe(AllowedAuthorizationEntityType.Course);
 		});
+
 		it('should return allowed type equal Task', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.Task);
 			expect(result).toBe(AllowedAuthorizationEntityType.Task);
 		});
+
 		it('should return allowed type equal School', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.School);
 			expect(result).toBe(AllowedAuthorizationEntityType.School);
 		});
+
 		it('should return allowed type equal User', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.User);
 			expect(result).toBe(AllowedAuthorizationEntityType.User);
 		});
+
+		it('should return allowed type equal Submission', () => {
+			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.Submission);
+			expect(result).toBe(AllowedAuthorizationEntityType.Submission);
+		});
+
 		it('should throw Error', () => {
 			const exec = () => {
 				FilesStorageMapper.mapToAllowedAuthorizationEntityType('' as FileRecordParentType);
@@ -126,6 +135,7 @@ describe('FilesStorageMapper', () => {
 
 			expect(result).toBeInstanceOf(FileRecordListResponse);
 		});
+
 		it('should contains props [data, total, skip, limit]', () => {
 			const fileRecords = fileRecordFactory.buildList(3);
 
@@ -140,6 +150,7 @@ describe('FilesStorageMapper', () => {
 				})
 			);
 		});
+
 		it('should contains instances of FileRecordResponse', () => {
 			const fileRecords = fileRecordFactory.buildList(3);
 

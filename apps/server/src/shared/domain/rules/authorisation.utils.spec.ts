@@ -10,6 +10,7 @@ import { AuthorisationUtils } from './authorisation.utils';
 class TestRule extends AuthorisationUtils {}
 
 describe('permission.utils', () => {
+	let module: TestingModule;
 	let orm: MikroORM;
 	let service: AuthorisationUtils;
 	const permissionA = 'a' as Permission;
@@ -19,7 +20,7 @@ describe('permission.utils', () => {
 	beforeAll(async () => {
 		orm = await setupEntities();
 
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [TestRule],
 		}).compile();
 
@@ -28,6 +29,7 @@ describe('permission.utils', () => {
 
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 	describe('[resolvePermissions]', () => {
 		it('should return permissions of a user with one role', () => {

@@ -17,7 +17,7 @@ describe('CourseGroupRule', () => {
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		orm = await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
@@ -30,7 +30,7 @@ describe('CourseGroupRule', () => {
 		user = userFactory.build({ roles: [role] });
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await orm.close();
 	});
 

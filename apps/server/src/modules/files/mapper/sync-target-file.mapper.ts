@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { FileRecord } from '@shared/domain';
+import { FileRecord } from '@src/modules/files-storage/entity/filerecord.entity';
 import { SyncTargetFile } from '../types';
 
 // Temporary functionality for migration to new fileservice
