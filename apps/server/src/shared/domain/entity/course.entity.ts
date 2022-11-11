@@ -96,6 +96,12 @@ export class Course
 		return studentIds;
 	}
 
+	public userIsSubstitutionTeacher(user: User): boolean {
+		const isSubstitutionTeacher = this.substitutionTeachers.contains(user);
+
+		return isSubstitutionTeacher;
+	}
+
 	getCourseGroupItems(): CourseGroup[] {
 		if (!this.courseGroups.isInitialized(true)) {
 			throw new InternalServerErrorException('Courses trying to access their course groups that are not loaded.');

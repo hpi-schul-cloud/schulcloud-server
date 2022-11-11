@@ -163,13 +163,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return false;
 	}
 
-	// not complet valid, it is based on different parameters and can not be calculated on this place
-	private getMaxSubmissions(): number {
-		const numberOfStudents = this.getStudentIds().length;
-
-		return numberOfStudents;
-	}
-
 	private getSubmittedSubmissions(): Submission[] {
 		const submissions = this.getSubmissionItems();
 		const gradedSubmissions = submissions.filter((submission) => submission.isSubmitted());
@@ -198,20 +191,19 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return graded;
 	}
 
+	private userIsSubstitutionTeacher(user: User): boolean {
+		const isSubstitutionTeacher = this.course ? this.course.userIsSubstitutionTeacher(user) : false;
+
+		return isSubstitutionTeacher;
+	}
+
 	createTeacherStatusForUser(user: User): ITaskStatus {
 		const submitted = this.getSubmittedSubmissions().length;
 		const graded = this.getGradedSubmissions().length;
-		const maxSubmissions = this.getMaxSubmissions();
+		const maxSubmissions = this.getStudentIds().length;
 		const isDraft = this.isDraft();
 		const isFinished = this.isFinishedForUser(user);
-		// only point that need the parameter
-		// const isSubstitutionTeacher = this.isSubstitutionTeacher(userId);
-		// work with getParent()
-		let isSubstitutionTeacher = false;
-		if (this.course) {
-			// invalid operations internals of course should not be knowen on this place
-			isSubstitutionTeacher = this.course.substitutionTeachers.contains(user);
-		}
+		const isSubstitutionTeacher = this.userIsSubstitutionTeacher(user);
 
 		const status = {
 			submitted,
