@@ -127,6 +127,10 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return false;
 	}
 
+	areSubmissionsPublic(): boolean {
+		return !!this.publicSubmissions;
+	}
+
 	private getSubmissionItems(): Submission[] {
 		if (!this.submissions.isInitialized(true)) {
 			throw new Error('Submissions items are not loaded.');

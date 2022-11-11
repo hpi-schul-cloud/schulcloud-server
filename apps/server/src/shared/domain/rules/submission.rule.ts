@@ -52,7 +52,7 @@ export class SubmissionRule extends BasePermission<Submission> {
 	private hasReadAccess(user: User, submission: Submission) {
 		const hasReadAccess =
 			this.hasWriteAccess(user, submission) ||
-			(this.hasParentTaskReadAccess(user, submission) && !!submission.task.publicSubmissions);
+			(this.hasParentTaskReadAccess(user, submission) && submission.task.areSubmissionsPublic());
 
 		return hasReadAccess;
 	}
