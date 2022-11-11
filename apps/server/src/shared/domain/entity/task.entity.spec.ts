@@ -70,24 +70,74 @@ describe('Task Entity', () => {
 	});
 
 	describe('isPublished', () => {
-		it('should return false for private task', () => {
-			const task = taskFactory.draft().build();
-			expect(task.isPublished()).toEqual(false);
+		describe('when task isPublished', () => {
+			const setup = () => {
+				const task = taskFactory.build();
+
+				return task;
+			};
+
+			it('should return true', () => {
+				const task = setup();
+
+				expect(task.isPublished()).toEqual(true);
+			});
 		});
 
-		it('should return false before available Date', () => {
-			const task = taskFactory.build({ availableDate: new Date(Date.now() + 10000) });
-			expect(task.isPublished()).toEqual(false);
+		describe('when task is a draft', () => {
+			const setup = () => {
+				const task = taskFactory.draft().build();
+
+				return task;
+			};
+
+			it('should return false', () => {
+				const task = setup();
+
+				expect(task.isPublished()).toEqual(false);
+			});
 		});
 
-		it('should return true after available Date', () => {
-			const task = taskFactory.build({ availableDate: new Date(Date.now() - 10000) });
-			expect(task.isPublished()).toEqual(true);
+		describe('when task avaible date is not arrived', () => {
+			const setup = () => {
+				const task = taskFactory.build({ availableDate: new Date(Date.now() - 10000) });
+
+				return task;
+			};
+
+			it('should return false', () => {
+				const task = setup();
+
+				expect(task.isPublished()).toEqual(false);
+			});
 		});
 
-		it('should return true without available Date', () => {
-			const task = taskFactory.build({ availableDate: undefined });
-			expect(task.isPublished()).toEqual(true);
+		describe('when task avaible date is arrived', () => {
+			const setup = () => {
+				const task = taskFactory.build({ availableDate: new Date(Date.now() + 10000) });
+
+				return task;
+			};
+
+			it('should return true', () => {
+				const task = setup();
+
+				expect(task.isPublished()).toEqual(true);
+			});
+		});
+
+		describe('when task avaible is not defined', () => {
+			const setup = () => {
+				const task = taskFactory.build({ availableDate: undefined });
+
+				return task;
+			};
+
+			it('should return true', () => {
+				const task = setup();
+
+				expect(task.isPublished()).toEqual(true);
+			});
 		});
 	});
 
