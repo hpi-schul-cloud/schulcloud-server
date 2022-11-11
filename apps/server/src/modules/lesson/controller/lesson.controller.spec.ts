@@ -5,11 +5,15 @@ import { LessonUC } from '../uc';
 import { LessonController } from './lesson.controller';
 
 describe('lesson controller', () => {
+	let module: TestingModule;
 	let lessonController: LessonController;
 	let lessonUc: DeepMocked<LessonUC>;
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	afterAll(async () => {
+		await module.close();
+	});
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			imports: [],
 			providers: [
 				LessonController,

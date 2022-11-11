@@ -9,6 +9,7 @@ import {
 	Permission,
 	PermissionContextBuilder,
 	SchoolRule,
+	SubmissionRule,
 	TaskRule,
 	User,
 	UserRule,
@@ -28,6 +29,7 @@ export class AuthorizationService extends BasePermissionManager {
 		private readonly taskRule: TaskRule,
 		private readonly userRule: UserRule,
 		private readonly teamRule: TeamRule,
+		private readonly submissionRule: SubmissionRule,
 		private readonly loader: ReferenceLoader
 	) {
 		super();
@@ -39,6 +41,7 @@ export class AuthorizationService extends BasePermissionManager {
 			this.teamRule,
 			this.userRule,
 			this.schoolRule,
+			this.submissionRule,
 		]);
 	}
 

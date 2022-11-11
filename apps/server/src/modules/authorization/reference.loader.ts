@@ -1,10 +1,26 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { Course, CourseGroup, EntityId, Lesson, School, Task, Team, User } from '@shared/domain';
-import { CourseGroupRepo, CourseRepo, LessonRepo, SchoolRepo, TaskRepo, TeamsRepo, UserRepo } from '@shared/repo';
-import { AllowedAuthorizationEntityType } from './interfaces';
+import { EntityId } from '@shared/domain';
+import {
+	CourseGroupRepo,
+	CourseRepo,
+	LessonRepo,
+	SchoolRepo,
+	SubmissionRepo,
+	TaskRepo,
+	TeamsRepo,
+	UserRepo,
+} from '@shared/repo';
+import { AllowedAuthorizationEntityType, AllowedEntity } from './interfaces';
 
-type RepoType = TaskRepo | CourseRepo | UserRepo | SchoolRepo | LessonRepo | TeamsRepo | CourseGroupRepo;
-export type ReferenceEntityType = Task | Course | User | School | Lesson | Team | CourseGroup;
+type RepoType =
+	| TaskRepo
+	| CourseRepo
+	| UserRepo
+	| SchoolRepo
+	| LessonRepo
+	| TeamsRepo
+	| CourseGroupRepo
+	| SubmissionRepo;
 
 interface IRepoLoader {
 	repo: RepoType;
@@ -22,7 +38,8 @@ export class ReferenceLoader {
 		private readonly taskRepo: TaskRepo,
 		private readonly schoolRepo: SchoolRepo,
 		private readonly lessonRepo: LessonRepo,
-		private readonly teamsRepo: TeamsRepo
+		private readonly teamsRepo: TeamsRepo,
+		private readonly submissionRepo: SubmissionRepo
 	) {
 		this.repos.set(AllowedAuthorizationEntityType.Task, { repo: this.taskRepo });
 		this.repos.set(AllowedAuthorizationEntityType.Course, { repo: this.courseRepo });
@@ -31,6 +48,7 @@ export class ReferenceLoader {
 		this.repos.set(AllowedAuthorizationEntityType.School, { repo: this.schoolRepo });
 		this.repos.set(AllowedAuthorizationEntityType.Lesson, { repo: this.lessonRepo });
 		this.repos.set(AllowedAuthorizationEntityType.Team, { repo: this.teamsRepo, populate: true });
+		this.repos.set(AllowedAuthorizationEntityType.Submission, { repo: this.submissionRepo });
 	}
 
 	private resolveRepo(type: AllowedAuthorizationEntityType): IRepoLoader {
@@ -41,10 +59,10 @@ export class ReferenceLoader {
 		throw new NotImplementedException('REPO_NOT_IMPLEMENT');
 	}
 
-	async loadEntity(entityName: AllowedAuthorizationEntityType, entityId: EntityId): Promise<ReferenceEntityType> {
+	async loadEntity(entityName: AllowedAuthorizationEntityType, entityId: EntityId): Promise<AllowedEntity> {
 		const repoLoader: IRepoLoader = this.resolveRepo(entityName);
 
-		let entity: ReferenceEntityType;
+		let entity: AllowedEntity;
 		if (repoLoader.populate) {
 			entity = await repoLoader.repo.findById(entityId, true);
 		} else {

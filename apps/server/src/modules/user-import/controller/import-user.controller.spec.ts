@@ -6,10 +6,15 @@ import { UserImportUc } from '../uc/user-import.uc';
 import { ImportUserController } from './import-user.controller';
 
 describe('ImportUserController', () => {
+	let module: TestingModule;
 	let controller: ImportUserController;
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	afterAll(async () => {
+		await module.close();
+	});
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [
 				UserImportUc,
 				{

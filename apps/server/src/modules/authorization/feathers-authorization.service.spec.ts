@@ -6,6 +6,7 @@ import { FeathersAuthProvider } from './feathers-auth.provider';
 import { FeathersAuthorizationService } from './feathers-authorization.service';
 
 describe('FeatherAuthorizationService', () => {
+	let module: TestingModule;
 	let service: FeathersAuthorizationService;
 	let authProvider: FeathersAuthProvider;
 	const userId = new ObjectId().toHexString();
@@ -14,8 +15,8 @@ describe('FeatherAuthorizationService', () => {
 	const coursePermissions = ['COURSE_VIEW', 'COURSE_CREATE', 'COURSE_EDIT', 'COURSE_DELETE'];
 	const teamPermissions = ['TEAM_CREATE', 'TEAM_EDIT', 'TEAM_VIEW', 'TEAM_DELETE'];
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [
 				FeathersAuthorizationService,
 				{
@@ -40,6 +41,10 @@ describe('FeatherAuthorizationService', () => {
 
 		service = module.get(FeathersAuthorizationService);
 		authProvider = module.get(FeathersAuthProvider);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {

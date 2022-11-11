@@ -2,14 +2,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ServerController } from './server.controller';
 
 describe('ServerController', () => {
+	let module: TestingModule;
 	let serverController: ServerController;
 
-	beforeEach(async () => {
-		const app: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			controllers: [ServerController],
 		}).compile();
 
-		serverController = app.get(ServerController);
+		serverController = module.get(ServerController);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('root', () => {

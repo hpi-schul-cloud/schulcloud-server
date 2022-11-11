@@ -11,6 +11,17 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 		return Submission;
 	}
 
+	async findById(id: string): Promise<Submission> {
+		const submission = await super.findById(id);
+		await this._em.populate(submission, [
+			'courseGroup',
+			'task.course',
+			'task.lesson.course',
+			'task.lesson.courseGroup.course',
+		]);
+		return submission;
+	}
+
 	async findAllByTaskIds(taskIds: EntityId[]): Promise<Counted<Submission[]>> {
 		const [submissions, count] = await this._em.findAndCount(this.entityName, {
 			task: { $in: taskIds },

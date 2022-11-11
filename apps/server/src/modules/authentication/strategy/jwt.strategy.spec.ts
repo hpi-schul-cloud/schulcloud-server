@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { Test, TestingModule } from '@nestjs/testing';
 
-import { UserRepo } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { UserRepo } from '@shared/repo';
+import { setupEntities, userFactory } from '@shared/testing';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
 
-import { JwtStrategy } from './jwt.strategy';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
+import { JwtStrategy } from './jwt.strategy';
 
 describe('jwt strategy', () => {
 	let adapter: DeepMocked<JwtValidationAdapter>;
@@ -21,7 +21,7 @@ describe('jwt strategy', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		orm = await setupEntities();
 
 		module = await Test.createTestingModule({

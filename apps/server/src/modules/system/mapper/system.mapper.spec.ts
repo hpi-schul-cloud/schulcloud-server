@@ -9,7 +9,7 @@ describe('SystemMapper', () => {
 		await module.close();
 	});
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [SystemMapper],
