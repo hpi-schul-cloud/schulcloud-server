@@ -44,17 +44,13 @@ export class LessonRule extends BasePermission<Lesson> {
 			hasParentReadPermission = this.parentPermission(user, entity, Actions.write);
 		}
 
-		const result = hasParentReadPermission;
-
-		return result;
+		return hasParentReadPermission;
 	}
 
 	private lessonWritePermission(user: User, entity: Lesson): boolean {
 		const hasParentWritePermission = this.parentPermission(user, entity, Actions.write);
 
-		const result = hasParentWritePermission;
-
-		return result;
+		return hasParentWritePermission;
 	}
 
 	private parentPermission(user: User, entity: Lesson, action: Actions): boolean {

@@ -43,6 +43,19 @@ describe('course group repo', () => {
 		expect(repo.entityName).toBe(CourseGroup);
 	});
 
+	describe('findById', () => {
+		it('should return courseGroup with populated course', async () => {
+			const course = courseFactory.build();
+			const courseGroup = courseGroupFactory.build({ course });
+			await em.persistAndFlush(courseGroup);
+			em.clear();
+
+			const result = await repo.findById(courseGroup.id);
+
+			expect(result.course?.name).toEqual(course.name);
+		});
+	});
+
 	describe('findByCourses', () => {
 		it('should return the right types', async () => {
 			const courseGroup = courseGroupFactory.build();
@@ -64,7 +77,7 @@ describe('course group repo', () => {
 			const [result] = await repo.findByCourseIds([courseGroup.course.id]);
 
 			const keysOfFirstElements = Object.keys(result[0]).sort();
-			const expectedResult = ['_id', 'course', 'updatedAt', 'createdAt', 'school', 'students'].sort();
+			const expectedResult = ['_id', 'name', 'course', 'updatedAt', 'createdAt', 'school', 'students'].sort();
 			expect(keysOfFirstElements).toEqual(expectedResult);
 		});
 
@@ -76,9 +89,9 @@ describe('course group repo', () => {
 			await em.persistAndFlush(courses);
 
 			const courseGroups = [
-				new CourseGroup({ course: course1 }),
-				new CourseGroup({ course: course2 }),
-				new CourseGroup({ course: course3 }),
+				courseGroupFactory.build({ course: course1 }),
+				courseGroupFactory.build({ course: course2 }),
+				courseGroupFactory.build({ course: course3 }),
 			];
 			await em.persistAndFlush(courseGroups);
 			em.clear();
@@ -95,9 +108,9 @@ describe('course group repo', () => {
 			await em.persistAndFlush(courses);
 
 			const courseGroups = [
-				new CourseGroup({ course: course2 }),
-				new CourseGroup({ course: course2 }),
-				new CourseGroup({ course: course2 }),
+				courseGroupFactory.build({ course: course2 }),
+				courseGroupFactory.build({ course: course2 }),
+				courseGroupFactory.build({ course: course2 }),
 			];
 			await em.persistAndFlush(courseGroups);
 			em.clear();
