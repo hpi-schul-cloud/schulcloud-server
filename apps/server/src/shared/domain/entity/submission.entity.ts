@@ -5,6 +5,7 @@ import type { CourseGroup } from './coursegroup.entity';
 import type { User } from './user.entity';
 import type { File } from './file.entity';
 import type { Task } from './task.entity';
+import { EntityId } from '../types';
 
 export interface ISubmissionProperties {
 	task: Task;
@@ -73,56 +74,31 @@ export class Submission extends BaseEntityWithTimestamps {
 		}
 	}
 
-	private getTeamMembersItems(): User[] {
-		if (!this.teamMembers.isInitialized(true)) {
-			throw new Error('TeamMember items are not loaded.');
-		}
-		const teamMembers = this.teamMembers.getItems();
+	private getTeamMembersIds(): EntityId[] {
+		const teamMemberObjectIds = this.teamMembers.getIdentifiers('_id');
+		const teamMemberIds = teamMemberObjectIds.map((id) => id.toString());
 
-		return teamMembers;
+		return teamMemberIds;
 	}
 
-	private getGradeFilesItems(): File[] {
-		if (!this.gradeFiles.isInitialized(true)) {
-			throw new Error('GradeFiles items are not loaded.');
-		}
-		const gradeFiles = this.gradeFiles.getItems();
+	private getGradeFileIds(): EntityId[] {
+		const gradeFilesObjectIds = this.gradeFiles.getIdentifiers('_id');
+		const gradeFilesIds = gradeFilesObjectIds.map((id) => id.toString());
 
-		return gradeFiles;
+		return gradeFilesIds;
 	}
 
-	private isCreator(user: User): boolean {
-		const creator = this.student.id === user.id;
-
-		return creator;
-	}
-
-	private isTeamMember(user: User): boolean {
-		const teamMembers = this.getTeamMembersItems();
-		const isTeamMember = teamMembers.some((teamMember) => teamMember.id === user.id);
-
-		return isTeamMember;
-	}
-
-	private isMemberOf(user: User): boolean {
-		const isCreator = this.isCreator(user);
-		const isTeamMember = this.isTeamMember(user);
-		const isMemberOf = isCreator || isTeamMember;
-
-		return isMemberOf;
-	}
-
-	isSubmitted(): boolean {
+	public isSubmitted(): boolean {
 		// Always submitted for now, but can be changed in future.
 		const isSubmitted = true;
 
 		return isSubmitted;
 	}
 
-	isSubmittedForUser(user: User): boolean {
-		const isMemberOf = this.isMemberOf(user);
+	public isSubmittedForUser(user: User): boolean {
+		const isMember = this.userIsMember(user);
 		const isSubmitted = this.isSubmitted();
-		const isSubmittedForUser = isMemberOf && isSubmitted;
+		const isSubmittedForUser = isMember && isSubmitted;
 
 		return isSubmittedForUser;
 	}
@@ -140,13 +116,28 @@ export class Submission extends BaseEntityWithTimestamps {
 	}
 
 	private gradeFilesExists(): boolean {
-		const gradedFiles = this.getGradeFilesItems();
-		const gradeFilesExists = gradedFiles.length > 0;
+		const gradedFileIds = this.getGradeFileIds();
+		const gradeFilesExists = gradedFileIds.length > 0;
 
 		return gradeFilesExists;
 	}
 
-	isGraded(): boolean {
+	public getMemberUserIds(): EntityId[] {
+		const creatorId = this.student.id;
+		const teamMemberIds = this.getTeamMembersIds();
+		const mmberUserIds = [creatorId, ...teamMemberIds];
+
+		return mmberUserIds;
+	}
+
+	private userIsMember(user: User): boolean {
+		const memberUserIds = this.getMemberUserIds();
+		const isMember = memberUserIds.some((id) => id === user.id);
+
+		return isMember;
+	}
+
+	public isGraded(): boolean {
 		const gradeExists = this.gradeExists();
 		const gradeCommentExists = this.gradeCommentExists();
 		const gradeFilesExists = this.gradeFilesExists();
@@ -155,10 +146,10 @@ export class Submission extends BaseEntityWithTimestamps {
 		return isGraded;
 	}
 
-	isGradedForUser(user: User): boolean {
-		const isMemberOf = this.isMemberOf(user);
+	public isGradedForUser(user: User): boolean {
+		const isMember = this.userIsMember(user);
 		const isGraded = this.isGraded();
-		const isGradedForUser = isMemberOf && isGraded;
+		const isGradedForUser = isMember && isGraded;
 
 		return isGradedForUser;
 	}

@@ -204,4 +204,8 @@ describe('Submission entity', () => {
 			});
 		});
 	});
+
+	describe('getMemberUserIds', () => {
+		// TODO:
+	});
 });
