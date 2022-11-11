@@ -150,7 +150,7 @@ describe('KeycloakConfigurationService Unit', () => {
 	});
 
 	afterAll(async () => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
 		await module.close();
 	});
 

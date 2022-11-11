@@ -38,10 +38,6 @@ describe('IservStrategy', () => {
 			});
 		});
 
-		afterAll(() => {
-			jest.clearAllMocks();
-		});
-
 		it('should apply strategy', async () => {
 			const result = await iservStrategy.apply(params);
 
