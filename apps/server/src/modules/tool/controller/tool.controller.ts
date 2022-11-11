@@ -1,9 +1,8 @@
 import { Body, Controller, Get, NotImplementedException, Param, Post, Query } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ExternalTool, ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
 import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/external-tool.response';
-import { ExternalToolUc } from '@src/modules/tool/uc/external-tool.uc';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';
@@ -13,11 +12,7 @@ import { Lti11Uc } from '../uc/lti11.uc';
 
 @Controller('tools')
 export class ToolController {
-	constructor(
-		private readonly lti11Uc: Lti11Uc,
-		private readonly lti11ResponseMapper: Lti11ResponseMapper,
-		private externalToolUc: ExternalToolUc
-	) {}
+	constructor(private readonly lti11Uc: Lti11Uc, private readonly lti11ResponseMapper: Lti11ResponseMapper) {}
 
 	@Get('lti11/:toolId/launch')
 	@Authenticate('jwt')
@@ -40,9 +35,6 @@ export class ToolController {
 		@Body() externalToolParams: ExternalToolParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ExternalToolResponse> {
-		// const externalTool: ExternalTool = await this.externalToolUc.createExternalTool(externalToolParams);
-		return Promise.reject(new NotImplementedException());
-		// const mapped: ExternalToolResponse = this.externalToolMapper.mapExternalToolToResponse(externalTool);
-		// return mapped;
+		throw new NotImplementedException();
 	}
 }

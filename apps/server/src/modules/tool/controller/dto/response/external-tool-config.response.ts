@@ -1,10 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
 
 export class ExternalToolConfigResponse {
-	@ApiProperty()
-	type!: ToolConfigType;
+	type: ToolConfigType;
 
-	@ApiProperty()
-	baseUrl!: string;
+	baseUrl: string;
+
+	constructor(props: ExternalToolConfigResponse) {
+		this.type = ToolConfigType.BASIC;
+		this.baseUrl = props.baseUrl;
+	}
 }

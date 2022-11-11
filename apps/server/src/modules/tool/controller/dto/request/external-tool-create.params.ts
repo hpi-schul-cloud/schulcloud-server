@@ -1,9 +1,12 @@
-import { IsBoolean, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
 import { BasicToolConfigParams } from '@src/modules/tool/controller/dto/request/basic-tool-config.params';
 import { Lti11ToolConfigParams } from '@src/modules/tool/controller/dto/request/lti11-tool-config.params';
 import { Oauth2ToolConfigParams } from '@src/modules/tool/controller/dto/request/oauth2-tool-config.params';
+import { Type } from 'class-transformer';
+import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
+import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
 
 export class ExternalToolParams {
 	@IsString()
@@ -18,7 +21,24 @@ export class ExternalToolParams {
 	@ApiProperty()
 	logoUrl?: string;
 
-	@ApiProperty()
+	@ValidateNested()
+	@Type(() => ExternalToolConfigCreateParams, {
+		discriminator: {
+			property: 'config.type',
+			subTypes: [
+				{ value: Lti11ToolConfigParams, name: ToolConfigType.LTI11 },
+				{ value: Oauth2ToolConfigParams, name: ToolConfigType.OAUTH2 },
+				{ value: BasicToolConfigParams, name: ToolConfigType.BASIC },
+			],
+		},
+	})
+	@ApiProperty({
+		oneOf: [
+			{ $ref: getSchemaPath(BasicToolConfigParams) },
+			{ $ref: getSchemaPath(Lti11ToolConfigParams) },
+			{ $ref: getSchemaPath(Oauth2ToolConfigParams) },
+		],
+	})
 	config!: BasicToolConfigParams | Lti11ToolConfigParams | Oauth2ToolConfigParams;
 
 	@ApiProperty()
@@ -32,6 +52,7 @@ export class ExternalToolParams {
 	@ApiProperty()
 	openNewTab!: boolean;
 
+	@IsNumber()
 	@ApiProperty()
 	version!: number;
 }

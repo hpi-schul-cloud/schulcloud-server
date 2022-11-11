@@ -1,26 +1,21 @@
-import { Property } from '@mikro-orm/core';
 import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
-import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 export class Oauth2ToolConfigParams extends ExternalToolConfigCreateParams {
-	@Property()
-	clientId: string;
+	@IsString()
+	@ApiProperty()
+	clientId!: string;
 
-	@Property()
-	clientSecret: string;
+	@IsString()
+	@ApiProperty()
+	clientSecret!: string;
 
-	@Property()
-	skipConsent: boolean;
+	@IsString()
+	@ApiProperty()
+	skipConsent!: boolean;
 
-	@Property()
+	@IsString()
+	@ApiProperty()
 	frontchannelLogoutUrl?: string;
-
-	constructor(props: Oauth2ToolConfigParams) {
-		super();
-		this.type = ToolConfigType.OAUTH2;
-		this.clientId = props.clientId;
-		this.clientSecret = props.clientSecret;
-		this.skipConsent = props.skipConsent;
-		this.frontchannelLogoutUrl = props.frontchannelLogoutUrl;
-	}
 }

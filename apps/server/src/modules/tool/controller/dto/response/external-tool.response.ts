@@ -1,33 +1,23 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { ExternalToolConfigResponse } from '@src/modules/tool/controller/dto/response/external-tool-config.response';
 import { CustomParameterResponse } from '@src/modules/tool/controller/dto/response/custom-parameter.response';
 
 export class ExternalToolResponse {
-	@ApiProperty()
 	externalToolId: string;
 
-	@ApiProperty()
 	name: string;
 
-	@ApiProperty()
 	url: string;
 
-	@ApiProperty()
 	logoUrl?: string;
 
-	@ApiProperty()
 	config: ExternalToolConfigResponse;
 
-	@ApiProperty()
 	parameters: CustomParameterResponse;
 
-	@ApiProperty()
 	isHidden: boolean;
 
-	@ApiProperty()
 	openNewTab: boolean;
 
-	@ApiProperty()
 	version: number;
 
 	constructor(response: ExternalToolResponse) {

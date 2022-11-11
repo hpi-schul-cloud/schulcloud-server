@@ -24,7 +24,7 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 	launch_presentation_document_target: string;
 
 	constructor(props: Lti11ToolConfigResponse) {
-		super();
+		super(props);
 		this.type = ToolConfigType.LTI11;
 		this.key = props.key;
 		this.resource_link = props.resource_link;

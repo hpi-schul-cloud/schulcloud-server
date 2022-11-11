@@ -3,7 +3,7 @@ import { ExternalToolConfigResponse } from '@src/modules/tool/controller/dto/res
 
 export class BasicToolConfigResponse extends ExternalToolConfigResponse {
 	constructor(props: BasicToolConfigResponse) {
-		super();
+		super(props);
 		this.type = ToolConfigType.BASIC;
 		this.baseUrl = props.baseUrl;
 	}
