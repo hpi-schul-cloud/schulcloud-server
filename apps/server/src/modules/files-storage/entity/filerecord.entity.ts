@@ -1,8 +1,9 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BadRequestException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-import type { EntityId } from '../types/entity-id';
-import { BaseEntity } from './base.entity';
+import { type EntityId, BaseEntity } from '@shared/domain';
+import { ErrorType } from '../error';
 
 export enum ScanStatus {
 	PENDING = 'pending',
@@ -169,5 +170,13 @@ export class FileRecord extends BaseEntity {
 
 	unmarkForDelete(): void {
 		this.deletedSince = undefined;
+	}
+
+	setName(name: string): void {
+		if (name.length === 0) {
+			throw new BadRequestException(ErrorType.FILE_NAME_EMPTY);
+		}
+
+		this.name = name;
 	}
 }

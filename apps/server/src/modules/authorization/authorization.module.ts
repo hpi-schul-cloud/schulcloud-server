@@ -4,7 +4,6 @@ import { FeathersModule } from '@shared/infra/feathers';
 import {
 	CourseGroupRepo,
 	CourseRepo,
-	FileRecordRepo,
 	LessonRepo,
 	SchoolRepo,
 	SubmissionRepo,
@@ -31,7 +30,6 @@ import { ReferenceLoader } from './reference.loader';
 		CourseRepo,
 		CourseGroupRepo,
 		TaskRepo,
-		FileRecordRepo,
 		SchoolRepo,
 		LessonRepo,
 		TeamsRepo,

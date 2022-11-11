@@ -7,7 +7,6 @@ import { EntityId } from '@shared/domain';
 import {
 	CourseGroupRepo,
 	CourseRepo,
-	FileRecordRepo,
 	LessonRepo,
 	SchoolRepo,
 	SubmissionRepo,
@@ -53,10 +52,6 @@ describe('reference.loader', () => {
 				{
 					provide: TaskRepo,
 					useValue: createMock<TaskRepo>(),
-				},
-				{
-					provide: FileRecordRepo,
-					useValue: createMock<FileRecordRepo>(),
 				},
 				{
 					provide: SchoolRepo,

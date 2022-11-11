@@ -1,5 +1,5 @@
-import { FileRecord, FileSecurityCheck, ScanStatus } from '@shared/domain';
 import { ScanResultParams } from '../controller/dto';
+import { FileRecord, FileSecurityCheck, ScanStatus } from '../entity';
 
 export function getStatusFromScanResult(scanResultParams: ScanResultParams): ScanStatus {
 	const status = scanResultParams.virus_detected ? ScanStatus.BLOCKED : ScanStatus.VERIFIED;
