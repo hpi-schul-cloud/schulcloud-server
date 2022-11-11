@@ -724,7 +724,7 @@ describe('TaskUC', () => {
 					task,
 					status: {
 						submitted: 0,
-						maxSubmissions: course.getUserIds().length,
+						maxSubmissions: course.getStudentIds().length,
 						graded: 0,
 						isDraft: true,
 						isFinished: false,
@@ -783,7 +783,7 @@ describe('TaskUC', () => {
 				expect(result[0].status).toEqual({
 					graded: 0,
 					submitted: 1,
-					maxSubmissions: course.getUserIds().length,
+					maxSubmissions: course.getStudentIds().length,
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
@@ -810,7 +810,7 @@ describe('TaskUC', () => {
 				expect(result[0].status).toEqual({
 					graded: 0,
 					submitted: 2,
-					maxSubmissions: course.getUserIds().length,
+					maxSubmissions: course.getStudentIds().length,
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
@@ -837,7 +837,7 @@ describe('TaskUC', () => {
 				expect(result[0].status).toEqual({
 					graded: 1,
 					submitted: 1,
-					maxSubmissions: course.getUserIds().length,
+					maxSubmissions: course.getStudentIds().length,
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
@@ -867,7 +867,7 @@ describe('TaskUC', () => {
 				expect(result[0].status).toEqual({
 					graded: 2,
 					submitted: 2,
-					maxSubmissions: course.getUserIds().length,
+					maxSubmissions: course.getStudentIds().length,
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
@@ -899,7 +899,7 @@ describe('TaskUC', () => {
 				expect(result[0].status).toEqual({
 					graded: 2,
 					submitted: 2,
-					maxSubmissions: course.getUserIds().length,
+					maxSubmissions: course.getStudentIds().length,
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
@@ -928,7 +928,7 @@ describe('TaskUC', () => {
 				expect(result[0].status).toEqual({
 					graded: 0,
 					submitted: 2,
-					maxSubmissions: course.getUserIds().length,
+					maxSubmissions: course.getStudentIds().length,
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,

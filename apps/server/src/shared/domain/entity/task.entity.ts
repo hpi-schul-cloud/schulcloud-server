@@ -31,7 +31,7 @@ export type TaskParentDescriptions = {
 };
 
 export interface ITaskParent {
-	getUserIds(): EntityId[];
+	getStudentIds(): EntityId[];
 }
 
 @Entity({ tableName: 'homeworks' })
@@ -107,14 +107,11 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return submissions;
 	}
 
-	// todo double check that it is populated otherwise switch to getReference
-	private getFinishedItems(): User[] {
-		if (!this.finished.isInitialized(true)) {
-			throw new Error('Finished items are not loaded.');
-		}
-		const submissions = this.finished.getItems();
+	private getFinishedUserIds(): EntityId[] {
+		const finishedObjectIds = this.finished.getIdentifiers('_id');
+		const finishedIds = finishedObjectIds.map((id) => id.toString());
 
-		return submissions;
+		return finishedIds;
 	}
 
 	private getParent(): ITaskParent {
@@ -123,17 +120,17 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return parent;
 	}
 
-	private getUserIds(): EntityId[] {
+	private getStudentIds(): EntityId[] {
 		const parent = this.getParent();
-		const userIds = parent.getUserIds();
+		const studentIds = parent.getStudentIds();
 
-		return userIds;
+		return studentIds;
 	}
 
 	isFinishedForUser(user: User): boolean {
-		const finished = this.getFinishedItems();
+		const finishedUserIds = this.getFinishedUserIds();
 		const finishedCourse = this.course?.isFinished();
-		const finishedForUser = finished.some((finishedUser) => finishedUser.id === user.id);
+		const finishedForUser = finishedUserIds.some((finishedUserId) => finishedUserId === user.id);
 		const isFinishedForUser = !!(finishedForUser || finishedCourse);
 
 		return isFinishedForUser;
@@ -168,7 +165,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	// not complet valid, it is based on different parameters and can not be calculated on this place
 	private getMaxSubmissions(): number {
-		const numberOfStudents = this.getUserIds().length;
+		const numberOfStudents = this.getStudentIds().length;
 
 		return numberOfStudents;
 	}

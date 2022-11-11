@@ -118,7 +118,9 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool,
 		this.deletedAt = props.deletedAt;
 	}
 
-	getUserIds(): EntityId[] {
+	// Is a problem, student is not really valid on this place.
+	// But is used in tasks and it can be possible that other roles are used
+	getStudentIds(): EntityId[] {
 		const userIds = [this.id];
 
 		return userIds;

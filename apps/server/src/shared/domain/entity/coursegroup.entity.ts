@@ -14,7 +14,7 @@ export interface ICourseGroupProperties {
 }
 
 export interface ICourseGroupParent {
-	getUserIds(): EntityId[];
+	getStudentIds(): EntityId[];
 }
 
 @Entity({ tableName: 'coursegroups' })
@@ -39,7 +39,7 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 		if (props.students) this.students.set(props.students);
 	}
 
-	getParent(): ICourseGroupParent {
+	private getParent(): ICourseGroupParent {
 		const parent = this.course;
 
 		return parent;
@@ -49,10 +49,10 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 		return this.course._id;
 	}
 
-	getUserIds(): EntityId[] {
+	getStudentIds(): EntityId[] {
 		const parent = this.getParent();
-		const userIds = parent.getUserIds();
+		const studentIds = parent.getStudentIds();
 
-		return userIds;
+		return studentIds;
 	}
 }

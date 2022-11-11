@@ -89,11 +89,11 @@ export class Course
 		if (props.startDate) this.startDate = props.startDate;
 	}
 
-	private getStudentIds(): EntityId[] {
-		const studentIds = this.students.getIdentifiers('_id');
-		const entityIds = studentIds.map((id) => id.toString());
+	public getStudentIds(): EntityId[] {
+		const studentObjectIds = this.students.getIdentifiers('_id');
+		const studentIds = studentObjectIds.map((id) => id.toString());
 
-		return entityIds;
+		return studentIds;
 	}
 
 	getCourseGroupItems(): CourseGroup[] {
@@ -135,11 +135,5 @@ export class Course
 		const isFinished = this.untilDate < new Date();
 
 		return isFinished;
-	}
-
-	getUserIds(): EntityId[] {
-		const userIds = this.getStudentIds();
-
-		return userIds;
 	}
 }

@@ -80,7 +80,7 @@ export interface IComponentProperties {
 }
 
 export interface ILessonParent {
-	getUserIds(): EntityId[];
+	getStudentIds(): EntityId[];
 }
 
 @Entity({ tableName: 'lessons' })
@@ -193,10 +193,10 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		this.hidden = true;
 	}
 
-	getUserIds(): EntityId[] {
+	getStudentIds(): EntityId[] {
 		const parent = this.getParent();
-		const userIds = parent.getUserIds();
+		const studentIds = parent.getStudentIds();
 
-		return userIds;
+		return studentIds;
 	}
 }

@@ -1,7 +1,5 @@
 import { Entity, ManyToOne, Collection, Property, ManyToMany, Index } from '@mikro-orm/core';
 
-import { EntityId } from '../types';
-
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { CourseGroup } from './coursegroup.entity';
 import type { User } from './user.entity';

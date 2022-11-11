@@ -28,16 +28,4 @@ describe('CourseEntity', () => {
 			expect(courseGroup instanceof CourseGroup).toEqual(true);
 		});
 	});
-
-	// TODO check if and how we need this
-	describe('getParent', () => {
-		it('should return the right id.', () => {
-			const course = courseFactory.build();
-			course._id = new ObjectId();
-			const courseGroup = new CourseGroup({ course });
-
-			const result = courseGroup.getParentId();
-			expect(result).toEqual(course._id);
-		});
-	});
 });
