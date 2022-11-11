@@ -7,10 +7,13 @@ import {
 } from '@shared/domain/domainobject/external-tool.do';
 import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
 import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
-import { CustomParameterScope } from '@shared/domain';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { CustomParameterMapper } from '@src/modules/tool/mapper/custom-parameter.mapper';
 
 @Injectable()
 export class ExternalToolDOMapper {
+	constructor(private readonly customParameterMapper: CustomParameterMapper) {}
+
 	mapRequestToExternalToolDO(externalToolParams: ExternalToolParams): ExternalToolDO {
 		const config: ExternalToolConfigProperty = this.mapExternalToolConfigToDO(externalToolParams.config);
 		const customParameter: CustomParameterProperty = this.mapExternalToolCustomParameterToDO(
@@ -27,17 +30,22 @@ export class ExternalToolDOMapper {
 		customParameterParams: CustomParameterCreateParams[]
 	): CustomParameterProperty[] {
 		let customParameterPropertyArr: CustomParameterProperty[];
-		customParameterParams.forEach((customParameterParam) => {
+		customParameterParams.forEach((customParameterParam: CustomParameterCreateParams) => {
+			const mapScopeElement: CustomParameterScope = this.customParameterMapper.mapScope[customParameterParam.scope];
+			const locationParam: CustomParameterLocation =
+				this.customParameterMapper.mapLocation[customParameterParam.location];
+			const typeParam: CustomParameterType = this.customParameterMapper.mapType[customParameterParam.type];
 			const mappedCustomParameterParam: CustomParameterProperty = new CustomParameterProperty({
 				name: customParameterParam.name,
 				default: customParameterParam.default,
 				regex: customParameterParam.regex || '',
-				scope: customParameterParam.scope,
-				type: customParameterParam.type,
-				location: customParameterParam.location,
+				scope: scopeParam,
+				location: locationParam,
+				type: typeParam,
 			});
 			customParameterPropertyArr.push(mappedCustomParameterParam);
 		});
-		return customParameterPropertyArr;
+
+		return [];
 	}
 }
