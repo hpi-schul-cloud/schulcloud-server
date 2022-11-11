@@ -91,7 +91,7 @@ describe('Task Entity', () => {
 		});
 	});
 
-	describe('isFinished', () => {
+	describe('isFinishedForUser', () => {
 		let user: User;
 
 		beforeEach(() => {
@@ -133,6 +133,32 @@ describe('Task Entity', () => {
 			Object.assign(task, { finished: undefined });
 			jest.spyOn(course, 'isFinished').mockReturnValue(true);
 			expect(task.isFinishedForUser(user)).toEqual(true);
+		});
+	});
+
+	describe('areSubmissionsPublic', () => {
+		it('should return false if publicSubmissions is undefined', () => {
+			const task = taskFactory.build();
+
+			const result = task.areSubmissionsPublic();
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if publicSubmissions is false', () => {
+			const task = taskFactory.build({ publicSubmissions: false });
+
+			const result = task.areSubmissionsPublic();
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if publicSubmissions is true', () => {
+			const task = taskFactory.build({ publicSubmissions: true });
+
+			const result = task.areSubmissionsPublic();
+
+			expect(result).toBe(true);
 		});
 	});
 

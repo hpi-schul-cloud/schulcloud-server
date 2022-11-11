@@ -9,18 +9,15 @@ import { Task } from '../entity';
 describe('task copy service', () => {
 	let module: TestingModule;
 	let copyService: TaskCopyService;
-
 	let orm: MikroORM;
-
-	beforeAll(async () => {
-		orm = await setupEntities();
-	});
 
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 
-	beforeEach(async () => {
+	beforeAll(async () => {
+		orm = await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				TaskCopyService,

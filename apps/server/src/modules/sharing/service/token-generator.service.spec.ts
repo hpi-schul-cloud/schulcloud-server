@@ -2,13 +2,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TokenGenerator } from './token-generator.service';
 
 describe('TokenGeneratorService', () => {
+	let module: TestingModule;
 	let service: TokenGenerator;
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [TokenGenerator],
 		}).compile();
 		service = await module.get(TokenGenerator);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('generateShareToken', () => {

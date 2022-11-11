@@ -4,6 +4,7 @@ import { Mail } from './mail.interface';
 import { MailService } from './mail.service';
 
 describe('MailService', () => {
+	let module: TestingModule;
 	let service: MailService;
 	let amqpConnection: AmqpConnection;
 
@@ -12,8 +13,8 @@ describe('MailService', () => {
 		routingKey: 'routingKey',
 	};
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [
 				MailService,
 				{ provide: AmqpConnection, useValue: { publish: () => {} } },
@@ -23,6 +24,10 @@ describe('MailService', () => {
 
 		service = module.get(MailService);
 		amqpConnection = module.get(AmqpConnection);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {

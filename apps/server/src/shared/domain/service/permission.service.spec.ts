@@ -8,13 +8,14 @@ import { Role } from '../entity/role.entity';
 import { Permission } from '../interface';
 
 describe('resolvePermissions', () => {
+	let module: TestingModule;
 	let orm: MikroORM;
 	let service: PermissionService;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
 
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [PermissionService],
 		}).compile();
 
@@ -23,6 +24,7 @@ describe('resolvePermissions', () => {
 
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 
 	it('should return permissions of a user with one role', () => {

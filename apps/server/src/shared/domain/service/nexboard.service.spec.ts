@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { FeathersServiceProvider } from '@shared/infra/feathers/feathers-service.provider';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Logger } from '@src/core/logger';
-import { EntityId } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EntityId } from '@shared/domain';
+import { FeathersServiceProvider } from '@shared/infra/feathers/feathers-service.provider';
+import { Logger } from '@src/core/logger';
 import { NexboardService } from './nexboard.service';
 
 describe('Nexboard service', () => {
@@ -11,7 +11,7 @@ describe('Nexboard service', () => {
 	let nexboardService: NexboardService;
 	let feathersServiceProvider: DeepMocked<FeathersServiceProvider>;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				NexboardService,
@@ -28,6 +28,10 @@ describe('Nexboard service', () => {
 
 		nexboardService = module.get(NexboardService);
 		feathersServiceProvider = module.get(FeathersServiceProvider);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('create Nexboard', () => {
