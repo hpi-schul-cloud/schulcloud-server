@@ -1,5 +1,8 @@
 import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { CustomParameterLocation } from '@src/modules/tool/interface/custom-parameter-location.enum';
+import { CustomParameterScope } from '@src/modules/tool/interface/custom-parameter-scope.enum';
+import { CustomParameterType } from '@src/modules/tool/interface/custom-parameter-type.enum';
 
 export class CustomParameterResponse {
 	constructor(props: CustomParameterResponse) {
@@ -24,11 +27,11 @@ export class CustomParameterResponse {
 	regex?: string;
 
 	@ApiProperty()
-	scope: string[];
+	scope: CustomParameterScope[];
 
 	@ApiProperty()
-	location: string[];
+	location: CustomParameterLocation[];
 
 	@ApiProperty()
-	type: string[];
+	type: CustomParameterType[];
 }

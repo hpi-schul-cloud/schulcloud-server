@@ -7,6 +7,9 @@ import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto
 import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 import { NotImplementedException } from '@nestjs/common';
+import { CustomParameterScope } from '@src/modules/tool/interface/custom-parameter-scope.enum';
+import { CustomParameterLocation } from '@src/modules/tool/interface/custom-parameter-location.enum';
+import { CustomParameterType } from '@src/modules/tool/interface/custom-parameter-type.enum';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { ToolController } from './tool.controller';
@@ -88,9 +91,9 @@ describe('ToolController', () => {
 			name: 'mockName',
 			default: 'mockDefault',
 			regex: 'mockRegex',
-			scope: 'mockScope',
-			location: 'mockLocation',
-			type: 'mockType',
+			scope: CustomParameterScope.COURSE,
+			location: CustomParameterLocation.TOKEN,
+			type: CustomParameterType.NUMBER,
 		};
 		const body: ExternalToolParams = {
 			name: 'ExternalTool',
