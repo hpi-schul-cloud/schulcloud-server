@@ -24,26 +24,48 @@ describe('Task Entity', () => {
 		await orm.close();
 	});
 
-	describe('isDraft', () => {
-		it('should return true by default', () => {
-			const task = taskFactory.draft().build();
-			expect(task.isDraft()).toEqual(true);
+	describe('isDraft is called', () => {
+		describe('when task is draft', () => {
+			const setup = () => {
+				const task = taskFactory.draft().build();
+
+				return task;
+			};
+
+			it('should return true', () => {
+				const task = setup();
+
+				expect(task.isDraft()).toEqual(true);
+			});
 		});
 
-		it('should return false if private = false', () => {
-			const task = taskFactory.build();
-			expect(task.isDraft()).toEqual(false);
+		describe('when task is not a draft', () => {
+			const setup = () => {
+				const task = taskFactory.build();
+
+				return task;
+			};
+
+			it('should return false', () => {
+				const task = setup();
+
+				expect(task.isDraft()).toEqual(false);
+			});
 		});
 
-		it('should return private property as boolean if defined', () => {
-			const task = taskFactory.draft().build();
-			expect(task.isDraft()).toEqual(true);
-		});
+		describe('when task private status is undefined', () => {
+			const setup = () => {
+				const task = taskFactory.build();
+				Object.assign(task, { private: undefined });
 
-		it('should return private property as boolean if undefined', () => {
-			const task = taskFactory.build();
-			Object.assign(task, { private: undefined });
-			expect(task.isDraft()).toEqual(false);
+				return task;
+			};
+
+			it('should return false', () => {
+				const task = setup();
+
+				expect(task.isDraft()).toEqual(false);
+			});
 		});
 	});
 
