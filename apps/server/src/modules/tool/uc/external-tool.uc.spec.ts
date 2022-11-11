@@ -4,6 +4,9 @@ import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/ext
 import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
 import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
 import { NotImplementedException } from '@nestjs/common';
+import { CustomParameterScope } from '@src/modules/tool/interface/custom-parameter-scope.enum';
+import { CustomParameterLocation } from '@src/modules/tool/interface/custom-parameter-location.enum';
+import { CustomParameterType } from '@src/modules/tool/interface/custom-parameter-type.enum';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;
@@ -34,9 +37,9 @@ describe('ExternalToolUc', () => {
 			name: 'mockName',
 			default: 'mockDefault',
 			regex: 'mockRegex',
-			scope: 'mockScope',
-			location: 'mockLocation',
-			type: 'mockType',
+			scope: CustomParameterScope.COURSE,
+			location: CustomParameterLocation.PATH,
+			type: CustomParameterType.STRING,
 		};
 		const body: ExternalToolParams = {
 			name: 'ExternalTool',
