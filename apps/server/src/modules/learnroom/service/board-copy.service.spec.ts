@@ -24,15 +24,13 @@ describe('board copy service', () => {
 
 	let orm: MikroORM;
 
-	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 
-	beforeEach(async () => {
+	beforeAll(async () => {
+		orm = await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				BoardCopyService,
@@ -55,6 +53,10 @@ describe('board copy service', () => {
 		taskCopyService = module.get(TaskCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
+	});
+
+	beforeEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('copyBoard', () => {

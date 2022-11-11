@@ -50,7 +50,7 @@ describe('oauth-response mapper', () => {
 		await module.close();
 	});
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [SystemOauthResponseMapper],
