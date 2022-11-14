@@ -52,7 +52,7 @@ export class ReferenceLoader {
 	}
 
 	private resolveRepo(type: AllowedAuthorizationEntityType): IRepoLoader {
-		const repo: IRepoLoader | undefined = this.repos.get(type);
+		const repo = this.repos.get(type);
 		if (repo) {
 			return repo;
 		}

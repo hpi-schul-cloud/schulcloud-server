@@ -59,10 +59,10 @@ export class AuthorizationService extends BasePermissionManager {
 	): Promise<boolean> {
 		try {
 			const [user, entity] = await Promise.all([
-				this.loader.loadEntity(AllowedAuthorizationEntityType.User, userId),
+				this.getUserWithPermissions(userId),
 				this.loader.loadEntity(entityName, entityId),
 			]);
-			const permission = this.hasPermission(user as User, entity, context);
+			const permission = this.hasPermission(user, entity, context);
 
 			return permission;
 		} catch (err) {
@@ -99,15 +99,10 @@ export class AuthorizationService extends BasePermissionManager {
 	}
 
 	async getUserWithPermissions(userId: EntityId): Promise<User> {
-		try {
-			const userWithPermissions: User = (await this.loader.loadEntity(
-				AllowedAuthorizationEntityType.User,
-				userId
-			)) as User;
-
+		const userWithPermissions = await this.loader.loadEntity(AllowedAuthorizationEntityType.User, userId);
+		if (userWithPermissions instanceof User) {
 			return userWithPermissions;
-		} catch (err) {
-			throw new ForbiddenException(err);
 		}
+		throw new ForbiddenException();
 	}
 }
