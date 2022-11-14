@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Team, TeamUser, User } from '@shared/domain/entity';
 import { IPermissionContext } from '@shared/domain/interface';
 import { BasePermission } from '@shared/domain/rules/base-permission';
@@ -10,21 +10,12 @@ export class TeamRule extends BasePermission<Team> {
 	}
 
 	public hasPermission(user: User, entity: Team, context: IPermissionContext): boolean {
-		const resultTeamUser: TeamUser | undefined = entity.teamUsers.find(
-			(teamUser: TeamUser) => teamUser.user.id === user.id
-		);
-
-		if (!resultTeamUser) {
-			throw new InternalServerErrorException('Cannot find user in team');
+		let hasPermission = false;
+		const teamUser1 = entity.teamUsers.find((teamUser: TeamUser) => teamUser.user.id === user.id);
+		if (teamUser1) {
+			// populate don't work, eger must be added
+			hasPermission = this.utils.hasAllPermissionsByRole(teamUser1.role, context.requiredPermissions);
 		}
-
-		const permissions: string[] = this.resolveTeamPermissions(resultTeamUser);
-		return context.requiredPermissions.every((permission) => permissions.includes(permission));
-	}
-
-	private resolveTeamPermissions(teamUser: TeamUser): string[] {
-		const rolesAndPermissions = this.utils.resolvePermissionsByRoles([teamUser.role]);
-
-		return rolesAndPermissions;
+		return hasPermission;
 	}
 }
