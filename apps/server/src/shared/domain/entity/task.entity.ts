@@ -8,7 +8,7 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
-import type { User } from './user.entity';
+import { User } from './user.entity';
 import type { ITaskProperties, ITaskStatus } from '../types/task.types';
 
 export class TaskWithStatusVo {
@@ -114,7 +114,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return finishedIds;
 	}
 
-	private getParent(): ITaskParent {
+	private getParent(): ITaskParent | User {
 		const parent = this.lesson || this.course || this.creator;
 
 		return parent;
@@ -122,7 +122,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	private getStudentIds(): EntityId[] {
 		const parent = this.getParent();
-		const studentIds = parent.getStudentIds();
+		const studentIds = parent instanceof User ? [parent.id] : parent.getStudentIds();
 
 		return studentIds;
 	}
