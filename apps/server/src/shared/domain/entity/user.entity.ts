@@ -1,10 +1,8 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Reference } from '@mikro-orm/core';
 import { IEntityWithSchool } from '../interface';
-import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
 import type { School } from './school.entity';
-import type { ITaskParent } from './task.entity';
 
 export enum LanguageType {
 	DE = 'de',
@@ -50,7 +48,7 @@ export interface IUserProperties {
 		language_override: 'de',
 	},
 })
-export class User extends BaseEntityWithTimestamps implements IEntityWithSchool, ITaskParent {
+export class User extends BaseEntityWithTimestamps implements IEntityWithSchool {
 	@Property()
 	@Index()
 	// @Unique()
@@ -116,13 +114,5 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool,
 		this.language = props.language;
 		this.preferences = props.preferences ?? {};
 		this.deletedAt = props.deletedAt;
-	}
-
-	// Is a problem, student is not really valid on this place.
-	// But is used in tasks and it can be possible that other roles are used
-	getStudentIds(): EntityId[] {
-		const userIds = [this.id];
-
-		return userIds;
 	}
 }

@@ -152,6 +152,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return true;
 	}
 
+	// <---------------------------- next test for refactoring ---------------------------->
 	public isPlanned(): boolean {
 		if (this.isDraft()) {
 			return false;

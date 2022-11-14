@@ -4,7 +4,6 @@ import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CourseGroup } from './coursegroup.entity';
-import type { ICourseGroupParent } from './coursegroup.entity';
 import type { ILessonParent } from './lesson.entity';
 import type { School } from './school.entity';
 import type { ITaskParent } from './task.entity';
@@ -34,7 +33,7 @@ const DEFAULT = {
 @Entity({ tableName: 'courses' })
 export class Course
 	extends BaseEntityWithTimestamps
-	implements ILearnroom, IEntityWithSchool, ITaskParent, ILessonParent, ICourseGroupParent
+	implements ILearnroom, IEntityWithSchool, ITaskParent, ILessonParent
 {
 	@Property()
 	name: string = DEFAULT.name;
@@ -89,6 +88,7 @@ export class Course
 		if (props.startDate) this.startDate = props.startDate;
 	}
 
+	// TODO: test
 	public getStudentIds(): EntityId[] {
 		const studentObjectIds = this.students.getIdentifiers('_id');
 		const studentIds = studentObjectIds.map((id) => id.toString());
@@ -96,13 +96,14 @@ export class Course
 		return studentIds;
 	}
 
+	// TODO: test
 	public userIsSubstitutionTeacher(user: User): boolean {
 		const isSubstitutionTeacher = this.substitutionTeachers.contains(user);
 
 		return isSubstitutionTeacher;
 	}
 
-	getCourseGroupItems(): CourseGroup[] {
+	public getCourseGroupItems(): CourseGroup[] {
 		if (!this.courseGroups.isInitialized(true)) {
 			throw new InternalServerErrorException('Courses trying to access their course groups that are not loaded.');
 		}
@@ -122,7 +123,7 @@ export class Course
 		return firstChar + secondChar;
 	}
 
-	getMetadata(): LearnroomMetadata {
+	public getMetadata(): LearnroomMetadata {
 		return {
 			id: this.id,
 			type: LearnroomTypes.Course,
@@ -134,7 +135,7 @@ export class Course
 		};
 	}
 
-	isFinished(): boolean {
+	public isFinished(): boolean {
 		if (!this.untilDate) {
 			return false;
 		}

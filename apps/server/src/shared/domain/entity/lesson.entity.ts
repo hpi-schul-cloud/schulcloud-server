@@ -6,7 +6,8 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
-import { ITaskParent, Task } from './task.entity';
+import { Task } from './task.entity';
+import type { ITaskParent } from './task.entity';
 import { User } from './user.entity';
 
 export interface ILessonProperties {
@@ -193,7 +194,8 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		this.hidden = true;
 	}
 
-	getStudentIds(): EntityId[] {
+	// TODO: test
+	public getStudentIds(): EntityId[] {
 		const parent = this.getParent();
 		const studentIds = parent.getStudentIds();
 
