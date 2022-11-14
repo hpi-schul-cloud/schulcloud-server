@@ -14,13 +14,13 @@ export class CustomParameterResponse {
 	regex?: string;
 
 	@ApiProperty()
-	scope: CustomParameterScope[];
+	scope: CustomParameterScope;
 
 	@ApiProperty()
-	location: CustomParameterLocation[];
+	location: CustomParameterLocation;
 
 	@ApiProperty()
-	type: CustomParameterType[];
+	type: CustomParameterType;
 
 	constructor(props: CustomParameterResponse) {
 		this.name = props.name;

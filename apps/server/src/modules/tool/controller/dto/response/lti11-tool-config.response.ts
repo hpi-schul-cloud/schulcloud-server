@@ -13,7 +13,7 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()
 	key: string;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	resource_link_id?: string;
 
 	@ApiProperty()

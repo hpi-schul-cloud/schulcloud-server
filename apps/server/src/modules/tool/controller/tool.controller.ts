@@ -4,7 +4,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
 import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/external-tool.response';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiNotImplementedResponse, ApiTags } from '@nestjs/swagger';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
@@ -33,6 +33,7 @@ export class ToolController {
 	}
 
 	@Post('tools')
+	@ApiNotImplementedResponse()
 	createExternalTool(
 		@Body() externalToolParams: ExternalToolParams,
 		@CurrentUser() currentUser: ICurrentUser
