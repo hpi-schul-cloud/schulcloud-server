@@ -42,15 +42,13 @@ describe('file copy append service', () => {
 
 	let orm: MikroORM;
 
-	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 
 	beforeEach(async () => {
+		orm = await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				FileCopyAppendService,

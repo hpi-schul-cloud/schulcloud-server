@@ -3,13 +3,14 @@ import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { createICopyFiles, createPath, getPaths } from '.';
+import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 
 describe('Path Helper', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([FileRecord]);
 	});
 
 	afterAll(async () => {
@@ -61,7 +62,6 @@ describe('Path Helper', () => {
 
 		it('should return paths', () => {
 			const { fileRecords } = setup();
-
 			const paths = getPaths(fileRecords);
 
 			const fileRecordId1 = fileRecords[0].id;

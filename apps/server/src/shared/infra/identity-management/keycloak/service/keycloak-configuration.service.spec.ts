@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
@@ -160,8 +161,9 @@ describe('KeycloakConfigurationService Unit', () => {
 		jest.spyOn(Configuration, 'get').mockReturnValue('localhost');
 	});
 
-	afterAll(() => {
-		jest.clearAllMocks();
+	afterAll(async () => {
+		jest.resetAllMocks();
+		await module.close();
 	});
 
 	beforeEach(() => {

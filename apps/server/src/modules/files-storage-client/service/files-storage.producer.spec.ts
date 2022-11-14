@@ -5,8 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParentType } from '@shared/domain';
-import { FilesStorageEvents, FilesStorageExchange } from '@shared/infra/rabbitmq';
+import { FileRecordParentType, FilesStorageEvents, FilesStorageExchange } from '@shared/infra/rabbitmq';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { ErrorMapper } from '../mapper/error.mapper';
@@ -23,13 +22,6 @@ describe('FilesStorageProducer', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
-	});
-
-	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageProducer,
@@ -54,7 +46,8 @@ describe('FilesStorageProducer', () => {
 		configService.get.mockReturnValue(timeout);
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
+		await orm.close();
 		await module.close();
 	});
 

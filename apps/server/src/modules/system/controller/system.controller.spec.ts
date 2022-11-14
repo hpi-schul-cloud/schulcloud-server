@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { SystemController } from '@src/modules/system/controller/system.controller';
-import { SystemUc } from '@src/modules/system/uc/system.uc';
-import { SystemFilterParams } from '@src/modules/system/controller/dto/system.filter.params';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { Test, TestingModule } from '@nestjs/testing';
 import { SystemOauthResponse } from '@src/modules/system/controller/dto/system-oauth.response';
+import { SystemFilterParams } from '@src/modules/system/controller/dto/system.filter.params';
+import { SystemController } from '@src/modules/system/controller/system.controller';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemUc } from '@src/modules/system/uc/system.uc';
 
 describe('SystemController', () => {
 	let module: TestingModule;
@@ -24,6 +24,10 @@ describe('SystemController', () => {
 		}).compile();
 		controller = module.get(SystemController);
 		systemUc = module.get(SystemUc);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {

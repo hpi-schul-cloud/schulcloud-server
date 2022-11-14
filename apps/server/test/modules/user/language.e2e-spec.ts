@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Request } from 'express';
+import request from 'supertest';
 
-import { ServerTestModule } from '@src/modules/server/server.module';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ICurrentUser, User, LanguageType } from '@shared/domain';
 import { ApiValidationError } from '@shared/common';
-import { userFactory, cleanupCollections, mapUserToCurrentUser, roleFactory } from '@shared/testing';
+import { ICurrentUser, LanguageType, User } from '@shared/domain';
+import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@src/modules/server/server.module';
 
 const baseRouteName = '/user/language';
 

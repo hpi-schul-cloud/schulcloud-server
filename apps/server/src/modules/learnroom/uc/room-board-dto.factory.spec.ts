@@ -7,20 +7,18 @@ import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
 describe('RoomBoardDTOMapper', () => {
+	let module: TestingModule;
 	let orm: MikroORM;
 	let mapper: RoomBoardDTOFactory;
 	let authorisationService: RoomsAuthorisationService;
 
-	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			imports: [],
 			providers: [
 				RoomBoardDTOFactory,
@@ -42,6 +40,7 @@ describe('RoomBoardDTOMapper', () => {
 
 		authorisationService = module.get(RoomsAuthorisationService);
 		mapper = module.get(RoomBoardDTOFactory);
+		orm = await setupEntities();
 	});
 
 	describe('mapDTO', () => {

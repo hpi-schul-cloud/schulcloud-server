@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { EntityId, FileRecord, ICurrentUser, Permission } from '@shared/domain';
+import { EntityId, ICurrentUser, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -13,6 +13,7 @@ import { ErrorType } from '@src/modules/files-storage/error';
 import { Request } from 'express';
 import S3rver from 's3rver';
 import request from 'supertest';
+import { FileRecord } from '../../entity';
 
 class API {
 	app: INestApplication;
@@ -173,14 +174,14 @@ describe('files-storage controller (e2e)', () => {
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 				expect(result).toStrictEqual(
 					expect.objectContaining({
-						id: expect.any(String) as string,
+						id: expect.any(String),
 						name: 'test.txt',
 						parentId: validId,
 						creatorId: currentUser.userId,
 						type: 'text/plain',
 						parentType: 'schools',
 						securityCheckStatus: 'pending',
-						size: expect.any(Number) as number,
+						size: expect.any(Number),
 					})
 				);
 			});
@@ -275,7 +276,7 @@ describe('files-storage controller (e2e)', () => {
 				const { result } = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
 				expect(result).toStrictEqual(
 					expect.objectContaining({
-						id: expect.any(String) as string,
+						id: expect.any(String),
 						name: 'test (1).txt',
 						parentId: validId,
 						creatorId: currentUser.userId,
