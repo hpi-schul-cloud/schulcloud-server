@@ -4,8 +4,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden, MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra');
-
-const mongoose = require('mongoose');
+const {userRepo} = require("../../../components/user/repo");
 
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
@@ -45,7 +44,6 @@ const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
-		hook.app.service('users').get(hook.params.account.userId).populate("roles", { name: 1 }),
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 					{
@@ -62,7 +60,7 @@ const setIdToken = (hook) => {
 				isLocal: true,
 			},
 		}),
-	]).then(([user, roleNames, userTeams, tools]) =>
+	]).then(([user, userTeams, tools]) =>
 		hook.app
 			.service('pseudonym')
 			.find({
@@ -77,9 +75,10 @@ const setIdToken = (hook) => {
 				const roles_id = user.roles.map((role) => this.role = role);
 				// eslint-disable-next-line no-console
 				console.log('RoleId: ', roles_id);
-				const roles_name = roleNames;
+				const roles_repo = userRepo.getUserWithRoles(user._id);
+				const role_names = roles_repo.roles
 				// eslint-disable-next-line no-console
-				console.log('RoleObj: ', roles_name);
+				console.log('RoleName: ', role_names);
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
