@@ -11,7 +11,7 @@ export class Oauth2ToolConfigParams extends ExternalToolConfigCreateParams {
 	@ApiProperty()
 	clientSecret!: string;
 
-	@IsString()
+@IsBoolean()
 	@ApiProperty()
 	skipConsent!: boolean;
 
