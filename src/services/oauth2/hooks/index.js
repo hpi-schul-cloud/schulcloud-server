@@ -41,10 +41,8 @@ const setSubject = (hook) => {
 const setIdToken = (hook) => {
 	const scope = hook.params.consentRequest.requested_scope;
 	if (!hook.params.query.accept) return hook;
-	// add 'federalState' to Promise - clean solution
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
-		// hook.app.service('roles').get(hook.params.account.userId),
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 					{
@@ -76,9 +74,14 @@ const setIdToken = (hook) => {
 				const roles_id = user.roles.map((role) => this.role = role);
 				// eslint-disable-next-line no-console
 				console.log('RoleId: ', roles_id);
-				const role_name_user = user.roles.map(({ name }) => this.name = name);
+				const roles_name_obj = user.findOne({_id: user._id}).populate("roles").then(user => {
+					res.json(user);
+				});
 				// eslint-disable-next-line no-console
-				console.log('RoleName: ', role_name_user);
+				console.log('RoleObj: ', roles_name_obj);
+				const roles_name = roles_name_obj.roles[0].name;
+				// eslint-disable-next-line no-console
+				console.log('RoleName: ', roles_name);
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
