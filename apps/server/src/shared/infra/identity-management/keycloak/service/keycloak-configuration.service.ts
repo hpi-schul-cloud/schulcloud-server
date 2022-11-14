@@ -10,6 +10,8 @@ import { SystemService } from '@src/modules/system/service/system.service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '@src/modules/server';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 import { IdentityProviderConfig, IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -26,6 +28,7 @@ const defaultIdpMapperName = 'oidc-username-idp-mapper';
 export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
+		private readonly httpService: HttpService,
 		private readonly systemService: SystemService,
 		private readonly configService: ConfigService<IServerConfig, true>,
 		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
@@ -112,7 +115,7 @@ export class KeycloakConfigurationService {
 		const scDomain = this.configService.get<string>('SC_DOMAIN');
 		const redirectUri =
 			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth' : `https://${scDomain}/api/v3/sso/oauth`;
-		const kcBaseUrl = `${this.kcSettings.baseUrl}/realms/${kc.realmName}`;
+		const kcRealmBaseUrl = `${this.kcSettings.baseUrl}/realms/${kc.realmName}`;
 		const cr: ClientRepresentation = {
 			clientId,
 			enabled: true,
@@ -135,7 +138,12 @@ export class KeycloakConfigurationService {
 		} else {
 			[keycloakSystem] = systems;
 		}
-		await this.setKeycloakSystemInformation(keycloakSystem, kcBaseUrl, redirectUri, generatedClientSecret.value ?? '');
+		await this.setKeycloakSystemInformation(
+			keycloakSystem,
+			kcRealmBaseUrl,
+			redirectUri,
+			generatedClientSecret.value ?? ''
+		);
 		await this.systemService.save(keycloakSystem);
 	}
 
@@ -168,17 +176,12 @@ export class KeycloakConfigurationService {
 
 	private async setKeycloakSystemInformation(
 		keycloakSystem: SystemDto,
-		kcBaseUrl: string,
+		kcRealmBaseUrl: string,
 		redirectUri: string,
 		generatedClientSecret: string
 	) {
-		const kc = await this.kcAdmin.callKcAdminClient();
-		const getWellKnownRequest = kc.realms.makeRequest<{ realmName: string }, Record<string, unknown>>({
-			method: 'GET',
-			path: '/realms/{realmName}/.well-known/openid-configuration',
-			urlParamKeys: ['realmName'],
-		});
-		const getWellKnownResponse = await getWellKnownRequest({ realmName: kc.realmName });
+		const wellKnownUrl = `${kcRealmBaseUrl}/.well-known/openid-configuration`;
+		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
 
 		keycloakSystem.type = SystemTypeEnum.KEYCLOAK;
 		keycloakSystem.alias = 'Keycloak';
@@ -190,11 +193,11 @@ export class KeycloakConfigurationService {
 			responseType: 'code',
 			provider: 'oauth',
 			redirectUri,
-			tokenEndpoint: getWellKnownResponse.token_endpoint as string,
-			authEndpoint: getWellKnownResponse.authorization_endpoint as string,
-			logoutEndpoint: getWellKnownResponse.end_session_endpoint as string,
-			jwksEndpoint: getWellKnownResponse.jwks_uri as string,
-			issuer: kcBaseUrl,
+			tokenEndpoint: response.token_endpoint as string,
+			authEndpoint: response.authorization_endpoint as string,
+			logoutEndpoint: response.end_session_endpoint as string,
+			jwksEndpoint: response.jwks_uri as string,
+			issuer: kcRealmBaseUrl,
 		};
 		return keycloakSystem;
 	}
