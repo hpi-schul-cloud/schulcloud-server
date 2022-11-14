@@ -33,7 +33,7 @@ export class ToolController {
 	}
 
 	@Post('tools')
-	async createExternalTool(
+	createExternalTool(
 		@Body() externalToolParams: ExternalToolParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ExternalToolResponse> {

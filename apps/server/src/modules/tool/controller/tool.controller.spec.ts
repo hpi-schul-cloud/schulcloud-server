@@ -119,30 +119,30 @@ describe('ToolController', () => {
 
 		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 
-		it('should throw NotImplementedException when creating a basic external tool', async () => {
+		it('should throw NotImplementedException when creating a basic external tool', () => {
 			const basicExternalToolBody = body;
 			basicExternalToolBody.config = bodyConfigCreateBasicParams;
 
-			const expected = controller.createExternalTool(basicExternalToolBody, currentUser);
+			const expected = () => controller.createExternalTool(basicExternalToolBody, currentUser);
 
-			await expect(expected).rejects.toThrow(NotImplementedException);
+			expect(expected).toThrow(NotImplementedException);
 		});
 
-		it('should throw NotImplementedException when creating an oauth2 external tool', async () => {
+		it('should throw NotImplementedException when creating an oauth2 external tool', () => {
 			const oauth2ExternalToolBody = body;
 			oauth2ExternalToolBody.config = bodyConfigCreateOauthParams;
-			const expected = controller.createExternalTool(oauth2ExternalToolBody, currentUser);
+			const expected = () => controller.createExternalTool(oauth2ExternalToolBody, currentUser);
 
-			await expect(expected).rejects.toThrow(NotImplementedException);
+			expect(expected).toThrow(NotImplementedException);
 		});
 
-		it('should throw NotImplementedException when creating a lti11 external tool', async () => {
+		it('should throw NotImplementedException when creating a lti11 external tool', () => {
 			const lti11ExternalToolBody = body;
 			lti11ExternalToolBody.config = bodyConfigCreateLti11Params;
 
-			const expected = controller.createExternalTool(lti11ExternalToolBody, currentUser);
+			const expected = () => controller.createExternalTool(lti11ExternalToolBody, currentUser);
 
-			await expect(expected).rejects.toThrow(NotImplementedException);
+			expect(expected).toThrow(NotImplementedException);
 		});
 	});
 });
