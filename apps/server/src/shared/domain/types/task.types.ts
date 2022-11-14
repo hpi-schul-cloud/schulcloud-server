@@ -9,12 +9,12 @@ interface ITask {
 }
 
 export interface ITaskUpdate extends ITask {
-	courseId: string;
+	courseId?: string;
 	lessonId?: string;
 }
 
 export interface ITaskCreate extends ITask {
-	courseId: string;
+	courseId?: string;
 	lessonId?: string;
 }
 
