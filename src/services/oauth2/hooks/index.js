@@ -75,13 +75,10 @@ const setIdToken = (hook) => {
 				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
 				const roles_id = user.roles.map((role) => this.role = role);
 				// eslint-disable-next-line no-console
-				console.log('roles_test: ', roles_id);
+				console.log('RoleId: ', roles_id);
+				const role_name_user = user.roles.map(({ name }) => this.name = name);
 				// eslint-disable-next-line no-console
-				console.log('RoleNameUser: ', user.roles[0].name);
-				// eslint-disable-next-line no-console
-				console.log('RoleObjectId: ', user.roles[0].id);
-				// eslint-disable-next-line no-console
-				console.log('RoleNameFromObjectId: ', user.roles[0].id.name);
+				console.log('RoleName: ', role_name_user);
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
