@@ -122,6 +122,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	private getStudentIds(): EntityId[] {
 		const parent = this.getParent();
+		// For draft (user as parent) propaly user is not a student, but for maxSubmission one is valid result
 		const studentIds = parent instanceof User ? [parent.id] : parent.getStudentIds();
 
 		return studentIds;

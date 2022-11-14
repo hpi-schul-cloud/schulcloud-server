@@ -122,6 +122,8 @@ export class Submission extends BaseEntityWithTimestamps {
 		return gradeFilesExists;
 	}
 
+	// Bad that the logic is needed to expose the userIds, but is used in task for now.
+	// Check later if it can be replaced and remove all related code.
 	public getMemberUserIds(): EntityId[] {
 		const creatorId = this.student.id;
 		const teamMemberIds = this.getTeamMembersIds();
