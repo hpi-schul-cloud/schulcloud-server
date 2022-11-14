@@ -43,6 +43,7 @@ const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
+		hook.app.service('users').get(hook.params.account.userId).populate("roles", { name: 1 }),
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 					{
@@ -59,7 +60,7 @@ const setIdToken = (hook) => {
 				isLocal: true,
 			},
 		}),
-	]).then(([user, userTeams, tools]) =>
+	]).then(([user, roleNames, userTeams, tools]) =>
 		hook.app
 			.service('pseudonym')
 			.find({
@@ -74,14 +75,9 @@ const setIdToken = (hook) => {
 				const roles_id = user.roles.map((role) => this.role = role);
 				// eslint-disable-next-line no-console
 				console.log('RoleId: ', roles_id);
-				const roles_name_obj = user.populate("roles").then((user) => {
-					res.json(user);
-				});
+				const roles_name = roleNames;
 				// eslint-disable-next-line no-console
-				console.log('RoleObj: ', roles_name_obj);
-				const roles_name = roles_name_obj.roles[0].name;
-				// eslint-disable-next-line no-console
-				console.log('RoleName: ', roles_name);
+				console.log('RoleObj: ', roles_name);
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
