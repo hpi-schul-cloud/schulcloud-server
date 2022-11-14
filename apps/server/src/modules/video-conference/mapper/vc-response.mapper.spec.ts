@@ -1,3 +1,11 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain';
+import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
+import {
+	VideoConferenceBaseResponse,
+	VideoConferenceInfoResponse,
+	VideoConferenceJoinResponse,
+} from '@src/modules/video-conference/controller/dto/video-conference.response';
 import {
 	VideoConferenceDTO,
 	VideoConferenceInfoDTO,
@@ -5,14 +13,6 @@ import {
 } from '@src/modules/video-conference/dto/video-conference.dto';
 import { BBBBaseResponse } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
-import { Test, TestingModule } from '@nestjs/testing';
-import {
-	VideoConferenceBaseResponse,
-	VideoConferenceInfoResponse,
-	VideoConferenceJoinResponse,
-} from '@src/modules/video-conference/controller/dto/video-conference.response';
-import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
-import { Permission } from '@shared/domain';
 
 describe('VideoConferenceResponseMapper', () => {
 	let module: TestingModule;
@@ -23,6 +23,10 @@ describe('VideoConferenceResponseMapper', () => {
 			providers: [VideoConferenceResponseMapper],
 		}).compile();
 		mapper = module.get(VideoConferenceResponseMapper);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('test mapping', () => {

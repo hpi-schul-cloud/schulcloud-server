@@ -1,5 +1,4 @@
 import { MikroORM } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { courseFactory, setupEntities } from '@shared/testing';
 import { CourseGroup } from './coursegroup.entity';
 
@@ -15,16 +14,19 @@ describe('CourseEntity', () => {
 	});
 
 	describe('constructor', () => {
-		it('should throw an error by empty constructor', () => {
+		it('should throw an error if constructor is called without arguments', () => {
 			// @ts-expect-error: Test case
 			const test = () => new CourseGroup();
+
 			expect(test).toThrow();
 		});
 
-		it('should create a course by passing required properties', () => {
+		it('should create a courseGroup when passing required properties', () => {
+			const name = 'someName';
 			const course = courseFactory.build();
-			course._id = new ObjectId();
-			const courseGroup = new CourseGroup({ course });
+
+			const courseGroup = new CourseGroup({ name, course });
+
 			expect(courseGroup instanceof CourseGroup).toEqual(true);
 		});
 	});

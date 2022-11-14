@@ -10,6 +10,7 @@ import { FeathersAuthorizationService } from '@src/modules/authorization/feather
 import { NewsUc } from './news.uc';
 
 describe('NewsUc', () => {
+	let module: TestingModule;
 	let service: NewsUc;
 	let repo: NewsRepo;
 	const courseTargetId = 'course1';
@@ -41,8 +42,12 @@ describe('NewsUc', () => {
 		},
 	];
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	afterAll(async () => {
+		await module.close();
+	});
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [
 				NewsUc,
 				{

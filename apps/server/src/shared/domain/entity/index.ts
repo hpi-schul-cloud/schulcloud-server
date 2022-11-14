@@ -10,7 +10,6 @@ export * from './external-tool/custom-parameter/custom-parameter-entry';
 export * from './dashboard.entity';
 export * from './dashboard.model.entity';
 export * from './file.entity';
-export * from './filerecord.entity';
 export * from './import-user.entity';
 export * from './lesson.entity';
 export * from './ltitool.entity';

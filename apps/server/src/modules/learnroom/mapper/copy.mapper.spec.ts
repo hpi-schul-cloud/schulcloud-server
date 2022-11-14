@@ -13,20 +13,13 @@ import { CopyMapper } from './copy.mapper';
 describe('copy mapper', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
-
-	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterEach(async () => {
+	afterAll(async () => {
+		await orm.close();
 		await module.close();
 	});
 
-	afterAll(async () => {
-		await orm.close();
-	});
-
-	beforeEach(async () => {
+	beforeAll(async () => {
+		orm = await setupEntities();
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [CopyMapper],

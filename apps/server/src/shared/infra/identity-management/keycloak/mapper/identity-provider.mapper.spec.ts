@@ -16,7 +16,7 @@ describe('OidcIdentityProviderMapper', () => {
 		await module.close();
 	});
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [

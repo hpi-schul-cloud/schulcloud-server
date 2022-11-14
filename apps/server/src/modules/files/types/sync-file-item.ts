@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 
-import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
+import { EntityId } from '@shared/domain';
+import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { SyncSourceFile } from './sync-source-file';
 import { SyncTargetFile } from './sync-target-file';
 

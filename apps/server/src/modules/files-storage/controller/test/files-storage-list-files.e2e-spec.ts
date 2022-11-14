@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { EntityId, FileRecordParentType, ICurrentUser, Permission } from '@shared/domain';
+import { EntityId, ICurrentUser, Permission } from '@shared/domain';
 import {
 	cleanupCollections,
 	fileRecordFactory,
@@ -16,6 +16,7 @@ import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
+import { FileRecordParentType } from '../../entity';
 
 const baseRouteName = '/file/list';
 
@@ -176,14 +177,14 @@ describe(`${baseRouteName} (api)`, () => {
 			expect(Array.isArray(result.data)).toBe(true);
 			expect(result.data[0]).toBeDefined();
 			expect(result.data[0]).toStrictEqual({
-				creatorId: expect.any(String) as string,
-				id: expect.any(String) as string,
-				name: expect.any(String) as string,
-				parentId: expect.any(String) as string,
+				creatorId: expect.any(String),
+				id: expect.any(String),
+				name: expect.any(String),
+				parentId: expect.any(String),
 				parentType: 'schools',
 				type: 'application/octet-stream',
 				securityCheckStatus: 'pending',
-				size: expect.any(Number) as number,
+				size: expect.any(Number),
 			});
 		});
 
