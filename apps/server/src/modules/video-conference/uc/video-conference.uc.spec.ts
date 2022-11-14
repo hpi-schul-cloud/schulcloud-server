@@ -1,13 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { IScopeInfo, VideoConferenceUc } from '@src/modules/video-conference/uc/video-conference.uc';
-import { AuthorizationService } from '@src/modules';
-import { CourseRepo, TeamsRepo, UserRepo, VideoConferenceRepo } from '@shared/repo';
-import { CalendarService } from '@shared/infra/calendar';
-import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { MikroORM } from '@mikro-orm/core';
+import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Course,
 	EntityId,
@@ -18,32 +13,37 @@ import {
 	RoleName,
 	Team,
 	User,
-	VideoConferenceDO,
+	VideoConferenceDO
 } from '@shared/domain';
-import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
+import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { CalendarService } from '@shared/infra/calendar';
+import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
+import { CourseRepo, TeamsRepo, UserRepo, VideoConferenceRepo } from '@shared/repo';
+import { roleFactory, setupEntities } from '@shared/testing';
+import { teamFactory } from '@shared/testing/factory/team.factory';
+import { AuthorizationService } from '@src/modules';
+import { SchoolUc } from '@src/modules/school/uc/school.uc';
+import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
+import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
+import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
+import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
 import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
-import {
-	defaultVideoConferenceOptions,
-	VideoConferenceOptions,
-} from '@src/modules/video-conference/interface/vc-options.interface';
+import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
 import { VideoConferenceDTO, VideoConferenceJoinDTO } from '@src/modules/video-conference/dto/video-conference.dto';
+import { ErrorStatus } from '@src/modules/video-conference/error/error-status.enum';
 import {
 	BBBBaseResponse,
 	BBBCreateResponse,
 	BBBMeetingInfoResponse,
 	BBBResponse,
-	BBBStatus,
+	BBBStatus
 } from '@src/modules/video-conference/interface/bbb-response.interface';
-import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
-import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
-import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
-import { teamFactory } from '@shared/testing/factory/team.factory';
-import { roleFactory, setupEntities } from '@shared/testing';
-import { MikroORM } from '@mikro-orm/core';
-import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
-import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
-import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
-import { ErrorStatus } from '@src/modules/video-conference/error/error-status.enum';
+import {
+	defaultVideoConferenceOptions,
+	VideoConferenceOptions
+} from '@src/modules/video-conference/interface/vc-options.interface';
+import { BBBService } from '@src/modules/video-conference/service/bbb.service';
+import { IScopeInfo, VideoConferenceUc } from '@src/modules/video-conference/uc/video-conference.uc';
 
 class VideoConferenceUcSpec extends VideoConferenceUc {
 	async getScopeInfoSpec(userId: EntityId, conferenceScope: VideoConferenceScope, refId: string): Promise<IScopeInfo> {
@@ -200,7 +200,7 @@ describe('VideoConferenceUc', () => {
 		schoolUc.hasFeature.mockResolvedValue(true);
 		courseRepo.findById.mockResolvedValue(course);
 		calendarService.findEvent.mockResolvedValue(event);
-		authorizationService.hasPermissionsByReferences.mockReturnValue(userPermissions);
+		authorizationService.hasPermissionByReferences.mockReturnValue(Promise.resolve(true));
 	});
 
 	describe('getScopeInfo', () => {
@@ -237,9 +237,8 @@ describe('VideoConferenceUc', () => {
 	describe('checkPermission', () => {
 		it('should return bbb moderator role', async () => {
 			// Arrange
-			userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
-			userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
-
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
 			// Act
 			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId');
 
@@ -249,8 +248,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should return bbb viewer role', async () => {
 			// Arrange
-			userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
-			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
 
 			// Act
 			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId');
@@ -261,8 +260,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should throw on missing permission', async () => {
 			// Arrange
-			userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(false));
-			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
 
 			// Act & Assert
 			await expect(useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId')).rejects.toThrow(
@@ -324,7 +323,9 @@ describe('VideoConferenceUc', () => {
 
 		it('should throw on insufficient permissions', async () => {
 			// Arrange
-			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
+			//	userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
 
 			// Act & Assert
 			await expect(
@@ -448,6 +449,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully return a join link for a viewer in courses', async () => {
 			// Arrange
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
 			videoConferenceRepo.findByScopeId.mockResolvedValue(courseVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
 
@@ -470,6 +473,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully return a join link for a viewer in teams', async () => {
 			// Arrange
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
 			videoConferenceRepo.findByScopeId.mockResolvedValue(eventVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
 
@@ -493,6 +498,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully join as guest in courses, without moderator rights', async () => {
 			// Arrange
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
 			courseVcDO.options.everybodyJoinsAsModerator = true;
 			courseVcDO.options.moderatorMustApproveJoinRequests = true;
 			setTeamRole(expertRoleCourse);
@@ -519,6 +526,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully join as guest in teams, without moderator rights', async () => {
 			// Arrange
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
 			courseVcDO.options.everybodyJoinsAsModerator = true;
 			courseVcDO.options.moderatorMustApproveJoinRequests = true;
 			setTeamRole(expertRoleTeam);
@@ -576,6 +585,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should always successfully join as moderator', async () => {
 			// Arrange
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
 			courseVcDO.options.everybodyJoinsAsModerator = true;
 			videoConferenceRepo.findByScopeId.mockResolvedValue(courseVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
@@ -612,14 +623,10 @@ describe('VideoConferenceUc', () => {
 			},
 		};
 
-		beforeEach(() => {
-			userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
-			userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
-		});
-
 		it('should throw on insufficient permissions', async () => {
 			// Arrange
-			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
 
 			// Act & Assert
 			await expect(useCase.end(defaultCurrentUser, VideoConferenceScope.COURSE, course.id)).rejects.toThrow(
@@ -663,9 +670,6 @@ describe('VideoConferenceUc', () => {
 		let vcDO: VideoConferenceDO;
 
 		beforeEach(() => {
-			userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
-			userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
-
 			vcDO = new VideoConferenceDO({
 				target: course.id,
 				targetModel: VideoConferenceScope.COURSE,
@@ -690,7 +694,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully give MeetingInfo to viewer without options', async () => {
 			// Arrange
-			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
 			bbbService.getMeetingInfo.mockResolvedValue(bbbResponse);
 
 			// Act
@@ -718,7 +723,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully give MeetingInfo to viewer without options and "not started"', async () => {
 			// Arrange
-			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
 			bbbService.getMeetingInfo.mockRejectedValue(new InternalServerErrorException());
 
 			// Act

@@ -1,13 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
-	Actions,
 	BasePermissionManager,
 	CourseGroupRule,
 	CourseRule,
 	EntityId,
 	LessonRule,
-	Permission,
-	PermissionContextBuilder,
 	SchoolRule,
 	SubmissionRule,
 	TaskRule,
@@ -68,23 +65,6 @@ export class AuthorizationService extends BasePermissionManager {
 		} catch (err) {
 			throw new ForbiddenException(err);
 		}
-	}
-
-	hasPermissionsByReferences(
-		userId: EntityId,
-		entityName: AllowedAuthorizationEntityType,
-		entityId: EntityId,
-		permissions: Permission[],
-		action: Actions
-	): Map<Permission, Promise<boolean>> {
-		const returnMap: Map<Permission, Promise<boolean>> = new Map();
-		permissions.forEach((perm) => {
-			const context =
-				action === Actions.read ? PermissionContextBuilder.read([perm]) : PermissionContextBuilder.write([perm]);
-			const ret = this.hasPermissionByReferences(userId, entityName, entityId, context);
-			returnMap.set(perm, ret);
-		});
-		return returnMap;
 	}
 
 	async checkPermissionByReferences(

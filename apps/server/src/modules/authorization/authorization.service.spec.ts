@@ -4,16 +4,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Actions,
-	ALL_RULES,
-	BaseEntity,
-	IPermissionContext,
-	Permission,
-	PermissionContextBuilder,
-	PermissionTypes,
-	User,
-} from '@shared/domain';
+import { ALL_RULES, BaseEntity, Permission, PermissionContextBuilder } from '@shared/domain';
 import {
 	courseFactory,
 	courseGroupFactory,
@@ -163,6 +154,8 @@ describe('authorization.service', () => {
 			const entityId = new ObjectId().toHexString();
 			const spy = jest.spyOn(service, 'hasPermission');
 			spy.mockReturnValue(true);
+			const user = userFactory.buildWithId({}, userId);
+			loader.loadEntity.mockResolvedValue(user);
 
 			await service.hasPermissionByReferences(userId, entityName, entityId, context);
 
@@ -207,34 +200,6 @@ describe('authorization.service', () => {
 		});
 	});
 
-	describe('checkPermissionsByReferences', () => {
-		const permissionTrue = 'true' as Permission;
-		const permissionFalse = 'false' as Permission;
-
-		it('should call ReferenceLoader.getUserWithPermissions', async () => {
-			const userId = new ObjectId().toHexString();
-			const entityName = AllowedAuthorizationEntityType.Course;
-			const entityId = new ObjectId().toHexString();
-			const spy = jest.spyOn(service, 'hasPermission');
-			spy.mockImplementation((user: User, entity: PermissionTypes, context: IPermissionContext) => {
-				return context.requiredPermissions[0] === permissionTrue;
-			});
-
-			const retMap = service.hasPermissionsByReferences(
-				userId,
-				entityName,
-				entityId,
-				[permissionTrue, permissionFalse],
-				Actions.read
-			);
-
-			expect(await retMap.get(permissionTrue)).toBe(true);
-			expect(await retMap.get(permissionFalse)).toBe(false);
-
-			spy.mockRestore();
-		});
-	});
-
 	describe('getUserWithPermissions', () => {
 		it('Should call ReferenceLoader.getUserWithPermissions.', async () => {
 			const userId = new ObjectId().toHexString();
@@ -243,8 +208,18 @@ describe('authorization.service', () => {
 			expect(loader.loadEntity).lastCalledWith(AllowedAuthorizationEntityType.User, userId);
 		});
 
+		it('Should call ReferenceLoader.getUserWithPermissions.', async () => {
+			const userId = new ObjectId().toHexString();
+			const user = userFactory.buildWithId({}, userId);
+			loader.loadEntity.mockResolvedValue(user);
+			const res = await service.getUserWithPermissions(userId);
+			expect(res).toStrictEqual(user);
+		});
+
 		it('Should throw ForbiddenException if user by id can not be found.', async () => {
-			loader.loadEntity.mockRejectedValueOnce(new NotFound());
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			loader.loadEntity.mockResolvedValue(undefined);
 
 			const userId = new ObjectId().toHexString();
 
