@@ -1,8 +1,16 @@
 import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class Oauth2ToolConfigParams extends ExternalToolConfigCreateParams {
+	@IsString()
+	@ApiProperty()
+	type!: string;
+
+	@IsString()
+	@ApiProperty()
+	baseUrl!: string;
+
 	@IsString()
 	@ApiProperty()
 	clientId!: string;
@@ -11,11 +19,12 @@ export class Oauth2ToolConfigParams extends ExternalToolConfigCreateParams {
 	@ApiProperty()
 	clientSecret!: string;
 
-@IsBoolean()
+	@IsBoolean()
 	@ApiProperty()
 	skipConsent!: boolean;
 
 	@IsString()
-	@ApiProperty()
+	@IsOptional()
+	@ApiPropertyOptional()
 	frontchannelLogoutUrl?: string;
 }

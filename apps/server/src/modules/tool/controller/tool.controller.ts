@@ -32,7 +32,7 @@ export class ToolController {
 		return mapped;
 	}
 
-	@Post('externalTool')
+	@Post('tools')
 	async createExternalTool(
 		@Body() externalToolParams: ExternalToolParams,
 		@CurrentUser() currentUser: ICurrentUser

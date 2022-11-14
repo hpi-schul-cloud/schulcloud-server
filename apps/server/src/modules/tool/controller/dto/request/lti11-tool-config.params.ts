@@ -1,11 +1,17 @@
 import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
 import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
-import { LtiRole } from '@src/modules/tool/interface/lti-role.enum';
-import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
-import { IsEnum, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class Lti11ToolConfigParams extends ExternalToolConfigCreateParams {
+	@IsString()
+	@ApiProperty()
+	type!: string;
+
+	@IsString()
+	@ApiProperty()
+	baseUrl!: string;
+
 	@IsString()
 	@ApiProperty()
 	key!: string;
@@ -15,22 +21,10 @@ export class Lti11ToolConfigParams extends ExternalToolConfigCreateParams {
 	secret!: string;
 
 	@IsString()
-@ApiPropertyOptional()
-	resource_link?: string;
+	@ApiProperty()
+	resource_link_id!: string;
 
 	@IsEnum(LtiMessageType)
 	@ApiProperty()
 	lti_message_type!: LtiMessageType;
-
-	@IsEnum(LtiRole)
-	@ApiProperty()
-	roles!: LtiRole[];
-
-	@IsString()
-	@ApiProperty()
-	launch_presentation_locale!: string;
-
-	@IsString()
-	@ApiProperty()
-	launch_presentation_document_target!: string;
 }

@@ -1,5 +1,5 @@
-import { IsEnum, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CustomParameterLocation } from '@src/modules/tool/interface/custom-parameter-location.enum';
 import { CustomParameterScope } from '@src/modules/tool/interface/custom-parameter-scope.enum';
 import { CustomParameterType } from '@src/modules/tool/interface/custom-parameter-type.enum';
@@ -10,11 +10,13 @@ export class CustomParameterCreateParams {
 	name!: string;
 
 	@IsString()
-	@ApiProperty()
+	@IsOptional()
+	@ApiPropertyOptional()
 	default?: string;
 
 	@IsString()
-	@ApiProperty()
+	@IsOptional()
+	@ApiPropertyOptional()
 	regex?: string;
 
 	@IsEnum(CustomParameterScope)

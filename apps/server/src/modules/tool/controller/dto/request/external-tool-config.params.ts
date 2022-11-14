@@ -1,12 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+export abstract class ExternalToolConfigCreateParams {
+	abstract type: string;
 
-export class ExternalToolConfigCreateParams {
-	@IsString()
-	@ApiProperty()
-	type!: string;
-
-	@IsString()
-	@ApiProperty()
-	baseUrl!: string;
+	abstract baseUrl: string;
 }

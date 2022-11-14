@@ -3,7 +3,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Authorization } from 'oauth-1.0a';
 import { ICurrentUser } from '@shared/domain';
 import { Lti11LaunchResponse } from '@src/modules/tool/controller/dto/lti11-launch.response';
-import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
 import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 import { NotImplementedException } from '@nestjs/common';
@@ -14,7 +13,6 @@ import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enu
 import { BasicToolConfigParams } from '@src/modules/tool/controller/dto/request/basic-tool-config.params';
 import { Lti11ToolConfigParams } from '@src/modules/tool/controller/dto/request/lti11-tool-config.params';
 import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
-import { LtiRole } from '@src/modules/tool/interface/lti-role.enum';
 import { Oauth2ToolConfigParams } from '@src/modules/tool/controller/dto/request/oauth2-tool-config.params';
 import { ToolController } from './tool.controller';
 import { Lti11Uc } from '../uc/lti11.uc';
@@ -82,28 +80,21 @@ describe('ToolController', () => {
 	});
 
 	describe('createExternalTool', () => {
-		const bodyConfigCreateParams = new ExternalToolConfigCreateParams();
-		bodyConfigCreateParams.type = ToolConfigType.BASIC;
-		bodyConfigCreateParams.baseUrl = 'mockUrl';
-
 		const bodyConfigCreateBasicParams = new BasicToolConfigParams();
 		bodyConfigCreateBasicParams.type = ToolConfigType.BASIC;
-		bodyConfigCreateBasicParams.baseUrl = bodyConfigCreateParams.baseUrl;
+		bodyConfigCreateBasicParams.baseUrl = 'mockUrl';
 
 		const bodyConfigCreateLti11Params = new Lti11ToolConfigParams();
 		bodyConfigCreateLti11Params.type = ToolConfigType.LTI11;
-		bodyConfigCreateLti11Params.baseUrl = bodyConfigCreateParams.baseUrl;
+		bodyConfigCreateLti11Params.baseUrl = 'mockUrl';
 		bodyConfigCreateLti11Params.key = 'mockKey';
 		bodyConfigCreateLti11Params.secret = 'mockSecret';
-		bodyConfigCreateLti11Params.resource_link = 'mockLink';
+		bodyConfigCreateLti11Params.resource_link_id = 'mockLink';
 		bodyConfigCreateLti11Params.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
-		bodyConfigCreateLti11Params.roles = [LtiRole.LEARNER, LtiRole.INSTRUCTOR, LtiRole.ADMINISTRATOR];
-		bodyConfigCreateLti11Params.launch_presentation_document_target = 'mockTarget';
-		bodyConfigCreateLti11Params.launch_presentation_locale = 'mockLocale';
 
 		const bodyConfigCreateOauthParams = new Oauth2ToolConfigParams();
 		bodyConfigCreateOauthParams.type = ToolConfigType.OAUTH2;
-		bodyConfigCreateOauthParams.baseUrl = bodyConfigCreateParams.baseUrl;
+		bodyConfigCreateOauthParams.baseUrl = 'mockUrl';
 		bodyConfigCreateOauthParams.clientId = 'mockId';
 		bodyConfigCreateOauthParams.clientSecret = 'mockSecret';
 		bodyConfigCreateOauthParams.frontchannelLogoutUrl = 'mockUrl';
