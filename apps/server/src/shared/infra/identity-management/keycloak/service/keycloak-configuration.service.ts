@@ -114,7 +114,7 @@ export class KeycloakConfigurationService {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const scDomain = this.configService.get<string>('SC_DOMAIN');
 		const redirectUri =
-			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth' : `https://${scDomain}/api/v3/sso/oauth`;
+			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
 		const kcRealmBaseUrl = `${this.kcSettings.baseUrl}/realms/${kc.realmName}`;
 		const cr: ClientRepresentation = {
 			clientId,
