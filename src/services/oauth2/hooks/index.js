@@ -74,7 +74,7 @@ const setIdToken = (hook) => {
 				const roles_id = user.roles.map((role) => this.role = role);
 				// eslint-disable-next-line no-console
 				console.log('RoleId: ', roles_id);
-				const roles_name_obj = user.findOne({_id: user._id}).populate("roles").then(user => {
+				const roles_name_obj = user.populate("roles").then((user) => {
 					res.json(user);
 				});
 				// eslint-disable-next-line no-console
