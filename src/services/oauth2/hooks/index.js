@@ -44,6 +44,7 @@ const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
+		userRepo.getUserWithRoles(user._id),
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 					{
@@ -60,7 +61,7 @@ const setIdToken = (hook) => {
 				isLocal: true,
 			},
 		}),
-	]).then(([user, userTeams, tools]) =>
+	]).then(([user, roles, userTeams, tools]) =>
 		hook.app
 			.service('pseudonym')
 			.find({
@@ -75,8 +76,7 @@ const setIdToken = (hook) => {
 				const roles_id = user.roles.map((role) => this.role = role);
 				// eslint-disable-next-line no-console
 				console.log('RoleId: ', roles_id);
-				const roles_repo = userRepo.getUserWithRoles(user._id);
-				const role_names = roles_repo.roles
+				const role_names = roles
 				// eslint-disable-next-line no-console
 				console.log('RoleName: ', role_names);
 				hook.data.session = {
