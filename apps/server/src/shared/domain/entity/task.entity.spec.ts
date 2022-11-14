@@ -1,5 +1,14 @@
 import { MikroORM } from '@mikro-orm/core';
-import { courseFactory, lessonFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import {
+	courseFactory,
+	courseGroupFactory,
+	lessonFactory,
+	schoolFactory,
+	setupEntities,
+	submissionFactory,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 
 describe('Task Entity', () => {
 	let orm: MikroORM;
@@ -86,9 +95,9 @@ describe('Task Entity', () => {
 			});
 		});
 
-		describe('when task avaible date is not arrived', () => {
+		describe('when task avaible date is not reached', () => {
 			const setup = () => {
-				const task = taskFactory.build({ availableDate: new Date(Date.now() - 10000) });
+				const task = taskFactory.isPlanned().build();
 
 				return task;
 			};
@@ -100,9 +109,9 @@ describe('Task Entity', () => {
 			});
 		});
 
-		describe('when task avaible date is arrived', () => {
+		describe('when task avaible date is reached', () => {
 			const setup = () => {
-				const task = taskFactory.build({ availableDate: new Date(Date.now() + 10000) });
+				const task = taskFactory.isPublished().build();
 
 				return task;
 			};
@@ -156,105 +165,349 @@ describe('Task Entity', () => {
 	});
 
 	describe('isPlanned', () => {
-		it('should return false for private task', () => {
-			const task = taskFactory.draft().build();
-			expect(task.isPlanned()).toEqual(false);
+		describe('when task is a draft', () => {
+			const setup = () => {
+				const task = taskFactory.draft().build();
+
+				return task;
+			};
+
+			it('should return false', () => {
+				const task = setup();
+
+				expect(task.isPlanned()).toEqual(false);
+			});
 		});
 
-		it('should return true before available Date', () => {
-			const task = taskFactory.build({ availableDate: new Date(Date.now() + 10000) });
-			expect(task.isPlanned()).toEqual(true);
+		describe('when task available Date is not reached', () => {
+			const setup = () => {
+				const task = taskFactory.isPlanned().build();
+
+				return task;
+			};
+
+			it('should return true', () => {
+				const task = setup();
+
+				expect(task.isPlanned()).toEqual(true);
+			});
 		});
 
-		it('should return false after available Date', () => {
-			const task = taskFactory.build({ availableDate: new Date(Date.now() - 10000) });
-			expect(task.isPlanned()).toEqual(false);
+		describe('when task available Date is reached', () => {
+			const setup = () => {
+				const task = taskFactory.isPublished().build();
+
+				return task;
+			};
+
+			it('should return false', () => {
+				const task = setup();
+
+				expect(task.isPlanned()).toEqual(false);
+			});
 		});
 
-		it('should return false without available Date', () => {
-			const task = taskFactory.build({ availableDate: undefined });
-			expect(task.isPlanned()).toEqual(false);
+		describe('when task available Date is undefined', () => {
+			const setup = () => {
+				const task = taskFactory.build({ availableDate: undefined });
+
+				return task;
+			};
+
+			it('should return false', () => {
+				const task = setup();
+
+				expect(task.isPlanned()).toEqual(false);
+			});
 		});
 	});
 
-	describe('createTeacherStatusForUser', () => {
-		it('should call getNumberOfSubmittedUsers and return the result as submitted property', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
-			const spy = jest.spyOn(task, 'getNumberOfSubmittedUsers').mockImplementation(() => 5);
+	describe('createTeacherStatusForUser is called', () => {
+		describe('when parent is a user', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const task = taskFactory.build({ creator: user });
 
-			const result = task.createTeacherStatusForUser(user);
+				return { task, user };
+			};
 
-			expect(spy).toHaveBeenCalled();
-			expect(result.submitted).toEqual(5);
+			it('should be create correct status with maxSubmissions = 1', () => {
+				const { task, user } = setup();
 
-			spy.mockReset();
-		});
+				const status = task.createTeacherStatusForUser(user);
 
-		it('should call getNumberOfGradedUsers and return the result as graded property', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
-			const spy = jest.spyOn(task, 'getNumberOfGradedUsers').mockImplementation(() => 5);
-
-			const result = task.createTeacherStatusForUser(user);
-
-			expect(spy).toHaveBeenCalled();
-			expect(result.graded).toEqual(5);
-
-			spy.mockReset();
-		});
-
-		it('should call getMaxSubmissions and return the result as maxSubmissions property', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
-			const spy = jest.spyOn(task, 'getMaxSubmissions').mockImplementation(() => 5);
-
-			const result = task.createTeacherStatusForUser(user);
-
-			expect(spy).toHaveBeenCalled();
-			expect(result.maxSubmissions).toEqual(5);
-
-			spy.mockReset();
-		});
-
-		it('should call isDraft and return the result as isDraft property', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
-			const spy = jest.spyOn(task, 'isDraft').mockImplementation(() => true);
-
-			const result = task.createTeacherStatusForUser(user);
-
-			expect(spy).toHaveBeenCalled();
-			expect(result.isDraft).toBe(true);
-
-			spy.mockReset();
+				expect(status.maxSubmissions).toEqual(1);
+			});
 		});
 
 		describe('when parent is a course', () => {
-			it('should return true if the user is part of it.', () => {
+			const setup = () => {
+				const maxSubmission = 3;
 				const user = userFactory.build();
-				const course = courseFactory.build();
-				course.substitutionTeachers.add(user);
-				const task = taskFactory.build({ course });
+				const students = userFactory.buildList(maxSubmission);
+				const course = courseFactory.build({ students });
+				const task = taskFactory.build({ creator: user, course });
 
-				const result = task.createTeacherStatusForUser(user);
+				return { task, user, maxSubmission };
+			};
 
-				expect(result.isSubstitutionTeacher).toBe(true);
+			it('should be create correct status with maxSubmissions of course students', () => {
+				const { task, user, maxSubmission } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.maxSubmissions).toEqual(maxSubmission);
+			});
+		});
+
+		// bad to split it in coursegroup lesson and course lesson,
+		// but we have no test case as fallback for this situations in code
+		describe('when parent is a lesson in a coursegroup', () => {
+			const setup = () => {
+				const maxSubmission = 3;
+				const user = userFactory.build();
+				const students = userFactory.buildList(maxSubmission);
+				const courseGroup = courseGroupFactory.build({ students });
+				const lesson = lessonFactory.build({ courseGroup });
+				const task = taskFactory.build({ creator: user, lesson });
+
+				return { task, user, maxSubmission };
+			};
+
+			it('should be create correct status with maxSubmissions of coursegroup students', () => {
+				const { task, user, maxSubmission } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.maxSubmissions).toEqual(maxSubmission);
+			});
+		});
+
+		describe('when parent is a lesson in a course', () => {
+			const setup = () => {
+				const maxSubmission = 3;
+				const user = userFactory.build();
+				const students = userFactory.buildList(maxSubmission);
+				const course = courseFactory.build({ students });
+				const lesson = lessonFactory.build({ course });
+				const task = taskFactory.build({ creator: user, lesson });
+
+				return { task, user, maxSubmission };
+			};
+
+			it('should be create correct status with maxSubmissions of course students', () => {
+				const { task, user, maxSubmission } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.maxSubmissions).toEqual(maxSubmission);
+			});
+		});
+
+		// TODO: use mock ..how to split the cases?
+		describe('when submitted submissions exists', () => {
+			const setup = () => {
+				const submittedSubmissionNumber = 3;
+
+				const user = userFactory.build();
+				const submissions = submissionFactory.buildList(submittedSubmissionNumber);
+				const task = taskFactory.build({ creator: user, submissions });
+
+				return { task, user, submittedSubmissionNumber };
+			};
+
+			it('should be create correct status with  total user number in submitted', () => {
+				const { task, user, submittedSubmissionNumber } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.submitted).toEqual(submittedSubmissionNumber);
 			});
 
-			it('should return false if the user not is part of it', () => {
+			it('should be create correct status with total user number in graded', () => {
+				const { task, user } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.graded).toEqual(0);
+			});
+		});
+
+		describe('when submitted team submissions exists', () => {
+			const setup = () => {
+				const submissionWithTeamMemberNumber = 3;
+
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const teamMembers = userFactory.buildList(submissionWithTeamMemberNumber);
+				const teamSubmission = submissionFactory.build({ teamMembers });
+				const task = taskFactory.build({ creator: user, submissions: [teamSubmission] });
 
-				const task = taskFactory.build({ course });
+				const submittedSubmissionNumber = submissionWithTeamMemberNumber + 1;
 
-				const result = task.createTeacherStatusForUser(user);
+				return { task, user, submittedSubmissionNumber };
+			};
 
-				expect(result.isSubstitutionTeacher).toBe(false);
+			it('should be create correct status with total user number in submitted', () => {
+				const { task, user, submittedSubmissionNumber } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.submitted).toEqual(submittedSubmissionNumber);
+			});
+
+			it('should be create correct status with total user number in graded', () => {
+				const { task, user } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.graded).toEqual(0);
+			});
+		});
+
+		describe('when graded submissions', () => {
+			const setup = () => {
+				const submissionNumber = 3;
+
+				const user = userFactory.build();
+				const submissions = submissionFactory.graded().buildList(submissionNumber);
+				const task = taskFactory.build({ creator: user, submissions });
+
+				return { task, user, submissionNumber };
+			};
+
+			it('should be create correct status with  total user number in submitted', () => {
+				const { task, user, submissionNumber } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.submitted).toEqual(submissionNumber);
+			});
+
+			it('should be create correct status with total user number in graded', () => {
+				const { task, user, submissionNumber } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.graded).toEqual(submissionNumber);
+			});
+		});
+
+		describe('when graded team submissions exists', () => {
+			const setup = () => {
+				const submissionNumber = 3;
+				const user = userFactory.build();
+				const teamMembers = userFactory.buildList(3);
+				const submissions = [submissionFactory.build({ teamMembers })];
+				const task = taskFactory.build({ creator: user, submissions });
+
+				return { task, user, submissionNumber };
+			};
+
+			it('should be create correct status with total user number in submitted', () => {
+				const { task, user, submissionNumber } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.submitted).toEqual(submissionNumber);
+			});
+
+			it('should be create correct status with total user number in graded', () => {
+				const { task, user, submissionNumber } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.graded).toEqual(submissionNumber);
+			});
+		});
+
+		describe('when task is a draft', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const task = taskFactory.draft().build({ creator: user });
+
+				return { task, user };
+			};
+
+			it('should be create correct status for isDraft', () => {
+				const { task, user } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.isDraft).toEqual(true);
+			});
+		});
+
+		describe('when task is planned', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const task = taskFactory.isPlanned().build({ creator: user });
+
+				return { task, user };
+			};
+
+			it('should be create correct status for isDraft', () => {
+				const { task, user } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.isDraft).toEqual(false);
+			});
+		});
+
+		describe('when task is published', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const task = taskFactory.isPublished().build({ creator: user });
+
+				return { task, user };
+			};
+
+			it('should be create correct status for isDraft', () => {
+				const { task, user } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.isDraft).toEqual(false);
+			});
+		});
+
+		describe('when task is a finished for the user', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const task = taskFactory.isPublished().build({ creator: user, finished: [user] });
+
+				return { task, user };
+			};
+
+			it('should be create correct status for isDraft', () => {
+				const { task, user } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.isFinished).toEqual(true);
+			});
+		});
+
+		// ..that is really nothing what the task should be knowen, but it exist also exist the test for it.
+		describe('when user is a submissionTeacher in parent that is a course', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const course = courseFactory.build({ substitutionTeachers: [user] });
+				const task = taskFactory.isPublished().build({ creator: user, course });
+
+				return { task, user };
+			};
+
+			it('should be create correct status for isSubstitutionTeacher', () => {
+				const { task, user } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.isSubstitutionTeacher).toEqual(true);
 			});
 		});
 	});
-
+	/*
 	describe('createStudentStatusForUser', () => {
 		it('should call isSubmittedForUser and return 1 instant of true for property submitted', () => {
 			const user = userFactory.build();
@@ -339,7 +592,7 @@ describe('Task Entity', () => {
 			expect(result.isSubstitutionTeacher).toEqual(false);
 		});
 	});
-
+*/
 	describe('getParentData', () => {
 		describe('when a course is set', () => {
 			it('should return the name, id and color of the course', () => {
@@ -376,6 +629,7 @@ describe('Task Entity', () => {
 		});
 	});
 
+	/*
 	describe('finishForUser', () => {
 		it('should add the user to the finished collection', () => {
 			const user = userFactory.build();
@@ -401,7 +655,8 @@ describe('Task Entity', () => {
 			expect(task.isFinishedForUser(user2)).toBe(true);
 		});
 	});
-
+*/
+	/*
 	describe('restoreForUser', () => {
 		it('should remove the user from the finished collection', () => {
 			const user = userFactory.build();
@@ -427,7 +682,7 @@ describe('Task Entity', () => {
 			expect(task.isFinishedForUser(user2)).toBe(false);
 		});
 	});
-
+*/
 	describe('publish', () => {
 		it('should become not a draft', () => {
 			const task = taskFactory.draft().build();

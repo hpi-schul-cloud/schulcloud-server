@@ -158,7 +158,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return true;
 	}
 
-	// <---------------------------- next test for refactoring ---------------------------->
 	public isPlanned(): boolean {
 		if (this.isDraft()) {
 			return false;
@@ -178,7 +177,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	public areSubmissionsPublic(): boolean {
-		return !!this.publicSubmissions;
+		const areSubmissionsPublic = !!this.publicSubmissions;
+
+		return areSubmissionsPublic;
 	}
 
 	private getGradedSubmissions(): Submission[] {
