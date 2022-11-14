@@ -88,6 +88,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.descriptionInputFormat = props.descriptionInputFormat || InputFormat.RICH_TEXT_CK4;
 		this.availableDate = props.availableDate;
 		this.dueDate = props.dueDate;
+
 		if (props.private !== undefined) this.private = props.private;
 		this.creator = props.creator;
 		this.course = props.course;

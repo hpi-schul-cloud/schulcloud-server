@@ -19,6 +19,7 @@ export class TaskCopyService {
 		const copy = new Task({
 			name: params.copyName || params.originalTask.name,
 			description: params.originalTask.description,
+			descriptionInputFormat: params.originalTask.descriptionInputFormat,
 			school: params.user.school,
 			creator: params.user,
 			course: params.destinationCourse,

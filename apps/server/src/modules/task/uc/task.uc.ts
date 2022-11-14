@@ -21,6 +21,7 @@ import {
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { ValidationError } from '@shared/common';
 
 @Injectable()
 export class TaskUC {
@@ -220,21 +221,32 @@ export class TaskUC {
 		this.checkNewTaskEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const course = await this.courseRepo.findById(params.courseId);
-
-		// TODO is this permissiosn checking parent correctly?
-		this.authorizationService.checkPermission(
-			user,
-			course,
-			PermissionContextBuilder.write([Permission.HOMEWORK_CREATE])
-		);
-
 		const taskParams: ITaskProperties = {
 			...params,
 			school: user.school,
 			creator: user,
-			course,
 		};
+
+		if (!this.authorizationService.hasAllPermissions(user, [Permission.HOMEWORK_CREATE])) {
+			throw new UnauthorizedException();
+		}
+
+		if (params.courseId) {
+			const course = await this.courseRepo.findById(params.courseId);
+			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+			taskParams.course = course;
+		}
+
+		if (params.lessonId) {
+			const lesson = await this.lessonRepo.findById(params.lessonId);
+			if (!taskParams.course || lesson.course.id !== taskParams.course.id) {
+				throw new BadRequestException('Lesson does not belong to Course');
+			}
+			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+			taskParams.lesson = lesson;
+		}
+
+		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
 
 		const task = new Task(taskParams);
 
@@ -279,9 +291,11 @@ export class TaskUC {
 			}
 		}
 
-		const course = await this.courseRepo.findById(params.courseId);
-		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
-		task.course = course;
+		if (params.courseId) {
+			const course = await this.courseRepo.findById(params.courseId);
+			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+			task.course = course;
+		}
 
 		if (params.lessonId) {
 			const lesson = await this.lessonRepo.findById(params.lessonId);
@@ -291,6 +305,8 @@ export class TaskUC {
 			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
 			task.lesson = lesson;
 		}
+
+		this.taskDateValidation(params.availableDate, params.dueDate);
 
 		await this.taskRepo.save(task);
 
@@ -311,6 +327,12 @@ export class TaskUC {
 
 		await this.taskRepo.delete(task);
 		return true;
+	}
+
+	private taskDateValidation(availableDate?: Date, dueDate?: Date) {
+		if (availableDate && dueDate && !(availableDate < dueDate)) {
+			throw new ValidationError('availableDate must be before dueDate');
+		}
 	}
 
 	private checkNewTaskEnabled() {
