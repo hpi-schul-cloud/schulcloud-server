@@ -29,6 +29,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	@ManyToOne('User', { fieldName: 'studentId' })
 	student: User;
 
+	// TODO: look like a DB smell it exist only one valid parent the task, no other is related, should be removed soon
 	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId', nullable: true })
 	courseGroup?: CourseGroup;
 
@@ -88,21 +89,6 @@ export class Submission extends BaseEntityWithTimestamps {
 		return gradeFilesIds;
 	}
 
-	public isSubmitted(): boolean {
-		// Always submitted for now, but can be changed in future.
-		const isSubmitted = true;
-
-		return isSubmitted;
-	}
-
-	public isSubmittedForUser(user: User): boolean {
-		const isMember = this.userIsMember(user);
-		const isSubmitted = this.isSubmitted();
-		const isSubmittedForUser = isMember && isSubmitted;
-
-		return isSubmittedForUser;
-	}
-
 	private gradeExists(): boolean {
 		const gradeExists = typeof this.grade === 'number' && this.grade >= 0;
 
@@ -122,6 +108,34 @@ export class Submission extends BaseEntityWithTimestamps {
 		return gradeFilesExists;
 	}
 
+	private isTeamMember(user: User): boolean {
+		const teamMemberIds = this.getTeamMembersIds();
+		const isTeamMember = teamMemberIds.some((id) => user.id === id);
+
+		return isTeamMember;
+	}
+
+	private isCreator(user: User): boolean {
+		const isCreator = this.student.id === user.id;
+
+		return isCreator;
+	}
+
+	public isSubmitted(): boolean {
+		// Always submitted for now, but can be changed in future.
+		const isSubmitted = true;
+
+		return isSubmitted;
+	}
+
+	public isSubmittedForUser(user: User): boolean {
+		const isMember = this.userIsMember(user);
+		const isSubmitted = this.isSubmitted();
+		const isSubmittedForUser = isMember && isSubmitted;
+
+		return isSubmittedForUser;
+	}
+
 	// Bad that the logic is needed to expose the userIds, but is used in task for now.
 	// Check later if it can be replaced and remove all related code.
 	public getMemberUserIds(): EntityId[] {
@@ -132,9 +146,11 @@ export class Submission extends BaseEntityWithTimestamps {
 		return mmberUserIds;
 	}
 
-	private userIsMember(user: User): boolean {
-		const memberUserIds = this.getMemberUserIds();
-		const isMember = memberUserIds.some((id) => id === user.id);
+	// TODO: test
+	public userIsMember(user: User): boolean {
+		const isCreator = this.isCreator(user);
+		const isTeamMember = this.isTeamMember(user);
+		const isMember = isCreator || isTeamMember;
 
 		return isMember;
 	}

@@ -170,7 +170,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return false;
 	}
 
-
 	private getSubmittedSubmissions(): Submission[] {
 		const submissions = this.getSubmissionItems();
 		const gradedSubmissions = submissions.filter((submission) => submission.isSubmitted());

@@ -41,8 +41,7 @@ export class SubmissionRule extends BasePermission<Submission> {
 
 	private hasWriteAccess(user: User, submission: Submission) {
 		const hasWriteAccess =
-			this.isCreator(user, submission) ||
-			this.isTeamMember(user, submission) ||
+			submission.userIsMember(user) ||
 			this.isInCourseGroup(user, submission) ||
 			this.hasParentTaskWriteAccess(user, submission);
 
@@ -57,18 +56,8 @@ export class SubmissionRule extends BasePermission<Submission> {
 		return hasReadAccess;
 	}
 
-	private isCreator(user: User, submission: Submission) {
-		const isCreator = this.utils.hasAccessToEntity(user, submission, ['student']);
-
-		return isCreator;
-	}
-
-	private isTeamMember(user: User, submission: Submission) {
-		const isTeamMember = this.utils.hasAccessToEntity(user, submission, ['teamMembers']);
-
-		return isTeamMember;
-	}
-
+	// TODO: make this sense? Coursegroup should not be interesst on this place. It is not a parent.
+	// The parent is task in solve coursgroup parent relationships.
 	private isInCourseGroup(user: User, submission: Submission) {
 		const isInCourseGroup =
 			submission.courseGroup &&

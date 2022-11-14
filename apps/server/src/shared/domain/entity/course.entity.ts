@@ -90,6 +90,9 @@ export class Course
 
 	// TODO: test
 	public getStudentIds(): EntityId[] {
+		if (this.students === undefined) {
+			throw new Error('Course.students is undefined. The course need to be populated.');
+		}
 		const studentObjectIds = this.students.getIdentifiers('_id');
 		const studentIds = studentObjectIds.map((id) => id.toString());
 

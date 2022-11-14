@@ -1,17 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	courseFactory,
-	lessonFactory,
-	schoolFactory,
-	setupEntities,
-	submissionFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
-import { Submission } from './submission.entity';
-import { Task } from './task.entity';
-import { User } from './user.entity';
+import { courseFactory, lessonFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 
 describe('Task Entity', () => {
 	let orm: MikroORM;
@@ -138,6 +126,32 @@ describe('Task Entity', () => {
 
 				expect(task.isPublished()).toEqual(true);
 			});
+		});
+	});
+
+	describe('areSubmissionsPublic', () => {
+		it('should return false if publicSubmissions is undefined', () => {
+			const task = taskFactory.build();
+
+			const result = task.areSubmissionsPublic();
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if publicSubmissions is false', () => {
+			const task = taskFactory.build({ publicSubmissions: false });
+
+			const result = task.areSubmissionsPublic();
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if publicSubmissions is true', () => {
+			const task = taskFactory.build({ publicSubmissions: true });
+
+			const result = task.areSubmissionsPublic();
+
+			expect(result).toBe(true);
 		});
 	});
 
