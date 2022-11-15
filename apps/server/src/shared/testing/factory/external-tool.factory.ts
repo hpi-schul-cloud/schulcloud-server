@@ -31,7 +31,7 @@ export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalTool
 				baseUrl: '',
 				clientSecret: '',
 				clientId: '',
-				frontchannelLogoutUrl: '',
+				frontchannelLogoutUri: '',
 				skipConsent: false,
 			}),
 		};
