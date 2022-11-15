@@ -14,8 +14,8 @@ import { Permission } from '../interface';
 import { Actions } from './actions.enum';
 
 const buildUserWithPermission = (permission) => {
-	const role = roleFactory.build({ permissions: [permission] });
-	const user = userFactory.build({ roles: [role] });
+	const role = roleFactory.buildWithId({ permissions: [permission] });
+	const user = userFactory.buildWithId({ roles: [role] });
 
 	return user;
 };

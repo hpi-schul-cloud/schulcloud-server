@@ -9,6 +9,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { Submission } from './submission.entity';
 
 describe('Task Entity', () => {
 	let orm: MikroORM;
@@ -24,7 +25,7 @@ describe('Task Entity', () => {
 	describe('isDraft is called', () => {
 		describe('when task is draft', () => {
 			const setup = () => {
-				const task = taskFactory.draft().build();
+				const task = taskFactory.draft().buildWithId();
 
 				return task;
 			};
@@ -38,7 +39,7 @@ describe('Task Entity', () => {
 
 		describe('when task is not a draft', () => {
 			const setup = () => {
-				const task = taskFactory.build();
+				const task = taskFactory.buildWithId();
 
 				return task;
 			};
@@ -52,8 +53,7 @@ describe('Task Entity', () => {
 
 		describe('when task private status is undefined', () => {
 			const setup = () => {
-				const task = taskFactory.build();
-				Object.assign(task, { private: undefined });
+				const task = taskFactory.buildWithId({ private: undefined });
 
 				return task;
 			};
@@ -69,7 +69,7 @@ describe('Task Entity', () => {
 	describe('isPublished', () => {
 		describe('when task isPublished', () => {
 			const setup = () => {
-				const task = taskFactory.build();
+				const task = taskFactory.buildWithId();
 
 				return task;
 			};
@@ -83,7 +83,7 @@ describe('Task Entity', () => {
 
 		describe('when task is a draft', () => {
 			const setup = () => {
-				const task = taskFactory.draft().build();
+				const task = taskFactory.draft().buildWithId();
 
 				return task;
 			};
@@ -97,7 +97,7 @@ describe('Task Entity', () => {
 
 		describe('when task avaible date is not reached', () => {
 			const setup = () => {
-				const task = taskFactory.isPlanned().build();
+				const task = taskFactory.isPlanned().buildWithId();
 
 				return task;
 			};
@@ -111,7 +111,7 @@ describe('Task Entity', () => {
 
 		describe('when task avaible date is reached', () => {
 			const setup = () => {
-				const task = taskFactory.isPublished().build();
+				const task = taskFactory.isPublished().buildWithId();
 
 				return task;
 			};
@@ -125,7 +125,7 @@ describe('Task Entity', () => {
 
 		describe('when task avaible is not defined', () => {
 			const setup = () => {
-				const task = taskFactory.build({ availableDate: undefined });
+				const task = taskFactory.buildWithId({ availableDate: undefined });
 
 				return task;
 			};
@@ -140,7 +140,7 @@ describe('Task Entity', () => {
 
 	describe('areSubmissionsPublic', () => {
 		it('should return false if publicSubmissions is undefined', () => {
-			const task = taskFactory.build();
+			const task = taskFactory.buildWithId();
 
 			const result = task.areSubmissionsPublic();
 
@@ -148,7 +148,7 @@ describe('Task Entity', () => {
 		});
 
 		it('should return false if publicSubmissions is false', () => {
-			const task = taskFactory.build({ publicSubmissions: false });
+			const task = taskFactory.buildWithId({ publicSubmissions: false });
 
 			const result = task.areSubmissionsPublic();
 
@@ -156,7 +156,7 @@ describe('Task Entity', () => {
 		});
 
 		it('should return false if publicSubmissions is true', () => {
-			const task = taskFactory.build({ publicSubmissions: true });
+			const task = taskFactory.buildWithId({ publicSubmissions: true });
 
 			const result = task.areSubmissionsPublic();
 
@@ -167,7 +167,7 @@ describe('Task Entity', () => {
 	describe('isPlanned', () => {
 		describe('when task is a draft', () => {
 			const setup = () => {
-				const task = taskFactory.draft().build();
+				const task = taskFactory.draft().buildWithId();
 
 				return task;
 			};
@@ -181,7 +181,7 @@ describe('Task Entity', () => {
 
 		describe('when task available Date is not reached', () => {
 			const setup = () => {
-				const task = taskFactory.isPlanned().build();
+				const task = taskFactory.isPlanned().buildWithId();
 
 				return task;
 			};
@@ -195,7 +195,7 @@ describe('Task Entity', () => {
 
 		describe('when task available Date is reached', () => {
 			const setup = () => {
-				const task = taskFactory.isPublished().build();
+				const task = taskFactory.isPublished().buildWithId();
 
 				return task;
 			};
@@ -209,7 +209,7 @@ describe('Task Entity', () => {
 
 		describe('when task available Date is undefined', () => {
 			const setup = () => {
-				const task = taskFactory.build({ availableDate: undefined });
+				const task = taskFactory.buildWithId({ availableDate: undefined });
 
 				return task;
 			};
@@ -225,8 +225,8 @@ describe('Task Entity', () => {
 	describe('createTeacherStatusForUser is called', () => {
 		describe('when parent is a user', () => {
 			const setup = () => {
-				const user = userFactory.build();
-				const task = taskFactory.build({ creator: user });
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ creator: user });
 
 				return { task, user };
 			};
@@ -243,10 +243,9 @@ describe('Task Entity', () => {
 		describe('when parent is a course', () => {
 			const setup = () => {
 				const maxSubmission = 3;
-				const user = userFactory.build();
-				const students = userFactory.buildList(maxSubmission);
-				const course = courseFactory.build({ students });
-				const task = taskFactory.build({ creator: user, course });
+				const user = userFactory.buildWithId();
+				const course = courseFactory.studentsWithId(maxSubmission).buildWithId();
+				const task = taskFactory.buildWithId({ creator: user, course });
 
 				return { task, user, maxSubmission };
 			};
@@ -258,6 +257,8 @@ describe('Task Entity', () => {
 
 				expect(status.maxSubmissions).toEqual(maxSubmission);
 			});
+
+			// unique
 		});
 
 		// bad to split it in coursegroup lesson and course lesson,
@@ -265,11 +266,10 @@ describe('Task Entity', () => {
 		describe('when parent is a lesson in a coursegroup', () => {
 			const setup = () => {
 				const maxSubmission = 3;
-				const user = userFactory.build();
-				const students = userFactory.buildList(maxSubmission);
-				const courseGroup = courseGroupFactory.build({ students });
-				const lesson = lessonFactory.build({ courseGroup });
-				const task = taskFactory.build({ creator: user, lesson });
+				const user = userFactory.buildWithId();
+				const courseGroup = courseGroupFactory.studentsWithId(maxSubmission).buildWithId();
+				const lesson = lessonFactory.buildWithId({ courseGroup });
+				const task = taskFactory.buildWithId({ creator: user, lesson });
 
 				return { task, user, maxSubmission };
 			};
@@ -286,11 +286,10 @@ describe('Task Entity', () => {
 		describe('when parent is a lesson in a course', () => {
 			const setup = () => {
 				const maxSubmission = 3;
-				const user = userFactory.build();
-				const students = userFactory.buildList(maxSubmission);
-				const course = courseFactory.build({ students });
-				const lesson = lessonFactory.build({ course });
-				const task = taskFactory.build({ creator: user, lesson });
+				const user = userFactory.buildWithId();
+				const course = courseFactory.studentsWithId(maxSubmission).buildWithId();
+				const lesson = lessonFactory.buildWithId({ course });
+				const task = taskFactory.buildWithId({ creator: user, lesson });
 
 				return { task, user, maxSubmission };
 			};
@@ -307,13 +306,15 @@ describe('Task Entity', () => {
 		// TODO: use mock ..how to split the cases?
 		describe('when submitted submissions exists', () => {
 			const setup = () => {
-				const submittedSubmissionNumber = 3;
+				const user = userFactory.buildWithId();
+				const submission1 = submissionFactory.studentWithId().buildWithId();
+				const submission2 = submissionFactory.studentWithId().buildWithId();
+				const submission3 = submissionFactory.studentWithId().buildWithId();
 
-				const user = userFactory.build();
-				const submissions = submissionFactory.buildList(submittedSubmissionNumber);
-				const task = taskFactory.build({ creator: user, submissions });
+				const submissions = [submission1, submission2, submission3];
+				const task = taskFactory.buildWithId({ creator: user, submissions });
 
-				return { task, user, submittedSubmissionNumber };
+				return { task, user, submittedSubmissionNumber: submissions.length };
 			};
 
 			it('should be create correct status with  total user number in submitted', () => {
@@ -337,10 +338,9 @@ describe('Task Entity', () => {
 			const setup = () => {
 				const submissionWithTeamMemberNumber = 3;
 
-				const user = userFactory.build();
-				const teamMembers = userFactory.buildList(submissionWithTeamMemberNumber);
-				const teamSubmission = submissionFactory.build({ teamMembers });
-				const task = taskFactory.build({ creator: user, submissions: [teamSubmission] });
+				const user = userFactory.buildWithId();
+				const teamSubmission = submissionFactory.teamMembersWithId(submissionWithTeamMemberNumber).buildWithId();
+				const task = taskFactory.buildWithId({ creator: user, submissions: [teamSubmission] });
 
 				const submittedSubmissionNumber = submissionWithTeamMemberNumber + 1;
 
@@ -368,9 +368,9 @@ describe('Task Entity', () => {
 			const setup = () => {
 				const submissionNumber = 3;
 
-				const user = userFactory.build();
-				const submissions = submissionFactory.graded().buildList(submissionNumber);
-				const task = taskFactory.build({ creator: user, submissions });
+				const user = userFactory.buildWithId();
+				const submissions = submissionFactory.graded().buildListWithId(submissionNumber);
+				const task = taskFactory.buildWithId({ creator: user, submissions });
 
 				return { task, user, submissionNumber };
 			};
@@ -395,10 +395,9 @@ describe('Task Entity', () => {
 		describe('when graded team submissions exists', () => {
 			const setup = () => {
 				const submissionNumber = 3;
-				const user = userFactory.build();
-				const teamMembers = userFactory.buildList(3);
-				const submissions = [submissionFactory.build({ teamMembers })];
-				const task = taskFactory.build({ creator: user, submissions });
+				const user = userFactory.buildWithId();
+				const submissions = [submissionFactory.teamMembersWithId(submissionNumber).buildWithId()];
+				const task = taskFactory.buildWithId({ creator: user, submissions });
 
 				return { task, user, submissionNumber };
 			};
@@ -422,8 +421,8 @@ describe('Task Entity', () => {
 
 		describe('when task is a draft', () => {
 			const setup = () => {
-				const user = userFactory.build();
-				const task = taskFactory.draft().build({ creator: user });
+				const user = userFactory.buildWithId();
+				const task = taskFactory.draft().buildWithId({ creator: user });
 
 				return { task, user };
 			};
@@ -439,8 +438,8 @@ describe('Task Entity', () => {
 
 		describe('when task is planned', () => {
 			const setup = () => {
-				const user = userFactory.build();
-				const task = taskFactory.isPlanned().build({ creator: user });
+				const user = userFactory.buildWithId();
+				const task = taskFactory.isPlanned().buildWithId({ creator: user });
 
 				return { task, user };
 			};
@@ -456,8 +455,8 @@ describe('Task Entity', () => {
 
 		describe('when task is published', () => {
 			const setup = () => {
-				const user = userFactory.build();
-				const task = taskFactory.isPublished().build({ creator: user });
+				const user = userFactory.buildWithId();
+				const task = taskFactory.isPublished().buildWithId({ creator: user });
 
 				return { task, user };
 			};
@@ -473,8 +472,8 @@ describe('Task Entity', () => {
 
 		describe('when task is a finished for the user', () => {
 			const setup = () => {
-				const user = userFactory.build();
-				const task = taskFactory.isPublished().build({ creator: user, finished: [user] });
+				const user = userFactory.buildWithId();
+				const task = taskFactory.isPublished().buildWithId({ creator: user, finished: [user] });
 
 				return { task, user };
 			};
@@ -491,9 +490,9 @@ describe('Task Entity', () => {
 		// ..that is really nothing what the task should be knowen, but it exist also exist the test for it.
 		describe('when user is a submissionTeacher in parent that is a course', () => {
 			const setup = () => {
-				const user = userFactory.build();
-				const course = courseFactory.build({ substitutionTeachers: [user] });
-				const task = taskFactory.isPublished().build({ creator: user, course });
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+				const task = taskFactory.isPublished().buildWithId({ creator: user, course });
 
 				return { task, user };
 			};
@@ -510,8 +509,8 @@ describe('Task Entity', () => {
 	/*
 	describe('createStudentStatusForUser', () => {
 		it('should call isSubmittedForUser and return 1 instant of true for property submitted', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
+			const user = userFactory.buildWithId();
+			const task = taskFactory.buildWithId();
 			const spy = jest.spyOn(task, 'isSubmittedForUser').mockImplementation(() => true);
 
 			const result = task.createStudentStatusForUser(user);
@@ -523,8 +522,8 @@ describe('Task Entity', () => {
 		});
 
 		it('should call isSubmittedForUser and return 0 instant of false for property submitted', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
+			const user = userFactory.buildWithId();
+			const task = taskFactory.buildWithId();
 			const spy = jest.spyOn(task, 'isSubmittedForUser').mockImplementation(() => false);
 
 			const result = task.createStudentStatusForUser(user);
@@ -536,8 +535,8 @@ describe('Task Entity', () => {
 		});
 
 		it('should call isGradedForUser and return 1 instant of true for property graded', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
+			const user = userFactory.buildWithId();
+			const task = taskFactory.buildWithId();
 			const spy = jest.spyOn(task, 'isGradedForUser').mockImplementation(() => true);
 
 			const result = task.createStudentStatusForUser(user);
@@ -549,8 +548,8 @@ describe('Task Entity', () => {
 		});
 
 		it('should call isGradedForUser and return 0 instant of false for property graded', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
+			const user = userFactory.buildWithId();
+			const task = taskFactory.buildWithId();
 			const spy = jest.spyOn(task, 'isGradedForUser').mockImplementation(() => false);
 
 			const result = task.createStudentStatusForUser(user);
@@ -562,8 +561,8 @@ describe('Task Entity', () => {
 		});
 
 		it('should return 1 for property maxSubmissions', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
+			const user = userFactory.buildWithId();
+			const task = taskFactory.buildWithId();
 
 			const result = task.createStudentStatusForUser(user);
 
@@ -571,8 +570,8 @@ describe('Task Entity', () => {
 		});
 
 		it('should call isDraft and return the result as isDraft property', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
+			const user = userFactory.buildWithId();
+			const task = taskFactory.buildWithId();
 			const spy = jest.spyOn(task, 'isDraft').mockImplementation(() => false);
 
 			const result = task.createStudentStatusForUser(user);
@@ -584,8 +583,8 @@ describe('Task Entity', () => {
 		});
 
 		it('should return false for property isSubstitutionTeacher', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
+			const user = userFactory.buildWithId();
+			const task = taskFactory.buildWithId();
 
 			const result = task.createStudentStatusForUser(user);
 
@@ -596,8 +595,8 @@ describe('Task Entity', () => {
 	describe('getParentData', () => {
 		describe('when a course is set', () => {
 			it('should return the name, id and color of the course', () => {
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
+				const course = courseFactory.buildWithId();
+				const task = taskFactory.buildWithId({ course });
 				expect(task.getParentData().courseName).toEqual(course.name);
 				expect(task.getParentData().courseId).toEqual(course.id);
 				expect(task.getParentData().color).toEqual(course.color);
@@ -605,16 +604,16 @@ describe('Task Entity', () => {
 
 			describe('when a lesson is set', () => {
 				it('should return the lesson name as description', () => {
-					const course = courseFactory.build();
-					const lesson = lessonFactory.build({ course });
-					const task = taskFactory.build({ course, lesson });
+					const course = courseFactory.buildWithId();
+					const lesson = lessonFactory.buildWithId({ course });
+					const task = taskFactory.buildWithId({ course, lesson });
 					expect(task.getParentData().lessonName).toEqual(lesson.name);
 				});
 			});
 			describe('when no lesson is set', () => {
 				it('should return an empty string as description', () => {
-					const course = courseFactory.build();
-					const task = taskFactory.build({ course });
+					const course = courseFactory.buildWithId();
+					const task = taskFactory.buildWithId({ course });
 					expect(task.getParentData().lessonName).toEqual('');
 				});
 			});
@@ -622,7 +621,7 @@ describe('Task Entity', () => {
 
 		describe('when no course is set', () => {
 			it('should return the default name and color', () => {
-				const task = taskFactory.build();
+				const task = taskFactory.buildWithId();
 				expect(task.getParentData().courseName).toEqual('');
 				expect(task.getParentData().color).toEqual('#ACACAC');
 			});
@@ -632,24 +631,24 @@ describe('Task Entity', () => {
 	/*
 	describe('finishForUser', () => {
 		it('should add the user to the finished collection', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
+			const user = userFactory.buildWithId();
+			const task = taskFactory.buildWithId();
 			task.finishForUser(user);
 			expect(task.isFinishedForUser(user)).toBe(true);
 		});
 
 		it('should make sure the user is added only once', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build();
+			const user = userFactory.buildWithId();
+			const task = taskFactory.buildWithId();
 			task.finishForUser(user);
 			task.finishForUser(user);
 			expect(task.finished.count()).toBe(1);
 		});
 
 		it('should not overwrite other users in the finished collection', () => {
-			const user1 = userFactory.build();
-			const user2 = userFactory.build();
-			const task = taskFactory.build({ finished: [user1] });
+			const user1 = userFactory.buildWithId();
+			const user2 = userFactory.buildWithId();
+			const task = taskFactory.buildWithId({ finished: [user1] });
 			task.finishForUser(user2);
 			expect(task.isFinishedForUser(user1)).toBe(true);
 			expect(task.isFinishedForUser(user2)).toBe(true);
@@ -659,24 +658,24 @@ describe('Task Entity', () => {
 	/*
 	describe('restoreForUser', () => {
 		it('should remove the user from the finished collection', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build({ finished: [user] });
+			const user = userFactory.buildWithId();
+			const task = taskFactory.buildWithId({ finished: [user] });
 			task.restoreForUser(user);
 			expect(task.isFinishedForUser(user)).toBe(false);
 		});
 
 		it('should make sure the task can be restored even if already done ', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build({ finished: [user] });
+			const user = userFactory.buildWithId();
+			const task = taskFactory.buildWithId({ finished: [user] });
 			task.restoreForUser(user);
 			task.restoreForUser(user);
 			expect(task.finished.count()).toBe(0);
 		});
 
 		it('should not remove other users from the finished collection', () => {
-			const user1 = userFactory.build();
-			const user2 = userFactory.build();
-			const task = taskFactory.build({ finished: [user1, user2] });
+			const user1 = userFactory.buildWithId();
+			const user2 = userFactory.buildWithId();
+			const task = taskFactory.buildWithId({ finished: [user1, user2] });
 			task.restoreForUser(user2);
 			expect(task.isFinishedForUser(user1)).toBe(true);
 			expect(task.isFinishedForUser(user2)).toBe(false);
@@ -685,13 +684,13 @@ describe('Task Entity', () => {
 */
 	describe('publish', () => {
 		it('should become not a draft', () => {
-			const task = taskFactory.draft().build();
+			const task = taskFactory.draft().buildWithId();
 			task.publish();
 			expect(task.isDraft()).toEqual(false);
 		});
 
 		it('should set availableDate', () => {
-			const task = taskFactory.draft().build();
+			const task = taskFactory.draft().buildWithId();
 			const dateBefore = new Date(Date.now());
 			task.publish();
 			expect(task.availableDate).toBeDefined();
@@ -701,7 +700,7 @@ describe('Task Entity', () => {
 
 	describe('unpublish', () => {
 		it('should become a draft', () => {
-			const task = taskFactory.build();
+			const task = taskFactory.buildWithId();
 			task.unpublish();
 			expect(task.isDraft()).toEqual(true);
 		});
@@ -709,8 +708,8 @@ describe('Task Entity', () => {
 
 	describe('getSchoolId', () => {
 		it('schould return schoolId from school', () => {
-			const school = schoolFactory.build();
-			const task = taskFactory.build({ school });
+			const school = schoolFactory.buildWithId();
+			const task = taskFactory.buildWithId({ school });
 			const schoolId = task.getSchoolId();
 
 			expect(schoolId).toEqual(school.id);

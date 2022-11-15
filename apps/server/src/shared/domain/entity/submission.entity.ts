@@ -76,6 +76,10 @@ export class Submission extends BaseEntityWithTimestamps {
 	}
 
 	private getTeamMembersIds(): EntityId[] {
+		if (!this.teamMembers) {
+			throw new Error('Submission.teamMembers is undefined. The submission need to be populated.');
+		}
+
 		const teamMemberObjectIds = this.teamMembers.getIdentifiers('_id');
 		const teamMemberIds = teamMemberObjectIds.map((id) => id.toString());
 

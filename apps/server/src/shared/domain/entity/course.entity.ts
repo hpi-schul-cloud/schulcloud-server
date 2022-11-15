@@ -90,9 +90,10 @@ export class Course
 
 	// TODO: test
 	public getStudentIds(): EntityId[] {
-		if (this.students === undefined) {
+		if (!this.students) {
 			throw new Error('Course.students is undefined. The course need to be populated.');
 		}
+
 		const studentObjectIds = this.students.getIdentifiers('_id');
 		const studentIds = studentObjectIds.map((id) => id.toString());
 
@@ -111,6 +112,7 @@ export class Course
 			throw new InternalServerErrorException('Courses trying to access their course groups that are not loaded.');
 		}
 		const courseGroups = this.courseGroups.getItems();
+
 		return courseGroups;
 	}
 

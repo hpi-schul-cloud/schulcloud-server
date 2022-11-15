@@ -17,9 +17,8 @@ describe('Submission entity', () => {
 	describe('isSubmitted is called', () => {
 		describe('when submission exists', () => {
 			const setup = () => {
-				const student = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
-				const submission = submissionFactory.buildWithId({ task, student });
+				const submission = submissionFactory.studentWithId().buildWithId({ task });
 
 				return submission;
 			};
@@ -37,7 +36,7 @@ describe('Submission entity', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
-				const submission = submissionFactory.buildWithId({ task, student: user });
+				const submission = submissionFactory.studentWithId().buildWithId({ task, student: user });
 
 				return { submission, user };
 			};
@@ -104,7 +103,7 @@ describe('Submission entity', () => {
 				const student = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
 				const grade = 50;
-				const submission = submissionFactory.buildWithId({ task, student, grade });
+				const submission = submissionFactory.graded().buildWithId({ task, student, grade });
 
 				return submission;
 			};
@@ -157,8 +156,7 @@ describe('Submission entity', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
-				const grade = 50;
-				const submission = submissionFactory.buildWithId({ task, student: user, grade });
+				const submission = submissionFactory.graded().buildWithId({ task, student: user });
 
 				return { submission, user };
 			};
@@ -174,8 +172,7 @@ describe('Submission entity', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
-				const grade = 50;
-				const submission = submissionFactory.buildWithId({ task, grade, teamMembers: [user] });
+				const submission = submissionFactory.graded().buildWithId({ task, teamMembers: [user] });
 
 				return { submission, user };
 			};
@@ -191,8 +188,7 @@ describe('Submission entity', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
-				const grade = 50;
-				const submission = submissionFactory.buildWithId({ task, grade });
+				const submission = submissionFactory.graded().buildWithId({ task });
 
 				return { submission, user };
 			};
@@ -205,7 +201,11 @@ describe('Submission entity', () => {
 		});
 	});
 
-	describe('getMemberUserIds', () => {
+	describe('getMemberUserIds is called', () => {
+		// TODO:
+	});
+
+	describe('userIsMember is called', () => {
 		// TODO:
 	});
 });
