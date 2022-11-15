@@ -46,7 +46,9 @@ const setIdToken = (hook) => {
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
 		scope.includes('bilo') ? userRepo.getUserWithRoles(hook.params.account.userId) : undefined,
-		schoolRepo.getSchool(hook.params.account.userId.schoolId),
+		// schoolRepo.getSchool(hook.params.account.userId.schoolId),
+		// hook.app.service('federalStates').find({ query: { _id: 'TH' } }),
+		userRepo.getUserWithFederalState(hook.params.account.userId),
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 					{
@@ -75,9 +77,12 @@ const setIdToken = (hook) => {
 			.then((pseudonyms) => {
 				const { pseudonym } = pseudonyms.data[0];
 				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
-				const fedState = userFedState;
+				const fedStateRaw = userFedState;
 				// eslint-disable-next-line no-console
-				console.log('fedState: ', fedState);
+				console.log('fedState: ', fedStateRaw);
+				const fedStateName = userFedState.schoolId.federalState;
+				// eslint-disable-next-line no-console
+				console.log('fedState: ', fedStateName);
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),

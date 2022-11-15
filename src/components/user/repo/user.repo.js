@@ -68,10 +68,25 @@ const getUsersWithRoles = async (_ids) => {
 	return users;
 };
 
+const getUserWithFederalState = async (_id) => {
+	const user = await User.findOne({
+		_id,
+	})
+		.populate({path: 'schools', populate: {path: 'federalstates'}})
+		.lean()
+		.exec();
+	if (user == null) {
+		throw new NotFound('no such user');
+	}
+
+	return user;
+};
+
 module.exports = {
 	getUser,
 	getUserWithRoles,
 	getUsersWithRoles,
+	getUserWithFederalState,
 	replaceUserWithTombstone,
 	createTombstoneUser,
 };
