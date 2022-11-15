@@ -2,9 +2,9 @@ import { MikroORM } from '@mikro-orm/core';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { BaseDomainObject } from '../interface/base-domain-object';
 import { AuthorisationUtils } from './authorisation.utils';
-import { BasePermission } from './base-permission';
-import { BasePermissionManager } from './base-permission-manager';
-import PermissionContextBuilder from './permission-context.builder';
+import { BaseRule } from './base-rule';
+import { BaseRuleManager } from './base-rule-manager';
+import { AuthorizationContextBuilder } from './authorization-context.builder';
 
 class MyDomainObject extends BaseDomainObject {
 	id: string;
@@ -15,7 +15,7 @@ class MyDomainObject extends BaseDomainObject {
 	}
 }
 
-class MyPermission extends BasePermission<MyDomainObject> {
+class MyPermission extends BaseRule<MyDomainObject> {
 	public isApplicable(): boolean {
 		return true;
 	}
@@ -38,10 +38,10 @@ describe('base-permission', () => {
 
 	const permission = new MyPermission();
 
-	class MyPermissionManager extends BasePermissionManager {
+	class MyPermissionManager extends BaseRuleManager {
 		constructor() {
 			super();
-			this.registerPermissions([permission]);
+			this.registerRules([permission]);
 		}
 	}
 
@@ -61,7 +61,7 @@ describe('base-permission', () => {
 		const user = userFactory.buildWithId({ roles });
 		const domainObject = new MyDomainObject();
 
-		expect(manager.hasPermission(user, domainObject, PermissionContextBuilder.read([]))).toEqual(true);
+		expect(manager.hasPermission(user, domainObject, AuthorizationContextBuilder.read([]))).toEqual(true);
 	});
 
 	it('Should support authorisation utils as public interface', () => {

@@ -8,10 +8,10 @@ import {
 	Actions,
 	ALL_RULES,
 	BaseEntity,
-	IPermissionContext,
+	IAuthorizationContext,
 	Permission,
-	PermissionContextBuilder,
-	PermissionTypes,
+	AuthorizationContextBuilder,
+	AuthorizableObject,
 	User,
 } from '@shared/domain';
 import {
@@ -59,7 +59,7 @@ describe('authorization.service', () => {
 	});
 
 	describe('hasPermission', () => {
-		const context = PermissionContextBuilder.write([]);
+		const context = AuthorizationContextBuilder.write([]);
 
 		it('throw an error if no rule exist', () => {
 			const user = userFactory.build();
@@ -130,7 +130,7 @@ describe('authorization.service', () => {
 	});
 
 	describe('checkPermission', () => {
-		const context = PermissionContextBuilder.write([]);
+		const context = AuthorizationContextBuilder.write([]);
 
 		it('should call this.hasPermission', () => {
 			const user = userFactory.build();
@@ -155,7 +155,7 @@ describe('authorization.service', () => {
 	});
 
 	describe('hasPermissionByReferences', () => {
-		const context = PermissionContextBuilder.read([]);
+		const context = AuthorizationContextBuilder.read([]);
 
 		it('should call ReferenceLoader.loadEntity', async () => {
 			const userId = new ObjectId().toHexString();
@@ -190,7 +190,7 @@ describe('authorization.service', () => {
 	});
 
 	describe('checkPermissionByReferences', () => {
-		const context = PermissionContextBuilder.read([]);
+		const context = AuthorizationContextBuilder.read([]);
 
 		it('should call ReferenceLoader.getUserWithPermissions', async () => {
 			const userId = new ObjectId().toHexString();
@@ -216,7 +216,7 @@ describe('authorization.service', () => {
 			const entityName = AllowedAuthorizationEntityType.Course;
 			const entityId = new ObjectId().toHexString();
 			const spy = jest.spyOn(service, 'hasPermission');
-			spy.mockImplementation((user: User, entity: PermissionTypes, context: IPermissionContext) => {
+			spy.mockImplementation((user: User, entity: AuthorizableObject, context: IAuthorizationContext) => {
 				return context.requiredPermissions[0] === permissionTrue;
 			});
 

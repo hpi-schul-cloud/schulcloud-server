@@ -1,6 +1,6 @@
 import { BaseDomainObject } from '../interface/base-domain-object';
 import { AuthorisationUtils } from './authorisation.utils';
-import { BasePermission } from './base-permission';
+import { BaseRule } from './base-rule';
 
 class MyDomainObject extends BaseDomainObject {
 	id: string;
@@ -12,7 +12,7 @@ class MyDomainObject extends BaseDomainObject {
 }
 
 describe('base-permission', () => {
-	class MyPermission extends BasePermission<MyDomainObject> {
+	class MyPermission extends BaseRule<MyDomainObject> {
 		public isApplicable(): boolean {
 			return true;
 		}

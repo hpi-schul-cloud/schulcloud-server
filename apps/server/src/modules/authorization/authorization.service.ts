@@ -1,26 +1,26 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
 	Actions,
-	BasePermissionManager,
+	BaseRuleManager,
 	CourseGroupRule,
 	CourseRule,
 	EntityId,
 	LessonRule,
 	Permission,
-	PermissionContextBuilder,
+	AuthorizationContextBuilder,
 	SchoolRule,
 	SubmissionRule,
 	TaskRule,
 	User,
 	UserRule,
 } from '@shared/domain';
-import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
+import { IAuthorizationContext, AuthorizableObject } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
 @Injectable()
-export class AuthorizationService extends BasePermissionManager {
+export class AuthorizationService extends BaseRuleManager {
 	constructor(
 		private readonly courseRule: CourseRule,
 		private readonly courseGroupRule: CourseGroupRule,
@@ -33,7 +33,7 @@ export class AuthorizationService extends BasePermissionManager {
 		private readonly loader: ReferenceLoader
 	) {
 		super();
-		this.registerPermissions([
+		this.registerRules([
 			this.courseRule,
 			this.courseGroupRule,
 			this.lessonRule,
@@ -45,7 +45,7 @@ export class AuthorizationService extends BasePermissionManager {
 		]);
 	}
 
-	checkPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {
+	checkPermission(user: User, entity: AuthorizableObject, context: IAuthorizationContext) {
 		if (!this.hasPermission(user, entity, context)) {
 			throw new ForbiddenException();
 		}
@@ -55,7 +55,7 @@ export class AuthorizationService extends BasePermissionManager {
 		userId: EntityId,
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
-		context: IPermissionContext
+		context: IAuthorizationContext
 	): Promise<boolean> {
 		try {
 			const [user, entity] = await Promise.all([
@@ -80,7 +80,7 @@ export class AuthorizationService extends BasePermissionManager {
 		const returnMap: Map<Permission, Promise<boolean>> = new Map();
 		permissions.forEach((perm) => {
 			const context =
-				action === Actions.read ? PermissionContextBuilder.read([perm]) : PermissionContextBuilder.write([perm]);
+				action === Actions.read ? AuthorizationContextBuilder.read([perm]) : AuthorizationContextBuilder.write([perm]);
 			const ret = this.hasPermissionByReferences(userId, entityName, entityId, context);
 			returnMap.set(perm, ret);
 		});
@@ -91,7 +91,7 @@ export class AuthorizationService extends BasePermissionManager {
 		userId: EntityId,
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
-		context: IPermissionContext
+		context: IAuthorizationContext
 	) {
 		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, context))) {
 			throw new ForbiddenException();

@@ -6,7 +6,7 @@ import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { Role, Team, User } from '../entity';
 import { Permission } from '../interface';
-import PermissionContextBuilder from './permission-context.builder';
+import { AuthorizationContextBuilder } from './authorization-context.builder';
 
 describe('TeamRule', () => {
 	let orm: MikroORM;
@@ -48,20 +48,28 @@ describe('TeamRule', () => {
 
 	describe('hasPermission', () => {
 		it('should return "true" if user in scope', () => {
-			const res = service.hasPermission(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionB]));
+			const res = service.hasPermission(
+				entity.teamUsers[0].user,
+				entity,
+				AuthorizationContextBuilder.read([permissionB])
+			);
 			expect(res).toBe(true);
 		});
 
 		it('should return "false" if user has not permission', () => {
-			const res = service.hasPermission(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionC]));
+			const res = service.hasPermission(
+				entity.teamUsers[0].user,
+				entity,
+				AuthorizationContextBuilder.read([permissionC])
+			);
 			expect(res).toBe(false);
 		});
 
 		it('should throw error if entity was not found', () => {
 			const notFoundUser = userFactory.build({ roles: [role] });
-			expect(() => service.hasPermission(notFoundUser, entity, PermissionContextBuilder.read([permissionA]))).toThrow(
-				new InternalServerErrorException('Cannot find user in team')
-			);
+			expect(() =>
+				service.hasPermission(notFoundUser, entity, AuthorizationContextBuilder.read([permissionA]))
+			).toThrow(new InternalServerErrorException('Cannot find user in team'));
 		});
 	});
 });

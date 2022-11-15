@@ -1,15 +1,15 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Team, TeamUser, User } from '@shared/domain/entity';
-import { IPermissionContext } from '@shared/domain/interface';
-import { BasePermission } from '@shared/domain/rules/base-permission';
+import { IAuthorizationContext } from '@shared/domain/interface';
+import { BaseRule } from '@shared/domain/rules/base-rule';
 
 @Injectable()
-export class TeamRule extends BasePermission<Team> {
+export class TeamRule extends BaseRule<Team> {
 	public isApplicable(user: User, entity: Team): boolean {
 		return entity instanceof Team;
 	}
 
-	public hasPermission(user: User, entity: Team, context: IPermissionContext): boolean {
+	public hasPermission(user: User, entity: Team, context: IAuthorizationContext): boolean {
 		const resultTeamUser: TeamUser | undefined = entity.teamUsers.find(
 			(teamUser: TeamUser) => teamUser.user.id === user.id
 		);

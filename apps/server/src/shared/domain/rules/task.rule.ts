@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Task, User } from '../entity';
-import { IPermissionContext } from '../interface/permission';
+import { IAuthorizationContext } from '../interface/rule';
 import { Actions } from './actions.enum';
-import { BasePermission } from './base-permission';
+import { BaseRule } from './base-rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
 
 @Injectable()
-export class TaskRule extends BasePermission<Task> {
+export class TaskRule extends BaseRule<Task> {
 	constructor(private readonly courseRule: CourseRule, private readonly lessonRule: LessonRule) {
 		super();
 	}
@@ -18,7 +18,7 @@ export class TaskRule extends BasePermission<Task> {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Task, context: IPermissionContext): boolean {
+	public hasPermission(user: User, entity: Task, context: IAuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasPermission = this.utils.hasAllPermissions(user, requiredPermissions);
 		const isCreator = this.utils.hasAccessToEntity(user, entity, ['creator']);
