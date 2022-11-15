@@ -105,7 +105,13 @@ const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 		userData = { ...userData, birthday, consent };
 	}
 	const user = await app.service('users').create(userData);
-	await accountModel.create({
+	// await accountModel.create({
+	// 	userId: user._id,
+	// 	username,
+	// 	systemId,
+	// 	activated: true,
+	// });
+	await app.service('nest-account-service').save({
 		userId: user._id,
 		username,
 		systemId,
