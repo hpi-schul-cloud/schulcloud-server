@@ -44,7 +44,7 @@ export class ExternalToolParams {
 	})
 	config!: BasicToolConfigParams | Lti11ToolConfigParams | Oauth2ToolConfigParams;
 
-	@ValidateNested()
+	@ValidateNested({ each: true })
 	@IsArray()
 	@IsOptional()
 	@ApiPropertyOptional()
