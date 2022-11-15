@@ -61,7 +61,7 @@ const setIdToken = (hook) => {
 				isLocal: true,
 			},
 		}),
-	]).then(([user, roles, userTeams, tools]) =>
+	]).then(([user, userRoles, userTeams, tools]) =>
 		hook.app
 			.service('pseudonym')
 			.find({
@@ -73,12 +73,15 @@ const setIdToken = (hook) => {
 			.then((pseudonyms) => {
 				const { pseudonym } = pseudonyms.data[0];
 				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
-				const roles_id = user.roles.map((role) => this.role = role);
-				// eslint-disable-next-line no-console
-				console.log('RoleId: ', roles_id);
-				const role_names = roles.roles
+				const role_names = userRoles.roles.name
 				// eslint-disable-next-line no-console
 				console.log('RoleName: ', role_names);
+				const roles_mapping_01 = userRoles.roles.map((roleName) => this.roleName = roleName.name);
+				// eslint-disable-next-line no-console
+				console.log('RoleMapping01: ', roles_mapping_01);
+				const roles_mapping_02 = userRoles.roles.name.map((roleName) => this.roleName = roleName);
+				// eslint-disable-next-line no-console
+				console.log('RoleMapping02: ', roles_mapping_02);
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
