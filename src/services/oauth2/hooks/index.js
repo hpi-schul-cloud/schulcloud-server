@@ -44,7 +44,8 @@ const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
-		userRepo.getUserWithRoles(hook.params.account.userId),
+		scope.includes('bilo') ? userRepo.getUserWithRoles(hook.params.account.userId) : undefined,
+		// userRepo.getUserWithRoles(hook.params.account.userId),
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 					{
@@ -73,22 +74,20 @@ const setIdToken = (hook) => {
 			.then((pseudonyms) => {
 				const { pseudonym } = pseudonyms.data[0];
 				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
-				const role_names = userRoles.roles.name
-				// eslint-disable-next-line no-console
-				console.log('RoleName: ', role_names);
 				const roles_mapping_01 = userRoles.roles.map((roleName) => this.roleName = roleName.name);
 				// eslint-disable-next-line no-console
 				console.log('RoleMapping01: ', roles_mapping_01);
-				const roles_mapping_02 = userRoles.roles.name.map((roleName) => this.roleName = roleName);
-				// eslint-disable-next-line no-console
-				console.log('RoleMapping02: ', roles_mapping_02);
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
 						email: scope.includes('email') ? user.email : undefined,
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
-						userRole: scope.includes('bilo') ? user.roles : undefined,
+						userRole: scope.includes('bilo')
+							? userRoles.roles.map((roleName) =>
+									this.roleName = roleName.name
+							)
+							: undefined,
 						fedState: scope.includes('bilo') ? user.schoolId.federalState : undefined,
 						schoolId: user.schoolId,
 						groups: scope.includes('groups')
