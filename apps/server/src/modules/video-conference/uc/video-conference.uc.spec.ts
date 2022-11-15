@@ -13,7 +13,7 @@ import {
 	RoleName,
 	Team,
 	User,
-	VideoConferenceDO
+	VideoConferenceDO,
 } from '@shared/domain';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 import { CalendarService } from '@shared/infra/calendar';
@@ -36,11 +36,11 @@ import {
 	BBBCreateResponse,
 	BBBMeetingInfoResponse,
 	BBBResponse,
-	BBBStatus
+	BBBStatus,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import {
 	defaultVideoConferenceOptions,
-	VideoConferenceOptions
+	VideoConferenceOptions,
 } from '@src/modules/video-conference/interface/vc-options.interface';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 import { IScopeInfo, VideoConferenceUc } from '@src/modules/video-conference/uc/video-conference.uc';
