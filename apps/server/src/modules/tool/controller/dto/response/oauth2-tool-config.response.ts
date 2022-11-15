@@ -18,11 +18,11 @@ export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiPropertyOptional()
 	frontchannelLogoutUri?: string;
 
-	@ApiProperty()
-	scope!: string;
+	@ApiPropertyOptional()
+	scope?: string;
 
 	@ApiProperty()
-	redirectUris!: string[];
+	redirectUris: string[];
 
 	constructor(props: Oauth2ToolConfigResponse) {
 		super();

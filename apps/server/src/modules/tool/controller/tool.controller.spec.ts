@@ -119,18 +119,19 @@ describe('ToolController', () => {
 			body.isHidden = true;
 			body.openNewTab = true;
 
+			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+
 			return {
 				body,
 				bodyConfigCreateBasicParams,
 				bodyConfigCreateOauthParams,
 				bodyConfigCreateLti11Params,
+				currentUser,
 			};
 		}
 
-		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-
 		it('should throw NotImplementedException when creating a basic external tool', () => {
-			const { body, bodyConfigCreateBasicParams } = setup();
+			const { body, bodyConfigCreateBasicParams, currentUser } = setup();
 			body.config = bodyConfigCreateBasicParams;
 
 			const expected = () => controller.createExternalTool(body, currentUser);
@@ -139,7 +140,7 @@ describe('ToolController', () => {
 		});
 
 		it('should throw NotImplementedException when creating an oauth2 external tool', () => {
-			const { body, bodyConfigCreateOauthParams } = setup();
+			const { body, bodyConfigCreateOauthParams, currentUser } = setup();
 			body.config = bodyConfigCreateOauthParams;
 
 			const expected = () => controller.createExternalTool(body, currentUser);
@@ -148,7 +149,7 @@ describe('ToolController', () => {
 		});
 
 		it('should throw NotImplementedException when creating a lti11 external tool', () => {
-			const { body, bodyConfigCreateLti11Params } = setup();
+			const { body, bodyConfigCreateLti11Params, currentUser } = setup();
 			body.config = bodyConfigCreateLti11Params;
 
 			const expected = () => controller.createExternalTool(body, currentUser);

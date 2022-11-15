@@ -32,7 +32,6 @@ export class Lti11ToolConfigParams extends ExternalToolConfigCreateParams {
 	lti_message_type!: LtiMessageType;
 
 	@IsEnum(LtiPrivacyPermission)
-	@IsOptional()
-	@ApiPropertyOptional()
-	privacy_permission?: LtiPrivacyPermission;
+	@ApiProperty()
+	privacy_permission!: LtiPrivacyPermission;
 }

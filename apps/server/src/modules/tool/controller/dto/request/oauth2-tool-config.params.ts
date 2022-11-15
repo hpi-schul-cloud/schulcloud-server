@@ -4,7 +4,6 @@ import { IsArray, IsBoolean, IsEnum, IsOptional, IsString } from 'class-validato
 import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
 
 export class Oauth2ToolConfigParams extends ExternalToolConfigCreateParams {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 	@IsEnum(ToolConfigType)
 	@ApiProperty()
 	type!: ToolConfigType;
@@ -31,8 +30,9 @@ export class Oauth2ToolConfigParams extends ExternalToolConfigCreateParams {
 	frontchannelLogoutUri?: string;
 
 	@IsString()
-	@ApiProperty()
-	scope!: string;
+	@IsOptional()
+	@ApiPropertyOptional()
+	scope?: string;
 
 	@IsArray()
 	@ApiProperty()

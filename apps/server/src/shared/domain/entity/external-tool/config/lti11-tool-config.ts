@@ -1,4 +1,5 @@
 import { Embeddable, Enum, Property } from '@mikro-orm/core';
+import { LtiPrivacyPermission } from '@shared/domain';
 import { ExternalToolConfig } from './external-tool-config';
 import { LtiMessageType } from './lti-message-type.enum';
 import { LtiRole } from './lti-role.enum';
@@ -27,6 +28,9 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 	@Property()
 	launch_presentation_document_target: string;
 
+	@Enum()
+	privacy_permission?: LtiPrivacyPermission;
+
 	constructor(props: Lti11ToolConfig) {
 		super(props);
 		this.type = ToolConfigType.LTI11;
@@ -37,5 +41,6 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 		this.roles = props.roles;
 		this.launch_presentation_locale = props.launch_presentation_locale;
 		this.launch_presentation_document_target = props.launch_presentation_document_target;
+		this.privacy_permission = props.privacy_permission;
 	}
 }

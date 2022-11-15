@@ -20,8 +20,8 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()
 	lti_message_type: LtiMessageType;
 
-	@ApiPropertyOptional()
-	privacy_permission?: LtiPrivacyPermission;
+	@ApiProperty()
+	privacy_permission: LtiPrivacyPermission;
 
 	constructor(props: Lti11ToolConfigResponse) {
 		super();
