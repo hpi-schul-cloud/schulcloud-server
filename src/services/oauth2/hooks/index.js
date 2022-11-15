@@ -5,7 +5,6 @@ const { Forbidden, MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra');
 const {userRepo} = require("../../../components/user/repo");
-const schoolRepo = require("../../../components/school/repo/school.repo");
 
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
@@ -46,9 +45,10 @@ const setIdToken = (hook) => {
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
 		scope.includes('bilo') ? userRepo.getUserWithRoles(hook.params.account.userId) : undefined,
+		scope.includes('bilo') ? userRepo.getUserWithFederalState(hook.params.account.userId) : undefined,
 		// schoolRepo.getSchool(hook.params.account.userId.schoolId),
 		// hook.app.service('federalStates').find({ query: { _id: 'TH' } }),
-		userRepo.getUserWithFederalState(hook.params.account.userId),
+		// userRepo.getUserWithFederalState(hook.params.account.userId),
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 					{
@@ -100,7 +100,7 @@ const setIdToken = (hook) => {
 									this.roleName = roleName.name
 							)
 							: undefined,
-						fedState: scope.includes('bilo') ? user.schoolId.federalState : undefined,
+						fedState: scope.includes('bilo') ? userFedState.schoolId.federalState.name : undefined,
 						schoolId: user.schoolId,
 						groups: scope.includes('groups')
 							? userTeams.data.map((team) => ({
