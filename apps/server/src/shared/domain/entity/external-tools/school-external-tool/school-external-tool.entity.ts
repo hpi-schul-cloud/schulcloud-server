@@ -1,8 +1,8 @@
-import { CustomParameterEntry } from '@shared/domain/entity/external-tool/custom-parameter/custom-parameter-entry';
 import { Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { ExternalTool } from './external-tool/external-tool.entity';
-import { BaseEntityWithTimestamps } from './base.entity';
-import { School } from './school.entity';
+import { CustomParameterEntry } from '../custom-parameter-entry';
+import { ExternalTool } from '../external-tool/external-tool.entity';
+import { BaseEntityWithTimestamps } from '../../base.entity';
+import { School } from '../../school.entity';
 
 export interface ISchoolExternalToolProperties {
 	tool: ExternalTool;

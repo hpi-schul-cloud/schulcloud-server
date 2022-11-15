@@ -1,5 +1,8 @@
 import { DeepPartial } from 'fishery';
-import { ExternalTool, IExternalToolProperties } from '@shared/domain/entity/external-tool/external-tool.entity';
+import {
+	ExternalTool,
+	IExternalToolProperties,
+} from '@shared/domain/entity/external-tools/external-tool/external-tool.entity';
 import {
 	BasicToolConfig,
 	CustomParameter,
@@ -8,6 +11,7 @@ import {
 	CustomParameterType,
 	Lti11ToolConfig,
 	LtiMessageType,
+	LtiPrivacyPermission,
 	Oauth2ToolConfig,
 	ToolConfigType,
 } from '@shared/domain';
@@ -31,7 +35,6 @@ export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalTool
 				baseUrl: '',
 				clientSecret: '',
 				clientId: '',
-				frontchannelLogoutUri: '',
 				skipConsent: false,
 			}),
 		};
@@ -44,12 +47,10 @@ export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalTool
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',
 				key: '',
-				launch_presentation_document_target: '',
-				launch_presentation_locale: '',
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 				resource_link_id: '',
 				secret: '',
-				roles: [],
+				privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 			}),
 		};
 		return this.params(params);
