@@ -1,5 +1,5 @@
 import { Embedded, Entity, Property, Unique } from '@mikro-orm/core';
-import { ExternalToolConfig } from '@shared/domain/entity/external-tools/config/external-tool-config';
+import { ExternalToolConfig } from '@shared/domain/entity/external-tool/config/external-tool-config';
 import { CustomParameter } from './custom-parameter/custom-parameter';
 import { BaseEntityWithTimestamps } from '../base.entity';
 

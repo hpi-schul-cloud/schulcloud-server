@@ -4,7 +4,7 @@ import {
 	ExternalTool,
 	IExternalToolProperties,
 	ToolConfigType,
-} from '@shared/domain/entity/external-tools';
+} from '@shared/domain/entity/external-tool';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityName } from '@mikro-orm/core';
 import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool.do';
