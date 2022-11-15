@@ -73,7 +73,7 @@ const getUserWithFederalState = async (_id) => {
 		_id,
 	})
 		// .populate({path: 'schools', populate: {path: 'federalstates'}})
-		.populate('schools')
+		.populate('schoolId')
 		.lean()
 		.exec();
 	if (user == null) {
