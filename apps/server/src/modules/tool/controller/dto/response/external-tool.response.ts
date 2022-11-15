@@ -11,8 +11,8 @@ export class ExternalToolResponse {
 	@ApiProperty()
 	name: string;
 
-	@ApiProperty()
-	url: string;
+	@ApiPropertyOptional()
+	url?: string;
 
 	@ApiPropertyOptional()
 	logoUrl?: string;

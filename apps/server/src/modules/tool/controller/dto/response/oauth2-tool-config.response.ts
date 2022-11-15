@@ -4,7 +4,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()
-	type: string;
+	type: ToolConfigType;
 
 	@ApiProperty()
 	baseUrl: string;
@@ -16,7 +16,13 @@ export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 	skipConsent: boolean;
 
 	@ApiPropertyOptional()
-	frontchannelLogoutUrl?: string;
+	frontchannelLogoutUri?: string;
+
+	@ApiPropertyOptional()
+	scope?: string;
+
+	@ApiProperty()
+	redirectUris: string[];
 
 	constructor(props: Oauth2ToolConfigResponse) {
 		super();
@@ -24,6 +30,8 @@ export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 		this.baseUrl = props.baseUrl;
 		this.clientId = props.clientId;
 		this.skipConsent = props.skipConsent;
-		this.frontchannelLogoutUrl = props.frontchannelLogoutUrl;
+		this.frontchannelLogoutUri = props.frontchannelLogoutUri;
+		this.scope = props.scope;
+		this.redirectUris = props.redirectUris;
 	}
 }

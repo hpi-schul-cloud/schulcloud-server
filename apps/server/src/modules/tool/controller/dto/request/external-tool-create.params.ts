@@ -15,8 +15,9 @@ export class ExternalToolParams {
 	name!: string;
 
 	@IsString()
-	@ApiProperty()
-	url!: string;
+	@IsOptional()
+	@ApiPropertyOptional()
+	url?: string;
 
 	@IsString()
 	@IsOptional()
@@ -43,7 +44,7 @@ export class ExternalToolParams {
 	})
 	config!: BasicToolConfigParams | Lti11ToolConfigParams | Oauth2ToolConfigParams;
 
-	@ValidateNested()
+	@ValidateNested({ each: true })
 	@IsArray()
 	@IsOptional()
 	@ApiPropertyOptional()

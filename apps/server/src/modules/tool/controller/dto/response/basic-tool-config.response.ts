@@ -4,10 +4,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class BasicToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()
-	type!: ToolConfigType;
+	type: ToolConfigType;
 
 	@ApiProperty()
-	baseUrl!: string;
+	baseUrl: string;
 
 	constructor(props: BasicToolConfigResponse) {
 		super();

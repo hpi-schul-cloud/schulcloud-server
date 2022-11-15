@@ -9,6 +9,7 @@ import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enu
 import { BasicToolConfigResponse } from '@src/modules/tool/controller/dto/response/basic-tool-config.response';
 import { Lti11ToolConfigResponse } from '@src/modules/tool/controller/dto/response/lti11-tool-config.response';
 import { Oauth2ToolConfigResponse } from '@src/modules/tool/controller/dto/response/oauth2-tool-config.response';
+import { LtiPrivacyPermission } from '@src/modules/tool/interface/lti-privacy-permission.enum';
 
 describe('external-tool-response', () => {
 	const externalToolResponseBasicConfig = new BasicToolConfigResponse({
@@ -22,22 +23,25 @@ describe('external-tool-response', () => {
 		key: 'mockKey',
 		resource_link_id: 'mockLink',
 		lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+		privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 	});
 
 	const externalToolResponseOauth2Config = new Oauth2ToolConfigResponse({
 		type: ToolConfigType.OAUTH2,
 		baseUrl: 'mockUrl',
 		clientId: 'mockId',
-		frontchannelLogoutUrl: 'mockUrl',
+		frontchannelLogoutUri: 'mockUrl',
 		skipConsent: true,
+		scope: 'mockScope',
+		redirectUris: ['mockUri'],
 	});
 
 	const customParameterResponseParams: CustomParameterResponse = new CustomParameterResponse({
 		name: 'mockName',
 		default: 'mockDefault',
-		location: [CustomParameterLocation.QUERY],
-		scope: [CustomParameterScope.SCHOOL],
-		type: [CustomParameterType.BOOLEAN],
+		location: CustomParameterLocation.QUERY,
+		scope: CustomParameterScope.SCHOOL,
+		type: CustomParameterType.BOOLEAN,
 		regex: 'mockRegex',
 	});
 
@@ -47,7 +51,7 @@ describe('external-tool-response', () => {
 		url: 'mockUrl',
 		logoUrl: 'mockLogoUrl',
 		config: externalToolResponseBasicConfig,
-		parameters: customParameterResponseParams,
+		parameters: [customParameterResponseParams],
 		isHidden: true,
 		openNewTab: true,
 		version: 3,

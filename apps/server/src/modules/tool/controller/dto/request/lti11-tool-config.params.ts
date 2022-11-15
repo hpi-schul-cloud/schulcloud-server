@@ -1,8 +1,9 @@
 import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
 import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
+import { LtiPrivacyPermission } from '@src/modules/tool/interface/lti-privacy-permission.enum';
 
 export class Lti11ToolConfigParams extends ExternalToolConfigCreateParams {
 	@IsEnum(ToolConfigType)
@@ -23,14 +24,14 @@ export class Lti11ToolConfigParams extends ExternalToolConfigCreateParams {
 
 	@IsString()
 	@IsOptional()
-	@ApiProperty()
+	@ApiPropertyOptional()
 	resource_link_id?: string;
 
 	@IsEnum(LtiMessageType)
 	@ApiProperty()
 	lti_message_type!: LtiMessageType;
 
-	@IsEnum(LtiMessageType)
+	@IsEnum(LtiPrivacyPermission)
 	@ApiProperty()
-	privacy_permission!: string;
+	privacy_permission!: LtiPrivacyPermission;
 }

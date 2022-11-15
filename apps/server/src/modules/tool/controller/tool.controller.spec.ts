@@ -80,67 +80,79 @@ describe('ToolController', () => {
 	});
 
 	describe('createExternalTool', () => {
-		const bodyConfigCreateBasicParams = new BasicToolConfigParams();
-		bodyConfigCreateBasicParams.type = ToolConfigType.BASIC;
-		bodyConfigCreateBasicParams.baseUrl = 'mockUrl';
+		function setup() {
+			const bodyConfigCreateBasicParams = new BasicToolConfigParams();
+			bodyConfigCreateBasicParams.type = ToolConfigType.BASIC;
+			bodyConfigCreateBasicParams.baseUrl = 'mockUrl';
 
-		const bodyConfigCreateLti11Params = new Lti11ToolConfigParams();
-		bodyConfigCreateLti11Params.type = ToolConfigType.LTI11;
-		bodyConfigCreateLti11Params.baseUrl = 'mockUrl';
-		bodyConfigCreateLti11Params.key = 'mockKey';
-		bodyConfigCreateLti11Params.secret = 'mockSecret';
-		bodyConfigCreateLti11Params.resource_link_id = 'mockLink';
-		bodyConfigCreateLti11Params.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
+			const bodyConfigCreateLti11Params = new Lti11ToolConfigParams();
+			bodyConfigCreateLti11Params.type = ToolConfigType.LTI11;
+			bodyConfigCreateLti11Params.baseUrl = 'mockUrl';
+			bodyConfigCreateLti11Params.key = 'mockKey';
+			bodyConfigCreateLti11Params.secret = 'mockSecret';
+			bodyConfigCreateLti11Params.resource_link_id = 'mockLink';
+			bodyConfigCreateLti11Params.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 
-		const bodyConfigCreateOauthParams = new Oauth2ToolConfigParams();
-		bodyConfigCreateOauthParams.type = ToolConfigType.OAUTH2;
-		bodyConfigCreateOauthParams.baseUrl = 'mockUrl';
-		bodyConfigCreateOauthParams.clientId = 'mockId';
-		bodyConfigCreateOauthParams.clientSecret = 'mockSecret';
-		bodyConfigCreateOauthParams.frontchannelLogoutUrl = 'mockUrl';
-		bodyConfigCreateOauthParams.skipConsent = true;
+			const bodyConfigCreateOauthParams = new Oauth2ToolConfigParams();
+			bodyConfigCreateOauthParams.type = ToolConfigType.OAUTH2;
+			bodyConfigCreateOauthParams.baseUrl = 'mockUrl';
+			bodyConfigCreateOauthParams.clientId = 'mockId';
+			bodyConfigCreateOauthParams.clientSecret = 'mockSecret';
+			bodyConfigCreateOauthParams.frontchannelLogoutUri = 'mockUrl';
+			bodyConfigCreateOauthParams.skipConsent = true;
+			bodyConfigCreateOauthParams.scope = 'mockScope';
+			bodyConfigCreateOauthParams.redirectUris = ['mockUri'];
 
-		const customParameterCreateParams = new CustomParameterCreateParams();
-		customParameterCreateParams.name = 'mockName';
-		customParameterCreateParams.default = 'mockDefault';
-		customParameterCreateParams.location = CustomParameterLocation.PATH;
-		customParameterCreateParams.scope = CustomParameterScope.SCHOOL;
-		customParameterCreateParams.type = CustomParameterType.STRING;
-		customParameterCreateParams.regex = 'mockRegex';
+			const customParameterCreateParams = new CustomParameterCreateParams();
+			customParameterCreateParams.name = 'mockName';
+			customParameterCreateParams.default = 'mockDefault';
+			customParameterCreateParams.location = CustomParameterLocation.PATH;
+			customParameterCreateParams.scope = CustomParameterScope.SCHOOL;
+			customParameterCreateParams.type = CustomParameterType.STRING;
+			customParameterCreateParams.regex = 'mockRegex';
 
-		const body = new ExternalToolParams();
-		body.name = 'mockName';
-		body.url = 'mockUrl';
-		body.logoUrl = 'mockLogoUrl';
-		body.parameters = [customParameterCreateParams];
-		body.isHidden = true;
-		body.openNewTab = true;
-		body.version = 3;
+			const body = new ExternalToolParams();
+			body.name = 'mockName';
+			body.url = 'mockUrl';
+			body.logoUrl = 'mockLogoUrl';
+			body.parameters = [customParameterCreateParams];
+			body.isHidden = true;
+			body.openNewTab = true;
 
-		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+
+			return {
+				body,
+				bodyConfigCreateBasicParams,
+				bodyConfigCreateOauthParams,
+				bodyConfigCreateLti11Params,
+				currentUser,
+			};
+		}
 
 		it('should throw NotImplementedException when creating a basic external tool', () => {
-			const basicExternalToolBody = body;
-			basicExternalToolBody.config = bodyConfigCreateBasicParams;
+			const { body, bodyConfigCreateBasicParams, currentUser } = setup();
+			body.config = bodyConfigCreateBasicParams;
 
-			const expected = () => controller.createExternalTool(basicExternalToolBody, currentUser);
+			const expected = () => controller.createExternalTool(body, currentUser);
 
 			expect(expected).toThrow(NotImplementedException);
 		});
 
 		it('should throw NotImplementedException when creating an oauth2 external tool', () => {
-			const oauth2ExternalToolBody = body;
-			oauth2ExternalToolBody.config = bodyConfigCreateOauthParams;
-			const expected = () => controller.createExternalTool(oauth2ExternalToolBody, currentUser);
+			const { body, bodyConfigCreateOauthParams, currentUser } = setup();
+			body.config = bodyConfigCreateOauthParams;
+
+			const expected = () => controller.createExternalTool(body, currentUser);
 
 			expect(expected).toThrow(NotImplementedException);
 		});
 
 		it('should throw NotImplementedException when creating a lti11 external tool', () => {
-			const lti11ExternalToolBody = body;
-			lti11ExternalToolBody.config = bodyConfigCreateLti11Params;
+			const { body, bodyConfigCreateLti11Params, currentUser } = setup();
+			body.config = bodyConfigCreateLti11Params;
 
-			const expected = () => controller.createExternalTool(lti11ExternalToolBody, currentUser);
+			const expected = () => controller.createExternalTool(body, currentUser);
 
 			expect(expected).toThrow(NotImplementedException);
 		});
