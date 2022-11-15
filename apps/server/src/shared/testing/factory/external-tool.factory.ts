@@ -47,7 +47,7 @@ export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalTool
 				launch_presentation_document_target: '',
 				launch_presentation_locale: '',
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-				resource_link: '',
+				resource_link_id: '',
 				secret: '',
 				roles: [],
 			}),

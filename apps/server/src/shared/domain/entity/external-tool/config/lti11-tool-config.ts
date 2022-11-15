@@ -13,7 +13,7 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 	secret: string;
 
 	@Property()
-	resource_link?: string;
+	resource_link_id?: string;
 
 	@Enum()
 	lti_message_type: LtiMessageType;
@@ -32,7 +32,7 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 		this.type = ToolConfigType.LTI11;
 		this.key = props.key;
 		this.secret = props.secret;
-		this.resource_link = props.resource_link;
+		this.resource_link_id = props.resource_link_id;
 		this.lti_message_type = props.lti_message_type;
 		this.roles = props.roles;
 		this.launch_presentation_locale = props.launch_presentation_locale;
