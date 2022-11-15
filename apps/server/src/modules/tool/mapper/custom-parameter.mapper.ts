@@ -10,13 +10,13 @@ const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.SCHOOL]: CustomParameterScope.SCHOOL,
 };
 
-const locationMapping: Partial<Record<CustomParameterLocationParams, CustomParameterLocation>> = {
+const locationMapping: Record<CustomParameterLocationParams, CustomParameterLocation> = {
 	[CustomParameterLocationParams.PATH]: CustomParameterLocation.PATH,
 	[CustomParameterLocationParams.QUERY]: CustomParameterLocation.QUERY,
 	[CustomParameterLocationParams.TOKEN]: CustomParameterLocation.TOKEN,
 };
 
-const typeMapping: Partial<Record<CustomParameterTypeParams, CustomParameterType>> = {
+const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 	[CustomParameterTypeParams.STRING]: CustomParameterType.STRING,
 	[CustomParameterTypeParams.BOOLEAN]: CustomParameterType.BOOLEAN,
 	[CustomParameterTypeParams.NUMBER]: CustomParameterType.NUMBER,
@@ -31,11 +31,11 @@ export class CustomParameterMapper {
 		return scopeMapping[customParameterParamsScope];
 	}
 
-	mapLocation(customParameterScopeParams: CustomParameterLocationParams): CustomParameterLocation | undefined {
+	mapLocation(customParameterScopeParams: CustomParameterLocationParams): CustomParameterLocation {
 		return locationMapping[customParameterScopeParams];
 	}
 
-	mapType(customParameterTypeParams: CustomParameterTypeParams): CustomParameterType | undefined {
+	mapType(customParameterTypeParams: CustomParameterTypeParams): CustomParameterType {
 		return typeMapping[customParameterTypeParams];
 	}
 }
