@@ -2,10 +2,11 @@ import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enu
 import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
 import { ExternalToolConfigResponse } from '@src/modules/tool/controller/dto/response/external-tool-config.response';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { LtiPrivacyPermission } from '@src/modules/tool/interface/lti-privacy-permission.enum';
 
 export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()
-	type: string;
+	type: ToolConfigType;
 
 	@ApiProperty()
 	baseUrl: string;
@@ -19,6 +20,9 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()
 	lti_message_type: LtiMessageType;
 
+	@ApiPropertyOptional()
+	privacy_permission?: LtiPrivacyPermission;
+
 	constructor(props: Lti11ToolConfigResponse) {
 		super();
 		this.type = ToolConfigType.LTI11;
@@ -26,5 +30,6 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 		this.key = props.key;
 		this.resource_link_id = props.resource_link_id;
 		this.lti_message_type = props.lti_message_type;
+		this.privacy_permission = props.privacy_permission;
 	}
 }

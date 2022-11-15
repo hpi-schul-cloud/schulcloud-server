@@ -97,8 +97,10 @@ describe('ToolController', () => {
 		bodyConfigCreateOauthParams.baseUrl = 'mockUrl';
 		bodyConfigCreateOauthParams.clientId = 'mockId';
 		bodyConfigCreateOauthParams.clientSecret = 'mockSecret';
-		bodyConfigCreateOauthParams.frontchannelLogoutUrl = 'mockUrl';
+		bodyConfigCreateOauthParams.frontchannelLogoutUri = 'mockUrl';
 		bodyConfigCreateOauthParams.skipConsent = true;
+		bodyConfigCreateOauthParams.scope = 'mockScope';
+		bodyConfigCreateOauthParams.redirectUris = ['mockUri'];
 
 		const customParameterCreateParams = new CustomParameterCreateParams();
 		customParameterCreateParams.name = 'mockName';
@@ -115,7 +117,6 @@ describe('ToolController', () => {
 		body.parameters = [customParameterCreateParams];
 		body.isHidden = true;
 		body.openNewTab = true;
-		body.version = 3;
 
 		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 

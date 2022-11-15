@@ -28,16 +28,18 @@ describe('external-tool-response', () => {
 		type: ToolConfigType.OAUTH2,
 		baseUrl: 'mockUrl',
 		clientId: 'mockId',
-		frontchannelLogoutUrl: 'mockUrl',
+		frontchannelLogoutUri: 'mockUrl',
 		skipConsent: true,
+		scope: 'mockScope',
+		redirectUris: ['mockUri'],
 	});
 
 	const customParameterResponseParams: CustomParameterResponse = new CustomParameterResponse({
 		name: 'mockName',
 		default: 'mockDefault',
-		location: [CustomParameterLocation.QUERY],
-		scope: [CustomParameterScope.SCHOOL],
-		type: [CustomParameterType.BOOLEAN],
+		location: CustomParameterLocation.QUERY,
+		scope: CustomParameterScope.SCHOOL,
+		type: CustomParameterType.BOOLEAN,
 		regex: 'mockRegex',
 	});
 
@@ -47,7 +49,7 @@ describe('external-tool-response', () => {
 		url: 'mockUrl',
 		logoUrl: 'mockLogoUrl',
 		config: externalToolResponseBasicConfig,
-		parameters: customParameterResponseParams,
+		parameters: [customParameterResponseParams],
 		isHidden: true,
 		openNewTab: true,
 		version: 3,

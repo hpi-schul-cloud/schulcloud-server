@@ -15,8 +15,9 @@ export class ExternalToolParams {
 	name!: string;
 
 	@IsString()
-	@ApiProperty()
-	url!: string;
+	@IsOptional()
+	@ApiPropertyOptional()
+	url?: string;
 
 	@IsString()
 	@IsOptional()

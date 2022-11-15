@@ -1,5 +1,7 @@
-export abstract class ExternalToolConfigResponse {
-	abstract type;
+import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
 
-	abstract baseUrl;
+export abstract class ExternalToolConfigResponse {
+	abstract type: ToolConfigType;
+
+	abstract baseUrl: string;
 }

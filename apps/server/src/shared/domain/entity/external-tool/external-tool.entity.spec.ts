@@ -37,7 +37,7 @@ describe('ExternalTool Entity', () => {
 				clientId: 'mockClientId',
 				clientSecret: 'mockClientSecret',
 				skipConsent: true,
-				frontchannelLogoutUrl: 'mockUrl',
+				frontchannelLogoutUri: 'mockUrl',
 			});
 			const lti11ToolConfig: Lti11ToolConfig = new Lti11ToolConfig({
 				type: ToolConfigType.LTI11,
