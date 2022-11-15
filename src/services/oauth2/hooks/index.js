@@ -79,10 +79,13 @@ const setIdToken = (hook) => {
 				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
 				const fedStateRaw = userFedState;
 				// eslint-disable-next-line no-console
-				console.log('fedState: ', fedStateRaw);
+				console.log('fedStateRaw: ', fedStateRaw);
+				const fedStateId = userFedState.schoolId;
+				// eslint-disable-next-line no-console
+				console.log('fedStateId: ', fedStateId);
 				const fedStateName = userFedState.schoolId.federalState;
 				// eslint-disable-next-line no-console
-				console.log('fedState: ', fedStateName);
+				console.log('fedStateName: ', fedStateName);
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
