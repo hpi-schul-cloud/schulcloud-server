@@ -53,7 +53,8 @@ describe('Task Entity', () => {
 
 		describe('when task private status is undefined', () => {
 			const setup = () => {
-				const task = taskFactory.buildWithId({ private: undefined });
+				const task = taskFactory.buildWithId();
+				Object.assign(task, { private: undefined });
 
 				return task;
 			};
@@ -364,15 +365,17 @@ describe('Task Entity', () => {
 			});
 		});
 
-		describe('when graded submissions', () => {
+		describe('when graded submissions exists', () => {
 			const setup = () => {
-				const submissionNumber = 3;
-
 				const user = userFactory.buildWithId();
-				const submissions = submissionFactory.graded().buildListWithId(submissionNumber);
+				const submission1 = submissionFactory.graded().studentWithId().build();
+				const submission2 = submissionFactory.graded().studentWithId().build();
+				const submission3 = submissionFactory.graded().studentWithId().build();
+
+				const submissions = [submission1, submission2, submission3];
 				const task = taskFactory.buildWithId({ creator: user, submissions });
 
-				return { task, user, submissionNumber };
+				return { task, user, submissionNumber: submissions.length };
 			};
 
 			it('should be create correct status with  total user number in submitted', () => {
@@ -396,26 +399,30 @@ describe('Task Entity', () => {
 			const setup = () => {
 				const submissionNumber = 3;
 				const user = userFactory.buildWithId();
-				const submissions = [submissionFactory.teamMembersWithId(submissionNumber).buildWithId()];
+				const submissions = [
+					submissionFactory.graded().studentWithId().teamMembersWithId(submissionNumber).buildWithId(),
+				];
 				const task = taskFactory.buildWithId({ creator: user, submissions });
 
-				return { task, user, submissionNumber };
+				const gradedSubmissionUsers = submissionNumber + 1;
+
+				return { task, user, gradedSubmissionUsers };
 			};
 
 			it('should be create correct status with total user number in submitted', () => {
-				const { task, user, submissionNumber } = setup();
+				const { task, user, gradedSubmissionUsers } = setup();
 
 				const status = task.createTeacherStatusForUser(user);
 
-				expect(status.submitted).toEqual(submissionNumber);
+				expect(status.submitted).toEqual(gradedSubmissionUsers);
 			});
 
 			it('should be create correct status with total user number in graded', () => {
-				const { task, user, submissionNumber } = setup();
+				const { task, user, gradedSubmissionUsers } = setup();
 
 				const status = task.createTeacherStatusForUser(user);
 
-				expect(status.graded).toEqual(submissionNumber);
+				expect(status.graded).toEqual(gradedSubmissionUsers);
 			});
 		});
 
