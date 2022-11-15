@@ -6,12 +6,15 @@ import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/
 import { ExternalToolUc } from '@src/modules/tool/uc/external-tool.uc';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool.do';
+import { ApiTags } from '@nestjs/swagger';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
 import { Lti11LaunchParams } from './dto/lti11-launch.params';
 import { Lti11Uc } from '../uc/lti11.uc';
 
+@ApiTags('Tool')
+@Authenticate('jwt')
 @Controller('tools')
 export class ToolController {
 	constructor(
@@ -21,7 +24,6 @@ export class ToolController {
 	) {}
 
 	@Get('lti11/:toolId/launch')
-	@Authenticate('jwt')
 	async getLti11LaunchParameters(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: Lti11LaunchParams,
@@ -36,7 +38,7 @@ export class ToolController {
 		return mapped;
 	}
 
-	@Post('externalTool')
+	@Post('tools')
 	async createExternalTool(
 		@Body() externalToolParams: ExternalToolParams,
 		@CurrentUser() currentUser: ICurrentUser

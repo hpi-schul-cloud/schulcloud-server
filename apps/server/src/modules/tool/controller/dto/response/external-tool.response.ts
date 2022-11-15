@@ -1,10 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { ExternalToolConfigResponse } from '@src/modules/tool/controller/dto/response/external-tool-config.response';
 import { CustomParameterResponse } from '@src/modules/tool/controller/dto/response/custom-parameter.response';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BasicToolConfigResponse } from '@src/modules/tool/controller/dto/response/basic-tool-config.response';
+import { Oauth2ToolConfigResponse } from '@src/modules/tool/controller/dto/response/oauth2-tool-config.response';
+import { Lti11ToolConfigResponse } from '@src/modules/tool/controller/dto/response/lti11-tool-config.response';
 
 export class ExternalToolResponse {
 	@ApiProperty()
-	externalToolId: string;
+	id: string;
 
 	@ApiProperty()
 	name: string;
@@ -12,14 +14,14 @@ export class ExternalToolResponse {
 	@ApiProperty()
 	url: string;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	logoUrl?: string;
 
 	@ApiProperty()
-	config: ExternalToolConfigResponse;
+	config: BasicToolConfigResponse | Oauth2ToolConfigResponse | Lti11ToolConfigResponse;
 
 	@ApiProperty()
-	parameters: CustomParameterResponse;
+	parameters: CustomParameterResponse[];
 
 	@ApiProperty()
 	isHidden: boolean;
@@ -31,7 +33,7 @@ export class ExternalToolResponse {
 	version: number;
 
 	constructor(response: ExternalToolResponse) {
-		this.externalToolId = response.externalToolId;
+		this.id = response.id;
 		this.name = response.name;
 		this.url = response.url;
 		this.logoUrl = response.logoUrl;
