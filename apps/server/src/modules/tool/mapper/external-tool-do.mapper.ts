@@ -5,47 +5,48 @@ import {
 	ExternalToolConfigProperty,
 	ExternalToolDO,
 } from '@shared/domain/domainobject/external-tool.do';
-import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
 import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
 import { CustomParameterMapper } from '@src/modules/tool/mapper/custom-parameter.mapper';
+import { BasicToolConfigParams } from '@src/modules/tool/controller/dto/request/basic-tool-config.params';
 
 @Injectable()
-export class ExternalToolDOMapper {
+export class ExternalToolMapper {
 	constructor(private readonly customParameterMapper: CustomParameterMapper) {}
 
 	mapRequestToExternalToolDO(externalToolParams: ExternalToolParams): ExternalToolDO {
-		const config: ExternalToolConfigProperty = this.mapExternalToolConfigToDO(externalToolParams.config);
-		const customParameter: CustomParameterProperty = this.mapExternalToolCustomParameterToDO(
-			externalToolParams.parameters
+		const mappedConfig: ExternalToolConfigProperty = this.mapExternalToolConfigToDO(externalToolParams.config);
+		const mappedCustomParameter: CustomParameterProperty[] = this.mapCustomParameterCreateParamsToProperty(
+			externalToolParams.parameters ?? []
 		);
-		return new ExternalToolDO({ ...externalToolParams });
+
+		return new ExternalToolDO({
+			name: externalToolParams.name,
+			url: externalToolParams.url,
+			logoUrl: externalToolParams.logoUrl,
+			config: mappedConfig,
+			parameters: mappedCustomParameter,
+			isHidden: externalToolParams.isHidden,
+			openNewTab: externalToolParams.openNewTab,
+			version: externalToolParams.version,
+		});
 	}
 
-	private mapExternalToolConfigToDO(externalToolConfigParams: ExternalToolConfigCreateParams) {
+	private mapExternalToolConfigToDO(externalToolConfigParams: BasicToolConfigParams): ExternalToolConfigProperty {
 		return new ExternalToolConfigProperty({ ...externalToolConfigParams });
 	}
 
-	private mapExternalToolCustomParameterToDO(
+	private mapCustomParameterCreateParamsToProperty(
 		customParameterParams: CustomParameterCreateParams[]
 	): CustomParameterProperty[] {
-		let customParameterPropertyArr: CustomParameterProperty[];
-		customParameterParams.forEach((customParameterParam: CustomParameterCreateParams) => {
-			const mapScopeElement: CustomParameterScope = this.customParameterMapper.mapScope[customParameterParam.scope];
-			const locationParam: CustomParameterLocation =
-				this.customParameterMapper.mapLocation[customParameterParam.location];
-			const typeParam: CustomParameterType = this.customParameterMapper.mapType[customParameterParam.type];
-			const mappedCustomParameterParam: CustomParameterProperty = new CustomParameterProperty({
+		return customParameterParams.map((customParameterParam: CustomParameterCreateParams) => {
+			return {
 				name: customParameterParam.name,
 				default: customParameterParam.default,
 				regex: customParameterParam.regex || '',
-				scope: scopeParam,
-				location: locationParam,
-				type: typeParam,
-			});
-			customParameterPropertyArr.push(mappedCustomParameterParam);
+				scope: this.customParameterMapper.mapScope(customParameterParam.scope),
+				location: this.customParameterMapper.mapLocation(customParameterParam.location),
+				type: this.customParameterMapper.mapType(customParameterParam.type),
+			} as CustomParameterProperty;
 		});
-
-		return [];
 	}
 }

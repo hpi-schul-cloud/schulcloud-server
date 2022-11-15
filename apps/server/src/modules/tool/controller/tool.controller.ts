@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotImplementedException, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
@@ -47,7 +47,7 @@ export class ToolController {
 					externalToolParams,
 					currentUser
 				);
-				const mapped: ExternalToolResponse = this.ExternalToolDOMapper.mapExternalToolToResponse(externalTool);
+				const mapped: ExternalToolResponse = ExternalToolDOMapper.mapExternalToolToResponse(externalTool);
 				return mapped;
 				break;
 			}

@@ -44,7 +44,7 @@ export class ExternalToolDO extends BaseWithTimestampsDO {
 
 	config: ExternalToolConfigProperty;
 
-	parameters?: CustomParameterProperty[];
+	parameters: CustomParameterProperty[];
 
 	isHidden: boolean;
 
