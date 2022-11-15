@@ -1,5 +1,8 @@
 import { DeepPartial } from 'fishery';
-import { ExternalTool, IExternalToolProperties } from '@shared/domain/entity/external-tool/external-tool.entity';
+import {
+	ExternalTool,
+	IExternalToolProperties,
+} from '@shared/domain/entity/external-tools/external-tool/external-tool.entity';
 import {
 	BasicToolConfig,
 	CustomParameter,
@@ -8,6 +11,7 @@ import {
 	CustomParameterType,
 	Lti11ToolConfig,
 	LtiMessageType,
+	LtiPrivacyPermission,
 	Oauth2ToolConfig,
 	ToolConfigType,
 } from '@shared/domain';

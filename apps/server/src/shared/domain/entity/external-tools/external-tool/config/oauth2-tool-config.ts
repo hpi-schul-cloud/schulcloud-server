@@ -13,15 +13,11 @@ export class Oauth2ToolConfig extends ExternalToolConfig {
 	@Property()
 	skipConsent: boolean;
 
-	@Property()
-	frontchannelLogoutUri: string;
-
 	constructor(props: Oauth2ToolConfig) {
 		super(props);
 		this.type = ToolConfigType.OAUTH2;
 		this.clientId = props.clientId;
 		this.clientSecret = props.clientSecret;
 		this.skipConsent = props.skipConsent;
-		this.frontchannelLogoutUri = props.frontchannelLogoutUri;
 	}
 }
