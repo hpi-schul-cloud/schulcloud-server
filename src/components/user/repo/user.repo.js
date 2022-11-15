@@ -72,8 +72,8 @@ const getUserWithFederalState = async (_id) => {
 	const user = await User.findOne({
 		_id,
 	})
-		// .populate({path: 'schools', populate: {path: 'federalstates'}})
-		.populate('schoolId')
+		.populate({path: 'schoolId', populate: {path: 'federalState'}})
+		// .populate('schoolId')
 		.lean()
 		.exec();
 	if (user == null) {
