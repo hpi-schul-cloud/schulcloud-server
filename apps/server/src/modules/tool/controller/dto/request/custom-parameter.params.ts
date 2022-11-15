@@ -19,15 +19,15 @@ export class CustomParameterCreateParams {
 	@ApiPropertyOptional()
 	regex?: string;
 
-	@IsEnum(CustomParameterScope)
+	@IsEnum(CustomParameterScopeParams)
 	@ApiProperty()
 	scope!: CustomParameterScopeParams;
 
-	@IsEnum(CustomParameterLocation)
+	@IsEnum(CustomParameterLocationParams)
 	@ApiProperty()
 	location!: CustomParameterLocationParams;
 
-	@IsEnum(CustomParameterType)
+	@IsEnum(CustomParameterTypeParams)
 	@ApiProperty()
 	type!: CustomParameterTypeParams;
 }

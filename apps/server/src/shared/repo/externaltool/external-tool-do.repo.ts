@@ -4,7 +4,7 @@ import {
 	ExternalTool,
 	IExternalToolProperties,
 	ToolConfigType,
-} from '@shared/domain/entity/external-tool';
+} from '@shared/domain/entity/external-tools';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityName } from '@mikro-orm/core';
 import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool.do';
@@ -36,7 +36,7 @@ export class ExternalToolDORepo extends BaseDORepo<ExternalToolDO, ExternalTool,
 			url: entity.url,
 			logoUrl: entity.logoUrl,
 			config: entity.config,
-			parameters: entity.parameters || [],
+			parameters: entity.parameters || [], // TODO mapping
 			isHidden: entity.isHidden,
 			openNewTab: entity.openNewTab,
 			version: entity.version,
