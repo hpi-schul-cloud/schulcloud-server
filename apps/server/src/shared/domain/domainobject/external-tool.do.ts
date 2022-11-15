@@ -1,7 +1,8 @@
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '@shared/domain';
+import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
 import { BaseWithTimestampsDO } from './base.do';
 
-export class CustomParameterProperty {
+export class CustomParameterDO {
 	name: string;
 
 	default?: string;
@@ -14,7 +15,7 @@ export class CustomParameterProperty {
 
 	type: CustomParameterType;
 
-	constructor(props: CustomParameterProperty) {
+	constructor(props: CustomParameterDO) {
 		this.name = props.name;
 		this.default = props.default;
 		this.location = props.location;
@@ -24,14 +25,62 @@ export class CustomParameterProperty {
 	}
 }
 
-export class ExternalToolConfigProperty {
+export class BasicToolConfigDO {
 	type: ToolConfigType;
 
 	baseUrl: string;
 
-	constructor(props: ExternalToolConfigProperty) {
+	constructor(props: BasicToolConfigDO) {
 		this.type = props.type;
 		this.baseUrl = props.baseUrl;
+	}
+}
+export class Lti11ToolConfigDO {
+	type: ToolConfigType;
+
+	baseUrl: string;
+
+	key: string;
+
+	secret: string;
+
+	resource_link_id?: string;
+
+	lti_message_type: LtiMessageType;
+
+	privacy_permission: string;
+
+	constructor(props: Lti11ToolConfigDO) {
+		this.type = props.type;
+		this.baseUrl = props.baseUrl;
+		this.key = props.key;
+		this.secret = props.secret;
+		this.resource_link_id = props.resource_link_id;
+		this.lti_message_type = props.lti_message_type;
+		this.privacy_permission = props.privacy_permission;
+	}
+}
+
+export class Oauth2ToolConfigDO {
+	type: ToolConfigType;
+
+	baseUrl: string;
+
+	clientId: string;
+
+	clientSecret: string;
+
+	skipConsent: boolean;
+
+	frontchannelLogoutUrl?: string;
+
+	constructor(props: Oauth2ToolConfigDO) {
+		this.type = props.type;
+		this.baseUrl = props.baseUrl;
+		this.clientId = props.clientId;
+		this.clientSecret = props.clientSecret;
+		this.skipConsent = props.skipConsent;
+		this.frontchannelLogoutUrl = props.frontchannelLogoutUrl;
 	}
 }
 
@@ -42,9 +91,9 @@ export class ExternalToolDO extends BaseWithTimestampsDO {
 
 	logoUrl?: string;
 
-	config: ExternalToolConfigProperty;
+	config: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
 
-	parameters: CustomParameterProperty[];
+	parameters: CustomParameterDO[];
 
 	isHidden: boolean;
 

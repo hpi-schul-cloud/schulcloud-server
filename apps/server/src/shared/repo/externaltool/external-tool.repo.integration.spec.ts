@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalTool, ToolConfigType } from '@shared/domain/entity/external-tool';
+import { ExternalTool, ToolConfigType } from '@shared/domain/entity/external-tools';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, externalToolFactory } from '@shared/testing';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';

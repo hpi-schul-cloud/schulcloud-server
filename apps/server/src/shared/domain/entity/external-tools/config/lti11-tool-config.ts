@@ -27,6 +27,9 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 	@Property()
 	launch_presentation_document_target: string;
 
+	@Property()
+	privacy_permission: string;
+
 	constructor(props: Lti11ToolConfig) {
 		super(props);
 		this.type = ToolConfigType.LTI11;
@@ -37,5 +40,6 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 		this.roles = props.roles;
 		this.launch_presentation_locale = props.launch_presentation_locale;
 		this.launch_presentation_document_target = props.launch_presentation_document_target;
+		this.privacy_permission = props.privacy_permission;
 	}
 }

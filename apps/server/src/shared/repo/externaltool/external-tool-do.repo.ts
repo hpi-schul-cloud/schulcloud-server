@@ -4,10 +4,10 @@ import {
 	ExternalTool,
 	IExternalToolProperties,
 	ToolConfigType,
-} from '@shared/domain/entity/external-tool';
+} from '@shared/domain/entity/external-tools';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityName } from '@mikro-orm/core';
-import { CustomParameterProperty, ExternalToolDO } from '@shared/domain/domainobject/external-tool.do';
+import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool.do';
 
 @Injectable()
 export class ExternalToolDORepo extends BaseDORepo<ExternalToolDO, ExternalTool, IExternalToolProperties> {
@@ -56,8 +56,8 @@ export class ExternalToolDORepo extends BaseDORepo<ExternalToolDO, ExternalTool,
 		};
 	}
 
-	mapToCustomParameter(customParameter: CustomParameterProperty[]): CustomParameter[] {
-		return customParameter.map((customParam: CustomParameterProperty) => {
+	mapToCustomParameter(customParameter: CustomParameterDO[]): CustomParameter[] {
+		return customParameter.map((customParam: CustomParameterDO) => {
 			return {
 				name: customParam.name,
 				default: customParam.default,

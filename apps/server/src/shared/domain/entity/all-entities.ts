@@ -5,7 +5,7 @@ import { Course } from './course.entity';
 import { CourseExternalTool } from './course-external-tool.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
-import { ExternalTool } from './external-tool/external-tool.entity';
+import { ExternalTool } from './external-tools/external-tool.entity';
 import { File } from './file.entity';
 import { ImportUser } from './import-user.entity';
 import { Lesson } from './lesson.entity';

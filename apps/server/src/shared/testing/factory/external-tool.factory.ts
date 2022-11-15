@@ -1,5 +1,5 @@
 import { DeepPartial } from 'fishery';
-import { ExternalTool, IExternalToolProperties } from '@shared/domain/entity/external-tool/external-tool.entity';
+import { ExternalTool, IExternalToolProperties } from '@shared/domain/entity/external-tools/external-tool.entity';
 import {
 	BasicToolConfig,
 	CustomParameter,

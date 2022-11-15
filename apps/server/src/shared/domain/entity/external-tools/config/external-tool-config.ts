@@ -1,4 +1,4 @@
-import { ToolConfigType } from '@shared/domain/entity/external-tool/config/tool-config-type.enum';
+import { ToolConfigType } from '@shared/domain/entity/external-tools/config/tool-config-type.enum';
 import { Embeddable, Enum, Property } from '@mikro-orm/core';
 
 @Embeddable({ abstract: true, discriminatorColumn: 'type' })

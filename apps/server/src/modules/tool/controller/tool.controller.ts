@@ -7,6 +7,7 @@ import { ExternalToolUc } from '@src/modules/tool/uc/external-tool.uc';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool.do';
 import { ApiTags } from '@nestjs/swagger';
+import { ExternalToolMapper } from '@src/modules/tool/mapper/external-tool-do.mapper';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
@@ -20,7 +21,8 @@ export class ToolController {
 	constructor(
 		private readonly lti11Uc: Lti11Uc,
 		private readonly lti11ResponseMapper: Lti11ResponseMapper,
-		private externalToolUc: ExternalToolUc
+		private externalToolUc: ExternalToolUc,
+		private readonly externalToolDOMapper: ExternalToolMapper
 	) {}
 
 	@Get('lti11/:toolId/launch')
@@ -43,28 +45,10 @@ export class ToolController {
 		@Body() externalToolParams: ExternalToolParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ExternalToolResponse> {
-		switch (externalToolParams.config.type) {
-			case 'basic': {
-				const externalTool: ExternalToolDO = await this.externalToolUc.createExternalTool(
-					externalToolParams,
-					currentUser
-				);
-				const mapped: ExternalToolResponse = ExternalToolDOMapper.mapExternalToolToResponse(externalTool);
-				return mapped;
-				break;
-			}
-			case 'lti11': {
-				// statements;
-				break;
-			}
-			case 'oauth': {
-				// statements;
-				break;
-			}
-			default: {
-				// statements;
-				break;
-			}
-		}
+		const externalToolDO: ExternalToolDO = this.externalToolDOMapper.mapRequestToExternalToolDO(externalToolParams, 0);
+		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(externalToolDO, currentUser);
+		// TODO
+		const mapped: ExternalToolResponse = ExternalToolDOMapper.mapExternalToolToResponse(created);
+		return mapped;
 	}
 }
