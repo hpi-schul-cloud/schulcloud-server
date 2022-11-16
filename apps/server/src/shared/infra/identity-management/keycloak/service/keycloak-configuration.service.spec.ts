@@ -16,7 +16,6 @@ import { systemFactory } from '@shared/testing';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { v1 } from 'uuid';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { HttpService } from '@nestjs/axios';
 import { of } from 'rxjs';
 import { AxiosResponse } from 'axios';
