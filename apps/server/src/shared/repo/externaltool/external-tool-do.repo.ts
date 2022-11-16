@@ -1,16 +1,22 @@
 import { BaseDORepo, EntityProperties } from '@shared/repo';
-import {
-	CustomParameter,
-	ExternalTool,
-	IExternalToolProperties,
-	ToolConfigType,
-} from '@shared/domain/entity/external-tools';
+import { ExternalTool, IExternalToolProperties, ToolConfigType } from '@shared/domain/entity/external-tools';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityName } from '@mikro-orm/core';
-import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool.do';
+import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool.do';
+import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Logger } from '@src/core/logger';
 
 @Injectable()
 export class ExternalToolDORepo extends BaseDORepo<ExternalToolDO, ExternalTool, IExternalToolProperties> {
+	constructor(
+		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
+		protected readonly _em: EntityManager,
+		protected readonly logger: Logger
+	) {
+		super(_em, logger);
+	}
+
 	get entityName(): EntityName<ExternalTool> {
 		return ExternalTool;
 	}
@@ -19,53 +25,23 @@ export class ExternalToolDORepo extends BaseDORepo<ExternalToolDO, ExternalTool,
 		return new ExternalTool(props);
 	}
 
-	async findByName(name: string): Promise<ExternalTool | null> {
+	findByName(name: string): Promise<ExternalTool | null> {
 		return this._em.findOne(ExternalTool, { name });
 	}
 
-	async findAllByConfigType(type: ToolConfigType): Promise<ExternalTool[]> {
+	findAllByConfigType(type: ToolConfigType): Promise<ExternalTool[]> {
 		return this._em.find(ExternalTool, { config: { type } });
 	}
 
+	findByOAuth2ConfigClientId(oauth2Config: Oauth2ToolConfigDO): Promise<ExternalTool | null> {
+		return this._em.findOne(ExternalTool, { config: { clientId: oauth2Config.clientId } });
+	}
+
 	mapEntityToDO(entity: ExternalTool): ExternalToolDO {
-		return new ExternalToolDO({
-			id: entity.id,
-			createdAt: entity.createdAt,
-			updatedAt: entity.updatedAt,
-			name: entity.name,
-			url: entity.url,
-			logoUrl: entity.logoUrl,
-			config: entity.config,
-			parameters: entity.parameters || [], // TODO mapping
-			isHidden: entity.isHidden,
-			openNewTab: entity.openNewTab,
-			version: entity.version,
-		});
+		return this.externalToolRepoMapper.mapEntityToDO(entity);
 	}
 
 	mapDOToEntityProperties(entityDO: ExternalToolDO): EntityProperties<IExternalToolProperties> {
-		return {
-			name: entityDO.name,
-			url: entityDO.url,
-			logoUrl: entityDO.logoUrl,
-			config: entityDO.config,
-			parameters: this.mapToCustomParameter(entityDO.parameters),
-			isHidden: entityDO.isHidden,
-			openNewTab: entityDO.openNewTab,
-			version: entityDO.version,
-		};
-	}
-
-	mapToCustomParameter(customParameter: CustomParameterDO[]): CustomParameter[] {
-		return customParameter.map((customParam: CustomParameterDO) => {
-			return {
-				name: customParam.name,
-				default: customParam.default,
-				regex: customParam.regex || '',
-				scope: customParam.scope,
-				location: customParam.location,
-				type: customParam.type,
-			} as CustomParameter;
-		});
+		return this.externalToolRepoMapper.mapDOToEntityProperties(entityDO);
 	}
 }

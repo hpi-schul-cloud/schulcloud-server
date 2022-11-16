@@ -12,6 +12,7 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool.do';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 
 @Injectable()
 export class ExternalToolMapper {
@@ -19,22 +20,12 @@ export class ExternalToolMapper {
 
 	mapRequestToExternalToolDO(externalToolParams: ExternalToolParams, version: number): ExternalToolDO {
 		let mappedConfig: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
-		switch (externalToolParams.config.type) {
-			case 'basic': {
-				mappedConfig = this.mapBasicToolConfig(externalToolParams.config);
-				break;
-			}
-			case 'lti11': {
-				mappedConfig = this.mapLti11ToolConfig(externalToolParams.config as Lti11ToolConfigParams);
-				break;
-			}
-			case 'oauth2': {
-				mappedConfig = this.mapOauth2ToolConfig(externalToolParams.config as Oauth2ToolConfigParams);
-				break;
-			}
-			default: {
-				throw new InternalServerErrorException('Could not found external tool config');
-			}
+		if (externalToolParams.config instanceof BasicToolConfigParams) {
+			mappedConfig = this.mapBasicToolConfig(externalToolParams.config);
+		} else if (externalToolParams.config instanceof Lti11ToolConfigParams) {
+			mappedConfig = this.mapLti11ToolConfig(externalToolParams.config);
+		} else {
+			mappedConfig = this.mapOauth2ToolConfig(externalToolParams.config);
 		}
 
 		const mappedCustomParameter: CustomParameterDO[] = this.mapCustomParameterCreateParamsToDO(
@@ -69,14 +60,37 @@ export class ExternalToolMapper {
 		customParameterParams: CustomParameterCreateParams[]
 	): CustomParameterDO[] {
 		return customParameterParams.map((customParameterParam: CustomParameterCreateParams) => {
-			return {
+			return new CustomParameterDO({
 				name: customParameterParam.name,
 				default: customParameterParam.default,
-				regex: customParameterParam.regex || '',
+				regex: customParameterParam.regex,
 				scope: this.customParameterMapper.mapScope(customParameterParam.scope),
 				location: this.customParameterMapper.mapLocation(customParameterParam.location),
 				type: this.customParameterMapper.mapType(customParameterParam.type),
-			};
+			});
+		});
+	}
+
+	mapDoToProviderOauthClient(name: string, oauth2Config: Oauth2ToolConfigDO): ProviderOauthClient {
+		return {
+			client_name: name,
+			client_id: oauth2Config.clientId,
+			client_secret: oauth2Config.clientSecret,
+			scope: oauth2Config.scope,
+			token_endpoint_auth_method: oauth2Config.tokenEndpointAuthMethod,
+			redirect_uris: oauth2Config.redirectUris,
+			frontchannel_logout_uri: oauth2Config.frontchannelLogoutUri,
+			subject_type: 'pairwise',
+		};
+	}
+
+	applyProviderOauthClientToDO(oauth2Config: Oauth2ToolConfigDO, oauthClient: ProviderOauthClient): Oauth2ToolConfigDO {
+		return new Oauth2ToolConfigDO({
+			...oauth2Config,
+			scope: oauthClient.scope,
+			tokenEndpointAuthMethod: oauthClient.token_endpoint_auth_method,
+			redirectUris: oauthClient.redirect_uris,
+			frontchannelLogoutUri: oauthClient.frontchannel_logout_uri,
 		});
 	}
 }

@@ -1,8 +1,6 @@
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '@shared/domain';
 import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
 import { LtiPrivacyPermission } from '@src/modules/tool/interface/lti-privacy-permission.enum';
-import { IsArray } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 import { BaseWithTimestampsDO } from './base.do';
 
 export class CustomParameterDO {
@@ -10,7 +8,7 @@ export class CustomParameterDO {
 
 	default?: string;
 
-	regex: string;
+	regex?: string;
 
 	scope: CustomParameterScope;
 
@@ -28,21 +26,27 @@ export class CustomParameterDO {
 	}
 }
 
-export class BasicToolConfigDO {
+export abstract class ExternalToolConfig {
 	type: ToolConfigType;
 
 	baseUrl: string;
 
-	constructor(props: BasicToolConfigDO) {
+	constructor(props: ExternalToolConfig) {
 		this.type = props.type;
 		this.baseUrl = props.baseUrl;
 	}
 }
-export class Lti11ToolConfigDO {
-	type: ToolConfigType;
 
-	baseUrl: string;
+export class BasicToolConfigDO extends ExternalToolConfig {
+	constructor(props: BasicToolConfigDO) {
+		super({
+			type: ToolConfigType.BASIC,
+			baseUrl: props.baseUrl,
+		});
+	}
+}
 
+export class Lti11ToolConfigDO extends ExternalToolConfig {
 	key: string;
 
 	secret: string;
@@ -54,8 +58,10 @@ export class Lti11ToolConfigDO {
 	privacy_permission: LtiPrivacyPermission;
 
 	constructor(props: Lti11ToolConfigDO) {
-		this.type = props.type;
-		this.baseUrl = props.baseUrl;
+		super({
+			type: ToolConfigType.LTI11,
+			baseUrl: props.baseUrl,
+		});
 		this.key = props.key;
 		this.secret = props.secret;
 		this.resource_link_id = props.resource_link_id;
@@ -64,31 +70,32 @@ export class Lti11ToolConfigDO {
 	}
 }
 
-export class Oauth2ToolConfigDO {
-	type: ToolConfigType;
-
-	baseUrl: string;
-
+export class Oauth2ToolConfigDO extends ExternalToolConfig {
 	clientId: string;
 
 	clientSecret: string;
 
 	skipConsent: boolean;
 
+	tokenEndpointAuthMethod?: string;
+
 	frontchannelLogoutUri?: string;
 
 	scope?: string;
 
-	redirectUris: string[];
+	redirectUris?: string[];
 
 	constructor(props: Oauth2ToolConfigDO) {
-		this.type = props.type;
-		this.baseUrl = props.baseUrl;
+		super({
+			type: ToolConfigType.OAUTH2,
+			baseUrl: props.baseUrl,
+		});
 		this.clientId = props.clientId;
 		this.clientSecret = props.clientSecret;
 		this.skipConsent = props.skipConsent;
 		this.redirectUris = props.redirectUris;
 		this.scope = props.scope;
+		this.tokenEndpointAuthMethod = props.tokenEndpointAuthMethod;
 		this.frontchannelLogoutUri = props.frontchannelLogoutUri;
 	}
 }
