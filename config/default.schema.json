@@ -374,11 +374,6 @@
 				}
 			}
 		},
-		"FEATURE_RABBITMQ_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, adds support to send RabbitMQ messages"
-		},
 		"RABBITMQ_URI": {
 			"type": "string",
 			"format": "uri",
