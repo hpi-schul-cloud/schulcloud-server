@@ -1,15 +1,23 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import bcrypt from 'bcryptjs';
 import { Account, EntityId } from '@shared/domain';
 import { AccountRepo } from '@shared/repo';
+import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
+import { ConfigService } from '@nestjs/config';
+import { IServerConfig } from '../../server/server.config';
 import { AccountEntityToDtoMapper } from '../mapper';
 import { AccountDto, AccountSaveDto } from './dto';
 
 @Injectable()
 export class AccountService {
-	constructor(private accountRepo: AccountRepo) {}
+	constructor(
+		private readonly accountRepo: AccountRepo,
+		private readonly identityManager: IdentityManagementService,
+		private readonly configService: ConfigService<IServerConfig, true>,
+		private readonly logger: Logger
+	) {}
 
 	async findById(id: EntityId): Promise<AccountDto> {
 		const accountEntity = await this.accountRepo.findById(id);
@@ -57,6 +65,21 @@ export class AccountService {
 			}
 			account.credentialHash = accountDto.credentialHash;
 			account.token = accountDto.token;
+
+			if (this.configService.get('FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED')) {
+				try {
+					const result = await this.identityManager.updateAccount(account.id, {
+						email: account.username,
+					});
+					this.logger.log(result);
+					if (account.password) {
+						const foo = await this.identityManager.updateAccountPassword(account.id, account.password);
+						this.logger.log(foo);
+					}
+				} catch (err) {
+					this.logger.error(err);
+				}
+			}
 		} else {
 			account = new Account({
 				userId: new ObjectId(accountDto.userId),
@@ -69,6 +92,18 @@ export class AccountService {
 				token: accountDto.token,
 				credentialHash: accountDto.credentialHash,
 			});
+
+			if (this.configService.get('FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED')) {
+				try {
+					const result = await this.identityManager.createAccount({
+						id: account.id,
+						userName: account.username,
+					});
+					this.logger.log(result);
+				} catch (err) {
+					this.logger.error(err);
+				}
+			}
 		}
 		await this.accountRepo.save(account);
 		return AccountEntityToDtoMapper.mapToDto(account);
