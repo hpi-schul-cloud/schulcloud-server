@@ -13,7 +13,6 @@ export class TeamRule extends BasePermission<Team> {
 		let hasPermission = false;
 		const resultTeamUser = entity.teamUsers.find((teamUser: TeamUser) => teamUser.user.id === user.id);
 		if (resultTeamUser) {
-			// populate don't work, eger must be added
 			hasPermission = this.utils.hasAllPermissionsByRole(resultTeamUser.role, context.requiredPermissions);
 		}
 		return hasPermission;

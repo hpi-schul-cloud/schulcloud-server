@@ -26,7 +26,7 @@ export class TeamUser {
 	@ManyToOne(() => User)
 	userId: User;
 
-	@ManyToOne(() => Role, { eager: true })
+	@ManyToOne(() => Role)
 	role: Role;
 
 	@ManyToOne(() => School)
