@@ -2,7 +2,7 @@ import { BaseDORepo, EntityProperties } from '@shared/repo';
 import { ExternalTool, IExternalToolProperties, ToolConfigType } from '@shared/domain/entity/external-tools';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityName } from '@mikro-orm/core';
-import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool.do';
+import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Logger } from '@src/core/logger';

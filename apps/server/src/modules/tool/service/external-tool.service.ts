@@ -1,19 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
-import {
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool.do';
+import { Injectable } from '@nestjs/common';
+import { CustomParameterDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolDORepo } from '@shared/repo/externaltool/external-tool-do.repo';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 
 @Injectable()
 export class ExternalToolService {
-	constructor(
-		private externalToolRepo: ExternalToolDORepo,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
-	) {}
+	constructor(private externalToolRepo: ExternalToolDORepo) {}
 
 	async createExternalTool(externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
 		const externalTool: ExternalToolDO = await this.externalToolRepo.save(externalToolDO);
@@ -36,11 +27,17 @@ export class ExternalToolService {
 		});
 	}
 
-	encryptSecrets(externalToolDO: ExternalToolDO): void {
-		if (externalToolDO.config instanceof Lti11ToolConfigDO) {
-			externalToolDO.config.secret = this.oAuthEncryptionService.encrypt(externalToolDO.config.secret);
-		} else if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
-			externalToolDO.config.clientSecret = this.oAuthEncryptionService.encrypt(externalToolDO.config.clientSecret);
-		}
+	validateByRegex(customParameter: CustomParameterDO[]): boolean {
+		return customParameter.every((param: CustomParameterDO) => {
+			if (param.regex) {
+				try {
+					// eslint-disable-next-line no-new
+					new RegExp(param.regex);
+				} catch (e) {
+					return false;
+				}
+			}
+			return true;
+		});
 	}
 }

@@ -1,11 +1,12 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ICurrentUser, Permission, User } from '@shared/domain';
 import { ExternalToolService } from '@src/modules/tool/service/external-tool.service';
-import { ExternalToolDO, Oauth2ToolConfigDO, Lti11ToolConfigDO } from '@shared/domain/domainobject/external-tool.do';
+import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolMapper } from '@src/modules/tool/mapper/external-tool-do.mapper';
 import { AuthorizationService } from '@src/modules/authorization';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 
 @Injectable()
 export class ExternalToolUc {
@@ -13,7 +14,8 @@ export class ExternalToolUc {
 		private readonly externalToolService: ExternalToolService,
 		private readonly externalToolMapper: ExternalToolMapper,
 		private readonly authorizationService: AuthorizationService,
-		private readonly oauthProviderService: OauthProviderService
+		private readonly oauthProviderService: OauthProviderService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
 	) {}
 
 	async createExternalTool(externalToolDO: ExternalToolDO, currentUser: ICurrentUser): Promise<ExternalToolDO> {
@@ -21,10 +23,21 @@ export class ExternalToolUc {
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_CREATE]);
 
 		if (!this.externalToolService.isNameUnique(externalToolDO)) {
-			throw new UnprocessableEntityException(`The toolname ${externalToolDO.name} is already used`);
+			throw new UnprocessableEntityException(`The tool name ${externalToolDO.name} is already used`);
 		}
 		if (this.externalToolService.hasDuplicateAttributes(externalToolDO.parameters)) {
-			throw new UnprocessableEntityException(`...`);
+			throw new UnprocessableEntityException(
+				`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
+			);
+		}
+		if (!this.externalToolService.validateByRegex(externalToolDO.parameters)) {
+			throw new UnprocessableEntityException(
+				`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute.`
+			);
+		}
+
+		if (externalToolDO.config instanceof Lti11ToolConfigDO) {
+			externalToolDO.config.secret = this.oAuthEncryptionService.encrypt(externalToolDO.config.secret);
 		}
 
 		let created: ExternalToolDO;
@@ -39,7 +52,6 @@ export class ExternalToolUc {
 			);
 			const createdOauthClient = await this.oauthProviderService.createOAuth2Client(oauthClient);
 
-			this.externalToolService.encryptSecrets(externalToolDO);
 			created = await this.externalToolService.createExternalTool(externalToolDO);
 
 			created.config = this.externalToolMapper.applyProviderOauthClientToDO(
@@ -47,7 +59,6 @@ export class ExternalToolUc {
 				createdOauthClient
 			);
 		} else {
-			this.externalToolService.encryptSecrets(externalToolDO);
 			created = await this.externalToolService.createExternalTool(externalToolDO);
 		}
 

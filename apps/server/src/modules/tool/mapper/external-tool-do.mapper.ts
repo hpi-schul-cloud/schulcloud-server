@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
 import { CustomParameterMapper } from '@src/modules/tool/mapper/custom-parameter.mapper';
@@ -11,7 +11,7 @@ import {
 	BasicToolConfigDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool.do';
+} from '@shared/domain/domainobject/external-tool';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 
 @Injectable()

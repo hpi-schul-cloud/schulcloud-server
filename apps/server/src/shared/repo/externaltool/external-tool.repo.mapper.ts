@@ -12,7 +12,7 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool.do';
+} from '@shared/domain/domainobject/external-tool';
 import { EntityProperties } from '@shared/repo';
 import { Injectable } from '@nestjs/common';
 
@@ -55,7 +55,6 @@ export class ExternalToolRepoMapper {
 			type: oauth2Config.type,
 			baseUrl: oauth2Config.baseUrl,
 			clientId: oauth2Config.clientId,
-			clientSecret: oauth2Config.clientSecret,
 			skipConsent: oauth2Config.skipConsent,
 		});
 	}
@@ -119,7 +118,6 @@ export class ExternalToolRepoMapper {
 			type: oauth2Config.type,
 			baseUrl: oauth2Config.baseUrl,
 			clientId: oauth2Config.clientId,
-			clientSecret: oauth2Config.clientSecret,
 			skipConsent: oauth2Config.skipConsent,
 		});
 	}

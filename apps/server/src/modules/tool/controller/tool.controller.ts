@@ -5,7 +5,7 @@ import { Authorization } from 'oauth-1.0a';
 import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/external-tool.response';
 import { ExternalToolUc } from '@src/modules/tool/uc/external-tool.uc';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool.do';
+import { ExternalToolDO } from '@shared/domain/domainobject/external-tool/external-tool.do';
 import { ApiTags } from '@nestjs/swagger';
 import { ExternalToolMapper } from '@src/modules/tool/mapper/external-tool-do.mapper';
 import { ExternalToolResponseMapper } from '@src/modules/tool/mapper/external-tool-response.mapper';
