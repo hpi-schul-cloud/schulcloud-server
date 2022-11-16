@@ -217,9 +217,6 @@ const getMessageFromUnhandledError = (error) =>
 const getErrorResponse = (error, req, res, next) => {
 	let errorDetail;
 	if (isSilentError(error)) {
-		if (Configuration.get('SILENT_ERROR_ENABLED') === true) {
-			res.append('x-silent-error', true); // TODO is removed in production?
-		}
 		// do not return this as error via REST
 		return res.status(200).json(SilentError.RESPONSE_CONTENT);
 	}

@@ -1,8 +1,5 @@
 const {
 	HOST,
-	SMTP,
-	SMTP_HOST,
-	SMTP_PORT,
 	AWS_ACCESS_KEY,
 	AWS_SECRET_ACCESS_KEY,
 	AWS_REGION,
@@ -11,11 +8,6 @@ const {
 } = require('./globals');
 
 const secrets = {
-	smtp: SMTP,
-	sendmail: {
-		host: SMTP_HOST,
-		port: SMTP_PORT,
-	},
 	aws: {
 		signatureVersion: 'v4',
 		s3ForcePathStyle: true,

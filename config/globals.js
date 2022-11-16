@@ -56,10 +56,6 @@ const globals = {
 	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
 	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
 	API_HOST: process.env.API_HOST,
-	// secrets smtp
-	SMTP: process.env.SMTP,
-	SMTP_HOST: process.env.SMTP_HOST,
-	SMTP_PORT: process.env.SMTP_PORT,
 	// secrets aws
 	AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
 	AWS_SECRET_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
