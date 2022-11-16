@@ -184,7 +184,6 @@ xdescribe('Ldap Sync Integration', () => {
 
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
-		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		app = await appPromise();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
