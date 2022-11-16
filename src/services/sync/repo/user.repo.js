@@ -1,17 +1,19 @@
-const accountModel = require('../../account/model');
 const { userModel } = require('../../user/model');
 const { importUserModel } = require('../model/importUser.schema');
 const roleModel = require('../../role/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { BadRequest } = require('../../../errors');
+const appPromise = require('../../../app');
 
-const createAccount = async (account) =>
-	accountModel.create({
+const createAccount = async (account) => {
+	const app = await appPromise;
+	await app.service('nest-account-service').save({
 		userId: account.userId,
 		username: account.username.toLowerCase(),
 		systemId: account.systemId,
 		activated: true,
 	});
+};
 
 const resolveUserRoles = async (roles) =>
 	roleModel
@@ -86,18 +88,14 @@ const createUserAndAccount = async (inputUser, inputAccount) => {
 	return { user, account };
 };
 
-const updateAccount = async (userId, account) =>
-	accountModel
-		.findOneAndUpdate(
-			{ userId, systemId: account.systemId },
-			{
-				username: account.username,
-				activated: true,
-			},
-			{ new: true }
-		)
-		.lean()
-		.exec();
+const updateAccount = async (userId, account) => {
+	const app = await appPromise;
+
+	const createdAccount = app.service('nest-account-service').findByUserIdAndSystemId(userId, account.systemId);
+	createdAccount.username = account.username;
+	createdAccount.activated = true;
+	app.service('nest-account-service').save(createdAccount);
+};
 
 const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
 	await checkUpdate(changedUser.email, userId);
