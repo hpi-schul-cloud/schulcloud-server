@@ -46,15 +46,15 @@ export class AuthorisationUtils {
 			return true;
 		}
 		const usersPermissions = this.resolvePermissions(user);
-		return this.hasEveryPermissions(requiredPermissions, usersPermissions);
+		return this.hasEveryPermission(requiredPermissions, usersPermissions);
 	}
 
 	hasAllPermissionsByRole(role: Role, requiredPermissions: string[]): boolean {
 		const usersPermissions = this.resolvePermissionsByRoles([role]);
-		return this.hasEveryPermissions(requiredPermissions, usersPermissions);
+		return this.hasEveryPermission(requiredPermissions, usersPermissions);
 	}
 
-	private hasEveryPermissions(requiredPermissions: string[], usersPermissions: string[]) {
+	private hasEveryPermission(requiredPermissions: string[], usersPermissions: string[]) {
 		const hasPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));
 		return hasPermissions;
 	}
