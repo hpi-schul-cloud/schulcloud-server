@@ -1,5 +1,8 @@
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '@shared/domain';
 import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
+import { LtiPrivacyPermission } from '@src/modules/tool/interface/lti-privacy-permission.enum';
+import { IsArray } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 import { BaseWithTimestampsDO } from './base.do';
 
 export class CustomParameterDO {
@@ -48,7 +51,7 @@ export class Lti11ToolConfigDO {
 
 	lti_message_type: LtiMessageType;
 
-	privacy_permission: string;
+	privacy_permission: LtiPrivacyPermission;
 
 	constructor(props: Lti11ToolConfigDO) {
 		this.type = props.type;
@@ -72,7 +75,11 @@ export class Oauth2ToolConfigDO {
 
 	skipConsent: boolean;
 
-	frontchannelLogoutUrl?: string;
+	frontchannelLogoutUri?: string;
+
+	scope?: string;
+
+	redirectUris: string[];
 
 	constructor(props: Oauth2ToolConfigDO) {
 		this.type = props.type;
@@ -80,7 +87,9 @@ export class Oauth2ToolConfigDO {
 		this.clientId = props.clientId;
 		this.clientSecret = props.clientSecret;
 		this.skipConsent = props.skipConsent;
-		this.frontchannelLogoutUrl = props.frontchannelLogoutUrl;
+		this.redirectUris = props.redirectUris;
+		this.scope = props.scope;
+		this.frontchannelLogoutUri = props.frontchannelLogoutUri;
 	}
 }
 
