@@ -167,7 +167,7 @@
 		"nestjs-console": "^7.0.0",
 		"oauth-1.0a": "^2.2.6",
 		"papaparse": "^5.1.1",
-		"passport": "^0.4.1",
+		"passport": "^0.6.0",
 		"passport-jwt": "^4.0.0",
 		"passport-local": "^1.0.0",
 		"prom-client": "^13.1.0",
