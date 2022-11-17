@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentType, IComponentProperties, IComponentTextProperties, Lesson, Task } from '@shared/domain';
-import { courseFactory, fileFactory, lessonFactory, schoolFactory, setupEntities, taskFactory } from '@shared/testing';
+import { ComponentType, CopyElementType, CopyHelperService, IComponentProperties } from '@shared/domain';
+import { courseFactory, fileFactory, lessonFactory, schoolFactory, setupEntities } from '@shared/testing';
 import { CopyFilesService } from './copy-files.service';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
@@ -14,6 +14,7 @@ const getImageHTML = (id: string, name: string) => {
 describe('copy files service', () => {
 	let module: TestingModule;
 	let copyFilesService: CopyFilesService;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 	let orm: MikroORM;
@@ -31,6 +32,10 @@ describe('copy files service', () => {
 			providers: [
 				CopyFilesService,
 				{
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
+				},
+				{
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
@@ -38,6 +43,7 @@ describe('copy files service', () => {
 		}).compile();
 
 		copyFilesService = module.get(CopyFilesService);
+		copyHelperService = module.get(CopyHelperService);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 	});
 
@@ -48,13 +54,12 @@ describe('copy files service', () => {
 			const file2 = fileFactory.buildWithId({ name: 'file.jpg' });
 			const imageHTML1 = getImageHTML(file1.id, file1.name);
 			const imageHTML2 = getImageHTML(file2.id, file2.name);
-			const jwt = 'asdaksjdaskjdhsdjkfhsd';
-			return { file1, file2, school, jwt, imageHTML1, imageHTML2 };
+			return { file1, file2, school, imageHTML1, imageHTML2 };
 		};
 
 		describe('copy files of lesson', () => {
 			const lessonSetup = () => {
-				const { file1, file2, school, jwt, imageHTML1, imageHTML2 } = setup();
+				const { file1, file2, school, imageHTML1, imageHTML2 } = setup();
 				const originalCourse = courseFactory.build({ school });
 				const textContent: IComponentProperties = {
 					title: '',
@@ -75,106 +80,30 @@ describe('copy files service', () => {
 					contents: [geoGebraContent, textContent],
 				});
 				const copyLesson = lessonFactory.build({ course: originalCourse, contents: [geoGebraContent, textContent] });
-				return { originalLesson, copyLesson, file1, file2, schoolId: school.id, jwt };
+				const userId = '123';
+				return { originalLesson, copyLesson, file1, file2, schoolId: school.id, userId };
 			};
 
-			it('it should return copy response', async () => {
-				const { originalLesson, copyLesson, jwt } = lessonSetup();
+			it('should return fileUrlReplacements', async () => {
+				const { originalLesson, copyLesson, userId } = lessonSetup();
 
-				const mockedResponse = [{ id: 'mockedFileId', sourceId: 'mockedSourceId', name: 'mockedName' }];
+				const mockedFileDto = { id: 'mockedFileId', sourceId: 'mockedSourceId', name: 'mockedName' };
 
-				filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue(mockedResponse);
-				const copyResponse = await copyFilesService.copyFilesOfEntity(originalLesson, copyLesson, jwt);
+				filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue([mockedFileDto]);
+				const copyResponse = await copyFilesService.copyFilesOfEntity(originalLesson, copyLesson, userId);
 
-				expect(copyResponse.response).toEqual(mockedResponse);
+				expect(copyResponse.fileUrlReplacements.length).toEqual(1);
+				expect(copyResponse.fileUrlReplacements[0].regex).toBeInstanceOf(RegExp);
+				expect(copyResponse.fileUrlReplacements[0].replacement).toContain(mockedFileDto.id);
+				expect(copyResponse.fileUrlReplacements[0].replacement).toContain(mockedFileDto.name);
 			});
 
-			it('it should replace copied urls in lesson', async () => {
-				const { originalLesson, copyLesson, file1, file2, jwt } = lessonSetup();
-
-				const mockedResponse = [
-					{ id: 'mockedFileId1', sourceId: file1.id, name: 'mockedName1' },
-					{ id: 'mockedFileId2', sourceId: file2.id, name: 'mockedName2' },
-				];
-
-				filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue(mockedResponse);
-				const copyResponse = await copyFilesService.copyFilesOfEntity(originalLesson, copyLesson, jwt);
-
-				const lesson = copyResponse.entity as Lesson;
-				const { text } = lesson.contents[1].content as IComponentTextProperties;
-
-				const expectedHTML1 = getImageHTML(mockedResponse[0].id, mockedResponse[0].name);
-				const expectedHTML2 = getImageHTML(mockedResponse[1].id, mockedResponse[1].name);
-
-				expect(text).toContain(expectedHTML1);
-				expect(text).toContain(expectedHTML2);
-			});
-		});
-
-		describe('copy files of task', () => {
-			it('it should replace copied urls in task in same school', async () => {
-				const { file1, file2, jwt, imageHTML1, imageHTML2, school } = setup();
-
-				const originalCourse = courseFactory.build();
-				const targetCourse = courseFactory.build();
-				const originalTask = taskFactory.buildWithId({
-					school,
-					description: `${imageHTML1} ${imageHTML2}`,
-					course: originalCourse,
-				});
-				const copyTask = taskFactory.buildWithId({
-					school,
-					description: `${imageHTML1} ${imageHTML2}`,
-					course: targetCourse,
-				});
-
-				const mockedResponse = [
-					{ id: 'mockedFileId1', sourceId: file1.id, name: 'mockedName1' },
-					{ id: 'mockedFileId2', sourceId: file2.id, name: 'mockedName2' },
-				];
-
-				filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue(mockedResponse);
-				const copyResponse = await copyFilesService.copyFilesOfEntity(originalTask, copyTask, jwt);
-
-				const { description } = copyResponse.entity as Task;
-
-				const expectedHTML1 = getImageHTML(mockedResponse[0].id, mockedResponse[0].name);
-				const expectedHTML2 = getImageHTML(mockedResponse[0].id, mockedResponse[0].name);
-				expect(description).toContain(expectedHTML1);
-				expect(description).toContain(expectedHTML2);
-			});
-
-			it('it should replace copied urls in task between different schools', async () => {
-				const { file1, file2, jwt, imageHTML1, imageHTML2, school } = setup();
-
-				const copySchool = schoolFactory.build();
-				const originalCourse = courseFactory.build({ school });
-				const targetCourse = courseFactory.build({ school: copySchool });
-				const originalTask = taskFactory.buildWithId({
-					school,
-					description: `${imageHTML1} ${imageHTML2}`,
-					course: originalCourse,
-				});
-				const copyTask = taskFactory.buildWithId({
-					school: copySchool,
-					description: `${imageHTML1} ${imageHTML2}`,
-					course: targetCourse,
-				});
-
-				const mockedResponse = [
-					{ id: 'mockedFileId1', sourceId: file1.id, name: 'mockedName1' },
-					{ id: 'mockedFileId2', sourceId: file2.id, name: 'mockedName2' },
-				];
-
-				filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue(mockedResponse);
-				const copyResponse = await copyFilesService.copyFilesOfEntity(originalTask, copyTask, jwt);
-
-				const { description } = copyResponse.entity as Task;
-
-				const expectedHTML1 = getImageHTML(mockedResponse[0].id, mockedResponse[0].name);
-				const expectedHTML2 = getImageHTML(mockedResponse[0].id, mockedResponse[0].name);
-				expect(description).toContain(expectedHTML1);
-				expect(description).toContain(expectedHTML2);
+			it('should return a copyStatus', async () => {
+				const { originalLesson, copyLesson, userId } = lessonSetup();
+				const copyResponse = await copyFilesService.copyFilesOfEntity(originalLesson, copyLesson, userId);
+				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
+				expect(copyResponse.copyStatus).toBeDefined();
+				expect(copyResponse.copyStatus.type).toBe(CopyElementType.FILE_GROUP);
 			});
 		});
 	});
