@@ -7,13 +7,11 @@ import {
 	EntityId,
 	Lesson,
 	PermissionContextBuilder,
-	Task,
-	TaskCopyService,
 	User,
 } from '@shared/domain';
-import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
+import { TaskCopyService } from '../service';
 
 // todo: it look like it is required not optional
 export type TaskCopyParentParams = {
@@ -25,13 +23,12 @@ export type TaskCopyParentParams = {
 @Injectable()
 export class TaskCopyUC {
 	constructor(
-		private readonly taskRepo: TaskRepo,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
 		private readonly authorisation: AuthorizationService,
 		private readonly taskCopyService: TaskCopyService,
-		private readonly copyHelperService: CopyHelperService,
-		private readonly fileCopyAppendService: FileCopyAppendService
+		private readonly taskRepo: TaskRepo,
+		private readonly copyHelperService: CopyHelperService
 	) {}
 
 	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {
@@ -42,24 +39,11 @@ export class TaskCopyUC {
 			throw new NotFoundException('could not find task to copy');
 		}
 
-		let existingNames: string[] = [];
-		let destinationCourse: Course | undefined;
+		const destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
+		const destinationLesson = await this.getDestinationLesson(parentParams.lessonId, user);
+		const copyName = await this.getCopyName(originalTask.name, parentParams.courseId);
 
-		if (parentParams.courseId) {
-			destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
-			const [existingTasks] = await this.taskRepo.findBySingleParent('', parentParams.courseId);
-			existingNames = existingTasks.map((t) => t.name);
-		}
-
-		const copyName = this.copyHelperService.deriveCopyName(originalTask.name, existingNames);
-
-		let destinationLesson: Lesson | undefined;
-
-		if (parentParams.lessonId) {
-			destinationLesson = await this.getDestinationLesson(parentParams.lessonId, user);
-		}
-
-		let status = this.taskCopyService.copyTaskMetadata({
+		const status = await this.taskCopyService.copyTask({
 			originalTask,
 			destinationCourse,
 			destinationLesson,
@@ -67,24 +51,23 @@ export class TaskCopyUC {
 			copyName,
 		});
 
-		if (status.copyEntity instanceof Task && status.originalEntity instanceof Task) {
-			await this.taskRepo.save(status.copyEntity);
-			status = await this.fileCopyAppendService.copyFilesOfEntity(
-				status,
-				status.originalEntity,
-				status.copyEntity,
-				parentParams.userId
-			);
-		}
-
-		if (status.copyEntity instanceof Task) {
-			await this.taskRepo.save(status.copyEntity);
-		}
-
 		return status;
 	}
 
-	private async getDestinationCourse(courseId: string, user: User) {
+	private async getCopyName(originalTaskName: string, parentCourseId: EntityId | undefined) {
+		if (parentCourseId) {
+			const [existingTasks] = await this.taskRepo.findBySingleParent('', parentCourseId);
+			const existingNames = (existingTasks || []).map((t) => t.name);
+			return this.copyHelperService.deriveCopyName(originalTaskName, existingNames);
+		}
+		return originalTaskName;
+	}
+
+	private async getDestinationCourse(courseId: string | undefined, user: User): Promise<Course | undefined> {
+		if (courseId === undefined) {
+			return undefined;
+		}
+
 		const destinationCourse = await this.courseRepo.findById(courseId);
 		if (!this.authorisation.hasPermission(user, destinationCourse, PermissionContextBuilder.write([]))) {
 			throw new ForbiddenException('you dont have permission to add to this course');
@@ -92,7 +75,11 @@ export class TaskCopyUC {
 		return destinationCourse;
 	}
 
-	private async getDestinationLesson(lessonId: string, user: User) {
+	private async getDestinationLesson(lessonId: string | undefined, user: User): Promise<Lesson | undefined> {
+		if (lessonId === undefined) {
+			return undefined;
+		}
+
 		const destinationLesson = await this.lessonRepo.findById(lessonId);
 		if (!this.authorisation.hasPermission(user, destinationLesson, PermissionContextBuilder.write([]))) {
 			throw new ForbiddenException('you dont have permission to add to this lesson');

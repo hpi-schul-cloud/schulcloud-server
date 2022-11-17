@@ -3,18 +3,17 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, CopyHelperService, PermissionTypes, TaskCopyService, User } from '@shared/domain';
-import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
+import { Test } from '@nestjs/testing';
+import { Actions, CopyHelperService, PermissionTypes, User } from '@shared/domain';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { TaskCopyService } from '../service';
 import { TaskCopyUC } from './task-copy.uc';
 
 describe('task copy uc', () => {
-	let module: TestingModule;
 	let orm: MikroORM;
 	let uc: TaskCopyUC;
 	let userRepo: DeepMocked<UserRepo>;
@@ -24,11 +23,17 @@ describe('task copy uc', () => {
 	let authorisation: DeepMocked<AuthorizationService>;
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
-	let fileCopyAppendService: DeepMocked<FileCopyAppendService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-		module = await Test.createTestingModule({
+	});
+
+	afterAll(async () => {
+		await orm.close();
+	});
+
+	beforeEach(async () => {
+		const module = await Test.createTestingModule({
 			providers: [
 				TaskCopyUC,
 				{
@@ -60,10 +65,6 @@ describe('task copy uc', () => {
 					useValue: createMock<CopyHelperService>(),
 				},
 				{
-					provide: FileCopyAppendService,
-					useValue: createMock<FileCopyAppendService>(),
-				},
-				{
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
@@ -77,18 +78,8 @@ describe('task copy uc', () => {
 		courseRepo = module.get(CourseRepo);
 		lessonRepo = module.get(LessonRepo);
 		taskCopyService = module.get(TaskCopyService);
-		fileCopyAppendService = module.get(FileCopyAppendService);
 		copyHelperService = module.get(CopyHelperService);
-	});
-
-	afterAll(async () => {
-		await orm.close();
-		await module.close();
-	});
-
-	beforeEach(() => {
 		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
-		jest.clearAllMocks();
 	});
 
 	describe('copy task', () => {
@@ -113,9 +104,8 @@ describe('task copy uc', () => {
 				copyEntity: copy,
 				originalEntity: task,
 			};
-			taskCopyService.copyTaskMetadata.mockReturnValue(status);
+			taskCopyService.copyTask.mockResolvedValue(status);
 			taskRepo.save.mockResolvedValue(undefined);
-			fileCopyAppendService.copyFilesOfEntity.mockResolvedValue(status);
 			const userId = user.id;
 			return {
 				user,
@@ -185,23 +175,6 @@ describe('task copy uc', () => {
 				const { user, task, userId } = setup();
 				await uc.copyTask(user.id, task.id, { userId });
 				expect(lessonRepo.findById).not.toHaveBeenCalled();
-			});
-
-			it('should persist copy', async () => {
-				const { course, lesson, user, task, copy, userId } = setup();
-				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, userId });
-				expect(taskRepo.save).toBeCalledWith(copy);
-			});
-
-			it('should try to copy files from original task to task copy', async () => {
-				const { course, lesson, user, task, userId } = setup();
-				const copyStatus = await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, userId });
-				expect(fileCopyAppendService.copyFilesOfEntity).toBeCalledWith(
-					copyStatus,
-					copyStatus.originalEntity,
-					copyStatus.copyEntity,
-					userId
-				);
 			});
 		});
 
@@ -326,7 +299,7 @@ describe('task copy uc', () => {
 					lessonId: lesson.id,
 					userId: new ObjectId().toHexString(),
 				});
-				expect(taskCopyService.copyTaskMetadata).toBeCalledWith({
+				expect(taskCopyService.copyTask).toBeCalledWith({
 					originalTask: task,
 					destinationCourse: course,
 					destinationLesson: lesson,
