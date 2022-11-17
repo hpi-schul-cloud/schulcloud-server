@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CopyHelperService, EtherpadService, NexboardService, TaskCopyService } from '@shared/domain';
-import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
+import { CopyHelperService, EtherpadService, NexboardService } from '@shared/domain';
 import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import {
@@ -37,6 +36,8 @@ import { LessonCopyUC } from './uc/lesson-copy.uc';
 import { RoomBoardDTOFactory } from './uc/room-board-dto.factory';
 import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
 import { RoomsUc } from './uc/rooms.uc';
+import { TaskCopyService } from './service';
+import { CopyLegacyFilesService } from '../files-storage-client/service/copy-legacy-files.service';
 
 @Module({
 	imports: [AuthorizationModule, FilesStorageClientModule, LessonModule, TaskModule],
@@ -70,9 +71,9 @@ import { RoomsUc } from './uc/rooms.uc';
 		EtherpadService,
 		NexboardService,
 		FileLegacyService,
+		CopyLegacyFilesService,
 		FeathersServiceProvider,
 		Logger,
-		FileCopyAppendService,
 		MetadataLoader,
 		CourseService,
 		CommonCartridgeExportService,
