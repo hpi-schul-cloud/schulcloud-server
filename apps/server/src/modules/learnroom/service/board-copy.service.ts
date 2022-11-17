@@ -9,10 +9,10 @@ import {
 	Course,
 	Lesson,
 	Task,
-	TaskCopyService,
 	User,
 } from '@shared/domain';
 import { LessonCopyService } from './lesson-copy.service';
+import { TaskCopyService } from './task-copy.service';
 
 export type BoardCopyParams = {
 	originalBoard: Board;
@@ -31,17 +31,21 @@ export class BoardCopyService {
 	async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
 		const elements: CopyStatus[] = [];
 		const references: BoardElement[] = [];
+		const { originalBoard, user, destinationCourse } = params;
 
-		const boardElements = params.originalBoard.getElements();
+		const boardElements = originalBoard.getElements();
+
+		// WIP: refactor to do copy operations in parallel
 		for (let i = 0; i < boardElements.length; i += 1) {
 			const element = boardElements[i];
 
 			if (element.boardElementType === BoardElementType.Task) {
 				const originalTask = element.target as Task;
-				const status = this.taskCopyService.copyTaskMetadata({
+				// eslint-disable-next-line no-await-in-loop
+				const status = await this.taskCopyService.copyTask({
 					originalTask,
-					user: params.user,
-					destinationCourse: params.destinationCourse,
+					user,
+					destinationCourse,
 				});
 				elements.push(status);
 				const taskBoardElement = BoardElement.FromTask(status.copyEntity as Task);
@@ -51,8 +55,8 @@ export class BoardCopyService {
 				// eslint-disable-next-line no-await-in-loop
 				const status = await this.lessonCopyService.copyLesson({
 					originalLesson,
-					user: params.user,
-					destinationCourse: params.destinationCourse,
+					user,
+					destinationCourse,
 				});
 				elements.push(status);
 				const lessonBardElement = BoardElement.FromLesson(status.copyEntity as Lesson);
@@ -71,5 +75,14 @@ export class BoardCopyService {
 		};
 
 		return status;
+	}
+
+	async copyElementTask(element: BoardElement, user: User, destinationCourse: Course): Promise<CopyStatus> {
+		const originalTask = element.target as Task;
+		return this.taskCopyService.copyTask({
+			originalTask,
+			user,
+			destinationCourse,
+		});
 	}
 }

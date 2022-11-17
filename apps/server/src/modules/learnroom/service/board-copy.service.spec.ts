@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, CopyElementType, CopyHelperService, CopyStatusEnum, TaskCopyService } from '@shared/domain';
+import { Board, CopyElementType, CopyHelperService, CopyStatusEnum } from '@shared/domain';
 import {
 	boardFactory,
 	courseFactory,
@@ -14,6 +14,7 @@ import {
 } from '@shared/testing';
 import { BoardCopyService } from './board-copy.service';
 import { LessonCopyService } from './lesson-copy.service';
+import { TaskCopyService } from './task-copy.service';
 
 describe('board copy service', () => {
 	let module: TestingModule;
@@ -116,7 +117,7 @@ describe('board copy service', () => {
 				const user = userFactory.build();
 				const taskCopy = taskFactory.build({ name: originalTask.name });
 
-				taskCopyService.copyTaskMetadata.mockReturnValue({
+				taskCopyService.copyTask.mockResolvedValue({
 					title: taskCopy.name,
 					type: CopyElementType.TASK,
 					status: CopyStatusEnum.SUCCESS,
@@ -130,7 +131,7 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user, originalTask } = setup();
 
 				await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				expect(taskCopyService.copyTaskMetadata).toHaveBeenCalledWith({ originalTask, destinationCourse, user });
+				expect(taskCopyService.copyTask).toHaveBeenCalledWith({ originalTask, destinationCourse, user });
 			});
 
 			it('should call copyHelperService', async () => {

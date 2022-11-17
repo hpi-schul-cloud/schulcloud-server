@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@shared/domain';
-import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { boardFactory, courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
@@ -21,7 +20,6 @@ describe('course copy service', () => {
 	let courseEntityCopyService: DeepMocked<CourseEntityCopyService>;
 	let boardCopyService: DeepMocked<BoardCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
-	let fileCopyAppendService: DeepMocked<FileCopyAppendService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let authorization: DeepMocked<AuthorizationService>;
 	let orm: MikroORM;
@@ -65,10 +63,6 @@ describe('course copy service', () => {
 					useValue: createMock<LessonCopyService>(),
 				},
 				{
-					provide: FileCopyAppendService,
-					useValue: createMock<FileCopyAppendService>(),
-				},
-				{
 					provide: CopyHelperService,
 					useValue: createMock<CopyHelperService>(),
 				},
@@ -86,7 +80,6 @@ describe('course copy service', () => {
 		courseEntityCopyService = module.get(CourseEntityCopyService);
 		boardCopyService = module.get(BoardCopyService);
 		lessonCopyService = module.get(LessonCopyService);
-		fileCopyAppendService = module.get(FileCopyAppendService);
 		copyHelperService = module.get(CopyHelperService);
 		authorization = module.get(AuthorizationService);
 	});
@@ -163,12 +156,6 @@ describe('course copy service', () => {
 			const { course, courseCopy, user } = setup();
 			await service.copyCourse({ userId: user.id, courseId: course.id });
 			expect(courseRepo.save).toBeCalledWith(courseCopy);
-		});
-
-		it('should try to copy files copies from original task to task copy', async () => {
-			const { course, user } = setup();
-			await service.copyCourse({ userId: user.id, courseId: course.id });
-			expect(fileCopyAppendService.copyFiles).toBeCalled();
 		});
 
 		it('should call board copy service', async () => {

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Board, CopyHelperService, CopyStatus, Course, EntityId } from '@shared/domain';
-import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { BoardRepo, CourseRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { BoardCopyService } from './board-copy.service';
@@ -17,7 +16,6 @@ export class CourseCopyService {
 		private readonly courseEntityCopyService: CourseEntityCopyService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly lessonCopyService: LessonCopyService,
-		private readonly fileCopyAppendService: FileCopyAppendService,
 		private readonly copyHelperService: CopyHelperService,
 		private readonly authorizationService: AuthorizationService
 	) {}
@@ -54,9 +52,11 @@ export class CourseCopyService {
 			const boardCopy = boardStatus.copyEntity as Board;
 			await this.boardRepo.save(boardCopy);
 			boardStatus = this.lessonCopyService.updateCopiedEmbeddedTasks(boardStatus);
-			boardStatus = await this.fileCopyAppendService.copyFiles(boardStatus, courseCopy.id, userId);
-			const updatedBoardCopy = boardStatus.copyEntity as Board;
-			await this.boardRepo.save(updatedBoardCopy);
+			// const { copyStatus } = await this.copyFilesService.copyFilesOfEntity(originalBoard, boardCopy, user.id);
+			// boardStatus.elements?.push(copyStatus);
+			// boardStatus = await this.fileCopyAppendService.copyFiles(boardStatus, courseCopy.id, userId);
+			// const updatedBoardCopy = boardStatus.copyEntity as Board;
+			// await this.boardRepo.save(updatedBoardCopy);
 		}
 
 		courseStatus.elements ||= [];
