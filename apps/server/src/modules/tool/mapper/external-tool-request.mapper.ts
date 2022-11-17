@@ -13,9 +13,10 @@ import {
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { TokenEndpointAuthMethod } from '@src/modules/tool/interface/token-endpoint-auth-method.enum';
 
 @Injectable()
-export class ExternalToolMapper {
+export class ExternalToolRequestMapper {
 	constructor(private readonly customParameterMapper: CustomParameterMapper) {}
 
 	mapRequestToExternalToolDO(externalToolParams: ExternalToolParams, version: number): ExternalToolDO {
@@ -88,7 +89,7 @@ export class ExternalToolMapper {
 		return new Oauth2ToolConfigDO({
 			...oauth2Config,
 			scope: oauthClient.scope,
-			tokenEndpointAuthMethod: oauthClient.token_endpoint_auth_method,
+			tokenEndpointAuthMethod: oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod,
 			redirectUris: oauthClient.redirect_uris,
 			frontchannelLogoutUri: oauthClient.frontchannel_logout_uri,
 		});

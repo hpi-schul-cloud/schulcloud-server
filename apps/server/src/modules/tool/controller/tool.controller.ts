@@ -7,7 +7,7 @@ import { ExternalToolUc } from '@src/modules/tool/uc/external-tool.uc';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool/external-tool.do';
 import { ApiTags } from '@nestjs/swagger';
-import { ExternalToolRequestMapper } from '@src/modules/tool/mapper/external-tool-do.mapper';
+import { ExternalToolRequestMapper } from '@src/modules/tool/mapper/external-tool-request.mapper';
 import { ExternalToolResponseMapper } from '@src/modules/tool/mapper/external-tool-response.mapper';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';

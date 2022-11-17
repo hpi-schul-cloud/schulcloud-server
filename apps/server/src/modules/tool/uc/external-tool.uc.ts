@@ -2,17 +2,17 @@ import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common
 import { ICurrentUser, Permission, User } from '@shared/domain';
 import { ExternalToolService } from '@src/modules/tool/service/external-tool.service';
 import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
-import { ExternalToolMapper } from '@src/modules/tool/mapper/external-tool-do.mapper';
 import { AuthorizationService } from '@src/modules/authorization';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { ExternalToolRequestMapper } from '@src/modules/tool/mapper/external-tool-request.mapper';
 
 @Injectable()
 export class ExternalToolUc {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly externalToolMapper: ExternalToolMapper,
+		private readonly externalToolMapper: ExternalToolRequestMapper,
 		private readonly authorizationService: AuthorizationService,
 		private readonly oauthProviderService: OauthProviderService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
@@ -22,15 +22,15 @@ export class ExternalToolUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_CREATE]);
 
-		if (!this.externalToolService.isNameUnique(externalToolDO)) {
-			throw new UnprocessableEntityException(`The tool name ${externalToolDO.name} is already used`);
+		if (!(await this.externalToolService.isNameUnique(externalToolDO))) {
+			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`);
 		}
-		if (this.externalToolService.hasDuplicateAttributes(externalToolDO.parameters)) {
+		if (externalToolDO.parameters && this.externalToolService.hasDuplicateAttributes(externalToolDO.parameters)) {
 			throw new UnprocessableEntityException(
 				`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
 			);
 		}
-		if (!this.externalToolService.validateByRegex(externalToolDO.parameters)) {
+		if (externalToolDO.parameters && !this.externalToolService.validateByRegex(externalToolDO.parameters)) {
 			throw new UnprocessableEntityException(
 				`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute.`
 			);
@@ -42,7 +42,7 @@ export class ExternalToolUc {
 
 		let created: ExternalToolDO;
 		if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
-			if (!this.externalToolService.isClientIdUnique(externalToolDO)) {
+			if (!(await this.externalToolService.isClientIdUnique(externalToolDO.config))) {
 				throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`);
 			}
 

@@ -14,9 +14,6 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()
 	key: string;
 
-	@ApiProperty()
-	secret: string;
-
 	@ApiPropertyOptional()
 	resource_link_id?: string;
 
@@ -31,7 +28,6 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 		this.type = props.type;
 		this.baseUrl = props.baseUrl;
 		this.key = props.key;
-		this.secret = props.secret;
 		this.resource_link_id = props.resource_link_id;
 		this.lti_message_type = props.lti_message_type;
 		this.privacy_permission = props.privacy_permission;

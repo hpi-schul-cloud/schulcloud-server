@@ -23,10 +23,10 @@ export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 	scope?: string;
 
 	@ApiProperty()
-	redirectUris: string[];
+	redirectUris?: string[];
 
 	@ApiProperty()
-	tokenEndpointAuthMethod!: TokenEndpointAuthMethod;
+	tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
 
 	constructor(props: Oauth2ToolConfigResponse) {
 		super();

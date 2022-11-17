@@ -5,6 +5,8 @@ import { BasicToolConfigDO } from './config/basic-tool-config.do';
 import { Lti11ToolConfigDO } from './config/lti11-tool-config.do';
 
 export class ExternalToolDO extends BaseWithTimestampsDO {
+	id?: string;
+
 	name: string;
 
 	url?: string;
@@ -13,7 +15,7 @@ export class ExternalToolDO extends BaseWithTimestampsDO {
 
 	config: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
 
-	parameters: CustomParameterDO[];
+	parameters?: CustomParameterDO[];
 
 	isHidden: boolean;
 

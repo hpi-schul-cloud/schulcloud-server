@@ -99,7 +99,7 @@ export class ExternalToolRepoMapper {
 			url: entityDO.url,
 			logoUrl: entityDO.logoUrl,
 			config,
-			parameters: this.mapCustomParameterDOsToEntities(entityDO.parameters),
+			parameters: this.mapCustomParameterDOsToEntities(entityDO.parameters ?? []),
 			isHidden: entityDO.isHidden,
 			openNewTab: entityDO.openNewTab,
 			version: entityDO.version,

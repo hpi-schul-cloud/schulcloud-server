@@ -1,4 +1,5 @@
 import { ToolConfigType } from '@shared/domain';
+import { TokenEndpointAuthMethod } from '@src/modules/tool/interface/token-endpoint-auth-method.enum';
 import { ExternalToolConfigDO } from './external-tool-config.do';
 
 export class Oauth2ToolConfigDO extends ExternalToolConfigDO {
@@ -8,7 +9,7 @@ export class Oauth2ToolConfigDO extends ExternalToolConfigDO {
 
 	skipConsent: boolean;
 
-	tokenEndpointAuthMethod?: string;
+	tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
 
 	frontchannelLogoutUri?: string;
 

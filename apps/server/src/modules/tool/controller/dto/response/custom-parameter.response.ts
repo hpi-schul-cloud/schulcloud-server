@@ -1,7 +1,5 @@
-import { CustomParameterLocation } from '@src/modules/tool/interface/custom-parameter-location.enum';
-import { CustomParameterScope } from '@src/modules/tool/interface/custom-parameter-scope.enum';
-import { CustomParameterType } from '@src/modules/tool/interface/custom-parameter-type.enum';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CustomParameterScope, CustomParameterLocation, CustomParameterType } from '@shared/domain';
 
 export class CustomParameterResponse {
 	@ApiProperty()

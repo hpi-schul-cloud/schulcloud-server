@@ -7,7 +7,7 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool/external-tool.do';
+} from '@shared/domain/domainobject/external-tool';
 import { BasicToolConfigResponse } from '@src/modules/tool/controller/dto/response/basic-tool-config.response';
 import { Oauth2ToolConfigResponse } from '@src/modules/tool/controller/dto/response/oauth2-tool-config.response';
 import { CustomParameterResponse } from '@src/modules/tool/controller/dto/response/custom-parameter.response';
@@ -15,8 +15,6 @@ import { Lti11ToolConfigResponse } from '../controller/dto/response/lti11-tool-c
 
 @Injectable()
 export class ExternalToolResponseMapper {
-	constructor(private readonly customParameterMapper: CustomParameterMapper) {}
-
 	mapToResponse(externalToolDO: ExternalToolDO): ExternalToolResponse {
 		let mappedConfig: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
 		switch (externalToolDO.config.type) {
