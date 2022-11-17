@@ -12,7 +12,7 @@ import {
 	ITaskUpdate,
 	Lesson,
 	Permission,
-	PermissionContextBuilder,
+	AuthorizationContextBuilder,
 	SortOrder,
 	Task,
 	TaskWithStatusVo,
@@ -63,7 +63,7 @@ export class TaskUC {
 
 		const taskWithStatusVos = tasks.map((task) => {
 			let status: ITaskStatus;
-			if (this.authorizationService.hasPermission(user, task, PermissionContextBuilder.write([]))) {
+			if (this.authorizationService.hasPermission(user, task, AuthorizationContextBuilder.write([]))) {
 				status = task.createTeacherStatusForUser(user);
 			} else {
 				// TaskParentPermission.read check is not needed on this place
@@ -97,7 +97,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([]));
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.read([]));
 
 		if (isFinished) {
 			task.finishForUser(user);
@@ -191,7 +191,7 @@ export class TaskUC {
 
 	private async getPermittedLessons(user: User, courses: Course[]): Promise<Lesson[]> {
 		const writeCourses = courses.filter((c) =>
-			this.authorizationService.hasPermission(user, c, PermissionContextBuilder.write([]))
+			this.authorizationService.hasPermission(user, c, AuthorizationContextBuilder.write([]))
 		);
 		const readCourses = courses.filter((c) => !writeCourses.includes(c));
 
@@ -233,7 +233,7 @@ export class TaskUC {
 
 		if (params.courseId) {
 			const course = await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
 			taskParams.course = course;
 		}
 
@@ -242,7 +242,7 @@ export class TaskUC {
 			if (!taskParams.course || lesson.course.id !== taskParams.course.id) {
 				throw new BadRequestException('Lesson does not belong to Course');
 			}
-			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
 			taskParams.lesson = lesson;
 		}
 
@@ -264,7 +264,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.read([Permission.HOMEWORK_VIEW]));
 
 		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])
 			? task.createTeacherStatusForUser(user)
@@ -281,7 +281,11 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([Permission.HOMEWORK_EDIT]));
+		this.authorizationService.checkPermission(
+			user,
+			task,
+			AuthorizationContextBuilder.write([Permission.HOMEWORK_EDIT])
+		);
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const [key, value] of Object.entries(params)) {
@@ -293,7 +297,7 @@ export class TaskUC {
 
 		if (params.courseId) {
 			const course = await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
 			task.course = course;
 		}
 
@@ -302,7 +306,7 @@ export class TaskUC {
 			if (!task.course || lesson.course.id !== task.course.id) {
 				throw new BadRequestException('Lesson does not belong to Course');
 			}
-			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
 			task.lesson = lesson;
 		}
 
@@ -320,7 +324,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.write([]));
 
 		const params = FileParamBuilder.build(task.school.id, task);
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);

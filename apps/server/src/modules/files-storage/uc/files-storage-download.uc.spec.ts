@@ -11,7 +11,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
-import { PermissionContexts } from '../files-storage.const';
+import { AuthorizationContexts } from '../files-storage.const';
 import { IGetFileResponse } from '../interface/storage-client';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -123,7 +123,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					allowedType,
 					fileRecord.parentId,
-					PermissionContexts.read
+					AuthorizationContexts.read
 				);
 			});
 

@@ -10,7 +10,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
-import { PermissionContexts } from '../files-storage.const';
+import { AuthorizationContexts } from '../files-storage.const';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
 
@@ -112,7 +112,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					params.parentType,
 					params.parentId,
-					PermissionContexts.read
+					AuthorizationContexts.read
 				);
 			});
 

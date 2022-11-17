@@ -6,7 +6,7 @@ import {
 	Course,
 	EntityId,
 	Lesson,
-	PermissionContextBuilder,
+	AuthorizationContextBuilder,
 	Task,
 	TaskCopyService,
 	User,
@@ -38,7 +38,7 @@ export class TaskCopyUC {
 		this.featureEnabled();
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalTask = await this.taskRepo.findById(taskId);
-		if (!this.authorisation.hasPermission(user, originalTask, PermissionContextBuilder.read([]))) {
+		if (!this.authorisation.hasPermission(user, originalTask, AuthorizationContextBuilder.read([]))) {
 			throw new NotFoundException('could not find task to copy');
 		}
 
@@ -86,7 +86,7 @@ export class TaskCopyUC {
 
 	private async getDestinationCourse(courseId: string, user: User) {
 		const destinationCourse = await this.courseRepo.findById(courseId);
-		if (!this.authorisation.hasPermission(user, destinationCourse, PermissionContextBuilder.write([]))) {
+		if (!this.authorisation.hasPermission(user, destinationCourse, AuthorizationContextBuilder.write([]))) {
 			throw new ForbiddenException('you dont have permission to add to this course');
 		}
 		return destinationCourse;
@@ -94,7 +94,7 @@ export class TaskCopyUC {
 
 	private async getDestinationLesson(lessonId: string, user: User) {
 		const destinationLesson = await this.lessonRepo.findById(lessonId);
-		if (!this.authorisation.hasPermission(user, destinationLesson, PermissionContextBuilder.write([]))) {
+		if (!this.authorisation.hasPermission(user, destinationLesson, AuthorizationContextBuilder.write([]))) {
 			throw new ForbiddenException('you dont have permission to add to this lesson');
 		}
 		return destinationLesson;

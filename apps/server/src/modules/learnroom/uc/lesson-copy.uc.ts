@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CopyHelperService, CopyStatus, EntityId, Lesson, PermissionContextBuilder, User } from '@shared/domain';
+import { CopyHelperService, CopyStatus, EntityId, Lesson, AuthorizationContextBuilder, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CourseRepo, LessonRepo } from '@shared/repo';
@@ -27,7 +27,7 @@ export class LessonCopyUC {
 		this.featureEnabled();
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalLesson = await this.lessonRepo.findById(lessonId);
-		const context = PermissionContextBuilder.read([Permission.TOPIC_CREATE]);
+		const context = AuthorizationContextBuilder.read([Permission.TOPIC_CREATE]);
 		if (!this.authorisation.hasPermission(user, originalLesson, context)) {
 			throw new ForbiddenException('could not find lesson to copy');
 		}
@@ -62,7 +62,7 @@ export class LessonCopyUC {
 
 	private async getDestinationCourse(courseId: string, user: User) {
 		const destinationCourse = await this.courseRepo.findById(courseId);
-		if (!this.authorisation.hasPermission(user, destinationCourse, PermissionContextBuilder.write([]))) {
+		if (!this.authorisation.hasPermission(user, destinationCourse, AuthorizationContextBuilder.write([]))) {
 			throw new ForbiddenException('you dont have permission to add to this course');
 		}
 		return destinationCourse;
