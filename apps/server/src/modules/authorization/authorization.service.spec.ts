@@ -2,7 +2,7 @@ import { NotFound } from '@feathersjs/errors';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ForbiddenException, NotImplementedException } from '@nestjs/common';
+import { ForbiddenException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ALL_RULES, BaseEntity, Permission, PermissionContextBuilder } from '@shared/domain';
 import {
@@ -79,63 +79,66 @@ describe('authorization.service', () => {
 			};
 		};
 
-		it('throw an error if no rule exist', () => {
-			const { context, user } = setup();
-			const entity = new TestEntity();
+		describe('if rule not exist', () => {
+			it('should throw NotImplementedException ', () => {
+				const { context, user } = setup();
+				const entity = new TestEntity();
 
-			const exec = () => {
-				service.hasPermission(user, entity, context);
-			};
-			expect(exec).toThrowError(NotImplementedException);
+				const exec = () => {
+					service.hasPermission(user, entity, context);
+				};
+				expect(exec).toThrowError(NotImplementedException);
+			});
 		});
+		describe('can resolve', () => {
+			it('lesson', () => {
+				const { context, lesson, user } = setup();
+				const response = service.hasPermission(user, lesson, context);
+				expect(response).toBe(true);
+			});
 
-		it('can resolve lesson', () => {
-			const { context, lesson, user } = setup();
-			const response = service.hasPermission(user, lesson, context);
-			expect(response).toBe(true);
-		});
+			it('tasks', () => {
+				const { context, task, user } = setup();
+				const response = service.hasPermission(user, task, context);
+				expect(response).toBe(true);
+			});
 
-		it('can resolve tasks', () => {
-			const { context, task, user } = setup();
-			const response = service.hasPermission(user, task, context);
-			expect(response).toBe(true);
-		});
+			it('courses', () => {
+				const { context, course, user } = setup();
+				const response = service.hasPermission(user, course, context);
+				expect(response).toBe(true);
+			});
 
-		it('can resolve courses', () => {
-			const { context, course, user } = setup();
-			const response = service.hasPermission(user, course, context);
-			expect(response).toBe(true);
-		});
+			it('school', () => {
+				const { context, school, user } = setup();
+				const response = service.hasPermission(user, school, context);
+				expect(response).toBe(true);
+			});
 
-		it('can resolve school', () => {
-			const { context, school, user } = setup();
-			const response = service.hasPermission(user, school, context);
-			expect(response).toBe(true);
-		});
+			it('user', () => {
+				const { context, user } = setup();
+				const response = service.hasPermission(user, user, context);
+				expect(response).toBe(true);
+			});
 
-		it('can resolve user', () => {
-			const { context, user } = setup();
-			const response = service.hasPermission(user, user, context);
-			expect(response).toBe(true);
-		});
+			it('team', () => {
+				const { team, user } = setup();
+				const context = PermissionContextBuilder.read([Permission.CHANGE_TEAM_ROLES]);
+				const response = service.hasPermission(user, team, context);
+				expect(response).toBe(true);
+			});
 
-		it('can resolve team', () => {
-			const { team, user } = setup();
-			const context = PermissionContextBuilder.read([Permission.CHANGE_TEAM_ROLES]);
-			const response = service.hasPermission(user, team, context);
-			expect(response).toBe(true);
-		});
+			it('courseGroup', () => {
+				const { context, courseGroup, user } = setup();
+				const response = service.hasPermission(user, courseGroup, context);
+				expect(response).toBe(true);
+			});
 
-		it('can resolve courseGroup', () => {
-			const { context, courseGroup, user } = setup();
-			const response = service.hasPermission(user, courseGroup, context);
-			expect(response).toBe(true);
-		});
-
-		it('can resolve courseGroup', () => {
-			const { context, submission, user } = setup();
-			const response = service.hasPermission(user, submission, context);
-			expect(response).toBe(true);
+			it('submission', () => {
+				const { context, submission, user } = setup();
+				const response = service.hasPermission(user, submission, context);
+				expect(response).toBe(true);
+			});
 		});
 	});
 
@@ -156,7 +159,7 @@ describe('authorization.service', () => {
 			spy.mockRestore();
 		});
 
-		it('should call this.hasPermission', () => {
+		it('should throw ForbiddenException', () => {
 			const { context, user } = setup();
 			const spy = jest.spyOn(service, 'hasPermission').mockReturnValue(false);
 
@@ -252,14 +255,23 @@ describe('authorization.service', () => {
 		});
 
 		describe('User can not be found', () => {
-			it('Should throw ForbiddenException if user by id can not be found.', async () => {
+			it('Should throw Error', async () => {
+				const userId = new ObjectId().toHexString();
+				const error = new Error();
+				loader.loadEntity.mockRejectedValue(error);
+
+				await expect(service.getUserWithPermissions(userId)).rejects.toThrowError(error);
+			});
+		});
+
+		describe('If user is not instanceof User', () => {
+			it('Should throw InternalServerErrorException ', async () => {
+				const userId = new ObjectId().toHexString();
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				loader.loadEntity.mockResolvedValue();
 
-				const userId = new ObjectId().toHexString();
-
-				await expect(service.getUserWithPermissions(userId)).rejects.toThrowError(ForbiddenException);
+				await expect(service.getUserWithPermissions(userId)).rejects.toThrowError(InternalServerErrorException);
 			});
 		});
 	});

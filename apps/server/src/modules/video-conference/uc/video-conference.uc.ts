@@ -391,7 +391,7 @@ export class VideoConferenceUc {
 		conferenceScope: VideoConferenceScope,
 		entityId: EntityId
 	): Promise<BBBRole> {
-		const permissionMap: Map<Permission, Promise<boolean>> = this.hasPermissionsByReferences(
+		const permissionMap: Map<Permission, Promise<boolean>> = this.hasPermissions(
 			userId,
 			PermissionScopeMapping[conferenceScope],
 			entityId,
@@ -408,7 +408,7 @@ export class VideoConferenceUc {
 		throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 	}
 
-	private hasPermissionsByReferences(
+	private hasPermissions(
 		userId: EntityId,
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,

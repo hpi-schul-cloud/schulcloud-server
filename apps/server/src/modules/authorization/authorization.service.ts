@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	BasePermissionManager,
 	CourseGroupRule,
@@ -83,6 +83,6 @@ export class AuthorizationService extends BasePermissionManager {
 		if (userWithPermissions instanceof User) {
 			return userWithPermissions;
 		}
-		throw new ForbiddenException();
+		throw new InternalServerErrorException('userWithPermissions is not instance of User');
 	}
 }

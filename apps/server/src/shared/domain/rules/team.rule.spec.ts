@@ -44,20 +44,24 @@ describe('TeamRule', () => {
 	};
 
 	describe('isApplicable', () => {
-		it('should return truthy', () => {
-			const { user, team } = setup();
-			const result = service.isApplicable(user, team);
+		describe('if entity type team', () => {
+			it('should return true', () => {
+				const { user, team } = setup();
 
-			expect(result).toBe(true);
+				const result = service.isApplicable(user, team);
+				expect(result).toBe(true);
+			});
 		});
 
-		it('should return falsy', () => {
-			const { user } = setup();
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			const result = service.isApplicable(user, user);
+		describe('if entity type is wrong', () => {
+			it('should return false', () => {
+				const { user } = setup();
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				const result = service.isApplicable(user, user);
 
-			expect(result).toBe(false);
+				expect(result).toBe(false);
+			});
 		});
 	});
 
@@ -65,19 +69,25 @@ describe('TeamRule', () => {
 		describe('if user is a teamUser and teamRoles are inherited ', () => {
 			it('should return "true" by teamRoleA ', () => {
 				const { user, team } = setup();
+
 				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionA]));
+
 				expect(res).toBe(true);
 			});
 
 			it('should return "true" by teamRoleB', () => {
 				const { user, team } = setup();
+
 				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionB]));
+
 				expect(res).toBe(true);
 			});
 
 			it('should return "true" by teamRole', () => {
 				const { user, team } = setup();
+
 				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionC]));
+
 				expect(res).toBe(true);
 			});
 		});
@@ -85,19 +95,25 @@ describe('TeamRule', () => {
 		describe('if user is a team user', () => {
 			it('should return "false" teamRole has not permission', () => {
 				const { user, team } = setup();
+
 				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionD]));
+
 				expect(res).toBe(false);
 			});
 
 			it('should return "false" if user has global permission', () => {
 				const { user, team } = setup();
+
 				const res = service.hasPermission(user, team, PermissionContextBuilder.read([permissionA]));
+
 				expect(res).toBe(false);
 			});
 
 			it('should return "false" if user has not global permission', () => {
 				const { user, team } = setup();
+
 				const res = service.hasPermission(user, team, PermissionContextBuilder.read([permissionC]));
+
 				expect(res).toBe(false);
 			});
 		});
