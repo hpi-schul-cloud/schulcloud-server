@@ -22,10 +22,15 @@
 				"TIMEOUT_MS": {
 					"type": "integer",
 					"description": "Outgoing request timeout in milliseconds."
+				},
+				"TIMEOUT_ES": {
+					"type": "integer",
+					"description": "Outgoing Edu-Sharing request timeout in milliseconds."
 				}
 			},
 			"default": {
 				"TIMEOUT_MS": 5000,
+				"TIMEOUT_ES": 10000,
 				"KEEP_ALIVE": true
 			}
 		},

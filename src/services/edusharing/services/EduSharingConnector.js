@@ -300,7 +300,7 @@ class EduSharingConnector {
 					criteria,
 					facets,
 				}),
-				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
+				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_ES'),
 			};
 
 			const response = await this.eduSharingRequest(options);
@@ -317,13 +317,13 @@ class EduSharingConnector {
 						node.properties['cclom:general_keyword'] &&
 						node.properties['cclom:general_keyword'][0]
 					) {
-						let clean_keywords = [];
-						for (let dirty_keyword of node.properties['cclom:general_keyword']) {
-							for (let keyword of dirty_keyword.split(',')) {
-								clean_keywords.push(keyword.trim());
+						const cleanKeywords = [];
+						for (const dirtyKeyword of node.properties['cclom:general_keyword']) {
+							for (const keyword of dirtyKeyword.split(',')) {
+								cleanKeywords.push(keyword.trim());
 							}
 						}
-						node.properties['cclom:general_keyword'] = clean_keywords;
+						node.properties['cclom:general_keyword'] = cleanKeywords;
 					}
 				});
 				await Promise.allSettled(promises);
@@ -339,8 +339,8 @@ class EduSharingConnector {
 	}
 
 	async getPlayerForNode(nodeUuid) {
-	    try {
-			const url = `${ES_ENDPOINTS.RENDERER}${nodeUuid}`
+		try {
+			const url = `${ES_ENDPOINTS.RENDERER}${nodeUuid}`;
 			const options = {
 				method: 'GET',
 				url,
@@ -348,7 +348,7 @@ class EduSharingConnector {
 					Accept: 'application/json',
 					...basicAuthorizationHeaders,
 				},
-				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
+				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_ES'),
 			};
 
 			const response = await this.eduSharingRequest(options);
@@ -357,10 +357,10 @@ class EduSharingConnector {
 				const root = htmlParser.parse(parsed.detailsSnippet);
 				const content = root.querySelector('.edusharing_rendering_content_wrapper');
 				const iframe = content.querySelector('iframe');
-				const iframe_src = iframe.getAttribute('src');
+				const iframeSrc = iframe.getAttribute('src');
 				const script = content.querySelector('script');
-				const script_src = script.getAttribute('src');
-				if (iframe_src === null || script_src === null) {
+				const scriptSrc = script.getAttribute('src');
+				if (iframeSrc === null || scriptSrc === null) {
 					throw new GeneralError('Could not find player in answer from Edu-Sharing');
 				}
 				return { 'iframe_src': iframe_src, 'script_src': script_src };
