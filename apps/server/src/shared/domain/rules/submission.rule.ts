@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Submission, User } from '../entity';
-import { IAuthorizationContext, AuthorizableObject } from '../interface/rule';
+import { IAuthorizationContext, AuthorizableObjectType } from '../interface/rule';
 import { Actions } from './actions.enum';
 import { BaseRule } from './base-rule';
 import { CourseGroupRule } from './course-group.rule';
@@ -12,7 +12,7 @@ export class SubmissionRule extends BaseRule<Submission> {
 		super();
 	}
 
-	public isApplicable(user: User, object: AuthorizableObject): boolean {
+	public isApplicable(user: User, object: AuthorizableObjectType): boolean {
 		const isMatched = object instanceof Submission;
 
 		return isMatched;

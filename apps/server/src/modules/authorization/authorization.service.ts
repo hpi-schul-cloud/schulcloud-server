@@ -14,7 +14,7 @@ import {
 	User,
 	UserRule,
 } from '@shared/domain';
-import { IAuthorizationContext, AuthorizableObject } from '@shared/domain/interface';
+import { IAuthorizationContext, AuthorizableObjectType } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
@@ -45,7 +45,7 @@ export class AuthorizationService extends BaseRuleManager {
 		]);
 	}
 
-	checkPermission(user: User, entity: AuthorizableObject, context: IAuthorizationContext) {
+	checkPermission(user: User, entity: AuthorizableObjectType, context: IAuthorizationContext) {
 		if (!this.hasPermission(user, entity, context)) {
 			throw new ForbiddenException();
 		}

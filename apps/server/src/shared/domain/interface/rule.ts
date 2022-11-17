@@ -8,9 +8,8 @@ export interface IAuthorizationContext {
 	requiredPermissions: Permission[];
 }
 
-export type AuthorizableObject = BaseDomainObject | BaseEntity;
+export type AuthorizableObjectType = BaseDomainObject | BaseEntity;
 
-// TODO: Why not IRule<T extends AuthorizableObject>?
-export interface IRule<T = AuthorizableObject> {
+export interface IRule<T = AuthorizableObjectType> {
 	hasPermission(user: User, object: T, context: IAuthorizationContext): boolean;
 }

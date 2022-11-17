@@ -11,7 +11,7 @@ import {
 	IAuthorizationContext,
 	Permission,
 	AuthorizationContextBuilder,
-	AuthorizableObject,
+	AuthorizableObjectType,
 	User,
 } from '@shared/domain';
 import {
@@ -216,7 +216,7 @@ describe('authorization.service', () => {
 			const entityName = AllowedAuthorizationEntityType.Course;
 			const entityId = new ObjectId().toHexString();
 			const spy = jest.spyOn(service, 'hasPermission');
-			spy.mockImplementation((user: User, entity: AuthorizableObject, context: IAuthorizationContext) => {
+			spy.mockImplementation((user: User, entity: AuthorizableObjectType, context: IAuthorizationContext) => {
 				return context.requiredPermissions[0] === permissionTrue;
 			});
 

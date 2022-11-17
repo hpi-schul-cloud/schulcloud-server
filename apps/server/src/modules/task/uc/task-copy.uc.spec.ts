@@ -4,7 +4,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, CopyHelperService, AuthorizableObject, TaskCopyService, User } from '@shared/domain';
+import { Actions, CopyHelperService, AuthorizableObjectType, TaskCopyService, User } from '@shared/domain';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
@@ -259,7 +259,7 @@ describe('task copy uc', () => {
 					const task = taskFactory.buildWithId();
 					userRepo.findById.mockResolvedValue(user);
 					taskRepo.findById.mockResolvedValue(task);
-					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== task);
+					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObjectType) => e !== task);
 					return { user, course, lesson, task };
 				};
 
@@ -287,7 +287,7 @@ describe('task copy uc', () => {
 					userRepo.findById.mockResolvedValue(user);
 					taskRepo.findById.mockResolvedValue(task);
 					courseRepo.findById.mockResolvedValue(course);
-					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== course);
+					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObjectType) => e !== course);
 					return { user, course, task };
 				};
 
@@ -346,7 +346,7 @@ describe('task copy uc', () => {
 				jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
 				jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
 				jest.spyOn(lessonRepo, 'findById').mockImplementation(() => Promise.resolve(lesson));
-				jest.spyOn(authorisation, 'hasPermission').mockImplementation((u: User, e: AuthorizableObject) => {
+				jest.spyOn(authorisation, 'hasPermission').mockImplementation((u: User, e: AuthorizableObjectType) => {
 					if (e === lesson) return false;
 					return true;
 				});

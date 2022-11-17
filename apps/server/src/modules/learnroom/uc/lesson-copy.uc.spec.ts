@@ -4,7 +4,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, CopyHelperService, EtherpadService, AuthorizableObject, User } from '@shared/domain';
+import { Actions, CopyHelperService, EtherpadService, AuthorizableObjectType, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
@@ -234,7 +234,7 @@ describe('lesson copy uc', () => {
 				const lesson = lessonFactory.buildWithId();
 				userRepo.findById.mockResolvedValue(user);
 				lessonRepo.findById.mockResolvedValue(lesson);
-				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== lesson);
+				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObjectType) => e !== lesson);
 
 				return { user, course, lesson };
 			};
@@ -259,7 +259,7 @@ describe('lesson copy uc', () => {
 				userRepo.findById.mockResolvedValue(user);
 				lessonRepo.findById.mockResolvedValue(lesson);
 				courseRepo.findById.mockResolvedValue(course);
-				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== course);
+				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObjectType) => e !== course);
 
 				return { user, course, lesson };
 			};
