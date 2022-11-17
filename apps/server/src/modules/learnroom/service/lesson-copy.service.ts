@@ -18,10 +18,13 @@ import {
 	Lesson,
 	Material,
 	NexboardService,
-	TaskCopyService,
 	User,
 } from '@shared/domain';
+import { LessonRepo } from '@shared/repo';
+import { CopyFilesService } from '@src/modules/files-storage-client';
+import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
 import { randomBytes } from 'crypto';
+import { TaskCopyService } from './task-copy.service';
 
 export type LessonCopyParams = {
 	originalLesson: Lesson;
@@ -36,13 +39,15 @@ export class LessonCopyService {
 		private readonly copyHelperService: CopyHelperService,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly etherpadService: EtherpadService,
-		private readonly nexboardService: NexboardService
+		private readonly nexboardService: NexboardService,
+		private readonly lessonRepo: LessonRepo,
+		private readonly copyFilesService: CopyFilesService
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
 		const { copiedContent, contentStatus } = await this.copyLessonContent(params.originalLesson.contents, params);
 		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(params.originalLesson);
-		const copy = new Lesson({
+		const lessonCopy = new Lesson({
 			course: params.destinationCourse,
 			hidden: true,
 			name: params.copyName ?? params.originalLesson.name,
@@ -51,7 +56,7 @@ export class LessonCopyService {
 			materials: copiedMaterials,
 		});
 
-		const copiedTasksStatus: CopyStatus[] = this.copyLinkedTasks(copy, params);
+		const copiedTasksStatus: CopyStatus[] = await this.copyLinkedTasks(lessonCopy, params);
 
 		const elements = [
 			...LessonCopyService.lessonStatusMetadata(),
@@ -60,16 +65,49 @@ export class LessonCopyService {
 			...copiedTasksStatus,
 		];
 
-		const status: CopyStatus = {
-			title: copy.name,
+		let status: CopyStatus = {
+			title: lessonCopy.name,
 			type: CopyElementType.LESSON,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
-			copyEntity: copy,
+			copyEntity: lessonCopy,
 			originalEntity: params.originalLesson,
 			elements,
 		};
 
+		await this.lessonRepo.save(lessonCopy);
+		status = this.updateCopiedEmbeddedTasks(status);
+
+		const { fileUrlReplacements, copyStatus } = await this.copyFilesService.copyFilesOfEntity(
+			params.originalLesson,
+			lessonCopy,
+			params.user.id
+		);
+
+		elements.push(copyStatus);
+		lessonCopy.contents = this.replaceUrlsInContents(lessonCopy.contents, fileUrlReplacements);
+
+		status.status = this.copyHelperService.deriveStatusFromElements(elements);
+		await this.lessonRepo.save(lessonCopy);
+
 		return status;
+	}
+
+	private replaceUrlsInContents(
+		contents: IComponentProperties[],
+		fileUrlReplacements: FileUrlReplacement[]
+	): IComponentProperties[] {
+		contents = contents.map((item: IComponentProperties) => {
+			if (item.component === 'text' && item.content && 'text' in item.content && item.content.text) {
+				let { text } = item.content;
+				fileUrlReplacements.forEach(({ regex, replacement }) => {
+					text = text.replace(regex, replacement);
+				});
+				item.content.text = text;
+			}
+			return item;
+		});
+
+		return contents;
 	}
 
 	updateCopiedEmbeddedTasks(status: CopyStatus): CopyStatus {
@@ -246,19 +284,19 @@ export class LessonCopyService {
 		return false;
 	}
 
-	private copyLinkedTasks(destinationLesson: Lesson, params: LessonCopyParams) {
+	private async copyLinkedTasks(destinationLesson: Lesson, params: LessonCopyParams) {
 		const linkedTasks = params.originalLesson.getLessonLinkedTasks();
-		const copiedTasksStatus: CopyStatus[] = [];
 		if (linkedTasks.length > 0) {
-			linkedTasks.forEach((element) => {
-				const taskStatus = this.taskCopyService.copyTaskMetadata({
-					originalTask: element,
-					destinationCourse: params.destinationCourse,
-					destinationLesson,
-					user: params.user,
-				});
-				copiedTasksStatus.push(taskStatus);
-			});
+			const copiedTasksStatus = await Promise.all(
+				linkedTasks.map((element) => {
+					return this.taskCopyService.copyTask({
+						originalTask: element,
+						destinationCourse: params.destinationCourse,
+						destinationLesson,
+						user: params.user,
+					});
+				})
+			);
 			const taskGroupStatus = {
 				type: CopyElementType.TASK_GROUP,
 				status: this.copyHelperService.deriveStatusFromElements(copiedTasksStatus),

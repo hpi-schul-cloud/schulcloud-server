@@ -6,7 +6,6 @@ import { ForbiddenException, InternalServerErrorException } from '@nestjs/common
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, CopyHelperService, EtherpadService, PermissionTypes, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
-import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
@@ -24,7 +23,6 @@ describe('lesson copy uc', () => {
 	let authorisation: DeepMocked<AuthorizationService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
-	let fileCopyAppendService: DeepMocked<FileCopyAppendService>;
 
 	afterAll(async () => {
 		await orm.close();
@@ -64,10 +62,6 @@ describe('lesson copy uc', () => {
 					provide: EtherpadService,
 					useValue: createMock<EtherpadService>(),
 				},
-				{
-					provide: FileCopyAppendService,
-					useValue: createMock<FileCopyAppendService>(),
-				},
 			],
 		}).compile();
 
@@ -78,7 +72,6 @@ describe('lesson copy uc', () => {
 		courseRepo = module.get(CourseRepo);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
-		fileCopyAppendService = module.get(FileCopyAppendService);
 	});
 
 	beforeEach(() => {
@@ -111,8 +104,6 @@ describe('lesson copy uc', () => {
 			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(status);
 			const lessonCopyName = 'Copy';
 			copyHelperService.deriveCopyName.mockReturnValue(lessonCopyName);
-
-			fileCopyAppendService.copyFiles.mockResolvedValue(status);
 
 			return {
 				user,
@@ -196,12 +187,6 @@ describe('lesson copy uc', () => {
 			});
 		});
 
-		it('should persist copy', async () => {
-			const { course, user, lesson, copy, userId } = setup();
-			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
-			expect(lessonRepo.save).toBeCalledWith(copy);
-		});
-
 		it('should return status', async () => {
 			const { course, user, lesson, status, userId } = setup();
 			const result = await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
@@ -213,12 +198,6 @@ describe('lesson copy uc', () => {
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			const existingNames = allLessons.map((l) => l.name);
 			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(lesson.name, existingNames);
-		});
-
-		it('should use lessonCopyService ', async () => {
-			const { course, user, lesson, userId } = setup();
-			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
-			expect(lessonCopyService.updateCopiedEmbeddedTasks).toHaveBeenCalled();
 		});
 
 		it('should use findAllByCourseIds to determine existing lesson names', async () => {

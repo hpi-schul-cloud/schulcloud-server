@@ -19,8 +19,8 @@ import {
 	Lesson,
 	Material,
 	NexboardService,
-	TaskCopyService,
 } from '@shared/domain';
+import { LessonRepo } from '@shared/repo';
 import {
 	courseFactory,
 	lessonFactory,
@@ -29,11 +29,15 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { CopyFilesService } from '@src/modules/files-storage-client';
+import { CopyLegacyFilesService } from '@src/modules/files-storage-client/service/copy-legacy-files.service';
 import { LessonCopyService } from './lesson-copy.service';
+import { TaskCopyService } from './task-copy.service';
 
 describe('lesson copy service', () => {
 	let module: TestingModule;
 	let copyService: LessonCopyService;
+	let copyFilesService: DeepMocked<CopyFilesService>;
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let etherpadService: DeepMocked<EtherpadService>;
@@ -67,12 +71,31 @@ describe('lesson copy service', () => {
 					provide: NexboardService,
 					useValue: createMock<NexboardService>(),
 				},
+				{
+					provide: CopyFilesService,
+					useValue: createMock<CopyFilesService>(),
+				},
+				{
+					provide: CopyLegacyFilesService,
+					useValue: createMock<CopyLegacyFilesService>(),
+				},
+				{
+					provide: LessonRepo,
+					useValue: createMock<LessonRepo>(),
+				},
 			],
 		}).compile();
 
 		copyService = module.get(LessonCopyService);
 		taskCopyService = module.get(TaskCopyService);
+		copyFilesService = module.get(CopyFilesService);
+		copyFilesService.copyFilesOfEntity.mockResolvedValue({
+			fileUrlReplacements: [],
+			copyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
+		});
 		copyHelperService = module.get(CopyHelperService);
+		const map: Map<EntityId, BaseEntity> = new Map();
+		copyHelperService.buildCopyEntityDict.mockReturnValue(map);
 		etherpadService = module.get(EtherpadService);
 		nexboardService = module.get(NexboardService);
 	});
@@ -379,13 +402,13 @@ describe('lesson copy service', () => {
 	});
 
 	describe('when lesson contains text content element', () => {
-		const setup = () => {
+		const setup = (text = 'this is a text content') => {
 			const textContent: IComponentProperties = {
 				title: 'text component 1',
 				hidden: false,
 				component: ComponentType.TEXT,
 				content: {
-					text: 'this is a text content',
+					text,
 				},
 			};
 			const user = userFactory.build();
@@ -407,6 +430,30 @@ describe('lesson copy service', () => {
 				destinationCourse,
 				user,
 			});
+			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			expect(contentsStatus).toBeDefined();
+			if (contentsStatus?.elements) {
+				expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_TEXT);
+				expect(contentsStatus.elements[0].status).toEqual(CopyStatusEnum.SUCCESS);
+			}
+		});
+
+		it('it should replace copied urls in lesson text', async () => {
+			const { user, destinationCourse, originalLesson } = setup(
+				'Here is a <a href="FILE_URL_TO_BE_REPLACED">link</a> to a file'
+			);
+
+			copyFilesService.copyFilesOfEntity.mockResolvedValue({
+				fileUrlReplacements: [],
+				copyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
+			});
+
+			const status = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
 			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
 			expect(contentsStatus).toBeDefined();
 			if (contentsStatus?.elements) {
@@ -610,7 +657,7 @@ describe('lesson copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					elements: [mockedTaskStatus],
 				};
-				taskCopyService.copyTaskMetadata.mockReturnValue(mockedTaskStatus);
+				taskCopyService.copyTask.mockResolvedValue(mockedTaskStatus);
 
 				return {
 					user,
@@ -679,9 +726,7 @@ describe('lesson copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: taskCopyTwo,
 				};
-				taskCopyService.copyTaskMetadata
-					.mockReturnValueOnce(mockedTaskStatusOne)
-					.mockReturnValueOnce(mockedTaskStatusTwo);
+				taskCopyService.copyTask.mockResolvedValueOnce(mockedTaskStatusOne).mockResolvedValueOnce(mockedTaskStatusTwo);
 
 				return {
 					user,
@@ -837,7 +882,7 @@ describe('lesson copy service', () => {
 				hidden: false,
 				component: ComponentType.INTERNAL,
 				content: {
-					url: 'urlPrefix/homeworks/someid',
+					url: 'http://somebasedomain.de/homework/someid',
 				},
 			};
 			const originalLesson = lessonFactory.build({
@@ -1326,4 +1371,10 @@ describe('lesson copy service', () => {
 			});
 		});
 	});
+
+	// it('should use lessonCopyService ', async () => {
+	// 	const { course, user, lesson, userId } = setup();
+	// 	await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
+	// 	expect(lessonCopyService.updateCopiedEmbeddedTasks).toHaveBeenCalled();
+	// });
 });
