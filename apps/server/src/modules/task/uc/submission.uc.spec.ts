@@ -52,15 +52,21 @@ describe('Submission UC', () => {
 	});
 
 	describe('findAllByTask is called', () => {
+		const createParams = () => {
+			const user = userFactory.buildWithId();
+			const task = taskFactory.buildWithId();
+
+			const submission1 = submissionFactory.buildWithId();
+			const submission2 = submissionFactory.buildWithId();
+			const submissions = [submission1, submission2];
+			const countedSubmissions: Counted<Submission[]> = [submissions, 2];
+
+			return { user, task, submissions, countedSubmissions };
+		};
+
 		describe('WHEN service returns successfully and user is authorized for all submissions', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-
-				const submission1 = submissionFactory.buildWithId();
-				const submission2 = submissionFactory.buildWithId();
-				const submissions = [submission1, submission2];
-				const countedSubmissions: Counted<Submission[]> = [submissions, 2];
+				const { user, task, submissions, countedSubmissions } = createParams();
 
 				submissionService.findAllByTask.mockResolvedValueOnce(countedSubmissions);
 				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true).mockResolvedValueOnce(true);
@@ -105,13 +111,7 @@ describe('Submission UC', () => {
 
 		describe('WHEN service returns successfully and user is authorized for second submission only', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-
-				const submission1 = submissionFactory.buildWithId();
-				const submission2 = submissionFactory.buildWithId();
-				const submissions = [submission1, submission2];
-				const countedSubmissions: Counted<Submission[]> = [submissions, 2];
+				const { user, task, submissions, countedSubmissions } = createParams();
 
 				submissionService.findAllByTask.mockResolvedValueOnce(countedSubmissions);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -132,13 +132,7 @@ describe('Submission UC', () => {
 
 		describe('WHEN service returns successfully and user is authorized for first submission only', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-
-				const submission1 = submissionFactory.buildWithId();
-				const submission2 = submissionFactory.buildWithId();
-				const submissions = [submission1, submission2];
-				const countedSubmissions: Counted<Submission[]> = [submissions, 2];
+				const { user, task, submissions, countedSubmissions } = createParams();
 
 				submissionService.findAllByTask.mockResolvedValueOnce(countedSubmissions);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -154,6 +148,23 @@ describe('Submission UC', () => {
 				const expectedResult: Counted<Submission[]> = [[submissions[0]], 1];
 
 				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('WHEN service throws error', () => {
+			const setup = () => {
+				const { user, task } = createParams();
+				const error = new Error();
+
+				submissionService.findAllByTask.mockRejectedValueOnce(error);
+
+				return { taskId: task.id, user, error };
+			};
+
+			it('should pass error', async () => {
+				const { user, taskId, error } = setup();
+
+				await expect(submissionUc.findAllByTask(user.id, taskId)).rejects.toThrow(error);
 			});
 		});
 	});
