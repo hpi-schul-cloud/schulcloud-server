@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { Submission, User } from '../entity';
-import { IAuthorizationContext, AuthorizableObjectType } from '../interface/rule';
+import { AuthorizableObjectType, IAuthorizationContext, IRule } from '../interface/rule';
 import { Actions } from './actions.enum';
-import { BaseRule } from './base-rule';
+import { AuthorisationUtils } from './authorisation.utils';
 import { CourseGroupRule } from './course-group.rule';
 import { TaskRule } from './task.rule';
 
 @Injectable()
-export class SubmissionRule extends BaseRule<Submission> {
-	constructor(private readonly taskRule: TaskRule, private readonly courseGroupRule: CourseGroupRule) {
-		super();
-	}
+export class SubmissionRule implements IRule<Submission> {
+	constructor(
+		private readonly authUtils: AuthorisationUtils,
+		private readonly taskRule: TaskRule,
+		private readonly courseGroupRule: CourseGroupRule
+	) {}
 
 	public isApplicable(user: User, object: AuthorizableObjectType): boolean {
 		const isMatched = object instanceof Submission;
@@ -22,7 +24,8 @@ export class SubmissionRule extends BaseRule<Submission> {
 		const { action, requiredPermissions } = context;
 
 		const result =
-			this.utils.hasAllPermissions(user, requiredPermissions) && this.hasAccessToSubmission(user, submission, action);
+			this.authUtils.hasAllPermissions(user, requiredPermissions) &&
+			this.hasAccessToSubmission(user, submission, action);
 
 		return result;
 	}
@@ -58,13 +61,13 @@ export class SubmissionRule extends BaseRule<Submission> {
 	}
 
 	private isCreator(user: User, submission: Submission) {
-		const isCreator = this.utils.hasAccessToEntity(user, submission, ['student']);
+		const isCreator = this.authUtils.hasAccessToEntity(user, submission, ['student']);
 
 		return isCreator;
 	}
 
 	private isTeamMember(user: User, submission: Submission) {
-		const isTeamMember = this.utils.hasAccessToEntity(user, submission, ['teamMembers']);
+		const isTeamMember = this.authUtils.hasAccessToEntity(user, submission, ['teamMembers']);
 
 		return isTeamMember;
 	}
