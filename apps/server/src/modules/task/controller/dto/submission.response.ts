@@ -42,13 +42,13 @@ export class SubmissionResponse {
 	submittingCourseGroupId?: string;
 
 	@ApiPropertyOptional()
-	submittingTeamMembers?: [string];
+	submittingTeamMembers?: string[];
 
 	@ApiPropertyOptional()
 	comment?: string;
 
 	@ApiProperty()
-	submissionFiles: [string];
+	submissionFiles: string[];
 
 	@ApiPropertyOptional()
 	grade?: number;
@@ -57,7 +57,7 @@ export class SubmissionResponse {
 	gradeComment?: string;
 
 	@ApiProperty()
-	gradeFiles: [string];
+	gradeFiles: string[];
 }
 
 export class SubmissionListResponse extends PaginationResponse<SubmissionResponse[]> {

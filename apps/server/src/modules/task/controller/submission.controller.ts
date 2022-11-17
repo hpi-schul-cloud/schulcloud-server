@@ -2,6 +2,7 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { SubmissionMapper } from '../mapper';
 import { SubmissionUC } from '../uc';
 import { TaskUrlParams } from './dto';
 import { SubmissionListResponse } from './dto/submission.response';
@@ -17,8 +18,14 @@ export class SubmissionController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: TaskUrlParams
 	): Promise<SubmissionListResponse> {
-		const statuses = await this.submissionsUc.findAllByTask(currentUser.id, params.taskId);
+		const [submissions] = await this.submissionsUc.findAllByTask(currentUser.userId, params.taskId);
 
-		return statuses;
+		const submissionResponses = submissions.map((submission) => {
+			return SubmissionMapper.mapToResponse(submission);
+		});
+
+		const listResponse = new SubmissionListResponse(submissionResponses, submissionResponses.length);
+
+		return listResponse;
 	}
 }
