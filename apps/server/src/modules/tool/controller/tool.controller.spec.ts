@@ -1,19 +1,35 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Authorization } from 'oauth-1.0a';
-import { ICurrentUser } from '@shared/domain';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ICurrentUser } from '@shared/domain';
 import { Lti11LaunchResponse } from '@src/modules/tool/controller/dto/lti11-launch.response';
 import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
-import { NotImplementedException } from '@nestjs/common';
-import { CustomParameterScope } from '@src/modules/tool/interface/custom-parameter-scope.enum';
-import { CustomParameterLocation } from '@src/modules/tool/interface/custom-parameter-location.enum';
-import { CustomParameterType } from '@src/modules/tool/interface/custom-parameter-type.enum';
 import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
 import { BasicToolConfigParams } from '@src/modules/tool/controller/dto/request/basic-tool-config.params';
 import { Lti11ToolConfigParams } from '@src/modules/tool/controller/dto/request/lti11-tool-config.params';
 import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
 import { Oauth2ToolConfigParams } from '@src/modules/tool/controller/dto/request/oauth2-tool-config.params';
+import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/external-tool.response';
+import { BasicToolConfigResponse } from '@src/modules/tool/controller/dto/response/basic-tool-config.response';
+import { CustomParameterResponse } from '@src/modules/tool/controller/dto/response/custom-parameter.response';
+import { CustomParameterLocationParams } from '@src/modules/tool/interface/custom-parameter-location.enum';
+import { CustomParameterScopeParams } from '@src/modules/tool/interface/custom-parameter-scope.enum';
+import { CustomParameterTypeParams } from '@src/modules/tool/interface/custom-parameter-type.enum';
+import { TokenEndpointAuthMethod } from '@src/modules/tool/interface/token-endpoint-auth-method.enum';
+import { ExternalToolUc } from '@src/modules/tool/uc/external-tool.uc';
+import { ExternalToolRequestMapper } from '@src/modules/tool/mapper/external-tool-do.mapper';
+import { ExternalToolResponseMapper } from '@src/modules/tool/mapper/external-tool-response.mapper';
+import {
+	BasicToolConfigDO,
+	CustomParameterDO,
+	ExternalToolDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
+} from '@shared/domain/domainobject/external-tool';
+import { Lti11ToolConfigResponse } from '@src/modules/tool/controller/dto/response/lti11-tool-config.response';
+import { Oauth2ToolConfigResponse } from '@src/modules/tool/controller/dto/response/oauth2-tool-config.response';
+import { LtiPrivacyPermission } from '@src/modules/tool/interface/lti-privacy-permission.enum';
 import { ToolController } from './tool.controller';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
@@ -24,6 +40,10 @@ describe('ToolController', () => {
 
 	let lti11Uc: DeepMocked<Lti11Uc>;
 	let lti11ResponseMapper: DeepMocked<Lti11ResponseMapper>;
+
+	let externalToolUc: DeepMocked<ExternalToolUc>;
+	let externalToolMapper: DeepMocked<ExternalToolRequestMapper>;
+	let externalToolResponseMapper: DeepMocked<ExternalToolResponseMapper>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -37,12 +57,27 @@ describe('ToolController', () => {
 					provide: Lti11ResponseMapper,
 					useValue: createMock<Lti11ResponseMapper>(),
 				},
+				{
+					provide: ExternalToolUc,
+					useValue: createMock<ExternalToolUc>(),
+				},
+				{
+					provide: ExternalToolRequestMapper,
+					useValue: createMock<ExternalToolRequestMapper>(),
+				},
+				{
+					provide: ExternalToolResponseMapper,
+					useValue: createMock<ExternalToolResponseMapper>(),
+				},
 			],
 		}).compile();
 
 		controller = module.get(ToolController);
 		lti11Uc = module.get(Lti11Uc);
 		lti11ResponseMapper = module.get(Lti11ResponseMapper);
+		externalToolUc = module.get(ExternalToolUc);
+		externalToolMapper = module.get(ExternalToolRequestMapper);
+		externalToolResponseMapper = module.get(ExternalToolResponseMapper);
 	});
 
 	afterAll(async () => {
@@ -102,13 +137,14 @@ describe('ToolController', () => {
 			bodyConfigCreateOauthParams.skipConsent = true;
 			bodyConfigCreateOauthParams.scope = 'mockScope';
 			bodyConfigCreateOauthParams.redirectUris = ['mockUri'];
+			bodyConfigCreateOauthParams.tokenEndpointAuthMethod = TokenEndpointAuthMethod.CLIENT_SECRET_POST;
 
 			const customParameterCreateParams = new CustomParameterCreateParams();
 			customParameterCreateParams.name = 'mockName';
 			customParameterCreateParams.default = 'mockDefault';
-			customParameterCreateParams.location = CustomParameterLocation.PATH;
-			customParameterCreateParams.scope = CustomParameterScope.SCHOOL;
-			customParameterCreateParams.type = CustomParameterType.STRING;
+			customParameterCreateParams.location = CustomParameterLocationParams.PATH;
+			customParameterCreateParams.scope = CustomParameterScopeParams.SCHOOL;
+			customParameterCreateParams.type = CustomParameterTypeParams.STRING;
 			customParameterCreateParams.regex = 'mockRegex';
 
 			const body = new ExternalToolParams();
@@ -121,40 +157,147 @@ describe('ToolController', () => {
 
 			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 
+			const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
+				name: 'mockName',
+				default: 'mockDefault',
+				location: CustomParameterLocation.PATH,
+				scope: CustomParameterScope.SCHOOL,
+				type: CustomParameterType.STRING,
+				regex: 'mockRegex',
+			});
+			const basicToolConfigResponse: BasicToolConfigResponse = new BasicToolConfigResponse({
+				type: ToolConfigType.BASIC,
+				baseUrl: 'mockUrl',
+			});
+			const lti11ToolConfigResponse: Lti11ToolConfigResponse = new Lti11ToolConfigResponse({
+				key: 'mockKey',
+				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+				privacy_permission: LtiPrivacyPermission.NAME,
+				type: ToolConfigType.LTI11,
+				baseUrl: 'mockUrl',
+			});
+			const oauth2ToolConfigResponse: Oauth2ToolConfigResponse = new Oauth2ToolConfigResponse({
+				clientId: 'mockId',
+				skipConsent: false,
+				type: ToolConfigType.OAUTH2,
+				baseUrl: 'mockUrl',
+			});
+			const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
+				id: '1',
+				name: 'mockName',
+				url: 'mockUrl',
+				logoUrl: 'mockLogoUrl',
+				parameters: [customParameterResponse],
+				isHidden: true,
+				openNewTab: true,
+				version: 1,
+				config: basicToolConfigResponse,
+			});
+
+			const basicToolConfigDO: BasicToolConfigDO = new BasicToolConfigDO({
+				type: ToolConfigType.BASIC,
+				baseUrl: 'mockUrl',
+			});
+			const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
+				secret: 'mockSecret',
+				key: 'mockKey',
+				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+				privacy_permission: LtiPrivacyPermission.NAME,
+				type: ToolConfigType.LTI11,
+				baseUrl: 'mockUrl',
+			});
+			const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
+				clientId: 'mockId',
+				skipConsent: false,
+				type: ToolConfigType.OAUTH2,
+				baseUrl: 'mockUrl',
+			});
+			const customParameterDO: CustomParameterDO = new CustomParameterDO({
+				name: 'mockName',
+				default: 'mockDefault',
+				location: CustomParameterLocation.PATH,
+				scope: CustomParameterScope.SCHOOL,
+				type: CustomParameterType.STRING,
+				regex: 'mockRegex',
+			});
+			const externalToolDO: ExternalToolDO = new ExternalToolDO({
+				id: '1',
+				name: 'mockName',
+				url: 'mockUrl',
+				logoUrl: 'mockLogoUrl',
+				parameters: [customParameterDO],
+				isHidden: true,
+				openNewTab: true,
+				version: 1,
+				config: basicToolConfigDO,
+			});
+
 			return {
 				body,
 				bodyConfigCreateBasicParams,
 				bodyConfigCreateOauthParams,
 				bodyConfigCreateLti11Params,
 				currentUser,
+				externalToolResponse,
+				externalToolDO,
+				lti11ToolConfigDO,
+				lti11ToolConfigResponse,
+				oauth2ToolConfigResponse,
+				oauth2ToolConfigDO,
 			};
 		}
 
-		it('should throw NotImplementedException when creating a basic external tool', () => {
-			const { body, bodyConfigCreateBasicParams, currentUser } = setup();
+		it('should return basic external tool response', async () => {
+			const { body, bodyConfigCreateBasicParams, currentUser, externalToolResponse, externalToolDO } = setup();
 			body.config = bodyConfigCreateBasicParams;
+			externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
+			externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
+			externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+			const expected = await controller.createExternalTool(body, currentUser);
 
-			const expected = () => controller.createExternalTool(body, currentUser);
-
-			expect(expected).toThrow(NotImplementedException);
+			expect(expected).toEqual(externalToolResponse);
 		});
 
-		it('should throw NotImplementedException when creating an oauth2 external tool', () => {
-			const { body, bodyConfigCreateOauthParams, currentUser } = setup();
-			body.config = bodyConfigCreateOauthParams;
-
-			const expected = () => controller.createExternalTool(body, currentUser);
-
-			expect(expected).toThrow(NotImplementedException);
-		});
-
-		it('should throw NotImplementedException when creating a lti11 external tool', () => {
-			const { body, bodyConfigCreateLti11Params, currentUser } = setup();
+		it('should return external tool response with lti config', async () => {
+			const {
+				body,
+				bodyConfigCreateLti11Params,
+				lti11ToolConfigResponse,
+				lti11ToolConfigDO,
+				currentUser,
+				externalToolResponse,
+				externalToolDO,
+			} = setup();
 			body.config = bodyConfigCreateLti11Params;
+			externalToolResponse.config = lti11ToolConfigResponse;
+			externalToolDO.config = lti11ToolConfigDO;
+			externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
+			externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
+			externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+			const expected = await controller.createExternalTool(body, currentUser);
 
-			const expected = () => controller.createExternalTool(body, currentUser);
+			expect(expected).toEqual(externalToolResponse);
+		});
 
-			expect(expected).toThrow(NotImplementedException);
+		it('should return external tool response with oauth2 config', async () => {
+			const {
+				body,
+				bodyConfigCreateOauthParams,
+				oauth2ToolConfigResponse,
+				oauth2ToolConfigDO,
+				currentUser,
+				externalToolResponse,
+				externalToolDO,
+			} = setup();
+			body.config = bodyConfigCreateOauthParams;
+			externalToolResponse.config = oauth2ToolConfigResponse;
+			externalToolDO.config = oauth2ToolConfigDO;
+			externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
+			externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
+			externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+			const expected = await controller.createExternalTool(body, currentUser);
+
+			expect(expected).toEqual(externalToolResponse);
 		});
 	});
 });
