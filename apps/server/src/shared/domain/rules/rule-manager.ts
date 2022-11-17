@@ -1,7 +1,6 @@
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { User } from '../entity/user.entity';
 import { AuthorizableObjectType, IAuthorizationContext, IRule } from '../interface';
-import { BaseRule } from './base-rule';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
@@ -13,7 +12,7 @@ import { UserRule } from './user.rule';
 
 @Injectable()
 export class RuleManager {
-	private rules: BaseRule[] = [];
+	private rules: IRule[] = [];
 
 	constructor(
 		private readonly courseRule: CourseRule,
@@ -44,11 +43,11 @@ export class RuleManager {
 		return rule.hasPermission(user, object, context);
 	}
 
-	private registerRules(rules: BaseRule[]): void {
+	private registerRules(rules: IRule[]): void {
 		this.rules = [...this.rules, ...rules];
 	}
 
-	private selectRules(user: User, object: AuthorizableObjectType, context?: IAuthorizationContext): BaseRule[] {
+	private selectRules(user: User, object: AuthorizableObjectType, context?: IAuthorizationContext): IRule[] {
 		return this.rules.filter((rule) => rule.isApplicable(user, object, context));
 	}
 

@@ -11,5 +11,6 @@ export interface IAuthorizationContext {
 export type AuthorizableObjectType = BaseDomainObject | BaseEntity;
 
 export interface IRule<T = AuthorizableObjectType> {
+	isApplicable(user: User, object: T, context?: IAuthorizationContext): boolean;
 	hasPermission(user: User, object: T, context: IAuthorizationContext): boolean;
 }
