@@ -71,7 +71,7 @@ describe('Submission UC', () => {
 				submissionService.findAllByTask.mockResolvedValueOnce(countedSubmissions);
 				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true).mockResolvedValueOnce(true);
 
-				return { taskId: task.id, user, submissions };
+				return { taskId: task.id, user, submissions, countedSubmissions };
 			};
 
 			it('should call findAllByTask', async () => {
@@ -101,11 +101,11 @@ describe('Submission UC', () => {
 			});
 
 			it('should return submissions', async () => {
-				const { user, taskId, submissions } = setup();
+				const { user, taskId, countedSubmissions } = setup();
 
 				const result = await submissionUc.findAllByTask(user.id, taskId);
 
-				expect(result).toEqual([submissions, submissions.length]);
+				expect(result).toEqual(countedSubmissions);
 			});
 		});
 
