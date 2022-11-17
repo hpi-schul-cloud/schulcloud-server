@@ -1,5 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CustomParameterMapper } from '@src/modules/tool/mapper/custom-parameter.mapper';
+import { Injectable } from '@nestjs/common';
 import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/external-tool.response';
 import {
 	BasicToolConfigDO,
@@ -17,22 +16,12 @@ import { Lti11ToolConfigResponse } from '../controller/dto/response/lti11-tool-c
 export class ExternalToolResponseMapper {
 	mapToResponse(externalToolDO: ExternalToolDO): ExternalToolResponse {
 		let mappedConfig: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
-		switch (externalToolDO.config.type) {
-			case 'basic': {
-				mappedConfig = this.mapBasicToolConfigDO(externalToolDO.config);
-				break;
-			}
-			case 'lti11': {
-				mappedConfig = this.mapLti11ToolConfigDO(externalToolDO.config as Lti11ToolConfigDO);
-				break;
-			}
-			case 'oauth2': {
-				mappedConfig = this.mapOauth2ToolConfigDO(externalToolDO.config as Oauth2ToolConfigDO);
-				break;
-			}
-			default: {
-				throw new InternalServerErrorException('Could not found external tool config');
-			}
+		if (externalToolDO.config instanceof BasicToolConfigDO) {
+			mappedConfig = this.mapBasicToolConfigDO(externalToolDO.config);
+		} else if (externalToolDO.config instanceof Lti11ToolConfigDO) {
+			mappedConfig = this.mapLti11ToolConfigDO(externalToolDO.config);
+		} else {
+			mappedConfig = this.mapOauth2ToolConfigDO(externalToolDO.config);
 		}
 
 		const mappedCustomParameter: CustomParameterResponse[] = this.mapCustomParameterToResponse(

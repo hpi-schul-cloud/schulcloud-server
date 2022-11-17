@@ -13,7 +13,6 @@ import { ExternalToolRequestMapper } from '@src/modules/tool/mapper/external-too
 import { AuthorizationModule } from '@src/modules/authorization';
 import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import { EncryptionModule } from '@shared/infra/encryption';
-import { CustomParameterMapper } from '@src/modules/tool/mapper/custom-parameter.mapper';
 import { Lti11Uc } from './uc/lti11.uc';
 import { LtiRoleMapper } from './mapper/lti-role.mapper';
 import { Lti11Service } from './service/lti11.service';
@@ -35,7 +34,6 @@ import { UserModule } from '../user';
 		ExternalToolService,
 		ExternalToolRequestMapper,
 		ExternalToolResponseMapper,
-		CustomParameterMapper,
 	],
 	exports: [ExternalToolRepo, LtiToolRepo],
 })

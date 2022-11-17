@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { OauthProviderService, OauthProviderServiceModule } from '@shared/infra/oauth-provider';
+import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
 import { UserModule } from '@src/modules/user';
 import { LoggerModule } from '@src/core/logger';

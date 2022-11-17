@@ -1,5 +1,4 @@
 import { ExternalToolRequestMapper } from '@src/modules/tool/mapper/external-tool-request.mapper';
-import { CustomParameterMapper } from '@src/modules/tool/mapper/custom-parameter.mapper';
 import { BasicToolConfigParams } from '@src/modules/tool/controller/dto/request/basic-tool-config.params';
 import { Lti11ToolConfigParams } from '@src/modules/tool/controller/dto/request/lti11-tool-config.params';
 import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
@@ -10,13 +9,7 @@ import { CustomParameterLocationParams } from '@src/modules/tool/interface/custo
 import { CustomParameterScopeParams } from '@src/modules/tool/interface/custom-parameter-scope.enum';
 import { CustomParameterTypeParams } from '@src/modules/tool/interface/custom-parameter-type.enum';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ICurrentUser,
-	ToolConfigType,
-} from '@shared/domain';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '@shared/domain';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -26,28 +19,18 @@ import {
 } from '@shared/domain/domainobject/external-tool';
 import { LtiPrivacyPermission } from '@src/modules/tool/interface/lti-privacy-permission.enum';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 
 describe('ExternalToolRequestMapper', () => {
 	let module: TestingModule;
 	let mapper: ExternalToolRequestMapper;
 
-	let customParameterMapper: DeepMocked<CustomParameterMapper>;
-
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [
-				ExternalToolRequestMapper,
-				{
-					provide: CustomParameterMapper,
-					useValue: createMock<CustomParameterMapper>(),
-				},
-			],
+			providers: [ExternalToolRequestMapper],
 		}).compile();
 
 		mapper = module.get(ExternalToolRequestMapper);
-		customParameterMapper = module.get(CustomParameterMapper);
 	});
 
 	afterAll(async () => {
@@ -95,7 +78,6 @@ describe('ExternalToolRequestMapper', () => {
 		externalToolParams.isHidden = true;
 		externalToolParams.openNewTab = true;
 
-		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 		const basicToolConfigDO: BasicToolConfigDO = new BasicToolConfigDO({
 			type: ToolConfigType.BASIC,
 			baseUrl: 'mockUrl',
@@ -153,7 +135,7 @@ describe('ExternalToolRequestMapper', () => {
 
 	describe('mapRequestToExternalToolDO', () => {
 		it('should map the request to external tool DO with basicConfig', () => {
-			const { externalToolParams, externalToolDO, basicConfigParams, basicToolConfigDO } = setup();
+			const { externalToolParams, externalToolDO, basicConfigParams } = setup();
 			externalToolParams.config = basicConfigParams;
 
 			const result = mapper.mapRequestToExternalToolDO(externalToolParams, 1);

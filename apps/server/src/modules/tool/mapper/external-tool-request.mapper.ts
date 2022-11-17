@@ -1,24 +1,45 @@
 import { Injectable } from '@nestjs/common';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
-import { CustomParameterMapper } from '@src/modules/tool/mapper/custom-parameter.mapper';
 import { BasicToolConfigParams } from '@src/modules/tool/controller/dto/request/basic-tool-config.params';
 import { Oauth2ToolConfigParams } from '@src/modules/tool/controller/dto/request/oauth2-tool-config.params';
 import { Lti11ToolConfigParams } from '@src/modules/tool/controller/dto/request/lti11-tool-config.params';
 import {
+	BasicToolConfigDO,
 	CustomParameterDO,
 	ExternalToolDO,
-	BasicToolConfigDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { TokenEndpointAuthMethod } from '@src/modules/tool/interface/token-endpoint-auth-method.enum';
+import { CustomParameterScopeParams } from '@src/modules/tool/interface/custom-parameter-scope.enum';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { CustomParameterLocationParams } from '@src/modules/tool/interface/custom-parameter-location.enum';
+import { CustomParameterTypeParams } from '@src/modules/tool/interface/custom-parameter-type.enum';
+
+const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
+	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,
+	[CustomParameterScopeParams.SCHOOL]: CustomParameterScope.SCHOOL,
+};
+
+const locationMapping: Record<CustomParameterLocationParams, CustomParameterLocation> = {
+	[CustomParameterLocationParams.PATH]: CustomParameterLocation.PATH,
+	[CustomParameterLocationParams.QUERY]: CustomParameterLocation.QUERY,
+	[CustomParameterLocationParams.TOKEN]: CustomParameterLocation.TOKEN,
+};
+
+const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
+	[CustomParameterTypeParams.STRING]: CustomParameterType.STRING,
+	[CustomParameterTypeParams.BOOLEAN]: CustomParameterType.BOOLEAN,
+	[CustomParameterTypeParams.NUMBER]: CustomParameterType.NUMBER,
+	[CustomParameterTypeParams.AUTO_COURSEID]: CustomParameterType.AUTO_COURSEID,
+	[CustomParameterTypeParams.AUTO_COURSENAME]: CustomParameterType.AUTO_COURSENAME,
+	[CustomParameterTypeParams.AUTO_SCHOOLID]: CustomParameterType.AUTO_SCHOOLID,
+};
 
 @Injectable()
 export class ExternalToolRequestMapper {
-	constructor(private readonly customParameterMapper: CustomParameterMapper) {}
-
 	mapRequestToExternalToolDO(externalToolParams: ExternalToolParams, version: number): ExternalToolDO {
 		let mappedConfig: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
 		if (externalToolParams.config instanceof BasicToolConfigParams) {
@@ -65,9 +86,9 @@ export class ExternalToolRequestMapper {
 				name: customParameterParam.name,
 				default: customParameterParam.default,
 				regex: customParameterParam.regex,
-				scope: this.customParameterMapper.mapScope(customParameterParam.scope),
-				location: this.customParameterMapper.mapLocation(customParameterParam.location),
-				type: this.customParameterMapper.mapType(customParameterParam.type),
+				scope: scopeMapping[customParameterParam.scope],
+				location: locationMapping[customParameterParam.location],
+				type: typeMapping[customParameterParam.type],
 			});
 		});
 	}
