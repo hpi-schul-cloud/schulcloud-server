@@ -24,7 +24,7 @@ export class CopyFilesService {
 		userId: EntityId
 	): Promise<{
 		fileUrlReplacements: FileUrlReplacement[];
-		copyStatus: CopyStatus;
+		fileCopyStatus: CopyStatus;
 	}> {
 		const source = FileParamBuilder.build(originalEntity.getSchoolId(), originalEntity);
 		const target = FileParamBuilder.build(copyEntity.getSchoolId(), copyEntity);
@@ -32,9 +32,9 @@ export class CopyFilesService {
 
 		const fileDtos = await this.filesStorageClientAdapterService.copyFilesOfParent(copyFilesOfParentParams);
 		const fileUrlReplacements = this.createFileUrlReplacements(fileDtos) ?? [];
-		const copyStatus = this.deriveCopyStatus(fileDtos);
+		const fileCopyStatus = this.deriveCopyStatus(fileDtos);
 
-		return { fileUrlReplacements, copyStatus };
+		return { fileUrlReplacements, fileCopyStatus };
 	}
 
 	private createFileUrlReplacements(fileDtos: CopyFileDto[]): FileUrlReplacement[] {

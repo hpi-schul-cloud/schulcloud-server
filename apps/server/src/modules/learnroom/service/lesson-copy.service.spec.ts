@@ -91,7 +91,7 @@ describe('lesson copy service', () => {
 		copyFilesService = module.get(CopyFilesService);
 		copyFilesService.copyFilesOfEntity.mockResolvedValue({
 			fileUrlReplacements: [],
-			copyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
+			fileCopyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
 		});
 		copyHelperService = module.get(CopyHelperService);
 		const map: Map<EntityId, BaseEntity> = new Map();
@@ -445,7 +445,7 @@ describe('lesson copy service', () => {
 
 			copyFilesService.copyFilesOfEntity.mockResolvedValue({
 				fileUrlReplacements: [],
-				copyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
+				fileCopyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
 			});
 
 			const status = await copyService.copyLesson({

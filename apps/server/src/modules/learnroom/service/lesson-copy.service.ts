@@ -77,13 +77,13 @@ export class LessonCopyService {
 		await this.lessonRepo.save(lessonCopy);
 		status = this.updateCopiedEmbeddedTasks(status);
 
-		const { fileUrlReplacements, copyStatus } = await this.copyFilesService.copyFilesOfEntity(
+		const { fileUrlReplacements, fileCopyStatus } = await this.copyFilesService.copyFilesOfEntity(
 			params.originalLesson,
 			lessonCopy,
 			params.user.id
 		);
 
-		elements.push(copyStatus);
+		elements.push(fileCopyStatus);
 		lessonCopy.contents = this.replaceUrlsInContents(lessonCopy.contents, fileUrlReplacements);
 
 		status.status = this.copyHelperService.deriveStatusFromElements(elements);

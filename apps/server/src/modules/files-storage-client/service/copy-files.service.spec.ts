@@ -102,8 +102,8 @@ describe('copy files service', () => {
 				const { originalLesson, copyLesson, userId } = lessonSetup();
 				const copyResponse = await copyFilesService.copyFilesOfEntity(originalLesson, copyLesson, userId);
 				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
-				expect(copyResponse.copyStatus).toBeDefined();
-				expect(copyResponse.copyStatus.type).toBe(CopyElementType.FILE_GROUP);
+				expect(copyResponse.fileCopyStatus).toBeDefined();
+				expect(copyResponse.fileCopyStatus.type).toBe(CopyElementType.FILE_GROUP);
 			});
 		});
 	});

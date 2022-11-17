@@ -30,6 +30,26 @@ export class TaskCopyService {
 	async copyTask(params: TaskCopyParams): Promise<CopyStatus> {
 		const { originalTask, user, destinationCourse, destinationLesson } = params;
 
+		const taskCopy = await this.copyTaskEntity(params, originalTask, user, destinationCourse, destinationLesson);
+
+		const { fileUrlReplacements, fileCopyStatus } = await this.copyFilesService.copyFilesOfEntity(
+			originalTask,
+			taskCopy,
+			user.id
+		);
+
+		await this.updateFileUrls(taskCopy, fileUrlReplacements);
+
+		return this.deriveCopyStatus(fileCopyStatus, taskCopy, params);
+	}
+
+	private async copyTaskEntity(
+		params: TaskCopyParams,
+		originalTask: Task,
+		user: User,
+		destinationCourse: Course | undefined,
+		destinationLesson: Lesson | undefined
+	) {
 		const taskCopy = new Task({
 			name: params.copyName || originalTask.name,
 			description: originalTask.description,
@@ -39,64 +59,19 @@ export class TaskCopyService {
 			course: destinationCourse,
 			lesson: destinationLesson,
 		});
-
 		await this.taskRepo.save(taskCopy);
-
-		const copyFilesResult = await this.copyFilesService.copyFilesOfEntity(originalTask, taskCopy, user.id);
-
-		const legacyFileIds = this.extractLegacyFileIds(taskCopy.description);
-		const targetCourseId = (destinationCourse ? destinationCourse.id : destinationLesson?.course.id) as string;
-
-		const copyLegacyFilesResult = await this.copyLegacyFilesService.copyLegacyFiles(
-			legacyFileIds,
-			targetCourseId,
-			user.id
-		);
-
-		taskCopy.description = this.replaceFileUrls(taskCopy.description, copyFilesResult.fileUrlReplacements);
-		taskCopy.description = this.replaceFileUrls(taskCopy.description, copyLegacyFilesResult.fileUrlReplacements);
-
-		await this.taskRepo.save(taskCopy);
-
-		const fileCopyStatus = this.mergeFileCopyStates(copyFilesResult.copyStatus, copyLegacyFilesResult.copyStatus);
-		const elements = [...this.defaultTaskStatusElements(), fileCopyStatus];
-
-		const status: CopyStatus = {
-			title: taskCopy.name,
-			type: CopyElementType.TASK,
-			status: this.copyHelperService.deriveStatusFromElements(elements),
-			copyEntity: taskCopy,
-			originalEntity: params.originalTask,
-			elements,
-		};
-
-		return status;
+		return taskCopy;
 	}
 
-	private replaceFileUrls(text: string, fileUrlReplacements: FileUrlReplacement[]) {
+	private async updateFileUrls(task: Task, fileUrlReplacements: FileUrlReplacement[]) {
 		fileUrlReplacements.forEach(({ regex, replacement }) => {
-			text = text.replace(regex, replacement);
+			task.description = task.description.replace(regex, replacement);
 		});
-		return text;
+		await this.taskRepo.save(task);
 	}
 
-	private extractLegacyFileIds(text: string): string[] {
-		const regEx = new RegExp(`(?<=src="(https?://[^"]*)?/files/file\\?file=).+?(?=&amp;)`, 'g');
-		const fileIds = text.match(regEx);
-		return fileIds ? uniq(fileIds) : [];
-	}
-
-	private mergeFileCopyStates(fileGroupStatus: CopyStatus, legacyFileGroupStatus: CopyStatus): CopyStatus {
-		const elements = [...(fileGroupStatus.elements || []), ...(legacyFileGroupStatus.elements || [])];
-		return {
-			type: CopyElementType.FILE_GROUP,
-			status: this.copyHelperService.deriveStatusFromElements(elements),
-			elements,
-		};
-	}
-
-	private defaultTaskStatusElements(): CopyStatus[] {
-		return [
+	private deriveCopyStatus(fileCopyStatus: CopyStatus, taskCopy: Task, params: TaskCopyParams) {
+		const elements = [
 			{
 				type: CopyElementType.METADATA,
 				status: CopyStatusEnum.SUCCESS,
@@ -109,6 +84,17 @@ export class TaskCopyService {
 				type: CopyElementType.SUBMISSION_GROUP,
 				status: CopyStatusEnum.NOT_DOING,
 			},
+			fileCopyStatus,
 		];
+
+		const status: CopyStatus = {
+			title: taskCopy.name,
+			type: CopyElementType.TASK,
+			status: this.copyHelperService.deriveStatusFromElements(elements),
+			copyEntity: taskCopy,
+			originalEntity: params.originalTask,
+			elements,
+		};
+		return status;
 	}
 }

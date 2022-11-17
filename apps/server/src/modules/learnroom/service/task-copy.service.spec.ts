@@ -61,7 +61,7 @@ describe('task copy service', () => {
 		copyFilesService = await module.get(CopyFilesService);
 		copyFilesService.copyFilesOfEntity.mockResolvedValue({
 			fileUrlReplacements: [],
-			copyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
+			fileCopyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
 		});
 		copyLegacyFilesService = await module.get(CopyLegacyFilesService);
 		copyLegacyFilesService.copyLegacyFiles.mockResolvedValue({
@@ -439,7 +439,7 @@ describe('task copy service', () => {
 
 				copyFilesService.copyFilesOfEntity.mockResolvedValue({
 					fileUrlReplacements,
-					copyStatus: { type: CopyElementType.TASK, status: CopyStatusEnum.SUCCESS },
+					fileCopyStatus: { type: CopyElementType.TASK, status: CopyStatusEnum.SUCCESS },
 				});
 
 				const status = await copyService.copyTask({
