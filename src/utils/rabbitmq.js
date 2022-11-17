@@ -5,7 +5,7 @@ const logger = require('../logger');
 let connection;
 
 const getConnection = async () => {
-	if (!Configuration.get('FEATURE_RABBITMQ_ENABLED') || !Configuration.get('RABBITMQ_URI')) {
+	if (!Configuration.get('RABBITMQ_URI')) {
 		throw new Error('RabbitMQ is not configured.');
 	}
 
@@ -27,12 +27,10 @@ const getConnection = async () => {
 };
 
 const setup = async () => {
-	if (Configuration.get('FEATURE_RABBITMQ_ENABLED')) {
-		try {
-			await getConnection();
-		} catch (err) {
-			logger.error('RabbitMQ unable to setup.', err);
-		}
+	try {
+		await getConnection();
+	} catch (err) {
+		logger.error('RabbitMQ unable to setup.', err);
 	}
 };
 
