@@ -363,7 +363,7 @@ class EduSharingConnector {
 				if (iframeSrc === null || scriptSrc === null) {
 					throw new GeneralError('Could not find player in answer from Edu-Sharing');
 				}
-				return { 'iframe_src': iframe_src, 'script_src': script_src };
+				return { 'iframe_src': iframeSrc, 'script_src': scriptSrc };
 			} else {
 				throw new GeneralError(`Unexpected answer from Edu-Sharing: ${response}`);
 			}
