@@ -19,6 +19,10 @@ export class AccountService {
 		private readonly logger: Logger
 	) {}
 
+	private get accountStoreEnabled(): boolean {
+		return this.configService.get('FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED');
+	}
+
 	async findById(id: EntityId): Promise<AccountDto> {
 		const accountEntity = await this.accountRepo.findById(id);
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
@@ -66,7 +70,7 @@ export class AccountService {
 			account.credentialHash = accountDto.credentialHash;
 			account.token = accountDto.token;
 
-			if (this.configService.get('FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED')) {
+			if (this.accountStoreEnabled) {
 				try {
 					const result = await this.identityManager.updateAccount(account.id, {
 						email: account.username,
@@ -93,7 +97,7 @@ export class AccountService {
 				credentialHash: accountDto.credentialHash,
 			});
 
-			if (this.configService.get('FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED')) {
+			if (this.accountStoreEnabled) {
 				try {
 					const result = await this.identityManager.createAccount({
 						id: account.id,
@@ -112,8 +116,19 @@ export class AccountService {
 	async updateUsername(accountId: EntityId, username: string): Promise<AccountDto> {
 		const account = await this.accountRepo.findById(accountId);
 		account.username = username;
+		// TODO: Check if necessary in MicroORM
 		account.updatedAt = new Date();
 		await this.accountRepo.save(account);
+
+		if (this.accountStoreEnabled) {
+			try {
+				const result = await this.identityManager.updateAccount(accountId, { email: username });
+				this.logger.log(result);
+			} catch (err) {
+				this.logger.error(err);
+			}
+		}
+
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
@@ -127,16 +142,44 @@ export class AccountService {
 	async updatePassword(accountId: EntityId, password: string): Promise<AccountDto> {
 		const account = await this.accountRepo.findById(accountId);
 		account.password = await this.encryptPassword(password);
+		// TODO: Check if necessary in MicroORM
 		account.updatedAt = new Date();
 		await this.accountRepo.save(account);
+
+		if (this.accountStoreEnabled) {
+			try {
+				const result = await this.identityManager.updateAccountPassword(accountId, password);
+				this.logger.log(result);
+			} catch (err) {
+				this.logger.error(err);
+			}
+		}
+
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
-	delete(id: EntityId): Promise<void> {
+	async delete(id: EntityId): Promise<void> {
+		if (this.accountStoreEnabled) {
+			try {
+				const result = await this.identityManager.deleteAccountById(id);
+				this.logger.log(result);
+			} catch (err) {
+				this.logger.error(err);
+			}
+		}
 		return this.accountRepo.deleteById(id);
 	}
 
-	deleteByUserId(userId: EntityId): Promise<void> {
+	async deleteByUserId(userId: EntityId): Promise<void> {
+		const account = await this.findByUserId(userId);
+		if (this.accountStoreEnabled && account) {
+			try {
+				const result = await this.identityManager.deleteAccountById(account.id);
+				this.logger.log(result);
+			} catch (err) {
+				this.logger.error(err);
+			}
+		}
 		return this.accountRepo.deleteByUserId(userId);
 	}
 

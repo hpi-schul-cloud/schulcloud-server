@@ -34,8 +34,7 @@ const config: IServerConfig = {
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,
 	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED') as boolean,
-	// TODO: get feature config from an environment variable
-	FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED: false,
+	FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED: Configuration.get('FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;
