@@ -10,7 +10,7 @@ export class AuthorisationUtils {
 	 * IMPORTANT: The role collections of the user and nested roles will not be loaded lazily.
 	 * Please make sure you populate them before calling this method.
 	 */
-	resolvePermissions(user: User): string[] {
+	private resolvePermissions(user: User): string[] {
 		if (!user.roles.isInitialized(true)) {
 			throw new Error('Roles items are not loaded.');
 		}

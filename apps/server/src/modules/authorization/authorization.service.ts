@@ -1,54 +1,25 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import {
-	Actions,
-	BaseRuleManager,
-	CourseGroupRule,
-	CourseRule,
-	EntityId,
-	LessonRule,
-	Permission,
-	AuthorizationContextBuilder,
-	SchoolRule,
-	SubmissionRule,
-	TaskRule,
-	User,
-	UserRule,
-} from '@shared/domain';
-import { IAuthorizationContext, AuthorizableObjectType } from '@shared/domain/interface';
-import { TeamRule } from '@shared/domain/rules/team.rule';
+import { Actions, AuthorizationContextBuilder, EntityId, Permission, User } from '@shared/domain';
+import { AuthorizableObjectType, IAuthorizationContext } from '@shared/domain/interface';
+import { AuthorisationUtils } from '@shared/domain/rules/authorisation.utils';
+import { RuleManager } from '@shared/domain/rules/rule-manager';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
 @Injectable()
-export class AuthorizationService extends BaseRuleManager {
-	constructor(
-		private readonly courseRule: CourseRule,
-		private readonly courseGroupRule: CourseGroupRule,
-		private readonly lessonRule: LessonRule,
-		private readonly schoolRule: SchoolRule,
-		private readonly taskRule: TaskRule,
-		private readonly userRule: UserRule,
-		private readonly teamRule: TeamRule,
-		private readonly submissionRule: SubmissionRule,
-		private readonly loader: ReferenceLoader
-	) {
+export class AuthorizationService extends AuthorisationUtils {
+	constructor(private readonly loader: ReferenceLoader, private readonly ruleManager: RuleManager) {
 		super();
-		this.registerRules([
-			this.courseRule,
-			this.courseGroupRule,
-			this.lessonRule,
-			this.taskRule,
-			this.teamRule,
-			this.userRule,
-			this.schoolRule,
-			this.submissionRule,
-		]);
 	}
 
 	checkPermission(user: User, entity: AuthorizableObjectType, context: IAuthorizationContext) {
-		if (!this.hasPermission(user, entity, context)) {
+		if (!this.ruleManager.hasPermission(user, entity, context)) {
 			throw new ForbiddenException();
 		}
+	}
+
+	hasPermission(user: User, entity: AuthorizableObjectType, context: IAuthorizationContext) {
+		return this.ruleManager.hasPermission(user, entity, context);
 	}
 
 	async hasPermissionByReferences(
@@ -62,7 +33,7 @@ export class AuthorizationService extends BaseRuleManager {
 				this.loader.loadEntity(AllowedAuthorizationEntityType.User, userId),
 				this.loader.loadEntity(entityName, entityId),
 			]);
-			const permission = this.hasPermission(user as User, entity, context);
+			const permission = this.ruleManager.hasPermission(user as User, entity, context);
 
 			return permission;
 		} catch (err) {

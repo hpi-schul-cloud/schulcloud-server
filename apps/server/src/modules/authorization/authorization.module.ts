@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ALL_RULES } from '@shared/domain';
+import { RuleManager } from '@shared/domain/rules/rule-manager';
 import { FeathersModule } from '@shared/infra/feathers';
 import {
 	CourseGroupRepo,
@@ -26,6 +27,7 @@ import { ReferenceLoader } from './reference.loader';
 		AuthorizationService,
 		...ALL_RULES,
 		ReferenceLoader,
+		RuleManager,
 		UserRepo,
 		CourseRepo,
 		CourseGroupRepo,
