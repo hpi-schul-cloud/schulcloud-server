@@ -302,11 +302,11 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return descriptions;
 	}
 
-	public finishForUser(user: User) {
+	public finishForUser(user: User): void {
 		this.finished.add(user);
 	}
 
-	public restoreForUser(user: User) {
+	public restoreForUser(user: User): void {
 		this.finished.remove(user);
 	}
 
@@ -314,12 +314,12 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return this.school.id;
 	}
 
-	public publish() {
+	public publish(): void {
 		this.private = false;
 		this.availableDate = new Date(Date.now());
 	}
 
-	public unpublish() {
+	public unpublish(): void {
 		this.private = true;
 	}
 }

@@ -31,11 +31,11 @@ describe('Task Entity', () => {
 			const setup = () => {
 				const task = taskFactory.draft().buildWithId();
 
-				return task;
+				return { task };
 			};
 
 			it('should return true', () => {
-				const task = setup();
+				const { task } = setup();
 
 				expect(task.isDraft()).toEqual(true);
 			});
@@ -45,11 +45,11 @@ describe('Task Entity', () => {
 			const setup = () => {
 				const task = taskFactory.buildWithId();
 
-				return task;
+				return { task };
 			};
 
 			it('should return false', () => {
-				const task = setup();
+				const { task } = setup();
 
 				expect(task.isDraft()).toEqual(false);
 			});
@@ -76,11 +76,11 @@ describe('Task Entity', () => {
 			const setup = () => {
 				const task = taskFactory.buildWithId();
 
-				return task;
+				return { task };
 			};
 
 			it('should return true', () => {
-				const task = setup();
+				const { task } = setup();
 
 				expect(task.isPublished()).toEqual(true);
 			});
@@ -90,11 +90,11 @@ describe('Task Entity', () => {
 			const setup = () => {
 				const task = taskFactory.draft().buildWithId();
 
-				return task;
+				return { task };
 			};
 
 			it('should return false', () => {
-				const task = setup();
+				const { task } = setup();
 
 				expect(task.isPublished()).toEqual(false);
 			});
@@ -104,11 +104,11 @@ describe('Task Entity', () => {
 			const setup = () => {
 				const task = taskFactory.isPlanned().buildWithId();
 
-				return task;
+				return { task };
 			};
 
 			it('should return false', () => {
-				const task = setup();
+				const { task } = setup();
 
 				expect(task.isPublished()).toEqual(false);
 			});
@@ -118,11 +118,11 @@ describe('Task Entity', () => {
 			const setup = () => {
 				const task = taskFactory.isPublished().buildWithId();
 
-				return task;
+				return { task };
 			};
 
 			it('should return true', () => {
-				const task = setup();
+				const { task } = setup();
 
 				expect(task.isPublished()).toEqual(true);
 			});
