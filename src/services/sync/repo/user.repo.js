@@ -71,8 +71,7 @@ const checkUpdate = async (email, userId) => {
 
 const createUser = async (inputUser) => {
 	await checkCreate(inputUser.email);
-	const user = (await createUserInternal(inputUser)).toObject();
-	return { user };
+	return createUserInternal(inputUser);
 };
 
 const updateUser = async (userId, changedUser) => {
@@ -81,7 +80,7 @@ const updateUser = async (userId, changedUser) => {
 		changedUser.roles = await resolveUserRoles(changedUser.roles);
 	}
 	const user = await userModel.findOneAndUpdate({ _id: userId }, changedUser, { new: true }).lean().exec();
-	return { user };
+	return user;
 };
 
 const findImportUsersBySchoolAndName = async (schoolId, firstName, lastName) => {

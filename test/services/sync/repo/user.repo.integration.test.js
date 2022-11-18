@@ -37,7 +37,7 @@ describe('user repo', () => {
 		await closeNestServices(nestServices);
 	});
 
-	describe('createUserAndAccountc', () => {
+	describe('createUser', () => {
 		// const createdAccounts = [];
 		const createdUsers = [];
 
@@ -51,7 +51,7 @@ describe('user repo', () => {
 			await testObjects.cleanup();
 		});
 
-		it('should successfully create new user and account', async () => {
+		it('should successfully create new user', async () => {
 			const school = await testObjects.createTestSchool();
 			const TEST_ROLE = 'blub21';
 			const role = await testObjects.createTestRole({ name: TEST_ROLE, permissions: [] });
@@ -123,8 +123,8 @@ describe('user repo', () => {
 			}
 		});
 	});
-	describe('update user and account', () => {
-		it('should successfully update user and account', async () => {
+	describe('update user', () => {
+		it('should successfully update user', async () => {
 			const initialFirstName = 'Initial Fname';
 			const initialLastName = 'Initial Lname';
 			const initialEmail = 'initial@email.com';
