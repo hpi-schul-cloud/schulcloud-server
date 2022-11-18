@@ -56,8 +56,6 @@ export class SubmissionRule extends BasePermission<Submission> {
 		return hasReadAccess;
 	}
 
-	// TODO: make this sense? Coursegroup should not be interesst on this place. It is not a parent.
-	// The parent is task in solve coursgroup parent relationships.
 	private isInCourseGroup(user: User, submission: Submission) {
 		const isInCourseGroup =
 			submission.courseGroup &&

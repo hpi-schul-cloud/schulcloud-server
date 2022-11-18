@@ -29,7 +29,6 @@ export class Submission extends BaseEntityWithTimestamps {
 	@ManyToOne('User', { fieldName: 'studentId' })
 	student: User;
 
-	// TODO: look like a DB smell it exist only one valid parent the task, no other is related, should be removed soon
 	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId', nullable: true })
 	courseGroup?: CourseGroup;
 

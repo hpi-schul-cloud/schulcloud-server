@@ -237,4 +237,40 @@ describe('Lesson Entity', () => {
 			expect(schoolId).toEqual(course.school.id);
 		});
 	});
+
+	describe('getStudentIds is called', () => {
+		describe('when course with students exists', () => {
+			const setup = () => {
+				const course = courseFactory.studentsWithId(3).build();
+				const lesson = lessonFactory.buildWithId({ course });
+
+				return { lesson };
+			};
+
+			it('should be return the userIds of the students', () => {
+				const { lesson } = setup();
+
+				const result = lesson.getStudentIds();
+
+				expect(result.length).toEqual(3);
+			});
+		});
+
+		describe('when coursegroup with students exists', () => {
+			const setup = () => {
+				const courseGroup = courseGroupFactory.studentsWithId(3).build();
+				const lesson = lessonFactory.buildWithId({ course: courseGroup });
+
+				return { lesson };
+			};
+
+			it('should be return the userIds of the students', () => {
+				const { lesson } = setup();
+
+				const result = lesson.getStudentIds();
+
+				expect(result.length).toEqual(3);
+			});
+		});
+	});
 });

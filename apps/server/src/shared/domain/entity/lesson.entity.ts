@@ -194,7 +194,6 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		this.hidden = true;
 	}
 
-	// TODO: test
 	public getStudentIds(): EntityId[] {
 		const parent = this.getParent();
 		const studentIds = parent.getStudentIds();

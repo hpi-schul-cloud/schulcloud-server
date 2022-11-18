@@ -88,10 +88,9 @@ export class Course
 		if (props.startDate) this.startDate = props.startDate;
 	}
 
-	// TODO: test
 	public getStudentIds(): EntityId[] {
 		if (!this.students) {
-			throw new Error('Course.students is undefined. The course need to be populated.');
+			throw new InternalServerErrorException('Course.students is undefined. The course need to be populated.');
 		}
 
 		const studentObjectIds = this.students.getIdentifiers('_id');
@@ -100,7 +99,6 @@ export class Course
 		return studentIds;
 	}
 
-	// TODO: test
 	public userIsSubstitutionTeacher(user: User): boolean {
 		const isSubstitutionTeacher = this.substitutionTeachers.contains(user);
 

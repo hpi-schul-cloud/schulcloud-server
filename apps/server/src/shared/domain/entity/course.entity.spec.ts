@@ -1,4 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
+import { InternalServerErrorException } from '@nestjs/common';
 import { courseFactory, courseGroupFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { Course } from './course.entity';
@@ -169,6 +170,77 @@ describe('CourseEntity', () => {
 				const result = course.getCourseGroupItems();
 				expect(result.length).toEqual(2);
 				expect(result[0]).toEqual(courseGroups[0]);
+			});
+		});
+	});
+
+	describe('getStudentIds is called', () => {
+		describe('when students exists', () => {
+			const setup = () => {
+				const course = courseFactory.studentsWithId(3).build();
+
+				return { course };
+			};
+
+			it('should be return the userIds of the students', () => {
+				const { course } = setup();
+
+				const result = course.getStudentIds();
+
+				expect(result.length).toEqual(3);
+			});
+		});
+
+		describe('when course is not populated', () => {
+			const setup = () => {
+				const course = courseFactory.build();
+				Object.assign(course, { students: undefined });
+
+				return { course };
+			};
+
+			it('should be return the userIds of the students', () => {
+				const { course } = setup();
+
+				expect(() => {
+					course.getStudentIds();
+				}).toThrowError(InternalServerErrorException);
+			});
+		});
+	});
+
+	describe('userIsSubstitutionTeacher is called', () => {
+		describe('when user is a subsitution teacher', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.build({ substitutionTeachers: [user] });
+
+				return { course, user };
+			};
+
+			it('should be return true', () => {
+				const { course, user } = setup();
+
+				const result = course.userIsSubstitutionTeacher(user);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when user is a not subsitution teacher', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.build({ substitutionTeachers: [] });
+
+				return { course, user };
+			};
+
+			it('should be return false', () => {
+				const { course, user } = setup();
+
+				const result = course.userIsSubstitutionTeacher(user);
+
+				expect(result).toBe(false);
 			});
 		});
 	});

@@ -1,4 +1,5 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { InternalServerErrorException } from '@nestjs/common';
 import { IEntityWithSchool } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
@@ -41,7 +42,9 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 	// TODO: test
 	public getStudentIds(): EntityId[] {
 		if (!this.students) {
-			throw new Error('Coursegroup.students is undefined. The coursegroup need to be populated.');
+			throw new InternalServerErrorException(
+				'Coursegroup.students is undefined. The coursegroup need to be populated.'
+			);
 		}
 
 		const studentObjectIds = this.students.getIdentifiers('_id');
