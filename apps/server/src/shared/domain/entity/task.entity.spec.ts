@@ -1,4 +1,4 @@
-import { Collection, MikroORM } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
 import {
 	courseFactory,
