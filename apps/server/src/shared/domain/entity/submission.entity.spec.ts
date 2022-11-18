@@ -42,11 +42,11 @@ describe('Submission entity', () => {
 				const task = taskFactory.buildWithId();
 				const submission = submissionFactory.studentWithId().buildWithId({ task });
 
-				return submission;
+				return { submission };
 			};
 
 			it('should return true.', () => {
-				const submission = setup();
+				const { submission } = setup();
 
 				expect(submission.isSubmitted()).toEqual(true);
 			});
