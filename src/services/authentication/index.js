@@ -1,9 +1,16 @@
-const { AuthenticationService, JWTStrategy } = require('@feathersjs/authentication');
+const { AuthenticationService } = require('@feathersjs/authentication');
 const { LocalStrategy } = require('@feathersjs/authentication-local');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
-const { LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy } = require('./strategies');
+const {
+	LdapStrategy,
+	MoodleStrategy,
+	IservStrategy,
+	TSPStrategy,
+	ApiKeyStrategy,
+	CustomJwtStrategy,
+} = require('./strategies');
 const { hooks } = require('./hooks');
 const { authConfig } = require('./configuration');
 
@@ -39,8 +46,8 @@ module.exports = (app) => {
 	app.set('authentication', authConfig);
 	const authentication = new SCAuthenticationService(app);
 
-	authentication.register('jwt', new JWTStrategy());
 	authentication.register('local', new LocalStrategy());
+	authentication.register('jwt', new CustomJwtStrategy());
 	authentication.register('ldap', new LdapStrategy());
 	authentication.register('moodle', new MoodleStrategy());
 	authentication.register('iserv', new IservStrategy());
