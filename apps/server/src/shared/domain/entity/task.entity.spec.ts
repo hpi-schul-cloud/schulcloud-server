@@ -22,6 +22,10 @@ describe('Task Entity', () => {
 		await orm.close();
 	});
 
+	beforeEach(() => {
+		jest.resetAllMocks();
+	});
+
 	describe('isDraft is called', () => {
 		describe('when task is draft', () => {
 			const setup = () => {
@@ -304,7 +308,6 @@ describe('Task Entity', () => {
 			});
 		});
 
-		// TODO: use mock ..how to split the cases?
 		describe('when submitted submissions exists', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -431,6 +434,8 @@ describe('Task Entity', () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.draft().buildWithId({ creator: user });
 
+				jest.spyOn(task, 'isDraft').mockImplementationOnce(() => true);
+
 				return { task, user };
 			};
 
@@ -443,27 +448,12 @@ describe('Task Entity', () => {
 			});
 		});
 
-		describe('when task is planned', () => {
+		describe('when task is not a draft', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const task = taskFactory.isPlanned().buildWithId({ creator: user });
+				const task = taskFactory.draft().buildWithId({ creator: user });
 
-				return { task, user };
-			};
-
-			it('should be create correct status for isDraft', () => {
-				const { task, user } = setup();
-
-				const status = task.createTeacherStatusForUser(user);
-
-				expect(status.isDraft).toEqual(false);
-			});
-		});
-
-		describe('when task is published', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const task = taskFactory.isPublished().buildWithId({ creator: user });
+				jest.spyOn(task, 'isDraft').mockImplementationOnce(() => false);
 
 				return { task, user };
 			};

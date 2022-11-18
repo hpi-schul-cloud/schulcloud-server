@@ -40,9 +40,10 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 
 	// TODO: test
 	public getStudentIds(): EntityId[] {
-		if (this.students === undefined) {
+		if (!this.students) {
 			throw new Error('Coursegroup.students is undefined. The coursegroup need to be populated.');
 		}
+
 		const studentObjectIds = this.students.getIdentifiers('_id');
 		const studentIds = studentObjectIds.map((id) => id.toString());
 
