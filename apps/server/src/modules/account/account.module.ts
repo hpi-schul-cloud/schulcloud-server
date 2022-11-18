@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { PermissionService } from '@shared/domain';
 import { AccountRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
@@ -19,7 +18,6 @@ import { LoggerModule } from '../../core/logger/logger.module';
 		AccountUc,
 		PermissionService,
 		AccountValidationService,
-		ConfigService,
 	],
 	controllers: [AccountController],
 	exports: [AccountUc, AccountService, AccountValidationService],
