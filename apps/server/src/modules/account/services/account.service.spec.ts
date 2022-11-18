@@ -6,11 +6,12 @@ import { Account, EntityId, Permission, Role, RoleName, School, User } from '@sh
 import { AccountRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
-import { AccountDto } from '@src/modules/account/services/dto';
+import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
 import bcrypt from 'bcryptjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { ConfigService } from '@nestjs/config';
+import { IServerConfig } from '@src/modules/server';
 import { Logger } from '../../../core/logger';
 import { AccountService } from './account.service';
 
@@ -119,7 +120,7 @@ describe('AccountService', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					useValue: createMock<ConfigService<IServerConfig, true>>(),
 				},
 				{
 					provide: IdentityManagementService,
@@ -381,6 +382,29 @@ describe('AccountService', () => {
 					password: defaultPassword,
 				})
 			);
+		});
+
+		it('should log error if update account in IDM fails', async () => {
+			const account = {
+				id: mockTeacherAccount.id,
+				username: mockTeacherAccount.username,
+			} as AccountSaveDto;
+			const error = new Error('Can not update account in IDM');
+			idmServiceMock.updateAccount.mockRejectedValueOnce(error);
+
+			await accountService.save(account);
+			expect(loggerMock.error).toBeCalledWith(error);
+		});
+
+		it('should log error if create account in IDM fails', async () => {
+			const account = {
+				username: mockTeacherAccount.username,
+			} as AccountSaveDto;
+			const error = new Error('Can not create account in IDM');
+			idmServiceMock.createAccount.mockRejectedValueOnce(error);
+
+			await accountService.save(account);
+			expect(loggerMock.error).toBeCalledWith(error);
 		});
 	});
 
