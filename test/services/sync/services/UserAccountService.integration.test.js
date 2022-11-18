@@ -37,7 +37,7 @@ describe('UserAccountService integration', () => {
 		const createdUsers = [];
 
 		afterEach(async () => {
-			const accountPromises = createdAccounts.map((account) => nestAccountService.delete(account));
+			const accountPromises = createdAccounts.map((account) => nestAccountService.delete(account.id));
 			await Promise.all(accountPromises);
 
 			const userPromises = createdUsers.map((user) => userModel.remove(user));
