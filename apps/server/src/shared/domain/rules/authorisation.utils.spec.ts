@@ -143,15 +143,15 @@ describe('permission.utils', () => {
 		});
 
 		describe('[hasAllPermissionsByRole]', () => {
-			const setup = () => {
-				const roleA = roleFactory.buildWithId({ permissions: [permissionA] });
-				const roleB = roleFactory.buildWithId({ permissions: [permissionB], roles: [roleA] });
-				const role = roleFactory.buildWithId({ permissions: [permissionC], roles: [roleB] });
-				return {
-					role,
-				};
-			};
 			describe('WHEN roles are inherited', () => {
+				const setup = () => {
+					const roleA = roleFactory.buildWithId({ permissions: [permissionA] });
+					const roleB = roleFactory.buildWithId({ permissions: [permissionB], roles: [roleA] });
+					const role = roleFactory.buildWithId({ permissions: [permissionC], roles: [roleB] });
+					return {
+						role,
+					};
+				};
 				it('should return true by permissionA', () => {
 					const { role } = setup();
 

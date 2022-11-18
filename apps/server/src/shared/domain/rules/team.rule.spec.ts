@@ -30,21 +30,17 @@ describe('TeamRule', () => {
 		await orm.close();
 	});
 
-	const setup = () => {
-		const role = roleFactory.buildWithId({ permissions: [permissionA] });
-		const teamRoleA = roleFactory.buildWithId({ permissions: [teamPermissionA] });
-		const teamRoleB = roleFactory.buildWithId({ permissions: [teamPermissionB], roles: [teamRoleA] });
-		const teamRole = roleFactory.buildWithId({ permissions: [teamPermissionC], roles: [teamRoleB] });
-		const user = userFactory.buildWithId({ roles: [role] });
-		const team = teamFactory.withRoleAndUserId(teamRole, user.id).build();
-		return {
-			user,
-			team,
-		};
-	};
-
 	describe('isApplicable', () => {
-		describe('if entity type team', () => {
+		describe('WHEN entity type team', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const team = teamFactory.build();
+				return {
+					user,
+					team,
+				};
+			};
+
 			it('should return true', () => {
 				const { user, team } = setup();
 
@@ -53,7 +49,14 @@ describe('TeamRule', () => {
 			});
 		});
 
-		describe('if entity type is wrong', () => {
+		describe('WHEN entity type is wrong', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				return {
+					user,
+				};
+			};
+
 			it('should return false', () => {
 				const { user } = setup();
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -66,33 +69,38 @@ describe('TeamRule', () => {
 	});
 
 	describe('hasPermission', () => {
-		describe('if user is a teamUser and teamRoles are inherited ', () => {
-			it('should return "true" by teamRoleA ', () => {
+		describe('WHEN user is not a team user', () => {
+			const setup = () => {
+				const role = roleFactory.buildWithId({ permissions: [permissionA] });
+				const user = userFactory.buildWithId({ roles: [role] });
+				const team = teamFactory.build();
+				return {
+					user,
+					team,
+				};
+			};
+
+			it('should return "false"', () => {
 				const { user, team } = setup();
 
-				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionA]));
+				const res = service.hasPermission(user, team, PermissionContextBuilder.read([permissionA]));
 
-				expect(res).toBe(true);
-			});
-
-			it('should return "true" by teamRoleB', () => {
-				const { user, team } = setup();
-
-				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionB]));
-
-				expect(res).toBe(true);
-			});
-
-			it('should return "true" by teamRole', () => {
-				const { user, team } = setup();
-
-				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionC]));
-
-				expect(res).toBe(true);
+				expect(res).toBe(false);
 			});
 		});
 
-		describe('if user is a team user', () => {
+		describe('WHEN user is a team user', () => {
+			const setup = () => {
+				const role = roleFactory.buildWithId({ permissions: [permissionA] });
+				const teamRole = roleFactory.buildWithId({ permissions: [teamPermissionA] });
+				const user = userFactory.buildWithId({ roles: [role] });
+				const team = teamFactory.withRoleAndUserId(teamRole, user.id).build();
+				return {
+					user,
+					team,
+				};
+			};
+
 			it('should return "false" teamRole has not permission', () => {
 				const { user, team } = setup();
 
@@ -115,6 +123,45 @@ describe('TeamRule', () => {
 				const res = service.hasPermission(user, team, PermissionContextBuilder.read([permissionC]));
 
 				expect(res).toBe(false);
+			});
+		});
+
+		describe('WHEN user is a team user and teamRoles are inherited ', () => {
+			const setup = () => {
+				const role = roleFactory.buildWithId({ permissions: [permissionA] });
+				const teamRoleA = roleFactory.buildWithId({ permissions: [teamPermissionA] });
+				const teamRoleB = roleFactory.buildWithId({ permissions: [teamPermissionB], roles: [teamRoleA] });
+				const teamRole = roleFactory.buildWithId({ permissions: [teamPermissionC], roles: [teamRoleB] });
+				const user = userFactory.buildWithId({ roles: [role] });
+				const team = teamFactory.withRoleAndUserId(teamRole, user.id).build();
+				return {
+					user,
+					team,
+				};
+			};
+
+			it('should return "true" by teamRoleA ', () => {
+				const { user, team } = setup();
+
+				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionA]));
+
+				expect(res).toBe(true);
+			});
+
+			it('should return "true" by teamRoleB', () => {
+				const { user, team } = setup();
+
+				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionB]));
+
+				expect(res).toBe(true);
+			});
+
+			it('should return "true" by teamRole', () => {
+				const { user, team } = setup();
+
+				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionC]));
+
+				expect(res).toBe(true);
 			});
 		});
 	});
