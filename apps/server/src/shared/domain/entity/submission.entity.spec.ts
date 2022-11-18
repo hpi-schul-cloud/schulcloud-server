@@ -33,7 +33,7 @@ describe('Submission entity', () => {
 				return submission;
 			};
 
-			it('should be return true.', () => {
+			it('should return true.', () => {
 				const submission = setup();
 
 				expect(submission.isSubmitted()).toEqual(true);
@@ -51,7 +51,7 @@ describe('Submission entity', () => {
 				return { submission, user };
 			};
 
-			it('should be return true.', () => {
+			it('should return true.', () => {
 				const { submission, user } = setup();
 
 				expect(submission.isSubmittedForUser(user)).toEqual(true);
@@ -67,7 +67,7 @@ describe('Submission entity', () => {
 				return { submission, user };
 			};
 
-			it('should be return true.', () => {
+			it('should return true.', () => {
 				const { submission, user } = setup();
 
 				expect(submission.isSubmittedForUser(user)).toEqual(true);
@@ -118,7 +118,7 @@ describe('Submission entity', () => {
 				return submission;
 			};
 
-			it('should be return true.', () => {
+			it('should return true.', () => {
 				const submission = setup();
 
 				expect(submission.isGraded()).toEqual(true);
@@ -135,7 +135,7 @@ describe('Submission entity', () => {
 				return submission;
 			};
 
-			it('should be return true.', () => {
+			it('should return true.', () => {
 				const submission = setup();
 
 				expect(submission.isGraded()).toEqual(true);
@@ -153,7 +153,7 @@ describe('Submission entity', () => {
 				return submission;
 			};
 
-			it('should be return true.', () => {
+			it('should return true.', () => {
 				const submission = setup();
 
 				expect(submission.isGraded()).toEqual(true);
@@ -171,7 +171,7 @@ describe('Submission entity', () => {
 				return { submission, user };
 			};
 
-			it('should be return true.', () => {
+			it('should return true.', () => {
 				const { submission, user } = setup();
 
 				expect(submission.isGradedForUser(user)).toEqual(true);
@@ -187,7 +187,7 @@ describe('Submission entity', () => {
 				return { submission, user };
 			};
 
-			it('should be return true.', () => {
+			it('should return true.', () => {
 				const { submission, user } = setup();
 
 				expect(submission.isGradedForUser(user)).toEqual(true);
@@ -292,7 +292,7 @@ describe('Submission entity', () => {
 				return { submission, user };
 			};
 
-			it('should be return true', () => {
+			it('should return true', () => {
 				const { submission, user } = setup();
 
 				const result = submission.userIsMember(user);
@@ -311,7 +311,7 @@ describe('Submission entity', () => {
 				return { submission, user };
 			};
 
-			it('should be return true', () => {
+			it('should return true', () => {
 				const { submission, user } = setup();
 
 				const result = submission.userIsMember(user);

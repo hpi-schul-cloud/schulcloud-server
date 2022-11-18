@@ -218,7 +218,7 @@ describe('CourseEntity', () => {
 				return { course, user };
 			};
 
-			it('should be return true', () => {
+			it('should return true', () => {
 				const { course, user } = setup();
 
 				const result = course.userIsSubstitutionTeacher(user);
