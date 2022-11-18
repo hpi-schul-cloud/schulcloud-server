@@ -24,6 +24,18 @@ describe('Submission entity', () => {
 		jest.resetAllMocks();
 	});
 
+	describe('constructor is called', () => {
+		describe('when files are is passed', () => {
+			it('create with studentFiles should be possible', () => {
+				const task = taskFactory.buildWithId();
+				const file = fileFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ task, studentFiles: [file] });
+
+				expect(submission.studentFiles.contains(file)).toBe(true);
+			});
+		});
+	});
+
 	describe('isSubmitted is called', () => {
 		describe('when submission exists', () => {
 			const setup = () => {
