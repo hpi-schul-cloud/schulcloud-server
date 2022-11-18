@@ -4,7 +4,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Counted, Permission, PermissionContextBuilder, Submission } from '@shared/domain';
 import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { SubmissionService } from '../service/submission.service';
 import { SubmissionUC } from './submission.uc';
 
@@ -69,7 +68,8 @@ describe('Submission UC', () => {
 				const { user, task, submissions, countedSubmissions } = createParams();
 
 				submissionService.findAllByTask.mockResolvedValueOnce(countedSubmissions);
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true).mockResolvedValueOnce(true);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.hasPermission.mockReturnValue(true).mockReturnValue(true);
 
 				return { taskId: task.id, user, submissions, countedSubmissions };
 			};
@@ -82,22 +82,22 @@ describe('Submission UC', () => {
 				expect(submissionService.findAllByTask).toHaveBeenCalledWith(taskId);
 			});
 
-			it('should call hasPermissionByReferences', async () => {
-				const { user, taskId, submissions } = setup();
+			it('should call getUserWithPermissions', async () => {
+				const { user, taskId } = setup();
 
 				await submissionUc.findAllByTask(user.id, taskId);
 
-				const permissionParams = (index: number) => {
-					return [
-						user.id,
-						AllowedAuthorizationEntityType.Submission,
-						submissions[index].id,
-						PermissionContextBuilder.read([Permission.SUBMISSIONS_VIEW]),
-					];
-				};
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
 
-				expect(authorizationService.hasPermissionByReferences).toHaveBeenNthCalledWith(1, ...permissionParams(0));
-				expect(authorizationService.hasPermissionByReferences).toHaveBeenNthCalledWith(2, ...permissionParams(1));
+			it('should call hasPermission', async () => {
+				const { user, taskId, submissions } = setup();
+				const permissionContext = PermissionContextBuilder.read([Permission.SUBMISSIONS_VIEW]);
+
+				await submissionUc.findAllByTask(user.id, taskId);
+
+				expect(authorizationService.hasPermission).toHaveBeenNthCalledWith(1, user, submissions[0], permissionContext);
+				expect(authorizationService.hasPermission).toHaveBeenNthCalledWith(2, user, submissions[1], permissionContext);
 			});
 
 			it('should return submissions', async () => {
@@ -115,7 +115,7 @@ describe('Submission UC', () => {
 
 				submissionService.findAllByTask.mockResolvedValueOnce(countedSubmissions);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+				authorizationService.hasPermission.mockReturnValueOnce(false).mockReturnValueOnce(true);
 
 				return { taskId: task.id, user, submissions };
 			};
@@ -136,7 +136,7 @@ describe('Submission UC', () => {
 
 				submissionService.findAllByTask.mockResolvedValueOnce(countedSubmissions);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+				authorizationService.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(false);
 
 				return { taskId: task.id, user, submissions };
 			};
@@ -151,12 +151,30 @@ describe('Submission UC', () => {
 			});
 		});
 
-		describe('WHEN service throws error', () => {
+		describe('WHEN submission service throws error', () => {
 			const setup = () => {
 				const { user, task } = createParams();
 				const error = new Error();
 
 				submissionService.findAllByTask.mockRejectedValueOnce(error);
+
+				return { taskId: task.id, user, error };
+			};
+
+			it('should pass error', async () => {
+				const { user, taskId, error } = setup();
+
+				await expect(submissionUc.findAllByTask(user.id, taskId)).rejects.toThrow(error);
+			});
+		});
+
+		describe('WHEN getUserWithPermissions throws error', () => {
+			const setup = () => {
+				const { user, task, countedSubmissions } = createParams();
+				const error = new Error();
+
+				submissionService.findAllByTask.mockResolvedValueOnce(countedSubmissions);
+				authorizationService.getUserWithPermissions.mockRejectedValueOnce(error);
 
 				return { taskId: task.id, user, error };
 			};
