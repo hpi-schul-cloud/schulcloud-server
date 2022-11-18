@@ -1,9 +1,11 @@
-import { Embeddable } from '@mikro-orm/core';
+import { Embeddable, Property } from '@mikro-orm/core';
 
 @Embeddable()
 export class CustomParameterEntry {
+	@Property()
 	name: string;
 
+	@Property()
 	value?: string;
 
 	constructor(props: CustomParameterEntry) {
