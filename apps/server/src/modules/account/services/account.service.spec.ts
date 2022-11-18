@@ -11,7 +11,7 @@ import bcrypt from 'bcryptjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@nestjs/common';
+import { Logger } from '../../../core/logger';
 import { AccountService } from './account.service';
 
 describe('AccountService', () => {

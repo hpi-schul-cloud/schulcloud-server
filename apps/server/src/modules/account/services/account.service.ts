@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import bcrypt from 'bcryptjs';
 import { Account, EntityId } from '@shared/domain';
@@ -7,6 +7,7 @@ import { AccountRepo } from '@shared/repo';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '../../server/server.config';
+import { Logger } from '../../../core/logger';
 import { AccountEntityToDtoMapper } from '../mapper';
 import { AccountDto, AccountSaveDto } from './dto';
 
