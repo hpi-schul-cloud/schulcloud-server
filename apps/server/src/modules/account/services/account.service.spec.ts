@@ -435,6 +435,15 @@ describe('AccountService', () => {
 				username: newUsername,
 			});
 		});
+
+		it('should log error if update username in IDM fails', async () => {
+			const newUsername = 'newUsername';
+			const error = new Error('Can not update username in IDM');
+			idmServiceMock.updateAccount.mockRejectedValueOnce(error);
+
+			await accountService.updateUsername(mockTeacherAccount.id, newUsername);
+			expect(loggerMock.error).toBeCalledWith(error);
+		});
 	});
 
 	describe('updateLastTriedFailedLogin', () => {
@@ -463,6 +472,15 @@ describe('AccountService', () => {
 				fail('return password is undefined');
 			}
 		});
+
+		it('should log error if update password in IDM fails', async () => {
+			const newPassword = 'newPassword';
+			const error = new Error('Can not update password in IDM');
+			idmServiceMock.updateAccountPassword.mockRejectedValueOnce(error);
+
+			await accountService.updatePassword(mockTeacherAccount.id, newPassword);
+			expect(loggerMock.error).toBeCalledWith(error);
+		});
 	});
 
 	describe('delete', () => {
@@ -470,12 +488,28 @@ describe('AccountService', () => {
 			await accountService.delete(mockTeacherAccount.id);
 			expect(accountRepo.deleteById).toHaveBeenCalledWith(mockTeacherAccount.id);
 		});
+
+		it('should log error if delete account in IDM fails', async () => {
+			const error = new Error('Can not delete account in IDM');
+			idmServiceMock.deleteAccountById.mockRejectedValueOnce(error);
+
+			await accountService.delete(mockTeacherAccount.id);
+			expect(loggerMock.error).toBeCalledWith(error);
+		});
 	});
 
 	describe('deleteByUserId', () => {
 		it('should delete the account with given user id via repo', async () => {
 			await accountService.deleteByUserId(mockTeacherAccount.userId?.toString() ?? '');
 			expect(accountRepo.deleteByUserId).toHaveBeenCalledWith(mockTeacherAccount.userId);
+		});
+
+		it('should log error if delete account by user id in IDM fails', async () => {
+			const error = new Error('Can not delete account in IDM');
+			idmServiceMock.deleteAccountById.mockRejectedValueOnce(error);
+
+			await accountService.deleteByUserId(mockTeacherUser.id);
+			expect(loggerMock.error).toBeCalledWith(error);
 		});
 	});
 
