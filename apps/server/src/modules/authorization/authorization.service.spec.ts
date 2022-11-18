@@ -2,7 +2,7 @@ import { NotFound } from '@feathersjs/errors';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ForbiddenException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ALL_RULES, BaseEntity, Permission, PermissionContextBuilder } from '@shared/domain';
 import {
@@ -265,13 +265,13 @@ describe('authorization.service', () => {
 		});
 
 		describe('If user is not instanceof User', () => {
-			it('Should throw InternalServerErrorException ', async () => {
+			it('Should throw ForbiddenException ', async () => {
 				const userId = new ObjectId().toHexString();
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				loader.loadEntity.mockResolvedValue();
 
-				await expect(service.getUserWithPermissions(userId)).rejects.toThrowError(InternalServerErrorException);
+				await expect(service.getUserWithPermissions(userId)).rejects.toThrowError(ForbiddenException);
 			});
 		});
 	});

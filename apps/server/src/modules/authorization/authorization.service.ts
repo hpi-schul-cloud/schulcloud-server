@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
 	BasePermissionManager,
 	CourseGroupRule,
@@ -79,10 +79,14 @@ export class AuthorizationService extends BasePermissionManager {
 	}
 
 	async getUserWithPermissions(userId: EntityId): Promise<User> {
-		const userWithPermissions = await this.loader.loadEntity(AllowedAuthorizationEntityType.User, userId);
-		if (userWithPermissions instanceof User) {
-			return userWithPermissions;
+		try {
+			const userWithPermissions = await this.loader.loadEntity(AllowedAuthorizationEntityType.User, userId);
+			if (userWithPermissions instanceof User) {
+				return userWithPermissions;
+			}
+			throw new Error('userWithPermissions is not instance of User');
+		} catch (err) {
+			throw new ForbiddenException(err);
 		}
-		throw new InternalServerErrorException('userWithPermissions is not instance of User');
 	}
 }
