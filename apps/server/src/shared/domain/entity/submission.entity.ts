@@ -1,12 +1,12 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 
+import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { CourseGroup } from './coursegroup.entity';
 import type { File } from './file.entity';
 import type { Task } from './task.entity';
 import { EntityId } from '../types';
 import type { User } from './user.entity';
-import { InternalServerErrorException } from '@nestjs/common';
 
 export interface ISubmissionProperties {
 	task: Task;

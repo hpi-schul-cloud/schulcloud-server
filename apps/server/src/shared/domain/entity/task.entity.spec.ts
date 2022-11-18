@@ -1,4 +1,5 @@
-import { MikroORM } from '@mikro-orm/core';
+import { Collection, MikroORM } from '@mikro-orm/core';
+import { InternalServerErrorException } from '@nestjs/common';
 import {
 	courseFactory,
 	courseGroupFactory,
@@ -227,6 +228,24 @@ describe('Task Entity', () => {
 	});
 
 	describe('createTeacherStatusForUser is called', () => {
+		describe('when submissions are not populated', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ creator: user });
+				Object.assign(task, { submissions: undefined });
+
+				return { task, user };
+			};
+
+			it('should be throw an error', () => {
+				const { task, user } = setup();
+
+				expect(() => {
+					task.createTeacherStatusForUser(user);
+				}).toThrowError(InternalServerErrorException);
+			});
+		});
+
 		describe('when parent is a user', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -488,6 +507,24 @@ describe('Task Entity', () => {
 	});
 
 	describe('createStudentStatusForUser is called', () => {
+		describe('when submissions are not populated', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({});
+				Object.assign(task, { submissions: undefined });
+
+				return { task, user };
+			};
+
+			it('should be throw an error', () => {
+				const { task, user } = setup();
+
+				expect(() => {
+					task.createTeacherStatusForUser(user);
+				}).toThrowError(InternalServerErrorException);
+			});
+		});
+
 		describe('when a valid status is return', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();

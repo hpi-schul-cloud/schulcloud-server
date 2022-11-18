@@ -1,6 +1,7 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { School } from '@shared/domain/entity/school.entity';
 import { InputFormat } from '@shared/domain/types/input-format.types';
+import { InternalServerErrorException } from '@nestjs/common';
 import type { IEntityWithSchool } from '../interface';
 import type { ILearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
@@ -104,8 +105,8 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	private getSubmissionItems(): Submission[] {
-		if (!this.submissions.isInitialized(true)) {
-			throw new Error('Submissions items are not loaded.');
+		if (!this.submissions?.isInitialized(true)) {
+			throw new InternalServerErrorException('Submissions items are not loaded.');
 		}
 		const submissions = this.submissions.getItems();
 
