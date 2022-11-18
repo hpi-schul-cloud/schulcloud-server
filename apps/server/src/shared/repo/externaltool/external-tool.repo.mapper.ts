@@ -1,12 +1,4 @@
 import {
-	BasicToolConfig,
-	CustomParameter,
-	ExternalTool,
-	IExternalToolProperties,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from '@shared/domain';
-import {
 	BasicToolConfigDO,
 	CustomParameterDO,
 	ExternalToolDO,
@@ -15,6 +7,14 @@ import {
 } from '@shared/domain/domainobject/external-tool';
 import { EntityProperties } from '@shared/repo';
 import { Injectable } from '@nestjs/common';
+import {
+	BasicToolConfig,
+	CustomParameter,
+	ExternalTool,
+	IExternalToolProperties,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
+} from '../../domain';
 
 @Injectable()
 export class ExternalToolRepoMapper {
