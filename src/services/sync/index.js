@@ -12,6 +12,7 @@ const Syncer = require('./strategies/Syncer');
 const syncers = require('./strategies');
 const getSyncLogger = require('./logger');
 const { consumer } = require('./strategies/LDAPSyncerConsumer');
+const { UserAccountService } = require('./services/UserAccountService');
 
 module.exports = function setup() {
 	const app = this;
@@ -52,6 +53,8 @@ module.exports = function setup() {
 			}
 		}
 	}
+
+	app.use('/sync/userAccount', new UserAccountService());
 
 	app.use('/sync/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/sync', new SyncService());

@@ -12,7 +12,7 @@ const defaultOptions = {
 };
 
 class UserAction extends BaseConsumerAction {
-	constructor(filterActive = true, options = defaultOptions) {
+	constructor(app, filterActive = true, options = defaultOptions) {
 		super(LDAP_SYNC_ACTIONS.SYNC_USER, options);
 		this.filterActive = filterActive;
 	}
@@ -100,7 +100,8 @@ class UserAction extends BaseConsumerAction {
 	async updateUserAndAccount(foundUser, user, account) {
 		const updateObject = this.createUserUpdateObject(user, foundUser);
 		if (!_.isEmpty(updateObject)) {
-			await UserRepo.updateUserAndAccount(foundUser._id, updateObject, account);
+			await this.app.service('/sync/userAccount').updateUserAndAccount(foundUser._id, updateObject, account);
+			// await UserRepo.updateUserAndAccount(foundUser._id, updateObject, account);
 		}
 	}
 
@@ -128,7 +129,9 @@ class UserAction extends BaseConsumerAction {
 
 	async createUserAndAccount(idmUser, account, schoolId) {
 		idmUser.schoolId = schoolId;
-		return UserRepo.createUserAndAccount(idmUser, account);
+		const userAccountService = await this.app.service('/sync/userAccount');
+		return userAccountService.createUserAndAccount(idmUser, account);
+		// return UserRepo.createUserAndAccount(idmUser, account);
 	}
 }
 

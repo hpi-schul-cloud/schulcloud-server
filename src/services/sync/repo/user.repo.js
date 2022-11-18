@@ -3,17 +3,6 @@ const { importUserModel } = require('../model/importUser.schema');
 const roleModel = require('../../role/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { BadRequest } = require('../../../errors');
-const appPromise = require('../../../app');
-
-const createAccount = async (account) => {
-	const app = await appPromise;
-	await app.service('nest-account-service').save({
-		userId: account.userId,
-		username: account.username.toLowerCase(),
-		systemId: account.systemId,
-		activated: true,
-	});
-};
 
 const resolveUserRoles = async (roles) =>
 	roleModel
@@ -25,7 +14,7 @@ const resolveUserRoles = async (roles) =>
 		.lean()
 		.exec();
 
-const createUser = async (user) => {
+const createUserInternal = async (user) => {
 	user.roles = await resolveUserRoles(user.roles);
 	return userModel.create({
 		firstName: user.firstName,
@@ -80,31 +69,19 @@ const checkUpdate = async (email, userId) => {
 	}
 };
 
-const createUserAndAccount = async (inputUser, inputAccount) => {
+const createUser = async (inputUser) => {
 	await checkCreate(inputUser.email);
-	const user = (await createUser(inputUser)).toObject();
-	inputAccount.userId = user._id;
-	const account = (await createAccount(inputAccount)).toObject();
-	return { user, account };
+	const user = (await createUserInternal(inputUser)).toObject();
+	return { user };
 };
 
-const updateAccount = async (userId, account) => {
-	const app = await appPromise;
-
-	const createdAccount = app.service('nest-account-service').findByUserIdAndSystemId(userId, account.systemId);
-	createdAccount.username = account.username;
-	createdAccount.activated = true;
-	app.service('nest-account-service').save(createdAccount);
-};
-
-const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
+const updateUser = async (userId, changedUser) => {
 	await checkUpdate(changedUser.email, userId);
 	if ('roles' in changedUser) {
 		changedUser.roles = await resolveUserRoles(changedUser.roles);
 	}
 	const user = await userModel.findOneAndUpdate({ _id: userId }, changedUser, { new: true }).lean().exec();
-	const account = await updateAccount(user._id, changedAccount);
-	return { user, account };
+	return { user };
 };
 
 const findImportUsersBySchoolAndName = async (schoolId, firstName, lastName) => {
@@ -149,9 +126,9 @@ const findByLdapDnsAndSchool = async (ldapDns, schoolId) =>
 		.exec();
 
 const UserRepo = {
-	private: { createAccount, createUser, updateAccount },
-	createUserAndAccount,
-	updateUserAndAccount,
+	private: { createUserInternal },
+	createUser,
+	updateUser,
 	findUserBySchoolAndName,
 	findByLdapIdAndSchool,
 	findByLdapDnsAndSchool,
