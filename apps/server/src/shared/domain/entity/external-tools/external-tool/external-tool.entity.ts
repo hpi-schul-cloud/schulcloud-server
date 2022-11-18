@@ -1,5 +1,4 @@
 import { Embedded, Entity, Property, Unique } from '@mikro-orm/core';
-import { ExternalToolConfig } from './config/external-tool-config';
 import {
 	BasicToolConfig,
 	Lti11ToolConfig,

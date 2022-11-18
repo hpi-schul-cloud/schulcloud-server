@@ -1,4 +1,5 @@
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '@shared/domain';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -6,8 +7,7 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '@shared/domain';
 import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
 import { CustomParameterCreateParams } from '../controller/dto/request/custom-parameter.params';
 import { BasicToolConfigParams } from '../controller/dto/request/basic-tool-config.params';
