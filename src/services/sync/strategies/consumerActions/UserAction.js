@@ -14,6 +14,7 @@ const defaultOptions = {
 class UserAction extends BaseConsumerAction {
 	constructor(app, filterActive = true, options = defaultOptions) {
 		super(LDAP_SYNC_ACTIONS.SYNC_USER, options);
+		this.app = app;
 		this.filterActive = filterActive;
 		this.app = app;
 	}
