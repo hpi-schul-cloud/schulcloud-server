@@ -1,4 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
+import { InternalServerErrorException } from '@nestjs/common';
 import {
 	userFactory,
 	taskFactory,
@@ -259,6 +260,23 @@ describe('Submission entity', () => {
 				const result = submission.getMemberIds();
 
 				expect(result.length).toEqual(4);
+			});
+		});
+
+		describe('when submission is not populated', () => {
+			const setup = () => {
+				const submission = submissionFactory.studentWithId().buildWithId({});
+				Object.assign(submission, { teamMembers: undefined });
+
+				return { submission };
+			};
+
+			it('should be return the userId of the creator and of the students of the coursegroup.', () => {
+				const { submission } = setup();
+
+				expect(() => {
+					submission.getMemberIds();
+				}).toThrowError(InternalServerErrorException);
 			});
 		});
 	});

@@ -6,6 +6,7 @@ import type { File } from './file.entity';
 import type { Task } from './task.entity';
 import { EntityId } from '../types';
 import type { User } from './user.entity';
+import { InternalServerErrorException } from '@nestjs/common';
 
 export interface ISubmissionProperties {
 	task: Task;
@@ -86,7 +87,9 @@ export class Submission extends BaseEntityWithTimestamps {
 
 	private getTeamMembersIds(): EntityId[] {
 		if (!this.teamMembers) {
-			throw new Error('Submission.teamMembers is undefined. The submission need to be populated.');
+			throw new InternalServerErrorException(
+				'Submission.teamMembers is undefined. The submission need to be populated.'
+			);
 		}
 
 		const teamMemberObjectIds = this.teamMembers.getIdentifiers('_id');
