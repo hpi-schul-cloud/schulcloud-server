@@ -103,8 +103,11 @@ export class ImportUserController {
 	}
 
 	@Post('startUserMigration')
-	async startSchoolInUserMigration(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
-		await this.userImportUc.startSchoolInUserMigration(currentUser.userId);
+	async startSchoolInUserMigration(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query('useCentralLdap') useCentralLdap?: boolean
+	): Promise<void> {
+		await this.userImportUc.startSchoolInUserMigration(currentUser.userId, useCentralLdap);
 	}
 
 	@Post('startSync')

@@ -30,6 +30,7 @@ export class UserMatchResponse {
 	@ApiProperty({
 		description: 'list of user roles from external system: student, teacher, admin',
 		enum: UserRole,
+		isArray: true,
 	})
 	roleNames: UserRole[];
 
