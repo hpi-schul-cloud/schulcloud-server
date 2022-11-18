@@ -75,6 +75,16 @@ export class Submission extends BaseEntityWithTimestamps {
 		}
 	}
 
+	private getCourseGroupMemberIds(): EntityId[] {
+		let courseGroupMemberIds: EntityId[] = [];
+
+		if (this.courseGroup) {
+			courseGroupMemberIds = this.courseGroup.getStudentIds();
+		}
+
+		return courseGroupMemberIds;
+	}
+
 	private getTeamMembersIds(): EntityId[] {
 		if (!this.teamMembers) {
 			throw new Error('Submission.teamMembers is undefined. The submission need to be populated.');
@@ -112,19 +122,6 @@ export class Submission extends BaseEntityWithTimestamps {
 		return gradeFilesExists;
 	}
 
-	private isTeamMember(user: User): boolean {
-		const teamMemberIds = this.getTeamMembersIds();
-		const isTeamMember = teamMemberIds.some((id) => user.id === id);
-
-		return isTeamMember;
-	}
-
-	private isCreator(user: User): boolean {
-		const isCreator = this.student.id === user.id;
-
-		return isCreator;
-	}
-
 	public isSubmitted(): boolean {
 		// Always submitted for now, but can be changed in future.
 		const isSubmitted = true;
@@ -142,19 +139,21 @@ export class Submission extends BaseEntityWithTimestamps {
 
 	// Bad that the logic is needed to expose the userIds, but is used in task for now.
 	// Check later if it can be replaced and remove all related code.
-	public getMemberUserIds(): EntityId[] {
+	public getMemberIds(): EntityId[] {
 		const creatorId = this.student.id;
 		const teamMemberIds = this.getTeamMembersIds();
-		const mmberUserIds = [creatorId, ...teamMemberIds];
+		const courseGroupMemberIds = this.getCourseGroupMemberIds();
+		const memberIds = [creatorId, ...teamMemberIds, ...courseGroupMemberIds];
 
-		return mmberUserIds;
+		const uniqueMemberIds = [...new Set(memberIds)];
+
+		return uniqueMemberIds;
 	}
 
 	// TODO: test
 	public userIsMember(user: User): boolean {
-		const isCreator = this.isCreator(user);
-		const isTeamMember = this.isTeamMember(user);
-		const isMember = isCreator || isTeamMember;
+		const memberIds = this.getMemberIds();
+		const isMember = memberIds.some((id) => id === user.id);
 
 		return isMember;
 	}

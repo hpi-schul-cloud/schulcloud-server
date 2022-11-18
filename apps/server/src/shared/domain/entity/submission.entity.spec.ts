@@ -1,5 +1,12 @@
 import { MikroORM } from '@mikro-orm/core';
-import { userFactory, taskFactory, submissionFactory, fileFactory, setupEntities } from '@shared/testing';
+import {
+	userFactory,
+	taskFactory,
+	submissionFactory,
+	fileFactory,
+	setupEntities,
+	courseGroupFactory,
+} from '@shared/testing';
 
 describe('Submission entity', () => {
 	let orm: MikroORM;
@@ -12,7 +19,9 @@ describe('Submission entity', () => {
 		await orm.close();
 	});
 
-	// TODO: mock restore beforeEach
+	beforeEach(() => {
+		jest.resetAllMocks();
+	});
 
 	describe('isSubmitted is called', () => {
 		describe('when submission exists', () => {
@@ -202,10 +211,95 @@ describe('Submission entity', () => {
 	});
 
 	describe('getMemberUserIds is called', () => {
-		// TODO:
+		describe('when creator exists', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ student: user });
+
+				return { submission, user };
+			};
+
+			it('should be return the userId of the creator', () => {
+				const { submission, user } = setup();
+
+				const result = submission.getMemberIds();
+
+				expect(result.length).toEqual(1);
+				expect(result.includes(user.id)).toBe(true);
+			});
+		});
+
+		describe('when teamMembers exists', () => {
+			const setup = () => {
+				const submission = submissionFactory.studentWithId().teamMembersWithId(3).buildWithId();
+
+				return { submission };
+			};
+
+			it('should be return the userIds of the creator and of the teammembers.', () => {
+				const { submission } = setup();
+
+				const result = submission.getMemberIds();
+
+				expect(result.length).toEqual(4);
+			});
+		});
+
+		describe('when coursegroup is added', () => {
+			const setup = () => {
+				const courseGroup = courseGroupFactory.studentsWithId(3).build();
+				const submission = submissionFactory.studentWithId().buildWithId({ courseGroup });
+
+				return { submission };
+			};
+
+			it('should be return the userId of the creator and of the students of the coursegroup.', () => {
+				const { submission } = setup();
+
+				const result = submission.getMemberIds();
+
+				expect(result.length).toEqual(4);
+			});
+		});
 	});
 
 	describe('userIsMember is called', () => {
-		// TODO:
+		describe('when user is a member', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ student: user });
+
+				jest.spyOn(submission, 'getMemberIds').mockImplementationOnce(() => [user.id]);
+
+				return { submission, user };
+			};
+
+			it('should be return true', () => {
+				const { submission, user } = setup();
+
+				const result = submission.userIsMember(user);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when user is not a member', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ student: user });
+
+				jest.spyOn(submission, 'getMemberIds').mockImplementationOnce(() => []);
+
+				return { submission, user };
+			};
+
+			it('should be return true', () => {
+				const { submission, user } = setup();
+
+				const result = submission.userIsMember(user);
+
+				expect(result).toBe(false);
+			});
+		});
 	});
 });

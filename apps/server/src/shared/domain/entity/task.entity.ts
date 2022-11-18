@@ -208,7 +208,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		const submittedSubmissions = this.getSubmittedSubmissions();
 
 		submittedSubmissions.forEach((submission) => {
-			const memberUserIds = submission.getMemberUserIds();
+			const memberUserIds = submission.getMemberIds();
 			submittedUserIds = [...submittedUserIds, ...memberUserIds];
 		});
 
@@ -222,7 +222,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		const gradedSubmissions = this.getGradedSubmissions();
 
 		gradedSubmissions.forEach((submission) => {
-			const memberUserIds = submission.getMemberUserIds();
+			const memberUserIds = submission.getMemberIds();
 			gradedUserIds = [...gradedUserIds, ...memberUserIds];
 		});
 

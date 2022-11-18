@@ -9,7 +9,6 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { Submission } from './submission.entity';
 
 describe('Task Entity', () => {
 	let orm: MikroORM;
