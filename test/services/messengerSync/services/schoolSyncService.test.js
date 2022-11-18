@@ -12,7 +12,6 @@ describe('schoolSyncService', () => {
 
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
-		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 
 		const appPromise = rabbitmqMock.setupMock();
