@@ -17,9 +17,13 @@ export class SyncFilesConsole {
 		private logger: Logger
 	) {}
 
-	@Command({ command: 'tasks [aggregationSize] [numParallelPromises]' })
-	async syncFilesForTasks(aggregationSize = 5000, numParallelPromises = 50) {
-		await this.syncFilesUc.syncFilesForParentType(FileRecordParentType.Task, aggregationSize, numParallelPromises);
+	@Command({ command: 'submissions [aggregationSize] [numParallelPromises]' })
+	async syncFilesForSubmissions(aggregationSize = 5000, numParallelPromises = 50) {
+		await this.syncFilesUc.syncFilesForParentType(
+			FileRecordParentType.Submission,
+			aggregationSize,
+			numParallelPromises
+		);
 	}
 
 	@Command({ command: 'embedded [type] [limit]' })

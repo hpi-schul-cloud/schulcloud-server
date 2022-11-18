@@ -121,7 +121,7 @@ Gates are part of pull request checks.
 
 ## OpenAPI documentation
 
-The NestJS applicaiton serves a documentation at [:3030/v3/docs](http://localhost:3030/v3/docs). The JSON-representation can be found at `/v3/docs-json` to be used for generating a client application.
+The NestJS applicaiton serves a documentation at [:3030/api/v3/docs](http://localhost:3030/api/v3/docs/). The JSON-representation can be found at `/api/v3/docs-json` to be used for generating a client application.
 
 Legacy/feathers Swagger UI documentation when running the server locally, it is served at [:3030/docs/](http://localhost:3030/docs/).
 

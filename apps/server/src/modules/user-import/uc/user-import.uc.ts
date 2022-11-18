@@ -20,7 +20,6 @@ import {
 
 import { ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 
@@ -40,12 +39,8 @@ export class UserImportUc {
 		private readonly userRepo: UserRepo
 	) {}
 
-	private featureEnabled(school: School) {
+	private checkFeatureEnabled(school: School) {
 		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
-		const systemId = Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string;
-		if (!ObjectId.isValid(systemId)) {
-			throw new InternalServerErrorException('User Migration not configured');
-		}
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
 			throw new InternalServerErrorException('User Migration not enabled');
@@ -65,7 +60,7 @@ export class UserImportUc {
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
-		this.featureEnabled(currentUser.school);
+		this.checkFeatureEnabled(currentUser.school);
 		const countedImportUsers = await this.importUserRepo.findImportUsers(currentUser.school, query, options);
 		return countedImportUsers;
 	}
@@ -79,7 +74,7 @@ export class UserImportUc {
 	 */
 	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId) {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
-		this.featureEnabled(currentUser.school);
+		this.checkFeatureEnabled(currentUser.school);
 		const importUser = await this.importUserRepo.findById(importUserId);
 		const userMatch = await this.userRepo.findById(userMatchId, true);
 
@@ -104,7 +99,7 @@ export class UserImportUc {
 
 	async removeMatch(currentUserId: EntityId, importUserId: EntityId) {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
-		this.featureEnabled(currentUser.school);
+		this.checkFeatureEnabled(currentUser.school);
 		const importUser = await this.importUserRepo.findById(importUserId);
 		// check same school
 		if (currentUser.school.id !== importUser.school.id) {
@@ -119,7 +114,7 @@ export class UserImportUc {
 
 	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean) {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
-		this.featureEnabled(currentUser.school);
+		this.checkFeatureEnabled(currentUser.school);
 		const importUser = await this.importUserRepo.findById(importUserId);
 
 		// check same school
@@ -148,14 +143,14 @@ export class UserImportUc {
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
-		this.featureEnabled(currentUser.school);
+		this.checkFeatureEnabled(currentUser.school);
 		const unmatchedCountedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
 		return unmatchedCountedUsers;
 	}
 
 	async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-		this.featureEnabled(currentUser.school);
+		this.checkFeatureEnabled(currentUser.school);
 		const { school } = currentUser;
 
 		const filters: IImportUserScope = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
@@ -175,7 +170,7 @@ export class UserImportUc {
 
 	private async endSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-		this.featureEnabled(currentUser.school);
+		this.checkFeatureEnabled(currentUser.school);
 		const { school } = currentUser;
 		if (!school.externalId || school.inUserMigration !== true || !school.inMaintenanceSince) {
 			throw new BadRequestException('School cannot exit from user migration mode');
@@ -184,20 +179,26 @@ export class UserImportUc {
 		await this.schoolRepo.save(school);
 	}
 
-	async startSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
+	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const { school } = currentUser;
-		this.featureEnabled(school);
-		const migrationSystem = await this.getMigrationSystem();
-		if (!school.officialSchoolNumber || (school.inUserMigration !== undefined && school.inUserMigration !== null)) {
+		this.checkFeatureEnabled(school);
+		// official school number is used to find the correct school in the central LDAP
+		if (
+			(useCentralLdap && !school.officialSchoolNumber) ||
+			(school.inUserMigration !== undefined && school.inUserMigration !== null)
+		) {
 			throw new BadRequestException('School cannot be set in user migration');
 		}
 
 		school.inUserMigration = true;
 		school.inMaintenanceSince = new Date();
 		school.externalId = school.officialSchoolNumber;
-		if (!school.systems.contains(migrationSystem)) {
-			school.systems.add(migrationSystem);
+		if (useCentralLdap) {
+			const migrationSystem = await this.getMigrationSystem();
+			if (!school.systems.contains(migrationSystem)) {
+				school.systems.add(migrationSystem);
+			}
 		}
 
 		await this.schoolRepo.save(school);
@@ -205,7 +206,7 @@ export class UserImportUc {
 
 	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-		this.featureEnabled(currentUser.school);
+		this.checkFeatureEnabled(currentUser.school);
 		const { school } = currentUser;
 		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.externalId) {
 			throw new BadRequestException('Sync cannot be activated for school');
