@@ -6,7 +6,14 @@ import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/
 import { ExternalToolUc } from '@src/modules/tool/uc/external-tool.uc';
 import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool/external-tool.do';
-import { ApiTags } from '@nestjs/swagger';
+import {
+	ApiCreatedResponse,
+	ApiForbiddenResponse,
+	ApiResponse,
+	ApiTags,
+	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import { ExternalToolRequestMapper } from '@src/modules/tool/mapper/external-tool-request.mapper';
 import { ExternalToolResponseMapper } from '@src/modules/tool/mapper/external-tool-response.mapper';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
@@ -43,11 +50,15 @@ export class ToolController {
 	}
 
 	@Post('tools')
+	@ApiCreatedResponse({ description: 'The Tool has been successfully created.', type: ExternalToolResponse })
+	@ApiForbiddenResponse()
+	@ApiUnprocessableEntityResponse()
+	@ApiUnauthorizedResponse()
 	async createExternalTool(
 		@Body() externalToolParams: ExternalToolParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ExternalToolResponse> {
-		const externalToolDO: ExternalToolDO = this.externalToolDOMapper.mapRequestToExternalToolDO(externalToolParams, 1);
+		const externalToolDO: ExternalToolDO = this.externalToolDOMapper.mapRequestToExternalToolDO(externalToolParams);
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(externalToolDO, currentUser);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
 		return mapped;

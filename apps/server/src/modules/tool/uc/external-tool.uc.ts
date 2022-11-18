@@ -22,19 +22,7 @@ export class ExternalToolUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_CREATE]);
 
-		if (!(await this.externalToolService.isNameUnique(externalToolDO))) {
-			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`);
-		}
-		if (externalToolDO.parameters && this.externalToolService.hasDuplicateAttributes(externalToolDO.parameters)) {
-			throw new UnprocessableEntityException(
-				`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
-			);
-		}
-		if (externalToolDO.parameters && !this.externalToolService.validateByRegex(externalToolDO.parameters)) {
-			throw new UnprocessableEntityException(
-				`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute.`
-			);
-		}
+		await this.checkValidation(externalToolDO);
 
 		if (externalToolDO.config instanceof Lti11ToolConfigDO) {
 			externalToolDO.config.secret = this.oAuthEncryptionService.encrypt(externalToolDO.config.secret);
@@ -42,10 +30,6 @@ export class ExternalToolUc {
 
 		let created: ExternalToolDO;
 		if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
-			if (!(await this.externalToolService.isClientIdUnique(externalToolDO.config))) {
-				throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`);
-			}
-
 			const oauthClient: ProviderOauthClient = this.externalToolMapper.mapDoToProviderOauthClient(
 				externalToolDO.name,
 				externalToolDO.config
@@ -63,5 +47,28 @@ export class ExternalToolUc {
 		}
 
 		return created;
+	}
+
+	private async checkValidation(externalToolDO: ExternalToolDO) {
+		if (!(await this.externalToolService.isNameUnique(externalToolDO))) {
+			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`);
+		}
+		if (externalToolDO.parameters && this.externalToolService.hasDuplicateAttributes(externalToolDO.parameters)) {
+			throw new UnprocessableEntityException(
+				`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
+			);
+		}
+		if (externalToolDO.parameters && !this.externalToolService.validateByRegex(externalToolDO.parameters)) {
+			throw new UnprocessableEntityException(
+				`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute.`
+			);
+		}
+
+		if (
+			externalToolDO.config instanceof Oauth2ToolConfigDO &&
+			!(await this.externalToolService.isClientIdUnique(externalToolDO.config))
+		) {
+			throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`);
+		}
 	}
 }

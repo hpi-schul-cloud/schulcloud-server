@@ -151,5 +151,15 @@ describe('ExternalToolResponseMapper', () => {
 
 			expect(result).toEqual(externalToolResponse);
 		});
+
+		it('should map a lti11 tool do to a lti11 tool response', () => {
+			const { externalToolDO, externalToolResponse, lti11ToolConfigDO, lti11ToolConfigResponse } = setup();
+			externalToolDO.config = lti11ToolConfigDO;
+			externalToolResponse.config = lti11ToolConfigResponse;
+
+			const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
+
+			expect(result).toEqual(externalToolResponse);
+		});
 	});
 });

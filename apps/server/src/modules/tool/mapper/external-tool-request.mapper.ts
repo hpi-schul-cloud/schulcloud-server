@@ -40,17 +40,17 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 
 @Injectable()
 export class ExternalToolRequestMapper {
-	mapRequestToExternalToolDO(externalToolParams: ExternalToolParams, version: number): ExternalToolDO {
+	mapRequestToExternalToolDO(externalToolParams: ExternalToolParams, version = 1): ExternalToolDO {
 		let mappedConfig: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
 		if (externalToolParams.config instanceof BasicToolConfigParams) {
-			mappedConfig = this.mapBasicToolConfig(externalToolParams.config);
+			mappedConfig = this.mapRequestToBasicToolConfigDO(externalToolParams.config);
 		} else if (externalToolParams.config instanceof Lti11ToolConfigParams) {
-			mappedConfig = this.mapLti11ToolConfig(externalToolParams.config);
+			mappedConfig = this.mapRequestLti11ToolConfigDO(externalToolParams.config);
 		} else {
-			mappedConfig = this.mapOauth2ToolConfig(externalToolParams.config);
+			mappedConfig = this.mapRequestToOauth2ToolConfigDO(externalToolParams.config);
 		}
 
-		const mappedCustomParameter: CustomParameterDO[] = this.mapCustomParameterCreateParamsToDO(
+		const mappedCustomParameter: CustomParameterDO[] = this.mapRequestToCustomParameterDO(
 			externalToolParams.parameters ?? []
 		);
 
@@ -66,21 +66,19 @@ export class ExternalToolRequestMapper {
 		});
 	}
 
-	private mapBasicToolConfig(externalToolConfigParams: BasicToolConfigParams): BasicToolConfigDO {
+	private mapRequestToBasicToolConfigDO(externalToolConfigParams: BasicToolConfigParams): BasicToolConfigDO {
 		return new BasicToolConfigDO({ ...externalToolConfigParams });
 	}
 
-	private mapLti11ToolConfig(externalToolConfigParams: Lti11ToolConfigParams): Lti11ToolConfigDO {
+	private mapRequestLti11ToolConfigDO(externalToolConfigParams: Lti11ToolConfigParams): Lti11ToolConfigDO {
 		return new Lti11ToolConfigDO({ ...externalToolConfigParams });
 	}
 
-	private mapOauth2ToolConfig(externalToolConfigParams: Oauth2ToolConfigParams): Oauth2ToolConfigDO {
+	private mapRequestToOauth2ToolConfigDO(externalToolConfigParams: Oauth2ToolConfigParams): Oauth2ToolConfigDO {
 		return new Oauth2ToolConfigDO({ ...externalToolConfigParams });
 	}
 
-	private mapCustomParameterCreateParamsToDO(
-		customParameterParams: CustomParameterCreateParams[]
-	): CustomParameterDO[] {
+	private mapRequestToCustomParameterDO(customParameterParams: CustomParameterCreateParams[]): CustomParameterDO[] {
 		return customParameterParams.map((customParameterParam: CustomParameterCreateParams) => {
 			return new CustomParameterDO({
 				name: customParameterParam.name,

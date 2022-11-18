@@ -250,9 +250,11 @@ describe('ToolController', () => {
 		it('should return basic external tool response', async () => {
 			const { body, bodyConfigCreateBasicParams, currentUser, externalToolResponse, externalToolDO } = setup();
 			body.config = bodyConfigCreateBasicParams;
+
 			externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
 			externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
 			externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+
 			const expected = await controller.createExternalTool(body, currentUser);
 
 			expect(expected).toEqual(externalToolResponse);
@@ -271,9 +273,11 @@ describe('ToolController', () => {
 			body.config = bodyConfigCreateLti11Params;
 			externalToolResponse.config = lti11ToolConfigResponse;
 			externalToolDO.config = lti11ToolConfigDO;
+
 			externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
 			externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
 			externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+
 			const expected = await controller.createExternalTool(body, currentUser);
 
 			expect(expected).toEqual(externalToolResponse);
@@ -292,9 +296,11 @@ describe('ToolController', () => {
 			body.config = bodyConfigCreateOauthParams;
 			externalToolResponse.config = oauth2ToolConfigResponse;
 			externalToolDO.config = oauth2ToolConfigDO;
+
 			externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
 			externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
 			externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+
 			const expected = await controller.createExternalTool(body, currentUser);
 
 			expect(expected).toEqual(externalToolResponse);
