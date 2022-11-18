@@ -1,5 +1,5 @@
 import { BaseRepo } from '@shared/repo';
-import { ExternalTool, ToolConfigType } from '@shared/domain/entity/external-tool';
+import { ExternalTool, ToolConfigType } from '@shared/domain';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityName } from '@mikro-orm/core';
 

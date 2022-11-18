@@ -5,23 +5,14 @@ import { CustomParameterType } from './custom-parameter-type.enum';
 
 @Embeddable()
 export class CustomParameter {
-	constructor(props: CustomParameter) {
-		this.name = props.name;
-		this.default = props.default;
-		this.location = props.location;
-		this.scope = props.scope;
-		this.type = props.type;
-		this.regex = props.regex;
-	}
-
 	@Property()
 	name: string;
 
-	@Property()
-	default: string;
+	@Property({ nullable: true })
+	default?: string;
 
-	@Property()
-	regex: string;
+	@Property({ nullable: true })
+	regex?: string;
 
 	@Enum()
 	scope: CustomParameterScope;
@@ -31,4 +22,13 @@ export class CustomParameter {
 
 	@Enum()
 	type: CustomParameterType;
+
+	constructor(props: CustomParameter) {
+		this.name = props.name;
+		this.default = props.default;
+		this.location = props.location;
+		this.scope = props.scope;
+		this.type = props.type;
+		this.regex = props.regex;
+	}
 }

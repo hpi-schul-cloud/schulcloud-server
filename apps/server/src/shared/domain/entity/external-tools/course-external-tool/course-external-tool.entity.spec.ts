@@ -1,7 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
-import { externalToolFactory, schoolFactory, setupEntities } from '@shared/testing/index';
+import { courseFactory, schoolFactory, setupEntities } from '@shared/testing';
 import {
 	BasicToolConfig,
+	CourseExternalTool,
 	CustomParameter,
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -11,7 +12,6 @@ import {
 	SchoolExternalTool,
 	ToolConfigType,
 } from '@shared/domain';
-import { schoolExternalToolFactory } from '@shared/testing/factory/school-external-tool.factory';
 
 describe('ExternalTool Entity', () => {
 	let orm: MikroORM;
@@ -27,25 +27,20 @@ describe('ExternalTool Entity', () => {
 	describe('constructor', () => {
 		it('should throw an error by empty constructor', () => {
 			// @ts-expect-error: Test case
-			const test = () => new SchoolExternalTool();
+			const test = () => new CourseExternalTool();
 			expect(test).toThrow();
 		});
 
-		it('should create an external school Tool by passing required properties', () => {
-			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-			expect(schoolExternalTool instanceof SchoolExternalTool).toEqual(true);
-		});
-
-		it('should set schoolParameters to empty when is undefined', () => {
+		it('should create an external course Tool by passing required properties', () => {
 			const externalToolConfig: ExternalToolConfig = new BasicToolConfig({
-				type: ToolConfigType.OAUTH2,
+				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',
 			});
 			const customParameter: CustomParameter = new CustomParameter({
 				name: 'parameterName',
 				default: 'mock',
 				location: CustomParameterLocation.PATH,
-				scope: CustomParameterScope.SCHOOL,
+				scope: CustomParameterScope.COURSE,
 				type: CustomParameterType.STRING,
 				regex: 'mockRegex',
 			});
@@ -59,14 +54,20 @@ describe('ExternalTool Entity', () => {
 				openNewTab: true,
 				version: 1,
 			});
-			const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
+			const schoolTool: SchoolExternalTool = new SchoolExternalTool({
 				tool: externalTool,
 				school: schoolFactory.buildWithId(),
 				schoolParameters: [],
 				toolVersion: 1,
 			});
+			const courseExternalTool: CourseExternalTool = new CourseExternalTool({
+				schoolTool,
+				course: courseFactory.buildWithId(),
+				courseParameters: [],
+				toolVersion: 1,
+			});
 
-			expect(schoolExternalTool.schoolParameters).toEqual([]);
+			expect(courseExternalTool instanceof CourseExternalTool).toEqual(true);
 		});
 	});
 });
