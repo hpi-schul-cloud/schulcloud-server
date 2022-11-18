@@ -5,7 +5,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { SubmissionMapper } from '../mapper';
 import { SubmissionUC } from '../uc';
 import { TaskUrlParams } from './dto';
-import { SubmissionListResponse } from './dto/submission.response';
+import { SubmissionStatusListResponse } from './dto/submission.response';
 
 @ApiTags('Submission')
 @Authenticate('jwt')
@@ -14,17 +14,17 @@ export class SubmissionController {
 	constructor(private readonly submissionsUc: SubmissionUC) {}
 
 	@Get(':taskId')
-	async findAllByTask(
+	async findStatusesByTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: TaskUrlParams
-	): Promise<SubmissionListResponse> {
+	): Promise<SubmissionStatusListResponse> {
 		const [submissions] = await this.submissionsUc.findAllByTask(currentUser.userId, params.taskId);
 
 		const submissionResponses = submissions.map((submission) => {
-			return SubmissionMapper.mapToResponse(submission);
+			return SubmissionMapper.mapToStatusResponse(submission);
 		});
 
-		const listResponse = new SubmissionListResponse(submissionResponses, submissionResponses.length);
+		const listResponse = new SubmissionStatusListResponse(submissionResponses, submissionResponses.length);
 
 		return listResponse;
 	}

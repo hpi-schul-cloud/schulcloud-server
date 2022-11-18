@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { setupEntities, submissionFactory } from '@shared/testing';
-import { SubmissionResponse } from '../controller/dto';
+import { SubmissionStatusResponse } from '../controller/dto';
 import { SubmissionMapper } from './submission.mapper';
 
 describe('Submission Mapper', () => {
@@ -14,24 +14,14 @@ describe('Submission Mapper', () => {
 		await orm.close();
 	});
 
-	describe('mapToResponse', () => {
+	describe('mapToStatusResponse', () => {
 		const setup = () => {
 			const submission = submissionFactory.buildWithId();
-			const submittingTeamMembers = [...submission.teamMembers].map((member) => member.id);
-			const submissionFiles = [...submission.studentFiles].map((file) => file.id);
-			const gradeFiles = [...submission.gradeFiles].map((file) => file.id);
 
-			const expected = new SubmissionResponse({
+			const expected = new SubmissionStatusResponse({
 				id: submission.id,
-				taskId: submission.task.id,
 				creatorId: submission.student.id,
-				submittingCourseGroupId: submission.courseGroup?.id,
-				submittingTeamMembers,
-				comment: submission.comment,
-				submissionFiles,
 				grade: submission.grade,
-				gradeComment: submission.gradeComment,
-				gradeFiles,
 			});
 
 			return { submission, expected };
@@ -39,7 +29,7 @@ describe('Submission Mapper', () => {
 		it('should map submission', () => {
 			const { submission, expected } = setup();
 
-			const result = SubmissionMapper.mapToResponse(submission);
+			const result = SubmissionMapper.mapToStatusResponse(submission);
 
 			expect(result).toStrictEqual(expected);
 		});
