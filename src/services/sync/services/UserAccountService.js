@@ -33,8 +33,7 @@ class UserAccountService {
 	}
 
 	async updateAccount(userId, account) {
-		const nestAccountService = await this.app.service('nest-account-service');
-		// const createdAccount = await nestAccountService.findByUsernameAndSystemId(username, account.systemId);
+		const nestAccountService = this.app.service('nest-account-service');
 		const createdAccount = await nestAccountService.findByUserId(userId);
 		createdAccount.username = account.username;
 		createdAccount.activated = true;

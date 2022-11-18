@@ -5,14 +5,12 @@ const { ObjectId } = require('mongoose').Types;
 const UserRepo = require('../../../../src/services/sync/repo/user.repo');
 
 // const accountModel = require('../../../../src/services/account/model');
-const { userModel } = require('../../../../src/services/user/model');
 const { importUserModel } = require('../../../../src/services/sync/model/importUser.schema');
 
 const appPromise = require('../../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const testObjects = require('../../helpers/testObjects')(appPromise());
-const { BadRequest } = require('../../../../src/errors');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
