@@ -1,6 +1,6 @@
-import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
-import { ExternalToolConfigResponse } from '@src/modules/tool/controller/dto/response/external-tool-config.response';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ExternalToolConfigResponse } from './external-tool-config.response';
+import { ToolConfigType } from '../../../interface/tool-config-type.enum';
 
 export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()

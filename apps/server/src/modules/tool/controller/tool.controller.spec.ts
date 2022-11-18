@@ -1,22 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Authorization } from 'oauth-1.0a';
 import { ICurrentUser } from '@shared/domain';
-import { Lti11LaunchResponse } from '@src/modules/tool/controller/dto/lti11-launch.response';
-import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
-import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
+import { Authorization } from 'oauth-1.0a';
 import { NotImplementedException } from '@nestjs/common';
-import { CustomParameterScope } from '@src/modules/tool/interface/custom-parameter-scope.enum';
-import { CustomParameterLocation } from '@src/modules/tool/interface/custom-parameter-location.enum';
-import { CustomParameterType } from '@src/modules/tool/interface/custom-parameter-type.enum';
-import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
-import { BasicToolConfigParams } from '@src/modules/tool/controller/dto/request/basic-tool-config.params';
-import { Lti11ToolConfigParams } from '@src/modules/tool/controller/dto/request/lti11-tool-config.params';
-import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
-import { Oauth2ToolConfigParams } from '@src/modules/tool/controller/dto/request/oauth2-tool-config.params';
 import { ToolController } from './tool.controller';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
+import { Lti11LaunchResponse } from './dto/lti11-launch.response';
+import { BasicToolConfigParams } from './dto/request/basic-tool-config.params';
+import { ToolConfigType } from '../interface/tool-config-type.enum';
+import { LtiMessageType } from '../interface/lti-message-type.enum';
+import { Oauth2ToolConfigParams } from './dto/request/oauth2-tool-config.params';
+import { CustomParameterLocation } from '../interface/custom-parameter-location.enum';
+import { CustomParameterScope } from '../interface/custom-parameter-scope.enum';
+import { CustomParameterType } from '../interface/custom-parameter-type.enum';
+import { CustomParameterCreateParams } from './dto/request/custom-parameter.params';
+import { Lti11ToolConfigParams } from './dto/request/lti11-tool-config.params';
+import { ExternalToolParams } from './dto/request/external-tool-create.params';
 
 describe('ToolController', () => {
 	let module: TestingModule;
