@@ -310,52 +310,36 @@ describe('Task Entity', () => {
 		describe('when submitted submissions exists', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const submission1 = submissionFactory.studentWithId().buildWithId();
-				const submission2 = submissionFactory.studentWithId().buildWithId();
-				const submission3 = submissionFactory.studentWithId().buildWithId();
+				const submission1 = submissionFactory.submitted().studentWithId().buildWithId();
+				const submission2 = submissionFactory.submitted().studentWithId().buildWithId();
+				const submission3 = submissionFactory.submitted().studentWithId().buildWithId();
+
+				const spy1 = jest.spyOn(submission1, 'getMemberIds');
+				const spy2 = jest.spyOn(submission2, 'getMemberIds');
+				const spy3 = jest.spyOn(submission3, 'getMemberIds');
 
 				const submissions = [submission1, submission2, submission3];
 				const task = taskFactory.buildWithId({ creator: user, submissions });
 
-				return { task, user, submittedSubmissionNumber: submissions.length };
+				return { task, user, spy1, spy2, spy3 };
 			};
 
-			it('should be create correct status with  total user number in submitted', () => {
-				const { task, user, submittedSubmissionNumber } = setup();
+			it('should be call submission.getMemberIds for each submission', () => {
+				const { task, user, spy1, spy2, spy3 } = setup();
 
-				const status = task.createTeacherStatusForUser(user);
+				task.createTeacherStatusForUser(user);
 
-				expect(status.submitted).toEqual(submittedSubmissionNumber);
+				expect(spy1).toBeCalledTimes(1);
+				expect(spy2).toBeCalledTimes(1);
+				expect(spy3).toBeCalledTimes(1);
 			});
 
-			it('should be create correct status with total user number in graded', () => {
+			it('should be create correct status with  total user number in submitted', () => {
 				const { task, user } = setup();
 
 				const status = task.createTeacherStatusForUser(user);
 
-				expect(status.graded).toEqual(0);
-			});
-		});
-
-		describe('when submitted team submissions exists', () => {
-			const setup = () => {
-				const submissionWithTeamMemberNumber = 3;
-
-				const user = userFactory.buildWithId();
-				const teamSubmission = submissionFactory.teamMembersWithId(submissionWithTeamMemberNumber).buildWithId();
-				const task = taskFactory.buildWithId({ creator: user, submissions: [teamSubmission] });
-
-				const submittedSubmissionNumber = submissionWithTeamMemberNumber + 1;
-
-				return { task, user, submittedSubmissionNumber };
-			};
-
-			it('should be create correct status with total user number in submitted', () => {
-				const { task, user, submittedSubmissionNumber } = setup();
-
-				const status = task.createTeacherStatusForUser(user);
-
-				expect(status.submitted).toEqual(submittedSubmissionNumber);
+				expect(status.submitted).toEqual(3);
 			});
 
 			it('should be create correct status with total user number in graded', () => {
@@ -374,57 +358,41 @@ describe('Task Entity', () => {
 				const submission2 = submissionFactory.graded().studentWithId().build();
 				const submission3 = submissionFactory.graded().studentWithId().build();
 
+				const spy1 = jest.spyOn(submission1, 'getMemberIds');
+				const spy2 = jest.spyOn(submission2, 'getMemberIds');
+				const spy3 = jest.spyOn(submission3, 'getMemberIds');
+
 				const submissions = [submission1, submission2, submission3];
 				const task = taskFactory.buildWithId({ creator: user, submissions });
 
-				return { task, user, submissionNumber: submissions.length };
+				return { task, user, spy1, spy2, spy3 };
 			};
+
+			it('should be call submission.getMemberIds for each submission', () => {
+				const { task, user, spy1, spy2, spy3 } = setup();
+
+				task.createTeacherStatusForUser(user);
+
+				// one for graded and one for submitted status
+				expect(spy1).toBeCalledTimes(2);
+				expect(spy2).toBeCalledTimes(2);
+				expect(spy3).toBeCalledTimes(2);
+			});
 
 			it('should be create correct status with  total user number in submitted', () => {
-				const { task, user, submissionNumber } = setup();
+				const { task, user } = setup();
 
 				const status = task.createTeacherStatusForUser(user);
 
-				expect(status.submitted).toEqual(submissionNumber);
+				expect(status.submitted).toEqual(3);
 			});
 
 			it('should be create correct status with total user number in graded', () => {
-				const { task, user, submissionNumber } = setup();
+				const { task, user } = setup();
 
 				const status = task.createTeacherStatusForUser(user);
 
-				expect(status.graded).toEqual(submissionNumber);
-			});
-		});
-
-		describe('when graded team submissions exists', () => {
-			const setup = () => {
-				const submissionNumber = 3;
-				const user = userFactory.buildWithId();
-				const submissions = [
-					submissionFactory.graded().studentWithId().teamMembersWithId(submissionNumber).buildWithId(),
-				];
-				const task = taskFactory.buildWithId({ creator: user, submissions });
-
-				const gradedSubmissionUsers = submissionNumber + 1;
-
-				return { task, user, gradedSubmissionUsers };
-			};
-
-			it('should be create correct status with total user number in submitted', () => {
-				const { task, user, gradedSubmissionUsers } = setup();
-
-				const status = task.createTeacherStatusForUser(user);
-
-				expect(status.submitted).toEqual(gradedSubmissionUsers);
-			});
-
-			it('should be create correct status with total user number in graded', () => {
-				const { task, user, gradedSubmissionUsers } = setup();
-
-				const status = task.createTeacherStatusForUser(user);
-
-				expect(status.graded).toEqual(gradedSubmissionUsers);
+				expect(status.graded).toEqual(3);
 			});
 		});
 
@@ -474,12 +442,221 @@ describe('Task Entity', () => {
 				return { task, user };
 			};
 
-			it('should be create correct status for isDraft', () => {
+			it('should be create correct status for isFinished', () => {
 				const { task, user } = setup();
 
 				const status = task.createTeacherStatusForUser(user);
 
 				expect(status.isFinished).toEqual(true);
+			});
+		});
+
+		describe('when task is not finished for the user', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.isPublished().buildWithId({ creator: user });
+
+				return { task, user };
+			};
+
+			it('should be create correct status for isFinished', () => {
+				const { task, user } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.isFinished).toEqual(false);
+			});
+		});
+
+		describe('when user is a submissionTeacher in parent that is a course', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+				const task = taskFactory.isPublished().buildWithId({ creator: user, course });
+
+				return { task, user };
+			};
+
+			it('should be create correct status for isSubstitutionTeacher', () => {
+				const { task, user } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.isSubstitutionTeacher).toEqual(true);
+			});
+		});
+	});
+
+	describe('createStudentStatusForUser is called', () => {
+		describe('when a valid status is return', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+
+				return { task, user };
+			};
+
+			it('should always display maxSubmissions 1', () => {
+				const { task, user } = setup();
+
+				const status = task.createStudentStatusForUser(user);
+
+				expect(status.maxSubmissions).toEqual(1);
+			});
+
+			it('should always display isSubstitutionTeacher false', () => {
+				const { task, user } = setup();
+
+				const status = task.createStudentStatusForUser(user);
+
+				expect(status.isSubstitutionTeacher).toEqual(false);
+			});
+		});
+
+		describe('when submitted submissions for this user exists', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submission = submissionFactory.submitted().buildWithId({ student: user });
+
+				const task = taskFactory.buildWithId({ submissions: [submission] });
+
+				return { task, user };
+			};
+
+			it('should be return 1', () => {
+				const { task, user } = setup();
+
+				const status = task.createStudentStatusForUser(user);
+
+				expect(status.submitted).toEqual(1);
+			});
+		});
+
+		describe('when no submitted submissions for this user exists', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+
+				const task = taskFactory.buildWithId({ submissions: [] });
+
+				return { task, user };
+			};
+
+			it('should be return 0', () => {
+				const { task, user } = setup();
+
+				const status = task.createStudentStatusForUser(user);
+
+				expect(status.submitted).toEqual(0);
+			});
+		});
+
+		describe('when graded submissions for this user exists', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submission = submissionFactory.graded().buildWithId({ student: user });
+
+				const task = taskFactory.buildWithId({ submissions: [submission] });
+
+				return { task, user };
+			};
+
+			it('should be return 1', () => {
+				const { task, user } = setup();
+
+				const status = task.createStudentStatusForUser(user);
+
+				expect(status.graded).toEqual(1);
+			});
+		});
+
+		describe('when no submitted submissions for this user exists', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submission = submissionFactory.submitted().buildWithId({ student: user });
+
+				const task = taskFactory.buildWithId({ submissions: [submission] });
+
+				return { task, user };
+			};
+
+			it('should be return 0', () => {
+				const { task, user } = setup();
+
+				const status = task.createStudentStatusForUser(user);
+
+				expect(status.graded).toEqual(0);
+			});
+		});
+
+		describe('when task is a draft', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.draft().buildWithId();
+
+				jest.spyOn(task, 'isDraft').mockImplementationOnce(() => true);
+
+				return { task, user };
+			};
+
+			it('should be create correct status for isDraft', () => {
+				const { task, user } = setup();
+
+				const status = task.createStudentStatusForUser(user);
+
+				expect(status.isDraft).toEqual(true);
+			});
+		});
+
+		describe('when task is not a draft', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.draft().buildWithId();
+
+				jest.spyOn(task, 'isDraft').mockImplementationOnce(() => false);
+
+				return { task, user };
+			};
+
+			it('should be create correct status for isDraft', () => {
+				const { task, user } = setup();
+
+				const status = task.createStudentStatusForUser(user);
+
+				expect(status.isDraft).toEqual(false);
+			});
+		});
+
+		describe('when task is a finished for the user', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.isPublished().buildWithId({ finished: [user] });
+
+				return { task, user };
+			};
+
+			it('should be create correct status for isFinished', () => {
+				const { task, user } = setup();
+
+				const status = task.createStudentStatusForUser(user);
+
+				expect(status.isFinished).toEqual(true);
+			});
+		});
+
+		describe('when task is a not finished for the user', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.isPublished().buildWithId();
+
+				return { task, user };
+			};
+
+			it('should be create correct status for isFinished', () => {
+				const { task, user } = setup();
+
+				const status = task.createStudentStatusForUser(user);
+
+				expect(status.isFinished).toEqual(false);
 			});
 		});
 
@@ -502,100 +679,18 @@ describe('Task Entity', () => {
 			});
 		});
 	});
-	/*
-	describe('createStudentStatusForUser', () => {
-		it('should call isSubmittedForUser and return 1 instant of true for property submitted', () => {
-			const user = userFactory.buildWithId();
-			const task = taskFactory.buildWithId();
-			const spy = jest.spyOn(task, 'isSubmittedForUser').mockImplementation(() => true);
 
-			const result = task.createStudentStatusForUser(user);
-
-			expect(spy).toHaveBeenCalled();
-			expect(result.submitted).toEqual(1);
-
-			spy.mockReset();
-		});
-
-		it('should call isSubmittedForUser and return 0 instant of false for property submitted', () => {
-			const user = userFactory.buildWithId();
-			const task = taskFactory.buildWithId();
-			const spy = jest.spyOn(task, 'isSubmittedForUser').mockImplementation(() => false);
-
-			const result = task.createStudentStatusForUser(user);
-
-			expect(spy).toHaveBeenCalled();
-			expect(result.submitted).toEqual(0);
-
-			spy.mockReset();
-		});
-
-		it('should call isGradedForUser and return 1 instant of true for property graded', () => {
-			const user = userFactory.buildWithId();
-			const task = taskFactory.buildWithId();
-			const spy = jest.spyOn(task, 'isGradedForUser').mockImplementation(() => true);
-
-			const result = task.createStudentStatusForUser(user);
-
-			expect(spy).toHaveBeenCalled();
-			expect(result.graded).toEqual(1);
-
-			spy.mockReset();
-		});
-
-		it('should call isGradedForUser and return 0 instant of false for property graded', () => {
-			const user = userFactory.buildWithId();
-			const task = taskFactory.buildWithId();
-			const spy = jest.spyOn(task, 'isGradedForUser').mockImplementation(() => false);
-
-			const result = task.createStudentStatusForUser(user);
-
-			expect(spy).toHaveBeenCalled();
-			expect(result.graded).toEqual(0);
-
-			spy.mockReset();
-		});
-
-		it('should return 1 for property maxSubmissions', () => {
-			const user = userFactory.buildWithId();
-			const task = taskFactory.buildWithId();
-
-			const result = task.createStudentStatusForUser(user);
-
-			expect(result.maxSubmissions).toEqual(1);
-		});
-
-		it('should call isDraft and return the result as isDraft property', () => {
-			const user = userFactory.buildWithId();
-			const task = taskFactory.buildWithId();
-			const spy = jest.spyOn(task, 'isDraft').mockImplementation(() => false);
-
-			const result = task.createStudentStatusForUser(user);
-
-			expect(spy).toHaveBeenCalled();
-			expect(result.isDraft).toEqual(false);
-
-			spy.mockReset();
-		});
-
-		it('should return false for property isSubstitutionTeacher', () => {
-			const user = userFactory.buildWithId();
-			const task = taskFactory.buildWithId();
-
-			const result = task.createStudentStatusForUser(user);
-
-			expect(result.isSubstitutionTeacher).toEqual(false);
-		});
-	});
-*/
 	describe('getParentData', () => {
 		describe('when a course is set', () => {
 			it('should return the name, id and color of the course', () => {
 				const course = courseFactory.buildWithId();
 				const task = taskFactory.buildWithId({ course });
-				expect(task.getParentData().courseName).toEqual(course.name);
-				expect(task.getParentData().courseId).toEqual(course.id);
-				expect(task.getParentData().color).toEqual(course.color);
+
+				const result = task.getParentData();
+
+				expect(result.courseName).toEqual(course.name);
+				expect(result.courseId).toEqual(course.id);
+				expect(result.color).toEqual(course.color);
 			});
 
 			describe('when a lesson is set', () => {
@@ -603,14 +698,20 @@ describe('Task Entity', () => {
 					const course = courseFactory.buildWithId();
 					const lesson = lessonFactory.buildWithId({ course });
 					const task = taskFactory.buildWithId({ course, lesson });
-					expect(task.getParentData().lessonName).toEqual(lesson.name);
+
+					const result = task.getParentData();
+
+					expect(result.lessonName).toEqual(lesson.name);
 				});
 			});
 			describe('when no lesson is set', () => {
 				it('should return an empty string as description', () => {
 					const course = courseFactory.buildWithId();
 					const task = taskFactory.buildWithId({ course });
-					expect(task.getParentData().lessonName).toEqual('');
+
+					const result = task.getParentData();
+
+					expect(result.lessonName).toEqual('');
 				});
 			});
 		});
@@ -618,26 +719,32 @@ describe('Task Entity', () => {
 		describe('when no course is set', () => {
 			it('should return the default name and color', () => {
 				const task = taskFactory.buildWithId();
-				expect(task.getParentData().courseName).toEqual('');
-				expect(task.getParentData().color).toEqual('#ACACAC');
+
+				const result = task.getParentData();
+
+				expect(result.courseName).toEqual('');
+				expect(result.color).toEqual('#ACACAC');
 			});
 		});
 	});
 
-	/*
 	describe('finishForUser', () => {
 		it('should add the user to the finished collection', () => {
 			const user = userFactory.buildWithId();
 			const task = taskFactory.buildWithId();
+
 			task.finishForUser(user);
-			expect(task.isFinishedForUser(user)).toBe(true);
+
+			expect(task.finished.contains(user)).toBe(true);
 		});
 
 		it('should make sure the user is added only once', () => {
 			const user = userFactory.buildWithId();
 			const task = taskFactory.buildWithId();
+
 			task.finishForUser(user);
 			task.finishForUser(user);
+
 			expect(task.finished.count()).toBe(1);
 		});
 
@@ -645,26 +752,31 @@ describe('Task Entity', () => {
 			const user1 = userFactory.buildWithId();
 			const user2 = userFactory.buildWithId();
 			const task = taskFactory.buildWithId({ finished: [user1] });
+
 			task.finishForUser(user2);
-			expect(task.isFinishedForUser(user1)).toBe(true);
-			expect(task.isFinishedForUser(user2)).toBe(true);
+
+			expect(task.finished.contains(user1)).toBe(true);
+			expect(task.finished.contains(user2)).toBe(true);
 		});
 	});
-*/
-	/*
+
 	describe('restoreForUser', () => {
 		it('should remove the user from the finished collection', () => {
 			const user = userFactory.buildWithId();
 			const task = taskFactory.buildWithId({ finished: [user] });
+
 			task.restoreForUser(user);
-			expect(task.isFinishedForUser(user)).toBe(false);
+
+			expect(task.finished.contains(user)).toBe(false);
 		});
 
 		it('should make sure the task can be restored even if already done ', () => {
 			const user = userFactory.buildWithId();
 			const task = taskFactory.buildWithId({ finished: [user] });
+
 			task.restoreForUser(user);
 			task.restoreForUser(user);
+
 			expect(task.finished.count()).toBe(0);
 		});
 
@@ -672,23 +784,29 @@ describe('Task Entity', () => {
 			const user1 = userFactory.buildWithId();
 			const user2 = userFactory.buildWithId();
 			const task = taskFactory.buildWithId({ finished: [user1, user2] });
+
 			task.restoreForUser(user2);
-			expect(task.isFinishedForUser(user1)).toBe(true);
-			expect(task.isFinishedForUser(user2)).toBe(false);
+
+			expect(task.finished.contains(user1)).toBe(true);
+			expect(task.finished.contains(user2)).toBe(false);
 		});
 	});
-*/
+
 	describe('publish', () => {
 		it('should become not a draft', () => {
 			const task = taskFactory.draft().buildWithId();
+
 			task.publish();
+
 			expect(task.isDraft()).toEqual(false);
 		});
 
 		it('should set availableDate', () => {
 			const task = taskFactory.draft().buildWithId();
 			const dateBefore = new Date(Date.now());
+
 			task.publish();
+
 			expect(task.availableDate).toBeDefined();
 			expect((task.availableDate as Date) >= dateBefore).toEqual(true);
 		});
@@ -697,7 +815,9 @@ describe('Task Entity', () => {
 	describe('unpublish', () => {
 		it('should become a draft', () => {
 			const task = taskFactory.buildWithId();
+
 			task.unpublish();
+
 			expect(task.isDraft()).toEqual(true);
 		});
 	});
@@ -706,6 +826,7 @@ describe('Task Entity', () => {
 		it('schould return schoolId from school', () => {
 			const school = schoolFactory.buildWithId();
 			const task = taskFactory.buildWithId({ school });
+
 			const schoolId = task.getSchoolId();
 
 			expect(schoolId).toEqual(school.id);

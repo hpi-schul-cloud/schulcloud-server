@@ -150,7 +150,6 @@ export class Submission extends BaseEntityWithTimestamps {
 		return uniqueMemberIds;
 	}
 
-	// TODO: test
 	public userIsMember(user: User): boolean {
 		const memberIds = this.getMemberIds();
 		const isMember = memberIds.some((id) => id === user.id);
