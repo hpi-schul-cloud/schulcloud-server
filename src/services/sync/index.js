@@ -12,7 +12,7 @@ const Syncer = require('./strategies/Syncer');
 const syncers = require('./strategies');
 const getSyncLogger = require('./logger');
 const { consumer } = require('./strategies/LDAPSyncerConsumer');
-const { UserAccountService } = require('./services/UserAccountService');
+const UserAccountService = require('./services/UserAccountService');
 
 module.exports = function setup() {
 	const app = this;

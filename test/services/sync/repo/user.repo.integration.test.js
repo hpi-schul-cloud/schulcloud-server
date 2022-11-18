@@ -4,7 +4,7 @@ const { ObjectId } = require('mongoose').Types;
 
 const UserRepo = require('../../../../src/services/sync/repo/user.repo');
 
-const accountModel = require('../../../../src/services/account/model');
+// const accountModel = require('../../../../src/services/account/model');
 const { userModel } = require('../../../../src/services/user/model');
 const { importUserModel } = require('../../../../src/services/sync/model/importUser.schema');
 
@@ -37,13 +37,13 @@ describe('user repo', () => {
 		await closeNestServices(nestServices);
 	});
 
-	describe('createUserAndAccount', () => {
-		const createdAccounts = [];
+	describe('createUserAndAccountc', () => {
+		// const createdAccounts = [];
 		const createdUsers = [];
 
 		afterEach(async () => {
-			const accountPromises = createdAccounts.map((account) => accountModel.remove(account));
-			await Promise.all(accountPromises);
+			// const accountPromises = createdAccounts.map((account) => accountModel.remove(account));
+			// await Promise.all(accountPromises);
 
 			const userPromises = createdUsers.map((user) => userModel.remove(user));
 			await Promise.all(userPromises);
@@ -65,19 +65,20 @@ describe('user repo', () => {
 				ldapId: 'Test ldapId',
 				roles: [TEST_ROLE],
 			};
-			const inputAccount = {
-				username: email,
-			};
-			const { user, account } = await UserRepo.createUserAndAccount(inputUser, inputAccount);
+			// const inputAccount = {
+			// 	username: email,
+			// };
+			// const { user, account } = await UserRepo.createUserAndAccount(inputUser, inputAccount);
+			const { user } = await UserRepo.createUser(inputUser);
 			expect(user._id).to.be.not.undefined;
-			expect(account.userId.toString()).to.be.equal(user._id.toString());
-			expect(account.activated).to.be.true;
+			// expect(account.userId.toString()).to.be.equal(user._id.toString());
+			// expect(account.activated).to.be.true;
 			expect(user.ldapDn).to.be.not.undefined;
 			expect(user.ldapId).to.be.not.undefined;
 			expect(user.roles.length).to.be.equal(1);
 			expect(user.roles[0]._id.toString()).to.be.equal(role._id.toString());
 
-			createdAccounts.push(account);
+			// createdAccounts.push(account);
 			createdUsers.push(user);
 		});
 
@@ -96,16 +97,17 @@ describe('user repo', () => {
 				ldapDn: 'Test ldap',
 				roles: [TEST_ROLE],
 			};
-			const inputAccount = {
-				username: TEST_EMAIL,
-			};
+			// const inputAccount = {
+			// 	username: TEST_EMAIL,
+			// };
 
 			const firstLdapId = 'initialLdapId';
 			const inputUserFirst = {
 				...inputUser,
 				ldapId: firstLdapId,
 			};
-			await UserRepo.createUserAndAccount(inputUserFirst, inputAccount);
+			// await UserRepo.createUserAndAccount(inputUserFirst, inputAccount);
+			await UserRepo.createUser(inputUserFirst);
 
 			const secondLdapId = 'newLdapId';
 			const inputUserSecond = {
@@ -113,7 +115,8 @@ describe('user repo', () => {
 				ldapId: secondLdapId,
 			};
 			try {
-				await UserRepo.createUserAndAccount(inputUserSecond, inputAccount);
+				// await UserRepo.createUserAndAccount(inputUserSecond, inputAccount);
+				await UserRepo.createUser(inputUserSecond);
 			} catch (error) {
 				expect(error).to.be.an.instanceof(BadRequest);
 				expect(error.message).to.contain(firstLdapId);
@@ -132,21 +135,22 @@ describe('user repo', () => {
 				birthday: initialBirthday,
 				email: initialEmail,
 			});
-			const password = 'password123';
-			const credentials = { username: testUser.email, password };
-			await testObjects.createTestAccount(credentials, 'local', testUser);
+			// const password = 'password123';
+			// const credentials = { username: testUser.email, password };
+			// await testObjects.createTestAccount(credentials, 'local', testUser);
 
 			const newFirstName = 'new first name';
 			const newLastName = 'new last name';
-			const newUserName = 'new user name';
-			const { user, account } = await UserRepo.updateUserAndAccount(
+			// const newUserName = 'new user name';
+			// const { user, account } = await UserRepo.updateUserAndAccount(
+			const { user } = await UserRepo.updateUser(
 				testUser._id,
-				{ firstName: newFirstName, lastName: newLastName },
-				{ username: newUserName }
+				{ firstName: newFirstName, lastName: newLastName }
+				// { username: newUserName }
 			);
 			expect(user.firstName).to.be.equal(newFirstName);
 			expect(user.lastName).to.be.equal(newLastName);
-			expect(account.username).to.be.equal(newUserName);
+			// expect(account.username).to.be.equal(newUserName);
 			expect(user.email).to.be.equal(initialEmail);
 			expect(user.birthday.toString()).to.be.equal(initialBirthday.toString());
 		});
@@ -157,18 +161,19 @@ describe('user repo', () => {
 
 			await testObjects.createTestUser({ email: existedEmail });
 			const testUser = await testObjects.createTestUser({ email: testEmail });
-			const password = 'password123';
-			const credentials = { username: testUser.email, password };
-			await testObjects.createTestAccount(credentials, 'local', testUser);
+			// const password = 'password123';
+			// const credentials = { username: testUser.email, password };
+			// await testObjects.createTestAccount(credentials, 'local', testUser);
 
 			const newFirstName = 'new first name';
 			const newLastName = 'new last name';
-			const newUserName = 'new user name';
+			// const newUserName = 'new user name';
 			await expect(
-				UserRepo.updateUserAndAccount(
+				// UserRepo.updateUserAndAccount(
+				UserRepo.updateUser(
 					testUser._id,
-					{ firstName: newFirstName, lastName: newLastName, email: existedEmail },
-					{ username: newUserName }
+					{ firstName: newFirstName, lastName: newLastName, email: existedEmail }
+					// { username: newUserName }
 				)
 			).to.be.rejectedWith(BadRequest);
 		});
