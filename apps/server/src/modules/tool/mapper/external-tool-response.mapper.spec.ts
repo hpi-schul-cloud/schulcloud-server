@@ -17,6 +17,9 @@ import { Oauth2ToolConfigResponse } from '../controller/dto/response/oauth2-tool
 import { ToolConfigType } from '../interface/tool-config-type.enum';
 import { LtiMessageType } from '../interface/lti-message-type.enum';
 import { LtiPrivacyPermission } from '../interface/lti-privacy-permission.enum';
+import { CustomParameterLocationParams } from '../interface/custom-parameter-location.enum';
+import { CustomParameterScopeParams } from '../interface/custom-parameter-scope.enum';
+import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
 
 describe('ExternalToolResponseMapper', () => {
 	let module: TestingModule;
@@ -38,9 +41,9 @@ describe('ExternalToolResponseMapper', () => {
 		const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
 			name: 'mockName',
 			default: 'mockDefault',
-			location: CustomParameterLocation.PATH,
-			scope: CustomParameterScope.SCHOOL,
-			type: CustomParameterType.STRING,
+			location: CustomParameterLocationParams.PATH,
+			scope: CustomParameterScopeParams.SCHOOL,
+			type: CustomParameterTypeParams.STRING,
 			regex: 'mockRegex',
 		});
 		const basicToolConfigResponse: BasicToolConfigResponse = new BasicToolConfigResponse({

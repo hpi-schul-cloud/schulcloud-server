@@ -160,9 +160,9 @@ describe('ToolController', () => {
 			const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
 				name: 'mockName',
 				default: 'mockDefault',
-				location: CustomParameterLocation.PATH,
-				scope: CustomParameterScope.SCHOOL,
-				type: CustomParameterType.STRING,
+				location: CustomParameterLocationParams.PATH,
+				scope: CustomParameterScopeParams.SCHOOL,
+				type: CustomParameterTypeParams.STRING,
 				regex: 'mockRegex',
 			});
 			const basicToolConfigResponse: BasicToolConfigResponse = new BasicToolConfigResponse({

@@ -13,7 +13,6 @@ import {
 	Oauth2ToolConfig,
 	ToolConfigType,
 } from '@shared/domain';
-
 import { BaseFactory } from './base.factory';
 
 export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalToolProperties> {
