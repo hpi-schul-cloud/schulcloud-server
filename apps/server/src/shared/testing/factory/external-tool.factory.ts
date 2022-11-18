@@ -2,8 +2,6 @@ import { DeepPartial } from 'fishery';
 import {
 	ExternalTool,
 	IExternalToolProperties,
-} from '@shared/domain/entity/external-tools/external-tool/external-tool.entity';
-import {
 	BasicToolConfig,
 	CustomParameter,
 	CustomParameterLocation,
@@ -15,6 +13,7 @@ import {
 	Oauth2ToolConfig,
 	ToolConfigType,
 } from '@shared/domain';
+
 import { BaseFactory } from './base.factory';
 
 export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalToolProperties> {
