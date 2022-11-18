@@ -1,26 +1,26 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
-import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/external-tool.response';
-import { ExternalToolUc } from '@src/modules/tool/uc/external-tool.uc';
-import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool/external-tool.do';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
-	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ExternalToolRequestMapper } from '@src/modules/tool/mapper/external-tool-request.mapper';
-import { ExternalToolResponseMapper } from '@src/modules/tool/mapper/external-tool-response.mapper';
+
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
 import { Lti11LaunchParams } from './dto/lti11-launch.params';
 import { Lti11Uc } from '../uc/lti11.uc';
+import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
+import { ExternalToolRequestMapper } from '../mapper/external-tool-request.mapper';
+import { ExternalToolResponseMapper } from '../mapper/external-tool-response.mapper';
+import { ExternalToolResponse } from './dto/response/external-tool.response';
+import { ExternalToolParams } from './dto/request/external-tool-create.params';
+import { ExternalToolUc } from '../uc/external-tool.uc';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

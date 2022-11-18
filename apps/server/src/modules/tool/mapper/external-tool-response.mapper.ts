@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/external-tool.response';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -7,10 +6,11 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { BasicToolConfigResponse } from '@src/modules/tool/controller/dto/response/basic-tool-config.response';
-import { Oauth2ToolConfigResponse } from '@src/modules/tool/controller/dto/response/oauth2-tool-config.response';
-import { CustomParameterResponse } from '@src/modules/tool/controller/dto/response/custom-parameter.response';
 import { Lti11ToolConfigResponse } from '../controller/dto/response/lti11-tool-config.response';
+import { ExternalToolResponse } from '../controller/dto/response/external-tool.response';
+import { BasicToolConfigResponse } from '../controller/dto/response/basic-tool-config.response';
+import { CustomParameterResponse } from '../controller/dto/response/custom-parameter.response';
+import { Oauth2ToolConfigResponse } from '../controller/dto/response/oauth2-tool-config.response';
 
 @Injectable()
 export class ExternalToolResponseMapper {

@@ -1,14 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolResponseMapper } from '@src/modules/tool/mapper/external-tool-response.mapper';
-import { CustomParameterResponse } from '@src/modules/tool/controller/dto/response/custom-parameter.response';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
-import { BasicToolConfigResponse } from '@src/modules/tool/controller/dto/response/basic-tool-config.response';
-import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
-import { Lti11ToolConfigResponse } from '@src/modules/tool/controller/dto/response/lti11-tool-config.response';
-import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
-import { LtiPrivacyPermission } from '@src/modules/tool/interface/lti-privacy-permission.enum';
-import { Oauth2ToolConfigResponse } from '@src/modules/tool/controller/dto/response/oauth2-tool-config.response';
-import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/external-tool.response';
+
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -16,6 +8,15 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
+import { ExternalToolResponse } from '../controller/dto/response/external-tool.response';
+import { ExternalToolResponseMapper } from './external-tool-response.mapper';
+import { BasicToolConfigResponse } from '../controller/dto/response/basic-tool-config.response';
+import { CustomParameterResponse } from '../controller/dto/response/custom-parameter.response';
+import { Lti11ToolConfigResponse } from '../controller/dto/response/lti11-tool-config.response';
+import { Oauth2ToolConfigResponse } from '../controller/dto/response/oauth2-tool-config.response';
+import { ToolConfigType } from '../interface/tool-config-type.enum';
+import { LtiMessageType } from '../interface/lti-message-type.enum';
+import { LtiPrivacyPermission } from '../interface/lti-privacy-permission.enum';
 
 describe('ExternalToolResponseMapper', () => {
 	let module: TestingModule;

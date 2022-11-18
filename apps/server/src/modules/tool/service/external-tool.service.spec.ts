@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolService } from '@src/modules/tool/service/external-tool.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
-import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
+
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -11,6 +10,8 @@ import {
 } from '@shared/domain/domainobject/external-tool';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ExternalTool } from '@shared/domain';
 import { externalToolFactory } from '@shared/testing';
+import { ExternalToolService } from './external-tool.service';
+import { ToolConfigType } from '../interface/tool-config-type.enum';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;

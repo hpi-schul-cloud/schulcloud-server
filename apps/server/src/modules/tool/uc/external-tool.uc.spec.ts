@@ -1,8 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ExternalToolUc } from '@src/modules/tool/uc/external-tool.uc';
-import { ExternalToolService } from '@src/modules/tool/service/external-tool.service';
-import { ExternalToolRequestMapper } from '@src/modules/tool/mapper/external-tool-request.mapper';
 import { AuthorizationService } from '@src/modules';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
@@ -13,13 +10,16 @@ import {
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { ICurrentUser, ToolConfigType, User } from '@shared/domain';
-import { TokenEndpointAuthMethod } from '@src/modules/tool/interface/token-endpoint-auth-method.enum';
-import { LtiPrivacyPermission } from '@src/modules/tool/interface/lti-privacy-permission.enum';
-import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
 import { setupEntities, userFactory } from '@shared/testing';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { ExternalToolUc } from './external-tool.uc';
+import { ExternalToolService } from '../service/external-tool.service';
+import { ExternalToolRequestMapper } from '../mapper/external-tool-request.mapper';
+import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
+import { LtiMessageType } from '../interface/lti-message-type.enum';
+import { LtiPrivacyPermission } from '../interface/lti-privacy-permission.enum';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;

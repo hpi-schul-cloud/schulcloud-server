@@ -1,12 +1,12 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ICurrentUser, Permission, User } from '@shared/domain';
-import { ExternalToolService } from '@src/modules/tool/service/external-tool.service';
 import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { AuthorizationService } from '@src/modules/authorization';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { ExternalToolRequestMapper } from '@src/modules/tool/mapper/external-tool-request.mapper';
+import { ExternalToolService } from '../service/external-tool.service';
+import { ExternalToolRequestMapper } from '../mapper/external-tool-request.mapper';
 
 @Injectable()
 export class ExternalToolUc {

@@ -1,14 +1,3 @@
-import { ExternalToolRequestMapper } from '@src/modules/tool/mapper/external-tool-request.mapper';
-import { BasicToolConfigParams } from '@src/modules/tool/controller/dto/request/basic-tool-config.params';
-import { Lti11ToolConfigParams } from '@src/modules/tool/controller/dto/request/lti11-tool-config.params';
-import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
-import { Oauth2ToolConfigParams } from '@src/modules/tool/controller/dto/request/oauth2-tool-config.params';
-import { TokenEndpointAuthMethod } from '@src/modules/tool/interface/token-endpoint-auth-method.enum';
-import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
-import { CustomParameterLocationParams } from '@src/modules/tool/interface/custom-parameter-location.enum';
-import { CustomParameterScopeParams } from '@src/modules/tool/interface/custom-parameter-scope.enum';
-import { CustomParameterTypeParams } from '@src/modules/tool/interface/custom-parameter-type.enum';
-import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '@shared/domain';
 import {
 	BasicToolConfigDO,
@@ -17,9 +6,20 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { LtiPrivacyPermission } from '@src/modules/tool/interface/lti-privacy-permission.enum';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
+import { CustomParameterCreateParams } from '../controller/dto/request/custom-parameter.params';
+import { BasicToolConfigParams } from '../controller/dto/request/basic-tool-config.params';
+import { Oauth2ToolConfigParams } from '../controller/dto/request/oauth2-tool-config.params';
+import { ExternalToolParams } from '../controller/dto/request/external-tool-create.params';
+import { ExternalToolRequestMapper } from './external-tool-request.mapper';
+import { Lti11ToolConfigParams } from '../controller/dto/request/lti11-tool-config.params';
+import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
+import { CustomParameterLocationParams } from '../interface/custom-parameter-location.enum';
+import { CustomParameterScopeParams } from '../interface/custom-parameter-scope.enum';
+import { LtiMessageType } from '../interface/lti-message-type.enum';
+import { LtiPrivacyPermission } from '../interface/lti-privacy-permission.enum';
 
 describe('ExternalToolRequestMapper', () => {
 	let module: TestingModule;

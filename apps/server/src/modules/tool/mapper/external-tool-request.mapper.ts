@@ -1,9 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-create.params';
-import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
-import { BasicToolConfigParams } from '@src/modules/tool/controller/dto/request/basic-tool-config.params';
-import { Oauth2ToolConfigParams } from '@src/modules/tool/controller/dto/request/oauth2-tool-config.params';
-import { Lti11ToolConfigParams } from '@src/modules/tool/controller/dto/request/lti11-tool-config.params';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -12,11 +7,16 @@ import {
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
-import { TokenEndpointAuthMethod } from '@src/modules/tool/interface/token-endpoint-auth-method.enum';
-import { CustomParameterScopeParams } from '@src/modules/tool/interface/custom-parameter-scope.enum';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
-import { CustomParameterLocationParams } from '@src/modules/tool/interface/custom-parameter-location.enum';
-import { CustomParameterTypeParams } from '@src/modules/tool/interface/custom-parameter-type.enum';
+import { CustomParameterScopeParams } from '../interface/custom-parameter-scope.enum';
+import { CustomParameterLocationParams } from '../interface/custom-parameter-location.enum';
+import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
+import { CustomParameterCreateParams } from '../controller/dto/request/custom-parameter.params';
+import { BasicToolConfigParams } from '../controller/dto/request/basic-tool-config.params';
+import { Oauth2ToolConfigParams } from '../controller/dto/request/oauth2-tool-config.params';
+import { ExternalToolParams } from '../controller/dto/request/external-tool-create.params';
+import { Lti11ToolConfigParams } from '../controller/dto/request/lti11-tool-config.params';
+import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,
@@ -45,7 +45,7 @@ export class ExternalToolRequestMapper {
 		if (externalToolParams.config instanceof BasicToolConfigParams) {
 			mappedConfig = this.mapRequestToBasicToolConfigDO(externalToolParams.config);
 		} else if (externalToolParams.config instanceof Lti11ToolConfigParams) {
-			mappedConfig = this.mapRequestLti11ToolConfigDO(externalToolParams.config);
+			mappedConfig = this.mapRequestToLti11ToolConfigDO(externalToolParams.config);
 		} else {
 			mappedConfig = this.mapRequestToOauth2ToolConfigDO(externalToolParams.config);
 		}
@@ -70,7 +70,7 @@ export class ExternalToolRequestMapper {
 		return new BasicToolConfigDO({ ...externalToolConfigParams });
 	}
 
-	private mapRequestLti11ToolConfigDO(externalToolConfigParams: Lti11ToolConfigParams): Lti11ToolConfigDO {
+	private mapRequestToLti11ToolConfigDO(externalToolConfigParams: Lti11ToolConfigParams): Lti11ToolConfigDO {
 		return new Lti11ToolConfigDO({ ...externalToolConfigParams });
 	}
 
