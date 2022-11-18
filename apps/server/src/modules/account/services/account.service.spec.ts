@@ -8,12 +8,19 @@ import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shar
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
 import bcrypt from 'bcryptjs';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
+import { ConfigService } from '@nestjs/config';
+import { Logger } from '@nestjs/common';
 import { AccountService } from './account.service';
 
 describe('AccountService', () => {
 	let module: TestingModule;
 	let accountService: AccountService;
 	let orm: MikroORM;
+	let loggerMock: DeepMocked<Logger>;
+	let configServiceMock: DeepMocked<ConfigService>;
+	let idmServiceMock: DeepMocked<IdentityManagementService>;
 	let mockAccounts: Account[];
 	let accountRepo: AccountRepo;
 
@@ -106,10 +113,25 @@ describe('AccountService', () => {
 						}),
 					},
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
+				{
+					provide: IdentityManagementService,
+					useValue: createMock<IdentityManagementService>(),
+				},
 			],
 		}).compile();
 		accountRepo = module.get(AccountRepo);
 		accountService = module.get(AccountService);
+		loggerMock = module.get(Logger);
+		configServiceMock = module.get(ConfigService);
+		idmServiceMock = module.get(IdentityManagementService);
 		orm = await setupEntities();
 	});
 

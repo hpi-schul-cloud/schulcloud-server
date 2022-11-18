@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { EncryptionModule } from '@shared/infra/encryption';
-import { SystemModule } from '@src/modules';
+import { SystemModule } from '../../../../modules/system/system.module';
 import { KeycloakSettings } from './interface/keycloak-settings.interface';
 import { KeycloakManagementUc } from './uc/Keycloak-management.uc';
 import { KeycloakManagementInputFiles } from './interface';
