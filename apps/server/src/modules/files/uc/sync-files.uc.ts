@@ -2,11 +2,35 @@
 
 import { Injectable } from '@nestjs/common';
 import { FileRecordParentType } from '@shared/domain';
+import { Loggable } from '@src/core/Logger-POC/interfaces/loggable';
 import { Logger } from '@src/core/logger/logger.service';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
 import { FileSyncOptions, SyncContext, SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
 import { SyncFilesStorageService } from './sync-files-storage.service';
+
+class SyncrunSuccessLoggable implements Loggable {
+	item: SyncFileItem;
+
+	currentCount: number;
+
+	constructor(item: SyncFileItem, currentCount: number) {
+		this.item = item;
+		this.currentCount = currentCount;
+	}
+
+	getLogMessage(): unknown {
+		return {
+			message: `Successfully synced a file`,
+			data: {
+				currentCount: this.currentCount,
+				sourceFileId: this.item.source.id,
+				targetFileId: this.item.target?.id,
+				operation: this.item.created ? 'created' : 'updated',
+			},
+		};
+	}
+}
 
 // Temporary functionality for migration to new fileservice
 // TODO: Remove when BC-1496 is done!
@@ -73,7 +97,7 @@ export class SyncFilesUc {
 			await this.storageService.syncS3File(item);
 			await this.metadataService.persistMetaData(item);
 
-			this.logSuccessfullySynced(item, currentCount);
+			this.logger.log(new SyncrunSuccessLoggable(item, currentCount));
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
