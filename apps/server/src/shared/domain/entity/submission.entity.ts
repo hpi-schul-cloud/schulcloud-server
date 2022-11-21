@@ -93,14 +93,14 @@ export class Submission extends BaseEntityWithTimestamps {
 		}
 
 		const teamMemberObjectIds = this.teamMembers.getIdentifiers('_id');
-		const teamMemberIds = teamMemberObjectIds.map((id) => id.toString());
+		const teamMemberIds = teamMemberObjectIds.map((id): string => id.toString());
 
 		return teamMemberIds;
 	}
 
 	private getGradeFileIds(): EntityId[] {
 		const gradeFilesObjectIds = this.gradeFiles.getIdentifiers('_id');
-		const gradeFilesIds = gradeFilesObjectIds.map((id) => id.toString());
+		const gradeFilesIds = gradeFilesObjectIds.map((id): string => id.toString());
 
 		return gradeFilesIds;
 	}

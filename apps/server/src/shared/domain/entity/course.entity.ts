@@ -94,7 +94,7 @@ export class Course
 		}
 
 		const studentObjectIds = this.students.getIdentifiers('_id');
-		const studentIds = studentObjectIds.map((id) => id.toString());
+		const studentIds = studentObjectIds.map((id): string => id.toString());
 
 		return studentIds;
 	}
