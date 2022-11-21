@@ -260,11 +260,15 @@ describe('Submission entity', () => {
 
 		describe('when coursegroup is added', () => {
 			const setup = () => {
-				const courseGroup = courseGroupFactory.studentsWithId(3).build();
+				const student1 = userFactory.buildWithId();
+				const student2 = userFactory.buildWithId();
+				const student3 = userFactory.buildWithId();
+				const students = [student1, student2, student3];
+				const courseGroupStudentIds = [student1.id, student2.id, student3.id];
+
+				const courseGroup = courseGroupFactory.build({ students });
 				const submission = submissionFactory.studentWithId().buildWithId({ courseGroup });
 				const creatorId = submission.student.id;
-				const courseGroupStudentIdsObjectIds = courseGroup.students.getIdentifiers('_id');
-				const courseGroupStudentIds = courseGroupStudentIdsObjectIds.map((id) => id.toString());
 
 				const spy = jest.spyOn(courseGroup, 'getStudentIds');
 

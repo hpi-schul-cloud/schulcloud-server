@@ -182,6 +182,7 @@ describe('CourseEntity', () => {
 				const student3 = userFactory.buildWithId();
 				const students = [student1, student2, student3];
 				const studentIds = [student1.id, student2.id, student3.id];
+
 				const course = courseFactory.build({ students });
 
 				return { course, studentIds };
