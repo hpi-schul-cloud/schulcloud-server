@@ -99,7 +99,7 @@ export class Course
 		return studentIds;
 	}
 
-	public userIsSubstitutionTeacher(user: User): boolean {
+	public isUserSubstitutionTeacher(user: User): boolean {
 		const isSubstitutionTeacher = this.substitutionTeachers.contains(user);
 
 		return isSubstitutionTeacher;

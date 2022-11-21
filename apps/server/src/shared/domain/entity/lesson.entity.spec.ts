@@ -247,7 +247,7 @@ describe('Lesson Entity', () => {
 				return { lesson };
 			};
 
-			it('should be return the userIds of the students', () => {
+			it('should return the userIds of the students', () => {
 				const { lesson } = setup();
 
 				const result = lesson.getStudentIds();
@@ -264,7 +264,7 @@ describe('Lesson Entity', () => {
 				return { lesson };
 			};
 
-			it('should be return the userIds of the students', () => {
+			it('should return the userIds of the students', () => {
 				const { lesson } = setup();
 
 				const result = lesson.getStudentIds();

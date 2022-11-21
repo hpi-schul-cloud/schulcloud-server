@@ -39,7 +39,6 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 		if (props.students) this.students.set(props.students);
 	}
 
-	// TODO: test
 	public getStudentIds(): EntityId[] {
 		if (!this.students) {
 			throw new InternalServerErrorException(

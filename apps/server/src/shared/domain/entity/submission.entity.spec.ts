@@ -37,10 +37,10 @@ describe('Submission entity', () => {
 	});
 
 	describe('isSubmitted is called', () => {
-		describe('when submission exists', () => {
+		describe('when submission is submitted', () => {
 			const setup = () => {
 				const task = taskFactory.buildWithId();
-				const submission = submissionFactory.studentWithId().buildWithId({ task });
+				const submission = submissionFactory.submitted().studentWithId().buildWithId({ task });
 
 				return { submission };
 			};
@@ -54,11 +54,11 @@ describe('Submission entity', () => {
 	});
 
 	describe('isSubmittedForUser is called', () => {
-		describe('when submission exists and user is creator of the submission', () => {
+		describe('when submission is submitted and user is creator of the submission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
-				const submission = submissionFactory.studentWithId().buildWithId({ task, student: user });
+				const submission = submissionFactory.submitted().studentWithId().buildWithId({ task, student: user });
 
 				return { submission, user };
 			};
@@ -70,11 +70,11 @@ describe('Submission entity', () => {
 			});
 		});
 
-		describe('when submission exists and user is teamMember of the submission', () => {
+		describe('when submission is submitted and user is teamMember of the submission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
-				const submission = submissionFactory.buildWithId({ task, teamMembers: [user] });
+				const submission = submissionFactory.submitted().buildWithId({ task, teamMembers: [user] });
 
 				return { submission, user };
 			};
@@ -86,11 +86,11 @@ describe('Submission entity', () => {
 			});
 		});
 
-		describe('when submission exists and user is no member of the submission', () => {
+		describe('when submission is submitted and user is no member of the submission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
-				const submission = submissionFactory.buildWithId({ task });
+				const submission = submissionFactory.submitted().buildWithId({ task });
 
 				return { submission, user };
 			};
@@ -104,7 +104,7 @@ describe('Submission entity', () => {
 	});
 
 	describe('isGraded is called', () => {
-		describe('when no grades exists', () => {
+		describe('when no grades exist', () => {
 			const setup = () => {
 				const student = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
@@ -125,7 +125,7 @@ describe('Submission entity', () => {
 				const student = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
 				const grade = 50;
-				const submission = submissionFactory.graded().buildWithId({ task, student, grade });
+				const submission = submissionFactory.buildWithId({ task, student, grade });
 
 				return submission;
 			};
@@ -174,7 +174,7 @@ describe('Submission entity', () => {
 	});
 
 	describe('isGradedForUser is called', () => {
-		describe('when grade exists and user is creator of the submission', () => {
+		describe('when submission is graded and user is creator of the submission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
@@ -190,7 +190,7 @@ describe('Submission entity', () => {
 			});
 		});
 
-		describe('when grade exists and user is teamMember of the submission', () => {
+		describe('when submission is graded and user is teamMember of the submission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
@@ -206,7 +206,7 @@ describe('Submission entity', () => {
 			});
 		});
 
-		describe('when grade exists and user is not a member of the submission', () => {
+		describe('when submission is graded and user is not a member of the submission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
@@ -283,7 +283,7 @@ describe('Submission entity', () => {
 				return { submission };
 			};
 
-			it('should be return the userId of the creator and of the students of the coursegroup.', () => {
+			it('should throw a internal server exception.', () => {
 				const { submission } = setup();
 
 				expect(() => {
@@ -323,7 +323,7 @@ describe('Submission entity', () => {
 				return { submission, user };
 			};
 
-			it('should return true', () => {
+			it('should return false', () => {
 				const { submission, user } = setup();
 
 				const result = submission.userIsMember(user);

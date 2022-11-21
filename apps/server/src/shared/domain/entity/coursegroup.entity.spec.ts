@@ -33,14 +33,14 @@ describe('CourseEntity', () => {
 	});
 
 	describe('getStudentIds is called', () => {
-		describe('when students exists', () => {
+		describe('when students exist', () => {
 			const setup = () => {
 				const courseGroup = courseGroupFactory.studentsWithId(3).build();
 
 				return { courseGroup };
 			};
 
-			it('should be return the userIds of the students', () => {
+			it('should return the userIds of the students', () => {
 				const { courseGroup } = setup();
 
 				const result = courseGroup.getStudentIds();
@@ -49,7 +49,7 @@ describe('CourseEntity', () => {
 			});
 		});
 
-		describe('when course is not populated', () => {
+		describe('when course group is not populated', () => {
 			const setup = () => {
 				const courseGroup = courseGroupFactory.build();
 				Object.assign(courseGroup, { students: undefined });
@@ -57,7 +57,7 @@ describe('CourseEntity', () => {
 				return { courseGroup };
 			};
 
-			it('should be return the userIds of the students', () => {
+			it('should return the userIds of the students', () => {
 				const { courseGroup } = setup();
 
 				expect(() => {

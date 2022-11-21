@@ -233,7 +233,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	private userIsSubstitutionTeacher(user: User): boolean {
-		const isSubstitutionTeacher = this.course ? this.course.userIsSubstitutionTeacher(user) : false;
+		const isSubstitutionTeacher = this.course ? this.course.isUserSubstitutionTeacher(user) : false;
 
 		return isSubstitutionTeacher;
 	}

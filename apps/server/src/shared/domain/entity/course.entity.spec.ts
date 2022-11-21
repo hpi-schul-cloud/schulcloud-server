@@ -175,14 +175,14 @@ describe('CourseEntity', () => {
 	});
 
 	describe('getStudentIds is called', () => {
-		describe('when students exists', () => {
+		describe('when students exist', () => {
 			const setup = () => {
 				const course = courseFactory.studentsWithId(3).build();
 
 				return { course };
 			};
 
-			it('should be return the userIds of the students', () => {
+			it('should be return the userIds of the students.', () => {
 				const { course } = setup();
 
 				const result = course.getStudentIds();
@@ -199,7 +199,7 @@ describe('CourseEntity', () => {
 				return { course };
 			};
 
-			it('should be return the userIds of the students', () => {
+			it('should throw with internal server exception.', () => {
 				const { course } = setup();
 
 				expect(() => {
@@ -209,7 +209,7 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	describe('userIsSubstitutionTeacher is called', () => {
+	describe('isUserSubstitutionTeacher is called', () => {
 		describe('when user is a subsitution teacher', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -218,16 +218,16 @@ describe('CourseEntity', () => {
 				return { course, user };
 			};
 
-			it('should return true', () => {
+			it('should return true.', () => {
 				const { course, user } = setup();
 
-				const result = course.userIsSubstitutionTeacher(user);
+				const result = course.isUserSubstitutionTeacher(user);
 
 				expect(result).toBe(true);
 			});
 		});
 
-		describe('when user is a not subsitution teacher', () => {
+		describe('when user is a not subsitution teacher.', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.build({ substitutionTeachers: [] });
@@ -235,10 +235,10 @@ describe('CourseEntity', () => {
 				return { course, user };
 			};
 
-			it('should be return false', () => {
+			it('should return false.', () => {
 				const { course, user } = setup();
 
-				const result = course.userIsSubstitutionTeacher(user);
+				const result = course.isUserSubstitutionTeacher(user);
 
 				expect(result).toBe(false);
 			});
