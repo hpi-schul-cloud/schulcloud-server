@@ -200,7 +200,6 @@ describe('VideoConferenceUc', () => {
 		schoolUc.hasFeature.mockResolvedValue(true);
 		courseRepo.findById.mockResolvedValue(course);
 		calendarService.findEvent.mockResolvedValue(event);
-		authorizationService.hasPermissionByReferences.mockReturnValue(Promise.resolve(true));
 	});
 
 	describe('getScopeInfo', () => {
@@ -238,7 +237,7 @@ describe('VideoConferenceUc', () => {
 		it('should return bbb moderator role', async () => {
 			// Arrange
 			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
-			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(true));
+			authorizationService.hasPermissionByReferences.mockReturnValueOnce(Promise.resolve(false));
 			// Act
 			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId');
 
