@@ -13,14 +13,14 @@ export class ExternalToolService {
 
 	async isNameUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
 		const duplicate: ExternalToolDO | null = await this.externalToolRepo.findByName(externalToolDO.name);
-		return duplicate !== null;
+		return duplicate == null;
 	}
 
 	async isClientIdUnique(oauth2ToolConfig: Oauth2ToolConfigDO): Promise<boolean> {
 		const duplicate: ExternalToolDO | null = await this.externalToolRepo.findByOAuth2ConfigClientId(
 			oauth2ToolConfig.clientId
 		);
-		return duplicate !== null;
+		return duplicate == null;
 	}
 
 	hasDuplicateAttributes(customParameter: CustomParameterDO[]): boolean {

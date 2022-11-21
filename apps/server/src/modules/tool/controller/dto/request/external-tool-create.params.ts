@@ -26,8 +26,9 @@ export class ExternalToolParams {
 
 	@ValidateNested()
 	@Type(/* istanbul ignore next */ () => ExternalToolConfigCreateParams, {
+		keepDiscriminatorProperty: true,
 		discriminator: {
-			property: 'config.type',
+			property: 'type',
 			subTypes: [
 				{ value: Lti11ToolConfigParams, name: ToolConfigType.LTI11 },
 				{ value: Oauth2ToolConfigParams, name: ToolConfigType.OAUTH2 },
@@ -42,7 +43,7 @@ export class ExternalToolParams {
 			{ $ref: getSchemaPath(Oauth2ToolConfigParams) },
 		],
 	})
-	config!: BasicToolConfigParams | Lti11ToolConfigParams | Oauth2ToolConfigParams;
+	config!: Lti11ToolConfigParams | Oauth2ToolConfigParams | BasicToolConfigParams;
 
 	@ValidateNested({ each: true })
 	@IsArray()
