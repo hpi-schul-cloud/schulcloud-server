@@ -13,8 +13,13 @@ class UserAccountService {
 		const user = await UserRepo.createUser(inputUser);
 		inputAccount.userId = user._id;
 
-		const account = await this.createAccount(inputAccount);
-		return { user, account };
+		try {
+			const account = await this.createAccount(inputAccount);
+			return { user, account };
+		} catch (err) {
+			await UserRepo.deleteUser(user._id);
+			throw err;
+		}
 	}
 
 	async updateUserAndAccount(userId, changedUser, changedAccount) {
@@ -37,7 +42,7 @@ class UserAccountService {
 		const createdAccount = await nestAccountService.findByUserId(userId);
 		createdAccount.username = account.username;
 		createdAccount.activated = true;
-		nestAccountService.save(createdAccount);
+		return nestAccountService.save(createdAccount);
 	}
 }
 

@@ -7,7 +7,7 @@ const { setupNestServices, closeNestServices } = require('../../../utils/setup.n
 const { userModel } = require('../../../../src/services/user/model');
 
 chai.use(chaiHttp);
-const { expect } = chai;
+const { expect, should } = chai;
 
 const { BadRequest } = require('../../../../src/errors');
 
@@ -33,15 +33,19 @@ describe('UserAccountService integration', () => {
 	});
 
 	describe('createUserAndAccountc', () => {
-		const createdAccounts = [];
-		const createdUsers = [];
+		let createdAccount;
+		let createdUser;
 
 		afterEach(async () => {
-			const accountPromises = createdAccounts.map((account) => nestAccountService.delete(account.id));
-			await Promise.all(accountPromises);
+			if (createdAccount) {
+				await nestAccountService.delete(createdAccount.id);
+				createdAccount = undefined;
+			}
 
-			const userPromises = createdUsers.map((user) => userModel.remove(user));
-			await Promise.all(userPromises);
+			if (createdUser) {
+				await userModel.remove(createdUser);
+				createdUser = undefined;
+			}
 
 			await testObjects.cleanup();
 		});
@@ -72,8 +76,8 @@ describe('UserAccountService integration', () => {
 			expect(user.roles.length).to.be.equal(1);
 			expect(user.roles[0]._id.toString()).to.be.equal(role._id.toString());
 
-			createdAccounts.push(account);
-			createdUsers.push(user);
+			createdAccount = account;
+			createdUser = user;
 		});
 
 		it('should throw an error by user creation if email already used', async () => {
@@ -81,7 +85,7 @@ describe('UserAccountService integration', () => {
 			const TEST_ROLE = 'blub21';
 			await testObjects.createTestRole({ name: TEST_ROLE, permissions: [] });
 
-			const TEST_EMAIL = `test${Date.now()}@example.com`;
+			const TEST_EMAIL = `test1234-${Date.now()}@example.com`;
 
 			const inputUser = {
 				firstName: 'Max',
@@ -100,7 +104,9 @@ describe('UserAccountService integration', () => {
 				...inputUser,
 				ldapId: firstLdapId,
 			};
-			await service.createUserAndAccount(inputUserFirst, inputAccount);
+			const { user, account } = await service.createUserAndAccount(inputUserFirst, inputAccount);
+			createdUser = user;
+			createdAccount = account;
 
 			const secondLdapId = 'newLdapId';
 			const inputUserSecond = {
@@ -114,9 +120,72 @@ describe('UserAccountService integration', () => {
 				expect(error.message).to.contain(firstLdapId);
 			}
 		});
+
+		it('should not create user if account creation fails', async () => {
+			const school = await testObjects.createTestSchool();
+			const TEST_ROLE = 'blub21';
+			await testObjects.createTestRole({ name: TEST_ROLE, permissions: [] });
+			const testEmail = `test${Date.now()}@example.com`;
+			const systemId = 'B5AACFD199822D4534DB6C98';
+
+			const testUser = await testObjects.createTestUser({ email: testEmail });
+			const password = 'password123';
+			const credentials = { username: testUser.email, password };
+			await testObjects.createTestAccount(credentials, 'local', testUser);
+
+			const inputUserOk = {
+				firstName: 'Max2',
+				lastName: 'Mustermann2',
+				email: `${testEmail}2`,
+				schoolId: school._id,
+				ldapDn: 'Test ldap',
+				roles: [TEST_ROLE],
+			};
+
+			try {
+				await service.createUserAndAccount(inputUserOk, {});
+			} catch (error) {
+				expect(error).not.to.be.undefined;
+			}
+
+			const foundUsers = await userModel.find({ email: `${testEmail}2` }).exec();
+			expect(foundUsers.length).to.be.equal(0);
+
+			const foundAccount = await nestAccountService.findByUsernameAndSystemId(testEmail, systemId);
+			expect(foundAccount).to.be.null;
+		});
+
+		it('should not create account if user creation fails', async () => {
+			const testEmail = `test${Date.now()}@example.com`;
+			const systemId = 'B5AACFD199822D4534DB6C98';
+
+			const testUser = await testObjects.createTestUser({ email: testEmail });
+			const password = 'password123';
+			const credentials = { username: testUser.email, password };
+			await testObjects.createTestAccount(credentials, 'local', testUser);
+
+			const inputAccountOK = {
+				username: `${testEmail}2`,
+				systemId,
+			};
+
+			try {
+				await service.createUserAndAccount({}, inputAccountOK);
+				should().fail();
+			} catch (error) {
+				expect(error).to.be.an.instanceof(BadRequest);
+			}
+
+			const foundAccount = await nestAccountService.findByUsernameAndSystemId(`${testEmail}2`, systemId);
+			expect(foundAccount).to.be.null;
+		});
 	});
 
 	describe('update user and account', () => {
+		afterEach(async () => {
+			await testObjects.cleanup();
+		});
+
 		it('should successfully update user and account', async () => {
 			const initialFirstName = 'Initial Fname';
 			const initialLastName = 'Initial Lname';
