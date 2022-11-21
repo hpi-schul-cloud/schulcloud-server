@@ -105,7 +105,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	private getSubmissionItems(): Submission[] {
-		if (!this.submissions?.isInitialized(true)) {
+		if (!this.submissions || !this.submissions.isInitialized(true)) {
 			throw new InternalServerErrorException('Submissions items are not loaded.');
 		}
 		const submissions = this.submissions.getItems();
@@ -115,7 +115,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	private getFinishedUserIds(): EntityId[] {
 		const finishedObjectIds = this.finished.getIdentifiers('_id');
-		const finishedIds = finishedObjectIds.map((id) => id.toString());
+		const finishedIds = finishedObjectIds.map((id): string => id.toString());
 
 		return finishedIds;
 	}
