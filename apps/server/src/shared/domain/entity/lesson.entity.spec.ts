@@ -7,6 +7,7 @@ import {
 	materialFactory,
 	setupEntities,
 	taskFactory,
+	userFactory,
 } from '../../testing';
 import { ComponentType } from './lesson.entity';
 import { Material } from './materials.entity';
@@ -241,18 +242,37 @@ describe('Lesson Entity', () => {
 	describe('getStudentIds is called', () => {
 		describe('when course with students exists', () => {
 			const setup = () => {
-				const course = courseFactory.studentsWithId(3).build();
+				const student1 = userFactory.buildWithId();
+				const student2 = userFactory.buildWithId();
+				const student3 = userFactory.buildWithId();
+				const students = [student1, student2, student3];
+				const studentIds = [student1.id, student2.id, student3.id];
+
+				const course = courseFactory.build({ students });
 				const lesson = lessonFactory.buildWithId({ course });
 
-				return { lesson };
+				const spy = jest.spyOn(course, 'getStudentIds');
+
+				return { lesson, studentIds, spy };
 			};
 
+			it('should call getStudentIds in course', () => {
+				const { lesson, spy } = setup();
+
+				lesson.getStudentIds();
+
+				expect(spy).toBeCalled();
+			});
+
 			it('should return the userIds of the students', () => {
-				const { lesson } = setup();
+				const { lesson, studentIds } = setup();
 
 				const result = lesson.getStudentIds();
 
 				expect(result.length).toEqual(3);
+				expect(result.includes(studentIds[0])).toBe(true);
+				expect(result.includes(studentIds[1])).toBe(true);
+				expect(result.includes(studentIds[2])).toBe(true);
 			});
 		});
 

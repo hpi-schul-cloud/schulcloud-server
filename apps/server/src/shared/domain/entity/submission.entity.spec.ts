@@ -266,8 +266,18 @@ describe('Submission entity', () => {
 				const courseGroupStudentIdsObjectIds = courseGroup.students.getIdentifiers('_id');
 				const courseGroupStudentIds = courseGroupStudentIdsObjectIds.map((id) => id.toString());
 
-				return { submission, courseGroupStudentIds, creatorId };
+				const spy = jest.spyOn(courseGroup, 'getStudentIds');
+
+				return { submission, courseGroupStudentIds, creatorId, spy };
 			};
+
+			it('should call getStudentIds in coursegroup', () => {
+				const { submission, spy } = setup();
+
+				submission.getSubmitterIds();
+
+				expect(spy).toBeCalled();
+			});
 
 			it('should be return the userId of the creator and of the students of the coursegroup.', () => {
 				const { submission, creatorId, courseGroupStudentIds } = setup();

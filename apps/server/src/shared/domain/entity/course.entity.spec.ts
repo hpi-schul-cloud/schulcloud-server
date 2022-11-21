@@ -177,17 +177,25 @@ describe('CourseEntity', () => {
 	describe('getStudentIds is called', () => {
 		describe('when students exist', () => {
 			const setup = () => {
-				const course = courseFactory.studentsWithId(3).build();
+				const student1 = userFactory.buildWithId();
+				const student2 = userFactory.buildWithId();
+				const student3 = userFactory.buildWithId();
+				const students = [student1, student2, student3];
+				const studentIds = [student1.id, student2.id, student3.id];
+				const course = courseFactory.build({ students });
 
-				return { course };
+				return { course, studentIds };
 			};
 
 			it('should be return the userIds of the students.', () => {
-				const { course } = setup();
+				const { course, studentIds } = setup();
 
 				const result = course.getStudentIds();
 
 				expect(result.length).toEqual(3);
+				expect(result.includes(studentIds[0])).toBe(true);
+				expect(result.includes(studentIds[1])).toBe(true);
+				expect(result.includes(studentIds[2])).toBe(true);
 			});
 		});
 
