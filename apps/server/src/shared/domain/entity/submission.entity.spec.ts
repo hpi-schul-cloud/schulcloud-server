@@ -104,7 +104,7 @@ describe('Submission entity', () => {
 	});
 
 	describe('isGraded is called', () => {
-		describe('when no grades exist', () => {
+		describe('when submission is not graded', () => {
 			const setup = () => {
 				const student = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
@@ -113,7 +113,7 @@ describe('Submission entity', () => {
 				return submission;
 			};
 
-			it('should be return false.', () => {
+			it('should return false.', () => {
 				const submission = setup();
 
 				expect(submission.isGraded()).toEqual(false);
@@ -154,7 +154,7 @@ describe('Submission entity', () => {
 			});
 		});
 
-		describe('when gradeFiles exists', () => {
+		describe('when gradeFiles exist', () => {
 			const setup = () => {
 				const student = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
@@ -223,7 +223,7 @@ describe('Submission entity', () => {
 		});
 	});
 
-	describe('getMemberUserIds is called', () => {
+	describe('getSubmitterIds is called', () => {
 		describe('when creator exists', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -235,14 +235,14 @@ describe('Submission entity', () => {
 			it('should be return the userId of the creator', () => {
 				const { submission, user } = setup();
 
-				const result = submission.getMemberIds();
+				const result = submission.getSubmitterIds();
 
 				expect(result.length).toEqual(1);
 				expect(result.includes(user.id)).toBe(true);
 			});
 		});
 
-		describe('when teamMembers exists', () => {
+		describe('when teamMembers exist', () => {
 			const setup = () => {
 				const submission = submissionFactory.studentWithId().teamMembersWithId(3).buildWithId();
 
@@ -252,7 +252,7 @@ describe('Submission entity', () => {
 			it('should be return the userIds of the creator and of the teammembers.', () => {
 				const { submission } = setup();
 
-				const result = submission.getMemberIds();
+				const result = submission.getSubmitterIds();
 
 				expect(result.length).toEqual(4);
 			});
@@ -262,16 +262,23 @@ describe('Submission entity', () => {
 			const setup = () => {
 				const courseGroup = courseGroupFactory.studentsWithId(3).build();
 				const submission = submissionFactory.studentWithId().buildWithId({ courseGroup });
+				const creatorId = submission.student.id;
+				const courseGroupStudentIdsObjectIds = courseGroup.students.getIdentifiers('_id');
+				const courseGroupStudentIds = courseGroupStudentIdsObjectIds.map((id) => id.toString());
 
-				return { submission };
+				return { submission, courseGroupStudentIds, creatorId };
 			};
 
 			it('should be return the userId of the creator and of the students of the coursegroup.', () => {
-				const { submission } = setup();
+				const { submission, creatorId, courseGroupStudentIds } = setup();
 
-				const result = submission.getMemberIds();
+				const result = submission.getSubmitterIds();
 
 				expect(result.length).toEqual(4);
+				expect(result.includes(creatorId)).toBe(true);
+				expect(result.includes(courseGroupStudentIds[0])).toBe(true);
+				expect(result.includes(courseGroupStudentIds[1])).toBe(true);
+				expect(result.includes(courseGroupStudentIds[2])).toBe(true);
 			});
 		});
 
@@ -287,19 +294,19 @@ describe('Submission entity', () => {
 				const { submission } = setup();
 
 				expect(() => {
-					submission.getMemberIds();
+					submission.getSubmitterIds();
 				}).toThrowError(InternalServerErrorException);
 			});
 		});
 	});
 
-	describe('userIsMember is called', () => {
+	describe('isUserSubmitter is called', () => {
 		describe('when user is a member', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const submission = submissionFactory.buildWithId({ student: user });
 
-				jest.spyOn(submission, 'getMemberIds').mockImplementationOnce(() => [user.id]);
+				jest.spyOn(submission, 'getSubmitterIds').mockImplementationOnce(() => [user.id]);
 
 				return { submission, user };
 			};
@@ -307,18 +314,18 @@ describe('Submission entity', () => {
 			it('should return true', () => {
 				const { submission, user } = setup();
 
-				const result = submission.userIsMember(user);
+				const result = submission.isUserSubmitter(user);
 
 				expect(result).toBe(true);
 			});
 		});
 
-		describe('when user is not a member', () => {
+		describe('when user is not a submitter', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const submission = submissionFactory.buildWithId({ student: user });
 
-				jest.spyOn(submission, 'getMemberIds').mockImplementationOnce(() => []);
+				jest.spyOn(submission, 'getSubmitterIds').mockImplementationOnce(() => []);
 
 				return { submission, user };
 			};
@@ -326,7 +333,7 @@ describe('Submission entity', () => {
 			it('should return false', () => {
 				const { submission, user } = setup();
 
-				const result = submission.userIsMember(user);
+				const result = submission.isUserSubmitter(user);
 
 				expect(result).toBe(false);
 			});

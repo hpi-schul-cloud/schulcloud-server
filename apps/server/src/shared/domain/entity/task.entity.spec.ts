@@ -333,9 +333,9 @@ describe('Task Entity', () => {
 				const submission2 = submissionFactory.submitted().studentWithId().buildWithId();
 				const submission3 = submissionFactory.submitted().studentWithId().buildWithId();
 
-				const spy1 = jest.spyOn(submission1, 'getMemberIds');
-				const spy2 = jest.spyOn(submission2, 'getMemberIds');
-				const spy3 = jest.spyOn(submission3, 'getMemberIds');
+				const spy1 = jest.spyOn(submission1, 'getSubmitterIds');
+				const spy2 = jest.spyOn(submission2, 'getSubmitterIds');
+				const spy3 = jest.spyOn(submission3, 'getSubmitterIds');
 
 				const submissions = [submission1, submission2, submission3];
 				const task = taskFactory.buildWithId({ creator: user, submissions });
@@ -343,7 +343,7 @@ describe('Task Entity', () => {
 				return { task, user, spy1, spy2, spy3 };
 			};
 
-			it('should be call submission.getMemberIds for each submission', () => {
+			it('should be call submission.getSubmitterIds for each submission', () => {
 				const { task, user, spy1, spy2, spy3 } = setup();
 
 				task.createTeacherStatusForUser(user);
@@ -377,9 +377,9 @@ describe('Task Entity', () => {
 				const submission2 = submissionFactory.graded().studentWithId().build();
 				const submission3 = submissionFactory.graded().studentWithId().build();
 
-				const spy1 = jest.spyOn(submission1, 'getMemberIds');
-				const spy2 = jest.spyOn(submission2, 'getMemberIds');
-				const spy3 = jest.spyOn(submission3, 'getMemberIds');
+				const spy1 = jest.spyOn(submission1, 'getSubmitterIds');
+				const spy2 = jest.spyOn(submission2, 'getSubmitterIds');
+				const spy3 = jest.spyOn(submission3, 'getSubmitterIds');
 
 				const submissions = [submission1, submission2, submission3];
 				const task = taskFactory.buildWithId({ creator: user, submissions });
@@ -387,7 +387,7 @@ describe('Task Entity', () => {
 				return { task, user, spy1, spy2, spy3 };
 			};
 
-			it('should be call submission.getMemberIds for each submission', () => {
+			it('should be call submission.getSubmitterIds for each submission', () => {
 				const { task, user, spy1, spy2, spy3 } = setup();
 
 				task.createTeacherStatusForUser(user);

@@ -126,19 +126,21 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return parent;
 	}
 
-	private getStudentIds(): EntityId[] {
+	private getMaxSubmissions(): number {
 		const parent = this.getParent();
 		// For draft (user as parent) propaly user is not a student, but for maxSubmission one is valid result
-		const studentIds = parent instanceof User ? [parent.id] : parent.getStudentIds();
+		const maxSubmissions = parent instanceof User ? 1 : parent.getStudentIds().length;
 
-		return studentIds;
+		return maxSubmissions;
 	}
 
 	private isFinishedForUser(user: User): boolean {
 		const finishedUserIds = this.getFinishedUserIds();
-		const finishedCourse = this.course?.isFinished();
-		const finishedForUser = finishedUserIds.some((finishedUserId) => finishedUserId === user.id);
-		const isFinishedForUser = !!(finishedForUser || finishedCourse);
+		const isUserInFinishedUser = finishedUserIds.some((finishedUserId) => finishedUserId === user.id);
+
+		const isCourseFinished = this.course ? this.course.isFinished() : false;
+
+		const isFinishedForUser = isUserInFinishedUser || isCourseFinished;
 
 		return isFinishedForUser;
 	}
@@ -204,12 +206,12 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return graded;
 	}
 
-	private getListOfSubmittedUserIds(): EntityId[] {
+	private getUniqueSubmitterIds(): EntityId[] {
 		let submittedUserIds: EntityId[] = [];
 		const submittedSubmissions = this.getSubmittedSubmissions();
 
 		submittedSubmissions.forEach((submission) => {
-			const memberUserIds = submission.getMemberIds();
+			const memberUserIds = submission.getSubmitterIds();
 			submittedUserIds = [...submittedUserIds, ...memberUserIds];
 		});
 
@@ -218,12 +220,12 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return uniqueSubmittedUserIds;
 	}
 
-	private getListOfGradeddUserIds(): EntityId[] {
+	private getUniqueSubmitterWithGrade(): EntityId[] {
 		let gradedUserIds: EntityId[] = [];
 		const gradedSubmissions = this.getGradedSubmissions();
 
 		gradedSubmissions.forEach((submission) => {
-			const memberUserIds = submission.getMemberIds();
+			const memberUserIds = submission.getSubmitterIds();
 			gradedUserIds = [...gradedUserIds, ...memberUserIds];
 		});
 
@@ -232,23 +234,23 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return uniqueGradedUserIds;
 	}
 
-	private userIsSubstitutionTeacher(user: User): boolean {
+	private isUserSubstitutionTeacherInCourse(user: User): boolean {
 		const isSubstitutionTeacher = this.course ? this.course.isUserSubstitutionTeacher(user) : false;
 
 		return isSubstitutionTeacher;
 	}
 
 	public createTeacherStatusForUser(user: User): ITaskStatus {
-		const submitted = this.getListOfSubmittedUserIds().length;
-		const graded = this.getListOfGradeddUserIds().length;
-		const maxSubmissions = this.getStudentIds().length;
+		const numberOfSubmitter = this.getUniqueSubmitterIds().length;
+		const numberOfSubmittersWithGrade = this.getUniqueSubmitterWithGrade().length;
+		const maxSubmissions = this.getMaxSubmissions();
 		const isDraft = this.isDraft();
 		const isFinished = this.isFinishedForUser(user);
-		const isSubstitutionTeacher = this.userIsSubstitutionTeacher(user);
+		const isSubstitutionTeacher = this.isUserSubstitutionTeacherInCourse(user);
 
 		const status = {
-			submitted,
-			graded,
+			submitted: numberOfSubmitter,
+			graded: numberOfSubmittersWithGrade,
 			maxSubmissions,
 			isDraft,
 			isSubstitutionTeacher,

@@ -75,7 +75,7 @@ export class Submission extends BaseEntityWithTimestamps {
 		}
 	}
 
-	private getCourseGroupMemberIds(): EntityId[] {
+	private getCourseGroupStudentIds(): EntityId[] {
 		let courseGroupMemberIds: EntityId[] = [];
 
 		if (this.courseGroup) {
@@ -85,7 +85,7 @@ export class Submission extends BaseEntityWithTimestamps {
 		return courseGroupMemberIds;
 	}
 
-	private getTeamMembersIds(): EntityId[] {
+	private getTeamMemberIds(): EntityId[] {
 		if (!this.teamMembers) {
 			throw new InternalServerErrorException(
 				'Submission.teamMembers is undefined. The submission need to be populated.'
@@ -132,7 +132,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	}
 
 	public isSubmittedForUser(user: User): boolean {
-		const isMember = this.userIsMember(user);
+		const isMember = this.isUserSubmitter(user);
 		const isSubmitted = this.isSubmitted();
 		const isSubmittedForUser = isMember && isSubmitted;
 
@@ -141,10 +141,10 @@ export class Submission extends BaseEntityWithTimestamps {
 
 	// Bad that the logic is needed to expose the userIds, but is used in task for now.
 	// Check later if it can be replaced and remove all related code.
-	public getMemberIds(): EntityId[] {
+	public getSubmitterIds(): EntityId[] {
 		const creatorId = this.student.id;
-		const teamMemberIds = this.getTeamMembersIds();
-		const courseGroupMemberIds = this.getCourseGroupMemberIds();
+		const teamMemberIds = this.getTeamMemberIds();
+		const courseGroupMemberIds = this.getCourseGroupStudentIds();
 		const memberIds = [creatorId, ...teamMemberIds, ...courseGroupMemberIds];
 
 		const uniqueMemberIds = [...new Set(memberIds)];
@@ -152,24 +152,21 @@ export class Submission extends BaseEntityWithTimestamps {
 		return uniqueMemberIds;
 	}
 
-	public userIsMember(user: User): boolean {
-		const memberIds = this.getMemberIds();
+	public isUserSubmitter(user: User): boolean {
+		const memberIds = this.getSubmitterIds();
 		const isMember = memberIds.some((id) => id === user.id);
 
 		return isMember;
 	}
 
 	public isGraded(): boolean {
-		const gradeExists = this.gradeExists();
-		const gradeCommentExists = this.gradeCommentExists();
-		const gradeFilesExists = this.gradeFilesExists();
-		const isGraded = gradeExists || gradeCommentExists || gradeFilesExists;
+		const isGraded = this.gradeExists() || this.gradeCommentExists() || this.gradeFilesExists();
 
 		return isGraded;
 	}
 
 	public isGradedForUser(user: User): boolean {
-		const isMember = this.userIsMember(user);
+		const isMember = this.isUserSubmitter(user);
 		const isGraded = this.isGraded();
 		const isGradedForUser = isMember && isGraded;
 

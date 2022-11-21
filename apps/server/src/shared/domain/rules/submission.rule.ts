@@ -40,7 +40,7 @@ export class SubmissionRule extends BasePermission<Submission> {
 	}
 
 	private hasWriteAccess(user: User, submission: Submission) {
-		const hasWriteAccess = submission.userIsMember(user) || this.hasParentTaskWriteAccess(user, submission);
+		const hasWriteAccess = submission.isUserSubmitter(user) || this.hasParentTaskWriteAccess(user, submission);
 
 		return hasWriteAccess;
 	}
