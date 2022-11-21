@@ -5,9 +5,6 @@ import { CopyElementType, CopyStatus, CopyStatusEnum, EntityId } from '@shared/d
 import { TaskRepo } from '@shared/repo';
 import { CopyFilesService } from '@src/modules/files-storage-client';
 import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
-import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
-
-import { uniq } from 'lodash';
 import { CopyLegacyFilesService } from '@src/modules/files-storage-client/service/copy-legacy-files.service';
 
 export type TaskCopyParams = {
