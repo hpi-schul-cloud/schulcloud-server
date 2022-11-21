@@ -11,14 +11,19 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 		return Submission;
 	}
 
-	async findById(id: string): Promise<Submission> {
-		const submission = await super.findById(id);
-		await this._em.populate(submission, [
+	private async populateReferences(submissions: Submission[]): Promise<void> {
+		await this._em.populate(submissions, [
 			'courseGroup',
 			'task.course',
 			'task.lesson.course',
 			'task.lesson.courseGroup.course',
 		]);
+	}
+
+	async findById(id: string): Promise<Submission> {
+		const submission = await super.findById(id);
+		await this.populateReferences([submission]);
+
 		return submission;
 	}
 
@@ -26,6 +31,7 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 		const [submissions, count] = await this._em.findAndCount(this.entityName, {
 			task: { $in: taskIds },
 		});
+		await this.populateReferences(submissions);
 
 		return [submissions, count];
 	}
