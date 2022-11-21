@@ -280,8 +280,6 @@ describe('Task Entity', () => {
 
 				expect(status.maxSubmissions).toEqual(maxSubmission);
 			});
-
-			// unique
 		});
 
 		// bad to split it in coursegroup lesson and course lesson,
@@ -340,6 +338,8 @@ describe('Task Entity', () => {
 				const submissions = [submission1, submission2, submission3];
 				const task = taskFactory.buildWithId({ creator: user, submissions });
 
+				jest.spyOn(task, 'isDraft').mockImplementationOnce(() => false);
+
 				return { task, user, spy1, spy2, spy3 };
 			};
 
@@ -367,6 +367,22 @@ describe('Task Entity', () => {
 				const status = task.createTeacherStatusForUser(user);
 
 				expect(status.graded).toEqual(0);
+			});
+
+			it('should be create correct status for isDraft', () => {
+				const { task, user } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.isSubstitutionTeacher).toBe(false);
+			});
+
+			it('should be create correct status for isFinished', () => {
+				const { task, user } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.isFinished).toEqual(false);
 			});
 		});
 
@@ -413,6 +429,14 @@ describe('Task Entity', () => {
 
 				expect(status.graded).toEqual(3);
 			});
+
+			it('should return isDraft false for not draft task', () => {
+				const { task, user } = setup();
+
+				const status = task.createTeacherStatusForUser(user);
+
+				expect(status.isDraft).toEqual(false);
+			});
 		});
 
 		describe('when task is a draft', () => {
@@ -434,25 +458,6 @@ describe('Task Entity', () => {
 			});
 		});
 
-		describe('when task is not a draft', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const task = taskFactory.draft().buildWithId({ creator: user });
-
-				jest.spyOn(task, 'isDraft').mockImplementationOnce(() => false);
-
-				return { task, user };
-			};
-
-			it('should be create correct status for isDraft', () => {
-				const { task, user } = setup();
-
-				const status = task.createTeacherStatusForUser(user);
-
-				expect(status.isDraft).toEqual(false);
-			});
-		});
-
 		describe('when task is a finished for the user', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -467,23 +472,6 @@ describe('Task Entity', () => {
 				const status = task.createTeacherStatusForUser(user);
 
 				expect(status.isFinished).toEqual(true);
-			});
-		});
-
-		describe('when task is not finished for the user', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const task = taskFactory.isPublished().buildWithId({ creator: user });
-
-				return { task, user };
-			};
-
-			it('should be create correct status for isFinished', () => {
-				const { task, user } = setup();
-
-				const status = task.createTeacherStatusForUser(user);
-
-				expect(status.isFinished).toEqual(false);
 			});
 		});
 
@@ -530,6 +518,8 @@ describe('Task Entity', () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
 
+				jest.spyOn(task, 'isDraft').mockImplementationOnce(() => false);
+
 				return { task, user };
 			};
 
@@ -547,6 +537,22 @@ describe('Task Entity', () => {
 				const status = task.createStudentStatusForUser(user);
 
 				expect(status.isSubstitutionTeacher).toEqual(false);
+			});
+
+			it('should be create correct status for isDraft', () => {
+				const { task, user } = setup();
+
+				const status = task.createStudentStatusForUser(user);
+
+				expect(status.isDraft).toEqual(false);
+			});
+
+			it('should be create correct status for isFinished', () => {
+				const { task, user } = setup();
+
+				const status = task.createStudentStatusForUser(user);
+
+				expect(status.isFinished).toEqual(false);
 			});
 		});
 
@@ -644,25 +650,6 @@ describe('Task Entity', () => {
 			});
 		});
 
-		describe('when task is not a draft', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const task = taskFactory.draft().buildWithId();
-
-				jest.spyOn(task, 'isDraft').mockImplementationOnce(() => false);
-
-				return { task, user };
-			};
-
-			it('should be create correct status for isDraft', () => {
-				const { task, user } = setup();
-
-				const status = task.createStudentStatusForUser(user);
-
-				expect(status.isDraft).toEqual(false);
-			});
-		});
-
 		describe('when task is a finished for the user', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -680,24 +667,6 @@ describe('Task Entity', () => {
 			});
 		});
 
-		describe('when task is a not finished for the user', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const task = taskFactory.isPublished().buildWithId();
-
-				return { task, user };
-			};
-
-			it('should be create correct status for isFinished', () => {
-				const { task, user } = setup();
-
-				const status = task.createStudentStatusForUser(user);
-
-				expect(status.isFinished).toEqual(false);
-			});
-		});
-
-		// ..that is really nothing what the task should be knowen, but it exist also exist the test for it.
 		describe('when user is a submissionTeacher in parent that is a course', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -707,12 +676,12 @@ describe('Task Entity', () => {
 				return { task, user };
 			};
 
-			it('should be create correct status for isSubstitutionTeacher', () => {
+			it('should always return false for isSubstitutionTeacher', () => {
 				const { task, user } = setup();
 
-				const status = task.createTeacherStatusForUser(user);
+				const status = task.createStudentStatusForUser(user);
 
-				expect(status.isSubstitutionTeacher).toEqual(true);
+				expect(status.isSubstitutionTeacher).toEqual(false);
 			});
 		});
 	});
