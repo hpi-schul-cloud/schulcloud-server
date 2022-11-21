@@ -31,7 +31,7 @@ describe('TeamRule', () => {
 	});
 
 	describe('isApplicable', () => {
-		describe('WHEN entity type team', () => {
+		describe('when entity type team', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const team = teamFactory.build();
@@ -45,11 +45,12 @@ describe('TeamRule', () => {
 				const { user, team } = setup();
 
 				const result = service.isApplicable(user, team);
+
 				expect(result).toBe(true);
 			});
 		});
 
-		describe('WHEN entity type is wrong', () => {
+		describe('when entity type is wrong', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				return {
@@ -59,8 +60,7 @@ describe('TeamRule', () => {
 
 			it('should return false', () => {
 				const { user } = setup();
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
+				// @ts-expect-error test with wrong instance
 				const result = service.isApplicable(user, user);
 
 				expect(result).toBe(false);
@@ -69,7 +69,7 @@ describe('TeamRule', () => {
 	});
 
 	describe('hasPermission', () => {
-		describe('WHEN user is not a team user', () => {
+		describe('when user is not a team user', () => {
 			const setup = () => {
 				const role = roleFactory.buildWithId({ permissions: [permissionA] });
 				const user = userFactory.buildWithId({ roles: [role] });
@@ -89,7 +89,7 @@ describe('TeamRule', () => {
 			});
 		});
 
-		describe('WHEN user is a team user', () => {
+		describe('when user is a team user', () => {
 			const setup = () => {
 				const role = roleFactory.buildWithId({ permissions: [permissionA] });
 				const teamRole = roleFactory.buildWithId({ permissions: [teamPermissionA] });
@@ -126,7 +126,7 @@ describe('TeamRule', () => {
 			});
 		});
 
-		describe('WHEN user is a team user and teamRoles are inherited ', () => {
+		describe('when user is a team user and teamRoles are inherited ', () => {
 			const setup = () => {
 				const role = roleFactory.buildWithId({ permissions: [permissionA] });
 				const teamRoleA = roleFactory.buildWithId({ permissions: [teamPermissionA] });
