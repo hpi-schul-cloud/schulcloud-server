@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { setupEntities } from '@shared/testing/index';
+import { setupEntities } from '@shared/testing';
 import {
 	BasicToolConfig,
 	CustomParameter,
@@ -9,10 +9,10 @@ import {
 	ExternalTool,
 	Lti11ToolConfig,
 	LtiMessageType,
-	LtiRole,
+	LtiPrivacyPermission,
 	Oauth2ToolConfig,
 	ToolConfigType,
-} from '@shared/domain/index';
+} from '@shared/domain';
 
 describe('ExternalTool Entity', () => {
 	let orm: MikroORM;
@@ -37,18 +37,15 @@ describe('ExternalTool Entity', () => {
 				clientId: 'mockClientId',
 				clientSecret: 'mockClientSecret',
 				skipConsent: true,
-				frontchannelLogoutUrl: 'mockUrl',
 			});
 			const lti11ToolConfig: Lti11ToolConfig = new Lti11ToolConfig({
 				type: ToolConfigType.LTI11,
 				baseUrl: 'mockBaseUrl',
 				key: 'mockKey',
 				secret: 'mockSecret',
-				resource_link: 'mockLink',
+				resource_link_id: 'mockLink',
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-				roles: [LtiRole.LEARNER],
-				launch_presentation_locale: 'mockLocale',
-				launch_presentation_document_target: 'mockTarget',
+				privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 			});
 			const customParameter: CustomParameter = new CustomParameter({
 				name: 'parameterName',
