@@ -69,7 +69,7 @@ describe('user repo', () => {
 			// 	username: email,
 			// };
 			// const { user, account } = await UserRepo.createUserAndAccount(inputUser, inputAccount);
-			const { user } = await UserRepo.createUser(inputUser);
+			const user = await UserRepo.createUser(inputUser);
 			expect(user._id).to.be.not.undefined;
 			// expect(account.userId.toString()).to.be.equal(user._id.toString());
 			// expect(account.activated).to.be.true;
@@ -143,7 +143,7 @@ describe('user repo', () => {
 			const newLastName = 'new last name';
 			// const newUserName = 'new user name';
 			// const { user, account } = await UserRepo.updateUserAndAccount(
-			const { user } = await UserRepo.updateUser(
+			const user = await UserRepo.updateUser(
 				testUser._id,
 				{ firstName: newFirstName, lastName: newLastName }
 				// { username: newUserName }
