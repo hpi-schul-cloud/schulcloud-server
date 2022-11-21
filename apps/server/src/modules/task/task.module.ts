@@ -4,17 +4,17 @@ import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.s
 import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
 import { TaskCopyService } from '@shared/domain/service/task-copy.service';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, SubmissionRepo, TaskRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { FilesStorageClientModule } from '../files-storage-client';
-import { TaskController } from './controller';
-import { TaskCopyUC, TaskUC } from './uc';
-import { TaskService } from './service/task.service';
+import { SubmissionController, TaskController } from './controller';
+import { TaskService, SubmissionService } from './service';
+import { SubmissionUC, TaskCopyUC, TaskUC } from './uc';
 
 @Module({
 	imports: [AuthorizationModule, FilesStorageClientModule],
-	controllers: [TaskController],
+	controllers: [TaskController, SubmissionController],
 	providers: [
 		TaskUC,
 		TaskRepo,
@@ -28,6 +28,9 @@ import { TaskService } from './service/task.service';
 		FeathersServiceProvider,
 		FileLegacyService,
 		Logger,
+		SubmissionUC,
+		SubmissionService,
+		SubmissionRepo,
 	],
 	exports: [TaskService],
 })
