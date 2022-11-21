@@ -116,29 +116,6 @@ describe('ToolController', () => {
 
 	describe('createExternalTool', () => {
 		function setup() {
-			const bodyConfigCreateBasicParams = new BasicToolConfigParams();
-			bodyConfigCreateBasicParams.type = ToolConfigType.BASIC;
-			bodyConfigCreateBasicParams.baseUrl = 'mockUrl';
-
-			const bodyConfigCreateLti11Params = new Lti11ToolConfigParams();
-			bodyConfigCreateLti11Params.type = ToolConfigType.LTI11;
-			bodyConfigCreateLti11Params.baseUrl = 'mockUrl';
-			bodyConfigCreateLti11Params.key = 'mockKey';
-			bodyConfigCreateLti11Params.secret = 'mockSecret';
-			bodyConfigCreateLti11Params.resource_link_id = 'mockLink';
-			bodyConfigCreateLti11Params.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
-
-			const bodyConfigCreateOauthParams = new Oauth2ToolConfigParams();
-			bodyConfigCreateOauthParams.type = ToolConfigType.OAUTH2;
-			bodyConfigCreateOauthParams.baseUrl = 'mockUrl';
-			bodyConfigCreateOauthParams.clientId = 'mockId';
-			bodyConfigCreateOauthParams.clientSecret = 'mockSecret';
-			bodyConfigCreateOauthParams.frontchannelLogoutUri = 'mockUrl';
-			bodyConfigCreateOauthParams.skipConsent = true;
-			bodyConfigCreateOauthParams.scope = 'mockScope';
-			bodyConfigCreateOauthParams.redirectUris = ['mockUri'];
-			bodyConfigCreateOauthParams.tokenEndpointAuthMethod = TokenEndpointAuthMethod.CLIENT_SECRET_POST;
-
 			const customParameterCreateParams = new CustomParameterCreateParams();
 			customParameterCreateParams.name = 'mockName';
 			customParameterCreateParams.default = 'mockDefault';
@@ -165,21 +142,13 @@ describe('ToolController', () => {
 				type: CustomParameterTypeParams.STRING,
 				regex: 'mockRegex',
 			});
-			const basicToolConfigResponse: BasicToolConfigResponse = new BasicToolConfigResponse({
+
+			const basicToolConfigDO: BasicToolConfigDO = new BasicToolConfigDO({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockUrl',
 			});
-			const lti11ToolConfigResponse: Lti11ToolConfigResponse = new Lti11ToolConfigResponse({
-				key: 'mockKey',
-				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-				privacy_permission: LtiPrivacyPermission.NAME,
-				type: ToolConfigType.LTI11,
-				baseUrl: 'mockUrl',
-			});
-			const oauth2ToolConfigResponse: Oauth2ToolConfigResponse = new Oauth2ToolConfigResponse({
-				clientId: 'mockId',
-				skipConsent: false,
-				type: ToolConfigType.OAUTH2,
+			const basicToolConfigResponse: BasicToolConfigResponse = new BasicToolConfigResponse({
+				type: ToolConfigType.BASIC,
 				baseUrl: 'mockUrl',
 			});
 			const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
@@ -194,24 +163,6 @@ describe('ToolController', () => {
 				config: basicToolConfigResponse,
 			});
 
-			const basicToolConfigDO: BasicToolConfigDO = new BasicToolConfigDO({
-				type: ToolConfigType.BASIC,
-				baseUrl: 'mockUrl',
-			});
-			const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
-				secret: 'mockSecret',
-				key: 'mockKey',
-				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-				privacy_permission: LtiPrivacyPermission.NAME,
-				type: ToolConfigType.LTI11,
-				baseUrl: 'mockUrl',
-			});
-			const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
-				clientId: 'mockId',
-				skipConsent: false,
-				type: ToolConfigType.OAUTH2,
-				baseUrl: 'mockUrl',
-			});
 			const customParameterDO: CustomParameterDO = new CustomParameterDO({
 				name: 'mockName',
 				default: 'mockDefault',
@@ -220,6 +171,7 @@ describe('ToolController', () => {
 				type: CustomParameterType.STRING,
 				regex: 'mockRegex',
 			});
+
 			const externalToolDO: ExternalToolDO = new ExternalToolDO({
 				id: '1',
 				name: 'mockName',
@@ -234,76 +186,137 @@ describe('ToolController', () => {
 
 			return {
 				body,
-				bodyConfigCreateBasicParams,
-				bodyConfigCreateOauthParams,
-				bodyConfigCreateLti11Params,
 				currentUser,
 				externalToolResponse,
 				externalToolDO,
-				lti11ToolConfigDO,
-				lti11ToolConfigResponse,
-				oauth2ToolConfigResponse,
-				oauth2ToolConfigDO,
 			};
 		}
 
-		it('should return basic external tool response', async () => {
-			const { body, bodyConfigCreateBasicParams, currentUser, externalToolResponse, externalToolDO } = setup();
-			body.config = bodyConfigCreateBasicParams;
+		describe('when creating an oauthTool', () => {
+			function oauthSetup() {
+				const bodyConfigCreateOauthParams = new Oauth2ToolConfigParams();
+				bodyConfigCreateOauthParams.type = ToolConfigType.OAUTH2;
+				bodyConfigCreateOauthParams.baseUrl = 'mockUrl';
+				bodyConfigCreateOauthParams.clientId = 'mockId';
+				bodyConfigCreateOauthParams.clientSecret = 'mockSecret';
+				bodyConfigCreateOauthParams.frontchannelLogoutUri = 'mockUrl';
+				bodyConfigCreateOauthParams.skipConsent = true;
+				bodyConfigCreateOauthParams.scope = 'mockScope';
+				bodyConfigCreateOauthParams.redirectUris = ['mockUri'];
+				bodyConfigCreateOauthParams.tokenEndpointAuthMethod = TokenEndpointAuthMethod.CLIENT_SECRET_POST;
 
-			externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
-			externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
-			externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+				const oauth2ToolConfigResponse: Oauth2ToolConfigResponse = new Oauth2ToolConfigResponse({
+					clientId: 'mockId',
+					skipConsent: false,
+					type: ToolConfigType.OAUTH2,
+					baseUrl: 'mockUrl',
+				});
 
-			const expected = await controller.createExternalTool(body, currentUser);
+				const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
+					clientId: 'mockId',
+					skipConsent: false,
+					type: ToolConfigType.OAUTH2,
+					baseUrl: 'mockUrl',
+				});
 
-			expect(expected).toEqual(externalToolResponse);
+				return {
+					bodyConfigCreateOauthParams,
+					oauth2ToolConfigResponse,
+					oauth2ToolConfigDO,
+				};
+			}
+
+			it('should return external tool response with oauth2 config', async () => {
+				const { body, currentUser, externalToolResponse, externalToolDO } = setup();
+				const { bodyConfigCreateOauthParams, oauth2ToolConfigResponse, oauth2ToolConfigDO } = oauthSetup();
+				body.config = bodyConfigCreateOauthParams;
+				externalToolResponse.config = oauth2ToolConfigResponse;
+				externalToolDO.config = oauth2ToolConfigDO;
+
+				externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
+				externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
+				externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+
+				const expected = await controller.createExternalTool(body, currentUser);
+
+				expect(expected).toEqual(externalToolResponse);
+			});
 		});
 
-		it('should return external tool response with lti config', async () => {
-			const {
-				body,
-				bodyConfigCreateLti11Params,
-				lti11ToolConfigResponse,
-				lti11ToolConfigDO,
-				currentUser,
-				externalToolResponse,
-				externalToolDO,
-			} = setup();
-			body.config = bodyConfigCreateLti11Params;
-			externalToolResponse.config = lti11ToolConfigResponse;
-			externalToolDO.config = lti11ToolConfigDO;
+		describe('when creating basic tool', () => {
+			function basicSetup() {
+				const bodyConfigCreateBasicParams = new BasicToolConfigParams();
+				bodyConfigCreateBasicParams.type = ToolConfigType.BASIC;
+				bodyConfigCreateBasicParams.baseUrl = 'mockUrl';
 
-			externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
-			externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
-			externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+				return {
+					bodyConfigCreateBasicParams,
+				};
+			}
 
-			const expected = await controller.createExternalTool(body, currentUser);
+			it('should return basic external tool response', async () => {
+				const { body, currentUser, externalToolResponse, externalToolDO } = setup();
+				const { bodyConfigCreateBasicParams } = basicSetup();
+				body.config = bodyConfigCreateBasicParams;
 
-			expect(expected).toEqual(externalToolResponse);
+				externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
+				externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
+				externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+
+				const expected = await controller.createExternalTool(body, currentUser);
+
+				expect(expected).toEqual(externalToolResponse);
+			});
 		});
 
-		it('should return external tool response with oauth2 config', async () => {
-			const {
-				body,
-				bodyConfigCreateOauthParams,
-				oauth2ToolConfigResponse,
-				oauth2ToolConfigDO,
-				currentUser,
-				externalToolResponse,
-				externalToolDO,
-			} = setup();
-			body.config = bodyConfigCreateOauthParams;
-			externalToolResponse.config = oauth2ToolConfigResponse;
-			externalToolDO.config = oauth2ToolConfigDO;
+		describe('when creating an lti tool', () => {
+			function ltiSetup() {
+				const bodyConfigCreateLti11Params = new Lti11ToolConfigParams();
+				bodyConfigCreateLti11Params.type = ToolConfigType.LTI11;
+				bodyConfigCreateLti11Params.baseUrl = 'mockUrl';
+				bodyConfigCreateLti11Params.key = 'mockKey';
+				bodyConfigCreateLti11Params.secret = 'mockSecret';
+				bodyConfigCreateLti11Params.resource_link_id = 'mockLink';
+				bodyConfigCreateLti11Params.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 
-			externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
-			externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
-			externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+				const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
+					secret: 'mockSecret',
+					key: 'mockKey',
+					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+					privacy_permission: LtiPrivacyPermission.NAME,
+					type: ToolConfigType.LTI11,
+					baseUrl: 'mockUrl',
+				});
 
-			const expected = await controller.createExternalTool(body, currentUser);
+				const lti11ToolConfigResponse: Lti11ToolConfigResponse = new Lti11ToolConfigResponse({
+					key: 'mockKey',
+					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+					privacy_permission: LtiPrivacyPermission.NAME,
+					type: ToolConfigType.LTI11,
+					baseUrl: 'mockUrl',
+				});
 
-			expect(expected).toEqual(externalToolResponse);
+				return {
+					bodyConfigCreateLti11Params,
+					lti11ToolConfigDO,
+					lti11ToolConfigResponse,
+				};
+			}
+			it('should return external tool response with lti config', async () => {
+				const { body, currentUser, externalToolResponse, externalToolDO } = setup();
+				const { bodyConfigCreateLti11Params, lti11ToolConfigResponse, lti11ToolConfigDO } = ltiSetup();
+				body.config = bodyConfigCreateLti11Params;
+				externalToolResponse.config = lti11ToolConfigResponse;
+				externalToolDO.config = lti11ToolConfigDO;
+
+				externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
+				externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
+				externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+
+				const expected = await controller.createExternalTool(body, currentUser);
+
+				expect(expected).toEqual(externalToolResponse);
+			});
 		});
 	});
 });
