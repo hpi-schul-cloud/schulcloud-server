@@ -7,10 +7,12 @@ import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
 @Injectable()
-export class AuthorizationService extends AuthorisationUtils {
-	constructor(private readonly loader: ReferenceLoader, private readonly ruleManager: RuleManager) {
-		super();
-	}
+export class AuthorizationService {
+	constructor(
+		private readonly loader: ReferenceLoader,
+		private readonly ruleManager: RuleManager,
+		private readonly authUtils: AuthorisationUtils
+	) {}
 
 	checkPermission(user: User, entity: AuthorizableObjectType, context: IAuthorizationContext) {
 		if (!this.ruleManager.hasPermission(user, entity, context)) {
@@ -80,5 +82,21 @@ export class AuthorizationService extends AuthorisationUtils {
 		} catch (err) {
 			throw new ForbiddenException(err);
 		}
+	}
+
+	hasAllPermissions(user: User, requiredPermissions: string[]): boolean {
+		return this.authUtils.hasAllPermissions(user, requiredPermissions);
+	}
+
+	checkAllPermissions(user: User, requiredPermissions: string[]): void {
+		return this.authUtils.checkAllPermissions(user, requiredPermissions);
+	}
+
+	hasOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
+		return this.authUtils.hasOneOfPermissions(user, requiredPermissions);
+	}
+
+	checkOneOfPermissions(user: User, requiredPermissions: string[]): void {
+		return this.authUtils.checkOneOfPermissions(user, requiredPermissions);
 	}
 }
