@@ -7,10 +7,12 @@ import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { Logger } from '@src/core/logger';
 import { AccountService } from './account.service';
+import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
 	let accountService: AccountService;
+	let idmService: IdentityManagementService;
 
 	const account: AccountSaveDto = {
 		username: 'john.doe@mail.tld',
@@ -42,6 +44,7 @@ describe('AccountService Integration', () => {
 			],
 		}).compile();
 		accountService = module.get(AccountService);
+		idmService = module.get(IdentityManagementService);
 	});
 
 	afterAll(async () => {
@@ -50,9 +53,14 @@ describe('AccountService Integration', () => {
 
 	describe('should mirror create, update and delete operations into the IDM', () => {
 		it('save should create a new account', async () => {
-			const result = await accountService.save(account);
+			await accountService.save(account);
+			const accounts = await idmService.getAllAccounts();
 
-			expect(result).toBeDefined();
+			expect(accounts).toBeTruthy();
+			expect(accounts).toContain({
+				userName: account.username,
+				email: account.username,
+			});
 		});
 
 		it('save should update existing account', async () => {});
