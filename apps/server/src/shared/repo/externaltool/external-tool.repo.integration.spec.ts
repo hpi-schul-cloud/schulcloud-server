@@ -5,6 +5,8 @@ import {
 	CustomParameterScope,
 	CustomParameterType,
 	ExternalTool,
+	LtiMessageType,
+	LtiPrivacyPermission,
 	ToolConfigType,
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -20,8 +22,6 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
-import { LtiPrivacyPermission } from '@src/modules/tool/interface/lti-privacy-permission.enum';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;
