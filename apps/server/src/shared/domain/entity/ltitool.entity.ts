@@ -62,7 +62,7 @@ export class LtiTool extends BaseEntityWithTimestamps {
 		default: LtiPrivacyPermission.ANONYMOUS,
 		nullable: false,
 	})
-	privacy_permission?: LtiPrivacyPermission;
+	privacy_permission: LtiPrivacyPermission;
 
 	@Property({ nullable: false })
 	customs: CustomLtiProperty[];

@@ -1,9 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolExternalTool } from '@shared/domain/entity/school-external-tool.entity';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, schoolExternalToolFactory } from '@shared/testing';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { SchoolExternalTool } from '@shared/domain';
 
 describe('SchoolExternalToolRepo', () => {
 	let module: TestingModule;
