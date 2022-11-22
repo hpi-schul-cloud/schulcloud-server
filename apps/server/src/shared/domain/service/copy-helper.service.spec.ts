@@ -25,9 +25,10 @@ describe('copy helper service', () => {
 
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [CopyHelperService],
 		}).compile();

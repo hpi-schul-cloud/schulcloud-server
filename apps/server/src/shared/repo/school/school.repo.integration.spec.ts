@@ -1,10 +1,10 @@
 import { EntityManager } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { School, SchoolRolePermission, SchoolRoles, SchoolYear, System } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { schoolFactory, systemFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolRepo } from '..';
 import { SchoolYearRepo } from '../schoolyear';
 
@@ -42,7 +42,6 @@ describe('school repo', () => {
 		school.permissions.teacher = new SchoolRolePermission();
 		school.permissions.teacher.STUDENT_LIST = true;
 		await em.persistAndFlush([school, schoolYear]);
-		em.clear();
 		const storedSchoolYears = await em.find(SchoolYear, {});
 		expect(storedSchoolYears).toHaveLength(1);
 		expect(storedSchoolYears[0]).toEqual(schoolYear);

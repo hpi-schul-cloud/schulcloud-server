@@ -2,10 +2,10 @@ import { Account } from './account.entity';
 import { Board } from './board.entity';
 import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
 import { Course } from './course.entity';
+import { CourseExternalTool, ExternalTool, SchoolExternalTool } from './external-tools';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { File } from './file.entity';
-import { FileRecord, FileSecurityCheck } from './filerecord.entity';
 import { ImportUser } from './import-user.entity';
 import { Lesson } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
@@ -26,38 +26,39 @@ import { VideoConference } from './video-conference.entity';
 
 export const ALL_ENTITIES = [
 	Account,
-	Course,
-	CourseGroup,
 	Board,
 	BoardElement,
-	TaskBoardElement,
-	LessonBoardElement,
-	DashboardModelEntity,
+	Course,
+	CourseExternalTool,
+	CourseGroup,
+	CourseNews,
 	DashboardGridElementModel,
+	DashboardModelEntity,
+	ExternalTool,
 	File,
-	StorageProvider,
+	ImportUser,
 	Lesson,
+	LessonBoardElement,
 	LtiTool,
 	Material,
-	Role,
-	School,
-	SchoolRoles,
-	SchoolRolePermission,
-	SchoolYear,
-	Submission,
-	Task,
-	Team,
-	TeamUser,
-	User,
-	CourseNews,
 	News,
 	Pseudonym,
+	Role,
+	School,
+	SchoolExternalTool,
 	SchoolNews,
+	SchoolRolePermission,
+	SchoolRoles,
+	SchoolYear,
 	ShareToken,
-	TeamNews,
+	StorageProvider,
+	Submission,
 	System,
-	ImportUser,
-	FileRecord,
-	FileSecurityCheck,
+	Task,
+	TaskBoardElement,
+	Team,
+	TeamNews,
+	TeamUser,
+	User,
 	VideoConference,
 ];

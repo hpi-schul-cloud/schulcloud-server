@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
 import { RoleName } from '@shared/domain';
+import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
 
 describe('TeamStorage Mapper', () => {
 	let module: TestingModule;
@@ -11,6 +11,10 @@ describe('TeamStorage Mapper', () => {
 			providers: [CollaborativeStorageAdapterMapper],
 		}).compile();
 		mapper = module.get(CollaborativeStorageAdapterMapper);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('Map Domain To Adapter', () => {

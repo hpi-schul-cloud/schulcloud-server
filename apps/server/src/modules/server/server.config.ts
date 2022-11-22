@@ -1,6 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { ICoreModuleConfig } from '@src/core';
-import { AvailableLogLevel } from '@src/core/logger';
 import type { IAccountConfig, IFilesStorageClientConfig, IUserConfig } from '@src/modules/';
 
 export enum NodeEnvType {
@@ -21,12 +20,14 @@ export interface IServerConfig
 		IFilesStorageClientConfig,
 		IAccountConfig {
 	NODE_ENV: string;
+	SC_DOMAIN: string;
 }
 
 const config: IServerConfig = {
+	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
-	AVAILABLE_LOG_LEVELS: (Configuration.get('NEST_AVAILABLE_LOG_LEVELS') as string).split(',') as AvailableLogLevel[],
+	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(','),
 	NODE_ENV: Configuration.get('NODE_ENV') as NodeEnvType,
 	LOGIN_BLOCK_TIME: Configuration.get('LOGIN_BLOCK_TIME') as number,

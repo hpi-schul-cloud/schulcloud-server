@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Actions,
@@ -22,6 +23,8 @@ import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
 
 describe('ShareTokenUC', () => {
+	let module: TestingModule;
+	let orm: MikroORM;
 	let uc: ShareTokenUC;
 	let service: DeepMocked<ShareTokenService>;
 	let metadataLoader: DeepMocked<MetadataLoader>;
@@ -29,11 +32,7 @@ describe('ShareTokenUC', () => {
 	let authorization: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
-		await setupEntities();
-	});
-
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				ShareTokenUC,
 				{
@@ -64,7 +63,16 @@ describe('ShareTokenUC', () => {
 		metadataLoader = module.get(MetadataLoader);
 		courseCopyService = module.get(CourseCopyService);
 		authorization = module.get(AuthorizationService);
+		orm = await setupEntities();
+	});
 
+	afterAll(async () => {
+		await orm.close();
+		await module.close();
+	});
+
+	beforeEach(() => {
+		jest.resetAllMocks();
 		Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
 	});
 
@@ -235,7 +243,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Course,
 				};
 
-				jest.useFakeTimers('modern');
+				jest.useFakeTimers();
 				jest.setSystemTime(new Date(2022, 10, 4));
 
 				await uc.createShareToken(user.id, payload, { expiresInDays: 7 });

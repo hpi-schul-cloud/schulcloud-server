@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { v1 } from 'uuid';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
+import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
+import { Test, TestingModule } from '@nestjs/testing';
+import { v1 } from 'uuid';
 import {
 	IJsonAccount,
 	IJsonUser,
@@ -21,6 +21,7 @@ const accountsFile = 'accounts.json';
 const usersFile = 'users.json';
 let jsonAccounts: IJsonAccount[];
 let jsonUsers: IJsonUser[];
+
 jest.mock('node:fs/promises', () => ({
 	readFile: jest.fn().mockImplementation((path: string) => {
 		if (path.toString() === accountsFile) {
@@ -182,6 +183,8 @@ describe('KeycloakSeedService', () => {
 		kcApiUsersMock.create.mockRestore();
 		kcApiUsersMock.del.mockRestore();
 		kcApiUsersMock.find.mockRestore();
+		jest.clearAllMocks();
+		jest.resetModules();
 	});
 
 	describe('clean', () => {

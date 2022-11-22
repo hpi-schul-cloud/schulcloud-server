@@ -17,7 +17,7 @@ class GenerateRecoveryPasswordTokenService {
 	}
 
 	setup(app) {
-		this.accountsService = app.service('nest-account-service');
+		this.app = app;
 	}
 
 	async get(id) {
@@ -29,7 +29,7 @@ class GenerateRecoveryPasswordTokenService {
 	async create(data) {
 		if (data && data.username) {
 			const { username } = data;
-			const accountsResult = await this.accountsService.searchByUsernameExactMatch(username);
+			const accountsResult = await this.app.service('nest-account-service').searchByUsernameExactMatch(username);
 			const { accounts, total } = accountsResult;
 
 			if (total !== 0 && Array.isArray(accounts) && accounts[0].id) {

@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { BBBService } from '@src/modules/video-conference/service/bbb.service';
-import { HttpService } from '@nestjs/axios';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { AxiosResponse } from 'axios';
-import { of } from 'rxjs';
-import { BBBCreateConfig, GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
+import { HttpService } from '@nestjs/axios';
+import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ConverterUtil } from '@shared/common';
+import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
+import { BBBCreateConfig, GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
+import { BBBJoinConfig, BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
 import {
 	BBBBaseResponse,
 	BBBCreateResponse,
@@ -14,11 +14,11 @@ import {
 	BBBResponse,
 	BBBStatus,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
-import { InternalServerErrorException } from '@nestjs/common';
-import { BBBJoinConfig, BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
-import { URLSearchParams } from 'url';
+import { BBBService } from '@src/modules/video-conference/service/bbb.service';
+import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
-import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
+import { of } from 'rxjs';
+import { URLSearchParams } from 'url';
 
 const createBBBCreateResponse = (): BBBResponse<BBBCreateResponse> => ({
 	response: {
@@ -134,6 +134,10 @@ describe('BBB Service', () => {
 		service = module.get(BBBServiceTest);
 		httpService = module.get(HttpService);
 		converterUtil = module.get(ConverterUtil);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('create', () => {

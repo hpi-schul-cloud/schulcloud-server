@@ -1,12 +1,12 @@
-import { Entity, ManyToOne, Collection, Property, ManyToMany, Index } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 
 import { EntityId } from '../types';
 
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { CourseGroup } from './coursegroup.entity';
-import type { User } from './user.entity';
 import type { File } from './file.entity';
 import type { Task } from './task.entity';
+import type { User } from './user.entity';
 
 export interface ISubmissionProperties {
 	task: Task;

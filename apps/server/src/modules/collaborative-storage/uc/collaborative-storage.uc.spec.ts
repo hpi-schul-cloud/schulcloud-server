@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
-import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
-import { CollaborativeStorageService } from '@src/modules/collaborative-storage/services/collaborative-storage.service';
-import { TeamPermissionsMapper } from '@src/modules/collaborative-storage/mapper/team-permissions.mapper';
-import { TeamRoleDto } from '@src/modules/collaborative-storage/controller/dto/team-role.params';
+import { Test, TestingModule } from '@nestjs/testing';
 import { TeamPermissionsBody } from '@src/modules/collaborative-storage/controller/dto/team-permissions.body.params';
+import { TeamRoleDto } from '@src/modules/collaborative-storage/controller/dto/team-role.params';
+import { TeamPermissionsMapper } from '@src/modules/collaborative-storage/mapper/team-permissions.mapper';
+import { CollaborativeStorageService } from '@src/modules/collaborative-storage/services/collaborative-storage.service';
 import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
+import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
 
 describe('TeamStorageUc', () => {
 	let module: TestingModule;
 	let uc: CollaborativeStorageUc;
 	let service: CollaborativeStorageService;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CollaborativeStorageUc,
@@ -28,6 +28,10 @@ describe('TeamStorageUc', () => {
 		}).compile();
 		uc = module.get(CollaborativeStorageUc);
 		service = module.get(CollaborativeStorageService);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('Update TeamRole Permissions', () => {

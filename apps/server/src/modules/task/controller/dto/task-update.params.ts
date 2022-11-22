@@ -1,17 +1,19 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsMongoId, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
+import { InputFormat, ITaskUpdate } from '@shared/domain';
 import { SanitizeHtml } from '@shared/controller';
 
-export class TaskUpdateParams {
+export class TaskUpdateParams implements ITaskUpdate {
 	@IsString()
 	@IsMongoId()
-	@ApiProperty({
+	@IsOptional()
+	@ApiPropertyOptional({
 		description: 'The id of an course object.',
 		pattern: '[a-f0-9]{24}',
 		required: true,
 		nullable: false,
 	})
-	courseId!: string;
+	courseId?: string;
 
 	@IsString()
 	@IsMongoId()
@@ -29,4 +31,28 @@ export class TaskUpdateParams {
 		required: true,
 	})
 	name!: string;
+
+	@IsString()
+	@IsOptional()
+	@SanitizeHtml(InputFormat.RICH_TEXT_CK5)
+	@ApiPropertyOptional({
+		description: 'The description of the task',
+	})
+	description?: string;
+
+	@IsDate()
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Date since the task is published',
+		type: Date,
+	})
+	availableDate?: Date;
+
+	@IsDate()
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Date until the task submissions can be sent',
+		type: Date,
+	})
+	dueDate?: Date;
 }

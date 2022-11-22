@@ -9,6 +9,12 @@ export class CourseGroupRepo extends BaseRepo<CourseGroup> {
 		return CourseGroup;
 	}
 
+	async findById(id: string): Promise<CourseGroup> {
+		const courseGroup = await super.findById(id);
+		await this._em.populate(courseGroup, ['course']);
+		return courseGroup;
+	}
+
 	async findByCourseIds(courseIds: EntityId[]): Promise<Counted<CourseGroup[]>> {
 		const [courseGroups, count] = await this._em.findAndCount(CourseGroup, {
 			course: { $in: courseIds },

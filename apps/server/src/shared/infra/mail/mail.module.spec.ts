@@ -5,18 +5,27 @@ import { MailModule } from './mail.module';
 import { MailService } from './mail.service';
 
 describe('MailModule', () => {
+	let module: TestingModule;
 	const mailModuleOptions = {
 		uri: Configuration.get('RABBITMQ_URI') as string,
 		exchange: 'exchange',
 		routingKey: 'routingKey',
 	};
+	let mailService: MailService;
 
-	it('should be initializable with forRoot', async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			imports: [RabbitMQWrapperTestModule, MailModule.forRoot(mailModuleOptions)],
 		}).compile();
 
-		const mailService = module.get(MailService);
+		mailService = module.get(MailService);
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	it('should be initializable with forRoot', () => {
 		expect(mailService).toBeDefined();
 	});
 });

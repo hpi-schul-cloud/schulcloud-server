@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
-import { FileRecordParentType } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { Command, Console } from 'nestjs-console';
 import { AvailableSyncParentType } from '../types';
 import { SyncEmbeddedFilesUc } from '../uc/sync-embedded-files.uc';
@@ -17,9 +17,13 @@ export class SyncFilesConsole {
 		private logger: Logger
 	) {}
 
-	@Command({ command: 'tasks [aggregationSize] [numParallelPromises]' })
-	async syncFilesForTasks(aggregationSize = 5000, numParallelPromises = 50) {
-		await this.syncFilesUc.syncFilesForParentType(FileRecordParentType.Task, aggregationSize, numParallelPromises);
+	@Command({ command: 'submissions [aggregationSize] [numParallelPromises]' })
+	async syncFilesForSubmissions(aggregationSize = 5000, numParallelPromises = 50) {
+		await this.syncFilesUc.syncFilesForParentType(
+			FileRecordParentType.Submission,
+			aggregationSize,
+			numParallelPromises
+		);
 	}
 
 	@Command({ command: 'embedded [type] [limit]' })
