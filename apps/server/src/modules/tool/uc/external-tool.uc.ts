@@ -20,7 +20,7 @@ export class ExternalToolUc {
 
 	async createExternalTool(externalToolDO: ExternalToolDO, currentUser: ICurrentUser): Promise<ExternalToolDO> {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
-		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_CREATE]);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
 		await this.checkValidation(externalToolDO);
 

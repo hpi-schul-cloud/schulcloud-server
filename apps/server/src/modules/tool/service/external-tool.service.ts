@@ -20,6 +20,7 @@ export class ExternalToolService {
 		const duplicate: ExternalToolDO | null = await this.externalToolRepo.findByOAuth2ConfigClientId(
 			oauth2ToolConfig.clientId
 		);
+
 		return duplicate == null;
 	}
 

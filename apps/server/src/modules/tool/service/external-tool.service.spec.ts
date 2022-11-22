@@ -99,7 +99,7 @@ describe('ExternalToolService', () => {
 
 			const expected: boolean = await service.isNameUnique(externalToolDO);
 
-			expect(expected).toEqual(false);
+			expect(expected).toEqual(true);
 			expect(repo.findByName).toHaveBeenCalledWith(externalToolDO.name);
 		});
 
@@ -109,7 +109,7 @@ describe('ExternalToolService', () => {
 
 			const expected: boolean = await service.isNameUnique(externalToolDO);
 
-			expect(expected).toEqual(true);
+			expect(expected).toEqual(false);
 			expect(repo.findByName).toHaveBeenCalledWith(externalToolDO.name);
 		});
 	});
@@ -121,7 +121,7 @@ describe('ExternalToolService', () => {
 
 			const expected: boolean = await service.isClientIdUnique(oauth2ToolConfigDO);
 
-			expect(expected).toEqual(false);
+			expect(expected).toEqual(true);
 			expect(repo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(oauth2ToolConfigDO.clientId);
 		});
 
@@ -131,7 +131,7 @@ describe('ExternalToolService', () => {
 
 			const expected: boolean = await service.isClientIdUnique(oauth2ToolConfigDO);
 
-			expect(expected).toEqual(true);
+			expect(expected).toEqual(false);
 			expect(repo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(oauth2ToolConfigDO.clientId);
 		});
 	});

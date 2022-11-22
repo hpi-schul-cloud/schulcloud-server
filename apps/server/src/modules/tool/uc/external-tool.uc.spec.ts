@@ -9,7 +9,7 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { ICurrentUser, ToolConfigType, User } from '@shared/domain';
+import { ICurrentUser, Permission, ToolConfigType, User } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
@@ -91,6 +91,37 @@ describe('ExternalToolUc', () => {
 			skipConsent: false,
 		});
 
+		const externalToolDO: ExternalToolDO = new ExternalToolDO({
+			name: 'name',
+			url: 'url',
+			logoUrl: 'logoUrl',
+			config: basicConfig,
+			parameters: [],
+			isHidden: false,
+			openNewTab: false,
+			version: 1,
+		});
+
+		const user: User = userFactory.buildWithId();
+		const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+
+		authorizationService.getUserWithPermissions.mockResolvedValue(user);
+		externalToolService.isNameUnique.mockResolvedValue(true);
+		externalToolService.isClientIdUnique.mockResolvedValue(true);
+		externalToolService.hasDuplicateAttributes.mockReturnValue(false);
+		externalToolService.validateByRegex.mockReturnValue(true);
+		externalToolService.createExternalTool.mockResolvedValue(externalToolDO);
+
+		return {
+			externalToolDO,
+			basicConfig,
+			oauth2ConfigWithoutExternalData,
+			user,
+			currentUser,
+		};
+	}
+
+	function oauthSetup() {
 		const oauth2ConfigWithExternalData: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
 			type: ToolConfigType.OAUTH2,
 			baseUrl: 'baseUrl',
@@ -103,27 +134,6 @@ describe('ExternalToolUc', () => {
 			redirectUris: ['redirectUri1', 'redirectUri2'],
 		});
 
-		const lti11Config: Lti11ToolConfigDO = new Lti11ToolConfigDO({
-			type: ToolConfigType.LTI11,
-			baseUrl: 'baseUrl',
-			key: 'key',
-			secret: 'secret',
-			resource_link_id: 'resource_link_id',
-			lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-			privacy_permission: LtiPrivacyPermission.ANONYMOUS,
-		});
-
-		const externalToolDO: ExternalToolDO = new ExternalToolDO({
-			name: 'name',
-			url: 'url',
-			logoUrl: 'logoUrl',
-			config: basicConfig,
-			parameters: [],
-			isHidden: false,
-			openNewTab: false,
-			version: 1,
-		});
-
 		const oauthClient: ProviderOauthClient = {
 			client_id: 'clientId',
 			client_secret: 'clientSecret',
@@ -133,26 +143,12 @@ describe('ExternalToolUc', () => {
 			redirect_uris: ['redirectUri1', 'redirectUri2'],
 		};
 
-		const user: User = userFactory.buildWithId();
-		const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
-
-		authorizationService.getUserWithPermissions.mockResolvedValue(user);
-		externalToolService.isNameUnique.mockResolvedValue(true);
-		externalToolService.isClientIdUnique.mockResolvedValue(true);
-		externalToolService.hasDuplicateAttributes.mockReturnValue(false);
-		externalToolService.validateByRegex.mockReturnValue(true);
-		externalToolService.createExternalTool.mockResolvedValue(externalToolDO);
 		oauthProviderService.createOAuth2Client.mockResolvedValue(oauthClient);
 		externalToolMapper.mapDoToProviderOauthClient.mockReturnValue(oauthClient);
 		externalToolMapper.applyProviderOauthClientToDO.mockReturnValue(oauth2ConfigWithExternalData);
 
 		return {
-			externalToolDO,
-			basicConfig,
-			oauth2ConfigWithoutExternalData,
 			oauth2ConfigWithExternalData,
-			lti11Config,
-			currentUser,
 			oauthClient,
 		};
 	}
@@ -160,11 +156,11 @@ describe('ExternalToolUc', () => {
 	describe('createExternalTool', () => {
 		describe('Authorization', () => {
 			it('should successfully check the user permission with the authorization service', async () => {
-				const { externalToolDO, currentUser } = setup();
+				const { externalToolDO, currentUser, user } = setup();
 
 				await uc.createExternalTool(externalToolDO, currentUser);
 
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalled();
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
 			});
 
 			it('should throw if the user has insufficient permission to create an external tool', async () => {
@@ -181,12 +177,24 @@ describe('ExternalToolUc', () => {
 
 		describe('Validation', () => {
 			it('should pass if tool name is unique, it has no duplicate attributes, all regex are valid and the client id is unique', async () => {
-				const { externalToolDO, currentUser, oauth2ConfigWithExternalData } = setup();
+				const { oauth2ConfigWithExternalData } = oauthSetup();
+				const { externalToolDO, currentUser } = setup();
 				externalToolDO.config = oauth2ConfigWithExternalData;
 
 				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser);
 
 				await expect(result).resolves.not.toThrow(UnprocessableEntityException);
+			});
+
+			it('should throw if the client id is not unique', async () => {
+				const { oauth2ConfigWithExternalData } = oauthSetup();
+				const { externalToolDO, currentUser } = setup();
+				externalToolDO.config = oauth2ConfigWithExternalData;
+				externalToolService.isClientIdUnique.mockResolvedValue(false);
+
+				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser);
+
+				await expect(result).rejects.toThrow(UnprocessableEntityException);
 			});
 
 			it('should throw if name is not unique', async () => {
@@ -210,16 +218,6 @@ describe('ExternalToolUc', () => {
 			it('should throw if tool has custom attributes with invalid regex', async () => {
 				const { externalToolDO, currentUser } = setup();
 				externalToolService.validateByRegex.mockReturnValue(false);
-
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser);
-
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
-			});
-
-			it('should throw if the client id is not unique', async () => {
-				const { externalToolDO, currentUser, oauth2ConfigWithExternalData } = setup();
-				externalToolDO.config = oauth2ConfigWithExternalData;
-				externalToolService.isClientIdUnique.mockResolvedValue(false);
 
 				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser);
 
@@ -249,8 +247,9 @@ describe('ExternalToolUc', () => {
 
 		describe('Oauth2 Tool', () => {
 			function setupOauth2() {
+				const { oauth2ConfigWithExternalData, oauthClient } = oauthSetup();
 				const setupData = setup();
-				setupData.externalToolDO.config = setupData.oauth2ConfigWithExternalData;
+				setupData.externalToolDO.config = oauth2ConfigWithExternalData;
 
 				const savedOauth2Tool: ExternalToolDO = { ...setupData.externalToolDO };
 				savedOauth2Tool.config = setupData.oauth2ConfigWithoutExternalData;
@@ -260,6 +259,7 @@ describe('ExternalToolUc', () => {
 				return {
 					...setupData,
 					savedOauth2Tool,
+					oauthClient,
 				};
 			}
 
@@ -289,8 +289,25 @@ describe('ExternalToolUc', () => {
 		});
 
 		describe('Lti11 Tool', () => {
+			function ltiSetup() {
+				const lti11Config: Lti11ToolConfigDO = new Lti11ToolConfigDO({
+					type: ToolConfigType.LTI11,
+					baseUrl: 'baseUrl',
+					key: 'key',
+					secret: 'secret',
+					resource_link_id: 'resource_link_id',
+					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+					privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+				});
+
+				return {
+					lti11Config,
+				};
+			}
+
 			it('should encrypt lti11 secret', async () => {
-				const { externalToolDO, currentUser, lti11Config } = setup();
+				const { lti11Config } = ltiSetup();
+				const { externalToolDO, currentUser } = setup();
 				const encryptedSecret = 'encryptedSecret';
 				externalToolDO.config = lti11Config;
 				oAuthEncryptionService.encrypt.mockReturnValue(encryptedSecret);
@@ -304,7 +321,8 @@ describe('ExternalToolUc', () => {
 			});
 
 			it('should save lti11 tool', async () => {
-				const { externalToolDO, currentUser, lti11Config } = setup();
+				const { lti11Config } = ltiSetup();
+				const { externalToolDO, currentUser } = setup();
 				externalToolDO.config = lti11Config;
 
 				await uc.createExternalTool(externalToolDO, currentUser);
@@ -313,7 +331,8 @@ describe('ExternalToolUc', () => {
 			});
 
 			it('should return saved lti11 tool', async () => {
-				const { externalToolDO, currentUser, lti11Config } = setup();
+				const { lti11Config } = ltiSetup();
+				const { externalToolDO, currentUser } = setup();
 				externalToolDO.config = lti11Config;
 
 				const result: ExternalToolDO = await uc.createExternalTool(externalToolDO, currentUser);

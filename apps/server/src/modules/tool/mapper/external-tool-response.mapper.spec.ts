@@ -50,19 +50,7 @@ describe('ExternalToolResponseMapper', () => {
 			type: ToolConfigType.BASIC,
 			baseUrl: 'mockUrl',
 		});
-		const lti11ToolConfigResponse: Lti11ToolConfigResponse = new Lti11ToolConfigResponse({
-			key: 'mockKey',
-			lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-			privacy_permission: LtiPrivacyPermission.NAME,
-			type: ToolConfigType.LTI11,
-			baseUrl: 'mockUrl',
-		});
-		const oauth2ToolConfigResponse: Oauth2ToolConfigResponse = new Oauth2ToolConfigResponse({
-			clientId: 'mockId',
-			skipConsent: false,
-			type: ToolConfigType.OAUTH2,
-			baseUrl: 'mockUrl',
-		});
+
 		const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
 			id: '1',
 			name: 'mockName',
@@ -79,20 +67,7 @@ describe('ExternalToolResponseMapper', () => {
 			type: ToolConfigType.BASIC,
 			baseUrl: 'mockUrl',
 		});
-		const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
-			secret: 'mockSecret',
-			key: 'mockKey',
-			lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-			privacy_permission: LtiPrivacyPermission.NAME,
-			type: ToolConfigType.LTI11,
-			baseUrl: 'mockUrl',
-		});
-		const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
-			clientId: 'mockId',
-			skipConsent: false,
-			type: ToolConfigType.OAUTH2,
-			baseUrl: 'mockUrl',
-		});
+
 		const customParameterDO: CustomParameterDO = new CustomParameterDO({
 			name: 'mockName',
 			default: 'mockDefault',
@@ -118,52 +93,86 @@ describe('ExternalToolResponseMapper', () => {
 			externalToolDO,
 			basicToolConfigDO,
 			basicToolConfigResponse,
-			lti11ToolConfigDO,
-			lti11ToolConfigResponse,
-			oauth2ToolConfigResponse,
-			oauth2ToolConfigDO,
 		};
 	}
 
 	describe('mapToResponse', () => {
-		it('should map a basic tool do to a basic tool response', () => {
-			const { externalToolDO, externalToolResponse, basicToolConfigDO, basicToolConfigResponse } = setup();
-			externalToolDO.config = basicToolConfigDO;
-			externalToolResponse.config = basicToolConfigResponse;
+		describe('when mapping basic tool DO', () => {
+			it('should map a basic tool do to a basic tool response', () => {
+				const { externalToolDO, externalToolResponse, basicToolConfigDO, basicToolConfigResponse } = setup();
+				externalToolDO.config = basicToolConfigDO;
+				externalToolResponse.config = basicToolConfigResponse;
 
-			const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
+				const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
 
-			expect(result).toEqual(externalToolResponse);
+				expect(result).toEqual(externalToolResponse);
+			});
 		});
 
-		it('should map a oauth2 tool do to a oauth2 tool response', () => {
-			const { externalToolDO, externalToolResponse, oauth2ToolConfigDO, oauth2ToolConfigResponse } = setup();
-			externalToolDO.config = oauth2ToolConfigDO;
-			externalToolResponse.config = oauth2ToolConfigResponse;
+		describe('when mapping oauth tool DO', () => {
+			function oauthSetup() {
+				const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
+					clientId: 'mockId',
+					skipConsent: false,
+					type: ToolConfigType.OAUTH2,
+					baseUrl: 'mockUrl',
+				});
 
-			const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
+				const oauth2ToolConfigResponse: Oauth2ToolConfigResponse = new Oauth2ToolConfigResponse({
+					clientId: 'mockId',
+					skipConsent: false,
+					type: ToolConfigType.OAUTH2,
+					baseUrl: 'mockUrl',
+				});
 
-			expect(result).toEqual(externalToolResponse);
+				return {
+					oauth2ToolConfigResponse,
+					oauth2ToolConfigDO,
+				};
+			}
+			it('should map a oauth2 tool do to a oauth2 tool response', () => {
+				const { oauth2ToolConfigDO, oauth2ToolConfigResponse } = oauthSetup();
+				const { externalToolDO, externalToolResponse } = setup();
+				externalToolDO.config = oauth2ToolConfigDO;
+				externalToolResponse.config = oauth2ToolConfigResponse;
+
+				const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
+
+				expect(result).toEqual(externalToolResponse);
+			});
 		});
 
-		it('should map a lti11 tool do to a lti11 tool response', () => {
-			const { externalToolDO, externalToolResponse, lti11ToolConfigDO, lti11ToolConfigResponse } = setup();
-			externalToolDO.config = lti11ToolConfigDO;
-			externalToolResponse.config = lti11ToolConfigResponse;
+		describe('when mapping lti tool DO', () => {
+			function ltiSetup() {
+				const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
+					secret: 'mockSecret',
+					key: 'mockKey',
+					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+					privacy_permission: LtiPrivacyPermission.NAME,
+					type: ToolConfigType.LTI11,
+					baseUrl: 'mockUrl',
+				});
 
-			const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
+				const lti11ToolConfigResponse: Lti11ToolConfigResponse = new Lti11ToolConfigResponse({
+					key: 'mockKey',
+					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+					privacy_permission: LtiPrivacyPermission.NAME,
+					type: ToolConfigType.LTI11,
+					baseUrl: 'mockUrl',
+				});
 
-			expect(result).toEqual(externalToolResponse);
-		});
+				return { lti11ToolConfigDO, lti11ToolConfigResponse };
+			}
+			it('should map a lti11 tool DO to a lti11 tool response', () => {
+				const { lti11ToolConfigDO, lti11ToolConfigResponse } = ltiSetup();
+				const { externalToolDO, externalToolResponse } = setup();
+				externalToolDO.config = lti11ToolConfigDO;
+				externalToolResponse.config = lti11ToolConfigResponse;
 
-		it('should map a lti11 tool do to a lti11 tool response', () => {
-			const { externalToolDO, externalToolResponse, lti11ToolConfigDO, lti11ToolConfigResponse } = setup();
-			externalToolDO.config = lti11ToolConfigDO;
-			externalToolResponse.config = lti11ToolConfigResponse;
+				const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
 
-			const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
-
-			expect(result).toEqual(externalToolResponse);
+				expect(result).toEqual(externalToolResponse);
+			});
 		});
 	});
 });
