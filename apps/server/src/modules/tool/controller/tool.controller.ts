@@ -48,7 +48,7 @@ export class ToolController {
 		return mapped;
 	}
 
-	@Post('tools')
+	@Post()
 	@ApiCreatedResponse({ description: 'The Tool has been successfully created.', type: ExternalToolResponse })
 	@ApiForbiddenResponse()
 	@ApiUnprocessableEntityResponse()
