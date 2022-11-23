@@ -8,6 +8,8 @@ import {
 } from '@shared/domain/domainobject/external-tool';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, SortOrderMap } from '@shared/domain';
+import { SortExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-sort.params';
+import { ExternalToolSearchParams } from '@src/modules/tool/controller/dto/request/external-tool-search.params';
 import { CustomParameterScopeParams } from '../interface/custom-parameter-scope.enum';
 import { CustomParameterLocationParams } from '../interface/custom-parameter-location.enum';
 import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
@@ -17,8 +19,6 @@ import { Oauth2ToolConfigParams } from '../controller/dto/request/oauth2-tool-co
 import { ExternalToolParams } from '../controller/dto/request/external-tool-create.params';
 import { Lti11ToolConfigParams } from '../controller/dto/request/lti11-tool-config.params';
 import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
-import { SortExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-sort.params';
-import { ExternalToolSearchParams } from '@src/modules/tool/controller/dto/request/external-tool-search.params';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,

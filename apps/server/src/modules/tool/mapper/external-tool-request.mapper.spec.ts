@@ -15,6 +15,11 @@ import {
 	SortOrderMap,
 	ToolConfigType,
 } from '@shared/domain';
+import {
+	ExternalToolSortOrder,
+	SortExternalToolParams,
+} from '@src/modules/tool/controller/dto/request/external-tool-sort.params';
+import { ExternalToolSearchParams } from '@src/modules/tool/controller/dto/request/external-tool-search.params';
 import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
 import { CustomParameterCreateParams } from '../controller/dto/request/custom-parameter.params';
 import { BasicToolConfigParams } from '../controller/dto/request/basic-tool-config.params';
@@ -27,11 +32,6 @@ import { CustomParameterLocationParams } from '../interface/custom-parameter-loc
 import { CustomParameterScopeParams } from '../interface/custom-parameter-scope.enum';
 import { LtiMessageType } from '../interface/lti-message-type.enum';
 import { LtiPrivacyPermission } from '../interface/lti-privacy-permission.enum';
-import {
-	ExternalToolSortOrder,
-	SortExternalToolParams,
-} from '@src/modules/tool/controller/dto/request/external-tool-sort.params';
-import { ExternalToolSearchParams } from '@src/modules/tool/controller/dto/request/external-tool-search.params';
 
 describe('ExternalToolRequestMapper', () => {
 	let module: TestingModule;

@@ -397,7 +397,7 @@ describe('ExternalToolUc', () => {
 
 		describe('findExternalTools with oauth2 config type', () => {
 			it('should call oauthProviderService when config type is oauth2', async () => {
-				const { currentUser, query, options, page, oauth2ConfigWithoutExternalData } = setup();
+				const { currentUser, query, options, oauth2ConfigWithoutExternalData } = setup();
 				query.config = new Oauth2ToolConfigDO({
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'test.de',
