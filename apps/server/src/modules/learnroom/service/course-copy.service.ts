@@ -1,19 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { Board, CopyHelperService, CopyStatus, Course, EntityId } from '@shared/domain';
+import { Board, CopyHelperService, CopyStatus, Course, User, EntityId } from '@shared/domain';
+import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { BoardRepo, CourseRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { BoardCopyService } from './board-copy.service';
-import { CourseEntityCopyService } from './course-entity-copy.service';
 import { LessonCopyService } from './lesson-copy.service';
 import { RoomsService } from './rooms.service';
 
+export type CourseCopyParams = {
+	originalCourse: Course;
+	user: User;
+	copyName?: string;
+};
 @Injectable()
 export class CourseCopyService {
 	constructor(
 		private readonly courseRepo: CourseRepo,
 		private readonly boardRepo: BoardRepo,
 		private readonly roomsService: RoomsService,
-		private readonly courseEntityCopyService: CourseEntityCopyService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly copyHelperService: CopyHelperService,
@@ -42,9 +46,8 @@ export class CourseCopyService {
 
 		const copyName = this.copyHelperService.deriveCopyName(newName || originalCourse.name, existingNames);
 
-		const courseStatus = this.courseEntityCopyService.copyCourse({ user, originalCourse, copyName });
-		const courseCopy = courseStatus.copyEntity as Course;
-		await this.courseRepo.save(courseCopy);
+		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
+		const courseStatus = this.getDefaultCourseStatus(originalCourse, courseCopy);
 
 		let boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
 
@@ -52,6 +55,7 @@ export class CourseCopyService {
 			const boardCopy = boardStatus.copyEntity as Board;
 			await this.boardRepo.save(boardCopy);
 			boardStatus = this.lessonCopyService.updateCopiedEmbeddedTasks(boardStatus);
+			await this.boardRepo.save(boardCopy);
 			// const { copyStatus } = await this.copyFilesService.copyFilesOfEntity(originalBoard, boardCopy, user.id);
 			// boardStatus.elements?.push(copyStatus);
 			// boardStatus = await this.fileCopyAppendService.copyFiles(boardStatus, courseCopy.id, userId);
@@ -64,5 +68,55 @@ export class CourseCopyService {
 		courseStatus.status = this.copyHelperService.deriveStatusFromElements(courseStatus.elements);
 
 		return courseStatus;
+	}
+
+	async copyCourseEntity(params: CourseCopyParams): Promise<Course> {
+		const { originalCourse, user, copyName } = params;
+		const courseCopy = new Course({
+			school: user.school,
+			name: copyName ?? originalCourse.name,
+			color: originalCourse.color,
+			teachers: [user],
+			startDate: user.school.schoolYear?.startDate,
+			untilDate: user.school.schoolYear?.endDate,
+		});
+		await this.courseRepo.createCourse(courseCopy);
+		return courseCopy;
+	}
+
+	getDefaultCourseStatus(originalCourse: Course, courseCopy: Course): CopyStatus {
+		const elements = [
+			{
+				type: CopyElementType.METADATA,
+				status: CopyStatusEnum.SUCCESS,
+			},
+			{
+				type: CopyElementType.USER_GROUP,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+			{
+				type: CopyElementType.LTITOOL_GROUP,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+			{
+				type: CopyElementType.TIME_GROUP,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+		];
+
+		const courseGroupsExist = originalCourse.getCourseGroupItems().length > 0;
+		if (courseGroupsExist) {
+			elements.push({ type: CopyElementType.COURSEGROUP_GROUP, status: CopyStatusEnum.NOT_IMPLEMENTED });
+		}
+
+		const status = {
+			title: courseCopy.name,
+			type: CopyElementType.COURSE,
+			status: this.copyHelperService.deriveStatusFromElements(elements),
+			copyEntity: courseCopy,
+			originalEntity: originalCourse,
+			elements,
+		};
+		return status;
 	}
 }

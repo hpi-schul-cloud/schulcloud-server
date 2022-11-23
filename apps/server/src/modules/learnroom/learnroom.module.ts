@@ -22,7 +22,6 @@ import { RoomsController } from './controller/rooms.controller';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 import { BoardCopyService } from './service/board-copy.service';
 import { CourseCopyService } from './service/course-copy.service';
-import { CourseEntityCopyService } from './service/course-entity-copy.service';
 import { LessonCopyService } from './service/lesson-copy.service';
 import { MetadataLoader } from './service/metadata-loader.service';
 import { RoomsService } from './service/rooms.service';
@@ -65,7 +64,6 @@ import { CopyLegacyFilesService } from '../files-storage-client/service/copy-leg
 		TaskCopyService,
 		CopyHelperService,
 		CourseCopyService,
-		CourseEntityCopyService,
 		CourseCopyUC,
 		RoomsService,
 		EtherpadService,
