@@ -71,6 +71,8 @@ export class AccountService {
 			account.credentialHash = accountDto.credentialHash;
 			account.token = accountDto.token;
 
+			await this.accountRepo.save(account);
+
 			if (this.accountStoreEnabled) {
 				try {
 					const result = await this.identityManager.updateAccount(account.id, {
@@ -83,6 +85,7 @@ export class AccountService {
 					}
 				} catch (err) {
 					this.logger.error(err);
+					throw err;
 				}
 			}
 		} else {
@@ -98,6 +101,8 @@ export class AccountService {
 				credentialHash: accountDto.credentialHash,
 			});
 
+			await this.accountRepo.save(account);
+
 			if (this.accountStoreEnabled) {
 				try {
 					const result = await this.identityManager.createAccount({
@@ -107,10 +112,10 @@ export class AccountService {
 					this.logger.log(result);
 				} catch (err) {
 					this.logger.error(err);
+					throw err;
 				}
 			}
 		}
-		await this.accountRepo.save(account);
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
@@ -127,6 +132,7 @@ export class AccountService {
 				this.logger.log(result);
 			} catch (err) {
 				this.logger.error(err);
+				throw err;
 			}
 		}
 
@@ -153,6 +159,7 @@ export class AccountService {
 				this.logger.log(result);
 			} catch (err) {
 				this.logger.error(err);
+				throw err;
 			}
 		}
 
@@ -166,6 +173,7 @@ export class AccountService {
 				this.logger.log(result);
 			} catch (err) {
 				this.logger.error(err);
+				throw err;
 			}
 		}
 		return this.accountRepo.deleteById(id);
@@ -179,6 +187,7 @@ export class AccountService {
 				this.logger.log(result);
 			} catch (err) {
 				this.logger.error(err);
+				throw err;
 			}
 		}
 		return this.accountRepo.deleteByUserId(userId);
