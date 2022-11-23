@@ -79,14 +79,8 @@ export class AuthorizationService extends BasePermissionManager {
 	}
 
 	async getUserWithPermissions(userId: EntityId): Promise<User> {
-		try {
-			const userWithPermissions = await this.loader.loadEntity(AllowedAuthorizationEntityType.User, userId);
-			if (userWithPermissions instanceof User) {
-				return userWithPermissions;
-			}
-			throw new Error('userWithPermissions is not instance of User');
-		} catch (err) {
-			throw new ForbiddenException(err);
-		}
+		const userWithPermissions = await this.loader.getUserWithPermissions(userId);
+
+		return userWithPermissions;
 	}
 }
