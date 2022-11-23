@@ -74,18 +74,11 @@ export class AccountService {
 			await this.accountRepo.save(account);
 
 			if (this.accountStoreEnabled) {
-				try {
-					const result = await this.identityManager.updateAccount(account.id, {
-						email: account.username,
-					});
-					this.logger.log(result);
-					if (account.password) {
-						const foo = await this.identityManager.updateAccountPassword(account.id, account.password);
-						this.logger.log(foo);
-					}
-				} catch (err) {
-					this.logger.error(err);
-					throw err;
+				await this.identityManager.updateAccount(account.id, {
+					email: account.username,
+				});
+				if (account.password) {
+					await this.identityManager.updateAccountPassword(account.id, account.password);
 				}
 			}
 		} else {
@@ -104,16 +97,10 @@ export class AccountService {
 			await this.accountRepo.save(account);
 
 			if (this.accountStoreEnabled) {
-				try {
-					const result = await this.identityManager.createAccount({
-						id: account.id,
-						userName: account.username,
-					});
-					this.logger.log(result);
-				} catch (err) {
-					this.logger.error(err);
-					throw err;
-				}
+				await this.identityManager.createAccount({
+					id: account.id,
+					userName: account.username,
+				});
 			}
 		}
 		return AccountEntityToDtoMapper.mapToDto(account);
@@ -122,18 +109,10 @@ export class AccountService {
 	async updateUsername(accountId: EntityId, username: string): Promise<AccountDto> {
 		const account = await this.accountRepo.findById(accountId);
 		account.username = username;
-		// TODO: Check if necessary in MicroORM
-		account.updatedAt = new Date();
 		await this.accountRepo.save(account);
 
 		if (this.accountStoreEnabled) {
-			try {
-				const result = await this.identityManager.updateAccount(accountId, { email: username });
-				this.logger.log(result);
-			} catch (err) {
-				this.logger.error(err);
-				throw err;
-			}
+			await this.identityManager.updateAccount(accountId, { email: username });
 		}
 
 		return AccountEntityToDtoMapper.mapToDto(account);
@@ -149,33 +128,18 @@ export class AccountService {
 	async updatePassword(accountId: EntityId, password: string): Promise<AccountDto> {
 		const account = await this.accountRepo.findById(accountId);
 		account.password = await this.encryptPassword(password);
-		// TODO: Check if necessary in MicroORM
-		account.updatedAt = new Date();
-		await this.accountRepo.save(account);
 
 		if (this.accountStoreEnabled) {
-			try {
-				const result = await this.identityManager.updateAccountPassword(accountId, password);
-				this.logger.log(result);
-			} catch (err) {
-				this.logger.error(err);
-				throw err;
-			}
+			await this.identityManager.updateAccountPassword(accountId, password);
 		}
-
+		await this.accountRepo.save(account);
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
 	async delete(id: EntityId): Promise<void> {
 		const account = await this.accountRepo.findById(id);
 		if (this.accountStoreEnabled) {
-			try {
-				const result = await this.identityManager.deleteAccountByUsername(account.username);
-				this.logger.log(result);
-			} catch (err) {
-				this.logger.error(err);
-				throw err;
-			}
+			await this.identityManager.deleteAccountByUsername(account.username);
 		}
 		return this.accountRepo.deleteById(id);
 	}
@@ -183,13 +147,7 @@ export class AccountService {
 	async deleteByUserId(userId: EntityId): Promise<void> {
 		const account = await this.findByUserId(userId);
 		if (this.accountStoreEnabled && account) {
-			try {
-				const result = await this.identityManager.deleteAccountById(account.id);
-				this.logger.log(result);
-			} catch (err) {
-				this.logger.error(err);
-				throw err;
-			}
+			await this.identityManager.deleteAccountByUsername(account.username);
 		}
 		return this.accountRepo.deleteByUserId(userId);
 	}

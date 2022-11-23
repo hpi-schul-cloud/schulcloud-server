@@ -37,6 +37,13 @@ export abstract class IdentityManagementService {
 	abstract findAccountById(accountId: string): Promise<IAccount>;
 
 	/**
+	 * Loads the account with the specific username.
+	 * @param username of the account to be loaded.
+	 * @returns the account if exists otherwise undefined
+	 */
+	abstract findAccountByUsername(username: string): Promise<IAccount | undefined>;
+
+	/**
 	 * Load all accounts.
 	 *
 	 * @returns an array of all accounts (might be empty)

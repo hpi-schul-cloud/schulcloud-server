@@ -3,6 +3,7 @@ import { IAccount, IAccountUpdate } from '@shared/domain';
 /* eslint-disable no-nested-ternary */
 import { Injectable } from '@nestjs/common';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
+import { EntityNotFoundError } from '@shared/common';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
@@ -54,9 +55,17 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	async findAccountById(accountId: string): Promise<IAccount> {
 		const keycloakUser = await (await this.kcAdminClient.callKcAdminClient()).users.findOne({ id: accountId });
 		if (!keycloakUser) {
-			throw Error(`Account '${accountId}' not found`);
+			throw new Error(`Account '${accountId}' not found`);
 		}
 		return this.extractAccount(keycloakUser);
+	}
+
+	async findAccountByUsername(username: string): Promise<IAccount | undefined> {
+		const [keycloakUser] = await (await this.kcAdminClient.callKcAdminClient()).users.find({ username });
+		if (keycloakUser) {
+			return this.extractAccount(keycloakUser);
+		}
+		return undefined;
 	}
 
 	async getAllAccounts(): Promise<IAccount[]> {

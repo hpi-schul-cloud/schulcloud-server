@@ -7,6 +7,7 @@ export interface IAccount {
 }
 
 export interface IAccountUpdate {
+	username?: string;
 	email?: string;
 	firstName?: string;
 	lastName?: string;
