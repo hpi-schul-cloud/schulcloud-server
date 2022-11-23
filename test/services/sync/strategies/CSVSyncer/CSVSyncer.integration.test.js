@@ -21,17 +21,26 @@ const {
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 const { SC_TITLE } = require('../../../../../config/globals');
 
-const { deleteUser, MockEmailService } = require('./helper');
+const { MockEmailService } = require('./helper');
 
 describe('CSVSyncer Integration', () => {
 	let app;
 	let server;
 	let nestServices;
+	let accountService;
+
+	const deleteUser = async (email = 'foo@bar.baz') => {
+		await userModel.deleteOne({ email });
+		const { accounts } = await accountService.searchByUsernameExactMatch(email);
+		const accountPromise = accounts.map((account) => accountService.deleteByUserId(account.userId));
+		Promise.allSettled(accountPromise);
+	};
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
+		accountService = await app.service('nest-account-service');
 	});
 
 	after(async () => {

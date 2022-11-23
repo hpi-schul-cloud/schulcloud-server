@@ -57,7 +57,7 @@ describe('TSP API integration tests', () => {
 				email: 'sailing@pacific.ocean',
 				schoolId: school._id,
 				source: 'tsp',
-				sourceOptions: { awesome: true, tspUid: '2345' },
+				sourceOptions: { awesome: true, tspUid: '234567' },
 			};
 			const roles = ['administrator', 'teacher'];
 			const systemId = (await createSystem())._id;
@@ -68,11 +68,14 @@ describe('TSP API integration tests', () => {
 			expect(createdUser.source).to.equal('tsp');
 			expect(createdUser.sourceOptions.awesome).to.equal(true);
 
-			const [account] = await app.service('accounts').find({
-				query: { userId: createdUser._id },
-			});
-			createdAccounts.push(account._id);
-			expect(account.username).to.equal('tsp/2345');
+			// const [account] = await app.service('accounts').find({
+			// 	query: { userId: createdUser._id },
+			// });
+			const account = await app.service('nest-account-service').findByUserId(createdUser._id);
+			// createdAccounts.push(account._id);
+			createdAccounts.push(account.id);
+
+			expect(account.username).to.equal('tsp/234567');
 			expect(account.activated).to.equal(true);
 		});
 
