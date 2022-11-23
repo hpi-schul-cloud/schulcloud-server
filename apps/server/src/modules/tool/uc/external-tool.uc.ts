@@ -34,7 +34,7 @@ export class ExternalToolUc {
 				externalToolDO.name,
 				externalToolDO.config
 			);
-			const createdOauthClient = await this.oauthProviderService.createOAuth2Client(oauthClient);
+			const createdOauthClient: ProviderOauthClient = await this.oauthProviderService.createOAuth2Client(oauthClient);
 
 			created = await this.externalToolService.createExternalTool(externalToolDO);
 
@@ -76,7 +76,13 @@ export class ExternalToolUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
-		const tool: Promise<ExternalToolDO> = this.externalToolService.findExternalToolById(toolId);
+		const tool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
+
+		if (tool.config instanceof Oauth2ToolConfigDO) {
+			const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(tool.config.clientId);
+			tool.config = this.externalToolMapper.applyProviderOauthClientToDO(tool.config, oauthClient);
+		}
+
 		return tool;
 	}
 }
