@@ -71,4 +71,12 @@ export class ExternalToolUc {
 			throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`);
 		}
 	}
+
+	async getExternalTool(toolId: string, currentUser: ICurrentUser): Promise<ExternalToolDO> {
+		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+
+		const tool: Promise<ExternalToolDO> = this.externalToolService.findExternalToolById(toolId);
+		return tool;
+	}
 }

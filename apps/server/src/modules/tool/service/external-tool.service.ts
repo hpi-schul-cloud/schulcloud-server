@@ -11,6 +11,11 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
+	async findExternalToolById(id: string): Promise<ExternalToolDO> {
+		const externalTool: ExternalToolDO = await this.externalToolRepo.findById(id);
+		return externalTool;
+	}
+
 	async isNameUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
 		const duplicate: ExternalToolDO | null = await this.externalToolRepo.findByName(externalToolDO.name);
 		return duplicate == null;

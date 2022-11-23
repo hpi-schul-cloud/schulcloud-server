@@ -1,8 +1,8 @@
+import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId } from 'class-validator';
 
-export class Lti11LaunchParams {
-	@IsMongoId()
+export class ToolIdParams {
+	@IsString()
 	@ApiProperty({ nullable: false, required: true })
 	toolId!: string;
 }

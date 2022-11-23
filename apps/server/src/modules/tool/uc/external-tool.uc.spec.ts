@@ -341,4 +341,36 @@ describe('ExternalToolUc', () => {
 			});
 		});
 	});
+
+	describe('getExternalTool', () => {
+		describe('Authorization', () => {
+			it('should successfully check the user permission with the authorization service', async () => {
+				const { externalToolDO, currentUser, user } = setup();
+
+				await uc.createExternalTool(externalToolDO, currentUser);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+			});
+
+			it('should throw if the user has insufficient permission to create an external tool', async () => {
+				const { externalToolDO, currentUser } = setup();
+				authorizationService.checkAllPermissions.mockImplementation(() => {
+					throw new UnauthorizedException();
+				});
+
+				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser);
+
+				await expect(result).rejects.toThrow(UnauthorizedException);
+			});
+		});
+
+		it('should fetch a tool', async () => {
+			const { currentUser, externalToolDO } = setup();
+			externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
+
+			const result: ExternalToolDO = await uc.getExternalTool('toolId', currentUser);
+
+			expect(result).toEqual(externalToolDO);
+		});
+	});
 });
