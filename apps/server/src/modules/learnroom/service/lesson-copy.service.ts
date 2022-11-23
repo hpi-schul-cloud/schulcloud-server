@@ -55,6 +55,7 @@ export class LessonCopyService {
 			contents: copiedContent,
 			materials: copiedMaterials,
 		});
+		await this.lessonRepo.createLesson(lessonCopy);
 
 		const copiedTasksStatus: CopyStatus[] = await this.copyLinkedTasks(lessonCopy, params);
 

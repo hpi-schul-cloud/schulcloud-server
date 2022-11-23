@@ -383,7 +383,8 @@ describe('task copy service', () => {
 					user,
 				});
 
-				expect(taskRepo.save).toHaveBeenCalledTimes(2);
+				expect(taskRepo.createTask).toHaveBeenCalledTimes(1);
+				expect(taskRepo.save).toHaveBeenCalledTimes(1);
 			});
 		});
 
