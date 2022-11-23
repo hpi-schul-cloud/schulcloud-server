@@ -316,19 +316,19 @@ describe('AuthorizationService', () => {
 		describe('when user successfully', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				loader.loadEntity.mockResolvedValueOnce(user);
+				loader.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				return {
 					user,
 				};
 			};
 
-			it('should call ReferenceLoader.loadEntity with specific arguments', async () => {
+			it('should call ReferenceLoader.getUserWithPermissions with specific arguments', async () => {
 				const { user } = setup();
 
 				await service.getUserWithPermissions(user.id);
 
-				expect(loader.loadEntity).toBeCalledWith(AllowedAuthorizationEntityType.User, user.id);
+				expect(loader.getUserWithPermissions).toBeCalledWith(user.id);
 			});
 
 			it('should return user', async () => {
@@ -345,7 +345,7 @@ describe('AuthorizationService', () => {
 				const userId = new ObjectId().toHexString();
 				const error = new NotFoundException();
 
-				loader.loadEntity.mockRejectedValue(error);
+				loader.getUserWithPermissions.mockRejectedValue(error);
 
 				return {
 					userId,
@@ -355,24 +355,6 @@ describe('AuthorizationService', () => {
 			it('should throw NotFoundException', async () => {
 				const { userId, error } = setup();
 				await expect(service.getUserWithPermissions(userId)).rejects.toThrowError(error);
-			});
-		});
-
-		describe('when user is not instanceof User', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				// @ts-expect-error test with wrong instance
-				loader.loadEntity.mockResolvedValue();
-
-				return {
-					userId,
-				};
-			};
-
-			it('should throw ForbiddenException ', async () => {
-				const { userId } = setup();
-
-				await expect(service.getUserWithPermissions(userId)).rejects.toThrowError(ForbiddenException);
 			});
 		});
 	});
