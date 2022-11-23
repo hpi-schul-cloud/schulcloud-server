@@ -39,6 +39,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		).users.update(
 			{ id: accountId },
 			{
+				username: account.username,
 				email: account.email,
 				firstName: account.firstName,
 				lastName: account.lastName,

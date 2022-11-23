@@ -6,16 +6,16 @@ import { AccountRepo } from '@shared/repo';
 import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { Logger } from '@src/core/logger';
-import { IAccount } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak/service/keycloak-administration.service';
 import { AccountService } from './account.service';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
 
-describe.skip('AccountService Integration', () => {
+describe('AccountService Integration', () => {
 	let module: TestingModule;
 	let accountService: AccountService;
 	let idmService: IdentityManagementService;
-	let account: AccountDto;
+	let isIdmReachable = false;
 
 	const testAccount: AccountSaveDto = {
 		username: 'john.doe@mail.tld',
@@ -23,16 +23,16 @@ describe.skip('AccountService Integration', () => {
 		password: 'password',
 	};
 	const createAccount = async (): Promise<AccountDto> => {
-		const temp = await idmService.findAccountByUsername(testAccount.username);
-		if (temp) {
-			await accountService.delete(temp.id as string);
+		const result = await accountService.searchByUsernameExactMatch(testAccount.username);
+		if (result.total === 0) {
+			return accountService.save(testAccount);
 		}
-		return accountService.save(testAccount);
+		return result.accounts[0];
 	};
-	const deleteAccount = async (username: string): Promise<void> => {
-		const temp = await idmService.findAccountByUsername(username);
-		if (temp) {
-			await accountService.delete(temp.id as string);
+	const deleteAccount = async (username?: string): Promise<void> => {
+		const result = await accountService.searchByUsernameExactMatch(username ?? testAccount.username);
+		if (result.total !== 0) {
+			await accountService.delete(result.accounts[0].id);
 		}
 	};
 
@@ -63,81 +63,108 @@ describe.skip('AccountService Integration', () => {
 		}).compile();
 		accountService = module.get(AccountService);
 		idmService = module.get(IdentityManagementService);
+		isIdmReachable = await module.get(KeycloakAdministrationService).testKcConnection();
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	beforeEach(async () => {
-		account = await createAccount();
-	});
-
 	afterEach(async () => {
-		await deleteAccount(account.id);
+		await deleteAccount();
 	});
 
-	describe('should mirror create, update and delete operations into the IDM', () => {
-		it('save should create a new account', async () => {
-			const accounts = await idmService.getAllAccounts();
+	it('save should create a new account', async () => {
+		if (!isIdmReachable) return;
 
-			expect(accounts).toEqual(
-				expect.arrayContaining([
-					expect.objectContaining({
-						userName: testAccount.username,
-					}),
-				])
-			);
+		await createAccount();
+		const accounts = await idmService.getAllAccounts();
+
+		expect(accounts).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					userName: testAccount.username,
+				}),
+			])
+		);
+	});
+
+	it.skip('save should update existing account', async () => {
+		if (!isIdmReachable) return;
+
+		const newUserName = 'jane.doe@mail.tld';
+		await createAccount();
+		await accountService.save({
+			username: newUserName,
 		});
+		const accounts = await idmService.getAllAccounts();
 
-		it.skip('save should update existing account', async () => {
-			const newUserName = 'jane.doe@mail.tld';
-			const accountToUpdate = await createAccount();
-			await accountService.save({
-				username: newUserName,
-			});
-			const accounts = await idmService.getAllAccounts();
+		expect(accounts).not.toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					userName: newUserName,
+				}),
+			])
+		);
 
-			expect(accounts).not.toEqual(
-				expect.arrayContaining([
-					expect.objectContaining({
-						userName: testAccount.username,
-					}),
-				])
-			);
-		});
+		await deleteAccount(newUserName);
+	});
 
-		it.skip('updateUsername should update user name', async () => {});
+	it.skip('updateUsername should update username', async () => {
+		if (!isIdmReachable) return;
 
-		it.skip('updatePassword should update password', async () => {
-			await expect(accountService.updatePassword(account.id, 'newPassword')).resolves.not.toThrow();
-			await deleteAccount(account.id);
-		});
+		const newUserName = 'jane.doe@mail.tld';
+		const account = await createAccount();
+		await accountService.updateUsername(account.id, newUserName);
+		const accounts = await idmService.getAllAccounts();
 
-		it('delete should remove account', async () => {
-			await accountService.delete(account.id);
-			const accounts = await idmService.getAllAccounts();
+		expect(accounts).not.toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					userName: newUserName,
+				}),
+			])
+		);
 
-			expect(accounts).not.toEqual(
-				expect.arrayContaining([
-					expect.objectContaining({
-						userName: testAccount.username,
-					}),
-				])
-			);
-		});
+		await deleteAccount(newUserName);
+	});
 
-		it('deleteByUserId should remove account', async () => {
-			await accountService.deleteByUserId(account.userId as string);
-			const accounts = await idmService.getAllAccounts();
+	it('updatePassword should update password', async () => {
+		if (!isIdmReachable) return;
 
-			expect(accounts).not.toEqual(
-				expect.arrayContaining([
-					expect.objectContaining({
-						userName: testAccount.username,
-					}),
-				])
-			);
-		});
+		const account = await createAccount();
+		await expect(accountService.updatePassword(account.id, 'newPassword')).resolves.not.toThrow();
+	});
+
+	it('delete should remove account', async () => {
+		if (!isIdmReachable) return;
+
+		const account = await createAccount();
+		await accountService.delete(account.id);
+		const accounts = await idmService.getAllAccounts();
+
+		expect(accounts).not.toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					userName: testAccount.username,
+				}),
+			])
+		);
+	});
+
+	it('deleteByUserId should remove account', async () => {
+		if (!isIdmReachable) return;
+
+		const account = await createAccount();
+		await accountService.deleteByUserId(account.userId as string);
+		const accounts = await idmService.getAllAccounts();
+
+		expect(accounts).not.toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					userName: testAccount.username,
+				}),
+			])
+		);
 	});
 });

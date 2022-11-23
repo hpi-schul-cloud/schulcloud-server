@@ -112,7 +112,7 @@ export class AccountService {
 		await this.accountRepo.save(account);
 
 		if (this.accountStoreEnabled) {
-			await this.identityManager.updateAccount(accountId, { email: username });
+			await this.identityManager.updateAccount(accountId, { username });
 		}
 
 		return AccountEntityToDtoMapper.mapToDto(account);
@@ -130,7 +130,8 @@ export class AccountService {
 		account.password = await this.encryptPassword(password);
 
 		if (this.accountStoreEnabled) {
-			await this.identityManager.updateAccountPassword(accountId, password);
+			const idmAccount = await this.identityManager.findAccountByUsername(account.username);
+			await this.identityManager.updateAccountPassword(idmAccount?.id as string, password);
 		}
 		await this.accountRepo.save(account);
 		return AccountEntityToDtoMapper.mapToDto(account);
