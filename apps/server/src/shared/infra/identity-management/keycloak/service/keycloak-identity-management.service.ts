@@ -69,6 +69,16 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		return accountId;
 	}
 
+	async deleteAccountByUsername(username: string): Promise<string | undefined> {
+		const kc = await this.kcAdminClient.callKcAdminClient();
+		const [account] = await kc.users.find({ username });
+
+		if (account.id) {
+			await kc.users.del({ id: account.id });
+		}
+		return account.id;
+	}
+
 	private extractAccount(user: UserRepresentation): IAccount {
 		return {
 			id: user.id,

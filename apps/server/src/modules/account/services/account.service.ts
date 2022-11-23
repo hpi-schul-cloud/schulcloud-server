@@ -167,9 +167,10 @@ export class AccountService {
 	}
 
 	async delete(id: EntityId): Promise<void> {
+		const account = await this.accountRepo.findById(id);
 		if (this.accountStoreEnabled) {
 			try {
-				const result = await this.identityManager.deleteAccountById(id);
+				const result = await this.identityManager.deleteAccountByUsername(account.username);
 				this.logger.log(result);
 			} catch (err) {
 				this.logger.error(err);

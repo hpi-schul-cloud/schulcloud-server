@@ -102,7 +102,7 @@ describe('AccountService Integration', () => {
 
 		it.skip('updatePassword should update password', async () => {});
 
-		it.skip('delete should remove account', async () => {
+		it('delete should remove account', async () => {
 			const account = await createAccount();
 			await accountService.delete(account.id);
 			const accounts = await idmService.getAllAccounts();
@@ -117,6 +117,7 @@ describe('AccountService Integration', () => {
 		});
 
 		it.skip('deleteByUserId should remove account', async () => {
+			const account = createAccount();
 			const accountToDelete = (await idmService.getAllAccounts()).find(
 				(accountTemp) => accountTemp.userName === testAccount.username
 			) as IAccount;

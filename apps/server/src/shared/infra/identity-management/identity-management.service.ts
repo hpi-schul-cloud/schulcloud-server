@@ -49,4 +49,11 @@ export abstract class IdentityManagementService {
 	 * @returns the accounts id if deleted successfully
 	 */
 	abstract deleteAccountById(accountId: string): Promise<string>;
+
+	/**
+	 * Deletes an account based on the username.
+	 * @param username the account username to be deleted.
+	 * @returns the account id if deleted successfully and undefined if use was not found.
+	 */
+	abstract deleteAccountByUsername(username: string): Promise<string | undefined>;
 }
