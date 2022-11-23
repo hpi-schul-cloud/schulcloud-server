@@ -54,7 +54,7 @@ class ChangePasswordService {
 
 const hooks = {
 	before: {
-		create: [globalHooks.blockDisposableEmail('username'), local.hooks.hashPassword('password')],
+		create: [globalHooks.blockDisposableEmail('username')],
 	},
 };
 
