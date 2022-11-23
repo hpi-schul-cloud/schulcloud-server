@@ -13,6 +13,8 @@ spec:
         envFrom:
         - configMapRef:
             name: api-configmap
+        - configMapRef:
+            name: api-init-job-configmap
         - secretRef:
             name: api-secret
         volumeMounts:
@@ -24,7 +26,7 @@ spec:
       volumes:
       - name: script
         configMap:
-          name: api-init-file
+          name: api-init-job-configmap
           items:
           - key: update.sh
             path: update.sh
