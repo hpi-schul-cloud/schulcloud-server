@@ -6,7 +6,6 @@ metadata:
   labels:
     app: api-deployment
 data:
-  INIT_MONGO_REPLICASET: {{ API_INIT_MONGO_REPLICASET | default("false", true)}}
   update.sh: |
     #! /bin/bash
     # necessary for secret handling and legacy indexes
@@ -14,6 +13,7 @@ data:
     cd /schulcloud-server
     git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
     npm install
+    INIT_MONGO_REPLICASET={{ API_INIT_MONGO_REPLICASET | default("false", true)}}
     echo "#####$INIT_MONGO_REPLICASET"
     if [ "$INIT_MONGO_REPLICASET" = true ]
     then
