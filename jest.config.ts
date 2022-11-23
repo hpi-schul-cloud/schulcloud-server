@@ -22,10 +22,10 @@ const config: Config.InitialOptions = {
 	],
 	coverageThreshold: {
 		global: {
-			branches: 80,
-			functions: 80,
-			lines: 80,
-			statements: -11,
+			branches: 95,
+			functions: 95,
+			lines: 95,
+			statements: -3,
 		},
 		// add custom paths: './apps/server/path...': { branches: X, functions: ... }
 	},
