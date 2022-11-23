@@ -7,6 +7,7 @@ import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import { EncryptionModule } from '@shared/infra/encryption';
+import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-tool-sorting.mapper';
 import { Lti11Uc } from './uc/lti11.uc';
 import { LtiRoleMapper } from './mapper/lti-role.mapper';
 import { Lti11Service } from './service/lti11.service';
@@ -34,6 +35,7 @@ import { ExternalToolResponseMapper } from './mapper/external-tool-response.mapp
 		ExternalToolService,
 		ExternalToolRequestMapper,
 		ExternalToolResponseMapper,
+		ExternalToolSortingMapper,
 	],
 })
 export class ToolModule {}

@@ -8,7 +8,14 @@ import {
 	ExternalToolDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ExternalTool } from '@shared/domain';
+import {
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	ExternalTool,
+	IFindOptions,
+	SortOrder,
+} from '@shared/domain';
 import { externalToolFactory } from '@shared/testing';
 import { ExternalToolService } from './external-tool.service';
 import { ToolConfigType } from '../interface/tool-config-type.enum';
@@ -170,6 +177,30 @@ describe('ExternalToolService', () => {
 			const expected: boolean = service.validateByRegex([customParameterDO]);
 
 			expect(expected).toEqual(false);
+		});
+	});
+
+	describe('findExternalTool', () => {
+		it('should call the externalToolRepo', async () => {
+			const { externalToolDO } = setup();
+			const query: Partial<ExternalToolDO> = {
+				id: externalToolDO.id,
+				name: externalToolDO.name,
+			};
+			const options: IFindOptions<ExternalToolDO> = {
+				order: {
+					id: SortOrder.asc,
+					name: SortOrder.asc,
+				},
+				pagination: {
+					limit: 2,
+					skip: 1,
+				},
+			};
+
+			await service.findExternalTool(query, options);
+
+			expect(repo.find).toHaveBeenCalledWith(query, options);
 		});
 	});
 });

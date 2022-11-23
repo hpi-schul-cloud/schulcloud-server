@@ -10,12 +10,18 @@ export class Scope<T> {
 
 	private _operator: ScopeOperator;
 
+	private _allowEmptyQuery: boolean;
+
 	constructor(operator: ScopeOperator = '$and') {
 		this._operator = operator;
+		this._allowEmptyQuery = false;
 	}
 
 	get query(): FilterQuery<T> {
 		if (this._queries.length === 0) {
+			if (this._allowEmptyQuery) {
+				return {} as FilterQuery<T>;
+			}
 			return EmptyResultQuery as FilterQuery<T>;
 		}
 		const query = this._queries.length > 1 ? { [this._operator]: this._queries } : this._queries[0];
@@ -24,5 +30,10 @@ export class Scope<T> {
 
 	addQuery(query: FilterQuery<T> | EmptyResultQueryType): void {
 		this._queries.push(query);
+	}
+
+	allowEmptyQuery(isEmptyQueryAllowed: boolean) {
+		this._allowEmptyQuery = isEmptyQueryAllowed;
+		return this;
 	}
 }

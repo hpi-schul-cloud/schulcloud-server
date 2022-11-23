@@ -1,14 +1,20 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser, IFindOptions } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool/external-tool.do';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
+	ApiFoundResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
+import { PaginationParams } from '@shared/controller/dto/pagination.params';
+import { SortExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-sort.params';
+import { ExternalToolSearchListResponse } from '@src/modules/tool/controller/dto/response/external-tool-search-list.response';
+import { Page } from '@shared/domain/interface/page';
+import { ExternalToolSearchParams } from '@src/modules/tool/controller/dto/request/external-tool-search.params';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
@@ -61,5 +67,33 @@ export class ToolController {
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(externalToolDO, currentUser);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
 		return mapped;
+	}
+
+	@Get()
+	@ApiFoundResponse({ description: 'Tools has been found.', type: ExternalToolSearchListResponse })
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	async findExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() filterQuery: ExternalToolSearchParams,
+		@Query() pagination: PaginationParams,
+		@Query() sortingQuery: SortExternalToolParams
+	): Promise<ExternalToolSearchListResponse> {
+		const options: IFindOptions<ExternalToolDO> = { pagination };
+		options.order = this.externalToolDOMapper.mapSortingQueryToDomain(sortingQuery);
+		const query: Partial<ExternalToolDO> = this.externalToolDOMapper.mapExternalToolFilterQueryToDO(filterQuery);
+
+		const tools: Page<ExternalToolDO> = await this.externalToolUc.findExternalTool(currentUser, query, options);
+
+		const dtoList: ExternalToolResponse[] = tools.data.map(
+			(tool: ExternalToolDO): ExternalToolResponse => this.externalResponseMapper.mapToResponse(tool)
+		);
+		const response: ExternalToolSearchListResponse = new ExternalToolSearchListResponse(
+			dtoList,
+			tools.total,
+			pagination.skip,
+			pagination.limit
+		);
+		return response;
 	}
 }

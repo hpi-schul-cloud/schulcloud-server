@@ -1,4 +1,11 @@
-import { ExternalTool, ToolConfigType, IExternalToolProperties } from '@shared/domain';
+import {
+	ExternalTool,
+	ToolConfigType,
+	IExternalToolProperties,
+	IFindOptions,
+	IPagination,
+	SortOrder,
+} from '@shared/domain';
 import { BaseDORepo, EntityProperties } from '@shared/repo';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityName } from '@mikro-orm/core';
@@ -6,13 +13,18 @@ import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Logger } from '@src/core/logger';
+import { QueryOrderMap } from '@mikro-orm/core/enums';
+import { ExternalToolScope } from '@shared/repo/externaltool/external-tool.scope';
+import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-tool-sorting.mapper';
+import { Page } from '@shared/domain/interface/page';
 
 @Injectable()
 export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, IExternalToolProperties> {
 	constructor(
 		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
 		protected readonly _em: EntityManager,
-		protected readonly logger: Logger
+		protected readonly logger: Logger,
+		protected readonly sortingMapper: ExternalToolSortingMapper
 	) {
 		super(_em, logger);
 	}
@@ -58,5 +70,28 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 
 	mapDOToEntityProperties(entityDO: ExternalToolDO): EntityProperties<IExternalToolProperties> {
 		return this.externalToolRepoMapper.mapDOToEntityProperties(entityDO);
+	}
+
+	async find(query: Partial<ExternalTool>, options?: IFindOptions<ExternalToolDO>): Promise<Page<ExternalToolDO>> {
+		const pagination: IPagination = options?.pagination || {};
+		const order: QueryOrderMap<ExternalTool> = this.sortingMapper.mapDOSortOrderToQueryOrder(options?.order || {});
+		const scope: ExternalToolScope = new ExternalToolScope()
+			.allowEmptyQuery(true)
+			.byName(query.name)
+			.byHidden(query.isHidden);
+
+		if (order._id == null) {
+			order._id = SortOrder.asc;
+		}
+
+		const [entities, total]: [ExternalTool[], number] = await this._em.findAndCount(ExternalTool, scope.query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order,
+		});
+
+		const entityDos = entities.map((entity) => this.mapEntityToDO(entity));
+		const page: Page<ExternalToolDO> = new Page<ExternalToolDO>(entityDos, total);
+		return page;
 	}
 }

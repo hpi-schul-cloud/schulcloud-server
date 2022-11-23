@@ -7,7 +7,14 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '@shared/domain';
+import {
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	SortOrder,
+	SortOrderMap,
+	ToolConfigType,
+} from '@shared/domain';
 import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
 import { CustomParameterCreateParams } from '../controller/dto/request/custom-parameter.params';
 import { BasicToolConfigParams } from '../controller/dto/request/basic-tool-config.params';
@@ -20,6 +27,11 @@ import { CustomParameterLocationParams } from '../interface/custom-parameter-loc
 import { CustomParameterScopeParams } from '../interface/custom-parameter-scope.enum';
 import { LtiMessageType } from '../interface/lti-message-type.enum';
 import { LtiPrivacyPermission } from '../interface/lti-privacy-permission.enum';
+import {
+	ExternalToolSortOrder,
+	SortExternalToolParams,
+} from '@src/modules/tool/controller/dto/request/external-tool-sort.params';
+import { ExternalToolSearchParams } from '@src/modules/tool/controller/dto/request/external-tool-search.params';
 
 describe('ExternalToolRequestMapper', () => {
 	let module: TestingModule;
@@ -223,6 +235,41 @@ describe('ExternalToolRequestMapper', () => {
 
 				expect(result).toEqual(expected);
 			});
+		});
+	});
+
+	describe('mapSortingQueryToDomain', () => {
+		it('should map controller sorting query to domain sort order map', () => {
+			const sortingQuery: SortExternalToolParams = {
+				sortBy: ExternalToolSortOrder.ID,
+				sortOrder: SortOrder.asc,
+			};
+
+			const result: SortOrderMap<ExternalToolDO> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
+
+			expect(result).toEqual({ id: SortOrder.asc });
+		});
+
+		it('should map controller sorting query to undefined', () => {
+			const sortingQuery: SortExternalToolParams = {
+				sortOrder: SortOrder.asc,
+			};
+
+			const result: SortOrderMap<ExternalToolDO> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
+
+			expect(result).toBeUndefined();
+		});
+	});
+
+	describe('mapExternalToolFilterQueryToDO', () => {
+		it('should map params to partial do', () => {
+			const params: ExternalToolSearchParams = {
+				name: 'name',
+			};
+
+			const doPartial = mapper.mapExternalToolFilterQueryToDO(params);
+
+			expect(doPartial).toEqual(expect.objectContaining(params));
 		});
 	});
 });

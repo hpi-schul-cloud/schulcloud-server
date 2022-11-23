@@ -9,11 +9,12 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { ICurrentUser, Permission, ToolConfigType, User } from '@shared/domain';
+import { ICurrentUser, IFindOptions, Permission, SortOrder, ToolConfigType, User } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { Page } from '@shared/domain/interface/page';
 import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService } from '../service/external-tool.service';
 import { ExternalToolRequestMapper } from '../mapper/external-tool-request.mapper';
@@ -92,6 +93,7 @@ describe('ExternalToolUc', () => {
 		});
 
 		const externalToolDO: ExternalToolDO = new ExternalToolDO({
+			id: 'id',
 			name: 'name',
 			url: 'url',
 			logoUrl: 'logoUrl',
@@ -102,6 +104,25 @@ describe('ExternalToolUc', () => {
 			version: 1,
 		});
 
+		const query: Partial<ExternalToolDO> = {
+			id: externalToolDO.id,
+			name: externalToolDO.name,
+		};
+		const options: IFindOptions<ExternalToolDO> = {
+			order: {
+				id: SortOrder.asc,
+				name: SortOrder.asc,
+			},
+			pagination: {
+				limit: 2,
+				skip: 1,
+			},
+		};
+		const page: Page<ExternalToolDO> = new Page<ExternalToolDO>(
+			[{ ...externalToolDO, config: oauth2ConfigWithoutExternalData }],
+			1
+		);
+
 		const user: User = userFactory.buildWithId();
 		const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
 
@@ -111,6 +132,7 @@ describe('ExternalToolUc', () => {
 		externalToolService.hasDuplicateAttributes.mockReturnValue(false);
 		externalToolService.validateByRegex.mockReturnValue(true);
 		externalToolService.createExternalTool.mockResolvedValue(externalToolDO);
+		externalToolService.findExternalTool.mockResolvedValue(page);
 
 		return {
 			externalToolDO,
@@ -118,6 +140,9 @@ describe('ExternalToolUc', () => {
 			oauth2ConfigWithoutExternalData,
 			user,
 			currentUser,
+			options,
+			page,
+			query,
 		};
 	}
 
@@ -339,6 +364,80 @@ describe('ExternalToolUc', () => {
 
 				expect(result).toEqual(externalToolDO);
 			});
+		});
+	});
+
+	describe('findExternalTool', () => {
+		describe('authorizationService', () => {
+			it('should call getUserWithPermissions', async () => {
+				const { currentUser, query, options } = setup();
+
+				await uc.findExternalTool(currentUser, query, options);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
+			});
+
+			it('should call checkAllPermissions', async () => {
+				const { currentUser, query, options, user } = setup();
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+				await uc.findExternalTool(currentUser, query, options);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+			});
+		});
+
+		it('should call the externalToolService', async () => {
+			const { currentUser, query, options } = setup();
+
+			await uc.findExternalTool(currentUser, query, options);
+
+			expect(externalToolService.findExternalTool).toHaveBeenCalledWith(query, options);
+		});
+
+		describe('findExternalTools with oauth2 config type', () => {
+			it('should call oauthProviderService when config type is oauth2', async () => {
+				const { currentUser, query, options, page, oauth2ConfigWithoutExternalData } = setup();
+				query.config = new Oauth2ToolConfigDO({
+					type: ToolConfigType.OAUTH2,
+					baseUrl: 'test.de',
+					clientId: 'xyz',
+					skipConsent: true,
+				});
+
+				await uc.findExternalTool(currentUser, query, options);
+
+				expect(oauthProviderService.getOAuth2Client).toHaveBeenCalledWith(oauth2ConfigWithoutExternalData.clientId);
+			});
+
+			it('should call externalToolMapper when config type is oauth2', async () => {
+				const { currentUser, query, options, page, oauth2ConfigWithoutExternalData } = setup();
+				query.config = new Oauth2ToolConfigDO({
+					type: ToolConfigType.OAUTH2,
+					baseUrl: 'test.de',
+					clientId: 'xyz',
+					skipConsent: true,
+				});
+				const oauthClient: ProviderOauthClient = {};
+				externalToolService.findExternalTool.mockResolvedValue(page);
+				oauthProviderService.getOAuth2Client.mockResolvedValue(oauthClient);
+
+				await uc.findExternalTool(currentUser, query, options);
+
+				expect(externalToolMapper.applyProviderOauthClientToDO).toHaveBeenCalledWith(
+					oauth2ConfigWithoutExternalData,
+					oauthClient
+				);
+			});
+		});
+
+		it('should return a page of externalToolDO', async () => {
+			const { currentUser, query, options, page } = setup();
+			externalToolService.findExternalTool.mockResolvedValue(page);
+
+			const resultPage: Page<ExternalToolDO> = await uc.findExternalTool(currentUser, query, options);
+
+			expect(resultPage).toEqual(page);
 		});
 	});
 });
