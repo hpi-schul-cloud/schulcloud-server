@@ -35,7 +35,6 @@ describe('ExternalTool Entity', () => {
 				type: ToolConfigType.OAUTH2,
 				baseUrl: 'mockBaseUrl',
 				clientId: 'mockClientId',
-				clientSecret: 'mockClientSecret',
 				skipConsent: true,
 			});
 			const lti11ToolConfig: Lti11ToolConfig = new Lti11ToolConfig({
