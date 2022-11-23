@@ -6,7 +6,7 @@ metadata:
   labels:
     app: api-deployment
 data:
-  INIT_MONGO_REPLICASET: {{ API_INIT_MONGO_REPLICASET }}
+  INIT_MONGO_REPLICASET: {{ API_INIT_MONGO_REPLICASET | default("false", true)}}
   update.sh: |
     #! /bin/bash
     # necessary for secret handling and legacy indexes
