@@ -35,6 +35,5 @@ import { ExternalToolResponseMapper } from './mapper/external-tool-response.mapp
 		ExternalToolRequestMapper,
 		ExternalToolResponseMapper,
 	],
-	exports: [ExternalToolRepo, LtiToolRepo],
 })
 export class ToolModule {}
