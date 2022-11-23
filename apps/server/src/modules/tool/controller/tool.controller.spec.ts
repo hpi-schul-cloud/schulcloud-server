@@ -262,7 +262,7 @@ describe('ToolController', () => {
 			}
 
 			it('should return basic external tool response', async () => {
-				const { currentUser, externalToolResponse, externalToolDO } = setupExternalTool();
+				const { currentUser, externalToolResponse } = setupExternalTool();
 				const { body } = setupCreate();
 				const { bodyConfigCreateBasicParams } = basicSetup();
 				body.config = bodyConfigCreateBasicParams;

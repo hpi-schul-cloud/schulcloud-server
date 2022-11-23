@@ -92,12 +92,12 @@ describe('ExternalToolService', () => {
 		});
 	});
 
-	describe('getExternalTool', () => {
+	describe('findExternalToolById', () => {
 		it('should get DO', async () => {
 			const { externalToolDO } = setup();
 			repo.findById.mockResolvedValue(externalToolDO);
 
-			const result: ExternalToolDO = await service.createExternalTool(externalToolDO);
+			const result: ExternalToolDO = await service.findExternalToolById('toolId');
 
 			expect(result).toEqual(externalToolDO);
 		});
