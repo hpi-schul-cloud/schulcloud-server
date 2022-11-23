@@ -1,8 +1,8 @@
-import { CustomParameterResponse } from '@src/modules/tool/controller/dto/response/custom-parameter.response';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BasicToolConfigResponse } from '@src/modules/tool/controller/dto/response/basic-tool-config.response';
-import { Oauth2ToolConfigResponse } from '@src/modules/tool/controller/dto/response/oauth2-tool-config.response';
-import { Lti11ToolConfigResponse } from '@src/modules/tool/controller/dto/response/lti11-tool-config.response';
+import { BasicToolConfigResponse } from './basic-tool-config.response';
+import { Oauth2ToolConfigResponse } from './oauth2-tool-config.response';
+import { Lti11ToolConfigResponse } from './lti11-tool-config.response';
+import { CustomParameterResponse } from './custom-parameter.response';
 
 export class ExternalToolResponse {
 	@ApiProperty()
