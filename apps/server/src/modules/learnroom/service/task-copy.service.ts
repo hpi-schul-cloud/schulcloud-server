@@ -5,7 +5,6 @@ import { CopyElementType, CopyStatus, CopyStatusEnum, EntityId } from '@shared/d
 import { TaskRepo } from '@shared/repo';
 import { CopyFilesService } from '@src/modules/files-storage-client';
 import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
-import { CopyLegacyFilesService } from '@src/modules/files-storage-client/service/copy-legacy-files.service';
 
 export type TaskCopyParams = {
 	originalTask: Task;
@@ -20,8 +19,7 @@ export class TaskCopyService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly copyHelperService: CopyHelperService,
-		private readonly copyFilesService: CopyFilesService,
-		private readonly copyLegacyFilesService: CopyLegacyFilesService
+		private readonly copyFilesService: CopyFilesService
 	) {}
 
 	async copyTask(params: TaskCopyParams): Promise<CopyStatus> {

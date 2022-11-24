@@ -36,7 +36,6 @@ import { RoomBoardDTOFactory } from './uc/room-board-dto.factory';
 import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
 import { RoomsUc } from './uc/rooms.uc';
 import { TaskCopyService } from './service';
-import { CopyLegacyFilesService } from '../files-storage-client/service/copy-legacy-files.service';
 
 @Module({
 	imports: [AuthorizationModule, FilesStorageClientModule, LessonModule, TaskModule],
@@ -69,7 +68,6 @@ import { CopyLegacyFilesService } from '../files-storage-client/service/copy-leg
 		EtherpadService,
 		NexboardService,
 		FileLegacyService,
-		CopyLegacyFilesService,
 		FeathersServiceProvider,
 		Logger,
 		MetadataLoader,

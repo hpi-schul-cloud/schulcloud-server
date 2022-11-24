@@ -15,14 +15,12 @@ import {
 } from '@shared/testing';
 import { Task } from '@shared/domain/entity';
 import { CopyFilesService } from '@src/modules/files-storage-client';
-import { CopyLegacyFilesService } from '@src/modules/files-storage-client/service/copy-legacy-files.service';
 import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {
 	let module: TestingModule;
 	let copyService: TaskCopyService;
 	let copyFilesService: DeepMocked<CopyFilesService>;
-	let copyLegacyFilesService: DeepMocked<CopyLegacyFilesService>;
 	let taskRepo: DeepMocked<TaskRepo>;
 
 	let orm: MikroORM;
@@ -49,10 +47,6 @@ describe('task copy service', () => {
 					provide: CopyFilesService,
 					useValue: createMock<CopyFilesService>(),
 				},
-				{
-					provide: CopyLegacyFilesService,
-					useValue: createMock<CopyLegacyFilesService>(),
-				},
 			],
 		}).compile();
 
@@ -62,11 +56,6 @@ describe('task copy service', () => {
 		copyFilesService.copyFilesOfEntity.mockResolvedValue({
 			fileUrlReplacements: [],
 			fileCopyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
-		});
-		copyLegacyFilesService = await module.get(CopyLegacyFilesService);
-		copyLegacyFilesService.copyLegacyFiles.mockResolvedValue({
-			fileUrlReplacements: [],
-			copyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
 		});
 	});
 

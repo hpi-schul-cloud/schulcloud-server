@@ -11,7 +11,6 @@ import { TaskUC } from './uc';
 import { TaskService } from './service/task.service';
 import { TaskCopyUC } from '../learnroom/uc/task-copy.uc';
 import { TaskCopyService } from '../learnroom/service';
-import { CopyLegacyFilesService } from '../files-storage-client/service/copy-legacy-files.service';
 
 @Module({
 	imports: [AuthorizationModule, FilesStorageClientModule],
@@ -27,7 +26,6 @@ import { CopyLegacyFilesService } from '../files-storage-client/service/copy-leg
 		CopyHelperService,
 		FeathersServiceProvider,
 		FileLegacyService,
-		CopyLegacyFilesService,
 		Logger,
 	],
 	exports: [TaskService],
