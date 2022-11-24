@@ -11,6 +11,7 @@ import {
 	Task,
 	User,
 } from '@shared/domain';
+import { BoardRepo } from '@shared/repo';
 import { LessonCopyService } from './lesson-copy.service';
 import { TaskCopyService } from './task-copy.service';
 
@@ -23,6 +24,7 @@ export type BoardCopyParams = {
 @Injectable()
 export class BoardCopyService {
 	constructor(
+		private readonly boardRepo: BoardRepo,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly copyHelperService: CopyHelperService
@@ -64,15 +66,21 @@ export class BoardCopyService {
 			}
 		}
 
-		const copy = new Board({ references, course: params.destinationCourse });
-		const status = {
+		let boardCopy = new Board({ references, course: params.destinationCourse });
+		let status: CopyStatus = {
 			title: 'board',
 			type: CopyElementType.BOARD,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
-			copyEntity: copy,
+			copyEntity: boardCopy,
 			originalEntity: params.originalBoard,
 			elements,
 		};
+
+		status = this.updateCopiedEmbeddedTasksOfLessons(status);
+		if (status.copyEntity) {
+			boardCopy = status.copyEntity as Board;
+		}
+		await this.boardRepo.save(boardCopy);
 
 		return status;
 	}
@@ -84,5 +92,18 @@ export class BoardCopyService {
 			user,
 			destinationCourse,
 		});
+	}
+
+	updateCopiedEmbeddedTasksOfLessons(boardStatus: CopyStatus): CopyStatus {
+		const copyDict = this.copyHelperService.buildCopyEntityDict(boardStatus);
+		const elements = boardStatus.elements ?? [];
+		const updatedElements = elements.map((elementCopyStatus) => {
+			if (elementCopyStatus.type === CopyElementType.LESSON) {
+				return this.lessonCopyService.updateCopiedEmbeddedTasks(elementCopyStatus, copyDict);
+			}
+			return elementCopyStatus;
+		});
+		boardStatus.elements = updatedElements;
+		return boardStatus;
 	}
 }
