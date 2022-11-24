@@ -10,11 +10,11 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller/dto/pagination.params';
+import { ExternalToolSearchParams } from '@src/modules/tool/controller/dto/request/external-tool-search.params';
+import { PaginationParams } from '@shared/controller';
 import { SortExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-sort.params';
 import { ExternalToolSearchListResponse } from '@src/modules/tool/controller/dto/response/external-tool-search-list.response';
 import { Page } from '@shared/domain/interface/page';
-import { ExternalToolSearchParams } from '@src/modules/tool/controller/dto/request/external-tool-search.params';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';

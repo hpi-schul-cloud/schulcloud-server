@@ -1,10 +1,10 @@
 import {
 	ExternalTool,
-	ToolConfigType,
 	IExternalToolProperties,
 	IFindOptions,
 	IPagination,
 	SortOrder,
+	ToolConfigType,
 } from '@shared/domain';
 import { BaseDORepo, EntityProperties } from '@shared/repo';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
