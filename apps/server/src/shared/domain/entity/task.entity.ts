@@ -210,11 +210,10 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return isGraded;
 	}
 
-	private numberOfSubmitters(): number {
+	private calculateNumberOfStudents(submissions: Submission[]): number {
 		let taskSubmitterIds: EntityId[] = [];
-		const submittedSubmissions = this.getSubmittedSubmissions();
 
-		submittedSubmissions.forEach((submission) => {
+		submissions.forEach((submission) => {
 			const submitterIds = submission.getSubmitterIds();
 			taskSubmitterIds = [...taskSubmitterIds, ...submitterIds];
 		});
@@ -225,21 +224,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return numberOfSubmitters;
 	}
 
-	private numberOfSubmittersWithGrade(): number {
-		let taskSubmittersWithGradeIds: EntityId[] = [];
-		const gradedSubmissions = this.getGradedSubmissions();
-
-		gradedSubmissions.forEach((submission) => {
-			const submitterIds = submission.getSubmitterIds();
-			taskSubmittersWithGradeIds = [...taskSubmittersWithGradeIds, ...submitterIds];
-		});
-
-		const uniqueIds = [...new Set(taskSubmittersWithGradeIds)];
-		const numberOfSubmittersWithGrade = uniqueIds.length;
-
-		return numberOfSubmittersWithGrade;
-	}
-
 	private isUserSubstitutionTeacherInCourse(user: User): boolean {
 		const isSubstitutionTeacher = this.course ? this.course.isUserSubstitutionTeacher(user) : false;
 
@@ -247,8 +231,11 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	public createTeacherStatusForUser(user: User): ITaskStatus {
-		const numberOfSubmitters = this.numberOfSubmitters();
-		const numberOfSubmittersWithGrade = this.numberOfSubmittersWithGrade();
+		const submittedSubmissions = this.getSubmittedSubmissions();
+		const gradedSubmissions = this.getGradedSubmissions();
+
+		const numberOfSubmitters = this.calculateNumberOfStudents(submittedSubmissions);
+		const numberOfSubmittersWithGrade = this.calculateNumberOfStudents(gradedSubmissions);
 		const maxSubmissions = this.getMaxSubmissions();
 		const isDraft = this.isDraft();
 		const isFinished = this.isFinishedForUser(user);
