@@ -151,6 +151,30 @@ describe('KeycloakIdentityManagement', () => {
 		});
 	});
 
+	describe('findAccountByUsername', () => {
+		it('should find an existing account by username', async () => {
+			jest.spyOn(kcAdminClient.users, 'find').mockResolvedValue([mockedAccount1]);
+			const ret = await idm.findAccountByUsername(mockedAccount1.username);
+
+			expect(ret).not.toBeNull();
+			expect(ret).toEqual(
+				expect.objectContaining({
+					id: mockedAccount1.id,
+					userName: mockedAccount1.username,
+					email: mockedAccount1.email,
+					firstName: mockedAccount1.firstName,
+					lastName: mockedAccount1.lastName,
+				})
+			);
+		});
+		it('should return undefined if no account found', async () => {
+			jest.spyOn(kcAdminClient.users, 'find').mockResolvedValue([]);
+			const ret = await idm.findAccountByUsername('');
+
+			expect(ret).toBeUndefined();
+		});
+	});
+
 	describe('getAllAccounts', () => {
 		it('should find all existing accounts', async () => {
 			jest.spyOn(kcAdminClient.users, 'find').mockResolvedValue([mockedAccount1, mockedAccount2]);
@@ -226,6 +250,17 @@ describe('KeycloakIdentityManagement', () => {
 			jest.spyOn(kcAdminClient.users, 'del').mockRejectedValue('error');
 
 			await expect(idm.deleteAccountById(accountId)).rejects.toBeTruthy();
+		});
+	});
+
+	describe('deleteAccountByUsername', () => {
+		it('should delete an account', async () => {
+			jest.spyOn(kcAdminClient.users, 'find').mockResolvedValue([mockedAccount1]);
+			jest.spyOn(kcAdminClient.users, 'del').mockResolvedValue();
+
+			const ret = await idm.deleteAccountByUsername(mockedAccount1.username);
+
+			expect(ret).toBe(mockedAccount1.id);
 		});
 	});
 
