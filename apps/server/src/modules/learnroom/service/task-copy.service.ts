@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CopyHelperService } from '@shared/domain';
 import { Course, Lesson, Task, User } from '@shared/domain/entity';
-import { CopyElementType, CopyStatus, CopyStatusEnum, EntityId } from '@shared/domain/types';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
 import { CopyFilesService } from '@src/modules/files-storage-client';
 import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
