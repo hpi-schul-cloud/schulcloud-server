@@ -59,24 +59,17 @@ export class LessonCopyService {
 
 		const copiedTasksStatus: CopyStatus[] = await this.copyLinkedTasks(lessonCopy, params);
 
-		const elements = [
-			...LessonCopyService.lessonStatusMetadata(),
-			...contentStatus,
-			...materialsStatus,
-			...copiedTasksStatus,
-		];
-
-		let status: CopyStatus = {
-			title: lessonCopy.name,
-			type: CopyElementType.LESSON,
-			status: this.copyHelperService.deriveStatusFromElements(elements),
-			copyEntity: lessonCopy,
-			originalEntity: params.originalLesson,
-			elements,
-		};
+		const { status, elements } = this.deriveCopyStatus(
+			contentStatus,
+			materialsStatus,
+			copiedTasksStatus,
+			lessonCopy,
+			params.originalLesson
+		);
 
 		await this.lessonRepo.save(lessonCopy);
-		status = this.updateCopiedEmbeddedTasks(status);
+		const copyDict = this.copyHelperService.buildCopyEntityDict(status);
+		const updatedStatus = this.updateCopiedEmbeddedTasks(status, copyDict);
 
 		const { fileUrlReplacements, fileCopyStatus } = await this.copyFilesService.copyFilesOfEntity(
 			params.originalLesson,
@@ -87,11 +80,77 @@ export class LessonCopyService {
 		elements.push(fileCopyStatus);
 		lessonCopy.contents = this.replaceUrlsInContents(lessonCopy.contents, fileUrlReplacements);
 
-		status.status = this.copyHelperService.deriveStatusFromElements(elements);
+		updatedStatus.status = this.copyHelperService.deriveStatusFromElements(elements);
 		await this.lessonRepo.save(lessonCopy);
 
-		return status;
+		return updatedStatus;
 	}
+
+	private deriveCopyStatus(
+		contentStatus: CopyStatus[],
+		materialsStatus: CopyStatus[],
+		copiedTasksStatus: CopyStatus[],
+		lessonCopy: Lesson,
+		originalLesson: Lesson
+	) {
+		const elements = [
+			...LessonCopyService.lessonStatusMetadata(),
+			...contentStatus,
+			...materialsStatus,
+			...copiedTasksStatus,
+		];
+
+		const status: CopyStatus = {
+			title: lessonCopy.name,
+			type: CopyElementType.LESSON,
+			status: this.copyHelperService.deriveStatusFromElements(elements),
+			copyEntity: lessonCopy,
+			originalEntity: originalLesson,
+			elements,
+		};
+		return { status, elements };
+	}
+
+	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
+		const copiedLesson = lessonStatus.copyEntity as Lesson;
+
+		copiedLesson.contents = copiedLesson.contents.map((value: IComponentProperties) =>
+			this.updateCopiedEmbeddedTaskId(value, copyDict)
+		);
+		lessonStatus.copyEntity = copiedLesson;
+
+		return lessonStatus;
+	}
+
+	private updateCopiedEmbeddedTaskId = (
+		value: IComponentProperties,
+		copyDict: Map<EntityId, BaseEntity>
+	): IComponentProperties => {
+		if (
+			value.component !== ComponentType.INTERNAL ||
+			value.content === undefined ||
+			(value.content as IComponentInternalProperties).url === undefined
+		) {
+			return value;
+		}
+
+		const content = value.content as IComponentInternalProperties;
+		const extractTaskId = (url: string) => {
+			const urlObject = new URL(url, 'https://www.example.com');
+			const taskId = urlObject.pathname.split('/')[2];
+			return taskId;
+		};
+
+		const originalTaskId = extractTaskId(content.url);
+		const copiedTask = copyDict.get(originalTaskId);
+		if (!copiedTask) {
+			return value;
+		}
+
+		const url = content.url.replace(originalTaskId, copiedTask.id);
+		const updateded = { ...value, content: { url } };
+		return updateded;
+	};
 
 	private replaceUrlsInContents(
 		contents: IComponentProperties[],
@@ -110,52 +169,6 @@ export class LessonCopyService {
 
 		return contents;
 	}
-
-	updateCopiedEmbeddedTasks(status: CopyStatus): CopyStatus {
-		const copyDict = this.copyHelperService.buildCopyEntityDict(status);
-		return this.updateCopiedEmbeddedTasksRecursive(status, copyDict);
-	}
-
-	private updateCopiedEmbeddedTasksRecursive(status: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
-		if (status.type === CopyElementType.LESSON) {
-			status = this.updateCopiedEmbeddedTasksOfLesson(status, copyDict);
-		}
-		if (status.elements) {
-			status.elements = status.elements.map((element) => {
-				return this.updateCopiedEmbeddedTasksRecursive(element, copyDict);
-			});
-		}
-		return status;
-	}
-
-	private updateCopiedEmbeddedTasksOfLesson(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
-		const copiedLesson = lessonStatus.copyEntity as Lesson;
-
-		copiedLesson.contents = copiedLesson.contents.map((value: IComponentProperties) =>
-			this.updateCopiedEmbeddedTasksMapContent(value, copyDict)
-		);
-		lessonStatus.copyEntity = copiedLesson;
-
-		return lessonStatus;
-	}
-
-	private updateCopiedEmbeddedTasksMapContent = (
-		value: IComponentProperties,
-		copyDict: Map<EntityId, BaseEntity>
-	): IComponentProperties => {
-		if (value.component !== ComponentType.INTERNAL) {
-			return value;
-		}
-		const content = value.content as IComponentInternalProperties;
-		const url = new URL(content.url);
-		const originalTaskId = url.pathname.split('/')[2];
-		const finalTask = copyDict.get(originalTaskId);
-		if (!finalTask) {
-			return value;
-		}
-		const newEmbedded = { ...value, content: { url: content.url.replace(originalTaskId, finalTask.id) } };
-		return newEmbedded;
-	};
 
 	private async copyLessonContent(
 		content: IComponentProperties[],
