@@ -51,7 +51,7 @@ export class CourseRepo extends BaseRepo<Course> {
 		return Course;
 	}
 
-	async createCourse(course: Course) {
+	async createCourse(course: Course): Promise<void> {
 		return this.save(this.create(course));
 	}
 

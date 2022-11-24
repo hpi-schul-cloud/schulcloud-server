@@ -9,7 +9,7 @@ export class LessonRepo extends BaseRepo<Lesson> {
 		return Lesson;
 	}
 
-	async createLesson(lesson: Lesson) {
+	async createLesson(lesson: Lesson): Promise<void> {
 		return this.save(this.create(lesson));
 	}
 

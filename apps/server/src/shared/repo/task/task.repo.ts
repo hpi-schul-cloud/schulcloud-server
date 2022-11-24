@@ -12,7 +12,7 @@ export class TaskRepo extends BaseRepo<Task> {
 		return Task;
 	}
 
-	async createTask(task: Task) {
+	async createTask(task: Task): Promise<void> {
 		return this.save(this.create(task));
 	}
 
