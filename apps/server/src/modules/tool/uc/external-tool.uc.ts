@@ -34,7 +34,7 @@ export class ExternalToolUc {
 				externalToolDO.name,
 				externalToolDO.config
 			);
-			const createdOauthClient: ProviderOauthClient = await this.oauthProviderService.createOAuth2Client(oauthClient);
+			const createdOauthClient = await this.oauthProviderService.createOAuth2Client(oauthClient);
 
 			created = await this.externalToolService.createExternalTool(externalToolDO);
 
