@@ -13,7 +13,7 @@ import { SubmissionStatusListResponse } from './dto/submission.response';
 export class SubmissionController {
 	constructor(private readonly submissionsUc: SubmissionUC) {}
 
-	@Get('statuses/:taskId')
+	@Get('status/task/:taskId')
 	async findStatusesByTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: TaskUrlParams

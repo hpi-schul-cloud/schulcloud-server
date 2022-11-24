@@ -26,7 +26,7 @@ class API {
 
 	async findStatusesByTask(taskId: string) {
 		const response = await request(this.app.getHttpServer())
-			.get(`/submissions/statuses/${taskId}`)
+			.get(`/submissions/status/task/${taskId}`)
 			.set('Accept', 'application/json')
 			.set('Authorization', 'jwt');
 
