@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	courseFactory,
 	courseGroupFactory,
@@ -7,7 +7,6 @@ import {
 	materialFactory,
 	setupEntities,
 	taskFactory,
-	userFactory,
 } from '../../testing';
 import { ComponentType } from './lesson.entity';
 import { Material } from './materials.entity';
@@ -242,16 +241,15 @@ describe('Lesson Entity', () => {
 	describe('getStudentIds is called', () => {
 		describe('when course with students exists', () => {
 			const setup = () => {
-				const student1 = userFactory.buildWithId();
-				const student2 = userFactory.buildWithId();
-				const student3 = userFactory.buildWithId();
-				const students = [student1, student2, student3];
-				const studentIds = [student1.id, student2.id, student3.id];
+				const studentId1 = new ObjectId().toHexString();
+				const studentId2 = new ObjectId().toHexString();
+				const studentId3 = new ObjectId().toHexString();
+				const studentIds = [studentId1, studentId2, studentId3];
 
-				const course = courseFactory.build({ students });
+				const course = courseFactory.build();
 				const lesson = lessonFactory.buildWithId({ course });
 
-				const spy = jest.spyOn(course, 'getStudentIds');
+				const spy = jest.spyOn(course, 'getStudentIds').mockReturnValueOnce(studentIds);
 
 				return { lesson, studentIds, spy };
 			};
@@ -270,26 +268,44 @@ describe('Lesson Entity', () => {
 				const result = lesson.getStudentIds();
 
 				expect(result.length).toEqual(3);
-				expect(result.includes(studentIds[0])).toBe(true);
-				expect(result.includes(studentIds[1])).toBe(true);
-				expect(result.includes(studentIds[2])).toBe(true);
+				expect(result).toContain(studentIds[0]);
+				expect(result).toContain(studentIds[1]);
+				expect(result).toContain(studentIds[2]);
 			});
 		});
 
 		describe('when coursegroup with students exists', () => {
 			const setup = () => {
-				const courseGroup = courseGroupFactory.studentsWithId(3).build();
+				const studentId1 = new ObjectId().toHexString();
+				const studentId2 = new ObjectId().toHexString();
+				const studentId3 = new ObjectId().toHexString();
+				const studentIds = [studentId1, studentId2, studentId3];
+
+				const courseGroup = courseGroupFactory.build();
 				const lesson = lessonFactory.buildWithId({ course: courseGroup });
 
-				return { lesson };
+				const spy = jest.spyOn(courseGroup, 'getStudentIds').mockReturnValueOnce(studentIds);
+
+				return { lesson, spy, studentIds };
 			};
 
+			it('should call getStudentIds in course', () => {
+				const { lesson, spy } = setup();
+
+				lesson.getStudentIds();
+
+				expect(spy).toBeCalled();
+			});
+
 			it('should return the userIds of the students', () => {
-				const { lesson } = setup();
+				const { lesson, studentIds } = setup();
 
 				const result = lesson.getStudentIds();
 
 				expect(result.length).toEqual(3);
+				expect(result).toContain(studentIds[0]);
+				expect(result).toContain(studentIds[1]);
+				expect(result).toContain(studentIds[2]);
 			});
 		});
 	});

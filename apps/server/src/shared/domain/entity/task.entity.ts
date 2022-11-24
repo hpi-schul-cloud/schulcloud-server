@@ -114,6 +114,10 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	private getFinishedUserIds(): EntityId[] {
+		if (!this.finished) {
+			throw new InternalServerErrorException('Task.finished is undefined. The task need to be populated.');
+		}
+
 		const finishedObjectIds = this.finished.getIdentifiers('_id');
 		const finishedIds = finishedObjectIds.map((id): string => id.toString());
 
@@ -174,9 +178,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	private getSubmittedSubmissions(): Submission[] {
 		const submissions = this.getSubmissionItems();
-		const gradedSubmissions = submissions.filter((submission) => submission.isSubmitted());
+		const submittedSubmissions = submissions.filter((submission) => submission.isSubmitted());
 
-		return gradedSubmissions;
+		return submittedSubmissions;
 	}
 
 	public areSubmissionsPublic(): boolean {
@@ -201,37 +205,39 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	private isGradedForUser(user: User): boolean {
 		const submissions = this.getSubmissionItems();
-		const graded = submissions.some((submission) => submission.isGradedForUser(user));
+		const isGraded = submissions.some((submission) => submission.isGradedForUser(user));
 
-		return graded;
+		return isGraded;
 	}
 
-	private getUniqueSubmitterIds(): EntityId[] {
-		let submittedUserIds: EntityId[] = [];
+	private numberOfSubmitters(): number {
+		let taskSubmitterIds: EntityId[] = [];
 		const submittedSubmissions = this.getSubmittedSubmissions();
 
 		submittedSubmissions.forEach((submission) => {
-			const memberUserIds = submission.getSubmitterIds();
-			submittedUserIds = [...submittedUserIds, ...memberUserIds];
+			const submitterIds = submission.getSubmitterIds();
+			taskSubmitterIds = [...taskSubmitterIds, ...submitterIds];
 		});
 
-		const uniqueSubmittedUserIds = [...new Set(submittedUserIds)];
+		const uniqueIds = [...new Set(taskSubmitterIds)];
+		const numberOfSubmitters = uniqueIds.length;
 
-		return uniqueSubmittedUserIds;
+		return numberOfSubmitters;
 	}
 
-	private getUniqueSubmitterWithGrade(): EntityId[] {
-		let gradedUserIds: EntityId[] = [];
+	private numberOfSubmittersWithGrade(): number {
+		let taskSubmittersWithGradeIds: EntityId[] = [];
 		const gradedSubmissions = this.getGradedSubmissions();
 
 		gradedSubmissions.forEach((submission) => {
-			const memberUserIds = submission.getSubmitterIds();
-			gradedUserIds = [...gradedUserIds, ...memberUserIds];
+			const submitterIds = submission.getSubmitterIds();
+			taskSubmittersWithGradeIds = [...taskSubmittersWithGradeIds, ...submitterIds];
 		});
 
-		const uniqueGradedUserIds = [...new Set(gradedUserIds)];
+		const uniqueIds = [...new Set(taskSubmittersWithGradeIds)];
+		const numberOfSubmittersWithGrade = uniqueIds.length;
 
-		return uniqueGradedUserIds;
+		return numberOfSubmittersWithGrade;
 	}
 
 	private isUserSubstitutionTeacherInCourse(user: User): boolean {
@@ -241,15 +247,15 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	public createTeacherStatusForUser(user: User): ITaskStatus {
-		const numberOfSubmitter = this.getUniqueSubmitterIds().length;
-		const numberOfSubmittersWithGrade = this.getUniqueSubmitterWithGrade().length;
+		const numberOfSubmitters = this.numberOfSubmitters();
+		const numberOfSubmittersWithGrade = this.numberOfSubmittersWithGrade();
 		const maxSubmissions = this.getMaxSubmissions();
 		const isDraft = this.isDraft();
 		const isFinished = this.isFinishedForUser(user);
 		const isSubstitutionTeacher = this.isUserSubstitutionTeacherInCourse(user);
 
 		const status = {
-			submitted: numberOfSubmitter,
+			submitted: numberOfSubmitters,
 			graded: numberOfSubmittersWithGrade,
 			maxSubmissions,
 			isDraft,

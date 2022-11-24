@@ -4,7 +4,9 @@ import { IEntityWithSchool } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
+import type { ILessonParent } from './lesson.entity';
 import { School } from './school.entity';
+import type { ITaskParent } from './task.entity';
 import type { User } from './user.entity';
 
 export interface ICourseGroupProperties {
@@ -15,7 +17,7 @@ export interface ICourseGroupProperties {
 
 @Entity({ tableName: 'coursegroups' })
 @Index({ properties: ['school', 'course'] })
-export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWithSchool {
+export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWithSchool, ITaskParent, ILessonParent {
 	@Property()
 	name: string;
 

@@ -105,19 +105,19 @@ export class Submission extends BaseEntityWithTimestamps {
 		return gradeFilesIds;
 	}
 
-	private gradeExists(): boolean {
+	private hasGrade(): boolean {
 		const gradeExists = typeof this.grade === 'number' && this.grade >= 0;
 
 		return gradeExists;
 	}
 
-	private gradeCommentExists(): boolean {
+	private hasGradeComment(): boolean {
 		const gradeCommentExists = typeof this.gradeComment === 'string' && this.gradeComment.length > 0;
 
 		return gradeCommentExists;
 	}
 
-	private gradeFilesExists(): boolean {
+	private hasGradeFiles(): boolean {
 		const gradedFileIds = this.getGradeFileIds();
 		const gradeFilesExists = gradedFileIds.length > 0;
 
@@ -160,7 +160,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	}
 
 	public isGraded(): boolean {
-		const isGraded = this.gradeExists() || this.gradeCommentExists() || this.gradeFilesExists();
+		const isGraded = this.hasGrade() || this.hasGradeComment() || this.hasGradeFiles();
 
 		return isGraded;
 	}

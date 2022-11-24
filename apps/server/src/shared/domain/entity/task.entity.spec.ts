@@ -128,7 +128,7 @@ describe('Task Entity', () => {
 			});
 		});
 
-		describe('when task avaible is not defined', () => {
+		describe('when task available date is not defined', () => {
 			const setup = () => {
 				const task = taskFactory.buildWithId({ availableDate: undefined });
 
@@ -306,21 +306,20 @@ describe('Task Entity', () => {
 
 		describe('when parent is a lesson in a course', () => {
 			const setup = () => {
-				const maxSubmission = 3;
 				const user = userFactory.buildWithId();
-				const course = courseFactory.studentsWithId(maxSubmission).buildWithId();
+				const course = courseFactory.studentsWithId(3).buildWithId();
 				const lesson = lessonFactory.buildWithId({ course });
 				const task = taskFactory.buildWithId({ creator: user, lesson });
 
-				return { task, user, maxSubmission };
+				return { task, user };
 			};
 
 			it('should be create correct status with maxSubmissions of course students', () => {
-				const { task, user, maxSubmission } = setup();
+				const { task, user } = setup();
 
 				const status = task.createTeacherStatusForUser(user);
 
-				expect(status.maxSubmissions).toEqual(maxSubmission);
+				expect(status.maxSubmissions).toEqual(3);
 			});
 		});
 

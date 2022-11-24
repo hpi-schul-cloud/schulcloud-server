@@ -1,4 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import {
 	userFactory,
@@ -25,7 +26,7 @@ describe('Submission entity', () => {
 	});
 
 	describe('constructor is called', () => {
-		describe('when files are is passed', () => {
+		describe('when files are passed', () => {
 			it('create with studentFiles should be possible', () => {
 				const task = taskFactory.buildWithId();
 				const file = fileFactory.buildWithId();
@@ -260,19 +261,18 @@ describe('Submission entity', () => {
 
 		describe('when coursegroup is added', () => {
 			const setup = () => {
-				const student1 = userFactory.buildWithId();
-				const student2 = userFactory.buildWithId();
-				const student3 = userFactory.buildWithId();
-				const students = [student1, student2, student3];
-				const courseGroupStudentIds = [student1.id, student2.id, student3.id];
+				const studentId1 = new ObjectId().toHexString();
+				const studentId2 = new ObjectId().toHexString();
+				const studentId3 = new ObjectId().toHexString();
+				const studentIds = [studentId1, studentId2, studentId3];
 
-				const courseGroup = courseGroupFactory.build({ students });
+				const courseGroup = courseGroupFactory.build();
 				const submission = submissionFactory.studentWithId().buildWithId({ courseGroup });
 				const creatorId = submission.student.id;
 
-				const spy = jest.spyOn(courseGroup, 'getStudentIds');
+				const spy = jest.spyOn(courseGroup, 'getStudentIds').mockReturnValueOnce(studentIds);
 
-				return { submission, courseGroupStudentIds, creatorId, spy };
+				return { submission, studentIds, creatorId, spy };
 			};
 
 			it('should call getStudentIds in coursegroup', () => {
@@ -284,15 +284,15 @@ describe('Submission entity', () => {
 			});
 
 			it('should be return the userId of the creator and of the students of the coursegroup.', () => {
-				const { submission, creatorId, courseGroupStudentIds } = setup();
+				const { submission, creatorId, studentIds } = setup();
 
 				const result = submission.getSubmitterIds();
 
 				expect(result.length).toEqual(4);
-				expect(result.includes(creatorId)).toBe(true);
-				expect(result.includes(courseGroupStudentIds[0])).toBe(true);
-				expect(result.includes(courseGroupStudentIds[1])).toBe(true);
-				expect(result.includes(courseGroupStudentIds[2])).toBe(true);
+				expect(result).toContain(creatorId);
+				expect(result).toContain(studentIds[0]);
+				expect(result).toContain(studentIds[1]);
+				expect(result).toContain(studentIds[2]);
 			});
 		});
 
@@ -315,15 +315,23 @@ describe('Submission entity', () => {
 	});
 
 	describe('isUserSubmitter is called', () => {
-		describe('when user is a member', () => {
+		describe('when user is a submitter', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const submission = submissionFactory.buildWithId({ student: user });
 
-				jest.spyOn(submission, 'getSubmitterIds').mockImplementationOnce(() => [user.id]);
+				const spy = jest.spyOn(submission, 'getSubmitterIds').mockImplementationOnce(() => [user.id]);
 
-				return { submission, user };
+				return { submission, user, spy };
 			};
+
+			it('should call getSubmitterIds in course', () => {
+				const { submission, spy } = setup();
+
+				submission.getSubmitterIds();
+
+				expect(spy).toBeCalled();
+			});
 
 			it('should return true', () => {
 				const { submission, user } = setup();
@@ -339,10 +347,18 @@ describe('Submission entity', () => {
 				const user = userFactory.buildWithId();
 				const submission = submissionFactory.buildWithId({ student: user });
 
-				jest.spyOn(submission, 'getSubmitterIds').mockImplementationOnce(() => []);
+				const spy = jest.spyOn(submission, 'getSubmitterIds').mockImplementationOnce(() => []);
 
-				return { submission, user };
+				return { submission, user, spy };
 			};
+
+			it('should call getSubmitterIds in course', () => {
+				const { submission, spy } = setup();
+
+				submission.getSubmitterIds();
+
+				expect(spy).toBeCalled();
+			});
 
 			it('should return false', () => {
 				const { submission, user } = setup();

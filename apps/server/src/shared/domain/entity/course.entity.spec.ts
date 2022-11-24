@@ -194,9 +194,9 @@ describe('CourseEntity', () => {
 				const result = course.getStudentIds();
 
 				expect(result.length).toEqual(3);
-				expect(result.includes(studentIds[0])).toBe(true);
-				expect(result.includes(studentIds[1])).toBe(true);
-				expect(result.includes(studentIds[2])).toBe(true);
+				expect(result).toContain(studentIds[0]);
+				expect(result).toContain(studentIds[1]);
+				expect(result).toContain(studentIds[2]);
 			});
 		});
 
