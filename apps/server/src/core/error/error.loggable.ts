@@ -1,7 +1,7 @@
 import { HttpException } from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
-import { FeathersError } from '../../error/interface';
-import { Loggable } from '../interfaces/loggable';
+import { Loggable } from '../logger/interfaces/loggable';
+import { FeathersError } from './interface';
 
 // this file could also be placed in the error module
 export class ErrorLoggable implements Loggable {

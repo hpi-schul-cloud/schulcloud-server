@@ -2,7 +2,7 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import util from 'util';
 import { Logger as WinstonLogger } from 'winston';
-import { RequestLoggingBody } from './interfaces';
+import { Loggable } from './interfaces/loggable';
 import { ILogger } from './interfaces/logger.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
@@ -22,32 +22,28 @@ export class Logger implements ILogger {
 
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
-	log(message: unknown, context?: string | undefined): void {
-		this.logger.log('info', this.createMessage(message, context));
+	log(loggable: Loggable): void {
+		this.logger.log('info', this.createMessage(loggable));
 	}
 
-	warn(message: unknown, context?: string | undefined): void {
-		this.logger.warning(this.createMessage(message, context));
+	warn(loggable: Loggable): void {
+		this.logger.warn(this.createMessage(loggable));
 	}
 
-	debug(message: unknown, context?: string | undefined): void {
-		this.logger.debug(this.createMessage(message, context));
+	debug(loggable: Loggable): void {
+		this.logger.debug(this.createMessage(loggable));
 	}
 
-	verbose(message: unknown, context?: string | undefined): void {
-		this.logger.verbose(this.createMessage(message, context));
+	verbose(loggable: Loggable): void {
+		this.logger.verbose(this.createMessage(loggable));
 	}
 
-	http(message: RequestLoggingBody, context?: string | undefined): void {
-		this.logger.notice(this.createMessage(message, context));
+	http(loggable: Loggable): void {
+		this.logger.notice(this.createMessage(loggable));
 	}
 
-	error(message: unknown, trace?: unknown, context?: string | undefined): void {
-		const result = {
-			message,
-			trace,
-		};
-		this.logger.error(this.createMessage(result, context));
+	error(loggable: Loggable): void {
+		this.logger.error(this.createMessage(loggable));
 	}
 
 	setContext(name: string) {
