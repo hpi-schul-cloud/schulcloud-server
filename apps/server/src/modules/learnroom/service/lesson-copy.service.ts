@@ -114,9 +114,14 @@ export class LessonCopyService {
 	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
 		const copiedLesson = lessonStatus.copyEntity as Lesson;
 
+		if (copiedLesson?.contents === undefined) {
+			return lessonStatus;
+		}
+
 		copiedLesson.contents = copiedLesson.contents.map((value: IComponentProperties) =>
 			this.updateCopiedEmbeddedTaskId(value, copyDict)
 		);
+
 		lessonStatus.copyEntity = copiedLesson;
 
 		return lessonStatus;

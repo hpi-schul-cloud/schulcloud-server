@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BaseEntity, Board, CopyElementType, CopyHelperService, CopyStatusEnum, EntityId } from '@shared/domain';
+import { Board, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import {
 	boardFactory,
@@ -56,7 +56,6 @@ describe('board copy service', () => {
 			],
 		}).compile();
 
-		boardRepo = module.get(BoardRepo);
 		copyService = module.get(BoardCopyService);
 		taskCopyService = module.get(TaskCopyService);
 		lessonCopyService = module.get(LessonCopyService);
@@ -169,21 +168,20 @@ describe('board copy service', () => {
 
 		describe('when board contains a lesson', () => {
 			const setup = () => {
-				const originalLesson = lessonFactory.build();
-				const lessonElement = lessonBoardElementFactory.build({ target: originalLesson });
-				const destinationCourse = courseFactory.build();
-				const originalBoard = boardFactory.build({ references: [lessonElement], course: destinationCourse });
-				const user = userFactory.build();
-				const lessonCopy = lessonFactory.build({ name: originalLesson.name });
+				const originalLesson = lessonFactory.buildWithId();
+				const lessonElement = lessonBoardElementFactory.buildWithId({ target: originalLesson });
+				const destinationCourse = courseFactory.buildWithId();
+				const originalBoard = boardFactory.buildWithId({ references: [lessonElement], course: destinationCourse });
+				const user = userFactory.buildWithId();
+				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
 
-				lessonCopyService.copyLesson.mockReturnValue(
-					Promise.resolve({
-						title: originalLesson.name,
-						type: CopyElementType.LESSON,
-						status: CopyStatusEnum.SUCCESS,
-						copyEntity: lessonCopy,
-					})
-				);
+				lessonCopyService.copyLesson.mockResolvedValue({
+					title: originalLesson.name,
+					type: CopyElementType.LESSON,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: lessonCopy,
+				});
+				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
 
 				return { destinationCourse, originalBoard, user, originalLesson };
 			};
@@ -195,24 +193,21 @@ describe('board copy service', () => {
 				expect(lessonCopyService.copyLesson).toHaveBeenCalledWith({ originalLesson, destinationCourse, user });
 			});
 
-			it('should add copy of lesson to board copy', async () => {
+			it('should add lessonCopy to board copy', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
-
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
 				const board = status.copyEntity as Board;
+
 				expect(board.getElements().length).toEqual(1);
 			});
 
-			// it('should add status of copying lesson to board copy status', async () => {
-			// 	const { destinationCourse, originalBoard, user, originalLesson } = setup();
-			// 	const map: Map<EntityId, BaseEntity> = new Map();
-			// 	copyHelperService.buildCopyEntityDict = jest.fn();
-			// 	const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-			// 	const lessonStatus = status.elements?.find(
-			// 		(el) => el.type === CopyElementType.LESSON && el.title === originalLesson.name
-			// 	);
-			// 	expect(lessonStatus).toBeDefined();
-			// });
+			it('should add status of lessonCopy to board copy status', async () => {
+				const { destinationCourse, originalBoard, user } = setup();
+				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const lessonStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON);
+
+				expect(lessonStatus).toBeDefined();
+			});
 		});
 
 		describe('derive status from elements', () => {
@@ -237,7 +232,6 @@ describe('board copy service', () => {
 
 			it('should call deriveStatusFromElements', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
-
 				await copyService.copyBoard({ originalBoard, user, destinationCourse });
 
 				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
