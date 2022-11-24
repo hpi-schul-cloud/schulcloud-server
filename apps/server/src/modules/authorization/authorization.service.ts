@@ -1,13 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
-	Actions,
 	BasePermissionManager,
 	CourseGroupRule,
 	CourseRule,
 	EntityId,
 	LessonRule,
-	Permission,
-	PermissionContextBuilder,
 	SchoolRule,
 	SubmissionRule,
 	TaskRule,
@@ -59,32 +56,15 @@ export class AuthorizationService extends BasePermissionManager {
 	): Promise<boolean> {
 		try {
 			const [user, entity] = await Promise.all([
-				this.loader.loadEntity(AllowedAuthorizationEntityType.User, userId),
+				this.getUserWithPermissions(userId),
 				this.loader.loadEntity(entityName, entityId),
 			]);
-			const permission = this.hasPermission(user as User, entity, context);
+			const permission = this.hasPermission(user, entity, context);
 
 			return permission;
 		} catch (err) {
 			throw new ForbiddenException(err);
 		}
-	}
-
-	hasPermissionsByReferences(
-		userId: EntityId,
-		entityName: AllowedAuthorizationEntityType,
-		entityId: EntityId,
-		permissions: Permission[],
-		action: Actions
-	): Map<Permission, Promise<boolean>> {
-		const returnMap: Map<Permission, Promise<boolean>> = new Map();
-		permissions.forEach((perm) => {
-			const context =
-				action === Actions.read ? PermissionContextBuilder.read([perm]) : PermissionContextBuilder.write([perm]);
-			const ret = this.hasPermissionByReferences(userId, entityName, entityId, context);
-			returnMap.set(perm, ret);
-		});
-		return returnMap;
 	}
 
 	async checkPermissionByReferences(
@@ -99,15 +79,8 @@ export class AuthorizationService extends BasePermissionManager {
 	}
 
 	async getUserWithPermissions(userId: EntityId): Promise<User> {
-		try {
-			const userWithPermissions: User = (await this.loader.loadEntity(
-				AllowedAuthorizationEntityType.User,
-				userId
-			)) as User;
+		const userWithPermissions = await this.loader.getUserWithPermissions(userId);
 
-			return userWithPermissions;
-		} catch (err) {
-			throw new ForbiddenException(err);
-		}
+		return userWithPermissions;
 	}
 }

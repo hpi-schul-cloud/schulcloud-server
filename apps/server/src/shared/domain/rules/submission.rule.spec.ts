@@ -254,7 +254,7 @@ describe('SubmissionRule', () => {
 						const { user, submission, permission } = setup();
 
 						const result = submissionRule.hasPermission(user, submission, {
-							action: Actions.write,
+							action: Actions.read,
 							requiredPermissions: [permission],
 						});
 

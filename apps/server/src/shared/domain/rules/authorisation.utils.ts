@@ -19,7 +19,7 @@ export class AuthorisationUtils {
 		return rolesAndPermissions;
 	}
 
-	public resolvePermissionsByRoles(inputRoles: Role[]): string[] {
+	private resolvePermissionsByRoles(inputRoles: Role[]): string[] {
 		let permissions: string[] = [];
 
 		for (let i = 0; i < inputRoles.length; i += 1) {
@@ -46,6 +46,15 @@ export class AuthorisationUtils {
 			return true;
 		}
 		const usersPermissions = this.resolvePermissions(user);
+		return this.hasEveryPermission(requiredPermissions, usersPermissions);
+	}
+
+	hasAllPermissionsByRole(role: Role, requiredPermissions: string[]): boolean {
+		const usersPermissions = this.resolvePermissionsByRoles([role]);
+		return this.hasEveryPermission(requiredPermissions, usersPermissions);
+	}
+
+	private hasEveryPermission(requiredPermissions: string[], usersPermissions: string[]) {
 		const hasPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));
 		return hasPermissions;
 	}
