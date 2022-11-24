@@ -10,13 +10,13 @@ import { BaseDORepo, EntityProperties } from '@shared/repo';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityName } from '@mikro-orm/core';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Logger } from '@src/core/logger';
 import { QueryOrderMap } from '@mikro-orm/core/enums';
-import { ExternalToolScope } from '@shared/repo/externaltool/external-tool.scope';
-import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-tool-sorting.mapper';
 import { Page } from '@shared/domain/interface/page';
+import { ExternalToolSortingMapper } from './external-tool-sorting.mapper';
+import { ExternalToolRepoMapper } from './external-tool.repo.mapper';
+import { ExternalToolScope } from './external-tool.scope';
 
 @Injectable()
 export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, IExternalToolProperties> {
@@ -90,7 +90,7 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 			orderBy: order,
 		});
 
-		const entityDos = entities.map((entity) => this.mapEntityToDO(entity));
+		const entityDos: ExternalToolDO[] = entities.map((entity) => this.mapEntityToDO(entity));
 		const page: Page<ExternalToolDO> = new Page<ExternalToolDO>(entityDos, total);
 		return page;
 	}

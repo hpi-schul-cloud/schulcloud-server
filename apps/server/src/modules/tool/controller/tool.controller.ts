@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ICurrentUser, IFindOptions } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool/external-tool.do';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -10,11 +9,9 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ExternalToolSearchParams } from '@src/modules/tool/controller/dto/request/external-tool-search.params';
 import { PaginationParams } from '@shared/controller';
-import { SortExternalToolParams } from '@src/modules/tool/controller/dto/request/external-tool-sort.params';
-import { ExternalToolSearchListResponse } from '@src/modules/tool/controller/dto/response/external-tool-search-list.response';
 import { Page } from '@shared/domain/interface/page';
+import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
@@ -26,6 +23,9 @@ import { ExternalToolResponseMapper } from '../mapper/external-tool-response.map
 import { ExternalToolResponse } from './dto/response/external-tool.response';
 import { ExternalToolParams } from './dto/request/external-tool-create.params';
 import { ExternalToolUc } from '../uc/external-tool.uc';
+import { ExternalToolSearchListResponse } from './dto/response/external-tool-search-list.response';
+import { ExternalToolSearchParams } from './dto/request/external-tool-search.params';
+import { SortExternalToolParams } from './dto/request/external-tool-sort.params';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

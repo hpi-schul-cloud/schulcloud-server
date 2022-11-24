@@ -60,7 +60,7 @@ export class ExternalToolUc {
 
 		const tools: Page<ExternalToolDO> = await this.externalToolService.findExternalTool(query, options);
 		tools.data = await Promise.all(
-			tools.data.map(async (tool: ExternalToolDO) => {
+			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO> => {
 				if (tool.config instanceof Oauth2ToolConfigDO) {
 					const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
 						tool.config.clientId
