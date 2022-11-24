@@ -1,5 +1,6 @@
 import { Entity, Enum, Property } from '@mikro-orm/core';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface ISystemProperties {
@@ -64,6 +65,74 @@ export class OauthConfig {
 	@Property()
 	jwksEndpoint: string;
 }
+
+export class LdapConfig {
+	constructor(ldapConfig: LdapConfig) {
+		this.url = ldapConfig.url;
+	}
+
+	@Property()
+	active?: boolean;
+
+	@Property()
+	federalState?: EntityId;
+
+	@Property()
+	lastSyncAttempt?: Date;
+
+	@Property()
+	lastSuccessfulFullSync?: Date;
+
+	@Property()
+	lastSuccessfulPartialSync?: Date;
+
+	@Property()
+	lastModifyTimestamp?: string;
+
+	@Property()
+	url: string;
+
+	@Property()
+	rootPath?: string;
+
+	@Property()
+	searchUser?: string;
+
+	@Property()
+	searchUserPassword?: string;
+
+	@Property()
+	provider?: string;
+
+	@Property()
+	providerOptions?: {
+		schoolName?: string;
+		userPathAdditions?: string;
+		classPathAdditions?: string;
+		roleType?: string;
+		userAttributeNameMapping?: {
+			givenName?: string;
+			sn?: string;
+			dn?: string;
+			uuid?: string;
+			uid?: string;
+			mail?: string;
+			role?: string;
+		};
+		roleAttributeNameMapping?: {
+			roleStudent?: string;
+			roleTeacher?: string;
+			roleAdmin?: string;
+			roleNoSc?: string;
+		};
+		classAttributeNameMapping?: {
+			description?: string;
+			dn?: string;
+			uniqueMember?: string;
+		};
+	};
+}
+
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {
 	constructor(props: ISystemProperties) {
@@ -100,7 +169,7 @@ export class System extends BaseEntityWithTimestamps {
 	config?: Record<string, unknown>;
 
 	@Property({ nullable: true })
-	ldapConfig?: Record<string, unknown>;
+	ldapConfig?: LdapConfig;
 
 	@Property({ nullable: true })
 	provisioningUrl?: string;

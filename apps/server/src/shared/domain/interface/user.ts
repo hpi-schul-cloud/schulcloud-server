@@ -34,7 +34,9 @@ export interface ICurrentUser {
 	/** account id as string */
 	accountId: string;
 
-	user?: IResolvedUser;
+	systemId?: string;
+
+	user: IResolvedUser;
 }
 
 export type IPermissionsAndRoles = {

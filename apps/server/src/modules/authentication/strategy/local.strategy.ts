@@ -4,7 +4,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
 import { UserRepo } from '@shared/repo';
 import { ICurrentUser, Role } from '@shared/domain';
-import { AuthenticationService } from '../authentication.service';
+import { CurrentUserMapper } from '@shared/domain/mapper/current-user.mapper';
+import { AuthenticationService } from '../services/authentication.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -14,7 +15,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
 	async validate(username: string, password: string): Promise<ICurrentUser> {
 		const account = await this.authenticationService.loadAccount(username);
-		if (!account || !account.password) {
+		if (!account.password) {
 			throw new UnauthorizedException();
 		}
 		if (!(await bcrypt.compare(password, account.password))) {
@@ -24,11 +25,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 			throw new Error(`login failing, because account ${account.id} has no userId`);
 		}
 		const user = await this.userRepo.findById(account.userId);
-		return {
-			accountId: account.id,
-			roles: user.roles.getItems().map((role: Role) => role.id),
-			schoolId: user.school.id,
-			userId: user.id,
-		};
+		return CurrentUserMapper.userToICurrentUser(account.id, user);
 	}
 }
