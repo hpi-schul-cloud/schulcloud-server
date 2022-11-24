@@ -1,4 +1,4 @@
-import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { Loggable, LogMessage } from '@src/core/logger/interfaces/loggable';
 import { SyncFileItem } from '../types';
 
 export class FileSyncSuccessLoggable implements Loggable {
@@ -11,7 +11,7 @@ export class FileSyncSuccessLoggable implements Loggable {
 		this.currentCount = currentCount;
 	}
 
-	getLogMessage(): unknown {
+	getLogMessage(): LogMessage {
 		return {
 			message: `Successfully synced a file`,
 			data: {

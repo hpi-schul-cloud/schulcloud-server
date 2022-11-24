@@ -1,6 +1,6 @@
 import { HttpException } from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
-import { Loggable } from '../logger/interfaces/loggable';
+import { ErrorLogMessage, Loggable, ValidationErrorLogMessage } from '../logger/interfaces/loggable';
 import { FeathersError } from './interface';
 
 // this file could also be placed in the error module
@@ -30,13 +30,13 @@ export class ErrorLoggable implements Loggable {
 			(e) => `Wrong property ${e.property} got ${e.value} : ${JSON.stringify(e.constraints)}`
 		);
 		return {
-			message: errorMsg,
+			validationErrors: errorMsg,
 			stack: error.stack,
 			type: 'API Validation Error',
 		};
 	};
 
-	getLogMessage(): unknown {
+	getLogMessage(): ErrorLogMessage | ValidationErrorLogMessage {
 		// what about unkown errors?
 		if (this.isFeathersError(this.error)) {
 			return {

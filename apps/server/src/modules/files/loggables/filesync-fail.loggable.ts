@@ -1,4 +1,4 @@
-import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { Loggable, LogMessage } from '@src/core/logger/interfaces/loggable';
 import { SyncFileItem } from '../types';
 
 export class FileSyncFailLoggable implements Loggable {
@@ -11,7 +11,7 @@ export class FileSyncFailLoggable implements Loggable {
 		this.stack = stack;
 	}
 
-	getLogMessage(): unknown {
+	getLogMessage(): LogMessage {
 		return {
 			message: 'Error syncing file',
 			data: {
