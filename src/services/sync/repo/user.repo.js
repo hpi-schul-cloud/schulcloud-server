@@ -83,6 +83,10 @@ const updateUser = async (userId, changedUser) => {
 	return user;
 };
 
+const deleteUser = async (userId) => {
+	await userModel.remove({ _id: userId }).lean().exec();
+};
+
 const findImportUsersBySchoolAndName = async (schoolId, firstName, lastName) => {
 	const result = await importUserModel.find({ schoolId, firstName, lastName }).lean().exec();
 	return result;
@@ -128,6 +132,7 @@ const UserRepo = {
 	private: { createUserInternal },
 	createUser,
 	updateUser,
+	deleteUser,
 	findUserBySchoolAndName,
 	findByLdapIdAndSchool,
 	findByLdapDnsAndSchool,
