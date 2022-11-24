@@ -61,8 +61,8 @@ export class BoardCopyService {
 					destinationCourse,
 				});
 				elements.push(status);
-				const lessonBardElement = BoardElement.FromLesson(status.copyEntity as Lesson);
-				references.push(lessonBardElement);
+				const lessonBoardElement = BoardElement.FromLesson(status.copyEntity as Lesson);
+				references.push(lessonBoardElement);
 			}
 		}
 
