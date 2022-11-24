@@ -210,7 +210,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return isGraded;
 	}
 
-	private calculateNumberOfStudents(submissions: Submission[]): number {
+	private calculateNumberOfSubmitters(submissions: Submission[]): number {
 		let taskSubmitterIds: EntityId[] = [];
 
 		submissions.forEach((submission) => {
@@ -234,8 +234,8 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		const submittedSubmissions = this.getSubmittedSubmissions();
 		const gradedSubmissions = this.getGradedSubmissions();
 
-		const numberOfSubmitters = this.calculateNumberOfStudents(submittedSubmissions);
-		const numberOfSubmittersWithGrade = this.calculateNumberOfStudents(gradedSubmissions);
+		const numberOfSubmitters = this.calculateNumberOfSubmitters(submittedSubmissions);
+		const numberOfSubmittersWithGrade = this.calculateNumberOfSubmitters(gradedSubmissions);
 		const maxSubmissions = this.getMaxSubmissions();
 		const isDraft = this.isDraft();
 		const isFinished = this.isFinishedForUser(user);
