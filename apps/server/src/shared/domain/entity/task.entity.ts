@@ -158,7 +158,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		if (this.isDraft()) {
 			return false;
 		}
-		if (this.availableDate && this.availableDate > new Date(Date.now())) {
+		if (this.availableDate && this.availableDate > new Date()) {
 			return false;
 		}
 
@@ -169,7 +169,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		if (this.isDraft()) {
 			return false;
 		}
-		if (this.availableDate && this.availableDate > new Date(Date.now())) {
+		if (this.availableDate && this.availableDate > new Date()) {
 			return true;
 		}
 
@@ -311,7 +311,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	public publish(): void {
 		this.private = false;
-		this.availableDate = new Date(Date.now());
+		this.availableDate = new Date();
 	}
 
 	public unpublish(): void {
