@@ -60,6 +60,8 @@ describe('board copy service', () => {
 		taskCopyService = module.get(TaskCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
+		boardRepo = module.get(BoardRepo);
+		boardRepo.save = jest.fn();
 	});
 
 	beforeEach(() => {
