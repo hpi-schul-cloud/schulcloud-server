@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, Permission, PermissionContextBuilder, Submission, User } from '@shared/domain';
+import { EntityId, Permission, PermissionContextBuilder, Submission, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
 import { SubmissionService } from '../service/submission.service';
 
@@ -22,12 +22,12 @@ export class SubmissionUC {
 		return permittedSubmissions;
 	}
 
-	async findAllByTask(userId: EntityId, taskId: EntityId): Promise<Counted<Submission[]>> {
+	async findAllByTask(userId: EntityId, taskId: EntityId): Promise<Submission[]> {
 		const [submissions] = await this.submissionService.findAllByTask(taskId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		const permittedSubmissions = this.filterSubmissionsByPermission(submissions, user);
 
-		return [permittedSubmissions, permittedSubmissions.length];
+		return permittedSubmissions;
 	}
 }

@@ -104,12 +104,11 @@ describe('Submission Controller (e2e)', () => {
 
 			const { result: statuses } = await api.findStatusesByTask(task.id);
 
-			const expectedSubmissionStatus = {
+			const expectedSubmissionStatuses = {
 				data: [{ id: submission.id, creatorId: submission.student.id, grade: submission.grade }],
-				total: 1,
 			};
 
-			expect(statuses).toEqual(expectedSubmissionStatus);
+			expect(statuses).toEqual(expectedSubmissionStatuses);
 		});
 	});
 

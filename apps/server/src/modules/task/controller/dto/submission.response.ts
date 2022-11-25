@@ -1,9 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
 
-/**
- * DTO for returning a submission document via api.
- */
 export class SubmissionStatusResponse {
 	constructor({ id, creatorId, grade }: SubmissionStatusResponse) {
 		this.id = id;
@@ -21,9 +17,8 @@ export class SubmissionStatusResponse {
 	grade?: number;
 }
 
-export class SubmissionStatusListResponse extends PaginationResponse<SubmissionStatusResponse[]> {
-	constructor(data: SubmissionStatusResponse[], total: number, skip?: number, limit?: number) {
-		super(total, skip, limit);
+export class SubmissionStatusListResponse {
+	constructor(data: SubmissionStatusResponse[]) {
 		this.data = data;
 	}
 
