@@ -7,7 +7,6 @@ import { AccountRepo } from '@shared/repo';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '../../server/server.config';
-import { Logger } from '../../../core/logger';
 import { AccountEntityToDtoMapper } from '../mapper';
 import { AccountDto, AccountSaveDto } from './dto';
 
@@ -16,8 +15,7 @@ export class AccountService {
 	constructor(
 		private readonly accountRepo: AccountRepo,
 		private readonly identityManager: IdentityManagementService,
-		private readonly configService: ConfigService<IServerConfig, true>,
-		private readonly logger: Logger
+		private readonly configService: ConfigService<IServerConfig, true>
 	) {}
 
 	private get accountStoreEnabled(): boolean {
@@ -99,7 +97,7 @@ export class AccountService {
 			if (this.accountStoreEnabled) {
 				await this.identityManager.createAccount({
 					id: account.id,
-					userName: account.username,
+					username: account.username,
 				});
 			}
 		}
@@ -140,7 +138,7 @@ export class AccountService {
 	async delete(id: EntityId): Promise<void> {
 		const account = await this.accountRepo.findById(id);
 		if (this.accountStoreEnabled) {
-			await this.identityManager.deleteAccountByUsername(account.username);
+			await this.identityManager.deleteAccountById(account.id);
 		}
 		return this.accountRepo.deleteById(id);
 	}
@@ -148,7 +146,7 @@ export class AccountService {
 	async deleteByUserId(userId: EntityId): Promise<void> {
 		const account = await this.findByUserId(userId);
 		if (this.accountStoreEnabled && account) {
-			await this.identityManager.deleteAccountByUsername(account.username);
+			await this.identityManager.deleteAccountById(account.id);
 		}
 		return this.accountRepo.deleteByUserId(userId);
 	}

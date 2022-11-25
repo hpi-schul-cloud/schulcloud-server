@@ -258,7 +258,7 @@ describe('KeycloakIdentityManagement', () => {
 			jest.spyOn(kcAdminClient.users, 'find').mockResolvedValue([mockedAccount1]);
 			jest.spyOn(kcAdminClient.users, 'del').mockResolvedValue();
 
-			const ret = await idm.deleteAccountByUsername(mockedAccount1.username);
+			const ret = await idm.deleteAccountById(mockedAccount1.id);
 
 			expect(ret).toBe(mockedAccount1.id);
 		});

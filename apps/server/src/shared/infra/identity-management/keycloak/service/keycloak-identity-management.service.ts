@@ -16,7 +16,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		const id = await (
 			await this.kcAdminClient.callKcAdminClient()
 		).users.create({
-			username: account.userName,
+			username: account.username,
 			email: account.email,
 			firstName: account.firstName,
 			lastName: account.lastName,
@@ -88,7 +88,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	private extractAccount(user: UserRepresentation): IAccount {
 		return {
 			id: user.id,
-			userName: user.username,
+			username: user.username,
 			email: user.email,
 			firstName: user.firstName,
 			lastName: user.lastName,

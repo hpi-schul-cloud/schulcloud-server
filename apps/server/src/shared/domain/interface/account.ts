@@ -1,6 +1,6 @@
 export interface IAccount {
 	id?: string;
-	userName?: string;
+	username?: string;
 	email?: string;
 	firstName?: string;
 	lastName?: string;
