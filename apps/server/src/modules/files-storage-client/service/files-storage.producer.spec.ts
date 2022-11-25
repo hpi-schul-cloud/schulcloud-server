@@ -22,13 +22,6 @@ describe('FilesStorageProducer', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
-	});
-
-	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageProducer,
@@ -53,7 +46,8 @@ describe('FilesStorageProducer', () => {
 		configService.get.mockReturnValue(timeout);
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
+		await orm.close();
 		await module.close();
 	});
 

@@ -7,6 +7,7 @@ import { FileRecord } from '@src/modules/files-storage/entity/filerecord.entity'
 import { AntivirusService } from './antivirus.service';
 
 describe('AntivirusService', () => {
+	let module: TestingModule;
 	let service: AntivirusService;
 	let amqpConnection: DeepMocked<AmqpConnection>;
 
@@ -17,8 +18,8 @@ describe('AntivirusService', () => {
 		routingKey: 'routingKey',
 	};
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [
 				AntivirusService,
 				{ provide: AmqpConnection, useValue: createMock<AmqpConnection>() },
@@ -28,6 +29,10 @@ describe('AntivirusService', () => {
 
 		service = module.get(AntivirusService);
 		amqpConnection = module.get(AmqpConnection);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {
