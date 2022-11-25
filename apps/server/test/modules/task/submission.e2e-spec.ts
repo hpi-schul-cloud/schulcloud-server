@@ -132,19 +132,22 @@ describe('Submission Controller (e2e)', () => {
 			const user = userFactory.buildWithId();
 			const submission = submissionFactory.buildWithId({ task });
 
-			await em.persistAndFlush([submission]);
+			await em.persistAndFlush([submission, user]);
 			em.clear();
 			currentUser = mapUserToCurrentUser(user);
 
 			return { task };
 		};
 
-		it('should return 403', async () => {
+		it('should return 200 and empty array', async () => {
 			const { task } = await setup();
 
-			const { status } = await api.findStatusesByTask(task.id);
+			const { status, result } = await api.findStatusesByTask(task.id);
 
-			expect(status).toEqual(403);
+			const expectedResult = { data: [] };
+
+			expect(status).toEqual(200);
+			expect(result).toEqual(expectedResult);
 		});
 	});
 });
