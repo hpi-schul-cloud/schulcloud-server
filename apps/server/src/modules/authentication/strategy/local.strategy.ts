@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
 import { UserRepo } from '@shared/repo';
-import { ICurrentUser, Role } from '@shared/domain';
+import { ICurrentUser } from '@shared/domain';
 import { CurrentUserMapper } from '@shared/domain/mapper/current-user.mapper';
 import { AuthenticationService } from '../services/authentication.service';
 
@@ -14,6 +14,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 	}
 
 	async validate(username: string, password: string): Promise<ICurrentUser> {
+		if (!username || !password) {
+			throw new UnauthorizedException();
+		}
 		const account = await this.authenticationService.loadAccount(username);
 		if (!account.password) {
 			throw new UnauthorizedException();

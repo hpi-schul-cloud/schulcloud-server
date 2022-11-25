@@ -40,7 +40,6 @@ const jwtModuleOptions: JwtModuleOptions = {
 		LdapService,
 		LdapStrategy,
 	],
-	controllers: [LoginController],
-	exports: [],
+	exports: [AuthenticationService],
 })
-export class AuthModule {}
+export class AuthenticationModule {}

@@ -12,4 +12,16 @@ export class LoginController {
 	login(@Req() req: { user: ICurrentUser }) {
 		return this.authService.generateJwt(req.user);
 	}
+
+	@UseGuards(AuthGuard('ldap'))
+	@Post('ldap')
+	loginLdap(@Req() req: { user: ICurrentUser }) {
+		return this.authService.generateJwt(req.user);
+	}
+
+	@UseGuards(AuthGuard('local'))
+	@Post('local')
+	loginLocal(@Req() req: { user: ICurrentUser }) {
+		return this.authService.generateJwt(req.user);
+	}
 }

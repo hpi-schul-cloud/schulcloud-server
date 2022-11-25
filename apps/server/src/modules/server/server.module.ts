@@ -9,7 +9,6 @@ import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
-import { AuthModule } from '@src/modules/authentication';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { LearnroomModule } from '@src/modules/learnroom';
@@ -30,6 +29,7 @@ import { VideoConferenceModule } from '@src/modules/video-conference';
 import { ToolModule } from '@src/modules/tool';
 import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
+import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot({
@@ -38,7 +38,7 @@ const serverModules = [
 		load: [serverConfig],
 	}),
 	CoreModule,
-	AuthModule,
+	AuthenticationApiModule,
 	CollaborativeStorageModule,
 	OauthModule,
 	TaskModule,

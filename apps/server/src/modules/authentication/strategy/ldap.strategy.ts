@@ -28,6 +28,9 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 			password,
 			schoolId,
 		}: { systemId: string; username: string; password: string; schoolId: string } = request.body;
+		if (!systemId || !username || !password || !schoolId) {
+			throw new UnauthorizedException();
+		}
 		const system: System = await this.systemRepo.findById(systemId);
 		const school: School = await this.schoolRepo.findById(schoolId);
 		if (!school.externalId) {
