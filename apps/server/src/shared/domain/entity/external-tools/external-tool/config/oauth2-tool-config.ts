@@ -8,16 +8,12 @@ export class Oauth2ToolConfig extends ExternalToolConfig {
 	clientId: string;
 
 	@Property()
-	clientSecret: string;
-
-	@Property()
 	skipConsent: boolean;
 
 	constructor(props: Oauth2ToolConfig) {
 		super(props);
 		this.type = ToolConfigType.OAUTH2;
 		this.clientId = props.clientId;
-		this.clientSecret = props.clientSecret;
 		this.skipConsent = props.skipConsent;
 	}
 }
