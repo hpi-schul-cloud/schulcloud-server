@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { RoleRepo, SchoolRepo, UserRepo } from '@shared/repo';
-import { LanguageType, PermissionService, Role, RoleName, School, User } from '@shared/domain';
 import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
-import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LanguageType, PermissionService, Role, RoleName, School, User } from '@shared/domain';
+import { RoleRepo, SchoolRepo, UserRepo } from '@shared/repo';
+import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { RoleService } from '@src/modules/role/service/role.service';
+import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { UserMapper } from '@src/modules/user/mapper/user.mapper';
-import { RoleService } from '@src/modules/role/service/role.service';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -205,7 +205,7 @@ describe('UserService', () => {
 		let capturedUser: User;
 
 		beforeAll(() => {
-			jest.useFakeTimers('modern');
+			jest.useFakeTimers();
 			jest.setSystemTime(date);
 		});
 

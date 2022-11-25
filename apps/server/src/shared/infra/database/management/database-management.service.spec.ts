@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from 'mongodb';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MikroORM } from '@mikro-orm/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { ObjectId } from 'mongodb';
 import { DatabaseManagementService } from './database-management.service';
 
 const randomChars = () => {
@@ -22,6 +22,7 @@ describe('DatabaseManagementService', () => {
 	});
 
 	afterAll(async () => {
+		await orm.close();
 		await module.close();
 	});
 

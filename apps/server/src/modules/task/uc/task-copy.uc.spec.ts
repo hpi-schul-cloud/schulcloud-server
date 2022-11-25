@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, CopyHelperService, PermissionTypes, TaskCopyService, User } from '@shared/domain';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
@@ -14,6 +14,7 @@ import { FilesStorageClientAdapterService } from '@src/modules/files-storage-cli
 import { TaskCopyUC } from './task-copy.uc';
 
 describe('task copy uc', () => {
+	let module: TestingModule;
 	let orm: MikroORM;
 	let uc: TaskCopyUC;
 	let userRepo: DeepMocked<UserRepo>;
@@ -27,14 +28,7 @@ describe('task copy uc', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
-	});
-
-	beforeEach(async () => {
-		const module = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				TaskCopyUC,
 				{
@@ -85,7 +79,16 @@ describe('task copy uc', () => {
 		taskCopyService = module.get(TaskCopyService);
 		fileCopyAppendService = module.get(FileCopyAppendService);
 		copyHelperService = module.get(CopyHelperService);
+	});
+
+	afterAll(async () => {
+		await orm.close();
+		await module.close();
+	});
+
+	beforeEach(() => {
 		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+		jest.clearAllMocks();
 	});
 
 	describe('copy task', () => {

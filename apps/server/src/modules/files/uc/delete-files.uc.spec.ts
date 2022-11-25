@@ -31,7 +31,7 @@ describe('DeleteFileUC', () => {
 		}),
 	];
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		exampleFiles[0].id = 'failed_removal_id';
 		exampleFiles[1].id = 'other_id';
 		const module: TestingModule = await Test.createTestingModule({
@@ -58,6 +58,10 @@ describe('DeleteFileUC', () => {
 		logger = module.get(Logger);
 		uc = module.get(DeleteFilesUc);
 		filesRepo = module.get(FilesRepo);
+	});
+
+	beforeEach(() => {
+		jest.resetAllMocks();
 	});
 
 	it('should be defined', () => {

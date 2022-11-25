@@ -7,7 +7,6 @@ import { ICurrentUser, InputFormat, Permission, Task } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
-	fileFactory,
 	lessonFactory,
 	mapUserToCurrentUser,
 	roleFactory,
@@ -1010,7 +1009,7 @@ describe('Task Controller (e2e)', () => {
 		});
 	});
 
-	describe('When individual assignment task feature is enabled', () => {
+	describe('When new task feature is enabled', () => {
 		let app: INestApplication;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
@@ -1121,8 +1120,46 @@ describe('Task Controller (e2e)', () => {
 			expect(responseTask.courseId).toEqual(updateTaskParams.courseId);
 			expect(responseTask.lessonName).toEqual(lesson.name);
 		});
+		describe('business logic errors', () => {
+			it('POST should fail if NOT availableDate < dueDate', async () => {
+				const user = setup(Permission.HOMEWORK_CREATE);
+				const course = courseFactory.build({ teachers: [user] });
+
+				await em.persistAndFlush([user, course]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				await request(app.getHttpServer())
+					.post(`/tasks`)
+					.set('Accept', 'application/json')
+					.send({ name: 'test', availableDate: '2022-11-09T15:06:30.771Z', dueDate: '2021-11-09T15:06:30.771Z' })
+					.expect(400);
+			});
+			it('PATCH :id should fail if NOT availableDate < dueDate', async () => {
+				const user = setup(Permission.HOMEWORK_EDIT);
+				const task = taskFactory.build({ name: 'original name', creator: user });
+
+				await em.persistAndFlush([user, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				const updateTaskParams = {
+					name: 'updated name',
+					description: '<p>test</p>',
+					availableDate: '2022-10-28T08:28:12.981Z',
+					dueDate: '2021-10-28T08:28:12.981Z',
+				};
+				await request(app.getHttpServer())
+					.patch(`/tasks/${task.id}`)
+					.set('Accept', 'application/json')
+					.send(updateTaskParams)
+					.expect(400);
+			});
+		});
 	});
-	describe('When individual assignment Task feature is not enabled', () => {
+	describe('When new task feature is not enabled', () => {
 		let app: INestApplication;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;

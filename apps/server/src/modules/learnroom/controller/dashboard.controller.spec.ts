@@ -30,7 +30,7 @@ describe('dashboard uc', () => {
 	let uc: DashboardUc;
 	let controller: DashboardController;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [],
 			providers: [

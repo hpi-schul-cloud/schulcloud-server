@@ -2,12 +2,10 @@ import { Account } from './account.entity';
 import { Board } from './board.entity';
 import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
 import { Course } from './course.entity';
-import { CourseExternalTool } from './course-external-tool.entity';
+import { CourseExternalTool, ExternalTool, SchoolExternalTool } from './external-tools';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
-import { ExternalTool } from './external-tool/external-tool.entity';
 import { File } from './file.entity';
-import { FileRecord, FileSecurityCheck } from './filerecord.entity';
 import { ImportUser } from './import-user.entity';
 import { Lesson } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
@@ -16,7 +14,6 @@ import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { Pseudonym } from './pseudonym.entity';
 import { Role } from './role.entity';
 import { School, SchoolRolePermission, SchoolRoles } from './school.entity';
-import { SchoolExternalTool } from './school-external-tool.entity';
 import { SchoolYear } from './schoolyear.entity';
 import { ShareToken } from './share-token.entity';
 import { StorageProvider } from './storageprovider.entity';
@@ -39,8 +36,6 @@ export const ALL_ENTITIES = [
 	DashboardModelEntity,
 	ExternalTool,
 	File,
-	FileRecord,
-	FileSecurityCheck,
 	ImportUser,
 	Lesson,
 	LessonBoardElement,
