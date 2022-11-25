@@ -2,9 +2,15 @@ export interface Loggable {
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage;
 }
 
+export type LogMessageData = LogMessageDataObject | string | number | undefined;
+
+export interface LogMessageDataObject {
+	[key: string]: LogMessageData;
+}
+
 export type LogMessage = {
 	message: string;
-	data?: { [key: string]: string | number | undefined };
+	data?: LogMessageData;
 };
 
 export type ErrorLogMessage = {
