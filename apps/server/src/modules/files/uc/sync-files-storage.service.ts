@@ -5,7 +5,7 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { StorageProviderRepo } from '@shared/repo';
-import { S3Config } from '@src/modules/files-storage/interface';
+import { S3Config } from '@src/modules/files-storage/interface/config';
 import { SyncFileItem } from '../types';
 
 // Temporary functionality for migration to new fileservice

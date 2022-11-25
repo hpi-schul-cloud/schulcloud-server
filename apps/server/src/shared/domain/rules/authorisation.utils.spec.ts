@@ -10,6 +10,7 @@ import { AuthorisationUtils } from './authorisation.utils';
 class TestRule extends AuthorisationUtils {}
 
 describe('permission.utils', () => {
+	let module: TestingModule;
 	let orm: MikroORM;
 	let service: AuthorisationUtils;
 	const permissionA = 'a' as Permission;
@@ -19,7 +20,7 @@ describe('permission.utils', () => {
 	beforeAll(async () => {
 		orm = await setupEntities();
 
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [TestRule],
 		}).compile();
 
@@ -28,6 +29,7 @@ describe('permission.utils', () => {
 
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 	describe('[resolvePermissions]', () => {
 		it('should return permissions of a user with one role', () => {
@@ -137,6 +139,46 @@ describe('permission.utils', () => {
 				const user = userFactory.build({ roles: [role] });
 				const result = service.hasAllPermissions(user, [permissionA]);
 				expect(result).toEqual(false);
+			});
+		});
+
+		describe('[hasAllPermissionsByRole]', () => {
+			describe('WHEN roles are inherited', () => {
+				const setup = () => {
+					const roleA = roleFactory.buildWithId({ permissions: [permissionA] });
+					const roleB = roleFactory.buildWithId({ permissions: [permissionB], roles: [roleA] });
+					const role = roleFactory.buildWithId({ permissions: [permissionC], roles: [roleB] });
+					return {
+						role,
+					};
+				};
+				it('should return true by permissionA', () => {
+					const { role } = setup();
+
+					const result = service.hasAllPermissionsByRole(role, [permissionA]);
+					expect(result).toEqual(true);
+				});
+
+				it('should return true by permissionB', () => {
+					const { role } = setup();
+
+					const result = service.hasAllPermissionsByRole(role, [permissionB]);
+					expect(result).toEqual(true);
+				});
+				it('should return true by permissionC', () => {
+					const { role } = setup();
+
+					const result = service.hasAllPermissionsByRole(role, [permissionC]);
+					expect(result).toEqual(true);
+				});
+
+				it('should return false by permissionNotFound', () => {
+					const { role } = setup();
+					const permissionNotFound = 'notFound' as Permission;
+
+					const result = service.hasAllPermissionsByRole(role, [permissionNotFound]);
+					expect(result).toEqual(false);
+				});
 			});
 		});
 

@@ -2,42 +2,50 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo } from '@shared/repo';
 import { courseFactory, setupEntities } from '@shared/testing';
+import { AuthorizationService } from '@src/modules';
 import { CourseUc } from './course.uc';
 
-describe('course uc', () => {
+describe('CourseUc', () => {
+	let module: TestingModule;
 	let service: CourseUc;
-	let repo: DeepMocked<CourseRepo>;
+	let courseRepo: DeepMocked<CourseRepo>;
 	let orm: MikroORM;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
-	});
-
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				CourseUc,
 				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
 				},
+				{
+					provide: LessonRepo,
+					useValue: createMock<LessonRepo>(),
+				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(CourseUc);
-		repo = module.get(CourseRepo);
+		courseRepo = module.get(CourseRepo);
+	});
+
+	afterAll(async () => {
+		await orm.close();
+		await module.close();
 	});
 
 	describe('findByUser', () => {
 		it('should return courses of user', async () => {
 			const courses = courseFactory.buildList(5);
-			repo.findAllByUserId.mockResolvedValue([courses, 5]);
+			courseRepo.findAllByUserId.mockResolvedValue([courses, 5]);
 
 			const [array, count] = await service.findAllByUser('someUserId');
 			expect(count).toEqual(5);
@@ -46,7 +54,7 @@ describe('course uc', () => {
 
 		it('should pass on options correctly', async () => {
 			const courses = courseFactory.buildList(5);
-			const spy = repo.findAllByUserId.mockResolvedValue([courses, 5]);
+			const spy = courseRepo.findAllByUserId.mockResolvedValue([courses, 5]);
 
 			const pagination = { skip: 1, limit: 2 };
 			const resultingOptions = { pagination, order: { updatedAt: SortOrder.desc } };

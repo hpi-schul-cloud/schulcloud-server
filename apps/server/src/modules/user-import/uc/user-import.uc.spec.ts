@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -408,7 +408,7 @@ describe('[ImportUserModule]', () => {
 			beforeEach(() => {
 				system = systemFactory.buildWithId();
 				school = schoolFactory.buildWithId({ systems: [system] });
-				school.ldapSchoolIdentifier = 'foo';
+				school.externalId = 'foo';
 				school.inMaintenanceSince = new Date();
 				school.inUserMigration = true;
 				school.officialSchoolNumber = 'foo';
@@ -479,8 +479,8 @@ describe('[ImportUserModule]', () => {
 					.spyOn(importUserRepo, 'findImportUsers')
 					.mockResolvedValueOnce([[importUser1, importUser2], 2]);
 
-				userMatch1.ldapId = importUser1.ldapId;
-				userMatch2.ldapId = importUser2.ldapId;
+				userMatch1.externalId = importUser1.externalId;
+				userMatch2.externalId = importUser2.externalId;
 				const userRepoSaveWithoutFlushSpy = jest.spyOn(userRepo, 'save').mockReturnValue(Promise.resolve());
 
 				await uc.saveAllUsersMatches(currentUser.id);
@@ -497,7 +497,7 @@ describe('[ImportUserModule]', () => {
 				expect(importUserRepoDeleteImportUsersBySchoolSpy).toHaveBeenCalledWith(school);
 			});
 			it('should throw if school data is inconsistent', async () => {
-				school.ldapSchoolIdentifier = undefined;
+				school.externalId = undefined;
 				currentUser = userFactory.buildWithId({ school });
 				const result2 = () => uc.saveAllUsersMatches(currentUser.id);
 				await expect(result2).rejects.toThrowError(BadRequestException);
@@ -561,16 +561,12 @@ describe('[ImportUserModule]', () => {
 
 				const schoolParams = { ...school };
 				schoolParams.inUserMigration = true;
-				schoolParams.ldapSchoolIdentifier = 'foo';
+				schoolParams.externalId = 'foo';
 				schoolParams.inMaintenanceSince = currentDate;
 				schoolParams.systems.add(system);
 				expect(schoolRepoSaveSpy).toHaveBeenCalledWith(schoolParams);
 			});
-			it('should throw if system id from configuration is wrong format', async () => {
-				configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue('foo');
-				const result = uc.startSchoolInUserMigration(currentUser.id);
-				await expect(result).rejects.toThrowError(InternalServerErrorException);
-			});
+
 			it('should throw if school is already in inUserMigration', async () => {
 				school.inUserMigration = true;
 				const result = uc.startSchoolInUserMigration(currentUser.id);
@@ -580,6 +576,11 @@ describe('[ImportUserModule]', () => {
 				school.officialSchoolNumber = undefined;
 				const result = uc.startSchoolInUserMigration(currentUser.id);
 				await expect(result).rejects.toThrowError(BadRequestException);
+			});
+			it('should not throw if school has no school number but its own LDAP', async () => {
+				school.officialSchoolNumber = undefined;
+				const result = uc.startSchoolInUserMigration(currentUser.id, false);
+				await expect(result).resolves.toBe(undefined);
 			});
 		});
 
@@ -591,7 +592,7 @@ describe('[ImportUserModule]', () => {
 			let schoolRepoSaveSpy: jest.SpyInstance;
 			beforeEach(() => {
 				school = schoolFactory.buildWithId();
-				school.ldapSchoolIdentifier = 'foo';
+				school.externalId = 'foo';
 				school.inMaintenanceSince = new Date();
 				school.inUserMigration = false;
 				school.officialSchoolNumber = 'foo';
@@ -618,7 +619,7 @@ describe('[ImportUserModule]', () => {
 				expect(schoolRepoSaveSpy).toHaveBeenCalledWith(school2);
 			});
 			it('should throw if school is missing ldapSchoolIdenfitier', async () => {
-				school.ldapSchoolIdentifier = undefined;
+				school.externalId = undefined;
 				currentUser = userFactory.buildWithId({ school });
 				const result1 = () => uc.endSchoolInMaintenance(currentUser.id);
 				await expect(result1).rejects.toThrowError(BadRequestException);

@@ -1,7 +1,8 @@
 {
 	"$schema": "./default.schema.json",
 	"host": "localhost",
-	"port": 3031,
+	"port": 3030,
+	"SC_DOMAIN": "localhost",
 	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud-test",
 	"public": "../public/",
 	"services": {
@@ -18,7 +19,6 @@
 	"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS": "[{\"countyId\":3256,\"merlinUser\":\"dummy\",\"secretMerlinKey\":\"dummy\"}]",
 	"FEATURE_ES_SEARCHABLE_ENABLED": true,
 	"FEATURE_ES_COLLECTIONS_ENABLED": true,
-	"FEATURE_RABBITMQ_ENABLED": true,
 	"FEATURE_S3_BUCKET_CORS": false,
 	"RABBITMQ_URI": "amqp://guest:guest@localhost",
 	"FEATURE_SYNCER_CONSUMER_ENABLE": true,
@@ -30,7 +30,8 @@
 		"S3_ACCESS_KEY_ID": "S3RVER",
 		"S3_SECRET_ACCESS_KEY": "S3RVER",
 		"S3_BUCKET": "schulcloud",
-		"S3_REGION": "eu-central-1"
+		"S3_REGION": "eu-central-1",
+		"EXCHANGE": "files-storage"
 	},
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
@@ -41,6 +42,8 @@
 		"ADMIN_USER": "dbildungscloud",
 		"ADMIN_PASSWORD": "dBildungscloud"
 	},
-	"NEST_AVAILABLE_LOG_LEVELS": "",
-	"CALENDAR_URI": "https://schul.tech:3000"
+	"NEST_LOG_LEVEL": "error",
+	"CALENDAR_URI": "https://schul.tech:3000",
+	"HYDRA_URI": "http://hydra:9000",
+	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": false
 }

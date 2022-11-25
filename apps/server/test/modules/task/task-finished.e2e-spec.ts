@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -13,8 +12,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
-import { ServerTestModule } from '@src/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
@@ -42,39 +41,36 @@ class API {
 }
 
 describe('Task controller (e2e)', () => {
-	describe('task/finished without permission', () => {
-		let app: INestApplication;
-		let orm: MikroORM;
-		let em: EntityManager;
-		let currentUser: ICurrentUser;
-		let api: API;
+	let app: INestApplication;
+	let em: EntityManager;
+	let currentUser: ICurrentUser;
+	let api: API;
 
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
+	beforeAll(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			imports: [ServerTestModule],
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue({
+				canActivate(context: ExecutionContext) {
+					const req: Request = context.switchToHttp().getRequest();
+					req.user = currentUser;
+					return true;
+				},
 			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
+			.compile();
 
-			app = module.createNestApplication();
-			await app.init();
-			orm = app.get(MikroORM);
-			em = module.get(EntityManager);
-			api = new API(app, '/tasks/finished');
-		});
+		app = module.createNestApplication();
+		await app.init();
+		em = module.get(EntityManager);
+		api = new API(app, '/tasks/finished');
+	});
 
-		afterAll(async () => {
-			await orm.close();
-			await app.close();
-		});
+	afterAll(async () => {
+		await app.close();
+	});
 
+	describe('task/finished without permission', () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);
 		});
@@ -96,39 +92,6 @@ describe('Task controller (e2e)', () => {
 	});
 
 	describe(`task/finished with ${Permission.TASK_DASHBOARD_TEACHER_VIEW_V3} permission`, () => {
-		let app: INestApplication;
-		let orm: MikroORM;
-		let em: EntityManager;
-		let currentUser: ICurrentUser;
-		let api: API;
-
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
-
-			app = module.createNestApplication();
-			await app.init();
-			orm = app.get(MikroORM);
-			em = module.get(EntityManager);
-
-			api = new API(app, '/tasks/finished');
-		});
-
-		afterAll(async () => {
-			await orm.close();
-			await app.close();
-		});
-
 		beforeEach(async () => {
 			await cleanupCollections(em);
 		});
@@ -188,39 +151,6 @@ describe('Task controller (e2e)', () => {
 	});
 
 	describe(`task/finished with ${Permission.TASK_DASHBOARD_VIEW_V3} permission`, () => {
-		let app: INestApplication;
-		let orm: MikroORM;
-		let em: EntityManager;
-		let currentUser: ICurrentUser;
-		let api: API;
-
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
-
-			app = module.createNestApplication();
-			await app.init();
-			orm = app.get(MikroORM);
-			em = module.get(EntityManager);
-
-			api = new API(app, '/tasks/finished');
-		});
-
-		afterAll(async () => {
-			await orm.close();
-			await app.close();
-		});
-
 		beforeEach(async () => {
 			await cleanupCollections(em);
 		});

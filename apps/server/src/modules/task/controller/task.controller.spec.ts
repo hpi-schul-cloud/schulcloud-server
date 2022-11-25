@@ -7,11 +7,12 @@ import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskController } from './task.controller';
 
 describe('TaskController', () => {
+	let module: TestingModule;
 	let controller: TaskController;
 	let uc: TaskCopyUC;
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [
 				{
 					provide: TaskUC,
@@ -29,13 +30,16 @@ describe('TaskController', () => {
 		uc = module.get(TaskCopyUC);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	it('should be defined', () => {
 		expect(controller).toBeDefined();
 	});
 
 	describe('copyTask', () => {
 		describe('when task should be copied via API call', () => {
-			const jwt = 'jwt';
 			const setup = () => {
 				// todo: why not use builder instead of as
 				const currentUser = { userId: 'userId' } as ICurrentUser;
@@ -52,19 +56,23 @@ describe('TaskController', () => {
 			};
 			it('should call uc with two parentIds', async () => {
 				const { currentUser, ucSpy } = setup();
-				await controller.copyTask(currentUser, { taskId: 'taskId' }, { courseId: 'id', lessonId: 'anotherId' }, jwt);
-				expect(ucSpy).toHaveBeenCalledWith('userId', 'taskId', { courseId: 'id', lessonId: 'anotherId', jwt });
+				await controller.copyTask(currentUser, { taskId: 'taskId' }, { courseId: 'id', lessonId: 'anotherId' });
+				expect(ucSpy).toHaveBeenCalledWith('userId', 'taskId', {
+					courseId: 'id',
+					lessonId: 'anotherId',
+					userId: currentUser.userId,
+				});
 			});
 
 			it('should call uc with one parentId', async () => {
 				const { currentUser, ucSpy } = setup();
-				await controller.copyTask(currentUser, { taskId: 'taskId' }, { courseId: 'id' }, jwt);
-				expect(ucSpy).toHaveBeenCalledWith('userId', 'taskId', { courseId: 'id', jwt });
+				await controller.copyTask(currentUser, { taskId: 'taskId' }, { courseId: 'id' });
+				expect(ucSpy).toHaveBeenCalledWith('userId', 'taskId', { courseId: 'id', userId: 'userId' });
 			});
 
 			it('should return result of correct type', async () => {
 				const { currentUser } = setup();
-				const result = await controller.copyTask(currentUser, { taskId: 'taskId' }, { courseId: 'id' }, jwt);
+				const result = await controller.copyTask(currentUser, { taskId: 'taskId' }, { courseId: 'id' });
 				expect(result).toBeInstanceOf(CopyApiResponse);
 			});
 		});

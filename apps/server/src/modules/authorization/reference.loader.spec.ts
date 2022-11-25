@@ -7,14 +7,14 @@ import { EntityId } from '@shared/domain';
 import {
 	CourseGroupRepo,
 	CourseRepo,
-	FileRecordRepo,
 	LessonRepo,
 	SchoolRepo,
+	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing';
+import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
@@ -28,6 +28,7 @@ describe('reference.loader', () => {
 	let schoolRepo: DeepMocked<SchoolRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
+	let submissionRepo: DeepMocked<SubmissionRepo>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -53,10 +54,6 @@ describe('reference.loader', () => {
 					useValue: createMock<TaskRepo>(),
 				},
 				{
-					provide: FileRecordRepo,
-					useValue: createMock<FileRecordRepo>(),
-				},
-				{
 					provide: SchoolRepo,
 					useValue: createMock<SchoolRepo>(),
 				},
@@ -67,6 +64,10 @@ describe('reference.loader', () => {
 				{
 					provide: TeamsRepo,
 					useValue: createMock<TeamsRepo>(),
+				},
+				{
+					provide: SubmissionRepo,
+					useValue: createMock<SubmissionRepo>(),
 				},
 			],
 		}).compile();
@@ -79,10 +80,15 @@ describe('reference.loader', () => {
 		schoolRepo = await module.get(SchoolRepo);
 		lessonRepo = await module.get(LessonRepo);
 		teamsRepo = await module.get(TeamsRepo);
+		submissionRepo = await module.get(SubmissionRepo);
 	});
 
 	afterAll(async () => {
 		await orm.close();
+	});
+
+	beforeEach(() => {
+		jest.restoreAllMocks();
 	});
 
 	it('should to be defined', () => {
@@ -132,6 +138,12 @@ describe('reference.loader', () => {
 			expect(teamsRepo.findById).toBeCalledWith(entityId, true);
 		});
 
+		it('should call submissionRepo.findById', async () => {
+			await service.loadEntity(AllowedAuthorizationEntityType.Submission, entityId);
+
+			expect(submissionRepo.findById).toBeCalledWith(entityId);
+		});
+
 		it('should return entity', async () => {
 			const user = userFactory.build();
 			userRepo.findById.mockResolvedValue(user);
@@ -145,6 +157,35 @@ describe('reference.loader', () => {
 			void expect(async () =>
 				service.loadEntity('NotAllowedEntityType' as AllowedAuthorizationEntityType, entityId)
 			).rejects.toThrow(NotImplementedException);
+		});
+	});
+
+	describe('getUserWithPermissions', () => {
+		describe('when user successfully', () => {
+			const setup = () => {
+				const roles = [roleFactory.build()];
+				const user = userFactory.buildWithId({ roles });
+				userRepo.findById.mockResolvedValue(user);
+				return {
+					user,
+				};
+			};
+
+			it('should call userRepo.findById with specific arguments', async () => {
+				const { user } = setup();
+
+				await service.getUserWithPermissions(user.id);
+
+				expect(userRepo.findById).toBeCalledWith(user.id, true);
+			});
+
+			it('should return user entity', async () => {
+				const { user } = setup();
+
+				const result = await service.getUserWithPermissions(user.id);
+
+				expect(result).toBe(user);
+			});
 		});
 	});
 });

@@ -19,7 +19,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 export type TaskCopyParentParams = {
 	courseId?: EntityId;
 	lessonId?: EntityId;
-	jwt: string;
+	userId: string;
 };
 
 @Injectable()
@@ -67,10 +67,18 @@ export class TaskCopyUC {
 			copyName,
 		});
 
-		if (status.copyEntity) {
-			const taskCopy = status.copyEntity as Task;
-			await this.taskRepo.save(taskCopy);
-			status = await this.fileCopyAppendService.appendFiles(status, parentParams.jwt);
+		if (status.copyEntity instanceof Task && status.originalEntity instanceof Task) {
+			await this.taskRepo.save(status.copyEntity);
+			status = await this.fileCopyAppendService.copyFilesOfEntity(
+				status,
+				status.originalEntity,
+				status.copyEntity,
+				parentParams.userId
+			);
+		}
+
+		if (status.copyEntity instanceof Task) {
+			await this.taskRepo.save(status.copyEntity);
 		}
 
 		return status;

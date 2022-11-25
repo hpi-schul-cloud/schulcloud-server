@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { ServerTestModule } from '@src/modules/server';
 import request from 'supertest';
-import { ServerModule } from '@src/server.module';
 import { enableOpenApiDocs } from './swagger';
 
 describe('swagger setup', () => {
@@ -9,7 +9,7 @@ describe('swagger setup', () => {
 		let app: INestApplication;
 
 		beforeAll(async () => {
-			app = await NestFactory.create(ServerModule);
+			app = await NestFactory.create(ServerTestModule);
 			enableOpenApiDocs(app, 'docs');
 			await app.init();
 		});

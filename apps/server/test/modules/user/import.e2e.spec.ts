@@ -1,19 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { Request } from 'express';
-import request from 'supertest';
-import { MikroORM } from '@mikro-orm/core';
-import { ServerTestModule } from '@src/server.module';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import {
-	cleanupCollections,
-	importUserFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	systemFactory,
-	userFactory,
-} from '@shared/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { PaginationParams } from '@shared/controller';
 import {
 	ICurrentUser,
 	ImportUser,
@@ -26,7 +15,17 @@ import {
 	System,
 	User,
 } from '@shared/domain';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import {
+	cleanupCollections,
+	importUserFactory,
+	mapUserToCurrentUser,
+	roleFactory,
+	schoolFactory,
+	systemFactory,
+	userFactory,
+} from '@shared/testing';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@src/modules/server/server.module';
 import {
 	FilterImportUserParams,
 	FilterMatchType,
@@ -43,12 +42,11 @@ import {
 	UserMatchResponse,
 	UserRole,
 } from '@src/modules/user-import/controller/dto';
-import { PaginationParams } from '@shared/controller';
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { Request } from 'express';
+import request from 'supertest';
 
 describe('ImportUser Controller (e2e)', () => {
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 
@@ -90,11 +88,9 @@ describe('ImportUser Controller (e2e)', () => {
 		await app.init();
 
 		em = app.get(EntityManager);
-		orm = app.get(MikroORM);
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await app.close();
 	});
 
@@ -935,7 +931,7 @@ describe('ImportUser Controller (e2e)', () => {
 					({ user, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]));
 					school.officialSchoolNumber = 'foo';
 					school.inMaintenanceSince = new Date();
-					school.ldapSchoolIdentifier = 'foo';
+					school.externalId = 'foo';
 					school.inUserMigration = true;
 					currentUser = mapUserToCurrentUser(user);
 				});
@@ -972,7 +968,7 @@ describe('ImportUser Controller (e2e)', () => {
 				describe('POST user/import/startSync', () => {
 					it('should remove inMaintenanceSince from school', async () => {
 						const school = schoolFactory.buildWithId({
-							ldapSchoolIdentifier: 'foo',
+							externalId: 'foo',
 							inMaintenanceSince: new Date(),
 							inUserMigration: false,
 						});

@@ -1,13 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { RoleRepo, SchoolRepo, UserRepo } from '@shared/repo';
-import { LanguageType, PermissionService, Role, RoleName, School, User } from '@shared/domain';
 import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
-import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LanguageType, PermissionService, Role, RoleName, School, User } from '@shared/domain';
+import { RoleRepo, SchoolRepo, UserRepo } from '@shared/repo';
+import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { RoleService } from '@src/modules/role/service/role.service';
+import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -19,6 +20,7 @@ describe('UserService', () => {
 	let roleRepo: DeepMocked<RoleRepo>;
 	let permissionService: DeepMocked<PermissionService>;
 	let config: DeepMocked<ConfigService>;
+	let roleService: DeepMocked<RoleService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -44,6 +46,10 @@ describe('UserService', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
+				{
+					provide: RoleService,
+					useValue: createMock<RoleService>(),
+				},
 			],
 		}).compile();
 		service = module.get(UserService);
@@ -53,6 +59,7 @@ describe('UserService', () => {
 		roleRepo = module.get(RoleRepo);
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
+		roleService = module.get(RoleService);
 
 		orm = await setupEntities();
 	});
@@ -86,6 +93,89 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('getUser', () => {
+		let user: User;
+
+		beforeEach(() => {
+			user = userFactory.buildWithId({ roles: [] });
+			userRepo.findById.mockResolvedValue(user);
+		});
+
+		it('should provide information about the passed userId', async () => {
+			// Act
+			const userDto: UserDto = await service.getUser(user.id);
+
+			// Assert
+			expect(userDto).toBeDefined();
+			expect(userDto).toBeInstanceOf(UserDto);
+			expect(userRepo.findById).toHaveBeenCalled();
+		});
+	});
+
+	describe('getDisplayName', () => {
+		let role: Role;
+
+		beforeEach(() => {
+			role = roleFactory.buildWithId();
+			roleService.getProtectedRoles.mockResolvedValue([role]);
+		});
+
+		it('should return only the last name when the user has a protected role', async () => {
+			// Arrange
+			const userDto: UserDto = { roleIds: [role.id], lastName: 'lastName' } as UserDto;
+
+			// Act
+			const result: string = await service.getDisplayName(userDto);
+
+			// Assert
+			expect(result).toEqual(userDto.lastName);
+			expect(roleService.getProtectedRoles).toHaveBeenCalled();
+		});
+
+		it('should return the id when the user has a protected role and the last name is missing', async () => {
+			// Arrange
+			const userDto: UserDto = { roleIds: [role.id], id: 'id' } as UserDto;
+
+			// Act
+			const result: string = await service.getDisplayName(userDto);
+
+			// Assert
+			expect(result).toEqual(userDto.id);
+			expect(roleService.getProtectedRoles).toHaveBeenCalled();
+		});
+
+		it('should return the first name and last name when the user has no protected role', async () => {
+			// Arrange
+			const userDto: UserDto = {
+				id: 'id',
+				lastName: 'lastName',
+				firstName: 'firstName',
+			} as UserDto;
+
+			// Act
+			const result: string = await service.getDisplayName(userDto);
+
+			// Assert
+			expect(result).toEqual(`${userDto.firstName} ${userDto.lastName}`);
+			expect(roleService.getProtectedRoles).toHaveBeenCalled();
+		});
+
+		it('should return the id when the user has no protected role and last name is missing', async () => {
+			// Arrange
+			const userDto: UserDto = {
+				id: 'id',
+				firstName: 'firstName',
+			} as UserDto;
+
+			// Act
+			const result: string = await service.getDisplayName(userDto);
+
+			// Assert
+			expect(result).toEqual(userDto.id);
+			expect(roleService.getProtectedRoles).toHaveBeenCalled();
+		});
+	});
+
 	describe('patchLanguage', () => {
 		let user: User;
 
@@ -115,7 +205,7 @@ describe('UserService', () => {
 		let capturedUser: User;
 
 		beforeAll(() => {
-			jest.useFakeTimers('modern');
+			jest.useFakeTimers();
 			jest.setSystemTime(date);
 		});
 

@@ -3,8 +3,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { systemFactory } from '@shared/testing/factory/system.factory';
 import { SystemRepo } from '@shared/repo';
+import { systemFactory } from '@shared/testing/factory/system.factory';
 
 describe('system repo', () => {
 	let module: TestingModule;
@@ -43,7 +43,18 @@ describe('system repo', () => {
 			await em.persistAndFlush([system]);
 			const result = await repo.findById(system.id);
 			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'type', 'url', 'alias', 'oauthConfig', '_id', 'provisioningStrategy'].sort()
+				[
+					'createdAt',
+					'updatedAt',
+					'type',
+					'url',
+					'alias',
+					'displayName',
+					'oauthConfig',
+					'_id',
+					'provisioningStrategy',
+					'provisioningUrl',
+				].sort()
 			);
 		});
 
@@ -67,14 +78,11 @@ describe('system repo', () => {
 		});
 
 		it('should return all systems', async () => {
-			// Arrange
 			const systems = [systemFactory.build(), systemFactory.build({ oauthConfig: undefined })];
 			await em.persistAndFlush(systems);
 
-			// Act
 			const result = await repo.findAll();
 
-			// Assert
 			expect(result.length).toEqual(systems.length);
 			expect(result).toEqual(systems);
 		});
@@ -93,37 +101,29 @@ describe('system repo', () => {
 		});
 
 		it('should return no systems', async () => {
-			// Act
 			const result = await repo.findByFilter();
 
-			// Assert
 			expect(result.length).toEqual(0);
 			expect(result).toEqual([]);
 		});
 
-		it('should return all systems with type iserv', async () => {
-			// Act
-			const result = await repo.findByFilter('iserv');
+		it('should return all systems with type oauth', async () => {
+			const result = await repo.findByFilter('oauth');
 
-			// Assert
 			expect(result.length).toEqual(systems.length);
 			expect(result).toEqual(systems);
 		});
 
-		it('should return all systems with type iserv and oauthConfig', async () => {
-			// Act
-			const result = await repo.findByFilter('iserv', true);
+		it('should return all systems with type oauth and oauthConfig', async () => {
+			const result = await repo.findByFilter('oauth', true);
 
-			// Assert
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(systems[0].id);
 		});
 
 		it('should return all systems with oauthConfig', async () => {
-			// Act
 			const result = await repo.findByFilter('', true);
 
-			// Assert
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(systems[0].id);
 		});

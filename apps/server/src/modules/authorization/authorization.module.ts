@@ -4,9 +4,9 @@ import { FeathersModule } from '@shared/infra/feathers';
 import {
 	CourseGroupRepo,
 	CourseRepo,
-	FileRecordRepo,
 	LessonRepo,
 	SchoolRepo,
+	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
@@ -30,10 +30,10 @@ import { ReferenceLoader } from './reference.loader';
 		CourseRepo,
 		CourseGroupRepo,
 		TaskRepo,
-		FileRecordRepo,
 		SchoolRepo,
 		LessonRepo,
 		TeamsRepo,
+		SubmissionRepo,
 	],
 	exports: [FeathersAuthorizationService, FeathersJwtProvider, AuthorizationService],
 })

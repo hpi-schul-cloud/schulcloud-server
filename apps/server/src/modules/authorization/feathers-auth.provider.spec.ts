@@ -7,7 +7,7 @@ import { FeathersAuthProvider } from './feathers-auth.provider';
 
 describe('FeathersAuthProvider', () => {
 	let authProvider: FeathersAuthProvider;
-
+	let module: TestingModule;
 	const userId = new ObjectId().toHexString();
 	const schoolId = new ObjectId().toHexString();
 	const courseId = new ObjectId().toHexString();
@@ -20,8 +20,8 @@ describe('FeathersAuthProvider', () => {
 		schoolId,
 		permissions: schoolPermissions,
 	};
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [
 				FeathersAuthProvider,
 				{
@@ -93,6 +93,10 @@ describe('FeathersAuthProvider', () => {
 		}).compile();
 
 		authProvider = await module.resolve<FeathersAuthProvider>(FeathersAuthProvider);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {

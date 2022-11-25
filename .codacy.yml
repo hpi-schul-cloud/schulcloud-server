@@ -1,0 +1,11 @@
+---
+exclude_paths:
+  - ".idea"
+  - ".vscode"
+  - "**/backup/**"
+  - "**/migrations/**"
+  - "**/tests/**"
+  - "**.test.js"
+  - "**.spec.js"
+  - "**.spec.ts"
+  - "**.e2e-spec.ts"

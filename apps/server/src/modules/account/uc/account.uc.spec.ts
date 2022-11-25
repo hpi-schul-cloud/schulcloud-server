@@ -1,8 +1,8 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import {
 	Account,
 	EntityId,
@@ -12,14 +12,17 @@ import {
 	Role,
 	RoleName,
 	School,
-	User,
-	SchoolRoles,
 	SchoolRolePermission,
+	SchoolRoles,
+	User,
 } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { BruteForcePrevention } from '@src/imports-from-feathers';
+import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { ObjectId } from 'bson';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -28,8 +31,8 @@ import {
 	AccountSearchType,
 } from '../controller/dto';
 import { AccountEntityToDtoMapper, AccountResponseMapper } from '../mapper';
-import { AccountUc } from './account.uc';
 import { AccountValidationService } from '../services/account.validation.service';
+import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -38,6 +41,7 @@ describe('AccountUc', () => {
 	let accountService: AccountService;
 	let orm: MikroORM;
 	let accountValidationService: AccountValidationService;
+	let configService: DeepMocked<ConfigService>;
 
 	let mockSchool: School;
 	let mockOtherSchool: School;
@@ -77,12 +81,17 @@ describe('AccountUc', () => {
 	let mockExternalUserAccount: Account;
 	let mockAccountWithoutRole: Account;
 	let mockAccountWithoutUser: Account;
+	let mockAccountWithSystemId: Account;
+	let mockAccountWithLastFailedLogin: Account;
+	let mockAccountWithOldLastFailedLogin: Account;
+	let mockAccountWithNoLastFailedLogin: Account;
 	let mockAccounts: Account[];
 	let mockUsers: User[];
 
 	const defaultPassword = 'DummyPasswd!1';
 	const otherPassword = 'DummyPasswd!2';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
+	const LOGIN_BLOCK_TIME = 15;
 
 	afterAll(async () => {
 		await module.close();
@@ -147,6 +156,17 @@ describe('AccountUc', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
+
+						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<AccountDto> => {
+							const account = mockAccounts.find(
+								(tempAccount) => tempAccount.username === username && tempAccount.systemId === systemId
+							);
+							if (account) {
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
+							}
+							throw new EntityNotFoundError(Account.name);
+						},
+
 						searchByUsernameExactMatch: (username: string): Promise<{ accounts: AccountDto[]; total: number }> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
 
@@ -176,7 +196,12 @@ describe('AccountUc', () => {
 								total: mockAccounts.length,
 							});
 						},
+						updateLastTriedFailedLogin: jest.fn(),
 					},
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
 				},
 				{
 					provide: UserRepo,
@@ -225,6 +250,7 @@ describe('AccountUc', () => {
 		accountService = module.get(AccountService);
 		orm = await setupEntities();
 		accountValidationService = module.get(AccountValidationService);
+		configService = module.get(ConfigService);
 	});
 
 	beforeEach(() => {
@@ -415,6 +441,25 @@ describe('AccountUc', () => {
 			password: defaultPasswordHash,
 			systemId: systemFactory.buildWithId().id,
 		});
+		mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId(10)).build();
+		mockAccountWithLastFailedLogin = accountFactory.buildWithId({
+			userId: undefined,
+			password: defaultPasswordHash,
+			systemId: systemFactory.buildWithId().id,
+			lasttriedFailedLogin: new Date(),
+		});
+		mockAccountWithOldLastFailedLogin = accountFactory.buildWithId({
+			userId: undefined,
+			password: defaultPasswordHash,
+			systemId: systemFactory.buildWithId().id,
+			lasttriedFailedLogin: new Date(new Date().getTime() - LOGIN_BLOCK_TIME - 1),
+		});
+		mockAccountWithNoLastFailedLogin = accountFactory.buildWithId({
+			userId: undefined,
+			password: defaultPasswordHash,
+			systemId: systemFactory.buildWithId().id,
+			lasttriedFailedLogin: undefined,
+		});
 
 		mockUsers = [
 			mockSuperheroUser,
@@ -453,6 +498,10 @@ describe('AccountUc', () => {
 			mockExternalUserAccount,
 			mockAccountWithoutRole,
 			mockAccountWithoutUser,
+			mockAccountWithSystemId,
+			mockAccountWithLastFailedLogin,
+			mockAccountWithOldLastFailedLogin,
+			mockAccountWithNoLastFailedLogin,
 		];
 	});
 
@@ -617,6 +666,19 @@ describe('AccountUc', () => {
 					email: 'fail@to.update',
 				})
 			).rejects.toThrow(EntityNotFoundError);
+		});
+		it('should not update password if no new password', async () => {
+			const spy = jest.spyOn(accountService, 'save');
+			await accountUc.updateMyAccount(mockStudentUser.id, {
+				passwordOld: defaultPassword,
+				passwordNew: undefined,
+				email: 'newemail@to.update',
+			});
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					password: undefined,
+				})
+			);
 		});
 	});
 
@@ -795,6 +857,9 @@ describe('AccountUc', () => {
 		});
 
 		describe('hasPermissionsToAccessAccount', () => {
+			beforeEach(() => {
+				configService.get.mockReturnValue(false);
+			});
 			it('admin can access teacher of the same school via user id', async () => {
 				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 				const params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
@@ -844,32 +909,29 @@ describe('AccountUc', () => {
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 			});
 			it('teacher can access student of the same school via user id if school has global permission', async () => {
-				const configSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
+				configService.get.mockReturnValue(true);
 				const currentUser = { userId: mockTeacherNoUserPermissionUser.id } as ICurrentUser;
 				const params = {
 					type: AccountSearchType.USER_ID,
 					value: mockStudentSchoolPermissionUser.id,
 				} as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
-				configSpy.mockRestore();
 			});
 			it('teacher can not access student of the same school if school has no global permission', async () => {
-				const configSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
+				configService.get.mockReturnValue(true);
 				const currentUser = { userId: mockTeacherNoUserNoSchoolPermissionUser.id } as ICurrentUser;
 				const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(ForbiddenOperationError);
-				configSpy.mockRestore();
 			});
 
 			it('student can not access student of the same school if school has global permission', async () => {
-				const configSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
+				configService.get.mockReturnValue(true);
 				const currentUser = { userId: mockStudentSchoolPermissionUser.id } as ICurrentUser;
 				const params = {
 					type: AccountSearchType.USER_ID,
 					value: mockOtherStudentSchoolPermissionUser.id,
 				} as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(ForbiddenOperationError);
-				configSpy.mockRestore();
 			});
 			it('student can not access any other account via user id', async () => {
 				const currentUser = { userId: mockStudentUser.id } as ICurrentUser;
@@ -1174,6 +1236,47 @@ describe('AccountUc', () => {
 					{ id: 'xxx' } as AccountByIdParams
 				)
 			).rejects.toThrow(EntityNotFoundError);
+		});
+	});
+
+	describe('checkBrutForce', () => {
+		let updateMock: jest.Mock;
+		beforeAll(() => {
+			configService.get.mockReturnValue(LOGIN_BLOCK_TIME);
+		});
+		afterAll(() => {
+			configService.get.mockRestore();
+		});
+		beforeEach(() => {
+			// eslint-disable-next-line jest/unbound-method
+			updateMock = accountService.updateLastTriedFailedLogin as jest.Mock;
+			updateMock.mockClear();
+		});
+		it('should throw, if time difference < the allowed time', async () => {
+			await expect(
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				accountUc.checkBrutForce(mockAccountWithLastFailedLogin.username, mockAccountWithLastFailedLogin.systemId!)
+			).rejects.toThrow(BruteForcePrevention);
+		});
+		it('should not throw Error, if the time difference > the allowed time', async () => {
+			await expect(
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				accountUc.checkBrutForce(mockAccountWithSystemId.username, mockAccountWithSystemId.systemId!)
+			).resolves.not.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			expect(updateMock.mock.calls[0][0]).toEqual(mockAccountWithSystemId.id);
+			const newDate = new Date().getTime() - 10000;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			expect((updateMock.mock.calls[0][1] as Date).getTime()).toBeGreaterThan(newDate);
+		});
+		it('should not throw, if lasttriedFailedLogin is undefined', async () => {
+			await expect(
+				accountUc.checkBrutForce(
+					mockAccountWithNoLastFailedLogin.username,
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					mockAccountWithNoLastFailedLogin.systemId!
+				)
+			).resolves.not.toThrow();
 		});
 	});
 });

@@ -19,13 +19,14 @@ export class TaskCopyService {
 		const copy = new Task({
 			name: params.copyName || params.originalTask.name,
 			description: params.originalTask.description,
+			descriptionInputFormat: params.originalTask.descriptionInputFormat,
 			school: params.user.school,
 			creator: params.user,
 			course: params.destinationCourse,
 			lesson: params.destinationLesson,
 		});
 
-		const elements = [...this.defaultTaskStatusElements(), ...this.copyTaskFiles(params.originalTask)];
+		const elements = [...this.defaultTaskStatusElements()];
 
 		const status: CopyStatus = {
 			title: copy.name,
@@ -54,23 +55,5 @@ export class TaskCopyService {
 				status: CopyStatusEnum.NOT_DOING,
 			},
 		];
-	}
-
-	private copyTaskFiles(task: Task): CopyStatus[] {
-		const fileNames = task.getFileNames();
-		if (fileNames.length > 0) {
-			const elements = fileNames.map((title) => ({
-				title,
-				type: CopyElementType.FILE,
-				status: CopyStatusEnum.NOT_IMPLEMENTED,
-			}));
-			const fileStatus = {
-				type: CopyElementType.FILE_GROUP,
-				status: CopyStatusEnum.NOT_IMPLEMENTED,
-				elements,
-			};
-			return [fileStatus];
-		}
-		return [];
 	}
 }

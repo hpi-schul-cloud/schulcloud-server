@@ -2,14 +2,13 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	courseFactory,
-	fileFactory,
 	lessonFactory,
+	schoolFactory,
 	setupEntities,
 	submissionFactory,
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { File } from './file.entity';
 import { Submission } from './submission.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';
@@ -92,7 +91,7 @@ describe('Task Entity', () => {
 		});
 	});
 
-	describe('isFinished', () => {
+	describe('isFinishedForUser', () => {
 		let user: User;
 
 		beforeEach(() => {
@@ -134,6 +133,32 @@ describe('Task Entity', () => {
 			Object.assign(task, { finished: undefined });
 			jest.spyOn(course, 'isFinished').mockReturnValue(true);
 			expect(task.isFinishedForUser(user)).toEqual(true);
+		});
+	});
+
+	describe('areSubmissionsPublic', () => {
+		it('should return false if publicSubmissions is undefined', () => {
+			const task = taskFactory.build();
+
+			const result = task.areSubmissionsPublic();
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if publicSubmissions is false', () => {
+			const task = taskFactory.build({ publicSubmissions: false });
+
+			const result = task.areSubmissionsPublic();
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if publicSubmissions is true', () => {
+			const task = taskFactory.build({ publicSubmissions: true });
+
+			const result = task.areSubmissionsPublic();
+
+			expect(result).toBe(true);
 		});
 	});
 
@@ -636,36 +661,6 @@ describe('Task Entity', () => {
 		});
 	});
 
-	describe('getFileNames', () => {
-		it('should throw if files are not loaded', () => {
-			const task = taskFactory.build();
-			task.files.set([orm.em.getReference(File, new ObjectId().toHexString())]);
-
-			expect(() => task.getFileNames()).toThrowError();
-		});
-
-		describe('when files are loaded', () => {
-			it('should return empty array if property files does not exist', () => {
-				const user = userFactory.buildWithId({});
-				const task = taskFactory.build({ creator: user });
-				expect(task.getFileNames()).toEqual([]);
-			});
-
-			it('should return empty array if files array is empty', () => {
-				const user = userFactory.buildWithId({});
-				const task = taskFactory.build({ creator: user, files: [] });
-				expect(task.getFileNames()).toEqual([]);
-			});
-
-			it('should return array with correct file name', () => {
-				const user = userFactory.buildWithId({});
-				const file = fileFactory.buildWithId({ creator: user });
-				const task = taskFactory.build({ creator: user, files: [file] });
-				expect(task.getFileNames()).toEqual([file.name]);
-			});
-		});
-	});
-
 	describe('finishForUser', () => {
 		it('should add the user to the finished collection', () => {
 			const user = userFactory.build();
@@ -743,26 +738,12 @@ describe('Task Entity', () => {
 	});
 
 	describe('getSchoolId', () => {
-		it('schould return schoolId from lesson', () => {
-			const lesson = lessonFactory.build();
-			const task = taskFactory.build({ lesson });
+		it('schould return schoolId from school', () => {
+			const school = schoolFactory.build();
+			const task = taskFactory.build({ school });
 			const schoolId = task.getSchoolId();
 
-			expect(schoolId).toEqual(lesson.getSchoolId());
-		});
-
-		it('schould return schoolId from course', () => {
-			const course = courseFactory.build();
-			const task = taskFactory.build({ course });
-			const schoolId = task.getSchoolId();
-
-			expect(schoolId).toEqual(course.school.id);
-		});
-
-		it('schould return error on missing parent', () => {
-			const task = taskFactory.build();
-
-			expect(() => task.getSchoolId()).toThrowError(`Couldn't find parent of task.`);
+			expect(schoolId).toEqual(school.id);
 		});
 	});
 });

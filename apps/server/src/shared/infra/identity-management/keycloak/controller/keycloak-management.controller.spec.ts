@@ -1,19 +1,20 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ServiceUnavailableException } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NodeEnvType } from '@src/server.config';
-import { KeycloakManagementController } from './keycloak-management.controller';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@src/core/logger';
+import { NodeEnvType } from '@src/modules/server/server.config';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
+import { KeycloakManagementController } from './keycloak-management.controller';
 
 describe('KeycloakManagementController', () => {
+	let module: TestingModule;
 	let uc: DeepMocked<KeycloakManagementUc>;
 	let controller: KeycloakManagementController;
 	let configServiceMock: DeepMocked<ConfigService>;
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			controllers: [KeycloakManagementController],
 			providers: [
 				{
@@ -34,6 +35,10 @@ describe('KeycloakManagementController', () => {
 		uc = module.get(KeycloakManagementUc);
 		controller = module.get(KeycloakManagementController);
 		configServiceMock = module.get(ConfigService);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	beforeEach(() => {

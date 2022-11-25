@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
 import { MikroORM } from '@mikro-orm/core';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ManagementServerTestModule } from '@src/modules/management/management-server.module';
+import request from 'supertest';
 
 describe('Database Management Controller (e2e)', () => {
 	let app: INestApplication;
@@ -22,7 +22,6 @@ describe('Database Management Controller (e2e)', () => {
 
 	afterAll(async () => {
 		await app.close();
-		await orm.close();
 	});
 
 	describe('When post to database management route', () => {

@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { RoleService } from '@src/modules/role/service/role.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain';
-import { RoleUc } from '@src/modules/role/uc/role.uc';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { RoleService } from '@src/modules/role/service/role.service';
+import { RoleUc } from '@src/modules/role/uc/role.uc';
 
 describe('RoleUc', () => {
 	let module: TestingModule;
@@ -23,6 +23,10 @@ describe('RoleUc', () => {
 		}).compile();
 		roleService = module.get(RoleService);
 		roleUc = module.get(RoleUc);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	beforeEach(() => {

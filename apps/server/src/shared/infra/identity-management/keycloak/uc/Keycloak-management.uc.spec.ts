@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Test, TestingModule } from '@nestjs/testing';
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakAdministrationService } from '../service/keycloak-administration.service';
-import { KeycloakManagementUc } from './Keycloak-management.uc';
 import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
 import { KeycloakSeedService } from '../service/keycloak-seed.service';
+import { KeycloakManagementUc } from './Keycloak-management.uc';
 
 describe('KeycloakManagementUc', () => {
 	let module: TestingModule;
@@ -35,6 +35,9 @@ describe('KeycloakManagementUc', () => {
 				{
 					provide: KeycloakConfigurationService,
 					useValue: {
+						configureClient: jest.fn().mockImplementation(async (): Promise<void> => {
+							return Promise.resolve();
+						}),
 						configureIdentityProviders: jest.fn().mockImplementation(async (): Promise<number> => {
 							return Promise.resolve(3);
 						}),
@@ -60,6 +63,10 @@ describe('KeycloakManagementUc', () => {
 		keycloakAdministrationService = module.get(KeycloakAdministrationService);
 		keycloakConfigurationService = module.get(KeycloakConfigurationService);
 		keycloakSeedService = module.get(KeycloakSeedService);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('check', () => {
@@ -92,6 +99,7 @@ describe('KeycloakManagementUc', () => {
 	describe('configure', () => {
 		it('should call services', async () => {
 			await uc.configure();
+			expect(keycloakConfigurationService.configureClient).toBeCalledTimes(1);
 			expect(keycloakConfigurationService.configureBrokerFlows).toBeCalledTimes(1);
 			expect(keycloakConfigurationService.configureIdentityProviders).toBeCalledTimes(1);
 			expect(keycloakAdministrationService.setPasswordPolicy).toBeCalledTimes(1);

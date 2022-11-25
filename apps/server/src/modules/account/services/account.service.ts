@@ -34,6 +34,11 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
+	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {
+		const accountEntity = await this.accountRepo.findByUsernameAndSystemId(username, systemId);
+		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
+	}
+
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		// Check if the ID is correct?
 		// const user = await this.userRepo.findById(accountDto.userId);
@@ -47,7 +52,9 @@ export class AccountService {
 			account.activated = accountDto.activated;
 			account.expiresAt = accountDto.expiresAt;
 			account.lasttriedFailedLogin = accountDto.lasttriedFailedLogin;
-			account.password = accountDto.password ? await this.encryptPassword(accountDto.password) : undefined;
+			if (accountDto.password) {
+				account.password = await this.encryptPassword(accountDto.password);
+			}
 			account.credentialHash = accountDto.credentialHash;
 			account.token = accountDto.token;
 		} else {
@@ -70,6 +77,21 @@ export class AccountService {
 	async updateUsername(accountId: EntityId, username: string): Promise<AccountDto> {
 		const account = await this.accountRepo.findById(accountId);
 		account.username = username;
+		account.updatedAt = new Date();
+		await this.accountRepo.save(account);
+		return AccountEntityToDtoMapper.mapToDto(account);
+	}
+
+	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
+		const account = await this.accountRepo.findById(accountId);
+		account.lasttriedFailedLogin = lastTriedFailedLogin;
+		await this.accountRepo.save(account);
+		return AccountEntityToDtoMapper.mapToDto(account);
+	}
+
+	async updatePassword(accountId: EntityId, password: string): Promise<AccountDto> {
+		const account = await this.accountRepo.findById(accountId);
+		account.password = await this.encryptPassword(password);
 		account.updatedAt = new Date();
 		await this.accountRepo.save(account);
 		return AccountEntityToDtoMapper.mapToDto(account);

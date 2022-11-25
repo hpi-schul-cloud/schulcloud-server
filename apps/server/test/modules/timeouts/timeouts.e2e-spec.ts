@@ -1,6 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -21,16 +20,15 @@ import request from 'supertest';
 Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 // eslint-disable-next-line import/first
-import { ServerTestModule } from '@src/server.module';
+import { ServerTestModule } from '@src/modules/server/server.module';
 
 describe('Copy timeout (e2e)', () => {
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let configBefore: IConfig;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
@@ -47,14 +45,12 @@ describe('Copy timeout (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
-		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await cleanupCollections(em);
 		await app.close();
-		await orm.close();
 		Configuration.reset(configBefore);
 	});
 

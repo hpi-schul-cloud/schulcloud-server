@@ -1,19 +1,23 @@
-import { School, SchoolFeatures } from '@shared/domain';
-import { schoolFactory, setupEntities } from '@shared/testing';
+import { School, SchoolFeatures, System } from '@shared/domain';
+import { schoolFactory, setupEntities, systemFactory } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolRepo } from '@shared/repo';
 import { MikroORM } from '@mikro-orm/core';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { SchoolService } from './school.service';
 
 describe('SchoolService', () => {
 	let module: TestingModule;
 	let schoolService: SchoolService;
-	let schoolRepo: DeepMocked<SchoolRepo>;
 	let orm: MikroORM;
-	let schoolDto: SchoolDto;
+
+	let schoolRepo: DeepMocked<SchoolRepo>;
+
+	let school1Dto: SchoolDto;
 	let mockSchoolEntities: School[];
+	let system: System;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -22,6 +26,10 @@ describe('SchoolService', () => {
 				{
 					provide: SchoolRepo,
 					useValue: createMock<SchoolRepo>(),
+				},
+				{
+					provide: SchoolMapper,
+					useValue: createMock<SchoolMapper>(),
 				},
 			],
 		}).compile();
@@ -36,8 +44,12 @@ describe('SchoolService', () => {
 	});
 
 	beforeEach(() => {
-		mockSchoolEntities = [schoolFactory.buildWithId(), schoolFactory.buildWithId()];
-		schoolDto = new SchoolDto({ name: 'schule1234' });
+		system = systemFactory.buildWithId();
+		const school1: School = schoolFactory.buildWithId({ name: 'schoolName' });
+		const school2: School = schoolFactory.buildWithId();
+		school1.systems.add(system);
+		mockSchoolEntities = [school1, school2];
+		school1Dto = new SchoolDto({ name: school1.name, systemIds: [system.id] });
 		schoolRepo.create.mockImplementation((): School => {
 			return mockSchoolEntities[0];
 		});
@@ -51,56 +63,43 @@ describe('SchoolService', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('saveSchool', () => {
+	describe('createOrUpdate', () => {
 		it('should create new school', async () => {
-			// Act
-			await schoolService.createOrUpdateSchool(schoolDto);
+			await schoolService.createOrUpdateSchool(school1Dto);
 
-			// Assert
-			expect(schoolRepo.create).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
+			expect(schoolRepo.create).toHaveBeenCalledWith(expect.objectContaining({ name: school1Dto.name }));
 			expect(schoolRepo.save).toHaveBeenCalled();
 		});
 
 		it('should update existing school', async () => {
-			// Arrange
-			schoolDto.id = mockSchoolEntities[0].id;
+			school1Dto.id = mockSchoolEntities[0].id;
 
-			// Act
-			await schoolService.createOrUpdateSchool(schoolDto);
+			await schoolService.createOrUpdateSchool(school1Dto);
 
-			// Assert
-			expect(schoolRepo.findById).toHaveBeenCalledWith(schoolDto.id);
 			expect(schoolRepo.save).toHaveBeenCalledWith(
 				expect.objectContaining({
-					name: schoolDto.name,
-					id: schoolDto.id,
+					name: school1Dto.name,
+					id: school1Dto.id,
 				})
 			);
 			expect(schoolRepo.create).not.toHaveBeenCalled();
-			expect(schoolRepo.save).toHaveBeenCalled();
 		});
 	});
 
 	describe('hasFeature', () => {
 		it('should return true', async () => {
-			// Arrange
 			schoolRepo.findById.mockResolvedValue(schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] }));
 
-			// Act
 			const result = await schoolService.hasFeature('schoolId', SchoolFeatures.VIDEOCONFERENCE);
 
-			// Assert
 			expect(result).toBe(true);
 		});
 
 		it('should return false', async () => {
-			// Arrange
 			schoolRepo.findById.mockResolvedValue(schoolFactory.buildWithId());
 
-			// Act
 			const result = await schoolService.hasFeature('schoolId', SchoolFeatures.VIDEOCONFERENCE);
 
-			// Assert
 			expect(result).toBe(false);
 		});
 	});
