@@ -15,6 +15,8 @@ export interface ISubmissionProperties {
 	teamMembers?: User[];
 	comment: string;
 	studentFiles?: File[];
+	submitted?: boolean;
+	graded?: boolean;
 	grade?: number;
 	gradeComment?: string;
 	gradeFiles?: File[];
@@ -44,7 +46,13 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Index()
 	studentFiles = new Collection<File>(this);
 
+	@Property()
+	submitted: boolean;
+
 	/* ***** teacher uploads ***** */
+	@Property()
+	graded: boolean;
+
 	@Property({ nullable: true })
 	grade?: number;
 
@@ -60,6 +68,8 @@ export class Submission extends BaseEntityWithTimestamps {
 		this.student = props.student;
 		this.comment = props.comment;
 		this.task = props.task;
+		this.submitted = props.submitted || false;
+		this.graded = props.graded || false;
 		this.grade = props.grade;
 		this.gradeComment = props.gradeComment;
 		this.courseGroup = props.courseGroup;
