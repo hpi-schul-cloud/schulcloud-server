@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { ICurrentUser } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool/external-tool.do';
@@ -61,5 +61,14 @@ export class ToolController {
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(externalToolDO, currentUser);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
 		return mapped;
+	}
+
+	@Delete(':toolId')
+	async deleteExternalTool(
+		@Param() params: Lti11LaunchParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(params.toolId);
+		return promise;
 	}
 }

@@ -1,14 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import { CustomParameterDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 
 @Injectable()
 export class ExternalToolService {
-	constructor(private externalToolRepo: ExternalToolRepo) {}
+	constructor(
+		private readonly externalToolRepo: ExternalToolRepo,
+		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
+		private readonly courseExternalToolRepo: CourseExternalToolRepo
+	) {}
 
 	async createExternalTool(externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
 		const externalTool: ExternalToolDO = await this.externalToolRepo.save(externalToolDO);
 		return externalTool;
+	}
+
+	async deleteExternalTool(toolId: string): Promise<void> {
+		const schoolExternalTools: SchoolExternalToolDO[] = await this.schoolExternalToolRepo.findByToolId(toolId);
+		const schoolExternalToolIds: string[] = schoolExternalTools.map(
+			(schoolExternalTool: SchoolExternalToolDO): string => {
+				// We can be sure that the repo returns the id
+				return schoolExternalTool.id as string;
+			}
+		);
+
+		await Promise.all([
+			this.courseExternalToolRepo.deleteBySchoolExternalToolIds(schoolExternalToolIds),
+			this.schoolExternalToolRepo.deleteByToolId(toolId),
+			this.externalToolRepo.deleteById(toolId),
+		]);
 	}
 
 	async isNameUnique(externalToolDO: ExternalToolDO): Promise<boolean> {

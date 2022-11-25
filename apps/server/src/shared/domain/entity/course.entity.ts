@@ -83,7 +83,7 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 		if (props.startDate) this.startDate = props.startDate;
 	}
 
-	private getShortTitle(): string {
+	getShortTitle(): string {
 		if (this.name.length === 1) {
 			return this.name;
 		}

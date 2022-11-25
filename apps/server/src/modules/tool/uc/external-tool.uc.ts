@@ -71,4 +71,9 @@ export class ExternalToolUc {
 			throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`);
 		}
 	}
+
+	async deleteExternalTool(toolId: string): Promise<void> {
+		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);
+		return promise;
+	}
 }
