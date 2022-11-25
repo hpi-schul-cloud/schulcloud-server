@@ -49,6 +49,17 @@ export class ExternalToolUc {
 		return created;
 	}
 
+	async updateExternalTool(
+		toolId: string,
+		externalToolDO: ExternalToolDO,
+		currentUser: ICurrentUser
+	): Promise<ExternalToolDO> {
+		// TODO: get, override obj expect undefined, save
+		// TODO: clientId immutable because of hydra secret
+		await this.externalToolService.createExternalTool(externalToolDO);
+		return {} as ExternalToolDO;
+	}
+
 	private async checkValidation(externalToolDO: ExternalToolDO) {
 		if (!(await this.externalToolService.isNameUnique(externalToolDO))) {
 			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`);

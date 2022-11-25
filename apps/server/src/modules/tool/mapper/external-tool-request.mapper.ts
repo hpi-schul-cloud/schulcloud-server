@@ -14,9 +14,10 @@ import { CustomParameterTypeParams } from '../interface/custom-parameter-type.en
 import { CustomParameterCreateParams } from '../controller/dto/request/custom-parameter.params';
 import { BasicToolConfigParams } from '../controller/dto/request/basic-tool-config.params';
 import { Oauth2ToolConfigParams } from '../controller/dto/request/oauth2-tool-config.params';
-import { ExternalToolParams } from '../controller/dto/request/external-tool-create.params';
+import { ExternalToolCreateParams } from '../controller/dto/request/external-tool-create.params';
 import { Lti11ToolConfigParams } from '../controller/dto/request/lti11-tool-config.params';
 import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
+import { ExternalToolUpdateParams } from '../controller/dto/request/external-tool-update.params';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,
@@ -40,7 +41,7 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 
 @Injectable()
 export class ExternalToolRequestMapper {
-	mapRequestToExternalToolDO(externalToolParams: ExternalToolParams, version = 1): ExternalToolDO {
+	mapCreateRequestToExternalToolDO(externalToolParams: ExternalToolCreateParams, version = 1): ExternalToolDO {
 		let mappedConfig: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
 		if (externalToolParams.config instanceof BasicToolConfigParams) {
 			mappedConfig = this.mapRequestToBasicToolConfigDO(externalToolParams.config);
@@ -64,6 +65,14 @@ export class ExternalToolRequestMapper {
 			openNewTab: externalToolParams.openNewTab,
 			version,
 		});
+	}
+
+	mapUpdateRequestToExternalToolDO(externalToolParams: ExternalToolUpdateParams): ExternalToolDO {
+		const externalToolDO: ExternalToolDO = this.mapCreateRequestToExternalToolDO(
+			externalToolParams,
+			externalToolParams.version
+		);
+		return externalToolDO;
 	}
 
 	private mapRequestToBasicToolConfigDO(externalToolConfigParams: BasicToolConfigParams): BasicToolConfigDO {

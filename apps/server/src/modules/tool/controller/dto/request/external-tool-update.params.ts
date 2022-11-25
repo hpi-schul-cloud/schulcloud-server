@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { CustomParameterCreateParams } from './custom-parameter.params';
@@ -9,7 +9,7 @@ import { ToolConfigType } from '../../../interface/tool-config-type.enum';
 import { Lti11ToolConfigParams } from './lti11-tool-config.params';
 
 @ApiExtraModels(Lti11ToolConfigParams, Oauth2ToolConfigParams, BasicToolConfigParams)
-export class ExternalToolCreateParams {
+export class ExternalToolUpdateParams {
 	@IsString()
 	@ApiProperty()
 	name!: string;
@@ -58,4 +58,8 @@ export class ExternalToolCreateParams {
 	@IsBoolean()
 	@ApiProperty()
 	openNewTab!: boolean;
+
+	@IsNumber()
+	@ApiProperty()
+	version!: number;
 }
