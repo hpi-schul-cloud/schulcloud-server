@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { AccountRepo } from '@shared/repo';
-import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
+import { AccountDto } from '@src/modules/account/services/dto';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -15,9 +15,11 @@ describe('AccountService Integration', () => {
 	let module: TestingModule;
 	let accountService: AccountService;
 	let idmService: IdentityManagementService;
+	let keycloakService: KeycloakAdministrationService;
 	let isIdmReachable = false;
 
-	const testAccount: AccountSaveDto = {
+	const testRealm = 'test-realm';
+	const testAccount = {
 		username: 'john.doe@mail.tld',
 		userId: new ObjectId().toString(),
 		password: 'password',
@@ -29,10 +31,12 @@ describe('AccountService Integration', () => {
 		}
 		return result.accounts[0];
 	};
-	const deleteAccount = async (username?: string): Promise<void> => {
-		const result = await accountService.searchByUsernameExactMatch(username ?? testAccount.username);
-		if (result.total !== 0) {
-			await accountService.delete(result.accounts[0].id);
+	const deleteAccounts = async (): Promise<void> => {
+		const result = await accountService.searchByUsernamePartialMatch('doe@mail.tld', 0, 10);
+		// eslint-disable-next-line no-restricted-syntax
+		for (const account of result.accounts) {
+			// eslint-disable-next-line no-await-in-loop
+			await accountService.delete(account.id);
 		}
 	};
 
@@ -63,15 +67,24 @@ describe('AccountService Integration', () => {
 		}).compile();
 		accountService = module.get(AccountService);
 		idmService = module.get(IdentityManagementService);
-		isIdmReachable = await module.get(KeycloakAdministrationService).testKcConnection();
+		keycloakService = module.get(KeycloakAdministrationService);
+		isIdmReachable = await keycloakService.testKcConnection();
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
+	beforeEach(async () => {
+		const kc = await keycloakService.callKcAdminClient();
+		await kc.realms.create({ realm: testRealm });
+		kc.setConfig({ realmName: testRealm });
+	});
+
 	afterEach(async () => {
-		await deleteAccount();
+		const kc = await keycloakService.callKcAdminClient();
+		await kc.realms.del({ realm: testRealm });
+		await deleteAccounts();
 	});
 
 	it('save should create a new account', async () => {
@@ -89,28 +102,34 @@ describe('AccountService Integration', () => {
 		);
 	});
 
-	it.skip('save should update existing account', async () => {
+	it('save should update existing account', async () => {
 		if (!isIdmReachable) return;
 
 		const newUserName = 'jane.doe@mail.tld';
-		await createAccount();
+		const account = await createAccount();
 		await accountService.save({
+			id: account.id,
 			username: newUserName,
 		});
 		const accounts = await idmService.getAllAccounts();
 
-		expect(accounts).not.toEqual(
+		expect(accounts).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
 					userName: newUserName,
 				}),
 			])
 		);
-
-		await deleteAccount(newUserName);
+		expect(accounts).not.toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					userName: testAccount.username,
+				}),
+			])
+		);
 	});
 
-	it.skip('updateUsername should update username', async () => {
+	it('updateUsername should update username', async () => {
 		if (!isIdmReachable) return;
 
 		const newUserName = 'jane.doe@mail.tld';
@@ -118,15 +137,20 @@ describe('AccountService Integration', () => {
 		await accountService.updateUsername(account.id, newUserName);
 		const accounts = await idmService.getAllAccounts();
 
-		expect(accounts).not.toEqual(
+		expect(accounts).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
 					userName: newUserName,
 				}),
 			])
 		);
-
-		await deleteAccount(newUserName);
+		expect(accounts).not.toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					userName: testAccount.username,
+				}),
+			])
+		);
 	});
 
 	it('updatePassword should update password', async () => {

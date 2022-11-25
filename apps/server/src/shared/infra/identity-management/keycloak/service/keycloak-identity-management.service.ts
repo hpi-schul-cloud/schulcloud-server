@@ -3,7 +3,6 @@ import { IAccount, IAccountUpdate } from '@shared/domain';
 /* eslint-disable no-nested-ternary */
 import { Injectable } from '@nestjs/common';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { EntityNotFoundError } from '@shared/common';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
@@ -21,6 +20,9 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 			email: account.email,
 			firstName: account.firstName,
 			lastName: account.lastName,
+			attributes: {
+				mongoId: account.id,
+			},
 		});
 		if (id && password) {
 			try {
@@ -34,10 +36,11 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	}
 
 	async updateAccount(accountId: string, account: IAccountUpdate): Promise<string> {
+		const id = await this.getExternalId(accountId);
 		await (
 			await this.kcAdminClient.callKcAdminClient()
 		).users.update(
-			{ id: accountId },
+			{ id },
 			{
 				username: account.username,
 				email: account.email,
@@ -49,12 +52,14 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	}
 
 	async updateAccountPassword(accountId: string, password: string): Promise<string> {
-		await this.resetPassword(accountId, password);
+		const id = await this.getExternalId(accountId);
+		await this.resetPassword(id, password);
 		return accountId;
 	}
 
 	async findAccountById(accountId: string): Promise<IAccount> {
-		const keycloakUser = await (await this.kcAdminClient.callKcAdminClient()).users.findOne({ id: accountId });
+		const id = await this.getExternalId(accountId);
+		const keycloakUser = await (await this.kcAdminClient.callKcAdminClient()).users.findOne({ id });
 		if (!keycloakUser) {
 			throw new Error(`Account '${accountId}' not found`);
 		}
@@ -75,18 +80,9 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	}
 
 	async deleteAccountById(accountId: string): Promise<string> {
-		await (await this.kcAdminClient.callKcAdminClient()).users.del({ id: accountId });
+		const id = await this.getExternalId(accountId);
+		await (await this.kcAdminClient.callKcAdminClient()).users.del({ id });
 		return accountId;
-	}
-
-	async deleteAccountByUsername(username: string): Promise<string | undefined> {
-		const kc = await this.kcAdminClient.callKcAdminClient();
-		const [account] = await kc.users.find({ username });
-
-		if (account.id) {
-			await kc.users.del({ id: account.id });
-		}
-		return account.id;
 	}
 
 	private extractAccount(user: UserRepresentation): IAccount {
@@ -100,15 +96,31 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	}
 
 	private async resetPassword(accountId: string, password: string) {
+		const id = await this.getExternalId(accountId);
 		await (
 			await this.kcAdminClient.callKcAdminClient()
 		).users.resetPassword({
-			id: accountId,
+			id,
 			credential: {
 				temporary: false,
 				type: 'password',
 				value: password,
 			},
 		});
+	}
+
+	private async getExternalId(accountId: string): Promise<string> {
+		const kc = await this.kcAdminClient.callKcAdminClient();
+		const users = await kc.users.find({ mongoId: accountId });
+
+		if (users.length === 1) {
+			return users[0].id as string;
+		}
+
+		if (users.length === 0) {
+			return accountId;
+		}
+
+		throw new Error('Multiple accounts for the same id!');
 	}
 }

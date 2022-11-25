@@ -166,6 +166,18 @@ export class KeycloakConfigurationService {
 		return count;
 	}
 
+	async configureRealm(): Promise<void> {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		await kc.realms.update(
+			{
+				realm: kc.realmName,
+			},
+			{
+				editUsernameAllowed: true,
+			}
+		);
+	}
+
 	private setKeycloakSystemInformation(
 		keycloakSystem: SystemDto,
 		kcBaseUrl: string,

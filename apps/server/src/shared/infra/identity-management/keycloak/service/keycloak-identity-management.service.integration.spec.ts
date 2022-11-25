@@ -14,7 +14,7 @@ import { KeycloakIdentityManagementService } from './keycloak-identity-managemen
  * Once Keycloak is integrated into the CI setup, this test can be re-factored and enabled.
  *
  */
-xdescribe('KeycloakIdentityManagement', () => {
+describe.skip('KeycloakIdentityManagement', () => {
 	let module: TestingModule;
 	let idm: IdentityManagementService;
 
@@ -107,3 +107,30 @@ xdescribe('KeycloakIdentityManagement', () => {
 		expect(updatePwdAccount1Ret).toEqual(account1Id);
 	});
 });
+
+/*
+describe('KeycloakIdentityManagementService', () => {
+	let module: TestingModule;
+	let idmService: IdentityManagementService;
+	let keycloakService: KeycloakAdministrationService;
+
+	const testRealm = 'test-realm';
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			imports: [KeycloakModule],
+		}).compile();
+		idmService = module.get(IdentityManagementService);
+		keycloakService = module.get(KeycloakAdministrationService);
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	beforeEach(async () => {
+		const kc = await keycloakService.callKcAdminClient();
+		kc.realms.create({ realm: })
+	});
+});
+*/
