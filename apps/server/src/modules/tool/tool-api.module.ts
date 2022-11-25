@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { SchoolModule } from '@src/modules/school';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import { EncryptionModule } from '@shared/infra/encryption';
@@ -16,15 +15,7 @@ import { ToolModule } from './tool.module';
 import { LoggerModule } from '../../core/logger';
 
 @Module({
-	imports: [
-		ToolModule,
-		UserModule,
-		SchoolModule,
-		AuthorizationModule,
-		OauthProviderServiceModule,
-		EncryptionModule,
-		LoggerModule,
-	],
+	imports: [ToolModule, UserModule, AuthorizationModule, OauthProviderServiceModule, EncryptionModule, LoggerModule],
 	controllers: [ToolController],
 	providers: [
 		Lti11Uc,
