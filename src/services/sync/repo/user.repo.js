@@ -41,7 +41,7 @@ const findUsersByEmail = async (email) => userModel.find({ email: email.toLowerC
 const findUserBySchoolAndName = async (schoolId, firstName, lastName) =>
 	userModel.find({ schoolId, firstName, lastName }).lean().exec();
 
-const checkCreate = async (email) => {
+const checkCreate = async (email, school) => {
 	if (!email) {
 		throw new BadRequest(`User cannot be created. Email is missing`);
 	}
@@ -78,8 +78,8 @@ const checkUpdate = async (email, userId) => {
 	}
 };
 
-const createUserAndAccount = async (inputUser, inputAccount) => {
-	await checkCreate(inputUser.email);
+const createUserAndAccount = async (inputUser, inputAccount, school) => {
+	await checkCreate(inputUser.email, school);
 	const user = (await createUser(inputUser)).toObject();
 	inputAccount.userId = user._id;
 	const account = (await createAccount(inputAccount)).toObject();
