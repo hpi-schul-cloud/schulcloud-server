@@ -7,7 +7,6 @@ const getInvalidatedEmail = (email) => `${email}.invalid`;
 
 const invalidateUser = async (app, user) => {
 	const userService = app.service('usersModel');
-	// const accountService = app.service('accountModel');
 	const accountService = app.service('nest-account-service');
 
 	const invalidatedUuid = getInvalidatedUuid(user.sourceOptions.tspUid);
@@ -19,10 +18,6 @@ const invalidateUser = async (app, user) => {
 	};
 	await userService.patch(user._id, userChanges);
 
-	// const accountChanges = {
-	// 	username: getUsername(userChanges),
-	// };
-	// await accountService.patch(null, accountChanges, { query: { userId: user._id } });
 	const account = await accountService.findByUserId(user._id);
 	await accountService.updateUsername(account.id, getUsername(userChanges));
 };

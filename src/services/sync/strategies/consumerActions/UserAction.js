@@ -103,7 +103,6 @@ class UserAction extends BaseConsumerAction {
 		const updateObject = this.createUserUpdateObject(user, foundUser);
 		if (!_.isEmpty(updateObject)) {
 			await this.app.service('/sync/userAccount').updateUserAndAccount(foundUser._id, updateObject, account);
-			// await UserRepo.updateUserAndAccount(foundUser._id, updateObject, account);
 		}
 	}
 
@@ -133,7 +132,6 @@ class UserAction extends BaseConsumerAction {
 		idmUser.schoolId = schoolId;
 		const userAccountService = await this.app.service('/sync/userAccount');
 		return userAccountService.createUserAndAccount(idmUser, account);
-		// return UserRepo.createUserAndAccount(idmUser, account);
 	}
 }
 
