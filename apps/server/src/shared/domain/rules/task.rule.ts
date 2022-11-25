@@ -54,9 +54,7 @@ export class TaskRule extends BasePermission<Task> {
 	private taskWritePermission(user: User, entity: Task): boolean {
 		const hasParentWritePermission = this.parentPermission(user, entity, Actions.write);
 
-		const result = hasParentWritePermission;
-
-		return result;
+		return hasParentWritePermission;
 	}
 
 	private parentPermission(user: User, entity: Task, action: Actions): boolean {

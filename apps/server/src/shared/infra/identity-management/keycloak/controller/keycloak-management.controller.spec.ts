@@ -8,12 +8,13 @@ import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 import { KeycloakManagementController } from './keycloak-management.controller';
 
 describe('KeycloakManagementController', () => {
+	let module: TestingModule;
 	let uc: DeepMocked<KeycloakManagementUc>;
 	let controller: KeycloakManagementController;
 	let configServiceMock: DeepMocked<ConfigService>;
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			controllers: [KeycloakManagementController],
 			providers: [
 				{
@@ -34,6 +35,10 @@ describe('KeycloakManagementController', () => {
 		uc = module.get(KeycloakManagementUc);
 		controller = module.get(KeycloakManagementController);
 		configServiceMock = module.get(ConfigService);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	beforeEach(() => {

@@ -1,26 +1,26 @@
 import { MikroORM } from '@mikro-orm/core';
 import { NotImplementedException } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
 describe('rooms authorisation service', () => {
+	let module: TestingModule;
 	let orm: MikroORM;
 	let service: RoomsAuthorisationService;
-	beforeAll(async () => {
-		orm = await setupEntities();
-	});
 
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 
-	beforeEach(async () => {
-		const module = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [RoomsAuthorisationService],
 		}).compile();
 
 		service = module.get(RoomsAuthorisationService);
+		orm = await setupEntities();
 	});
 
 	describe('hasCourseReadPermission', () => {
