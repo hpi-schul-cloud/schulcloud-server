@@ -5,7 +5,7 @@ import { schoolExternalToolFactory } from './school-external-tool.factory';
 
 export const courseExternalToolFactory = BaseFactory.define<CourseExternalTool, ICourseExternalToolProperties>(
 	CourseExternalTool,
-	({ sequence }) => {
+	() => {
 		return {
 			schoolTool: schoolExternalToolFactory.buildWithId(),
 			course: courseFactory.buildWithId(),

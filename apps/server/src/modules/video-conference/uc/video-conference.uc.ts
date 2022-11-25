@@ -1,12 +1,12 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
-import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
 import {
 	Actions,
 	Course,
 	EntityId,
 	ICurrentUser,
 	Permission,
+	PermissionContextBuilder,
 	RoleName,
 	SchoolFeatures,
 	Team,
@@ -15,36 +15,37 @@ import {
 	VideoConferenceDO,
 	VideoConferenceOptionsDO,
 } from '@shared/domain';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { SchoolUc } from '@src/modules/school/uc/school.uc';
-import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
-import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
-import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
-import { CalendarService } from '@shared/infra/calendar';
-import {
-	BBBBaseResponse,
-	BBBCreateResponse,
-	BBBMeetingInfoResponse,
-	BBBResponse,
-} from '@src/modules/video-conference/interface/bbb-response.interface';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
-import { BBBService } from '@src/modules/video-conference/service/bbb.service';
+import { CalendarService } from '@shared/infra/calendar';
+import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
+import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
-import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
-import {
-	defaultVideoConferenceOptions,
-	VideoConferenceOptions,
-} from '@src/modules/video-conference/interface/vc-options.interface';
 import { AuthorizationService } from '@src/modules/authorization';
+import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { SchoolUc } from '@src/modules/school/uc/school.uc';
+import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
+import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
+import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
+import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
+import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
 import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
 import {
 	VideoConferenceDTO,
 	VideoConferenceInfoDTO,
 	VideoConferenceJoinDTO,
 } from '@src/modules/video-conference/dto/video-conference.dto';
-import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { ErrorStatus } from '@src/modules/video-conference/error/error-status.enum';
+import {
+	BBBBaseResponse,
+	BBBCreateResponse,
+	BBBMeetingInfoResponse,
+	BBBResponse,
+} from '@src/modules/video-conference/interface/bbb-response.interface';
+import {
+	defaultVideoConferenceOptions,
+	VideoConferenceOptions,
+} from '@src/modules/video-conference/interface/vc-options.interface';
+import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 
 export interface IScopeInfo {
 	scopeId: EntityId;
@@ -390,7 +391,7 @@ export class VideoConferenceUc {
 		conferenceScope: VideoConferenceScope,
 		entityId: EntityId
 	): Promise<BBBRole> {
-		const permissionMap: Map<Permission, Promise<boolean>> = this.authorizationService.hasPermissionsByReferences(
+		const permissionMap: Map<Permission, Promise<boolean>> = this.hasPermissions(
 			userId,
 			PermissionScopeMapping[conferenceScope],
 			entityId,
@@ -405,6 +406,23 @@ export class VideoConferenceUc {
 			return BBBRole.VIEWER;
 		}
 		throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
+	}
+
+	private hasPermissions(
+		userId: EntityId,
+		entityName: AllowedAuthorizationEntityType,
+		entityId: EntityId,
+		permissions: Permission[],
+		action: Actions
+	): Map<Permission, Promise<boolean>> {
+		const returnMap: Map<Permission, Promise<boolean>> = new Map();
+		permissions.forEach((perm) => {
+			const context =
+				action === Actions.read ? PermissionContextBuilder.read([perm]) : PermissionContextBuilder.write([perm]);
+			const ret = this.authorizationService.hasPermissionByReferences(userId, entityName, entityId, context);
+			returnMap.set(perm, ret);
+		});
+		return returnMap;
 	}
 
 	/**

@@ -1,4 +1,4 @@
-export enum CustomParameterType {
+export enum CustomParameterTypeParams {
 	STRING = 'string',
 	NUMBER = 'number',
 	BOOLEAN = 'boolean',
