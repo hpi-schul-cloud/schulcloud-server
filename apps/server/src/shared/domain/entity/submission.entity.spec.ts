@@ -55,51 +55,147 @@ describe('Submission entity', () => {
 	});
 
 	describe('isSubmittedForUser is called', () => {
-		describe('when submission is submitted and user is creator of the submission', () => {
+		describe('when submission is submitted and user is a submitter of the submission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				const submission = submissionFactory.submitted().studentWithId().buildWithId({ task, student: user });
+				const submission = submissionFactory.submitted().buildWithId();
 
-				return { submission, user };
+				const spyIsUserSubmitter = jest.spyOn(submission, 'isUserSubmitter').mockReturnValueOnce(true);
+				const spyIsSubmitted = jest.spyOn(submission, 'isSubmitted').mockReturnValueOnce(true);
+
+				return { submission, user, spyIsUserSubmitter, spyIsSubmitted };
 			};
+
+			it('should be called submission.isUserSubmitter.', () => {
+				const { submission, user, spyIsSubmitted } = setup();
+
+				submission.isSubmittedForUser(user);
+
+				expect(spyIsSubmitted).toBeCalled();
+			});
+
+			it('should be called submission.isUserSubmitter.', () => {
+				const { submission, user, spyIsUserSubmitter } = setup();
+
+				submission.isSubmittedForUser(user);
+
+				expect(spyIsUserSubmitter).toBeCalledWith(user);
+			});
 
 			it('should return true.', () => {
 				const { submission, user } = setup();
 
-				expect(submission.isSubmittedForUser(user)).toEqual(true);
+				const result = submission.isSubmittedForUser(user);
+
+				expect(result).toBe(true);
 			});
 		});
 
-		describe('when submission is submitted and user is teamMember of the submission', () => {
+		describe('when submission is not submitted and user is a submitter of the submission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				const submission = submissionFactory.submitted().buildWithId({ task, teamMembers: [user] });
+				const submission = submissionFactory.submitted().buildWithId();
 
-				return { submission, user };
+				const spyIsUserSubmitter = jest.spyOn(submission, 'isUserSubmitter').mockReturnValueOnce(true);
+				const spyIsSubmitted = jest.spyOn(submission, 'isSubmitted').mockReturnValueOnce(false);
+
+				return { submission, user, spyIsUserSubmitter, spyIsSubmitted };
 			};
 
-			it('should return true.', () => {
+			it('should be called submission.isUserSubmitter.', () => {
+				const { submission, user, spyIsSubmitted } = setup();
+
+				submission.isSubmittedForUser(user);
+
+				expect(spyIsSubmitted).toBeCalled();
+			});
+
+			it('should be called submission.isUserSubmitter.', () => {
+				const { submission, user, spyIsUserSubmitter } = setup();
+
+				submission.isSubmittedForUser(user);
+
+				expect(spyIsUserSubmitter).toBeCalledWith(user);
+			});
+
+			it('should return false.', () => {
 				const { submission, user } = setup();
 
-				expect(submission.isSubmittedForUser(user)).toEqual(true);
+				const result = submission.isSubmittedForUser(user);
+
+				expect(result).toBe(false);
 			});
 		});
 
-		describe('when submission is submitted and user is no member of the submission', () => {
+		describe('when submission is submitted and user is no submitter of the submission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				const submission = submissionFactory.submitted().buildWithId({ task });
+				const submission = submissionFactory.submitted().buildWithId();
 
-				return { submission, user };
+				const spyIsUserSubmitter = jest.spyOn(submission, 'isUserSubmitter').mockReturnValueOnce(false);
+				const spyIsSubmitted = jest.spyOn(submission, 'isSubmitted').mockReturnValueOnce(true);
+
+				return { submission, user, spyIsUserSubmitter, spyIsSubmitted };
 			};
 
-			it('should be return false.', () => {
+			it('should be called submission.isUserSubmitter.', () => {
+				const { submission, user, spyIsSubmitted } = setup();
+
+				submission.isSubmittedForUser(user);
+
+				expect(spyIsSubmitted).toBeCalled();
+			});
+
+			it('should be called submission.isUserSubmitter.', () => {
+				const { submission, user, spyIsUserSubmitter } = setup();
+
+				submission.isSubmittedForUser(user);
+
+				expect(spyIsUserSubmitter).toBeCalledWith(user);
+			});
+
+			it('should return false.', () => {
 				const { submission, user } = setup();
 
-				expect(submission.isSubmittedForUser(user)).toEqual(false);
+				const result = submission.isSubmittedForUser(user);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when submission is not submitted and user is no submitter of the submission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submission = submissionFactory.submitted().buildWithId();
+
+				const spyIsUserSubmitter = jest.spyOn(submission, 'isUserSubmitter').mockReturnValueOnce(false);
+				const spyIsSubmitted = jest.spyOn(submission, 'isSubmitted').mockReturnValueOnce(false);
+
+				return { submission, user, spyIsUserSubmitter, spyIsSubmitted };
+			};
+
+			it('should be called submission.isUserSubmitter.', () => {
+				const { submission, user, spyIsSubmitted } = setup();
+
+				submission.isSubmittedForUser(user);
+
+				expect(spyIsSubmitted).toBeCalled();
+			});
+
+			it('should be called submission.isUserSubmitter.', () => {
+				const { submission, user, spyIsUserSubmitter } = setup();
+
+				submission.isSubmittedForUser(user);
+
+				expect(spyIsUserSubmitter).toBeCalledWith(user);
+			});
+
+			it('should return false.', () => {
+				const { submission, user } = setup();
+
+				const result = submission.isSubmittedForUser(user);
+
+				expect(result).toBe(false);
 			});
 		});
 	});
@@ -175,51 +271,147 @@ describe('Submission entity', () => {
 	});
 
 	describe('isGradedForUser is called', () => {
-		describe('when submission is graded and user is creator of the submission', () => {
+		describe('when submission is graded and user is a submitter of the submission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				const submission = submissionFactory.graded().buildWithId({ task, student: user });
+				const submission = submissionFactory.submitted().buildWithId();
 
-				return { submission, user };
+				const spyIsUserSubmitter = jest.spyOn(submission, 'isUserSubmitter').mockReturnValueOnce(true);
+				const spyIsGraded = jest.spyOn(submission, 'isGraded').mockReturnValueOnce(true);
+
+				return { submission, user, spyIsUserSubmitter, spyIsGraded };
 			};
+
+			it('should be called submission.spyIsGraded.', () => {
+				const { submission, user, spyIsGraded } = setup();
+
+				submission.isGradedForUser(user);
+
+				expect(spyIsGraded).toBeCalled();
+			});
+
+			it('should be called submission.isUserSubmitter.', () => {
+				const { submission, user, spyIsUserSubmitter } = setup();
+
+				submission.isGradedForUser(user);
+
+				expect(spyIsUserSubmitter).toBeCalledWith(user);
+			});
 
 			it('should return true.', () => {
 				const { submission, user } = setup();
 
-				expect(submission.isGradedForUser(user)).toEqual(true);
+				const result = submission.isGradedForUser(user);
+
+				expect(result).toBe(true);
 			});
 		});
 
-		describe('when submission is graded and user is teamMember of the submission', () => {
+		describe('when submission is not graded and user is a submitter of the submission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				const submission = submissionFactory.graded().buildWithId({ task, teamMembers: [user] });
+				const submission = submissionFactory.submitted().buildWithId();
 
-				return { submission, user };
+				const spyIsUserSubmitter = jest.spyOn(submission, 'isUserSubmitter').mockReturnValueOnce(true);
+				const spyIsGraded = jest.spyOn(submission, 'isGraded').mockReturnValueOnce(false);
+
+				return { submission, user, spyIsUserSubmitter, spyIsGraded };
 			};
 
-			it('should return true.', () => {
+			it('should be called submission.spyIsGraded.', () => {
+				const { submission, user, spyIsGraded } = setup();
+
+				submission.isGradedForUser(user);
+
+				expect(spyIsGraded).toBeCalled();
+			});
+
+			it('should be called submission.isUserSubmitter.', () => {
+				const { submission, user, spyIsUserSubmitter } = setup();
+
+				submission.isGradedForUser(user);
+
+				expect(spyIsUserSubmitter).toBeCalledWith(user);
+			});
+
+			it('should return false.', () => {
 				const { submission, user } = setup();
 
-				expect(submission.isGradedForUser(user)).toEqual(true);
+				const result = submission.isGradedForUser(user);
+
+				expect(result).toBe(false);
 			});
 		});
 
-		describe('when submission is graded and user is not a member of the submission', () => {
+		describe('when submission is graded and user is not a submitter of the submission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				const submission = submissionFactory.graded().buildWithId({ task });
+				const submission = submissionFactory.submitted().buildWithId();
 
-				return { submission, user };
+				const spyIsUserSubmitter = jest.spyOn(submission, 'isUserSubmitter').mockReturnValueOnce(false);
+				const spyIsGraded = jest.spyOn(submission, 'isGraded').mockReturnValueOnce(true);
+
+				return { submission, user, spyIsUserSubmitter, spyIsGraded };
 			};
 
-			it('should be return false.', () => {
+			it('should be called submission.spyIsGraded.', () => {
+				const { submission, user, spyIsGraded } = setup();
+
+				submission.isGradedForUser(user);
+
+				expect(spyIsGraded).toBeCalled();
+			});
+
+			it('should be called submission.isUserSubmitter.', () => {
+				const { submission, user, spyIsUserSubmitter } = setup();
+
+				submission.isGradedForUser(user);
+
+				expect(spyIsUserSubmitter).toBeCalledWith(user);
+			});
+
+			it('should return false.', () => {
 				const { submission, user } = setup();
 
-				expect(submission.isGradedForUser(user)).toEqual(false);
+				const result = submission.isGradedForUser(user);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when submission is not graded and user is not a submitter of the submission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submission = submissionFactory.submitted().buildWithId();
+
+				const spyIsUserSubmitter = jest.spyOn(submission, 'isUserSubmitter').mockReturnValueOnce(false);
+				const spyIsGraded = jest.spyOn(submission, 'isGraded').mockReturnValueOnce(false);
+
+				return { submission, user, spyIsUserSubmitter, spyIsGraded };
+			};
+
+			it('should be called submission.spyIsGraded.', () => {
+				const { submission, user, spyIsGraded } = setup();
+
+				submission.isGradedForUser(user);
+
+				expect(spyIsGraded).toBeCalled();
+			});
+
+			it('should be called submission.isUserSubmitter.', () => {
+				const { submission, user, spyIsUserSubmitter } = setup();
+
+				submission.isGradedForUser(user);
+
+				expect(spyIsUserSubmitter).toBeCalledWith(user);
+			});
+
+			it('should return false.', () => {
+				const { submission, user } = setup();
+
+				const result = submission.isGradedForUser(user);
+
+				expect(result).toBe(false);
 			});
 		});
 	});
@@ -233,7 +425,7 @@ describe('Submission entity', () => {
 				return { submission, user };
 			};
 
-			it('should be return the userId of the creator', () => {
+			it('should return the userId of the creator', () => {
 				const { submission, user } = setup();
 
 				const result = submission.getSubmitterIds();
@@ -250,7 +442,7 @@ describe('Submission entity', () => {
 				return { submission };
 			};
 
-			it('should be return the userIds of the creator and of the teammembers.', () => {
+			it('should return the userIds of the creator and of the teammembers.', () => {
 				const { submission } = setup();
 
 				const result = submission.getSubmitterIds();
@@ -283,7 +475,7 @@ describe('Submission entity', () => {
 				expect(spy).toBeCalled();
 			});
 
-			it('should be return the userId of the creator and of the students of the coursegroup.', () => {
+			it('should return the userId of the creator and of the students of the coursegroup.', () => {
 				const { submission, creatorId, studentIds } = setup();
 
 				const result = submission.getSubmitterIds();

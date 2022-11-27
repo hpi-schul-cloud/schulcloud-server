@@ -66,7 +66,7 @@ describe('CourseEntity', () => {
 				return { courseGroup };
 			};
 
-			it('should return the userIds of the students', () => {
+			it('should throw an internal server exception', () => {
 				const { courseGroup } = setup();
 
 				expect(() => {

@@ -503,7 +503,7 @@ describe('Task Entity', () => {
 				return { task, user };
 			};
 
-			it('should be throw an error', () => {
+			it('should throw an internal server exception', () => {
 				const { task, user } = setup();
 
 				expect(() => {
