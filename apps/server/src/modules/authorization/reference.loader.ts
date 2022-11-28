@@ -1,5 +1,5 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId, User } from '@shared/domain';
 import {
 	CourseGroupRepo,
 	CourseRepo,
@@ -52,7 +52,7 @@ export class ReferenceLoader {
 	}
 
 	private resolveRepo(type: AllowedAuthorizationEntityType): IRepoLoader {
-		const repo: IRepoLoader | undefined = this.repos.get(type);
+		const repo = this.repos.get(type);
 		if (repo) {
 			return repo;
 		}
@@ -70,5 +70,11 @@ export class ReferenceLoader {
 		}
 
 		return entity;
+	}
+
+	async getUserWithPermissions(userId: EntityId): Promise<User> {
+		const user = await this.userRepo.findById(userId, true);
+
+		return user;
 	}
 }

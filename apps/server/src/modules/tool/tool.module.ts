@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { LtiToolRepo, PseudonymsRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { SchoolModule } from '@src/modules/school';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { AuthorizationModule } from '@src/modules/authorization';
@@ -11,15 +10,12 @@ import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-to
 import { Lti11Uc } from './uc/lti11.uc';
 import { LtiRoleMapper } from './mapper/lti-role.mapper';
 import { Lti11Service } from './service/lti11.service';
-import { UserModule } from '../user';
-import { ToolController } from './controller/tool.controller';
-import { Lti11ResponseMapper } from './mapper/lti11-response.mapper';
-import { ExternalToolUc } from './uc/external-tool.uc';
 import { ExternalToolService } from './service/external-tool.service';
-import { ExternalToolRequestMapper } from './mapper/external-tool-request.mapper';
-import { ExternalToolResponseMapper } from './mapper/external-tool-response.mapper';
 
 @Module({
+	imports: [LoggerModule],
+	providers: [Lti11Service, LtiToolRepo, PseudonymsRepo, ExternalToolRepoMapper, ExternalToolRepo, ExternalToolService],
+	exports: [Lti11Service, ExternalToolService],
 	imports: [UserModule, LoggerModule, SchoolModule, AuthorizationModule, OauthProviderServiceModule, EncryptionModule],
 	controllers: [ToolController],
 	providers: [
