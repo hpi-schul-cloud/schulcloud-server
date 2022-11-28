@@ -393,7 +393,7 @@ describe('ToolController', () => {
 
 			await controller.findExternalTool(currentUser, filterQuery, pagination, sortingQuery);
 
-			expect(externalToolUc.findExternalTool).toHaveBeenCalledWith(currentUser, {}, filter);
+			expect(externalToolUc.findExternalTool).toHaveBeenCalledWith(currentUser.userId, {}, filter);
 		});
 
 		it('should call the externalToolMapper.mapSortingQueryToDomain', async () => {

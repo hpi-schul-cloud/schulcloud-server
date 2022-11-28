@@ -64,7 +64,7 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ExternalToolResponse> {
 		const externalToolDO: ExternalToolDO = this.externalToolDOMapper.mapRequestToExternalToolDO(externalToolParams);
-		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(externalToolDO, currentUser);
+		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(externalToolDO, currentUser.userId);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
 		return mapped;
 	}
@@ -83,7 +83,7 @@ export class ToolController {
 		options.order = this.externalToolDOMapper.mapSortingQueryToDomain(sortingQuery);
 		const query: Partial<ExternalToolDO> = this.externalToolDOMapper.mapExternalToolFilterQueryToDO(filterQuery);
 
-		const tools: Page<ExternalToolDO> = await this.externalToolUc.findExternalTool(currentUser, query, options);
+		const tools: Page<ExternalToolDO> = await this.externalToolUc.findExternalTool(currentUser.userId, query, options);
 
 		const dtoList: ExternalToolResponse[] = tools.data.map(
 			(tool: ExternalToolDO): ExternalToolResponse => this.externalResponseMapper.mapToResponse(tool)

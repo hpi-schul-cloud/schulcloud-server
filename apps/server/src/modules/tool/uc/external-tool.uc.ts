@@ -19,8 +19,8 @@ export class ExternalToolUc {
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
 	) {}
 
-	async createExternalTool(externalToolDO: ExternalToolDO, currentUser: ICurrentUser): Promise<ExternalToolDO> {
-		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
+	async createExternalTool(externalToolDO: ExternalToolDO, userId: string): Promise<ExternalToolDO> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
 		await this.checkValidation(externalToolDO);
@@ -51,11 +51,11 @@ export class ExternalToolUc {
 	}
 
 	async findExternalTool(
-		currentUser: ICurrentUser,
+		userId: string,
 		query: Partial<ExternalToolDO>,
 		options: IFindOptions<ExternalToolDO>
 	): Promise<Page<ExternalToolDO>> {
-		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
 		const tools: Page<ExternalToolDO> = await this.externalToolService.findExternalTool(query, options);

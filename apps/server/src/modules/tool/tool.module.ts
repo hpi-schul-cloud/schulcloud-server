@@ -11,12 +11,17 @@ import { Lti11Uc } from './uc/lti11.uc';
 import { LtiRoleMapper } from './mapper/lti-role.mapper';
 import { Lti11Service } from './service/lti11.service';
 import { ExternalToolService } from './service/external-tool.service';
+import { ToolController } from './controller/tool.controller';
+import { UserModule } from '../user';
+import { SchoolModule } from '../school';
+import { Lti11ResponseMapper } from './mapper/lti11-response.mapper';
+import { ExternalToolUc } from './uc/external-tool.uc';
+import { ExternalToolResponseMapper } from './mapper/external-tool-response.mapper';
+import { ExternalToolRequestMapper } from './mapper/external-tool-request.mapper';
 
 @Module({
-	imports: [LoggerModule],
-	providers: [Lti11Service, LtiToolRepo, PseudonymsRepo, ExternalToolRepoMapper, ExternalToolRepo, ExternalToolService],
-	exports: [Lti11Service, ExternalToolService],
 	imports: [UserModule, LoggerModule, SchoolModule, AuthorizationModule, OauthProviderServiceModule, EncryptionModule],
+	exports: [Lti11Service, ExternalToolService],
 	controllers: [ToolController],
 	providers: [
 		Lti11Service,
