@@ -52,6 +52,8 @@ const submissionSchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 	comment: { type: String },
+	submitted: { type: Boolean, default: false },
+	graded: { type: Boolean, default: false },
 	grade: { type: Number, min: 0, max: 100 },
 	gradeComment: { type: String },
 	homeworkId: {
