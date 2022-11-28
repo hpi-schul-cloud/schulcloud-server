@@ -1,15 +1,15 @@
 import { validate } from 'class-validator';
-import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/external-tool.response';
-import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
-import { CustomParameterResponse } from '@src/modules/tool/controller/dto/response/custom-parameter.response';
-import { CustomParameterLocation } from '@src/modules/tool/interface/custom-parameter-location.enum';
-import { CustomParameterScope } from '@src/modules/tool/interface/custom-parameter-scope.enum';
-import { CustomParameterType } from '@src/modules/tool/interface/custom-parameter-type.enum';
-import { LtiMessageType } from '@src/modules/tool/interface/lti-message-type.enum';
-import { BasicToolConfigResponse } from '@src/modules/tool/controller/dto/response/basic-tool-config.response';
-import { Lti11ToolConfigResponse } from '@src/modules/tool/controller/dto/response/lti11-tool-config.response';
-import { Oauth2ToolConfigResponse } from '@src/modules/tool/controller/dto/response/oauth2-tool-config.response';
-import { LtiPrivacyPermission } from '@src/modules/tool/interface/lti-privacy-permission.enum';
+import { ToolConfigType } from '../../../interface/tool-config-type.enum';
+import { BasicToolConfigResponse } from './basic-tool-config.response';
+import { Lti11ToolConfigResponse } from './lti11-tool-config.response';
+import { Oauth2ToolConfigResponse } from './oauth2-tool-config.response';
+import { LtiMessageType } from '../../../interface/lti-message-type.enum';
+import { CustomParameterScopeParams } from '../../../interface/custom-parameter-scope.enum';
+import { CustomParameterLocationParams } from '../../../interface/custom-parameter-location.enum';
+import { CustomParameterTypeParams } from '../../../interface/custom-parameter-type.enum';
+import { CustomParameterResponse } from './custom-parameter.response';
+import { LtiPrivacyPermission } from '../../../interface/lti-privacy-permission.enum';
+import { ExternalToolResponse } from './external-tool.response';
 
 describe('external-tool-response', () => {
 	const externalToolResponseBasicConfig = new BasicToolConfigResponse({
@@ -39,9 +39,9 @@ describe('external-tool-response', () => {
 	const customParameterResponseParams: CustomParameterResponse = new CustomParameterResponse({
 		name: 'mockName',
 		default: 'mockDefault',
-		location: CustomParameterLocation.QUERY,
-		scope: CustomParameterScope.SCHOOL,
-		type: CustomParameterType.BOOLEAN,
+		location: CustomParameterLocationParams.QUERY,
+		scope: CustomParameterScopeParams.SCHOOL,
+		type: CustomParameterTypeParams.BOOLEAN,
 		regex: 'mockRegex',
 	});
 
