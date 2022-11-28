@@ -27,7 +27,7 @@ import { TaskModule } from '@src/modules/task';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { VideoConferenceModule } from '@src/modules/video-conference';
-import { ToolModule } from '@src/modules/tool';
+import { ToolApiModule } from '@src/modules/tool';
 import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
 
@@ -66,7 +66,7 @@ const serverModules = [
 	VideoConferenceModule,
 	OauthProviderModule,
 	SharingApiModule,
-	ToolModule,
+	ToolApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
