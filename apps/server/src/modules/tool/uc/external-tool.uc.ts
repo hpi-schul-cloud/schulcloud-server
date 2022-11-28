@@ -72,8 +72,8 @@ export class ExternalToolUc {
 		}
 	}
 
-	async getExternalTool(toolId: string, currentUser: ICurrentUser): Promise<ExternalToolDO> {
-		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
+	async getExternalTool(userId: string, toolId: string): Promise<ExternalToolDO> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
 		const tool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);

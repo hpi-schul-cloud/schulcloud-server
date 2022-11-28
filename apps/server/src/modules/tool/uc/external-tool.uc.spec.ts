@@ -370,7 +370,7 @@ describe('ExternalToolUc', () => {
 			const { currentUser, externalToolDO } = setup();
 			externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
 
-			const result: ExternalToolDO = await uc.getExternalTool('toolId', currentUser);
+			const result: ExternalToolDO = await uc.getExternalTool(currentUser.userId, 'toolId');
 
 			expect(result).toEqual(externalToolDO);
 		});
@@ -378,7 +378,7 @@ describe('ExternalToolUc', () => {
 		it('should fetch a oauth2 tool and populate the config with external data', async () => {
 			const { currentUser, externalToolDO } = setupOauth2();
 
-			const result: ExternalToolDO = await uc.getExternalTool('toolId', currentUser);
+			const result: ExternalToolDO = await uc.getExternalTool(currentUser.userId, 'toolId');
 
 			expect(result).toEqual(externalToolDO);
 		});

@@ -68,7 +68,7 @@ export class ToolController {
 		@Param() params: ToolIdParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ExternalToolResponse> {
-		const externalToolDO: ExternalToolDO = await this.externalToolUc.getExternalTool(params.toolId, currentUser);
+		const externalToolDO: ExternalToolDO = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(externalToolDO);
 		return mapped;
 	}
