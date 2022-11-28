@@ -1,12 +1,12 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 
 import { InternalServerErrorException } from '@nestjs/common';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { CourseGroup } from './coursegroup.entity';
 import type { File } from './file.entity';
 import { School } from './school.entity';
 import type { Task } from './task.entity';
-import { EntityId } from '../types';
 import type { User } from './user.entity';
 
 export interface ISubmissionProperties {
@@ -142,10 +142,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	}
 
 	public isSubmitted(): boolean {
-		// Always submitted for now, but can be changed in future.
-		const isSubmitted = true;
-
-		return isSubmitted;
+		return this.submitted;
 	}
 
 	public isSubmittedForUser(user: User): boolean {
