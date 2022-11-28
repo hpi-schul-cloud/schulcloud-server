@@ -6,7 +6,7 @@ import {
 	SortOrder,
 	ToolConfigType,
 } from '@shared/domain';
-import { BaseDORepo, EntityProperties } from '@shared/repo';
+import { BaseDORepo, EntityProperties, Scope } from '@shared/repo';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityName } from '@mikro-orm/core';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
@@ -75,10 +75,10 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 	async find(query: Partial<ExternalTool>, options?: IFindOptions<ExternalToolDO>): Promise<Page<ExternalToolDO>> {
 		const pagination: IPagination = options?.pagination || {};
 		const order: QueryOrderMap<ExternalTool> = this.sortingMapper.mapDOSortOrderToQueryOrder(options?.order || {});
-		const scope: ExternalToolScope = new ExternalToolScope()
-			.allowEmptyQuery(true)
+		const scope: Scope<ExternalTool> = new ExternalToolScope()
 			.byName(query.name)
-			.byHidden(query.isHidden);
+			.byHidden(query.isHidden)
+			.allowEmptyQuery(true);
 
 		if (order._id == null) {
 			order._id = SortOrder.asc;

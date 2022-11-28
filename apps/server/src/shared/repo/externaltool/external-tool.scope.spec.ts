@@ -4,7 +4,8 @@ describe('ExternalToolScope', () => {
 	let scope: ExternalToolScope;
 
 	beforeEach(() => {
-		scope = new ExternalToolScope().allowEmptyQuery(true);
+		scope = new ExternalToolScope();
+		scope.allowEmptyQuery(true);
 	});
 
 	describe('byName', () => {
