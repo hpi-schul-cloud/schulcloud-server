@@ -8,8 +8,10 @@ import {
 	ExternalToolDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ExternalTool } from '@shared/domain';
-import { externalToolFactory } from '@shared/testing';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { ExternalToolService } from './external-tool.service';
 import { ToolConfigType } from '../interface/tool-config-type.enum';
 
@@ -17,7 +19,9 @@ describe('ExternalToolService', () => {
 	let module: TestingModule;
 	let service: ExternalToolService;
 
-	let repo: DeepMocked<ExternalToolRepo>;
+	let externalToolRepo: DeepMocked<ExternalToolRepo>;
+	let schoolToolRepo: DeepMocked<SchoolExternalToolRepo>;
+	let courseToolRepo: DeepMocked<CourseExternalToolRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -27,18 +31,28 @@ describe('ExternalToolService', () => {
 					provide: ExternalToolRepo,
 					useValue: createMock<ExternalToolRepo>(),
 				},
+				{
+					provide: SchoolExternalToolRepo,
+					useValue: createMock<SchoolExternalToolRepo>(),
+				},
+				{
+					provide: CourseExternalToolRepo,
+					useValue: createMock<CourseExternalToolRepo>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(ExternalToolService);
-		repo = module.get(ExternalToolRepo);
+		externalToolRepo = module.get(ExternalToolRepo);
+		schoolToolRepo = module.get(SchoolExternalToolRepo);
+		courseToolRepo = module.get(CourseExternalToolRepo);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	function setup() {
+	const setup = () => {
 		const basicToolConfigDO: BasicToolConfigDO = new BasicToolConfigDO({
 			type: ToolConfigType.BASIC,
 			baseUrl: 'mockUrl',
@@ -52,7 +66,7 @@ describe('ExternalToolService', () => {
 			regex: 'mockRegex',
 		});
 		const externalToolDO: ExternalToolDO = new ExternalToolDO({
-			id: '1',
+			id: 'tool1',
 			name: 'mockName',
 			url: 'mockUrl',
 			logoUrl: 'mockLogoUrl',
@@ -70,69 +84,116 @@ describe('ExternalToolService', () => {
 			baseUrl: 'mockUrl',
 		});
 
-		const externalTool: ExternalTool = externalToolFactory.buildWithId();
-
 		return {
 			externalToolDO,
 			oauth2ToolConfigDO,
-			externalTool,
 			customParameterDO,
 		};
-	}
+	};
+
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
 
 	describe('createExternalTool', () => {
 		it('should save DO', async () => {
 			const { externalToolDO } = setup();
-			const saved = repo.save.mockResolvedValue(externalToolDO);
+			externalToolRepo.save.mockResolvedValue(externalToolDO);
 
 			const expected = await service.createExternalTool(externalToolDO);
 
 			expect(expected).toEqual(externalToolDO);
-			expect(saved).toHaveBeenCalledWith(externalToolDO);
+			expect(externalToolRepo.save).toHaveBeenCalledWith(externalToolDO);
+		});
+	});
+
+	describe('deleteExternalTool', () => {
+		const setupDelete = () => {
+			const schoolExternalToolDO: SchoolExternalToolDO = new SchoolExternalToolDO({
+				id: 'schoolTool1',
+				toolId: 'tool1',
+				schoolId: 'school1',
+				parameters: [],
+				toolVersion: 1,
+			});
+
+			schoolToolRepo.findByToolId.mockResolvedValue([schoolExternalToolDO]);
+
+			return { schoolExternalToolDO };
+		};
+
+		it('should delete all related CourseExternalTools', async () => {
+			const toolId = 'tool1';
+			setup();
+			const { schoolExternalToolDO } = setupDelete();
+
+			await service.deleteExternalTool(toolId);
+
+			expect(courseToolRepo.deleteBySchoolExternalToolIds).toHaveBeenCalledWith([schoolExternalToolDO.id]);
+		});
+
+		it('should delete all related SchoolExternalTools', async () => {
+			const toolId = 'tool1';
+			setup();
+			setupDelete();
+
+			await service.deleteExternalTool(toolId);
+
+			expect(schoolToolRepo.deleteByToolId).toHaveBeenCalledWith(toolId);
+		});
+
+		it('should delete the ExternalTool', async () => {
+			const toolId = 'tool1';
+			setup();
+			setupDelete();
+
+			await service.deleteExternalTool(toolId);
+
+			expect(externalToolRepo.deleteById).toHaveBeenCalledWith(toolId);
 		});
 	});
 
 	describe('isNameUnique', () => {
 		it('should find a tool with this name', async () => {
 			const { externalToolDO } = setup();
-			repo.findByName.mockResolvedValue(null);
+			externalToolRepo.findByName.mockResolvedValue(null);
 
 			const expected: boolean = await service.isNameUnique(externalToolDO);
 
 			expect(expected).toEqual(true);
-			expect(repo.findByName).toHaveBeenCalledWith(externalToolDO.name);
+			expect(externalToolRepo.findByName).toHaveBeenCalledWith(externalToolDO.name);
 		});
 
 		it('should not find a tool with this name', async () => {
-			const { externalToolDO, externalTool } = setup();
-			repo.findByName.mockResolvedValue(externalTool);
+			const { externalToolDO } = setup();
+			externalToolRepo.findByName.mockResolvedValue(externalToolDO);
 
 			const expected: boolean = await service.isNameUnique(externalToolDO);
 
 			expect(expected).toEqual(false);
-			expect(repo.findByName).toHaveBeenCalledWith(externalToolDO.name);
+			expect(externalToolRepo.findByName).toHaveBeenCalledWith(externalToolDO.name);
 		});
 	});
 
 	describe('isClientIdUnique', () => {
 		it('should find a tool with this client id', async () => {
 			const { oauth2ToolConfigDO } = setup();
-			repo.findByOAuth2ConfigClientId.mockResolvedValue(null);
+			externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(null);
 
 			const expected: boolean = await service.isClientIdUnique(oauth2ToolConfigDO);
 
 			expect(expected).toEqual(true);
-			expect(repo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(oauth2ToolConfigDO.clientId);
+			expect(externalToolRepo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(oauth2ToolConfigDO.clientId);
 		});
 
 		it('should not find a tool with this client id', async () => {
-			const { oauth2ToolConfigDO, externalTool } = setup();
-			repo.findByOAuth2ConfigClientId.mockResolvedValue(externalTool);
+			const { externalToolDO, oauth2ToolConfigDO } = setup();
+			externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(externalToolDO);
 
 			const expected: boolean = await service.isClientIdUnique(oauth2ToolConfigDO);
 
 			expect(expected).toEqual(false);
-			expect(repo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(oauth2ToolConfigDO.clientId);
+			expect(externalToolRepo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(oauth2ToolConfigDO.clientId);
 		});
 	});
 

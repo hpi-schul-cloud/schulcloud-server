@@ -33,6 +33,7 @@ import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method
 import { ToolConfigType } from '../interface/tool-config-type.enum';
 import { LtiMessageType } from '../interface/lti-message-type.enum';
 import { LtiPrivacyPermission } from '../interface/lti-privacy-permission.enum';
+import { Lti11LaunchParams } from './dto/lti11-launch.params';
 
 describe('ToolController', () => {
 	let module: TestingModule;
@@ -317,6 +318,18 @@ describe('ToolController', () => {
 
 				expect(expected).toEqual(externalToolResponse);
 			});
+		});
+	});
+
+	describe('deleteExternalTool', () => {
+		it('should call the uc', async () => {
+			const params: Lti11LaunchParams = new Lti11LaunchParams();
+			params.toolId = 'toolId';
+			const currentUser: ICurrentUser = {} as ICurrentUser;
+
+			await controller.deleteExternalTool(params, currentUser);
+
+			expect(externalToolUc.deleteExternalTool).toHaveBeenCalledWith(params.toolId, currentUser);
 		});
 	});
 });

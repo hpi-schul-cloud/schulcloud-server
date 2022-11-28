@@ -341,4 +341,37 @@ describe('ExternalToolUc', () => {
 			});
 		});
 	});
+
+	describe('deleteExternalTool', () => {
+		const setupDelete = () => {
+			const toolId = 'toolId';
+			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+			const user: User = userFactory.buildWithId();
+
+			authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+			return {
+				toolId,
+				currentUser,
+				user,
+			};
+		};
+
+		it('should check that the user has TOOL_ADMIN permission', async () => {
+			const { toolId, currentUser, user } = setupDelete();
+
+			await uc.deleteExternalTool(toolId, currentUser);
+
+			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
+			expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+		});
+
+		it('should call the externalToolService', async () => {
+			const { toolId, currentUser } = setupDelete();
+
+			await uc.deleteExternalTool(toolId, currentUser);
+
+			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(toolId);
+		});
+	});
 });

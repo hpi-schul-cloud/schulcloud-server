@@ -19,8 +19,7 @@ export class ExternalToolUc {
 	) {}
 
 	async createExternalTool(externalToolDO: ExternalToolDO, currentUser: ICurrentUser): Promise<ExternalToolDO> {
-		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
-		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+		await this.ensurePermission(currentUser);
 
 		await this.checkValidation(externalToolDO);
 
@@ -49,6 +48,11 @@ export class ExternalToolUc {
 		return created;
 	}
 
+	private async ensurePermission(currentUser: ICurrentUser) {
+		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+	}
+
 	private async checkValidation(externalToolDO: ExternalToolDO) {
 		if (!(await this.externalToolService.isNameUnique(externalToolDO))) {
 			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`);
@@ -72,7 +76,9 @@ export class ExternalToolUc {
 		}
 	}
 
-	async deleteExternalTool(toolId: string): Promise<void> {
+	async deleteExternalTool(toolId: string, currentUser: ICurrentUser): Promise<void> {
+		await this.ensurePermission(currentUser);
+
 		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);
 		return promise;
 	}

@@ -163,6 +163,9 @@ describe('ExternalToolRepo', () => {
 			const result: ExternalToolDO = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
+			expect(result.id).toBeDefined();
+			expect(result.updatedAt).toBeDefined();
+			expect(result.createdAt).toBeDefined();
 		});
 
 		it('should save an oauth2 tool correctly', async () => {
@@ -178,6 +181,9 @@ describe('ExternalToolRepo', () => {
 			const result: ExternalToolDO = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
+			expect(result.id).toBeDefined();
+			expect(result.updatedAt).toBeDefined();
+			expect(result.createdAt).toBeDefined();
 		});
 
 		it('should save an lti11 tool correctly', async () => {
@@ -196,6 +202,9 @@ describe('ExternalToolRepo', () => {
 			const result: ExternalToolDO = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
+			expect(result.id).toBeDefined();
+			expect(result.updatedAt).toBeDefined();
+			expect(result.createdAt).toBeDefined();
 		});
 	});
 });

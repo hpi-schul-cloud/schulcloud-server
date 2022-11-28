@@ -68,7 +68,7 @@ export class ToolController {
 		@Param() params: Lti11LaunchParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(params.toolId);
+		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(params.toolId, currentUser);
 		return promise;
 	}
 }
