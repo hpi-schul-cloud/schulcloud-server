@@ -58,7 +58,7 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ExternalToolResponse> {
 		const externalToolDO: ExternalToolDO = this.externalToolDOMapper.mapRequestToExternalToolDO(externalToolParams);
-		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(externalToolDO, currentUser);
+		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(externalToolDO, currentUser.userId);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
 		return mapped;
 	}
@@ -68,7 +68,7 @@ export class ToolController {
 		@Param() params: Lti11LaunchParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(params.toolId, currentUser);
+		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(params.toolId, currentUser.userId);
 		return promise;
 	}
 }

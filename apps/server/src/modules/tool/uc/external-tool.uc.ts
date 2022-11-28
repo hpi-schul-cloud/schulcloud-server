@@ -1,5 +1,5 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { ICurrentUser, Permission, User } from '@shared/domain';
+import { Permission, User } from '@shared/domain';
 import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { AuthorizationService } from '@src/modules/authorization';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
@@ -18,8 +18,8 @@ export class ExternalToolUc {
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
 	) {}
 
-	async createExternalTool(externalToolDO: ExternalToolDO, currentUser: ICurrentUser): Promise<ExternalToolDO> {
-		await this.ensurePermission(currentUser);
+	async createExternalTool(externalToolDO: ExternalToolDO, userId: string): Promise<ExternalToolDO> {
+		await this.ensurePermission(userId);
 
 		await this.checkValidation(externalToolDO);
 
@@ -48,8 +48,8 @@ export class ExternalToolUc {
 		return created;
 	}
 
-	private async ensurePermission(currentUser: ICurrentUser) {
-		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
+	private async ensurePermission(userId: string) {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 	}
 
@@ -76,8 +76,8 @@ export class ExternalToolUc {
 		}
 	}
 
-	async deleteExternalTool(toolId: string, currentUser: ICurrentUser): Promise<void> {
-		await this.ensurePermission(currentUser);
+	async deleteExternalTool(toolId: string, userId: string): Promise<void> {
+		await this.ensurePermission(userId);
 
 		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);
 		return promise;

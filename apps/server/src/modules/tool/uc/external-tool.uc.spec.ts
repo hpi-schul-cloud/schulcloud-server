@@ -158,7 +158,7 @@ describe('ExternalToolUc', () => {
 			it('should successfully check the user permission with the authorization service', async () => {
 				const { externalToolDO, currentUser, user } = setup();
 
-				await uc.createExternalTool(externalToolDO, currentUser);
+				await uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
 			});
@@ -169,7 +169,7 @@ describe('ExternalToolUc', () => {
 					throw new UnauthorizedException();
 				});
 
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser);
+				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -181,7 +181,7 @@ describe('ExternalToolUc', () => {
 				const { externalToolDO, currentUser } = setup();
 				externalToolDO.config = oauth2ConfigWithExternalData;
 
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser);
+				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				await expect(result).resolves.not.toThrow(UnprocessableEntityException);
 			});
@@ -192,7 +192,7 @@ describe('ExternalToolUc', () => {
 				externalToolDO.config = oauth2ConfigWithExternalData;
 				externalToolService.isClientIdUnique.mockResolvedValue(false);
 
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser);
+				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				await expect(result).rejects.toThrow(UnprocessableEntityException);
 			});
@@ -201,7 +201,7 @@ describe('ExternalToolUc', () => {
 				const { externalToolDO, currentUser } = setup();
 				externalToolService.isNameUnique.mockResolvedValue(false);
 
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser);
+				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				await expect(result).rejects.toThrow(UnprocessableEntityException);
 			});
@@ -210,7 +210,7 @@ describe('ExternalToolUc', () => {
 				const { externalToolDO, currentUser } = setup();
 				externalToolService.hasDuplicateAttributes.mockReturnValue(true);
 
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser);
+				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				await expect(result).rejects.toThrow(UnprocessableEntityException);
 			});
@@ -219,7 +219,7 @@ describe('ExternalToolUc', () => {
 				const { externalToolDO, currentUser } = setup();
 				externalToolService.validateByRegex.mockReturnValue(false);
 
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser);
+				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				await expect(result).rejects.toThrow(UnprocessableEntityException);
 			});
@@ -230,7 +230,7 @@ describe('ExternalToolUc', () => {
 				const { externalToolDO, currentUser, basicConfig } = setup();
 				externalToolDO.config = basicConfig;
 
-				await uc.createExternalTool(externalToolDO, currentUser);
+				await uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				expect(externalToolService.createExternalTool).toHaveBeenCalled();
 			});
@@ -239,7 +239,7 @@ describe('ExternalToolUc', () => {
 				const { externalToolDO, currentUser, basicConfig } = setup();
 				externalToolDO.config = basicConfig;
 
-				const result: ExternalToolDO = await uc.createExternalTool(externalToolDO, currentUser);
+				const result: ExternalToolDO = await uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				expect(result).toEqual(externalToolDO);
 			});
@@ -266,7 +266,7 @@ describe('ExternalToolUc', () => {
 			it('should create a new oauth2 client with the oauth provider service', async () => {
 				const { externalToolDO, currentUser, oauthClient } = setupOauth2();
 
-				await uc.createExternalTool(externalToolDO, currentUser);
+				await uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				expect(oauthProviderService.createOAuth2Client).toHaveBeenCalledWith(oauthClient);
 			});
@@ -274,7 +274,7 @@ describe('ExternalToolUc', () => {
 			it('should save auth2 tool', async () => {
 				const { externalToolDO, currentUser } = setupOauth2();
 
-				await uc.createExternalTool(externalToolDO, currentUser);
+				await uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				expect(externalToolService.createExternalTool).toHaveBeenCalled();
 			});
@@ -282,7 +282,7 @@ describe('ExternalToolUc', () => {
 			it('should return external tool with external oauth client data', async () => {
 				const { externalToolDO, currentUser } = setupOauth2();
 
-				const result: ExternalToolDO = await uc.createExternalTool(externalToolDO, currentUser);
+				const result: ExternalToolDO = await uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				expect(result).toEqual(externalToolDO);
 			});
@@ -312,7 +312,7 @@ describe('ExternalToolUc', () => {
 				externalToolDO.config = lti11Config;
 				oAuthEncryptionService.encrypt.mockReturnValue(encryptedSecret);
 
-				await uc.createExternalTool(externalToolDO, currentUser);
+				await uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				expect(externalToolService.createExternalTool).toHaveBeenCalledWith(
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -325,7 +325,7 @@ describe('ExternalToolUc', () => {
 				const { externalToolDO, currentUser } = setup();
 				externalToolDO.config = lti11Config;
 
-				await uc.createExternalTool(externalToolDO, currentUser);
+				await uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				expect(externalToolService.createExternalTool).toHaveBeenCalled();
 			});
@@ -335,7 +335,7 @@ describe('ExternalToolUc', () => {
 				const { externalToolDO, currentUser } = setup();
 				externalToolDO.config = lti11Config;
 
-				const result: ExternalToolDO = await uc.createExternalTool(externalToolDO, currentUser);
+				const result: ExternalToolDO = await uc.createExternalTool(externalToolDO, currentUser.userId);
 
 				expect(result).toEqual(externalToolDO);
 			});
@@ -360,7 +360,7 @@ describe('ExternalToolUc', () => {
 		it('should check that the user has TOOL_ADMIN permission', async () => {
 			const { toolId, currentUser, user } = setupDelete();
 
-			await uc.deleteExternalTool(toolId, currentUser);
+			await uc.deleteExternalTool(toolId, currentUser.userId);
 
 			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
 			expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
@@ -369,7 +369,7 @@ describe('ExternalToolUc', () => {
 		it('should call the externalToolService', async () => {
 			const { toolId, currentUser } = setupDelete();
 
-			await uc.deleteExternalTool(toolId, currentUser);
+			await uc.deleteExternalTool(toolId, currentUser.userId);
 
 			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(toolId);
 		});

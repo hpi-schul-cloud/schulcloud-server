@@ -329,7 +329,7 @@ describe('ToolController', () => {
 
 			await controller.deleteExternalTool(params, currentUser);
 
-			expect(externalToolUc.deleteExternalTool).toHaveBeenCalledWith(params.toolId, currentUser);
+			expect(externalToolUc.deleteExternalTool).toHaveBeenCalledWith(params.toolId, currentUser.userId);
 		});
 	});
 });
