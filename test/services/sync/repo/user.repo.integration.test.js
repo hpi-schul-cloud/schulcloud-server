@@ -68,7 +68,7 @@ describe('user repo', () => {
 			const inputAccount = {
 				username: email,
 			};
-			const { user, account } = await UserRepo.createUserAndAccount(inputUser, inputAccount);
+			const { user, account } = await UserRepo.createUserAndAccount(inputUser, inputAccount, school);
 			expect(user._id).to.be.not.undefined;
 			expect(account.userId.toString()).to.be.equal(user._id.toString());
 			expect(account.activated).to.be.true;
@@ -105,7 +105,7 @@ describe('user repo', () => {
 				...inputUser,
 				ldapId: firstLdapId,
 			};
-			await UserRepo.createUserAndAccount(inputUserFirst, inputAccount);
+			await UserRepo.createUserAndAccount(inputUserFirst, inputAccount, school);
 
 			const secondLdapId = 'newLdapId';
 			const inputUserSecond = {
@@ -113,7 +113,7 @@ describe('user repo', () => {
 				ldapId: secondLdapId,
 			};
 			try {
-				await UserRepo.createUserAndAccount(inputUserSecond, inputAccount);
+				await UserRepo.createUserAndAccount(inputUserSecond, inputAccount, school);
 			} catch (error) {
 				expect(error).to.be.an.instanceof(BadRequest);
 				expect(error.message).to.contain(firstLdapId);

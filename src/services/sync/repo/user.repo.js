@@ -41,7 +41,7 @@ const findUsersByEmail = async (email) => userModel.find({ email: email.toLowerC
 const findUserBySchoolAndName = async (schoolId, firstName, lastName) =>
 	userModel.find({ schoolId, firstName, lastName }).lean().exec();
 
-const checkCreate = async (email, school) => {
+const checkCreate = async (email, userSchool) => {
 	if (!email) {
 		throw new BadRequest(`User cannot be created. Email is missing`);
 	}
@@ -49,10 +49,19 @@ const checkCreate = async (email, school) => {
 	if (users.length !== 0) {
 		const foundUser = users[0];
 		const userExistsInSchool = foundUser.schoolId;
-		throw new BadRequest(
-			`User cannot be created. User with the same email already exists in school ${userExistsInSchool} with ldapId:${foundUser.ldapId}`,
-			{ userId: foundUser._id, ldapId: foundUser.ldapId, existsInSchool: userExistsInSchool }
-		);
+		const schools = await SchoolRepo.findSchoolById(foundUser.schoolId);
+		if (schools.length !== 0) {
+			const foundSchool = schools[0];
+			throw new BadRequest(
+				`User cannot be created in school ${userSchool.name} (${userSchool._id}). User with the same email already exists in school ${foundSchool.name} ${userExistsInSchool} with ldapId:${foundUser.ldapId}`,
+				{ userId: foundUser._id, ldapId: foundUser.ldapId, existsInSchool: userExistsInSchool, userSchool: userSchool.name, userSchoolId: userSchool._id,existsInSchoolName: foundSchool.name,}
+			);
+		} else {
+			throw new BadRequest(
+				`User cannot be created in school ${userSchool.name} (${userSchool._id}). User with the same email already exists in school ${userExistsInSchool} with ldapId:${foundUser.ldapId}`,
+				{ userId: foundUser._id, ldapId: foundUser.ldapId, existsInSchool: userExistsInSchool, userSchool: userSchool.name, userSchoolId: userSchool._id}
+			);
+		}
 	}
 };
 
