@@ -58,7 +58,7 @@ export class ExternalToolUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
-		const tools: Page<ExternalToolDO> = await this.externalToolService.findExternalTool(query, options);
+		const tools: Page<ExternalToolDO> = await this.externalToolService.findExternalTools(query, options);
 		tools.data = await Promise.all(
 			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO> => {
 				if (tool.config instanceof Oauth2ToolConfigDO) {

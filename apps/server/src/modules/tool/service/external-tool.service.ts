@@ -26,7 +26,10 @@ export class ExternalToolService {
 		return duplicate == null;
 	}
 
-	async findExternalTool(query: Partial<ExternalToolDO>, options: IFindOptions<ExternalToolDO>) {
+	async findExternalTools(
+		query: Partial<ExternalToolDO>,
+		options: IFindOptions<ExternalToolDO>
+	): Promise<Page<ExternalToolDO>> {
 		const tools: Page<ExternalToolDO> = await this.externalToolRepo.find(query, options);
 		return tools;
 	}

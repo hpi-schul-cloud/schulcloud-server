@@ -198,7 +198,7 @@ describe('ExternalToolService', () => {
 				},
 			};
 
-			await service.findExternalTool(query, options);
+			await service.findExternalTools(query, options);
 
 			expect(repo.find).toHaveBeenCalledWith(query, options);
 		});

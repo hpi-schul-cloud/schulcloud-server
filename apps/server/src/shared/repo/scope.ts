@@ -32,7 +32,7 @@ export class Scope<T> {
 		this._queries.push(query);
 	}
 
-	allowEmptyQuery(isEmptyQueryAllowed: boolean) {
+	allowEmptyQuery(isEmptyQueryAllowed: boolean): Scope<T> {
 		this._allowEmptyQuery = isEmptyQueryAllowed;
 		return this;
 	}

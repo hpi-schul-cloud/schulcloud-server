@@ -132,7 +132,7 @@ describe('ExternalToolUc', () => {
 		externalToolService.hasDuplicateAttributes.mockReturnValue(false);
 		externalToolService.validateByRegex.mockReturnValue(true);
 		externalToolService.createExternalTool.mockResolvedValue(externalToolDO);
-		externalToolService.findExternalTool.mockResolvedValue(page);
+		externalToolService.findExternalTools.mockResolvedValue(page);
 
 		return {
 			externalToolDO,
@@ -392,7 +392,7 @@ describe('ExternalToolUc', () => {
 
 			await uc.findExternalTool(currentUser.userId, query, options);
 
-			expect(externalToolService.findExternalTool).toHaveBeenCalledWith(query, options);
+			expect(externalToolService.findExternalTools).toHaveBeenCalledWith(query, options);
 		});
 
 		describe('findExternalTools with oauth2 config type', () => {
@@ -419,7 +419,7 @@ describe('ExternalToolUc', () => {
 					skipConsent: true,
 				});
 				const oauthClient: ProviderOauthClient = {};
-				externalToolService.findExternalTool.mockResolvedValue(page);
+				externalToolService.findExternalTools.mockResolvedValue(page);
 				oauthProviderService.getOAuth2Client.mockResolvedValue(oauthClient);
 
 				await uc.findExternalTool(currentUser.userId, query, options);
@@ -433,7 +433,7 @@ describe('ExternalToolUc', () => {
 
 		it('should return a page of externalToolDO', async () => {
 			const { currentUser, query, options, page } = setup();
-			externalToolService.findExternalTool.mockResolvedValue(page);
+			externalToolService.findExternalTools.mockResolvedValue(page);
 
 			const resultPage: Page<ExternalToolDO> = await uc.findExternalTool(currentUser.userId, query, options);
 
