@@ -1,5 +1,5 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { ICurrentUser, IFindOptions, Permission, User } from '@shared/domain';
+import { IFindOptions, Permission, User } from '@shared/domain';
 import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { AuthorizationService } from '@src/modules/authorization';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
