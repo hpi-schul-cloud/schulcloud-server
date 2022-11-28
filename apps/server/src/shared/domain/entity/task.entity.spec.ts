@@ -246,6 +246,24 @@ describe('Task Entity', () => {
 			});
 		});
 
+		describe('when finished is not populated', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({});
+				Object.assign(task, { finished: undefined });
+
+				return { task, user };
+			};
+
+			it('should throw an internal server exception', () => {
+				const { task, user } = setup();
+
+				expect(() => {
+					task.createTeacherStatusForUser(user);
+				}).toThrowError(InternalServerErrorException);
+			});
+		});
+
 		describe('when parent is a user', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -507,7 +525,25 @@ describe('Task Entity', () => {
 				const { task, user } = setup();
 
 				expect(() => {
-					task.createTeacherStatusForUser(user);
+					task.createStudentStatusForUser(user);
+				}).toThrowError(InternalServerErrorException);
+			});
+		});
+
+		describe('when finished is not populated', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({});
+				Object.assign(task, { finished: undefined });
+
+				return { task, user };
+			};
+
+			it('should throw an internal server exception', () => {
+				const { task, user } = setup();
+
+				expect(() => {
+					task.createStudentStatusForUser(user);
 				}).toThrowError(InternalServerErrorException);
 			});
 		});
