@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	courseFactory,
 	courseGroupFactory,
@@ -235,6 +235,78 @@ describe('Lesson Entity', () => {
 			const schoolId = lesson.getSchoolId();
 
 			expect(schoolId).toEqual(course.school.id);
+		});
+	});
+
+	describe('getStudentIds is called', () => {
+		describe('when course with students exists', () => {
+			const setup = () => {
+				const studentId1 = new ObjectId().toHexString();
+				const studentId2 = new ObjectId().toHexString();
+				const studentId3 = new ObjectId().toHexString();
+				const studentIds = [studentId1, studentId2, studentId3];
+
+				const course = courseFactory.build();
+				const lesson = lessonFactory.buildWithId({ course });
+
+				const spy = jest.spyOn(course, 'getStudentIds').mockReturnValueOnce(studentIds);
+
+				return { lesson, studentIds, spy };
+			};
+
+			it('should call getStudentIds in course', () => {
+				const { lesson, spy } = setup();
+
+				lesson.getStudentIds();
+
+				expect(spy).toBeCalled();
+			});
+
+			it('should return the userIds of the students', () => {
+				const { lesson, studentIds } = setup();
+
+				const result = lesson.getStudentIds();
+
+				expect(result.length).toEqual(3);
+				expect(result).toContain(studentIds[0]);
+				expect(result).toContain(studentIds[1]);
+				expect(result).toContain(studentIds[2]);
+			});
+		});
+
+		describe('when coursegroup with students exists', () => {
+			const setup = () => {
+				const studentId1 = new ObjectId().toHexString();
+				const studentId2 = new ObjectId().toHexString();
+				const studentId3 = new ObjectId().toHexString();
+				const studentIds = [studentId1, studentId2, studentId3];
+
+				const courseGroup = courseGroupFactory.build();
+				const lesson = lessonFactory.buildWithId({ course: courseGroup });
+
+				const spy = jest.spyOn(courseGroup, 'getStudentIds').mockReturnValueOnce(studentIds);
+
+				return { lesson, spy, studentIds };
+			};
+
+			it('should call getStudentIds in course', () => {
+				const { lesson, spy } = setup();
+
+				lesson.getStudentIds();
+
+				expect(spy).toBeCalled();
+			});
+
+			it('should return the userIds of the students', () => {
+				const { lesson, studentIds } = setup();
+
+				const result = lesson.getStudentIds();
+
+				expect(result.length).toEqual(3);
+				expect(result).toContain(studentIds[0]);
+				expect(result).toContain(studentIds[1]);
+				expect(result).toContain(studentIds[2]);
+			});
 		});
 	});
 });
