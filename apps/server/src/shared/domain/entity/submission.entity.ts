@@ -1,12 +1,12 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 
-import { EntityId } from '../types';
-
+import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { CourseGroup } from './coursegroup.entity';
 import type { File } from './file.entity';
 import { School } from './school.entity';
 import type { Task } from './task.entity';
+import { EntityId } from '../types';
 import type { User } from './user.entity';
 
 export interface ISubmissionProperties {
@@ -92,15 +92,101 @@ export class Submission extends BaseEntityWithTimestamps {
 		}
 	}
 
-	isGraded(): boolean {
-		const isGraded =
-			(typeof this.grade === 'number' && this.grade >= 0) ||
-			(typeof this.gradeComment === 'string' && this.gradeComment.length > 0) ||
-			(this.gradeFiles !== undefined && this.gradeFiles.length > 0);
+	private getCourseGroupStudentIds(): EntityId[] {
+		let courseGroupMemberIds: EntityId[] = [];
+
+		if (this.courseGroup) {
+			courseGroupMemberIds = this.courseGroup.getStudentIds();
+		}
+
+		return courseGroupMemberIds;
+	}
+
+	private getTeamMemberIds(): EntityId[] {
+		if (!this.teamMembers) {
+			throw new InternalServerErrorException(
+				'Submission.teamMembers is undefined. The submission need to be populated.'
+			);
+		}
+
+		const teamMemberObjectIds = this.teamMembers.getIdentifiers('_id');
+		const teamMemberIds = teamMemberObjectIds.map((id): string => id.toString());
+
+		return teamMemberIds;
+	}
+
+	private getGradeFileIds(): EntityId[] {
+		const gradeFilesObjectIds = this.gradeFiles.getIdentifiers('_id');
+		const gradeFilesIds = gradeFilesObjectIds.map((id): string => id.toString());
+
+		return gradeFilesIds;
+	}
+
+	private hasGrade(): boolean {
+		const gradeExists = typeof this.grade === 'number' && this.grade >= 0;
+
+		return gradeExists;
+	}
+
+	private hasGradeComment(): boolean {
+		const gradeCommentExists = typeof this.gradeComment === 'string' && this.gradeComment.length > 0;
+
+		return gradeCommentExists;
+	}
+
+	private hasGradeFiles(): boolean {
+		const gradedFileIds = this.getGradeFileIds();
+		const gradeFilesExists = gradedFileIds.length > 0;
+
+		return gradeFilesExists;
+	}
+
+	public isSubmitted(): boolean {
+		// Always submitted for now, but can be changed in future.
+		const isSubmitted = true;
+
+		return isSubmitted;
+	}
+
+	public isSubmittedForUser(user: User): boolean {
+		const isMember = this.isUserSubmitter(user);
+		const isSubmitted = this.isSubmitted();
+		const isSubmittedForUser = isMember && isSubmitted;
+
+		return isSubmittedForUser;
+	}
+
+	// Bad that the logic is needed to expose the userIds, but is used in task for now.
+	// Check later if it can be replaced and remove all related code.
+	public getSubmitterIds(): EntityId[] {
+		const creatorId = this.student.id;
+		const teamMemberIds = this.getTeamMemberIds();
+		const courseGroupMemberIds = this.getCourseGroupStudentIds();
+		const memberIds = [creatorId, ...teamMemberIds, ...courseGroupMemberIds];
+
+		const uniqueMemberIds = [...new Set(memberIds)];
+
+		return uniqueMemberIds;
+	}
+
+	public isUserSubmitter(user: User): boolean {
+		const memberIds = this.getSubmitterIds();
+		const isMember = memberIds.some((id) => id === user.id);
+
+		return isMember;
+	}
+
+	public isGraded(): boolean {
+		const isGraded = this.hasGrade() || this.hasGradeComment() || this.hasGradeFiles();
+
 		return isGraded;
 	}
 
-	getStudentId(): EntityId {
-		return this.student.id;
+	public isGradedForUser(user: User): boolean {
+		const isMember = this.isUserSubmitter(user);
+		const isGraded = this.isGraded();
+		const isGradedForUser = isMember && isGraded;
+
+		return isGradedForUser;
 	}
 }
