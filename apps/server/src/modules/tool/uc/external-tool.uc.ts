@@ -54,7 +54,7 @@ export class ExternalToolUc {
 		externalToolDO: ExternalToolDO,
 		currentUser: ICurrentUser
 	): Promise<ExternalToolDO> {
-		// TODO: get, override obj expect undefined, save
+		// TODO: get, increase version, override obj expect undefined, save
 		// TODO: clientId immutable because of hydra secret
 		await this.externalToolService.createExternalTool(externalToolDO);
 		return {} as ExternalToolDO;

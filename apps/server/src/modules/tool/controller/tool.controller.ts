@@ -66,8 +66,7 @@ export class ToolController {
 		return mapped;
 	}
 
-	// TODO: POST instead of put to handle increasement of version number on server side?
-	@Put('/:toolId')
+	@Post('/:toolId')
 	@ApiOkResponse({ description: 'The Tool has been successfully updated.', type: ExternalToolResponse })
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
