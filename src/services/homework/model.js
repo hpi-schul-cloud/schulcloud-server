@@ -70,7 +70,7 @@ const submissionSchema = new Schema({
 query list with bigges impact of database load
 schulcloud.submissions         find         {"$and": [{"teamMembers": 1}, {"studentId": {"$ne": 1}}] -> 1
 */
-submissionSchema.index({ schoolId: 1 }); // ? school exist not in submission entity
+submissionSchema.index({ schoolId: 1 });
 
 enableAuditLog(homeworkSchema);
 enableAuditLog(submissionSchema);

@@ -5,10 +5,12 @@ import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { CourseGroup } from './coursegroup.entity';
 import type { File } from './file.entity';
+import { School } from './school.entity';
 import type { Task } from './task.entity';
 import type { User } from './user.entity';
 
 export interface ISubmissionProperties {
+	school: School;
 	task: Task;
 	student: User;
 	courseGroup?: CourseGroup;
@@ -25,6 +27,10 @@ export interface ISubmissionProperties {
 @Entity({ tableName: 'submissions' })
 @Index({ properties: ['student', 'teamMembers'] })
 export class Submission extends BaseEntityWithTimestamps {
+	@ManyToOne('School', { fieldName: 'schoolId' })
+	@Index()
+	school: School;
+
 	@ManyToOne('Task', { fieldName: 'homeworkId' })
 	@Index()
 	task: Task;
@@ -65,6 +71,7 @@ export class Submission extends BaseEntityWithTimestamps {
 
 	constructor(props: ISubmissionProperties) {
 		super();
+		this.school = props.school;
 		this.student = props.student;
 		this.comment = props.comment;
 		this.task = props.task;
