@@ -6,18 +6,18 @@ import { EntityId } from '@shared/domain';
 import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { FileRecordMapper } from '../mapper/filerecord-mapper';
 
-const tasksQuery = [
+const orphanedFilesQuery = (collection: string) => [
 	{
 		$lookup: {
-			from: 'homeworks',
+			from: collection,
 			localField: 'parent',
 			foreignField: '_id',
-			as: 'homeworks',
+			as: collection,
 		},
 	},
 	{
 		$set: {
-			homework: { $arrayElemAt: ['$homeworks', 0] },
+			entity: { $arrayElemAt: [`$${collection}`, 0] },
 		},
 	},
 	{
@@ -36,11 +36,11 @@ const tasksQuery = [
 	{
 		$match: {
 			$or: [
-				{ homework: null },
+				{ entity: null },
 				{
 					$expr: {
 						$not: {
-							$in: ['$file_filerecord.fileId', '$homework.fileIds'],
+							$in: ['$file_filerecord.fileId', '$entity.fileIds'],
 						},
 					},
 				},
@@ -105,7 +105,11 @@ export class OrphanedFilesRepo {
 		let query;
 
 		if (parentType === FileRecordParentType.Task) {
-			query = tasksQuery;
+			query = orphanedFilesQuery('homeworks');
+		}
+
+		if (parentType === FileRecordParentType.Submission) {
+			query = orphanedFilesQuery('submissions');
 		}
 
 		const result = await this._em.aggregate(FileRecord, query);
