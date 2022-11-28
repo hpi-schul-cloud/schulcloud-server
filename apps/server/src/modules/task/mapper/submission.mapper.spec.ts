@@ -21,6 +21,7 @@ describe('Submission Mapper', () => {
 			const expected = new SubmissionStatusResponse({
 				id: submission.id,
 				creatorId: submission.student.id,
+				isSubmitted: submission.isSubmitted(),
 				grade: submission.grade,
 			});
 

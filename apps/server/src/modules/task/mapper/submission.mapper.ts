@@ -6,6 +6,7 @@ export class SubmissionMapper {
 		const dto = new SubmissionStatusResponse({
 			id: submission.id,
 			creatorId: submission.student.id,
+			isSubmitted: submission.isSubmitted(),
 			grade: submission.grade,
 		});
 
