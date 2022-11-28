@@ -10,6 +10,19 @@ const yesterday = new Date(Date.now() - 86400000);
 class TaskFactory extends BaseFactory<Task, ITaskProperties> {
 	draft(): this {
 		const params: DeepPartial<ITaskProperties> = { private: true };
+
+		return this.params(params);
+	}
+
+	isPlanned(): this {
+		const params: DeepPartial<ITaskProperties> = { private: false, availableDate: new Date(Date.now() + 10000) };
+
+		return this.params(params);
+	}
+
+	isPublished(): this {
+		const params: DeepPartial<ITaskProperties> = { private: false, availableDate: new Date(Date.now() - 10000) };
+
 		return this.params(params);
 	}
 
