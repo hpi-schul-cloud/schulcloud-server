@@ -6,18 +6,18 @@ import { EntityId } from '@shared/domain';
 import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { FileRecordMapper } from '../mapper/filerecord-mapper';
 
-const orphanedFilesQuery = (collection: string) => [
+const orphanedFilesQuery = (collectionName: string) => [
 	{
 		$lookup: {
-			from: collection,
+			from: collectionName,
 			localField: 'parent',
 			foreignField: '_id',
-			as: collection,
+			as: collectionName,
 		},
 	},
 	{
 		$set: {
-			entity: { $arrayElemAt: [`$${collection}`, 0] },
+			entity: { $arrayElemAt: [`$${collectionName}`, 0] },
 		},
 	},
 	{
