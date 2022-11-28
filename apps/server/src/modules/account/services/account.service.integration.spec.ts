@@ -1,13 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { AccountRepo } from '@shared/repo';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { IdentityManagementModule } from '@shared/infra/identity-management';
-import { Logger } from '@src/core/logger';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak/service/keycloak-administration.service';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { IKeycloakSettings, KeycloakSettings } from '@shared/infra/identity-management/keycloak/interface';
+import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
+import { IAccount } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from './account.service';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
 
@@ -15,34 +16,24 @@ describe('AccountService Integration', () => {
 	let module: TestingModule;
 	let accountService: AccountService;
 	let idmService: IdentityManagementService;
-	let keycloakService: KeycloakAdministrationService;
+	let keycloakAdminService: KeycloakAdministrationService;
+	let keycloak: KeycloakAdminClient;
 	let isIdmReachable = false;
 
 	const testRealm = 'test-realm';
-	const testAccount = {
+	const testAccount = new AccountSaveDto({
 		username: 'john.doe@mail.tld',
+		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
-		password: 'password',
-	};
+	});
 	const createAccount = async (): Promise<AccountDto> => {
-		const result = await accountService.searchByUsernameExactMatch(testAccount.username);
-		if (result.total === 0) {
-			return accountService.save(testAccount);
-		}
-		return result.accounts[0];
-	};
-	const deleteAccounts = async (): Promise<void> => {
-		const result = await accountService.searchByUsernamePartialMatch('doe@mail.tld', 0, 10);
-		// eslint-disable-next-line no-restricted-syntax
-		for (const account of result.accounts) {
-			// eslint-disable-next-line no-await-in-loop
-			await accountService.delete(account.id);
-		}
+		return accountService.save(testAccount);
 	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
+				MongoMemoryDatabaseModule.forRoot(),
 				ConfigModule.forRoot({
 					isGlobal: true,
 					ignoreEnvFile: true,
@@ -53,22 +44,39 @@ describe('AccountService Integration', () => {
 						}),
 					],
 				}),
-				MongoMemoryDatabaseModule.forRoot(),
-				IdentityManagementModule,
 			],
 			providers: [
 				AccountRepo,
 				AccountService,
+				KeycloakAdministrationService,
+				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: KeycloakAdminClient,
+					useValue: new KeycloakAdminClient(),
+				},
+				{
+					provide: KeycloakSettings,
+					useValue: {
+						clientId: 'admin-cli',
+						baseUrl: 'http://localhost:8080',
+						realmName: 'master',
+						credentials: {
+							clientId: 'admin-cli',
+							username: 'keycloak',
+							password: 'keycloak',
+							grantType: 'password',
+						},
+					} as IKeycloakSettings,
 				},
 			],
 		}).compile();
 		accountService = module.get(AccountService);
 		idmService = module.get(IdentityManagementService);
-		keycloakService = module.get(KeycloakAdministrationService);
-		isIdmReachable = await keycloakService.testKcConnection();
+		keycloakAdminService = module.get(KeycloakAdministrationService);
+		isIdmReachable = await keycloakAdminService.testKcConnection();
+		if (isIdmReachable) {
+			keycloak = await keycloakAdminService.callKcAdminClient();
+		}
 	});
 
 	afterAll(async () => {
@@ -76,15 +84,16 @@ describe('AccountService Integration', () => {
 	});
 
 	beforeEach(async () => {
-		const kc = await keycloakService.callKcAdminClient();
-		await kc.realms.create({ realm: testRealm });
-		kc.setConfig({ realmName: testRealm });
+		if (isIdmReachable) {
+			await keycloak.realms.create({ realm: testRealm, editUsernameAllowed: true });
+			keycloak.setConfig({ realmName: testRealm });
+		}
 	});
 
 	afterEach(async () => {
-		const kc = await keycloakService.callKcAdminClient();
-		await kc.realms.del({ realm: testRealm });
-		await deleteAccounts();
+		if (isIdmReachable) {
+			await keycloak.realms.del({ realm: testRealm });
+		}
 	});
 
 	it('save should create a new account', async () => {
@@ -95,8 +104,8 @@ describe('AccountService Integration', () => {
 
 		expect(accounts).toEqual(
 			expect.arrayContaining([
-				expect.objectContaining({
-					userName: testAccount.username,
+				expect.objectContaining<IAccount>({
+					username: testAccount.username,
 				}),
 			])
 		);
@@ -105,18 +114,18 @@ describe('AccountService Integration', () => {
 	it('save should update existing account', async () => {
 		if (!isIdmReachable) return;
 
-		const newUserName = 'jane.doe@mail.tld';
+		const newUsername = 'jane.doe@mail.tld';
 		const account = await createAccount();
 		await accountService.save({
 			id: account.id,
-			username: newUserName,
+			username: newUsername,
 		});
 		const accounts = await idmService.getAllAccounts();
 
 		expect(accounts).toEqual(
 			expect.arrayContaining([
-				expect.objectContaining({
-					userName: newUserName,
+				expect.objectContaining<IAccount>({
+					username: newUsername,
 				}),
 			])
 		);
@@ -139,15 +148,15 @@ describe('AccountService Integration', () => {
 
 		expect(accounts).toEqual(
 			expect.arrayContaining([
-				expect.objectContaining({
-					userName: newUserName,
+				expect.objectContaining<IAccount>({
+					username: newUserName,
 				}),
 			])
 		);
 		expect(accounts).not.toEqual(
 			expect.arrayContaining([
-				expect.objectContaining({
-					userName: testAccount.username,
+				expect.objectContaining<IAccount>({
+					username: testAccount.username,
 				}),
 			])
 		);
@@ -169,8 +178,8 @@ describe('AccountService Integration', () => {
 
 		expect(accounts).not.toEqual(
 			expect.arrayContaining([
-				expect.objectContaining({
-					userName: testAccount.username,
+				expect.objectContaining<IAccount>({
+					username: testAccount.username,
 				}),
 			])
 		);
@@ -185,8 +194,8 @@ describe('AccountService Integration', () => {
 
 		expect(accounts).not.toEqual(
 			expect.arrayContaining([
-				expect.objectContaining({
-					userName: testAccount.username,
+				expect.objectContaining<IAccount>({
+					username: testAccount.username,
 				}),
 			])
 		);

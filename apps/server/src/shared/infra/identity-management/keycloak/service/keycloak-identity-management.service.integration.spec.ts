@@ -8,7 +8,7 @@ import { KeycloakIdentityManagementService } from './keycloak-identity-managemen
 import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 import { IdentityManagementService } from '../../identity-management.service';
 
-describe('KeycloakIdentityManagementService', () => {
+describe('KeycloakIdentityManagementService Integration', () => {
 	let module: TestingModule;
 	let idmService: KeycloakIdentityManagementService;
 	let keycloakAdminService: KeycloakAdministrationService;

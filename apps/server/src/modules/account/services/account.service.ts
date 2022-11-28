@@ -73,7 +73,7 @@ export class AccountService {
 
 			if (this.accountStoreEnabled) {
 				await this.identityManager.updateAccount(account.id, {
-					email: account.username,
+					username: account.username,
 				});
 				if (account.password) {
 					await this.identityManager.updateAccountPassword(account.id, account.password);
