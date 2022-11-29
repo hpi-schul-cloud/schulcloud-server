@@ -2,7 +2,7 @@ import { EntityId } from '@shared/domain';
 import { ICopyFileDomainObjectProps } from '../interfaces';
 
 export class CopyFileDto {
-	id: EntityId;
+	id?: EntityId | undefined;
 
 	sourceId: EntityId;
 

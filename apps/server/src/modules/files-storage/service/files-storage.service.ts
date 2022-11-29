@@ -293,7 +293,7 @@ export class FilesStorageService {
 	): Promise<CopyFileResponse[]> {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
 
-		const promises = sourceFileRecords.map(async (sourceFile) => {
+		const promises: Promise<CopyFileResponse>[] = sourceFileRecords.map(async (sourceFile) => {
 			this.checkScanStatus(sourceFile);
 
 			const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
@@ -304,7 +304,26 @@ export class FilesStorageService {
 
 		const settledPromises = await Promise.allSettled(promises);
 		const resolvedResponses = getResolvedValues(settledPromises);
+		const allResponses: CopyFileResponse[] = this.addFailedResponses(sourceFileRecords, resolvedResponses);
 
-		return resolvedResponses;
+		return allResponses;
+	}
+
+	private addFailedResponses(
+		sourceFileRecords: FileRecord[],
+		resolvedResponses: CopyFileResponse[]
+	): CopyFileResponse[] {
+		return sourceFileRecords.map(({ _id, name }) => {
+			const sourceId = _id.toString();
+			const successfulResponse = resolvedResponses.find((fileResponse) => fileResponse.sourceId === sourceId);
+			if (successfulResponse) {
+				return successfulResponse;
+			}
+
+			return {
+				sourceId,
+				name,
+			};
+		});
 	}
 }
