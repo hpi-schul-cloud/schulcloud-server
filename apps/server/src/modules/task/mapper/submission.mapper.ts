@@ -9,6 +9,7 @@ export class SubmissionMapper {
 			isSubmitted: submission.isSubmitted(),
 			grade: submission.grade,
 			isGraded: submission.isGraded(),
+			submittingCourseGroupName: submission.courseGroup?.name,
 		});
 
 		return dto;

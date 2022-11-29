@@ -24,6 +24,7 @@ describe('Submission Mapper', () => {
 				isSubmitted: submission.isSubmitted(),
 				grade: submission.grade,
 				isGraded: submission.isGraded(),
+				submittingCourseGroupName: submission.courseGroup?.name,
 			});
 
 			return { submission, expected };
