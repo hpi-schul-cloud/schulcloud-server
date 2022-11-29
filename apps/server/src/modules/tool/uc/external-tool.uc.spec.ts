@@ -169,11 +169,30 @@ describe('ExternalToolUc', () => {
 		};
 
 		oauthProviderService.createOAuth2Client.mockResolvedValue(oauthClient);
+		oauthProviderService.getOAuth2Client.mockResolvedValue(oauthClient);
 		externalToolMapper.mapDoToProviderOauthClient.mockReturnValue(oauthClient);
 		externalToolMapper.applyProviderOauthClientToDO.mockReturnValue(oauth2ConfigWithExternalData);
 
 		return {
 			oauth2ConfigWithExternalData,
+			oauthClient,
+		};
+	}
+
+	function setupOauth2() {
+		const { oauth2ConfigWithExternalData, oauthClient } = oauthSetup();
+		const setupData = setup();
+		setupData.externalToolDO.config = oauth2ConfigWithExternalData;
+
+		const oauth2ToolFromDb: ExternalToolDO = { ...setupData.externalToolDO };
+		oauth2ToolFromDb.config = setupData.oauth2ConfigWithoutExternalData;
+
+		externalToolService.findExternalToolById.mockResolvedValue(oauth2ToolFromDb);
+		externalToolService.createExternalTool.mockResolvedValue(oauth2ToolFromDb);
+
+		return {
+			...setupData,
+			oauth2ToolFromDb,
 			oauthClient,
 		};
 	}
@@ -271,23 +290,6 @@ describe('ExternalToolUc', () => {
 		});
 
 		describe('Oauth2 Tool', () => {
-			function setupOauth2() {
-				const { oauth2ConfigWithExternalData, oauthClient } = oauthSetup();
-				const setupData = setup();
-				setupData.externalToolDO.config = oauth2ConfigWithExternalData;
-
-				const savedOauth2Tool: ExternalToolDO = { ...setupData.externalToolDO };
-				savedOauth2Tool.config = setupData.oauth2ConfigWithoutExternalData;
-
-				externalToolService.createExternalTool.mockResolvedValue(savedOauth2Tool);
-
-				return {
-					...setupData,
-					savedOauth2Tool,
-					oauthClient,
-				};
-			}
-
 			it('should create a new oauth2 client with the oauth provider service', async () => {
 				const { externalToolDO, currentUser, oauthClient } = setupOauth2();
 
@@ -364,6 +366,46 @@ describe('ExternalToolUc', () => {
 
 				expect(result).toEqual(externalToolDO);
 			});
+		});
+	});
+
+	describe('getExternalTool', () => {
+		describe('Authorization', () => {
+			it('should successfully check the user permission with the authorization service', async () => {
+				const { externalToolDO, currentUser, user } = setup();
+
+				await uc.createExternalTool(externalToolDO, currentUser);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+			});
+
+			it('should throw if the user has insufficient permission to create an external tool', async () => {
+				const { externalToolDO, currentUser } = setup();
+				authorizationService.checkAllPermissions.mockImplementation(() => {
+					throw new UnauthorizedException();
+				});
+
+				const result: Promise<ExternalToolDO> = uc.createExternalTool(externalToolDO, currentUser);
+
+				await expect(result).rejects.toThrow(UnauthorizedException);
+			});
+		});
+
+		it('should fetch a tool', async () => {
+			const { currentUser, externalToolDO } = setup();
+			externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
+
+			const result: ExternalToolDO = await uc.getExternalTool(currentUser.userId, 'toolId');
+
+			expect(result).toEqual(externalToolDO);
+		});
+
+		it('should fetch a oauth2 tool and populate the config with external data', async () => {
+			const { currentUser, externalToolDO } = setupOauth2();
+
+			const result: ExternalToolDO = await uc.getExternalTool(currentUser.userId, 'toolId');
+
+			expect(result).toEqual(externalToolDO);
 		});
 	});
 

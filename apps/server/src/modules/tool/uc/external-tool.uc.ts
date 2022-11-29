@@ -107,4 +107,18 @@ export class ExternalToolUc {
 			throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`);
 		}
 	}
+
+	async getExternalTool(userId: string, toolId: string): Promise<ExternalToolDO> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+
+		const tool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
+
+		if (tool.config instanceof Oauth2ToolConfigDO) {
+			const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(tool.config.clientId);
+			tool.config = this.externalToolMapper.applyProviderOauthClientToDO(tool.config, oauthClient);
+		}
+
+		return tool;
+	}
 }

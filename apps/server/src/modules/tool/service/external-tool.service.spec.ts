@@ -90,12 +90,23 @@ describe('ExternalToolService', () => {
 	describe('createExternalTool', () => {
 		it('should save DO', async () => {
 			const { externalToolDO } = setup();
-			const saved = repo.save.mockResolvedValue(externalToolDO);
+			repo.save.mockResolvedValue(externalToolDO);
 
-			const expected = await service.createExternalTool(externalToolDO);
+			const result: ExternalToolDO = await service.createExternalTool(externalToolDO);
 
-			expect(expected).toEqual(externalToolDO);
-			expect(saved).toHaveBeenCalledWith(externalToolDO);
+			expect(result).toEqual(externalToolDO);
+			expect(repo.save).toHaveBeenCalledWith(externalToolDO);
+		});
+	});
+
+	describe('findExternalToolById', () => {
+		it('should get DO', async () => {
+			const { externalToolDO } = setup();
+			repo.findById.mockResolvedValue(externalToolDO);
+
+			const result: ExternalToolDO = await service.findExternalToolById('toolId');
+
+			expect(result).toEqual(externalToolDO);
 		});
 	});
 
