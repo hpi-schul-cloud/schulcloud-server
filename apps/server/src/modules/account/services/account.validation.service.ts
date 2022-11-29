@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { AccountRepo, UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo';
 import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
+import { AccountRepo } from '../repo/account.repo';
 
 @Injectable()
 export class AccountValidationService {

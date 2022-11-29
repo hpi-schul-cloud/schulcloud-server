@@ -253,26 +253,51 @@ describe('Lti11Uc', () => {
 			});
 		});
 
-		it('should throw when trying to access an lti tool that is not v1.1', async () => {
-			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-			const ltiTool: LtiToolDO = new LtiToolDO({
-				name: 'name',
-				url: 'url',
-				key: 'key',
-				secret: 'secret',
-				roles: [],
-				privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
-				customs: [],
-				isTemplate: false,
-				openNewTab: false,
-				isHidden: false,
+		describe('with invalid tool parameters', () => {
+			const setup = () => {
+				const currentUser: ICurrentUser = { userId: 'userId', roles: [RoleName.USER] } as ICurrentUser;
+
+				const ltiTool: LtiToolDO = new LtiToolDO({
+					name: 'name',
+					url: 'url',
+					key: 'key',
+					secret: 'secret',
+					roles: [],
+					privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
+					customs: [],
+					isTemplate: false,
+					openNewTab: false,
+					isHidden: false,
+					lti_version: 'LTI-1p0',
+					lti_message_type: 'messageType',
+					resource_link_id: 'linkId',
+				});
+
+				return {
+					currentUser,
+					ltiTool,
+				};
+			};
+
+			it('should throw when trying to access an lti tool that is not v1.1', async () => {
+				const { currentUser, ltiTool } = setup();
+				ltiTool.lti_version = 'LTI-wrong-version';
+
+				ltiToolRepo.findById.mockResolvedValue(ltiTool);
+
+				const func = () => useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				await expect(func).rejects.toThrow();
 			});
 
-			ltiToolRepo.findById.mockResolvedValue(ltiTool);
+			it('should throw when trying to access an lti tool that has no message type', async () => {
+				const { currentUser, ltiTool } = setup();
+				ltiTool.lti_message_type = undefined;
 
-			const func = () => useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				ltiToolRepo.findById.mockResolvedValue(ltiTool);
 
-			await expect(func).rejects.toThrow();
+				const func = () => useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				await expect(func).rejects.toThrow();
+			});
 		});
 	});
 });
