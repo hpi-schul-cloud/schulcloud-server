@@ -101,7 +101,7 @@ export class ExternalToolUc {
 		}
 	}
 
-	async deleteExternalTool(toolId: string, userId: string): Promise<void> {
+	async deleteExternalTool(userId: string, toolId: string): Promise<void> {
 		await this.ensurePermission(userId);
 
 		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);

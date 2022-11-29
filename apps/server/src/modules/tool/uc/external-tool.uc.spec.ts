@@ -459,7 +459,7 @@ describe('ExternalToolUc', () => {
 		it('should check that the user has TOOL_ADMIN permission', async () => {
 			const { toolId, currentUser, user } = setupDelete();
 
-			await uc.deleteExternalTool(toolId, currentUser.userId);
+			await uc.deleteExternalTool(currentUser.userId, toolId);
 
 			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
 			expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
@@ -468,7 +468,7 @@ describe('ExternalToolUc', () => {
 		it('should call the externalToolService', async () => {
 			const { toolId, currentUser } = setupDelete();
 
-			await uc.deleteExternalTool(toolId, currentUser.userId);
+			await uc.deleteExternalTool(currentUser.userId, toolId);
 
 			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(toolId);
 		});

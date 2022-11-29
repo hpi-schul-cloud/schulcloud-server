@@ -443,7 +443,7 @@ describe('ToolController', () => {
 
 			await controller.deleteExternalTool(params, currentUser);
 
-			expect(externalToolUc.deleteExternalTool).toHaveBeenCalledWith(params.toolId, currentUser.userId);
+			expect(externalToolUc.deleteExternalTool).toHaveBeenCalledWith(currentUser.userId, params.toolId);
 		});
 	});
 });
