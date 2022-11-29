@@ -1,24 +1,28 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class SubmissionStatusResponse {
-	constructor({ id, creatorId, isSubmitted, grade }: SubmissionStatusResponse) {
+	constructor({ id, submitters, isSubmitted, grade, isGraded }: SubmissionStatusResponse) {
 		this.id = id;
-		this.creatorId = creatorId;
+		this.submitters = submitters;
 		this.isSubmitted = isSubmitted;
 		this.grade = grade;
+		this.isGraded = isGraded;
 	}
 
 	@ApiProperty()
 	id: string;
 
 	@ApiProperty()
-	creatorId: string;
+	submitters: string[];
 
 	@ApiProperty()
 	isSubmitted: boolean;
 
 	@ApiPropertyOptional()
 	grade?: number;
+
+	@ApiProperty()
+	isGraded: boolean;
 }
 
 export class SubmissionStatusListResponse {
