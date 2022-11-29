@@ -1,10 +1,11 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { ICurrentUser, Permission, User } from '@shared/domain';
+import { IFindOptions, Permission, User } from '@shared/domain';
 import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { AuthorizationService } from '@src/modules/authorization';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { Page } from '@shared/domain/interface/page';
 import { ExternalToolService } from '../service/external-tool.service';
 import { ExternalToolRequestMapper } from '../mapper/external-tool-request.mapper';
 
@@ -18,8 +19,8 @@ export class ExternalToolUc {
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
 	) {}
 
-	async createExternalTool(externalToolDO: ExternalToolDO, currentUser: ICurrentUser): Promise<ExternalToolDO> {
-		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
+	async createExternalTool(externalToolDO: ExternalToolDO, userId: string): Promise<ExternalToolDO> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
 		await this.checkValidation(externalToolDO);
@@ -47,6 +48,30 @@ export class ExternalToolUc {
 		}
 
 		return created;
+	}
+
+	async findExternalTool(
+		userId: string,
+		query: Partial<ExternalToolDO>,
+		options: IFindOptions<ExternalToolDO>
+	): Promise<Page<ExternalToolDO>> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+
+		const tools: Page<ExternalToolDO> = await this.externalToolService.findExternalTools(query, options);
+		tools.data = await Promise.all(
+			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO> => {
+				if (tool.config instanceof Oauth2ToolConfigDO) {
+					const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
+						tool.config.clientId
+					);
+					tool.config = this.externalToolMapper.applyProviderOauthClientToDO(tool.config, oauthClient);
+				}
+				return tool;
+			})
+		);
+
+		return tools;
 	}
 
 	async updateExternalTool(
