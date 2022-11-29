@@ -35,7 +35,7 @@ export class ExternalToolUc {
 				externalToolDO.name,
 				externalToolDO.config
 			);
-			const createdOauthClient = await this.oauthProviderService.createOAuth2Client(oauthClient);
+			const createdOauthClient: ProviderOauthClient = await this.oauthProviderService.createOAuth2Client(oauthClient);
 
 			created = await this.externalToolService.createExternalTool(externalToolDO);
 
@@ -75,11 +75,32 @@ export class ExternalToolUc {
 	}
 
 	async updateExternalTool(userId: string, toolId: string, externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
-		// TODO: get, increase version, override obj expect undefined, save
-		// TODO: clientId immutable because of hydra secret
-		const toUpdate: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
-		await this.externalToolService.updateExternalTool(externalToolDO);
-		return {} as ExternalToolDO;
+		await this.checkValidation(externalToolDO);
+		const loaded: ExternalToolDO = await this.getExternalTool(userId, toolId);
+		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalToolDO });
+
+		if (toUpdate.config instanceof Oauth2ToolConfigDO) {
+			const toUpdateOauthClient: ProviderOauthClient = this.externalToolMapper.mapDoToProviderOauthClient(
+				toUpdate.name,
+				toUpdate.config
+			);
+			const loadedOauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
+				toUpdate.config.clientId
+			);
+			if (loadedOauthClient && loadedOauthClient.client_id) {
+				const savedOauthClient: ProviderOauthClient = await this.oauthProviderService.updateOAuth2Client(
+					loadedOauthClient.client_id,
+					toUpdateOauthClient
+				);
+				toUpdate.config = this.externalToolMapper.applyProviderOauthClientToDO(toUpdate.config, savedOauthClient);
+			} else {
+				throw new UnprocessableEntityException(
+					`The oAuthConfigs clientId "${toUpdate.config.clientId}" does not exists.`
+				);
+			}
+		}
+		const saved = await this.externalToolService.updateExternalTool(toUpdate);
+		return saved;
 	}
 
 	private async checkValidation(externalToolDO: ExternalToolDO) {
