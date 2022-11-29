@@ -61,7 +61,7 @@ describe('TaskRepo', () => {
 					return { creator };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { creator } = await setup();
 
 					const [result, total] = await repo.findAllByParentIds({ creatorId: creator.id });
@@ -88,7 +88,7 @@ describe('TaskRepo', () => {
 					return { course };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { course } = await setup();
 
 					const [result, total] = await repo.findAllByParentIds({ courseIds: [course.id] });
@@ -117,7 +117,7 @@ describe('TaskRepo', () => {
 					return { lesson };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { lesson } = await setup();
 
 					const [result, total] = await repo.findAllByParentIds({ lessonIds: [lesson.id] });
@@ -147,7 +147,7 @@ describe('TaskRepo', () => {
 					return { lesson };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { lesson } = await setup();
 
 					const [result, total] = await repo.findAllByParentIds({ lessonIds: [lesson.id] });
@@ -876,7 +876,7 @@ describe('TaskRepo', () => {
 					return { user };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { user } = await setup();
 
 					const [result, total] = await repo.findAllFinishedByParentIds({
@@ -909,7 +909,7 @@ describe('TaskRepo', () => {
 					return { course, user };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { course, user } = await setup();
 
 					const [result, total] = await repo.findAllFinishedByParentIds({
@@ -944,7 +944,7 @@ describe('TaskRepo', () => {
 					return { lesson, user };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { lesson, user } = await setup();
 
 					const [result, total] = await repo.findAllFinishedByParentIds({
@@ -980,7 +980,7 @@ describe('TaskRepo', () => {
 					return { lesson, user };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { lesson, user } = await setup();
 
 					const [result, total] = await repo.findAllFinishedByParentIds({
@@ -1682,7 +1682,7 @@ describe('TaskRepo', () => {
 					return { creator };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { creator } = await setup();
 
 					const [result, total] = await repo.findBySingleParent({ creatorId: creator.id });
@@ -1709,7 +1709,7 @@ describe('TaskRepo', () => {
 					return { course };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { course } = await setup();
 
 					const [result, total] = await repo.findBySingleParent({ courseId: course.id });
@@ -1738,7 +1738,7 @@ describe('TaskRepo', () => {
 					return { lesson };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { lesson } = await setup();
 
 					const [result, total] = await repo.findBySingleParent({ lessonId: lesson.id });
@@ -1768,7 +1768,7 @@ describe('TaskRepo', () => {
 					return { lesson };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { lesson } = await setup();
 
 					const [result, total] = await repo.findBySingleParent({ lessonId: lesson.id });
@@ -1992,7 +1992,7 @@ describe('TaskRepo', () => {
 					return { task };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { task } = await setup();
 
 					const result = await repo.findById(task.id);
@@ -2017,7 +2017,7 @@ describe('TaskRepo', () => {
 					return { task };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { task } = await setup();
 
 					const result = await repo.findById(task.id);
@@ -2044,7 +2044,7 @@ describe('TaskRepo', () => {
 					return { task };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { task } = await setup();
 
 					const result = await repo.findById(task.id);
@@ -2072,7 +2072,7 @@ describe('TaskRepo', () => {
 					return { task };
 				};
 
-				it('should be populate all elements correctly', async () => {
+				it('should populate all elements correctly', async () => {
 					const { task } = await setup();
 
 					const result = await repo.findById(task.id);
