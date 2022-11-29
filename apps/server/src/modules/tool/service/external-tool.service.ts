@@ -1,21 +1,73 @@
-import { Injectable } from '@nestjs/common';
-import { CustomParameterDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+	CustomParameterDO,
+	ExternalToolDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
+} from '@shared/domain/domainobject/external-tool';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
-import { IFindOptions } from '@shared/domain';
+import { EntityId, IFindOptions } from '@shared/domain';
 import { Page } from '@shared/domain/interface/page';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { OauthProviderService } from '@shared/infra/oauth-provider';
+import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
+import { ExternalToolServiceMapper } from './mapper/external-tool-service.mapper';
 
 @Injectable()
 export class ExternalToolService {
-	constructor(private externalToolRepo: ExternalToolRepo) {}
+	constructor(
+		private readonly externalToolRepo: ExternalToolRepo,
+		private readonly oauthProviderService: OauthProviderService,
+		private readonly mapper: ExternalToolServiceMapper, // TODO naming?, location of mapper in directory
+		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService
+	) {}
 
 	async createExternalTool(externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
-		const externalTool: ExternalToolDO = await this.externalToolRepo.save(externalToolDO);
-		return externalTool;
+		if (externalToolDO.config instanceof Lti11ToolConfigDO) {
+			externalToolDO.config.secret = this.encryptionService.encrypt(externalToolDO.config.secret);
+		} else if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
+			const oauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
+				externalToolDO.name,
+				externalToolDO.config
+			);
+
+			await this.oauthProviderService.createOAuth2Client(oauthClient);
+		}
+
+		const created: ExternalToolDO = await this.externalToolRepo.save(externalToolDO);
+		return created;
 	}
 
-	async findExternalToolById(id: string): Promise<ExternalToolDO> {
-		const externalTool: ExternalToolDO = await this.externalToolRepo.findById(id);
-		return externalTool;
+	async findExternalTools(
+		query: Partial<ExternalToolDO>,
+		options: IFindOptions<ExternalToolDO>
+	): Promise<Page<ExternalToolDO>> {
+		const tools: Page<ExternalToolDO> = await this.externalToolRepo.find(query, options);
+		tools.data = await Promise.all(
+			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO> => {
+				if (tool.config instanceof Oauth2ToolConfigDO) {
+					const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
+						tool.config.clientId
+					);
+					this.applyProviderOauthClientToDO(tool.config, oauthClient);
+				}
+				return tool;
+			})
+		);
+
+		return tools;
+	}
+
+	async findExternalToolById(id: EntityId): Promise<ExternalToolDO> {
+		const tool: ExternalToolDO = await this.externalToolRepo.findById(id);
+
+		if (tool.config instanceof Oauth2ToolConfigDO) {
+			const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(tool.config.clientId);
+			this.applyProviderOauthClientToDO(tool.config, oauthClient);
+		}
+
+		return tool;
 	}
 
 	async isNameUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
@@ -29,14 +81,6 @@ export class ExternalToolService {
 		);
 
 		return duplicate == null;
-	}
-
-	async findExternalTools(
-		query: Partial<ExternalToolDO>,
-		options: IFindOptions<ExternalToolDO>
-	): Promise<Page<ExternalToolDO>> {
-		const tools: Page<ExternalToolDO> = await this.externalToolRepo.find(query, options);
-		return tools;
 	}
 
 	hasDuplicateAttributes(customParameter: CustomParameterDO[]): boolean {
@@ -57,5 +101,12 @@ export class ExternalToolService {
 			}
 			return true;
 		});
+	}
+
+	applyProviderOauthClientToDO(oauth2Config: Oauth2ToolConfigDO, oauthClient: ProviderOauthClient): void {
+		oauth2Config.scope = oauthClient.scope;
+		oauth2Config.tokenEndpointAuthMethod = oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
+		oauth2Config.redirectUris = oauthClient.redirect_uris;
+		oauth2Config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
 	}
 }

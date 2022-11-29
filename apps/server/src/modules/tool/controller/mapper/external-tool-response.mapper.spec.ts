@@ -8,18 +8,18 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { ExternalToolResponse } from '../controller/dto/response/external-tool.response';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
-import { BasicToolConfigResponse } from '../controller/dto/response/basic-tool-config.response';
-import { CustomParameterResponse } from '../controller/dto/response/custom-parameter.response';
-import { Lti11ToolConfigResponse } from '../controller/dto/response/lti11-tool-config.response';
-import { Oauth2ToolConfigResponse } from '../controller/dto/response/oauth2-tool-config.response';
-import { ToolConfigType } from '../interface/tool-config-type.enum';
-import { LtiMessageType } from '../interface/lti-message-type.enum';
-import { LtiPrivacyPermission } from '../interface/lti-privacy-permission.enum';
-import { CustomParameterLocationParams } from '../interface/custom-parameter-location.enum';
-import { CustomParameterScopeParams } from '../interface/custom-parameter-scope.enum';
-import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
+import { BasicToolConfigResponse } from '../dto/response/basic-tool-config.response';
+import { CustomParameterResponse } from '../dto/response/custom-parameter.response';
+import { Lti11ToolConfigResponse } from '../dto/response/lti11-tool-config.response';
+import { Oauth2ToolConfigResponse } from '../dto/response/oauth2-tool-config.response';
+import { ToolConfigType } from '../../interface/tool-config-type.enum';
+import { LtiMessageType } from '../../interface/lti-message-type.enum';
+import { LtiPrivacyPermission } from '../../interface/lti-privacy-permission.enum';
+import { CustomParameterLocationParams } from '../../interface/custom-parameter-location.enum';
+import { CustomParameterScopeParams } from '../../interface/custom-parameter-scope.enum';
+import { CustomParameterTypeParams } from '../../interface/custom-parameter-type.enum';
+import { ExternalToolResponse } from '../dto/response/external-tool.response';
 
 describe('ExternalToolResponseMapper', () => {
 	let module: TestingModule;
@@ -37,7 +37,7 @@ describe('ExternalToolResponseMapper', () => {
 		await module.close();
 	});
 
-	function setup() {
+	const setup = () => {
 		const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
 			name: 'mockName',
 			default: 'mockDefault',
@@ -94,7 +94,7 @@ describe('ExternalToolResponseMapper', () => {
 			basicToolConfigDO,
 			basicToolConfigResponse,
 		};
-	}
+	};
 
 	describe('mapToResponse', () => {
 		describe('when mapping basic tool DO', () => {
@@ -110,7 +110,7 @@ describe('ExternalToolResponseMapper', () => {
 		});
 
 		describe('when mapping oauth tool DO', () => {
-			function oauthSetup() {
+			const oauthSetup = () => {
 				const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
 					clientId: 'mockId',
 					skipConsent: false,
@@ -129,7 +129,7 @@ describe('ExternalToolResponseMapper', () => {
 					oauth2ToolConfigResponse,
 					oauth2ToolConfigDO,
 				};
-			}
+			};
 			it('should map a oauth2 tool do to a oauth2 tool response', () => {
 				const { oauth2ToolConfigDO, oauth2ToolConfigResponse } = oauthSetup();
 				const { externalToolDO, externalToolResponse } = setup();
@@ -143,7 +143,7 @@ describe('ExternalToolResponseMapper', () => {
 		});
 
 		describe('when mapping lti tool DO', () => {
-			function ltiSetup() {
+			const ltiSetup = () => {
 				const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
 					secret: 'mockSecret',
 					key: 'mockKey',
@@ -162,7 +162,7 @@ describe('ExternalToolResponseMapper', () => {
 				});
 
 				return { lti11ToolConfigDO, lti11ToolConfigResponse };
-			}
+			};
 			it('should map a lti11 tool DO to a lti11 tool response', () => {
 				const { lti11ToolConfigDO, lti11ToolConfigResponse } = ltiSetup();
 				const { externalToolDO, externalToolResponse } = setup();
