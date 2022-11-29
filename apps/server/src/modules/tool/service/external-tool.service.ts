@@ -19,7 +19,7 @@ export class ExternalToolService {
 	constructor(
 		private readonly externalToolRepo: ExternalToolRepo,
 		private readonly oauthProviderService: OauthProviderService,
-		private readonly mapper: ExternalToolServiceMapper, // TODO naming?, location of mapper in directory
+		private readonly mapper: ExternalToolServiceMapper,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService
 	) {}
 
