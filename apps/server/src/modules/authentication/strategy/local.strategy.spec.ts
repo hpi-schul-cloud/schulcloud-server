@@ -2,15 +2,14 @@ import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
 import { UserRepo } from '@shared/repo';
 import { AccountDto } from '@src/modules/account/services/dto';
-import { LocalStrategy } from './local.strategy';
-import { AuthenticationService } from '../services/authentication.service';
 import { Role, RoleName, School, User } from '@shared/domain';
 import { Collection } from '@mikro-orm/core';
-import { ObjectId } from 'bson';
+import { LocalStrategy } from './local.strategy';
+import { AuthenticationService } from '../services/authentication.service';
 
 const mockPassword = 'mockPassword123&';
 const mockPasswordHash = bcrypt.hashSync(mockPassword);

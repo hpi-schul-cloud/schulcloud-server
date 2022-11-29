@@ -10,13 +10,18 @@ const accountModelService = service({
 	lean: true,
 });
 
+const debugPointHook = (hook) => {
+	console.log('accountModel');
+	return hook;
+};
+
 /**
  *  @deprecated This service is replaced by "apps\server\src\modules\account\uc\account.uc.ts" and corresponding services.
  *  This is about to be removed with completion of EW-214.
  */
 const accountModelServiceHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [auth.hooks.authenticate('jwt'), debugPointHook],
 		find: [iff(isProvider('external'), disallow())],
 		get: [iff(isProvider('external'), disallow())],
 		create: [iff(isProvider('external'), disallow())],

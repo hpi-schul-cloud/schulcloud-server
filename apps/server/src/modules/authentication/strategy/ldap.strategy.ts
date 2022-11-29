@@ -4,10 +4,11 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ICurrentUser, School, System } from '@shared/domain';
 import { CurrentUserMapper } from '@shared/domain/mapper/current-user.mapper';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { Request } from 'express';
 import { Strategy } from 'passport-custom';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
+
+export type RequestBody = { systemId?: string; username?: string; password?: string; schoolId?: string };
 
 @Injectable()
 export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
@@ -21,13 +22,8 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		super();
 	}
 
-	async validate(request: Request): Promise<ICurrentUser> {
-		const {
-			systemId,
-			username,
-			password,
-			schoolId,
-		}: { systemId: string; username: string; password: string; schoolId: string } = request.body;
+	async validate(request: { body: RequestBody }): Promise<ICurrentUser> {
+		const { systemId, username, password, schoolId } = request.body;
 		if (!systemId || !username || !password || !schoolId) {
 			throw new UnauthorizedException();
 		}
