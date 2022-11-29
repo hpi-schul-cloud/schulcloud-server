@@ -8,7 +8,7 @@ import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
 import { Lti11Service } from '../service/lti11.service';
 import { Lti11PayloadDto } from './dto/lti11-payload.dto';
 import { LtiRole } from '../interface/lti-role.enum';
-import { LtiRoleMapper } from '../mapper/lti-role.mapper';
+import { LtiRoleMapper } from './mapper/lti-role.mapper';
 
 @Injectable()
 export class Lti11Uc {
@@ -18,6 +18,18 @@ export class Lti11Uc {
 		private readonly ltiToolRepo: LtiToolRepo,
 		private readonly userService: UserService
 	) {}
+
+	async getLaunchParameters(currentUser: ICurrentUser, toolId: string, courseId: string): Promise<Authorization> {
+		const tool: LtiToolDO = await this.ltiToolRepo.findById(toolId);
+
+		const payload = await this.createPayload(currentUser, tool, courseId, toolId);
+		const customFields = this.createCustomFields(tool);
+		const requestData = this.buildRequestOptions(tool, payload, customFields);
+
+		const consumer: OAuth = this.lti11Service.createConsumer(tool.key, tool.secret);
+		const authorization: Authorization = consumer.authorize(requestData);
+		return authorization;
+	}
 
 	private async createPayload(
 		currentUser: ICurrentUser,
@@ -67,15 +79,5 @@ export class Lti11Uc {
 			data: { ...payload, ...customFields },
 		};
 		return requestData;
-	}
-
-	async getLaunchParameters(currentUser: ICurrentUser, toolId: string, courseId: string): Promise<Authorization> {
-		const tool: LtiToolDO = await this.ltiToolRepo.findById(toolId);
-		const payload = await this.createPayload(currentUser, tool, courseId, toolId);
-		const customFields = this.createCustomFields(tool);
-		const requestData = this.buildRequestOptions(tool, payload, customFields);
-		const consumer: OAuth = this.lti11Service.createConsumer(tool.key, tool.secret);
-		const authorization: Authorization = consumer.authorize(requestData);
-		return authorization;
 	}
 }

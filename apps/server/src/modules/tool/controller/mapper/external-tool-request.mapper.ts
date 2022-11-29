@@ -6,20 +6,18 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, SortOrderMap } from '@shared/domain';
-import { CustomParameterScopeParams } from '../interface/custom-parameter-scope.enum';
-import { CustomParameterLocationParams } from '../interface/custom-parameter-location.enum';
-import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
-import { CustomParameterCreateParams } from '../controller/dto/request/custom-parameter.params';
-import { BasicToolConfigParams } from '../controller/dto/request/basic-tool-config.params';
-import { Oauth2ToolConfigParams } from '../controller/dto/request/oauth2-tool-config.params';
-import { ExternalToolCreateParams } from '../controller/dto/request/external-tool-create.params';
-import { Lti11ToolConfigParams } from '../controller/dto/request/lti11-tool-config.params';
-import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
-import { SortExternalToolParams } from '../controller/dto/request/external-tool-sort.params';
-import { ExternalToolSearchParams } from '../controller/dto/request/external-tool-search.params';
-import { ExternalToolUpdateParams } from '../controller/dto/request/external-tool-update.params';
+import { CustomParameterScopeParams } from '../../interface/custom-parameter-scope.enum';
+import { CustomParameterLocationParams } from '../../interface/custom-parameter-location.enum';
+import { CustomParameterTypeParams } from '../../interface/custom-parameter-type.enum';
+import { CustomParameterCreateParams } from '../dto/request/custom-parameter.params';
+import { BasicToolConfigParams } from '../dto/request/basic-tool-config.params';
+import { Oauth2ToolConfigParams } from '../dto/request/oauth2-tool-config.params';
+import { ExternalToolCreateParams } from '../dto/request/external-tool-create.params';
+import { Lti11ToolConfigParams } from '../dto/request/lti11-tool-config.params';
+import { SortExternalToolParams } from '../dto/request/external-tool-sort.params';
+import { ExternalToolSearchParams } from '../dto/request/external-tool-search.params';
+import { ExternalToolUpdateParams } from '../dto/request/external-tool-update.params';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,
@@ -99,29 +97,6 @@ export class ExternalToolRequestMapper {
 				location: locationMapping[customParameterParam.location],
 				type: typeMapping[customParameterParam.type],
 			});
-		});
-	}
-
-	mapDoToProviderOauthClient(name: string, oauth2Config: Oauth2ToolConfigDO): ProviderOauthClient {
-		return {
-			client_name: name,
-			client_id: oauth2Config.clientId,
-			client_secret: oauth2Config.clientSecret,
-			scope: oauth2Config.scope,
-			token_endpoint_auth_method: oauth2Config.tokenEndpointAuthMethod,
-			redirect_uris: oauth2Config.redirectUris,
-			frontchannel_logout_uri: oauth2Config.frontchannelLogoutUri,
-			subject_type: 'pairwise',
-		};
-	}
-
-	applyProviderOauthClientToDO(oauth2Config: Oauth2ToolConfigDO, oauthClient: ProviderOauthClient): Oauth2ToolConfigDO {
-		return new Oauth2ToolConfigDO({
-			...oauth2Config,
-			scope: oauthClient.scope,
-			tokenEndpointAuthMethod: oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod,
-			redirectUris: oauthClient.redirect_uris,
-			frontchannelLogoutUri: oauthClient.frontchannel_logout_uri,
 		});
 	}
 

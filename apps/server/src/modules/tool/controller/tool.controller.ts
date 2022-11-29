@@ -15,11 +15,11 @@ import { Page } from '@shared/domain/interface/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Lti11LaunchQuery } from './dto/request/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/response/lti11-launch.response';
-import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
+import { Lti11ResponseMapper } from './mapper/lti11-response.mapper';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { ExternalToolRequestMapper } from '../mapper/external-tool-request.mapper';
-import { ExternalToolResponseMapper } from '../mapper/external-tool-response.mapper';
+import { ExternalToolRequestMapper } from './mapper/external-tool-request.mapper';
+import { ExternalToolResponseMapper } from './mapper/external-tool-response.mapper';
 import { ExternalToolResponse } from './dto/response/external-tool.response';
 import { ExternalToolCreateParams } from './dto/request/external-tool-create.params';
 import { ExternalToolUc } from '../uc/external-tool.uc';
@@ -62,23 +62,13 @@ export class ToolController {
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
 	async createExternalTool(
-		@Body() externalToolParams: ExternalToolCreateParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise<ExternalToolResponse> {
 		const externalToolDO: ExternalToolDO =
 			this.externalToolDOMapper.mapCreateRequestToExternalToolDO(externalToolParams);
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
-		return mapped;
-	}
-
-	@Get(':toolId')
-	async getExternalTool(
-		@Param() params: ToolIdParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<ExternalToolResponse> {
-		const externalToolDO: ExternalToolDO = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
-		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(externalToolDO);
 		return mapped;
 	}
 
@@ -108,6 +98,16 @@ export class ToolController {
 			pagination.limit
 		);
 		return response;
+	}
+
+	@Get(':toolId')
+	async getExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ToolIdParams
+	): Promise<ExternalToolResponse> {
+		const externalToolDO: ExternalToolDO = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(externalToolDO);
+		return mapped;
 	}
 
 	@Post('/:toolId')
