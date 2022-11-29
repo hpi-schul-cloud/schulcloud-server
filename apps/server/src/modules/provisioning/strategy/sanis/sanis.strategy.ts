@@ -1,5 +1,5 @@
 import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
-import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SanisResponse } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { HttpService } from '@nestjs/axios';
