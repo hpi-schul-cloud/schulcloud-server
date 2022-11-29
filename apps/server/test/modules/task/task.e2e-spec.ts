@@ -229,7 +229,7 @@ describe('Task Controller (e2e)', () => {
 			expect(result.data[0]).toBeDefined();
 			expect(result.data[0].status).toEqual({
 				submitted: 1,
-				maxSubmissions: course.getNumberOfStudents(),
+				maxSubmissions: course.getStudentIds().length,
 				graded: 0,
 				isDraft: false,
 				isFinished: false,

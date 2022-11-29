@@ -40,11 +40,7 @@ export class SubmissionRule extends BasePermission<Submission> {
 	}
 
 	private hasWriteAccess(user: User, submission: Submission) {
-		const hasWriteAccess =
-			this.isCreator(user, submission) ||
-			this.isTeamMember(user, submission) ||
-			this.isInCourseGroup(user, submission) ||
-			this.hasParentTaskWriteAccess(user, submission);
+		const hasWriteAccess = submission.isUserSubmitter(user) || this.hasParentTaskWriteAccess(user, submission);
 
 		return hasWriteAccess;
 	}
@@ -55,29 +51,6 @@ export class SubmissionRule extends BasePermission<Submission> {
 			(this.hasParentTaskReadAccess(user, submission) && submission.task.areSubmissionsPublic());
 
 		return hasReadAccess;
-	}
-
-	private isCreator(user: User, submission: Submission) {
-		const isCreator = this.utils.hasAccessToEntity(user, submission, ['student']);
-
-		return isCreator;
-	}
-
-	private isTeamMember(user: User, submission: Submission) {
-		const isTeamMember = this.utils.hasAccessToEntity(user, submission, ['teamMembers']);
-
-		return isTeamMember;
-	}
-
-	private isInCourseGroup(user: User, submission: Submission) {
-		const isInCourseGroup =
-			submission.courseGroup &&
-			this.courseGroupRule.hasPermission(user, submission.courseGroup, {
-				action: Actions.read,
-				requiredPermissions: [],
-			});
-
-		return isInCourseGroup;
 	}
 
 	private hasParentTaskWriteAccess(user: User, submission: Submission) {
