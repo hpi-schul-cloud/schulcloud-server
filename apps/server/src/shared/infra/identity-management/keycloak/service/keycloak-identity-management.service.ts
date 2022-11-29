@@ -13,9 +13,8 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	}
 
 	async createAccount(account: IAccount, password?: string): Promise<string> {
-		const id = await (
-			await this.kcAdminClient.callKcAdminClient()
-		).users.create({
+		const kc = await this.kcAdminClient.callKcAdminClient();
+		const id = await kc.users.create({
 			username: account.username,
 			email: account.email,
 			firstName: account.firstName,
@@ -26,9 +25,16 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		});
 		if (id && password) {
 			try {
-				await this.resetPassword(id.id, password);
+				await kc.users.resetPassword({
+					id: id.id,
+					credential: {
+						temporary: false,
+						type: 'password',
+						value: password,
+					},
+				});
 			} catch (err) {
-				await this.deleteAccountById(id.id);
+				await kc.users.del(id);
 				throw err;
 			}
 		}

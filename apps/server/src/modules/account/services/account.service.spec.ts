@@ -391,7 +391,7 @@ describe('AccountService', () => {
 				username: newUsername,
 			});
 		});
-
+		/* 
 		it.skip('should update an existing account and set update date', async () => {
 			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
 			const newUsername = 'newUsername';
@@ -405,7 +405,7 @@ describe('AccountService', () => {
 				updatedAt: theNewDate,
 				username: newUsername,
 			});
-		});
+		}); */
 	});
 
 	describe('updateLastTriedFailedLogin', () => {
