@@ -142,6 +142,46 @@ describe('permission.utils', () => {
 			});
 		});
 
+		describe('[hasAllPermissionsByRole]', () => {
+			describe('WHEN roles are inherited', () => {
+				const setup = () => {
+					const roleA = roleFactory.buildWithId({ permissions: [permissionA] });
+					const roleB = roleFactory.buildWithId({ permissions: [permissionB], roles: [roleA] });
+					const role = roleFactory.buildWithId({ permissions: [permissionC], roles: [roleB] });
+					return {
+						role,
+					};
+				};
+				it('should return true by permissionA', () => {
+					const { role } = setup();
+
+					const result = service.hasAllPermissionsByRole(role, [permissionA]);
+					expect(result).toEqual(true);
+				});
+
+				it('should return true by permissionB', () => {
+					const { role } = setup();
+
+					const result = service.hasAllPermissionsByRole(role, [permissionB]);
+					expect(result).toEqual(true);
+				});
+				it('should return true by permissionC', () => {
+					const { role } = setup();
+
+					const result = service.hasAllPermissionsByRole(role, [permissionC]);
+					expect(result).toEqual(true);
+				});
+
+				it('should return false by permissionNotFound', () => {
+					const { role } = setup();
+					const permissionNotFound = 'notFound' as Permission;
+
+					const result = service.hasAllPermissionsByRole(role, [permissionNotFound]);
+					expect(result).toEqual(false);
+				});
+			});
+		});
+
 		describe('[checkAllPermissions]', () => {
 			it('should throw when hasAllPermissions is false', () => {
 				const user = userFactory.build();
