@@ -66,6 +66,10 @@ class Accounts {
 	}
 }
 
+/**
+ *  @deprecated This service is replaced by "apps\server\src\modules\account\uc\account.uc.ts" and corresponding services.
+ *  This is about to be removed with completion of EW-214.
+ */
 const accountService = new Accounts({
 	paginate: false,
 });
@@ -74,6 +78,10 @@ const populateWhitelist = {
 	userId: ['_id', 'firstName', 'lastName', 'email'],
 };
 
+/**
+ *  @deprecated This service is replaced by "apps\server\src\modules\account\uc\account.uc.ts" and corresponding services.
+ *  This is about to be removed with completion of EW-214.
+ */
 const accountServiceHooks = {
 	before: {
 		// find, get and create cannot be protected by authenticate('jwt')
