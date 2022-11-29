@@ -16,6 +16,13 @@ import {
 import { BaseFactory } from './base.factory';
 
 export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalToolProperties> {
+	withName(name: string): this {
+		const params: DeepPartial<IExternalToolProperties> = {
+			name,
+		};
+		return this.params(params);
+	}
+
 	withBasicConfig(): this {
 		const params: DeepPartial<IExternalToolProperties> = {
 			config: new BasicToolConfig({
