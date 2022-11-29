@@ -19,6 +19,18 @@ export class Lti11Uc {
 		private readonly userService: UserService
 	) {}
 
+	async getLaunchParameters(currentUser: ICurrentUser, toolId: string, courseId: string): Promise<Authorization> {
+		const tool: LtiToolDO = await this.ltiToolRepo.findById(toolId);
+
+		const payload = await this.createPayload(currentUser, tool, courseId, toolId);
+		const customFields = this.createCustomFields(tool);
+		const requestData = this.buildRequestOptions(tool, payload, customFields);
+
+		const consumer: OAuth = this.lti11Service.createConsumer(tool.key, tool.secret);
+		const authorization: Authorization = consumer.authorize(requestData);
+		return authorization;
+	}
+
 	private async createPayload(
 		currentUser: ICurrentUser,
 		tool: LtiToolDO,
@@ -67,15 +79,5 @@ export class Lti11Uc {
 			data: { ...payload, ...customFields },
 		};
 		return requestData;
-	}
-
-	async getLaunchParameters(currentUser: ICurrentUser, toolId: string, courseId: string): Promise<Authorization> {
-		const tool: LtiToolDO = await this.ltiToolRepo.findById(toolId);
-		const payload = await this.createPayload(currentUser, tool, courseId, toolId);
-		const customFields = this.createCustomFields(tool);
-		const requestData = this.buildRequestOptions(tool, payload, customFields);
-		const consumer: OAuth = this.lti11Service.createConsumer(tool.key, tool.secret);
-		const authorization: Authorization = consumer.authorize(requestData);
-		return authorization;
 	}
 }

@@ -4,7 +4,6 @@
  * It is forbidden to reuse existing ones from different layers.
  */
 
-export * from './account';
 export * from './base.repo';
 export * from './base.do.repo';
 export * from './board';
