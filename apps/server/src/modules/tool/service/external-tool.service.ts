@@ -13,6 +13,12 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
+	async updateExternalTool(externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
+		externalToolDO.version += 1;
+		const externalTool: ExternalToolDO = await this.externalToolRepo.save(externalToolDO);
+		return externalTool;
+	}
+
 	async findExternalToolById(id: string): Promise<ExternalToolDO> {
 		const externalTool: ExternalToolDO = await this.externalToolRepo.findById(id);
 		return externalTool;

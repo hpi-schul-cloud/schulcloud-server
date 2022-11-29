@@ -19,7 +19,7 @@ export class ExternalToolUc {
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
 	) {}
 
-	async createExternalTool(externalToolDO: ExternalToolDO, userId: string): Promise<ExternalToolDO> {
+	async createExternalTool(userId: string, externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
@@ -74,14 +74,11 @@ export class ExternalToolUc {
 		return tools;
 	}
 
-	async updateExternalTool(
-		toolId: string,
-		externalToolDO: ExternalToolDO,
-		currentUser: ICurrentUser
-	): Promise<ExternalToolDO> {
+	async updateExternalTool(userId: string, toolId: string, externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
 		// TODO: get, increase version, override obj expect undefined, save
 		// TODO: clientId immutable because of hydra secret
-		await this.externalToolService.createExternalTool(externalToolDO);
+		const toUpdate: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
+		await this.externalToolService.updateExternalTool(externalToolDO);
 		return {} as ExternalToolDO;
 	}
 

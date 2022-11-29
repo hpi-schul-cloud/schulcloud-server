@@ -154,7 +154,7 @@ describe('ToolController', () => {
 			config: basicToolConfigDO,
 		});
 
-		externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
+		externalToolMapper.mapCreateRequestToExternalToolDO.mockReturnValue(externalToolDO);
 		externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
 		externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
 
@@ -205,7 +205,7 @@ describe('ToolController', () => {
 			customParameterCreateParams.type = CustomParameterTypeParams.STRING;
 			customParameterCreateParams.regex = 'mockRegex';
 
-			const body = new ExternalToolParams();
+			const body = new ExternalToolCreateParams();
 			body.name = 'mockName';
 			body.url = 'mockUrl';
 			body.logoUrl = 'mockLogoUrl';
@@ -282,7 +282,7 @@ describe('ToolController', () => {
 			}
 
 			it('should return basic external tool response', async () => {
-				const { currentUser, externalToolResponse } = setupExternalTool();
+				const { currentUser, externalToolResponse, externalToolDO } = setupExternalTool();
 				const { body } = setupCreate();
 				const { bodyConfigCreateBasicParams } = basicSetup();
 				body.config = bodyConfigCreateBasicParams;
@@ -366,7 +366,7 @@ describe('ToolController', () => {
 
 			await controller.getExternalTool(toolIdParams, currentUser);
 
-			expect(externalToolUc.getExternalTool).toHaveBeenCalledWith(toolIdParams.toolId, currentUser);
+			expect(externalToolUc.getExternalTool).toHaveBeenCalledWith(currentUser.userId, toolIdParams.toolId);
 		});
 
 		it('should fetch a tool', async () => {
@@ -560,8 +560,10 @@ describe('ToolController', () => {
 			it('the externalToolDOMapper.updateExternalTool', async () => {
 				const { currentUser } = setup();
 				const externalToolUpdateParams: ExternalToolUpdateParams = new ExternalToolUpdateParams();
+				const toolIdParams: ToolIdParams = new ToolIdParams();
+				toolIdParams.toolId = 'toolId';
 
-				await controller.updateExternalTool(currentUser, externalToolUpdateParams);
+				await controller.updateExternalTool(currentUser, toolIdParams, externalToolUpdateParams);
 
 				expect(externalToolMapper.mapUpdateRequestToExternalToolDO).toHaveBeenCalledWith(externalToolUpdateParams);
 			});
