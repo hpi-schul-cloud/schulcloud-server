@@ -13,7 +13,7 @@ class SubmissionFactory extends BaseFactory<Submission, ISubmissionProperties> {
 	}
 
 	submitted(): this {
-		const params: DeepPartial<ISubmissionProperties> = {};
+		const params: DeepPartial<ISubmissionProperties> = { submitted: true };
 
 		return this.params(params);
 	}
