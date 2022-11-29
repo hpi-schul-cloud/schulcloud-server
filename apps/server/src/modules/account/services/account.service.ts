@@ -71,12 +71,22 @@ export class AccountService {
 
 			await this.accountRepo.save(account);
 
-			if (this.accountStoreEnabled) {
-				await this.identityManager.updateAccount(account.id, {
-					username: account.username,
-				});
-				if (account.password) {
-					await this.identityManager.updateAccountPassword(account.id, account.password);
+			try {
+				if (this.accountStoreEnabled) {
+					await this.identityManager.updateAccount(account.id, {
+						username: account.username,
+					});
+					if (account.password) {
+						await this.identityManager.updateAccountPassword(account.id, account.password);
+					}
+				}
+			} catch (err) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				if (err.response && err.response.status === 404) {
+					await this.identityManager.createAccount({
+						id: account.id,
+						username: account.username,
+					});
 				}
 			}
 		} else {
