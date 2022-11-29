@@ -7,7 +7,6 @@ import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { AccountModule } from '../account';
 import { AuthenticationService } from './services/authentication.service';
 import { jwtConstants } from './constants';
-import { LoginController } from './controllers/login.controller';
 import { JwtValidationAdapter } from './strategy/jwt-validation.adapter';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LdapStrategy } from './strategy/ldap.strategy';

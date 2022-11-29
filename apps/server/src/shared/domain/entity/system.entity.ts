@@ -9,6 +9,7 @@ export interface ISystemProperties {
 	alias?: string;
 	displayName?: string;
 	oauthConfig?: OauthConfig;
+	ldapConfig?: LdapConfig;
 	provisioningStrategy?: SystemProvisioningStrategy;
 	provisioningUrl?: string;
 }
@@ -142,6 +143,7 @@ export class System extends BaseEntityWithTimestamps {
 		this.alias = props.alias;
 		this.displayName = props.displayName;
 		this.oauthConfig = props.oauthConfig;
+		this.ldapConfig = props.ldapConfig;
 		this.provisioningStrategy = props.provisioningStrategy;
 		this.provisioningUrl = props.provisioningUrl;
 	}

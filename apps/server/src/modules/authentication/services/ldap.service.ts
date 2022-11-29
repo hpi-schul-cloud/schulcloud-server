@@ -36,7 +36,7 @@ export class LdapService {
 			client.on('connect', () => {
 				client.bind(username, password, (err) => {
 					if (err) {
-						reject(new UnauthorizedException('Wrong credentials'));
+						reject(new UnauthorizedException('User could not authenticate'));
 					} else {
 						this.logger.debug('[LDAP] Bind successful');
 						resolve(client);

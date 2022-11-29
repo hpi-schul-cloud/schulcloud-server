@@ -8,18 +8,18 @@ import { AccountDto } from '../../account/services/dto';
 export class AuthenticationService {
 	constructor(private jwtService: JwtService, private accountService: AccountService) {}
 
-	async loadAccount(username: string, systemId?: EntityId): Promise<AccountDto> {
-		const accounts = await this.accountService.searchByUsernameExactMatch(username);
-		let foundAccount: AccountDto | undefined;
-		if (accounts.accounts.length === 1) {
-			[foundAccount] = accounts.accounts;
-		} else if (accounts.accounts.length > 1) {
-			foundAccount = accounts.accounts.find((account) => account.systemId === systemId);
+	async loadAccount(username: string, systemId?: string): Promise<AccountDto> {
+		let account: AccountDto | undefined | null;
+		if (systemId) {
+			account = await this.accountService.findByUsernameAndSystemId(username, systemId);
+		} else {
+			const foundAccounts = await this.accountService.searchByUsernameExactMatch(username);
+			account = foundAccounts.accounts.find((foundAccount) => foundAccount.systemId == null);
 		}
-		if (!foundAccount) {
+		if (!account) {
 			throw new UnauthorizedException();
 		}
-		return foundAccount;
+		return account;
 	}
 
 	// if user does not contain a systemId the JWT won't contain it, thus the user needs to change his PW during first login

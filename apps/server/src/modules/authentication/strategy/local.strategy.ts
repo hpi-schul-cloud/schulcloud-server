@@ -13,7 +13,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		super();
 	}
 
-	async validate(username: string, password: string): Promise<ICurrentUser> {
+	async validate(username?: string, password?: string): Promise<ICurrentUser> {
 		if (!username || !password) {
 			throw new UnauthorizedException();
 		}

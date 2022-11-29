@@ -7,12 +7,6 @@ import { AuthenticationService } from '../services/authentication.service';
 export class LoginController {
 	constructor(private authService: AuthenticationService) {}
 
-	@UseGuards(AuthGuard(['ldap', 'local']))
-	@Post()
-	login(@Req() req: { user: ICurrentUser }) {
-		return this.authService.generateJwt(req.user);
-	}
-
 	@UseGuards(AuthGuard('ldap'))
 	@Post('ldap')
 	loginLdap(@Req() req: { user: ICurrentUser }) {
