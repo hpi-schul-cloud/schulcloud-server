@@ -2,6 +2,7 @@ const accountModel = require('../../account/model');
 const { userModel } = require('../../user/model');
 const { importUserModel } = require('../model/importUser.schema');
 const roleModel = require('../../role/model');
+const { schoolModel } = require('../../school/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { BadRequest } = require('../../../errors');
 
@@ -41,16 +42,19 @@ const findUsersByEmail = async (email) => userModel.find({ email: email.toLowerC
 const findUserBySchoolAndName = async (schoolId, firstName, lastName) =>
 	userModel.find({ schoolId, firstName, lastName }).lean().exec();
 
-const checkCreate = async (email, userSchool) => {
-	if (!email) {
+const findUsersSchoolById = async (schoolId) =>
+	schoolModel.find({id: schoolId,}).lean().exec();
+
+const checkCreate = async (inputUser, userSchool) => {
+	if (!inputUser?.email) {
 		throw new BadRequest(`User cannot be created. Email is missing`);
 	}
-	const users = await findUsersByEmail(email);
+	const users = await findUsersByEmail(inputUser.email);
 	if (users.length !== 0) {
 		const foundUser = users[0];
 		const userExistsInSchool = foundUser.schoolId;
-		const schools = await SchoolRepo.findSchoolById(foundUser.schoolId);
-		if (schools.length !== 0) {
+		const schools = await findUsersSchoolById(foundUser.schoolId);
+		if (schools !== undefined && schools.length !== 0) {
 			const foundSchool = schools[0];
 			throw new BadRequest(
 				`User cannot be created in school ${userSchool.name} (${userSchool._id}). User with the same email already exists in school ${foundSchool.name} ${userExistsInSchool} with ldapId:${foundUser.ldapId}`,
@@ -88,7 +92,7 @@ const checkUpdate = async (email, userId) => {
 };
 
 const createUserAndAccount = async (inputUser, inputAccount, school) => {
-	await checkCreate(inputUser.email, school);
+	await checkCreate(inputUser, school);
 	const user = (await createUser(inputUser)).toObject();
 	inputAccount.userId = user._id;
 	const account = (await createAccount(inputAccount)).toObject();

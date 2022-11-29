@@ -23,13 +23,6 @@ const findSchoolByLdapIdAndSystem = async (ldapSchoolIdentifier, systems) =>
 		.lean({ virtuals: true })
 		.exec();
 
-const findSchoolById = async (schoolId) =>
-	schoolModel
-		.findOne({
-			_id: schoolId,
-		})
-		.lean({ virtuals: true })
-		.exec();
 
 const findSchoolByOfficialSchoolNumber = async (officialSchoolNumber) => {
 	if (!officialSchoolNumber) {
@@ -47,7 +40,6 @@ const SchoolRepo = {
 	createSchool,
 	updateSchoolName,
 	findSchoolByLdapIdAndSystem,
-	findSchoolById,
 	findSchoolByOfficialSchoolNumber,
 	getYears,
 	findFederalState,
