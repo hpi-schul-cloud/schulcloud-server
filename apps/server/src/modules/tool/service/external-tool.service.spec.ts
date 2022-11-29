@@ -8,10 +8,16 @@ import {
 	ExternalToolDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
-import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
-import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
+import {
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	IFindOptions,
+	SortOrder,
+} from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
 import { ExternalToolService } from './external-tool.service';
 import { ToolConfigType } from '../interface/tool-config-type.enum';
 
@@ -231,6 +237,30 @@ describe('ExternalToolService', () => {
 			const expected: boolean = service.validateByRegex([customParameterDO]);
 
 			expect(expected).toEqual(false);
+		});
+	});
+
+	describe('findExternalTool', () => {
+		it('should call the externalToolRepo', async () => {
+			const { externalToolDO } = setup();
+			const query: Partial<ExternalToolDO> = {
+				id: externalToolDO.id,
+				name: externalToolDO.name,
+			};
+			const options: IFindOptions<ExternalToolDO> = {
+				order: {
+					id: SortOrder.asc,
+					name: SortOrder.asc,
+				},
+				pagination: {
+					limit: 2,
+					skip: 1,
+				},
+			};
+
+			await service.findExternalTools(query, options);
+
+			expect(externalToolRepo.find).toHaveBeenCalledWith(query, options);
 		});
 	});
 });

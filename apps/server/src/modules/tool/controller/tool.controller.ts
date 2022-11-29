@@ -1,14 +1,17 @@
 import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser, IFindOptions } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool/external-tool.do';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
+	ApiFoundResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
+import { PaginationParams } from '@shared/controller';
+import { Page } from '@shared/domain/interface/page';
+import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Lti11LaunchQuery } from './dto/lti11-launch.query';
 import { Lti11LaunchResponse } from './dto/lti11-launch.response';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
@@ -20,6 +23,9 @@ import { ExternalToolResponseMapper } from '../mapper/external-tool-response.map
 import { ExternalToolResponse } from './dto/response/external-tool.response';
 import { ExternalToolParams } from './dto/request/external-tool-create.params';
 import { ExternalToolUc } from '../uc/external-tool.uc';
+import { ExternalToolSearchListResponse } from './dto/response/external-tool-search-list.response';
+import { ExternalToolSearchParams } from './dto/request/external-tool-search.params';
+import { SortExternalToolParams } from './dto/request/external-tool-sort.params';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -61,6 +67,34 @@ export class ToolController {
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(externalToolDO, currentUser.userId);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
 		return mapped;
+	}
+
+	@Get()
+	@ApiFoundResponse({ description: 'Tools has been found.', type: ExternalToolSearchListResponse })
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	async findExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() filterQuery: ExternalToolSearchParams,
+		@Query() pagination: PaginationParams,
+		@Query() sortingQuery: SortExternalToolParams
+	): Promise<ExternalToolSearchListResponse> {
+		const options: IFindOptions<ExternalToolDO> = { pagination };
+		options.order = this.externalToolDOMapper.mapSortingQueryToDomain(sortingQuery);
+		const query: Partial<ExternalToolDO> = this.externalToolDOMapper.mapExternalToolFilterQueryToDO(filterQuery);
+
+		const tools: Page<ExternalToolDO> = await this.externalToolUc.findExternalTool(currentUser.userId, query, options);
+
+		const dtoList: ExternalToolResponse[] = tools.data.map(
+			(tool: ExternalToolDO): ExternalToolResponse => this.externalResponseMapper.mapToResponse(tool)
+		);
+		const response: ExternalToolSearchListResponse = new ExternalToolSearchListResponse(
+			dtoList,
+			tools.total,
+			pagination.skip,
+			pagination.limit
+		);
+		return response;
 	}
 
 	@Delete(':toolId')

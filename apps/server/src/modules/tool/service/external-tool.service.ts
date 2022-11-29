@@ -4,6 +4,8 @@ import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
 import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { IFindOptions } from '@shared/domain';
+import { Page } from '@shared/domain/interface/page';
 
 @Injectable()
 export class ExternalToolService {
@@ -45,6 +47,14 @@ export class ExternalToolService {
 		);
 
 		return duplicate == null;
+	}
+
+	async findExternalTools(
+		query: Partial<ExternalToolDO>,
+		options: IFindOptions<ExternalToolDO>
+	): Promise<Page<ExternalToolDO>> {
+		const tools: Page<ExternalToolDO> = await this.externalToolRepo.find(query, options);
+		return tools;
 	}
 
 	hasDuplicateAttributes(customParameter: CustomParameterDO[]): boolean {
