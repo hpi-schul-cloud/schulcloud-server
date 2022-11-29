@@ -60,6 +60,7 @@ export class ExternalToolService {
 	}
 
 	async updateExternalTool(toUpdate: ExternalToolDO): Promise<ExternalToolDO> {
+		// TODO move to private function
 		if (toUpdate.config instanceof Oauth2ToolConfigDO) {
 			const toUpdateOauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
 				toUpdate.name,
@@ -69,14 +70,10 @@ export class ExternalToolService {
 				toUpdate.config.clientId
 			);
 			if (loadedOauthClient && loadedOauthClient.client_id) {
-				const savedOauthClient: ProviderOauthClient = await this.oauthProviderService.updateOAuth2Client(
-					loadedOauthClient.client_id,
-					toUpdateOauthClient
-				);
-				this.applyProviderOauthClientToDO(toUpdate.config, savedOauthClient);
+				await this.oauthProviderService.updateOAuth2Client(loadedOauthClient.client_id, toUpdateOauthClient);
 			} else {
 				throw new UnprocessableEntityException(
-					`The oAuthConfigs clientId "${toUpdate.config.clientId}" does not exists.`
+					`The oAuthConfigs clientId "${toUpdate.config.clientId}" does not exist`
 				);
 			}
 		}
@@ -103,6 +100,7 @@ export class ExternalToolService {
 		return duplicate == null;
 	}
 
+	// TODO move to validationService
 	hasDuplicateAttributes(customParameter: CustomParameterDO[]): boolean {
 		return customParameter.some((item, itemIndex) => {
 			return customParameter.some((other, otherIndex) => itemIndex !== otherIndex && item.name === other.name);
