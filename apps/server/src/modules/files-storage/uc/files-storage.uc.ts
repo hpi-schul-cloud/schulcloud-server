@@ -97,6 +97,7 @@ export class FilesStorageUC {
 
 		const response = await firstValueFrom(responseStream);
 
+		/* istanbul ignore next */
 		response.data.on('error', (error) => {
 			throw error;
 		});
