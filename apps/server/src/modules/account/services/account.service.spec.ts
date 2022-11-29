@@ -391,21 +391,6 @@ describe('AccountService', () => {
 				username: newUsername,
 			});
 		});
-		/* 
-		it.skip('should update an existing account and set update date', async () => {
-			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
-			const newUsername = 'newUsername';
-			const theNewDate = new Date(2020, 1, 2);
-			jest.setSystemTime(theNewDate);
-			const ret = await accountService.updateUsername(mockTeacherAccount.id, newUsername);
-
-			expect(ret).toBeDefined();
-			expect(ret).toMatchObject({
-				...mockTeacherAccountDto,
-				updatedAt: theNewDate,
-				username: newUsername,
-			});
-		}); */
 	});
 
 	describe('updateLastTriedFailedLogin', () => {

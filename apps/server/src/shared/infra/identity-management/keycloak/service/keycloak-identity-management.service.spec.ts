@@ -246,17 +246,6 @@ describe('KeycloakIdentityManagement', () => {
 		});
 	});
 
-	/* 	describe('deleteAccountByUsername', () => {
-		it('should delete an account', async () => {
-			jest.spyOn(kcAdminClient.users, 'find').mockResolvedValue([mockedAccount1]);
-			jest.spyOn(kcAdminClient.users, 'del').mockResolvedValue();
-
-			const ret = await idm.deleteAccountById(mockedAccount1.id);
-
-			expect(ret).toBe(mockedAccount1.id);
-		});
-	}); */
-
 	describe('updateAccountPassword', () => {
 		it('should allow to update an existing accounts password', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
