@@ -244,6 +244,21 @@ describe('KeycloakIdentityManagement', () => {
 
 			await expect(idm.deleteAccountById(accountId)).rejects.toBeTruthy();
 		});
+
+		it('should throw if multiple accounts with same id exist', async () => {
+			const account1: MockUser = {
+				id: '123',
+				username: 'user1',
+			};
+			const account2: MockUser = {
+				id: '123',
+				username: 'user2',
+			};
+
+			kcUsersMock.find.mockResolvedValueOnce([account1, account2]);
+
+			await expect(idm.deleteAccountById(account1.id)).rejects.toThrowError('Multiple accounts for the same id!');
+		});
 	});
 
 	describe('updateAccountPassword', () => {
