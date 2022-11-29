@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CustomParameterDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
+import { IFindOptions } from '@shared/domain';
+import { Page } from '@shared/domain/interface/page';
 
 @Injectable()
 export class ExternalToolService {
@@ -22,6 +24,14 @@ export class ExternalToolService {
 		);
 
 		return duplicate == null;
+	}
+
+	async findExternalTools(
+		query: Partial<ExternalToolDO>,
+		options: IFindOptions<ExternalToolDO>
+	): Promise<Page<ExternalToolDO>> {
+		const tools: Page<ExternalToolDO> = await this.externalToolRepo.find(query, options);
+		return tools;
 	}
 
 	hasDuplicateAttributes(customParameter: CustomParameterDO[]): boolean {
