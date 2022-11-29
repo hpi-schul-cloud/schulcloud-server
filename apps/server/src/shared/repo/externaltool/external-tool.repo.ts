@@ -64,14 +64,6 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 		return null;
 	}
 
-	mapEntityToDO(entity: ExternalTool): ExternalToolDO {
-		return this.externalToolRepoMapper.mapEntityToDO(entity);
-	}
-
-	mapDOToEntityProperties(entityDO: ExternalToolDO): EntityProperties<IExternalToolProperties> {
-		return this.externalToolRepoMapper.mapDOToEntityProperties(entityDO);
-	}
-
 	async find(query: Partial<ExternalTool>, options?: IFindOptions<ExternalToolDO>): Promise<Page<ExternalToolDO>> {
 		const pagination: IPagination = options?.pagination || {};
 		const order: QueryOrderMap<ExternalTool> = this.sortingMapper.mapDOSortOrderToQueryOrder(options?.order || {});
@@ -93,5 +85,13 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 		const entityDos: ExternalToolDO[] = entities.map((entity) => this.mapEntityToDO(entity));
 		const page: Page<ExternalToolDO> = new Page<ExternalToolDO>(entityDos, total);
 		return page;
+	}
+
+	mapEntityToDO(entity: ExternalTool): ExternalToolDO {
+		return this.externalToolRepoMapper.mapEntityToDO(entity);
+	}
+
+	mapDOToEntityProperties(entityDO: ExternalToolDO): EntityProperties<IExternalToolProperties> {
+		return this.externalToolRepoMapper.mapDOToEntityProperties(entityDO);
 	}
 }

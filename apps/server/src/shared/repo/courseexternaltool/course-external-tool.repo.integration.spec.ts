@@ -40,7 +40,7 @@ describe('CourseExternalToolRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	async function setup() {
+	const setup = async () => {
 		const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 		const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 		const courseExternalTool1: CourseExternalTool = courseExternalToolFactory.buildWithId({
@@ -63,7 +63,7 @@ describe('CourseExternalToolRepo', () => {
 		em.clear();
 
 		return { schoolExternalTool1, schoolExternalTool2 };
-	}
+	};
 
 	it('getEntityName should return CourseExternalTool', () => {
 		const { entityName } = repo;

@@ -26,11 +26,11 @@ import { Page } from '@shared/domain/interface/page';
 import { ExternalToolSearchListResponse } from '@src/modules/tool/controller/dto/response/external-tool-search-list.response';
 import { ToolController } from './tool.controller';
 import { Lti11Uc } from '../uc/lti11.uc';
-import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
+import { Lti11ResponseMapper } from './mapper/lti11-response.mapper';
 import { ExternalToolUc } from '../uc/external-tool.uc';
-import { ExternalToolRequestMapper } from '../mapper/external-tool-request.mapper';
-import { ExternalToolResponseMapper } from '../mapper/external-tool-response.mapper';
-import { Lti11LaunchResponse } from './dto/lti11-launch.response';
+import { ExternalToolRequestMapper } from './mapper/external-tool-request.mapper';
+import { ExternalToolResponseMapper } from './mapper/external-tool-response.mapper';
+import { Lti11LaunchResponse } from './dto/response/lti11-launch.response';
 import { BasicToolConfigParams } from './dto/request/basic-tool-config.params';
 import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
 import { ExternalToolResponse } from './dto/response/external-tool.response';
@@ -48,7 +48,7 @@ import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method
 import { ToolConfigType } from '../interface/tool-config-type.enum';
 import { LtiMessageType } from '../interface/lti-message-type.enum';
 import { LtiPrivacyPermission } from '../interface/lti-privacy-permission.enum';
-import { Lti11LaunchParams } from './dto/lti11-launch.params';
+import { ToolIdParams } from './dto/request/tool-id.params';
 
 describe('ToolController', () => {
 	let module: TestingModule;
@@ -100,6 +100,70 @@ describe('ToolController', () => {
 		await module.close();
 	});
 
+	const setupExternalTool = () => {
+		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+
+		const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
+			name: 'mockName',
+			default: 'mockDefault',
+			location: CustomParameterLocationParams.PATH,
+			scope: CustomParameterScopeParams.SCHOOL,
+			type: CustomParameterTypeParams.STRING,
+			regex: 'mockRegex',
+		});
+
+		const basicToolConfigDO: BasicToolConfigDO = new BasicToolConfigDO({
+			type: ToolConfigType.BASIC,
+			baseUrl: 'mockUrl',
+		});
+		const basicToolConfigResponse: BasicToolConfigResponse = new BasicToolConfigResponse({
+			type: ToolConfigType.BASIC,
+			baseUrl: 'mockUrl',
+		});
+		const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
+			id: '1',
+			name: 'mockName',
+			url: 'mockUrl',
+			logoUrl: 'mockLogoUrl',
+			parameters: [customParameterResponse],
+			isHidden: true,
+			openNewTab: true,
+			version: 1,
+			config: basicToolConfigResponse,
+		});
+
+		const customParameterDO: CustomParameterDO = new CustomParameterDO({
+			name: 'mockName',
+			default: 'mockDefault',
+			location: CustomParameterLocation.PATH,
+			scope: CustomParameterScope.SCHOOL,
+			type: CustomParameterType.STRING,
+			regex: 'mockRegex',
+		});
+
+		const externalToolDO: ExternalToolDO = new ExternalToolDO({
+			id: '1',
+			name: 'mockName',
+			url: 'mockUrl',
+			logoUrl: 'mockLogoUrl',
+			parameters: [customParameterDO],
+			isHidden: true,
+			openNewTab: true,
+			version: 1,
+			config: basicToolConfigDO,
+		});
+
+		externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
+		externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
+		externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+
+		return {
+			currentUser,
+			externalToolResponse,
+			externalToolDO,
+		};
+	};
+
 	describe('getLti11LaunchParameters', () => {
 		it('should fetch the authorized launch parameters and return the response', async () => {
 			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
@@ -131,7 +195,7 @@ describe('ToolController', () => {
 	});
 
 	describe('createExternalTool', () => {
-		function setup() {
+		const setupCreate = () => {
 			const customParameterCreateParams = new CustomParameterCreateParams();
 			customParameterCreateParams.name = 'mockName';
 			customParameterCreateParams.default = 'mockDefault';
@@ -148,68 +212,13 @@ describe('ToolController', () => {
 			body.isHidden = true;
 			body.openNewTab = true;
 
-			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-
-			const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
-				name: 'mockName',
-				default: 'mockDefault',
-				location: CustomParameterLocationParams.PATH,
-				scope: CustomParameterScopeParams.SCHOOL,
-				type: CustomParameterTypeParams.STRING,
-				regex: 'mockRegex',
-			});
-
-			const basicToolConfigDO: BasicToolConfigDO = new BasicToolConfigDO({
-				type: ToolConfigType.BASIC,
-				baseUrl: 'mockUrl',
-			});
-			const basicToolConfigResponse: BasicToolConfigResponse = new BasicToolConfigResponse({
-				type: ToolConfigType.BASIC,
-				baseUrl: 'mockUrl',
-			});
-			const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
-				id: '1',
-				name: 'mockName',
-				url: 'mockUrl',
-				logoUrl: 'mockLogoUrl',
-				parameters: [customParameterResponse],
-				isHidden: true,
-				openNewTab: true,
-				version: 1,
-				config: basicToolConfigResponse,
-			});
-
-			const customParameterDO: CustomParameterDO = new CustomParameterDO({
-				name: 'mockName',
-				default: 'mockDefault',
-				location: CustomParameterLocation.PATH,
-				scope: CustomParameterScope.SCHOOL,
-				type: CustomParameterType.STRING,
-				regex: 'mockRegex',
-			});
-
-			const externalToolDO: ExternalToolDO = new ExternalToolDO({
-				id: '1',
-				name: 'mockName',
-				url: 'mockUrl',
-				logoUrl: 'mockLogoUrl',
-				parameters: [customParameterDO],
-				isHidden: true,
-				openNewTab: true,
-				version: 1,
-				config: basicToolConfigDO,
-			});
-
 			return {
 				body,
-				currentUser,
-				externalToolResponse,
-				externalToolDO,
 			};
-		}
+		};
 
 		describe('when creating an oauthTool', () => {
-			function oauthSetup() {
+			const oauthSetup = () => {
 				const bodyConfigCreateOauthParams = new Oauth2ToolConfigParams();
 				bodyConfigCreateOauthParams.type = ToolConfigType.OAUTH2;
 				bodyConfigCreateOauthParams.baseUrl = 'mockUrl';
@@ -240,27 +249,24 @@ describe('ToolController', () => {
 					oauth2ToolConfigResponse,
 					oauth2ToolConfigDO,
 				};
-			}
+			};
 
 			it('should return external tool response with oauth2 config', async () => {
-				const { body, currentUser, externalToolResponse, externalToolDO } = setup();
+				const { currentUser, externalToolResponse, externalToolDO } = setupExternalTool();
+				const { body } = setupCreate();
 				const { bodyConfigCreateOauthParams, oauth2ToolConfigResponse, oauth2ToolConfigDO } = oauthSetup();
 				body.config = bodyConfigCreateOauthParams;
 				externalToolResponse.config = oauth2ToolConfigResponse;
 				externalToolDO.config = oauth2ToolConfigDO;
 
-				externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
-				externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
-				externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
-
-				const expected = await controller.createExternalTool(body, currentUser);
+				const expected = await controller.createExternalTool(currentUser, body);
 
 				expect(expected).toEqual(externalToolResponse);
 			});
 		});
 
 		describe('when creating basic tool', () => {
-			function basicSetup() {
+			const basicSetup = () => {
 				const bodyConfigCreateBasicParams = new BasicToolConfigParams();
 				bodyConfigCreateBasicParams.type = ToolConfigType.BASIC;
 				bodyConfigCreateBasicParams.baseUrl = 'mockUrl';
@@ -268,25 +274,22 @@ describe('ToolController', () => {
 				return {
 					bodyConfigCreateBasicParams,
 				};
-			}
+			};
 
 			it('should return basic external tool response', async () => {
-				const { body, currentUser, externalToolResponse, externalToolDO } = setup();
+				const { currentUser, externalToolResponse } = setupExternalTool();
+				const { body } = setupCreate();
 				const { bodyConfigCreateBasicParams } = basicSetup();
 				body.config = bodyConfigCreateBasicParams;
 
-				externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
-				externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
-				externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
-
-				const expected = await controller.createExternalTool(body, currentUser);
+				const expected = await controller.createExternalTool(currentUser, body);
 
 				expect(expected).toEqual(externalToolResponse);
 			});
 		});
 
 		describe('when creating an lti tool', () => {
-			function ltiSetup() {
+			const ltiSetup = () => {
 				const bodyConfigCreateLti11Params = new Lti11ToolConfigParams();
 				bodyConfigCreateLti11Params.type = ToolConfigType.LTI11;
 				bodyConfigCreateLti11Params.baseUrl = 'mockUrl';
@@ -317,19 +320,17 @@ describe('ToolController', () => {
 					lti11ToolConfigDO,
 					lti11ToolConfigResponse,
 				};
-			}
+			};
+
 			it('should return external tool response with lti config', async () => {
-				const { body, currentUser, externalToolResponse, externalToolDO } = setup();
+				const { currentUser, externalToolResponse, externalToolDO } = setupExternalTool();
+				const { body } = setupCreate();
 				const { bodyConfigCreateLti11Params, lti11ToolConfigResponse, lti11ToolConfigDO } = ltiSetup();
 				body.config = bodyConfigCreateLti11Params;
 				externalToolResponse.config = lti11ToolConfigResponse;
 				externalToolDO.config = lti11ToolConfigDO;
 
-				externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
-				externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
-				externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
-
-				const expected = await controller.createExternalTool(body, currentUser);
+				const expected = await controller.createExternalTool(currentUser, body);
 
 				expect(expected).toEqual(externalToolResponse);
 			});
@@ -337,7 +338,7 @@ describe('ToolController', () => {
 	});
 
 	describe('findExternalTool', () => {
-		function setupFind() {
+		const setupFind = () => {
 			const filterQuery: ExternalToolSearchParams = new ExternalToolSearchParams();
 			const pagination: PaginationParams = { skip: 0, limit: 1 };
 			const sortingQuery: SortExternalToolParams = { sortOrder: SortOrder.asc, sortBy: ExternalToolSortOrder.NAME };
@@ -383,7 +384,7 @@ describe('ToolController', () => {
 				sortingQuery,
 				filter,
 			};
-		}
+		};
 
 		beforeEach(() => {
 			jest.clearAllMocks();
@@ -435,13 +436,42 @@ describe('ToolController', () => {
 		});
 	});
 
+	describe('getExternalTool', () => {
+		const setupGetById = () => {
+			const toolIdParams: ToolIdParams = new ToolIdParams();
+			toolIdParams.toolId = 'toolId';
+
+			return {
+				toolIdParams,
+			};
+		};
+
+		it('should call the uc to fetch a tool', async () => {
+			const { currentUser } = setupExternalTool();
+			const { toolIdParams } = setupGetById();
+
+			await controller.getExternalTool(currentUser, toolIdParams);
+
+			expect(externalToolUc.getExternalTool).toHaveBeenCalledWith(currentUser.userId, toolIdParams.toolId);
+		});
+
+		it('should fetch a tool', async () => {
+			const { currentUser, externalToolResponse } = setupExternalTool();
+			const { toolIdParams } = setupGetById();
+
+			const result: ExternalToolResponse = await controller.getExternalTool(currentUser, toolIdParams);
+
+			expect(result).toEqual(externalToolResponse);
+		});
+	});
+
 	describe('deleteExternalTool', () => {
 		it('should call the uc', async () => {
-			const params: Lti11LaunchParams = new Lti11LaunchParams();
+			const params: ToolIdParams = new ToolIdParams();
 			params.toolId = 'toolId';
 			const currentUser: ICurrentUser = {} as ICurrentUser;
 
-			await controller.deleteExternalTool(params, currentUser);
+			await controller.deleteExternalTool(currentUser, params);
 
 			expect(externalToolUc.deleteExternalTool).toHaveBeenCalledWith(currentUser.userId, params.toolId);
 		});
