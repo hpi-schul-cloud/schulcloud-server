@@ -11,7 +11,6 @@ describe('KeycloakIdentityManagement', () => {
 	let module: TestingModule;
 	let idm: IdentityManagementService;
 	let kcAdminClient: DeepMocked<KeycloakAdminClient>;
-	let kcMock: DeepMocked<KeycloakAdminClient>;
 	const kcUsersMock = createMock<Users>();
 
 	type MockUser = {
@@ -82,7 +81,7 @@ describe('KeycloakIdentityManagement', () => {
 			const accountId = 'user-1-id';
 			const createUserMock = jest.spyOn(kcAdminClient.users, 'create').mockResolvedValue({ id: accountId });
 			const resetPasswordMock = jest.spyOn(kcAdminClient.users, 'resetPassword');
-			const testAccount = { userName: 'test', email: 'test@test.test' };
+			const testAccount = { username: 'test', email: 'test@test.test' };
 			const testAccountPassword = 'test';
 
 			const ret = await idm.createAccount(testAccount, testAccountPassword);
@@ -90,7 +89,7 @@ describe('KeycloakIdentityManagement', () => {
 			expect(ret).not.toBeNull();
 			expect(ret).toBe(accountId);
 			expect(createUserMock).toBeCalledWith(
-				expect.objectContaining({ username: testAccount.userName, email: testAccount.email })
+				expect.objectContaining({ username: testAccount.username, email: testAccount.email })
 			);
 			expect(resetPasswordMock).toBeCalledWith(
 				expect.objectContaining({
@@ -106,7 +105,7 @@ describe('KeycloakIdentityManagement', () => {
 			kcUsersMock.resetPassword.mockRejectedValueOnce('error');
 			kcUsersMock.del.mockResolvedValueOnce();
 
-			const testAccount = { userName: 'test', email: 'test@test.test' };
+			const testAccount = { username: 'test', email: 'test@test.test' };
 			const testAccountPassword = 'test';
 
 			await expect(idm.createAccount(testAccount, testAccountPassword)).rejects.toBeTruthy();
@@ -126,7 +125,7 @@ describe('KeycloakIdentityManagement', () => {
 			expect(ret).toEqual(
 				expect.objectContaining({
 					id: mockedAccount1.id,
-					userName: mockedAccount1.username,
+					username: mockedAccount1.username,
 					email: mockedAccount1.email,
 					firstName: mockedAccount1.firstName,
 					lastName: mockedAccount1.lastName,
@@ -152,7 +151,7 @@ describe('KeycloakIdentityManagement', () => {
 			expect(ret).toEqual(
 				expect.objectContaining({
 					id: mockedAccount1.id,
-					userName: mockedAccount1.username,
+					username: mockedAccount1.username,
 					email: mockedAccount1.email,
 					firstName: mockedAccount1.firstName,
 					lastName: mockedAccount1.lastName,
@@ -178,7 +177,7 @@ describe('KeycloakIdentityManagement', () => {
 			expect(ret).toContainEqual(
 				expect.objectContaining({
 					id: mockedAccount1.id,
-					userName: mockedAccount1.username,
+					username: mockedAccount1.username,
 					email: mockedAccount1.email,
 					firstName: mockedAccount1.firstName,
 					lastName: mockedAccount1.lastName,
@@ -187,7 +186,7 @@ describe('KeycloakIdentityManagement', () => {
 			expect(ret).toContainEqual(
 				expect.objectContaining({
 					id: mockedAccount2.id,
-					userName: mockedAccount2.username,
+					username: mockedAccount2.username,
 					email: mockedAccount2.email,
 					firstName: mockedAccount2.firstName,
 					lastName: mockedAccount2.lastName,
@@ -221,7 +220,7 @@ describe('KeycloakIdentityManagement', () => {
 
 		it('should reject if account can not be updated', async () => {
 			const accountId = 'user-1-id';
-			const testAccount = { userName: 'test', email: 'test@test.test' };
+			const testAccount = { username: 'test', email: 'test@test.test' };
 			jest.spyOn(kcAdminClient.users, 'update').mockRejectedValue('error');
 
 			await expect(idm.updateAccount(accountId, testAccount)).rejects.toBeTruthy();

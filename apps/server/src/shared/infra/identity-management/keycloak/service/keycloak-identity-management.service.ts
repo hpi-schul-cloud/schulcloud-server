@@ -59,7 +59,16 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 
 	async updateAccountPassword(accountId: string, password: string): Promise<string> {
 		const id = await this.getExternalId(accountId);
-		await this.resetPassword(id, password);
+		await (
+			await this.kcAdminClient.callKcAdminClient()
+		).users.resetPassword({
+			id,
+			credential: {
+				temporary: false,
+				type: 'password',
+				value: password,
+			},
+		});
 		return accountId;
 	}
 
@@ -99,20 +108,6 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 			firstName: user.firstName,
 			lastName: user.lastName,
 		};
-	}
-
-	private async resetPassword(accountId: string, password: string) {
-		const id = await this.getExternalId(accountId);
-		await (
-			await this.kcAdminClient.callKcAdminClient()
-		).users.resetPassword({
-			id,
-			credential: {
-				temporary: false,
-				type: 'password',
-				value: password,
-			},
-		});
 	}
 
 	private async getExternalId(accountId: string): Promise<string> {
