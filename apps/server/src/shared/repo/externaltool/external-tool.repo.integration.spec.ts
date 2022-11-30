@@ -5,8 +5,10 @@ import {
 	CustomParameterScope,
 	CustomParameterType,
 	ExternalTool,
+	IFindOptions,
 	LtiMessageType,
 	LtiPrivacyPermission,
+	SortOrder,
 	ToolConfigType,
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -14,7 +16,7 @@ import { cleanupCollections, externalToolFactory } from '@shared/testing';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { Logger } from '@src/core/logger';
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -22,11 +24,15 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
+import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-tool-sorting.mapper';
+import { Page } from '@shared/domain/interface/page';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;
 	let repo: ExternalToolRepo;
 	let em: EntityManager;
+
+	let sortingMapper: DeepMocked<ExternalToolSortingMapper>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -38,11 +44,16 @@ describe('ExternalToolRepo', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: ExternalToolSortingMapper,
+					useValue: createMock<ExternalToolSortingMapper>(),
+				},
 			],
 		}).compile();
 
 		repo = module.get(ExternalToolRepo);
 		em = module.get(EntityManager);
+		sortingMapper = module.get(ExternalToolSortingMapper);
 	});
 
 	afterAll(async () => {
@@ -65,7 +76,17 @@ describe('ExternalToolRepo', () => {
 		await em.persistAndFlush([externalTool, externalOauthTool, externalOauthTool2, externalLti11Tool]);
 		em.clear();
 
-		return { externalTool, externalOauthTool, externalOauthTool2, externalLti11Tool, client1Id, client2Id };
+		const queryExternalToolDO: Partial<ExternalToolDO> = { name: 'external-tool-*' };
+
+		return {
+			externalTool,
+			externalOauthTool,
+			externalOauthTool2,
+			externalLti11Tool,
+			client1Id,
+			client2Id,
+			queryExternalToolDO,
+		};
 	}
 
 	it('getEntityName should return ExternalTool', () => {
@@ -196,6 +217,101 @@ describe('ExternalToolRepo', () => {
 			const result: ExternalToolDO = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
+		});
+	});
+
+	describe('find', () => {
+		async function setupFind() {
+			const { queryExternalToolDO } = await setup();
+			queryExternalToolDO.name = '.';
+
+			const options: IFindOptions<ExternalToolDO> = {};
+
+			await em.nativeDelete(ExternalTool, {});
+			const ltiToolA: ExternalTool = externalToolFactory.withName('A').buildWithId();
+			const ltiToolB: ExternalTool = externalToolFactory.withName('B').buildWithId();
+			const ltiToolC: ExternalTool = externalToolFactory.withName('B').buildWithId();
+			const ltiTools: ExternalTool[] = [ltiToolA, ltiToolB, ltiToolC];
+			await em.persistAndFlush([ltiToolA, ltiToolB, ltiToolC]);
+
+			return { queryExternalToolDO, options, ltiTools };
+		}
+
+		describe('sortingMapper', () => {
+			it('should call mapDOSortOrderToQueryOrder with options.order', async () => {
+				const { queryExternalToolDO, options } = await setupFind();
+				options.order = {
+					name: SortOrder.asc,
+				};
+
+				await repo.find(queryExternalToolDO, options);
+
+				expect(sortingMapper.mapDOSortOrderToQueryOrder).toHaveBeenCalledWith(options.order);
+			});
+
+			it('should call mapDOSortOrderToQueryOrder with an empty object', async () => {
+				const { queryExternalToolDO, options } = await setupFind();
+				options.order = undefined;
+
+				await repo.find(queryExternalToolDO, options);
+
+				expect(sortingMapper.mapDOSortOrderToQueryOrder).toHaveBeenCalledWith({});
+			});
+		});
+
+		describe('pagination', () => {
+			it('should return all ltiTools when options with pagination is set to undefined', async () => {
+				const { queryExternalToolDO, ltiTools } = await setupFind();
+
+				const page: Page<ExternalToolDO> = await repo.find(queryExternalToolDO, undefined);
+
+				expect(page.data.length).toBe(ltiTools.length);
+			});
+
+			it('should return one ltiTool when pagination has a limit of 1', async () => {
+				const { queryExternalToolDO, options } = await setupFind();
+				options.pagination = { limit: 1 };
+
+				const page: Page<ExternalToolDO> = await repo.find(queryExternalToolDO, options);
+
+				expect(page.data.length).toBe(1);
+			});
+
+			it('should return no ltiTool when pagination has a limit of 1 and skip is set to 2', async () => {
+				const { queryExternalToolDO, options } = await setupFind();
+				options.pagination = { limit: 1, skip: 3 };
+
+				const page: Page<ExternalToolDO> = await repo.find(queryExternalToolDO, options);
+
+				expect(page.data.length).toBe(0);
+			});
+		});
+
+		describe('order', () => {
+			it('should return ltiTools ordered by default _id when no order is specified', async () => {
+				const { queryExternalToolDO, options, ltiTools } = await setupFind();
+				sortingMapper.mapDOSortOrderToQueryOrder.mockReturnValue({});
+
+				const page: Page<ExternalToolDO> = await repo.find(queryExternalToolDO, options);
+
+				expect(page.data[0].name).toEqual(ltiTools[0].name);
+				expect(page.data[1].name).toEqual(ltiTools[1].name);
+				expect(page.data[2].name).toEqual(ltiTools[2].name);
+			});
+
+			it('should return ltiTools ordered by name ascending', async () => {
+				const { queryExternalToolDO, options, ltiTools } = await setupFind();
+
+				options.order = {
+					name: SortOrder.asc,
+				};
+
+				const page: Page<ExternalToolDO> = await repo.find(queryExternalToolDO, options);
+
+				expect(page.data[0].name).toEqual(ltiTools[0].name);
+				expect(page.data[1].name).toEqual(ltiTools[1].name);
+				expect(page.data[2].name).toEqual(ltiTools[2].name);
+			});
 		});
 	});
 });
