@@ -4,11 +4,13 @@ import { InternalServerErrorException } from '@nestjs/common';
 import {
 	courseGroupFactory,
 	fileFactory,
+	schoolFactory,
 	setupEntities,
 	submissionFactory,
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { Submission } from './submission.entity';
 
 describe('Submission entity', () => {
 	let orm: MikroORM;
@@ -26,14 +28,60 @@ describe('Submission entity', () => {
 	});
 
 	describe('constructor is called', () => {
+		const buildSubmissionParams = () => {
+			const school = schoolFactory.build();
+			const student = userFactory.build();
+			const task = taskFactory.buildWithId();
+			const file = fileFactory.buildWithId();
+
+			return { school, student, task, file };
+		};
+
+		describe('when required pros are set', () => {
+			const setup = () => {
+				const { school, student, task } = buildSubmissionParams();
+
+				const submission = new Submission({
+					school,
+					student,
+					task,
+					comment: 'test',
+				});
+
+				return { submission, school, student, task };
+			};
+
+			it('should contains default props', () => {
+				const { submission, school, student, task } = setup();
+
+				expect(submission).toStrictEqual(
+					expect.objectContaining({
+						school,
+						student,
+						task,
+						comment: 'test',
+						graded: false,
+						submitted: false,
+					})
+				);
+			});
+		});
+
 		describe('when studentFiles are passed', () => {
 			const setup = () => {
-				const task = taskFactory.buildWithId();
-				const file = fileFactory.buildWithId();
-				const submission = submissionFactory.buildWithId({ task, studentFiles: [file] });
+				const { school, student, task, file } = buildSubmissionParams();
+
+				const submission = new Submission({
+					school,
+					student,
+					task,
+					comment: 'test',
+					studentFiles: [file],
+				});
 
 				return { submission, file };
 			};
+
 			it('should contains file', () => {
 				const { submission, file } = setup();
 
@@ -43,10 +91,14 @@ describe('Submission entity', () => {
 
 		describe('when gradeFiles are passed', () => {
 			const setup = () => {
-				const student = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				const file = fileFactory.buildWithId();
-				const submission = submissionFactory.buildWithId({ task, student, gradeFiles: [file] });
+				const { school, student, task, file } = buildSubmissionParams();
+				const submission = new Submission({
+					school,
+					student,
+					task,
+					comment: 'test',
+					gradeFiles: [file],
+				});
 
 				return { submission, file };
 			};
@@ -55,6 +107,72 @@ describe('Submission entity', () => {
 				const { submission, file } = setup();
 
 				expect(submission.gradeFiles.contains(file)).toBe(true);
+			});
+		});
+
+		describe('when teamMembers are passed', () => {
+			const setup = () => {
+				const { school, student, task } = buildSubmissionParams();
+				const teamMember = userFactory.build();
+				const submission = new Submission({
+					school,
+					student,
+					task,
+					comment: 'test',
+					teamMembers: [teamMember],
+				});
+
+				return { submission, teamMember };
+			};
+
+			it('should contains teamMember', () => {
+				const { submission, teamMember } = setup();
+
+				expect(submission.teamMembers.contains(teamMember)).toBe(true);
+			});
+		});
+
+		describe('when submitted is passed', () => {
+			const setup = () => {
+				const { school, student, task } = buildSubmissionParams();
+
+				const submission = new Submission({
+					school,
+					student,
+					task,
+					comment: 'test',
+					submitted: true,
+				});
+
+				return { submission };
+			};
+
+			it('should return true', () => {
+				const { submission } = setup();
+
+				expect(submission.submitted).toBe(true);
+			});
+		});
+
+		describe('when graded is passed', () => {
+			const setup = () => {
+				const { school, student, task } = buildSubmissionParams();
+
+				const submission = new Submission({
+					school,
+					student,
+					task,
+					comment: 'test',
+					graded: true,
+				});
+
+				return { submission };
+			};
+
+			it('should return true', () => {
+				const { submission } = setup();
+
+				expect(submission.graded).toBe(true);
 			});
 		});
 	});
