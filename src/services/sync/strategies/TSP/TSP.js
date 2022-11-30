@@ -4,6 +4,7 @@ const moment = require('moment');
 const { JWE, JWK, JWS } = require('jose');
 const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const accountModel = require('../../../account/model');
 
 const ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
 const SOURCE_ID_ATTRIBUTE = 'tspUid'; // name of the uid attribute within sourceOptions
@@ -104,7 +105,7 @@ const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 		userData = { ...userData, birthday, consent };
 	}
 	const user = await app.service('users').create(userData);
-	await app.service('nest-account-service').save({
+	await accountModel.create({
 		userId: user._id,
 		username,
 		systemId,
