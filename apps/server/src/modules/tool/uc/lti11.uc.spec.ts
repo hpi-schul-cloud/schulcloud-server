@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser, LtiPrivacyPermission, RoleName } from '@shared/domain';
+import { LtiPrivacyPermission, RoleName } from '@shared/domain';
 import { Lti11Service } from '@src/modules/tool/service/lti11.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LtiToolRepo } from '@shared/repo';
@@ -61,7 +61,8 @@ describe('Lti11Uc', () => {
 		describe('build oauth1 authorization parameters and payload', () => {
 			const setup = () => {
 				const userName = 'userName';
-				const currentUser: ICurrentUser = { userId: 'userId', roles: [RoleName.USER] } as ICurrentUser;
+				const userId = 'userId';
+				const userRole: RoleName = RoleName.USER;
 				const userDto: UserDto = new UserDto({
 					email: 'email',
 					firstName: 'firstName',
@@ -98,14 +99,15 @@ describe('Lti11Uc', () => {
 				ltiToolRepo.findById.mockResolvedValue(ltiTool);
 				ltiRoleMapper.mapRoleToLtiRole.mockReturnValue(LtiRole.LEARNER);
 				userService.getUser.mockResolvedValue(userDto);
-				lti11Service.getUserIdOrPseudonym.mockResolvedValue(currentUser.userId);
+				lti11Service.getUserIdOrPseudonym.mockResolvedValue(userId);
 				userService.getDisplayName.mockResolvedValue(userName);
 				lti11Service.createConsumer.mockReturnValue(oauth);
 				oauth.authorize.mockReturnValue(authorization);
 
 				return {
 					userName,
-					currentUser,
+					userId,
+					userRole,
 					userDto,
 					ltiTool,
 					authorization,
@@ -113,7 +115,7 @@ describe('Lti11Uc', () => {
 			};
 
 			it('should return authorization with resource link id from tool', async () => {
-				const { currentUser, ltiTool, authorization } = setup();
+				const { userId, userRole, ltiTool, authorization } = setup();
 				const expectedRequestData: RequestOptions = {
 					url: ltiTool.url,
 					method: 'POST',
@@ -124,18 +126,18 @@ describe('Lti11Uc', () => {
 						roles: LtiRole.LEARNER,
 						launch_presentation_document_target: 'window',
 						launch_presentation_locale: 'en',
-						user_id: currentUser.userId,
+						user_id: userId,
 					},
 				};
 
-				const result: Authorization = await useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				const result: Authorization = await useCase.getLaunchParameters(userId, userRole, 'toolId', 'courseId');
 
 				expect(result).toEqual(authorization);
 				expect(oauth.authorize).toHaveBeenCalledWith(expect.objectContaining(expectedRequestData));
 			});
 
 			it('should return authorization with courseId as resource_link_id, if tool has none', async () => {
-				const { currentUser, ltiTool, authorization } = setup();
+				const { userId, userRole, ltiTool, authorization } = setup();
 				const courseId = 'courseId';
 				ltiTool.resource_link_id = undefined;
 				const expectedRequestData: RequestOptions = {
@@ -148,18 +150,18 @@ describe('Lti11Uc', () => {
 						roles: LtiRole.LEARNER,
 						launch_presentation_document_target: 'window',
 						launch_presentation_locale: 'en',
-						user_id: currentUser.userId,
+						user_id: userId,
 					},
 				};
 
-				const result: Authorization = await useCase.getLaunchParameters(currentUser, 'toolId', courseId);
+				const result: Authorization = await useCase.getLaunchParameters(userId, userRole, 'toolId', courseId);
 
 				expect(result).toEqual(authorization);
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
 			it('should return authorization with pseudonymous privacy_permission', async () => {
-				const { currentUser, ltiTool, authorization } = setup();
+				const { userId, userRole, ltiTool, authorization } = setup();
 				const expectedRequestData: RequestOptions = {
 					url: ltiTool.url,
 					method: 'POST',
@@ -170,18 +172,18 @@ describe('Lti11Uc', () => {
 						roles: LtiRole.LEARNER,
 						launch_presentation_document_target: 'window',
 						launch_presentation_locale: 'en',
-						user_id: currentUser.userId,
+						user_id: userId,
 					},
 				};
 
-				const result: Authorization = await useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				const result: Authorization = await useCase.getLaunchParameters(userId, userRole, 'toolId', 'courseId');
 
 				expect(result).toEqual(authorization);
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
 			it('should return authorization with name privacy_permission', async () => {
-				const { currentUser, ltiTool, authorization, userName } = setup();
+				const { userId, userRole, ltiTool, authorization, userName } = setup();
 				ltiTool.privacy_permission = LtiPrivacyPermission.NAME;
 				const expectedRequestData: RequestOptions = {
 					url: ltiTool.url,
@@ -193,19 +195,19 @@ describe('Lti11Uc', () => {
 						roles: LtiRole.LEARNER,
 						launch_presentation_document_target: 'window',
 						launch_presentation_locale: 'en',
-						user_id: currentUser.userId,
+						user_id: userId,
 						lis_person_name_full: userName,
 					},
 				};
 
-				const result: Authorization = await useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				const result: Authorization = await useCase.getLaunchParameters(userId, userRole, 'toolId', 'courseId');
 
 				expect(result).toEqual(authorization);
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
 			it('should return authorization with email privacy_permission', async () => {
-				const { currentUser, ltiTool, authorization, userDto } = setup();
+				const { userId, userRole, ltiTool, authorization, userDto } = setup();
 				ltiTool.privacy_permission = LtiPrivacyPermission.EMAIL;
 				const expectedRequestData: RequestOptions = {
 					url: ltiTool.url,
@@ -217,19 +219,19 @@ describe('Lti11Uc', () => {
 						roles: LtiRole.LEARNER,
 						launch_presentation_document_target: 'window',
 						launch_presentation_locale: 'en',
-						user_id: currentUser.userId,
+						user_id: userId,
 						lis_person_contact_email_primary: userDto.email,
 					},
 				};
 
-				const result: Authorization = await useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				const result: Authorization = await useCase.getLaunchParameters(userId, userRole, 'toolId', 'courseId');
 
 				expect(result).toEqual(authorization);
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
 			});
 
 			it('should return authorization with custom fields', async () => {
-				const { currentUser, ltiTool, authorization } = setup();
+				const { userId, userRole, ltiTool, authorization } = setup();
 				ltiTool.customs = [new CustomLtiProperty('field1', 'value1'), new CustomLtiProperty('field2', 'value2')];
 				const expectedRequestData: RequestOptions = {
 					url: ltiTool.url,
@@ -241,13 +243,13 @@ describe('Lti11Uc', () => {
 						roles: LtiRole.LEARNER,
 						launch_presentation_document_target: 'window',
 						launch_presentation_locale: 'en',
-						user_id: currentUser.userId,
+						user_id: userId,
 						custom_field1: 'value1',
 						custom_field2: 'value2',
 					},
 				};
 
-				const result: Authorization = await useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				const result: Authorization = await useCase.getLaunchParameters(userId, userRole, 'toolId', 'courseId');
 
 				expect(result).toEqual(authorization);
 				expect(oauth.authorize).toHaveBeenCalledWith(expectedRequestData);
@@ -256,7 +258,8 @@ describe('Lti11Uc', () => {
 
 		describe('with invalid tool parameters', () => {
 			const setup = () => {
-				const currentUser: ICurrentUser = { userId: 'userId', roles: [RoleName.USER] } as ICurrentUser;
+				const userId = 'userId';
+				const userRole: RoleName = RoleName.USER;
 
 				const ltiTool: LtiToolDO = new LtiToolDO({
 					name: 'name',
@@ -275,28 +278,29 @@ describe('Lti11Uc', () => {
 				});
 
 				return {
-					currentUser,
+					userId,
+					userRole,
 					ltiTool,
 				};
 			};
 
 			it('should throw when trying to access an lti tool that is not v1.1', async () => {
-				const { currentUser, ltiTool } = setup();
+				const { userId, userRole, ltiTool } = setup();
 				ltiTool.lti_version = 'LTI-wrong-version';
 
 				ltiToolRepo.findById.mockResolvedValue(ltiTool);
 
-				const func = () => useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				const func = () => useCase.getLaunchParameters(userId, userRole, 'toolId', 'courseId');
 				await expect(func).rejects.toThrow();
 			});
 
 			it('should throw when trying to access an lti tool that has no message type', async () => {
-				const { currentUser, ltiTool } = setup();
+				const { userId, userRole, ltiTool } = setup();
 				ltiTool.lti_message_type = undefined;
 
 				ltiToolRepo.findById.mockResolvedValue(ltiTool);
 
-				const func = () => useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				const func = () => useCase.getLaunchParameters(userId, userRole, 'toolId', 'courseId');
 				await expect(func).rejects.toThrow(InternalServerErrorException);
 			});
 		});

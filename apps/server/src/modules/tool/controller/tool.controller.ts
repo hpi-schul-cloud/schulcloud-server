@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
-import { ICurrentUser, IFindOptions } from '@shared/domain';
+import { ICurrentUser, IFindOptions, RoleName } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
 import {
 	ApiCreatedResponse,
@@ -48,7 +48,8 @@ export class ToolController {
 		@Query() query: Lti11LaunchQuery
 	): Promise<Lti11LaunchResponse> {
 		const authorization: Authorization = await this.lti11Uc.getLaunchParameters(
-			currentUser,
+			currentUser.userId,
+			currentUser.roles[0] as RoleName,
 			params.toolId,
 			query.courseId
 		);

@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CustomLtiProperty, LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo } from '@shared/repo';
-import { ICurrentUser, LtiPrivacyPermission, RoleName } from '@shared/domain';
+import { EntityId, LtiPrivacyPermission, RoleName } from '@shared/domain';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
@@ -19,10 +19,15 @@ export class Lti11Uc {
 		private readonly userService: UserService
 	) {}
 
-	async getLaunchParameters(currentUser: ICurrentUser, toolId: string, courseId: string): Promise<Authorization> {
+	async getLaunchParameters(
+		userId: EntityId,
+		userRole: RoleName,
+		toolId: string,
+		courseId: string
+	): Promise<Authorization> {
 		const tool: LtiToolDO = await this.ltiToolRepo.findById(toolId);
 
-		const payload = await this.createPayload(currentUser, tool, courseId, toolId);
+		const payload = await this.createPayload(userId, userRole, tool, courseId, toolId);
 		const customFields = this.createCustomFields(tool);
 		const requestData = this.buildRequestOptions(tool, payload, customFields);
 
@@ -32,13 +37,14 @@ export class Lti11Uc {
 	}
 
 	private async createPayload(
-		currentUser: ICurrentUser,
+		userId: EntityId,
+		userRole: RoleName,
 		tool: LtiToolDO,
 		courseId: string,
 		toolId: string
 	): Promise<Lti11PayloadDto> {
-		const ltiRole: LtiRole | undefined = this.ltiRoleMapper.mapRoleToLtiRole(currentUser.roles[0] as RoleName);
-		const user: UserDto = await this.userService.getUser(currentUser.userId);
+		const ltiRole: LtiRole | undefined = this.ltiRoleMapper.mapRoleToLtiRole(userRole);
+		const user: UserDto = await this.userService.getUser(userId);
 		if (tool.lti_version !== 'LTI-1p0' || !tool.lti_message_type) {
 			throw new InternalServerErrorException(`Tool ${toolId} is not a valid Lti v1.1 tool`);
 		}
@@ -49,7 +55,7 @@ export class Lti11Uc {
 			roles: ltiRole,
 			launch_presentation_document_target: 'window',
 			launch_presentation_locale: 'en',
-			user_id: await this.lti11Service.getUserIdOrPseudonym(currentUser.userId, toolId, tool.privacy_permission),
+			user_id: await this.lti11Service.getUserIdOrPseudonym(userId, toolId, tool.privacy_permission),
 		});
 		if (tool.privacy_permission === LtiPrivacyPermission.NAME) {
 			payload.lis_person_name_full = await this.userService.getDisplayName(user);
