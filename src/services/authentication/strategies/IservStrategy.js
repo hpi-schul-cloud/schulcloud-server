@@ -4,7 +4,9 @@ const { omit } = require('lodash');
 const ClientOAuth2 = require('client-oauth2');
 const { NotAuthenticated } = require('../../../errors');
 const logger = require('../../../logger');
-
+/**
+ * @deprecated Unused. LDAP user login via OAuth in the Nest.js stack
+ */
 class IservStrategy extends AuthenticationBaseStrategy {
 	verifyConfiguration() {
 		const config = this.configuration;

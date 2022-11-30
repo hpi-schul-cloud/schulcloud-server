@@ -3,14 +3,7 @@ const { LocalStrategy } = require('@feathersjs/authentication-local');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
-const {
-	LdapStrategy,
-	MoodleStrategy,
-	IservStrategy,
-	TSPStrategy,
-	ApiKeyStrategy,
-	CustomJwtStrategy,
-} = require('./strategies');
+const { LdapStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy, CustomJwtStrategy } = require('./strategies');
 const { hooks } = require('./hooks');
 const { authConfig } = require('./configuration');
 
@@ -46,12 +39,15 @@ module.exports = (app) => {
 	app.set('authentication', authConfig);
 	const authentication = new SCAuthenticationService(app);
 
+	// TODO remove LocalStrategy. It is reimplemented in the Nest.js stack
 	authentication.register('local', new LocalStrategy());
-	authentication.register('jwt', new CustomJwtStrategy());
 	authentication.register('ldap', new LdapStrategy());
-	authentication.register('moodle', new MoodleStrategy());
 	authentication.register('iserv', new IservStrategy());
 	authentication.register('tsp', new TSPStrategy());
+
+	// JWT strategy needs to stay active in feathers to enable hooks "authenticate('jwt')"
+	authentication.register('jwt', new CustomJwtStrategy());
+	// api-key strategy needs to stay active in feathers to enable hooks "authenticate('api-key')"
 	authentication.register('api-key', new ApiKeyStrategy());
 
 	app.use('/authentication', authentication);

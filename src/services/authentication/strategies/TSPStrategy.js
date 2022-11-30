@@ -62,7 +62,9 @@ const findUser = async (app, token) => {
 	});
 	return user;
 };
-
+/**
+ * @deprecated Needs to be refactored to remove access to accountModel. Should be replaced by other strategy e.g. OAuth
+ */
 class TSPStrategy extends AuthenticationBaseStrategy {
 	get configuration() {
 		const authConfig = this.authentication.configuration;
