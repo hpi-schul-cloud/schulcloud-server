@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { equal } = require('../../../helper/compare').ObjectId;
+const { hasPermission } = require('../../../hooks');
 
 // get an json api conform entry
 const getDataEntry = ({ type, id, name, authorities = ['can-read'], attributes = {} }) => ({
@@ -53,7 +54,7 @@ class ScopeResolver {
 					$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
 				},
 			}),
-			user.permissions.includes('SCHOOL_EDIT') // Change SCHOOL_EDIT to one used when displaying Management->courses tab on UI
+			hasPermission('ADMIN_VIEW')
 				? courseService.find({
 						query: {
 							$limit: false,
