@@ -83,7 +83,7 @@ export class AccountService extends AbstractAccountService {
 
 	async deleteByUserId(userId: string): Promise<void> {
 		const ret = await this.accountDb.deleteByUserId(userId);
-		// TODO implement user id feature in IDM (external ID)
+		await this.executeIdmMethod(async () => this.accountIdm.deleteByUserId(userId));
 		return ret;
 	}
 

@@ -35,6 +35,9 @@ export class Account extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	activated?: boolean;
 
+	@Property()
+	refId?: string;
+
 	constructor(props: IAccountProperties) {
 		super();
 		this.username = props.username;
@@ -46,5 +49,6 @@ export class Account extends BaseEntityWithTimestamps {
 		this.lasttriedFailedLogin = props.lasttriedFailedLogin;
 		this.expiresAt = props.expiresAt;
 		this.activated = props.activated;
+		this.refId = props.refId;
 	}
 }

@@ -164,6 +164,58 @@ describe('KeycloakIdentityManagement', () => {
 		});
 	});
 
+	describe('findAccountByTecRefId', () => {
+		it('should find an existing account by technical reference id', async () => {
+			kcUsersMock.find.mockResolvedValueOnce([mockedAccount1]);
+			const ret = await idm.findAccountByTecRefId('any');
+
+			expect(ret).not.toBeNull();
+			expect(ret).toEqual(
+				expect.objectContaining({
+					id: mockedAccount1.id,
+					username: mockedAccount1.username,
+					email: mockedAccount1.email,
+					firstName: mockedAccount1.firstName,
+					lastName: mockedAccount1.lastName,
+				})
+			);
+		});
+		it('should throw if no account found', async () => {
+			kcUsersMock.find.mockResolvedValueOnce([]);
+			await expect(idm.findAccountByTecRefId('any')).rejects.toThrow();
+		});
+		it('should throw if multiple accounts found', async () => {
+			kcUsersMock.find.mockResolvedValueOnce([mockedAccount1, mockedAccount2]);
+			await expect(idm.findAccountByTecRefId('any')).rejects.toThrow();
+		});
+	});
+
+	describe('findAccountByTecRefId', () => {
+		it('should find an existing account by technical reference id', async () => {
+			kcUsersMock.find.mockResolvedValueOnce([mockedAccount1]);
+			const ret = await idm.findAccountByFctIntId('any');
+
+			expect(ret).not.toBeNull();
+			expect(ret).toEqual(
+				expect.objectContaining({
+					id: mockedAccount1.id,
+					username: mockedAccount1.username,
+					email: mockedAccount1.email,
+					firstName: mockedAccount1.firstName,
+					lastName: mockedAccount1.lastName,
+				})
+			);
+		});
+		it('should throw if no account found', async () => {
+			kcUsersMock.find.mockResolvedValueOnce([]);
+			await expect(idm.findAccountByFctIntId('any')).rejects.toThrow();
+		});
+		it('should throw if multiple accounts found', async () => {
+			kcUsersMock.find.mockResolvedValueOnce([mockedAccount1, mockedAccount2]);
+			await expect(idm.findAccountByFctIntId('any')).rejects.toThrow();
+		});
+	});
+
 	describe('getAllAccounts', () => {
 		it('should find all existing accounts', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([mockedAccount1, mockedAccount2]);

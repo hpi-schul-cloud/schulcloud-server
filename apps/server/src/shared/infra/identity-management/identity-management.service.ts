@@ -8,7 +8,7 @@ export abstract class IdentityManagementService {
 	 * @param [password] the account's password (optional)
 	 * @returns the account id if created successfully
 	 */
-	abstract createAccount(account: IAccount, password?: string | undefined): Promise<string>;
+	abstract createAccount(account: IAccountUpdate, password?: string | undefined): Promise<string>;
 
 	/**
 	 * Update an existing account's details.
@@ -35,6 +35,22 @@ export abstract class IdentityManagementService {
 	 * @returns the account if exists
 	 */
 	abstract findAccountById(accountId: string): Promise<IAccount>;
+
+	/**
+	 * Load a specific account by its technical reference id.
+	 *
+	 * @param accountTecRefId the account to be loaded.
+	 * @returns the account if exists
+	 */
+	abstract findAccountByTecRefId(accountTecRefId: string): Promise<IAccount>;
+
+	/**
+	 * Load a specific account by its functional internal reference id.
+	 *
+	 * @param accountTecRefId the account to be loaded.
+	 * @returns the account if exists
+	 */
+	abstract findAccountByFctIntId(accountFctIntId: string): Promise<IAccount>;
 
 	/**
 	 * Loads the account with the specific username.

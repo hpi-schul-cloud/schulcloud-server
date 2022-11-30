@@ -57,27 +57,36 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		let accountId: string;
-		if (accountDto.id) {
-			accountId = await this.identityManager.updateAccount(accountDto.id, {
+		if (accountDto.id && accountDto.refId) {
+			accountId = await this.identityManager.updateAccount(accountDto.refId, {
 				username: accountDto.username,
+				attRefTechnicalId: accountDto.id,
+				attRefFunctionalIntId: accountDto.userId,
+				attRefFunctionalExtId: accountDto.systemId,
 			});
 		} else {
-			accountId = await this.identityManager.createAccount({
-				username: accountDto.username,
-			});
-		}
-		if (accountDto.password) {
-			accountDto.password = await super.encryptPassword(accountDto.password);
-			await this.identityManager.updateAccountPassword(accountId, accountDto.password);
+			if (accountDto.password) {
+				accountDto.password = await super.encryptPassword(accountDto.password);
+			}
+			accountId = await this.identityManager.createAccount(
+				{
+					username: accountDto.username,
+					attRefTechnicalId: accountDto.id,
+					attRefFunctionalIntId: accountDto.userId,
+					attRefFunctionalExtId: accountDto.systemId,
+				},
+				accountDto.password
+			);
 		}
 
 		const updatedAccount = await this.identityManager.findAccountById(accountId);
 		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
-	async updateUsername(accountId: EntityId, username: string): Promise<AccountDto> {
-		await this.identityManager.updateAccount(accountId, { username });
-		const updatedAccount = await this.identityManager.findAccountById(accountId);
+	async updateUsername(accountRefId: EntityId, username: string): Promise<AccountDto> {
+		const id = await this.getInternalId(accountRefId);
+		await this.identityManager.updateAccount(id, { username });
+		const updatedAccount = await this.identityManager.findAccountById(id);
 		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
@@ -86,18 +95,25 @@ export class AccountServiceIdm extends AbstractAccountService {
 		throw new NotImplementedException();
 	}
 
-	async updatePassword(accountId: EntityId, password: string): Promise<AccountDto> {
-		await this.identityManager.updateAccountPassword(accountId, password);
-		const updatedAccount = await this.identityManager.findAccountById(accountId);
+	async updatePassword(accountRefId: EntityId, password: string): Promise<AccountDto> {
+		const id = await this.getInternalId(accountRefId);
+		await this.identityManager.updateAccountPassword(id, password);
+		const updatedAccount = await this.identityManager.findAccountById(id);
 		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
-	async delete(id: EntityId): Promise<void> {
+	async delete(accountRefId: EntityId): Promise<void> {
+		const id = await this.getInternalId(accountRefId);
 		await this.identityManager.deleteAccountById(id);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async deleteByUserId(userId: EntityId): Promise<void> {
-		throw new NotImplementedException();
+		const idmAccount = await this.identityManager.findAccountByFctIntId(userId);
+		return this.delete(idmAccount.id);
+	}
+
+	private async getInternalId(accountRefId: string) {
+		const idmAccount = await this.identityManager.findAccountByTecRefId(accountRefId);
+		return idmAccount.id;
 	}
 }
