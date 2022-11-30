@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -10,7 +10,6 @@ import { KeycloakIdentityManagementService } from './keycloak-identity-managemen
 describe('KeycloakIdentityManagement', () => {
 	let module: TestingModule;
 	let idm: IdentityManagementService;
-	let kcAdminClient: DeepMocked<KeycloakAdminClient>;
 	const kcUsersMock = createMock<Users>();
 
 	type MockUser = {
@@ -64,7 +63,6 @@ describe('KeycloakIdentityManagement', () => {
 			],
 		}).compile();
 		idm = module.get<IdentityManagementService>(IdentityManagementService);
-		kcAdminClient = module.get(KeycloakAdminClient);
 	});
 
 	afterAll(async () => {
@@ -79,8 +77,8 @@ describe('KeycloakIdentityManagement', () => {
 		it('should allow to create an account', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
 			const accountId = 'user-1-id';
-			const createUserMock = jest.spyOn(kcAdminClient.users, 'create').mockResolvedValue({ id: accountId });
-			const resetPasswordMock = jest.spyOn(kcAdminClient.users, 'resetPassword');
+			const createUserMock = kcUsersMock.create.mockResolvedValueOnce({ id: accountId });
+			const resetPasswordMock = kcUsersMock.resetPassword.mockResolvedValueOnce();
 			const testAccount = { username: 'test', email: 'test@test.test' };
 			const testAccountPassword = 'test';
 
@@ -117,7 +115,7 @@ describe('KeycloakIdentityManagement', () => {
 	describe('findAccountById', () => {
 		it('should find an existing account', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
-			jest.spyOn(kcAdminClient.users, 'findOne').mockResolvedValue(mockedAccount1);
+			kcUsersMock.findOne.mockResolvedValueOnce(mockedAccount1);
 
 			const ret = await idm.findAccountById(mockedAccount1.id);
 
@@ -134,17 +132,17 @@ describe('KeycloakIdentityManagement', () => {
 		});
 
 		it('should reject if account does not exist', async () => {
-			jest.spyOn(kcAdminClient.users, 'findOne').mockRejectedValue('error');
+			kcUsersMock.findOne.mockRejectedValueOnce('error');
 			await expect(idm.findAccountById('accountId')).rejects.toBeTruthy();
 
-			jest.spyOn(kcAdminClient.users, 'findOne').mockResolvedValue(undefined);
+			kcUsersMock.findOne.mockResolvedValueOnce(undefined);
 			await expect(idm.findAccountById('accountId')).rejects.toBeTruthy();
 		});
 	});
 
 	describe('findAccountByUsername', () => {
 		it('should find an existing account by username', async () => {
-			jest.spyOn(kcAdminClient.users, 'find').mockResolvedValue([mockedAccount1]);
+			kcUsersMock.find.mockResolvedValueOnce([mockedAccount1]);
 			const ret = await idm.findAccountByUsername(mockedAccount1.username);
 
 			expect(ret).not.toBeNull();
@@ -159,7 +157,7 @@ describe('KeycloakIdentityManagement', () => {
 			);
 		});
 		it('should return undefined if no account found', async () => {
-			jest.spyOn(kcAdminClient.users, 'find').mockResolvedValue([]);
+			kcUsersMock.find.mockResolvedValueOnce([]);
 			const ret = await idm.findAccountByUsername('');
 
 			expect(ret).toBeUndefined();
@@ -168,7 +166,7 @@ describe('KeycloakIdentityManagement', () => {
 
 	describe('getAllAccounts', () => {
 		it('should find all existing accounts', async () => {
-			jest.spyOn(kcAdminClient.users, 'find').mockResolvedValue([mockedAccount1, mockedAccount2]);
+			kcUsersMock.find.mockResolvedValueOnce([mockedAccount1, mockedAccount2]);
 
 			const ret = await idm.getAllAccounts();
 
@@ -195,7 +193,7 @@ describe('KeycloakIdentityManagement', () => {
 		});
 
 		it('should reject if loading all accounts failed', async () => {
-			jest.spyOn(kcAdminClient.users, 'find').mockRejectedValue('error');
+			kcUsersMock.find.mockRejectedValueOnce('error');
 
 			await expect(idm.getAllAccounts()).rejects.toBeTruthy();
 		});
@@ -205,7 +203,7 @@ describe('KeycloakIdentityManagement', () => {
 		it('should allow to update an existing account', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
 			const accountId = 'user-1-id';
-			const updateUserMock = jest.spyOn(kcAdminClient.users, 'update').mockResolvedValue();
+			const updateUserMock = kcUsersMock.update.mockResolvedValueOnce();
 			const testAccount = { firstName: 'test', email: 'test@test.test' };
 
 			const ret = await idm.updateAccount(accountId, testAccount);
@@ -221,7 +219,7 @@ describe('KeycloakIdentityManagement', () => {
 		it('should reject if account can not be updated', async () => {
 			const accountId = 'user-1-id';
 			const testAccount = { username: 'test', email: 'test@test.test' };
-			jest.spyOn(kcAdminClient.users, 'update').mockRejectedValue('error');
+			kcUsersMock.update.mockRejectedValueOnce('error');
 
 			await expect(idm.updateAccount(accountId, testAccount)).rejects.toBeTruthy();
 		});
@@ -231,7 +229,7 @@ describe('KeycloakIdentityManagement', () => {
 		it('should allow to delete an existing account', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
 			const accountId = 'user-1-id';
-			jest.spyOn(kcAdminClient.users, 'del').mockResolvedValue();
+			kcUsersMock.del.mockResolvedValueOnce();
 
 			const ret = await idm.deleteAccountById(accountId);
 
@@ -240,7 +238,7 @@ describe('KeycloakIdentityManagement', () => {
 
 		it('should reject if account can not be deleted', async () => {
 			const accountId = 'user-1-id';
-			jest.spyOn(kcAdminClient.users, 'del').mockRejectedValue('error');
+			kcUsersMock.del.mockRejectedValueOnce('error');
 
 			await expect(idm.deleteAccountById(accountId)).rejects.toBeTruthy();
 		});
@@ -265,7 +263,6 @@ describe('KeycloakIdentityManagement', () => {
 		it('should allow to update an existing accounts password', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
 			kcUsersMock.resetPassword.mockResolvedValueOnce();
-			// const resetPasswordMock = jest.spyOn(kcAdminClient.users, 'resetPassword').mockResolvedValue();
 			const accountId = 'user-1-id';
 			const testAccountPassword = 'test';
 
@@ -283,7 +280,7 @@ describe('KeycloakIdentityManagement', () => {
 		});
 
 		it('should reject if account password can not be updated', async () => {
-			jest.spyOn(kcAdminClient.users, 'resetPassword').mockRejectedValue('error');
+			kcUsersMock.resetPassword.mockRejectedValueOnce('error');
 			const accountId = 'user-1-id';
 			const testAccountPassword = 'test';
 
