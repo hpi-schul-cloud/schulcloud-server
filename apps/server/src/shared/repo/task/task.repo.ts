@@ -12,9 +12,22 @@ export class TaskRepo extends BaseRepo<Task> {
 		return Task;
 	}
 
+	private async populate(tasks: Task[]): Promise<void> {
+		await this._em.populate(tasks, [
+			'course',
+			'lesson',
+			'lesson.course',
+			'lesson.courseGroup',
+			'submissions',
+			'submissions.courseGroup',
+		]);
+	}
+
 	async findById(id: EntityId): Promise<Task> {
 		const task = await super.findById(id);
-		await this._em.populate(task, ['course', 'lesson', 'submissions']);
+
+		await this.populate([task]);
+
 		return task;
 	}
 
@@ -183,14 +196,14 @@ export class TaskRepo extends BaseRepo<Task> {
 			order._id = SortOrder.asc;
 		}
 
-		const [taskEntities, count] = await this._em.findAndCount(Task, query, {
+		const [tasks, count] = await this._em.findAndCount(Task, query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
 			orderBy: order,
 		});
 
-		await this._em.populate(taskEntities, ['course', 'lesson', 'submissions']);
+		await this.populate(tasks);
 
-		return [taskEntities, count];
+		return [tasks, count];
 	}
 }

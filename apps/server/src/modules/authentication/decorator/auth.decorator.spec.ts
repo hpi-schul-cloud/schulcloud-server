@@ -4,7 +4,6 @@ import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@shared/domain';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { MikroORM } from '@mikro-orm/core';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { Authenticate, CurrentUser, JWT } from './auth.decorator';
 
@@ -30,7 +29,6 @@ describe('auth.decorator', () => {
 	let app: INestApplication;
 	let currentUser: ICurrentUser;
 	let module: TestingModule;
-	let orm: MikroORM;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -54,11 +52,9 @@ describe('auth.decorator', () => {
 
 		app = module.createNestApplication();
 		await app.init();
-		orm = app.get(MikroORM);
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await app.close();
 		await module.close();
 	});
@@ -68,6 +64,15 @@ describe('auth.decorator', () => {
 			const response = await request(app.getHttpServer()).get('/test_decorator_JWT/test');
 
 			expect(response.statusCode).toEqual(401);
+		});
+
+		it('should succeed if it can get the jwt', async () => {
+			const jwt = 'example-jwt';
+			const response = await request(app.getHttpServer())
+				.get('/test_decorator_JWT/test')
+				.set('Authorization', `Bearer ${jwt}`);
+
+			expect(response.statusCode).toEqual(200);
 		});
 	});
 
@@ -82,7 +87,7 @@ describe('auth.decorator', () => {
 		});
 	});
 
-	describe.skip('Authenticate', () => {
+	describe('Authenticate', () => {
 		it('should throw with UnauthorizedException if no jwt user data can be extracted from request context', () => {
 			// @ts-expect-error Testcase
 			const exec = () => Authenticate('bla');
