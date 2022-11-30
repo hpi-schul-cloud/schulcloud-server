@@ -1,32 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
-import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ExternalTool,
-	IFindOptions,
-	LtiMessageType,
-	LtiPrivacyPermission,
-	SortOrder,
-} from '@shared/domain';
+import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { ExternalTool, IFindOptions, SortOrder } from '@shared/domain';
 import { externalToolFactory } from '@shared/testing';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { Page } from '@shared/domain/interface/page';
+import {
+	customParameterDOFactory,
+	externalToolDOFactory,
+	lti11ToolConfigDOFactory,
+	oauth2ToolConfigDOFactory,
+} from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ExternalToolService } from './external-tool.service';
-import { ToolConfigType } from '../interface/tool-config-type.enum';
 import { ExternalToolServiceMapper } from './mapper/external-tool-service.mapper';
-import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;
@@ -76,62 +65,18 @@ describe('ExternalToolService', () => {
 	});
 
 	const setup = () => {
-		const basicToolConfigDO: BasicToolConfigDO = new BasicToolConfigDO({
-			type: ToolConfigType.BASIC,
-			baseUrl: 'mockUrl',
-		});
-		const customParameterDO: CustomParameterDO = new CustomParameterDO({
-			name: 'mockName',
-			default: 'mockDefault',
-			location: CustomParameterLocation.PATH,
-			scope: CustomParameterScope.SCHOOL,
-			type: CustomParameterType.STRING,
-			regex: 'mockRegex',
-		});
-		const externalToolDO: ExternalToolDO = new ExternalToolDO({
-			id: '1',
-			name: 'mockName',
-			url: 'mockUrl',
-			logoUrl: 'mockLogoUrl',
-			parameters: [customParameterDO],
-			isHidden: true,
-			openNewTab: true,
-			version: 1,
-			config: basicToolConfigDO,
-		});
+		const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1).buildWithId();
+		const oauth2ToolConfigDO: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.withExternalData().build();
+		const oauth2ToolConfigDOWithoutExternalData: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.build();
+		const lti11ToolConfigDO: Lti11ToolConfigDO = lti11ToolConfigDOFactory.build();
 
-		const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
-			clientId: 'mockId',
-			skipConsent: false,
-			type: ToolConfigType.OAUTH2,
-			baseUrl: 'mockUrl',
-			scope: 'offline',
-			tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_BASIC,
-			redirectUris: ['reDir1', 'reDir2'],
-			frontchannelLogoutUri: 'frontchannelLogoutUri',
-		});
-		const oauth2ToolConfigDOWithoutExternalData: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
-			clientId: 'mockId',
-			skipConsent: false,
-			type: ToolConfigType.OAUTH2,
-			baseUrl: 'mockUrl',
-		});
 		const oauthClient: ProviderOauthClient = {
-			client_id: 'clientId',
-			scope: 'offline',
-			token_endpoint_auth_method: 'client_secret_basic',
-			redirect_uris: ['reDir1', 'reDir2'],
-			frontchannel_logout_uri: 'frontchannelLogoutUri',
+			client_id: oauth2ToolConfigDO.clientId,
+			scope: oauth2ToolConfigDO.scope,
+			token_endpoint_auth_method: oauth2ToolConfigDO.tokenEndpointAuthMethod,
+			redirect_uris: oauth2ToolConfigDO.redirectUris,
+			frontchannel_logout_uri: oauth2ToolConfigDO.frontchannelLogoutUri,
 		};
-
-		const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
-			type: ToolConfigType.LTI11,
-			baseUrl: 'mockUrl',
-			key: 'key',
-			secret: 'secret',
-			lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-			privacy_permission: LtiPrivacyPermission.ANONYMOUS,
-		});
 
 		const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
@@ -140,7 +85,6 @@ describe('ExternalToolService', () => {
 			oauth2ToolConfigDO,
 			lti11ToolConfigDO,
 			externalTool,
-			customParameterDO,
 			oauth2ToolConfigDOWithoutExternalData,
 			oauthClient,
 		};
@@ -281,6 +225,7 @@ describe('ExternalToolService', () => {
 		it('should get DOs and add external oauth2 data', async () => {
 			const { query, options, page } = setupFind();
 			const { externalToolDO, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO, oauthClient } = setup();
+			oauth2ToolConfigDO.clientSecret = undefined;
 			externalToolDO.config = oauth2ToolConfigDOWithoutExternalData;
 			page.data = [externalToolDO];
 			repo.find.mockResolvedValue(page);
@@ -304,6 +249,7 @@ describe('ExternalToolService', () => {
 
 		it('should get DO and add external oauth2 data', async () => {
 			const { externalToolDO, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO, oauthClient } = setup();
+			oauth2ToolConfigDO.clientSecret = undefined;
 			externalToolDO.config = oauth2ToolConfigDOWithoutExternalData;
 			repo.findById.mockResolvedValue(externalToolDO);
 			oauthProviderService.getOAuth2Client.mockResolvedValue(oauthClient);
@@ -360,7 +306,7 @@ describe('ExternalToolService', () => {
 
 	describe('hasDuplicateAttributes', () => {
 		it('should not find duplicate custom parameters if there are none', () => {
-			const { customParameterDO } = setup();
+			const customParameterDO = customParameterDOFactory.build();
 
 			const expected: boolean = service.hasDuplicateAttributes([customParameterDO]);
 
@@ -368,7 +314,7 @@ describe('ExternalToolService', () => {
 		});
 
 		it('should find duplicate custom parameters if there are any', () => {
-			const { customParameterDO } = setup();
+			const customParameterDO = customParameterDOFactory.build();
 
 			const expected: boolean = service.hasDuplicateAttributes([customParameterDO, customParameterDO]);
 
@@ -378,7 +324,7 @@ describe('ExternalToolService', () => {
 
 	describe('validateByRegex', () => {
 		it('should validate the regular expression', () => {
-			const { customParameterDO } = setup();
+			const customParameterDO = customParameterDOFactory.build();
 
 			const expected: boolean = service.validateByRegex([customParameterDO]);
 
@@ -386,8 +332,7 @@ describe('ExternalToolService', () => {
 		});
 
 		it('should not validate a faulty regular expression', () => {
-			const { customParameterDO } = setup();
-			customParameterDO.regex = '[';
+			const customParameterDO = customParameterDOFactory.build({ regex: '[' });
 
 			const expected: boolean = service.validateByRegex([customParameterDO]);
 

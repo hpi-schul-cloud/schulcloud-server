@@ -1,21 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Authorization } from 'oauth-1.0a';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ICurrentUser,
-	IFindOptions,
-	SortOrder,
-} from '@shared/domain';
-import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
+import { ICurrentUser, IFindOptions, SortOrder } from '@shared/domain';
+import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { PaginationParams } from '@shared/controller';
 import {
 	ExternalToolSortOrder,
@@ -24,6 +11,7 @@ import {
 import { ExternalToolSearchParams } from '@src/modules/tool/controller/dto/request/external-tool-search.params';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolSearchListResponse } from '@src/modules/tool/controller/dto/response/external-tool-search-list.response';
+import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ToolController } from './tool.controller';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Lti11ResponseMapper } from './mapper/lti11-response.mapper';
@@ -111,11 +99,6 @@ describe('ToolController', () => {
 			type: CustomParameterTypeParams.STRING,
 			regex: 'mockRegex',
 		});
-
-		const basicToolConfigDO: BasicToolConfigDO = new BasicToolConfigDO({
-			type: ToolConfigType.BASIC,
-			baseUrl: 'mockUrl',
-		});
 		const basicToolConfigResponse: BasicToolConfigResponse = new BasicToolConfigResponse({
 			type: ToolConfigType.BASIC,
 			baseUrl: 'mockUrl',
@@ -132,26 +115,7 @@ describe('ToolController', () => {
 			config: basicToolConfigResponse,
 		});
 
-		const customParameterDO: CustomParameterDO = new CustomParameterDO({
-			name: 'mockName',
-			default: 'mockDefault',
-			location: CustomParameterLocation.PATH,
-			scope: CustomParameterScope.SCHOOL,
-			type: CustomParameterType.STRING,
-			regex: 'mockRegex',
-		});
-
-		const externalToolDO: ExternalToolDO = new ExternalToolDO({
-			id: '1',
-			name: 'mockName',
-			url: 'mockUrl',
-			logoUrl: 'mockLogoUrl',
-			parameters: [customParameterDO],
-			isHidden: true,
-			openNewTab: true,
-			version: 1,
-			config: basicToolConfigDO,
-		});
+		const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1).buildWithId();
 
 		externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
 		externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);

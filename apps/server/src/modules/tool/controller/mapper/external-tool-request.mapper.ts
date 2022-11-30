@@ -19,8 +19,9 @@ import { SortExternalToolParams } from '../dto/request/external-tool-sort.params
 import { ExternalToolSearchParams } from '../dto/request/external-tool-search.params';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
-	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,
+	[CustomParameterScopeParams.GLOBAL]: CustomParameterScope.GLOBAL,
 	[CustomParameterScopeParams.SCHOOL]: CustomParameterScope.SCHOOL,
+	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,
 };
 
 const locationMapping: Record<CustomParameterLocationParams, CustomParameterLocation> = {

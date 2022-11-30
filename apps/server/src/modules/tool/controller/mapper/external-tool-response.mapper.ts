@@ -17,6 +17,7 @@ import { CustomParameterLocationParams } from '../../interface/custom-parameter-
 import { CustomParameterTypeParams } from '../../interface/custom-parameter-type.enum';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeParams> = {
+	[CustomParameterScope.GLOBAL]: CustomParameterScopeParams.GLOBAL,
 	[CustomParameterScope.COURSE]: CustomParameterScopeParams.COURSE,
 	[CustomParameterScope.SCHOOL]: CustomParameterScopeParams.SCHOOL,
 };
