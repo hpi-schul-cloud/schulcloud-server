@@ -2,8 +2,9 @@ import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Permission, Role, RoleName, User } from '@shared/domain';
-import { AccountRepo, UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory, accountFactory, systemFactory } from '@shared/testing';
+import { AccountRepo } from '../repo/account.repo';
 import { AccountValidationService } from './account.validation.service';
 
 describe('AccountValidationService', () => {

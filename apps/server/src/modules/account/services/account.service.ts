@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import bcrypt from 'bcryptjs';
 import { Account, EntityId } from '@shared/domain';
-import { AccountRepo } from '@shared/repo';
 import { AccountEntityToDtoMapper } from '../mapper';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountRepo } from '../repo/account.repo';
 
 @Injectable()
 export class AccountService {

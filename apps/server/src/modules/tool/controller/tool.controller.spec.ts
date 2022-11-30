@@ -1,7 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Authorization } from 'oauth-1.0a';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ICurrentUser } from '@shared/domain';
+import {
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	ICurrentUser,
+	IFindOptions,
+	SortOrder,
+} from '@shared/domain';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -9,6 +16,14 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
+import { PaginationParams } from '@shared/controller';
+import {
+	ExternalToolSortOrder,
+	SortExternalToolParams,
+} from '@src/modules/tool/controller/dto/request/external-tool-sort.params';
+import { ExternalToolSearchParams } from '@src/modules/tool/controller/dto/request/external-tool-search.params';
+import { Page } from '@shared/domain/interface/page';
+import { ExternalToolSearchListResponse } from '@src/modules/tool/controller/dto/response/external-tool-search-list.response';
 import { ToolController } from './tool.controller';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
@@ -317,6 +332,105 @@ describe('ToolController', () => {
 
 				expect(expected).toEqual(externalToolResponse);
 			});
+		});
+	});
+
+	describe('findExternalTool', () => {
+		function setupFind() {
+			const filterQuery: ExternalToolSearchParams = new ExternalToolSearchParams();
+			const pagination: PaginationParams = { skip: 0, limit: 1 };
+			const sortingQuery: SortExternalToolParams = { sortOrder: SortOrder.asc, sortBy: ExternalToolSortOrder.NAME };
+			const filter: IFindOptions<ExternalToolDO> = {
+				pagination: { skip: 0, limit: 1 },
+				order: { name: SortOrder.asc },
+			};
+			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+			const externalToolDO: ExternalToolDO = new ExternalToolDO({
+				id: '1',
+				name: 'mockName',
+				url: 'mockUrl',
+				logoUrl: 'mockLogoUrl',
+				parameters: [],
+				isHidden: true,
+				openNewTab: true,
+				version: 1,
+				config: new Oauth2ToolConfigDO({} as Oauth2ToolConfigDO),
+			});
+			const externalToolResponse: ExternalToolResponse = new ExternalToolResponse({
+				id: '1',
+				name: externalToolDO.name,
+				url: externalToolDO.url,
+				logoUrl: externalToolDO.logoUrl,
+				parameters: [],
+				isHidden: true,
+				openNewTab: true,
+				version: 1,
+				config: new Oauth2ToolConfigResponse({} as Oauth2ToolConfigResponse),
+			});
+
+			externalToolMapper.mapSortingQueryToDomain.mockReturnValue(filter.order);
+			externalToolMapper.mapExternalToolFilterQueryToDO.mockReturnValue({});
+			externalToolUc.findExternalTool.mockResolvedValue(new Page<ExternalToolDO>([externalToolDO], 1));
+			externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
+
+			return {
+				currentUser,
+				externalToolDO,
+				externalToolResponse,
+				filterQuery,
+				pagination,
+				sortingQuery,
+				filter,
+			};
+		}
+
+		beforeEach(() => {
+			jest.clearAllMocks();
+		});
+
+		it('should call the externalToolUc', async () => {
+			const { currentUser, filterQuery, pagination, sortingQuery, filter } = setupFind();
+
+			await controller.findExternalTool(currentUser, filterQuery, pagination, sortingQuery);
+
+			expect(externalToolUc.findExternalTool).toHaveBeenCalledWith(currentUser.userId, {}, filter);
+		});
+
+		it('should call the externalToolMapper.mapSortingQueryToDomain', async () => {
+			const { currentUser, filterQuery, pagination, sortingQuery } = setupFind();
+
+			await controller.findExternalTool(currentUser, filterQuery, pagination, sortingQuery);
+
+			expect(externalToolMapper.mapSortingQueryToDomain).toHaveBeenCalledWith(sortingQuery);
+		});
+
+		it('should call the externalToolMapper.mapExternalToolFilterQueryToDO', async () => {
+			const { currentUser, filterQuery, pagination, sortingQuery } = setupFind();
+
+			await controller.findExternalTool(currentUser, filterQuery, pagination, sortingQuery);
+
+			expect(externalToolMapper.mapExternalToolFilterQueryToDO).toHaveBeenCalledWith(filterQuery);
+		});
+
+		it('should call the externalToolResponseMapper.mapToResponse', async () => {
+			const { currentUser, filterQuery, pagination, sortingQuery, externalToolDO } = setupFind();
+
+			await controller.findExternalTool(currentUser, filterQuery, pagination, sortingQuery);
+
+			expect(externalToolResponseMapper.mapToResponse).toHaveBeenCalledWith(externalToolDO);
+		});
+
+		it('should return a externalToolSearchListResponse', async () => {
+			const { currentUser, filterQuery, pagination, sortingQuery, externalToolResponse } = setupFind();
+
+			const result: ExternalToolSearchListResponse = await controller.findExternalTool(
+				currentUser,
+				filterQuery,
+				pagination,
+				sortingQuery
+			);
+
+			expect(result).toEqual(new ExternalToolSearchListResponse([externalToolResponse], 1, 0, 1));
 		});
 	});
 });
