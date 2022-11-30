@@ -13,5 +13,4 @@ jobs:
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v3
         with:
-          allow-licenses:
-            - 'AGPL-3.0-only'
+          allow-licenses: AGPL-3.0-only
