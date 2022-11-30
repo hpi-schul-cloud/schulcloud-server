@@ -7,7 +7,7 @@ import {
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType, SortOrderMap } from '@shared/domain';
 import { CustomParameterScopeParams } from '../interface/custom-parameter-scope.enum';
 import { CustomParameterLocationParams } from '../interface/custom-parameter-location.enum';
 import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
@@ -17,6 +17,8 @@ import { Oauth2ToolConfigParams } from '../controller/dto/request/oauth2-tool-co
 import { ExternalToolParams } from '../controller/dto/request/external-tool-create.params';
 import { Lti11ToolConfigParams } from '../controller/dto/request/lti11-tool-config.params';
 import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
+import { SortExternalToolParams } from '../controller/dto/request/external-tool-sort.params';
+import { ExternalToolSearchParams } from '../controller/dto/request/external-tool-search.params';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,
@@ -112,5 +114,22 @@ export class ExternalToolRequestMapper {
 			redirectUris: oauthClient.redirect_uris,
 			frontchannelLogoutUri: oauthClient.frontchannel_logout_uri,
 		});
+	}
+
+	mapSortingQueryToDomain(sortingQuery: SortExternalToolParams): SortOrderMap<ExternalToolDO> | undefined {
+		const { sortBy } = sortingQuery;
+		if (sortBy == null) {
+			return undefined;
+		}
+
+		const result: SortOrderMap<ExternalToolDO> = {
+			[sortBy]: sortingQuery.sortOrder,
+		};
+		return result;
+	}
+
+	mapExternalToolFilterQueryToDO(params: ExternalToolSearchParams): Partial<ExternalToolDO> {
+		const queryDO: Partial<ExternalToolDO> = { name: params.name };
+		return queryDO;
 	}
 }
