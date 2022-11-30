@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { EntityId, ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@shared/domain';
 import { AccountService } from '../../account/services/account.service';
 import { AccountDto } from '../../account/services/dto';
 
