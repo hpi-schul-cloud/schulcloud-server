@@ -7,7 +7,7 @@ import { userFactory } from './user.factory';
 
 class SubmissionFactory extends BaseFactory<Submission, ISubmissionProperties> {
 	graded(): this {
-		const params: DeepPartial<ISubmissionProperties> = { gradeComment: 'graded text' };
+		const params: DeepPartial<ISubmissionProperties> = { graded: true };
 
 		return this.params(params);
 	}

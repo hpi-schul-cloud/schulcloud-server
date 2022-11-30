@@ -115,32 +115,6 @@ export class Submission extends BaseEntityWithTimestamps {
 		return teamMemberIds;
 	}
 
-	private getGradeFileIds(): EntityId[] {
-		const gradeFilesObjectIds = this.gradeFiles.getIdentifiers('_id');
-		const gradeFilesIds = gradeFilesObjectIds.map((id): string => id.toString());
-
-		return gradeFilesIds;
-	}
-
-	private hasGrade(): boolean {
-		const gradeExists = typeof this.grade === 'number' && this.grade >= 0;
-
-		return gradeExists;
-	}
-
-	private hasGradeComment(): boolean {
-		const gradeCommentExists = typeof this.gradeComment === 'string' && this.gradeComment.length > 0;
-
-		return gradeCommentExists;
-	}
-
-	private hasGradeFiles(): boolean {
-		const gradedFileIds = this.getGradeFileIds();
-		const gradeFilesExists = gradedFileIds.length > 0;
-
-		return gradeFilesExists;
-	}
-
 	public isSubmitted(): boolean {
 		return this.submitted;
 	}
@@ -174,9 +148,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	}
 
 	public isGraded(): boolean {
-		const isGraded = this.hasGrade() || this.hasGradeComment() || this.hasGradeFiles();
-
-		return isGraded;
+		return this.graded;
 	}
 
 	public isGradedForUser(user: User): boolean {

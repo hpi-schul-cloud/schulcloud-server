@@ -2,12 +2,12 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import {
-	userFactory,
-	taskFactory,
-	submissionFactory,
+	courseGroupFactory,
 	fileFactory,
 	setupEntities,
-	courseGroupFactory,
+	submissionFactory,
+	taskFactory,
+	userFactory,
 } from '@shared/testing';
 
 describe('Submission entity', () => {
@@ -26,13 +26,35 @@ describe('Submission entity', () => {
 	});
 
 	describe('constructor is called', () => {
-		describe('when files are passed', () => {
-			it('create with studentFiles should be possible', () => {
+		describe('when studentFiles are passed', () => {
+			const setup = () => {
 				const task = taskFactory.buildWithId();
 				const file = fileFactory.buildWithId();
 				const submission = submissionFactory.buildWithId({ task, studentFiles: [file] });
 
+				return { submission, file };
+			};
+			it('should contains file', () => {
+				const { submission, file } = setup();
+
 				expect(submission.studentFiles.contains(file)).toBe(true);
+			});
+		});
+
+		describe('when gradeFiles are passed', () => {
+			const setup = () => {
+				const student = userFactory.buildWithId();
+				const task = taskFactory.buildWithId();
+				const file = fileFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ task, student, gradeFiles: [file] });
+
+				return { submission, file };
+			};
+
+			it('should contains file', () => {
+				const { submission, file } = setup();
+
+				expect(submission.gradeFiles.contains(file)).toBe(true);
 			});
 		});
 	});
@@ -222,42 +244,7 @@ describe('Submission entity', () => {
 				const student = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
 				const grade = 50;
-				const submission = submissionFactory.buildWithId({ task, student, grade });
-
-				return submission;
-			};
-
-			it('should return true.', () => {
-				const submission = setup();
-
-				expect(submission.isGraded()).toEqual(true);
-			});
-		});
-
-		describe('when gradeComment exists', () => {
-			const setup = () => {
-				const student = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				const gradeComment = 'Very good!';
-				const submission = submissionFactory.buildWithId({ task, student, gradeComment });
-
-				return submission;
-			};
-
-			it('should return true.', () => {
-				const submission = setup();
-
-				expect(submission.isGraded()).toEqual(true);
-			});
-		});
-
-		describe('when gradeFiles exist', () => {
-			const setup = () => {
-				const student = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				const file = fileFactory.buildWithId();
-				const gradeFiles = [file];
-				const submission = submissionFactory.buildWithId({ task, student, gradeFiles });
+				const submission = submissionFactory.graded().buildWithId({ task, student, grade });
 
 				return submission;
 			};
