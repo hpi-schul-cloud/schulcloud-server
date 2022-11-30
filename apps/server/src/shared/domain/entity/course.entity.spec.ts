@@ -1,4 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
+import { InternalServerErrorException } from '@nestjs/common';
 import { courseFactory, courseGroupFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { Course } from './course.entity';
@@ -123,36 +124,6 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	describe('getNumberOfStudents', () => {
-		it('should count the number of assigned students', () => {
-			const student1 = userFactory.build();
-			const student2 = userFactory.build();
-			const course = courseFactory.build({ students: [student1, student2] });
-
-			const number = course.getNumberOfStudents();
-
-			expect(number).toEqual(2);
-		});
-
-		it('should return 0 if no student is assigned', () => {
-			const teacher = userFactory.build();
-			const course = courseFactory.build({ teachers: [teacher], students: [] });
-
-			const number = course.getNumberOfStudents();
-
-			expect(number).toEqual(0);
-		});
-
-		it('should return 0 if student not an array', () => {
-			const teacher = userFactory.build();
-			const course = courseFactory.build({ teachers: [teacher], students: undefined });
-
-			const number = course.getNumberOfStudents();
-
-			expect(number).toEqual(0);
-		});
-	});
-
 	describe('isFinished', () => {
 		it('should always return false if no untilDate is set', () => {
 			const course = courseFactory.build({ untilDate: undefined });
@@ -199,6 +170,86 @@ describe('CourseEntity', () => {
 				const result = course.getCourseGroupItems();
 				expect(result.length).toEqual(2);
 				expect(result[0]).toEqual(courseGroups[0]);
+			});
+		});
+	});
+
+	describe('getStudentIds is called', () => {
+		describe('when students exist', () => {
+			const setup = () => {
+				const student1 = userFactory.buildWithId();
+				const student2 = userFactory.buildWithId();
+				const student3 = userFactory.buildWithId();
+				const students = [student1, student2, student3];
+				const studentIds = [student1.id, student2.id, student3.id];
+
+				const course = courseFactory.build({ students });
+
+				return { course, studentIds };
+			};
+
+			it('should be return the userIds of the students.', () => {
+				const { course, studentIds } = setup();
+
+				const result = course.getStudentIds();
+
+				expect(result.length).toEqual(3);
+				expect(result).toContain(studentIds[0]);
+				expect(result).toContain(studentIds[1]);
+				expect(result).toContain(studentIds[2]);
+			});
+		});
+
+		describe('when course is not populated', () => {
+			const setup = () => {
+				const course = courseFactory.build();
+				Object.assign(course, { students: undefined });
+
+				return { course };
+			};
+
+			it('should throw with internal server exception.', () => {
+				const { course } = setup();
+
+				expect(() => {
+					course.getStudentIds();
+				}).toThrowError(InternalServerErrorException);
+			});
+		});
+	});
+
+	describe('isUserSubstitutionTeacher is called', () => {
+		describe('when user is a subsitution teacher', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.build({ substitutionTeachers: [user] });
+
+				return { course, user };
+			};
+
+			it('should return true.', () => {
+				const { course, user } = setup();
+
+				const result = course.isUserSubstitutionTeacher(user);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when user is a not subsitution teacher.', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.build({ substitutionTeachers: [] });
+
+				return { course, user };
+			};
+
+			it('should return false.', () => {
+				const { course, user } = setup();
+
+				const result = course.isUserSubstitutionTeacher(user);
+
+				expect(result).toBe(false);
 			});
 		});
 	});
