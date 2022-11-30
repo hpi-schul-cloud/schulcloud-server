@@ -16,7 +16,6 @@ class UserAction extends BaseConsumerAction {
 		super(LDAP_SYNC_ACTIONS.SYNC_USER, options);
 		this.app = app;
 		this.filterActive = filterActive;
-		this.app = app;
 	}
 
 	async action(data = {}) {
