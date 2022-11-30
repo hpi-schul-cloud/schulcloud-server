@@ -82,18 +82,18 @@ describe('local strategy', () => {
 			const accountNoPassword = { ...mockAccount };
 			delete accountNoPassword.password;
 			authenticationService.loadAccount.mockResolvedValueOnce(accountNoPassword);
-			await expect(strategy.validate(mockAccount.username, mockAccount.password)).rejects.toThrow(
-				UnauthorizedException
-			);
+			await expect(strategy.validate(mockAccount.username, mockPassword)).rejects.toThrow(UnauthorizedException);
 		});
 		it('when account does have a wrong password', async () => {
-			await expect(strategy.validate(mockAccount.username, 'wrongPasswor')).rejects.toThrow(UnauthorizedException);
+			await expect(strategy.validate(mockAccount.username, 'wrongPassword')).rejects.toThrow(UnauthorizedException);
 		});
 		it('when account does not have a user id', async () => {
 			const accountNoUser = { ...mockAccount };
 			delete accountNoUser.userId;
 			authenticationService.loadAccount.mockResolvedValueOnce(accountNoUser);
-			await expect(strategy.validate('mockUsername', mockPasswordHash)).rejects.toThrow(UnauthorizedException);
+			await expect(strategy.validate('mockUsername', mockPassword)).rejects.toThrow(
+				new Error(`login failing, because account ${mockAccount.id} has no userId`)
+			);
 		});
 	});
 });

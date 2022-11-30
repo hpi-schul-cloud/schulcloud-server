@@ -66,18 +66,13 @@ describe('CurrentUserMapper', () => {
 		expect(currentUser).toMatchObject({
 			accountId,
 			systemId,
-			roles: ['teacher'],
+			roles: [],
 			schoolId: user.school.id,
 			user: {
 				firstName: user.firstName,
 				lastName: user.lastName,
-				roles: [
-					{
-						id: null,
-						name: 'teacher',
-					},
-				],
-				permissions: ['STUDENT_EDIT'],
+				roles: [],
+				permissions: [],
 			},
 		});
 	});

@@ -17,6 +17,9 @@ const mockClient = {
 			this.connected = true;
 			callback();
 		}
+		if (username === 'connectWithoutFlag') {
+			callback();
+		}
 		callback('an error');
 	},
 	unbind() {},
@@ -30,7 +33,7 @@ jest.mock('ldapjs', () => {
 	return {
 		__esModule: true,
 		...originalModule,
-		createClient: () => mockClient,
+		createClient: () => ({ ...mockClient }),
 	};
 });
 
@@ -62,6 +65,13 @@ describe('LdapService', () => {
 		it('should throw error if user cannot be authorised', async () => {
 			const system: System = systemFactory.withLdapConfig().buildWithId();
 			await expect(ldapService.authenticate(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
+				new UnauthorizedException('User could not authenticate')
+			);
+		});
+
+		it('should throw error if connected flag is not set', async () => {
+			const system: System = systemFactory.withLdapConfig().buildWithId();
+			await expect(ldapService.authenticate(system, 'connectWithoutFlag', 'mockPassword')).rejects.toThrow(
 				new UnauthorizedException('User could not authenticate')
 			);
 		});
