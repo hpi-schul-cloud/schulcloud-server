@@ -1,23 +1,20 @@
 import { MikroORM } from '@mikro-orm/core';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamRule } from '@shared/domain/rules/team.rule';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
-import { Role, Team, User } from '../entity';
 import { Permission } from '../interface';
 import PermissionContextBuilder from './permission-context.builder';
 
 describe('TeamRule', () => {
 	let orm: MikroORM;
 	let service: TeamRule;
-	let user: User;
-	let entity: Team;
-	let role: Role;
-	let teamRole: Role;
 	const permissionA = 'a' as Permission;
-	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
+	const teamPermissionA = 'TA' as Permission;
+	const teamPermissionB = 'TB' as Permission;
+	const teamPermissionC = 'TC' as Permission;
+	const teamPermissionD = 'TD' as Permission;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -33,35 +30,139 @@ describe('TeamRule', () => {
 		await orm.close();
 	});
 
-	beforeEach(() => {
-		role = roleFactory.build({ permissions: [permissionA] });
-		teamRole = roleFactory.build({ permissions: [permissionB] });
-		user = userFactory.build({ roles: [role] });
-		entity = teamFactory.withRoleAndUserId(teamRole, user.id).build();
-	});
-
 	describe('isApplicable', () => {
-		it('should return truthy', () => {
-			expect(() => service.isApplicable(entity.teamUsers[0].user, entity)).toBeTruthy();
+		describe('when entity type team', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const team = teamFactory.build();
+				return {
+					user,
+					team,
+				};
+			};
+
+			it('should return true', () => {
+				const { user, team } = setup();
+
+				const result = service.isApplicable(user, team);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when entity type is wrong', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				return {
+					user,
+				};
+			};
+
+			it('should return false', () => {
+				const { user } = setup();
+				// @ts-expect-error test with wrong instance
+				const result = service.isApplicable(user, user);
+
+				expect(result).toBe(false);
+			});
 		});
 	});
 
 	describe('hasPermission', () => {
-		it('should return "true" if user in scope', () => {
-			const res = service.hasPermission(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionB]));
-			expect(res).toBe(true);
+		describe('when user is not a team user', () => {
+			const setup = () => {
+				const role = roleFactory.buildWithId({ permissions: [permissionA] });
+				const user = userFactory.buildWithId({ roles: [role] });
+				const team = teamFactory.build();
+				return {
+					user,
+					team,
+				};
+			};
+
+			it('should return "false"', () => {
+				const { user, team } = setup();
+
+				const res = service.hasPermission(user, team, PermissionContextBuilder.read([permissionA]));
+
+				expect(res).toBe(false);
+			});
 		});
 
-		it('should return "false" if user has not permission', () => {
-			const res = service.hasPermission(entity.teamUsers[0].user, entity, PermissionContextBuilder.read([permissionC]));
-			expect(res).toBe(false);
+		describe('when user is a team user', () => {
+			const setup = () => {
+				const role = roleFactory.buildWithId({ permissions: [permissionA] });
+				const teamRole = roleFactory.buildWithId({ permissions: [teamPermissionA] });
+				const user = userFactory.buildWithId({ roles: [role] });
+				const team = teamFactory.withRoleAndUserId(teamRole, user.id).build();
+				return {
+					user,
+					team,
+				};
+			};
+
+			it('should return "false" teamRole has not permission', () => {
+				const { user, team } = setup();
+
+				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionD]));
+
+				expect(res).toBe(false);
+			});
+
+			it('should return "false" if user has global permission', () => {
+				const { user, team } = setup();
+
+				const res = service.hasPermission(user, team, PermissionContextBuilder.read([permissionA]));
+
+				expect(res).toBe(false);
+			});
+
+			it('should return "false" if user has not global permission', () => {
+				const { user, team } = setup();
+
+				const res = service.hasPermission(user, team, PermissionContextBuilder.read([permissionC]));
+
+				expect(res).toBe(false);
+			});
 		});
 
-		it('should throw error if entity was not found', () => {
-			const notFoundUser = userFactory.build({ roles: [role] });
-			expect(() => service.hasPermission(notFoundUser, entity, PermissionContextBuilder.read([permissionA]))).toThrow(
-				new InternalServerErrorException('Cannot find user in team')
-			);
+		describe('when user is a team user and teamRoles are inherited ', () => {
+			const setup = () => {
+				const role = roleFactory.buildWithId({ permissions: [permissionA] });
+				const teamRoleA = roleFactory.buildWithId({ permissions: [teamPermissionA] });
+				const teamRoleB = roleFactory.buildWithId({ permissions: [teamPermissionB], roles: [teamRoleA] });
+				const teamRole = roleFactory.buildWithId({ permissions: [teamPermissionC], roles: [teamRoleB] });
+				const user = userFactory.buildWithId({ roles: [role] });
+				const team = teamFactory.withRoleAndUserId(teamRole, user.id).build();
+				return {
+					user,
+					team,
+				};
+			};
+
+			it('should return "true" by teamRoleA ', () => {
+				const { user, team } = setup();
+
+				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionA]));
+
+				expect(res).toBe(true);
+			});
+
+			it('should return "true" by teamRoleB', () => {
+				const { user, team } = setup();
+
+				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionB]));
+
+				expect(res).toBe(true);
+			});
+
+			it('should return "true" by teamRole', () => {
+				const { user, team } = setup();
+
+				const res = service.hasPermission(user, team, PermissionContextBuilder.read([teamPermissionC]));
+
+				expect(res).toBe(true);
+			});
 		});
 	});
 });

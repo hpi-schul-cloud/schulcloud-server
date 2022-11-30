@@ -45,6 +45,8 @@ describe('team repo', () => {
 			const team = teamFactory.build();
 
 			await em.persistAndFlush([team]);
+			em.clear();
+
 			const result = await repo.findById(team.id);
 			expect(Object.keys(result).sort()).toEqual(['name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort());
 		});
@@ -64,14 +66,16 @@ describe('team repo', () => {
 
 			const team: Team = teamFactory.withRoleAndUserId(role, userId).buildWithId();
 			await em.persistAndFlush(team);
+			em.clear();
 
 			// Act
 			const result = await repo.findById(team.id, true);
 
 			// Assert
-			expect(result.teamUsers[0].role.roles).toBeDefined();
-			expect(result.teamUsers[0].role.roles.getItems()).toEqual(roles2);
-			expect(result.teamUsers[0].role.roles[0].roles.getItems()).toEqual(roles3);
+			const teamUserRoles = result.teamUsers[0].role.roles;
+			expect(teamUserRoles).toBeDefined();
+			expect(teamUserRoles.toArray()).toEqual(role.roles.toArray());
+			expect(teamUserRoles[0].roles.toArray()).toEqual(roles2[0].roles.toArray());
 		});
 
 		it('should return one role that matched by id', async () => {
@@ -79,8 +83,14 @@ describe('team repo', () => {
 			const teamB = teamFactory.build();
 
 			await em.persistAndFlush([teamA, teamB]);
+			em.clear();
+
 			const result = await repo.findById(teamA.id, true);
-			expect(result).toEqual(teamA);
+
+			expect(result).toMatchObject({
+				id: teamA.id,
+				name: teamA.name,
+			});
 		});
 
 		it('should throw an error if roles by id doesnt exist', async () => {
@@ -95,6 +105,7 @@ describe('team repo', () => {
 			// Arrange
 			const team = teamFactory.buildWithId();
 			await em.persistAndFlush([team]);
+			em.clear();
 
 			// Act
 			const result = await repo.findByUserId(team.teamUsers[0].user.id);
@@ -111,6 +122,7 @@ describe('team repo', () => {
 			const team2 = teamFactory.withTeamUser(teamUser).build();
 			const team3 = teamFactory.buildWithId();
 			await em.persistAndFlush([team1, team2, team3]);
+			em.clear();
 
 			// Act
 			const result = await repo.findByUserId(teamUser.user.id);
@@ -118,7 +130,7 @@ describe('team repo', () => {
 			// Assert
 			expect(result.length).toEqual([team1, team2].length);
 			result.forEach((team: Team) => {
-				expect(team.teamUsers.flatMap((user) => user.userId).includes(teamUser.userId)).toBeTruthy();
+				expect(team.teamUsers.flatMap((user) => user.userId.id).includes(teamUser.userId.id)).toBeTruthy();
 			});
 			expect(result.some((team: Team) => team.id === team3.id)).toBeFalsy();
 			expect(Object.keys(result[0]).sort()).toEqual(['name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort());
