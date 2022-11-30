@@ -43,6 +43,8 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 	public getStudentIds(): EntityId[] {
 		let studentIds: EntityId[] = [];
 
+		// A not existing course group can be referenced in a submission.
+		// Therefore we need to handle this case instead of returning an error here.
 		if (this.students) {
 			const studentObjectIds = this.students.getIdentifiers('_id');
 			studentIds = studentObjectIds.map((id): string => id.toString());
