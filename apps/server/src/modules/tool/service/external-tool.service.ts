@@ -14,7 +14,7 @@ import { Page } from '@shared/domain/interface/page';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
+import { TokenEndpointAuthMethod } from '../interface';
 import { ExternalToolServiceMapper } from './mapper/external-tool-service.mapper';
 
 @Injectable()

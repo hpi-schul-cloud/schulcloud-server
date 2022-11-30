@@ -12,20 +12,22 @@ import {
 import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { Lti11LaunchQuery } from './dto/request/lti11-launch.query';
-import { Lti11LaunchResponse } from './dto/response/lti11-launch.response';
 import { Lti11ResponseMapper } from './mapper/lti11-response.mapper';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ExternalToolRequestMapper } from './mapper/external-tool-request.mapper';
 import { ExternalToolResponseMapper } from './mapper/external-tool-response.mapper';
-import { ExternalToolResponse } from './dto/response/external-tool.response';
-import { ExternalToolParams } from './dto/request/external-tool-create.params';
 import { ExternalToolUc } from '../uc/external-tool.uc';
-import { ToolIdParams } from './dto/request/tool-id.params';
-import { ExternalToolSearchListResponse } from './dto/response/external-tool-search-list.response';
-import { ExternalToolSearchParams } from './dto/request/external-tool-search.params';
-import { SortExternalToolParams } from './dto/request/external-tool-sort.params';
+import {
+	ExternalToolParams,
+	ExternalToolResponse,
+	ExternalToolSearchListResponse,
+	ExternalToolSearchParams,
+	Lti11LaunchQuery,
+	Lti11LaunchResponse,
+	SortExternalToolParams,
+	ToolIdParams,
+} from './dto';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

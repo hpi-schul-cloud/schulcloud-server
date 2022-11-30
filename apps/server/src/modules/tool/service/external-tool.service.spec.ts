@@ -25,9 +25,8 @@ import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/
 import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
 import { ExternalToolService } from './external-tool.service';
-import { ToolConfigType } from '../interface/tool-config-type.enum';
+import { TokenEndpointAuthMethod, ToolConfigType } from '../interface';
 import { ExternalToolServiceMapper } from './mapper/external-tool-service.mapper';
-import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;

@@ -30,25 +30,29 @@ import { Lti11ResponseMapper } from './mapper/lti11-response.mapper';
 import { ExternalToolUc } from '../uc/external-tool.uc';
 import { ExternalToolRequestMapper } from './mapper/external-tool-request.mapper';
 import { ExternalToolResponseMapper } from './mapper/external-tool-response.mapper';
-import { Lti11LaunchResponse } from './dto/response/lti11-launch.response';
-import { BasicToolConfigParams } from './dto/request/basic-tool-config.params';
-import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
-import { ExternalToolResponse } from './dto/response/external-tool.response';
-import { CustomParameterCreateParams } from './dto/request/custom-parameter.params';
-import { ExternalToolParams } from './dto/request/external-tool-create.params';
-import { BasicToolConfigResponse } from './dto/response/basic-tool-config.response';
-import { Lti11ToolConfigParams } from './dto/request/lti11-tool-config.params';
-import { CustomParameterLocationParams } from '../interface/custom-parameter-location.enum';
-import { Oauth2ToolConfigResponse } from './dto/response/oauth2-tool-config.response';
-import { CustomParameterScopeParams } from '../interface/custom-parameter-scope.enum';
-import { Oauth2ToolConfigParams } from './dto/request/oauth2-tool-config.params';
-import { CustomParameterResponse } from './dto/response/custom-parameter.response';
-import { Lti11ToolConfigResponse } from './dto/response/lti11-tool-config.response';
-import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
-import { ToolConfigType } from '../interface/tool-config-type.enum';
-import { LtiMessageType } from '../interface/lti-message-type.enum';
-import { LtiPrivacyPermission } from '../interface/lti-privacy-permission.enum';
-import { ToolIdParams } from './dto/request/tool-id.params';
+import {
+	BasicToolConfigParams,
+	BasicToolConfigResponse,
+	CustomParameterCreateParams,
+	CustomParameterResponse,
+	ExternalToolParams,
+	ExternalToolResponse,
+	Lti11LaunchResponse,
+	Lti11ToolConfigParams,
+	Lti11ToolConfigResponse,
+	Oauth2ToolConfigParams,
+	Oauth2ToolConfigResponse,
+	ToolIdParams,
+} from './dto';
+import {
+	CustomParameterLocationParams,
+	CustomParameterScopeParams,
+	CustomParameterTypeParams,
+	LtiMessageType,
+	LtiPrivacyPermission,
+	TokenEndpointAuthMethod,
+	ToolConfigType,
+} from '../interface';
 
 describe('ToolController', () => {
 	let module: TestingModule;
