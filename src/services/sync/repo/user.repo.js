@@ -43,7 +43,7 @@ const findUserBySchoolAndName = async (schoolId, firstName, lastName) =>
 	userModel.find({ schoolId, firstName, lastName }).lean().exec();
 
 const findUsersSchoolById = async (schoolId) =>
-	schoolModel.find({id: schoolId,}).lean().exec();
+	schoolModel.find({_id: schoolId,}).lean().exec();
 
 const checkCreate = async (inputUser, userSchool) => {
 	if (!inputUser?.email) {

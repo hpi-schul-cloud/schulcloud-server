@@ -23,7 +23,6 @@ const findSchoolByLdapIdAndSystem = async (ldapSchoolIdentifier, systems) =>
 		.lean({ virtuals: true })
 		.exec();
 
-
 const findSchoolByOfficialSchoolNumber = async (officialSchoolNumber) => {
 	if (!officialSchoolNumber) {
 		return;

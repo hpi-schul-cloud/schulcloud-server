@@ -37,13 +37,13 @@ describe('User Actions', () => {
 			const testAccountInput = { _id: 2 };
 			await userAction.action({ user: testUserInput, account: testAccountInput });
 
-			const { firstArg } = createUserAndAccountStub.firstCall;
-			const { lastArg } = createUserAndAccountStub.firstCall;
+			const firstArg = createUserAndAccountStub.firstCall.args[0];
+			const secondArg = createUserAndAccountStub.firstCall.args[1];
 
 			expect(createUserAndAccountStub.calledOnce).to.be.true;
 			expect(firstArg.schoolId).to.be.equal(testSchoolId);
 			expect(firstArg._id).to.be.equal(testUserInput._id);
-			expect(lastArg._id).to.be.equal(testAccountInput._id);
+			expect(secondArg._id).to.be.equal(testAccountInput._id);
 		});
 
 		it('should update user and account if exists', async () => {
