@@ -15,6 +15,7 @@ import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/
 import { systemFactory } from '@shared/testing';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
+import exp from 'constants';
 import { v1 } from 'uuid';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
@@ -365,6 +366,18 @@ describe('KeycloakConfigurationService Unit', () => {
 					path: '/{realmName}/authentication/flows/{flowAlias}/executions',
 					urlParamKeys: ['realmName', 'flowAlias'],
 				})
+			);
+		});
+	});
+
+	describe('configureRealm', () => {
+		it('should update the realm', async () => {
+			const updateMock = jest.spyOn(kcApiRealmsMock, 'update');
+
+			await service.configureRealm();
+			expect(updateMock).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.objectContaining({ editUsernameAllowed: true })
 			);
 		});
 	});
