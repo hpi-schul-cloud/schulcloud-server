@@ -81,8 +81,7 @@ describe('Submission entity', () => {
 
 				return { submission, file };
 			};
-
-			it('should contains file', () => {
+			it('should contain file', () => {
 				const { submission, file } = setup();
 
 				expect(submission.studentFiles.contains(file)).toBe(true);
