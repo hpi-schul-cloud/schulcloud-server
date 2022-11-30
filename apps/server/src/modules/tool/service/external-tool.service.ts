@@ -52,10 +52,7 @@ export class ExternalToolService {
 		tools.data = await Promise.all(
 			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO> => {
 				if (tool.config instanceof Oauth2ToolConfigDO) {
-					const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
-						tool.config.clientId
-					);
-					this.applyProviderOauthClientToDO(tool.config, oauthClient);
+					await this.addExternalOauth2DataToConfig(tool.config);
 				}
 				return tool;
 			})
@@ -68,11 +65,19 @@ export class ExternalToolService {
 		const tool: ExternalToolDO = await this.externalToolRepo.findById(id);
 
 		if (tool.config instanceof Oauth2ToolConfigDO) {
-			const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(tool.config.clientId);
-			this.applyProviderOauthClientToDO(tool.config, oauthClient);
+			await this.addExternalOauth2DataToConfig(tool.config);
 		}
 
 		return tool;
+	}
+
+	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfigDO) {
+		const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(config.clientId);
+
+		config.scope = oauthClient.scope;
+		config.tokenEndpointAuthMethod = oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
+		config.redirectUris = oauthClient.redirect_uris;
+		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
 	}
 
 	async deleteExternalTool(toolId: string): Promise<void> {
@@ -122,12 +127,5 @@ export class ExternalToolService {
 			}
 			return true;
 		});
-	}
-
-	applyProviderOauthClientToDO(oauth2Config: Oauth2ToolConfigDO, oauthClient: ProviderOauthClient): void {
-		oauth2Config.scope = oauthClient.scope;
-		oauth2Config.tokenEndpointAuthMethod = oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
-		oauth2Config.redirectUris = oauthClient.redirect_uris;
-		oauth2Config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
 	}
 }
