@@ -5,6 +5,7 @@ import { ApiValidationError } from '@shared/common';
 import { ICurrentUser, Permission } from '@shared/domain';
 import {
 	cleanupCollections,
+	courseGroupFactory,
 	mapUserToCurrentUser,
 	roleFactory,
 	submissionFactory,
@@ -90,7 +91,8 @@ describe('Submission Controller (e2e)', () => {
 			});
 			const user = userFactory.buildWithId({ roles });
 			const task = taskFactory.buildWithId();
-			const submission = submissionFactory.buildWithId({ task, student: user, grade: 97 });
+			const courseGroup = courseGroupFactory.buildWithId();
+			const submission = submissionFactory.buildWithId({ task, student: user, grade: 97, courseGroup });
 
 			await em.persistAndFlush([submission]);
 			em.clear();
@@ -105,7 +107,16 @@ describe('Submission Controller (e2e)', () => {
 			const { result: statuses } = await api.findStatusesByTask(task.id);
 
 			const expectedSubmissionStatuses = {
-				data: [{ id: submission.id, creatorId: submission.student.id, grade: submission.grade }],
+				data: [
+					{
+						id: submission.id,
+						submitters: submission.getSubmitterIds(),
+						isSubmitted: submission.isSubmitted(),
+						isGraded: submission.isGraded(),
+						grade: submission.grade,
+						submittingCourseGroupName: submission.courseGroup?.name,
+					},
+				],
 			};
 
 			expect(statuses).toEqual(expectedSubmissionStatuses);
