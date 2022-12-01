@@ -101,11 +101,11 @@ describe('Submission UC', () => {
 			});
 
 			it('should return submissions', async () => {
-				const { user, taskId, countedSubmissions } = setup();
+				const { user, taskId, submissions } = setup();
 
 				const result = await submissionUc.findAllByTask(user.id, taskId);
 
-				expect(result).toEqual(countedSubmissions);
+				expect(result).toEqual(submissions);
 			});
 		});
 
@@ -124,7 +124,7 @@ describe('Submission UC', () => {
 				const { user, taskId, submissions } = setup();
 
 				const result = await submissionUc.findAllByTask(user.id, taskId);
-				const expectedResult: Counted<Submission[]> = [[submissions[1]], 1];
+				const expectedResult = submissions[1];
 
 				expect(result).toEqual(expectedResult);
 			});
@@ -145,7 +145,7 @@ describe('Submission UC', () => {
 				const { user, taskId, submissions } = setup();
 
 				const result = await submissionUc.findAllByTask(user.id, taskId);
-				const expectedResult: Counted<Submission[]> = [[submissions[0]], 1];
+				const expectedResult = submissions[0];
 
 				expect(result).toEqual(expectedResult);
 			});
