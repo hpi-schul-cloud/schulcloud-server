@@ -1,5 +1,4 @@
 import { MikroORM } from '@mikro-orm/core';
-import { InternalServerErrorException } from '@nestjs/common';
 import { courseFactory, courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseGroup } from './coursegroup.entity';
 
@@ -66,12 +65,11 @@ describe('CourseEntity', () => {
 				return { courseGroup };
 			};
 
-			it('should throw an internal server exception', () => {
+			it('should return empty array', () => {
 				const { courseGroup } = setup();
 
-				expect(() => {
-					courseGroup.getStudentIds();
-				}).toThrowError(InternalServerErrorException);
+				const result = courseGroup.getStudentIds();
+				expect(result).toEqual([]);
 			});
 		});
 	});
