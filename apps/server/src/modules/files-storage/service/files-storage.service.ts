@@ -294,36 +294,23 @@ export class FilesStorageService {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
 
 		const promises: Promise<CopyFileResponse>[] = sourceFileRecords.map(async (sourceFile) => {
-			this.checkScanStatus(sourceFile);
+			try {
+				this.checkScanStatus(sourceFile);
 
-			const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
-			const fileResponse = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
+				const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
+				const fileResponse = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
-			return fileResponse;
-		});
-
-		const settledPromises = await Promise.allSettled(promises);
-		const resolvedResponses = getResolvedValues(settledPromises);
-		const allResponses: CopyFileResponse[] = this.addFailedResponses(sourceFileRecords, resolvedResponses);
-
-		return allResponses;
-	}
-
-	private addFailedResponses(
-		sourceFileRecords: FileRecord[],
-		resolvedResponses: CopyFileResponse[]
-	): CopyFileResponse[] {
-		return sourceFileRecords.map(({ _id, name }) => {
-			const sourceId = _id.toString();
-			const successfulResponse = resolvedResponses.find((fileResponse) => fileResponse.sourceId === sourceId);
-			if (successfulResponse) {
-				return successfulResponse;
+				return fileResponse;
+			} catch (error) {
+				return {
+					sourceId: sourceFile._id.toString(),
+					name: sourceFile.name,
+				};
 			}
-
-			return {
-				sourceId,
-				name,
-			};
 		});
+
+		const settledPromises = await Promise.all(promises);
+
+		return settledPromises;
 	}
 }
