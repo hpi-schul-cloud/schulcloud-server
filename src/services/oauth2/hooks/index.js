@@ -5,7 +5,7 @@ const { Forbidden, MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra');
 const {userRepo} = require("../../../components/user/repo");
-const {classRepo} = require("../../../components/user-group/repo");
+const {classesRepo} = require("../../../components/user-group/repo");
 
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
@@ -47,7 +47,7 @@ const setIdToken = (hook) => {
 		hook.app.service('users').get(hook.params.account.userId),
 		scope.includes('bilo') ? userRepo.getUserWithRoles(hook.params.account.userId) : undefined,
 		scope.includes('bilo') ? userRepo.getUserWithFederalState(hook.params.account.userId) : undefined,
-		scope.includes('bilo') ? classRepo.getClassesForUser(hook.params.account.userId) : undefined,
+		scope.includes('bilo') ? classesRepo.getClassesForUser(hook.params.account.userId) : undefined,
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 				{
