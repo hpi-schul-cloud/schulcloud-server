@@ -4,7 +4,7 @@ import { CustomParameterScopeParams } from '../../../interface/custom-parameter-
 import { CustomParameterLocationParams } from '../../../interface/custom-parameter-location.enum';
 import { CustomParameterTypeParams } from '../../../interface/custom-parameter-type.enum';
 
-export class CustomParameterCreateParams {
+export class CustomParameterPostParams {
 	@IsString()
 	@ApiProperty()
 	name!: string;

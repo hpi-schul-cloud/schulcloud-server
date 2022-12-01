@@ -21,10 +21,9 @@ import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.d
 import { ExternalToolRequestMapper } from './mapper/external-tool-request.mapper';
 import { ExternalToolResponseMapper } from './mapper/external-tool-response.mapper';
 import { ExternalToolResponse } from './dto/response/external-tool.response';
-import { ExternalToolCreateParams } from './dto/request/external-tool-create.params';
+import { ExternalToolPostParams } from './dto/request/external-tool-post.params';
 import { ExternalToolUc } from '../uc/external-tool.uc';
 import { ToolIdParams } from './dto/request/tool-id.params';
-import { ExternalToolUpdateParams } from './dto/request/external-tool-update.params';
 import { ExternalToolSearchListResponse } from './dto/response/external-tool-search-list.response';
 import { ExternalToolSearchParams } from './dto/request/external-tool-search.params';
 import { SortExternalToolParams } from './dto/request/external-tool-sort.params';
@@ -63,10 +62,9 @@ export class ToolController {
 	@ApiUnauthorizedResponse()
 	async createExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() externalToolParams: ExternalToolCreateParams
+		@Body() externalToolParams: ExternalToolPostParams
 	): Promise<ExternalToolResponse> {
-		const externalToolDO: ExternalToolDO =
-			this.externalToolDOMapper.mapCreateRequestToExternalToolDO(externalToolParams);
+		const externalToolDO: ExternalToolDO = this.externalToolDOMapper.mapPostRequestToExternalToolDO(externalToolParams);
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
 		return mapped;
@@ -117,10 +115,9 @@ export class ToolController {
 	async updateExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams,
-		@Body() externalToolParams: ExternalToolUpdateParams
+		@Body() externalToolParams: ExternalToolPostParams
 	): Promise<ExternalToolResponse> {
-		const externalToolDO: ExternalToolDO =
-			this.externalToolDOMapper.mapUpdateRequestToExternalToolDO(externalToolParams);
+		const externalToolDO: ExternalToolDO = this.externalToolDOMapper.mapPostRequestToExternalToolDO(externalToolParams);
 		const created: ExternalToolDO = await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
 			params.toolId,

@@ -4,7 +4,7 @@ import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolService } from '../service/external-tool.service';
-import { ToolValidationService, ValidationType } from '../service/tool-validation.service';
+import { ToolValidationService } from '../service/tool-validation.service';
 
 @Injectable()
 export class ExternalToolUc {
@@ -16,7 +16,7 @@ export class ExternalToolUc {
 
 	async createExternalTool(userId: EntityId, externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
 		await this.ensurePermission(userId);
-		await this.toolValidationService.validate(ValidationType.CREATE, externalToolDO);
+		await this.toolValidationService.validateCreate(externalToolDO);
 
 		const tool: Promise<ExternalToolDO> = this.externalToolService.createExternalTool(externalToolDO);
 		return tool;
@@ -47,10 +47,9 @@ export class ExternalToolUc {
 
 	async updateExternalTool(userId: EntityId, toolId: string, externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
 		await this.ensurePermission(userId);
-		await this.toolValidationService.validate(ValidationType.UPDATE, externalToolDO);
+		await this.toolValidationService.validateUpdate(externalToolDO);
 
-		const loaded: ExternalToolDO = await this.getExternalTool(userId, toolId);
-		// TODO test undefined values, dont take version number of externalToolDO!
+		const loaded: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
 		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalToolDO });
 
 		const saved = await this.externalToolService.updateExternalTool(toUpdate);

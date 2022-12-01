@@ -17,10 +17,10 @@ import {
 import { ExternalToolSortOrder, SortExternalToolParams } from '../dto/request/external-tool-sort.params';
 import { ExternalToolSearchParams } from '../dto/request/external-tool-search.params';
 import { CustomParameterTypeParams } from '../../interface/custom-parameter-type.enum';
-import { CustomParameterCreateParams } from '../dto/request/custom-parameter.params';
+import { CustomParameterPostParams } from '../dto/request/custom-parameter.params';
 import { BasicToolConfigParams } from '../dto/request/basic-tool-config.params';
 import { Oauth2ToolConfigParams } from '../dto/request/oauth2-tool-config.params';
-import { ExternalToolCreateParams } from '../dto/request/external-tool-create.params';
+import { ExternalToolPostParams } from '../dto/request/external-tool-create.params';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 import { Lti11ToolConfigParams } from '../dto/request/lti11-tool-config.params';
 import { TokenEndpointAuthMethod } from '../../interface/token-endpoint-auth-method.enum';
@@ -52,7 +52,7 @@ describe('ExternalToolRequestMapper', () => {
 		basicConfigParams.type = ToolConfigType.BASIC;
 		basicConfigParams.baseUrl = 'mockUrl';
 
-		const customParameterCreateParams = new CustomParameterCreateParams();
+		const customParameterCreateParams = new CustomParameterPostParams();
 		customParameterCreateParams.name = 'mockName';
 		customParameterCreateParams.default = 'mockDefault';
 		customParameterCreateParams.location = CustomParameterLocationParams.PATH;
@@ -60,7 +60,7 @@ describe('ExternalToolRequestMapper', () => {
 		customParameterCreateParams.type = CustomParameterTypeParams.STRING;
 		customParameterCreateParams.regex = 'mockRegex';
 
-		const externalToolParams = new ExternalToolCreateParams();
+		const externalToolParams = new ExternalToolPostParams();
 		externalToolParams.name = 'mockName';
 		externalToolParams.url = 'mockUrl';
 		externalToolParams.logoUrl = 'mockLogoUrl';
@@ -106,7 +106,7 @@ describe('ExternalToolRequestMapper', () => {
 				const { externalToolParams, externalToolDO, basicConfigParams } = setup();
 				externalToolParams.config = basicConfigParams;
 
-				const result = mapper.mapCreateRequestToExternalToolDO(externalToolParams, 1);
+				const result = mapper.mapPostRequestToExternalToolDO(externalToolParams, 1);
 
 				expect(result).toEqual(externalToolDO);
 			});
@@ -141,7 +141,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolParams.config = lti11ConfigParams;
 				externalToolDO.config = lti11ToolConfigDO;
 
-				const result = mapper.mapCreateRequestToExternalToolDO(externalToolParams, 1);
+				const result = mapper.mapPostRequestToExternalToolDO(externalToolParams, 1);
 
 				expect(result).toEqual(externalToolDO);
 			});
@@ -184,7 +184,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolParams.config = oauth2ConfigParams;
 				externalToolDO.config = oauth2ToolConfigDO;
 
-				const result = mapper.mapCreateRequestToExternalToolDO(externalToolParams, 1);
+				const result = mapper.mapPostRequestToExternalToolDO(externalToolParams, 1);
 
 				expect(result).toEqual(externalToolDO);
 			});
@@ -230,11 +230,11 @@ describe('ExternalToolRequestMapper', () => {
 		it('should call mapCreateRequestToExternalToolDO with version of params', () => {
 			const externalToolUpdateParams: ExternalToolUpdateParams = new ExternalToolUpdateParams();
 			externalToolUpdateParams.version = 1337;
-			jest.spyOn(mapper, 'mapCreateRequestToExternalToolDO');
+			jest.spyOn(mapper, 'mapPostRequestToExternalToolDO');
 
 			mapper.mapUpdateRequestToExternalToolDO(externalToolUpdateParams);
 
-			expect(mapper.mapCreateRequestToExternalToolDO).toHaveBeenCalledWith(
+			expect(mapper.mapPostRequestToExternalToolDO).toHaveBeenCalledWith(
 				externalToolUpdateParams,
 				externalToolUpdateParams.version
 			);

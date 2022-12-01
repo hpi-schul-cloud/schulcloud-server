@@ -69,6 +69,7 @@ export class ExternalToolService {
 			const loadedOauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
 				toUpdate.config.clientId
 			);
+
 			if (loadedOauthClient && loadedOauthClient.client_id) {
 				await this.oauthProviderService.updateOAuth2Client(loadedOauthClient.client_id, toUpdateOauthClient);
 			} else {
@@ -89,15 +90,17 @@ export class ExternalToolService {
 
 	async isNameUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
 		const duplicate: ExternalToolDO | null = await this.externalToolRepo.findByName(externalToolDO.name);
-		return duplicate == null;
+		return duplicate == null || duplicate.id === externalToolDO.id;
 	}
 
 	async isClientIdUnique(oauth2ToolConfig: Oauth2ToolConfigDO): Promise<boolean> {
 		const duplicate: ExternalToolDO | null = await this.externalToolRepo.findByOAuth2ConfigClientId(
 			oauth2ToolConfig.clientId
 		);
-
-		return duplicate == null;
+		return (
+			duplicate == null ||
+			(duplicate.config instanceof Oauth2ToolConfigDO && duplicate.config.clientId === oauth2ToolConfig.clientId)
+		);
 	}
 
 	// TODO move to validationService

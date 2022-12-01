@@ -10,14 +10,13 @@ import { CustomParameterLocation, CustomParameterScope, CustomParameterType, Sor
 import { CustomParameterScopeParams } from '../../interface/custom-parameter-scope.enum';
 import { CustomParameterLocationParams } from '../../interface/custom-parameter-location.enum';
 import { CustomParameterTypeParams } from '../../interface/custom-parameter-type.enum';
-import { CustomParameterCreateParams } from '../dto/request/custom-parameter.params';
+import { CustomParameterPostParams } from '../dto/request/custom-parameter.params';
 import { BasicToolConfigParams } from '../dto/request/basic-tool-config.params';
 import { Oauth2ToolConfigParams } from '../dto/request/oauth2-tool-config.params';
-import { ExternalToolCreateParams } from '../dto/request/external-tool-create.params';
+import { ExternalToolPostParams } from '../dto/request/external-tool-post.params';
 import { Lti11ToolConfigParams } from '../dto/request/lti11-tool-config.params';
 import { SortExternalToolParams } from '../dto/request/external-tool-sort.params';
 import { ExternalToolSearchParams } from '../dto/request/external-tool-search.params';
-import { ExternalToolUpdateParams } from '../dto/request/external-tool-update.params';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,
@@ -41,7 +40,7 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 
 @Injectable()
 export class ExternalToolRequestMapper {
-	mapCreateRequestToExternalToolDO(externalToolParams: ExternalToolCreateParams, version = 1): ExternalToolDO {
+	mapPostRequestToExternalToolDO(externalToolParams: ExternalToolPostParams, version = 1): ExternalToolDO {
 		let mappedConfig: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
 		if (externalToolParams.config instanceof BasicToolConfigParams) {
 			mappedConfig = this.mapRequestToBasicToolConfigDO(externalToolParams.config);
@@ -67,14 +66,6 @@ export class ExternalToolRequestMapper {
 		});
 	}
 
-	mapUpdateRequestToExternalToolDO(externalToolParams: ExternalToolUpdateParams): ExternalToolDO {
-		const externalToolDO: ExternalToolDO = this.mapCreateRequestToExternalToolDO(
-			externalToolParams,
-			externalToolParams.version
-		);
-		return externalToolDO;
-	}
-
 	private mapRequestToBasicToolConfigDO(externalToolConfigParams: BasicToolConfigParams): BasicToolConfigDO {
 		return new BasicToolConfigDO({ ...externalToolConfigParams });
 	}
@@ -87,8 +78,8 @@ export class ExternalToolRequestMapper {
 		return new Oauth2ToolConfigDO({ ...externalToolConfigParams });
 	}
 
-	private mapRequestToCustomParameterDO(customParameterParams: CustomParameterCreateParams[]): CustomParameterDO[] {
-		return customParameterParams.map((customParameterParam: CustomParameterCreateParams) => {
+	private mapRequestToCustomParameterDO(customParameterParams: CustomParameterPostParams[]): CustomParameterDO[] {
+		return customParameterParams.map((customParameterParam: CustomParameterPostParams) => {
 			return new CustomParameterDO({
 				name: customParameterParam.name,
 				default: customParameterParam.default,
