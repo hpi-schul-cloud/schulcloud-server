@@ -9,7 +9,6 @@
 		"hydra": "http://localhost:9001",
 		"web": "http://localhost:3100"
 	},
-	"SC_DOMAIN": "localhost",
 	"I18N": {
 		"AVAILABLE_LANGUAGES": "de,en,es,ua",
 		"DEFAULT_LANGUAGE": "de",
