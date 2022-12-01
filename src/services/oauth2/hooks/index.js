@@ -5,6 +5,7 @@ const { Forbidden, MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra');
 const {userRepo} = require("../../../components/user/repo");
+const {classRepo} = require("../../../components/user-group/repo");
 
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
@@ -44,17 +45,18 @@ const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
-		scope.includes('bilo') ? userRepo.getUserWithRoles(hook.params.account.userId) : undefined,
-		scope.includes('bilo') ? userRepo.getUserWithFederalState(hook.params.account.userId) : undefined,
+		scope.includes('user_role') ? userRepo.getUserWithRoles(hook.params.account.userId) : undefined,
+		scope.includes('fed_state') ? userRepo.getUserWithFederalState(hook.params.account.userId) : undefined,
+		scope.includes('class') ? classRepo.getClassesForUser(hook.params.account.userId) : undefined,
 		scope.includes('groups')
 			? hook.app.service('teams').find(
-					{
-						query: {
-							'userIds.userId': hook.params.account.userId,
-						},
+				{
+					query: {
+						'userIds.userId': hook.params.account.userId,
 					},
-					'_id name'
-			  )
+				},
+				'_id name'
+			)
 			: undefined,
 		hook.app.service('ltiTools').find({
 			query: {
@@ -62,7 +64,7 @@ const setIdToken = (hook) => {
 				isLocal: true,
 			},
 		}),
-	]).then(([user, userRoles, userFedState, userTeams, tools]) =>
+	]).then(([user, userRoles, userFedState, userClass, userTeams, tools]) =>
 		hook.app
 			.service('pseudonym')
 			.find({
@@ -74,6 +76,7 @@ const setIdToken = (hook) => {
 			.then((pseudonyms) => {
 				const { pseudonym } = pseudonyms.data[0];
 				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
+				const alias = user.firstName + " " + user.lastName[0];
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
@@ -82,16 +85,18 @@ const setIdToken = (hook) => {
 						userId: scope.includes('profile') ? user._id : undefined,
 						userRole: scope.includes('bilo')
 							? userRoles.roles.map((roleName) =>
-									this.roleName = roleName.name
+								this.roleName = roleName.name
 							)
 							: undefined,
 						fedState: scope.includes('bilo') ? userFedState.schoolId.federalState.name : undefined,
+						alias: scope.includes('bilo') ? alias : undefined,
+						class: scope.includes('bilo') ? userClass : undefined,
 						schoolId: user.schoolId,
 						groups: scope.includes('groups')
 							? userTeams.data.map((team) => ({
-									gid: team._id,
-									displayName: team.name,
-							  }))
+								gid: team._id,
+								displayName: team.name,
+							}))
 							: undefined,
 					},
 				};
