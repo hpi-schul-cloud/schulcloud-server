@@ -45,9 +45,9 @@ const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
-		scope.includes('user_role') ? userRepo.getUserWithRoles(hook.params.account.userId) : undefined,
-		scope.includes('fed_state') ? userRepo.getUserWithFederalState(hook.params.account.userId) : undefined,
-		scope.includes('class') ? classRepo.getClassesForUser(hook.params.account.userId) : undefined,
+		scope.includes('bilo') ? userRepo.getUserWithRoles(hook.params.account.userId) : undefined,
+		scope.includes('bilo') ? userRepo.getUserWithFederalState(hook.params.account.userId) : undefined,
+		scope.includes('bilo') ? classRepo.getClassesForUser(hook.params.account.userId) : undefined,
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 				{
