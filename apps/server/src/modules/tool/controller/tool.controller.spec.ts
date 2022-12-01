@@ -26,10 +26,8 @@ import { Page } from '@shared/domain/interface/page';
 import { ExternalToolSearchListResponse } from '@src/modules/tool/controller/dto/response/external-tool-search-list.response';
 import { ToolController } from './tool.controller';
 import { Lti11Uc } from '../uc/lti11.uc';
-import { Lti11ResponseMapper } from './mapper/lti11-response.mapper';
 import { ExternalToolUc } from '../uc/external-tool.uc';
-import { ExternalToolRequestMapper } from './mapper/external-tool-request.mapper';
-import { ExternalToolResponseMapper } from './mapper/external-tool-response.mapper';
+import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './mapper';
 import {
 	BasicToolConfigParams,
 	BasicToolConfigResponse,

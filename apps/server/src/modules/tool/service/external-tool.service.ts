@@ -15,7 +15,7 @@ import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { TokenEndpointAuthMethod } from '../interface';
-import { ExternalToolServiceMapper } from './mapper/external-tool-service.mapper';
+import { ExternalToolServiceMapper } from './mapper';
 
 @Injectable()
 export class ExternalToolService {

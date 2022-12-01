@@ -26,7 +26,7 @@ import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-e
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
 import { ExternalToolService } from './external-tool.service';
 import { TokenEndpointAuthMethod, ToolConfigType } from '../interface';
-import { ExternalToolServiceMapper } from './mapper/external-tool-service.mapper';
+import { ExternalToolServiceMapper } from './mapper';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;

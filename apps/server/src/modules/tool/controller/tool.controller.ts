@@ -12,11 +12,9 @@ import {
 import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { Lti11ResponseMapper } from './mapper/lti11-response.mapper';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { ExternalToolRequestMapper } from './mapper/external-tool-request.mapper';
-import { ExternalToolResponseMapper } from './mapper/external-tool-response.mapper';
+import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './mapper';
 import { ExternalToolUc } from '../uc/external-tool.uc';
 import {
 	ExternalToolParams,
