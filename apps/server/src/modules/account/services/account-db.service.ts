@@ -119,5 +119,4 @@ export class AccountServiceDb extends AbstractAccountService {
 		const accountEntities = await this.accountRepo.searchByUsernameExactMatch(userName);
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}
-
 }
