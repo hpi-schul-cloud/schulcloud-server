@@ -44,7 +44,6 @@ export class Submission extends BaseEntityWithTimestamps {
 	@ManyToMany('User', undefined, { fieldName: 'teamMembers' })
 	teamMembers = new Collection<User>(this);
 
-	/* ***** student uploads ***** */
 	@Property({ nullable: true })
 	comment?: string;
 
@@ -55,7 +54,6 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Property()
 	submitted: boolean;
 
-	/* ***** teacher uploads ***** */
 	@Property()
 	graded: boolean;
 

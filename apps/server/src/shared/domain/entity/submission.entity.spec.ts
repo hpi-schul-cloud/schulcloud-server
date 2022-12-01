@@ -28,18 +28,19 @@ describe('Submission entity', () => {
 	});
 
 	describe('constructor is called', () => {
-		const buildSubmissionParams = () => {
+		const setup = () => {
 			const school = schoolFactory.build();
 			const student = userFactory.build();
 			const task = taskFactory.buildWithId();
 			const file = fileFactory.buildWithId();
+			const teamMember = userFactory.build();
 
-			return { school, student, task, file };
+			return { school, student, task, file, teamMember };
 		};
 
 		describe('when required pros are set', () => {
-			const setup = () => {
-				const { school, student, task } = buildSubmissionParams();
+			it('should contains default props', () => {
+				const { school, student, task } = setup();
 
 				const submission = new Submission({
 					school,
@@ -47,12 +48,6 @@ describe('Submission entity', () => {
 					task,
 					comment: 'test',
 				});
-
-				return { submission, school, student, task };
-			};
-
-			it('should contains default props', () => {
-				const { submission, school, student, task } = setup();
 
 				expect(submission).toStrictEqual(
 					expect.objectContaining({
@@ -68,8 +63,8 @@ describe('Submission entity', () => {
 		});
 
 		describe('when studentFiles are passed', () => {
-			const setup = () => {
-				const { school, student, task, file } = buildSubmissionParams();
+			it('should contain file', () => {
+				const { school, student, task, file } = setup();
 
 				const submission = new Submission({
 					school,
@@ -79,18 +74,14 @@ describe('Submission entity', () => {
 					studentFiles: [file],
 				});
 
-				return { submission, file };
-			};
-			it('should contain file', () => {
-				const { submission, file } = setup();
-
 				expect(submission.studentFiles.contains(file)).toBe(true);
 			});
 		});
 
 		describe('when gradeFiles are passed', () => {
-			const setup = () => {
-				const { school, student, task, file } = buildSubmissionParams();
+			it('should contains file', () => {
+				const { school, student, task, file } = setup();
+
 				const submission = new Submission({
 					school,
 					student,
@@ -99,20 +90,14 @@ describe('Submission entity', () => {
 					gradeFiles: [file],
 				});
 
-				return { submission, file };
-			};
-
-			it('should contains file', () => {
-				const { submission, file } = setup();
-
 				expect(submission.gradeFiles.contains(file)).toBe(true);
 			});
 		});
 
 		describe('when teamMembers are passed', () => {
-			const setup = () => {
-				const { school, student, task } = buildSubmissionParams();
-				const teamMember = userFactory.build();
+			it('should contains teamMember', () => {
+				const { school, student, task, teamMember } = setup();
+
 				const submission = new Submission({
 					school,
 					student,
@@ -121,19 +106,13 @@ describe('Submission entity', () => {
 					teamMembers: [teamMember],
 				});
 
-				return { submission, teamMember };
-			};
-
-			it('should contains teamMember', () => {
-				const { submission, teamMember } = setup();
-
 				expect(submission.teamMembers.contains(teamMember)).toBe(true);
 			});
 		});
 
 		describe('when submitted is passed', () => {
-			const setup = () => {
-				const { school, student, task } = buildSubmissionParams();
+			it('should return true', () => {
+				const { school, student, task } = setup();
 
 				const submission = new Submission({
 					school,
@@ -143,19 +122,13 @@ describe('Submission entity', () => {
 					submitted: true,
 				});
 
-				return { submission };
-			};
-
-			it('should return true', () => {
-				const { submission } = setup();
-
 				expect(submission.submitted).toBe(true);
 			});
 		});
 
 		describe('when graded is passed', () => {
-			const setup = () => {
-				const { school, student, task } = buildSubmissionParams();
+			it('should return true', () => {
+				const { school, student, task } = setup();
 
 				const submission = new Submission({
 					school,
@@ -164,12 +137,6 @@ describe('Submission entity', () => {
 					comment: 'test',
 					graded: true,
 				});
-
-				return { submission };
-			};
-
-			it('should return true', () => {
-				const { submission } = setup();
 
 				expect(submission.graded).toBe(true);
 			});
