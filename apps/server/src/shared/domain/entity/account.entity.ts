@@ -35,7 +35,7 @@ export class Account extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	activated?: boolean;
 
-	@Property()
+	@Property({ nullable: true })
 	refId?: string;
 
 	constructor(props: IAccountProperties) {
