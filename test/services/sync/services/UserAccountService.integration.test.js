@@ -7,7 +7,7 @@ const { setupNestServices, closeNestServices } = require('../../../utils/setup.n
 const { userModel } = require('../../../../src/services/user/model');
 
 chai.use(chaiHttp);
-const { expect, should } = chai;
+const { expect } = chai;
 
 const { BadRequest } = require('../../../../src/errors');
 
@@ -113,12 +113,10 @@ describe('UserAccountService integration', () => {
 				...inputUser,
 				ldapId: secondLdapId,
 			};
-			try {
-				await service.createUserAndAccount(inputUserSecond, inputAccount);
-			} catch (error) {
-				expect(error).to.be.an.instanceof(BadRequest);
-				expect(error.message).to.contain(firstLdapId);
-			}
+			await expect(service.createUserAndAccount(inputUserSecond, inputAccount))
+				.to.be.rejectedWith(BadRequest)
+				.and.to.eventually.have.property('message')
+				.and.to.eventually.contain(firstLdapId);
 		});
 
 		it('should not create user if account creation fails', async () => {
@@ -142,11 +140,7 @@ describe('UserAccountService integration', () => {
 				roles: [TEST_ROLE],
 			};
 
-			try {
-				await service.createUserAndAccount(inputUserOk, {});
-			} catch (error) {
-				expect(error).not.to.be.undefined;
-			}
+			await expect(service.createUserAndAccount(inputUserOk, {})).to.be.rejected;
 
 			const foundUsers = await userModel.find({ email: `${testEmail}2` }).exec();
 			expect(foundUsers.length).to.be.equal(0);
@@ -169,12 +163,7 @@ describe('UserAccountService integration', () => {
 				systemId,
 			};
 
-			try {
-				await service.createUserAndAccount({}, inputAccountOK);
-				should().fail();
-			} catch (error) {
-				expect(error).to.be.an.instanceof(BadRequest);
-			}
+			await expect(service.createUserAndAccount({}, inputAccountOK)).to.be.rejectedWith(BadRequest);
 
 			const foundAccount = await nestAccountService.findByUsernameAndSystemId(`${testEmail}2`, systemId);
 			expect(foundAccount).to.be.null;

@@ -129,7 +129,6 @@ const findByLdapDnsAndSchool = async (ldapDns, schoolId) =>
 		.exec();
 
 const UserRepo = {
-	private: { createUserInternal },
 	createUser,
 	updateUser,
 	deleteUser,

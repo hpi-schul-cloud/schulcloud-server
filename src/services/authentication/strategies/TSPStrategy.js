@@ -186,7 +186,6 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 			},
 			paginate: false,
 		});
-
 		const { entity } = this.configuration;
 		return {
 			authentication: { strategy: this.name },
