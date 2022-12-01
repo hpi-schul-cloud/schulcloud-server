@@ -3,7 +3,7 @@ const { LocalStrategy } = require('@feathersjs/authentication-local');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
-const { LdapStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy, CustomJwtStrategy } = require('./strategies');
+const { LdapStrategy, TSPStrategy, ApiKeyStrategy, CustomJwtStrategy } = require('./strategies');
 const { hooks } = require('./hooks');
 const { authConfig } = require('./configuration');
 
@@ -42,7 +42,6 @@ module.exports = (app) => {
 	// TODO remove LocalStrategy. It is reimplemented in the Nest.js stack
 	authentication.register('local', new LocalStrategy());
 	authentication.register('ldap', new LdapStrategy());
-	authentication.register('iserv', new IservStrategy());
 	authentication.register('tsp', new TSPStrategy());
 
 	// JWT strategy needs to stay active in feathers to enable hooks "authenticate('jwt')"
