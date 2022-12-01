@@ -17,6 +17,9 @@ import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
 import exp from 'constants';
 import { v1 } from 'uuid';
+import { HttpService } from '@nestjs/axios';
+import { of } from 'rxjs';
+import { AxiosResponse } from 'axios';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -28,6 +31,7 @@ describe('KeycloakConfigurationService Unit', () => {
 	let service: KeycloakConfigurationService;
 	let configService: DeepMocked<ConfigService>;
 	let systemService: DeepMocked<SystemService>;
+	let httpServiceMock: DeepMocked<HttpService>;
 	let defaultEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let settings: IKeycloakSettings;
 
@@ -127,7 +131,9 @@ describe('KeycloakConfigurationService Unit', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					useValue: createMock<ConfigService>({
+						get: (key: string) => `${key}-value`,
+					}),
 				},
 				{
 					provide: DefaultEncryptionService,
@@ -137,6 +143,10 @@ describe('KeycloakConfigurationService Unit', () => {
 					provide: OidcIdentityProviderMapper,
 					useValue: createMock<OidcIdentityProviderMapper>(),
 				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
 			],
 		}).compile();
 		client = module.get(KeycloakAdminClient);
@@ -144,6 +154,7 @@ describe('KeycloakConfigurationService Unit', () => {
 		configService = module.get(ConfigService);
 		settings = module.get(KeycloakSettings);
 		systemService = module.get(SystemService);
+		httpServiceMock = module.get(HttpService);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_enc`);
 		defaultEncryptionService.decrypt.mockImplementation((data) => `${data}_dec`);
@@ -227,6 +238,15 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.create.mockResolvedValue({ id: 'new_client_id' });
 			kcApiClientMock.generateNewClientSecret.mockResolvedValue({ type: 'secret', value: 'generated_client_secret' });
 			systemService.find.mockResolvedValue([]);
+			const response = {
+				data: {
+					token_endpoint: 'tokenEndpoint',
+					authorization_endpoint: 'authEndpoint',
+					end_session_endpoint: 'logoutEndpoint',
+					jwks_uri: 'jwksUrl',
+				},
+			} as AxiosResponse<unknown>;
+			httpServiceMock.get.mockReturnValue(of(response));
 		});
 
 		afterAll(() => {

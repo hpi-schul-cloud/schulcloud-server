@@ -21,9 +21,11 @@ export interface IServerConfig
 		IFilesStorageClientConfig,
 		IAccountConfig {
 	NODE_ENV: string;
+	SC_DOMAIN: string;
 }
 
 const config: IServerConfig = {
+	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,

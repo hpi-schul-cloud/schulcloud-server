@@ -9,6 +9,7 @@ const hooks = require('./hooks');
 const { warning } = require('../../logger/index');
 const { teamsModel } = require('./model');
 const { userModel } = require('../user/model');
+const { LinkModel } = require('../link/link-model');
 const { createUserWithRole, removeDuplicatedTeamUsers } = require('./hooks/helpers');
 const {
 	getBasic,
@@ -127,12 +128,18 @@ class Add {
 			});
 		}
 
-		return app
+		const linkInfo = await app
 			.service('/expertinvitelink')
 			.create({ esid, email })
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Erstellen des Einladelinks.', err);
 			});
+
+		if (isUserCreated === true) {
+			LinkModel.create({ target: linkInfo.shortLink });
+		}
+
+		return linkInfo;
 	}
 
 	/**

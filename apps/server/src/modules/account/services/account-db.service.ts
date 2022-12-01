@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId } from '@shared/domain';
-import { AccountRepo } from '@shared/repo';
+import { AccountRepo } from '../repo/account.repo';
 import { AccountEntityToDtoMapper } from '../mapper';
 import { AccountDto, AccountSaveDto } from './dto';
 import { AbstractAccountService } from './account.service.abstract';

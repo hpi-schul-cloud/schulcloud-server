@@ -1,6 +1,7 @@
 import { DeepPartial } from 'fishery';
-import { ExternalTool, IExternalToolProperties } from '@shared/domain/entity/external-tool/external-tool.entity';
 import {
+	ExternalTool,
+	IExternalToolProperties,
 	BasicToolConfig,
 	CustomParameter,
 	CustomParameterLocation,
@@ -8,12 +9,20 @@ import {
 	CustomParameterType,
 	Lti11ToolConfig,
 	LtiMessageType,
+	LtiPrivacyPermission,
 	Oauth2ToolConfig,
 	ToolConfigType,
 } from '@shared/domain';
 import { BaseFactory } from './base.factory';
 
 export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalToolProperties> {
+	withName(name: string): this {
+		const params: DeepPartial<IExternalToolProperties> = {
+			name,
+		};
+		return this.params(params);
+	}
+
 	withBasicConfig(): this {
 		const params: DeepPartial<IExternalToolProperties> = {
 			config: new BasicToolConfig({
@@ -24,14 +33,12 @@ export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalTool
 		return this.params(params);
 	}
 
-	withOauth2Config(): this {
+	withOauth2Config(clientId: string): this {
 		const params: DeepPartial<IExternalToolProperties> = {
 			config: new Oauth2ToolConfig({
 				type: ToolConfigType.OAUTH2,
-				baseUrl: '',
-				clientSecret: '',
-				clientId: '',
-				frontchannelLogoutUrl: '',
+				baseUrl: 'mockBaseUrl',
+				clientId,
 				skipConsent: false,
 			}),
 		};
@@ -43,13 +50,11 @@ export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalTool
 			config: new Lti11ToolConfig({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',
-				key: '',
-				launch_presentation_document_target: '',
-				launch_presentation_locale: '',
+				key: 'key',
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-				resource_link: '',
-				secret: '',
-				roles: [],
+				resource_link_id: 'resource_link_id',
+				secret: 'secret',
+				privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 			}),
 		};
 		return this.params(params);

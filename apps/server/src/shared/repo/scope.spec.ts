@@ -68,5 +68,10 @@ describe('scope.ts', () => {
 			expect(scope1.query).toEqual(EmptyResultQuery);
 			expect(scope2.query).toEqual(EmptyResultQuery);
 		});
+
+		it('should return an empty object when allowEmptyQuery was set', () => {
+			const scope = new Scope<TestEntity>().allowEmptyQuery(true);
+			expect(scope.query).toEqual({});
+		});
 	});
 });

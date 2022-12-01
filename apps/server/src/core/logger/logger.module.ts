@@ -26,7 +26,7 @@ const availableLevels = {
 						new winston.transports.Console({
 							level: configService.get<string>('NEST_LOG_LEVEL'),
 							format: winston.format.combine(
-								winston.format.timestamp(),
+								winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
 								winston.format.ms(),
 								utilities.format.nestLike()
 							),
