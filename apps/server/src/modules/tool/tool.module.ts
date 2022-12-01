@@ -10,7 +10,7 @@ import { EncryptionModule } from '@shared/infra/encryption';
 import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-tool-sorting.mapper';
 import { Lti11Service } from './service/lti11.service';
 import { ExternalToolService } from './service/external-tool.service';
-import { ExternalToolServiceMapper } from './service/mapper/external-tool-service.mapper';
+import { ExternalToolServiceMapper } from './service/mapper';
 
 @Module({
 	imports: [LoggerModule, OauthProviderServiceModule, EncryptionModule],

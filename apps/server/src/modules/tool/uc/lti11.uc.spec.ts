@@ -9,7 +9,7 @@ import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { CustomLtiProperty, LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
 import { InternalServerErrorException } from '@nestjs/common';
-import { LtiRoleMapper } from './mapper/lti-role.mapper';
+import { LtiRoleMapper } from './mapper';
 import { Lti11Uc } from './lti11.uc';
 
 describe('Lti11Uc', () => {
