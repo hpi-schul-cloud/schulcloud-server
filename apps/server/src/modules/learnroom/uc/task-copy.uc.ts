@@ -55,12 +55,12 @@ export class TaskCopyUC {
 	}
 
 	private async getCopyName(originalTaskName: string, parentCourseId: EntityId | undefined) {
+		let existingNames: string[] = [];
 		if (parentCourseId) {
 			const [existingTasks] = await this.taskRepo.findBySingleParent('', parentCourseId);
-			const existingNames = (existingTasks || []).map((t) => t.name);
-			return this.copyHelperService.deriveCopyName(originalTaskName, existingNames);
+			existingNames = (existingTasks || []).map((t) => t.name);
 		}
-		return originalTaskName;
+		return this.copyHelperService.deriveCopyName(originalTaskName, existingNames);
 	}
 
 	private async getDestinationCourse(courseId: string | undefined, user: User): Promise<Course | undefined> {
