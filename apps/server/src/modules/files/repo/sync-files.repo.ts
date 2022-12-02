@@ -14,6 +14,11 @@ const query = (aggregationSize: number) => [
 		$match: { fileIds: { $exists: true, $ne: [] } },
 	},
 	{
+		$sort: {
+			_id: 1,
+		},
+	},
+	{
 		$lookup: {
 			from: 'files',
 			localField: 'fileIds',
@@ -83,12 +88,6 @@ const query = (aggregationSize: number) => [
 			schoolId: '$schoolId',
 			file: '$files',
 			filerecord: '$filerecord',
-		},
-	},
-	{
-		$sort: {
-			'file.updatedAt': 1,
-			'file._id': 1,
 		},
 	},
 	{
