@@ -1,5 +1,5 @@
 const { getUsername } = require('./TSP');
-const { FileModel } = require('../../../fileStorage/model');
+const { FileModel } = require('../../../fileStorage/model.js');
 const { info: logInfo, error: logError } = require('../../../../logger');
 
 const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;
@@ -27,7 +27,10 @@ const invalidateUser = async (app, user) => {
 const deleteUser = (app, user) => {
 	const userService = app.service('usersModel');
 	const accountService = app.service('nest-account-service');
-	return Promise.all([userService.remove({ _id: user._id }), accountService.deleteByUserId(user._id.toString())]);
+	return Promise.all([
+		userService.remove({ _id: user._id }),
+		accountService.deleteByUserId(user._id.toString()),
+	]);
 };
 
 const grantAccessToPrivateFiles = async (app, oldUser, newUser) => {
