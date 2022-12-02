@@ -7,16 +7,16 @@ import {
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, SortOrderMap } from '@shared/domain';
-import { CustomParameterScopeParams } from '../../interface/custom-parameter-scope.enum';
-import { CustomParameterLocationParams } from '../../interface/custom-parameter-location.enum';
-import { CustomParameterTypeParams } from '../../interface/custom-parameter-type.enum';
-import { CustomParameterCreateParams } from '../dto/request/custom-parameter.params';
-import { BasicToolConfigParams } from '../dto/request/basic-tool-config.params';
-import { Oauth2ToolConfigParams } from '../dto/request/oauth2-tool-config.params';
-import { ExternalToolParams } from '../dto/request/external-tool-create.params';
-import { Lti11ToolConfigParams } from '../dto/request/lti11-tool-config.params';
-import { SortExternalToolParams } from '../dto/request/external-tool-sort.params';
-import { ExternalToolSearchParams } from '../dto/request/external-tool-search.params';
+import { CustomParameterLocationParams, CustomParameterScopeParams, CustomParameterTypeParams } from '../../interface';
+import {
+	BasicToolConfigParams,
+	CustomParameterCreateParams,
+	ExternalToolParams,
+	ExternalToolSearchParams,
+	Lti11ToolConfigParams,
+	Oauth2ToolConfigParams,
+	SortExternalToolParams,
+} from '../dto';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.GLOBAL]: CustomParameterScope.GLOBAL,

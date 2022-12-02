@@ -10,11 +10,13 @@ import { Injectable } from '@nestjs/common';
 import {
 	BasicToolConfig,
 	CustomParameter,
+	CustomParameterEntry,
 	ExternalTool,
 	IExternalToolProperties,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '../../domain';
+import { CustomParameterEntryDO } from '../../domain/domainobject/external-tool/custom-parameter-entry.do';
 
 @Injectable()
 export class ExternalToolRepoMapper {
@@ -71,19 +73,6 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	mapCustomParametersToDOs(customParameters: CustomParameter[]): CustomParameterDO[] {
-		return customParameters.map((param: CustomParameter) => {
-			return new CustomParameterDO({
-				name: param.name,
-				default: param.default,
-				regex: param.regex,
-				scope: param.scope,
-				location: param.location,
-				type: param.type,
-			});
-		});
-	}
-
 	mapDOToEntityProperties(entityDO: ExternalToolDO): EntityProperties<IExternalToolProperties> {
 		let config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
 		if (entityDO.config instanceof BasicToolConfigDO) {
@@ -134,6 +123,19 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
+	mapCustomParametersToDOs(customParameters: CustomParameter[]): CustomParameterDO[] {
+		return customParameters.map((param: CustomParameter) => {
+			return new CustomParameterDO({
+				name: param.name,
+				default: param.default,
+				regex: param.regex,
+				scope: param.scope,
+				location: param.location,
+				type: param.type,
+			});
+		});
+	}
+
 	mapCustomParameterDOsToEntities(customParameters: CustomParameterDO[]): CustomParameter[] {
 		return customParameters.map((param: CustomParameterDO) => {
 			return new CustomParameter({
@@ -143,6 +145,24 @@ export class ExternalToolRepoMapper {
 				scope: param.scope,
 				location: param.location,
 				type: param.type,
+			});
+		});
+	}
+
+	mapCustomParameterEntryEntitiesToDOs(entries: CustomParameterEntry[]): CustomParameterEntryDO[] {
+		return entries.map((entry: CustomParameterEntry): CustomParameterEntryDO => {
+			return new CustomParameterEntryDO({
+				name: entry.name,
+				value: entry.value,
+			});
+		});
+	}
+
+	mapCustomParameterEntryDOsToEntities(entries: CustomParameterEntryDO[]): CustomParameterEntry[] {
+		return entries.map((entry: CustomParameterEntry): CustomParameterEntryDO => {
+			return new CustomParameterEntry({
+				name: entry.name,
+				value: entry.value,
 			});
 		});
 	}
