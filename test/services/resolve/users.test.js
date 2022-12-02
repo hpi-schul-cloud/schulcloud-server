@@ -43,7 +43,7 @@ describe('resolve/users service', () => {
 		const data = await service.get(testUser._id);
 		assert(data.data.length > 0);
 		assert(data.data[0].type === 'user');
-		const curseScope = data.data.filter((scope) => scope.idequals(testCourse._id));
+		const curseScope = data.data.filter((scope) => scope.id.equals(testCourse._id));
 		assert(curseScope > 0);
 	});
 });
