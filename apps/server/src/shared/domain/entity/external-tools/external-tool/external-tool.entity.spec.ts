@@ -26,7 +26,7 @@ describe('ExternalTool Entity', () => {
 	});
 
 	describe('constructor', () => {
-		function setup() {
+		const setup = () => {
 			const basicToolConfig: BasicToolConfig = new BasicToolConfig({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',
@@ -69,7 +69,7 @@ describe('ExternalTool Entity', () => {
 				oauth2ToolConfig,
 				lti11ToolConfig,
 			};
-		}
+		};
 
 		it('should throw an error by empty constructor', () => {
 			// @ts-expect-error: Test case
