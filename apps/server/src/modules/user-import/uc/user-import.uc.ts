@@ -184,11 +184,11 @@ export class UserImportUc {
 		const { school } = currentUser;
 		this.checkFeatureEnabled(school);
 		// official school number is used to find the correct school in the central LDAP
-		if (
-			(useCentralLdap && !school.officialSchoolNumber) ||
-			(school.inUserMigration !== undefined && school.inUserMigration !== null)
-		) {
-			throw new BadRequestException('School cannot be set in user migration');
+		if (useCentralLdap && !school.officialSchoolNumber) {
+			throw new BadRequestException('School cannot be set in user migration. The school number is missing');
+		}
+		if (school.inUserMigration) {
+			throw new BadRequestException('School cannot be set in user migration. School is already in migration');
 		}
 
 		school.inUserMigration = true;
