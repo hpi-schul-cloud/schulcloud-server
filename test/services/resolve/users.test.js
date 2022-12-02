@@ -28,9 +28,9 @@ describe('resolve/users service', () => {
 		assert.ok(service);
 	});
 
-	it('get error if no scope is found', () => {
+	it('get error if no scope is found', async () => {
 		try {
-			service.get('00006e13b101c8742dc2d092');
+			await service.get('00006e13b101c8742dc2d092');
 			throw new Error('was not supposed to succeed');
 		} catch (err) {
 			assert(err.message.includes('No scope found for given id.'));

@@ -34,9 +34,9 @@ describe('resolve/scopes service', () => {
 		assert.ok(service);
 	});
 
-	it('get error if id is no object id', () => {
+	it('get error if id is no object id', async () => {
 		try {
-			service.get('123');
+			await service.get('123');
 			throw new Error('was not supposed to succeed');
 		} catch (err) {
 			assert(err.message.includes('Cast to ObjectId failed'));
@@ -45,9 +45,9 @@ describe('resolve/scopes service', () => {
 		}
 	});
 
-	it('get 404 if no user is found', () => {
+	it('get 404 if no user is found', async () => {
 		try {
-			service.get('00006e13b101c8742dc2d092');
+			await service.get('00006e13b101c8742dc2d092');
 			throw new Error('was not supposed to succeed');
 		} catch (err) {
 			assert(err.message.includes('No record found for id'));
