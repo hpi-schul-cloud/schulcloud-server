@@ -14,20 +14,25 @@ import {
 	SortOrderMap,
 	ToolConfigType,
 } from '@shared/domain';
-import { ExternalToolSortOrder, SortExternalToolParams } from '../dto/request/external-tool-sort.params';
-import { ExternalToolSearchParams } from '../dto/request/external-tool-search.params';
-import { CustomParameterTypeParams } from '../../interface/custom-parameter-type.enum';
-import { CustomParameterCreateParams } from '../dto/request/custom-parameter.params';
-import { BasicToolConfigParams } from '../dto/request/basic-tool-config.params';
-import { Oauth2ToolConfigParams } from '../dto/request/oauth2-tool-config.params';
-import { ExternalToolParams } from '../dto/request/external-tool-create.params';
+import {
+	BasicToolConfigParams,
+	CustomParameterCreateParams,
+	ExternalToolParams,
+	ExternalToolSearchParams,
+	ExternalToolSortOrder,
+	Lti11ToolConfigParams,
+	Oauth2ToolConfigParams,
+	SortExternalToolParams,
+} from '../dto';
+import {
+	CustomParameterLocationParams,
+	CustomParameterScopeParams,
+	CustomParameterTypeParams,
+	LtiMessageType,
+	LtiPrivacyPermission,
+	TokenEndpointAuthMethod,
+} from '../../interface';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
-import { Lti11ToolConfigParams } from '../dto/request/lti11-tool-config.params';
-import { TokenEndpointAuthMethod } from '../../interface/token-endpoint-auth-method.enum';
-import { CustomParameterLocationParams } from '../../interface/custom-parameter-location.enum';
-import { CustomParameterScopeParams } from '../../interface/custom-parameter-scope.enum';
-import { LtiMessageType } from '../../interface/lti-message-type.enum';
-import { LtiPrivacyPermission } from '../../interface/lti-privacy-permission.enum';
 
 describe('ExternalToolRequestMapper', () => {
 	let module: TestingModule;

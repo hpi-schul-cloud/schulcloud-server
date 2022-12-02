@@ -1,6 +1,6 @@
 import { PaginationResponse } from '@shared/controller';
 import { ApiProperty } from '@nestjs/swagger';
-import { ExternalToolResponse } from '@src/modules/tool/controller/dto/response/external-tool.response';
+import { ExternalToolResponse } from './external-tool.response';
 
 export class ExternalToolSearchListResponse extends PaginationResponse<ExternalToolResponse[]> {
 	@ApiProperty({ type: [ExternalToolResponse] })

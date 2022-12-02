@@ -1,15 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
-import {
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
-import {
-	IFindOptions,
-	SortOrder,
-} from '@shared/domain';
+import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { IFindOptions, SortOrder } from '@shared/domain';
 import {
 	customParameterDOFactory,
 	externalToolDOFactory,

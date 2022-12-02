@@ -12,8 +12,8 @@ import {
 import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Lti11Uc } from '../uc/lti11.uc';
-import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './mapper';
 import { ExternalToolUc } from '../uc/external-tool.uc';
 import {

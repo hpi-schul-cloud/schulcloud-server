@@ -13,7 +13,7 @@ import {
 } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService } from '../service/external-tool.service';
-import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
+import { TokenEndpointAuthMethod } from '../interface';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;

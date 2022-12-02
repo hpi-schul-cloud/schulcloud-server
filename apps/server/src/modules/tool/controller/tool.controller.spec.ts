@@ -1,17 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Authorization } from 'oauth-1.0a';
-import { ICurrentUser, IFindOptions, RoleName,
-	SortOrder} from '@shared/domain';
+import { ICurrentUser, IFindOptions, RoleName, SortOrder } from '@shared/domain';
 import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { PaginationParams } from '@shared/controller';
-import {
-	ExternalToolSortOrder,
-	SortExternalToolParams,
-} from '@src/modules/tool/controller/dto/request/external-tool-sort.params';
-import { ExternalToolSearchParams } from '@src/modules/tool/controller/dto/request/external-tool-search.params';
 import { Page } from '@shared/domain/interface/page';
-import { ExternalToolSearchListResponse } from '@src/modules/tool/controller/dto/response/external-tool-search-list.response';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ToolController } from './tool.controller';
 import { Lti11Uc } from '../uc/lti11.uc';
@@ -24,11 +17,15 @@ import {
 	CustomParameterResponse,
 	ExternalToolParams,
 	ExternalToolResponse,
+	ExternalToolSearchListResponse,
+	ExternalToolSearchParams,
+	ExternalToolSortOrder,
 	Lti11LaunchResponse,
 	Lti11ToolConfigParams,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigParams,
 	Oauth2ToolConfigResponse,
+	SortExternalToolParams,
 	ToolIdParams,
 } from './dto';
 import {
