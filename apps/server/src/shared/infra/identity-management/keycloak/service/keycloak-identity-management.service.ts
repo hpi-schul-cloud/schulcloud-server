@@ -83,8 +83,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	async findAccountByTecRefId(accountTecRefId: string): Promise<IAccount> {
 		const keycloakUsers = await (
 			await this.kcAdminClient.callKcAdminClient()
-		).users.find({ refTechnicalId: accountTecRefId });
-
+		).users.find({ q: `refTechnicalId:${accountTecRefId} }` });
 		if (keycloakUsers.length > 1) {
 			throw new Error('Multiple accounts for the same id!');
 		}
