@@ -13,6 +13,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { BoardCopyService } from './board-copy.service';
 import { LessonCopyService } from './lesson-copy.service';
 import { TaskCopyService } from './task-copy.service';
@@ -23,6 +24,7 @@ describe('board copy service', () => {
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
+	// let logger: DeepMocked<Logger>;
 	let boardRepo: DeepMocked<BoardRepo>;
 
 	let orm: MikroORM;
@@ -53,6 +55,10 @@ describe('board copy service', () => {
 					provide: BoardRepo,
 					useValue: createMock<BoardRepo>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
@@ -60,6 +66,7 @@ describe('board copy service', () => {
 		taskCopyService = module.get(TaskCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
+		// logger = module.get(Logger);
 		boardRepo = module.get(BoardRepo);
 		boardRepo.save = jest.fn();
 	});

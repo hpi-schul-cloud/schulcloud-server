@@ -39,9 +39,12 @@ export class BoardCopyService {
 
 		const boardElements = originalBoard.getElements();
 		const elements: CopyStatus[] = await this.copyBoardElements(boardElements, user, destinationCourse);
+		console.log('elements', elements);
 		const references: BoardElement[] = this.extractReferences(elements);
+		console.log('references', references);
 
-		let boardCopy = new Board({ references, course: destinationCourse });
+		let boardCopy: Board = new Board({ references, course: destinationCourse });
+		console.log('boardCopy.getElements()', boardCopy.getElements());
 		let status: CopyStatus = {
 			title: 'board',
 			type: CopyElementType.BOARD,
@@ -102,12 +105,11 @@ export class BoardCopyService {
 	private extractReferences(statuses: CopyStatus[]): BoardElement[] {
 		const references: BoardElement[] = [];
 		statuses.forEach((status) => {
-			const copyEntity = status.copyEntity as BoardElement | undefined;
-			if (copyEntity?.boardElementType === BoardElementType.Task) {
-				references.push(BoardElement.FromTask(status.copyEntity as Task));
+			if (status.copyEntity instanceof Task) {
+				references.push(BoardElement.FromTask(status.copyEntity));
 			}
-			if (copyEntity?.boardElementType === BoardElementType.Lesson) {
-				references.push(BoardElement.FromLesson(status.copyEntity as Lesson));
+			if (status.copyEntity instanceof Lesson) {
+				references.push(BoardElement.FromLesson(status.copyEntity));
 			}
 		});
 		return references;
