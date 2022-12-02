@@ -9,7 +9,7 @@ import { CopyApiResponse } from '@src/modules/learnroom/controller/dto/copy.resp
 import { CopyMapper } from '@src/modules/learnroom/mapper/copy.mapper';
 import { TaskCopyUC } from '@src/modules/learnroom/uc/task-copy.uc';
 import { serverConfig } from '@src/modules/server/server.config';
-import { TaskMapper } from '../mapper/task.mapper';
+import { TaskMapper } from '../mapper';
 import { TaskUC } from '../uc/task.uc';
 import { TaskListResponse, TaskResponse, TaskUrlParams, TaskCreateParams, TaskUpdateParams } from './dto';
 import { TaskCopyApiParams } from './dto/task-copy.params';

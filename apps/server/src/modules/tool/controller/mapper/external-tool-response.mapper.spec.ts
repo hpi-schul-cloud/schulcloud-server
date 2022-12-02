@@ -14,6 +14,7 @@ import {
 	CustomParameterTypeParams,
 	LtiMessageType,
 	LtiPrivacyPermission,
+	TokenEndpointAuthMethod,
 	ToolConfigType,
 } from '../../interface';
 import {
@@ -119,6 +120,11 @@ describe('ExternalToolResponseMapper', () => {
 					skipConsent: false,
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'mockUrl',
+					tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_POST,
+					scope: 'test',
+					clientSecret: 'secret',
+					frontchannelLogoutUri: 'http://logout',
+					redirectUris: ['redirectUri'],
 				});
 
 				const oauth2ToolConfigResponse: Oauth2ToolConfigResponse = new Oauth2ToolConfigResponse({
@@ -126,6 +132,10 @@ describe('ExternalToolResponseMapper', () => {
 					skipConsent: false,
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'mockUrl',
+					tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_POST,
+					scope: 'test',
+					frontchannelLogoutUri: 'http://logout',
+					redirectUris: ['redirectUri'],
 				});
 
 				return {
@@ -133,6 +143,7 @@ describe('ExternalToolResponseMapper', () => {
 					oauth2ToolConfigDO,
 				};
 			};
+
 			it('should map a oauth2 tool do to a oauth2 tool response', () => {
 				const { oauth2ToolConfigDO, oauth2ToolConfigResponse } = oauthSetup();
 				const { externalToolDO, externalToolResponse } = setup();
