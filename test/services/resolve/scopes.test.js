@@ -64,9 +64,8 @@ describe('resolve/scopes service', () => {
 	it('return courseAdmin scope if admin is found and his school has a course', async () => {
 		const data = await service.get(testAdmin._id);
 		const courseAdmin = data.data.filter(
-			(scope) => scope.attributes.scopeType === 'courseAdmin' && scope.id === testCourse._id
+			(scope) => scope.attributes.scopeType === 'courseAdmin' && scope.id.equals(testCourse._id)
 		);
-		console.log({ data, courseAdmin });
 		assert(courseAdmin.length > 0);
 	});
 });

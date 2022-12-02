@@ -41,10 +41,9 @@ describe('resolve/users service', () => {
 
 	it('return users if scope is found', async () => {
 		const data = await service.get(testUser._id);
-		console.log({ data });
 		assert(data.data.length > 0);
 		assert(data.data[0].type === 'user');
-		const curseScope = data.data.filter((scope) => scope.id === testCourse._id);
+		const curseScope = data.data.filter((scope) => scope.idequals(testCourse._id));
 		assert(curseScope > 0);
 	});
 });
