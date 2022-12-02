@@ -3,12 +3,14 @@ import { PseudonymsRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
 import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import { EncryptionModule } from '@shared/infra/encryption';
 import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-tool-sorting.mapper';
 import { Lti11Service } from './service/lti11.service';
 import { ExternalToolService } from './service/external-tool.service';
-import { ExternalToolServiceMapper } from './service/mapper/external-tool-service.mapper';
+import { ExternalToolServiceMapper } from './service/mapper';
 import { ToolValidationService } from './service/tool-validation.service';
 
 @Module({
@@ -21,8 +23,10 @@ import { ToolValidationService } from './service/tool-validation.service';
 		ExternalToolRepo,
 		ExternalToolRepoMapper,
 		ExternalToolSortingMapper,
+		SchoolExternalToolRepo,
+		CourseExternalToolRepo,
 		ToolValidationService,
 	],
-	exports: [Lti11Service, ExternalToolService],
+	exports: [Lti11Service, ExternalToolService, ToolValidationService],
 })
 export class ToolModule {}

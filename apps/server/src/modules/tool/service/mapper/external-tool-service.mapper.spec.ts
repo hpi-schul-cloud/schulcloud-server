@@ -3,7 +3,7 @@ import { Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { ToolConfigType } from '@shared/domain';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
-import { TokenEndpointAuthMethod } from '../../interface/token-endpoint-auth-method.enum';
+import { TokenEndpointAuthMethod } from '../../interface';
 
 describe('ExternalToolServiceMapper', () => {
 	let module: TestingModule;

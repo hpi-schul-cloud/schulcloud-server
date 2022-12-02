@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
-
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -9,17 +8,22 @@ import {
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
-import { BasicToolConfigResponse } from '../dto/response/basic-tool-config.response';
-import { CustomParameterResponse } from '../dto/response/custom-parameter.response';
-import { Lti11ToolConfigResponse } from '../dto/response/lti11-tool-config.response';
-import { Oauth2ToolConfigResponse } from '../dto/response/oauth2-tool-config.response';
-import { ToolConfigType } from '../../interface/tool-config-type.enum';
-import { LtiMessageType } from '../../interface/lti-message-type.enum';
-import { LtiPrivacyPermission } from '../../interface/lti-privacy-permission.enum';
-import { CustomParameterLocationParams } from '../../interface/custom-parameter-location.enum';
-import { CustomParameterScopeParams } from '../../interface/custom-parameter-scope.enum';
-import { CustomParameterTypeParams } from '../../interface/custom-parameter-type.enum';
-import { ExternalToolResponse } from '../dto/response/external-tool.response';
+import {
+	CustomParameterLocationParams,
+	CustomParameterScopeParams,
+	CustomParameterTypeParams,
+	LtiMessageType,
+	LtiPrivacyPermission,
+	TokenEndpointAuthMethod,
+	ToolConfigType,
+} from '../../interface';
+import {
+	BasicToolConfigResponse,
+	CustomParameterResponse,
+	ExternalToolResponse,
+	Lti11ToolConfigResponse,
+	Oauth2ToolConfigResponse,
+} from '../dto';
 
 describe('ExternalToolResponseMapper', () => {
 	let module: TestingModule;
@@ -116,6 +120,11 @@ describe('ExternalToolResponseMapper', () => {
 					skipConsent: false,
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'mockUrl',
+					tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_POST,
+					scope: 'test',
+					clientSecret: 'secret',
+					frontchannelLogoutUri: 'http://logout',
+					redirectUris: ['redirectUri'],
 				});
 
 				const oauth2ToolConfigResponse: Oauth2ToolConfigResponse = new Oauth2ToolConfigResponse({
@@ -123,6 +132,10 @@ describe('ExternalToolResponseMapper', () => {
 					skipConsent: false,
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'mockUrl',
+					tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_POST,
+					scope: 'test',
+					frontchannelLogoutUri: 'http://logout',
+					redirectUris: ['redirectUri'],
 				});
 
 				return {
@@ -130,6 +143,7 @@ describe('ExternalToolResponseMapper', () => {
 					oauth2ToolConfigDO,
 				};
 			};
+
 			it('should map a oauth2 tool do to a oauth2 tool response', () => {
 				const { oauth2ToolConfigDO, oauth2ToolConfigResponse } = oauthSetup();
 				const { externalToolDO, externalToolResponse } = setup();

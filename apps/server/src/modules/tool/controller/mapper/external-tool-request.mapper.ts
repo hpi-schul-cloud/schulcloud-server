@@ -7,20 +7,21 @@ import {
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, SortOrderMap } from '@shared/domain';
-import { CustomParameterScopeParams } from '../../interface/custom-parameter-scope.enum';
-import { CustomParameterLocationParams } from '../../interface/custom-parameter-location.enum';
-import { CustomParameterTypeParams } from '../../interface/custom-parameter-type.enum';
-import { CustomParameterPostParams } from '../dto/request/custom-parameter.params';
-import { BasicToolConfigParams } from '../dto/request/basic-tool-config.params';
-import { Oauth2ToolConfigParams } from '../dto/request/oauth2-tool-config.params';
-import { ExternalToolPostParams } from '../dto/request/external-tool-post.params';
-import { Lti11ToolConfigParams } from '../dto/request/lti11-tool-config.params';
-import { SortExternalToolParams } from '../dto/request/external-tool-sort.params';
-import { ExternalToolSearchParams } from '../dto/request/external-tool-search.params';
+import { CustomParameterLocationParams, CustomParameterScopeParams, CustomParameterTypeParams } from '../../interface';
+import {
+	BasicToolConfigParams,
+	CustomParameterPostParams,
+	ExternalToolPostParams,
+	ExternalToolSearchParams,
+	Lti11ToolConfigParams,
+	Oauth2ToolConfigParams,
+	SortExternalToolParams,
+} from '../dto';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
-	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,
+	[CustomParameterScopeParams.GLOBAL]: CustomParameterScope.GLOBAL,
 	[CustomParameterScopeParams.SCHOOL]: CustomParameterScope.SCHOOL,
+	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,
 };
 
 const locationMapping: Record<CustomParameterLocationParams, CustomParameterLocation> = {
@@ -40,28 +41,28 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 
 @Injectable()
 export class ExternalToolRequestMapper {
-	mapPostRequestToExternalToolDO(externalToolParams: ExternalToolPostParams, version = 1): ExternalToolDO {
+	mapRequestToExternalToolDO(externalToolPostParams: ExternalToolPostParams, version = 1): ExternalToolDO {
 		let mappedConfig: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
-		if (externalToolParams.config instanceof BasicToolConfigParams) {
-			mappedConfig = this.mapRequestToBasicToolConfigDO(externalToolParams.config);
-		} else if (externalToolParams.config instanceof Lti11ToolConfigParams) {
-			mappedConfig = this.mapRequestToLti11ToolConfigDO(externalToolParams.config);
+		if (externalToolPostParams.config instanceof BasicToolConfigParams) {
+			mappedConfig = this.mapRequestToBasicToolConfigDO(externalToolPostParams.config);
+		} else if (externalToolPostParams.config instanceof Lti11ToolConfigParams) {
+			mappedConfig = this.mapRequestToLti11ToolConfigDO(externalToolPostParams.config);
 		} else {
-			mappedConfig = this.mapRequestToOauth2ToolConfigDO(externalToolParams.config);
+			mappedConfig = this.mapRequestToOauth2ToolConfigDO(externalToolPostParams.config);
 		}
 
 		const mappedCustomParameter: CustomParameterDO[] = this.mapRequestToCustomParameterDO(
-			externalToolParams.parameters ?? []
+			externalToolPostParams.parameters ?? []
 		);
 
 		return new ExternalToolDO({
-			name: externalToolParams.name,
-			url: externalToolParams.url,
-			logoUrl: externalToolParams.logoUrl,
+			name: externalToolPostParams.name,
+			url: externalToolPostParams.url,
+			logoUrl: externalToolPostParams.logoUrl,
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
-			isHidden: externalToolParams.isHidden,
-			openNewTab: externalToolParams.openNewTab,
+			isHidden: externalToolPostParams.isHidden,
+			openNewTab: externalToolPostParams.openNewTab,
 			version,
 		});
 	}

@@ -1,15 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@src/modules';
-import { BasicToolConfigDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
-import { ICurrentUser, IFindOptions, Permission, SortOrder, ToolConfigType, User } from '@shared/domain';
+import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { ICurrentUser, IFindOptions, Permission, SortOrder, User } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
 import { Page } from '@shared/domain/interface/page';
+import {
+	externalToolDOFactory,
+	oauth2ToolConfigDOFactory,
+} from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService } from '../service/external-tool.service';
-import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
 import { ToolValidationService } from '../service/tool-validation.service';
 
 describe('ExternalToolUc', () => {
@@ -72,29 +75,8 @@ describe('ExternalToolUc', () => {
 	const setup = () => {
 		const toolId = 'toolId';
 
-		const basicConfig: BasicToolConfigDO = new BasicToolConfigDO({
-			type: ToolConfigType.BASIC,
-			baseUrl: 'baseUrl',
-		});
-
-		const oauth2ConfigWithoutExternalData: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
-			type: ToolConfigType.OAUTH2,
-			baseUrl: 'baseUrl',
-			clientId: 'clientId',
-			skipConsent: false,
-		});
-
-		const externalToolDO: ExternalToolDO = new ExternalToolDO({
-			id: toolId,
-			name: 'name',
-			url: 'url',
-			logoUrl: 'logoUrl',
-			config: basicConfig,
-			parameters: [],
-			isHidden: false,
-			openNewTab: false,
-			version: 1,
-		});
+		const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1).buildWithId();
+		const oauth2ConfigWithoutExternalData: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.build();
 
 		const query: Partial<ExternalToolDO> = {
 			id: externalToolDO.id,
@@ -124,7 +106,6 @@ describe('ExternalToolUc', () => {
 
 		return {
 			externalToolDO,
-			basicConfig,
 			oauth2ConfigWithoutExternalData,
 			options,
 			page,
@@ -166,83 +147,30 @@ describe('ExternalToolUc', () => {
 			});
 		});
 
-		describe('Validation', () => {
-			const oauthSetup = () => {
-				const oauth2Config: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
-					type: ToolConfigType.OAUTH2,
-					baseUrl: 'baseUrl',
-					clientId: 'clientId',
-					clientSecret: 'clientSecret',
-					skipConsent: false,
-					tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_POST,
-					frontchannelLogoutUri: 'frontchannelLogoutUri',
-					scope: 'openid offline',
-					redirectUris: ['redirectUri1', 'redirectUri2'],
-				});
+		it('should validate the tool', async () => {
+			const { currentUser } = setupAuthorization();
+			const { externalToolDO } = setup();
 
-				return {
-					oauth2Config,
-				};
-			};
+			await uc.createExternalTool(currentUser.userId, externalToolDO);
 
-			it('should pass if tool name is unique, it has no duplicate attributes, all regex are valid and the client id is unique', async () => {
-				const { currentUser } = setupAuthorization();
-				const { externalToolDO } = setup();
-				const { oauth2Config } = oauthSetup();
-				externalToolDO.config = oauth2Config;
+			expect(toolValidationService.validateCreate).toHaveBeenCalledWith(externalToolDO);
+		});
 
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(currentUser.userId, externalToolDO);
-
-				await expect(result).resolves.not.toThrow(UnprocessableEntityException);
+		it('should throw if validation of the tool fails', async () => {
+			const { currentUser } = setupAuthorization();
+			const { externalToolDO } = setup();
+			toolValidationService.validateCreate.mockImplementation(() => {
+				throw new UnprocessableEntityException();
 			});
 
-			it('should throw if the client id is not unique', async () => {
-				const { currentUser } = setupAuthorization();
-				const { oauth2Config } = oauthSetup();
-				const { externalToolDO } = setup();
-				externalToolDO.config = oauth2Config;
-				externalToolService.isClientIdUnique.mockResolvedValue(false);
+			const result: Promise<ExternalToolDO> = uc.createExternalTool(currentUser.userId, externalToolDO);
 
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(currentUser.userId, externalToolDO);
-
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
-			});
-
-			it('should throw if name is not unique', async () => {
-				const { currentUser } = setupAuthorization();
-				const { externalToolDO } = setup();
-				externalToolService.isNameUnique.mockResolvedValue(false);
-
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(currentUser.userId, externalToolDO);
-
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
-			});
-
-			it('should throw if tool has duplicate custom attributes', async () => {
-				const { currentUser } = setupAuthorization();
-				const { externalToolDO } = setup();
-				externalToolService.hasDuplicateAttributes.mockReturnValue(true);
-
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(currentUser.userId, externalToolDO);
-
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
-			});
-
-			it('should throw if tool has custom attributes with invalid regex', async () => {
-				const { currentUser } = setupAuthorization();
-				const { externalToolDO } = setup();
-				externalToolService.validateByRegex.mockReturnValue(false);
-
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(currentUser.userId, externalToolDO);
-
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
-			});
+			await expect(result).rejects.toThrow(UnprocessableEntityException);
 		});
 
 		it('should call the service to save a tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { externalToolDO, basicConfig } = setup();
-			externalToolDO.config = basicConfig;
+			const { externalToolDO } = setup();
 
 			await uc.createExternalTool(currentUser.userId, externalToolDO);
 
@@ -251,8 +179,7 @@ describe('ExternalToolUc', () => {
 
 		it('should return saved a tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { externalToolDO, basicConfig } = setup();
-			externalToolDO.config = basicConfig;
+			const { externalToolDO } = setup();
 
 			const result: ExternalToolDO = await uc.createExternalTool(currentUser.userId, externalToolDO);
 
@@ -447,6 +374,39 @@ describe('ExternalToolUc', () => {
 			const result: ExternalToolDO = await uc.updateExternalTool(currentUser.userId, toolId, updatedExternalToolDO);
 
 			expect(result).toEqual(updatedExternalToolDO);
+		});
+	});
+
+	describe('deleteExternalTool', () => {
+		const setupDelete = () => {
+			const toolId = 'toolId';
+			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+			const user: User = userFactory.buildWithId();
+
+			authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+			return {
+				toolId,
+				currentUser,
+				user,
+			};
+		};
+
+		it('should check that the user has TOOL_ADMIN permission', async () => {
+			const { toolId, currentUser, user } = setupDelete();
+
+			await uc.deleteExternalTool(currentUser.userId, toolId);
+
+			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
+			expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+		});
+
+		it('should call the externalToolService', async () => {
+			const { toolId, currentUser } = setupDelete();
+
+			await uc.deleteExternalTool(currentUser.userId, toolId);
+
+			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(toolId);
 		});
 	});
 });

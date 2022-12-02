@@ -27,6 +27,17 @@ export class ExternalToolUc {
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 	}
 
+	async updateExternalTool(userId: EntityId, toolId: string, externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
+		await this.ensurePermission(userId);
+		await this.toolValidationService.validateUpdate(externalToolDO);
+
+		const loaded: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
+		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalToolDO });
+
+		const saved = await this.externalToolService.updateExternalTool(toUpdate);
+		return saved;
+	}
+
 	async findExternalTool(
 		userId: EntityId,
 		query: Partial<ExternalToolDO>,
@@ -45,14 +56,10 @@ export class ExternalToolUc {
 		return tool;
 	}
 
-	async updateExternalTool(userId: EntityId, toolId: string, externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
+	async deleteExternalTool(userId: EntityId, toolId: EntityId): Promise<void> {
 		await this.ensurePermission(userId);
-		await this.toolValidationService.validateUpdate(externalToolDO);
 
-		const loaded: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
-		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalToolDO });
-
-		const saved = await this.externalToolService.updateExternalTool(toUpdate);
-		return saved;
+		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);
+		return promise;
 	}
 }

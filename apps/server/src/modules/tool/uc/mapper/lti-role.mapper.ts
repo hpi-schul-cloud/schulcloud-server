@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain';
-import { LtiRole } from '../../interface/lti-role.enum';
+import { LtiRole } from '../../interface';
 
 const RoleMapping: Partial<Record<RoleName, LtiRole>> = {
 	[RoleName.USER]: LtiRole.LEARNER,
