@@ -15,8 +15,12 @@ describe('resolve/users service', () => {
 		app = await appPromise();
 		service = app.service('resolve/users');
 		nestServices = await setupNestServices(app);
-		testUser = await testObjects.createTestUser();
-		testCourse = await testObjects.createTestCourse({ userIds: [testUser._id] });
+		const testSchool = await testObjects.createTestSchool();
+		testUser = await testObjects.createTestUser({ schoolId: testSchool._id });
+		testCourse = await testObjects.createTestCourse({
+			schoolId: testSchool._id,
+			userIds: [testUser._id],
+		});
 	});
 
 	after(async () => {
