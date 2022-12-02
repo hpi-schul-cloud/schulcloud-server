@@ -13,8 +13,10 @@ import {
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
 	IComponentInternalProperties,
+	IComponentLernstoreProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
+	IComponentTextProperties,
 	Lesson,
 	Material,
 	NexboardService,
@@ -189,7 +191,15 @@ export class LessonCopyService {
 		for (let i = 0; i < content.length; i += 1) {
 			const element = content[i];
 			if (element.component === ComponentType.TEXT) {
-				copiedContent.push(element);
+				copiedContent.push({
+					title: element.title,
+					hidden: element.hidden,
+					component: ComponentType.TEXT,
+					user: params.user,
+					content: {
+						text: (element.content as IComponentTextProperties).text,
+					},
+				});
 				copiedContentStatus.push({
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT_TEXT,
@@ -197,7 +207,23 @@ export class LessonCopyService {
 				});
 			}
 			if (element.component === ComponentType.LERNSTORE) {
-				copiedContent.push(element);
+				copiedContent.push({
+					title: element.title,
+					hidden: element.hidden,
+					component: ComponentType.LERNSTORE,
+					user: params.user,
+					content: {
+						resources: ((element.content as IComponentLernstoreProperties).resources ?? []).map(
+							({ client, description, merlinReference, title, url }) => ({
+								client,
+								description,
+								merlinReference,
+								title,
+								url,
+							})
+						),
+					},
+				});
 				copiedContentStatus.push({
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT_LERNSTORE,
@@ -261,6 +287,7 @@ export class LessonCopyService {
 	private static copyGeogebra(originalElement: IComponentProperties): IComponentProperties {
 		const copy = { ...originalElement, hidden: true } as IComponentProperties;
 		copy.content = { ...copy.content, materialId: '' } as IComponentGeogebraProperties;
+		delete copy._id;
 		return copy;
 	}
 
@@ -269,6 +296,7 @@ export class LessonCopyService {
 		params: LessonCopyParams
 	): Promise<IComponentProperties | false> {
 		const copy = { ...originalElement } as IComponentProperties;
+		delete copy._id;
 		const content = { ...copy.content, url: '' } as IComponentEtherpadProperties;
 		content.title = randomBytes(12).toString('hex');
 
@@ -291,6 +319,7 @@ export class LessonCopyService {
 		params: LessonCopyParams
 	): Promise<IComponentProperties | false> {
 		const copy = { ...originalElement } as IComponentProperties;
+		delete copy._id;
 		const content = { ...copy.content, url: '', board: '' } as IComponentNexboardProperties;
 
 		const nexboard = await this.nexboardService.createNexboard(params.user.id, content.title, content.description);
@@ -358,6 +387,7 @@ export class LessonCopyService {
 
 	private copyEmbeddedTaskLink(originalElement: IComponentProperties) {
 		const copy = JSON.parse(JSON.stringify(originalElement)) as IComponentProperties;
+		delete copy._id;
 		return copy;
 	}
 
