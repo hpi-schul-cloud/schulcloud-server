@@ -22,7 +22,7 @@ describe('resolve/scopes service', () => {
 			schoolId: testSchool._id,
 			userIds: [testUser._id],
 		});
-		testAdmin = await testObjects.createTestUser({ roles: 'admin', schoolId: testSchool._id });
+		testAdmin = await testObjects.createTestUser({ roles: 'administrator', schoolId: testSchool._id });
 	});
 
 	after(async () => {
