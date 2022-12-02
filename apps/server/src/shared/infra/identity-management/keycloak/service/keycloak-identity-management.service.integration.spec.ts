@@ -1,7 +1,7 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak/service/keycloak-administration.service';
-import { IAccount } from '@shared/domain';
+import { IAccount, IAccountUpdate } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
@@ -112,7 +112,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 	it('should update an account', async () => {
 		if (!isKeycloakReachable) return;
 
-		const newAccount: IAccount = {
+		const newAccount: IAccountUpdate = {
 			email: 'jane.doe@mail.tld',
 			username: 'jane.doe@mail.tld',
 			firstName: 'Jane',
@@ -148,7 +148,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		if (!isKeycloakReachable) return;
 
 		await createAccount();
-		const result = await idmService.updateAccountPassword(testAccount.id as string, 'new-password');
+		const result = await idmService.updateAccountPassword(testAccount.id, 'new-password');
 
 		expect(result).toEqual(testAccount.id);
 	});
@@ -157,10 +157,11 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		if (!isKeycloakReachable) return;
 
 		await createAccount();
-		const account = await idmService.findAccountById(testAccount.id as string);
+		const account = await idmService.findAccountById(testAccount.id);
 
 		expect(account).toEqual(
 			expect.objectContaining<IAccount>({
+				id: testAccount.id,
 				username: testAccount.username,
 				firstName: testAccount.firstName,
 				lastName: testAccount.lastName,
@@ -176,6 +177,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 
 		expect(account).toEqual(
 			expect.objectContaining<IAccount>({
+				id: testAccount.id,
 				username: testAccount.username,
 				firstName: testAccount.firstName,
 				lastName: testAccount.lastName,
@@ -196,7 +198,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		if (!isKeycloakReachable) return;
 
 		await createAccount();
-		const result = await idmService.deleteAccountById(testAccount.id as string);
+		const result = await idmService.deleteAccountById(testAccount.id);
 		const accounts = await listAccounts();
 
 		expect(result).toEqual(testAccount.id);
