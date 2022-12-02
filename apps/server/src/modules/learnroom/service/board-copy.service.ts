@@ -95,7 +95,7 @@ export class BoardCopyService {
 
 		const results = await Promise.allSettled(promises);
 		const resolved: Array<[number, CopyStatus]> = getResolvedValues(results);
-		const statuses: CopyStatus[] = sortBy(resolved, ([pos, _]) => pos).map(([_, status]) => status);
+		const statuses: CopyStatus[] = this.sortByOriginalOrder(resolved);
 		return statuses;
 	}
 
@@ -123,5 +123,11 @@ export class BoardCopyService {
 		});
 		boardStatus.elements = updatedElements;
 		return boardStatus;
+	}
+
+	private sortByOriginalOrder(resolved: [number, CopyStatus][]): CopyStatus[] {
+		const sortByPos = sortBy(resolved, ([pos, _]) => pos);
+		const statuses = sortByPos.map(([_, status]) => status);
+		return statuses;
 	}
 }
