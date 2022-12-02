@@ -3,7 +3,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import util from 'util';
 import { Logger as WinstonLogger } from 'winston';
 import { Loggable } from './interfaces/loggable';
-import { ILogger } from './interfaces/logger.interface';
+import { IErrorLogger, ILogger } from './interfaces/logger.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 /**
@@ -11,7 +11,7 @@ import { ILogger } from './interfaces/logger.interface';
  * Must implement ILogger but must not extend ConsoleLogger (this can be changed).
  * Transient injection: Wherever injected, a separate instance will be created, that can be provided with a custom context.
  */
-export class Logger implements ILogger {
+export class Logger implements ILogger, IErrorLogger {
 	/**
 	 * This Logger Service can be injected into every Class,
 	 * use setContext() with CustomProviderClass.name that will be added to every log.
@@ -23,7 +23,7 @@ export class Logger implements ILogger {
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
 	log(loggable: Loggable): void {
-		this.logger.log('info', this.createMessage(loggable));
+		this.logger.info(this.createMessage(loggable));
 	}
 
 	warn(loggable: Loggable): void {
