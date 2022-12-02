@@ -1,9 +1,14 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CourseExternalTool, SchoolExternalTool } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, courseExternalToolFactory } from '@shared/testing';
-import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
-import { CourseExternalTool } from '@shared/domain';
+import { cleanupCollections, courseExternalToolFactory, schoolExternalToolFactory } from '@shared/testing';
+import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
+import { Logger } from '@src/core/logger';
+import { createMock } from '@golevelup/ts-jest';
+import { CourseExternalToolRepo } from './course-external-tool.repo';
+import { CourseExternalToolDO } from '../../domain/domainobject/external-tool/course-external-tool.do';
+import { CustomParameterEntryDO } from '../../domain/domainobject/external-tool/custom-parameter-entry.do';
 
 describe('CourseExternalToolRepo', () => {
 	let module: TestingModule;
@@ -13,8 +18,16 @@ describe('CourseExternalToolRepo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [CourseExternalToolRepo],
+			providers: [
+				CourseExternalToolRepo,
+				ExternalToolRepoMapper,
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+			],
 		}).compile();
+
 		repo = module.get(CourseExternalToolRepo);
 		em = module.get(EntityManager);
 	});
@@ -28,14 +41,28 @@ describe('CourseExternalToolRepo', () => {
 	});
 
 	const setup = async () => {
-		const courseExternalTool: CourseExternalTool = courseExternalToolFactory.buildWithId();
-		const courseExternalTool2: CourseExternalTool = courseExternalToolFactory.buildWithId();
-		courseExternalTool2.schoolTool = courseExternalTool.schoolTool;
-		courseExternalTool2.course = courseExternalTool.course;
-		await em.persistAndFlush([courseExternalTool, courseExternalTool2]);
-		const { schoolTool } = courseExternalTool;
-		const { course } = courseExternalTool;
-		return { courseExternalTool, schoolTool, course };
+		const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+		const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+		const courseExternalTool1: CourseExternalTool = courseExternalToolFactory.buildWithId({
+			schoolTool: schoolExternalTool1,
+		});
+		const courseExternalTool2: CourseExternalTool = courseExternalToolFactory.buildWithId({
+			schoolTool: schoolExternalTool2,
+		});
+		const courseExternalTool3: CourseExternalTool = courseExternalToolFactory.buildWithId({
+			schoolTool: schoolExternalTool1,
+		});
+
+		await em.persistAndFlush([
+			schoolExternalTool1,
+			schoolExternalTool2,
+			courseExternalTool1,
+			courseExternalTool2,
+			courseExternalTool3,
+		]);
+		em.clear();
+
+		return { schoolExternalTool1, schoolExternalTool2 };
 	};
 
 	it('getEntityName should return CourseExternalTool', () => {
@@ -43,60 +70,56 @@ describe('CourseExternalToolRepo', () => {
 		expect(entityName).toEqual(CourseExternalTool);
 	});
 
-	describe('findBySchoolToolIdAndCourseId', () => {
-		it('should find a course external tool with given schoolToolId and courseId', async () => {
-			const { schoolTool, course, courseExternalTool } = await setup();
+	describe('deleteBySchoolExternalToolIds', () => {
+		it('should delete all CourseExternalTools with reference to one given SchoolExternalTool', async () => {
+			const { schoolExternalTool1 } = await setup();
 
-			const result: CourseExternalTool | null = await repo.findBySchoolToolIdAndCourseId(schoolTool.id, course.id);
+			const result: number = await repo.deleteBySchoolExternalToolIds([schoolExternalTool1.id]);
 
-			expect(result).toEqual(expect.objectContaining(courseExternalTool));
+			expect(result).toEqual(2);
 		});
 
-		it('should return null if course external tool was not found', async () => {
+		it('should delete all CourseExternalTools with reference to multiple given SchoolExternalTool', async () => {
+			const { schoolExternalTool1, schoolExternalTool2 } = await setup();
+
+			const result: number = await repo.deleteBySchoolExternalToolIds([schoolExternalTool1.id, schoolExternalTool2.id]);
+
+			expect(result).toEqual(3);
+		});
+
+		it('should not delete any CourseExternalTools when no SchoolExternalTools are given', async () => {
 			await setup();
-			const notExisting = new ObjectId().toHexString();
 
-			const result: CourseExternalTool | null = await repo.findBySchoolToolIdAndCourseId(notExisting, notExisting);
+			const result: number = await repo.deleteBySchoolExternalToolIds([]);
 
-			expect(result).toBeNull();
+			expect(result).toEqual(0);
 		});
 	});
 
-	describe('findAllBySchoolToolId', () => {
-		it('should find two course external tools with given schoolToolId', async () => {
-			const { schoolTool } = await setup();
+	describe('save', () => {
+		function setupDO() {
+			const domainObject: CourseExternalToolDO = new CourseExternalToolDO({
+				courseId: new ObjectId().toHexString(),
+				parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
+				schoolToolId: new ObjectId().toHexString(),
+				toolVersion: 1,
+			});
 
-			const result: CourseExternalTool[] = await repo.findAllBySchoolToolId(schoolTool.id);
+			return {
+				domainObject,
+			};
+		}
 
-			expect(result.length).toEqual(2);
-		});
+		it('should save a CourseExternalTool', async () => {
+			const { domainObject } = setupDO();
+			const { id, updatedAt, createdAt, ...expected } = domainObject;
 
-		it('should return an empty array when no courseExternalTools were found', async () => {
-			await setup();
-			const notExisting = new ObjectId().toHexString();
+			const result: CourseExternalToolDO = await repo.save(domainObject);
 
-			const result: CourseExternalTool[] = await repo.findAllBySchoolToolId(notExisting);
-
-			expect(result.length).toEqual(0);
-		});
-	});
-
-	describe('findAllByCourseId', () => {
-		it('should find two course external tool with given courseId', async () => {
-			const { course } = await setup();
-
-			const result: CourseExternalTool[] = await repo.findAllByCourseId(course.id);
-
-			expect(result.length).toEqual(2);
-		});
-
-		it('should return an empty array when no courseExternalTools were found', async () => {
-			await setup();
-			const notExisting = new ObjectId().toHexString();
-
-			const result: CourseExternalTool[] = await repo.findAllByCourseId(notExisting);
-
-			expect(result.length).toEqual(0);
+			expect(result).toMatchObject(expected);
+			expect(result.id).toBeDefined();
+			expect(result.updatedAt).toBeDefined();
+			expect(result.createdAt).toBeDefined();
 		});
 	});
 });
