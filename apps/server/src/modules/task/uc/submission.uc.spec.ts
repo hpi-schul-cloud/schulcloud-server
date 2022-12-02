@@ -130,27 +130,6 @@ describe('Submission Uc', () => {
 			});
 		});
 
-		describe('WHEN service returns successfully and user is authorized for first submission only', () => {
-			const setup = () => {
-				const { user, task, submissions, countedSubmissions } = createParams();
-
-				submissionService.findAllByTask.mockResolvedValueOnce(countedSubmissions);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				authorizationService.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(false);
-
-				return { taskId: task.id, user, submissions };
-			};
-
-			it('should return only submission1', async () => {
-				const { user, taskId, submissions } = setup();
-				const expectedResult = [submissions[0]];
-
-				const result = await submissionUc.findAllByTask(user.id, taskId);
-
-				expect(result).toEqual(expectedResult);
-			});
-		});
-
 		describe('WHEN submission service throws error', () => {
 			const setup = () => {
 				const { user, task } = createParams();
