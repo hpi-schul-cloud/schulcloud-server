@@ -1,15 +1,18 @@
 const assert = require('assert');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 describe('resolve/scopes service', () => {
 	let app;
 	let service;
+	let nestServices;
 	const testData = {};
 
 	before(async () => {
 		app = await appPromise();
 		service = app.service('resolve/scopes');
+		nestServices = await setupNestServices(app);
 		testData.school = await testObjects.createTestSchool();
 		testData.user = await testObjects.createTestUser({ schoolId: testData.school._id });
 		testData.course = await testObjects.createTestCourse({
@@ -17,6 +20,11 @@ describe('resolve/scopes service', () => {
 			userIds: [testData.user._id],
 		});
 		testData.admin = await testObjects.createTestUser({ roles: 'admin', schoolId: testData.school._id });
+	});
+
+	after(async () => {
+		testObjects.cleanup;
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the resolve/scopes service', () => {

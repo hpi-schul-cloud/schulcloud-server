@@ -2,10 +2,12 @@ const assert = require('assert');
 const _ = require('lodash');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 describe('resolve/users service', () => {
 	let app;
 	let service;
+	let nestServices;
 	const testData = {};
 
 	before(async () => {
@@ -13,6 +15,11 @@ describe('resolve/users service', () => {
 		service = app.service('resolve/users');
 		testData.user = await testObjects.createTestUser();
 		testData.course = await testObjects.createTestCourse({ userIds: [testData.user._id] });
+	});
+
+	after(async () => {
+		testObjects.cleanup;
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the resolve/users service', () => {
