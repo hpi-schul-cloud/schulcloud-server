@@ -57,6 +57,11 @@ export class LessonCopyService {
 			contents: copiedContent,
 			materials: copiedMaterials,
 		});
+
+		console.log('lessonCopy');
+		console.log(lessonCopy);
+		console.log('copiedContent');
+		console.log(copiedContent);
 		await this.lessonRepo.createLesson(lessonCopy);
 
 		const copiedTasksStatus: CopyStatus[] = await this.copyLinkedTasks(lessonCopy, params);
@@ -191,15 +196,8 @@ export class LessonCopyService {
 		for (let i = 0; i < content.length; i += 1) {
 			const element = content[i];
 			if (element.component === ComponentType.TEXT) {
-				copiedContent.push({
-					title: element.title,
-					hidden: element.hidden,
-					component: ComponentType.TEXT,
-					user: params.user,
-					content: {
-						text: (element.content as IComponentTextProperties).text,
-					},
-				});
+				const textContent = this.copyTextContent(element);
+				copiedContent.push(textContent);
 				copiedContentStatus.push({
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT_TEXT,
@@ -207,23 +205,8 @@ export class LessonCopyService {
 				});
 			}
 			if (element.component === ComponentType.LERNSTORE) {
-				copiedContent.push({
-					title: element.title,
-					hidden: element.hidden,
-					component: ComponentType.LERNSTORE,
-					user: params.user,
-					content: {
-						resources: ((element.content as IComponentLernstoreProperties).resources ?? []).map(
-							({ client, description, merlinReference, title, url }) => ({
-								client,
-								description,
-								merlinReference,
-								title,
-								url,
-							})
-						),
-					},
-				});
+				const lernstoreContent = this.copyLernStore(element);
+				copiedContent.push(lernstoreContent);
 				copiedContentStatus.push({
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT_LERNSTORE,
@@ -282,6 +265,41 @@ export class LessonCopyService {
 		}
 		const contentStatus = this.lessonStatusContent(copiedContentStatus);
 		return { copiedContent, contentStatus };
+	}
+
+	private copyTextContent(element: IComponentProperties) {
+		return {
+			title: element.title,
+			hidden: element.hidden,
+			component: ComponentType.TEXT,
+			user: element.user, // TODO should be params.user - but that made the server crash, but property is normally undefined
+			content: {
+				text: (element.content as IComponentTextProperties).text,
+			},
+		};
+	}
+
+	private copyLernStore(element: IComponentProperties) {
+		const resources = ((element.content as IComponentLernstoreProperties).resources ?? []).map(
+			({ client, description, merlinReference, title, url }) => ({
+				client,
+				description,
+				merlinReference,
+				title,
+				url,
+			})
+		);
+
+		const lernstore = {
+			title: element.title,
+			hidden: element.hidden,
+			component: ComponentType.LERNSTORE,
+			user: element.user, // TODO should be params.user - but that made the server crash, but property is normally undefined
+			content: {
+				resources,
+			},
+		};
+		return lernstore;
 	}
 
 	private static copyGeogebra(originalElement: IComponentProperties): IComponentProperties {
