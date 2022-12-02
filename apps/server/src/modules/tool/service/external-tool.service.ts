@@ -7,12 +7,15 @@ import {
 } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { EntityId, IFindOptions } from '@shared/domain';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { Page } from '@shared/domain/interface/page';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
-import { ExternalToolServiceMapper } from './mapper/external-tool-service.mapper';
+import { TokenEndpointAuthMethod } from '../interface';
+import { ExternalToolServiceMapper } from './mapper';
 
 @Injectable()
 export class ExternalToolService {
@@ -20,6 +23,8 @@ export class ExternalToolService {
 		private readonly externalToolRepo: ExternalToolRepo,
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly mapper: ExternalToolServiceMapper,
+		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
+		private readonly courseExternalToolRepo: CourseExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService
 	) {}
 
@@ -47,10 +52,7 @@ export class ExternalToolService {
 		tools.data = await Promise.all(
 			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO> => {
 				if (tool.config instanceof Oauth2ToolConfigDO) {
-					const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
-						tool.config.clientId
-					);
-					this.applyProviderOauthClientToDO(tool.config, oauthClient);
+					await this.addExternalOauth2DataToConfig(tool.config);
 				}
 				return tool;
 			})
@@ -63,11 +65,35 @@ export class ExternalToolService {
 		const tool: ExternalToolDO = await this.externalToolRepo.findById(id);
 
 		if (tool.config instanceof Oauth2ToolConfigDO) {
-			const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(tool.config.clientId);
-			this.applyProviderOauthClientToDO(tool.config, oauthClient);
+			await this.addExternalOauth2DataToConfig(tool.config);
 		}
 
 		return tool;
+	}
+
+	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfigDO) {
+		const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(config.clientId);
+
+		config.scope = oauthClient.scope;
+		config.tokenEndpointAuthMethod = oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
+		config.redirectUris = oauthClient.redirect_uris;
+		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
+	}
+
+	async deleteExternalTool(toolId: string): Promise<void> {
+		const schoolExternalTools: SchoolExternalToolDO[] = await this.schoolExternalToolRepo.findByToolId(toolId);
+		const schoolExternalToolIds: string[] = schoolExternalTools.map(
+			(schoolExternalTool: SchoolExternalToolDO): string => {
+				// We can be sure that the repo returns the id
+				return schoolExternalTool.id as string;
+			}
+		);
+
+		await Promise.all([
+			this.courseExternalToolRepo.deleteBySchoolExternalToolIds(schoolExternalToolIds),
+			this.schoolExternalToolRepo.deleteByToolId(toolId),
+			this.externalToolRepo.deleteById(toolId),
+		]);
 	}
 
 	async isNameUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
@@ -101,12 +127,5 @@ export class ExternalToolService {
 			}
 			return true;
 		});
-	}
-
-	applyProviderOauthClientToDO(oauth2Config: Oauth2ToolConfigDO, oauthClient: ProviderOauthClient): void {
-		oauth2Config.scope = oauthClient.scope;
-		oauth2Config.tokenEndpointAuthMethod = oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
-		oauth2Config.redirectUris = oauthClient.redirect_uris;
-		oauth2Config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
 	}
 }
