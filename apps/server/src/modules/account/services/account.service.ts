@@ -90,8 +90,11 @@ export class AccountService extends AbstractAccountService {
 	private executeIdmMethod<T>(idmCallback: () => T) {
 		if (this.configService.get('FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED')) {
 			try {
-				return idmCallback();
+				// return idmCallback();
+				const ret = idmCallback();
+				return ret;
 			} catch (error) {
+				console.log('♠♠♠');
 				if (error instanceof Error) {
 					this.logger.error(error, error.stack);
 				} else {

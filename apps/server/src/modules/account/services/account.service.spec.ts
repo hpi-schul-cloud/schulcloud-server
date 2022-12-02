@@ -14,6 +14,8 @@ describe('AccountService', () => {
 	let accountService: AccountService;
 	let accountServiceIdm: DeepMocked<AbstractAccountService>;
 	let accountServiceDb: DeepMocked<AbstractAccountService>;
+	let configService: DeepMocked<ConfigService>;
+	let logger: DeepMocked<Logger>;
 
 	afterAll(async () => {
 		await module.close();
@@ -44,6 +46,12 @@ describe('AccountService', () => {
 		accountServiceDb = module.get(AccountServiceDb);
 		accountServiceIdm = module.get(AccountServiceIdm);
 		accountService = module.get(AccountService);
+		configService = module.get(ConfigService);
+		logger = module.get(Logger);
+	});
+
+	beforeEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('findById', () => {
@@ -86,9 +94,19 @@ describe('AccountService', () => {
 			await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
 			expect(accountServiceDb.save).toHaveBeenCalledTimes(1);
 		});
-		it('should call save in accountServiceIdm', async () => {
+		it('should call save in accountServiceIdm if feature is enabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(true);
+
 			await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
-			expect(accountServiceIdm.save).toHaveBeenCalledTimes(2);
+			expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
+		});
+		it('should not call save in accountServiceIdm if feature is disabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(false);
+
+			await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
+			expect(accountServiceIdm.save).not.toHaveBeenCalled();
 		});
 	});
 
@@ -97,9 +115,19 @@ describe('AccountService', () => {
 			await expect(accountService.updateUsername('accountId', 'username')).resolves.not.toThrow();
 			expect(accountServiceDb.updateUsername).toHaveBeenCalledTimes(1);
 		});
-		it('should call updateUsername in accountServiceIdm', async () => {
+		it('should call updateUsername in accountServiceIdm if feature is enabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(true);
+
 			await expect(accountService.updateUsername('accountId', 'username')).resolves.not.toThrow();
 			expect(accountServiceIdm.updateUsername).toHaveBeenCalledTimes(1);
+		});
+		it('should not call updateUsername in accountServiceIdm if feature is disabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(false);
+
+			await expect(accountService.updateUsername('accountId', 'username')).resolves.not.toThrow();
+			expect(accountServiceIdm.updateUsername).not.toHaveBeenCalled();
 		});
 	});
 
@@ -115,9 +143,19 @@ describe('AccountService', () => {
 			await expect(accountService.updatePassword('accountId', 'password')).resolves.not.toThrow();
 			expect(accountServiceDb.updatePassword).toHaveBeenCalledTimes(1);
 		});
-		it('should call updatePassword in accountServiceIdm', async () => {
+		it('should call updatePassword in accountServiceIdm if feature is enabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(true);
+
 			await expect(accountService.updatePassword('accountId', 'password')).resolves.not.toThrow();
-			expect(accountServiceIdm.updatePassword).toHaveBeenCalledTimes(2);
+			expect(accountServiceIdm.updatePassword).toHaveBeenCalledTimes(1);
+		});
+		it('should not call updatePassword in accountServiceIdm if feature is disabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(false);
+
+			await expect(accountService.updatePassword('accountId', 'password')).resolves.not.toThrow();
+			expect(accountServiceIdm.updatePassword).not.toHaveBeenCalled();
 		});
 	});
 
@@ -126,9 +164,19 @@ describe('AccountService', () => {
 			await expect(accountService.delete('accountId')).resolves.not.toThrow();
 			expect(accountServiceDb.delete).toHaveBeenCalledTimes(1);
 		});
-		it('should call delete in accountServiceIdm', async () => {
+		it('should call delete in accountServiceIdm if feature is enabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(true);
+
 			await expect(accountService.delete('accountId')).resolves.not.toThrow();
-			expect(accountServiceIdm.delete).toHaveBeenCalledTimes(2);
+			expect(accountServiceIdm.delete).toHaveBeenCalledTimes(1);
+		});
+		it('should not call delete in accountServiceIdm if feature is disabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(false);
+
+			await expect(accountService.delete('accountId')).resolves.not.toThrow();
+			expect(accountServiceIdm.delete).not.toHaveBeenCalled();
 		});
 	});
 
@@ -136,6 +184,20 @@ describe('AccountService', () => {
 		it('should call deleteByUserId in accountServiceDb', async () => {
 			await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
 			expect(accountServiceDb.deleteByUserId).toHaveBeenCalledTimes(1);
+		});
+		it('should call deleteByUserId in accountServiceIdm if feature is enabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(true);
+
+			await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
+			expect(accountServiceIdm.deleteByUserId).toHaveBeenCalledTimes(1);
+		});
+		it('should not call deleteByUserId in accountServiceIdm if feature is disabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(false);
+
+			await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
+			expect(accountServiceIdm.deleteByUserId).not.toHaveBeenCalled();
 		});
 	});
 
@@ -150,6 +212,22 @@ describe('AccountService', () => {
 		it('should call searchByUsernameExactMatch in accountServiceDb', async () => {
 			await expect(accountService.searchByUsernameExactMatch('username')).resolves.not.toThrow();
 			expect(accountServiceDb.searchByUsernameExactMatch).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('TEST TEST', () => {
+		it('should call deleteByUserId in accountServiceIdm if feature is enabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(true);
+
+			const spyLogger = jest.spyOn(logger, 'error');
+
+			const deleteByUserMock = jest.spyOn(accountServiceIdm, 'deleteByUserId');
+			deleteByUserMock.mockImplementationOnce(() => {
+				throw new Error('error');
+			});
+
+			await accountService.deleteByUserId('userId');
 		});
 	});
 });
