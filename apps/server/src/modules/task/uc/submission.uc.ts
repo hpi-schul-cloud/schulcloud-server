@@ -20,10 +20,10 @@ export class SubmissionUc {
 	}
 
 	private filterSubmissionsByPermission(submissions: Submission[], user: User): Submission[] {
-		const permissionsContext = PermissionContextBuilder.read([Permission.SUBMISSIONS_VIEW]);
+		const permissionContext = PermissionContextBuilder.read([Permission.SUBMISSIONS_VIEW]);
 
 		const permittedSubmissions = submissions.filter((submission) => {
-			const hasPermission = this.authorizationService.hasPermission(user, submission, permissionsContext);
+			const hasPermission = this.authorizationService.hasPermission(user, submission, permissionContext);
 
 			return hasPermission;
 		});
