@@ -22,8 +22,8 @@ describe('resolve/scopes service', () => {
 			})
 			.catch((err) => {
 				assert(err.message.includes('Cast to ObjectId failed'));
-				assert(err.name == 'BadRequest');
-				assert(err.code == 400);
+				assert(err.name === 'BadRequest');
+				assert(err.code === 400);
 			}));
 
 	it('get 404 if no user is found', () =>
@@ -34,12 +34,22 @@ describe('resolve/scopes service', () => {
 			})
 			.catch((err) => {
 				assert(err.message.includes('No record found for id'));
-				assert(err.name == 'NotFound');
-				assert(err.code == 404);
+				assert(err.name === 'NotFound');
+				assert(err.code === 404);
 			}));
 
 	it('return scopes if user is found', () =>
-		service.get('0000d213816abba584714c0a').then((data) => {
+		service.get('0000d224816abba584714c9c').then((data) => {
 			assert(data.data.length > 0);
+			return data;
+		}));
+
+	it('return courseAdmin scope if admin is found and his school has a course', () =>
+		service.get('0000d213816abba584714c0a').then((data) => {
+			const courseAdmins = data.data.filter(
+				(scope) => scope.type === 'scope' && scope.attributes.scopeType === 'courseAdmin'
+			);
+			assert(courseAdmins.length > 0);
+			return data;
 		}));
 });

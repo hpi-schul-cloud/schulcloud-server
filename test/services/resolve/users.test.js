@@ -23,8 +23,8 @@ describe('resolve/users service', () => {
 			})
 			.catch((err) => {
 				assert(err.message.includes('No scope found for given id.'));
-				assert(err.name == 'NotFound');
-				assert(err.code == 404);
+				assert(err.name === 'NotFound');
+				assert(err.code === 404);
 			}));
 
 	it('return users if scope is found', () =>
@@ -32,5 +32,6 @@ describe('resolve/users service', () => {
 			assert(data.data.length > 0);
 			assert(data.data[0].type === 'user');
 			assert(_.find(data.data, (user) => user.id === '0000d213816abba584714c0a' || '0000d231816abba584714c9e'));
+			return data;
 		}));
 });
