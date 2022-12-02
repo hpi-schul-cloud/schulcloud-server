@@ -39,8 +39,8 @@ describe('resolve/users service', () => {
 		}
 	});
 
-	it('return users if scope is found', () => {
-		const data = service.get(testUser._id);
+	it('return users if scope is found', async () => {
+		const data = await service.get(testUser._id);
 		assert(data.data.length > 0);
 		assert(data.data[0].type === 'user');
 		assert(_.find(data.data, (user) => user.id === testCourse._id));
