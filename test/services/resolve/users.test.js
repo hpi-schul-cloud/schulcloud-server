@@ -1,5 +1,4 @@
 const assert = require('assert');
-const _ = require('lodash');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
