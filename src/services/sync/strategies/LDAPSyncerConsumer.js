@@ -31,13 +31,13 @@ class LDAPSyncerConsumer {
 	}
 }
 
-const setupConsumer = () => {
+const setupConsumer = (app) => {
 	const syncQueue = rabbitMq.getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
 
 	const shouldUseFilter = NODE_ENV === ENVIRONMENTS.PRODUCTION;
 	const consumer = new LDAPSyncerConsumer(
 		new SchoolAction(shouldUseFilter),
-		new UserAction(shouldUseFilter),
+		new UserAction(app, shouldUseFilter),
 		new ClassAction(shouldUseFilter)
 	);
 
