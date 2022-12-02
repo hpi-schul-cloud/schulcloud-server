@@ -4,7 +4,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { SubmissionService } from '../service/submission.service';
 
 @Injectable()
-export class SubmissionUC {
+export class SubmissionUc {
 	constructor(
 		private readonly submissionService: SubmissionService,
 		private readonly authorizationService: AuthorizationService

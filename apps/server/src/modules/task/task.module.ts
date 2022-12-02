@@ -10,7 +10,7 @@ import { AuthorizationModule } from '../authorization';
 import { FilesStorageClientModule } from '../files-storage-client';
 import { SubmissionController, TaskController } from './controller';
 import { TaskService, SubmissionService } from './service';
-import { SubmissionUC, TaskCopyUC, TaskUC } from './uc';
+import { SubmissionUc, TaskCopyUC, TaskUC } from './uc';
 
 @Module({
 	imports: [AuthorizationModule, FilesStorageClientModule],
@@ -28,7 +28,7 @@ import { SubmissionUC, TaskCopyUC, TaskUC } from './uc';
 		FeathersServiceProvider,
 		FileLegacyService,
 		Logger,
-		SubmissionUC,
+		SubmissionUc,
 		SubmissionService,
 		SubmissionRepo,
 	],

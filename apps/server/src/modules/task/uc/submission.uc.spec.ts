@@ -5,11 +5,11 @@ import { Counted, Permission, PermissionContextBuilder, Submission } from '@shar
 import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { SubmissionService } from '../service/submission.service';
-import { SubmissionUC } from './submission.uc';
+import { SubmissionUc } from './submission.uc';
 
-describe('Submission UC', () => {
+describe('Submission Uc', () => {
 	let module: TestingModule;
-	let submissionUc: SubmissionUC;
+	let submissionUc: SubmissionUc;
 	let submissionService: DeepMocked<SubmissionService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let orm: MikroORM;
@@ -20,7 +20,7 @@ describe('Submission UC', () => {
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [
-				SubmissionUC,
+				SubmissionUc,
 				{
 					provide: SubmissionService,
 					useValue: createMock<SubmissionService>(),
@@ -32,7 +32,7 @@ describe('Submission UC', () => {
 			],
 		}).compile();
 
-		submissionUc = module.get(SubmissionUC);
+		submissionUc = module.get(SubmissionUc);
 		submissionService = module.get(SubmissionService);
 		authorizationService = module.get(AuthorizationService);
 	});

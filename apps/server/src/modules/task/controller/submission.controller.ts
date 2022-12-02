@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { SubmissionMapper } from '../mapper';
-import { SubmissionUC } from '../uc';
+import { SubmissionUc } from '../uc';
 import { TaskUrlParams } from './dto';
 import { SubmissionStatusListResponse } from './dto/submission.response';
 
@@ -11,7 +11,7 @@ import { SubmissionStatusListResponse } from './dto/submission.response';
 @Authenticate('jwt')
 @Controller('submissions')
 export class SubmissionController {
-	constructor(private readonly submissionUc: SubmissionUC) {}
+	constructor(private readonly submissionUc: SubmissionUc) {}
 
 	@Get('status/task/:taskId')
 	async findStatusesByTask(
