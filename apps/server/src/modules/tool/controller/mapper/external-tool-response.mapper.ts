@@ -17,6 +17,7 @@ import {
 } from '../dto';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeParams> = {
+	[CustomParameterScope.GLOBAL]: CustomParameterScopeParams.GLOBAL,
 	[CustomParameterScope.COURSE]: CustomParameterScopeParams.COURSE,
 	[CustomParameterScope.SCHOOL]: CustomParameterScopeParams.SCHOOL,
 };

@@ -1,12 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@src/modules';
-import { BasicToolConfigDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { ICurrentUser, IFindOptions, Permission, SortOrder, ToolConfigType, User } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
 import { Page } from '@shared/domain/interface/page';
+import {
+	externalToolDOFactory,
+	oauth2ToolConfigDOFactory,
+} from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService } from '../service/external-tool.service';
 import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
@@ -53,29 +57,8 @@ describe('ExternalToolUc', () => {
 	const setup = () => {
 		const toolId = 'toolId';
 
-		const basicConfig: BasicToolConfigDO = new BasicToolConfigDO({
-			type: ToolConfigType.BASIC,
-			baseUrl: 'baseUrl',
-		});
-
-		const oauth2ConfigWithoutExternalData: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
-			type: ToolConfigType.OAUTH2,
-			baseUrl: 'baseUrl',
-			clientId: 'clientId',
-			skipConsent: false,
-		});
-
-		const externalToolDO: ExternalToolDO = new ExternalToolDO({
-			id: toolId,
-			name: 'name',
-			url: 'url',
-			logoUrl: 'logoUrl',
-			config: basicConfig,
-			parameters: [],
-			isHidden: false,
-			openNewTab: false,
-			version: 1,
-		});
+		const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1).buildWithId();
+		const oauth2ConfigWithoutExternalData: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.build();
 
 		const query: Partial<ExternalToolDO> = {
 			id: externalToolDO.id,
@@ -109,7 +92,6 @@ describe('ExternalToolUc', () => {
 
 		return {
 			externalToolDO,
-			basicConfig,
 			oauth2ConfigWithoutExternalData,
 			user,
 			currentUser,
@@ -219,8 +201,7 @@ describe('ExternalToolUc', () => {
 		});
 
 		it('should call the service to save a tool', async () => {
-			const { externalToolDO, currentUser, basicConfig } = setup();
-			externalToolDO.config = basicConfig;
+			const { externalToolDO, currentUser } = setup();
 
 			await uc.createExternalTool(currentUser.userId, externalToolDO);
 
@@ -228,8 +209,7 @@ describe('ExternalToolUc', () => {
 		});
 
 		it('should return saved a tool', async () => {
-			const { externalToolDO, currentUser, basicConfig } = setup();
-			externalToolDO.config = basicConfig;
+			const { externalToolDO, currentUser } = setup();
 
 			const result: ExternalToolDO = await uc.createExternalTool(currentUser.userId, externalToolDO);
 
