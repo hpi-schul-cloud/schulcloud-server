@@ -219,15 +219,34 @@ describe('AccountService', () => {
 		it('should call deleteByUserId in accountServiceIdm if feature is enabled', async () => {
 			const spy = jest.spyOn(configService, 'get');
 			spy.mockReturnValueOnce(true);
+			const spyLogger = jest.spyOn(logger, 'error');
+			const testError = new Error('error');
+
+			const deleteByUserMock = jest.spyOn(accountServiceIdm, 'deleteByUserId');
+			deleteByUserMock.mockImplementationOnce(() => {
+				throw testError;
+			});
+
+			await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
+
+			expect(spyLogger).toHaveBeenCalledWith(testError, expect.anything());
+		});
+
+		it('should call deleteByUserId in accountServiceIdm if feature is enabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(true);
 
 			const spyLogger = jest.spyOn(logger, 'error');
 
 			const deleteByUserMock = jest.spyOn(accountServiceIdm, 'deleteByUserId');
 			deleteByUserMock.mockImplementationOnce(() => {
-				throw new Error('error');
+				// eslint-disable-next-line @typescript-eslint/no-throw-literal
+				throw 'a non error object';
 			});
 
-			await accountService.deleteByUserId('userId');
+			await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
+
+			expect(spyLogger).toHaveBeenCalledWith('a non error object');
 		});
 	});
 });
