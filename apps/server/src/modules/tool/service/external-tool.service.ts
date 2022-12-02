@@ -1,16 +1,99 @@
-import { Injectable } from '@nestjs/common';
-import { CustomParameterDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+	CustomParameterDO,
+	ExternalToolDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
+} from '@shared/domain/domainobject/external-tool';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
-import { IFindOptions } from '@shared/domain';
+import { EntityId, IFindOptions } from '@shared/domain';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { Page } from '@shared/domain/interface/page';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { OauthProviderService } from '@shared/infra/oauth-provider';
+import { TokenEndpointAuthMethod } from '../interface';
+import { ExternalToolServiceMapper } from './mapper';
 
 @Injectable()
 export class ExternalToolService {
-	constructor(private externalToolRepo: ExternalToolRepo) {}
+	constructor(
+		private readonly externalToolRepo: ExternalToolRepo,
+		private readonly oauthProviderService: OauthProviderService,
+		private readonly mapper: ExternalToolServiceMapper,
+		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
+		private readonly courseExternalToolRepo: CourseExternalToolRepo,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService
+	) {}
 
 	async createExternalTool(externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
-		const externalTool: ExternalToolDO = await this.externalToolRepo.save(externalToolDO);
-		return externalTool;
+		if (externalToolDO.config instanceof Lti11ToolConfigDO) {
+			externalToolDO.config.secret = this.encryptionService.encrypt(externalToolDO.config.secret);
+		} else if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
+			const oauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
+				externalToolDO.name,
+				externalToolDO.config
+			);
+
+			await this.oauthProviderService.createOAuth2Client(oauthClient);
+		}
+
+		const created: ExternalToolDO = await this.externalToolRepo.save(externalToolDO);
+		return created;
+	}
+
+	async findExternalTools(
+		query: Partial<ExternalToolDO>,
+		options: IFindOptions<ExternalToolDO>
+	): Promise<Page<ExternalToolDO>> {
+		const tools: Page<ExternalToolDO> = await this.externalToolRepo.find(query, options);
+		tools.data = await Promise.all(
+			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO> => {
+				if (tool.config instanceof Oauth2ToolConfigDO) {
+					await this.addExternalOauth2DataToConfig(tool.config);
+				}
+				return tool;
+			})
+		);
+
+		return tools;
+	}
+
+	async findExternalToolById(id: EntityId): Promise<ExternalToolDO> {
+		const tool: ExternalToolDO = await this.externalToolRepo.findById(id);
+
+		if (tool.config instanceof Oauth2ToolConfigDO) {
+			await this.addExternalOauth2DataToConfig(tool.config);
+		}
+
+		return tool;
+	}
+
+	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfigDO) {
+		const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(config.clientId);
+
+		config.scope = oauthClient.scope;
+		config.tokenEndpointAuthMethod = oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
+		config.redirectUris = oauthClient.redirect_uris;
+		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
+	}
+
+	async deleteExternalTool(toolId: string): Promise<void> {
+		const schoolExternalTools: SchoolExternalToolDO[] = await this.schoolExternalToolRepo.findByToolId(toolId);
+		const schoolExternalToolIds: string[] = schoolExternalTools.map(
+			(schoolExternalTool: SchoolExternalToolDO): string => {
+				// We can be sure that the repo returns the id
+				return schoolExternalTool.id as string;
+			}
+		);
+
+		await Promise.all([
+			this.courseExternalToolRepo.deleteBySchoolExternalToolIds(schoolExternalToolIds),
+			this.schoolExternalToolRepo.deleteByToolId(toolId),
+			this.externalToolRepo.deleteById(toolId),
+		]);
 	}
 
 	async isNameUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
@@ -24,14 +107,6 @@ export class ExternalToolService {
 		);
 
 		return duplicate == null;
-	}
-
-	async findExternalTools(
-		query: Partial<ExternalToolDO>,
-		options: IFindOptions<ExternalToolDO>
-	): Promise<Page<ExternalToolDO>> {
-		const tools: Page<ExternalToolDO> = await this.externalToolRepo.find(query, options);
-		return tools;
 	}
 
 	hasDuplicateAttributes(customParameter: CustomParameterDO[]): boolean {
