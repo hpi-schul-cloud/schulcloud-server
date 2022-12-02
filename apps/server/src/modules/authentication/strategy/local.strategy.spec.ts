@@ -72,6 +72,9 @@ describe('local strategy', () => {
 	});
 
 	describe('should fail to authenticate', () => {
+		beforeEach(() => {
+			authenticationService.updateLastTriedFailedLogin.mockClear();
+		});
 		it('when no username is provided', async () => {
 			await expect(strategy.validate()).rejects.toThrow(UnauthorizedException);
 		});
@@ -86,6 +89,7 @@ describe('local strategy', () => {
 		});
 		it('when account does have a wrong password', async () => {
 			await expect(strategy.validate(mockAccount.username, 'wrongPassword')).rejects.toThrow(UnauthorizedException);
+			expect(authenticationService.updateLastTriedFailedLogin).toHaveBeenCalledWith(mockAccount.id);
 		});
 		it('when account does not have a user id', async () => {
 			const accountNoUser = { ...mockAccount };

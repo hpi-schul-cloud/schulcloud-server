@@ -345,6 +345,10 @@ export class AccountUc {
 		}
 	}
 
+	/**
+	 *
+	 * @deprecated this is for legacy login strategies only. Login strategies in Nest.js should use {@link AuthenticationService}
+	 */
 	async checkBrutForce(username: string, systemId: EntityId | ObjectId): Promise<void> {
 		const account = await this.accountService.findByUsernameAndSystemId(username, systemId);
 		//  missing Account is ignored as in legacy feathers Impl.

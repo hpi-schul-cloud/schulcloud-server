@@ -37,11 +37,19 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		if (!account.userId) {
 			throw new UnauthorizedException();
 		}
+		this.authenticationService.checkBrutForce(account);
 		const user = await this.userRepo.findById(account.userId);
 		if (!user.ldapDn) {
 			throw new UnauthorizedException();
 		}
-		await this.ldapService.authenticate(system, user.ldapDn, password);
+		try {
+			await this.ldapService.authenticate(system, user.ldapDn, password);
+		} catch (error) {
+			if (error instanceof UnauthorizedException) {
+				await this.authenticationService.updateLastTriedFailedLogin(account.id);
+				throw error;
+			}
+		}
 		return CurrentUserMapper.userToICurrentUser(account.id, user, systemId);
 	}
 }

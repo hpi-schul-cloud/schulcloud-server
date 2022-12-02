@@ -21,7 +21,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		if (!account.password) {
 			throw new UnauthorizedException();
 		}
+		this.authenticationService.checkBrutForce(account);
 		if (!(await bcrypt.compare(password, account.password))) {
+			await this.authenticationService.updateLastTriedFailedLogin(account.id);
 			throw new UnauthorizedException();
 		}
 		if (!account.userId) {

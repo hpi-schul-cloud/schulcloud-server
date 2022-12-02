@@ -33,6 +33,7 @@ describe('local strategy', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let schoolRepo: DeepMocked<SchoolRepo>;
 	let authenticationService: DeepMocked<AuthenticationService>;
+	let ldapService: DeepMocked<LdapService>;
 	let module: TestingModule;
 
 	beforeAll(async () => {
@@ -80,6 +81,7 @@ describe('local strategy', () => {
 		authenticationService = module.get(AuthenticationService);
 		schoolRepo = module.get(SchoolRepo);
 		userRepo = module.get(UserRepo);
+		ldapService = module.get(LdapService);
 	});
 
 	afterAll(async () => {
@@ -165,6 +167,20 @@ describe('local strategy', () => {
 			delete mockAccountWithoutUserId.userId;
 			authenticationService.loadAccount.mockResolvedValueOnce(mockAccountWithoutUserId);
 			await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
+		});
+		it('if authentication at LDAP fails', async () => {
+			const request: { body: RequestBody } = {
+				body: {
+					username: 'mockUserName',
+					password: 'somePassword1234$',
+					schoolId: 'mockSchoolId',
+					systemId: 'mockSystemId',
+				},
+			};
+			ldapService.authenticate.mockRejectedValueOnce(new UnauthorizedException());
+			await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
+			// TODO correct mock of ldapService
+			expect(authenticationService.updateLastTriedFailedLogin).toHaveBeenCalledWith(mockAccount.id);
 		});
 	});
 

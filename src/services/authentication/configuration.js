@@ -22,14 +22,6 @@ module.exports = {
 		ldap: {
 			usernameField: 'username',
 		},
-		moodle: {
-			usernameField: 'username',
-			systemIdField: 'systemId',
-		},
-		iserv: {
-			usernameField: 'username',
-			systemIdField: 'systemId',
-		},
 		tsp: {},
 		'api-key': {},
 	},
