@@ -7,19 +7,22 @@ describe('resolve/scopes service', () => {
 	let app;
 	let service;
 	let nestServices;
-	const testData = {};
+	let testSchool;
+	let testUser;
+	let testCourse;
+	let testAdmin;
 
 	before(async () => {
 		app = await appPromise();
 		service = app.service('resolve/scopes');
 		nestServices = await setupNestServices(app);
-		testData.school = await testObjects.createTestSchool();
-		testData.user = await testObjects.createTestUser({ schoolId: testData.school._id });
-		testData.course = await testObjects.createTestCourse({
-			schoolId: testData.school._id,
-			userIds: [testData.user._id],
+		testSchool = await testObjects.createTestSchool();
+		testUser = await testObjects.createTestUser({ schoolId: testSchool._id });
+		testCourse = await testObjects.createTestCourse({
+			schoolId: testSchool._id,
+			userIds: [testUser._id],
 		});
-		testData.admin = await testObjects.createTestUser({ roles: 'admin', schoolId: testData.school._id });
+		testAdmin = await testObjects.createTestUser({ roles: 'admin', schoolId: testSchool._id });
 	});
 
 	after(async () => {
@@ -54,14 +57,14 @@ describe('resolve/scopes service', () => {
 	});
 
 	it('return scopes if user is found', async () => {
-		const data = await service.get(testData.user._id);
+		const data = await service.get(testUser._id);
 		assert(data.data.length > 0);
 	});
 
 	it('return courseAdmin scope if admin is found and his school has a course', async () => {
-		const data = await service.get(testData.admin._id);
+		const data = await service.get(testAdmin._id);
 		const courseAdmin = data.data.filter(
-			(scope) => scope.attributes.scopeType === 'courseAdmin' && scope.id === testData.course._id
+			(scope) => scope.attributes.scopeType === 'courseAdmin' && scope.id === testCourse._id
 		);
 		assert(courseAdmin.length === 1);
 	});

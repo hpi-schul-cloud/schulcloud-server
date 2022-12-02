@@ -8,13 +8,15 @@ describe('resolve/users service', () => {
 	let app;
 	let service;
 	let nestServices;
-	const testData = {};
+	let testUser;
+	let testCourse;
 
 	before(async () => {
 		app = await appPromise();
 		service = app.service('resolve/users');
-		testData.user = await testObjects.createTestUser();
-		testData.course = await testObjects.createTestCourse({ userIds: [testData.user._id] });
+		nestServices = await setupNestServices(app);
+		testUser = await testObjects.createTestUser();
+		testCourse = await testObjects.createTestCourse({ userIds: [testUser._id] });
 	});
 
 	after(async () => {
@@ -38,9 +40,9 @@ describe('resolve/users service', () => {
 	});
 
 	it('return users if scope is found', () => {
-		const data = service.get(testData.user._id);
+		const data = service.get(testUser._id);
 		assert(data.data.length > 0);
 		assert(data.data[0].type === 'user');
-		assert(_.find(data.data, (user) => user.id === testData.course._id));
+		assert(_.find(data.data, (user) => user.id === testCourse._id));
 	});
 });
