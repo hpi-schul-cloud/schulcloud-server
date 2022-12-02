@@ -9,13 +9,26 @@ const { UserAction } = require('../../../../../src/services/sync/strategies/cons
 
 const { SchoolRepo, UserRepo } = require('../../../../../src/services/sync/repo');
 
+const appPromise = require('../../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../../utils/setup.nest.services');
+
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
 describe('User Actions', () => {
 	let userAction;
-	before(() => {
-		userAction = new UserAction(true);
+	let userAccountService;
+	let nestServices;
+
+	before(async () => {
+		const app = await appPromise();
+		userAction = new UserAction(app, true);
+		userAccountService = await app.service('/sync/userAccount');
+		nestServices = await setupNestServices(app);
+	});
+
+	after(async () => {
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(() => {
@@ -31,19 +44,18 @@ describe('User Actions', () => {
 			const findByLdapIdAndSchoolStub = sinon.stub(UserRepo, 'findByLdapIdAndSchool');
 			findByLdapIdAndSchoolStub.returns(null);
 
-			const createUserAndAccountStub = sinon.stub(UserRepo, 'createUserAndAccount');
+			const createUserAndAccountStub = sinon.stub(userAccountService, 'createUserAndAccount');
 
 			const testUserInput = { _id: 1 };
 			const testAccountInput = { _id: 2 };
 			await userAction.action({ user: testUserInput, account: testAccountInput });
 
-			const { firstArg } = createUserAndAccountStub.firstCall;
-			const { lastArg } = createUserAndAccountStub.firstCall;
+			const [userArg, accountArg] = createUserAndAccountStub.firstCall.args;
 
 			expect(createUserAndAccountStub.calledOnce).to.be.true;
-			expect(firstArg.schoolId).to.be.equal(testSchoolId);
-			expect(firstArg._id).to.be.equal(testUserInput._id);
-			expect(lastArg._id).to.be.equal(testAccountInput._id);
+			expect(userArg.schoolId).to.be.equal(testSchoolId);
+			expect(userArg._id).to.be.equal(testUserInput._id);
+			expect(accountArg._id).to.be.equal(testAccountInput._id);
 		});
 
 		it('should update user and account if exists', async () => {
@@ -61,7 +73,7 @@ describe('User Actions', () => {
 			};
 			findByLdapIdAndSchoolStub.returns(existingUser);
 
-			const updateUserAndAccountStub = sinon.stub(UserRepo, 'updateUserAndAccount');
+			const updateUserAndAccountStub = sinon.stub(userAccountService, 'updateUserAndAccount');
 
 			const testUserInput = {
 				_id: 1,
@@ -76,17 +88,16 @@ describe('User Actions', () => {
 
 			expect(updateUserAndAccountStub.calledOnce).to.be.true;
 
-			const { args } = updateUserAndAccountStub.firstCall;
-			const updateUserArg = args[1];
+			const [updateUserId, updateUserArg, testAccountArg] = updateUserAndAccountStub.firstCall.args;
 
-			expect(args[0]).to.be.equal(testUserInput._id);
+			expect(updateUserId).to.be.equal(testUserInput._id);
 			expect(updateUserArg.firstName).to.be.equal(testUserInput.firstName);
 			expect(updateUserArg.lastName).to.be.equal(testUserInput.lastName);
 			expect(updateUserArg.email).to.be.equal(testUserInput.email);
 			expect(updateUserArg.ldapDn).to.be.equal(testUserInput.ldapDn);
 			expect(updateUserArg.roles).to.be.equal(testUserInput.roles);
 
-			expect(args[2]).to.be.equal(testAccountInput);
+			expect(testAccountArg).to.be.equal(testAccountInput);
 		});
 
 		it('should throw a sync error if user repo throws an error', async () => {
@@ -110,7 +121,7 @@ describe('User Actions', () => {
 				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 				findSchoolByLdapIdAndSystemStub.returns({ name: 'Test Schhol', inMaintenance: true });
 
-				const createUserSpy = sinon.spy(UserRepo, 'createUserAndAccount');
+				const createUserSpy = sinon.spy(userAccountService, 'createUserAndAccount');
 
 				sinon.stub(UserRepo, 'findByLdapIdAndSchool').returns(null);
 
@@ -141,7 +152,7 @@ describe('User Actions', () => {
 				};
 				sinon.stub(UserRepo, 'findByLdapIdAndSchool').returns(existingUser);
 
-				const updateUserSpy = sinon.spy(UserRepo, 'updateUserAndAccount');
+				const updateUserSpy = sinon.spy(userAccountService, 'updateUserAndAccount');
 
 				const testUserInput = {
 					_id: 1,
@@ -165,8 +176,8 @@ describe('User Actions', () => {
 					.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem')
 					.resolves({ _id: schoolId, name: 'Test School', inUserMigration: true });
 				sinon.stub(UserRepo, 'findByLdapIdAndSchool').resolves(null);
-				const createUserAndAccountStub = sinon.stub(UserRepo, 'createUserAndAccount');
-				const updateUserAndAccountStub = sinon.stub(UserRepo, 'updateUserAndAccount');
+				const createUserAndAccountStub = sinon.stub(userAccountService, 'createUserAndAccount');
+				const updateUserAndAccountStub = sinon.stub(userAccountService, 'updateUserAndAccount');
 				const createOrUpdateImportUserStub = sinon.stub(UserRepo, 'createOrUpdateImportUser');
 				const autoMatchImportUserStub = sinon.stub(userAction, 'autoMatchImportUser');
 

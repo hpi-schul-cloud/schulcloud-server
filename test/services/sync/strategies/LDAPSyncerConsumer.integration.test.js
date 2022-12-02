@@ -7,7 +7,6 @@ const { SchoolAction, UserAction, ClassAction } = require('../../../../src/servi
 const SchoolYearFacade = require('../../../../src/services/school/logic/year');
 
 const { userModel } = require('../../../../src/services/user/model');
-const accountModel = require('../../../../src/services/account/model');
 
 const { classModel } = require('../../../../src/services/user-group/model');
 const { schoolModel } = require('../../../../src/services/school/model');
@@ -31,6 +30,8 @@ describe('Ldap Syncer Consumer Integration', () => {
 	let server;
 	let ldapConsumer;
 	let nestServices;
+	let accountService;
+	let system;
 
 	before(async () => {
 		app = await appPromise();
@@ -38,14 +39,20 @@ describe('Ldap Syncer Consumer Integration', () => {
 		const shouldUseFilter = true;
 		ldapConsumer = new LDAPSyncerConsumer(
 			new SchoolAction(shouldUseFilter),
-			new UserAction(shouldUseFilter),
+			new UserAction(app, shouldUseFilter),
 			new ClassAction(shouldUseFilter)
 		);
 		nestServices = await setupNestServices(app);
+		accountService = await app.service('nest-account-service');
+	});
+
+	beforeEach(async () => {
+		system = await testObjects.createTestSystem();
 	});
 
 	afterEach(async () => {
-		await accountModel.deleteOne({ username: accountUserName.toLowerCase() }).lean().exec();
+		const account = accountService.findByUsernameAndSystemId(accountUserName, system._id);
+		await accountService.deleteByUserId(account.userId);
 		await userModel.deleteOne({ ldapDn: ldapUserDn }).lean().exec();
 		await classModel.deleteOne({ ldapDN: ldapClassDn }).lean().exec();
 
@@ -61,7 +68,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 	describe('school messages', () => {
 		it('should create school by the data', async () => {
 			const schoolName = 'test school';
-			const system = await testObjects.createTestSystem();
 			const years = await app.service('years').find({ query: { name: '2022/23' } });
 			const currentYear = new SchoolYearFacade(years.data).defaultYear;
 			const states = await app.service('federalStates').find({ query: { abbreviation: 'NI' } });
@@ -94,7 +100,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 
 		it('should update existing school by the data', async () => {
 			const initialSchoolName = 'Initial School Name';
-			const system = await testObjects.createTestSystem();
 			await testObjects.createTestSchool({
 				name: initialSchoolName,
 				ldapSchoolIdentifier: ldapSchoolIDn,
@@ -130,7 +135,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 			const lastName = 'test last';
 			const ldapUserId = 'LDAP_USER_ID';
 
-			const system = await testObjects.createTestSystem();
 			const school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
 
 			const contentData = {
@@ -140,7 +144,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 					user: {
 						firstName,
 						lastName,
-						systemId: system._id.toString(),
+						systemId: system._id,
 						schoolDn: school.ldapSchoolIdentifier,
 						email: testEmail,
 						ldapDn: ldapUserDn,
@@ -151,7 +155,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 						ldapDn: ldapUserDn,
 						ldapId: ldapUserId,
 						username: accountUserName,
-						systemId: system._id.toString(),
+						systemId: system._id,
 						schoolDn: school.ldapSchoolIdentifier,
 						activated: true,
 					},
@@ -171,7 +175,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 			expect(foundUser.ldapId).to.be.equal(ldapUserId);
 			expect(foundUser.ldapDn).to.be.equal(ldapUserDn);
 
-			const foundAccount = await accountModel.findOne({ userId: foundUser._id }).lean().exec();
+			const foundAccount = await accountService.findByUserId(foundUser._id);
 			expect(foundAccount).to.be.not.null;
 			expect(foundAccount.username).to.be.equal(accountUserName.toLowerCase());
 			expect(foundAccount.systemId.toString()).to.be.equal(system._id.toString());
@@ -187,15 +191,22 @@ describe('Ldap Syncer Consumer Integration', () => {
 			const updatedLastName = 'test last';
 			const ldapUserId = 'LDAP_USER_ID';
 
-			const system = await testObjects.createTestSystem();
 			const school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
-			await testObjects.createTestUser({
+			const user = await testObjects.createTestUser({
 				ldapId: ldapUserId,
 				firstName: initialFirstName,
 				lastName: initialLastName,
 				email: initialEmail,
 				schoolId: school._id,
 			});
+			await testObjects.createTestAccount(
+				{
+					username: 'testUser',
+					password: 'testPassword',
+				},
+				system,
+				user
+			);
 			const contentData = {
 				action: 'syncUser',
 				syncId: '6082d22395baca4f64ef0a1f',
@@ -203,7 +214,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 					user: {
 						firstName: updatedFirstName,
 						lastName: updatedLastName,
-						systemId: system._id.toString(),
+						systemId: system._id,
 						schoolDn: school.ldapSchoolIdentifier,
 						email: updatedEmail,
 						ldapDn: ldapUserDn,
@@ -214,7 +225,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 						ldapDn: ldapUserDn,
 						ldapId: ldapUserId,
 						username: accountUserName,
-						systemId: system._id.toString(),
+						systemId: system._id,
 						schoolDn: school.ldapSchoolIdentifier,
 						activated: true,
 					},
@@ -234,7 +245,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 		});
 
 		it('should not create user if the school is in maintenance mode', async () => {
-			const system = await testObjects.createTestSystem();
 			const oneDayinMilliseconds = 24 * 60 * 60 * 1000;
 			const inMaintenanceSince = Date.now() - oneDayinMilliseconds;
 			const school = await testObjects.createTestSchool({
@@ -279,8 +289,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 	});
 
 	describe('class messages', () => {
-		let system;
-
 		beforeEach(async () => {
 			system = await testObjects.createTestSystem();
 		});
