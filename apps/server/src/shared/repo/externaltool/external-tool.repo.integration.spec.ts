@@ -64,7 +64,7 @@ describe('ExternalToolRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	async function setup() {
+	const setup = async () => {
 		const client1Id = 'client-1';
 		const client2Id = 'client-2';
 
@@ -87,7 +87,7 @@ describe('ExternalToolRepo', () => {
 			client2Id,
 			queryExternalToolDO,
 		};
-	}
+	};
 
 	it('getEntityName should return ExternalTool', () => {
 		const { entityName } = repo;
@@ -147,7 +147,7 @@ describe('ExternalToolRepo', () => {
 	});
 
 	describe('save', () => {
-		function setupDO(config: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO) {
+		const setupDO = (config: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO) => {
 			const domainObject: ExternalToolDO = new ExternalToolDO({
 				name: 'name',
 				url: 'url',
@@ -171,7 +171,7 @@ describe('ExternalToolRepo', () => {
 			return {
 				domainObject,
 			};
-		}
+		};
 
 		it('should save an basic tool correctly', async () => {
 			const config: BasicToolConfigDO = new BasicToolConfigDO({
@@ -221,7 +221,7 @@ describe('ExternalToolRepo', () => {
 	});
 
 	describe('find', () => {
-		async function setupFind() {
+		const setupFind = async () => {
 			const { queryExternalToolDO } = await setup();
 			queryExternalToolDO.name = '.';
 
@@ -235,7 +235,7 @@ describe('ExternalToolRepo', () => {
 			await em.persistAndFlush([ltiToolA, ltiToolB, ltiToolC]);
 
 			return { queryExternalToolDO, options, ltiTools };
-		}
+		};
 
 		describe('sortingMapper', () => {
 			it('should call mapDOSortOrderToQueryOrder with options.order', async () => {
