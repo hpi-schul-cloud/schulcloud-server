@@ -3,11 +3,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Permission, Role, RoleName, School, User } from '@shared/domain';
-import { AccountRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
 import bcrypt from 'bcryptjs';
+import { AccountRepo } from '../repo/account.repo';
 import { AccountService } from './account.service';
 
 describe('AccountService', () => {

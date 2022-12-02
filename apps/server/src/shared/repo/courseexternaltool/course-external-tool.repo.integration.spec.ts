@@ -27,7 +27,7 @@ describe('CourseExternalToolRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	async function setup() {
+	const setup = async () => {
 		const courseExternalTool: CourseExternalTool = courseExternalToolFactory.buildWithId();
 		const courseExternalTool2: CourseExternalTool = courseExternalToolFactory.buildWithId();
 		courseExternalTool2.schoolTool = courseExternalTool.schoolTool;
@@ -36,7 +36,7 @@ describe('CourseExternalToolRepo', () => {
 		const { schoolTool } = courseExternalTool;
 		const { course } = courseExternalTool;
 		return { courseExternalTool, schoolTool, course };
-	}
+	};
 
 	it('getEntityName should return CourseExternalTool', () => {
 		const { entityName } = repo;
