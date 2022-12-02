@@ -5,7 +5,7 @@ import { CustomParameterCreateParams } from './custom-parameter.params';
 import { BasicToolConfigParams } from './basic-tool-config.params';
 import { ExternalToolConfigCreateParams } from './external-tool-config.params';
 import { Oauth2ToolConfigParams } from './oauth2-tool-config.params';
-import { ToolConfigType } from '../../../interface/tool-config-type.enum';
+import { ToolConfigType } from '../../../interface';
 import { Lti11ToolConfigParams } from './lti11-tool-config.params';
 
 @ApiExtraModels(Lti11ToolConfigParams, Oauth2ToolConfigParams, BasicToolConfigParams)
