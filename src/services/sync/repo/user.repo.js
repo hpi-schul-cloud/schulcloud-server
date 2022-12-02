@@ -54,18 +54,10 @@ const checkCreate = async (inputUser, userSchool) => {
 		const foundUser = users[0];
 		const userExistsInSchool = foundUser.schoolId;
 		const schools = await findUsersSchoolById(foundUser.schoolId);
-		if (schools !== undefined && schools.length !== 0) {
-			const foundSchool = schools[0];
-			throw new BadRequest(
-				`User cannot be created in school ${userSchool.name} (${userSchool._id}). User with the same email already exists in school ${foundSchool.name} ${userExistsInSchool} with ldapId:${foundUser.ldapId}`,
-				{ userId: foundUser._id, ldapId: foundUser.ldapId, existsInSchool: userExistsInSchool, userSchool: userSchool.name, userSchoolId: userSchool._id,existsInSchoolName: foundSchool.name,}
-			);
-		} else {
-			throw new BadRequest(
-				`User cannot be created in school ${userSchool.name} (${userSchool._id}). User with the same email already exists in school ${userExistsInSchool} with ldapId:${foundUser.ldapId}`,
-				{ userId: foundUser._id, ldapId: foundUser.ldapId, existsInSchool: userExistsInSchool, userSchool: userSchool.name, userSchoolId: userSchool._id}
-			);
-		}
+		throw new BadRequest(
+			"User cannot be created, because a user with the same email already exists.",
+			{ userId: foundUser._id, ldapId: foundUser.ldapId, existsInSchool: userExistsInSchool, userSchool: userSchool.name, userSchoolId: userSchool._id, existsInSchoolName: schools[0]?.name,}
+		);
 	}
 };
 
