@@ -1,4 +1,4 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -10,7 +10,7 @@ import { KeycloakIdentityManagementService } from './keycloak-identity-managemen
 describe('KeycloakIdentityManagement', () => {
 	let module: TestingModule;
 	let idm: IdentityManagementService;
-	const kcUsersMock = createMock<Users>();
+	let kcUsersMock: DeepMocked<Users>;
 
 	type MockUser = {
 		id: string;
@@ -41,7 +41,8 @@ describe('KeycloakIdentityManagement', () => {
 		lastName: '2',
 	};
 
-	beforeAll(async () => {
+	beforeEach(async () => {
+		kcUsersMock = createMock<Users>();
 		module = await Test.createTestingModule({
 			providers: [
 				KeycloakAdministrationService,
@@ -65,7 +66,7 @@ describe('KeycloakIdentityManagement', () => {
 		idm = module.get<IdentityManagementService>(IdentityManagementService);
 	});
 
-	afterAll(async () => {
+	afterEach(async () => {
 		await module.close();
 	});
 
@@ -293,21 +294,6 @@ describe('KeycloakIdentityManagement', () => {
 			kcUsersMock.del.mockRejectedValueOnce('error');
 
 			await expect(idm.deleteAccountById(accountId)).rejects.toBeTruthy();
-		});
-
-		it('should throw if multiple accounts with same id exist', async () => {
-			const account1: MockUser = {
-				id: '123',
-				username: 'user1',
-			};
-			const account2: MockUser = {
-				id: '123',
-				username: 'user2',
-			};
-
-			kcUsersMock.find.mockResolvedValueOnce([account1, account2]);
-
-			await expect(idm.deleteAccountById(account1.id)).rejects.toThrowError('Multiple accounts for the same id!');
 		});
 	});
 
