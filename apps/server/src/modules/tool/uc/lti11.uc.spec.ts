@@ -2,13 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser, LtiPrivacyPermission, RoleName } from '@shared/domain';
 import { Lti11Service } from '@src/modules/tool/service/lti11.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { LtiRoleMapper } from '@src/modules/tool/mapper/lti-role.mapper';
 import { LtiToolRepo } from '@shared/repo';
 import { UserService } from '@src/modules/user/service/user.service';
 import { LtiRole } from '@src/modules/tool/interface/lti-role.enum';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { CustomLtiProperty, LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
+import { InternalServerErrorException } from '@nestjs/common';
+import { LtiRoleMapper } from './mapper/lti-role.mapper';
 import { Lti11Uc } from './lti11.uc';
 
 describe('Lti11Uc', () => {
@@ -253,26 +254,51 @@ describe('Lti11Uc', () => {
 			});
 		});
 
-		it('should throw when trying to access an lti tool that is not v1.1', async () => {
-			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-			const ltiTool: LtiToolDO = new LtiToolDO({
-				name: 'name',
-				url: 'url',
-				key: 'key',
-				secret: 'secret',
-				roles: [],
-				privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
-				customs: [],
-				isTemplate: false,
-				openNewTab: false,
-				isHidden: false,
+		describe('with invalid tool parameters', () => {
+			const setup = () => {
+				const currentUser: ICurrentUser = { userId: 'userId', roles: [RoleName.USER] } as ICurrentUser;
+
+				const ltiTool: LtiToolDO = new LtiToolDO({
+					name: 'name',
+					url: 'url',
+					key: 'key',
+					secret: 'secret',
+					roles: [],
+					privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
+					customs: [],
+					isTemplate: false,
+					openNewTab: false,
+					isHidden: false,
+					lti_version: 'LTI-1p0',
+					lti_message_type: 'messageType',
+					resource_link_id: 'linkId',
+				});
+
+				return {
+					currentUser,
+					ltiTool,
+				};
+			};
+
+			it('should throw when trying to access an lti tool that is not v1.1', async () => {
+				const { currentUser, ltiTool } = setup();
+				ltiTool.lti_version = 'LTI-wrong-version';
+
+				ltiToolRepo.findById.mockResolvedValue(ltiTool);
+
+				const func = () => useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				await expect(func).rejects.toThrow();
 			});
 
-			ltiToolRepo.findById.mockResolvedValue(ltiTool);
+			it('should throw when trying to access an lti tool that has no message type', async () => {
+				const { currentUser, ltiTool } = setup();
+				ltiTool.lti_message_type = undefined;
 
-			const func = () => useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				ltiToolRepo.findById.mockResolvedValue(ltiTool);
 
-			await expect(func).rejects.toThrow();
+				const func = () => useCase.getLaunchParameters(currentUser, 'toolId', 'courseId');
+				await expect(func).rejects.toThrow(InternalServerErrorException);
+			});
 		});
 	});
 });

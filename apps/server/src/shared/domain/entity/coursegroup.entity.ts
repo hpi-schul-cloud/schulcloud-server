@@ -1,9 +1,11 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { IEntityWithSchool } from '../interface';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
+import type { ILessonParent } from './lesson.entity';
 import { School } from './school.entity';
+import type { ITaskParent } from './task.entity';
 import type { User } from './user.entity';
 
 export interface ICourseGroupProperties {
@@ -14,7 +16,7 @@ export interface ICourseGroupProperties {
 
 @Entity({ tableName: 'coursegroups' })
 @Index({ properties: ['school', 'course'] })
-export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWithSchool {
+export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWithSchool, ITaskParent, ILessonParent {
 	@Property()
 	name: string;
 
@@ -38,7 +40,16 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 		if (props.students) this.students.set(props.students);
 	}
 
-	getParentId(): ObjectId {
-		return this.course._id;
+	public getStudentIds(): EntityId[] {
+		let studentIds: EntityId[] = [];
+
+		// A not existing course group can be referenced in a submission.
+		// Therefore we need to handle this case instead of returning an error here.
+		if (this.students) {
+			const studentObjectIds = this.students.getIdentifiers('_id');
+			studentIds = studentObjectIds.map((id): string => id.toString());
+		}
+
+		return studentIds;
 	}
 }

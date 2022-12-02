@@ -1,6 +1,6 @@
 import { Authorization } from 'oauth-1.0a';
-import { Lti11LaunchResponse } from '@src/modules/tool/controller/dto/lti11-launch.response';
 import { Injectable } from '@nestjs/common';
+import { Lti11LaunchResponse } from '../dto/response/lti11-launch.response';
 
 @Injectable()
 export class Lti11ResponseMapper {

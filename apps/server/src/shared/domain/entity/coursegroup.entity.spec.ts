@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { courseFactory, setupEntities } from '@shared/testing';
+import { courseFactory, courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseGroup } from './coursegroup.entity';
 
 describe('CourseEntity', () => {
@@ -31,16 +31,46 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	// TODO check if and how we need this
-	describe('getParent', () => {
-		it('should return the right id.', () => {
-			const name = 'someName';
-			const course = courseFactory.build();
-			const courseGroup = new CourseGroup({ name, course });
+	describe('getStudentIds is called', () => {
+		describe('when students exist', () => {
+			const setup = () => {
+				const student1 = userFactory.buildWithId();
+				const student2 = userFactory.buildWithId();
+				const student3 = userFactory.buildWithId();
+				const students = [student1, student2, student3];
+				const studentIds = [student1.id, student2.id, student3.id];
 
-			const result = courseGroup.getParentId();
+				const courseGroup = courseGroupFactory.build({ students });
 
-			expect(result).toEqual(course._id);
+				return { courseGroup, studentIds };
+			};
+
+			it('should return the userIds of the students', () => {
+				const { courseGroup, studentIds } = setup();
+
+				const result = courseGroup.getStudentIds();
+
+				expect(result.length).toEqual(3);
+				expect(result).toContain(studentIds[0]);
+				expect(result).toContain(studentIds[1]);
+				expect(result).toContain(studentIds[2]);
+			});
+		});
+
+		describe('when course group is not populated', () => {
+			const setup = () => {
+				const courseGroup = courseGroupFactory.build();
+				Object.assign(courseGroup, { students: undefined });
+
+				return { courseGroup };
+			};
+
+			it('should return empty array', () => {
+				const { courseGroup } = setup();
+
+				const result = courseGroup.getStudentIds();
+				expect(result).toEqual([]);
+			});
 		});
 	});
 });

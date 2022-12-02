@@ -1,6 +1,6 @@
-import { LtiRole } from '@src/modules/tool/interface/lti-role.enum';
-import { LtiRoleMapper } from '@src/modules/tool/mapper/lti-role.mapper';
 import { RoleName } from '@shared/domain';
+import { LtiRole } from '../../interface/lti-role.enum';
+import { LtiRoleMapper } from './lti-role.mapper';
 
 describe('LtiRoleMapper', () => {
 	let mapper: LtiRoleMapper;

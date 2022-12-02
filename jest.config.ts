@@ -19,21 +19,13 @@ const config: Config.InitialOptions = {
 		'.module.ts$',
 		'index.ts$',
 		'spec.ts$',
-		// Temporary functionality for migration to new fileservice
-		// TODO: Remove when BC-1496 is done!
-		// The two paths below regarding the file-sync-job are added because istanbul-ignore-file is somehow not working on them. They can be removed when the job is done.
-		'apps/server/src/modules/files/mapper',
-		'apps/server/src/modules/files/types',
-		'apps/server/src/modules/files/repo',
-		'apps/server/src/modules/files/uc',
-		'apps/server/src/modules/files-storage-client/filesStorageApi',
 	],
 	coverageThreshold: {
 		global: {
-			branches: 80,
-			functions: 80,
-			lines: 80,
-			statements: -11,
+			branches: 95,
+			functions: 95,
+			lines: 95,
+			statements: -3,
 		},
 		// add custom paths: './apps/server/path...': { branches: X, functions: ... }
 	},
