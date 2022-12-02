@@ -79,7 +79,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 		});
 	}
 
-	async deleteById(id: string | string[]): Promise<number> {
+	async deleteById(id: EntityId | EntityId[]): Promise<number> {
 		const ids: string[] = Array.isArray(id) ? id : [id];
 
 		let total = 0;
@@ -92,7 +92,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 		return total;
 	}
 
-	private deleteEntityById(id: string): Promise<number> {
+	private deleteEntityById(id: EntityId): Promise<number> {
 		const promise: Promise<number> = this._em.nativeDelete(this.entityName, { id } as FilterQuery<E>);
 		return promise;
 	}
