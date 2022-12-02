@@ -124,7 +124,7 @@ describe('Submission UC', () => {
 				const { user, taskId, submissions } = setup();
 
 				const result = await submissionUc.findAllByTask(user.id, taskId);
-				const expectedResult = submissions[1];
+				const expectedResult = [submissions[1]];
 
 				expect(result).toEqual(expectedResult);
 			});
@@ -145,7 +145,7 @@ describe('Submission UC', () => {
 				const { user, taskId, submissions } = setup();
 
 				const result = await submissionUc.findAllByTask(user.id, taskId);
-				const expectedResult = submissions[0];
+				const expectedResult = [submissions[0]];
 
 				expect(result).toEqual(expectedResult);
 			});
