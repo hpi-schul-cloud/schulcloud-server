@@ -42,7 +42,7 @@ export class CopyFilesService {
 			const { sourceId, id, name } = fileDto;
 			return {
 				regex: new RegExp(`${sourceId}.+?"`, 'g'),
-				replacement: `${id ?? 'fileCouldNotBeCopied'}/failed-${name}"`,
+				replacement: `${id ?? 'fileCouldNotBeCopied'}/${name}"`,
 			};
 		});
 	}
