@@ -9,7 +9,6 @@ const { equal: equalIds } = require('../../../../../src/helper/compare').ObjectI
 
 const { findSchool, createUserAndAccount } = require('../../../../../src/services/sync/strategies/TSP/TSP');
 const { userModel } = require('../../../../../src/services/user/model');
-const accountModel = require('../../../../../src/services/account/model');
 
 describe('TSP API integration tests', () => {
 	let app;
@@ -18,11 +17,13 @@ describe('TSP API integration tests', () => {
 
 	let createdAccount;
 	let createdUser;
+	let nestAccountService;
 
 	before(async () => {
 		app = await appPromise();
 		server = app.listen(0);
 		nestServices = await setupNestServices(app);
+		nestAccountService = app.service('nest-account-service');
 	});
 
 	after(async () => {
@@ -32,7 +33,7 @@ describe('TSP API integration tests', () => {
 
 	afterEach(async () => {
 		if (createdAccount) {
-			await accountModel.deleteOne({ accountId: createdAccount.id });
+			await nestAccountService.delete(createdAccount.id);
 			createdAccount = undefined;
 		}
 
@@ -75,10 +76,7 @@ describe('TSP API integration tests', () => {
 			const roles = ['administrator', 'teacher'];
 			const systemId = (await testObjects.createTestSystem())._id;
 			createdUser = await createUserAndAccount(app, userDetails, roles, systemId);
-			const [account] = await app.service('accounts').find({
-				query: { userId: createdUser._id },
-			});
-			createdAccount = account;
+			createdAccount = await nestAccountService.findByUserId(createdUser._id);
 
 			expect(createdUser).to.be.ok;
 			expect(createdUser.source).to.equal('tsp');
