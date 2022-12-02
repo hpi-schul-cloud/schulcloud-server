@@ -7,6 +7,7 @@ import {
 	CustomParameterType,
 	ICurrentUser,
 	IFindOptions,
+	RoleName,
 	SortOrder,
 } from '@shared/domain';
 import {
@@ -168,7 +169,7 @@ describe('ToolController', () => {
 
 	describe('getLti11LaunchParameters', () => {
 		it('should fetch the authorized launch parameters and return the response', async () => {
-			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser: ICurrentUser = { userId: 'userId', roles: [RoleName.USER] } as ICurrentUser;
 			const toolId = 'toolId';
 			const courseId = 'courseId';
 			const authorization: Authorization = {
@@ -192,7 +193,12 @@ describe('ToolController', () => {
 			);
 
 			expect(result).toEqual(expect.objectContaining(authorization));
-			expect(lti11Uc.getLaunchParameters).toHaveBeenCalledWith(currentUser, toolId, courseId);
+			expect(lti11Uc.getLaunchParameters).toHaveBeenCalledWith(
+				currentUser.userId,
+				currentUser.roles[0],
+				toolId,
+				courseId
+			);
 		});
 	});
 
