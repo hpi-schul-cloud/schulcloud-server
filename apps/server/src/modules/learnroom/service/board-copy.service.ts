@@ -14,6 +14,7 @@ import {
 import { BoardRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { getResolvedValues } from '@src/modules/files-storage/helper';
+import { sortBy } from 'lodash';
 import { LessonCopyService } from './lesson-copy.service';
 import { TaskCopyService } from './task-copy.service';
 
@@ -59,23 +60,31 @@ export class BoardCopyService {
 		return status;
 	}
 
-	private async copyBoardElements(boardElements: BoardElement[], user: User, destinationCourse: Course) {
-		const promises: Promise<CopyStatus>[] = boardElements.map((element) => {
+	private async copyBoardElements(
+		boardElements: BoardElement[],
+		user: User,
+		destinationCourse: Course
+	): Promise<CopyStatus[]> {
+		const promises: Promise<[number, CopyStatus]>[] = boardElements.map((element, pos) => {
 			if (element.boardElementType === BoardElementType.Task) {
 				const originalTask = element.target as Task;
-				return this.taskCopyService.copyTask({
-					originalTask,
-					user,
-					destinationCourse,
-				});
+				return this.taskCopyService
+					.copyTask({
+						originalTask,
+						user,
+						destinationCourse,
+					})
+					.then((status) => [pos, status]);
 			}
 			if (element.boardElementType === BoardElementType.Lesson) {
 				const originalLesson = element.target as Lesson;
-				return this.lessonCopyService.copyLesson({
-					originalLesson,
-					user,
-					destinationCourse,
-				});
+				return this.lessonCopyService
+					.copyLesson({
+						originalLesson,
+						user,
+						destinationCourse,
+					})
+					.then((status) => [pos, status]);
 			}
 
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -85,11 +94,12 @@ export class BoardCopyService {
 		});
 
 		const results = await Promise.allSettled(promises);
-		const statuses: CopyStatus[] = getResolvedValues(results);
+		const resolved: Array<[number, CopyStatus]> = getResolvedValues(results);
+		const statuses: CopyStatus[] = sortBy(resolved, ([pos, _]) => pos).map(([_, status]) => status);
 		return statuses;
 	}
 
-	private extractReferences(statuses: CopyStatus[]) {
+	private extractReferences(statuses: CopyStatus[]): BoardElement[] {
 		const references: BoardElement[] = [];
 		statuses.forEach((status) => {
 			const copyEntity = status.copyEntity as BoardElement | undefined;
