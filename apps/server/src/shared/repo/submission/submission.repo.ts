@@ -11,15 +11,6 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 		return Submission;
 	}
 
-	private async populateReferences(submissions: Submission[]): Promise<void> {
-		await this._em.populate(submissions, [
-			'courseGroup',
-			'task.course',
-			'task.lesson.course',
-			'task.lesson.courseGroup.course',
-		]);
-	}
-
 	async findById(id: string): Promise<Submission> {
 		const submission = await super.findById(id);
 		await this.populateReferences([submission]);
@@ -45,5 +36,14 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 		const courseGroupsOfUser = await this._em.find(CourseGroup, { students: userId });
 		const query = { $or: [{ student: userId }, { teamMembers: userId }, { courseGroup: { $in: courseGroupsOfUser } }] };
 		return query;
+	}
+
+	private async populateReferences(submissions: Submission[]): Promise<void> {
+		await this._em.populate(submissions, [
+			'courseGroup',
+			'task.course',
+			'task.lesson.course',
+			'task.lesson.courseGroup.course',
+		]);
 	}
 }

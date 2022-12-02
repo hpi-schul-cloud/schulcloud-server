@@ -10,6 +10,15 @@ export class SubmissionUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
+	async findAllByTask(userId: EntityId, taskId: EntityId): Promise<Submission[]> {
+		const [submissions] = await this.submissionService.findAllByTask(taskId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		const permittedSubmissions = this.filterSubmissionsByPermission(submissions, user);
+
+		return permittedSubmissions;
+	}
+
 	private filterSubmissionsByPermission(submissions: Submission[], user: User): Submission[] {
 		const permissionsContext = PermissionContextBuilder.read([Permission.SUBMISSIONS_VIEW]);
 
@@ -18,15 +27,6 @@ export class SubmissionUc {
 
 			return hasPermission;
 		});
-
-		return permittedSubmissions;
-	}
-
-	async findAllByTask(userId: EntityId, taskId: EntityId): Promise<Submission[]> {
-		const [submissions] = await this.submissionService.findAllByTask(taskId);
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-
-		const permittedSubmissions = this.filterSubmissionsByPermission(submissions, user);
 
 		return permittedSubmissions;
 	}
