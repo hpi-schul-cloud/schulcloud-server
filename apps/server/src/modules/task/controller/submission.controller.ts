@@ -11,14 +11,14 @@ import { SubmissionStatusListResponse } from './dto/submission.response';
 @Authenticate('jwt')
 @Controller('submissions')
 export class SubmissionController {
-	constructor(private readonly submissionsUc: SubmissionUC) {}
+	constructor(private readonly submissionUc: SubmissionUC) {}
 
 	@Get('status/task/:taskId')
 	async findStatusesByTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: TaskUrlParams
 	): Promise<SubmissionStatusListResponse> {
-		const submissions = await this.submissionsUc.findAllByTask(currentUser.userId, params.taskId);
+		const submissions = await this.submissionUc.findAllByTask(currentUser.userId, params.taskId);
 
 		const submissionResponses = submissions.map((submission) => {
 			return SubmissionMapper.mapToStatusResponse(submission);
