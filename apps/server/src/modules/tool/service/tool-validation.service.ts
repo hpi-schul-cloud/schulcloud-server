@@ -7,40 +7,41 @@ export class ToolValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
 	async validateCreate(externalToolDO: ExternalToolDO): Promise<void> {
-		this.validateCommon(externalToolDO);
+		await this.validateCommon(externalToolDO);
 
-		if (!(await this.isNameUnique(externalToolDO))) {
-			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`);
-		}
-		if (externalToolDO.config instanceof Oauth2ToolConfigDO && !(await this.isClientIdUnique(externalToolDO.config))) {
+		if (externalToolDO.config instanceof Oauth2ToolConfigDO && !(await this.isClientIdUnique(externalToolDO))) {
 			throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`);
 		}
 	}
 
 	async validateUpdate(externalToolDO: ExternalToolDO): Promise<void> {
-		this.validateCommon(externalToolDO);
+		await this.validateCommon(externalToolDO);
 
 		if (!externalToolDO.id) {
-			throw new UnprocessableEntityException('TODO');
+			throw new UnprocessableEntityException(`The Tool: ${externalToolDO.name} has no id`);
 		}
 
-		if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
-			const loadedTool: ExternalToolDO = await this.externalToolService.findExternalToolById(externalToolDO.id);
-			if (externalToolDO.config.type !== loadedTool.config.type) {
-				throw new UnprocessableEntityException(`The Config Type of the tool: ${externalToolDO.name} is immutable`);
-			}
-			if (
-				loadedTool.config instanceof Oauth2ToolConfigDO &&
-				externalToolDO.config.clientId !== loadedTool.config.clientId
-			) {
-				throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is immutable`);
-			}
+		const loadedTool: ExternalToolDO = await this.externalToolService.findExternalToolById(externalToolDO.id);
+		// TODO should we be consistent in checking the type or only for oauth or do we add hydra logic to create a new client
+		if (externalToolDO.config.type !== loadedTool.config.type) {
+			throw new UnprocessableEntityException(`The Config Type of the tool: ${externalToolDO.name} is immutable`);
+		}
+
+		if (
+			externalToolDO.config instanceof Oauth2ToolConfigDO &&
+			loadedTool.config instanceof Oauth2ToolConfigDO &&
+			externalToolDO.config.clientId !== loadedTool.config.clientId
+		) {
+			throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is immutable`);
 		}
 	}
 
-	private validateCommon(externalToolDO: ExternalToolDO): void {
+	private async validateCommon(externalToolDO: ExternalToolDO): Promise<void> {
 		if (!externalToolDO) {
 			return;
+		}
+		if (!(await this.isNameUnique(externalToolDO))) {
+			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`);
 		}
 		if (externalToolDO.parameters && this.hasDuplicateAttributes(externalToolDO.parameters)) {
 			throw new UnprocessableEntityException(
@@ -59,14 +60,15 @@ export class ToolValidationService {
 		return duplicate == null || duplicate.id === externalToolDO.id;
 	}
 
-	private async isClientIdUnique(oauth2ToolConfig: Oauth2ToolConfigDO): Promise<boolean> {
+	private async isClientIdUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
+		if (!(externalToolDO.config instanceof Oauth2ToolConfigDO)) {
+			return true;
+		}
+
 		const duplicate: ExternalToolDO | null = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
-			oauth2ToolConfig.clientId
+			externalToolDO.config.clientId
 		);
-		return (
-			duplicate == null ||
-			(duplicate.config instanceof Oauth2ToolConfigDO && duplicate.config.clientId === oauth2ToolConfig.clientId)
-		);
+		return duplicate == null || duplicate.id === externalToolDO.id;
 	}
 
 	private hasDuplicateAttributes(customParameter: CustomParameterDO[]): boolean {
