@@ -9,8 +9,8 @@ class UserAccountService {
 		this.app = app;
 	}
 
-	async createUserAndAccount(inputUser, inputAccount) {
-		const user = await UserRepo.createUser(inputUser);
+	async createUserAndAccount(inputUser, inputAccount, school) {
+		const user = await UserRepo.createUser(inputUser, school);
 		inputAccount.userId = user._id;
 
 		try {
