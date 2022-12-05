@@ -9,12 +9,16 @@ import {
 	Course,
 	Lesson,
 	Task,
-	TaskCopyService,
 	User,
 } from '@shared/domain';
+import { BoardRepo } from '@shared/repo';
+import { Logger } from '@src/core/logger';
+import { getResolvedValues } from '@src/modules/files-storage/helper';
+import { sortBy } from 'lodash';
 import { LessonCopyService } from './lesson-copy.service';
+import { TaskCopyService } from './task-copy.service';
 
-export type BoardCopyParams = {
+type BoardCopyParams = {
 	originalBoard: Board;
 	destinationCourse: Course;
 	user: User;
@@ -23,53 +27,107 @@ export type BoardCopyParams = {
 @Injectable()
 export class BoardCopyService {
 	constructor(
+		private readonly logger: Logger,
+		private readonly boardRepo: BoardRepo,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly copyHelperService: CopyHelperService
 	) {}
 
 	async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
-		const elements: CopyStatus[] = [];
-		const references: BoardElement[] = [];
+		const { originalBoard, user, destinationCourse } = params;
 
-		const boardElements = params.originalBoard.getElements();
-		for (let i = 0; i < boardElements.length; i += 1) {
-			const element = boardElements[i];
+		const boardElements: BoardElement[] = originalBoard.getElements();
+		const elements: CopyStatus[] = await this.copyBoardElements(boardElements, user, destinationCourse);
+		const references: BoardElement[] = this.extractReferences(elements);
 
-			if (element.boardElementType === BoardElementType.Task) {
-				const originalTask = element.target as Task;
-				const status = this.taskCopyService.copyTaskMetadata({
-					originalTask,
-					user: params.user,
-					destinationCourse: params.destinationCourse,
-				});
-				elements.push(status);
-				const taskBoardElement = BoardElement.FromTask(status.copyEntity as Task);
-				references.push(taskBoardElement);
-			} else if (element.boardElementType === BoardElementType.Lesson) {
-				const originalLesson = element.target as Lesson;
-				// eslint-disable-next-line no-await-in-loop
-				const status = await this.lessonCopyService.copyLesson({
-					originalLesson,
-					user: params.user,
-					destinationCourse: params.destinationCourse,
-				});
-				elements.push(status);
-				const lessonBardElement = BoardElement.FromLesson(status.copyEntity as Lesson);
-				references.push(lessonBardElement);
-			}
-		}
-
-		const copy = new Board({ references, course: params.destinationCourse });
-		const status = {
+		let boardCopy: Board = new Board({ references, course: destinationCourse });
+		let status: CopyStatus = {
 			title: 'board',
 			type: CopyElementType.BOARD,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
-			copyEntity: copy,
+			copyEntity: boardCopy,
 			originalEntity: params.originalBoard,
 			elements,
 		};
 
+		status = this.updateCopiedEmbeddedTasksOfLessons(status);
+		if (status.copyEntity) {
+			boardCopy = status.copyEntity as Board;
+		}
+		await this.boardRepo.save(boardCopy);
+
 		return status;
+	}
+
+	private async copyBoardElements(
+		boardElements: BoardElement[],
+		user: User,
+		destinationCourse: Course
+	): Promise<CopyStatus[]> {
+		const promises: Promise<[number, CopyStatus]>[] = boardElements.map((element, pos) => {
+			if (element.boardElementType === BoardElementType.Task) {
+				const originalTask = element.target as Task;
+				return this.taskCopyService
+					.copyTask({
+						originalTask,
+						user,
+						destinationCourse,
+					})
+					.then((status) => [pos, status]);
+			}
+			if (element.boardElementType === BoardElementType.Lesson) {
+				const originalLesson = element.target as Lesson;
+				return this.lessonCopyService
+					.copyLesson({
+						originalLesson,
+						user,
+						destinationCourse,
+					})
+					.then((status) => [pos, status]);
+			}
+
+			/* istanbul ignore next */
+			this.logger.warn(`BoardCopyService unable to handle boardElementType.`);
+			/* istanbul ignore next */
+			return Promise.reject(new Error(`BoardCopyService unable to handle boardElementType.`));
+		});
+
+		const results = await Promise.allSettled(promises);
+		const resolved: Array<[number, CopyStatus]> = getResolvedValues(results);
+		const statuses: CopyStatus[] = this.sortByOriginalOrder(resolved);
+		return statuses;
+	}
+
+	private extractReferences(statuses: CopyStatus[]): BoardElement[] {
+		const references: BoardElement[] = [];
+		statuses.forEach((status) => {
+			if (status.copyEntity instanceof Task) {
+				references.push(BoardElement.FromTask(status.copyEntity));
+			}
+			if (status.copyEntity instanceof Lesson) {
+				references.push(BoardElement.FromLesson(status.copyEntity));
+			}
+		});
+		return references;
+	}
+
+	private updateCopiedEmbeddedTasksOfLessons(boardStatus: CopyStatus): CopyStatus {
+		const copyDict = this.copyHelperService.buildCopyEntityDict(boardStatus);
+		const elements = boardStatus.elements ?? [];
+		const updatedElements = elements.map((elementCopyStatus) => {
+			if (elementCopyStatus.type === CopyElementType.LESSON) {
+				return this.lessonCopyService.updateCopiedEmbeddedTasks(elementCopyStatus, copyDict);
+			}
+			return elementCopyStatus;
+		});
+		boardStatus.elements = updatedElements;
+		return boardStatus;
+	}
+
+	private sortByOriginalOrder(resolved: [number, CopyStatus][]): CopyStatus[] {
+		const sortByPos = sortBy(resolved, ([pos, _]) => pos);
+		const statuses = sortByPos.map(([_, status]) => status);
+		return statuses;
 	}
 }
