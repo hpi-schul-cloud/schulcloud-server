@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
+import { IAccount } from '@shared/domain/interface/account';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakSettings } from '../interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -128,6 +129,46 @@ describe('KeycloakIdentityManagement', () => {
 					email: mockedAccount1.email,
 					firstName: mockedAccount1.firstName,
 					lastName: mockedAccount1.lastName,
+				})
+			);
+		});
+
+		it('should extract given date from keycloak representation', async () => {
+			kcUsersMock.find.mockResolvedValueOnce([]);
+			// 1647262955423 -> Mon Mar 14 2022 14:02:35 GMT+0100
+			kcUsersMock.findOne.mockResolvedValueOnce({ ...mockedAccount1, createdTimestamp: 1647262955423 });
+
+			const ret = await idm.findAccountById(mockedAccount1.id);
+
+			expect(ret).not.toBeNull();
+			expect(ret).toEqual(
+				expect.objectContaining<IAccount>({
+					id: ret.id,
+					createdTimestamp: new Date(2022, 2, 14, 14, 2, 35, 423),
+				})
+			);
+		});
+
+		it('should extract attributes from keycloak representation', async () => {
+			kcUsersMock.find.mockResolvedValueOnce([]);
+			// 1577836861 -> Wed Jan 01 2020 00:01:01 GMT+0000
+			kcUsersMock.findOne.mockResolvedValueOnce({
+				...mockedAccount1,
+				attributes: {
+					refTechnicalId: 'tecId',
+					refFunctionalIntId: 'fctIntId',
+					refFunctionalExtId: 'fctExtId',
+				},
+			});
+
+			const ret = await idm.findAccountById(mockedAccount1.id);
+			expect(ret).not.toBeNull();
+			expect(ret).toEqual(
+				expect.objectContaining<IAccount>({
+					id: ret.id,
+					attRefTechnicalId: 'tecId',
+					attRefFunctionalIntId: 'fctIntId',
+					attRefFunctionalExtId: 'fctExtId',
 				})
 			);
 		});
