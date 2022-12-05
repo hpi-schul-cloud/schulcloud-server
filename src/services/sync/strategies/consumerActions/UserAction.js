@@ -128,7 +128,7 @@ class UserAction extends BaseConsumerAction {
 	}
 
 	async createUserAndAccount(idmUser, account, school) {
-		idmUser.schoolId = schoolId._id;
+		idmUser.schoolId = school._id;
 		const userAccountService = await this.app.service('/sync/userAccount');
 		return userAccountService.createUserAndAccount(idmUser, account, school);
 	}
