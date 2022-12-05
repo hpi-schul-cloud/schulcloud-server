@@ -126,8 +126,8 @@ export class BoardCopyService {
 	}
 
 	private sortByOriginalOrder(resolved: [number, CopyStatus][]): CopyStatus[] {
-		const sortByPos = sortBy(resolved, ([pos, _]) => pos);
-		const statuses = sortByPos.map(([_, status]) => status);
+		const sortByPos = sortBy(resolved, ([pos]) => pos);
+		const statuses = sortByPos.map(([, status]) => status);
 		return statuses;
 	}
 }
