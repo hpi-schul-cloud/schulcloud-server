@@ -1,24 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { AccountRepo } from '@shared/repo';
 import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { IKeycloakSettings, KeycloakSettings } from '@shared/infra/identity-management/keycloak/interface';
 import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
-import { IAccount } from '@shared/domain';
+import { IAccount, IAccountUpdate } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountService } from './account.service';
+import { AccountRepo } from '../repo/account.repo';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
+import { AbstractAccountService } from './account.service.abstract';
+import { AccountServiceIdm } from './account-idm.service';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
-	let accountService: AccountService;
-	let idmService: IdentityManagementService;
+	let identityManegementService: IdentityManagementService;
 	let keycloakAdminService: KeycloakAdministrationService;
 	let keycloak: KeycloakAdminClient;
 	let isIdmReachable = false;
+	let accountIdmService: AbstractAccountService;
 
 	const testRealm = 'test-realm';
 	const testAccount = new AccountSaveDto({
@@ -27,7 +28,7 @@ describe('AccountService Integration', () => {
 		userId: new ObjectId().toString(),
 	});
 	const createAccount = async (): Promise<AccountDto> => {
-		return accountService.save(testAccount);
+		return accountIdmService.save(testAccount);
 	};
 
 	beforeAll(async () => {
@@ -47,7 +48,7 @@ describe('AccountService Integration', () => {
 			],
 			providers: [
 				AccountRepo,
-				AccountService,
+				AccountServiceIdm,
 				KeycloakAdministrationService,
 				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
 				{
@@ -70,8 +71,8 @@ describe('AccountService Integration', () => {
 				},
 			],
 		}).compile();
-		accountService = module.get(AccountService);
-		idmService = module.get(IdentityManagementService);
+		accountIdmService = module.get(AccountServiceIdm);
+		identityManegementService = module.get(IdentityManagementService);
 		keycloakAdminService = module.get(KeycloakAdministrationService);
 		isIdmReachable = await keycloakAdminService.testKcConnection();
 		if (isIdmReachable) {
@@ -99,12 +100,13 @@ describe('AccountService Integration', () => {
 	it('save should create a new account', async () => {
 		if (!isIdmReachable) return;
 
-		await createAccount();
-		const accounts = await idmService.getAllAccounts();
+		const createdAccount = await createAccount();
+		const accounts = await identityManegementService.getAllAccounts();
 
 		expect(accounts).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining<IAccount>({
+					id: createdAccount.refId ?? 'undefined',
 					username: testAccount.username,
 				}),
 			])
@@ -116,15 +118,16 @@ describe('AccountService Integration', () => {
 
 		const newUsername = 'jane.doe@mail.tld';
 		const account = await createAccount();
-		await accountService.save({
+		await accountIdmService.save({
 			id: account.id,
 			username: newUsername,
 		});
-		const accounts = await idmService.getAllAccounts();
+		const accounts = await identityManegementService.getAllAccounts();
 
 		expect(accounts).toEqual(
 			expect.arrayContaining([
-				expect.objectContaining<IAccount>({
+				expect.objectContaining<IAccountUpdate>({
+					// id: account.id,
 					username: newUsername,
 				}),
 			])
@@ -143,19 +146,19 @@ describe('AccountService Integration', () => {
 
 		const newUserName = 'jane.doe@mail.tld';
 		const account = await createAccount();
-		await accountService.updateUsername(account.id, newUserName);
-		const accounts = await idmService.getAllAccounts();
+		await accountIdmService.updateUsername(account.id, newUserName);
+		const accounts = await identityManegementService.getAllAccounts();
 
 		expect(accounts).toEqual(
 			expect.arrayContaining([
-				expect.objectContaining<IAccount>({
+				expect.objectContaining<IAccountUpdate>({
 					username: newUserName,
 				}),
 			])
 		);
 		expect(accounts).not.toEqual(
 			expect.arrayContaining([
-				expect.objectContaining<IAccount>({
+				expect.objectContaining<IAccountUpdate>({
 					username: testAccount.username,
 				}),
 			])
@@ -166,19 +169,19 @@ describe('AccountService Integration', () => {
 		if (!isIdmReachable) return;
 
 		const account = await createAccount();
-		await expect(accountService.updatePassword(account.id, 'newPassword')).resolves.not.toThrow();
+		await expect(accountIdmService.updatePassword(account.id, 'newPassword')).resolves.not.toThrow();
 	});
 
 	it('delete should remove account', async () => {
 		if (!isIdmReachable) return;
 
 		const account = await createAccount();
-		await accountService.delete(account.id);
-		const accounts = await idmService.getAllAccounts();
+		await accountIdmService.delete(account.id);
+		const accounts = await identityManegementService.getAllAccounts();
 
 		expect(accounts).not.toEqual(
 			expect.arrayContaining([
-				expect.objectContaining<IAccount>({
+				expect.objectContaining<IAccountUpdate>({
 					username: testAccount.username,
 				}),
 			])
@@ -189,12 +192,12 @@ describe('AccountService Integration', () => {
 		if (!isIdmReachable) return;
 
 		const account = await createAccount();
-		await accountService.deleteByUserId(account.userId as string);
-		const accounts = await idmService.getAllAccounts();
+		await accountIdmService.deleteByUserId(account.userId as string);
+		const accounts = await identityManegementService.getAllAccounts();
 
 		expect(accounts).not.toEqual(
 			expect.arrayContaining([
-				expect.objectContaining<IAccount>({
+				expect.objectContaining<IAccountUpdate>({
 					username: testAccount.username,
 				}),
 			])
