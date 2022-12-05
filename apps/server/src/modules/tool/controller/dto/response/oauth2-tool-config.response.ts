@@ -36,5 +36,6 @@ export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 		this.frontchannelLogoutUri = props.frontchannelLogoutUri;
 		this.scope = props.scope;
 		this.redirectUris = props.redirectUris;
+		this.tokenEndpointAuthMethod = props.tokenEndpointAuthMethod;
 	}
 }
