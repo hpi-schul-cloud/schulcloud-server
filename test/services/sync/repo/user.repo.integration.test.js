@@ -116,7 +116,15 @@ describe('user repo', () => {
 				await UserRepo.createUserAndAccount(inputUserSecond, inputAccount, school);
 			} catch (error) {
 				expect(error).to.be.an.instanceof(BadRequest);
-				expect(error.message).to.contain(firstLdapId);
+				expect(error.errors).to.have.all.keys(
+					'userId',
+					'ldapId',
+					'existsInSchool',
+					'userSchool',
+					'userSchoolId',
+					'existsInSchoolName'
+				);
+				expect(error.errors.ldapId).to.equal(firstLdapId);
 			}
 		});
 	});
