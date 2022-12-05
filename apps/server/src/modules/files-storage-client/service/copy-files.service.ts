@@ -11,6 +11,7 @@ export type FileUrlReplacement = {
 	regex: RegExp;
 	replacement: string;
 };
+
 @Injectable()
 export class CopyFilesService {
 	constructor(
