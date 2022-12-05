@@ -3,16 +3,16 @@ const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
 
 const UserRepo = require('../../../../src/services/sync/repo/user.repo');
-
-const accountModel = require('../../../../src/services/account/model');
 const { userModel } = require('../../../../src/services/user/model');
+
+const { BadRequest } = require('../../../../src/errors');
+
 const { importUserModel } = require('../../../../src/services/sync/model/importUser.schema');
 
 const appPromise = require('../../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const testObjects = require('../../helpers/testObjects')(appPromise());
-const { BadRequest } = require('../../../../src/errors');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -37,21 +37,17 @@ describe('user repo', () => {
 		await closeNestServices(nestServices);
 	});
 
-	describe('createUserAndAccount', () => {
-		const createdAccounts = [];
+	describe('createUser', () => {
 		const createdUsers = [];
 
 		afterEach(async () => {
-			const accountPromises = createdAccounts.map((account) => accountModel.remove(account));
-			await Promise.all(accountPromises);
-
 			const userPromises = createdUsers.map((user) => userModel.remove(user));
 			await Promise.all(userPromises);
 
 			await testObjects.cleanup();
 		});
 
-		it('should successfully create new user and account', async () => {
+		it('should successfully create new user', async () => {
 			const school = await testObjects.createTestSchool();
 			const TEST_ROLE = 'blub21';
 			const role = await testObjects.createTestRole({ name: TEST_ROLE, permissions: [] });
@@ -65,19 +61,15 @@ describe('user repo', () => {
 				ldapId: 'Test ldapId',
 				roles: [TEST_ROLE],
 			};
-			const inputAccount = {
-				username: email,
-			};
-			const { user, account } = await UserRepo.createUserAndAccount(inputUser, inputAccount, school);
+
+			const user = await UserRepo.createUser(inputUser, school);
 			expect(user._id).to.be.not.undefined;
-			expect(account.userId.toString()).to.be.equal(user._id.toString());
-			expect(account.activated).to.be.true;
+
 			expect(user.ldapDn).to.be.not.undefined;
 			expect(user.ldapId).to.be.not.undefined;
 			expect(user.roles.length).to.be.equal(1);
 			expect(user.roles[0]._id.toString()).to.be.equal(role._id.toString());
 
-			createdAccounts.push(account);
 			createdUsers.push(user);
 		});
 
@@ -96,16 +88,13 @@ describe('user repo', () => {
 				ldapDn: 'Test ldap',
 				roles: [TEST_ROLE],
 			};
-			const inputAccount = {
-				username: TEST_EMAIL,
-			};
 
 			const firstLdapId = 'initialLdapId';
 			const inputUserFirst = {
 				...inputUser,
 				ldapId: firstLdapId,
 			};
-			await UserRepo.createUserAndAccount(inputUserFirst, inputAccount, school);
+			await UserRepo.createUser(inputUserFirst, school);
 
 			const secondLdapId = 'newLdapId';
 			const inputUserSecond = {
@@ -113,7 +102,7 @@ describe('user repo', () => {
 				ldapId: secondLdapId,
 			};
 			try {
-				await UserRepo.createUserAndAccount(inputUserSecond, inputAccount, school);
+				await UserRepo.createUser(inputUserSecond, school);
 			} catch (error) {
 				expect(error).to.be.an.instanceof(BadRequest);
 				expect(error.errors).to.have.all.keys(
@@ -128,8 +117,8 @@ describe('user repo', () => {
 			}
 		});
 	});
-	describe('update user and account', () => {
-		it('should successfully update user and account', async () => {
+	describe('update user', () => {
+		it('should successfully update user', async () => {
 			const initialFirstName = 'Initial Fname';
 			const initialLastName = 'Initial Lname';
 			const initialEmail = 'initial@email.com';
@@ -140,21 +129,12 @@ describe('user repo', () => {
 				birthday: initialBirthday,
 				email: initialEmail,
 			});
-			const password = 'password123';
-			const credentials = { username: testUser.email, password };
-			await testObjects.createTestAccount(credentials, 'local', testUser);
 
 			const newFirstName = 'new first name';
 			const newLastName = 'new last name';
-			const newUserName = 'new user name';
-			const { user, account } = await UserRepo.updateUserAndAccount(
-				testUser._id,
-				{ firstName: newFirstName, lastName: newLastName },
-				{ username: newUserName }
-			);
+			const user = await UserRepo.updateUser(testUser._id, { firstName: newFirstName, lastName: newLastName });
 			expect(user.firstName).to.be.equal(newFirstName);
 			expect(user.lastName).to.be.equal(newLastName);
-			expect(account.username).to.be.equal(newUserName);
 			expect(user.email).to.be.equal(initialEmail);
 			expect(user.birthday.toString()).to.be.equal(initialBirthday.toString());
 		});
@@ -165,19 +145,12 @@ describe('user repo', () => {
 
 			await testObjects.createTestUser({ email: existedEmail });
 			const testUser = await testObjects.createTestUser({ email: testEmail });
-			const password = 'password123';
-			const credentials = { username: testUser.email, password };
-			await testObjects.createTestAccount(credentials, 'local', testUser);
 
 			const newFirstName = 'new first name';
 			const newLastName = 'new last name';
-			const newUserName = 'new user name';
+
 			await expect(
-				UserRepo.updateUserAndAccount(
-					testUser._id,
-					{ firstName: newFirstName, lastName: newLastName, email: existedEmail },
-					{ username: newUserName }
-				)
+				UserRepo.updateUser(testUser._id, { firstName: newFirstName, lastName: newLastName, email: existedEmail })
 			).to.be.rejectedWith(BadRequest);
 		});
 	});
@@ -378,6 +351,29 @@ describe('user repo', () => {
 			});
 			const res = await UserRepo.findUserBySchoolAndName(school._id, 'jane', user.lastName);
 
+			expect(res.length).to.equal(0);
+		});
+	});
+	describe('deleteUser', () => {
+		it('should delete an existing user', async () => {
+			const school = await testObjects.createTestSchool();
+			const testUserEmail = 'user@test.test';
+			const user = await testObjects.createTestUser(
+				{
+					schoolId: school._id,
+					firstName: 'jon',
+					lastName: 'doe',
+					email: testUserEmail,
+				},
+				{ manualCleanup: true }
+			);
+
+			let res = await UserRepo.findUserBySchoolAndName(school._id, user.firstName, user.lastName);
+			expect(res.length).to.equal(1);
+
+			await UserRepo.deleteUser(user._id);
+
+			res = await UserRepo.findUserBySchoolAndName(school._id, user.firstName, user.lastName);
 			expect(res.length).to.equal(0);
 		});
 	});
