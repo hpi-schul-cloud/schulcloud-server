@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { equal } = require('../../../helper/compare').ObjectId;
+const { hasPermission } = require('../../../hooks');
 
 // get an json api conform entry
 const getDataEntry = ({ type, id, name, authorities = ['can-read'], attributes = {} }) => ({
@@ -35,6 +36,7 @@ class ScopeResolver {
 
 		const user = await userService.get(id);
 		const userId = user._id;
+		const { schoolId } = user;
 
 		response.data.push(
 			getDataEntry({
@@ -45,13 +47,21 @@ class ScopeResolver {
 			})
 		);
 
-		const [courses, classes, teams] = await Promise.all([
+		const [courses, coursesAdmin, classes, teams] = await Promise.all([
 			courseService.find({
 				query: {
 					$limit: false,
 					$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
 				},
 			}),
+			hasPermission('ADMIN_VIEW')
+				? courseService.find({
+						query: {
+							$limit: false,
+							$or: [{ schoolId }],
+						},
+				  })
+				: null,
 			classService.find({
 				query: {
 					$limit: false,
@@ -72,6 +82,15 @@ class ScopeResolver {
 			};
 			return c;
 		});
+
+		if (coursesAdmin != null) {
+			coursesAdmin.data = coursesAdmin.data.map((c) => {
+				c.attributes = {
+					scopeType: 'courseAdmin',
+				};
+				return c;
+			});
+		}
 
 		classes.data = classes.data.map((c) => {
 			c.attributes = {
@@ -95,7 +114,7 @@ class ScopeResolver {
 			);
 		});
 
-		const scopes = [].concat(courses.data, classes.data);
+		const scopes = [].concat(courses.data, coursesAdmin.data, classes.data);
 		const isUserId = equalId(userId);
 
 		scopes.forEach((scope) => {

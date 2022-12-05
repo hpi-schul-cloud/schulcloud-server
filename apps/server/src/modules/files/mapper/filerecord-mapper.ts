@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { ObjectId } from '@mikro-orm/mongodb';

@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -7,19 +6,33 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '@shared/domain';
-import { CustomParameterTypeParams } from '../interface/custom-parameter-type.enum';
-import { CustomParameterCreateParams } from '../controller/dto/request/custom-parameter.params';
-import { BasicToolConfigParams } from '../controller/dto/request/basic-tool-config.params';
-import { Oauth2ToolConfigParams } from '../controller/dto/request/oauth2-tool-config.params';
-import { ExternalToolParams } from '../controller/dto/request/external-tool-create.params';
+import {
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	SortOrder,
+	SortOrderMap,
+	ToolConfigType,
+} from '@shared/domain';
+import {
+	BasicToolConfigParams,
+	CustomParameterCreateParams,
+	ExternalToolParams,
+	ExternalToolSearchParams,
+	ExternalToolSortOrder,
+	Lti11ToolConfigParams,
+	Oauth2ToolConfigParams,
+	SortExternalToolParams,
+} from '../dto';
+import {
+	CustomParameterLocationParams,
+	CustomParameterScopeParams,
+	CustomParameterTypeParams,
+	LtiMessageType,
+	LtiPrivacyPermission,
+	TokenEndpointAuthMethod,
+} from '../../interface';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
-import { Lti11ToolConfigParams } from '../controller/dto/request/lti11-tool-config.params';
-import { TokenEndpointAuthMethod } from '../interface/token-endpoint-auth-method.enum';
-import { CustomParameterLocationParams } from '../interface/custom-parameter-location.enum';
-import { CustomParameterScopeParams } from '../interface/custom-parameter-scope.enum';
-import { LtiMessageType } from '../interface/lti-message-type.enum';
-import { LtiPrivacyPermission } from '../interface/lti-privacy-permission.enum';
 
 describe('ExternalToolRequestMapper', () => {
 	let module: TestingModule;
@@ -37,7 +50,7 @@ describe('ExternalToolRequestMapper', () => {
 		await module.close();
 	});
 
-	function setup() {
+	const setup = () => {
 		const basicConfigParams = new BasicToolConfigParams();
 		basicConfigParams.type = ToolConfigType.BASIC;
 		basicConfigParams.baseUrl = 'mockUrl';
@@ -88,7 +101,7 @@ describe('ExternalToolRequestMapper', () => {
 			basicToolConfigDO,
 			basicConfigParams,
 		};
-	}
+	};
 
 	describe('mapRequestToExternalToolDO', () => {
 		describe('when mapping basic tool', () => {
@@ -101,8 +114,9 @@ describe('ExternalToolRequestMapper', () => {
 				expect(result).toEqual(externalToolDO);
 			});
 		});
+
 		describe('when mapping lti tool', () => {
-			function ltiSetup() {
+			const ltiSetup = () => {
 				const lti11ConfigParams = new Lti11ToolConfigParams();
 				lti11ConfigParams.type = ToolConfigType.LTI11;
 				lti11ConfigParams.baseUrl = 'mockUrl';
@@ -122,7 +136,8 @@ describe('ExternalToolRequestMapper', () => {
 					baseUrl: 'mockUrl',
 				});
 				return { lti11ToolConfigDO, lti11ConfigParams };
-			}
+			};
+
 			it('should map the request to external tool DO with lti11 config', () => {
 				const { lti11ToolConfigDO, lti11ConfigParams } = ltiSetup();
 				const { externalToolParams, externalToolDO } = setup();
@@ -134,8 +149,9 @@ describe('ExternalToolRequestMapper', () => {
 				expect(result).toEqual(externalToolDO);
 			});
 		});
+
 		describe('when mapping oauth tool', () => {
-			function oauthSetup() {
+			const oauthSetup = () => {
 				const oauth2ConfigParams = new Oauth2ToolConfigParams();
 				oauth2ConfigParams.type = ToolConfigType.OAUTH2;
 				oauth2ConfigParams.baseUrl = 'mockUrl';
@@ -163,7 +179,7 @@ describe('ExternalToolRequestMapper', () => {
 					oauth2ConfigParams,
 					oauth2ToolConfigDO,
 				};
-			}
+			};
 
 			it('should map the request to external tool DO with oauth2', () => {
 				const { oauth2ConfigParams, oauth2ToolConfigDO } = oauthSetup();
@@ -175,54 +191,41 @@ describe('ExternalToolRequestMapper', () => {
 
 				expect(result).toEqual(externalToolDO);
 			});
+		});
+	});
 
-			it('should map DO to ProviderOauthClient', () => {
-				const { oauth2ToolConfigDO } = oauthSetup();
-				const { externalToolDO } = setup();
-				externalToolDO.config = oauth2ToolConfigDO;
-				externalToolDO.name = 'name';
+	describe('mapSortingQueryToDomain', () => {
+		it('should map controller sorting query to domain sort order map', () => {
+			const sortingQuery: SortExternalToolParams = {
+				sortBy: ExternalToolSortOrder.ID,
+				sortOrder: SortOrder.asc,
+			};
 
-				const result = mapper.mapDoToProviderOauthClient('name', oauth2ToolConfigDO);
+			const result: SortOrderMap<ExternalToolDO> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
 
-				expect(result).toEqual({
-					client_name: 'name',
-					client_id: oauth2ToolConfigDO.clientId,
-					client_secret: oauth2ToolConfigDO.clientSecret,
-					scope: oauth2ToolConfigDO.scope,
-					token_endpoint_auth_method: oauth2ToolConfigDO.tokenEndpointAuthMethod,
-					redirect_uris: oauth2ToolConfigDO.redirectUris,
-					frontchannel_logout_uri: oauth2ToolConfigDO.frontchannelLogoutUri,
-					subject_type: 'pairwise',
-				});
-			});
+			expect(result).toEqual({ id: SortOrder.asc });
+		});
 
-			it('should apply the ProviderOauthClient to DO', () => {
-				const { oauth2ConfigParams, oauth2ToolConfigDO } = oauthSetup();
-				const { externalToolParams, externalToolDO } = setup();
-				const oauthClient: ProviderOauthClient = {
-					scope: '',
-					token_endpoint_auth_method: TokenEndpointAuthMethod.PRIVATE_KEY_JWT,
-					redirect_uris: [],
-					frontchannel_logout_uri: '',
-				};
-				externalToolParams.config = oauth2ConfigParams;
-				externalToolDO.config = oauth2ToolConfigDO;
-				const expected: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
-					type: oauth2ToolConfigDO.type,
-					baseUrl: oauth2ToolConfigDO.baseUrl,
-					clientId: oauth2ToolConfigDO.clientId,
-					clientSecret: oauth2ToolConfigDO.clientSecret,
-					skipConsent: oauth2ToolConfigDO.skipConsent,
-					scope: oauthClient.scope,
-					tokenEndpointAuthMethod: oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod,
-					redirectUris: oauthClient.redirect_uris,
-					frontchannelLogoutUri: oauthClient.frontchannel_logout_uri,
-				});
+		it('should map controller sorting query to undefined', () => {
+			const sortingQuery: SortExternalToolParams = {
+				sortOrder: SortOrder.asc,
+			};
 
-				const result: Oauth2ToolConfigDO = mapper.applyProviderOauthClientToDO(oauth2ToolConfigDO, oauthClient);
+			const result: SortOrderMap<ExternalToolDO> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
 
-				expect(result).toEqual(expected);
-			});
+			expect(result).toBeUndefined();
+		});
+	});
+
+	describe('mapExternalToolFilterQueryToDO', () => {
+		it('should map params to partial do', () => {
+			const params: ExternalToolSearchParams = {
+				name: 'name',
+			};
+
+			const doPartial = mapper.mapExternalToolFilterQueryToDO(params);
+
+			expect(doPartial).toEqual(expect.objectContaining(params));
 		});
 	});
 });
