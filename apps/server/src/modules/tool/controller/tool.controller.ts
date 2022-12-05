@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { ICurrentUser, IFindOptions } from '@shared/domain';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { ICurrentUser, IFindOptions, RoleName } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
 import {
 	ApiCreatedResponse,
@@ -12,20 +12,20 @@ import {
 import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { Lti11LaunchQuery } from './dto/lti11-launch.query';
-import { Lti11LaunchResponse } from './dto/lti11-launch.response';
-import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
-import { Lti11LaunchParams } from './dto/lti11-launch.params';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Lti11Uc } from '../uc/lti11.uc';
-import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { ExternalToolRequestMapper } from '../mapper/external-tool-request.mapper';
-import { ExternalToolResponseMapper } from '../mapper/external-tool-response.mapper';
-import { ExternalToolResponse } from './dto/response/external-tool.response';
-import { ExternalToolParams } from './dto/request/external-tool-create.params';
+import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './mapper';
 import { ExternalToolUc } from '../uc/external-tool.uc';
-import { ExternalToolSearchListResponse } from './dto/response/external-tool-search-list.response';
-import { ExternalToolSearchParams } from './dto/request/external-tool-search.params';
-import { SortExternalToolParams } from './dto/request/external-tool-sort.params';
+import {
+	ExternalToolParams,
+	ExternalToolResponse,
+	ExternalToolSearchListResponse,
+	ExternalToolSearchParams,
+	Lti11LaunchQuery,
+	Lti11LaunchResponse,
+	SortExternalToolParams,
+	ToolIdParams,
+} from './dto';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -34,7 +34,7 @@ export class ToolController {
 	constructor(
 		private readonly lti11Uc: Lti11Uc,
 		private readonly lti11ResponseMapper: Lti11ResponseMapper,
-		private externalToolUc: ExternalToolUc,
+		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
 		private readonly externalResponseMapper: ExternalToolResponseMapper
 	) {}
@@ -42,11 +42,12 @@ export class ToolController {
 	@Get('lti11/:toolId/launch')
 	async getLti11LaunchParameters(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: Lti11LaunchParams,
+		@Param() params: ToolIdParams,
 		@Query() query: Lti11LaunchQuery
 	): Promise<Lti11LaunchResponse> {
 		const authorization: Authorization = await this.lti11Uc.getLaunchParameters(
-			currentUser,
+			currentUser.userId,
+			currentUser.roles[0] as RoleName,
 			params.toolId,
 			query.courseId
 		);
@@ -60,11 +61,11 @@ export class ToolController {
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
 	async createExternalTool(
-		@Body() externalToolParams: ExternalToolParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() externalToolParams: ExternalToolParams
 	): Promise<ExternalToolResponse> {
 		const externalToolDO: ExternalToolDO = this.externalToolDOMapper.mapRequestToExternalToolDO(externalToolParams);
-		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(externalToolDO, currentUser.userId);
+		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
 		return mapped;
 	}
@@ -95,5 +96,21 @@ export class ToolController {
 			pagination.limit
 		);
 		return response;
+	}
+
+	@Get(':toolId')
+	async getExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ToolIdParams
+	): Promise<ExternalToolResponse> {
+		const externalToolDO: ExternalToolDO = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(externalToolDO);
+		return mapped;
+	}
+
+	@Delete(':toolId')
+	async deleteExternalTool(@CurrentUser() currentUser: ICurrentUser, @Param() params: ToolIdParams): Promise<void> {
+		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.toolId);
+		return promise;
 	}
 }

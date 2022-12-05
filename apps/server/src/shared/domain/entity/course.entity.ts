@@ -114,7 +114,7 @@ export class Course
 		return courseGroups;
 	}
 
-	private getShortTitle(): string {
+	getShortTitle(): string {
 		if (this.name.length === 1) {
 			return this.name;
 		}
