@@ -31,7 +31,7 @@ export class CopyFilesService {
 		const copyFilesOfParentParams = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
 		const fileDtos = await this.filesStorageClientAdapterService.copyFilesOfParent(copyFilesOfParentParams);
-		const fileUrlReplacements = this.createFileUrlReplacements(fileDtos) ?? [];
+		const fileUrlReplacements = this.createFileUrlReplacements(fileDtos);
 		const fileCopyStatus = this.deriveCopyStatus(fileDtos);
 
 		return { fileUrlReplacements, fileCopyStatus };

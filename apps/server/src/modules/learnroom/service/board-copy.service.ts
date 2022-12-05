@@ -18,7 +18,7 @@ import { sortBy } from 'lodash';
 import { LessonCopyService } from './lesson-copy.service';
 import { TaskCopyService } from './task-copy.service';
 
-export type BoardCopyParams = {
+type BoardCopyParams = {
 	originalBoard: Board;
 	destinationCourse: Course;
 	user: User;
@@ -87,10 +87,10 @@ export class BoardCopyService {
 					.then((status) => [pos, status]);
 			}
 
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			const errorMsg = `BoardCopyService unable to handle boardElements of type ${element.boardElementType}`;
-			this.logger.warn(errorMsg);
-			return Promise.reject(new Error(errorMsg));
+			/* istanbul ignore next */
+			this.logger.warn(`BoardCopyService unable to handle boardElementType.`);
+			/* istanbul ignore next */
+			return Promise.reject(new Error(`BoardCopyService unable to handle boardElementType.`));
 		});
 
 		const results = await Promise.allSettled(promises);

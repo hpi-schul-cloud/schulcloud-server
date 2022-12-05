@@ -15,6 +15,7 @@ import {
 	IComponentInternalProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
+	IComponentTextProperties,
 	Lesson,
 	Material,
 	NexboardService,
@@ -430,13 +431,20 @@ describe('lesson copy service', () => {
 			}
 		});
 
-		it('it should replace copied urls in lesson text', async () => {
+		it('should replace copied urls in lesson text', async () => {
+			const FILE_ID_TO_BE_REPLACED = '12837461287346091823z490812374098127340987123';
+			const NEW_FILE_ID = '19843275091827465871246598716239438';
 			const { user, destinationCourse, originalLesson } = setup(
-				'Here is a <a href="FILE_URL_TO_BE_REPLACED">link</a> to a file'
+				`Here is a <a href="${FILE_ID_TO_BE_REPLACED}">link</a> to a file`
 			);
 
 			copyFilesService.copyFilesOfEntity.mockResolvedValue({
-				fileUrlReplacements: [],
+				fileUrlReplacements: [
+					{
+						regex: new RegExp(FILE_ID_TO_BE_REPLACED),
+						replacement: NEW_FILE_ID,
+					},
+				],
 				fileCopyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
 			});
 
@@ -446,12 +454,10 @@ describe('lesson copy service', () => {
 				user,
 			});
 
+			const lessonCopy = status.copyEntity as Lesson;
 			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
 			expect(contentsStatus).toBeDefined();
-			if (contentsStatus?.elements) {
-				expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_TEXT);
-				expect(contentsStatus.elements[0].status).toEqual(CopyStatusEnum.SUCCESS);
-			}
+			expect((lessonCopy.contents[0].content as IComponentTextProperties).text).not.toContain(FILE_ID_TO_BE_REPLACED);
 		});
 	});
 

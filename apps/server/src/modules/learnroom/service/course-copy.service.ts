@@ -6,11 +6,12 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { BoardCopyService } from './board-copy.service';
 import { RoomsService } from './rooms.service';
 
-export type CourseCopyParams = {
+type CourseCopyParams = {
 	originalCourse: Course;
 	user: User;
 	copyName?: string;
 };
+
 @Injectable()
 export class CourseCopyService {
 	constructor(
@@ -55,7 +56,7 @@ export class CourseCopyService {
 		const { originalCourse, user, copyName } = params;
 		const courseCopy = new Course({
 			school: user.school,
-			name: copyName ?? originalCourse.name,
+			name: copyName,
 			color: originalCourse.color,
 			teachers: [user],
 			startDate: user.school.schoolYear?.startDate,

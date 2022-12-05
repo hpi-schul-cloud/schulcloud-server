@@ -28,7 +28,7 @@ import { FileUrlReplacement } from '@src/modules/files-storage-client/service/co
 import { randomBytes } from 'crypto';
 import { TaskCopyService } from './task-copy.service';
 
-export type LessonCopyParams = {
+type LessonCopyParams = {
 	originalLesson: Lesson;
 	destinationCourse: Course;
 	user: User;

@@ -6,7 +6,7 @@ import { TaskRepo } from '@shared/repo';
 import { CopyFilesService } from '@src/modules/files-storage-client';
 import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
 
-export type TaskCopyParams = {
+type TaskCopyParams = {
 	originalTask: Task;
 	destinationCourse?: Course;
 	destinationLesson?: Lesson;

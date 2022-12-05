@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType, CopyElementType, CopyHelperService, IComponentProperties } from '@shared/domain';
 import { courseFactory, fileFactory, lessonFactory, schoolFactory, setupEntities } from '@shared/testing';
@@ -17,14 +16,12 @@ describe('copy files service', () => {
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
-		await orm.close();
+		await module.close();
 	});
 
 	beforeEach(async () => {
