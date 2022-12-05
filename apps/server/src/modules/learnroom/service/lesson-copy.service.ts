@@ -96,7 +96,7 @@ export class LessonCopyService {
 		lessonCopy: Lesson,
 		originalLesson: Lesson
 	) {
-		const elements = [
+		const elements: CopyStatus[] = [
 			...LessonCopyService.lessonStatusMetadata(),
 			...contentStatus,
 			...materialsStatus,
