@@ -62,8 +62,9 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		let accountId: string;
-		if (accountDto.id && accountDto.refId) {
-			accountId = await this.identityManager.updateAccount(accountDto.refId, {
+		if (accountDto.id) {
+			const id = await this.getInternalId(accountDto.id);
+			accountId = await this.identityManager.updateAccount(id, {
 				username: accountDto.username,
 				attRefTechnicalId: accountDto.id,
 				attRefFunctionalIntId: accountDto.userId,
