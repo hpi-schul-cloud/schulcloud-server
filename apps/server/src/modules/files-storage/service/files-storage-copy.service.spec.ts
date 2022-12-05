@@ -407,12 +407,13 @@ describe('FilesStorageService copy methods', () => {
 				return { fileRecord, userId, params };
 			};
 
-			it('should return empty array', async () => {
+			it('should return failed file record (=without new id)', async () => {
 				const { fileRecord, params, userId } = setup();
 
 				const result = await service.copy(userId, [fileRecord], params);
+				const expected = { sourceId: fileRecord.id, name: fileRecord.name };
 
-				expect(result.length).toBe(0);
+				expect(result[0]).toEqual(expected);
 			});
 		});
 
@@ -425,16 +426,17 @@ describe('FilesStorageService copy methods', () => {
 				return { fileRecord, userId, params };
 			};
 
-			it('should return empty array', async () => {
+			it('should return failed file record (=without new id)', async () => {
 				const { fileRecord, params, userId } = setup();
 
 				const result = await service.copy(userId, [fileRecord], params);
+				const expected = { sourceId: fileRecord.id, name: fileRecord.name };
 
-				expect(result.length).toBe(0);
+				expect(result[0]).toEqual(expected);
 			});
 		});
 
-		describe('WHEN one copy file record throws error', () => {
+		describe('WHEN copying two files and one file record throws error', () => {
 			let spy: jest.SpyInstance;
 
 			afterEach(() => {
@@ -443,29 +445,32 @@ describe('FilesStorageService copy methods', () => {
 
 			const setup = () => {
 				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				const targetFile = fileRecords[1];
+				const sourceFile1 = fileRecords[0];
+				const targetFile1 = fileRecords[1];
+				const sourceFile2 = fileRecords[2];
 				const error = new Error('test');
 
 				spy = jest.spyOn(service, 'copyFileRecord');
-				spy.mockRejectedValueOnce(error).mockResolvedValueOnce(targetFile);
+				spy.mockResolvedValueOnce(targetFile1).mockRejectedValueOnce(error);
 
-				const fileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
-				spy = jest.spyOn(service, 'copyFilesWithRollbackOnError').mockResolvedValue(fileResponse);
+				const fileResponse1 = CopyFileResponseBuilder.build(targetFile1.id, sourceFile1.id, sourceFile1.name);
+				const fileResponse2 = { sourceId: sourceFile2.id, name: sourceFile2.name };
+				spy = jest.spyOn(service, 'copyFilesWithRollbackOnError').mockResolvedValue(fileResponse1);
 
-				return { sourceFile, targetFile, userId, params, fileResponse };
+				return { sourceFile1, targetFile1, sourceFile2, userId, params, fileResponse1, fileResponse2 };
 			};
 
-			it('should return one file response', async () => {
-				const { sourceFile, params, userId, fileResponse } = setup();
+			it('should return one file response and one failed file response', async () => {
+				const { sourceFile1, sourceFile2, params, userId, fileResponse1, fileResponse2 } = setup();
 
-				const result = await service.copy(userId, [sourceFile, sourceFile], params);
+				const [result1, result2] = await service.copy(userId, [sourceFile1, sourceFile2], params);
 
-				expect(result).toEqual([fileResponse]);
+				expect(result1).toEqual(fileResponse1);
+				expect(result2).toEqual(fileResponse2);
 			});
 		});
 
-		describe('WHEN one copy files throws error', () => {
+		describe('WHEN one file is copied and throws an error', () => {
 			let spy: jest.SpyInstance;
 
 			afterEach(() => {
@@ -481,17 +486,17 @@ describe('FilesStorageService copy methods', () => {
 				spy = jest.spyOn(service, 'copyFileRecord');
 				spy.mockResolvedValue(targetFile);
 
-				const fileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
+				const fileResponse = { sourceId: sourceFile.id, name: sourceFile.name };
 				spy = jest.spyOn(service, 'copyFilesWithRollbackOnError');
 				spy.mockRejectedValueOnce(error).mockResolvedValue(fileResponse);
 
 				return { sourceFile, targetFile, userId, params, fileResponse };
 			};
 
-			it('should return one file response', async () => {
+			it('should only return one failed file response', async () => {
 				const { sourceFile, params, userId, fileResponse } = setup();
 
-				const result = await service.copy(userId, [sourceFile, sourceFile], params);
+				const result = await service.copy(userId, [sourceFile], params);
 
 				expect(result).toEqual([fileResponse]);
 			});
