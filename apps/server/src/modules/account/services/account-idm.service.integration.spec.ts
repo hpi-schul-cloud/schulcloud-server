@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
+import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { IKeycloakSettings, KeycloakSettings } from '@shared/infra/identity-management/keycloak/interface';
@@ -28,8 +28,14 @@ describe('AccountService Integration', () => {
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
 	});
-	const createAccount = async (): Promise<AccountDto> => {
-		return accountIdmService.save(testAccount);
+	const createAccount = async (): Promise<string> => {
+		return identityManegementService.createAccount(
+			{
+				username: testAccount.username,
+				attRefFunctionalIntId: testAccount.userId,
+			},
+			testAccount.password
+		);
 	};
 
 	beforeAll(async () => {
@@ -101,16 +107,17 @@ describe('AccountService Integration', () => {
 	it('save should create a new account', async () => {
 		if (!isIdmReachable) return;
 
-		const createdAccount = await createAccount();
-		const accounts = await identityManegementService.getAllAccounts();
+		const createdAccount = await accountIdmService.save(testAccount);
+		const foundAccount = await identityManegementService.findAccountById(createdAccount.id);
 
-		expect(accounts).toEqual(
-			expect.arrayContaining([
-				expect.objectContaining<IAccount>({
-					id: createdAccount.refId ?? 'undefined',
-					username: testAccount.username,
-				}),
-			])
+		expect(foundAccount).toEqual(
+			expect.objectContaining<IAccount>({
+				id: createdAccount.id,
+				username: createdAccount.username,
+				attRefTechnicalId: createdAccount.id,
+				attRefFunctionalIntId: createdAccount.userId,
+				attRefFunctionalExtId: createdAccount.systemId,
+			})
 		);
 	});
 
