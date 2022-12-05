@@ -71,9 +71,6 @@ export class AccountServiceIdm extends AbstractAccountService {
 				attRefFunctionalExtId: accountDto.systemId,
 			});
 		} else {
-			if (accountDto.password) {
-				accountDto.password = await super.encryptPassword(accountDto.password);
-			}
 			accountId = await this.identityManager.createAccount(
 				{
 					username: accountDto.username,
@@ -110,7 +107,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async deleteByUserId(userId: EntityId): Promise<void> {
 		const idmAccount = await this.identityManager.findAccountByFctIntId(userId);
-		return this.delete(idmAccount.id);
+		await this.identityManager.deleteAccountById(idmAccount.id);
 	}
 
 	private async getInternalId(accountRefId: string) {
