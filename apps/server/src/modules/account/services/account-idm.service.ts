@@ -55,6 +55,11 @@ export class AccountServiceIdm extends AbstractAccountService {
 		throw new NotImplementedException();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
+	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
+		throw new NotImplementedException();
+	}
+
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		let accountId: string;
 		if (accountDto.id && accountDto.refId) {
@@ -88,11 +93,6 @@ export class AccountServiceIdm extends AbstractAccountService {
 		await this.identityManager.updateAccount(id, { username });
 		const updatedAccount = await this.identityManager.findAccountById(id);
 		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
-	}
-
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
-	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
-		throw new NotImplementedException();
 	}
 
 	async updatePassword(accountRefId: EntityId, password: string): Promise<AccountDto> {

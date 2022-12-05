@@ -8,6 +8,7 @@ import { IKeycloakSettings, KeycloakSettings } from '@shared/infra/identity-mana
 import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import { IAccount, IAccountUpdate } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { NotImplementedException } from '@nestjs/common/exceptions/not-implemented.exception';
 import { AccountRepo } from '../repo/account.repo';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
 import { AbstractAccountService } from './account.service.abstract';
@@ -202,5 +203,43 @@ describe('AccountService Integration', () => {
 				}),
 			])
 		);
+	});
+
+	describe('Not implemented method', () => {
+		it('findById should throw', async () => {
+			await expect(accountIdmService.findById('id')).rejects.toThrow(NotImplementedException);
+		});
+
+		it('findMultipleByUserId should throw', async () => {
+			await expect(accountIdmService.findMultipleByUserId(['id1', 'id2'])).rejects.toThrow(NotImplementedException);
+		});
+
+		it('findByUserId should throw', async () => {
+			await expect(accountIdmService.findByUserId('id')).rejects.toThrow(NotImplementedException);
+		});
+
+		it('findByUserIdOrFail should throw', async () => {
+			await expect(accountIdmService.findByUserIdOrFail('id')).rejects.toThrow(NotImplementedException);
+		});
+
+		it('findByUsernameAndSystemId should throw', async () => {
+			await expect(accountIdmService.findByUsernameAndSystemId('id1', 'id2')).rejects.toThrow(NotImplementedException);
+		});
+
+		it('searchByUsernamePartialMatch should throw', async () => {
+			await expect(accountIdmService.searchByUsernamePartialMatch('username', 0, 10)).rejects.toThrow(
+				NotImplementedException
+			);
+		});
+
+		it('searchByUsernameExactMatch should throw', async () => {
+			await expect(accountIdmService.searchByUsernameExactMatch('username')).rejects.toThrow(NotImplementedException);
+		});
+
+		it('updateLastTriedFailedLogin should throw', async () => {
+			await expect(accountIdmService.updateLastTriedFailedLogin('id', new Date())).rejects.toThrow(
+				NotImplementedException
+			);
+		});
 	});
 });
