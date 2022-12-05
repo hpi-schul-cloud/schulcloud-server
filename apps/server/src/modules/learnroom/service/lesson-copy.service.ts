@@ -58,10 +58,6 @@ export class LessonCopyService {
 			materials: copiedMaterials,
 		});
 
-		console.log('lessonCopy');
-		console.log(lessonCopy);
-		console.log('copiedContent');
-		console.log(copiedContent);
 		await this.lessonRepo.createLesson(lessonCopy);
 
 		const copiedTasksStatus: CopyStatus[] = await this.copyLinkedTasks(lessonCopy, params);
