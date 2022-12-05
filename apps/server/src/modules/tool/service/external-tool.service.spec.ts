@@ -317,83 +317,57 @@ describe('ExternalToolService', () => {
 		});
 	});
 
-	describe('isNameUnique', () => {
-		it('should find a tool with this name', async () => {
-			const { externalToolDO } = setup();
+	describe('findExternalToolByName', () => {
+		it('should call the externalToolRepo', async () => {
+			const toolName = 'toolName';
+
+			await service.findExternalToolByName(toolName);
+
+			expect(externalToolRepo.findByName).toHaveBeenCalledWith(toolName);
+		});
+
+		it('should return externalToolDO when tool was found', async () => {
+			const externalTool: ExternalToolDO = externalToolDOFactory.build();
+			externalToolRepo.findByName.mockResolvedValue(externalTool);
+
+			const result: ExternalToolDO | null = await service.findExternalToolByName('toolName');
+
+			expect(result).toBeInstanceOf(ExternalToolDO);
+		});
+
+		it('should return null when externalTool was not found', async () => {
 			externalToolRepo.findByName.mockResolvedValue(null);
 
-			const expected: boolean = await service.isNameUnique(externalToolDO);
+			const result: ExternalToolDO | null = await service.findExternalToolByName('toolName');
 
-			expect(expected).toEqual(true);
-			expect(externalToolRepo.findByName).toHaveBeenCalledWith(externalToolDO.name);
-		});
-
-		it('should not find a tool with this name', async () => {
-			const { externalToolDO } = setup();
-			externalToolRepo.findByName.mockResolvedValue(externalToolDO);
-
-			const expected: boolean = await service.isNameUnique(externalToolDO);
-
-			expect(expected).toEqual(false);
-			expect(externalToolRepo.findByName).toHaveBeenCalledWith(externalToolDO.name);
+			expect(result).toBeNull();
 		});
 	});
 
-	describe('isClientIdUnique', () => {
-		it('should find a tool with this client id', async () => {
-			const { oauth2ToolConfigDO } = setup();
+	describe('findExternalToolByOAuth2ConfigClientId', () => {
+		it('should call the externalToolRepo', async () => {
+			const clientId = 'clientId';
+
+			await service.findExternalToolByOAuth2ConfigClientId(clientId);
+
+			expect(externalToolRepo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(clientId);
+		});
+
+		it('should return externalToolDO when tool was found', async () => {
+			const externalTool: ExternalToolDO = externalToolDOFactory.build();
+			externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(externalTool);
+
+			const result: ExternalToolDO | null = await service.findExternalToolByOAuth2ConfigClientId('clientId');
+
+			expect(result).toBeInstanceOf(ExternalToolDO);
+		});
+
+		it('should return null when externalTool was not found', async () => {
 			externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(null);
 
-			const expected: boolean = await service.isClientIdUnique(oauth2ToolConfigDO);
+			const result: ExternalToolDO | null = await service.findExternalToolByOAuth2ConfigClientId('clientId');
 
-			expect(expected).toEqual(true);
-			expect(externalToolRepo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(oauth2ToolConfigDO.clientId);
-		});
-
-		it('should not find a tool with this client id', async () => {
-			const { externalToolDO, oauth2ToolConfigDO } = setup();
-			externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(externalToolDO);
-
-			const expected: boolean = await service.isClientIdUnique(oauth2ToolConfigDO);
-
-			expect(expected).toEqual(false);
-			expect(externalToolRepo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(oauth2ToolConfigDO.clientId);
-		});
-	});
-
-	describe('hasDuplicateAttributes', () => {
-		it('should not find duplicate custom parameters if there are none', () => {
-			const customParameterDO = customParameterDOFactory.build();
-
-			const expected: boolean = service.hasDuplicateAttributes([customParameterDO]);
-
-			expect(expected).toEqual(false);
-		});
-
-		it('should find duplicate custom parameters if there are any', () => {
-			const customParameterDO = customParameterDOFactory.build();
-
-			const expected: boolean = service.hasDuplicateAttributes([customParameterDO, customParameterDO]);
-
-			expect(expected).toEqual(true);
-		});
-	});
-
-	describe('validateByRegex', () => {
-		it('should validate the regular expression', () => {
-			const customParameterDO = customParameterDOFactory.build();
-
-			const expected: boolean = service.validateByRegex([customParameterDO]);
-
-			expect(expected).toEqual(true);
-		});
-
-		it('should not validate a faulty regular expression', () => {
-			const customParameterDO = customParameterDOFactory.build({ regex: '[' });
-
-			const expected: boolean = service.validateByRegex([customParameterDO]);
-
-			expect(expected).toEqual(false);
+			expect(result).toBeNull();
 		});
 	});
 });

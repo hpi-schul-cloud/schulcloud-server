@@ -1,11 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
+import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, SortOrderMap } from '@shared/domain';
 import { CustomParameterLocationParams, CustomParameterScopeParams, CustomParameterTypeParams } from '../../interface';
 import {
@@ -17,6 +11,15 @@ import {
 	Oauth2ToolConfigParams,
 	SortExternalToolParams,
 } from '../dto';
+import {
+	BasicToolConfig,
+	CreateExternalTool,
+	CustomParameter,
+	ExternalTool,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
+	UpdateExternalTool,
+} from '../../uc/dto';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.GLOBAL]: CustomParameterScope.GLOBAL,
@@ -41,8 +44,8 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 
 @Injectable()
 export class ExternalToolRequestMapper {
-	mapRequestToExternalToolDO(externalToolPostParams: ExternalToolPostParams, version = 1): ExternalToolDO {
-		let mappedConfig: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
+	mapExternalToolRequest(externalToolPostParams: ExternalToolPostParams, version = 1): ExternalTool {
+		let mappedConfig: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig;
 		if (externalToolPostParams.config instanceof BasicToolConfigParams) {
 			mappedConfig = this.mapRequestToBasicToolConfigDO(externalToolPostParams.config);
 		} else if (externalToolPostParams.config instanceof Lti11ToolConfigParams) {
@@ -51,11 +54,11 @@ export class ExternalToolRequestMapper {
 			mappedConfig = this.mapRequestToOauth2ToolConfigDO(externalToolPostParams.config);
 		}
 
-		const mappedCustomParameter: CustomParameterDO[] = this.mapRequestToCustomParameterDO(
+		const mappedCustomParameter: CustomParameter[] = this.mapRequestToCustomParameterDO(
 			externalToolPostParams.parameters ?? []
 		);
 
-		return new ExternalToolDO({
+		return {
 			name: externalToolPostParams.name,
 			url: externalToolPostParams.url,
 			logoUrl: externalToolPostParams.logoUrl,
@@ -64,31 +67,39 @@ export class ExternalToolRequestMapper {
 			isHidden: externalToolPostParams.isHidden,
 			openNewTab: externalToolPostParams.openNewTab,
 			version,
-		});
+		};
 	}
 
-	private mapRequestToBasicToolConfigDO(externalToolConfigParams: BasicToolConfigParams): BasicToolConfigDO {
-		return new BasicToolConfigDO({ ...externalToolConfigParams });
+	mapUpdateRequest(externalToolPostParams: ExternalToolPostParams, version = 1): UpdateExternalTool {
+		return this.mapExternalToolRequest(externalToolPostParams, version);
 	}
 
-	private mapRequestToLti11ToolConfigDO(externalToolConfigParams: Lti11ToolConfigParams): Lti11ToolConfigDO {
-		return new Lti11ToolConfigDO({ ...externalToolConfigParams });
+	mapCreateRequest(externalToolPostParams: ExternalToolPostParams, version = 1): CreateExternalTool {
+		return this.mapExternalToolRequest(externalToolPostParams, version);
 	}
 
-	private mapRequestToOauth2ToolConfigDO(externalToolConfigParams: Oauth2ToolConfigParams): Oauth2ToolConfigDO {
-		return new Oauth2ToolConfigDO({ ...externalToolConfigParams });
+	private mapRequestToBasicToolConfigDO(externalToolConfigParams: BasicToolConfigParams): BasicToolConfig {
+		return { ...externalToolConfigParams };
 	}
 
-	private mapRequestToCustomParameterDO(customParameterParams: CustomParameterPostParams[]): CustomParameterDO[] {
+	private mapRequestToLti11ToolConfigDO(externalToolConfigParams: Lti11ToolConfigParams): Lti11ToolConfig {
+		return { ...externalToolConfigParams };
+	}
+
+	private mapRequestToOauth2ToolConfigDO(externalToolConfigParams: Oauth2ToolConfigParams): Oauth2ToolConfig {
+		return { ...externalToolConfigParams };
+	}
+
+	private mapRequestToCustomParameterDO(customParameterParams: CustomParameterPostParams[]): CustomParameter[] {
 		return customParameterParams.map((customParameterParam: CustomParameterPostParams) => {
-			return new CustomParameterDO({
+			return {
 				name: customParameterParam.name,
 				default: customParameterParam.default,
 				regex: customParameterParam.regex,
 				scope: scopeMapping[customParameterParam.scope],
 				location: locationMapping[customParameterParam.location],
 				type: typeMapping[customParameterParam.type],
-			});
+			};
 		});
 	}
 

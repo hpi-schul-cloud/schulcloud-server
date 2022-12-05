@@ -1,10 +1,5 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
-import {
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
+import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { EntityId, IFindOptions } from '@shared/domain';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
@@ -45,7 +40,6 @@ export class ExternalToolService {
 	}
 
 	async updateExternalTool(toUpdate: ExternalToolDO): Promise<ExternalToolDO> {
-		// TODO move to private function
 		if (toUpdate.config instanceof Oauth2ToolConfigDO) {
 			const toUpdateOauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
 				toUpdate.name,
@@ -95,6 +89,16 @@ export class ExternalToolService {
 		return tool;
 	}
 
+	findExternalToolByName(name: string): Promise<ExternalToolDO | null> {
+		const externalTool: Promise<ExternalToolDO | null> = this.externalToolRepo.findByName(name);
+		return externalTool;
+	}
+
+	findExternalToolByOAuth2ConfigClientId(clientId: string): Promise<ExternalToolDO | null> {
+		const externalTool: Promise<ExternalToolDO | null> = this.externalToolRepo.findByOAuth2ConfigClientId(clientId);
+		return externalTool;
+	}
+
 	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfigDO) {
 		const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(config.clientId);
 
@@ -118,44 +122,5 @@ export class ExternalToolService {
 			this.schoolExternalToolRepo.deleteByToolId(toolId),
 			this.externalToolRepo.deleteById(toolId),
 		]);
-	}
-
-	// TODO move to validationService
-	async isNameUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
-		const duplicate: ExternalToolDO | null = await this.externalToolRepo.findByName(externalToolDO.name);
-		return duplicate == null || duplicate.id === externalToolDO.id;
-	}
-
-	// TODO move to validationService
-	async isClientIdUnique(oauth2ToolConfig: Oauth2ToolConfigDO): Promise<boolean> {
-		const duplicate: ExternalToolDO | null = await this.externalToolRepo.findByOAuth2ConfigClientId(
-			oauth2ToolConfig.clientId
-		);
-		return (
-			duplicate == null ||
-			(duplicate.config instanceof Oauth2ToolConfigDO && duplicate.config.clientId === oauth2ToolConfig.clientId)
-		);
-	}
-
-	// TODO move to validationService
-	hasDuplicateAttributes(customParameter: CustomParameterDO[]): boolean {
-		return customParameter.some((item, itemIndex) => {
-			return customParameter.some((other, otherIndex) => itemIndex !== otherIndex && item.name === other.name);
-		});
-	}
-
-	// TODO move to validationService
-	validateByRegex(customParameter: CustomParameterDO[]): boolean {
-		return customParameter.every((param: CustomParameterDO) => {
-			if (param.regex) {
-				try {
-					// eslint-disable-next-line no-new
-					new RegExp(param.regex);
-				} catch (e) {
-					return false;
-				}
-			}
-			return true;
-		});
 	}
 }

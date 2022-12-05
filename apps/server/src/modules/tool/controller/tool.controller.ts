@@ -27,6 +27,7 @@ import {
 	SortExternalToolParams,
 	ToolIdParams,
 } from './dto';
+import { CreateExternalTool, UpdateExternalTool } from '../uc/dto';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -65,7 +66,7 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolParams: ExternalToolPostParams
 	): Promise<ExternalToolResponse> {
-		const externalToolDO: ExternalToolDO = this.externalToolDOMapper.mapRequestToExternalToolDO(externalToolParams);
+		const externalToolDO: CreateExternalTool = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
 		return mapped;
@@ -118,13 +119,13 @@ export class ToolController {
 		@Param() params: ToolIdParams,
 		@Body() externalToolParams: ExternalToolPostParams
 	): Promise<ExternalToolResponse> {
-		const externalToolDO: ExternalToolDO = this.externalToolDOMapper.mapRequestToExternalToolDO(externalToolParams);
-		const created: ExternalToolDO = await this.externalToolUc.updateExternalTool(
+		const externalTool: UpdateExternalTool = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
+		const updated: ExternalToolDO = await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
 			params.toolId,
-			externalToolDO
+			externalTool
 		);
-		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(updated);
 		return mapped;
 	}
 

@@ -5,6 +5,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolService } from '../service/external-tool.service';
 import { ToolValidationService } from '../service/tool-validation.service';
+import { CreateExternalTool, UpdateExternalTool } from './dto';
 
 @Injectable()
 export class ExternalToolUc {
@@ -14,7 +15,7 @@ export class ExternalToolUc {
 		private readonly toolValidationService: ToolValidationService
 	) {}
 
-	async createExternalTool(userId: EntityId, externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
+	async createExternalTool(userId: EntityId, externalToolDO: CreateExternalTool): Promise<ExternalToolDO> {
 		await this.ensurePermission(userId);
 		await this.toolValidationService.validateCreate(externalToolDO);
 
@@ -27,7 +28,11 @@ export class ExternalToolUc {
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 	}
 
-	async updateExternalTool(userId: EntityId, toolId: string, externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
+	async updateExternalTool(
+		userId: EntityId,
+		toolId: string,
+		externalToolDO: UpdateExternalTool
+	): Promise<ExternalToolDO> {
 		await this.ensurePermission(userId);
 		await this.toolValidationService.validateUpdate(externalToolDO);
 

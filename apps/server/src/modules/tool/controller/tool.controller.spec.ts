@@ -117,7 +117,7 @@ describe('ToolController', () => {
 
 		const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1).buildWithId();
 
-		externalToolMapper.mapRequestToExternalToolDO.mockReturnValue(externalToolDO);
+		externalToolMapper.mapUpdateRequest.mockReturnValue(externalToolDO);
 		externalToolUc.createExternalTool.mockResolvedValue(externalToolDO);
 		externalToolResponseMapper.mapToResponse.mockReturnValue(externalToolResponse);
 

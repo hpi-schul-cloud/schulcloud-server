@@ -109,7 +109,7 @@ describe('ExternalToolRequestMapper', () => {
 				const { externalToolParams, externalToolDO, basicConfigParams } = setup();
 				externalToolParams.config = basicConfigParams;
 
-				const result = mapper.mapRequestToExternalToolDO(externalToolParams, 1);
+				const result = mapper.mapUpdateRequest(externalToolParams, 1);
 
 				expect(result).toEqual(externalToolDO);
 			});
@@ -144,7 +144,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolParams.config = lti11ConfigParams;
 				externalToolDO.config = lti11ToolConfigDO;
 
-				const result = mapper.mapRequestToExternalToolDO(externalToolParams, 1);
+				const result = mapper.mapUpdateRequest(externalToolParams, 1);
 
 				expect(result).toEqual(externalToolDO);
 			});
@@ -187,7 +187,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolParams.config = oauth2ConfigParams;
 				externalToolDO.config = oauth2ToolConfigDO;
 
-				const result = mapper.mapRequestToExternalToolDO(externalToolParams, 1);
+				const result = mapper.mapUpdateRequest(externalToolParams, 1);
 
 				expect(result).toEqual(externalToolDO);
 			});
