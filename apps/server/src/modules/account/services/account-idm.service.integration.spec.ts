@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
@@ -8,8 +7,6 @@ import { IKeycloakSettings, KeycloakSettings } from '@shared/infra/identity-mana
 import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import { IAccount, IAccountUpdate } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { NotImplementedException } from '@nestjs/common/exceptions/not-implemented.exception';
-import { AccountRepo } from '../repo/account.repo';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountServiceIdm } from './account-idm.service';
@@ -23,16 +20,20 @@ describe('AccountService Integration', () => {
 	let accountIdmService: AbstractAccountService;
 
 	const testRealm = 'test-realm';
+	const testAccountId = new ObjectId().toString();
 	const testAccount = new AccountSaveDto({
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
+		systemId: new ObjectId().toString(),
 	});
 	const createAccount = async (): Promise<string> => {
 		return identityManegementService.createAccount(
 			{
 				username: testAccount.username,
 				attRefFunctionalIntId: testAccount.userId,
+				attRefFunctionalExtId: testAccount.systemId,
+				attRefTechnicalId: testAccount.id,
 			},
 			testAccount.password
 		);
@@ -41,7 +42,6 @@ describe('AccountService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				MongoMemoryDatabaseModule.forRoot(),
 				ConfigModule.forRoot({
 					isGlobal: true,
 					ignoreEnvFile: true,
@@ -54,7 +54,6 @@ describe('AccountService Integration', () => {
 				}),
 			],
 			providers: [
-				AccountRepo,
 				AccountServiceIdm,
 				KeycloakAdministrationService,
 				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
@@ -125,27 +124,22 @@ describe('AccountService Integration', () => {
 		if (!isIdmReachable) return;
 
 		const newUsername = 'jane.doe@mail.tld';
-		const account = await createAccount();
-		await accountIdmService.save({
-			id: account.id,
+		await createAccount();
+
+		const updatedAccount = await accountIdmService.save({
+			id: testAccountId,
 			username: newUsername,
 		});
-		const accounts = await identityManegementService.getAllAccounts();
+		const foundAccount = await identityManegementService.findAccountByTecRefId(updatedAccount.id);
 
-		expect(accounts).toEqual(
-			expect.arrayContaining([
-				expect.objectContaining<IAccountUpdate>({
-					// id: account.id,
-					username: newUsername,
-				}),
-			])
-		);
-		expect(accounts).not.toEqual(
-			expect.arrayContaining([
-				expect.objectContaining({
-					userName: testAccount.username,
-				}),
-			])
+		expect(foundAccount).toEqual(
+			expect.objectContaining<IAccount>({
+				id: updatedAccount.id,
+				username: updatedAccount.username,
+				attRefTechnicalId: updatedAccount.id,
+				attRefFunctionalIntId: updatedAccount.userId,
+				attRefFunctionalExtId: updatedAccount.systemId,
+			})
 		);
 	});
 
@@ -154,7 +148,7 @@ describe('AccountService Integration', () => {
 
 		const newUserName = 'jane.doe@mail.tld';
 		const account = await createAccount();
-		await accountIdmService.updateUsername(account.id, newUserName);
+		await accountIdmService.updateUsername(testAccountId, newUserName);
 		const accounts = await identityManegementService.getAllAccounts();
 
 		expect(accounts).toEqual(
@@ -177,14 +171,14 @@ describe('AccountService Integration', () => {
 		if (!isIdmReachable) return;
 
 		const account = await createAccount();
-		await expect(accountIdmService.updatePassword(account.id, 'newPassword')).resolves.not.toThrow();
+		await expect(accountIdmService.updatePassword(testAccountId, 'newPassword')).resolves.not.toThrow();
 	});
 
 	it('delete should remove account', async () => {
 		if (!isIdmReachable) return;
 
 		const account = await createAccount();
-		await accountIdmService.delete(account.id);
+		await accountIdmService.delete(testAccountId);
 		const accounts = await identityManegementService.getAllAccounts();
 
 		expect(accounts).not.toEqual(
@@ -200,7 +194,7 @@ describe('AccountService Integration', () => {
 		if (!isIdmReachable) return;
 
 		const account = await createAccount();
-		await accountIdmService.deleteByUserId(account.userId as string);
+		await accountIdmService.deleteByUserId(testAccount.userId as string);
 		const accounts = await identityManegementService.getAllAccounts();
 
 		expect(accounts).not.toEqual(
@@ -210,43 +204,5 @@ describe('AccountService Integration', () => {
 				}),
 			])
 		);
-	});
-
-	describe('Not implemented method', () => {
-		it('findById should throw', async () => {
-			await expect(accountIdmService.findById('id')).rejects.toThrow(NotImplementedException);
-		});
-
-		it('findMultipleByUserId should throw', async () => {
-			await expect(accountIdmService.findMultipleByUserId(['id1', 'id2'])).rejects.toThrow(NotImplementedException);
-		});
-
-		it('findByUserId should throw', async () => {
-			await expect(accountIdmService.findByUserId('id')).rejects.toThrow(NotImplementedException);
-		});
-
-		it('findByUserIdOrFail should throw', async () => {
-			await expect(accountIdmService.findByUserIdOrFail('id')).rejects.toThrow(NotImplementedException);
-		});
-
-		it('findByUsernameAndSystemId should throw', async () => {
-			await expect(accountIdmService.findByUsernameAndSystemId('id1', 'id2')).rejects.toThrow(NotImplementedException);
-		});
-
-		it('searchByUsernamePartialMatch should throw', async () => {
-			await expect(accountIdmService.searchByUsernamePartialMatch('username', 0, 10)).rejects.toThrow(
-				NotImplementedException
-			);
-		});
-
-		it('searchByUsernameExactMatch should throw', async () => {
-			await expect(accountIdmService.searchByUsernameExactMatch('username')).rejects.toThrow(NotImplementedException);
-		});
-
-		it('updateLastTriedFailedLogin should throw', async () => {
-			await expect(accountIdmService.updateLastTriedFailedLogin('id', new Date())).rejects.toThrow(
-				NotImplementedException
-			);
-		});
 	});
 });
