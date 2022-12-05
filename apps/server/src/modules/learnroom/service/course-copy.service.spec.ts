@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyElementType, CopyHelperService, CopyStatusEnum, Course } from '@shared/domain';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
@@ -27,15 +26,13 @@ describe('course copy service', () => {
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let authorization: DeepMocked<AuthorizationService>;
-	let orm: MikroORM;
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				CourseCopyService,

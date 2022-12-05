@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyHelperService } from '@shared/domain';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
@@ -23,15 +22,12 @@ describe('task copy service', () => {
 	let copyFilesService: DeepMocked<CopyFilesService>;
 	let taskRepo: DeepMocked<TaskRepo>;
 
-	let orm: MikroORM;
-
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				TaskCopyService,

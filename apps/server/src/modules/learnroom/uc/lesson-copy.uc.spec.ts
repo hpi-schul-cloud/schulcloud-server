@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -15,7 +14,6 @@ import { LessonCopyUC } from './lesson-copy.uc';
 
 describe('lesson copy uc', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let uc: LessonCopyUC;
 	let userRepo: DeepMocked<UserRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
@@ -25,12 +23,11 @@ describe('lesson copy uc', () => {
 	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				LessonCopyUC,

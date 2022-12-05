@@ -37,7 +37,7 @@ export class BoardCopyService {
 	async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
 		const { originalBoard, user, destinationCourse } = params;
 
-		const boardElements = originalBoard.getElements();
+		const boardElements: BoardElement[] = originalBoard.getElements();
 		const elements: CopyStatus[] = await this.copyBoardElements(boardElements, user, destinationCourse);
 		const references: BoardElement[] = this.extractReferences(elements);
 

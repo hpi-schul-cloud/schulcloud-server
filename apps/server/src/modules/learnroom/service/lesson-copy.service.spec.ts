@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	BaseEntity,
@@ -42,15 +41,13 @@ describe('lesson copy service', () => {
 	let etherpadService: DeepMocked<EtherpadService>;
 	let nexboardService: DeepMocked<NexboardService>;
 	let configurationSpy: jest.SpyInstance;
-	let orm: MikroORM;
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				LessonCopyService,

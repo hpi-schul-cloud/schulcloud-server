@@ -1,9 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, CopyHelperService, PermissionTypes, User } from '@shared/domain';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
@@ -14,7 +13,6 @@ import { TaskCopyService } from '../service';
 import { TaskCopyUC } from './task-copy.uc';
 
 describe('task copy uc', () => {
-	let orm: MikroORM;
 	let uc: TaskCopyUC;
 	let userRepo: DeepMocked<UserRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
@@ -23,17 +21,18 @@ describe('task copy uc', () => {
 	let authorisation: DeepMocked<AuthorizationService>;
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
+	let module: TestingModule;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
-		await orm.close();
+		await module.close();
 	});
 
 	beforeEach(async () => {
-		const module = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				TaskCopyUC,
 				{
