@@ -218,7 +218,7 @@ describe('Task Controller (e2e)', () => {
 			const student = userFactory.build();
 			const course = courseFactory.build({ teachers: [teacher] });
 			const task = taskFactory.build({ course });
-			task.submissions.add(submissionFactory.build({ task, student }));
+			task.submissions.add(submissionFactory.submitted().build({ task, student }));
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -745,7 +745,7 @@ describe('Task Controller (e2e)', () => {
 				students: [student],
 			});
 			const task = taskFactory.build({ course });
-			task.submissions.add(submissionFactory.build({ task, student }));
+			task.submissions.add(submissionFactory.submitted().build({ task, student }));
 
 			await em.persistAndFlush([task]);
 			em.clear();

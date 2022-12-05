@@ -406,9 +406,9 @@ describe('Task Entity', () => {
 		describe('when graded submissions exists', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const submission1 = submissionFactory.graded().studentWithId().build();
-				const submission2 = submissionFactory.graded().studentWithId().build();
-				const submission3 = submissionFactory.graded().studentWithId().build();
+				const submission1 = submissionFactory.submitted().graded().studentWithId().build();
+				const submission2 = submissionFactory.submitted().graded().studentWithId().build();
+				const submission3 = submissionFactory.submitted().graded().studentWithId().build();
 
 				const spy1 = jest.spyOn(submission1, 'getSubmitterIds');
 				const spy2 = jest.spyOn(submission2, 'getSubmitterIds');
