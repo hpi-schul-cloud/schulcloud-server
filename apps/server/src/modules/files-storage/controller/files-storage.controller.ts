@@ -106,7 +106,7 @@ export class FilesStorageController {
 
 		return new StreamableFile(res.data, {
 			type: res.contentType,
-			disposition: `inline; filename="${encodeURI(params.fileName)}"`,
+			disposition: `filename="${encodeURI(params.fileName)}"`,
 		});
 	}
 
