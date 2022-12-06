@@ -136,7 +136,21 @@ describe('KeycloakIdentityManagement', () => {
 		it('should extract given date from keycloak representation', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
 			// 1647262955423 -> Mon Mar 14 2022 14:02:35 GMT+0100
-			kcUsersMock.findOne.mockResolvedValueOnce({ ...mockedAccount1, createdTimestamp: 1647262955423 });
+			const date = new Date();
+			const nowUtc = Date.UTC(
+				date.getUTCFullYear(),
+				date.getUTCMonth(),
+				date.getUTCDate(),
+				date.getUTCHours(),
+				date.getUTCMinutes(),
+				date.getUTCSeconds(),
+				date.getUTCMilliseconds()
+			);
+
+			kcUsersMock.findOne.mockResolvedValueOnce({
+				...mockedAccount1,
+				createdTimestamp: nowUtc,
+			});
 
 			const ret = await idm.findAccountById(mockedAccount1.id);
 
@@ -144,7 +158,7 @@ describe('KeycloakIdentityManagement', () => {
 			expect(ret).toEqual(
 				expect.objectContaining<IAccount>({
 					id: ret.id,
-					createdDate: new Date(2022, 2, 14, 14, 2, 35, 423),
+					createdDate: date,
 				})
 			);
 		});
@@ -158,6 +172,30 @@ describe('KeycloakIdentityManagement', () => {
 					refTechnicalId: 'tecId',
 					refFunctionalIntId: 'fctIntId',
 					refFunctionalExtId: 'fctExtId',
+				},
+			});
+
+			const ret = await idm.findAccountById(mockedAccount1.id);
+			expect(ret).not.toBeNull();
+			expect(ret).toEqual(
+				expect.objectContaining<IAccount>({
+					id: ret.id,
+					attRefTechnicalId: 'tecId',
+					attRefFunctionalIntId: 'fctIntId',
+					attRefFunctionalExtId: 'fctExtId',
+				})
+			);
+		});
+
+		it('should extract array attributes from keycloak representation', async () => {
+			kcUsersMock.find.mockResolvedValueOnce([]);
+			// 1577836861 -> Wed Jan 01 2020 00:01:01 GMT+0000
+			kcUsersMock.findOne.mockResolvedValueOnce({
+				...mockedAccount1,
+				attributes: {
+					refTechnicalId: ['tecId', 'ignore'],
+					refFunctionalIntId: ['fctIntId', 'ignore', 'ignore'],
+					refFunctionalExtId: ['fctExtId'],
 				},
 			});
 
