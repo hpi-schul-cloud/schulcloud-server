@@ -14,16 +14,17 @@ export class ToolValidationService {
 		}
 	}
 
-	async validateUpdate(externalToolDO: ExternalToolDO): Promise<void> {
+	async validateUpdate(toolId: string, externalToolDO: ExternalToolDO): Promise<void> {
 		await this.validateCommon(externalToolDO);
 
-		if (!externalToolDO.id) {
-			throw new UnprocessableEntityException(`The Tool: ${externalToolDO.name} has no id`);
+		if (!externalToolDO.id || toolId !== externalToolDO.id) {
+			throw new UnprocessableEntityException(
+				`The Tool: ${externalToolDO.name} has no id or it does not match the path parameter.`
+			);
 		}
 
-		const loadedTool: ExternalToolDO = await this.externalToolService.findExternalToolById(externalToolDO.id);
-		// TODO should we be consistent in checking the type or only for oauth or do we add hydra logic to create a new client
-		if (externalToolDO.config.type !== loadedTool.config.type) {
+		const loadedTool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
+		if (loadedTool.config instanceof Oauth2ToolConfigDO && externalToolDO.config.type !== loadedTool.config.type) {
 			throw new UnprocessableEntityException(`The Config Type of the tool: ${externalToolDO.name} is immutable`);
 		}
 

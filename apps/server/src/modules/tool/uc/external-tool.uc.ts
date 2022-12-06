@@ -34,7 +34,7 @@ export class ExternalToolUc {
 		externalToolDO: UpdateExternalTool
 	): Promise<ExternalToolDO> {
 		await this.ensurePermission(userId);
-		await this.toolValidationService.validateUpdate(externalToolDO);
+		await this.toolValidationService.validateUpdate(toolId, externalToolDO);
 
 		const loaded: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
 		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalToolDO });

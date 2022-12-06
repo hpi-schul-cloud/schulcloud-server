@@ -97,10 +97,6 @@ describe('ExternalToolUc', () => {
 			1
 		);
 
-		externalToolService.isNameUnique.mockResolvedValue(true);
-		externalToolService.isClientIdUnique.mockResolvedValue(true);
-		externalToolService.hasDuplicateAttributes.mockReturnValue(false);
-		externalToolService.validateByRegex.mockReturnValue(true);
 		externalToolService.createExternalTool.mockResolvedValue(externalToolDO);
 		externalToolService.findExternalTools.mockResolvedValue(page);
 
@@ -343,7 +339,7 @@ describe('ExternalToolUc', () => {
 
 			await uc.updateExternalTool(currentUser.userId, toolId, updatedExternalToolDO);
 
-			expect(toolValidationService.validateUpdate).toHaveBeenCalledWith(updatedExternalToolDO);
+			expect(toolValidationService.validateUpdate).toHaveBeenCalledWith(toolId, updatedExternalToolDO);
 		});
 
 		it('should throw if validation of the tool fails', async () => {

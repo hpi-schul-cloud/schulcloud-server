@@ -4,7 +4,6 @@ import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { IFindOptions, SortOrder } from '@shared/domain';
 import {
-	customParameterDOFactory,
 	externalToolDOFactory,
 	lti11ToolConfigDOFactory,
 	oauth2ToolConfigDOFactory,
@@ -16,6 +15,7 @@ import { Page } from '@shared/domain/interface/page';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './mapper';
 
@@ -368,6 +368,84 @@ describe('ExternalToolService', () => {
 			const result: ExternalToolDO | null = await service.findExternalToolByOAuth2ConfigClientId('clientId');
 
 			expect(result).toBeNull();
+		});
+	});
+
+	describe('updateExternalTool', () => {
+		describe('with oauth2ToolConfig', () => {
+			const setupOauthConfig = () => {
+				const existingTool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+				const changedTool: ExternalToolDO = externalToolDOFactory
+					.withOauth2Config()
+					.build({ id: existingTool.id, name: 'newName' });
+
+				const oauthClientId: string =
+					existingTool.config instanceof Oauth2ToolConfigDO ? existingTool.config.clientId : 'undefined';
+				const providerOauthClient: ProviderOauthClient = {
+					client_id: oauthClientId,
+				};
+
+				oauthProviderService.getOAuth2Client.mockResolvedValue(providerOauthClient);
+				mapper.mapDoToProviderOauthClient.mockReturnValue(providerOauthClient);
+
+				return {
+					existingTool,
+					changedTool,
+					providerOauthClient,
+					oauthClientId,
+				};
+			};
+
+			it('should call externalToolServiceMapper', async () => {
+				const { changedTool } = setupOauthConfig();
+
+				await service.updateExternalTool(changedTool);
+
+				expect(mapper.mapDoToProviderOauthClient).toHaveBeenCalledWith(changedTool.name, changedTool.config);
+			});
+
+			it('should call oauthProviderService', async () => {
+				const { changedTool, oauthClientId } = setupOauthConfig();
+
+				await service.updateExternalTool(changedTool);
+
+				expect(oauthProviderService.getOAuth2Client).toHaveBeenCalledWith(oauthClientId);
+			});
+
+			it('should update the oauth2Client when clientId exists already', async () => {
+				const { changedTool, oauthClientId, providerOauthClient } = setupOauthConfig();
+
+				await service.updateExternalTool(changedTool);
+
+				expect(oauthProviderService.updateOAuth2Client).toHaveBeenCalledWith(oauthClientId, providerOauthClient);
+			});
+
+			it('should throw an error when requested oauth2Client not exists', async () => {
+				const { changedTool, providerOauthClient } = setupOauthConfig();
+				providerOauthClient.client_id = undefined;
+				oauthProviderService.getOAuth2Client.mockResolvedValue(providerOauthClient);
+
+				const func = () => service.updateExternalTool(changedTool);
+
+				await expect(func).rejects.toThrow(UnprocessableEntityException);
+			});
+		});
+
+		it('should save the externalTool', async () => {
+			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+
+			await service.updateExternalTool(externalToolDO);
+
+			expect(externalToolRepo.save).toHaveBeenCalled();
+		});
+
+		it('should increase the version of the externalTool', async () => {
+			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+			externalToolDO.version = 1;
+
+			await service.updateExternalTool(externalToolDO);
+
+			expect(externalToolRepo.save).toHaveBeenCalledWith({ ...externalToolDO, version: 2 });
 		});
 	});
 });

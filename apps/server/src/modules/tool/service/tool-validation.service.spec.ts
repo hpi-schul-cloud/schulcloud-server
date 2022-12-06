@@ -154,8 +154,9 @@ describe('ToolValidation', () => {
 		describe('isNameUnique', () => {
 			it('should not find a tool with the same name', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
 
-				const result: Promise<void> = service.validateUpdate(externalToolDO);
+				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
 
 				await expect(result).resolves.not.toThrow();
 			});
@@ -164,7 +165,7 @@ describe('ToolValidation', () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
 				externalToolService.findExternalToolByName.mockResolvedValue(externalToolDO);
 
-				const result: Promise<void> = service.validateUpdate(externalToolDO);
+				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
 
 				await expect(result).resolves.not.toThrow();
 			});
@@ -174,7 +175,7 @@ describe('ToolValidation', () => {
 				const existingExternalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId({ name: 'sameName' });
 				externalToolService.findExternalToolByName.mockResolvedValue(existingExternalToolDO);
 
-				const result: Promise<void> = service.validateUpdate(externalToolDO);
+				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
 
 				await expect(result).rejects.toThrow(UnprocessableEntityException);
 			});
@@ -184,7 +185,7 @@ describe('ToolValidation', () => {
 			it('should not find duplicate custom parameters', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(2).buildWithId();
 
-				const result: Promise<void> = service.validateUpdate(externalToolDO);
+				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
 
 				await expect(result).resolves.not.toThrow();
 			});
@@ -194,7 +195,7 @@ describe('ToolValidation', () => {
 					.withCustomParameters(2, { name: 'sameKey' })
 					.buildWithId();
 
-				const result: Promise<void> = service.validateUpdate(externalToolDO);
+				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
 
 				await expect(result).rejects.toThrow(UnprocessableEntityException);
 			});
@@ -204,7 +205,7 @@ describe('ToolValidation', () => {
 			it('should validate the regular expression', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1).buildWithId();
 
-				const result: Promise<void> = service.validateUpdate(externalToolDO);
+				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
 
 				await expect(result).resolves.not.toThrow();
 			});
@@ -214,7 +215,7 @@ describe('ToolValidation', () => {
 					.withCustomParameters(1, { regex: '[' })
 					.buildWithId();
 
-				const result: Promise<void> = service.validateUpdate(externalToolDO);
+				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
 
 				await expect(result).rejects.toThrow(UnprocessableEntityException);
 			});
@@ -224,7 +225,7 @@ describe('ToolValidation', () => {
 			it('should pass if the tool has an id', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
 
-				const result: Promise<void> = service.validateUpdate(externalToolDO);
+				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
 
 				await expect(result).resolves.not.toThrow();
 			});
@@ -232,18 +233,30 @@ describe('ToolValidation', () => {
 			it('should throw if the tool has no id', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
 
-				const result: Promise<void> = service.validateUpdate(externalToolDO);
+				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
 
 				await expect(result).rejects.toThrow(UnprocessableEntityException);
 			});
 		});
 
 		describe('Oauth2 config', () => {
+			it('should throw if config type was changed', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+				const existingExternalToolDO: ExternalToolDO = externalToolDOFactory
+					.withOauth2Config({ clientId: 'clientId1' })
+					.buildWithId();
+				externalToolService.findExternalToolById.mockResolvedValue(existingExternalToolDO);
+
+				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
+
+				await expect(result).rejects.toThrow(UnprocessableEntityException);
+			});
+
 			it('should pass if tool has the same clientId as before', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
 				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
 
-				const result: Promise<void> = service.validateUpdate(externalToolDO);
+				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
 
 				await expect(result).resolves.not.toThrow();
 			});
@@ -257,7 +270,7 @@ describe('ToolValidation', () => {
 					.buildWithId();
 				externalToolService.findExternalToolById.mockResolvedValue(existingExternalToolDO);
 
-				const result: Promise<void> = service.validateUpdate(externalToolDO);
+				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
 
 				await expect(result).rejects.toThrow(UnprocessableEntityException);
 			});
