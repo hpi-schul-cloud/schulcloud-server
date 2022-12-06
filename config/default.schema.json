@@ -519,6 +519,11 @@
 			"default": "false",
 			"description": "Login via Link generation (to the right form)."
 		},
+		"FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the oauth system (iserv to sanis) migration feature."
+		},
 		"SC_TITLE": {
 			"type": "string",
 			"default": "HPI Schul-Cloud",
