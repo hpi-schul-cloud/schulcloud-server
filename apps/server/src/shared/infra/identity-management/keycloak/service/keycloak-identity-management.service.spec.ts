@@ -144,7 +144,7 @@ describe('KeycloakIdentityManagement', () => {
 			expect(ret).toEqual(
 				expect.objectContaining<IAccount>({
 					id: ret.id,
-					createdTimestamp: new Date(2022, 2, 14, 14, 2, 35, 423),
+					createdDate: new Date(2022, 2, 14, 14, 2, 35, 423),
 				})
 			);
 		});

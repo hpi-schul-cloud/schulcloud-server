@@ -4,7 +4,7 @@ export type IAccount = {
 	email?: string;
 	firstName?: string;
 	lastName?: string;
-	createdTimestamp?: Date;
+	createdDate?: Date;
 	attRefTechnicalId?: string;
 	attRefFunctionalIntId?: string;
 	attRefFunctionalExtId?: string;

@@ -18,7 +18,7 @@ describe('AccountService Integration', () => {
 		email: 'email',
 		firstName: 'firstName',
 		lastName: 'lastName',
-		createdTimestamp: new Date(2020, 1, 1, 0, 0, 0, 0),
+		createdDate: new Date(2020, 1, 1, 0, 0, 0, 0),
 		attRefTechnicalId: mockIdmAccountRefId,
 		attRefFunctionalIntId: 'fctIntId',
 		attRefFunctionalExtId: 'fctExtId',
@@ -127,8 +127,8 @@ describe('AccountService Integration', () => {
 			expect(ret).toMatchObject({
 				id: mockIdmAccount.attRefTechnicalId,
 				refId: mockIdmAccount.id,
-				createdAt: mockIdmAccount.createdTimestamp,
-				updatedAt: mockIdmAccount.createdTimestamp,
+				createdAt: mockIdmAccount.createdDate,
+				updatedAt: mockIdmAccount.createdDate,
 				username: mockIdmAccount.username,
 			});
 		});
@@ -146,8 +146,8 @@ describe('AccountService Integration', () => {
 			expect(ret).toMatchObject({
 				id: mockIdmAccount.attRefTechnicalId,
 				refId: mockIdmAccount.id,
-				createdAt: mockIdmAccount.createdTimestamp,
-				updatedAt: mockIdmAccount.createdTimestamp,
+				createdAt: mockIdmAccount.createdDate,
+				updatedAt: mockIdmAccount.createdDate,
 				username: mockIdmAccount.username,
 			});
 		});
@@ -161,8 +161,8 @@ describe('AccountService Integration', () => {
 			expect(ret).toMatchObject({
 				id: mockIdmAccount.attRefTechnicalId,
 				refId: mockIdmAccount.id,
-				createdAt: mockIdmAccount.createdTimestamp,
-				updatedAt: mockIdmAccount.createdTimestamp,
+				createdAt: mockIdmAccount.createdDate,
+				updatedAt: mockIdmAccount.createdDate,
 				username: mockIdmAccount.username,
 			});
 		});
@@ -176,8 +176,8 @@ describe('AccountService Integration', () => {
 			expect(ret).toMatchObject({
 				id: mockIdmAccount.attRefTechnicalId,
 				refId: mockIdmAccount.id,
-				createdAt: mockIdmAccount.createdTimestamp,
-				updatedAt: mockIdmAccount.createdTimestamp,
+				createdAt: mockIdmAccount.createdDate,
+				updatedAt: mockIdmAccount.createdDate,
 				username: mockIdmAccount.username,
 			});
 		});

@@ -134,7 +134,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 			email: user.email,
 			firstName: user.firstName,
 			lastName: user.lastName,
-			createdTimestamp: user.createdTimestamp ? new Date(user.createdTimestamp) : undefined,
+			createdDate: user.createdTimestamp ? new Date(user.createdTimestamp) : undefined,
 			attRefFunctionalExtId: user.attributes?.refFunctionalExtId as string,
 			attRefFunctionalIntId: user.attributes?.refFunctionalIntId as string,
 			attRefTechnicalId: user.attributes?.refTechnicalId as string,
