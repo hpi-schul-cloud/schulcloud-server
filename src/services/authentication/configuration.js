@@ -7,7 +7,7 @@ module.exports = {
 		entity: 'account',
 		service: 'accountModel',
 		secret: authenticationSecret,
-		authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv', 'tsp', 'api-key'],
+		authStrategies: ['jwt', 'local', 'ldap', 'tsp', 'api-key'],
 		jwtOptions: {
 			header: { typ: 'access' },
 			audience,
