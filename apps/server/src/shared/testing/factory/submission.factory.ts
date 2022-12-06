@@ -1,18 +1,19 @@
+import { ISubmissionProperties, Submission } from '@shared/domain';
 import { DeepPartial } from 'fishery';
-import { Submission, ISubmissionProperties } from '@shared/domain';
 import { BaseFactory } from './base.factory';
+import { schoolFactory } from './school.factory';
 import { taskFactory } from './task.factory';
 import { userFactory } from './user.factory';
 
 class SubmissionFactory extends BaseFactory<Submission, ISubmissionProperties> {
 	graded(): this {
-		const params: DeepPartial<ISubmissionProperties> = { gradeComment: 'graded text' };
+		const params: DeepPartial<ISubmissionProperties> = { graded: true };
 
 		return this.params(params);
 	}
 
 	submitted(): this {
-		const params: DeepPartial<ISubmissionProperties> = {};
+		const params: DeepPartial<ISubmissionProperties> = { submitted: true };
 
 		return this.params(params);
 	}
@@ -33,6 +34,7 @@ class SubmissionFactory extends BaseFactory<Submission, ISubmissionProperties> {
 
 export const submissionFactory = SubmissionFactory.define(Submission, ({ sequence }) => {
 	return {
+		school: schoolFactory.build(),
 		task: taskFactory.build(),
 		student: userFactory.build(),
 		comment: `submission comment #${sequence}`,

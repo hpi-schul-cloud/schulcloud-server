@@ -33,7 +33,7 @@
 				"STUDENT_LIST": true
 			}
 		},
-                "features" : []
+        "features" : []
 	},
 	{
 		"_id": {
@@ -41,14 +41,7 @@
 		},
 		"name": "Schiller-Oberschule",
 		"fileStorageType": "awsS3",
-		"systems": [
-			{
-				"$oid": "0000d186816abba584714c90"
-			},
-			{
-				"$oid": "0000d186816abba584714c92"
-			}
-		],
+		"systems": [],
 		"updatedAt": {
 			"$date": "2020-08-04T07:21:33.616Z"
 		},
@@ -65,7 +58,7 @@
 				"STUDENT_LIST": true
 			}
 		},
-                "features" : []
+        "features" : []
 	},
 	{
 		"_id": {
@@ -84,14 +77,7 @@
 			"countyId": 12051,
 			"name": "Brandenburg an der Havel"
 		},
-		"systems": [
-			{
-				"$oid": "0000d186816abba584714c92"
-			},
-			{
-				"$oid": "0000d186816abba584714c93"
-			}
-		],
+		"systems": [],
 		"updatedAt": {
 			"$date": "2020-07-27T08:21:14.719Z"
 		},

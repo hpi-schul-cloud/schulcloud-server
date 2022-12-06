@@ -293,18 +293,24 @@ export class FilesStorageService {
 	): Promise<CopyFileResponse[]> {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
 
-		const promises = sourceFileRecords.map(async (sourceFile) => {
-			this.checkScanStatus(sourceFile);
+		const promises: Promise<CopyFileResponse>[] = sourceFileRecords.map(async (sourceFile) => {
+			try {
+				this.checkScanStatus(sourceFile);
 
-			const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
-			const fileResponse = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
+				const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
+				const fileResponse = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
-			return fileResponse;
+				return fileResponse;
+			} catch (error) {
+				return {
+					sourceId: sourceFile._id.toString(),
+					name: sourceFile.name,
+				};
+			}
 		});
 
-		const settledPromises = await Promise.allSettled(promises);
-		const resolvedResponses = getResolvedValues(settledPromises);
+		const settledPromises = await Promise.all(promises);
 
-		return resolvedResponses;
+		return settledPromises;
 	}
 }
