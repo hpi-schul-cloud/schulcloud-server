@@ -13,17 +13,22 @@ import {
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
 	IComponentInternalProperties,
+	IComponentLernstoreProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
+	IComponentTextProperties,
 	Lesson,
 	Material,
 	NexboardService,
-	TaskCopyService,
 	User,
 } from '@shared/domain';
+import { LessonRepo } from '@shared/repo';
+import { CopyFilesService } from '@src/modules/files-storage-client';
+import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
 import { randomBytes } from 'crypto';
+import { TaskCopyService } from './task-copy.service';
 
-export type LessonCopyParams = {
+type LessonCopyParams = {
 	originalLesson: Lesson;
 	destinationCourse: Course;
 	user: User;
@@ -36,13 +41,15 @@ export class LessonCopyService {
 		private readonly copyHelperService: CopyHelperService,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly etherpadService: EtherpadService,
-		private readonly nexboardService: NexboardService
+		private readonly nexboardService: NexboardService,
+		private readonly lessonRepo: LessonRepo,
+		private readonly copyFilesService: CopyFilesService
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
 		const { copiedContent, contentStatus } = await this.copyLessonContent(params.originalLesson.contents, params);
 		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(params.originalLesson);
-		const copy = new Lesson({
+		const lessonCopy = new Lesson({
 			course: params.destinationCourse,
 			hidden: true,
 			name: params.copyName ?? params.originalLesson.name,
@@ -51,9 +58,45 @@ export class LessonCopyService {
 			materials: copiedMaterials,
 		});
 
-		const copiedTasksStatus: CopyStatus[] = this.copyLinkedTasks(copy, params);
+		await this.lessonRepo.createLesson(lessonCopy);
 
-		const elements = [
+		const copiedTasksStatus: CopyStatus[] = await this.copyLinkedTasks(lessonCopy, params);
+
+		const { status, elements } = this.deriveCopyStatus(
+			contentStatus,
+			materialsStatus,
+			copiedTasksStatus,
+			lessonCopy,
+			params.originalLesson
+		);
+
+		await this.lessonRepo.save(lessonCopy);
+		const copyDict = this.copyHelperService.buildCopyEntityDict(status);
+		const updatedStatus = this.updateCopiedEmbeddedTasks(status, copyDict);
+
+		const { fileUrlReplacements, fileCopyStatus } = await this.copyFilesService.copyFilesOfEntity(
+			params.originalLesson,
+			lessonCopy,
+			params.user.id
+		);
+
+		elements.push(fileCopyStatus);
+		lessonCopy.contents = this.replaceUrlsInContents(lessonCopy.contents, fileUrlReplacements);
+
+		updatedStatus.status = this.copyHelperService.deriveStatusFromElements(elements);
+		await this.lessonRepo.save(lessonCopy);
+
+		return updatedStatus;
+	}
+
+	private deriveCopyStatus(
+		contentStatus: CopyStatus[],
+		materialsStatus: CopyStatus[],
+		copiedTasksStatus: CopyStatus[],
+		lessonCopy: Lesson,
+		originalLesson: Lesson
+	) {
+		const elements: CopyStatus[] = [
 			...LessonCopyService.lessonStatusMetadata(),
 			...contentStatus,
 			...materialsStatus,
@@ -61,62 +104,79 @@ export class LessonCopyService {
 		];
 
 		const status: CopyStatus = {
-			title: copy.name,
+			title: lessonCopy.name,
 			type: CopyElementType.LESSON,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
-			copyEntity: copy,
-			originalEntity: params.originalLesson,
+			copyEntity: lessonCopy,
+			originalEntity: originalLesson,
 			elements,
 		};
-
-		return status;
+		return { status, elements };
 	}
 
-	updateCopiedEmbeddedTasks(status: CopyStatus): CopyStatus {
-		const copyDict = this.copyHelperService.buildCopyEntityDict(status);
-		return this.updateCopiedEmbeddedTasksRecursive(status, copyDict);
-	}
-
-	private updateCopiedEmbeddedTasksRecursive(status: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
-		if (status.type === CopyElementType.LESSON) {
-			status = this.updateCopiedEmbeddedTasksOfLesson(status, copyDict);
-		}
-		if (status.elements) {
-			status.elements = status.elements.map((element) => {
-				return this.updateCopiedEmbeddedTasksRecursive(element, copyDict);
-			});
-		}
-		return status;
-	}
-
-	private updateCopiedEmbeddedTasksOfLesson(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
+	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
 		const copiedLesson = lessonStatus.copyEntity as Lesson;
 
+		if (copiedLesson?.contents === undefined) {
+			return lessonStatus;
+		}
+
 		copiedLesson.contents = copiedLesson.contents.map((value: IComponentProperties) =>
-			this.updateCopiedEmbeddedTasksMapContent(value, copyDict)
+			this.updateCopiedEmbeddedTaskId(value, copyDict)
 		);
+
 		lessonStatus.copyEntity = copiedLesson;
 
 		return lessonStatus;
 	}
 
-	private updateCopiedEmbeddedTasksMapContent = (
+	private updateCopiedEmbeddedTaskId = (
 		value: IComponentProperties,
 		copyDict: Map<EntityId, BaseEntity>
 	): IComponentProperties => {
-		if (value.component !== ComponentType.INTERNAL) {
+		if (
+			value.component !== ComponentType.INTERNAL ||
+			value.content === undefined ||
+			(value.content as IComponentInternalProperties).url === undefined
+		) {
 			return value;
 		}
+
 		const content = value.content as IComponentInternalProperties;
-		const url = new URL(content.url);
-		const originalTaskId = url.pathname.split('/')[2];
-		const finalTask = copyDict.get(originalTaskId);
-		if (!finalTask) {
+		const extractTaskId = (url: string) => {
+			const urlObject = new URL(url, 'https://www.example.com');
+			const taskId = urlObject.pathname.split('/')[2];
+			return taskId;
+		};
+
+		const originalTaskId = extractTaskId(content.url);
+		const copiedTask = copyDict.get(originalTaskId);
+		if (!copiedTask) {
 			return value;
 		}
-		const newEmbedded = { ...value, content: { url: content.url.replace(originalTaskId, finalTask.id) } };
-		return newEmbedded;
+
+		const url = content.url.replace(originalTaskId, copiedTask.id);
+		const updateded = { ...value, content: { url } };
+		return updateded;
 	};
+
+	private replaceUrlsInContents(
+		contents: IComponentProperties[],
+		fileUrlReplacements: FileUrlReplacement[]
+	): IComponentProperties[] {
+		contents = contents.map((item: IComponentProperties) => {
+			if (item.component === 'text' && item.content && 'text' in item.content && item.content.text) {
+				let { text } = item.content;
+				fileUrlReplacements.forEach(({ regex, replacement }) => {
+					text = text.replace(regex, replacement);
+				});
+				item.content.text = text;
+			}
+			return item;
+		});
+
+		return contents;
+	}
 
 	private async copyLessonContent(
 		content: IComponentProperties[],
@@ -132,7 +192,8 @@ export class LessonCopyService {
 		for (let i = 0; i < content.length; i += 1) {
 			const element = content[i];
 			if (element.component === ComponentType.TEXT) {
-				copiedContent.push(element);
+				const textContent = this.copyTextContent(element);
+				copiedContent.push(textContent);
 				copiedContentStatus.push({
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT_TEXT,
@@ -140,7 +201,8 @@ export class LessonCopyService {
 				});
 			}
 			if (element.component === ComponentType.LERNSTORE) {
-				copiedContent.push(element);
+				const lernstoreContent = this.copyLernStore(element);
+				copiedContent.push(lernstoreContent);
 				copiedContentStatus.push({
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT_LERNSTORE,
@@ -201,9 +263,45 @@ export class LessonCopyService {
 		return { copiedContent, contentStatus };
 	}
 
+	private copyTextContent(element: IComponentProperties) {
+		return {
+			title: element.title,
+			hidden: element.hidden,
+			component: ComponentType.TEXT,
+			user: element.user, // TODO should be params.user - but that made the server crash, but property is normally undefined
+			content: {
+				text: (element.content as IComponentTextProperties).text,
+			},
+		};
+	}
+
+	private copyLernStore(element: IComponentProperties) {
+		const resources = ((element.content as IComponentLernstoreProperties).resources ?? []).map(
+			({ client, description, merlinReference, title, url }) => ({
+				client,
+				description,
+				merlinReference,
+				title,
+				url,
+			})
+		);
+
+		const lernstore = {
+			title: element.title,
+			hidden: element.hidden,
+			component: ComponentType.LERNSTORE,
+			user: element.user, // TODO should be params.user - but that made the server crash, but property is normally undefined
+			content: {
+				resources,
+			},
+		};
+		return lernstore;
+	}
+
 	private static copyGeogebra(originalElement: IComponentProperties): IComponentProperties {
 		const copy = { ...originalElement, hidden: true } as IComponentProperties;
 		copy.content = { ...copy.content, materialId: '' } as IComponentGeogebraProperties;
+		delete copy._id;
 		return copy;
 	}
 
@@ -212,6 +310,7 @@ export class LessonCopyService {
 		params: LessonCopyParams
 	): Promise<IComponentProperties | false> {
 		const copy = { ...originalElement } as IComponentProperties;
+		delete copy._id;
 		const content = { ...copy.content, url: '' } as IComponentEtherpadProperties;
 		content.title = randomBytes(12).toString('hex');
 
@@ -234,6 +333,7 @@ export class LessonCopyService {
 		params: LessonCopyParams
 	): Promise<IComponentProperties | false> {
 		const copy = { ...originalElement } as IComponentProperties;
+		delete copy._id;
 		const content = { ...copy.content, url: '', board: '' } as IComponentNexboardProperties;
 
 		const nexboard = await this.nexboardService.createNexboard(params.user.id, content.title, content.description);
@@ -246,19 +346,19 @@ export class LessonCopyService {
 		return false;
 	}
 
-	private copyLinkedTasks(destinationLesson: Lesson, params: LessonCopyParams) {
+	private async copyLinkedTasks(destinationLesson: Lesson, params: LessonCopyParams) {
 		const linkedTasks = params.originalLesson.getLessonLinkedTasks();
-		const copiedTasksStatus: CopyStatus[] = [];
 		if (linkedTasks.length > 0) {
-			linkedTasks.forEach((element) => {
-				const taskStatus = this.taskCopyService.copyTaskMetadata({
-					originalTask: element,
-					destinationCourse: params.destinationCourse,
-					destinationLesson,
-					user: params.user,
-				});
-				copiedTasksStatus.push(taskStatus);
-			});
+			const copiedTasksStatus = await Promise.all(
+				linkedTasks.map((element) => {
+					return this.taskCopyService.copyTask({
+						originalTask: element,
+						destinationCourse: params.destinationCourse,
+						destinationLesson,
+						user: params.user,
+					});
+				})
+			);
 			const taskGroupStatus = {
 				type: CopyElementType.TASK_GROUP,
 				status: this.copyHelperService.deriveStatusFromElements(copiedTasksStatus),
@@ -301,6 +401,7 @@ export class LessonCopyService {
 
 	private copyEmbeddedTaskLink(originalElement: IComponentProperties) {
 		const copy = JSON.parse(JSON.stringify(originalElement)) as IComponentProperties;
+		delete copy._id;
 		return copy;
 	}
 

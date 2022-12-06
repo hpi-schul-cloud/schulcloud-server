@@ -23,6 +23,10 @@ export class TaskRepo extends BaseRepo<Task> {
 		]);
 	}
 
+	async createTask(task: Task): Promise<void> {
+		return this.save(this.create(task));
+	}
+
 	async findById(id: EntityId): Promise<Task> {
 		const task = await super.findById(id);
 
