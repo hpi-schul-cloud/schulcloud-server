@@ -45,9 +45,9 @@ const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
-		scope.includes('user_role') ? userRepo.getUserWithRoles(hook.params.account.userId) : undefined,
+		scope.includes('user_roles') ? userRepo.getUserWithRoles(hook.params.account.userId) : undefined,
 		scope.includes('fed_state') ? userRepo.getUserWithFederalState(hook.params.account.userId) : undefined,
-		scope.includes('class') ? classesRepo.getClassesForUser(hook.params.account.userId) : undefined,
+		scope.includes('classes') ? classesRepo.getClassesForUser(hook.params.account.userId) : undefined,
 		scope.includes('groups')
 			? hook.app.service('teams').find(
 				{
@@ -83,14 +83,14 @@ const setIdToken = (hook) => {
 						email: scope.includes('email') ? user.email : undefined,
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
-						userRole: scope.includes('user_role')
+						user_roles: scope.includes('user_roles')
 							? userRoles.roles.map((roleName) =>
 								this.roleName = roleName.name
 							)
 							: undefined,
-						fedState: scope.includes('fed_state') ? userFedState.schoolId.federalState.name : undefined,
+						fed_state: scope.includes('fed_state') ? userFedState.schoolId.federalState.name : undefined,
 						alias: scope.includes('alias') ? alias : undefined,
-						class: scope.includes('class') ? userClass : undefined,
+						classes: scope.includes('classes') ? userClass : undefined,
 						schoolId: user.schoolId,
 						groups: scope.includes('groups')
 							? userTeams.data.map((team) => ({
