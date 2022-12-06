@@ -74,7 +74,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 			accountId = await this.identityManager.createAccount(
 				{
 					username: accountDto.username,
-					attRefTechnicalId: accountDto.id,
+					attRefTechnicalId: accountDto.refId,
 					attRefFunctionalIntId: accountDto.userId,
 					attRefFunctionalExtId: accountDto.systemId,
 				},

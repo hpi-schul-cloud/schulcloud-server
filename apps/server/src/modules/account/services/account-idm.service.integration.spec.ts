@@ -5,7 +5,7 @@ import { KeycloakAdministrationService } from '@shared/infra/identity-management
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { IKeycloakSettings, KeycloakSettings } from '@shared/infra/identity-management/keycloak/interface';
 import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
-import { IAccount, IAccountUpdate } from '@shared/domain';
+import { IAccount } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
 import { AbstractAccountService } from './account.service.abstract';
@@ -13,27 +13,28 @@ import { AccountServiceIdm } from './account-idm.service';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
-	let identityManegementService: IdentityManagementService;
+	let identityManagementService: IdentityManagementService;
 	let keycloakAdminService: KeycloakAdministrationService;
 	let keycloak: KeycloakAdminClient;
 	let isIdmReachable = false;
 	let accountIdmService: AbstractAccountService;
 
 	const testRealm = 'test-realm';
-	const testAccountId = new ObjectId().toString();
+	const technicalRefId = 'aTechnicalReferenceId';
 	const testAccount = new AccountSaveDto({
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
 		systemId: new ObjectId().toString(),
+		refId: technicalRefId,
 	});
 	const createAccount = async (): Promise<string> => {
-		return identityManegementService.createAccount(
+		return identityManagementService.createAccount(
 			{
 				username: testAccount.username,
 				attRefFunctionalIntId: testAccount.userId,
 				attRefFunctionalExtId: testAccount.systemId,
-				attRefTechnicalId: testAccount.id,
+				attRefTechnicalId: technicalRefId,
 			},
 			testAccount.password
 		);
@@ -78,7 +79,7 @@ describe('AccountService Integration', () => {
 			],
 		}).compile();
 		accountIdmService = module.get(AccountServiceIdm);
-		identityManegementService = module.get(IdentityManagementService);
+		identityManagementService = module.get(IdentityManagementService);
 		keycloakAdminService = module.get(KeycloakAdministrationService);
 		isIdmReachable = await keycloakAdminService.testKcConnection();
 		if (isIdmReachable) {
@@ -107,13 +108,13 @@ describe('AccountService Integration', () => {
 		if (!isIdmReachable) return;
 
 		const createdAccount = await accountIdmService.save(testAccount);
-		const foundAccount = await identityManegementService.findAccountById(createdAccount.id);
+		const foundAccount = await identityManagementService.findAccountById(createdAccount.refId ?? '');
 
 		expect(foundAccount).toEqual(
 			expect.objectContaining<IAccount>({
-				id: createdAccount.id,
+				id: createdAccount.refId ?? '',
 				username: createdAccount.username,
-				attRefTechnicalId: createdAccount.id,
+				attRefTechnicalId: technicalRefId,
 				attRefFunctionalIntId: createdAccount.userId,
 				attRefFunctionalExtId: createdAccount.systemId,
 			})
@@ -124,19 +125,19 @@ describe('AccountService Integration', () => {
 		if (!isIdmReachable) return;
 
 		const newUsername = 'jane.doe@mail.tld';
-		await createAccount();
+		const idmId = await createAccount();
 
 		const updatedAccount = await accountIdmService.save({
-			id: testAccountId,
+			id: technicalRefId,
 			username: newUsername,
 		});
-		const foundAccount = await identityManegementService.findAccountByTecRefId(updatedAccount.id);
+		const foundAccount = await identityManagementService.findAccountById(idmId);
 
 		expect(foundAccount).toEqual(
 			expect.objectContaining<IAccount>({
-				id: updatedAccount.id,
+				id: updatedAccount.refId ?? '',
 				username: updatedAccount.username,
-				attRefTechnicalId: updatedAccount.id,
+				attRefTechnicalId: technicalRefId,
 				attRefFunctionalIntId: updatedAccount.userId,
 				attRefFunctionalExtId: updatedAccount.systemId,
 			})
@@ -147,62 +148,42 @@ describe('AccountService Integration', () => {
 		if (!isIdmReachable) return;
 
 		const newUserName = 'jane.doe@mail.tld';
-		const account = await createAccount();
-		await accountIdmService.updateUsername(testAccountId, newUserName);
-		const accounts = await identityManegementService.getAllAccounts();
+		const idmId = await createAccount();
+		await accountIdmService.updateUsername(technicalRefId, newUserName);
 
-		expect(accounts).toEqual(
-			expect.arrayContaining([
-				expect.objectContaining<IAccountUpdate>({
-					username: newUserName,
-				}),
-			])
-		);
-		expect(accounts).not.toEqual(
-			expect.arrayContaining([
-				expect.objectContaining<IAccountUpdate>({
-					username: testAccount.username,
-				}),
-			])
+		const foundAccount = await identityManagementService.findAccountById(idmId);
+
+		expect(foundAccount).toEqual(
+			expect.objectContaining<Partial<IAccount>>({
+				username: newUserName,
+			})
 		);
 	});
 
 	it('updatePassword should update password', async () => {
 		if (!isIdmReachable) return;
 
-		const account = await createAccount();
-		await expect(accountIdmService.updatePassword(testAccountId, 'newPassword')).resolves.not.toThrow();
+		await createAccount();
+		await expect(accountIdmService.updatePassword(technicalRefId, 'newPassword')).resolves.not.toThrow();
 	});
 
 	it('delete should remove account', async () => {
 		if (!isIdmReachable) return;
+		const idmId = await createAccount();
+		const foundAccount = await identityManagementService.findAccountById(idmId);
+		expect(foundAccount).toBeDefined();
 
-		const account = await createAccount();
-		await accountIdmService.delete(testAccountId);
-		const accounts = await identityManegementService.getAllAccounts();
-
-		expect(accounts).not.toEqual(
-			expect.arrayContaining([
-				expect.objectContaining<IAccountUpdate>({
-					username: testAccount.username,
-				}),
-			])
-		);
+		await accountIdmService.delete(technicalRefId);
+		await expect(identityManagementService.findAccountById(idmId)).rejects.toThrow();
 	});
 
 	it('deleteByUserId should remove account', async () => {
 		if (!isIdmReachable) return;
+		const idmId = await createAccount();
+		const foundAccount = await identityManagementService.findAccountById(idmId);
+		expect(foundAccount).toBeDefined();
 
-		const account = await createAccount();
-		await accountIdmService.deleteByUserId(testAccount.userId as string);
-		const accounts = await identityManegementService.getAllAccounts();
-
-		expect(accounts).not.toEqual(
-			expect.arrayContaining([
-				expect.objectContaining<IAccountUpdate>({
-					username: testAccount.username,
-				}),
-			])
-		);
+		await accountIdmService.deleteByUserId(testAccount.userId ?? '');
+		await expect(identityManagementService.findAccountById(idmId)).rejects.toThrow();
 	});
 });

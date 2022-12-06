@@ -128,16 +128,25 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	}
 
 	private extractAccount(user: UserRepresentation): IAccount {
-		return {
+		const ret: IAccount = {
 			id: user.id ?? '',
 			username: user.username,
 			email: user.email,
 			firstName: user.firstName,
 			lastName: user.lastName,
 			createdDate: user.createdTimestamp ? new Date(user.createdTimestamp) : undefined,
-			attRefFunctionalExtId: user.attributes?.refFunctionalExtId as string,
-			attRefFunctionalIntId: user.attributes?.refFunctionalIntId as string,
-			attRefTechnicalId: user.attributes?.refTechnicalId as string,
 		};
+		ret.attRefFunctionalExtId = this.extractAttributeValue(user.attributes?.refFunctionalExtId);
+		ret.attRefFunctionalIntId = this.extractAttributeValue(user.attributes?.refFunctionalIntId);
+		ret.attRefTechnicalId = this.extractAttributeValue(user.attributes?.refTechnicalId);
+
+		return ret;
+	}
+
+	private extractAttributeValue(value: unknown): string {
+		if (Array.isArray(value)) {
+			return value[0] as string;
+		}
+		return value as string;
 	}
 }
