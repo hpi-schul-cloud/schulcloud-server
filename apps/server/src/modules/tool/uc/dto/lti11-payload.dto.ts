@@ -1,4 +1,4 @@
-import { LtiRole } from '@src/modules/tool/interface/lti-role.enum';
+import { LtiRole } from '../../interface';
 
 export class Lti11PayloadDto {
 	lti_version: string;

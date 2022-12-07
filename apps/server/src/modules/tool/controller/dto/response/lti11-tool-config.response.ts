@@ -1,8 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ExternalToolConfigResponse } from './external-tool-config.response';
-import { ToolConfigType } from '../../../interface/tool-config-type.enum';
-import { LtiMessageType } from '../../../interface/lti-message-type.enum';
-import { LtiPrivacyPermission } from '../../../interface/lti-privacy-permission.enum';
+import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../../interface';
 
 export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()

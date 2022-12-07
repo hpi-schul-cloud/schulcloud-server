@@ -1,7 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CustomParameterTypeParams } from '../../../interface/custom-parameter-type.enum';
-import { CustomParameterLocationParams } from '../../../interface/custom-parameter-location.enum';
-import { CustomParameterScopeParams } from '../../../interface/custom-parameter-scope.enum';
+import {
+	CustomParameterLocationParams,
+	CustomParameterScopeParams,
+	CustomParameterTypeParams,
+} from '../../../interface';
 
 export class CustomParameterResponse {
 	@ApiProperty()
