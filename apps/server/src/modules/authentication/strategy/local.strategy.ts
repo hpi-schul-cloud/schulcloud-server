@@ -17,6 +17,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		if (!username || !password) {
 			throw new UnauthorizedException();
 		}
+		username = this.authenticationService.normalizeUsername(username);
+		password = this.authenticationService.normalizePassword(password);
 		const account = await this.authenticationService.loadAccount(username);
 		if (!account.password) {
 			throw new UnauthorizedException();

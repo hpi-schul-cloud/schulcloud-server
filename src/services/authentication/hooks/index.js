@@ -106,6 +106,9 @@ const injectUserId = async (context) => {
 	return context;
 };
 
+/**
+ * @deprecated Remove when switched to new auth service
+ */
 const lowerCaseUsername = (hook) => {
 	if (hook.data.username) {
 		hook.data.username = hook.data.username.toLowerCase();
@@ -113,6 +116,9 @@ const lowerCaseUsername = (hook) => {
 	return hook;
 };
 
+/**
+ * @deprecated Remove when switched to new auth service
+ */
 const trimUsername = (hook) => {
 	if (hook.data.username) {
 		hook.data.username = hook.data.username.trim();
@@ -120,6 +126,9 @@ const trimUsername = (hook) => {
 	return hook;
 };
 
+/**
+ * @deprecated Remove when switched to new auth service
+ */
 const trimPassword = (hook) => {
 	if (hook.data.password) {
 		hook.data.password = hook.data.password.trim();
@@ -132,8 +141,11 @@ const populateResult = (hook) => {
 	return hook;
 };
 
-// Requests need to be used after authentication as inner server calls
-// Provider is not allowed to be set to detect it as inner server call
+/**
+ * Requests need to be used after authentication as inner server calls
+ * Provider is not allowed to be set to detect it as inner server call
+ * @deprecated not needed in nest
+ */
 const removeProvider = (context) => {
 	delete context.params.provider;
 	return context;
@@ -142,6 +154,7 @@ const removeProvider = (context) => {
 /**
  * If a redis connection exists, the newly created is added to the whitelist.
  * @param {Object} context feathers context
+ * @deprecated
  */
 const addJwtToWhitelist = async (context) => {
 	if (getRedisClient()) {
@@ -168,7 +181,7 @@ const removeJwtFromWhitelist = async (context) => {
 
 /**
  * increase jwt timeout for private devices on request
-  @param {} context
+ * @deprecated remove when switched to v3 endpoint
  */
 const increaseJwtTimeoutForPrivateDevices = (context) => {
 	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true) {
@@ -182,6 +195,9 @@ const increaseJwtTimeoutForPrivateDevices = (context) => {
 	return context;
 };
 
+/**
+ * @deprecated can be removed after switching to v3 endpoint
+ */
 const checkJwtAuthWhitelisted = async (context) => {
 	const { strategy, accessToken } = context.data;
 	if (strategy === 'jwt') {
@@ -200,6 +216,7 @@ const hooks = {
 			trimUsername,
 			trimPassword,
 			bruteForceCheck,
+			// NOTE: will not be ported
 			globalHooks.blockDisposableEmail('username'),
 			injectUserId,
 			increaseJwtTimeoutForPrivateDevices,

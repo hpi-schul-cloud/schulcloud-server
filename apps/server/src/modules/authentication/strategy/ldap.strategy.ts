@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ICurrentUser, School, System } from '@shared/domain';
+import { ICurrentUser } from '@shared/domain';
 import { CurrentUserMapper } from '@shared/domain/mapper/current-user.mapper';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Strategy } from 'passport-custom';
@@ -23,12 +23,15 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 	}
 
 	async validate(request: { body: RequestBody }): Promise<ICurrentUser> {
-		const { systemId, username, password, schoolId } = request.body;
+		const { systemId, schoolId } = request.body;
+		let { username, password } = request.body;
 		if (!systemId || !username || !password || !schoolId) {
 			throw new UnauthorizedException();
 		}
-		const system: System = await this.systemRepo.findById(systemId);
-		const school: School = await this.schoolRepo.findById(schoolId);
+		username = this.authenticationService.normalizeUsername(username);
+		password = this.authenticationService.normalizePassword(password);
+		const system = await this.systemRepo.findById(systemId);
+		const school = await this.schoolRepo.findById(schoolId);
 		if (!school.externalId) {
 			throw new UnauthorizedException();
 		}
