@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
 	Board,
 	BoardElement,
+	BoardElementReference,
 	BoardElementType,
 	CopyElementType,
 	CopyHelperService,
@@ -66,25 +67,16 @@ export class BoardCopyService {
 		destinationCourse: Course
 	): Promise<CopyStatus[]> {
 		const promises: Promise<[number, CopyStatus]>[] = boardElements.map((element, pos) => {
-			if (element.boardElementType === BoardElementType.Task) {
-				const originalTask = element.target as Task;
-				return this.taskCopyService
-					.copyTask({
-						originalTask,
-						user,
-						destinationCourse,
-					})
-					.then((status) => [pos, status]);
+			if (element.target === undefined || element.target.name === undefined) {
+				return Promise.reject(new Error('Broken boardelement - not pointing to any target entity'));
 			}
+
+			if (element.boardElementType === BoardElementType.Task) {
+				return this.copyTask(element.target, user, destinationCourse).then((status) => [pos, status]);
+			}
+
 			if (element.boardElementType === BoardElementType.Lesson) {
-				const originalLesson = element.target as Lesson;
-				return this.lessonCopyService
-					.copyLesson({
-						originalLesson,
-						user,
-						destinationCourse,
-					})
-					.then((status) => [pos, status]);
+				return this.copyLesson(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
 			/* istanbul ignore next */
@@ -97,6 +89,28 @@ export class BoardCopyService {
 		const resolved: Array<[number, CopyStatus]> = getResolvedValues(results);
 		const statuses: CopyStatus[] = this.sortByOriginalOrder(resolved);
 		return statuses;
+	}
+
+	private async copyLesson(
+		reference: BoardElementReference,
+		user: User,
+		destinationCourse: Course
+	): Promise<CopyStatus> {
+		const originalLesson = reference as Lesson;
+		return this.lessonCopyService.copyLesson({
+			originalLesson,
+			user,
+			destinationCourse,
+		});
+	}
+
+	private async copyTask(reference: BoardElementReference, user: User, destinationCourse: Course): Promise<CopyStatus> {
+		const originalTask = reference as Task;
+		return this.taskCopyService.copyTask({
+			originalTask,
+			user,
+			destinationCourse,
+		});
 	}
 
 	private extractReferences(statuses: CopyStatus[]): BoardElement[] {
