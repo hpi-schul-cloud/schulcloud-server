@@ -14,6 +14,7 @@ import { Page } from '@shared/domain/interface/page';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
+import { forEach } from 'lodash';
 import { TokenEndpointAuthMethod } from '../interface';
 import { ExternalToolServiceMapper } from './mapper';
 
@@ -127,5 +128,12 @@ export class ExternalToolService {
 			}
 			return true;
 		});
+	}
+
+	isRegexCommentMandatoryAndFilled(customParameter: CustomParameterDO): boolean {
+		if (customParameter.regex && !customParameter.regexComment) {
+			return false;
+		}
+		return true;
 	}
 }

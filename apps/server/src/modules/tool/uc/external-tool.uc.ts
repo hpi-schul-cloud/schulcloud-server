@@ -1,8 +1,9 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, IFindOptions, Permission, User } from '@shared/domain';
-import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { CustomParameterDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Page } from '@shared/domain/interface/page';
+import { customParameterDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ExternalToolService } from '../service/external-tool.service';
 
 @Injectable()
@@ -30,17 +31,23 @@ export class ExternalToolUc {
 		if (!(await this.externalToolService.isNameUnique(externalToolDO))) {
 			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`);
 		}
-		if (externalToolDO.parameters && this.externalToolService.hasDuplicateAttributes(externalToolDO.parameters)) {
-			throw new UnprocessableEntityException(
-				`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
-			);
+		if (externalToolDO.parameters) {
+			if (this.externalToolService.hasDuplicateAttributes(externalToolDO.parameters)) {
+				throw new UnprocessableEntityException(
+					`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
+				);
+			}
+			if (!this.externalToolService.validateByRegex(externalToolDO.parameters)) {
+				throw new UnprocessableEntityException(
+					`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute.`
+				);
+			}
+			externalToolDO.parameters.forEach((param) => {
+				if (!this.externalToolService.isRegexCommentMandatoryAndFilled(param)) {
+					throw new UnprocessableEntityException(`The "${param.name}" parameter is missing a regex comment.`);
+				}
+			});
 		}
-		if (externalToolDO.parameters && !this.externalToolService.validateByRegex(externalToolDO.parameters)) {
-			throw new UnprocessableEntityException(
-				`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute.`
-			);
-		}
-
 		if (
 			externalToolDO.config instanceof Oauth2ToolConfigDO &&
 			!(await this.externalToolService.isClientIdUnique(externalToolDO.config))
