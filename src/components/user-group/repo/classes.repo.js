@@ -83,16 +83,19 @@ const getClassesForUserWithClassNames = async (userId) => {
 					student: {
 						$in: [userId, '$userIds'],
 					},
+					name: {
+						$in: [userId, '$name'],
+					},
 				},
 			},
 		])
 		.exec();
 
-	const sanitize = ({ _id, name, student, teacher }) => ({
+	const sanitize = ({ _id, student, teacher, name }) => ({
 		id: idToString(_id),
-		name: name,
 		student: student === true,
 		teacher: teacher === true,
+		name: name,
 	});
 
 	return result.map(sanitize);
