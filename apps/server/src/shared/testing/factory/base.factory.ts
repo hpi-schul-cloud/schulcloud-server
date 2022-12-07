@@ -57,8 +57,8 @@ export class BaseFactory<T, U, I = any, C = U> {
 	 * @param id
 	 * @returns an entity
 	 */
-	buildWithId(params?: DeepPartial<U>, id?: string): T {
-		const entity = this.build(params);
+	buildWithId(params?: DeepPartial<U>, id?: string, options: BuildOptions<U, I> = {}): T {
+		const entity = this.build(params, options);
 		const entityWithId = Object.assign(entity, { _id: new ObjectId(id) });
 
 		return entityWithId;
@@ -74,6 +74,15 @@ export class BaseFactory<T, U, I = any, C = U> {
 		const list: T[] = [];
 		for (let i = 0; i < number; i += 1) {
 			list.push(this.build(params, options));
+		}
+
+		return list;
+	}
+
+	buildListWithId(number: number, params?: DeepPartial<U>, options: BuildOptions<U, I> = {}): T[] {
+		const list: T[] = [];
+		for (let i = 0; i < number; i += 1) {
+			list.push(this.buildWithId(params, undefined, options));
 		}
 
 		return list;

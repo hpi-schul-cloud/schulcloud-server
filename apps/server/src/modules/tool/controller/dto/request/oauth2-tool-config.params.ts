@@ -1,7 +1,7 @@
-import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
-import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
+import { TokenEndpointAuthMethod, ToolConfigType } from '../../../interface';
+import { ExternalToolConfigCreateParams } from './external-tool-config.params';
 
 export class Oauth2ToolConfigParams extends ExternalToolConfigCreateParams {
 	@IsEnum(ToolConfigType)
@@ -37,4 +37,8 @@ export class Oauth2ToolConfigParams extends ExternalToolConfigCreateParams {
 	@IsArray()
 	@ApiProperty()
 	redirectUris!: string[];
+
+	@IsEnum(TokenEndpointAuthMethod)
+	@ApiProperty()
+	tokenEndpointAuthMethod!: TokenEndpointAuthMethod;
 }

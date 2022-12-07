@@ -1,4 +1,5 @@
-export enum CustomParameterScope {
+export enum CustomParameterScopeParams {
+	GLOBAL = 'global',
 	SCHOOL = 'school',
 	COURSE = 'course',
 }

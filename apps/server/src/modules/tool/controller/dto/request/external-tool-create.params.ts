@@ -1,12 +1,12 @@
-import { IsArray, IsBoolean, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { CustomParameterCreateParams } from '@src/modules/tool/controller/dto/request/custom-parameter.params';
-import { BasicToolConfigParams } from '@src/modules/tool/controller/dto/request/basic-tool-config.params';
-import { Lti11ToolConfigParams } from '@src/modules/tool/controller/dto/request/lti11-tool-config.params';
-import { Oauth2ToolConfigParams } from '@src/modules/tool/controller/dto/request/oauth2-tool-config.params';
 import { Type } from 'class-transformer';
-import { ExternalToolConfigCreateParams } from '@src/modules/tool/controller/dto/request/external-tool-config.params';
-import { ToolConfigType } from '@src/modules/tool/interface/tool-config-type.enum';
+import { CustomParameterCreateParams } from './custom-parameter.params';
+import { BasicToolConfigParams } from './basic-tool-config.params';
+import { ExternalToolConfigCreateParams } from './external-tool-config.params';
+import { Oauth2ToolConfigParams } from './oauth2-tool-config.params';
+import { ToolConfigType } from '../../../interface';
+import { Lti11ToolConfigParams } from './lti11-tool-config.params';
 
 @ApiExtraModels(Lti11ToolConfigParams, Oauth2ToolConfigParams, BasicToolConfigParams)
 export class ExternalToolParams {
@@ -26,8 +26,9 @@ export class ExternalToolParams {
 
 	@ValidateNested()
 	@Type(/* istanbul ignore next */ () => ExternalToolConfigCreateParams, {
+		keepDiscriminatorProperty: true,
 		discriminator: {
-			property: 'config.type',
+			property: 'type',
 			subTypes: [
 				{ value: Lti11ToolConfigParams, name: ToolConfigType.LTI11 },
 				{ value: Oauth2ToolConfigParams, name: ToolConfigType.OAUTH2 },
@@ -42,7 +43,7 @@ export class ExternalToolParams {
 			{ $ref: getSchemaPath(Oauth2ToolConfigParams) },
 		],
 	})
-	config!: BasicToolConfigParams | Lti11ToolConfigParams | Oauth2ToolConfigParams;
+	config!: Lti11ToolConfigParams | Oauth2ToolConfigParams | BasicToolConfigParams;
 
 	@ValidateNested({ each: true })
 	@IsArray()

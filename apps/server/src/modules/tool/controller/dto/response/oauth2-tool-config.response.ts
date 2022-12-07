@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ExternalToolConfigResponse } from './external-tool-config.response';
-import { ToolConfigType } from '../../../interface/tool-config-type.enum';
+import { TokenEndpointAuthMethod, ToolConfigType } from '../../../interface';
 
 export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()
@@ -21,8 +21,11 @@ export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiPropertyOptional()
 	scope?: string;
 
-	@ApiProperty()
-	redirectUris: string[];
+	@ApiPropertyOptional()
+	redirectUris?: string[];
+
+	@ApiPropertyOptional()
+	tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
 
 	constructor(props: Oauth2ToolConfigResponse) {
 		super();
@@ -33,5 +36,6 @@ export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 		this.frontchannelLogoutUri = props.frontchannelLogoutUri;
 		this.scope = props.scope;
 		this.redirectUris = props.redirectUris;
+		this.tokenEndpointAuthMethod = props.tokenEndpointAuthMethod;
 	}
 }

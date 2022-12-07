@@ -561,7 +561,7 @@ describe('TaskUC', () => {
 				const student = user;
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				task.submissions.add(submissionFactory.build({ task, student }));
+				task.submissions.add(submissionFactory.submitted().build({ task, student }));
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
@@ -586,8 +586,8 @@ describe('TaskUC', () => {
 				const student2 = userFactory.build();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				task.submissions.add(submissionFactory.build({ task, student: student1 }));
-				task.submissions.add(submissionFactory.build({ task, student: student2 }));
+				task.submissions.add(submissionFactory.submitted().build({ task, student: student1 }));
+				task.submissions.add(submissionFactory.submitted().build({ task, student: student2 }));
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
@@ -611,7 +611,7 @@ describe('TaskUC', () => {
 				const student = user;
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission = submissionFactory.build({ task, student });
+				const submission = submissionFactory.submitted().build({ task, student });
 				task.submissions.add(submission);
 
 				const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
@@ -640,8 +640,8 @@ describe('TaskUC', () => {
 				const student2 = userFactory.build();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.build({ task, student: student1 });
-				const submission2 = submissionFactory.build({ task, student: student2 });
+				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
+				const submission2 = submissionFactory.submitted().build({ task, student: student2 });
 				task.submissions.add(submission1, submission2);
 
 				jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
@@ -724,7 +724,7 @@ describe('TaskUC', () => {
 					task,
 					status: {
 						submitted: 0,
-						maxSubmissions: course.getNumberOfStudents(),
+						maxSubmissions: course.getStudentIds().length,
 						graded: 0,
 						isDraft: true,
 						isFinished: false,
@@ -772,7 +772,7 @@ describe('TaskUC', () => {
 				const student = user;
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				task.submissions.add(submissionFactory.build({ task, student }));
+				task.submissions.add(submissionFactory.submitted().build({ task, student }));
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
@@ -783,7 +783,7 @@ describe('TaskUC', () => {
 				expect(result[0].status).toEqual({
 					graded: 0,
 					submitted: 1,
-					maxSubmissions: course.getNumberOfStudents(),
+					maxSubmissions: course.getStudentIds().length,
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
@@ -797,8 +797,8 @@ describe('TaskUC', () => {
 				const student2 = userFactory.buildWithId();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.build({ task, student: student1 });
-				const submission2 = submissionFactory.build({ task, student: student2 });
+				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
+				const submission2 = submissionFactory.submitted().build({ task, student: student2 });
 				task.submissions.add(submission1, submission2);
 
 				const mockRestore = findAllMock({ tasks: [task] });
@@ -810,7 +810,7 @@ describe('TaskUC', () => {
 				expect(result[0].status).toEqual({
 					graded: 0,
 					submitted: 2,
-					maxSubmissions: course.getNumberOfStudents(),
+					maxSubmissions: course.getStudentIds().length,
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
@@ -823,7 +823,7 @@ describe('TaskUC', () => {
 				const student = userFactory.build();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission = submissionFactory.build({ task, student });
+				const submission = submissionFactory.submitted().build({ task, student });
 				task.submissions.add(submission);
 
 				const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
@@ -837,7 +837,7 @@ describe('TaskUC', () => {
 				expect(result[0].status).toEqual({
 					graded: 1,
 					submitted: 1,
-					maxSubmissions: course.getNumberOfStudents(),
+					maxSubmissions: course.getStudentIds().length,
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
@@ -852,8 +852,8 @@ describe('TaskUC', () => {
 				const student2 = userFactory.build();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.build({ task, student: student1 });
-				const submission2 = submissionFactory.build({ task, student: student2 });
+				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
+				const submission2 = submissionFactory.submitted().build({ task, student: student2 });
 				task.submissions.add(submission1, submission2);
 
 				jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
@@ -867,7 +867,7 @@ describe('TaskUC', () => {
 				expect(result[0].status).toEqual({
 					graded: 2,
 					submitted: 2,
-					maxSubmissions: course.getNumberOfStudents(),
+					maxSubmissions: course.getStudentIds().length,
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
@@ -881,9 +881,9 @@ describe('TaskUC', () => {
 				const student2 = userFactory.build();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.build({ task, student: student1 });
-				const submission2 = submissionFactory.build({ task, student: student2 });
-				const submission3 = submissionFactory.build({ task, student: student2 });
+				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
+				const submission2 = submissionFactory.submitted().build({ task, student: student2 });
+				const submission3 = submissionFactory.submitted().build({ task, student: student2 });
 
 				task.submissions.add(submission1, submission2, submission3);
 
@@ -899,7 +899,7 @@ describe('TaskUC', () => {
 				expect(result[0].status).toEqual({
 					graded: 2,
 					submitted: 2,
-					maxSubmissions: course.getNumberOfStudents(),
+					maxSubmissions: course.getStudentIds().length,
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
@@ -913,9 +913,9 @@ describe('TaskUC', () => {
 				const student2 = userFactory.buildWithId();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.build({ task, student: student1 });
-				const submission2 = submissionFactory.build({ task, student: student1 });
-				const submission3 = submissionFactory.build({ task, student: student2 });
+				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
+				const submission2 = submissionFactory.submitted().build({ task, student: student1 });
+				const submission3 = submissionFactory.submitted().build({ task, student: student2 });
 
 				task.submissions.add(submission1, submission2, submission3);
 
@@ -928,7 +928,7 @@ describe('TaskUC', () => {
 				expect(result[0].status).toEqual({
 					graded: 0,
 					submitted: 2,
-					maxSubmissions: course.getNumberOfStudents(),
+					maxSubmissions: course.getStudentIds().length,
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,

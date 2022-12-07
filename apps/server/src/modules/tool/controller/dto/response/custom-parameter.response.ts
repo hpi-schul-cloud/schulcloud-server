@@ -1,7 +1,9 @@
-import { CustomParameterLocation } from '@src/modules/tool/interface/custom-parameter-location.enum';
-import { CustomParameterScope } from '@src/modules/tool/interface/custom-parameter-scope.enum';
-import { CustomParameterType } from '@src/modules/tool/interface/custom-parameter-type.enum';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+	CustomParameterLocationParams,
+	CustomParameterScopeParams,
+	CustomParameterTypeParams,
+} from '../../../interface';
 
 export class CustomParameterResponse {
 	@ApiProperty()
@@ -14,13 +16,13 @@ export class CustomParameterResponse {
 	regex?: string;
 
 	@ApiProperty()
-	scope: CustomParameterScope;
+	scope: CustomParameterScopeParams;
 
 	@ApiProperty()
-	location: CustomParameterLocation;
+	location: CustomParameterLocationParams;
 
 	@ApiProperty()
-	type: CustomParameterType;
+	type: CustomParameterTypeParams;
 
 	constructor(props: CustomParameterResponse) {
 		this.name = props.name;
