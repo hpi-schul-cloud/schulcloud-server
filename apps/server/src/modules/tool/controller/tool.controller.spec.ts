@@ -98,6 +98,8 @@ describe('ToolController', () => {
 			scope: CustomParameterScopeParams.SCHOOL,
 			type: CustomParameterTypeParams.STRING,
 			regex: 'mockRegex',
+			regexComment: 'mockComment',
+			isOptional: false,
 		});
 		const basicToolConfigResponse: BasicToolConfigResponse = new BasicToolConfigResponse({
 			type: ToolConfigType.BASIC,

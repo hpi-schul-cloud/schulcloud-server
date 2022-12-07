@@ -66,6 +66,7 @@ export const customParameterDOFactory = DoBaseFactory.define<CustomParameterDO, 
 		type: CustomParameterType.STRING,
 		scope: CustomParameterScope.GLOBAL,
 		location: CustomParameterLocation.TOKEN,
+		isOptional: false,
 	})
 );
 

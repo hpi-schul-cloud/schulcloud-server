@@ -129,9 +129,11 @@ export class ExternalToolRepoMapper {
 				name: param.name,
 				default: param.default,
 				regex: param.regex,
+				regexComment: param.regexComment,
 				scope: param.scope,
 				location: param.location,
 				type: param.type,
+				isOptional: param.isOptional,
 			});
 		});
 	}
@@ -142,9 +144,11 @@ export class ExternalToolRepoMapper {
 				name: param.name,
 				default: param.default,
 				regex: param.regex,
+				regexComment: param.regexComment,
 				scope: param.scope,
 				location: param.location,
 				type: param.type,
+				isOptional: param.isOptional,
 			});
 		});
 	}

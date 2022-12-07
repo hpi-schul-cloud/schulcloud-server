@@ -87,6 +87,7 @@ describe('ExternalToolUc', () => {
 		externalToolService.isClientIdUnique.mockResolvedValue(true);
 		externalToolService.hasDuplicateAttributes.mockReturnValue(false);
 		externalToolService.validateByRegex.mockReturnValue(true);
+		externalToolService.isRegexCommentMandatoryAndFilled.mockReturnValue(true);
 		externalToolService.createExternalTool.mockResolvedValue(externalToolDO);
 		externalToolService.findExternalTools.mockResolvedValue(page);
 
@@ -193,6 +194,15 @@ describe('ExternalToolUc', () => {
 			it('should throw if tool has custom attributes with invalid regex', async () => {
 				const { externalToolDO, currentUser } = setup();
 				externalToolService.validateByRegex.mockReturnValue(false);
+
+				const result: Promise<ExternalToolDO> = uc.createExternalTool(currentUser.userId, externalToolDO);
+
+				await expect(result).rejects.toThrow(UnprocessableEntityException);
+			});
+
+			it('should throw if reges is set but no comment was provided', async () => {
+				const { externalToolDO, currentUser } = setup();
+				externalToolService.isRegexCommentMandatoryAndFilled.mockReturnValue(false);
 
 				const result: Promise<ExternalToolDO> = uc.createExternalTool(currentUser.userId, externalToolDO);
 
