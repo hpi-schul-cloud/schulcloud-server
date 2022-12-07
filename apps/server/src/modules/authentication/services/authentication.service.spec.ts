@@ -8,6 +8,7 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { BruteForceError } from '../errors/brute-force.error';
 import { AuthenticationService } from './authentication.service';
+import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
 
 const mockAccount: AccountDto = {
 	id: 'mockAccountId',
@@ -26,6 +27,10 @@ describe('AuthenticationService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				AuthenticationService,
+				{
+					provide: JwtValidationAdapter,
+					useValue: createMock<JwtValidationAdapter>(),
+				},
 				{
 					provide: JwtService,
 					useValue: createMock<JwtService>(),
@@ -69,7 +74,7 @@ describe('AuthenticationService', () => {
 		});
 	});
 	describe('generateJwt', () => {
-		it('should pass the correct parameters', () => {
+		it('should pass the correct parameters', async () => {
 			const mockCurrentUser: ICurrentUser = {
 				accountId: 'mockAccountId',
 				roles: ['student'],
@@ -86,8 +91,13 @@ describe('AuthenticationService', () => {
 					updatedAt: new Date(),
 				},
 			};
-			authenticationService.generateJwt(mockCurrentUser);
-			expect(jwtService.sign).toBeCalledWith({ ...mockCurrentUser, sub: mockCurrentUser.accountId });
+			await authenticationService.generateJwt(mockCurrentUser);
+			expect(jwtService.sign).toBeCalledWith(
+				mockCurrentUser,
+				expect.objectContaining({
+					subject: mockCurrentUser.accountId,
+				})
+			);
 		});
 	});
 	describe('checkBrutForce', () => {
@@ -95,20 +105,20 @@ describe('AuthenticationService', () => {
 			accountService.updateLastTriedFailedLogin.mockClear();
 		});
 
-		it('should fail for account with recently failed login', async () => {
+		it('should fail for account with recently failed login', () => {
 			const lasttriedFailedLogin = new Date();
 			lasttriedFailedLogin.setSeconds(lasttriedFailedLogin.getSeconds() - 14);
-			await expect(
+			expect(() =>
 				authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as AccountDto)
-			).rejects.toThrow(BruteForceError);
+			).toThrow(BruteForceError);
 		});
-		it('should not fail for account with failed login above threshold', async () => {
+		it('should not fail for account with failed login above threshold', () => {
 			const lasttriedFailedLogin = new Date();
 			lasttriedFailedLogin.setSeconds(lasttriedFailedLogin.getSeconds() - 16);
 
-			await expect(
+			expect(() =>
 				authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as AccountDto)
-			).resolves.not.toThrow();
+			).not.toThrow();
 		});
 	});
 });

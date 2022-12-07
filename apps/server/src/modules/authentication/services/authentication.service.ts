@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { ICurrentUser } from '@shared/domain';
 import { IAccountConfig } from '@src/modules/account';
+import { JwtValidationAdapter } from '@src/modules/authentication/strategy/jwt-validation.adapter';
+import { randomUUID } from 'crypto';
 import { AccountService } from '../../account/services/account.service';
 import { AccountDto } from '../../account/services/dto';
 import { BruteForceError } from '../errors/brute-force.error';
@@ -10,8 +12,9 @@ import { BruteForceError } from '../errors/brute-force.error';
 @Injectable()
 export class AuthenticationService {
 	constructor(
-		private jwtService: JwtService,
-		private accountService: AccountService,
+		private readonly jwtService: JwtService,
+		private readonly jwtValidationAdapter: JwtValidationAdapter,
+		private readonly accountService: AccountService,
 		private readonly configService: ConfigService<IAccountConfig, true>
 	) {}
 
@@ -30,8 +33,16 @@ export class AuthenticationService {
 	}
 
 	// if user does not contain a systemId the JWT won't contain it, thus the user needs to change his PW during first login
-	generateJwt(user: ICurrentUser) {
-		return { accessToken: this.jwtService.sign({ ...user, sub: user.accountId }) };
+	async generateJwt(user: ICurrentUser) {
+		const jti = randomUUID();
+		const result = {
+			accessToken: this.jwtService.sign(user, {
+				subject: user.accountId,
+				jwtid: jti,
+			}),
+		};
+		await this.jwtValidationAdapter.addToWhitelist(user.accountId, jti);
+		return result;
 	}
 
 	checkBrutForce(account: AccountDto): void {
