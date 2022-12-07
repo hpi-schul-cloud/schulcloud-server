@@ -138,7 +138,7 @@ export class KeycloakConfigurationService {
 		} else {
 			[keycloakSystem] = systems;
 		}
-		await this.setKeycloakSystemInformation(
+		keycloakSystem = await this.setKeycloakSystemInformation(
 			keycloakSystem,
 			kcRealmBaseUrl,
 			redirectUri,

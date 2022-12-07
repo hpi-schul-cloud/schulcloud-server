@@ -15,7 +15,6 @@ import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/
 import { systemFactory } from '@shared/testing';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
-import exp from 'constants';
 import { v1 } from 'uuid';
 import { HttpService } from '@nestjs/axios';
 import { of } from 'rxjs';
@@ -302,6 +301,32 @@ describe('KeycloakConfigurationService Unit', () => {
 			systemService.find.mockResolvedValueOnce([mockedSystem]);
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(systemService.save).toHaveBeenCalledWith(expect.objectContaining({ _id: mockedSystem._id }));
+		});
+		it('should put the scdomain into the redirect', async () => {
+			const scDomain = 'test-sc-domain';
+			jest.spyOn(configService, 'get').mockReturnValue(scDomain);
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(systemService.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining({ redirectUri: expect.stringContaining(scDomain) }),
+				})
+			);
+		});
+		it('should take special localhost as redirect if scdomain is localhost', async () => {
+			const scDomain = 'localhost';
+			jest.spyOn(configService, 'get').mockReturnValue(scDomain);
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(systemService.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining({ redirectUri: expect.stringContaining('http://localhost:3030') }),
+				})
+			);
+		});
+		it('should ignore missing client secret but put empty string', async () => {
+			kcApiClientMock.generateNewClientSecret.mockResolvedValue({ type: 'secret', value: undefined });
+			await expect(service.configureClient()).resolves.not.toThrow();
 		});
 	});
 
