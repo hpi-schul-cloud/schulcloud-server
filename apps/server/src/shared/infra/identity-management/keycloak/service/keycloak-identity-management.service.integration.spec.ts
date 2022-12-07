@@ -22,6 +22,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		username: 'john.doe@mail.tld',
 		firstName: 'John',
 		lastName: 'Doe',
+		attRefTechnicalId: new ObjectId().toString(),
 	};
 	const createAccount = async (): Promise<string> => {
 		const { id } = await keycloak.users.create({
@@ -29,7 +30,9 @@ describe('KeycloakIdentityManagementService Integration', () => {
 			firstName: testAccount.firstName,
 			lastName: testAccount.lastName,
 			attributes: {
-				mongoId: testAccount.id,
+				refTechnicalId: testAccount.attRefTechnicalId,
+				refFunctionalIntId: undefined,
+				refFunctionalExtId: undefined,
 			},
 		});
 		return id;
@@ -102,7 +105,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 					firstName: testAccount.firstName,
 					lastName: testAccount.lastName,
 					attributes: {
-						mongoId: [testAccount.id],
+						refTechnicalId: [testAccount.attRefTechnicalId],
 					},
 				}),
 			])
@@ -147,21 +150,21 @@ describe('KeycloakIdentityManagementService Integration', () => {
 	it('should update password of an account', async () => {
 		if (!isKeycloakReachable) return;
 
-		await createAccount();
-		const result = await idmService.updateAccountPassword(testAccount.id, 'new-password');
+		const idmId = await createAccount();
+		const result = await idmService.updateAccountPassword(idmId, 'new-password');
 
-		expect(result).toEqual(testAccount.id);
+		expect(result).toEqual(idmId);
 	});
 
 	it('should find an account by id', async () => {
 		if (!isKeycloakReachable) return;
 
-		await createAccount();
-		const account = await idmService.findAccountById(testAccount.id);
+		const idmId = await createAccount();
+		const account = await idmService.findAccountById(idmId);
 
 		expect(account).toEqual(
 			expect.objectContaining<IAccount>({
-				id: testAccount.id,
+				id: idmId,
 				username: testAccount.username,
 				firstName: testAccount.firstName,
 				lastName: testAccount.lastName,
@@ -176,8 +179,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		const account = await idmService.findAccountByUsername(testAccount.username as string);
 
 		expect(account).toEqual(
-			expect.objectContaining<IAccount>({
-				id: testAccount.id,
+			expect.objectContaining<Omit<IAccount, 'id'>>({
 				username: testAccount.username,
 				firstName: testAccount.firstName,
 				lastName: testAccount.lastName,
@@ -197,11 +199,11 @@ describe('KeycloakIdentityManagementService Integration', () => {
 	it('should delete an account', async () => {
 		if (!isKeycloakReachable) return;
 
-		await createAccount();
-		const result = await idmService.deleteAccountById(testAccount.id);
+		const idmId = await createAccount();
+		const result = await idmService.deleteAccountById(idmId);
 		const accounts = await listAccounts();
 
-		expect(result).toEqual(testAccount.id);
+		expect(result).toEqual(idmId);
 		expect(accounts).toHaveLength(0);
 	});
 });

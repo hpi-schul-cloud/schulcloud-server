@@ -133,6 +133,22 @@ describe('KeycloakIdentityManagement', () => {
 			);
 		});
 
+		it('should ignore missing id', async () => {
+			kcUsersMock.find.mockResolvedValueOnce([]);
+			kcUsersMock.findOne.mockResolvedValueOnce({
+				...mockedAccount1,
+				id: undefined,
+			});
+
+			const ret = await idm.findAccountById(mockedAccount1.id);
+			expect(ret).not.toBeNull();
+			expect(ret).toEqual(
+				expect.objectContaining<IAccount>({
+					id: '',
+				})
+			);
+		});
+
 		it('should extract given date from keycloak representation', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
 			// 1647262955423 -> Mon Mar 14 2022 14:02:35 GMT+0100
