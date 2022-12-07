@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Board, Course, EntityId, LessonBoardElement, TaskBoardElement } from '@shared/domain';
+import { Board, Course, EntityId, CardBoardElement, LessonBoardElement, TaskBoardElement } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
+import { populate } from 'feathers-hooks-common';
 
 @Injectable()
 export class BoardRepo extends BaseRepo<Board> {
@@ -42,6 +43,8 @@ export class BoardRepo extends BaseRepo<Board> {
 		await this._em.populate(taskElements, ['target']);
 		const lessonElements = elements.filter((el) => el instanceof LessonBoardElement);
 		await this._em.populate(lessonElements, ['target']);
+		const cardElements = elements.filter((el) => el instanceof CardBoardElement);
+		await this._em.populate(cardElements, ['target']);
 		return board;
 	}
 }
