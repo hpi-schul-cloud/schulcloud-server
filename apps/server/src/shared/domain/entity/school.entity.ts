@@ -18,6 +18,7 @@ export interface ISchoolProperties {
 	externalId?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
+	inOauthMigration?: boolean;
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: System[];
@@ -66,6 +67,9 @@ export class School extends BaseEntity {
 
 	@Property({ nullable: true })
 	inUserMigration?: boolean;
+
+	@Property({ nullable: true })
+	inOauthMigration?: boolean;
 
 	@Property({ nullable: true, fieldName: 'ldapSchoolIdentifier' })
 	externalId?: string;
