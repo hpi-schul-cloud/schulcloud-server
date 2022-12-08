@@ -37,7 +37,7 @@ const getAverageRating = function getAverageRating(submissions) {
 	return undefined;
 };
 function isValidSubmission(submission) {
-	return (submission.comment && submission.comment !== '') || (submission.fileIds && submission.fileIds.length > 0);
+	return submission.submitted;
 }
 function isGraded(submission) {
 	return submission.graded;
