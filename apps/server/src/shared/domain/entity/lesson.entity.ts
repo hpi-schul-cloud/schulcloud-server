@@ -38,15 +38,13 @@ export interface IComponentGeogebraProperties {
 }
 
 export interface IComponentLernstoreProperties {
-	resources: [
-		{
-			client: string;
-			description: string;
-			merlinReference?: string;
-			title: string;
-			url: string;
-		}
-	];
+	resources: {
+		client: string;
+		description: string;
+		merlinReference?: string;
+		title: string;
+		url: string;
+	}[];
 }
 
 export interface IComponentEtherpadProperties {
@@ -67,6 +65,7 @@ export interface IComponentInternalProperties {
 }
 
 export interface IComponentProperties {
+	_id?: string;
 	title?: string;
 	hidden: boolean;
 	component: ComponentType;
