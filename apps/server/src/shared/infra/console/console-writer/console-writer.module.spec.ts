@@ -7,7 +7,7 @@ describe('ConsoleWriterModule', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [ConsoleWriterService],
+			providers: [ConsoleWriterService],
 		}).compile();
 		service = module.get(ConsoleWriterService);
 	});
