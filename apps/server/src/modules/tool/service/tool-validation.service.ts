@@ -48,7 +48,7 @@ export class ToolValidationService {
 		}
 		if (externalToolDO.parameters && !this.validateByRegex(externalToolDO.parameters)) {
 			throw new UnprocessableEntityException(
-				`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute.`
+				`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute`
 			);
 		}
 	}

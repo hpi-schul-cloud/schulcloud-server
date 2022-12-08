@@ -66,7 +66,9 @@ describe('ToolValidation', () => {
 
 				const result: Promise<void> = service.validateCreate(externalToolDO);
 
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
+				await expect(result).rejects.toThrow(
+					new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`)
+				);
 			});
 		});
 
@@ -86,7 +88,11 @@ describe('ToolValidation', () => {
 
 				const result: Promise<void> = service.validateCreate(externalToolDO);
 
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
+				await expect(result).rejects.toThrow(
+					new UnprocessableEntityException(
+						`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
+					)
+				);
 			});
 		});
 
@@ -104,7 +110,11 @@ describe('ToolValidation', () => {
 
 				const result: Promise<void> = service.validateCreate(externalToolDO);
 
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
+				await expect(result).rejects.toThrow(
+					new UnprocessableEntityException(
+						`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute`
+					)
+				);
 			});
 		});
 
@@ -145,7 +155,9 @@ describe('ToolValidation', () => {
 
 				const result: Promise<void> = service.validateCreate(externalToolDO);
 
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
+				await expect(result).rejects.toThrow(
+					new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`)
+				);
 			});
 		});
 	});
@@ -175,9 +187,11 @@ describe('ToolValidation', () => {
 				const existingExternalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId({ name: 'sameName' });
 				externalToolService.findExternalToolByName.mockResolvedValue(existingExternalToolDO);
 
-				const result: Promise<void> = service.validateUpdate('toolId', externalToolDO);
+				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
+				await expect(result).rejects.toThrow(
+					new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`)
+				);
 			});
 		});
 
@@ -197,7 +211,11 @@ describe('ToolValidation', () => {
 
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
+				await expect(result).rejects.toThrow(
+					new UnprocessableEntityException(
+						`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
+					)
+				);
 			});
 		});
 
@@ -217,7 +235,11 @@ describe('ToolValidation', () => {
 
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
+				await expect(result).rejects.toThrow(
+					new UnprocessableEntityException(
+						`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute`
+					)
+				);
 			});
 		});
 
@@ -227,7 +249,11 @@ describe('ToolValidation', () => {
 
 				const func = () => service.validateUpdate('notMatchToolId', externalToolDO);
 
-				await expect(func).rejects.toThrow(UnprocessableEntityException);
+				await expect(func).rejects.toThrow(
+					new UnprocessableEntityException(
+						`The id of the tool with name ${externalToolDO.name} has no id or it does not match the path parameter.`
+					)
+				);
 			});
 
 			it('should pass if the tool and id parameter are the same', async () => {
@@ -250,7 +276,9 @@ describe('ToolValidation', () => {
 
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
+				await expect(result).rejects.toThrow(
+					new UnprocessableEntityException(`The Config Type of the tool: ${externalToolDO.name} is immutable`)
+				);
 			});
 
 			it('should pass if tool has the same clientId as before', async () => {
@@ -273,7 +301,9 @@ describe('ToolValidation', () => {
 
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
-				await expect(result).rejects.toThrow(UnprocessableEntityException);
+				await expect(result).rejects.toThrow(
+					new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is immutable`)
+				);
 			});
 		});
 	});
