@@ -33,7 +33,7 @@ export class AuthenticationService {
 	}
 
 	// if user does not contain a systemId the JWT won't contain it, thus the user needs to change his PW during first login
-	async generateJwt(user: ICurrentUser, privateDevice = false) {
+	async generateJwt(user: ICurrentUser) {
 		const jti = randomUUID();
 		const result = {
 			accessToken: this.jwtService.sign(user, {
@@ -41,10 +41,7 @@ export class AuthenticationService {
 				jwtid: jti,
 			}),
 		};
-		if (!this.configService.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED')) {
-			privateDevice = false;
-		}
-		await this.jwtValidationAdapter.addToWhitelist(user.accountId, jti, privateDevice);
+		await this.jwtValidationAdapter.addToWhitelist(user.accountId, jti);
 		return result;
 	}
 
