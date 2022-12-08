@@ -1,4 +1,4 @@
-import { PseudonymDO, Team} from '@shared/domain';
+import { PseudonymDO, Team } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
 import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
 import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
@@ -36,7 +36,7 @@ export class IdTokenService {
 		const name: string = await this.userService.getDisplayName(userDto);
 		const iframe: string | undefined = await this.createIframeSubject(userId, clientId);
 		const groups: GroupNameIdTuple[] = this.buildGroupsClaim(teams);
-		const alias: string = userDto.firstName + " " + userDto.lastName[0];
+		const alias: string = `${userDto.firstName} ${userDto.lastName.substring(0, 1)}`;
 
 		return {
 			iframe,
