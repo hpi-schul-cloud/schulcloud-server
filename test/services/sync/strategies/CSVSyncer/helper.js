@@ -1,11 +1,3 @@
-const { userModel } = require('../../../../../src/services/user/model');
-const accountModel = require('../../../../../src/services/account/model');
-
-const deleteUser = async (email = 'foo@bar.baz') => {
-	await userModel.deleteOne({ email });
-	await accountModel.deleteOne({ username: email });
-};
-
 class MockEmailService {
 	constructor(eventHandler) {
 		this.eventHandler = eventHandler;
@@ -18,6 +10,5 @@ class MockEmailService {
 }
 
 module.exports = {
-	deleteUser,
 	MockEmailService,
 };
