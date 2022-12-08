@@ -408,11 +408,11 @@ export class AccountUc {
 				case 'UPDATE':
 					permissionsToCheck.push(Permission.STUDENT_EDIT);
 					break;
-				// for future endpoints
-				/* case 'CREATE':
+				case 'CREATE':
 					permissionsToCheck.push('STUDENT_CREATE');
 					break;
-				case 'DELETE':
+				// for future endpoints
+				/* 	case 'DELETE':
 					permissionsToCheck.push('STUDENT_DELETE');
 					break;
 				*/

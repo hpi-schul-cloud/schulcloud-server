@@ -182,17 +182,29 @@ class AdminUsers {
 		const params = await this.prepareParams(_id, _params);
 		await this.checkIfExternallyManaged(params.query.schoolId);
 
-		const { email } = _data;
-		await this.checkMail(email, _id);
-		await this.updateAccount(email, _id);
+		const { user: userData, createAccount } = _data;
+		await this.checkMail(userData.email, _id);
+		if (!createAccount) {
+			await this.updateAccount(userData.email, _id);
+		}
+
 		// _id is part of params and will be combined with the schoolId
-		const users = await this.prepareRoleback(email, _id, () =>
-			this.app.service('usersModel').patch(null, _data, params)
+		const createdUsers = await this.prepareRoleback(userData.email, _id, () =>
+			this.app.service('usersModel').patch(null, userData, params)
 		);
 
-		if (users.length === 0) throw new BadRequest('user could not be edit');
+		if (createdUsers.length === 0) throw new BadRequest('user could not be edit');
 
-		return users[0];
+		const createdUser = createdUsers[0];
+		if (createAccount) {
+			await this.createAccount({
+				username: createdUser.email,
+				password: userData.password,
+				userId: createdUser._id,
+				activated: true,
+			});
+		}
+		return createdUser;
 	}
 
 	/**
@@ -254,6 +266,12 @@ class AdminUsers {
 			if (account) {
 				await this.app.service('nest-account-service').updateUsername(account.id, email);
 			}
+		}
+	}
+
+	async createAccount(account) {
+		if (account.username) {
+			await this.app.service('nest-account-uc').saveAccount(account);
 		}
 	}
 
