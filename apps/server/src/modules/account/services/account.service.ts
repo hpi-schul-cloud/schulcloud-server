@@ -59,6 +59,7 @@ export class AccountService extends AbstractAccountService {
 			...ret,
 			id: undefined,
 			refId: ret.id,
+			password: accountDto.password,
 		};
 		await this.executeIdmMethod(async () => this.accountIdm.save(newAccount));
 		return ret;

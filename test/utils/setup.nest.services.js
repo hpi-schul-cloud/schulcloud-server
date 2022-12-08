@@ -39,6 +39,7 @@ const setupNestServices = async (app) => {
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
 	app.services['nest-account-validation-service'] = accountValidationService;
+	app.services['nest-orm'] = orm;
 
 	return { nestApp, orm, accountUc, accountService };
 };
