@@ -88,7 +88,7 @@ const getClassesForUserWithClassNames = async (userId) => {
 		])
 		.exec();
 
-	const className = await classModel.find({_id: result._id});
+	const className = await classModel.findById(result._id);
 
 	// eslint-disable-next-line no-console
 	console.log('classResultRaw: ', className);
