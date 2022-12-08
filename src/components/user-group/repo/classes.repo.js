@@ -87,8 +87,12 @@ const getClassesForUserWithClassNames = async (userId) => {
 			},
 		])
 		.exec();
+
+	const className = await classModel.find({_id: result._id});
+
 	// eslint-disable-next-line no-console
-	console.log('classResultRaw: ', result);
+	console.log('classResultRaw: ', className);
+
 	const sanitize = ({ _id, student, teacher, name }) => ({
 		id: idToString(_id),
 		student: student === true,
