@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { TaskRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import {
 	Counted,
 	EntityId,
@@ -14,10 +14,16 @@ import {
 	TaskWithStatusVo,
 } from '@shared/domain';
 import { ValidationError } from '@shared/common';
+import { AuthorizationService } from '@src/modules';
 
 @Injectable()
 export class TaskService {
-	constructor(private readonly taskRepo: TaskRepo) {}
+	constructor(
+		private readonly taskRepo: TaskRepo,
+		private readonly lessonRepo: LessonRepo,
+		private readonly courseRepo: CourseRepo,
+		private readonly authorizationService: AuthorizationService
+	) {}
 
 	async findBySingleParent(
 		creatorId: EntityId,

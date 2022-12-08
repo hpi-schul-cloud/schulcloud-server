@@ -14,7 +14,7 @@ export enum CardElementType {
 export abstract class CardElement extends BaseEntityWithTimestamps {
 	// TODO do we need constructor?
 	// TODO add type for props
-	constructor(props) {
+	constructor() {
 		super();
 	}
 
@@ -24,28 +24,30 @@ export abstract class CardElement extends BaseEntityWithTimestamps {
 
 @Entity({ discriminatorValue: CardElementType.Title })
 export class TitleCardElement extends CardElement {
-	constructor(props) {
-		super(props);
+	constructor(title: string) {
+		super();
 		this.cardElementType = CardElementType.Title;
+		this.value = title;
 	}
 
 	@Property()
-	value!: String;
+	value!: string;
 }
 
 @Entity({ discriminatorValue: CardElementType.RichText })
 export class RichTextCardElement extends CardElement {
-	constructor(props: { valueInputFormat: InputFormat }) {
-		super(props);
+	constructor(props: { text: string; inputFormat: InputFormat }) {
+		super();
 		this.cardElementType = CardElementType.RichText;
-		this.valueInputFormat = props.valueInputFormat;
+		this.inputFormat = props.inputFormat;
+		this.value = props.text;
 	}
 
 	@Property()
-	value!: String;
+	value!: string;
 
 	@Property()
-	valueInputFormat: InputFormat;
+	inputFormat: InputFormat;
 }
 
 // availableFrom/Until date element

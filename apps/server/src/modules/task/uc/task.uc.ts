@@ -21,6 +21,7 @@ import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { ValidationError } from '@shared/common';
+import { TaskService } from '../service/task.service';
 
 @Injectable()
 export class TaskUC {
@@ -29,7 +30,8 @@ export class TaskUC {
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
+		private readonly taskService: TaskService
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -227,5 +229,17 @@ export class TaskUC {
 
 		await this.taskRepo.delete(task);
 		return true;
+	}
+
+	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
+		return this.taskService.create(userId, params);
+	}
+
+	async find(userId: EntityId, taskId: EntityId) {
+		return this.taskService.find(userId, taskId);
+	}
+
+	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
+		return this.taskService.update(userId, taskId, params);
 	}
 }

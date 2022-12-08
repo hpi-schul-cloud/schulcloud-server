@@ -1,16 +1,16 @@
 import { Entity, Enum, ManyToOne } from '@mikro-orm/core';
-import { Card } from './card.entity';
+//import { Card } from './card.entity';
 import { Lesson } from './lesson.entity';
 import { Task } from './task.entity';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 
-export type BoardElementReference = Task | Lesson | Card;
+export type BoardElementReference = Task | Lesson /*| Card */;
 
 export enum BoardElementType {
 	'Task' = 'task',
 	'Lesson' = 'lesson',
-	'Card' = 'card',
+	//'Card' = 'card',
 }
 
 export type BoardElementProps = {
@@ -46,11 +46,12 @@ export abstract class BoardElement extends BaseEntityWithTimestamps {
 		return element;
 	}
 
+	/*
 	static FromCard(card: Card): BoardElement {
 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		const element = new CardBoardElement({ target: card });
 		return element;
-	}
+	}*/
 }
 
 @Entity({ discriminatorValue: BoardElementType.Task })
@@ -78,6 +79,7 @@ export class LessonBoardElement extends BoardElement {
 	target!: Lesson;
 }
 
+/*
 @Entity({ discriminatorValue: BoardElementType.Card })
 export class CardBoardElement extends BoardElement {
 	constructor(props: { target: Card }) {
@@ -88,3 +90,4 @@ export class CardBoardElement extends BoardElement {
 	@ManyToOne('Card')
 	target!: Card;
 }
+*/

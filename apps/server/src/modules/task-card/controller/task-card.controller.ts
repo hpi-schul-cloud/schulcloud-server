@@ -23,8 +23,7 @@ export class TaskCardController {
 		@Body() params: CreateTaskCardParams
 	): Promise<TaskCardResponse> {
 		// TODO split per card type here?
-		const taskCardParams = TaskCardMapper.mapCreateCardToDomain(params);
-		const card = await this.taskCardUc.create(currentUser.userId, taskCardParams, taskParams);
+		const card = await this.taskCardUc.create(currentUser.userId, TaskCardMapper.mapCreateToDomain(params));
 		const dto = TaskCardMapper.mapToResponse(card);
 		return dto;
 	}

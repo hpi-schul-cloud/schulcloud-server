@@ -3,13 +3,14 @@ import {
 	Collection,
 	Entity,
 	Enum,
+	IdentifiedReference,
 	Index,
 	ManyToMany,
 	ManyToOne,
 	OneToOne,
 	Property,
 } from '@mikro-orm/core';
-import { EntityId, ITaskCardProprieties } from '../types';
+import { EntityId, ITaskCard } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CardElement } from './cardElement.entity';
 import { Task } from './task.entity';
@@ -68,13 +69,13 @@ export class TextCard extends Card {
 
 @Entity({ discriminatorValue: CardType.Task })
 export class TaskCard extends Card {
-	constructor(props: ITaskCardProprieties) {
+	constructor(props: ITaskCard) {
 		super(props);
 		this.cardType = CardType.Task;
-		this.task = props.task;
+		//this.task = props.task;
 	}
 
 	@Index()
-	@OneToOne('Task', { fieldName: 'taskId' })
-	task: Task;
+	@OneToOne({ type: 'Task', fieldName: 'taskId', wrappedReference: true, unique: true })
+	task!: IdentifiedReference<Task>;
 }

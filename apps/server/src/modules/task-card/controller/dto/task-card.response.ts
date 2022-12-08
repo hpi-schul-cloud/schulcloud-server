@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CardElement } from '@shared/domain/entity/cardElement.entity';
 import { TaskResponse } from '@src/modules/task/controller/dto';
+import { CardElementResponse } from '@src/modules/task-card/controller/dto/card-element.response';
 
 export class TaskCardResponse {
 	constructor({ id, draggable, cardElements, task }: TaskCardResponse) {
@@ -10,7 +11,6 @@ export class TaskCardResponse {
 		//this.description = description;
 		//this.title = title;
 
-		this.taskId = task.id;
 		this.task = task;
 	}
 
@@ -21,15 +21,9 @@ export class TaskCardResponse {
 	id: string;
 
 	@ApiProperty({
-		description: 'The id of the Task entity',
-		pattern: '[a-f0-9]{24}',
+		description: 'Array of card elements',
 	})
-	taskId: string;
-
-	@ApiProperty({
-		description: 'The task details',
-	})
-	task: TaskResponse;
+	cardElements: CardElementResponse[];
 
 	@ApiProperty({
 		description: 'Are the card elements draggable?',
@@ -37,7 +31,7 @@ export class TaskCardResponse {
 	draggable: boolean;
 
 	@ApiProperty({
-		description: 'Array of richtext descriptions',
+		description: 'The task details',
 	})
-	cardElements: CardElement[];
+	task: TaskResponse;
 }
