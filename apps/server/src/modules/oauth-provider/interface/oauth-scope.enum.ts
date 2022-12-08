@@ -5,7 +5,8 @@ export enum OauthScope {
 	EMAIL = 'email',
 	PROFILE = 'profile',
 	GROUPS = 'groups',
-	USERROLE = 'user_role',
-	// ToDo: add fedState, if the federalState is migrated to NEST
-	// FEDERALSTATE = "federal_state"
+	ALIAS = 'alias',
+	// ToDo: add classes and fed_state, if they are migrated to NEST
+	// FEDERALSTATE = "fed_state"
+	// CLASSES = 'classes',
 }

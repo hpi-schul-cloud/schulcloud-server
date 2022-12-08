@@ -5,9 +5,10 @@ export interface IdToken {
 	userId?: string;
 	schoolId: string;
 	groups?: GroupNameIdTuple[];
-	userRole?: string[];
-	// ToDo: add fedState, if the federalState is migrated to NEST
-	// fedState?: string;
+	alias?: string;
+	// ToDo: add classes and fed_state, if they are migrated to NEST
+	// fed_state?: string;
+	// classes?: string[];
 }
 
 export interface GroupNameIdTuple {

@@ -1,4 +1,4 @@
-import {EntityId, PseudonymDO, Team} from '@shared/domain';
+import { PseudonymDO, Team} from '@shared/domain';
 import { Injectable } from '@nestjs/common';
 import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
 import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
@@ -8,8 +8,6 @@ import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Logger } from '@src/core/logger';
-import {RoleService} from "@src/modules/role/service/role.service";
-import {RoleDto} from "@src/modules/role/service/dto/role.dto";
 
 @Injectable()
 export class IdTokenService {
@@ -22,7 +20,6 @@ export class IdTokenService {
 		private readonly ltiToolRepo: LtiToolRepo,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly userService: UserService,
-		private readonly roleService: RoleService,
 		private readonly logger: Logger
 	) {
 		this.host = Configuration.get('HOST') as string;
@@ -39,13 +36,7 @@ export class IdTokenService {
 		const name: string = await this.userService.getDisplayName(userDto);
 		const iframe: string | undefined = await this.createIframeSubject(userId, clientId);
 		const groups: GroupNameIdTuple[] = this.buildGroupsClaim(teams);
-
-		const roleIds: EntityId[] = userDto.roleIds;
-		let roleNames: string[] = [];
-		for(let i = 0; i < roleIds.length ; i++) {
-			let userRoleDto: RoleDto = await this.roleService.findById(roleIds[i]);
-			roleNames.push(userRoleDto.name);
-		}
+		const alias: string = userDto.firstName + " " + userDto.lastName[0];
 
 		return {
 			iframe,
@@ -54,9 +45,10 @@ export class IdTokenService {
 			userId: scopes.includes(OauthScope.PROFILE) ? userDto.id : undefined,
 			schoolId: userDto.schoolId,
 			groups: scopes.includes(OauthScope.GROUPS) ? groups : undefined,
-			userRole: scopes.includes(OauthScope.USERROLE) ? roleNames : undefined,
-			// ToDo: add fedState, if the federalState is migrated to NEST
-			// fedState: scopes.includes(OauthScope.FEDERALSTATE) ? userDto.id : undefined,
+			alias: scopes.includes(OauthScope.ALIAS) ? alias : undefined,
+			// ToDo: add classes and fed_state, if they are migrated to NEST
+			// classes: scopes.includes(OauthScope.CLASSES) ? classes : undefined,
+			// fed_state: scopes.includes(OauthScope.FEDERALSTATE) ? userDto.schoolId.federalState.name : undefined,
 		};
 	}
 
