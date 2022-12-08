@@ -15,13 +15,13 @@ export class ToolValidationService {
 	}
 
 	async validateUpdate(toolId: string, externalToolDO: ExternalToolDO): Promise<void> {
-		await this.validateCommon(externalToolDO);
-
-		if (!externalToolDO.id || toolId !== externalToolDO.id) {
+		if (toolId !== externalToolDO.id) {
 			throw new UnprocessableEntityException(
-				`The Tool: ${externalToolDO.name} has no id or it does not match the path parameter.`
+				`The id of the tool with name ${externalToolDO.name} has no id or it does not match the path parameter.`
 			);
 		}
+
+		await this.validateCommon(externalToolDO);
 
 		const loadedTool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
 		if (loadedTool.config instanceof Oauth2ToolConfigDO && externalToolDO.config.type !== loadedTool.config.type) {
@@ -38,9 +38,6 @@ export class ToolValidationService {
 	}
 
 	private async validateCommon(externalToolDO: ExternalToolDO): Promise<void> {
-		if (!externalToolDO) {
-			return;
-		}
 		if (!(await this.isNameUnique(externalToolDO))) {
 			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`);
 		}
@@ -62,13 +59,10 @@ export class ToolValidationService {
 	}
 
 	private async isClientIdUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
-		if (!(externalToolDO.config instanceof Oauth2ToolConfigDO)) {
-			return true;
+		let duplicate: ExternalToolDO | null = null;
+		if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
+			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalToolDO.config.clientId);
 		}
-
-		const duplicate: ExternalToolDO | null = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
-			externalToolDO.config.clientId
-		);
 		return duplicate == null || duplicate.id === externalToolDO.id;
 	}
 
