@@ -85,7 +85,6 @@ const getClassesForUserWithClassNames = async (userId) => {
 					},
 				},
 			},
-			{ $out: '$name' },
 		])
 		.exec();
 	// eslint-disable-next-line no-console
