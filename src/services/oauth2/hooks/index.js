@@ -94,8 +94,6 @@ const setIdToken = (hook) => {
 							: undefined,
 					},
 				};
-				// eslint-disable-next-line no-console
-				console.log('id_token_bilo: ', hook);
 				return hook;
 			})
 	);
