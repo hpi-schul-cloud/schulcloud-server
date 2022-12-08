@@ -4,6 +4,7 @@ const { setupNestServices, closeNestServices } = require('../../../utils/setup.n
 const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const { setIdToken, validatePermissionForNextcloud } = require('../../../../src/services/oauth2/hooks/index');
+const {ObjectId} = require("@mikro-orm/mongodb");
 
 describe('oauth2 token test', () => {
 	let app;
@@ -124,4 +125,93 @@ describe('oauth2 token test', () => {
 			}
 		});
 	});
+
+	describe('when scope alias is set', () => {
+		it('id_token alias should be defined', async () => {
+			// Arrange
+			const testTool = await testObjects.createTestLtiTool();
+			const testUser = await testObjects.createTestUser();
+
+			// Act
+			const result = await setIdToken(createHook(testTool.oAuthClientId, testUser._id, 'alias'));
+
+			// Assert
+			expect(result).to.not.equal(undefined);
+			expect(result.data.session.id_token.alias).to.not.equal(undefined);
+		});
+
+		it('id_token alias should contain alias-name', async () => {
+			// Arrange
+			const testTool = await testObjects.createTestLtiTool();
+			const testUser = await testObjects.createTestUser();
+
+			// Act
+			const result = await setIdToken(createHook(testTool.oAuthClientId, testUser._id, 'alias'));
+
+			// Assert
+			expect(result.data.session.id_token.alias).to.equal('Max M');
+		});
+	});
+
+	describe('when scope fed_state is set', () => {
+		it('id_token fed_state should be defined', async () => {
+			// Arrange
+			const testTool = await testObjects.createTestLtiTool();
+			const testSchool = await testObjects.createTestSchool({federalState: ObjectId('0000b186816abba584714c53')});
+			const testUser = await testObjects.createTestUser({schoolId: testSchool.id});
+
+			// Act
+			const result = await setIdToken(createHook(testTool.oAuthClientId, testUser._id, 'fed_state'));
+
+			// Assert
+			expect(result).to.not.equal(undefined);
+			expect(result.data.session.id_token.fed_state).to.not.equal(undefined);
+		});
+
+		it('id_token fed_state should contain fed_state of the school', async () => {
+			// Arrange
+			const testTool = await testObjects.createTestLtiTool();
+			const testSchool = await testObjects.createTestSchool({federalState: ObjectId('0000b186816abba584714c53')});
+			const testUser = await testObjects.createTestUser({schoolId: testSchool.id});
+
+			// Act
+			const result = await setIdToken(createHook(testTool.oAuthClientId, testUser._id, 'fed_state'));
+
+			// Assert
+			expect(result.data.session.id_token.fed_state).to.equal('Brandenburg');
+		});
+	});
+
+	describe('when scope classes is set', () => {
+		it('id_token classes should be defined', async () => {
+			// Arrange
+			const testTool = await testObjects.createTestLtiTool();
+			const testSchool = await testObjects.createTestSchool();
+			const testUser = await testObjects.createTestUser({schoolId: testSchool.id});
+			const testClass = await testObjects.createTestClass({schoolId: testSchool.id, userIds: [testUser.id]});
+
+			// Act
+			const result = await setIdToken(createHook(testTool.oAuthClientId, testUser._id, 'classes'));
+
+			// Assert
+			expect(result).to.not.equal(undefined);
+			expect(result.data.session.id_token.classes).to.not.equal(undefined);
+		});
+
+		it('id_token classes should contain subscribed classes and role', async () => {
+			// Arrange
+			const testTool = await testObjects.createTestLtiTool();
+			const testSchool = await testObjects.createTestSchool();
+			const testUser = await testObjects.createTestUser({schoolId: testSchool.id, roles: ['student']});
+			const testClass = await testObjects.createTestClass({schoolId: testSchool.id, userIds: [testUser._id]});
+
+			// Act
+			const result = await setIdToken(createHook(testTool.oAuthClientId, testUser._id, 'classes'));
+
+			// Assert
+			expect(result.data.session.id_token.classes[0].id).to.equal(testClass.id);
+			expect(result.data.session.id_token.classes[0].student).to.true;
+		});
+	});
+
 });
