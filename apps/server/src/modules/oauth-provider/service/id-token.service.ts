@@ -36,7 +36,7 @@ export class IdTokenService {
 		const name: string = await this.userService.getDisplayName(userDto);
 		const iframe: string | undefined = await this.createIframeSubject(userId, clientId);
 		const groups: GroupNameIdTuple[] = this.buildGroupsClaim(teams);
-		const alias: string = `${userDto.firstName} ${userDto.lastName.substring(0, 1)}`;
+		const alias = `${userDto.firstName} ${userDto.lastName?.substring(0, 1)}`;
 
 		return {
 			iframe,
