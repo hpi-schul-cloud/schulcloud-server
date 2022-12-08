@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	BaseEntity,
@@ -16,11 +15,12 @@ import {
 	IComponentInternalProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
+	IComponentTextProperties,
 	Lesson,
 	Material,
 	NexboardService,
-	TaskCopyService,
 } from '@shared/domain';
+import { LessonRepo } from '@shared/repo';
 import {
 	courseFactory,
 	lessonFactory,
@@ -29,25 +29,26 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { CopyFilesService } from '@src/modules/files-storage-client';
 import { LessonCopyService } from './lesson-copy.service';
+import { TaskCopyService } from './task-copy.service';
 
 describe('lesson copy service', () => {
 	let module: TestingModule;
 	let copyService: LessonCopyService;
+	let copyFilesService: DeepMocked<CopyFilesService>;
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let etherpadService: DeepMocked<EtherpadService>;
 	let nexboardService: DeepMocked<NexboardService>;
 	let configurationSpy: jest.SpyInstance;
-	let orm: MikroORM;
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				LessonCopyService,
@@ -67,12 +68,27 @@ describe('lesson copy service', () => {
 					provide: NexboardService,
 					useValue: createMock<NexboardService>(),
 				},
+				{
+					provide: CopyFilesService,
+					useValue: createMock<CopyFilesService>(),
+				},
+				{
+					provide: LessonRepo,
+					useValue: createMock<LessonRepo>(),
+				},
 			],
 		}).compile();
 
 		copyService = module.get(LessonCopyService);
 		taskCopyService = module.get(TaskCopyService);
+		copyFilesService = module.get(CopyFilesService);
+		copyFilesService.copyFilesOfEntity.mockResolvedValue({
+			fileUrlReplacements: [],
+			fileCopyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
+		});
 		copyHelperService = module.get(CopyHelperService);
+		const map: Map<EntityId, BaseEntity> = new Map();
+		copyHelperService.buildCopyEntityDict.mockReturnValue(map);
 		etherpadService = module.get(EtherpadService);
 		nexboardService = module.get(NexboardService);
 	});
@@ -379,13 +395,13 @@ describe('lesson copy service', () => {
 	});
 
 	describe('when lesson contains text content element', () => {
-		const setup = () => {
+		const setup = (text = 'this is a text content') => {
 			const textContent: IComponentProperties = {
 				title: 'text component 1',
 				hidden: false,
 				component: ComponentType.TEXT,
 				content: {
-					text: 'this is a text content',
+					text,
 				},
 			};
 			const user = userFactory.build();
@@ -413,6 +429,35 @@ describe('lesson copy service', () => {
 				expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_TEXT);
 				expect(contentsStatus.elements[0].status).toEqual(CopyStatusEnum.SUCCESS);
 			}
+		});
+
+		it('should replace copied urls in lesson text', async () => {
+			const FILE_ID_TO_BE_REPLACED = '12837461287346091823z490812374098127340987123';
+			const NEW_FILE_ID = '19843275091827465871246598716239438';
+			const { user, destinationCourse, originalLesson } = setup(
+				`Here is a <a href="${FILE_ID_TO_BE_REPLACED}">link</a> to a file`
+			);
+
+			copyFilesService.copyFilesOfEntity.mockResolvedValue({
+				fileUrlReplacements: [
+					{
+						regex: new RegExp(FILE_ID_TO_BE_REPLACED),
+						replacement: NEW_FILE_ID,
+					},
+				],
+				fileCopyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
+			});
+
+			const status = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			const lessonCopy = status.copyEntity as Lesson;
+			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			expect(contentsStatus).toBeDefined();
+			expect((lessonCopy.contents[0].content as IComponentTextProperties).text).not.toContain(FILE_ID_TO_BE_REPLACED);
 		});
 	});
 
@@ -610,7 +655,7 @@ describe('lesson copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					elements: [mockedTaskStatus],
 				};
-				taskCopyService.copyTaskMetadata.mockReturnValue(mockedTaskStatus);
+				taskCopyService.copyTask.mockResolvedValue(mockedTaskStatus);
 
 				return {
 					user,
@@ -679,9 +724,7 @@ describe('lesson copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: taskCopyTwo,
 				};
-				taskCopyService.copyTaskMetadata
-					.mockReturnValueOnce(mockedTaskStatusOne)
-					.mockReturnValueOnce(mockedTaskStatusTwo);
+				taskCopyService.copyTask.mockResolvedValueOnce(mockedTaskStatusOne).mockResolvedValueOnce(mockedTaskStatusTwo);
 
 				return {
 					user,
@@ -837,7 +880,7 @@ describe('lesson copy service', () => {
 				hidden: false,
 				component: ComponentType.INTERNAL,
 				content: {
-					url: 'urlPrefix/homeworks/someid',
+					url: 'http://somebasedomain.de/homework/someid',
 				},
 			};
 			const originalLesson = lessonFactory.build({
@@ -1200,8 +1243,9 @@ describe('lesson copy service', () => {
 					},
 				],
 			};
+			const copyDict = copyHelperService.buildCopyEntityDict(status);
+			const result = copyService.updateCopiedEmbeddedTasks(status, copyDict);
 
-			const result = copyService.updateCopiedEmbeddedTasks(status);
 			expect(result).toEqual(status);
 		});
 
@@ -1228,75 +1272,62 @@ describe('lesson copy service', () => {
 					},
 				};
 				copiedLesson.contents = [{ ...textContent }, embeddedTaskContent, { ...textContent }];
-
 				const copyStatus: CopyStatus = {
-					type: CopyElementType.COURSE,
+					type: CopyElementType.LESSON,
 					status: CopyStatusEnum.SUCCESS,
+					originalEntity: originalLesson,
+					copyEntity: copiedLesson,
 					elements: [
 						{
-							type: CopyElementType.LESSON,
+							type: CopyElementType.TASK,
 							status: CopyStatusEnum.SUCCESS,
-							originalEntity: originalLesson,
-							copyEntity: copiedLesson,
+							originalEntity: originalTask,
+							copyEntity: copiedTask,
+						},
+						{
+							type: CopyElementType.LESSON_CONTENT_GROUP,
+							status: CopyStatusEnum.PARTIAL,
 							elements: [
 								{
-									type: CopyElementType.TASK,
+									type: CopyElementType.LESSON_CONTENT_TEXT,
 									status: CopyStatusEnum.SUCCESS,
-									originalEntity: originalTask,
-									copyEntity: copiedTask,
 								},
 								{
-									type: CopyElementType.LESSON_CONTENT_GROUP,
-									status: CopyStatusEnum.PARTIAL,
-									elements: [
-										{
-											type: CopyElementType.LESSON_CONTENT_TEXT,
-											status: CopyStatusEnum.SUCCESS,
-										},
-										{
-											type: CopyElementType.LESSON_CONTENT_TASK,
-											status: CopyStatusEnum.SUCCESS,
-										},
-										{
-											type: CopyElementType.LESSON_CONTENT_TEXT,
-											status: CopyStatusEnum.SUCCESS,
-										},
-									],
+									type: CopyElementType.LESSON_CONTENT_TASK,
+									status: CopyStatusEnum.SUCCESS,
+								},
+								{
+									type: CopyElementType.LESSON_CONTENT_TEXT,
+									status: CopyStatusEnum.SUCCESS,
 								},
 							],
 						},
 					],
 				};
-
 				const copyDict = new Map<EntityId, BaseEntity>();
 				copyDict.set(originalTask.id, copiedTask);
-
 				copyHelperService.buildCopyEntityDict.mockReturnValue(copyDict);
-
 				return { copyStatus, copiedTask, originalTask };
 			};
 
-			it('should add copy of embedded task url, with new taskId', () => {
-				const { copyStatus, copiedTask } = setup();
-
-				const updatedCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus);
-				const lessonStatus = updatedCopyStatus.elements?.find((el) => el.type === CopyElementType.LESSON);
-				const lesson = lessonStatus?.copyEntity as Lesson;
+			it('should update taskIds in lesson, if tasks were copied', () => {
+				const { copyStatus, originalTask, copiedTask } = setup();
+				const copyDict = copyHelperService.buildCopyEntityDict(copyStatus);
+				const updatedCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus, copyDict);
+				const lesson = updatedCopyStatus?.copyEntity as Lesson;
 				if (lesson === undefined || lesson.contents === undefined) {
 					throw new Error('lesson should be part of the copy');
 				}
 				const content = lesson.contents.find((el) => el.component === ComponentType.INTERNAL);
-				expect((content?.content as IComponentInternalProperties).url).toEqual(
-					`http://somebasedomain.de/homeworks/${copiedTask.id}`
-				);
+				expect((content?.content as IComponentInternalProperties).url).not.toContain(originalTask.id);
+				expect((content?.content as IComponentInternalProperties).url).toContain(copiedTask.id);
 			});
 
 			it('should maintain order of content elements', () => {
 				const { copyStatus } = setup();
-
-				const appendCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus);
-				const lessonStatus = appendCopyStatus.elements?.find((el) => el.type === CopyElementType.LESSON);
-				const lesson = lessonStatus?.copyEntity as Lesson;
+				const copyDict = copyHelperService.buildCopyEntityDict(copyStatus);
+				const updatedCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus, copyDict);
+				const lesson = updatedCopyStatus?.copyEntity as Lesson;
 				if (lesson === undefined || lesson.contents === undefined) {
 					throw new Error('lesson should be part of the copy');
 				}
@@ -1306,10 +1337,9 @@ describe('lesson copy service', () => {
 			it('should keep original url when task is not in dictionary (has not been copied)', () => {
 				const { copyStatus, originalTask } = setup();
 				copyHelperService.buildCopyEntityDict.mockReturnValue(new Map<EntityId, BaseEntity>());
-
-				const appendCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus);
-				const lessonStatus = appendCopyStatus.elements?.find((el) => el.type === CopyElementType.LESSON);
-				const lesson = lessonStatus?.copyEntity as Lesson;
+				const copyDict = copyHelperService.buildCopyEntityDict(copyStatus);
+				const updatedCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus, copyDict);
+				const lesson = updatedCopyStatus?.copyEntity as Lesson;
 				if (lesson === undefined || lesson.contents === undefined) {
 					throw new Error('lesson should be part of the copy');
 				}
@@ -1321,7 +1351,8 @@ describe('lesson copy service', () => {
 
 			it('should use copyHelperService to build a dictionary', () => {
 				const { copyStatus } = setup();
-				copyService.updateCopiedEmbeddedTasks(copyStatus);
+				const copyDict = copyHelperService.buildCopyEntityDict(copyStatus);
+				copyService.updateCopiedEmbeddedTasks(copyStatus, copyDict);
 				expect(copyHelperService.buildCopyEntityDict).toHaveBeenCalled();
 			});
 		});
