@@ -83,14 +83,13 @@ const getClassesForUserWithClassNames = async (userId) => {
 					student: {
 						$in: [userId, '$userIds'],
 					},
-					name: {
-						$in: [userId, '$name'],
-					},
 				},
 			},
+			{ name: true },
 		])
 		.exec();
-
+	// eslint-disable-next-line no-console
+	console.log('classResultRaw: ', result);
 	const sanitize = ({ _id, student, teacher, name }) => ({
 		id: idToString(_id),
 		student: student === true,
