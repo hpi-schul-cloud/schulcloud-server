@@ -95,7 +95,8 @@ const schoolSchema = new Schema(
 		enableStudentTeamCreation: { type: Boolean, required: false },
 		inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
 		inUserMigration: { type: Boolean },
-		ifOauthMigration: { type: Boolean },
+		inOauthMigration: { type: Boolean },
+		inMandatoryMigration: { type: Boolean },
 		storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
 		permissions: { type: Object },
 		tombstoneUserId: {

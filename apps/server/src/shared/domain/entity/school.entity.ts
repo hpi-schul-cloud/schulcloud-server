@@ -71,6 +71,9 @@ export class School extends BaseEntity {
 	@Property({ nullable: true })
 	inOauthMigration?: boolean;
 
+	@Property({ nullable: true })
+	inMandatoryMigration?: boolean;
+
 	@Property({ nullable: true, fieldName: 'ldapSchoolIdentifier' })
 	externalId?: string;
 
