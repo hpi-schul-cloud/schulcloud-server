@@ -67,43 +67,6 @@ const getClassesForUser = async (userId) => {
 };
 
 /**
- * Returns a list of class Id with the user role plays in it
- * @param {String|ObjectId} userId - the user's to check
- * @returns: {Array} An array of result objects
- */
-const getClassesForUserWithClassNames = async (userId) => {
-	const result = await classModel
-		.aggregate([
-			{ $match: filterClassMember(userId) },
-			{
-				$project: {
-					teacher: {
-						$in: [userId, '$teacherIds'],
-					},
-					student: {
-						$in: [userId, '$userIds'],
-					},
-				},
-			},
-		])
-		.exec();
-
-	const className = await classModel.findById(result._id);
-
-	// eslint-disable-next-line no-console
-	console.log('classResultRaw: ', className);
-
-	const sanitize = ({ _id, student, teacher, name }) => ({
-		id: idToString(_id),
-		student: student === true,
-		teacher: teacher === true,
-		name: name,
-	});
-
-	return result.map(sanitize);
-};
-
-/**
  * Returns a list of class Id the user belongs to (as student)
  * @param {String|ObjectId} userId - the user's to check
  * @returns: {Array} Array of Class Business Objects
@@ -144,7 +107,6 @@ const findClassById = (classId) => {
 module.exports = {
 	findClassById,
 	getClassesForUser,
-	getClassesForUserWithClassNames,
 	findClassesByStudent,
 	findClassesByTeacher,
 	removeUserFromClasses,
