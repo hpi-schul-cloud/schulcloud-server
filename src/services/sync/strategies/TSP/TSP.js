@@ -7,7 +7,6 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
 const SOURCE_ID_ATTRIBUTE = 'tspUid'; // name of the uid attribute within sourceOptions
-
 const ENCRYPTION_KEY = Configuration.get('TSP_API_ENCRYPTION_KEY');
 const SIGNATURE_KEY = Configuration.get('TSP_API_SIGNATURE_KEY');
 const BASE_URL = Configuration.get('TSP_API_BASE_URL');
@@ -105,7 +104,7 @@ const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 	}
 	const user = await app.service('users').create(userData);
 	await app.service('nest-account-service').save({
-		userId: user._id,
+		userId: user._id.toString(),
 		username,
 		systemId,
 		activated: true,

@@ -1,7 +1,6 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
-
+const { ObjectId } = require('bson');
 const { NotAuthenticated, BadRequest } = require('../../../errors');
-
 const logger = require('../../../logger');
 const {
 	verifyToken,
@@ -62,7 +61,9 @@ const findUser = async (app, token) => {
 	});
 	return user;
 };
-
+/**
+ * @deprecated Needs to be refactored to remove access to accountModel. Should be replaced by other strategy e.g. OAuth
+ */
 class TSPStrategy extends AuthenticationBaseStrategy {
 	get configuration() {
 		const authConfig = this.authentication.configuration;
@@ -179,7 +180,8 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		}
 
 		// find account and generate JWT payload
-		const account = await app.service('nest-account-service').findByUserId(user._id);
+		const account = await app.service('nest-account-service').findByUserId(user._id.toString());
+		account._id = new ObjectId(account.id);
 		const { entity } = this.configuration;
 		return {
 			authentication: { strategy: this.name },
