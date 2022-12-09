@@ -31,13 +31,13 @@ export class ExternalToolUc {
 	async updateExternalTool(
 		userId: EntityId,
 		toolId: string,
-		externalToolDO: UpdateExternalTool
+		externalTool: UpdateExternalTool
 	): Promise<ExternalToolDO> {
 		await this.ensurePermission(userId);
-		await this.toolValidationService.validateUpdate(toolId, externalToolDO);
+		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
 		const loaded: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
-		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalToolDO });
+		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalTool });
 
 		const saved = await this.externalToolService.updateExternalTool(toUpdate);
 		return saved;

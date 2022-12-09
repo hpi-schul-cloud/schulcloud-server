@@ -40,6 +40,13 @@ export class ExternalToolService {
 	}
 
 	async updateExternalTool(toUpdate: ExternalToolDO): Promise<ExternalToolDO> {
+		await this.updateOauth2ToolConfig(toUpdate);
+		toUpdate.version += 1;
+		const externalTool: ExternalToolDO = await this.externalToolRepo.save(toUpdate);
+		return externalTool;
+	}
+
+	private async updateOauth2ToolConfig(toUpdate: ExternalToolDO) {
 		if (toUpdate.config instanceof Oauth2ToolConfigDO) {
 			const toUpdateOauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
 				toUpdate.name,
@@ -48,18 +55,20 @@ export class ExternalToolService {
 			const loadedOauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
 				toUpdate.config.clientId
 			);
-
-			if (loadedOauthClient && loadedOauthClient.client_id) {
-				await this.oauthProviderService.updateOAuth2Client(loadedOauthClient.client_id, toUpdateOauthClient);
-			} else {
-				throw new UnprocessableEntityException(
-					`The oAuthConfigs clientId "${toUpdate.config.clientId}" does not exist`
-				);
-			}
+			await this.updateOauthClientOrThrow(loadedOauthClient, toUpdateOauthClient, toUpdate);
 		}
-		toUpdate.version += 1;
-		const externalTool: ExternalToolDO = await this.externalToolRepo.save(toUpdate);
-		return externalTool;
+	}
+
+	private async updateOauthClientOrThrow(
+		loadedOauthClient: ProviderOauthClient,
+		toUpdateOauthClient: ProviderOauthClient,
+		toUpdate: ExternalToolDO
+	) {
+		if (loadedOauthClient && loadedOauthClient.client_id) {
+			await this.oauthProviderService.updateOAuth2Client(loadedOauthClient.client_id, toUpdateOauthClient);
+		} else {
+			throw new UnprocessableEntityException(`The oAuthConfigs clientId of tool ${toUpdate.name}" does not exist`);
+		}
 	}
 
 	async findExternalTools(

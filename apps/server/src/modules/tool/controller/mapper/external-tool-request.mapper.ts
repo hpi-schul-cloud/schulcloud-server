@@ -20,6 +20,7 @@ import {
 	Oauth2ToolConfig,
 	UpdateExternalTool,
 } from '../../uc/dto';
+import { ExternalToolUpdateParams } from '../dto/request/external-tool-update.params';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.GLOBAL]: CustomParameterScope.GLOBAL,
@@ -44,7 +45,10 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 
 @Injectable()
 export class ExternalToolRequestMapper {
-	mapExternalToolRequest(externalToolPostParams: ExternalToolPostParams, version = 1): ExternalTool {
+	mapExternalToolRequest(
+		externalToolPostParams: ExternalToolPostParams | ExternalToolUpdateParams,
+		version = 1
+	): ExternalTool {
 		let mappedConfig: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig;
 		if (externalToolPostParams.config instanceof BasicToolConfigParams) {
 			mappedConfig = this.mapRequestToBasicToolConfigDO(externalToolPostParams.config);
@@ -59,18 +63,18 @@ export class ExternalToolRequestMapper {
 		);
 
 		return {
-			name: externalToolPostParams.name,
+			name: externalToolPostParams.name || '',
 			url: externalToolPostParams.url,
 			logoUrl: externalToolPostParams.logoUrl,
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
-			isHidden: externalToolPostParams.isHidden,
-			openNewTab: externalToolPostParams.openNewTab,
+			isHidden: externalToolPostParams.isHidden || true,
+			openNewTab: externalToolPostParams.openNewTab || true,
 			version,
 		};
 	}
 
-	mapUpdateRequest(externalToolPostParams: ExternalToolPostParams, version = 1): UpdateExternalTool {
+	mapUpdateRequest(externalToolPostParams: ExternalToolUpdateParams, version = 1): UpdateExternalTool {
 		return this.mapExternalToolRequest(externalToolPostParams, version);
 	}
 

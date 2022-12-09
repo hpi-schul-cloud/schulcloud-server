@@ -8,7 +8,7 @@ import {
 
 export type ExternalTool = ExternalToolDO;
 
-export type UpdateExternalTool = ExternalToolDO;
+export type UpdateExternalTool = Partial<ExternalToolDO>;
 
 export type CreateExternalTool = ExternalToolDO;
 

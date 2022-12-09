@@ -164,6 +164,25 @@ describe('ToolValidation', () => {
 
 	describe('validateUpdate', () => {
 		describe('isNameUnique', () => {
+			it('should not return true when no name is given', async () => {
+				const externalToolDO: Partial<ExternalToolDO> = externalToolDOFactory.buildWithId();
+				externalToolDO.name = undefined;
+				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO as ExternalToolDO);
+
+				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
+
+				await expect(result).resolves.not.toThrow();
+			});
+
+			it('should not find a tool with the same name', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
+
+				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
+
+				await expect(result).resolves.not.toThrow();
+			});
+
 			it('should not find a tool with the same name', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
 				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
@@ -250,9 +269,7 @@ describe('ToolValidation', () => {
 				const func = () => service.validateUpdate('notMatchToolId', externalToolDO);
 
 				await expect(func).rejects.toThrow(
-					new UnprocessableEntityException(
-						`The id of the tool with name ${externalToolDO.name} has no id or it does not match the path parameter.`
-					)
+					new UnprocessableEntityException(`The tool has no id or it does not match the path parameter.`)
 				);
 			});
 
@@ -277,7 +294,7 @@ describe('ToolValidation', () => {
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The Config Type of the tool: ${externalToolDO.name} is immutable`)
+					new UnprocessableEntityException(`The Config Type of the tool ${externalToolDO.name} is immutable`)
 				);
 			});
 
@@ -302,7 +319,7 @@ describe('ToolValidation', () => {
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is immutable`)
+					new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name} is immutable`)
 				);
 			});
 		});

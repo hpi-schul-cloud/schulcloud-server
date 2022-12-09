@@ -28,6 +28,7 @@ import {
 	ToolIdParams,
 } from './dto';
 import { CreateExternalTool, UpdateExternalTool } from '../uc/dto';
+import { ExternalToolUpdateParams } from './dto/request/external-tool-update.params';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -117,7 +118,7 @@ export class ToolController {
 	async updateExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams,
-		@Body() externalToolParams: ExternalToolPostParams
+		@Body() externalToolParams: ExternalToolUpdateParams
 	): Promise<ExternalToolResponse> {
 		const externalTool: UpdateExternalTool = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
 		const updated: ExternalToolDO = await this.externalToolUc.updateExternalTool(

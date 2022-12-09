@@ -14,18 +14,20 @@ export class ToolValidationService {
 		}
 	}
 
-	async validateUpdate(toolId: string, externalToolDO: ExternalToolDO): Promise<void> {
+	async validateUpdate(toolId: string, externalToolDO: Partial<ExternalToolDO>): Promise<void> {
 		if (toolId !== externalToolDO.id) {
-			throw new UnprocessableEntityException(
-				`The id of the tool with name ${externalToolDO.name} has no id or it does not match the path parameter.`
-			);
+			throw new UnprocessableEntityException(`The tool has no id or it does not match the path parameter.`);
 		}
 
 		await this.validateCommon(externalToolDO);
 
 		const loadedTool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
-		if (loadedTool.config instanceof Oauth2ToolConfigDO && externalToolDO.config.type !== loadedTool.config.type) {
-			throw new UnprocessableEntityException(`The Config Type of the tool: ${externalToolDO.name} is immutable`);
+		if (
+			loadedTool.config instanceof Oauth2ToolConfigDO &&
+			externalToolDO.config &&
+			externalToolDO.config.type !== loadedTool.config.type
+		) {
+			throw new UnprocessableEntityException(`The Config Type of the tool ${externalToolDO.name || ''} is immutable`);
 		}
 
 		if (
@@ -33,27 +35,30 @@ export class ToolValidationService {
 			loadedTool.config instanceof Oauth2ToolConfigDO &&
 			externalToolDO.config.clientId !== loadedTool.config.clientId
 		) {
-			throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is immutable`);
+			throw new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name || ''} is immutable`);
 		}
 	}
 
-	private async validateCommon(externalToolDO: ExternalToolDO): Promise<void> {
+	private async validateCommon(externalToolDO: ExternalToolDO | Partial<ExternalToolDO>): Promise<void> {
 		if (!(await this.isNameUnique(externalToolDO))) {
-			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`);
+			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name || ''}" is already used`);
 		}
 		if (externalToolDO.parameters && this.hasDuplicateAttributes(externalToolDO.parameters)) {
 			throw new UnprocessableEntityException(
-				`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
+				`The tool: ${externalToolDO.name || ''} contains multiple of the same custom parameters`
 			);
 		}
 		if (externalToolDO.parameters && !this.validateByRegex(externalToolDO.parameters)) {
 			throw new UnprocessableEntityException(
-				`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute`
+				`A custom Parameter of the tool: ${externalToolDO.name || ''} has wrong regex attribute`
 			);
 		}
 	}
 
-	private async isNameUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
+	private async isNameUnique(externalToolDO: ExternalToolDO | Partial<ExternalToolDO>): Promise<boolean> {
+		if (!externalToolDO.name) {
+			return true;
+		}
 		const duplicate: ExternalToolDO | null = await this.externalToolService.findExternalToolByName(externalToolDO.name);
 		return duplicate == null || duplicate.id === externalToolDO.id;
 	}
