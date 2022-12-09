@@ -12,6 +12,9 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { LdapService } from './services/ldap.service';
+import { SystemModule } from '../system';
+import { OauthStrategy } from './strategy/oauth.strategy';
+import { OauthModule } from '../oauth';
 
 const signAlgoritm = jwtConstants.jwtOptions.algorithm as Algorithm;
 const signOptions: SignOptions = {
@@ -27,7 +30,14 @@ const jwtModuleOptions: JwtModuleOptions = {
 	verifyOptions: signOptions,
 };
 @Module({
-	imports: [LoggerModule, PassportModule, JwtModule.register(jwtModuleOptions), AccountModule],
+	imports: [
+		LoggerModule,
+		PassportModule,
+		JwtModule.register(jwtModuleOptions),
+		AccountModule,
+		SystemModule,
+		OauthModule,
+	],
 	providers: [
 		JwtStrategy,
 		JwtValidationAdapter,
@@ -38,6 +48,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 		AuthenticationService,
 		LdapService,
 		LdapStrategy,
+		OauthStrategy,
 	],
 	exports: [AuthenticationService],
 })

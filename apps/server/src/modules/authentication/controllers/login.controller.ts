@@ -1,6 +1,9 @@
-import { Controller, Req, Post, UseGuards, Res, HttpCode, HttpStatus } from '@nestjs/common';
+import { CookieOptions, Response } from 'express';
+import { Controller, Req, Post, UseGuards, HttpCode, HttpStatus, Param, Query, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser } from '@shared/domain';
+import { CurrentUser } from '../decorator/auth.decorator';
 import { AuthenticationService } from '../services/authentication.service';
 
 @Controller('authentication')
@@ -10,14 +13,33 @@ export class LoginController {
 	@UseGuards(AuthGuard('ldap'))
 	@HttpCode(HttpStatus.OK)
 	@Post('ldap')
-	loginLdap(@Req() req: { user: ICurrentUser }) {
-		return this.authService.generateJwt(req.user);
+	loginLdap(@CurrentUser() user: ICurrentUser) {
+		return this.authService.generateJwt(user);
 	}
 
 	@UseGuards(AuthGuard('local'))
 	@HttpCode(HttpStatus.OK)
 	@Post('local')
-	loginLocal(@Req() req: { user: ICurrentUser }) {
-		return this.authService.generateJwt(req.user);
+	loginLocal(@CurrentUser() user: ICurrentUser) {
+		return this.authService.generateJwt(user);
+	}
+
+	@UseGuards(AuthGuard('oauth'))
+	@HttpCode(HttpStatus.OK)
+	@Post('oauth')
+	async loginOauth(
+		@CurrentUser() user: ICurrentUser,
+		@Query() queryParams: { redirect: string },
+		@Res() res: Response
+	) {
+		const jwt = await this.authService.generateJwt(user);
+		const cookieDefaultOptions: CookieOptions = {
+			httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
+			sameSite: Configuration.get('COOKIE__SAME_SITE') as 'lax' | 'strict' | 'none',
+			secure: Configuration.get('COOKIE__SECURE') as boolean,
+			expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
+		};
+		res.cookie('jwt', jwt.accessToken, cookieDefaultOptions);
+		res.redirect(queryParams.redirect);
 	}
 }

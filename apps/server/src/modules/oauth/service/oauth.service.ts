@@ -4,19 +4,22 @@ import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { OauthConfig, User } from '@shared/domain';
+import { OauthConfig } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { AxiosResponse } from 'axios';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { BadRequestException, Inject, UnauthorizedException } from '@nestjs/common';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { FeathersJwtProvider } from '@src/modules/authorization';
+import { SystemService } from '@src/modules/system/service/system.service';
+import { OauthTokenResponse } from '@src/modules/oauth/controller/dto';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthResponse } from './dto/oauth.response';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
@@ -24,17 +27,37 @@ import { AuthorizationParams } from '../controller/dto/authorization.params';
 @Injectable()
 export class OAuthService {
 	constructor(
-		private readonly userRepo: UserRepo,
+		private readonly userDORepo: UserDORepo,
 		private readonly jwtService: FeathersJwtProvider,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
 		private readonly logger: Logger,
-		private readonly provisioningService: ProvisioningService
+		private readonly provisioningService: ProvisioningService,
+		private readonly systemService: SystemService
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
 
+	async authenticateUser(authCode: string, systemId: string): Promise<{ user: UserDO; redirect: string }> {
+		const system = await this.systemService.findOAuthById(systemId);
+		if (!system.id) {
+			throw new UnauthorizedException(`System with id "${systemId}" does not exist.`);
+		}
+
+		const oauthConfig: OauthConfig = this.extractOauthConfigFromSystem(system);
+
+		const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig);
+
+		await this.validateToken(queryToken.id_token, oauthConfig);
+
+		const user: UserDO = await this.findUser(queryToken.access_token, queryToken.id_token, system.id);
+		const redirect = this.getRedirectUrl(oauthConfig.provider, queryToken.id_token, oauthConfig.logoutEndpoint);
+		return { user, redirect };
+	}
+
 	/**
+	 * @deprecated not needed after change of oauth login to authentication module
+	 *
 	 * @query query input that has either a code or an error
 	 * @return authorization code or throws an error
 	 */
@@ -54,6 +77,17 @@ export class OAuthService {
 		const responseTokenObservable = this.sendTokenRequest(payload);
 		const responseToken = this.resolveTokenRequest(responseTokenObservable);
 		return responseToken;
+	}
+
+	private extractOauthConfigFromSystem(system: SystemDto): OauthConfig {
+		const { oauthConfig } = system;
+		if (oauthConfig == null) {
+			this.logger.warn(
+				`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id ?? 'undefined'}`
+			);
+			throw new UnauthorizedException('Requested system has no oauth configured', 'sso_internal_error');
+		}
+		return oauthConfig;
 	}
 
 	private buildTokenRequestPayload(code: string, oauthConfig: OauthConfig): TokenRequestPayload {
@@ -114,7 +148,7 @@ export class OAuthService {
 		return verifiedJWT as IJwt;
 	}
 
-	async findUser(accessToken: string, idToken: string, systemId: string): Promise<User> {
+	async findUser(accessToken: string, idToken: string, systemId: string): Promise<UserDO> {
 		const sub: string | undefined = jwt.decode(idToken, { json: true })?.sub;
 
 		if (!sub) {
@@ -125,25 +159,28 @@ export class OAuthService {
 		const provisioningDto: ProvisioningDto = await this.provisioningService.process(accessToken, idToken, systemId);
 
 		try {
-			const user: User = await this.userRepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
+			const user: UserDO = await this.userDORepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
+
 			return user;
 		} catch (error) {
-			let additionalInfo = '';
 			const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
 			const email = decodedToken?.email as string | undefined;
+			let emailInfo = '';
 			if (email) {
-				const usersWithEmail: User[] = await this.userRepo.findByEmail(email);
-				const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
-				additionalInfo = ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
+				emailInfo = `, email: ${email}`;
 			}
 			throw new OAuthSSOError(
-				`Failed to find user with Id ${provisioningDto.externalUserId} ${additionalInfo}`,
+				`Failed to find user with Id ${provisioningDto.externalUserId}${emailInfo}`,
 				'sso_user_notfound'
 			);
 		}
 	}
 
-	async getJwtForUser(user: User): Promise<string> {
+	async getJwtForUser(user: UserDO): Promise<string> {
+		if (!user.id) {
+			// unreachable. Users from DB have an ID
+			throw new UnauthorizedException();
+		}
 		const stringPromise = this.jwtService.generateJwt(user.id);
 		return stringPromise;
 	}

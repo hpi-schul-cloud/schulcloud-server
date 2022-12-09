@@ -1,8 +1,5 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-/**
- * @deprecated
- */
 export class AuthorizationParams {
 	@IsOptional()
 	@IsString()
@@ -13,4 +10,9 @@ export class AuthorizationParams {
 	@IsString()
 	@IsNotEmpty()
 	error?: string;
+
+	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
+	redirect?: string;
 }

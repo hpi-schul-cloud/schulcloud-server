@@ -23,7 +23,7 @@ export class OAuthResponse {
 
 	@IsString()
 	@IsNotEmpty()
-	provider!: string;
+	provider?: string;
 
 	@IsString()
 	@IsNotEmpty()
