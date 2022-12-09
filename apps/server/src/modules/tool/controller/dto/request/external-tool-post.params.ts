@@ -11,6 +11,11 @@ import { Lti11ToolConfigParams } from './lti11-tool-config.params';
 @ApiExtraModels(Lti11ToolConfigParams, Oauth2ToolConfigParams, BasicToolConfigParams)
 export class ExternalToolPostParams {
 	@IsString()
+	@IsOptional()
+	@ApiProperty()
+	id?: string;
+
+	@IsString()
 	@ApiProperty()
 	name!: string;
 

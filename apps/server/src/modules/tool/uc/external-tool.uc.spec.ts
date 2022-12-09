@@ -284,10 +284,11 @@ describe('ExternalToolUc', () => {
 		const setupUpdate = () => {
 			const { externalToolDO, toolId } = setup();
 
-			const externalToolDOtoUpdate: ExternalToolDO = { ...externalToolDO, name: 'newName', url: undefined };
+			const externalToolDOtoUpdate: ExternalToolDO = { ...externalToolDO, name: 'newName', url: undefined, version: 1 };
 			const updatedExternalToolDO: ExternalToolDO = { ...externalToolDO, name: 'newName' };
 
 			externalToolService.updateExternalTool.mockResolvedValue(updatedExternalToolDO);
+			externalToolService.findExternalToolById.mockResolvedValue(externalToolDOtoUpdate);
 
 			return {
 				externalToolDO,

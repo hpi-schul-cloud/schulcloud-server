@@ -64,6 +64,7 @@ describe('ExternalToolRequestMapper', () => {
 		customParameterPostParams.regex = 'mockRegex';
 
 		const externalToolPostParams = new ExternalToolPostParams();
+		externalToolPostParams.id = 'id';
 		externalToolPostParams.name = 'mockName';
 		externalToolPostParams.url = 'mockUrl';
 		externalToolPostParams.logoUrl = 'mockLogoUrl';
@@ -85,6 +86,7 @@ describe('ExternalToolRequestMapper', () => {
 			regex: 'mockRegex',
 		});
 		const externalToolDO: ExternalToolDO = new ExternalToolDO({
+			id: externalToolPostParams.id,
 			name: 'mockName',
 			url: 'mockUrl',
 			logoUrl: 'mockLogoUrl',

@@ -118,7 +118,7 @@ export class ToolController {
 	async updateExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams,
-		@Body() externalToolParams: ExternalToolUpdateParams
+		@Body() externalToolParams: ExternalToolPostParams
 	): Promise<ExternalToolResponse> {
 		const externalTool: UpdateExternalTool = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
 		const updated: ExternalToolDO = await this.externalToolUc.updateExternalTool(

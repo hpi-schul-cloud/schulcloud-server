@@ -63,6 +63,7 @@ export class ExternalToolRequestMapper {
 		);
 
 		return {
+			id: externalToolPostParams.id,
 			name: externalToolPostParams.name || '',
 			url: externalToolPostParams.url,
 			logoUrl: externalToolPostParams.logoUrl,

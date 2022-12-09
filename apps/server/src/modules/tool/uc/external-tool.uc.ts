@@ -37,7 +37,7 @@ export class ExternalToolUc {
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
 		const loaded: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
-		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalTool });
+		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalTool, version: loaded.version });
 
 		const saved = await this.externalToolService.updateExternalTool(toUpdate);
 		return saved;
