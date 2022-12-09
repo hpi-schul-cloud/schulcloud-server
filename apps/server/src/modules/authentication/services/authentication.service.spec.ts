@@ -121,4 +121,29 @@ describe('AuthenticationService', () => {
 			).not.toThrow();
 		});
 	});
+
+	describe('normalizeUsername', () => {
+		it('should trim username', () => {
+			const username = '  username  ';
+			const result = authenticationService.normalizeUsername(username);
+
+			expect(result).toEqual('username');
+		});
+
+		it('should lowercase username', () => {
+			const username = 'UserName';
+			const result = authenticationService.normalizeUsername(username);
+
+			expect(result).toEqual('username');
+		});
+	});
+
+	describe('normalizePassword', () => {
+		it('should trim password', () => {
+			const password = '  password  ';
+			const result = authenticationService.normalizePassword(password);
+
+			expect(result).toEqual('password');
+		});
+	});
 });

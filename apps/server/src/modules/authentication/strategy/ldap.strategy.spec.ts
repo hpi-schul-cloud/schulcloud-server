@@ -1,6 +1,5 @@
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
@@ -28,7 +27,7 @@ const mockAccount = {
 	userId: mockUser.id,
 } as AccountDto;
 
-describe('local strategy', () => {
+describe('ldap strategy', () => {
 	let strategy: LdapStrategy;
 	let userRepo: DeepMocked<UserRepo>;
 	let schoolRepo: DeepMocked<SchoolRepo>;
@@ -45,6 +44,8 @@ describe('local strategy', () => {
 					provide: AuthenticationService,
 					useValue: createMock<AuthenticationService>({
 						loadAccount: (username) => Promise.resolve({ ...mockAccount, username }),
+						normalizeUsername: (username: string) => username,
+						normalizePassword: (password: string) => password,
 					}),
 				},
 				{
