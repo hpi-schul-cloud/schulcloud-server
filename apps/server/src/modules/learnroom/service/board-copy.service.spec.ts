@@ -248,5 +248,39 @@ describe('board copy service', () => {
 				expect(status.status).toEqual(CopyStatusEnum.PARTIAL);
 			});
 		});
+
+		describe('when board contains corrupted references', () => {
+			const setup = () => {
+				const originalLesson = lessonFactory.buildWithId();
+				const lessonElement = lessonBoardElementFactory.buildWithId({ target: originalLesson });
+				const destinationCourse = courseFactory.buildWithId();
+				const originalBoard = boardFactory.buildWithId({ references: [lessonElement], course: destinationCourse });
+				const user = userFactory.buildWithId();
+				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
+
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				delete originalBoard.references[0].target;
+
+				lessonCopyService.copyLesson.mockResolvedValue({
+					title: originalLesson.name,
+					type: CopyElementType.LESSON,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: lessonCopy,
+				});
+				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
+
+				return { destinationCourse, originalBoard, user, originalLesson };
+			};
+
+			it('should skip boardelements that contain a corrupted reference', async () => {
+				const { destinationCourse, originalBoard, user } = setup();
+
+				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const board = status.copyEntity as Board;
+
+				expect(board.references).toHaveLength(0);
+			});
+		});
 	});
 });
