@@ -5,6 +5,6 @@ import { SchoolService } from '@src/modules/school/service/school.service';
 
 @Module({
 	providers: [SchoolRepo, SchoolUc, SchoolService],
-	exports: [SchoolUc, SchoolService],
+	exports: [SchoolService],
 })
 export class SchoolModule {}

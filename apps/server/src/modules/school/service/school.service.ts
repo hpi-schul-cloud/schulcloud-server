@@ -1,8 +1,10 @@
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { SchoolRepo } from '@shared/repo';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { School, EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
+import { MigrationResponse } from '../controller/dto';
 
 @Injectable()
 export class SchoolService {
@@ -34,5 +36,25 @@ export class SchoolService {
 	async hasFeature(schoolId: EntityId, feature: SchoolFeatures): Promise<boolean> {
 		const entity: School = await this.schoolRepo.findById(schoolId);
 		return entity.features ? entity.features.includes(feature) : false;
+	}
+
+	async setMigration(
+		schoolId: EntityId,
+		oauthMigrationPossible: boolean,
+		oauthMigrationMandatory: boolean
+	): Promise<MigrationResponse> {
+		const entity: School = await this.schoolRepo.findById(schoolId);
+		entity.oauthMigrationPossible = oauthMigrationPossible;
+		entity.oauthMigrationMandatory = oauthMigrationMandatory;
+
+		await this.schoolRepo.save(entity);
+
+		// const patchedEntity: School = await this.patchSchool(entity);
+		const response: MigrationResponse = new MigrationResponse({
+			oauthMigrationPossible: entity.oauthMigrationPossible,
+			oauthMigrationMandatory: entity.oauthMigrationMandatory,
+		});
+
+		return response;
 	}
 }

@@ -27,6 +27,12 @@ export class SchoolMapper {
 		target.name = source.name;
 		target.externalId = source.externalId;
 		target.systems = source.systems;
+		if (source.oauthMigrationPossible) {
+			target.oauthMigrationPossible = source.oauthMigrationPossible;
+		}
+		if (source.oauthMigrationMandatory) {
+			target.oauthMigrationMandatory = source.oauthMigrationMandatory;
+		}
 		return target;
 	}
 
