@@ -59,6 +59,7 @@ export class S3ClientAdapter implements IStorageClient {
 				data: stream,
 				contentType: data.ContentType,
 				contentLength: data.ContentLength,
+				contentRange: data.ContentRange,
 				etag: data.ETag,
 			};
 		} catch (err) {

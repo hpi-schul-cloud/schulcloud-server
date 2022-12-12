@@ -5,6 +5,7 @@ export interface IGetFileResponse {
 	data: internal.Readable;
 	contentType: string | undefined;
 	contentLength: number | undefined;
+	contentRange: string | undefined;
 	etag: string | undefined;
 }
 
