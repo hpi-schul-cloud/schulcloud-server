@@ -1,6 +1,9 @@
 import { CardElement, CardElementType } from '@shared/domain/entity/cardElement.entity';
-import type { Task } from '@shared/domain';
-import { InputFormat } from '@shared/domain';
+import type { Task, User } from '@shared/domain';
+import { CardType } from '@shared/domain';
+import { InputFormat } from './input-format.types';
+
+// import { TaskResponse } from '@src/modules/task/controller/dto'
 
 export interface ITaskCardCreate {
 	title: string;
@@ -8,9 +11,13 @@ export interface ITaskCardCreate {
 }
 
 export interface ICard {
-	draggable?: boolean;
+	cardElements: CardElement[]; // ICardElement[];
 
-	cardElements: CardElement[];
+	cardType: CardType;
+
+	creator: User;
+
+	draggable?: boolean;
 }
 
 export interface ITaskCard extends ICard {
@@ -19,7 +26,7 @@ export interface ITaskCard extends ICard {
 
 export type ICardElement = {
 	cardElementType: CardElementType;
-	content: ITitleCardElement | IRichTextCardElement;
+	// content: ITitleCardElement | IRichTextCardElement;
 };
 
 export type ITitleCardElement = {

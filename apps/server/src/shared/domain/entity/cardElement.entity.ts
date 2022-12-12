@@ -1,6 +1,6 @@
 import { Entity, Enum, Property } from '@mikro-orm/core';
+import { InputFormat } from '../types/input-format.types';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { InputFormat } from '@shared/domain';
 
 export enum CardElementType {
 	'Title' = 'title',
@@ -20,6 +20,9 @@ export abstract class CardElement extends BaseEntityWithTimestamps {
 
 	@Enum()
 	cardElementType!: CardElementType;
+
+	// @Property()
+	// content!: TitleCardElement | RichTextCardElement;
 }
 
 @Entity({ discriminatorValue: CardElementType.Title })

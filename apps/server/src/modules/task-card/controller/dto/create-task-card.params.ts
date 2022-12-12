@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
-import { InputFormat } from '@shared/domain';
+import { InputFormat } from '@shared/domain/types/input-format.types';
 import { SanitizeHtml } from '@shared/controller';
 
 export class CreateTaskCardParams {

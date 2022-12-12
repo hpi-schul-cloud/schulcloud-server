@@ -1,42 +1,47 @@
-import { CardElementResponse, CreateTaskCardParams, TaskCardResponse } from '../controller/dto';
-import { ITaskCreate, ITaskCardCreate, TaskCard } from '@shared/domain';
-import { TaskCreateParams, TaskResponse } from '@src/modules/task/controller/dto';
+import { ITaskCardCreate, TaskCard, TaskWithStatusVo, ICardElement } from '@shared/domain';
+import { TaskResponse } from '@src/modules/task/controller/dto';
+import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import { TaskMapper } from '@src/modules/task/mapper';
 import {
-	CardElement,
-	CardElementType,
-	RichTextCardElement,
-	TitleCardElement,
-} from '@shared/domain/entity/cardElement.entity';
-import { CardTitleElementResponse } from '@src/modules/task-card/controller/dto/card-title-element.response';
-import { CardRichTextElementResponse } from '@src/modules/task-card/controller/dto/card-richtext-element.response';
+	CardTitleElementResponse,
+	CardRichTextElementResponse,
+	CardElementResponse,
+	CreateTaskCardParams,
+	TaskCardResponse,
+} from '../controller/dto';
 
 export class TaskCardMapper {
-	mapToResponse(card: TaskCard): TaskCardResponse {
-		//const task = new TaskResponse(card.task);
+	mapToResponse(card: TaskCard, taskWithStatusVo: TaskWithStatusVo): TaskCardResponse {
+		const taskResponse: TaskResponse = TaskMapper.mapToResponse(taskWithStatusVo);
+		const cardElements = card.getCardElements();
+		const cardElementsResponse = this.mapElements(cardElements);
 
 		const dto = new TaskCardResponse({
 			id: card.id,
-			draggable: card.draggable,
-			//task: card.task,
-			cardElements: this.mapElements(card.cardElements),
+			draggable: card.draggable || true,
+			cardElements: cardElementsResponse,
+			task: taskResponse,
 		});
 
 		return dto;
 	}
 
-	private mapElements(cardElements: CardElement[]): CardElementResponse[] {
-		const elements = [];
-
-		cardElements.forEach((element) => {
-			if (element.cardElementType === CardElementType.Title) {
-				elements.push(new CardTitleElementResponse(element as TitleCardElement));
+	private mapElements(cardElements: ICardElement[]): CardElementResponse[] {
+		const cardElementsResponse: CardElementResponse[] = [];
+		cardElements.forEach((cardElement) => {
+			if (cardElement.cardElementType === CardElementType.Title) {
+				const title = new CardTitleElementResponse(cardElement as TitleCardElement);
+				const response = { cardElementType: cardElement.cardElementType, content: title };
+				cardElementsResponse.push(response);
 			}
-			if (element.cardElementType === CardElementType.RichText) {
-				elements.push(new CardRichTextElementResponse(element as RichTextCardElement));
+			if (cardElement.cardElementType === CardElementType.RichText) {
+				const richText = new CardRichTextElementResponse(cardElement as RichTextCardElement);
+				const response = { cardElementType: cardElement.cardElementType, content: richText };
+				cardElementsResponse.push(response);
 			}
 		});
 
-		return elements;
+		return cardElementsResponse;
 	}
 
 	static mapCreateToDomain(params: CreateTaskCardParams): ITaskCardCreate {
@@ -49,4 +54,4 @@ export class TaskCardMapper {
 	}
 }
 
-//export class ElementMapper
+// export class ElementMapper

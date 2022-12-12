@@ -1,5 +1,4 @@
 import {
-	BooleanType,
 	Collection,
 	Entity,
 	Enum,
@@ -9,14 +8,17 @@ import {
 	ManyToOne,
 	OneToOne,
 	Property,
+	wrap,
 } from '@mikro-orm/core';
-import { EntityId, ITaskCard } from '../types';
+import { ITaskCard } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CardElement } from './cardElement.entity';
 import { Task } from './task.entity';
+import { User } from './user.entity';
 
 export type CardProps = {
 	cardElements: CardElement[];
+	creator: User;
 };
 
 export enum CardType {
@@ -32,6 +34,7 @@ export abstract class Card extends BaseEntityWithTimestamps {
 	constructor(props: CardProps) {
 		super();
 		this.cardElements.set(props.cardElements);
+		this.creator = props.creator;
 	}
 
 	@ManyToMany('CardElement', undefined, { fieldName: 'cardElementIds' })
@@ -40,8 +43,15 @@ export abstract class Card extends BaseEntityWithTimestamps {
 	@Enum()
 	cardType!: CardType;
 
+	@Index()
+	@ManyToOne('User', { fieldName: 'userId' })
+	creator: User;
+
 	@Property()
-	draggable: boolean = true;
+	draggable = true;
+
+	@Property()
+	isDraft = false;
 
 	// TODO
 	getCardElements() {
@@ -54,7 +64,6 @@ export abstract class Card extends BaseEntityWithTimestamps {
 	}
 
 	private validateReordering(ids: EntityId[]) {
-
 	}
 	*/
 }
@@ -72,7 +81,12 @@ export class TaskCard extends Card {
 	constructor(props: ITaskCard) {
 		super(props);
 		this.cardType = CardType.Task;
-		//this.task = props.task;
+
+		if (props.draggable) {
+			this.draggable = props.draggable;
+		}
+
+		this.task = wrap(props.task).toReference();
 	}
 
 	@Index()

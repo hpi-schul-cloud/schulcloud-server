@@ -8,7 +8,7 @@ export abstract class CardRepo extends BaseRepo<Card> {
 		return Card;
 	}
 
-	private populateCard(card: Card) {
+	private async populateCard(card: Card) {
 		await card.cardElements.init();
 	}
 }
@@ -16,7 +16,7 @@ export abstract class CardRepo extends BaseRepo<Card> {
 export class TaskCardRepo extends CardRepo {
 	async findById(id: EntityId) {
 		const card = await this._em.findOneOrFail(TaskCard, { id });
-		if (card.taskId != null) {
+		if (card.task != null) {
 			await this._em.populate(card, ['task']);
 		}
 		return card;

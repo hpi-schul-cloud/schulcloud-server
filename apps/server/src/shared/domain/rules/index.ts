@@ -4,6 +4,7 @@ import { LessonRule } from './lesson.rule';
 import { SchoolRule } from './school.rule';
 import { SubmissionRule } from './submission.rule';
 import { TaskRule } from './task.rule';
+import { TaskCardRule } from './task-card.rule';
 import { TeamRule } from './team.rule';
 import { UserRule } from './user.rule';
 
@@ -17,6 +18,7 @@ export { default as PermissionContextBuilder } from './permission-context.builde
 export * from './school.rule';
 export * from './submission.rule';
 export * from './task.rule';
+export * from './task-card.rule';
 export * from './team.rule';
 export * from './user.rule';
 
@@ -27,6 +29,7 @@ export const ALL_RULES = [
 	SchoolRule,
 	SubmissionRule,
 	TaskRule,
+	TaskCardRule,
 	TeamRule,
 	UserRule,
 ];
