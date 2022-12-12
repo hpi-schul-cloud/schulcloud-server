@@ -54,10 +54,9 @@ export class AccountService extends AbstractAccountService {
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		const ret = await this.accountDb.save(accountDto);
-		// prepare Id mapping, switch DB-ID with IDM-IDM
 		const newAccount: AccountSaveDto = {
-			...ret,
-			id: undefined,
+			...accountDto,
+			id: accountDto.id,
 			refId: ret.id,
 			password: accountDto.password,
 		};

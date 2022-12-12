@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 
-import { EntityId } from '@shared/domain';
+import { EntityId, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { AccountIdmToDtoMapper } from '../mapper/account-idm-to-dto.mapper';
 import { AbstractAccountService } from './account.service.abstract';
@@ -62,24 +62,20 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		let accountId: string;
+		const idmAccount: IAccountUpdate = {
+			username: accountDto.username,
+			attRefTechnicalId: accountDto.refId,
+			attRefFunctionalIntId: accountDto.userId,
+			attRefFunctionalExtId: accountDto.systemId,
+		};
 		if (accountDto.id) {
 			const id = await this.getInternalId(accountDto.id);
-			accountId = await this.identityManager.updateAccount(id, {
-				username: accountDto.username,
-				attRefTechnicalId: accountDto.id,
-				attRefFunctionalIntId: accountDto.userId,
-				attRefFunctionalExtId: accountDto.systemId,
-			});
+			accountId = await this.identityManager.updateAccount(id, idmAccount);
+			if (accountDto.password) {
+				await this.identityManager.updateAccountPassword(id, accountDto.password);
+			}
 		} else {
-			accountId = await this.identityManager.createAccount(
-				{
-					username: accountDto.username,
-					attRefTechnicalId: accountDto.refId,
-					attRefFunctionalIntId: accountDto.userId,
-					attRefFunctionalExtId: accountDto.systemId,
-				},
-				accountDto.password
-			);
+			accountId = await this.identityManager.createAccount(idmAccount, accountDto.password);
 		}
 
 		const updatedAccount = await this.identityManager.findAccountById(accountId);
