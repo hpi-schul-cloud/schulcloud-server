@@ -24,6 +24,7 @@ import { SchoolModule } from '@src/modules/school/school.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemModule } from '@src/modules/system';
 import { TaskModule } from '@src/modules/task';
+import { TaskCardModule } from '@src/modules/task-card';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { VideoConferenceModule } from '@src/modules/video-conference';
@@ -42,6 +43,7 @@ const serverModules = [
 	CollaborativeStorageModule,
 	OauthModule,
 	TaskModule,
+	TaskCardModule,
 	LessonApiModule,
 	NewsModule,
 	UserModule,

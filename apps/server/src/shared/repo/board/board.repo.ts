@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Board, Course, EntityId, LessonBoardElement, TaskBoardElement } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
-import { populate } from 'feathers-hooks-common';
 
 @Injectable()
 export class BoardRepo extends BaseRepo<Board> {

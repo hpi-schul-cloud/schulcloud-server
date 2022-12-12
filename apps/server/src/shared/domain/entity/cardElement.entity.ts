@@ -12,12 +12,6 @@ export enum CardElementType {
 	abstract: true,
 })
 export abstract class CardElement extends BaseEntityWithTimestamps {
-	// TODO do we need constructor?
-	// TODO add type for props
-	constructor() {
-		super();
-	}
-
 	@Enum()
 	cardElementType!: CardElementType;
 

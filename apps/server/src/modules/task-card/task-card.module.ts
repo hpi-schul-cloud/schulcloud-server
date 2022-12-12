@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AuthorizationModule } from '@src/modules';
-import { TaskCardController } from './controller/task-card.controller';
-import { TaskCardUc } from './uc';
 import { TaskCardRepo } from '@shared/repo';
-import { TaskService } from '@src/modules/task/service';
+import { AuthorizationModule } from '../authorization/authorization.module';
+import { TaskModule } from '../task/task.module';
+import { TaskCardController } from './controller/task-card.controller';
+import { TaskCardUc } from './uc/task-card.uc';
 
 @Module({
-	imports: [AuthorizationModule],
+	imports: [AuthorizationModule, TaskModule],
 	controllers: [TaskCardController],
-	providers: [TaskCardUc, TaskCardRepo, TaskService],
+	providers: [TaskCardUc, TaskCardRepo],
 	exports: [],
 })
 export class TaskCardModule {}

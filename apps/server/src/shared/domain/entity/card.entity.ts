@@ -10,7 +10,7 @@ import {
 	Property,
 	wrap,
 } from '@mikro-orm/core';
-import { ITaskCard } from '../types';
+import { CardType, ITaskCard } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CardElement } from './cardElement.entity';
 import { Task } from './task.entity';
@@ -21,17 +21,12 @@ export type CardProps = {
 	creator: User;
 };
 
-export enum CardType {
-	'Text' = 'text',
-	'Task' = 'task',
-}
-
 @Entity({
 	discriminatorColumn: 'cardElementType',
 	tableName: 'card',
 })
 export abstract class Card extends BaseEntityWithTimestamps {
-	constructor(props: CardProps) {
+	protected constructor(props: CardProps) {
 		super();
 		this.cardElements.set(props.cardElements);
 		this.creator = props.creator;
@@ -66,14 +61,6 @@ export abstract class Card extends BaseEntityWithTimestamps {
 	private validateReordering(ids: EntityId[]) {
 	}
 	*/
-}
-
-@Entity({ discriminatorValue: CardType.Text })
-export class TextCard extends Card {
-	constructor(props) {
-		super(props);
-		this.cardType = CardType.Text;
-	}
 }
 
 @Entity({ discriminatorValue: CardType.Task })

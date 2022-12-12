@@ -1,6 +1,4 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import {
 	Counted,
 	EntityId,
@@ -13,16 +11,17 @@ import {
 	Task,
 	TaskWithStatusVo,
 } from '@shared/domain';
+import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
+import { AuthorizationService } from '@src/modules/authorization';
 import { ValidationError } from '@shared/common';
-import { AuthorizationService } from '@src/modules';
 
 @Injectable()
 export class TaskService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
-		private readonly lessonRepo: LessonRepo,
+		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
-		private readonly authorizationService: AuthorizationService
+		private readonly lessonRepo: LessonRepo
 	) {}
 
 	async findBySingleParent(
@@ -35,8 +34,6 @@ export class TaskService {
 	}
 
 	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
-		this.checkNewTaskEnabled();
-
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const taskParams: ITaskProperties = {
 			...params,
@@ -76,8 +73,6 @@ export class TaskService {
 	}
 
 	async find(userId: EntityId, taskId: EntityId) {
-		this.checkNewTaskEnabled();
-
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
@@ -93,8 +88,6 @@ export class TaskService {
 	}
 
 	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
-		this.checkNewTaskEnabled();
-
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
@@ -136,13 +129,6 @@ export class TaskService {
 	private taskDateValidation(availableDate?: Date, dueDate?: Date) {
 		if (availableDate && dueDate && !(availableDate < dueDate)) {
 			throw new ValidationError('availableDate must be before dueDate');
-		}
-	}
-
-	private checkNewTaskEnabled() {
-		const enabled = Configuration.get('FEATURE_NEW_TASK_ENABLED') as boolean;
-		if (!enabled) {
-			throw new InternalServerErrorException('Feature not enabled');
 		}
 	}
 }

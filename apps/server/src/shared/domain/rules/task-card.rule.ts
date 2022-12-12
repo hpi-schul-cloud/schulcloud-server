@@ -3,14 +3,10 @@ import { TaskCard, User } from '../entity';
 import { IPermissionContext } from '../interface/permission';
 import { Actions } from './actions.enum';
 import { BasePermission } from './base-permission';
-import { TaskRule } from './task.rule';
+// import { TaskRule } from './task.rule';
 
 @Injectable()
 export class TaskCardRule extends BasePermission<TaskCard> {
-	constructor(private readonly taskRule: TaskRule) {
-		super();
-	}
-
 	public isApplicable(user: User, entity: TaskCard): boolean {
 		const isMatched = entity instanceof TaskCard;
 
@@ -62,7 +58,7 @@ export class TaskCardRule extends BasePermission<TaskCard> {
 		const hasParentPermission = true;
 		// TODO
 
-		//const hasParentPermission = this.taskRule.hasPermission(user, entity.task, { action, requiredPermissions: [] });
+		// const hasParentPermission = this.taskRule.hasPermission(user, entity.task, { action, requiredPermissions: [] });
 		return hasParentPermission;
 	}
 }

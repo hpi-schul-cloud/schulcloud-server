@@ -8,15 +8,12 @@ export class CreateTaskCardParams {
 	@SanitizeHtml()
 	@ApiProperty({
 		description: 'Title of the text card',
+		required: true,
 	})
 	title!: string;
 
-	// sanitize happens in RichText class itself
-	@ApiProperty({
-		description: 'Description of the card',
-	})
 	@IsOptional()
-	@ApiPropertyOptional()
-	@SanitizeHtml(InputFormat.RICH_TEXT_CK5_SIMPLE)
+	@SanitizeHtml(InputFormat.RICH_TEXT_CK5)
+	@ApiPropertyOptional({ description: 'Description of the card' })
 	description?: string[];
 }

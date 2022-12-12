@@ -1,6 +1,6 @@
-import { CardElement, CardElementType } from '@shared/domain/entity/cardElement.entity';
-import type { Task, User } from '@shared/domain';
-import { CardType } from '@shared/domain';
+import { CardElement, CardElementType } from '../entity/cardElement.entity';
+import type { Task } from '../entity/task.entity';
+import type { User } from '../entity/user.entity';
 import { InputFormat } from './input-format.types';
 
 // import { TaskResponse } from '@src/modules/task/controller/dto'
@@ -8,6 +8,11 @@ import { InputFormat } from './input-format.types';
 export interface ITaskCardCreate {
 	title: string;
 	description?: string[];
+}
+
+export enum CardType {
+	'Text' = 'text',
+	'Task' = 'task',
 }
 
 export interface ICard {

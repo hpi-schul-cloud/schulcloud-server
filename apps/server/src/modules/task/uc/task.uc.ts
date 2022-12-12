@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import {
 	Actions,
 	Counted,
@@ -6,32 +7,29 @@ import {
 	EntityId,
 	IPagination,
 	ITaskCreate,
-	ITaskProperties,
 	ITaskStatus,
 	ITaskUpdate,
 	Lesson,
 	Permission,
 	PermissionContextBuilder,
 	SortOrder,
-	Task,
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { ValidationError } from '@shared/common';
 import { TaskService } from '../service/task.service';
 
 @Injectable()
 export class TaskUC {
 	constructor(
+		private readonly taskService: TaskService,
 		private readonly taskRepo: TaskRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly taskService: TaskService
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -218,6 +216,24 @@ export class TaskUC {
 		return oneWeekAgo;
 	}
 
+	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
+		this.checkNewTaskEnabled();
+
+		return this.taskService.create(userId, params);
+	}
+
+	async find(userId: EntityId, taskId: EntityId) {
+		this.checkNewTaskEnabled();
+
+		return this.taskService.find(userId, taskId);
+	}
+
+	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
+		this.checkNewTaskEnabled();
+
+		return this.taskService.update(userId, taskId, params);
+	}
+
 	async delete(userId: EntityId, taskId: EntityId) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
@@ -231,15 +247,10 @@ export class TaskUC {
 		return true;
 	}
 
-	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
-		return this.taskService.create(userId, params);
-	}
-
-	async find(userId: EntityId, taskId: EntityId) {
-		return this.taskService.find(userId, taskId);
-	}
-
-	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
-		return this.taskService.update(userId, taskId, params);
+	private checkNewTaskEnabled() {
+		const enabled = Configuration.get('FEATURE_NEW_TASK_ENABLED') as boolean;
+		if (!enabled) {
+			throw new InternalServerErrorException('Feature not enabled');
+		}
 	}
 }

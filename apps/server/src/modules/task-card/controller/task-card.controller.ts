@@ -1,20 +1,19 @@
-import { Body, Controller } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 // import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { CreateTaskCardParams, TaskCardResponse } from './dto';
+import { CreateTaskCardParams, TaskCardResponse, TaskCardUrlParams } from './dto';
 import { TaskCardMapper } from '../mapper/task-card.mapper';
 import { TaskCardUc } from '../uc';
 
-@ApiTags('card')
+@ApiTags('Cards')
 @Authenticate('jwt')
-@Controller('task-card')
+@Controller('cards/task')
 export class TaskCardController {
 	constructor(private readonly taskCardUc: TaskCardUc) {}
 
-	// async findAll()
-
+	@Post()
 	async create(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: CreateTaskCardParams
@@ -24,13 +23,18 @@ export class TaskCardController {
 			currentUser.userId,
 			TaskCardMapper.mapCreateToDomain(params)
 		);
-		const taskCardDto = mapper.mapToResponse(card, taskWithStatusVo);
+		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
 
-		return taskCardDto;
+		return taskCardResponse;
 	}
 
-	// @Get(':id')
-	// async findOne(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser) {}
+	@Get(':id')
+	async find(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: TaskCardUrlParams) {
+		const { card, taskWithStatusVo } = await this.taskCardUc.find(currentUser.userId, urlParams.id);
+		const mapper = new TaskCardMapper();
+		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
+		return taskCardResponse;
+	}
 
 	// async update
 	// async delete
