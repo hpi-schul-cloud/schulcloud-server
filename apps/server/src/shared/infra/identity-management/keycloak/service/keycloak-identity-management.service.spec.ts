@@ -99,6 +99,21 @@ describe('KeycloakIdentityManagement', () => {
 			);
 		});
 
+		it('should enable accounts by default', async () => {
+			kcUsersMock.find.mockResolvedValueOnce([]);
+			const accountId = 'user-1-id';
+			const createUserMock = kcUsersMock.create.mockResolvedValueOnce({ id: accountId });
+			kcUsersMock.resetPassword.mockResolvedValueOnce();
+			const testAccount = { username: 'test', email: 'test@test.test' };
+			const testAccountPassword = 'test';
+
+			const ret = await idm.createAccount(testAccount, testAccountPassword);
+
+			expect(ret).not.toBeNull();
+			expect(ret).toBe(accountId);
+			expect(createUserMock).toBeCalledWith(expect.objectContaining({ enabled: true }));
+		});
+
 		it('should reject if account create fails', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
 			kcUsersMock.create.mockResolvedValueOnce({ id: 'accountId' });
@@ -361,6 +376,22 @@ describe('KeycloakIdentityManagement', () => {
 			expect(updateUserMock).toBeCalledWith(
 				expect.objectContaining({ id: accountId }),
 				expect.objectContaining({ firstName: testAccount.firstName, email: testAccount.email })
+			);
+		});
+
+		it('should enable accounts by default', async () => {
+			kcUsersMock.find.mockResolvedValueOnce([]);
+			const accountId = 'user-1-id';
+			const updateUserMock = kcUsersMock.update.mockResolvedValueOnce();
+			const testAccount = { firstName: 'test', email: 'test@test.test' };
+
+			const ret = await idm.updateAccount(accountId, testAccount);
+
+			expect(ret).not.toBeNull();
+			expect(ret).toBe(accountId);
+			expect(updateUserMock).toBeCalledWith(
+				expect.objectContaining({ id: accountId }),
+				expect.objectContaining({ enabled: true })
 			);
 		});
 

@@ -19,6 +19,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 			email: account.email,
 			firstName: account.firstName,
 			lastName: account.lastName,
+			enabled: true,
 			attributes: {
 				refTechnicalId: account.attRefTechnicalId,
 				refFunctionalIntId: account.attRefFunctionalIntId,
@@ -53,6 +54,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 				email: account.email,
 				firstName: account.firstName,
 				lastName: account.lastName,
+				enabled: true,
 			}
 		);
 		return id;
