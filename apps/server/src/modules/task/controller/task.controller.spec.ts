@@ -2,16 +2,17 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum, ICurrentUser } from '@shared/domain';
 import { CopyApiResponse } from '@src/modules/learnroom/controller/dto/copy.response';
+import { TaskCopyUC } from '@src/modules/learnroom/uc/task-copy.uc';
 import { TaskUC } from '../uc';
-import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskController } from './task.controller';
 
 describe('TaskController', () => {
+	let module: TestingModule;
 	let controller: TaskController;
 	let uc: TaskCopyUC;
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [
 				{
 					provide: TaskUC,
@@ -27,6 +28,10 @@ describe('TaskController', () => {
 
 		controller = module.get(TaskController);
 		uc = module.get(TaskCopyUC);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {

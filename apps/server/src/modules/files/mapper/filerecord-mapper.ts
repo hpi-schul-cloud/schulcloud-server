@@ -1,7 +1,9 @@
+/* istanbul ignore file */
+
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FileRecord } from '@shared/domain';
+import { FileRecord } from '@src/modules/files-storage/entity/filerecord.entity';
 
 export class FileRecordMapper {
 	static mapToFileRecord(aggregationResult: Record<string, never>): FileRecord {

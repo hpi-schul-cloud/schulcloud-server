@@ -3,9 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
+import { FileDto } from '../dto';
 import { ICopyFiles } from '../interface';
 import { S3Config } from '../interface/config';
-import { IFile } from '../interface/file';
 import { S3ClientAdapter } from './s3-client.adapter';
 
 const config = {
@@ -120,12 +120,12 @@ describe('S3ClientAdapter', () => {
 
 	describe('create', () => {
 		const buffer = Buffer.from('ddd');
-		const file: IFile = {
+		const file = new FileDto({
 			buffer,
 			name: 'test.txt',
 			mimeType: 'text/plain',
 			size: 100,
-		};
+		});
 		const path = 'test/test.txt';
 
 		it('should call send() of client', async () => {

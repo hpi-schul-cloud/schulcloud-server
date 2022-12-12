@@ -1,13 +1,13 @@
-import AdmZip from 'adm-zip';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, Lesson, Task } from '@shared/domain';
+import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LessonService } from '@src/modules/lesson/service';
-import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { Course, Lesson, Task } from '@shared/domain';
-import { MikroORM } from '@mikro-orm/core';
 import { TaskService } from '@src/modules/task/service/task.service';
+import AdmZip from 'adm-zip';
 
 describe('CommonCartridgeExportService', () => {
 	let orm: MikroORM;

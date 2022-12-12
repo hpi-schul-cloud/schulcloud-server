@@ -7,6 +7,7 @@ import type { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
 import { Task } from './task.entity';
+import type { ITaskParent } from './task.entity';
 import { User } from './user.entity';
 
 export interface ILessonProperties {
@@ -37,15 +38,13 @@ export interface IComponentGeogebraProperties {
 }
 
 export interface IComponentLernstoreProperties {
-	resources: [
-		{
-			client: string;
-			description: string;
-			merlinReference?: string;
-			title: string;
-			url: string;
-		}
-	];
+	resources: {
+		client: string;
+		description: string;
+		merlinReference?: string;
+		title: string;
+		url: string;
+	}[];
 }
 
 export interface IComponentEtherpadProperties {
@@ -66,6 +65,7 @@ export interface IComponentInternalProperties {
 }
 
 export interface IComponentProperties {
+	_id?: string;
 	title?: string;
 	hidden: boolean;
 	component: ComponentType;
@@ -79,8 +79,12 @@ export interface IComponentProperties {
 		| IComponentNexboardProperties;
 }
 
+export interface ILessonParent {
+	getStudentIds(): EntityId[];
+}
+
 @Entity({ tableName: 'lessons' })
-export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElement {
+export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElement, ITaskParent {
 	@Property()
 	name: string;
 
@@ -116,6 +120,12 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		this.position = props.position || 0;
 		this.contents = props.contents;
 		if (props.materials) this.materials.set(props.materials);
+	}
+
+	private getParent(): ILessonParent {
+		const parent = this.courseGroup || this.course;
+
+		return parent;
 	}
 
 	private getTasksItems(): Task[] {
@@ -181,5 +191,12 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 
 	unpublish() {
 		this.hidden = true;
+	}
+
+	public getStudentIds(): EntityId[] {
+		const parent = this.getParent();
+		const studentIds = parent.getStudentIds();
+
+		return studentIds;
 	}
 }

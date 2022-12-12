@@ -1,22 +1,25 @@
+/* istanbul ignore file */
+
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
+import { EntityId } from '@shared/domain';
+import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { FileRecordMapper } from '../mapper/filerecord-mapper';
 
-const tasksQuery = [
+const orphanedFilesQuery = (collectionName: string) => [
 	{
 		$lookup: {
-			from: 'homeworks',
+			from: collectionName,
 			localField: 'parent',
 			foreignField: '_id',
-			as: 'homeworks',
+			as: collectionName,
 		},
 	},
 	{
 		$set: {
-			homework: { $arrayElemAt: ['$homeworks', 0] },
+			entity: { $arrayElemAt: [`$${collectionName}`, 0] },
 		},
 	},
 	{
@@ -35,11 +38,11 @@ const tasksQuery = [
 	{
 		$match: {
 			$or: [
-				{ homework: null },
+				{ entity: null },
 				{
 					$expr: {
 						$not: {
-							$in: ['$file_filerecord.fileId', '$homework.fileIds'],
+							$in: ['$file_filerecord.fileId', '$entity.fileIds'],
 						},
 					},
 				},
@@ -104,7 +107,11 @@ export class OrphanedFilesRepo {
 		let query;
 
 		if (parentType === FileRecordParentType.Task) {
-			query = tasksQuery;
+			query = orphanedFilesQuery('homeworks');
+		}
+
+		if (parentType === FileRecordParentType.Submission) {
+			query = orphanedFilesQuery('submissions');
 		}
 
 		const result = await this._em.aggregate(FileRecord, query);

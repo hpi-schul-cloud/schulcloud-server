@@ -6,27 +6,20 @@ import { setupEntities } from '@shared/testing';
 import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
 import { LessonCopyParentParams } from '@src/modules/learnroom/uc/lesson-copy.uc';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
-import { TaskCopyParentParams } from '@src/modules/task/uc/task-copy.uc';
 import { CopyApiResponse } from '../controller/dto/copy.response';
+import { TaskCopyParentParams } from '../uc/task-copy.uc';
 import { CopyMapper } from './copy.mapper';
 
 describe('copy mapper', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
-
-	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterEach(async () => {
+	afterAll(async () => {
+		await orm.close();
 		await module.close();
 	});
 
-	afterAll(async () => {
-		await orm.close();
-	});
-
-	beforeEach(async () => {
+	beforeAll(async () => {
+		orm = await setupEntities();
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [CopyMapper],

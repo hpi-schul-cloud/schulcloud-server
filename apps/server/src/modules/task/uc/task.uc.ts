@@ -1,11 +1,13 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import {
 	Actions,
 	Counted,
 	Course,
 	EntityId,
 	IPagination,
+	ITaskCreate,
+	ITaskProperties,
 	ITaskStatus,
 	ITaskUpdate,
 	Lesson,
@@ -19,6 +21,7 @@ import {
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { ValidationError } from '@shared/common';
 
 @Injectable()
 export class TaskUC {
@@ -214,21 +217,49 @@ export class TaskUC {
 		return oneWeekAgo;
 	}
 
-	async delete(userId: EntityId, taskId: EntityId) {
+	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
+		this.checkNewTaskEnabled();
+
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const task = await this.taskRepo.findById(taskId);
+		const taskParams: ITaskProperties = {
+			...params,
+			school: user.school,
+			creator: user,
+		};
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
+		if (!this.authorizationService.hasAllPermissions(user, [Permission.HOMEWORK_CREATE])) {
+			throw new UnauthorizedException();
+		}
 
-		const params = FileParamBuilder.build(task.school.id, task);
-		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
+		if (params.courseId) {
+			const course = await this.courseRepo.findById(params.courseId);
+			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+			taskParams.course = course;
+		}
 
-		await this.taskRepo.delete(task);
-		return true;
+		if (params.lessonId) {
+			const lesson = await this.lessonRepo.findById(params.lessonId);
+			if (!taskParams.course || lesson.course.id !== taskParams.course.id) {
+				throw new BadRequestException('Lesson does not belong to Course');
+			}
+			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+			taskParams.lesson = lesson;
+		}
+
+		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
+
+		const task = new Task(taskParams);
+
+		await this.taskRepo.save(task);
+
+		const status = task.createTeacherStatusForUser(user);
+		const taskWithStatusVo = new TaskWithStatusVo(task, status);
+
+		return taskWithStatusVo;
 	}
 
 	async find(userId: EntityId, taskId: EntityId) {
-		this.checkIndividualTaskEnabled();
+		this.checkNewTaskEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
@@ -244,35 +275,8 @@ export class TaskUC {
 		return result;
 	}
 
-	async create(userId: EntityId, courseId: EntityId): Promise<TaskWithStatusVo> {
-		this.checkIndividualTaskEnabled();
-
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const course = await this.courseRepo.findById(courseId);
-
-		this.authorizationService.checkPermission(
-			user,
-			course,
-			PermissionContextBuilder.write([Permission.HOMEWORK_CREATE])
-		);
-
-		const task = new Task({
-			name: 'Draft', // TODO
-			school: user.school,
-			creator: user,
-			course,
-		});
-
-		await this.taskRepo.save(task);
-
-		const status = task.createTeacherStatusForUser(user);
-		const taskWithStatusVo = new TaskWithStatusVo(task, status);
-
-		return taskWithStatusVo;
-	}
-
 	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
-		this.checkIndividualTaskEnabled();
+		this.checkNewTaskEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
@@ -286,6 +290,24 @@ export class TaskUC {
 				task[key] = value;
 			}
 		}
+
+		if (params.courseId) {
+			const course = await this.courseRepo.findById(params.courseId);
+			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+			task.course = course;
+		}
+
+		if (params.lessonId) {
+			const lesson = await this.lessonRepo.findById(params.lessonId);
+			if (!task.course || lesson.course.id !== task.course.id) {
+				throw new BadRequestException('Lesson does not belong to Course');
+			}
+			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+			task.lesson = lesson;
+		}
+
+		this.taskDateValidation(params.availableDate, params.dueDate);
+
 		await this.taskRepo.save(task);
 
 		const status = task.createTeacherStatusForUser(user);
@@ -294,7 +316,26 @@ export class TaskUC {
 		return taskWithStatusVo;
 	}
 
-	private checkIndividualTaskEnabled() {
+	async delete(userId: EntityId, taskId: EntityId) {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
+
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
+
+		const params = FileParamBuilder.build(task.school.id, task);
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
+
+		await this.taskRepo.delete(task);
+		return true;
+	}
+
+	private taskDateValidation(availableDate?: Date, dueDate?: Date) {
+		if (availableDate && dueDate && !(availableDate < dueDate)) {
+			throw new ValidationError('availableDate must be before dueDate');
+		}
+	}
+
+	private checkNewTaskEnabled() {
 		const enabled = Configuration.get('FEATURE_NEW_TASK_ENABLED') as boolean;
 		if (!enabled) {
 			throw new InternalServerErrorException('Feature not enabled');

@@ -1,13 +1,13 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import bcrypt from 'bcryptjs';
 import { EntityNotFoundError } from '@shared/common';
-import { Account, EntityId, Role, School, User, RoleName, Permission } from '@shared/domain';
-import { AccountRepo } from '@shared/repo';
+import { Account, EntityId, Permission, Role, RoleName, School, User } from '@shared/domain';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { AccountDto } from '@src/modules/account/services/dto';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
+import { AccountDto } from '@src/modules/account/services/dto';
+import bcrypt from 'bcryptjs';
+import { AccountRepo } from '../repo/account.repo';
 import { AccountService } from './account.service';
 
 describe('AccountService', () => {
@@ -114,7 +114,7 @@ describe('AccountService', () => {
 	});
 
 	beforeEach(() => {
-		jest.useFakeTimers('modern');
+		jest.useFakeTimers();
 		jest.setSystemTime(new Date(2020, 1, 1));
 
 		mockSchool = schoolFactory.buildWithId();

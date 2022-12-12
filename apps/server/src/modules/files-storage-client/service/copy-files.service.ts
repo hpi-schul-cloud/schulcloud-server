@@ -1,71 +1,65 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IComponentProperties, Lesson, Task } from '@shared/domain';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum, EntityId } from '@shared/domain';
 import { CopyFileDto } from '../dto';
 import { EntityWithEmbeddedFiles } from '../interfaces';
-import { FileParamBuilder } from '../mapper';
-import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
+import { FileParamBuilder, CopyFilesOfParentParamBuilder } from '../mapper';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
+
+// TODO  missing FileCopyParams  ...passing user instead of userId
+
+export type FileUrlReplacement = {
+	regex: RegExp;
+	replacement: string;
+};
 
 @Injectable()
 export class CopyFilesService {
-	constructor(private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService) {}
+	constructor(
+		private readonly copyHelperService: CopyHelperService,
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
+	) {}
 
-	async copyFilesOfEntity(
-		originalEntity: EntityWithEmbeddedFiles,
-		copyEntity: EntityWithEmbeddedFiles,
+	async copyFilesOfEntity<T extends EntityWithEmbeddedFiles>(
+		originalEntity: T,
+		copyEntity: T,
 		userId: EntityId
-	): Promise<{ entity: EntityWithEmbeddedFiles; response: CopyFileDto[] }> {
+	): Promise<{
+		fileUrlReplacements: FileUrlReplacement[];
+		fileCopyStatus: CopyStatus;
+	}> {
 		const source = FileParamBuilder.build(originalEntity.getSchoolId(), originalEntity);
 		const target = FileParamBuilder.build(copyEntity.getSchoolId(), copyEntity);
-
 		const copyFilesOfParentParams = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
-		const response = await this.filesStorageClientAdapterService.copyFilesOfParent(copyFilesOfParentParams);
+		const fileDtos = await this.filesStorageClientAdapterService.copyFilesOfParent(copyFilesOfParentParams);
+		const fileUrlReplacements = this.createFileUrlReplacements(fileDtos);
+		const fileCopyStatus = this.deriveCopyStatus(fileDtos);
 
-		const entity = this.replaceUrlsOfEntity(response, copyEntity);
-
-		return { entity, response };
+		return { fileUrlReplacements, fileCopyStatus };
 	}
 
-	private replaceUrlsOfEntity(responses: CopyFileDto[], entity: EntityWithEmbeddedFiles): EntityWithEmbeddedFiles {
-		if (responses.length === 0) {
-			return entity;
-		}
-
-		responses.forEach((response) => {
-			if (entity instanceof Lesson) {
-				entity = this.replaceUrlsInLessons(entity, response);
-			} else if (entity instanceof Task) {
-				entity = this.replaceUrlsInTask(entity, response);
-			}
+	private createFileUrlReplacements(fileDtos: CopyFileDto[]): FileUrlReplacement[] {
+		return fileDtos.map((fileDto) => {
+			const { sourceId, id, name } = fileDto;
+			return {
+				regex: new RegExp(`${sourceId}.+?"`, 'g'),
+				replacement: `${id ?? 'fileCouldNotBeCopied'}/${name}"`,
+			};
 		});
-
-		return entity;
 	}
 
-	private replaceUrlsInLessons(lesson: Lesson, response: CopyFileDto): Lesson {
-		lesson.contents = lesson.contents.map((item: IComponentProperties) => {
-			if (item.component === 'text' && item.content && 'text' in item.content && item.content.text) {
-				const text = this.replaceUrl(item.content.text, response);
-				const itemWithUpdatedText = { ...item, content: { ...item.content, text } };
-				return itemWithUpdatedText;
-			}
+	private deriveCopyStatus(fileDtos: CopyFileDto[]): CopyStatus {
+		const fileStatuses: CopyStatus[] = fileDtos.map(({ sourceId, id, name }) => ({
+			type: CopyElementType.FILE,
+			status: id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
+			title: name ?? `(old fileid: ${sourceId})`,
+		}));
 
-			return item;
-		});
-
-		return lesson;
-	}
-
-	private replaceUrlsInTask(task: Task, response: CopyFileDto): Task {
-		task.description = this.replaceUrl(task.description, response);
-
-		return task;
-	}
-
-	private replaceUrl(text: string, response: CopyFileDto) {
-		const regex = new RegExp(`${response.sourceId}.+?"`, 'g');
-		const newUrl = `${response.id}/${response.name}"`;
-		return text.replace(regex, newUrl);
+		const fileGroupStatus = {
+			type: CopyElementType.FILE_GROUP,
+			status: this.copyHelperService.deriveStatusFromElements(fileStatuses),
+			elements: fileStatuses,
+		};
+		return fileGroupStatus;
 	}
 }

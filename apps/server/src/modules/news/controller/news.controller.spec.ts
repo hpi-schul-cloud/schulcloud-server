@@ -4,10 +4,15 @@ import { NewsUc } from '../uc';
 import { NewsController } from './news.controller';
 
 describe('NewsController', () => {
+	let module: TestingModule;
 	let controller: NewsController;
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	afterAll(async () => {
+		await module.close();
+	});
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			controllers: [NewsController],
 			providers: [
 				{

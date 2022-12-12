@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, CopyElementType, CopyStatusEnum, Permission } from '@shared/domain';
 import { boardFactory, courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
@@ -10,16 +10,14 @@ import { CourseCopyService } from '../service';
 import { CourseCopyUC } from './course-copy.uc';
 
 describe('course copy uc', () => {
+	let module: TestingModule;
 	let uc: CourseCopyUC;
 	let authorization: DeepMocked<AuthorizationService>;
 	let courseCopyService: DeepMocked<CourseCopyService>;
 
 	beforeAll(async () => {
 		await setupEntities();
-	});
-
-	beforeEach(async () => {
-		const module = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				CourseCopyUC,
 				{
@@ -36,6 +34,13 @@ describe('course copy uc', () => {
 		uc = module.get(CourseCopyUC);
 		authorization = module.get(AuthorizationService);
 		courseCopyService = module.get(CourseCopyService);
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	beforeEach(() => {
 		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 	});
 

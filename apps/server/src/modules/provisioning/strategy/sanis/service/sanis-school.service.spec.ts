@@ -1,14 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MikroORM } from '@mikro-orm/core';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
-import { SchoolUc } from '@src/modules/school/uc/school.uc';
+import { MikroORM } from '@mikro-orm/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Role, RoleName, School, System } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SchoolRepo } from '@shared/repo';
 import { roleFactory, schoolFactory, setupEntities, systemFactory } from '@shared/testing';
-import { SanisSchoolService } from '@src/modules/provisioning/strategy/sanis/service/sanis-school.service';
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
-import { UUID } from 'bson';
-import { Role, RoleName, School, System } from '@shared/domain';
+import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
+import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
 import {
 	SanisResponse,
 	SanisResponseName,
@@ -16,8 +14,10 @@ import {
 	SanisResponsePersonenkontext,
 	SanisRole,
 } from '@src/modules/provisioning/strategy/sanis/sanis.response';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
+import { SanisSchoolService } from '@src/modules/provisioning/strategy/sanis/service/sanis-school.service';
+import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
+import { SchoolUc } from '@src/modules/school/uc/school.uc';
+import { UUID } from 'bson';
 
 describe('SanisSchoolService', () => {
 	let module: TestingModule;
@@ -77,7 +77,7 @@ describe('SanisSchoolService', () => {
 			personenkontexte: [
 				new SanisResponsePersonenkontext({
 					id: new UUID(),
-					rolle: SanisRole.SYSA,
+					rolle: SanisRole.LEIT,
 					organisation: new SanisResponseOrganisation({
 						id: schoolUUID,
 						name: 'schoolName',
@@ -128,6 +128,7 @@ describe('SanisSchoolService', () => {
 
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 
 	describe('provisionSchool', () => {

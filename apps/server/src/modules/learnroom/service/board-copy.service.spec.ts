@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, CopyElementType, CopyHelperService, CopyStatusEnum, TaskCopyService } from '@shared/domain';
+import { Board, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@shared/domain';
+import { BoardRepo } from '@shared/repo';
 import {
 	boardFactory,
 	courseFactory,
@@ -12,8 +12,10 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { BoardCopyService } from './board-copy.service';
 import { LessonCopyService } from './lesson-copy.service';
+import { TaskCopyService } from './task-copy.service';
 
 describe('board copy service', () => {
 	let module: TestingModule;
@@ -21,18 +23,14 @@ describe('board copy service', () => {
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
-
-	let orm: MikroORM;
-
-	beforeAll(async () => {
-		orm = await setupEntities();
-	});
+	let boardRepo: DeepMocked<BoardRepo>;
 
 	afterAll(async () => {
-		await orm.close();
+		await module.close();
 	});
 
-	beforeEach(async () => {
+	beforeAll(async () => {
+		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				BoardCopyService,
@@ -48,6 +46,14 @@ describe('board copy service', () => {
 					provide: CopyHelperService,
 					useValue: createMock<CopyHelperService>(),
 				},
+				{
+					provide: BoardRepo,
+					useValue: createMock<BoardRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
@@ -55,6 +61,12 @@ describe('board copy service', () => {
 		taskCopyService = module.get(TaskCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
+		boardRepo = module.get(BoardRepo);
+		boardRepo.save = jest.fn();
+	});
+
+	beforeEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('copyBoard', () => {
@@ -114,7 +126,7 @@ describe('board copy service', () => {
 				const user = userFactory.build();
 				const taskCopy = taskFactory.build({ name: originalTask.name });
 
-				taskCopyService.copyTaskMetadata.mockReturnValue({
+				taskCopyService.copyTask.mockResolvedValue({
 					title: taskCopy.name,
 					type: CopyElementType.TASK,
 					status: CopyStatusEnum.SUCCESS,
@@ -128,7 +140,7 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user, originalTask } = setup();
 
 				await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				expect(taskCopyService.copyTaskMetadata).toHaveBeenCalledWith({ originalTask, destinationCourse, user });
+				expect(taskCopyService.copyTask).toHaveBeenCalledWith({ originalTask, destinationCourse, user });
 			});
 
 			it('should call copyHelperService', async () => {
@@ -159,21 +171,20 @@ describe('board copy service', () => {
 
 		describe('when board contains a lesson', () => {
 			const setup = () => {
-				const originalLesson = lessonFactory.build();
-				const lessonElement = lessonBoardElementFactory.build({ target: originalLesson });
-				const destinationCourse = courseFactory.build();
-				const originalBoard = boardFactory.build({ references: [lessonElement], course: destinationCourse });
-				const user = userFactory.build();
-				const lessonCopy = lessonFactory.build({ name: originalLesson.name });
+				const originalLesson = lessonFactory.buildWithId();
+				const lessonElement = lessonBoardElementFactory.buildWithId({ target: originalLesson });
+				const destinationCourse = courseFactory.buildWithId();
+				const originalBoard = boardFactory.buildWithId({ references: [lessonElement], course: destinationCourse });
+				const user = userFactory.buildWithId();
+				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
 
-				lessonCopyService.copyLesson.mockReturnValue(
-					Promise.resolve({
-						title: originalLesson.name,
-						type: CopyElementType.LESSON,
-						status: CopyStatusEnum.SUCCESS,
-						copyEntity: lessonCopy,
-					})
-				);
+				lessonCopyService.copyLesson.mockResolvedValue({
+					title: originalLesson.name,
+					type: CopyElementType.LESSON,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: lessonCopy,
+				});
+				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
 
 				return { destinationCourse, originalBoard, user, originalLesson };
 			};
@@ -185,21 +196,19 @@ describe('board copy service', () => {
 				expect(lessonCopyService.copyLesson).toHaveBeenCalledWith({ originalLesson, destinationCourse, user });
 			});
 
-			it('should add copy of lesson to board copy', async () => {
+			it('should add lessonCopy to board copy', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
-
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
 				const board = status.copyEntity as Board;
+
 				expect(board.getElements().length).toEqual(1);
 			});
 
-			it('should add status of copying lesson to board copy status', async () => {
-				const { destinationCourse, originalBoard, user, originalLesson } = setup();
-
+			it('should add status of lessonCopy to board copy status', async () => {
+				const { destinationCourse, originalBoard, user } = setup();
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const lessonStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LESSON && el.title === originalLesson.name
-				);
+				const lessonStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON);
+
 				expect(lessonStatus).toBeDefined();
 			});
 		});
@@ -226,7 +235,6 @@ describe('board copy service', () => {
 
 			it('should call deriveStatusFromElements', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
-
 				await copyService.copyBoard({ originalBoard, user, destinationCourse });
 
 				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
@@ -238,6 +246,40 @@ describe('board copy service', () => {
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
 
 				expect(status.status).toEqual(CopyStatusEnum.PARTIAL);
+			});
+		});
+
+		describe('when board contains corrupted references', () => {
+			const setup = () => {
+				const originalLesson = lessonFactory.buildWithId();
+				const lessonElement = lessonBoardElementFactory.buildWithId({ target: originalLesson });
+				const destinationCourse = courseFactory.buildWithId();
+				const originalBoard = boardFactory.buildWithId({ references: [lessonElement], course: destinationCourse });
+				const user = userFactory.buildWithId();
+				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
+
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				delete originalBoard.references[0].target;
+
+				lessonCopyService.copyLesson.mockResolvedValue({
+					title: originalLesson.name,
+					type: CopyElementType.LESSON,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: lessonCopy,
+				});
+				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
+
+				return { destinationCourse, originalBoard, user, originalLesson };
+			};
+
+			it('should skip boardelements that contain a corrupted reference', async () => {
+				const { destinationCourse, originalBoard, user } = setup();
+
+				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const board = status.copyEntity as Board;
+
+				expect(board.references).toHaveLength(0);
 			});
 		});
 	});

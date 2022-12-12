@@ -374,11 +374,6 @@
 				}
 			}
 		},
-		"FEATURE_RABBITMQ_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, adds support to send RabbitMQ messages"
-		},
 		"RABBITMQ_URI": {
 			"type": "string",
 			"format": "uri",
@@ -523,6 +518,11 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Login via Link generation (to the right form)."
+		},
+		"FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the oauth system (iserv to sanis) migration feature."
 		},
 		"SC_TITLE": {
 			"type": "string",
@@ -854,10 +854,11 @@
 			"description": "Log level for api.",
 			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
-		"NEST_AVAILABLE_LOG_LEVELS": {
+		"NEST_LOG_LEVEL": {
 			"type": "string",
-			"default": "error,http",
-			"description": "Nest Log level for api. Different log level can be activated separately by adding the value to the comma separated list. For example 'log,error,warn,debug,verbose,http' The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'."
+			"default": "notice",
+			"description": "Nest Log level for api. The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'.",
+			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
 		"SYSTEM_LOG_LEVEL": {
 			"type": "string",
@@ -1038,11 +1039,11 @@
 				}
 			}
 		},
-        "FEATURE_NEW_TASK_ENABLED": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enable the task assignment to individuals"
-        }
+		"FEATURE_NEW_TASK_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable the task assignment to individuals"
+		}
 	},
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",

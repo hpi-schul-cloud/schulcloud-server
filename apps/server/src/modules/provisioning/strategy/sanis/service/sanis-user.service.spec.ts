@@ -1,4 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { UnprocessableEntityException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Role, RoleName, School, System } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { RoleRepo } from '@shared/repo';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { roleFactory, schoolFactory, setupEntities, systemFactory } from '@shared/testing';
+import { AccountUc } from '@src/modules/account/uc/account.uc';
+import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
 import {
 	SanisResponse,
 	SanisResponseName,
@@ -6,19 +17,8 @@ import {
 	SanisResponsePersonenkontext,
 	SanisRole,
 } from '@src/modules/provisioning/strategy/sanis/sanis.response';
-import { UUID } from 'bson';
-import { UnprocessableEntityException } from '@nestjs/common';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Role, RoleName, School, System } from '@shared/domain';
-import { roleFactory, schoolFactory, setupEntities, systemFactory } from '@shared/testing';
-import { MikroORM } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { SanisUserService } from '@src/modules/provisioning/strategy/sanis/service/sanis-user.service';
-import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
-import { RoleRepo } from '@shared/repo';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { AccountUc } from '@src/modules/account/uc/account.uc';
+import { UUID } from 'bson';
 
 describe('SanisUserService', () => {
 	let module: TestingModule;
@@ -83,7 +83,7 @@ describe('SanisUserService', () => {
 			personenkontexte: [
 				new SanisResponsePersonenkontext({
 					id: new UUID(),
-					rolle: SanisRole.SYSA,
+					rolle: SanisRole.LEIT,
 					organisation: new SanisResponseOrganisation({
 						id: schoolUUID,
 						name: 'schoolName',
@@ -128,6 +128,7 @@ describe('SanisUserService', () => {
 
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 
 	describe('provisionUser', () => {

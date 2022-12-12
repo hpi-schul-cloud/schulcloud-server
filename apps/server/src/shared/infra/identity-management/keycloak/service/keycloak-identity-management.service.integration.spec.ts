@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
+import { Test, TestingModule } from '@nestjs/testing';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakSettings } from '../interface/keycloak-settings.interface';
+import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
 
 /**
  * This test does not run on CI!
@@ -15,6 +15,7 @@ import { KeycloakSettings } from '../interface/keycloak-settings.interface';
  *
  */
 xdescribe('KeycloakIdentityManagement', () => {
+	let module: TestingModule;
 	let idm: IdentityManagementService;
 
 	// This is the GIVEN data of the integration test.
@@ -29,7 +30,7 @@ xdescribe('KeycloakIdentityManagement', () => {
 	let account2Id: string | null;
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
 				{ provide: KeycloakAdminClient, useClass: KeycloakAdminClient },
@@ -72,6 +73,7 @@ xdescribe('KeycloakIdentityManagement', () => {
 		ret = await idm.deleteAccountById(account2Id!);
 		expect(ret).not.toBeNull();
 		expect(ret).toEqual(account2Id);
+		await module.close();
 	});
 
 	// This is a user journey for local testing only

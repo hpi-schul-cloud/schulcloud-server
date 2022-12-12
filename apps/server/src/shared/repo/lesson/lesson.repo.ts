@@ -9,9 +9,13 @@ export class LessonRepo extends BaseRepo<Lesson> {
 		return Lesson;
 	}
 
+	async createLesson(lesson: Lesson): Promise<void> {
+		return this.save(this.create(lesson));
+	}
+
 	async findById(id: EntityId): Promise<Lesson> {
 		const lesson = await super.findById(id);
-		await this._em.populate(lesson, ['course', 'tasks', 'materials', 'courseGroup']);
+		await this._em.populate(lesson, ['course', 'tasks', 'materials', 'courseGroup.course']);
 		return lesson;
 	}
 

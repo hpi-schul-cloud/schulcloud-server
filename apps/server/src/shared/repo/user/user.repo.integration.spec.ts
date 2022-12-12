@@ -26,6 +26,7 @@ describe('user repo', () => {
 	});
 
 	afterEach(async () => {
+		em.clear();
 		await cleanupCollections(em);
 	});
 
@@ -43,6 +44,8 @@ describe('user repo', () => {
 			const user = userFactory.build();
 
 			await em.persistAndFlush([user]);
+			em.clear();
+
 			const result = await repo.findById(user.id);
 			expect(Object.keys(result).sort()).toEqual(
 				[
@@ -50,13 +53,17 @@ describe('user repo', () => {
 					'updatedAt',
 					'roles',
 					'firstName',
+					'firstNameSearchValues',
 					'lastName',
+					'lastNameSearchValues',
 					'email',
+					'emailSearchValues',
 					'school',
 					'_id',
 					'ldapDn',
 					'externalId',
 					'forcePasswordChange',
+					'importHash',
 					'preferences',
 					'language',
 					'deletedAt',
@@ -69,8 +76,15 @@ describe('user repo', () => {
 			const userB = userFactory.build();
 
 			await em.persistAndFlush([userA, userB]);
+			em.clear();
+
 			const result = await repo.findById(userA.id);
-			expect(result).toEqual(userA);
+			expect(result).toMatchObject({
+				id: userA.id,
+				firstName: userA.firstName,
+				lastName: userA.lastName,
+				email: userA.email,
+			});
 		});
 
 		it('should throw an error if roles by id doesnt exist', async () => {
@@ -91,14 +105,13 @@ describe('user repo', () => {
 
 			const user = userFactory.build({ roles: roles1 });
 			await em.persistAndFlush([user]);
-
 			em.clear();
 
 			const result = await repo.findById(user.id, true);
 
-			expect(result.roles.getItems()).toEqual(roles1);
-			expect(result.roles[0].roles.getItems()).toEqual(roles2);
-			expect(result.roles[0].roles[0].roles.getItems()).toEqual(roles3);
+			expect(result.roles.toArray()).toEqual(user.roles.toArray());
+			expect(result.roles[0].roles.toArray()).toEqual(user.roles[0].roles.toArray());
+			expect(result.roles[0].roles[0].roles.toArray()).toEqual(user.roles[0].roles[0].roles.toArray());
 		});
 	});
 
@@ -115,6 +128,7 @@ describe('user repo', () => {
 			userA = userFactory.build({ school, externalId: '111' });
 			userB = userFactory.build({ externalId: '111' });
 			await em.persistAndFlush([userA, userB]);
+			em.clear();
 		});
 		it('should return right keys', async () => {
 			const result = await repo.findByExternalIdOrFail(userA.externalId as string, sys.id);
@@ -124,13 +138,17 @@ describe('user repo', () => {
 					'updatedAt',
 					'roles',
 					'firstName',
+					'firstNameSearchValues',
 					'lastName',
+					'lastNameSearchValues',
 					'email',
+					'emailSearchValues',
 					'school',
 					'_id',
 					'ldapDn',
 					'externalId',
 					'forcePasswordChange',
+					'importHash',
 					'preferences',
 					'language',
 					'deletedAt',
@@ -139,9 +157,13 @@ describe('user repo', () => {
 		});
 
 		it('should return user matched by id', async () => {
-			await em.persistAndFlush([userA, userB]);
 			const result = await repo.findByExternalIdOrFail(userA.externalId as string, sys.id);
-			expect(result).toEqual(userA);
+			expect(result).toMatchObject({
+				id: userA.id,
+				firstName: userA.firstName,
+				lastName: userA.lastName,
+				email: userA.email,
+			});
 		});
 
 		it('should throw an error if user by externalid doesnt exist', async () => {
@@ -156,13 +178,14 @@ describe('user repo', () => {
 			const school = schoolFactory.build();
 			const user = userFactory.build({ school });
 			await em.persistAndFlush([user, school]);
+			em.clear();
 			return { user, school };
 		};
 
 		it('should find users not referenced in importusers', async () => {
 			const { user } = await persistUserAndSchool();
 			const [result, count] = await repo.findWithoutImportUser(user.school);
-			expect(result).toContain(user);
+			expect(result.map((u) => u.id)).toContain(user.id);
 			expect(count).toEqual(1);
 		});
 
@@ -170,6 +193,7 @@ describe('user repo', () => {
 			const { user, school } = await persistUserAndSchool();
 			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
 			await em.persistAndFlush([user, importUser]);
+			em.clear();
 			const [result, count] = await repo.findWithoutImportUser(user.school);
 			expect(result).not.toContain(user);
 			expect(count).toEqual(0);
@@ -180,9 +204,10 @@ describe('user repo', () => {
 			const matchedUser = userFactory.build({ school });
 			const importUser = importUserFactory.matched(MatchCreator.AUTO, matchedUser).build({ school });
 			await em.persistAndFlush([matchedUser, importUser]);
+			em.clear();
 			const [result, count] = await repo.findWithoutImportUser(school);
-			expect(result).toContain(user);
-			expect(result).not.toContain(matchedUser);
+			expect(result.map((u) => u.id)).toContain(user.id);
+			expect(result.map((u) => u.id)).not.toContain(matchedUser);
 			expect(count).toEqual(1);
 		});
 
@@ -190,8 +215,9 @@ describe('user repo', () => {
 			const school = schoolFactory.build();
 			const user = userFactory.build({ school, deletedAt: new Date() });
 			await em.persistAndFlush([school, user]);
+			em.clear();
 			const [result, count] = await repo.findWithoutImportUser(school);
-			expect(result).not.toContain(user);
+			expect(result.map((u) => u.id)).not.toContain(user.id);
 			expect(count).toEqual(0);
 		});
 
@@ -200,35 +226,36 @@ describe('user repo', () => {
 			const user = userFactory.build({ firstName: 'Papa', lastName: 'Pane', school });
 			const otherUser = userFactory.build({ school });
 			await em.persistAndFlush([user, otherUser]);
+			em.clear();
 			// full first name
 			const [result1, count1] = await repo.findWithoutImportUser(school, { name: 'papa' });
-			expect(result1).toContain(user);
-			expect(result1).not.toContain(otherUser);
+			expect(result1.map((u) => u.id)).toContain(user.id);
+			expect(result1.map((u) => u.id)).not.toContain(otherUser.id);
 			expect(count1).toEqual(1);
 			// full last name
 			const [result2, count2] = await repo.findWithoutImportUser(school, { name: 'pane' });
-			expect(result2).toContain(user);
-			expect(result2).not.toContain(otherUser);
+			expect(result2.map((u) => u.id)).toContain(user.id);
+			expect(result2.map((u) => u.id)).not.toContain(otherUser.id);
 			expect(count2).toEqual(1);
 			// partial first and last name
 			const [result3, count3] = await repo.findWithoutImportUser(school, { name: 'pa' });
-			expect(result3).toContain(user);
-			expect(result3).not.toContain(otherUser);
+			expect(result3.map((u) => u.id)).toContain(user.id);
+			expect(result3.map((u) => u.id)).not.toContain(otherUser.id);
 			expect(count3).toEqual(1);
 			// partial first name
 			const [result4, count4] = await repo.findWithoutImportUser(school, { name: 'pap' });
-			expect(result4).toContain(user);
-			expect(result4).not.toContain(otherUser);
+			expect(result4.map((u) => u.id)).toContain(user.id);
+			expect(result4.map((u) => u.id)).not.toContain(otherUser.id);
 			expect(count4).toEqual(1);
 			// partial last name
 			const [result5, count5] = await repo.findWithoutImportUser(school, { name: 'ane' });
-			expect(result5).toContain(user);
-			expect(result5).not.toContain(otherUser);
+			expect(result5.map((u) => u.id)).toContain(user.id);
+			expect(result5.map((u) => u.id)).not.toContain(otherUser.id);
 			expect(count5).toEqual(1);
 			// no match
 			const [result6, count6] = await repo.findWithoutImportUser(school, { name: 'Fox' });
-			expect(result6).not.toContain(user);
-			expect(result6).not.toContain(otherUser);
+			expect(result6.map((u) => u.id)).not.toContain(user);
+			expect(result6.map((u) => u.id)).not.toContain(otherUser);
 			expect(count6).toEqual(0);
 		});
 
@@ -237,33 +264,34 @@ describe('user repo', () => {
 			const user = userFactory.build({ school, firstName: 'Anna', lastName: 'Schmidt' });
 			const otherUser = userFactory.build({ school, firstName: 'Peter', lastName: 'Ball' });
 			await em.persistAndFlush([user, otherUser]);
+			em.clear();
 			const [result, count] = await repo.findWithoutImportUser(school, undefined, {
 				order: { firstName: SortOrder.desc },
 			});
 			expect(count).toEqual(2);
-			expect(result.indexOf(user)).toEqual(1);
-			expect(result.indexOf(otherUser)).toEqual(0);
+			expect(result.map((u) => u.id).indexOf(user.id)).toEqual(1);
+			expect(result.map((u) => u.id).indexOf(otherUser.id)).toEqual(0);
 
 			const [result2, count2] = await repo.findWithoutImportUser(school, undefined, {
 				order: { firstName: SortOrder.asc },
 			});
 			expect(count2).toEqual(2);
-			expect(result2.indexOf(user)).toEqual(0);
-			expect(result2.indexOf(otherUser)).toEqual(1);
+			expect(result2.map((u) => u.id).indexOf(user.id)).toEqual(0);
+			expect(result2.map((u) => u.id).indexOf(otherUser.id)).toEqual(1);
 
 			const [result3, count3] = await repo.findWithoutImportUser(school, undefined, {
 				order: { lastName: SortOrder.desc },
 			});
 			expect(count3).toEqual(2);
-			expect(result3.indexOf(user)).toEqual(0);
-			expect(result3.indexOf(otherUser)).toEqual(1);
+			expect(result3.map((u) => u.id).indexOf(user.id)).toEqual(0);
+			expect(result3.map((u) => u.id).indexOf(otherUser.id)).toEqual(1);
 
 			const [result4, count4] = await repo.findWithoutImportUser(school, undefined, {
 				order: { lastName: SortOrder.asc },
 			});
 			expect(count4).toEqual(2);
-			expect(result4.indexOf(user)).toEqual(1);
-			expect(result4.indexOf(otherUser)).toEqual(0);
+			expect(result4.map((u) => u.id).indexOf(user.id)).toEqual(1);
+			expect(result4.map((u) => u.id).indexOf(otherUser.id)).toEqual(0);
 		});
 
 		it('should skip returned two users by one', async () => {
@@ -271,9 +299,10 @@ describe('user repo', () => {
 			const user = userFactory.build({ school });
 			const otherUser = userFactory.build({ school });
 			await em.persistAndFlush([user, otherUser]);
+			em.clear();
 			const [result, count] = await repo.findWithoutImportUser(school, undefined, { pagination: { skip: 1 } });
-			expect(result).not.toContain(user);
-			expect(result).toContain(otherUser);
+			expect(result.map((u) => u.id)).not.toContain(user.id);
+			expect(result.map((u) => u.id)).toContain(otherUser.id);
 			expect(result.length).toEqual(1);
 			expect(count).toEqual(2);
 		});
@@ -283,9 +312,10 @@ describe('user repo', () => {
 			const user = userFactory.build({ school });
 			const otherUser = userFactory.build({ school });
 			await em.persistAndFlush([user, otherUser]);
+			em.clear();
 			const [result, count] = await repo.findWithoutImportUser(school, undefined, { pagination: { limit: 1 } });
-			expect(result).toContain(user);
-			expect(result).not.toContain(otherUser);
+			expect(result.map((u) => u.id)).toContain(user.id);
+			expect(result.map((u) => u.id)).not.toContain(otherUser.id);
 			expect(result.length).toEqual(1);
 			expect(count).toEqual(2);
 		});

@@ -97,7 +97,7 @@ describe('SanisStrategy', () => {
 			personenkontexte: [
 				new SanisResponsePersonenkontext({
 					id: new UUID(),
-					rolle: SanisRole.SYSA,
+					rolle: SanisRole.LEIT,
 					organisation: new SanisResponseOrganisation({
 						id: schoolUUID,
 						name: 'schoolName',

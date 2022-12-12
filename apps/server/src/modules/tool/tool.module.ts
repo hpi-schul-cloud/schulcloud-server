@@ -1,16 +1,30 @@
 import { Module } from '@nestjs/common';
-import { LtiToolRepo, PseudonymsRepo } from '@shared/repo';
-import { Lti11ResponseMapper } from '@src/modules/tool/mapper/lti11-response.mapper';
+import { PseudonymsRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { LtiToolService } from '@src/modules/tool/service/lti-tool.service';
-import { SchoolModule } from '@src/modules/school';
-import { Lti11Uc } from './uc/lti11.uc';
-import { LtiRoleMapper } from './mapper/lti-role.mapper';
+import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
+import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
+import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
+import { EncryptionModule } from '@shared/infra/encryption';
+import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-tool-sorting.mapper';
 import { Lti11Service } from './service/lti11.service';
-import { UserModule } from '../user';
+import { ExternalToolService } from './service/external-tool.service';
+import { ExternalToolServiceMapper } from './service/mapper';
 
 @Module({
-	imports: [UserModule, LoggerModule, SchoolModule],
-	providers: [Lti11Service, Lti11Uc, LtiRoleMapper, Lti11ResponseMapper, LtiToolRepo, PseudonymsRepo, LtiToolService],
+	imports: [LoggerModule, OauthProviderServiceModule, EncryptionModule],
+	providers: [
+		Lti11Service,
+		ExternalToolService,
+		ExternalToolServiceMapper,
+		PseudonymsRepo,
+		ExternalToolRepo,
+		ExternalToolRepoMapper,
+		ExternalToolSortingMapper,
+		SchoolExternalToolRepo,
+		CourseExternalToolRepo,
+	],
+	exports: [Lti11Service, ExternalToolService],
 })
 export class ToolModule {}
