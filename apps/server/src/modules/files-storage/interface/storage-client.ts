@@ -16,7 +16,7 @@ export interface ICopyFiles {
 export interface IStorageClient {
 	create(path: string, file: FileDto): unknown;
 
-	get(path: string): unknown;
+	get(path: string, bytesRange?: string): unknown;
 
 	delete(paths: string[]): unknown;
 
