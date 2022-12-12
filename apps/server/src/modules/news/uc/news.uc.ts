@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+	Counted,
 	EntityId,
 	ICreateNews,
 	IFindOptions,
@@ -7,13 +8,13 @@ import {
 	IUpdateNews,
 	News,
 	NewsTargetModel,
-	SortOrder,
-	Counted,
 	Permission,
+	SortOrder,
 } from '@shared/domain';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
+import { CrudOperation, NewsCrudOperationLoggable } from '../loggables/news-crud-operation.loggable';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
 
@@ -35,8 +36,6 @@ export class NewsUc {
 	 * @returns
 	 */
 	async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
-		this.logger.log(`create news as user ${userId}`);
-
 		const { targetModel, targetId } = params.target;
 		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, [Permission.NEWS_CREATE]);
 
@@ -52,7 +51,7 @@ export class NewsUc {
 		});
 		await this.newsRepo.save(news);
 
-		this.logger.log(`news ${news.id} created by user ${userId}`);
+		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.CREATE, news, userId));
 
 		return news;
 	}
@@ -65,8 +64,6 @@ export class NewsUc {
 	 * @returns
 	 */
 	async findAllForUser(userId: EntityId, scope?: INewsScope, options?: IFindOptions<News>): Promise<Counted<News[]>> {
-		this.logger.log(`start find all news for user ${userId}`);
-
 		const unpublished = !!scope?.unpublished; // default is only published news
 		const permissions: [NewsPermission] = NewsUc.getRequiredPermissions(unpublished);
 
@@ -84,8 +81,6 @@ export class NewsUc {
 			})
 		);
 
-		this.logger.log(`return ${newsList.length} news for user ${userId}`);
-
 		return [newsList, newsCount];
 	}
 
@@ -96,8 +91,6 @@ export class NewsUc {
 	 * @returns
 	 */
 	async findOneByIdForUser(id: EntityId, userId: EntityId): Promise<News> {
-		this.logger.log(`start find one news ${id}`);
-
 		const news = await this.newsRepo.findOneById(id);
 		const isPublished = news.displayAt > new Date();
 		const requiredPermissions = NewsUc.getRequiredPermissions(isPublished);
@@ -120,8 +113,6 @@ export class NewsUc {
 	 * @returns
 	 */
 	async update(id: EntityId, userId: EntityId, params: IUpdateNews): Promise<News> {
-		this.logger.log(`start update news ${id}`);
-
 		const news = await this.newsRepo.findOneById(id);
 		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, [
 			Permission.NEWS_EDIT,
@@ -136,6 +127,8 @@ export class NewsUc {
 
 		await this.newsRepo.save(news);
 
+		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.UPDATE, news, userId));
+
 		return news;
 	}
 
@@ -146,10 +139,10 @@ export class NewsUc {
 	 * @returns
 	 */
 	async delete(id: EntityId, userId: EntityId): Promise<EntityId> {
-		this.logger.log(`start remove news ${id}`);
-
 		const news = await this.newsRepo.findOneById(id);
 		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
+
+		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.DELETE, news, userId));
 
 		await this.newsRepo.delete(news);
 

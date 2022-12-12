@@ -1,4 +1,5 @@
-import { News, ICreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain';
+import { ICreateNews, INewsScope, IUpdateNews, News, NewsTargetModel } from '@shared/domain';
+import { LogMessageData } from '@src/core/logger/interfaces/loggable';
 import { CreateNewsParams, FilterNewsParams, NewsResponse, UpdateNewsParams } from '../controller/dto';
 import { SchoolInfoMapper } from './school-info.mapper';
 import { TargetInfoMapper } from './target-info.mapper';
@@ -68,5 +69,15 @@ export class NewsMapper {
 			displayAt: params.displayAt,
 		};
 		return dto;
+	}
+
+	static MapToLogMessageData(news: News): LogMessageData {
+		const data = {
+			entityType: 'News',
+			id: news.id,
+			targetModel: news.targetModel,
+			targetId: news.target.id,
+		};
+		return data;
 	}
 }

@@ -3,6 +3,11 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
 import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { AggregationEmptyLoggable } from '../loggables/aggregation-empty.loggable';
+import { AggregationStartLoggable } from '../loggables/aggregation-start.loggable';
+import { FileSyncFailLoggable } from '../loggables/filesync-fail.loggable';
+import { FileSyncStartLoggable } from '../loggables/filesync-start.loggable';
+import { FileSyncSuccessLoggable } from '../loggables/filesync-success.loggable';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
 import { FileSyncOptions, SyncContext, SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
@@ -27,7 +32,7 @@ export class SyncFilesUc {
 		const options = new FileSyncOptions(aggregationSize, numParallelPromises);
 
 		do {
-			this.logStartingAggregation(aggregationsCounter, options);
+			this.logger.log(new AggregationStartLoggable(aggregationsCounter, options));
 			const context = { fileCounter: aggregationsCounter * Number(aggregationSize) };
 			// eslint-disable-next-line no-await-in-loop
 			const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findFilesToSync(parentType, options.aggregationSize);
@@ -46,7 +51,7 @@ export class SyncFilesUc {
 			const promises = initilizedArray.map(() => this.syncBatch(itemsToSync, context));
 			await Promise.all(promises);
 		} else {
-			this.logItemNotFound();
+			this.logger.log(new AggregationEmptyLoggable());
 		}
 
 		return numFound;
@@ -67,47 +72,20 @@ export class SyncFilesUc {
 		try {
 			context.fileCounter += 1;
 			const currentCount = context.fileCounter;
-			this.logStartSyncing(item, currentCount);
+			this.logger.log(new FileSyncStartLoggable(item, currentCount));
 
 			await this.metadataService.prepareMetaData(item);
 			await this.storageService.syncS3File(item);
 			await this.metadataService.persistMetaData(item);
 
-			this.logSuccessfullySynced(item, currentCount);
+			this.logger.log(new FileSyncSuccessLoggable(item, currentCount));
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
 
-			this.logError(item, stack);
+			this.logger.warn(new FileSyncFailLoggable(item, stack));
+
 			await this.metadataService.persistError(item.source.id, stack);
 		}
-	}
-
-	private logStartingAggregation(aggregationsCounter: number, options: FileSyncOptions) {
-		this.logger.log(
-			`Starting file sync: aggregation #${aggregationsCounter + 1} with aggregationSize = ${
-				options.aggregationSize
-			} and numParallelPromises = ${options.numParallelPromises}`
-		);
-	}
-
-	private logStartSyncing(item: SyncFileItem, currentCount: number): void {
-		const fileInfo = `source file with id = ${item.source.id}, size = ${item.source.size}`;
-		this.logger.log(`#${currentCount} Start syncing ${fileInfo}`);
-	}
-
-	private logSuccessfullySynced(item: SyncFileItem, currentCount: number): void {
-		const fileInfo = `source file id = ${item.source.id}, target file with id = ${item.target?.id || 'undefined'}`;
-		const operation = item.created ? 'created' : 'updated';
-		this.logger.log(`#${currentCount} Successfully synced ${fileInfo} (${operation})`);
-	}
-
-	private logError(item: SyncFileItem, stack: string) {
-		this.logger.error(`Error syncing source file with id = ${item.source.id}, parentId = ${item.parentId}`);
-		this.logger.error(stack);
-	}
-
-	private logItemNotFound() {
-		this.logger.log('Not items found. Nothing to do.');
 	}
 }
