@@ -28,7 +28,6 @@ import {
 	ToolIdParams,
 } from './dto';
 import { CreateExternalTool, UpdateExternalTool } from '../uc/dto';
-import { ExternalToolUpdateParams } from './dto/request/external-tool-update.params';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
