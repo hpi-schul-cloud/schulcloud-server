@@ -31,7 +31,7 @@ export class SubmissionUc {
 			PermissionContextBuilder.write([Permission.SUBMISSIONS_EDIT])
 		);
 
-		await this.submissionService.deleteSubmission(submission);
+		await this.submissionService.delete(submission);
 
 		return true;
 	}

@@ -20,7 +20,7 @@ export class SubmissionService {
 		return submissions;
 	}
 
-	async deleteSubmission(submission: Submission): Promise<void> {
+	async delete(submission: Submission): Promise<void> {
 		const params = FileParamBuilder.build(submission.school.id, submission);
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
 
