@@ -1,7 +1,5 @@
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { Role, School, User } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolDto } from '../../school/uc/dto/school.dto';
 
 export class UserMapper {
 	static mapFromEntityToDto(entity: User): UserDto {

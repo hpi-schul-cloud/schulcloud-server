@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { BaseRepo } from '@shared/repo/base.repo';
-import { ISchoolProperties, Role, School, System } from '@shared/domain';
-import { EntityName, Reference } from '@mikro-orm/core';
+import { ISchoolProperties, School } from '@shared/domain';
+import { EntityName } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { BaseDORepo, EntityProperties } from '../base.do.repo';
 import { SchoolDO } from '../../domain/domainobject/school.do';
+import { SchoolMapper } from '../../../modules/school/mapper/school.mapper';
+import { Logger } from '../../../core/logger';
 
 @Injectable()
 export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> {
+	constructor(protected readonly _em: EntityManager, protected readonly logger: Logger) {
+		super(_em, logger);
+	}
+
 	get entityName(): EntityName<School> {
 		return School;
 	}
@@ -30,32 +36,10 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 	}
 
 	protected mapDOToEntityProperties(entityDO: SchoolDO): EntityProperties<ISchoolProperties> {
-		return {
-			externalId: entityDO.externalId,
-			features: entityDO.features,
-			inMaintenanceSince: entityDO.inMaintenanceSince,
-			inUserMigration: entityDO.inUserMigration,
-			name: entityDO.name,
-			oauthMigrationMandatory: entityDO.oauthMigrationMandatory,
-			oauthMigrationPossible: entityDO.oauthMigrationPossible,
-			officialSchoolNumber: entityDO.officialSchoolNumber,
-			schoolYear: entityDO.schoolYear,
-			systems: entityDO.systems ? entityDO.systems.map((systemId) => Reference.createFromPK(System, systemId)) : [],
-		};
+		return SchoolMapper.mapDOToEntityProperties(entityDO);
 	}
 
 	protected mapEntityToDO(entity: School): SchoolDO {
-		return new SchoolDO({
-			externalId: entity.externalId,
-			features: entity.features,
-			inMaintenanceSince: entity.inMaintenanceSince,
-			inUserMigration: entity.inUserMigration,
-			name: entity.name,
-			oauthMigrationMandatory: entity.oauthMigrationMandatory,
-			oauthMigrationPossible: entity.oauthMigrationPossible,
-			officialSchoolNumber: entity.officialSchoolNumber,
-			schoolYear: entity.schoolYear,
-			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: System) => system.id) : [],
-		});
+		return SchoolMapper.mapEntityToDO(entity);
 	}
 }
