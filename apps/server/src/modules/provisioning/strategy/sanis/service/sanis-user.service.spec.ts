@@ -82,10 +82,10 @@ describe('SanisUserService', () => {
 			},
 			personenkontexte: [
 				new SanisResponsePersonenkontext({
-					ktid: new UUID(),
+					id: new UUID(),
 					rolle: SanisRole.LEIT,
 					organisation: new SanisResponseOrganisation({
-						orgid: schoolUUID,
+						id: schoolUUID,
 						name: 'schoolName',
 						typ: 'SCHULE',
 					}),
