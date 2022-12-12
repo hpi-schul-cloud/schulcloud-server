@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { IUserConfig } from '@src/modules/user/interfaces';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 @Injectable()
 export class UserService {
@@ -74,7 +75,7 @@ export class UserService {
 
 	async createOrUpdate(user: UserDto): Promise<void> {
 		const userRoles: Role[] = await this.roleRepo.findByIds(user.roleIds);
-		const school: School = await this.schoolRepo.findById(user.schoolId);
+		const school: SchoolDO = await this.schoolRepo.findById(user.schoolId);
 
 		let saveEntity: User;
 		if (user.id) {

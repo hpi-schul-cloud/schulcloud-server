@@ -1,5 +1,6 @@
 import { BaseDO } from './base.do';
-import { SchoolFeatures, SchoolYear, System } from '../entity';
+import { SchoolFeatures } from '../entity/school.entity';
+import { SchoolYear } from '../entity/schoolyear.entity';
 
 export class SchoolDO extends BaseDO {
 	externalId?: string;

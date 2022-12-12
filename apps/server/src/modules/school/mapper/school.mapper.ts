@@ -1,10 +1,11 @@
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { EntityId, School, System } from '@shared/domain';
 import { IdentifiedReference, Reference } from '@mikro-orm/core';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 export class SchoolMapper {
-	static mapToEntity(schoolDto: SchoolDto): School {
-		const school = new School({
+	static mapToDO(schoolDto: SchoolDto): SchoolDO {
+		const school = new SchoolDO({
 			name: schoolDto.name,
 			externalId: schoolDto.externalId,
 		});
@@ -13,12 +14,13 @@ export class SchoolMapper {
 			school.id = schoolDto.id;
 		}
 
-		const refs: IdentifiedReference<System, EntityId>[] = schoolDto.systemIds.map(
+		/* const refs: IdentifiedReference<System, EntityId>[] = schoolDto.systemIds.map(
 			(systemId: EntityId): IdentifiedReference<System, EntityId> => {
 				return Reference.createFromPK(System, systemId);
 			}
 		);
-		school.systems.add(...refs);
+		school.systems.add(...refs); */
+		school.systems = schoolDto.systemIds;
 
 		return school;
 	}
@@ -27,21 +29,17 @@ export class SchoolMapper {
 		target.name = source.name;
 		target.externalId = source.externalId;
 		target.systems = source.systems;
-		if (source.oauthMigrationPossible) {
-			target.oauthMigrationPossible = source.oauthMigrationPossible;
-		}
-		if (source.oauthMigrationMandatory) {
-			target.oauthMigrationMandatory = source.oauthMigrationMandatory;
-		}
+
 		return target;
 	}
 
-	static mapToDto(entity: School) {
+	static mapToDto(entity: SchoolDO) {
 		return new SchoolDto({
 			name: entity.name,
 			id: entity.id,
 			externalId: entity.externalId,
-			systemIds: entity.systems.getItems().map((system: System): EntityId => system.id),
+			// systemIds: entity.systems.getItems().map((system: System): EntityId => system.id),
+			systemIds: entity.systems as string[],
 		});
 	}
 }

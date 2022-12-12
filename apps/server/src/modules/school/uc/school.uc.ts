@@ -10,18 +10,6 @@ import { MigrationResponse } from '../controller/dto';
 export class SchoolUc {
 	constructor(readonly schoolService: SchoolService) {}
 
-	async saveProvisioningSchoolOutputDto(schoolDto: ProvisioningSchoolOutputDto): Promise<SchoolDto> {
-		return this.createOrUpdate(SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDto(schoolDto));
-	}
-
-	async createOrUpdate(schoolDto: SchoolDto): Promise<SchoolDto> {
-		return this.schoolService.createOrUpdateSchool(schoolDto);
-	}
-
-	async hasFeature(schoolId: EntityId, feature: SchoolFeatures): Promise<boolean> {
-		return this.schoolService.hasFeature(schoolId, feature);
-	}
-
 	async setMigration(
 		schoolId: EntityId,
 		oauthMigrationPossible: boolean,

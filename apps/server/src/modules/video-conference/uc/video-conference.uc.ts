@@ -22,7 +22,7 @@ import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
-import { SchoolUc } from '@src/modules/school/uc/school.uc';
+import { SchoolService } from '@src/modules/school/service/school.service';
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
 import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
 import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
@@ -76,7 +76,7 @@ export class VideoConferenceUc {
 		private readonly courseRepo: CourseRepo,
 		private readonly userRepo: UserRepo,
 		private readonly calendarService: CalendarService,
-		private readonly schoolUc: SchoolUc
+		private readonly schoolService: SchoolService
 	) {
 		this.hostURL = Configuration.get('HOST') as string;
 	}
@@ -439,7 +439,7 @@ export class VideoConferenceUc {
 			);
 		}
 		// throw, if the current users school does not have the feature enabled
-		const schoolFeatureEnabled = await this.schoolUc.hasFeature(schoolId, SchoolFeatures.VIDEOCONFERENCE);
+		const schoolFeatureEnabled = await this.schoolService.hasFeature(schoolId, SchoolFeatures.VIDEOCONFERENCE);
 		if (!schoolFeatureEnabled) {
 			throw new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED, 'school feature VIDEOCONFERENCE is disabled');
 		}
