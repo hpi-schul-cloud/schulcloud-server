@@ -1,16 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CardElement } from '@shared/domain/entity/cardElement.entity';
 import { TaskResponse } from '@src/modules/task/controller/dto';
-import { CardElementResponse } from '@src/modules/task-card/controller/dto/card-element.response';
+import { CardElementResponse } from './card-element.response';
 
 export class TaskCardResponse {
 	constructor({ id, draggable, cardElements, task }: TaskCardResponse) {
 		this.id = id;
 		this.draggable = draggable;
 		this.cardElements = cardElements;
-		//this.description = description;
-		//this.title = title;
-
 		this.task = task;
 	}
 
