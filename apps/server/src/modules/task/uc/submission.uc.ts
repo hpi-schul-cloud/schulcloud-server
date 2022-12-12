@@ -19,6 +19,23 @@ export class SubmissionUc {
 		return permittedSubmissions;
 	}
 
+	async delete(userId: EntityId, submissionId: EntityId) {
+		const [user, submission] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.submissionService.findById(submissionId),
+		]);
+
+		this.authorizationService.checkPermission(
+			user,
+			submission,
+			PermissionContextBuilder.write([Permission.SUBMISSIONS_EDIT])
+		);
+
+		await this.submissionService.deleteSubmission(submission);
+
+		return true;
+	}
+
 	private filterSubmissionsByPermission(submissions: Submission[], user: User): Submission[] {
 		const permissionContext = PermissionContextBuilder.read([Permission.SUBMISSIONS_VIEW]);
 
