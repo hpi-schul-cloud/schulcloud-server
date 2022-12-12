@@ -1,45 +1,41 @@
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
-import { EntityId, School, System } from '@shared/domain';
-import { IdentifiedReference, Reference } from '@mikro-orm/core';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { EntityProperties } from '@shared/repo/base.do.repo';
+import { ISchoolProperties, School, System } from '@shared/domain';
+import { Reference } from '@mikro-orm/core';
 
 export class SchoolMapper {
-	static mapToDO(schoolDto: SchoolDto): SchoolDO {
-		const school = new SchoolDO({
-			name: schoolDto.name,
-			externalId: schoolDto.externalId,
-		});
-
-		if (schoolDto.id) {
-			school.id = schoolDto.id;
-		}
-
-		/* const refs: IdentifiedReference<System, EntityId>[] = schoolDto.systemIds.map(
-			(systemId: EntityId): IdentifiedReference<System, EntityId> => {
-				return Reference.createFromPK(System, systemId);
-			}
-		);
-		school.systems.add(...refs); */
-		school.systems = schoolDto.systemIds;
-
-		return school;
+	static mapDOToEntityProperties(entityDO: SchoolDO): EntityProperties<ISchoolProperties> {
+		return {
+			id: entityDO.id,
+			_id: entityDO.id,
+			externalId: entityDO.externalId,
+			features: entityDO.features,
+			inMaintenanceSince: entityDO.inMaintenanceSince,
+			inUserMigration: entityDO.inUserMigration,
+			name: entityDO.name,
+			oauthMigrationMandatory: entityDO.oauthMigrationMandatory,
+			oauthMigrationPossible: entityDO.oauthMigrationPossible,
+			officialSchoolNumber: entityDO.officialSchoolNumber,
+			schoolYear: entityDO.schoolYear,
+			systems: entityDO.systems
+				? entityDO.systems.map((systemId: string) => Reference.createFromPK(System, systemId))
+				: [],
+		};
 	}
 
-	static mapEntityToEntity(target: School, source: School): School {
-		target.name = source.name;
-		target.externalId = source.externalId;
-		target.systems = source.systems;
-
-		return target;
-	}
-
-	static mapToDto(entity: SchoolDO) {
-		return new SchoolDto({
-			name: entity.name,
+	static mapEntityToDO(entity: School): SchoolDO {
+		return new SchoolDO({
 			id: entity.id,
 			externalId: entity.externalId,
-			// systemIds: entity.systems.getItems().map((system: System): EntityId => system.id),
-			systemIds: entity.systems as string[],
+			features: entity.features,
+			inMaintenanceSince: entity.inMaintenanceSince,
+			inUserMigration: entity.inUserMigration,
+			name: entity.name,
+			oauthMigrationMandatory: entity.oauthMigrationMandatory,
+			oauthMigrationPossible: entity.oauthMigrationPossible,
+			officialSchoolNumber: entity.officialSchoolNumber,
+			schoolYear: entity.schoolYear,
+			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: System) => system.id) : [],
 		});
 	}
 }

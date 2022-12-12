@@ -1,6 +1,5 @@
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { SchoolRepo } from '@shared/repo';
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
@@ -12,22 +11,18 @@ import { SchoolUcMapper } from '../mapper/school.uc.mapper';
 export class SchoolService {
 	constructor(readonly schoolRepo: SchoolRepo) {}
 
-	async saveProvisioningSchoolOutputDto(schoolDto: ProvisioningSchoolOutputDto): Promise<SchoolDto> {
-		return this.createOrUpdateSchool(SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDto(schoolDto));
+	async saveProvisioningSchoolOutputDto(schoolDto: ProvisioningSchoolOutputDto): Promise<SchoolDO> {
+		return this.createOrUpdateSchool(SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDO(schoolDto));
 	}
 
-	async createOrUpdateSchool(schoolDto: SchoolDto): Promise<SchoolDto> {
-		const school: SchoolDO = SchoolMapper.mapToDO(schoolDto);
-
+	async createOrUpdateSchool(school: SchoolDO): Promise<SchoolDO> {
 		let createdSchool: SchoolDO;
 		if (school.id) {
 			createdSchool = await this.patchSchool(school);
 		} else {
-			// createdSchool = this.schoolRepo.create(school);
 			createdSchool = await this.schoolRepo.save(school);
 		}
-		const returnSchoolDto: SchoolDto = SchoolMapper.mapToDto(createdSchool);
-		return returnSchoolDto;
+		return createdSchool;
 	}
 
 	private async patchSchool(school: SchoolDO) {
@@ -61,5 +56,15 @@ export class SchoolService {
 		});
 
 		return response;
+	}
+
+	async getSchoolById(id: string): Promise<SchoolDO> {
+		const schoolDO: SchoolDO = await this.schoolRepo.findById(id);
+		return schoolDO;
+	}
+
+	async save(school: SchoolDO): Promise<SchoolDO> {
+		const ret: SchoolDO = await this.schoolRepo.save(school);
+		return ret;
 	}
 }

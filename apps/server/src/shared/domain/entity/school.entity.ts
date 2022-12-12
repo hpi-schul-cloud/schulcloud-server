@@ -15,6 +15,7 @@ export enum SchoolFeatures {
 }
 
 export interface ISchoolProperties {
+	_id?: string;
 	externalId?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;

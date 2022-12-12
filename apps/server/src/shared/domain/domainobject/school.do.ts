@@ -25,6 +25,7 @@ export class SchoolDO extends BaseDO {
 
 	constructor(params: SchoolDO) {
 		super();
+		this.id = params.id;
 		this.externalId = params.externalId;
 		this.features = params.features;
 		this.inMaintenanceSince = params.inMaintenanceSince;
