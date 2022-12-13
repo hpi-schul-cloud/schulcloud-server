@@ -448,30 +448,4 @@ describe('ExternalToolService', () => {
 			expect(externalToolRepo.save).toHaveBeenCalledWith({ ...externalToolDO, version: 2 });
 		});
 	});
-
-	describe('isRegexCommentMandatoryAndFilled', () => {
-		it('should be false if a regex is set and no comment was provided', () => {
-			const customParameterDO = customParameterDOFactory.build({ regex: '.' });
-
-			const expected: boolean = service.isRegexCommentMandatoryAndFilled(customParameterDO);
-
-			expect(expected).toEqual(false);
-		});
-
-		it('should be true if no regex is set', () => {
-			const customParameterDO = customParameterDOFactory.build();
-
-			const expected: boolean = service.isRegexCommentMandatoryAndFilled(customParameterDO);
-
-			expect(expected).toEqual(true);
-		});
-
-		it('should be true if a regex is set and a comment was provided.', () => {
-			const customParameterDO = customParameterDOFactory.build({ regex: '.', regexComment: '.' });
-
-			const expected: boolean = service.isRegexCommentMandatoryAndFilled(customParameterDO);
-
-			expect(expected).toEqual(true);
-		});
-	});
 });
