@@ -6,7 +6,7 @@ import {
 	CustomParameterTypeParams,
 } from '../../../interface';
 
-export class CustomParameterCreateParams {
+export class CustomParameterPostParams {
 	@IsString()
 	@ApiProperty()
 	name!: string;

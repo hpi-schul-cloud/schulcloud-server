@@ -1,22 +1,23 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, Permission, User } from '@shared/domain';
-import { CustomParameterDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Page } from '@shared/domain/interface/page';
-import { customParameterDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ExternalToolService } from '../service/external-tool.service';
+import { ToolValidationService } from '../service/tool-validation.service';
+import { CreateExternalTool, UpdateExternalTool } from './dto';
 
 @Injectable()
 export class ExternalToolUc {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly toolValidationService: ToolValidationService
 	) {}
 
-	async createExternalTool(userId: EntityId, externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
+	async createExternalTool(userId: EntityId, externalToolDO: CreateExternalTool): Promise<ExternalToolDO> {
 		await this.ensurePermission(userId);
-
-		await this.checkValidation(externalToolDO);
+		await this.toolValidationService.validateCreate(externalToolDO);
 
 		const tool: Promise<ExternalToolDO> = this.externalToolService.createExternalTool(externalToolDO);
 		return tool;
@@ -27,33 +28,19 @@ export class ExternalToolUc {
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 	}
 
-	private async checkValidation(externalToolDO: ExternalToolDO) {
-		if (!(await this.externalToolService.isNameUnique(externalToolDO))) {
-			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`);
-		}
-		if (externalToolDO.parameters) {
-			if (this.externalToolService.hasDuplicateAttributes(externalToolDO.parameters)) {
-				throw new UnprocessableEntityException(
-					`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
-				);
-			}
-			if (!this.externalToolService.validateByRegex(externalToolDO.parameters)) {
-				throw new UnprocessableEntityException(
-					`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute.`
-				);
-			}
-			externalToolDO.parameters.forEach((param) => {
-				if (!this.externalToolService.isRegexCommentMandatoryAndFilled(param)) {
-					throw new UnprocessableEntityException(`The "${param.name}" parameter is missing a regex comment.`);
-				}
-			});
-		}
-		if (
-			externalToolDO.config instanceof Oauth2ToolConfigDO &&
-			!(await this.externalToolService.isClientIdUnique(externalToolDO.config))
-		) {
-			throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`);
-		}
+	async updateExternalTool(
+		userId: EntityId,
+		toolId: string,
+		externalTool: UpdateExternalTool
+	): Promise<ExternalToolDO> {
+		await this.ensurePermission(userId);
+		await this.toolValidationService.validateUpdate(toolId, externalTool);
+
+		const loaded: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
+		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalTool, version: loaded.version });
+
+		const saved = await this.externalToolService.updateExternalTool(toUpdate);
+		return saved;
 	}
 
 	async findExternalTool(
@@ -74,7 +61,7 @@ export class ExternalToolUc {
 		return tool;
 	}
 
-	async deleteExternalTool(userId: string, toolId: string): Promise<void> {
+	async deleteExternalTool(userId: EntityId, toolId: EntityId): Promise<void> {
 		await this.ensurePermission(userId);
 
 		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);

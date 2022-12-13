@@ -4,7 +4,6 @@ import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { IFindOptions, SortOrder } from '@shared/domain';
 import {
-	customParameterDOFactory,
 	externalToolDOFactory,
 	lti11ToolConfigDOFactory,
 	oauth2ToolConfigDOFactory,
@@ -16,6 +15,7 @@ import { Page } from '@shared/domain/interface/page';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './mapper';
 
@@ -317,83 +317,135 @@ describe('ExternalToolService', () => {
 		});
 	});
 
-	describe('isNameUnique', () => {
-		it('should find a tool with this name', async () => {
-			const { externalToolDO } = setup();
+	describe('findExternalToolByName', () => {
+		it('should call the externalToolRepo', async () => {
+			const toolName = 'toolName';
+
+			await service.findExternalToolByName(toolName);
+
+			expect(externalToolRepo.findByName).toHaveBeenCalledWith(toolName);
+		});
+
+		it('should return externalToolDO when tool was found', async () => {
+			const externalTool: ExternalToolDO = externalToolDOFactory.build();
+			externalToolRepo.findByName.mockResolvedValue(externalTool);
+
+			const result: ExternalToolDO | null = await service.findExternalToolByName('toolName');
+
+			expect(result).toBeInstanceOf(ExternalToolDO);
+		});
+
+		it('should return null when externalTool was not found', async () => {
 			externalToolRepo.findByName.mockResolvedValue(null);
 
-			const expected: boolean = await service.isNameUnique(externalToolDO);
+			const result: ExternalToolDO | null = await service.findExternalToolByName('toolName');
 
-			expect(expected).toEqual(true);
-			expect(externalToolRepo.findByName).toHaveBeenCalledWith(externalToolDO.name);
-		});
-
-		it('should not find a tool with this name', async () => {
-			const { externalToolDO } = setup();
-			externalToolRepo.findByName.mockResolvedValue(externalToolDO);
-
-			const expected: boolean = await service.isNameUnique(externalToolDO);
-
-			expect(expected).toEqual(false);
-			expect(externalToolRepo.findByName).toHaveBeenCalledWith(externalToolDO.name);
+			expect(result).toBeNull();
 		});
 	});
 
-	describe('isClientIdUnique', () => {
-		it('should find a tool with this client id', async () => {
-			const { oauth2ToolConfigDO } = setup();
+	describe('findExternalToolByOAuth2ConfigClientId', () => {
+		it('should call the externalToolRepo', async () => {
+			const clientId = 'clientId';
+
+			await service.findExternalToolByOAuth2ConfigClientId(clientId);
+
+			expect(externalToolRepo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(clientId);
+		});
+
+		it('should return externalToolDO when tool was found', async () => {
+			const externalTool: ExternalToolDO = externalToolDOFactory.build();
+			externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(externalTool);
+
+			const result: ExternalToolDO | null = await service.findExternalToolByOAuth2ConfigClientId('clientId');
+
+			expect(result).toBeInstanceOf(ExternalToolDO);
+		});
+
+		it('should return null when externalTool was not found', async () => {
 			externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(null);
 
-			const expected: boolean = await service.isClientIdUnique(oauth2ToolConfigDO);
+			const result: ExternalToolDO | null = await service.findExternalToolByOAuth2ConfigClientId('clientId');
 
-			expect(expected).toEqual(true);
-			expect(externalToolRepo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(oauth2ToolConfigDO.clientId);
-		});
-
-		it('should not find a tool with this client id', async () => {
-			const { externalToolDO, oauth2ToolConfigDO } = setup();
-			externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(externalToolDO);
-
-			const expected: boolean = await service.isClientIdUnique(oauth2ToolConfigDO);
-
-			expect(expected).toEqual(false);
-			expect(externalToolRepo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(oauth2ToolConfigDO.clientId);
+			expect(result).toBeNull();
 		});
 	});
 
-	describe('hasDuplicateAttributes', () => {
-		it('should not find duplicate custom parameters if there are none', () => {
-			const customParameterDO = customParameterDOFactory.build();
+	describe('updateExternalTool', () => {
+		describe('with oauth2ToolConfig', () => {
+			const setupOauthConfig = () => {
+				const existingTool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+				const changedTool: ExternalToolDO = externalToolDOFactory
+					.withOauth2Config()
+					.build({ id: existingTool.id, name: 'newName' });
 
-			const expected: boolean = service.hasDuplicateAttributes([customParameterDO]);
+				const oauthClientId: string =
+					existingTool.config instanceof Oauth2ToolConfigDO ? existingTool.config.clientId : 'undefined';
+				const providerOauthClient: ProviderOauthClient = {
+					client_id: oauthClientId,
+				};
 
-			expect(expected).toEqual(false);
+				oauthProviderService.getOAuth2Client.mockResolvedValue(providerOauthClient);
+				mapper.mapDoToProviderOauthClient.mockReturnValue(providerOauthClient);
+
+				return {
+					existingTool,
+					changedTool,
+					providerOauthClient,
+					oauthClientId,
+				};
+			};
+
+			it('should call externalToolServiceMapper', async () => {
+				const { changedTool } = setupOauthConfig();
+
+				await service.updateExternalTool(changedTool);
+
+				expect(mapper.mapDoToProviderOauthClient).toHaveBeenCalledWith(changedTool.name, changedTool.config);
+			});
+
+			it('should call oauthProviderService', async () => {
+				const { changedTool, oauthClientId } = setupOauthConfig();
+
+				await service.updateExternalTool(changedTool);
+
+				expect(oauthProviderService.getOAuth2Client).toHaveBeenCalledWith(oauthClientId);
+			});
+
+			it('should update the oauth2Client when clientId exists already', async () => {
+				const { changedTool, oauthClientId, providerOauthClient } = setupOauthConfig();
+
+				await service.updateExternalTool(changedTool);
+
+				expect(oauthProviderService.updateOAuth2Client).toHaveBeenCalledWith(oauthClientId, providerOauthClient);
+			});
+
+			it('should throw an error when requested oauth2Client not exists', async () => {
+				const { changedTool, providerOauthClient } = setupOauthConfig();
+				providerOauthClient.client_id = undefined;
+				oauthProviderService.getOAuth2Client.mockResolvedValue(providerOauthClient);
+
+				const func = () => service.updateExternalTool(changedTool);
+
+				await expect(func).rejects.toThrow(UnprocessableEntityException);
+			});
 		});
 
-		it('should find duplicate custom parameters if there are any', () => {
-			const customParameterDO = customParameterDOFactory.build();
+		it('should save the externalTool', async () => {
+			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
 
-			const expected: boolean = service.hasDuplicateAttributes([customParameterDO, customParameterDO]);
+			await service.updateExternalTool(externalToolDO);
 
-			expect(expected).toEqual(true);
-		});
-	});
-
-	describe('validateByRegex', () => {
-		it('should validate the regular expression', () => {
-			const customParameterDO = customParameterDOFactory.build();
-
-			const expected: boolean = service.validateByRegex([customParameterDO]);
-
-			expect(expected).toEqual(true);
+			expect(externalToolRepo.save).toHaveBeenCalled();
 		});
 
-		it('should not validate a faulty regular expression', () => {
-			const customParameterDO = customParameterDOFactory.build({ regex: '[' });
+		it('should increase the version of the externalTool', async () => {
+			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+			externalToolDO.version = 1;
 
-			const expected: boolean = service.validateByRegex([customParameterDO]);
+			await service.updateExternalTool(externalToolDO);
 
-			expect(expected).toEqual(false);
+			expect(externalToolRepo.save).toHaveBeenCalledWith({ ...externalToolDO, version: 2 });
 		});
 	});
 

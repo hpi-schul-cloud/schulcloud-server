@@ -20,13 +20,13 @@ export class SanisResponseName {
 
 export class SanisResponsePersonenkontext {
 	constructor(sanisResponsePersonenkontext: SanisResponsePersonenkontext) {
-		this.ktid = sanisResponsePersonenkontext.ktid;
+		this.id = sanisResponsePersonenkontext.id;
 		this.rolle = sanisResponsePersonenkontext.rolle;
 		this.organisation = sanisResponsePersonenkontext.organisation;
 		this.personenstatus = sanisResponsePersonenkontext.personenstatus;
 	}
 
-	ktid: UUID;
+	id: UUID;
 
 	rolle: SanisRole;
 
@@ -37,12 +37,12 @@ export class SanisResponsePersonenkontext {
 
 export class SanisResponseOrganisation {
 	constructor(sanisResponseOrganisation: SanisResponseOrganisation) {
-		this.orgid = sanisResponseOrganisation.orgid;
+		this.id = sanisResponseOrganisation.id;
 		this.name = sanisResponseOrganisation.name;
 		this.typ = sanisResponseOrganisation.typ;
 	}
 
-	orgid: UUID;
+	id: UUID;
 
 	name: string;
 

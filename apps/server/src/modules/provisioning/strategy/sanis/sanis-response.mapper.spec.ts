@@ -28,10 +28,10 @@ describe('SanisResponseMapper', () => {
 		},
 		personenkontexte: [
 			new SanisResponsePersonenkontext({
-				ktid: new UUID(),
+				id: new UUID(),
 				rolle: SanisRole.LERN,
 				organisation: new SanisResponseOrganisation({
-					orgid: schoolUUID,
+					id: schoolUUID,
 					name: 'schoolName',
 					typ: 'SCHULE',
 				}),
@@ -48,7 +48,7 @@ describe('SanisResponseMapper', () => {
 		it('should map a school to Dto', () => {
 			const dto = mapper.mapToSchoolDto(sanisResponse, systemUUID.toString());
 			expect(dto?.name).toEqual(sanisResponse.personenkontexte[0].organisation.name);
-			expect(dto?.externalId).toEqual(sanisResponse.personenkontexte[0].organisation.orgid.toString());
+			expect(dto?.externalId).toEqual(sanisResponse.personenkontexte[0].organisation.id.toString());
 			expect(dto?.systemIds[0]).toEqual(systemUUID.toString());
 		});
 	});
