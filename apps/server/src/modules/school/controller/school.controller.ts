@@ -17,7 +17,7 @@ export class SchoolController {
 		@Body() migrationBody: MigrationBody,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<MigrationResponse> {
-		const result = await this.schoolUc.setMigration(
+		const result: MigrationResponse = await this.schoolUc.setMigration(
 			schoolParams.schoolId,
 			migrationBody.oauthMigrationPossible,
 			migrationBody.oauthMigrationMandatory

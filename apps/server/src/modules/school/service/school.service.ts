@@ -1,4 +1,3 @@
-import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { SchoolRepo } from '@shared/repo';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { EntityId, SchoolFeatures } from '@shared/domain';
@@ -44,15 +43,15 @@ export class SchoolService {
 		oauthMigrationPossible: boolean,
 		oauthMigrationMandatory: boolean
 	): Promise<MigrationResponse> {
-		const entity: SchoolDO = await this.schoolRepo.findById(schoolId);
-		entity.oauthMigrationPossible = oauthMigrationPossible;
-		entity.oauthMigrationMandatory = oauthMigrationMandatory;
+		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
+		schoolDo.oauthMigrationPossible = oauthMigrationPossible;
+		schoolDo.oauthMigrationMandatory = oauthMigrationMandatory;
 
-		await this.schoolRepo.save(entity);
+		await this.schoolRepo.save(schoolDo);
 
 		const response: MigrationResponse = new MigrationResponse({
-			oauthMigrationPossible: entity.oauthMigrationPossible,
-			oauthMigrationMandatory: entity.oauthMigrationMandatory,
+			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
+			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
 		});
 
 		return response;
