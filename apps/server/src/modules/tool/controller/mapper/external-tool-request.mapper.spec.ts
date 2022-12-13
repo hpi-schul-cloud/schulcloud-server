@@ -33,6 +33,7 @@ import {
 } from '../../interface';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 import { ExternalToolPostParams } from '../dto/request/external-tool-post.params';
+import { ExternalToolUpdateParams } from '../dto/request/external-tool-update.params';
 
 describe('ExternalToolRequestMapper', () => {
 	let module: TestingModule;
@@ -209,6 +210,39 @@ describe('ExternalToolRequestMapper', () => {
 				const result = mapper.mapUpdateRequest(externalToolParams, 1);
 
 				expect(result).toEqual(externalToolDO);
+			});
+
+			it('should update default config', () => {
+				const { basicConfigParams } = setup();
+				const params: ExternalToolUpdateParams = {
+					openNewTab: undefined,
+					isHidden: undefined,
+					logoUrl: undefined,
+					config: basicConfigParams,
+					name: undefined,
+					url: undefined,
+					id: undefined,
+					parameters: undefined,
+				};
+
+				const result: Partial<ExternalToolDO> = mapper.mapUpdateRequest(params, 1);
+
+				expect(result).toEqual({
+					config: {
+						baseUrl: basicConfigParams.baseUrl,
+						type: basicConfigParams.type,
+					},
+					createdAt: undefined,
+					id: undefined,
+					isHidden: true,
+					logoUrl: undefined,
+					parameters: [],
+					updatedAt: undefined,
+					name: '',
+					openNewTab: true,
+					url: undefined,
+					version: 1,
+				});
 			});
 		});
 
