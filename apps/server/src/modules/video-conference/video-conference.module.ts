@@ -11,6 +11,7 @@ import { SchoolModule } from '@src/modules/school/school.module';
 import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
 import { LoggerModule } from '@src/core/logger';
 import { ConverterUtil } from '@shared/common';
+import { SchoolService } from '../school';
 
 @Module({
 	imports: [AuthorizationModule, CalendarModule, HttpModule, SchoolModule, LoggerModule],
@@ -18,6 +19,7 @@ import { ConverterUtil } from '@shared/common';
 	providers: [
 		VideoConferenceUc,
 		BBBService,
+		SchoolService,
 		VideoConferenceRepo,
 		TeamsRepo,
 		CourseRepo,
