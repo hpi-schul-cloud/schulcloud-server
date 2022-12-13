@@ -40,11 +40,7 @@ function isValidSubmission(submission) {
 	return (submission.comment && submission.comment !== '') || (submission.fileIds && submission.fileIds.length > 0);
 }
 function isGraded(submission) {
-	return (
-		(submission.gradeComment && submission.gradeComment !== '') ||
-		(submission.grade && Number.isInteger(submission.grade)) ||
-		(submission.gradeFileIds && submission.gradeFileIds.length > 0)
-	);
+	return submission.graded;
 }
 
 /**

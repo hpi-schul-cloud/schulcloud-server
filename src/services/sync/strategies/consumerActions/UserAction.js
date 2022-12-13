@@ -47,7 +47,7 @@ class UserAction extends BaseConsumerAction {
 		if (foundUser !== null) {
 			await this.updateUserAndAccount(foundUser, user, account);
 		} else {
-			await this.createUserAndAccount(user, account, school._id);
+			await this.createUserAndAccount(user, account, school);
 		}
 	}
 
@@ -127,10 +127,10 @@ class UserAction extends BaseConsumerAction {
 		return updateObject;
 	}
 
-	async createUserAndAccount(idmUser, account, schoolId) {
-		idmUser.schoolId = schoolId;
+	async createUserAndAccount(idmUser, account, school) {
+		idmUser.schoolId = school._id;
 		const userAccountService = await this.app.service('/sync/userAccount');
-		return userAccountService.createUserAndAccount(idmUser, account);
+		return userAccountService.createUserAndAccount(idmUser, account, school);
 	}
 }
 
