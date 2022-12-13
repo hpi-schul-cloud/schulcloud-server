@@ -27,11 +27,4 @@ export class CustomParameterDO {
 		this.regexComment = props.regexComment;
 		this.isOptional = props.isOptional;
 	}
-	// TODO function in DO that is not an attribute...
-	/* isRegexCommentMandatoryAndFilled(): boolean {
-		if (this.regex && !this.regexComment) {
-			return false;
-		}
-		return true;
-	} */
 }
