@@ -27,7 +27,6 @@ import {
 	createPath,
 	deriveStatusFromSource,
 	getPaths,
-	getResolvedValues,
 	getStatusFromScanResult,
 	isStatusBlocked,
 	markForDelete,
@@ -151,8 +150,9 @@ export class FilesStorageService {
 		bytesRange?: string
 	): Promise<IGetFileResponse> {
 		const pathToFile = createPath(schoolId, fileRecordId);
+		const response = await this.storageClient.get(pathToFile, bytesRange);
 
-		return await this.storageClient.get(pathToFile, bytesRange);
+		return response;
 	}
 
 	public async download(
@@ -163,7 +163,9 @@ export class FilesStorageService {
 		this.checkFileName(fileRecord, params);
 		this.checkScanStatus(fileRecord);
 
-		return await this.downloadFile(fileRecord.schoolId, fileRecord.id, bytesRange);
+		const response = await this.downloadFile(fileRecord.schoolId, fileRecord.id, bytesRange);
+
+		return response;
 	}
 
 	// delete

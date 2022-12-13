@@ -138,8 +138,9 @@ export class FilesStorageUC {
 
 	public async downloadBySecurityToken(token: string) {
 		const fileRecord = await this.filesStorageService.getFileRecordBySecurityCheckRequestToken(token);
+		const res = await this.filesStorageService.downloadFile(fileRecord.schoolId, fileRecord.id);
 
-		return await this.filesStorageService.downloadFile(fileRecord.schoolId, fileRecord.id);
+		return res;
 	}
 
 	// delete
