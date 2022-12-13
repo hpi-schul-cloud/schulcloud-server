@@ -1,10 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
-import {
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
+import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { EntityId, IFindOptions } from '@shared/domain';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
@@ -44,6 +39,38 @@ export class ExternalToolService {
 		return created;
 	}
 
+	async updateExternalTool(toUpdate: ExternalToolDO): Promise<ExternalToolDO> {
+		await this.updateOauth2ToolConfig(toUpdate);
+		toUpdate.version += 1;
+		const externalTool: ExternalToolDO = await this.externalToolRepo.save(toUpdate);
+		return externalTool;
+	}
+
+	private async updateOauth2ToolConfig(toUpdate: ExternalToolDO) {
+		if (toUpdate.config instanceof Oauth2ToolConfigDO) {
+			const toUpdateOauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
+				toUpdate.name,
+				toUpdate.config
+			);
+			const loadedOauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
+				toUpdate.config.clientId
+			);
+			await this.updateOauthClientOrThrow(loadedOauthClient, toUpdateOauthClient, toUpdate);
+		}
+	}
+
+	private async updateOauthClientOrThrow(
+		loadedOauthClient: ProviderOauthClient,
+		toUpdateOauthClient: ProviderOauthClient,
+		toUpdate: ExternalToolDO
+	) {
+		if (loadedOauthClient && loadedOauthClient.client_id) {
+			await this.oauthProviderService.updateOAuth2Client(loadedOauthClient.client_id, toUpdateOauthClient);
+		} else {
+			throw new UnprocessableEntityException(`The oAuthConfigs clientId of tool ${toUpdate.name}" does not exist`);
+		}
+	}
+
 	async findExternalTools(
 		query: Partial<ExternalToolDO>,
 		options: IFindOptions<ExternalToolDO>
@@ -71,6 +98,16 @@ export class ExternalToolService {
 		return tool;
 	}
 
+	findExternalToolByName(name: string): Promise<ExternalToolDO | null> {
+		const externalTool: Promise<ExternalToolDO | null> = this.externalToolRepo.findByName(name);
+		return externalTool;
+	}
+
+	findExternalToolByOAuth2ConfigClientId(clientId: string): Promise<ExternalToolDO | null> {
+		const externalTool: Promise<ExternalToolDO | null> = this.externalToolRepo.findByOAuth2ConfigClientId(clientId);
+		return externalTool;
+	}
+
 	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfigDO) {
 		const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(config.clientId);
 
@@ -80,7 +117,7 @@ export class ExternalToolService {
 		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
 	}
 
-	async deleteExternalTool(toolId: string): Promise<void> {
+	async deleteExternalTool(toolId: EntityId): Promise<void> {
 		const schoolExternalTools: SchoolExternalToolDO[] = await this.schoolExternalToolRepo.findByToolId(toolId);
 		const schoolExternalToolIds: string[] = schoolExternalTools.map(
 			(schoolExternalTool: SchoolExternalToolDO): string => {
@@ -94,38 +131,5 @@ export class ExternalToolService {
 			this.schoolExternalToolRepo.deleteByToolId(toolId),
 			this.externalToolRepo.deleteById(toolId),
 		]);
-	}
-
-	async isNameUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
-		const duplicate: ExternalToolDO | null = await this.externalToolRepo.findByName(externalToolDO.name);
-		return duplicate == null;
-	}
-
-	async isClientIdUnique(oauth2ToolConfig: Oauth2ToolConfigDO): Promise<boolean> {
-		const duplicate: ExternalToolDO | null = await this.externalToolRepo.findByOAuth2ConfigClientId(
-			oauth2ToolConfig.clientId
-		);
-
-		return duplicate == null;
-	}
-
-	hasDuplicateAttributes(customParameter: CustomParameterDO[]): boolean {
-		return customParameter.some((item, itemIndex) => {
-			return customParameter.some((other, otherIndex) => itemIndex !== otherIndex && item.name === other.name);
-		});
-	}
-
-	validateByRegex(customParameter: CustomParameterDO[]): boolean {
-		return customParameter.every((param: CustomParameterDO) => {
-			if (param.regex) {
-				try {
-					// eslint-disable-next-line no-new
-					new RegExp(param.regex);
-				} catch (e) {
-					return false;
-				}
-			}
-			return true;
-		});
 	}
 }
