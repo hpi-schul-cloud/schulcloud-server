@@ -127,22 +127,19 @@ export class FilesStorageUC {
 	}
 
 	// download
-	public async download(userId: EntityId, params: DownloadFileParams) {
+	public async download(userId: EntityId, params: DownloadFileParams, bytesRange?: string) {
 		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
 		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
 
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.read);
 
-		const response = this.filesStorageService.download(fileRecord, params);
-
-		return response;
+		return this.filesStorageService.download(fileRecord, params, bytesRange);
 	}
 
 	public async downloadBySecurityToken(token: string) {
 		const fileRecord = await this.filesStorageService.getFileRecordBySecurityCheckRequestToken(token);
-		const res = await this.filesStorageService.downloadFile(fileRecord.schoolId, fileRecord.id);
 
-		return res;
+		return await this.filesStorageService.downloadFile(fileRecord.schoolId, fileRecord.id);
 	}
 
 	// delete
