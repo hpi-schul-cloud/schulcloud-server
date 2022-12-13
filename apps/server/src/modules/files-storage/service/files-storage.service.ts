@@ -145,20 +145,25 @@ export class FilesStorageService {
 		}
 	}
 
-	public async downloadFile(schoolId: EntityId, fileRecordId: EntityId): Promise<IGetFileResponse> {
+	public async downloadFile(
+		schoolId: EntityId,
+		fileRecordId: EntityId,
+		bytesRange?: string
+	): Promise<IGetFileResponse> {
 		const pathToFile = createPath(schoolId, fileRecordId);
-		const res = await this.storageClient.get(pathToFile);
 
-		return res;
+		return await this.storageClient.get(pathToFile, bytesRange);
 	}
 
-	public async download(fileRecord: FileRecord, params: DownloadFileParams): Promise<IGetFileResponse> {
+	public async download(
+		fileRecord: FileRecord,
+		params: DownloadFileParams,
+		bytesRange?: string
+	): Promise<IGetFileResponse> {
 		this.checkFileName(fileRecord, params);
 		this.checkScanStatus(fileRecord);
 
-		const response = await this.downloadFile(fileRecord.schoolId, fileRecord.id);
-
-		return response;
+		return await this.downloadFile(fileRecord.schoolId, fileRecord.id, bytesRange);
 	}
 
 	// delete
