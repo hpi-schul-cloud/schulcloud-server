@@ -69,8 +69,8 @@ export class ExternalToolRequestMapper {
 			logoUrl: externalToolPostParams.logoUrl,
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
-			isHidden: externalToolPostParams.isHidden || true,
-			openNewTab: externalToolPostParams.openNewTab || true,
+			isHidden: externalToolPostParams.isHidden === undefined ? true : externalToolPostParams.isHidden,
+			openNewTab: externalToolPostParams.openNewTab === undefined ? true : externalToolPostParams.openNewTab,
 			version,
 		};
 	}
