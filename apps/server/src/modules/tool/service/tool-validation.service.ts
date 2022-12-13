@@ -98,7 +98,7 @@ export class ToolValidationService {
 		});
 	}
 
-	// TODO this schould be a call to the DO, where the logic is implemented
+	// TODO this should be a call to the DO, where the logic is implemented
 	isRegexCommentMandatoryAndFilled(customParameter: CustomParameterDO): boolean {
 		if (customParameter.regex && !customParameter.regexComment) {
 			return false;

@@ -124,13 +124,11 @@ describe('ToolValidation', () => {
 
 				const result: Promise<void> = service.validateCreate(externalToolDO);
 
-				if (externalToolDO.parameters) {
-					await expect(result).rejects.toThrow(
-						new UnprocessableEntityException(
-							`The "${externalToolDO.parameters[0].name}" parameter is missing a regex comment.`
-						)
-					);
-				}
+				await expect(result).rejects.toThrow(
+					new UnprocessableEntityException(
+						`The "${externalToolDO.parameters![0].name}" parameter is missing a regex comment.`
+					)
+				);
 			});
 
 			it('should not throw if regex is not set', async () => {
@@ -300,13 +298,11 @@ describe('ToolValidation', () => {
 
 					const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
-					if (externalToolDO.parameters) {
-						await expect(result).rejects.toThrow(
-							new UnprocessableEntityException(
-								`The "${externalToolDO.parameters[0].name}" parameter is missing a regex comment.`
-							)
-						);
-					}
+					await expect(result).rejects.toThrow(
+						new UnprocessableEntityException(
+							`The "${externalToolDO.parameters![0].name}" parameter is missing a regex comment.`
+						)
+					);
 				});
 
 				it('should not throw if regex is not set', async () => {
