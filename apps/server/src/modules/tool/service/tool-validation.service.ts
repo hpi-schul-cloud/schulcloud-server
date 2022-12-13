@@ -43,15 +43,22 @@ export class ToolValidationService {
 		if (!(await this.isNameUnique(externalToolDO))) {
 			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name || ''}" is already used`);
 		}
-		if (externalToolDO.parameters && this.hasDuplicateAttributes(externalToolDO.parameters)) {
-			throw new UnprocessableEntityException(
-				`The tool: ${externalToolDO.name || ''} contains multiple of the same custom parameters`
-			);
-		}
-		if (externalToolDO.parameters && !this.validateByRegex(externalToolDO.parameters)) {
-			throw new UnprocessableEntityException(
-				`A custom Parameter of the tool: ${externalToolDO.name || ''} has wrong regex attribute`
-			);
+		if (externalToolDO.parameters) {
+			if (this.hasDuplicateAttributes(externalToolDO.parameters)) {
+				throw new UnprocessableEntityException(
+					`The tool: ${externalToolDO.name || ''} contains multiple of the same custom parameters`
+				);
+			}
+			if (!this.validateByRegex(externalToolDO.parameters)) {
+				throw new UnprocessableEntityException(
+					`A custom Parameter of the tool: ${externalToolDO.name || ''} has wrong regex attribute`
+				);
+			}
+			externalToolDO.parameters.forEach((param) => {
+				if (!this.isRegexCommentMandatoryAndFilled(param)) {
+					throw new UnprocessableEntityException(`The "${param.name}" parameter is missing a regex comment.`);
+				}
+			});
 		}
 	}
 
@@ -89,5 +96,13 @@ export class ToolValidationService {
 			}
 			return true;
 		});
+	}
+
+	// TODO this schould be a call to the DO, where the logic is implemented
+	isRegexCommentMandatoryAndFilled(customParameter: CustomParameterDO): boolean {
+		if (customParameter.regex && !customParameter.regexComment) {
+			return false;
+		}
+		return true;
 	}
 }

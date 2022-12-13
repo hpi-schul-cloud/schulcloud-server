@@ -118,6 +118,40 @@ describe('ToolValidation', () => {
 			});
 		});
 
+		describe('isRegexCommentMandatoryAndFilled', () => {
+			it('should throw if regex is set but no comment was provided', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1, { regex: '.' }).build();
+
+				const result: Promise<void> = service.validateCreate(externalToolDO);
+
+				if (externalToolDO.parameters) {
+					await expect(result).rejects.toThrow(
+						new UnprocessableEntityException(
+							`The "${externalToolDO.parameters[0].name}" parameter is missing a regex comment.`
+						)
+					);
+				}
+			});
+
+			it('should not throw if regex is not set', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1).build();
+
+				const result: Promise<void> = service.validateCreate(externalToolDO);
+
+				await expect(result).resolves.not.toThrow();
+			});
+
+			it('should not throw if regex and regexComment is set', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, { regex: '.', regexComment: 'mockComment' })
+					.build();
+
+				const result: Promise<void> = service.validateCreate(externalToolDO);
+
+				await expect(result).resolves.not.toThrow();
+			});
+		});
+
 		describe('isClientIdUnique', () => {
 			it('should return true if the config is not of type Oauth2', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
@@ -259,6 +293,39 @@ describe('ToolValidation', () => {
 						`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute`
 					)
 				);
+			});
+			describe('isRegexCommentMandatoryAndFilled', () => {
+				it('should throw if regex is set but no comment was provided', async () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1, { regex: '.' }).build();
+
+					const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
+
+					if (externalToolDO.parameters) {
+						await expect(result).rejects.toThrow(
+							new UnprocessableEntityException(
+								`The "${externalToolDO.parameters[0].name}" parameter is missing a regex comment.`
+							)
+						);
+					}
+				});
+
+				it('should not throw if regex is not set', async () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1).build();
+
+					const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
+
+					await expect(result).resolves.not.toThrow();
+				});
+
+				it('should not throw if regex and regexComment is set', async () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory
+						.withCustomParameters(1, { regex: '.', regexComment: 'mockComment' })
+						.build();
+
+					const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
+
+					await expect(result).resolves.not.toThrow();
+				});
 			});
 		});
 

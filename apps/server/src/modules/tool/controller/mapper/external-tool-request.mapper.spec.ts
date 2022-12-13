@@ -62,6 +62,8 @@ describe('ExternalToolRequestMapper', () => {
 		customParameterPostParams.scope = CustomParameterScopeParams.SCHOOL;
 		customParameterPostParams.type = CustomParameterTypeParams.STRING;
 		customParameterPostParams.regex = 'mockRegex';
+		customParameterPostParams.regexComment = 'mockComment';
+		customParameterPostParams.isOptional = false;
 
 		const externalToolPostParams = new ExternalToolPostParams();
 		externalToolPostParams.id = 'id';
@@ -84,6 +86,8 @@ describe('ExternalToolRequestMapper', () => {
 			scope: CustomParameterScope.SCHOOL,
 			type: CustomParameterType.STRING,
 			regex: 'mockRegex',
+			regexComment: 'mockComment',
+			isOptional: false,
 		});
 		const externalToolDO: ExternalToolDO = new ExternalToolDO({
 			id: externalToolPostParams.id,

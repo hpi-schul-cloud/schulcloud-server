@@ -101,9 +101,11 @@ export class ExternalToolRequestMapper {
 				name: customParameterParam.name,
 				default: customParameterParam.default,
 				regex: customParameterParam.regex,
+				regexComment: customParameterParam.regexComment,
 				scope: scopeMapping[customParameterParam.scope],
 				location: locationMapping[customParameterParam.location],
 				type: typeMapping[customParameterParam.type],
+				isOptional: customParameterParam.isOptional,
 			};
 		});
 	}
