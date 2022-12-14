@@ -1,18 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ISchoolProperties, School } from '@shared/domain';
 import { EntityName } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { BaseDORepo, EntityProperties } from '../base.do.repo';
 import { SchoolDO } from '../../domain/domainobject/school.do';
 import { SchoolMapper } from '../../../modules/school/mapper/school.mapper';
-import { Logger } from '../../../core/logger';
 
 @Injectable()
 export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: Logger) {
-		super(_em, logger);
-	}
-
 	get entityName(): EntityName<School> {
 		return School;
 	}

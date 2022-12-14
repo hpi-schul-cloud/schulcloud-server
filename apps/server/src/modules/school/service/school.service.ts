@@ -57,6 +57,17 @@ export class SchoolService {
 		return response;
 	}
 
+	async getMigration(schoolId: string): Promise<MigrationResponse> {
+		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
+
+		const response: MigrationResponse = new MigrationResponse({
+			oauthMigrationPossible: schoolDo.oauthMigrationPossible ?? false,
+			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory ?? false,
+		});
+
+		return response;
+	}
+
 	async getSchoolById(id: string): Promise<SchoolDO> {
 		const schoolDO: SchoolDO = await this.schoolRepo.findById(id);
 		return schoolDO;

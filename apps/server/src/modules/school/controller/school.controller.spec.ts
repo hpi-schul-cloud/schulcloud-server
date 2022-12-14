@@ -58,4 +58,16 @@ describe('School Controller', () => {
 			restoreBasicSetup();
 		});
 	});
+
+	describe('getMigration', () => {
+		it('should call UC', async () => {
+			setupBasicData();
+			const migrationResp: MigrationResponse = { oauthMigrationMandatory: true, oauthMigrationPossible: true };
+			schoolUc.getMigration.mockResolvedValue(migrationResp);
+			const res: MigrationResponse = await controller.getMigration(schoolParams, testUser);
+			expect(schoolUc.getMigration).toHaveBeenCalled();
+			expect(res).toBe(migrationResp);
+			restoreBasicSetup();
+		});
+	});
 });

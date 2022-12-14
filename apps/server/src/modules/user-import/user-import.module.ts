@@ -4,13 +4,13 @@ import { ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { PermissionService } from '@shared/domain';
 import { ImportUserController } from './controller/import-user.controller';
 import { UserImportUc } from './uc/user-import.uc';
-import { AccountModule } from '../account/account.module';
+import { AccountModule } from '../account';
 import { SchoolModule, SchoolService } from '../school';
 
 @Module({
 	imports: [LoggerModule, AccountModule, SchoolModule],
 	controllers: [ImportUserController],
-	providers: [UserImportUc, ImportUserRepo, PermissionService, SchoolService, SystemRepo, UserRepo],
+	providers: [UserImportUc, ImportUserRepo, PermissionService, SchoolRepo, SchoolService, SystemRepo, UserRepo],
 	exports: [],
 })
 /**

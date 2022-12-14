@@ -199,4 +199,25 @@ describe('SchoolService', () => {
 			expect(schoolRepo.save).toHaveBeenCalledWith(testDO);
 		});
 	});
+
+	describe('getMigration', () => {
+		let testId: string;
+		let testDO: SchoolDO;
+		beforeAll(() => {
+			testId = 'migration';
+			testDO = new SchoolDO({
+				id: testId,
+				name: 'testDO',
+				oauthMigrationPossible: true,
+				oauthMigrationMandatory: true,
+			});
+			schoolRepo.findById.mockResolvedValue(testDO);
+		});
+		it('it should get the migrationflags', async () => {
+			const resp: MigrationResponse = await schoolService.getMigration(testId);
+			expect(resp.oauthMigrationPossible).toBeTruthy();
+			expect(resp.oauthMigrationMandatory).toBeTruthy();
+			expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
+		});
+	});
 });
