@@ -203,7 +203,7 @@ describe('SchoolService', () => {
 	describe('getMigration', () => {
 		let testId: string;
 		let testDO: SchoolDO;
-		beforeAll(() => {
+		beforeEach(() => {
 			testId = 'migration';
 			testDO = new SchoolDO({
 				id: testId,
@@ -217,6 +217,14 @@ describe('SchoolService', () => {
 			const resp: MigrationResponse = await schoolService.getMigration(testId);
 			expect(resp.oauthMigrationPossible).toBeTruthy();
 			expect(resp.oauthMigrationMandatory).toBeTruthy();
+			expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
+		});
+		it('it should get the migrationflags when not set', async () => {
+			testDO.oauthMigrationPossible = undefined;
+			testDO.oauthMigrationMandatory = undefined;
+			const resp: MigrationResponse = await schoolService.getMigration(testId);
+			expect(resp.oauthMigrationPossible).toBeFalsy();
+			expect(resp.oauthMigrationMandatory).toBeFalsy();
 			expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
 		});
 	});
