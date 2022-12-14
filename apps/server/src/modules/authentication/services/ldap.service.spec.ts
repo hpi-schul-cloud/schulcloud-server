@@ -54,7 +54,7 @@ describe('LdapService', () => {
 		ldapService = module.get(LdapService);
 	});
 
-	describe('authenticate', () => {
+	describe('when a user tries to authenticate', () => {
 		it('should throw error if no ldapconfig is given', async () => {
 			const system: System = systemFactory.buildWithId();
 			await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(

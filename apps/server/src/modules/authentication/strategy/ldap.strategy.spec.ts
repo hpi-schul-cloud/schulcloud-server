@@ -91,8 +91,8 @@ describe('ldap strategy', () => {
 		await orm.close();
 	});
 
-	describe('should fail to authenticate', () => {
-		it('if username parameter is missing', async () => {
+	describe('when a user tries to login', () => {
+		it('should throw if username parameter is missing', async () => {
 			const request: { body: RequestBody } = {
 				body: {
 					password: 'somePassword1234$',
@@ -102,7 +102,8 @@ describe('ldap strategy', () => {
 			};
 			await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 		});
-		it('if password parameter is missing', async () => {
+
+		it('should throw if password parameter is missing', async () => {
 			const request: { body: RequestBody } = {
 				body: {
 					username: 'mockUserName',
@@ -112,7 +113,8 @@ describe('ldap strategy', () => {
 			};
 			await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 		});
-		it('if schoolId parameter is missing', async () => {
+
+		it('should throw if schoolId parameter is missing', async () => {
 			const request: { body: RequestBody } = {
 				body: {
 					username: 'mockUserName',
@@ -122,7 +124,8 @@ describe('ldap strategy', () => {
 			};
 			await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 		});
-		it('if systemId parameter is missing', async () => {
+
+		it('should throw if systemId parameter is missing', async () => {
 			const request: { body: RequestBody } = {
 				body: {
 					username: 'mockUserName',
@@ -133,7 +136,7 @@ describe('ldap strategy', () => {
 			await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 		});
 
-		it('if user has no LDAP DN', async () => {
+		it('should throw if user has no LDAP DN', async () => {
 			const request: { body: RequestBody } = {
 				body: {
 					username: 'mockUserName',
@@ -145,7 +148,8 @@ describe('ldap strategy', () => {
 			userRepo.findById.mockResolvedValueOnce({ ...mockUser });
 			await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 		});
-		it('if school has no external Id', async () => {
+
+		it('should throw if school has no external Id', async () => {
 			const request: { body: RequestBody } = {
 				body: {
 					username: 'mockUserName',
@@ -157,7 +161,8 @@ describe('ldap strategy', () => {
 			schoolRepo.findById.mockResolvedValueOnce({} as School);
 			await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 		});
-		it('if account has no userId', async () => {
+
+		it('should throw if account has no userId', async () => {
 			const request: { body: RequestBody } = {
 				body: {
 					username: 'mockUserName',
@@ -171,7 +176,8 @@ describe('ldap strategy', () => {
 			authenticationService.loadAccount.mockResolvedValueOnce(mockAccountWithoutUserId);
 			await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 		});
-		it('if authentication at LDAP fails', async () => {
+
+		it('should throw if authentication at LDAP fails', async () => {
 			const request: { body: RequestBody } = {
 				body: {
 					username: 'mockUserName',
