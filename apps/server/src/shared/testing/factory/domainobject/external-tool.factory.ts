@@ -79,6 +79,14 @@ class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolDO
 		return this.params(params);
 	}
 
+	withCustomParameter(customParam?: DeepPartial<CustomParameterDO>): this {
+		const params: DeepPartial<ExternalToolDO> = {
+			parameters: [customParameterDOFactory.build(customParam)],
+		};
+
+		return this.params(params);
+	}
+
 	withCustomParameters(number: number, customParam?: DeepPartial<CustomParameterDO>): this {
 		const params: DeepPartial<ExternalToolDO> = {
 			parameters: customParameterDOFactory.buildList(number, customParam),

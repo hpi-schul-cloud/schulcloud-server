@@ -11,6 +11,7 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { TokenEndpointAuthMethod } from '../interface';
 import { ExternalToolServiceMapper } from './mapper';
+import { ExternalToolVersionService } from './external-tool-version.service';
 
 @Injectable()
 export class ExternalToolService {
@@ -20,7 +21,8 @@ export class ExternalToolService {
 		private readonly mapper: ExternalToolServiceMapper,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly courseExternalToolRepo: CourseExternalToolRepo,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService
+		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
+		private readonly externalToolVersionService: ExternalToolVersionService
 	) {}
 
 	async createExternalTool(externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
@@ -39,9 +41,9 @@ export class ExternalToolService {
 		return created;
 	}
 
-	async updateExternalTool(toUpdate: ExternalToolDO): Promise<ExternalToolDO> {
+	async updateExternalTool(toUpdate: ExternalToolDO, loadedTool: ExternalToolDO): Promise<ExternalToolDO> {
 		await this.updateOauth2ToolConfig(toUpdate);
-		toUpdate.version += 1;
+		this.externalToolVersionService.increaseVersionOfNewToolIfNecessary(loadedTool, toUpdate);
 		const externalTool: ExternalToolDO = await this.externalToolRepo.save(toUpdate);
 		return externalTool;
 	}
