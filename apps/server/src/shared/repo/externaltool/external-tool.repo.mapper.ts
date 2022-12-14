@@ -6,7 +6,7 @@ import {
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { EntityProperties } from '@shared/repo';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	BasicToolConfig,
 	CustomParameter,
@@ -15,6 +15,7 @@ import {
 	IExternalToolProperties,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
+	ToolConfigType,
 } from '../../domain';
 import { CustomParameterEntryDO } from '../../domain/domainobject/external-tool/custom-parameter-entry.do';
 
@@ -22,12 +23,19 @@ import { CustomParameterEntryDO } from '../../domain/domainobject/external-tool/
 export class ExternalToolRepoMapper {
 	mapEntityToDO(entity: ExternalTool): ExternalToolDO {
 		let config: BasicToolConfigDO | Oauth2ToolConfigDO | Lti11ToolConfigDO;
-		if (entity.config instanceof BasicToolConfig) {
-			config = this.mapBasicToolConfigToDO(entity.config);
-		} else if (entity.config instanceof Oauth2ToolConfig) {
-			config = this.mapOauth2ConfigToDO(entity.config);
-		} else {
-			config = this.mapLti11ToolConfigToDO(entity.config);
+		switch (entity.config.type) {
+			case ToolConfigType.BASIC:
+				config = this.mapBasicToolConfigToDO(entity.config as BasicToolConfigDO);
+				break;
+			case ToolConfigType.OAUTH2:
+				config = this.mapOauth2ConfigToDO(entity.config as Oauth2ToolConfigDO);
+				break;
+			case ToolConfigType.LTI11:
+				config = this.mapLti11ToolConfigToDO(entity.config as Lti11ToolConfigDO);
+				break;
+			default:
+				/* istanbul ignore next */
+				throw new UnprocessableEntityException(`Unknown config type.`);
 		}
 
 		return new ExternalToolDO({
@@ -75,12 +83,19 @@ export class ExternalToolRepoMapper {
 
 	mapDOToEntityProperties(entityDO: ExternalToolDO): EntityProperties<IExternalToolProperties> {
 		let config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
-		if (entityDO.config instanceof BasicToolConfigDO) {
-			config = this.mapBasicToolConfigDOToEntity(entityDO.config);
-		} else if (entityDO.config instanceof Oauth2ToolConfigDO) {
-			config = this.mapOauth2ConfigDOToEntity(entityDO.config);
-		} else {
-			config = this.mapLti11ToolConfigDOToEntity(entityDO.config);
+		switch (entityDO.config.type) {
+			case ToolConfigType.BASIC:
+				config = this.mapBasicToolConfigDOToEntity(entityDO.config as BasicToolConfigDO);
+				break;
+			case ToolConfigType.OAUTH2:
+				config = this.mapOauth2ConfigDOToEntity(entityDO.config as Oauth2ToolConfigDO);
+				break;
+			case ToolConfigType.LTI11:
+				config = this.mapLti11ToolConfigDOToEntity(entityDO.config as Lti11ToolConfigDO);
+				break;
+			default:
+				/* istanbul ignore next */
+				throw new UnprocessableEntityException(`Unknown config type.`);
 		}
 
 		return {
@@ -129,9 +144,11 @@ export class ExternalToolRepoMapper {
 				name: param.name,
 				default: param.default,
 				regex: param.regex,
+				regexComment: param.regexComment,
 				scope: param.scope,
 				location: param.location,
 				type: param.type,
+				isOptional: param.isOptional,
 			});
 		});
 	}
@@ -142,9 +159,11 @@ export class ExternalToolRepoMapper {
 				name: param.name,
 				default: param.default,
 				regex: param.regex,
+				regexComment: param.regexComment,
 				scope: param.scope,
 				location: param.location,
 				type: param.type,
+				isOptional: param.isOptional,
 			});
 		});
 	}

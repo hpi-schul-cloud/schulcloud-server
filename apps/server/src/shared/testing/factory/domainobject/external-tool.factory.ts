@@ -66,10 +66,19 @@ export const customParameterDOFactory = DoBaseFactory.define<CustomParameterDO, 
 		type: CustomParameterType.STRING,
 		scope: CustomParameterScope.GLOBAL,
 		location: CustomParameterLocation.TOKEN,
+		isOptional: false,
 	})
 );
 
 class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolDO> {
+	withOauth2Config(customParam?: DeepPartial<Oauth2ToolConfigDO>): this {
+		const params: DeepPartial<ExternalToolDO> = {
+			config: oauth2ToolConfigDOFactory.build(customParam),
+		};
+
+		return this.params(params);
+	}
+
 	withCustomParameters(number: number, customParam?: DeepPartial<CustomParameterDO>): this {
 		const params: DeepPartial<ExternalToolDO> = {
 			parameters: customParameterDOFactory.buildList(number, customParam),
