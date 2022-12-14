@@ -88,4 +88,22 @@ describe('SchoolRepo', () => {
 			expect(result).toBeNull();
 		});
 	});
+
+	describe('findBySchoolNumber', () => {
+		it('should find school by schoolnumber', async () => {
+			const schoolEntity: School = schoolFactory.build({ officialSchoolNumber: '12345' });
+
+			await em.persistAndFlush(schoolEntity);
+
+			const result: SchoolDO | null = await repo.findBySchoolNumber(schoolEntity.officialSchoolNumber as string);
+
+			expect(result?.officialSchoolNumber).toEqual(schoolEntity.officialSchoolNumber);
+		});
+
+		it('should return null when no school is found', async () => {
+			const result: SchoolDO | null = await repo.findBySchoolNumber('fail');
+
+			expect(result).toBeNull();
+		});
+	});
 });
