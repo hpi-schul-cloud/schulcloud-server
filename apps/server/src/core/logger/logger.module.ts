@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { utilities, WinstonModule } from 'nest-winston';
 import winston from 'winston';
 import { ILoggerConfig } from './interfaces';
-import { Logger } from './logger.service';
+import { ErrorLogger, Logger } from './logger.service';
 
 const availableLevels = {
 	emerg: 0,
@@ -37,7 +37,7 @@ const availableLevels = {
 			inject: [ConfigService],
 		}),
 	],
-	providers: [Logger],
-	exports: [Logger],
+	providers: [Logger, ErrorLogger],
+	exports: [Logger, ErrorLogger],
 })
 export class LoggerModule {}
