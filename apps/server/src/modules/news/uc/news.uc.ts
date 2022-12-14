@@ -51,7 +51,7 @@ export class NewsUc {
 		});
 		await this.newsRepo.save(news);
 
-		// this.logger.log(new NewsCrudOperationLoggable(CrudOperation.CREATE, news, userId));
+		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.CREATE, news, userId));
 
 		return news;
 	}
