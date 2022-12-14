@@ -23,23 +23,23 @@ export class Logger implements ILogger {
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
 	log(loggable: ILoggable): void {
-		this.logger.info(LoggingUtils.createMessage(loggable));
+		this.logger.info(LoggingUtils.createMessage(loggable, this.context));
 	}
 
 	warn(loggable: ILoggable): void {
-		this.logger.warn(LoggingUtils.createMessage(loggable));
+		this.logger.warn(LoggingUtils.createMessage(loggable, this.context));
 	}
 
 	debug(loggable: ILoggable): void {
-		this.logger.debug(LoggingUtils.createMessage(loggable));
+		this.logger.debug(LoggingUtils.createMessage(loggable, this.context));
 	}
 
 	verbose(loggable: ILoggable): void {
-		this.logger.verbose(LoggingUtils.createMessage(loggable));
+		this.logger.verbose(LoggingUtils.createMessage(loggable, this.context));
 	}
 
 	http(loggable: ILoggable): void {
-		this.logger.notice(LoggingUtils.createMessage(loggable));
+		this.logger.notice(LoggingUtils.createMessage(loggable, this.context));
 	}
 
 	setContext(name: string) {

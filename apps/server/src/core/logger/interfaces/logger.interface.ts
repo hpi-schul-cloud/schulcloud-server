@@ -16,3 +16,8 @@ export interface ILogger {
 export interface IErrorLogger {
 	error(loggable: ILoggable): void;
 }
+
+export type LogMessageWithContext = {
+	message: string;
+	context: string | undefined;
+};
