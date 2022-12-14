@@ -54,7 +54,7 @@ export class ToolValidationService {
 					`A custom Parameter of the tool: ${externalToolDO.name || ''} has wrong regex attribute`
 				);
 			}
-			externalToolDO.parameters.forEach((param) => {
+			externalToolDO.parameters.forEach((param: CustomParameterDO) => {
 				if (!this.isRegexCommentMandatoryAndFilled(param)) {
 					throw new UnprocessableEntityException(`The "${param.name}" parameter is missing a regex comment.`);
 				}
