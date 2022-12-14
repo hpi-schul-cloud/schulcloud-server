@@ -20,7 +20,6 @@ import { OauthProviderModule } from '@src/modules/oauth-provider';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { RoleModule } from '@src/modules/role/role.module';
-import { SchoolModule } from '@src/modules/school/school.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemModule } from '@src/modules/system';
 import { TaskModule } from '@src/modules/task';
@@ -30,6 +29,7 @@ import { VideoConferenceModule } from '@src/modules/video-conference';
 import { ToolApiModule } from '@src/modules/tool';
 import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
+import { SchoolApiModule } from '../school/school-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot({
@@ -60,7 +60,7 @@ const serverModules = [
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
-	SchoolModule,
+	SchoolApiModule,
 	ProvisioningModule,
 	RoleModule,
 	VideoConferenceModule,

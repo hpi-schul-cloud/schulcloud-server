@@ -1,5 +1,5 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { SchoolUc } from '../uc/school.uc';
@@ -11,7 +11,7 @@ import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
 export class SchoolController {
 	constructor(private readonly schoolUc: SchoolUc) {}
 
-	@Patch(':schoolId/migration')
+	@Put(':schoolId/migration')
 	async setMigration(
 		@Param() schoolParams: SchoolParams,
 		@Body() migrationBody: MigrationBody,
@@ -27,7 +27,7 @@ export class SchoolController {
 		return result;
 	}
 
-	@Get('schoolId/migration')
+	@Get(':schoolId/migration')
 	async getMigration(
 		@Param() schoolParams: SchoolParams,
 		@CurrentUser() currentUser: ICurrentUser
