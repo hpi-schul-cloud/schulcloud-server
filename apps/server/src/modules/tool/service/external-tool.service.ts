@@ -78,7 +78,6 @@ export class ExternalToolService {
 		}
 	}
 
-	// TODO extend tests
 	async findExternalTools(
 		query: Partial<ExternalToolDO>,
 		options: IFindOptions<ExternalToolDO>
@@ -87,7 +86,16 @@ export class ExternalToolService {
 
 		const resolvedTools: (ExternalToolDO | undefined)[] = await Promise.all(
 			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO | undefined> => {
-				await this.expandOauthToolsWithDataFromOauthProvider(tool.config);
+				if (this.isOauth2Config(tool.config)) {
+					try {
+						await this.addExternalOauth2DataToConfig(tool.config);
+					} catch (e) {
+						this.logger.debug(
+							`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
+						);
+						return undefined;
+					}
+				}
 				return tool;
 			})
 		);
@@ -97,25 +105,17 @@ export class ExternalToolService {
 		return tools;
 	}
 
-	// TODO tests
-	private async expandOauthToolsWithDataFromOauthProvider(config: ExternalToolConfigDO): Promise<boolean | undefined> {
-		if (this.isOauth2Config(config)) {
-			try {
-				await this.addExternalOauth2DataToConfig(config);
-			} catch (e) {
-				this.logger.debug(
-					`Could not resolve oauth2Config of tool with clientId ${config.clientId}. It will be filtered out.`
-				);
-				return undefined;
-			}
-		}
-		return Promise.resolve(true);
-	}
-
 	async findExternalToolById(id: EntityId): Promise<ExternalToolDO> {
 		const tool: ExternalToolDO = await this.externalToolRepo.findById(id);
-		if (!(await this.expandOauthToolsWithDataFromOauthProvider(tool.config))) {
-			throw new UnprocessableEntityException(`Could not resolve oauth2Config of tool ${tool.name}.`);
+		if (this.isOauth2Config(tool.config)) {
+			try {
+				await this.addExternalOauth2DataToConfig(tool.config);
+			} catch (e) {
+				this.logger.debug(
+					`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
+				);
+				throw new UnprocessableEntityException(`Could not resolve oauth2Config of tool ${tool.name}.`);
+			}
 		}
 		return tool;
 	}
@@ -155,12 +155,10 @@ export class ExternalToolService {
 		]);
 	}
 
-	// TODO: tests
 	isLti11Config(config: ExternalToolConfigDO): config is Lti11ToolConfigDO {
 		return ToolConfigType.LTI11 === config.type;
 	}
 
-	// TODO: tests
 	isOauth2Config(config: ExternalToolConfigDO): config is Oauth2ToolConfigDO {
 		return ToolConfigType.OAUTH2 === config.type;
 	}

@@ -18,6 +18,7 @@ import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-e
 import { UnprocessableEntityException } from '@nestjs/common';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './mapper';
+import { Logger } from '../../../core/logger';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;
@@ -57,6 +58,10 @@ describe('ExternalToolService', () => {
 				{
 					provide: CourseExternalToolRepo,
 					useValue: createMock<CourseExternalToolRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -246,6 +251,21 @@ describe('ExternalToolService', () => {
 
 			expect(result).toEqual({ data: [{ ...externalToolDO, config: oauth2ToolConfigDO }], total: 1 });
 		});
+
+		it('should filter out oauth2tools with unresolved oauthConfig when oauthProvider throws an error', async () => {
+			const { query, options, page } = setupFind();
+			const { externalToolDO, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO, oauthClient } = setup();
+			oauth2ToolConfigDO.clientSecret = undefined;
+			externalToolDO.config = oauth2ToolConfigDOWithoutExternalData;
+			page.data = [externalToolDO, externalToolDOFactory.withOauth2Config().build()];
+			externalToolRepo.find.mockResolvedValue(page);
+			oauthProviderService.getOAuth2Client.mockResolvedValueOnce(oauthClient);
+			oauthProviderService.getOAuth2Client.mockRejectedValue(new Error('some error occurred during fetching data'));
+
+			const result: Page<ExternalToolDO> = await service.findExternalTools(query, options);
+
+			expect(result).toEqual({ data: [{ ...externalToolDO, config: oauth2ToolConfigDO }], total: 1 });
+		});
 	});
 
 	describe('findExternalToolById', () => {
@@ -268,6 +288,18 @@ describe('ExternalToolService', () => {
 			const result: ExternalToolDO = await service.findExternalToolById('toolId');
 
 			expect(result).toEqual({ ...externalToolDO, config: oauth2ToolConfigDO });
+		});
+
+		it('should throw UnprocessableEntityException when oauthConfig could not be resolved', async () => {
+			const { externalToolDO, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO } = setup();
+			oauth2ToolConfigDO.clientSecret = undefined;
+			externalToolDO.config = oauth2ToolConfigDOWithoutExternalData;
+			externalToolRepo.findById.mockResolvedValue(externalToolDO);
+			oauthProviderService.getOAuth2Client.mockRejectedValueOnce(new Error('some error occurred during fetching data'));
+
+			const func = () => service.findExternalToolById('toolId');
+
+			await expect(func()).rejects.toThrow(`Could not resolve oauth2Config of tool ${externalToolDO.name}.`);
 		});
 	});
 
@@ -446,6 +478,42 @@ describe('ExternalToolService', () => {
 			await service.updateExternalTool(externalToolDO);
 
 			expect(externalToolRepo.save).toHaveBeenCalledWith({ ...externalToolDO, version: 2 });
+		});
+	});
+
+	describe('isLti11Config', () => {
+		it('should return true when config.type is Lti11', () => {
+			const externalToolDO: ExternalToolDO = externalToolDOFactory.withLti11Config().buildWithId();
+
+			const func = () => service.isLti11Config(externalToolDO.config);
+
+			expect(func()).toBeTruthy();
+		});
+
+		it('should return false when config.type is not Lti11', () => {
+			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+
+			const func = () => service.isLti11Config(externalToolDO.config);
+
+			expect(func()).toBeFalsy();
+		});
+	});
+
+	describe('isOauth2Config', () => {
+		it('should return true when config.type is Oauth2', () => {
+			const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+
+			const func = () => service.isOauth2Config(externalToolDO.config);
+
+			expect(func()).toBeTruthy();
+		});
+
+		it('should return false when config.type is not Oauth2', () => {
+			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+
+			const func = () => service.isOauth2Config(externalToolDO.config);
+
+			expect(func()).toBeFalsy();
 		});
 	});
 });
