@@ -126,7 +126,7 @@ describe('ToolValidation', () => {
 
 				await expect(result).rejects.toThrow(
 					new UnprocessableEntityException(
-						`The "${externalToolDO.parameters![0].name}" parameter is missing a regex comment.`
+						new UnprocessableEntityException(`The "custom-parameter-1" parameter is missing a regex comment.`)
 					)
 				);
 			});
@@ -299,9 +299,7 @@ describe('ToolValidation', () => {
 					const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
 					await expect(result).rejects.toThrow(
-						new UnprocessableEntityException(
-							`The "${externalToolDO.parameters![0].name}" parameter is missing a regex comment.`
-						)
+						new UnprocessableEntityException(`The "custom-parameter-1" parameter is missing a regex comment.`)
 					);
 				});
 
