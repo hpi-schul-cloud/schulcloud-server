@@ -11,31 +11,6 @@ export class ErrorLoggable implements Loggable {
 		this.error = error;
 	}
 
-	private isFeathersError(error: Error): error is FeathersError {
-		if (!(error && 'type' in error)) return false;
-		return (error as FeathersError)?.type === 'FeathersError';
-	}
-
-	private isBusinessError(error: Error): error is BusinessError {
-		return error instanceof BusinessError;
-	}
-
-	private isTechnicalError(error: Error): error is HttpException {
-		return error instanceof HttpException;
-	}
-
-	private writeValidationErrors = (error: ApiValidationError) => {
-		const errorMsg = error.validationErrors.map(
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			(e) => `Wrong property ${e.property} got ${e.value} : ${JSON.stringify(e.constraints)}`
-		);
-		return {
-			validationErrors: errorMsg,
-			stack: error.stack,
-			type: 'API Validation Error',
-		};
-	};
-
 	getLogMessage(): ErrorLogMessage | ValidationErrorLogMessage {
 		// what about unkown errors?
 		if (this.isFeathersError(this.error)) {
@@ -68,4 +43,29 @@ export class ErrorLoggable implements Loggable {
 			type: 'Unhandled or Unknown Error',
 		};
 	}
+
+	private isFeathersError(error: Error): error is FeathersError {
+		if (!(error && 'type' in error)) return false;
+		return (error as FeathersError)?.type === 'FeathersError';
+	}
+
+	private isBusinessError(error: Error): error is BusinessError {
+		return error instanceof BusinessError;
+	}
+
+	private isTechnicalError(error: Error): error is HttpException {
+		return error instanceof HttpException;
+	}
+
+	private writeValidationErrors = (error: ApiValidationError) => {
+		const errorMsg = error.validationErrors.map(
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+			(e) => `Wrong property ${e.property} got ${e.value} : ${JSON.stringify(e.constraints)}`
+		);
+		return {
+			validationErrors: errorMsg,
+			stack: error.stack,
+			type: 'API Validation Error',
+		};
+	};
 }
