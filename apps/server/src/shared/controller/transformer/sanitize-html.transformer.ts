@@ -175,6 +175,14 @@ export const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IInputFormats
 	}
 };
 
+export const sanitizeRichText = (value: string, inputFormat?: InputFormat) => {
+	const sanitizeHtmlOptions: sanitize.IOptions = getSanitizeHtmlOptions(inputFormat);
+
+	const sanitized = sanitize(value, sanitizeHtmlOptions);
+
+	return sanitized;
+};
+
 /**
  * Decorator to sanitize a string by removing unwanted HTML.
  * Place after IsString decorator.
@@ -187,11 +195,7 @@ export function SanitizeHtml(inputFormat?: InputFormat): PropertyDecorator {
 		const value = params.obj[params.key];
 
 		if (typeof value === 'string') {
-			const sanitizeHtmlOptions: sanitize.IOptions = getSanitizeHtmlOptions(inputFormat);
-
-			const sanitized = sanitize(value, sanitizeHtmlOptions);
-
-			return sanitized;
+			return sanitizeRichText(value, inputFormat);
 		}
 
 		throw new NotImplementedException('can only sanitize strings');

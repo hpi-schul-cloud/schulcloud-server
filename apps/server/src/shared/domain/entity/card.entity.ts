@@ -7,6 +7,7 @@ import {
 	ManyToMany,
 	ManyToOne,
 	OneToOne,
+	OneToMany,
 	Property,
 	wrap,
 } from '@mikro-orm/core';
@@ -21,18 +22,19 @@ export type CardProps = {
 	creator: User;
 };
 
+/* TODO
+  using discriminatorValue in TaskCard leads to exception
+  workaround is using discriminatorMap in the abstract class and tableName in all classes,
+ */
 @Entity({
-	discriminatorColumn: 'cardElementType',
+	discriminatorColumn: 'cardType',
+	discriminatorMap: { task: 'TaskCard' },
+	abstract: true,
 	tableName: 'card',
 })
 export abstract class Card extends BaseEntityWithTimestamps {
-	protected constructor(props: CardProps) {
-		super();
-		this.cardElements.set(props.cardElements);
-		this.creator = props.creator;
-	}
-
-	@ManyToMany('CardElement', undefined, { fieldName: 'cardElementIds' })
+	//@OneToMany({ entity: () => CardElement, mappedBy: (cardElement) => cardElement.card, orphanRemoval: true }))
+	@ManyToMany('CardElement', undefined, { fieldName: 'referenceIds' })
 	cardElements = new Collection<CardElement>(this);
 
 	@Enum()
@@ -40,13 +42,31 @@ export abstract class Card extends BaseEntityWithTimestamps {
 
 	@Index()
 	@ManyToOne('User', { fieldName: 'userId' })
-	creator: User;
+	creator!: User;
 
 	@Property()
 	draggable = true;
 
 	@Property()
 	isDraft = false;
+
+	protected constructor(props: CardProps) {
+		super();
+		if (props.cardElements) {
+			this.cardElements.set(props.cardElements);
+		}
+		Object.assign(this, { creator: props.creator });
+	}
+
+	/*
+	static createInstance(cardType: CardType, props: CardProps): Card {
+		let card: Card;
+		if (cardType === CardType.Task) {
+			card = new TaskCard(props);
+		}
+
+		return card;
+	}*/
 
 	// TODO
 	getCardElements() {
@@ -63,10 +83,13 @@ export abstract class Card extends BaseEntityWithTimestamps {
 	*/
 }
 
-@Entity({ discriminatorValue: CardType.Task })
+@Entity({
+	tableName: 'card',
+})
 export class TaskCard extends Card {
 	constructor(props: ITaskCard) {
 		super(props);
+		//this.cardElements.set(props.cardElements);
 		this.cardType = CardType.Task;
 
 		if (props.draggable) {

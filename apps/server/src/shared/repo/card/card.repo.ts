@@ -9,15 +9,23 @@ export abstract class CardRepo extends BaseRepo<Card> {
 	}
 
 	private async populateCard(card: Card) {
-		await card.cardElements.init();
+		//await card.cardElements.init();
 	}
 }
 
-export class TaskCardRepo extends CardRepo {
+export class TaskCardRepo extends BaseRepo<TaskCard> {
+	get entityName() {
+		return TaskCard;
+	}
+
+	async createTaskCard(taskCard: TaskCard): Promise<void> {
+		return this.save(this.create(taskCard));
+	}
+
 	async findById(id: EntityId) {
-		const card = await this._em.findOneOrFail(TaskCard, { id });
+		const card = await this._em.findOneOrFail(this.entityName, { id });
 		if (card.task != null) {
-			await this._em.populate(card, ['task']);
+			//await this._em.populate(card, ['task']);
 		}
 		return card;
 	}

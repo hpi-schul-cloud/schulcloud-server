@@ -30,13 +30,13 @@ export class TaskCardMapper {
 		const cardElementsResponse: CardElementResponse[] = [];
 		cardElements.forEach((cardElement) => {
 			if (cardElement.cardElementType === CardElementType.Title) {
-				const title = new CardTitleElementResponse(cardElement as TitleCardElement);
-				const response = { cardElementType: cardElement.cardElementType, content: title };
+				const content = new CardTitleElementResponse(cardElement as TitleCardElement);
+				const response = { cardElementType: cardElement.cardElementType, content };
 				cardElementsResponse.push(response);
 			}
 			if (cardElement.cardElementType === CardElementType.RichText) {
-				const richText = new CardRichTextElementResponse(cardElement as RichTextCardElement);
-				const response = { cardElementType: cardElement.cardElementType, content: richText };
+				const content = new CardRichTextElementResponse(cardElement as RichTextCardElement);
+				const response = { cardElementType: cardElement.cardElementType, content };
 				cardElementsResponse.push(response);
 			}
 		});
@@ -47,7 +47,7 @@ export class TaskCardMapper {
 	static mapCreateToDomain(params: CreateTaskCardParams): ITaskCardCreate {
 		const dto = {
 			title: params.title,
-			description: params.description,
+			description: params.text,
 		};
 
 		return dto;

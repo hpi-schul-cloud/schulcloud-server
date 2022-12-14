@@ -1,25 +1,47 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
 import { InputFormat } from '../types/input-format.types';
 import { BaseEntityWithTimestamps } from './base.entity';
+import { Card, RichText, TaskCard } from '@shared/domain';
 
 export enum CardElementType {
 	'Title' = 'title',
 	'RichText' = 'richText',
 }
 
+export type CardElementProps = {
+	cardElementType: CardElementType;
+};
+
 @Entity({
 	discriminatorValue: 'cardElementType',
+	discriminatorMap: { title: 'TitleCardElement', richText: 'RichTextCardElement' },
 	abstract: true,
+	tableName: 'card-element',
 })
 export abstract class CardElement extends BaseEntityWithTimestamps {
 	@Enum()
 	cardElementType!: CardElementType;
 
+	//@ManyToOne({ entity: () => TaskCard, wrappedReference: true })
+	//card!: Card;
+
 	// @Property()
 	// content!: TitleCardElement | RichTextCardElement;
+
+	static fromTitle(title: string): CardElement {
+		const element = new TitleCardElement(title);
+		return element;
+	}
+
+	static fromRichtext(richText: RichText): CardElement {
+		const element = new RichTextCardElement(richText);
+		return element;
+	}
 }
 
-@Entity({ discriminatorValue: CardElementType.Title })
+@Entity({
+	tableName: 'card-element',
+})
 export class TitleCardElement extends CardElement {
 	constructor(title: string) {
 		super();
@@ -31,13 +53,15 @@ export class TitleCardElement extends CardElement {
 	value!: string;
 }
 
-@Entity({ discriminatorValue: CardElementType.RichText })
+@Entity({
+	tableName: 'card-element',
+})
 export class RichTextCardElement extends CardElement {
-	constructor(props: { text: string; inputFormat: InputFormat }) {
+	constructor(props: RichText) {
 		super();
 		this.cardElementType = CardElementType.RichText;
-		this.inputFormat = props.inputFormat;
-		this.value = props.text;
+		this.inputFormat = props.type;
+		this.value = props.content;
 	}
 
 	@Property()
