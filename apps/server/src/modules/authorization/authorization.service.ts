@@ -13,6 +13,8 @@ import {
 } from '@shared/domain';
 import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
+import { ForbiddenError } from './errors/forbidden.error';
+import { LoggableForbiddenException } from './errors/loggable-forbidden.exception';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
@@ -44,7 +46,7 @@ export class AuthorizationService extends BasePermissionManager {
 
 	checkPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {
 		if (!this.hasPermission(user, entity, context)) {
-			throw new ForbiddenException();
+			throw new LoggableForbiddenException(user.id, entity.id, context);
 		}
 	}
 
@@ -74,7 +76,7 @@ export class AuthorizationService extends BasePermissionManager {
 		context: IPermissionContext
 	) {
 		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, context))) {
-			throw new ForbiddenException();
+			throw new ForbiddenError(userId, entityId, context);
 		}
 	}
 
