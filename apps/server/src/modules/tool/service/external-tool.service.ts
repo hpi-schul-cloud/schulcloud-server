@@ -1,5 +1,10 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import {
+	ExternalToolConfigDO,
+	ExternalToolDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
+} from '@shared/domain/domainobject/external-tool';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { EntityId, IFindOptions } from '@shared/domain';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
@@ -9,8 +14,9 @@ import { Page } from '@shared/domain/interface/page';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { TokenEndpointAuthMethod } from '../interface';
+import { TokenEndpointAuthMethod, ToolConfigType } from '../interface';
 import { ExternalToolServiceMapper } from './mapper';
+import { Logger } from '../../../core/logger';
 
 @Injectable()
 export class ExternalToolService {
@@ -20,13 +26,14 @@ export class ExternalToolService {
 		private readonly mapper: ExternalToolServiceMapper,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly courseExternalToolRepo: CourseExternalToolRepo,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService
+		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
+		private readonly logger: Logger
 	) {}
 
 	async createExternalTool(externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
-		if (externalToolDO.config instanceof Lti11ToolConfigDO) {
+		if (this.isLti11Config(externalToolDO.config)) {
 			externalToolDO.config.secret = this.encryptionService.encrypt(externalToolDO.config.secret);
-		} else if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
+		} else if (this.isOauth2Config(externalToolDO.config)) {
 			const oauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
 				externalToolDO.name,
 				externalToolDO.config
@@ -47,7 +54,7 @@ export class ExternalToolService {
 	}
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalToolDO) {
-		if (toUpdate.config instanceof Oauth2ToolConfigDO) {
+		if (this.isOauth2Config(toUpdate.config)) {
 			const toUpdateOauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
 				toUpdate.name,
 				toUpdate.config
@@ -76,13 +83,20 @@ export class ExternalToolService {
 		options: IFindOptions<ExternalToolDO>
 	): Promise<Page<ExternalToolDO>> {
 		const tools: Page<ExternalToolDO> = await this.externalToolRepo.find(query, options);
+
 		tools.data = await Promise.all(
-			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO> => {
-				if (tool.config instanceof Oauth2ToolConfigDO) {
-					await this.addExternalOauth2DataToConfig(tool.config);
+			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO | undefined> => {
+				if (this.isOauth2Config(tool.config)) {
+					try {
+						await this.addExternalOauth2DataToConfig(tool.config);
+					} catch (e) {
+						this.logger.log('log');
+						return undefined;
+					}
 				}
 				return tool;
-			})
+			}) // .filter(filter undefined)
+			// retrun externaltooldo []
 		);
 
 		return tools;
@@ -91,7 +105,7 @@ export class ExternalToolService {
 	async findExternalToolById(id: EntityId): Promise<ExternalToolDO> {
 		const tool: ExternalToolDO = await this.externalToolRepo.findById(id);
 
-		if (tool.config instanceof Oauth2ToolConfigDO) {
+		if (this.isOauth2Config(tool.config)) {
 			await this.addExternalOauth2DataToConfig(tool.config);
 		}
 
@@ -131,5 +145,15 @@ export class ExternalToolService {
 			this.schoolExternalToolRepo.deleteByToolId(toolId),
 			this.externalToolRepo.deleteById(toolId),
 		]);
+	}
+
+	// TODO: tests
+	isLti11Config(config: ExternalToolConfigDO): config is Lti11ToolConfigDO {
+		return ToolConfigType.LTI11 === config.type;
+	}
+
+	// TODO: tests
+	isOauth2Config(config: ExternalToolConfigDO): config is Oauth2ToolConfigDO {
+		return ToolConfigType.OAUTH2 === config.type;
 	}
 }

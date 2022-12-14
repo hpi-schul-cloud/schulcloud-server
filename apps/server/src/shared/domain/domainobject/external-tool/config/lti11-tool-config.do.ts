@@ -16,7 +16,7 @@ export class Lti11ToolConfigDO extends ExternalToolConfigDO {
 		super({
 			type: ToolConfigType.LTI11,
 			baseUrl: props.baseUrl,
-		});
+		} as Lti11ToolConfigDO);
 		this.key = props.key;
 		this.secret = props.secret;
 		this.resource_link_id = props.resource_link_id;

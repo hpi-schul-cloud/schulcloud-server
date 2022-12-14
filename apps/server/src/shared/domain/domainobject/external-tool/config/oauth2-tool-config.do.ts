@@ -21,7 +21,7 @@ export class Oauth2ToolConfigDO extends ExternalToolConfigDO {
 		super({
 			type: ToolConfigType.OAUTH2,
 			baseUrl: props.baseUrl,
-		});
+		} as Oauth2ToolConfigDO);
 		this.clientId = props.clientId;
 		this.clientSecret = props.clientSecret;
 		this.skipConsent = props.skipConsent;
