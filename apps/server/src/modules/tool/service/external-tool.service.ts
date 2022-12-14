@@ -78,37 +78,45 @@ export class ExternalToolService {
 		}
 	}
 
+	// TODO extend tests
 	async findExternalTools(
 		query: Partial<ExternalToolDO>,
 		options: IFindOptions<ExternalToolDO>
 	): Promise<Page<ExternalToolDO>> {
 		const tools: Page<ExternalToolDO> = await this.externalToolRepo.find(query, options);
 
-		tools.data = await Promise.all(
+		const resolvedTools: (ExternalToolDO | undefined)[] = await Promise.all(
 			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO | undefined> => {
-				if (this.isOauth2Config(tool.config)) {
-					try {
-						await this.addExternalOauth2DataToConfig(tool.config);
-					} catch (e) {
-						this.logger.log('log');
-						return undefined;
-					}
-				}
+				await this.expandOauthToolsWithDataFromOauthProvider(tool.config);
 				return tool;
-			}) // .filter(filter undefined)
-			// retrun externaltooldo []
+			})
 		);
+
+		tools.data = resolvedTools.filter((tool) => tool !== undefined) as ExternalToolDO[];
 
 		return tools;
 	}
 
+	// TODO tests
+	private async expandOauthToolsWithDataFromOauthProvider(config: ExternalToolConfigDO): Promise<boolean | undefined> {
+		if (this.isOauth2Config(config)) {
+			try {
+				await this.addExternalOauth2DataToConfig(config);
+			} catch (e) {
+				this.logger.debug(
+					`Could not resolve oauth2Config of tool with clientId ${config.clientId}. It will be filtered out.`
+				);
+				return undefined;
+			}
+		}
+		return Promise.resolve(true);
+	}
+
 	async findExternalToolById(id: EntityId): Promise<ExternalToolDO> {
 		const tool: ExternalToolDO = await this.externalToolRepo.findById(id);
-
-		if (this.isOauth2Config(tool.config)) {
-			await this.addExternalOauth2DataToConfig(tool.config);
+		if (!(await this.expandOauthToolsWithDataFromOauthProvider(tool.config))) {
+			throw new UnprocessableEntityException(`Could not resolve oauth2Config of tool ${tool.name}.`);
 		}
-
 		return tool;
 	}
 
