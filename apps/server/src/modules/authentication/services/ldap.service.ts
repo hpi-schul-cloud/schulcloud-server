@@ -10,11 +10,11 @@ export class LdapService {
 		this.logger.setContext(LdapService.name);
 	}
 
-	async authenticate(system: System, username: string, password: string) {
+	async checkLdapCredentials(system: System, username: string, password: string): Promise<void> {
 		const connection = await this.connect(system, username, password);
 		if (connection.connected) {
 			connection.unbind();
-			return true;
+			return;
 		}
 		throw new UnauthorizedException('User could not authenticate');
 	}
@@ -36,6 +36,7 @@ export class LdapService {
 			client.on('connect', () => {
 				client.bind(username, password, (err) => {
 					if (err) {
+						this.logger.debug(err);
 						reject(new UnauthorizedException('User could not authenticate'));
 					} else {
 						this.logger.debug('[LDAP] Bind successful');
@@ -44,9 +45,7 @@ export class LdapService {
 				});
 			});
 			client.on('error', (err) => {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				this.logger.error('Error during LDAP operation', { error: err });
-				reject(new LdapConnectionError());
+				reject(new LdapConnectionError({ error: err }));
 			});
 		});
 	}

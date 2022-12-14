@@ -5,8 +5,9 @@ import { UnauthorizedException } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { AccountDto } from '@src/modules/account/services/dto';
-import { Role, RoleName, School, System, User } from '@shared/domain';
-import { Collection } from '@mikro-orm/core';
+import { RoleName, School, System, User } from '@shared/domain';
+import { MikroORM } from '@mikro-orm/core';
+import { setupEntities, userFactory } from '@shared/testing';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapStrategy, RequestBody } from './ldap.strategy';
 import { LdapService } from '../services/ldap.service';
@@ -14,28 +15,28 @@ import { LdapService } from '../services/ldap.service';
 const mockPassword = 'mockPassword123&';
 const mockPasswordHash = bcrypt.hashSync(mockPassword);
 
-const studentRole: Role = { id: 'mockRoleId', name: RoleName.STUDENT } as Role;
-const mockUser: User = {
-	id: 'mockUserId',
-	roles: new Collection<Role>(null, [studentRole]),
-	school: { id: 'mockSchoolId' } as School,
-} as User;
-const mockAccount = {
-	id: 'mockAccountId',
-	username: 'mockUsername',
-	password: mockPasswordHash,
-	userId: mockUser.id,
-} as AccountDto;
-
 describe('ldap strategy', () => {
+	let orm: MikroORM;
 	let strategy: LdapStrategy;
 	let userRepo: DeepMocked<UserRepo>;
 	let schoolRepo: DeepMocked<SchoolRepo>;
 	let authenticationService: DeepMocked<AuthenticationService>;
 	let ldapService: DeepMocked<LdapService>;
 	let module: TestingModule;
+	let mockUser: User;
+	let mockAccount: AccountDto;
 
 	beforeAll(async () => {
+		orm = await setupEntities();
+		mockUser = userFactory.withRole(RoleName.STUDENT).buildWithId();
+
+		mockAccount = {
+			id: 'mockAccountId',
+			username: 'mockUsername',
+			password: mockPasswordHash,
+			userId: mockUser.id,
+		} as AccountDto;
+
 		module = await Test.createTestingModule({
 			imports: [PassportModule],
 			providers: [
@@ -87,6 +88,7 @@ describe('ldap strategy', () => {
 
 	afterAll(async () => {
 		await module.close();
+		await orm.close();
 	});
 
 	describe('should fail to authenticate', () => {
@@ -178,7 +180,7 @@ describe('ldap strategy', () => {
 					systemId: 'mockSystemId',
 				},
 			};
-			ldapService.authenticate.mockRejectedValueOnce(new UnauthorizedException());
+			ldapService.checkLdapCredentials.mockRejectedValueOnce(new UnauthorizedException());
 			await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 			// TODO correct mock of ldapService
 			expect(authenticationService.updateLastTriedFailedLogin).toHaveBeenCalledWith(mockAccount.id);

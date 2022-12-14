@@ -33,7 +33,7 @@ export class AuthenticationService {
 	}
 
 	// if user does not contain a systemId the JWT won't contain it, thus the user needs to change his PW during first login
-	async generateJwt(user: ICurrentUser) {
+	async generateJwt(user: ICurrentUser): Promise<{ accessToken: string }> {
 		const jti = randomUUID();
 		const result = {
 			accessToken: this.jwtService.sign(user, {
@@ -55,7 +55,7 @@ export class AuthenticationService {
 		}
 	}
 
-	async updateLastTriedFailedLogin(id: string) {
+	async updateLastTriedFailedLogin(id: string): Promise<void> {
 		await this.accountService.updateLastTriedFailedLogin(id, new Date());
 	}
 
