@@ -1,6 +1,6 @@
-import { Loggable, LogMessage } from '@src/core/logger/interfaces/loggable';
+import { ILoggable, LogMessage } from '@src/core/logger/interfaces/loggable';
 
-export class AggregationEmptyLoggable implements Loggable {
+export class AggregationEmptyLoggable implements ILoggable {
 	getLogMessage(): LogMessage {
 		return {
 			message: 'No items found. Nothing to do.',

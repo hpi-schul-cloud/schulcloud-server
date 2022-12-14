@@ -2,7 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErr
 import { ApiValidationError, BusinessError } from '@shared/common';
 import { IError, RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
 import { ErrorLogger } from '@src/core/logger';
-import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { ILoggable } from '@src/core/logger/interfaces/loggable';
 import { Response } from 'express';
 import _ from 'lodash';
 import util from 'util';
@@ -38,7 +38,7 @@ export class GlobalErrorFilter<T extends IError | undefined> implements Exceptio
 		}
 	};
 
-	private isInstanceOfLoggable(object: any): object is Loggable {
+	private isInstanceOfLoggable(object: any): object is ILoggable {
 		return 'getLogMessage' in object;
 	}
 

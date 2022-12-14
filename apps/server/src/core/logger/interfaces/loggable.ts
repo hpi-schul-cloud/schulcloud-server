@@ -1,12 +1,12 @@
-export interface Loggable {
+export interface ILoggable {
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage;
 }
 
 export type LogMessageData = LogMessageDataObject | string | number | undefined;
 
-export interface LogMessageDataObject {
+export type LogMessageDataObject = {
 	[key: string]: LogMessageData;
-}
+};
 
 export type LogMessage = {
 	message: string;

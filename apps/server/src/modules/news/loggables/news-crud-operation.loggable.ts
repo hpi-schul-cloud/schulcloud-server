@@ -1,5 +1,5 @@
 import { EntityId, News } from '@shared/domain';
-import { Loggable, LogMessage } from '@src/core/logger/interfaces/loggable';
+import { ILoggable, LogMessage } from '@src/core/logger/interfaces/loggable';
 import { NewsMapper } from '../mapper/news.mapper';
 
 export enum CrudOperation {
@@ -8,7 +8,7 @@ export enum CrudOperation {
 	DELETE = 'delete',
 }
 
-export class NewsCrudOperationLoggable implements Loggable {
+export class NewsCrudOperationLoggable implements ILoggable {
 	news: News;
 
 	userId: EntityId;

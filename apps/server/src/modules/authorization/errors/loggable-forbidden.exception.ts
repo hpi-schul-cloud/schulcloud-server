@@ -1,12 +1,12 @@
 import { ForbiddenException } from '@nestjs/common';
 import { EntityId, IPermissionContext } from '@shared/domain';
-import { ErrorLogMessage, Loggable } from '@src/core/logger/interfaces/loggable';
+import { ErrorLogMessage, ILoggable } from '@src/core/logger/interfaces/loggable';
 
 // This and the ForbiddenError are alternative implementations.
 // I think LoggableForbiddenException is more expressive about what it is.
 // ForbiddenError is more in line with our naming style because we always(?) use "error" instead of "exception".
 // I (Max) tend to favor LoggableForbiddenException.
-export class LoggableForbiddenException extends ForbiddenException implements Loggable {
+export class LoggableForbiddenException extends ForbiddenException implements ILoggable {
 	constructor(private userId: EntityId, private entityId: EntityId, private context: IPermissionContext) {
 		super();
 	}

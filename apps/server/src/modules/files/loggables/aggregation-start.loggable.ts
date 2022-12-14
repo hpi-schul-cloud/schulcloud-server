@@ -1,7 +1,7 @@
-import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { ILoggable } from '@src/core/logger/interfaces/loggable';
 import { FileSyncOptions } from '../types';
 
-export class AggregationStartLoggable implements Loggable {
+export class AggregationStartLoggable implements ILoggable {
 	aggregationsCounter: number;
 
 	fileSyncOptions: FileSyncOptions;

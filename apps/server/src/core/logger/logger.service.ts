@@ -1,7 +1,7 @@
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger as WinstonLogger } from 'winston';
-import { Loggable } from './interfaces/loggable';
+import { ILoggable } from './interfaces/loggable';
 import { IErrorLogger, ILogger } from './interfaces/logger.interface';
 import { LoggingUtils } from './logging.utils';
 
@@ -22,23 +22,23 @@ export class Logger implements ILogger {
 
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
-	log(loggable: Loggable): void {
+	log(loggable: ILoggable): void {
 		this.logger.info(LoggingUtils.createMessage(loggable));
 	}
 
-	warn(loggable: Loggable): void {
+	warn(loggable: ILoggable): void {
 		this.logger.warn(LoggingUtils.createMessage(loggable));
 	}
 
-	debug(loggable: Loggable): void {
+	debug(loggable: ILoggable): void {
 		this.logger.debug(LoggingUtils.createMessage(loggable));
 	}
 
-	verbose(loggable: Loggable): void {
+	verbose(loggable: ILoggable): void {
 		this.logger.verbose(LoggingUtils.createMessage(loggable));
 	}
 
-	http(loggable: Loggable): void {
+	http(loggable: ILoggable): void {
 		this.logger.notice(LoggingUtils.createMessage(loggable));
 	}
 
@@ -50,7 +50,7 @@ export class Logger implements ILogger {
 export class ErrorLogger implements IErrorLogger {
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
-	error(loggable: Loggable): void {
+	error(loggable: ILoggable): void {
 		this.logger.error(LoggingUtils.createMessage(loggable));
 	}
 }

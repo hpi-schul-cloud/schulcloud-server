@@ -1,7 +1,7 @@
-import { Loggable } from '@src/core/logger/interfaces/loggable';
+import { ILoggable } from '@src/core/logger/interfaces/loggable';
 import { SyncFileItem } from '../types';
 
-export class FileSyncStartLoggable implements Loggable {
+export class FileSyncStartLoggable implements ILoggable {
 	item: SyncFileItem;
 
 	currentCount: number;

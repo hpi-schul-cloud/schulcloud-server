@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { EntityId, IPermissionContext } from '@shared/domain';
-import { ErrorLogMessage, Loggable } from '@src/core/logger/interfaces/loggable';
+import { ErrorLogMessage, ILoggable } from '@src/core/logger/interfaces/loggable';
 
 // This and the LoggableForbiddenException are alternative implementations.
 // See LoggableForbiddenException for pros and cons.
-export class ForbiddenError extends HttpException implements Loggable {
+export class ForbiddenError extends HttpException implements ILoggable {
 	constructor(private userId: EntityId, private entityId: EntityId, private context: IPermissionContext) {
 		super('Forbidden', HttpStatus.FORBIDDEN);
 	}

@@ -1,8 +1,8 @@
 import util from 'util';
-import { Loggable } from './interfaces/loggable';
+import { ILoggable } from './interfaces/loggable';
 
 export class LoggingUtils {
-	static createMessage(loggable: Loggable) {
+	static createMessage(loggable: ILoggable) {
 		const message = loggable.getLogMessage();
 		const stringifiedMessage = this.stringifyMessage(message);
 		return stringifiedMessage;

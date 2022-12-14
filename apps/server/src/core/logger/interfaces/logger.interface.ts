@@ -1,4 +1,4 @@
-import { Loggable } from './loggable';
+import { ILoggable } from './loggable';
 
 export type RequestLoggingBody = {
 	userId?: string;
@@ -6,13 +6,13 @@ export type RequestLoggingBody = {
 	error: unknown | undefined;
 };
 export interface ILogger {
-	http(loggable: Loggable): void;
-	log(loggable: Loggable): void;
-	warn(loggable: Loggable): void;
-	debug(loggable: Loggable): void;
-	verbose?(loggable: Loggable): void;
+	http(loggable: ILoggable): void;
+	log(loggable: ILoggable): void;
+	warn(loggable: ILoggable): void;
+	debug(loggable: ILoggable): void;
+	verbose?(loggable: ILoggable): void;
 }
 
 export interface IErrorLogger {
-	error(loggable: Loggable): void;
+	error(loggable: ILoggable): void;
 }
