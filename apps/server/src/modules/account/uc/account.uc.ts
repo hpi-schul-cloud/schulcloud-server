@@ -411,10 +411,10 @@ export class AccountUc {
 				// for future endpoints
 				/* case 'CREATE':
 					permissionsToCheck.push('STUDENT_CREATE');
-					break;
+					break; 
 				case 'DELETE':
 					permissionsToCheck.push('STUDENT_DELETE');
-					break; 
+					break;
 				*/
 			}
 		}
