@@ -2,7 +2,15 @@
 
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { ComponentType, EntityId, IComponentProperties, IComponentTextProperties, Lesson, Task } from '@shared/domain';
+import {
+	ComponentType,
+	EntityId,
+	IComponentProperties,
+	IComponentTextProperties,
+	Lesson,
+	Submission,
+	Task,
+} from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
 import _ from 'lodash';
 import { EmbeddedFilesRepo, fileIdRegex, fileUrlRegex } from '../repo/embedded-files.repo';
@@ -74,8 +82,17 @@ export class SyncEmbeddedFilesUc {
 				}
 			});
 		}
+
 		if (entity instanceof Task) {
 			const contentFileIds = this.extractFileIdsFromContent(entity.description);
+
+			if (contentFileIds !== null) {
+				fileIds.push(...contentFileIds);
+			}
+		}
+
+		if (entity instanceof Submission && entity.comment !== undefined) {
+			const contentFileIds = this.extractFileIdsFromContent(entity.comment);
 
 			if (contentFileIds !== null) {
 				fileIds.push(...contentFileIds);
@@ -140,7 +157,7 @@ export class SyncEmbeddedFilesUc {
 	}
 
 	private updateEntityLinks(
-		entity: Task | Lesson,
+		entity: Task | Lesson | Submission,
 		sourceFileId: string,
 		fileRecordId?: string,
 		fileRecordName?: string
@@ -159,6 +176,8 @@ export class SyncEmbeddedFilesUc {
 			});
 		} else if (entity instanceof Task && entity?.description) {
 			entity.description = this.replaceLink(entity.description, sourceFileId, fileRecordId, fileRecordName);
+		} else if (entity instanceof Submission && entity?.comment) {
+			entity.comment = this.replaceLink(entity.comment, sourceFileId, fileRecordId, fileRecordName);
 		} else {
 			throw new Error(`no matching condition in updateEntityLinks() for entity ${entity._id.toHexString()}`);
 		}
