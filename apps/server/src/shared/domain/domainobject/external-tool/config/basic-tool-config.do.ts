@@ -6,6 +6,6 @@ export class BasicToolConfigDO extends ExternalToolConfigDO {
 		super({
 			type: ToolConfigType.BASIC,
 			baseUrl: props.baseUrl,
-		} as BasicToolConfigDO);
+		});
 	}
 }
