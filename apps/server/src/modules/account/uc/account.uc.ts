@@ -414,7 +414,7 @@ export class AccountUc {
 					break;
 				case 'DELETE':
 					permissionsToCheck.push('STUDENT_DELETE');
-					break;
+					break; 
 				*/
 			}
 		}

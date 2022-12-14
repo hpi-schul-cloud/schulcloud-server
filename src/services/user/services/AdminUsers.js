@@ -182,9 +182,9 @@ class AdminUsers {
 		const params = await this.prepareParams(_id, _params);
 		await this.checkIfExternallyManaged(params.query.schoolId);
 
-		const { user: userData, createAccount } = _data;
+		const userData = _data;
 		await this.checkMail(userData.email, _id);
-		if (!createAccount) {
+		if (!userData.createAccount) {
 			await this.updateAccount(userData.email, _id);
 		}
 
@@ -196,7 +196,7 @@ class AdminUsers {
 		if (createdUsers.length === 0) throw new BadRequest('user could not be edit');
 
 		const createdUser = createdUsers[0];
-		if (createAccount) {
+		if (userData.createAccount) {
 			await this.createAccount({
 				username: createdUser.email,
 				password: userData.password,
