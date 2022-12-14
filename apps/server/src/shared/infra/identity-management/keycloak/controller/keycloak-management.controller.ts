@@ -22,7 +22,7 @@ export class KeycloakManagementController {
 				await this.keycloakManagementUc.configure();
 				return await this.keycloakManagementUc.seed();
 			} catch (err) {
-				this.logger.error(err);
+				// this.logger.error(err);
 				return -1;
 			}
 		}

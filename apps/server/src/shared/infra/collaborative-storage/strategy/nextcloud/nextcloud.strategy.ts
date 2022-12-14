@@ -38,9 +38,9 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 			folderId = await this.client.findGroupFolderIdForGroupId(groupId);
 			await this.client.setGroupPermissions(groupId, folderId, dto.permissions);
 		} catch (e) {
-			this.logger.log(
-				`Permissions in nextcloud were not set because of missing groupId or folderId for teamId ${dto.teamId}`
-			);
+			// this.logger.log(
+			// 	`Permissions in nextcloud were not set because of missing groupId or folderId for teamId ${dto.teamId}`
+			// );
 		}
 	}
 
@@ -137,9 +137,9 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		convertedTeamUserIds = convertedTeamUserIds.filter(Boolean);
 
 		const removeUserIds: string[] = groupUserIds.filter((userId) => !convertedTeamUserIds.includes(userId));
-		this.logger.debug(`Removing nextcloud userIds [${removeUserIds.toString()}]`);
+		// this.logger.debug(`Removing nextcloud userIds [${removeUserIds.toString()}]`);
 		const addUserIds: string[] = convertedTeamUserIds.filter((userId) => !groupUserIds.includes(userId));
-		this.logger.debug(`Adding nextcloud userIds [${addUserIds.toString()}]`);
+		// this.logger.debug(`Adding nextcloud userIds [${addUserIds.toString()}]`);
 
 		return Promise.all([
 			Promise.all(removeUserIds.map((nextcloudUserId) => this.client.removeUserFromGroup(nextcloudUserId, groupId))),
@@ -150,10 +150,10 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	private async findNextcloudTool(): Promise<LtiToolDO> {
 		const foundTools: LtiToolDO[] = await this.ltiToolRepo.findByName(this.client.oidcInternalName);
 		if (foundTools.length > 1) {
-			this.logger.warn(
-				`Please check the configured lti tools. There should one be one tool with the name ${this.client.oidcInternalName}. 
-				Otherwise teams can not be created or updated on demand.`
-			);
+			// this.logger.warn(
+			// 	`Please check the configured lti tools. There should one be one tool with the name ${this.client.oidcInternalName}.
+			// 	Otherwise teams can not be created or updated on demand.`
+			// );
 		}
 		return foundTools[0];
 	}

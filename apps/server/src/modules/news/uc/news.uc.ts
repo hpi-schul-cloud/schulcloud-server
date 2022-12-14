@@ -51,7 +51,7 @@ export class NewsUc {
 		});
 		await this.newsRepo.save(news);
 
-		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.CREATE, news, userId));
+		// this.logger.log(new NewsCrudOperationLoggable(CrudOperation.CREATE, news, userId));
 
 		return news;
 	}
@@ -127,7 +127,7 @@ export class NewsUc {
 
 		await this.newsRepo.save(news);
 
-		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.UPDATE, news, userId));
+		// this.logger.log(new NewsCrudOperationLoggable(CrudOperation.UPDATE, news, userId));
 
 		return news;
 	}
@@ -142,7 +142,7 @@ export class NewsUc {
 		const news = await this.newsRepo.findOneById(id);
 		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
 
-		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.DELETE, news, userId));
+		// this.logger.log(new NewsCrudOperationLoggable(CrudOperation.DELETE, news, userId));
 
 		await this.newsRepo.delete(news);
 

@@ -100,7 +100,7 @@ export class NextcloudClient {
 		return this.handleOcsRequest(
 			request,
 			() => {
-				return this.logger.log(`Successfully created group with group id: ${groupId} in Nextcloud`);
+				// return this.logger.log(`Successfully created group with group id: ${groupId} in Nextcloud`);
 			},
 			(error) => {
 				throw new UnprocessableEntityException(error, `Group "${groupId}" could not be created in Nextcloud!`);
@@ -119,7 +119,7 @@ export class NextcloudClient {
 		return this.handleOcsRequest<Meta, void>(
 			request,
 			() => {
-				return this.logger.log(`Successfully removed group with group id: ${groupId} in Nextcloud`);
+				// return this.logger.log(`Successfully removed group with group id: ${groupId} in Nextcloud`);
 			},
 			(error) => {
 				throw new UnprocessableEntityException(error, `Group "${groupId}" could not be deleted in Nextcloud!`);
@@ -142,7 +142,7 @@ export class NextcloudClient {
 		return this.handleOcsRequest(
 			request,
 			() => {
-				return this.logger.log(`Successfully renamed group with group id: ${groupId} in Nextcloud`);
+				// return this.logger.log(`Successfully renamed group with group id: ${groupId} in Nextcloud`);
 			},
 			(error) => {
 				throw new UnprocessableEntityException(error, `Group "${groupId}" could not be renamed in Nextcloud!`);
@@ -207,7 +207,7 @@ export class NextcloudClient {
 			request,
 			(data: SuccessfulRes) => {
 				if (data.success) {
-					return this.logger.log(`Successfully deleted folder with folder id: ${folderId} in Nextcloud`);
+					// return this.logger.log(`Successfully deleted folder with folder id: ${folderId} in Nextcloud`);
 				}
 				throw Error();
 			},
@@ -232,7 +232,7 @@ export class NextcloudClient {
 			request,
 			(data: GroupfoldersCreated) => {
 				const folderId = data.id;
-				this.logger.log(`Successfully created folder with folder id: ${folderId} in Nextcloud`);
+				// this.logger.log(`Successfully created folder with folder id: ${folderId} in Nextcloud`);
 				return folderId;
 			},
 			(error) => {
@@ -255,7 +255,7 @@ export class NextcloudClient {
 		return this.handleOcsRequest(
 			request,
 			() => {
-				this.logger.log(`Successfully added group: ${groupId} to folder with folder id: ${folderId} in Nextcloud`);
+				// this.logger.log(`Successfully added group: ${groupId} to folder with folder id: ${folderId} in Nextcloud`);
 			},
 			(error) => {
 				throw new UnprocessableEntityException(error, `Group "${groupId}" could not be deleted in Nextcloud!`);
@@ -275,7 +275,7 @@ export class NextcloudClient {
 		return this.handleOcsRequest<GroupUsers, string[]>(
 			request,
 			(data: GroupUsers) => {
-				this.logger.log(`Successfully fetched all users in group: ${groupId} in Nextcloud`);
+				// this.logger.log(`Successfully fetched all users in group: ${groupId} in Nextcloud`);
 				return data.users;
 			},
 			(error) => {
@@ -298,7 +298,7 @@ export class NextcloudClient {
 		return this.handleOcsRequest(
 			request,
 			() => {
-				this.logger.log(`Successfully added user: ${userId} to group: ${groupId} in Nextcloud`);
+				// this.logger.log(`Successfully added user: ${userId} to group: ${groupId} in Nextcloud`);
 			},
 			(error) => {
 				throw new UnprocessableEntityException(
@@ -322,7 +322,7 @@ export class NextcloudClient {
 		return this.handleOcsRequest(
 			request,
 			() => {
-				this.logger.log(`Successfully remove user: ${userId} from group: ${groupId} in Nextcloud`);
+				// this.logger.log(`Successfully remove user: ${userId} from group: ${groupId} in Nextcloud`);
 			},
 			(error) => {
 				throw new UnprocessableEntityException(
@@ -347,7 +347,7 @@ export class NextcloudClient {
 		return this.handleOcsRequest(
 			request,
 			() => {
-				this.logger.log(`Successfully renamed folder with folder id: ${folderId} in Nextcloud`);
+				// this.logger.log(`Successfully renamed folder with folder id: ${folderId} in Nextcloud`);
 			},
 			(error) => {
 				throw new UnprocessableEntityException(error, `Groupfolder "${folderId}" could not be renamed in Nextcloud!`);

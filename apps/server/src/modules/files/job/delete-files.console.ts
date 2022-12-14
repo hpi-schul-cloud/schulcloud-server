@@ -13,11 +13,11 @@ export class DeleteFilesConsole {
 		description: 'cleanup job to remove files that were marked for deletion <days> days ago',
 	})
 	async removeDeletedFilesData(removedSinceDays: number): Promise<void> {
-		this.logger.log(`cleanup job will remove files that were marked for deletion ${removedSinceDays} days ago`);
+		// this.logger.log(`cleanup job will remove files that were marked for deletion ${removedSinceDays} days ago`);
 		const removedSince = new Date();
 		removedSince.setDate(removedSince.getDate() - removedSinceDays);
 
 		await this.deleteFilesUc.removeDeletedFilesData(removedSince);
-		this.logger.log('cleanup job finished');
+		// this.logger.log('cleanup job finished');
 	}
 }

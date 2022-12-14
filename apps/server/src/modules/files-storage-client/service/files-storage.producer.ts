@@ -28,36 +28,36 @@ export class FilesStorageProducer {
 	}
 
 	async copyFilesOfParent(payload: ICopyFilesOfParentParams): Promise<ICopyFileDO[]> {
-		this.logger.debug({ action: 'copyFilesOfParent:started', payload });
+		// this.logger.debug({ action: 'copyFilesOfParent:started', payload });
 		const response = await this.amqpConnection.request<RpcMessage<ICopyFileDO[]>>(
 			this.createRequest(FilesStorageEvents.COPY_FILES_OF_PARENT, payload)
 		);
 
-		this.logger.debug({ action: 'copyFilesOfParent:finished', payload });
+		// this.logger.debug({ action: 'copyFilesOfParent:finished', payload });
 
 		this.checkError(response);
 		return response.message || [];
 	}
 
 	async listFilesOfParent(payload: IFileRecordParams): Promise<IFileDO[]> {
-		this.logger.debug({ action: 'listFilesOfParent:started', payload });
+		// this.logger.debug({ action: 'listFilesOfParent:started', payload });
 		const response = await this.amqpConnection.request<RpcMessage<IFileDO[]>>(
 			this.createRequest(FilesStorageEvents.LIST_FILES_OF_PARENT, payload)
 		);
 
-		this.logger.debug({ action: 'listFilesOfParent:finished', payload });
+		// this.logger.debug({ action: 'listFilesOfParent:finished', payload });
 
 		this.checkError(response);
 		return response.message || [];
 	}
 
 	async deleteFilesOfParent(payload: IFileRecordParams): Promise<IFileDO[]> {
-		this.logger.debug({ action: 'deleteFilesOfParent:started', payload });
+		// this.logger.debug({ action: 'deleteFilesOfParent:started', payload });
 		const response = await this.amqpConnection.request<RpcMessage<IFileDO[]>>(
 			this.createRequest(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload)
 		);
 
-		this.logger.debug({ action: 'deleteFilesOfParent:finished', payload });
+		// this.logger.debug({ action: 'deleteFilesOfParent:finished', payload });
 
 		this.checkError(response);
 		return response.message || [];

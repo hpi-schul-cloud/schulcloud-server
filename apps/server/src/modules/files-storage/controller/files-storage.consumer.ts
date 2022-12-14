@@ -28,7 +28,7 @@ export class FilesStorageConsumer {
 	public async copyFilesOfParent(
 		@RabbitPayload() payload: CopyFilesOfParentPayload
 	): Promise<RpcMessage<ICopyFileDO[]>> {
-		this.logger.debug({ action: 'copyFilesOfParent', payload });
+		// this.logger.debug({ action: 'copyFilesOfParent', payload });
 
 		const { userId, source, target } = payload;
 		const [response] = await this.filesStorageService.copyFilesOfParent(userId, source, { target });
@@ -43,7 +43,7 @@ export class FilesStorageConsumer {
 	})
 	@UseRequestContext()
 	public async getFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<IFileDO[]>> {
-		this.logger.debug({ action: 'getFilesOfParent', payload });
+		// this.logger.debug({ action: 'getFilesOfParent', payload });
 
 		const [fileRecords, total] = await this.filesStorageService.getFileRecordsOfParent(payload);
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
@@ -58,7 +58,7 @@ export class FilesStorageConsumer {
 	})
 	@UseRequestContext()
 	public async deleteFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<IFileDO[]>> {
-		this.logger.debug({ action: 'deleteFilesOfParent', payload });
+		// this.logger.debug({ action: 'deleteFilesOfParent', payload });
 
 		const [fileRecords, total] = await this.filesStorageService.deleteFilesOfParent(payload);
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);

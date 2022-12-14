@@ -133,14 +133,14 @@ export class FilesStorageService {
 	// download
 	private checkFileName(entity: FileRecord, params: DownloadFileParams): void | NotFoundException {
 		if (entity.name !== params.fileName) {
-			this.logger.debug(`could not find file with id: ${entity.id} by filename`);
+			// this.logger.debug(`could not find file with id: ${entity.id} by filename`);
 			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
 	}
 
 	private checkScanStatus(entity: FileRecord): void | NotAcceptableException {
 		if (isStatusBlocked(entity)) {
-			this.logger.warn(`file is blocked with id: ${entity.id}`);
+			// this.logger.warn(`file is blocked with id: ${entity.id}`);
 			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED);
 		}
 	}
@@ -178,7 +178,7 @@ export class FilesStorageService {
 	}
 
 	public async delete(fileRecords: FileRecord[]) {
-		this.logger.debug({ action: 'delete', fileRecords });
+		// this.logger.debug({ action: 'delete', fileRecords });
 
 		const markedFileRecords = markForDelete(fileRecords);
 		await this.fileRecordRepo.save(markedFileRecords);
@@ -226,7 +226,7 @@ export class FilesStorageService {
 	}
 
 	public async restore(fileRecords: FileRecord[]) {
-		this.logger.debug({ action: 'restore', fileRecords });
+		// this.logger.debug({ action: 'restore', fileRecords });
 
 		const unmarkFileRecords = unmarkForDelete(fileRecords);
 		await this.fileRecordRepo.save(unmarkFileRecords);
@@ -291,7 +291,7 @@ export class FilesStorageService {
 		sourceFileRecords: FileRecord[],
 		targetParams: FileRecordParams
 	): Promise<CopyFileResponse[]> {
-		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
+		// this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
 
 		const promises: Promise<CopyFileResponse>[] = sourceFileRecords.map(async (sourceFile) => {
 			try {

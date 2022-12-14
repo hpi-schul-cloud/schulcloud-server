@@ -32,7 +32,7 @@ export class SyncFilesUc {
 		const options = new FileSyncOptions(aggregationSize, numParallelPromises);
 
 		do {
-			this.logger.log(new AggregationStartLoggable(aggregationsCounter, options));
+			// this.logger.log(new AggregationStartLoggable(aggregationsCounter, options));
 			const context = { fileCounter: aggregationsCounter * Number(aggregationSize) };
 			// eslint-disable-next-line no-await-in-loop
 			const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findFilesToSync(parentType, options.aggregationSize);
@@ -51,7 +51,7 @@ export class SyncFilesUc {
 			const promises = initilizedArray.map(() => this.syncBatch(itemsToSync, context));
 			await Promise.all(promises);
 		} else {
-			this.logger.log(new AggregationEmptyLoggable());
+			// this.logger.log(new AggregationEmptyLoggable());
 		}
 
 		return numFound;
@@ -72,18 +72,18 @@ export class SyncFilesUc {
 		try {
 			context.fileCounter += 1;
 			const currentCount = context.fileCounter;
-			this.logger.log(new FileSyncStartLoggable(item, currentCount));
+			// this.logger.log(new FileSyncStartLoggable(item, currentCount));
 
 			await this.metadataService.prepareMetaData(item);
 			await this.storageService.syncS3File(item);
 			await this.metadataService.persistMetaData(item);
 
-			this.logger.log(new FileSyncSuccessLoggable(item, currentCount));
+			// this.logger.log(new FileSyncSuccessLoggable(item, currentCount));
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
 
-			this.logger.warn(new FileSyncFailLoggable(item, stack));
+			// this.logger.warn(new FileSyncFailLoggable(item, stack));
 
 			await this.metadataService.persistError(item.source.id, stack);
 		}

@@ -41,7 +41,7 @@ export class ShareTokenUC {
 	): Promise<ShareTokenDO> {
 		this.checkFeatureEnabled();
 
-		this.logger.debug({ action: 'createShareToken', userId, payload, options });
+		// this.logger.debug({ action: 'createShareToken', userId, payload, options });
 
 		await this.checkParentWritePermission(userId, payload);
 
@@ -65,7 +65,7 @@ export class ShareTokenUC {
 	async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfoDto> {
 		this.checkFeatureEnabled();
 
-		this.logger.debug({ action: 'lookupShareToken', userId, token });
+		// this.logger.debug({ action: 'lookupShareToken', userId, token });
 
 		const shareToken = await this.shareTokenService.lookupToken(token);
 
@@ -87,7 +87,7 @@ export class ShareTokenUC {
 	async importShareToken(userId: EntityId, token: string, newName: string): Promise<CopyStatus> {
 		this.checkFeatureEnabled();
 
-		this.logger.debug({ action: 'importShareToken', userId, token, newName });
+		// this.logger.debug({ action: 'importShareToken', userId, token, newName });
 
 		const shareToken = await this.shareTokenService.lookupToken(token);
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger/logger.service';
 import { FilesRepo } from '@shared/repo';
+import { Logger } from '@src/core/logger/logger.service';
 
 @Injectable()
 export class DeleteFilesUc {
@@ -15,7 +15,7 @@ export class DeleteFilesUc {
 	async removeDeletedFilesData(removedSince: Date): Promise<void> {
 		const filesForDeletion = await this.filesRepo.findAllFilesForCleanup(removedSince);
 		const numberOfFiles = filesForDeletion.length;
-		this.logger.log(`${numberOfFiles} files will be deleted`);
+		// this.logger.log(`${numberOfFiles} files will be deleted`);
 		const failingFileIds: string[] = [];
 		// eslint-disable-next-line no-restricted-syntax
 		for (const file of filesForDeletion) {
@@ -24,12 +24,12 @@ export class DeleteFilesUc {
 				await this.filesRepo.deleteFile(file);
 			} catch (err) {
 				failingFileIds.push(file.id);
-				this.logger.error(err);
+				// this.logger.error(err);
 			}
 		}
-		this.logger.log(`${numberOfFiles - failingFileIds.length} out of ${numberOfFiles} files were successfully deleted`);
+		// this.logger.log(`${numberOfFiles - failingFileIds.length} out of ${numberOfFiles} files were successfully deleted`);
 		if (failingFileIds.length > 0) {
-			this.logger.error('the following files could not be deleted:', failingFileIds);
+			// this.logger.error('the following files could not be deleted:', failingFileIds);
 		}
 	}
 }

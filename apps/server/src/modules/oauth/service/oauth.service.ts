@@ -121,7 +121,7 @@ export class OAuthService {
 			throw new BadRequestException(`Provided idToken: ${idToken} has no sub.`);
 		}
 
-		this.logger.debug(`provisioning is running for user with sub: ${sub} and system with id: ${systemId}`);
+		// this.logger.debug(`provisioning is running for user with sub: ${sub} and system with id: ${systemId}`);
 		const provisioningDto: ProvisioningDto = await this.provisioningService.process(accessToken, idToken, systemId);
 
 		try {
@@ -180,7 +180,7 @@ export class OAuthService {
 	}
 
 	getOAuthErrorResponse(error: unknown, provider: string): OAuthResponse {
-		this.logger.error(error);
+		// this.logger.error(error);
 
 		const oauthResponse = new OAuthResponse();
 

@@ -17,17 +17,17 @@ export class DeleteOrphanedFilesUc {
 	}
 
 	async deleteOrphanedFilesForParentType(parentType: FileRecordParentType) {
-		this.logger.log('Start deletion process.');
+		// this.logger.log('Start deletion process.');
 
 		const orphanedFileRecords = await this.orphanedFilesRepo.findOrphanedFileRecords(parentType);
-		this.logger.log(`Found ${orphanedFileRecords.length} orphaned fileRecords.`);
+		// this.logger.log(`Found ${orphanedFileRecords.length} orphaned fileRecords.`);
 
 		await this.deleteOrphans(orphanedFileRecords);
-		this.logger.log(`Finished removing orphaned fileRecords.`);
+		// this.logger.log(`Finished removing orphaned fileRecords.`);
 	}
 
 	async deleteDuplicatedFilesForParentType(parentType: FileRecordParentType) {
-		this.logger.log('Start deletion process.');
+		// this.logger.log('Start deletion process.');
 
 		const orphanedFileRecords = await this.orphanedFilesRepo.findDuplicatedFileRecords(parentType);
 		const chunkSize = 100;
@@ -41,7 +41,7 @@ export class DeleteOrphanedFilesUc {
 		for await (const chunk of chunks) {
 			const promises = chunk.map(async (fileRecord) => {
 				const found = await this.orphanedFilesRepo.findLessonsByFileRecordId(fileRecord.id);
-				this.logger.log(`FileRecord with id ${fileRecord.id} and lesson found: ${JSON.stringify(found)}`);
+				// this.logger.log(`FileRecord with id ${fileRecord.id} and lesson found: ${JSON.stringify(found)}`);
 				if (!found) {
 					await this.deleteOrphan(fileRecord);
 				}
@@ -62,15 +62,15 @@ export class DeleteOrphanedFilesUc {
 		try {
 			const path = [fileRecord.schoolId, fileRecord.id].join('/');
 			await this.syncFilesStorageService.removeFile(path);
-			this.logger.log(`Successfully removed file with path = ${path} from S3 bucket.`);
+			// this.logger.log(`Successfully removed file with path = ${path} from S3 bucket.`);
 
 			await this.deleteMetaData(fileRecord);
-			this.logger.log(
-				`Successfully removed fileRecord with id = ${fileRecord.id} and corresponding fileFileRecord from database.`
-			);
+			// this.logger.log(
+			// 	`Successfully removed fileRecord with id = ${fileRecord.id} and corresponding fileFileRecord from database.`
+			// );
 		} catch (error) {
-			this.logger.error(`Error removing fileRecord with id = ${fileRecord.id}.`);
-			this.logger.error(error);
+			// this.logger.error(`Error removing fileRecord with id = ${fileRecord.id}.`);
+			// this.logger.error(error);
 		}
 	}
 

@@ -27,12 +27,12 @@ export class SyncEmbeddedFilesUc {
 	private async syncEmbeddedFiles(type: AvailableSyncParentType, limit: number) {
 		const [entities, count] = await this.embeddedFilesRepo.findElementsToSyncFiles(type, limit);
 
-		this.logger.log(`Found ${entities.length} ${type} descriptions with embedded files.`);
+		// this.logger.log(`Found ${entities.length} ${type} descriptions with embedded files.`);
 
 		const promises = entities.map(async (entity: AvailableSyncEntityType) => {
-			this.logger.log(`migrating entity with id ${entity.id}`);
+			// this.logger.log(`migrating entity with id ${entity.id}`);
 			const fileIds = this.extractFileIds(entity);
-			this.logger.log(`extracted file ids for entity with id ${entity.id} - fileIds: ${JSON.stringify(fileIds)}`);
+			// this.logger.log(`extracted file ids for entity with id ${entity.id} - fileIds: ${JSON.stringify(fileIds)}`);
 			if (fileIds.length > 0) {
 				const files = await this.embeddedFilesRepo.findFiles(fileIds, entity._id, type);
 
@@ -41,9 +41,9 @@ export class SyncEmbeddedFilesUc {
 					const idExists = files.some((file) => file.source.id === id.toHexString());
 					if (!idExists) {
 						unreachableFileIds.push(id.toHexString());
-						this.logger.warn(
-							`legacy file with id: ${id.toHexString()} in entity ${entity._id.toHexString()} not found`
-						);
+						// this.logger.warn(
+						// 	`legacy file with id: ${id.toHexString()} in entity ${entity._id.toHexString()} not found`
+						// );
 					}
 				});
 				unreachableFileIds.forEach((id) => {
@@ -88,7 +88,7 @@ export class SyncEmbeddedFilesUc {
 				try {
 					return new ObjectId(id);
 				} catch (error) {
-					this.logger.error(`The file id ${id} is not ObjectId in entity ${entity._id.toHexString()}`);
+					// this.logger.error(`The file id ${id} is not ObjectId in entity ${entity._id.toHexString()}`);
 				}
 			})
 			.filter((item): item is ObjectId => !!item);
@@ -115,11 +115,11 @@ export class SyncEmbeddedFilesUc {
 
 	private async sync(file: SyncFileItem, entity: AvailableSyncEntityType) {
 		try {
-			this.logger.log(`syncing entity with id ${entity.id}`);
+			// this.logger.log(`syncing entity with id ${entity.id}`);
 			await this.syncFilesMetaDataService.prepareMetaData(file);
 			await this.syncFilesStorageService.syncS3File(file);
 			await this.syncFilesMetaDataService.persistMetaData(file);
-			this.logger.log(`Synced file ${file.source.id}`);
+			// this.logger.log(`Synced file ${file.source.id}`);
 		} catch (error) {
 			if (error instanceof Error && error.message.includes('S3 file not found')) {
 				file.fileRecord.name = '';
@@ -134,7 +134,7 @@ export class SyncEmbeddedFilesUc {
 		const entityId = entity._id.toHexString();
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 		const stack = 'stack' in error ? error.stack : error;
-		this.logger.error(`${entityId}`, stack);
+		// this.logger.error(`${entityId}`, stack);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		return this.syncFilesMetaDataService.persistError(sourceFileId, stack);
 	}

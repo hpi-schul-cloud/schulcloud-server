@@ -19,7 +19,7 @@ export class EtherpadService {
 			const pad = (await service.create(data, { account: { userId } })) as PadResponse;
 			return pad.data.padID;
 		} catch (error) {
-			this.logger.error('Could not create new Etherpad', error);
+			// this.logger.error('Could not create new Etherpad', error);
 			return false;
 		}
 	}

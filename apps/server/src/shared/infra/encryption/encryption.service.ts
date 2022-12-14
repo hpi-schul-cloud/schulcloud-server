@@ -8,13 +8,13 @@ import { IEncryptionService } from './encryption.interface';
 export class SymetricKeyEncryptionService implements IEncryptionService {
 	constructor(private logger: Logger, private key?: string) {
 		if (!this.key) {
-			this.logger.warn('No AES key defined. Encryption will no work');
+			// this.logger.warn('No AES key defined. Encryption will no work');
 		}
 	}
 
 	public encrypt(data: string): string {
 		if (!this.key) {
-			this.logger.warn('No AES key defined. Will return plain text');
+			// this.logger.warn('No AES key defined. Will return plain text');
 			return data;
 		}
 		return CryptoJs.AES.encrypt(data, this.key).toString();
@@ -22,7 +22,7 @@ export class SymetricKeyEncryptionService implements IEncryptionService {
 
 	public decrypt(data: string): string {
 		if (!this.key) {
-			this.logger.warn('No AES key defined. Will return plain text');
+			// this.logger.warn('No AES key defined. Will return plain text');
 			return data;
 		}
 		return CryptoJs.AES.decrypt(data, this.key).toString(CryptoJs.enc.Utf8);

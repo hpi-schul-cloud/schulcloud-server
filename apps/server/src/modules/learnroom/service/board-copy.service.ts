@@ -80,7 +80,7 @@ export class BoardCopyService {
 			}
 
 			/* istanbul ignore next */
-			this.logger.warn(`BoardCopyService unable to handle boardElementType.`);
+			// this.logger.warn(`BoardCopyService unable to handle boardElementType.`);
 			/* istanbul ignore next */
 			return Promise.reject(new Error(`BoardCopyService unable to handle boardElementType.`));
 		});

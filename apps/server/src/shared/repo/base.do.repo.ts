@@ -45,7 +45,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 		const newEntity: E = this.createNewEntityFromDO(domainObject);
 
 		const created: E = this._em.create(this.entityName, newEntity);
-		this.logger.debug(`Created new entity with id ${created.id}`);
+		// this.logger.debug(`Created new entity with id ${created.id}`);
 		return created;
 	}
 
@@ -58,7 +58,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 			id: domainObject.id,
 		} as FilterQuery<E>);
 		const updated: E = this._em.assign(fetchedEntity, newEntity);
-		this.logger.debug(`Updated entity with id ${updated.id}`);
+		// this.logger.debug(`Updated entity with id ${updated.id}`);
 		return updated;
 	}
 

@@ -25,7 +25,7 @@ export class FileLegacyService {
 			const result = await service.create(data, { userId: data.userId });
 			return result as FileLegacyResponse;
 		} catch (error) {
-			this.logger.error('Could not copy file', error);
+			// this.logger.error('Could not copy file', error);
 			return { oldFileId: data.fileId };
 		}
 	}

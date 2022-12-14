@@ -26,11 +26,11 @@ export class RequestLoggingInterceptor implements NestInterceptor {
 		};
 		return next.handle().pipe(
 			tap(() => {
-				this.logger.http(logging);
+				// this.logger.http(logging);
 			}),
 			catchError((err: unknown) => {
 				logging.error = err;
-				this.logger.http(logging);
+				// this.logger.http(logging);
 				return throwError(() => err);
 			})
 		);

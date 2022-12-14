@@ -29,7 +29,7 @@ export class OauthUc {
 	}
 
 	private async process(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
-		this.logger.debug(`Oauth process started for systemId ${systemId}`);
+		// this.logger.debug(`Oauth process started for systemId ${systemId}`);
 
 		const authCode: string = this.oauthService.checkAuthorizationCode(query);
 
@@ -57,9 +57,9 @@ export class OauthUc {
 	private extractOauthConfigFromSystem(system: SystemDto): OauthConfig {
 		const { oauthConfig } = system;
 		if (oauthConfig == null) {
-			this.logger.warn(
-				`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id ?? 'undefined'}`
-			);
+			// this.logger.warn(
+			// 	`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id ?? 'undefined'}`
+			// );
 			throw new OAuthSSOError('Requested system has no oauth configured', 'sso_internal_error');
 		}
 		return oauthConfig;

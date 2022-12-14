@@ -64,9 +64,9 @@ export class IdTokenService {
 
 			return `<iframe src="${this.host}/oauth2/username/${pseudonymDO.pseudonym}" ${this.iFrameProperties}></iframe>`;
 		} catch (err) {
-			this.logger.debug(
-				`Something went wrong for id token creation. LtiTool or Pseudonym could not be found for userId: ${userId} and clientId: ${clientId}`
-			);
+			// this.logger.debug(
+			// 	`Something went wrong for id token creation. LtiTool or Pseudonym could not be found for userId: ${userId} and clientId: ${clientId}`
+			// );
 			return undefined;
 		}
 	}

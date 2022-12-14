@@ -23,7 +23,7 @@ export class NexboardService {
 			const nexBoard = (await service.create(data, { account: { userId } })) as NexboardResponse;
 			return { board: nexBoard.id, url: nexBoard.publicLink };
 		} catch (error) {
-			this.logger.error('Could not create new Nexboard', error);
+			// this.logger.error('Could not create new Nexboard', error);
 			return false;
 		}
 	}
