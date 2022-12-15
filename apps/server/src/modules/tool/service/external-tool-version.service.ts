@@ -4,7 +4,7 @@ import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/e
 @Injectable()
 export class ExternalToolVersionService {
 	increaseVersionOfNewToolIfNecessary(oldTool: ExternalToolDO, newTool: ExternalToolDO): void {
-		if (!oldTool || !oldTool.parameters || !newTool.parameters) {
+		if (!oldTool.parameters || !newTool.parameters) {
 			return;
 		}
 		if (this.compareParameters(oldTool.parameters, newTool.parameters)) {
@@ -18,7 +18,7 @@ export class ExternalToolVersionService {
 		});
 
 		const shouldIncrementVersion =
-			this.hasChangedArrayLength(oldParams, newParams) ||
+			this.hasNewRequiredParameter(oldParams, newParams) ||
 			this.hasChangedRequiredParameters(oldParams, newParams) ||
 			this.hasChangedParameterNames(oldParams, newParams) ||
 			this.hasChangedParameterRegex(newParams, matchingParams) ||
@@ -27,8 +27,10 @@ export class ExternalToolVersionService {
 		return shouldIncrementVersion;
 	}
 
-	private hasChangedArrayLength(oldParams: CustomParameterDO[], newParams: CustomParameterDO[]): boolean {
-		return oldParams.length !== newParams.length;
+	private hasNewRequiredParameter(oldParams: CustomParameterDO[], newParams: CustomParameterDO[]): boolean {
+		return newParams.some(
+			(newParam) => !newParam.isOptional && oldParams.every((oldParam) => oldParam.name !== newParam.name)
+		);
 	}
 
 	private hasChangedParameterNames(oldParams: CustomParameterDO[], newParams: CustomParameterDO[]): boolean {

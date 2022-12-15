@@ -33,20 +33,49 @@ describe('ExternalToolVersionService', () => {
 		const newTool: ExternalToolDO = { ...oldTool, parameters: [{ ...param1 }] };
 
 		return {
-			param1,
 			oldTool,
 			newTool,
 		};
 	};
 
 	const expectIncreasement = (newTool: ExternalToolDO) => expect(newTool.version).toEqual(2);
+	const expectNoIncreasement = (newTool: ExternalToolDO) => expect(newTool.version).toEqual(1);
+
+	describe('parameter check', () => {
+		it('should return when customParameters on old tool is not defined', () => {
+			const { oldTool, newTool } = setup();
+			oldTool.parameters = undefined;
+
+			service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+
+			expectNoIncreasement(newTool);
+		});
+
+		it('should return when customParameters on new tool is not defined', () => {
+			const { oldTool, newTool } = setup();
+			newTool.parameters = undefined;
+
+			service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+
+			expectNoIncreasement(newTool);
+		});
+	});
 
 	it('should not increase the version if the customParameters are the same', () => {
 		const { oldTool, newTool } = setup();
 
 		service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
 
-		expect(newTool.version).toEqual(1);
+		expectNoIncreasement(newTool);
+	});
+
+	it('should increase when new required parameter exists', () => {
+		const { oldTool, newTool } = setup();
+		newTool.parameters?.push(customParameterDOFactory.build({ isOptional: false }));
+
+		service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+
+		expectIncreasement(newTool);
 	});
 
 	it('should increase when length of customParameters is different', () => {
