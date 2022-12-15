@@ -1,5 +1,5 @@
-import { EntityProperties, RoleRepo, UserRepo } from '@shared/repo';
-import { EntityId, ISchoolProperties, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
+import { RoleRepo, UserRepo } from '@shared/repo';
+import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { BadRequestException, Injectable } from '@nestjs/common';
