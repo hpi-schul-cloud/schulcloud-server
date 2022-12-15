@@ -7,13 +7,13 @@ import { SchoolDO } from '../domainobject/school.do';
 @Injectable()
 export class SchoolRule extends BasePermission<School | SchoolDO> {
 	public isApplicable(user: User, entity: School | SchoolDO): boolean {
-		const isMatched = entity instanceof School || entity instanceof SchoolDO;
+		const isMatched: boolean = entity instanceof School || entity instanceof SchoolDO;
 
 		return isMatched;
 	}
 
 	public hasPermission(user: User, entity: School | SchoolDO, context: IPermissionContext): boolean {
-		const hasPermission =
+		const hasPermission: boolean =
 			this.utils.hasAllPermissions(user, context.requiredPermissions) && user.school.id === entity.id;
 
 		return hasPermission;

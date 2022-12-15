@@ -19,7 +19,13 @@ export class SchoolUc {
 			action: Actions.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
-		return this.schoolService.setMigration(schoolId, oauthMigrationPossible, oauthMigrationMandatory);
+		const migrationResponse: MigrationResponse = await this.schoolService.setMigration(
+			schoolId,
+			oauthMigrationPossible,
+			oauthMigrationMandatory
+		);
+
+		return migrationResponse;
 	}
 
 	async getMigration(schoolId: string, userId: string): Promise<MigrationResponse> {
@@ -27,6 +33,8 @@ export class SchoolUc {
 			action: Actions.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
-		return this.schoolService.getMigration(schoolId);
+		const migrationResponse: MigrationResponse = await this.schoolService.getMigration(schoolId);
+
+		return migrationResponse;
 	}
 }
