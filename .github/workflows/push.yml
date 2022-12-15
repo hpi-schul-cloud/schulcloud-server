@@ -43,6 +43,8 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build and push ${{ github.repository }}
+        permissions:
+          packages: write
         if: ${{ env.IMAGE_EXISTS == 0 }}
         uses: docker/build-push-action@v3
         with:
