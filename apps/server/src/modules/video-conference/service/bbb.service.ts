@@ -58,7 +58,8 @@ export class BBBService {
 	}
 
 	private bbbConfig(presentationUrl: string): string {
-		return presentationUrl === "" ? "" : `<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='${presentationUrl}' /></module></modules>`;
+		if (presentationUrl === "") return "";
+		return `<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='${presentationUrl}' /></module></modules>`;
 	}
 
 	/**
