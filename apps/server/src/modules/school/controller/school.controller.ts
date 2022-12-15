@@ -1,4 +1,11 @@
-import { ApiTags } from '@nestjs/swagger';
+import {
+	ApiForbiddenResponse,
+	ApiFoundResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
@@ -12,6 +19,8 @@ export class SchoolController {
 	constructor(private readonly schoolUc: SchoolUc) {}
 
 	@Put(':schoolId/migration')
+	@ApiOkResponse({ description: 'New migrationflags set', type: MigrationResponse })
+	@ApiUnauthorizedResponse()
 	async setMigration(
 		@Param() schoolParams: SchoolParams,
 		@Body() migrationBody: MigrationBody,
@@ -28,6 +37,9 @@ export class SchoolController {
 	}
 
 	@Get(':schoolId/migration')
+	@ApiFoundResponse({ description: 'Migrationflags have been found.', type: MigrationResponse })
+	@ApiUnauthorizedResponse()
+	@ApiNotFoundResponse({ description: 'Migrationsflags could not be found for the given school' })
 	async getMigration(
 		@Param() schoolParams: SchoolParams,
 		@CurrentUser() currentUser: ICurrentUser
