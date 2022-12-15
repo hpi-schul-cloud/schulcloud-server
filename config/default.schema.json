@@ -192,7 +192,7 @@
 		"FEATURE_VIDEOCONFERENCE_DEFAULT_PRESENTATION": {
 			"type": "string",
 			"default": "",
-			"description": "Link to a custom presentation, if empty, the default presentation will be used. TODO set this env variable for Thuringen 'https://s3.hidrive.strato.com/cloud-instances/thr/bbb/presentation.pdf'"
+			"description": "Link to a custom presentation, if empty, the default presentation will be used."
 		},
 		"VIDEOCONFERENCE_HOST": {
 			"type": "string",
