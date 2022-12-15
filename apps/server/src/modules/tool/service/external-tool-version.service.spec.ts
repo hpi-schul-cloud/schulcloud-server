@@ -35,91 +35,122 @@ describe('ExternalToolVersionService', () => {
 		return {
 			oldTool,
 			newTool,
+			param1,
 		};
 	};
 
 	const expectIncreasement = (newTool: ExternalToolDO) => expect(newTool.version).toEqual(2);
 	const expectNoIncreasement = (newTool: ExternalToolDO) => expect(newTool.version).toEqual(1);
 
-	describe('parameter check', () => {
-		it('should return when customParameters on old tool is not defined', () => {
-			const { oldTool, newTool } = setup();
-			oldTool.parameters = undefined;
+	describe('increaseVersionOfNewToolIfNecessary is called', () => {
+		describe('when customParameters on old tool is not defined', () => {
+			it('should not increase version', () => {
+				const { oldTool, newTool } = setup();
+				oldTool.parameters = undefined;
 
-			service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+				service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
 
-			expectNoIncreasement(newTool);
+				expectNoIncreasement(newTool);
+			});
+
+			describe('when customParameters on new tool is not defined', () => {
+				it('should not increase version', () => {
+					const { oldTool, newTool } = setup();
+					newTool.parameters = undefined;
+
+					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+
+					expectNoIncreasement(newTool);
+				});
+			});
 		});
 
-		it('should return when customParameters on new tool is not defined', () => {
-			const { oldTool, newTool } = setup();
-			newTool.parameters = undefined;
+		describe('compareParameters is called', () => {
+			describe('when customParameters are the same', () => {
+				it('should not increase version', () => {
+					const { oldTool, newTool } = setup();
 
-			service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
 
-			expectNoIncreasement(newTool);
+					expectNoIncreasement(newTool);
+				});
+			});
+
+			describe('when length of customParameters is different', () => {
+				it('should increase version', () => {
+					const { oldTool, newTool } = setup();
+					newTool.parameters?.push(customParameterDOFactory.build());
+
+					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+
+					expectIncreasement(newTool);
+				});
+			});
 		});
-	});
 
-	it('should not increase the version if the customParameters are the same', () => {
-		const { oldTool, newTool } = setup();
+		describe('hasNewRequiredParameter is called', () => {
+			describe('when new required parameter exists', () => {
+				it('should increase version', () => {
+					const { oldTool, newTool } = setup();
+					newTool.parameters?.push(customParameterDOFactory.build({ isOptional: false }));
 
-		service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
 
-		expectNoIncreasement(newTool);
-	});
+					expectIncreasement(newTool);
+				});
+			});
+		});
 
-	it('should increase when new required parameter exists', () => {
-		const { oldTool, newTool } = setup();
-		newTool.parameters?.push(customParameterDOFactory.build({ isOptional: false }));
+		describe('hasChangedParameterNames is called', () => {
+			describe('when the name of some customParameter has changed', () => {
+				it('should increase version', () => {
+					const { oldTool, newTool, param1 } = setup();
+					param1.name = 'newName';
 
-		service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
 
-		expectIncreasement(newTool);
-	});
+					expectIncreasement(newTool);
+				});
+			});
+		});
 
-	it('should increase when length of customParameters is different', () => {
-		const { oldTool, newTool } = setup();
-		newTool.parameters?.push(customParameterDOFactory.build());
+		describe('hasChangedRequiredParameters is called', () => {
+			describe('when one customParameter change from optional to required', () => {
+				it('should increase version', () => {
+					const { oldTool, newTool, param1 } = setup();
+					param1.isOptional = true;
 
-		service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
 
-		expectIncreasement(newTool);
-	});
+					expectIncreasement(newTool);
+				});
+			});
+		});
 
-	it('should increase when the name of some customParameter has changed', () => {
-		const { oldTool, newTool } = setup();
-		newTool.parameters![0].name = 'newName';
+		describe('hasChangedParameterRegex is called', () => {
+			describe('when one customParameter has a changed regex', () => {
+				it('should increase version', () => {
+					const { oldTool, newTool, param1 } = setup();
+					param1.regex = '.+';
 
-		service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
 
-		expectIncreasement(newTool);
-	});
+					expectIncreasement(newTool);
+				});
+			});
+		});
 
-	it('should increase when one customParameter change from optional to required', () => {
-		const { oldTool, newTool } = setup();
-		newTool.parameters![0].isOptional = true;
+		describe('hasChangedParameterTypes is called', () => {
+			describe('when one customParameter has a changed type', () => {
+				it('should increase version', () => {
+					const { oldTool, newTool, param1 } = setup();
+					param1.type = CustomParameterType.BOOLEAN;
 
-		service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
 
-		expectIncreasement(newTool);
-	});
-
-	it('should increase when one customParameter has a changed regex', () => {
-		const { oldTool, newTool } = setup();
-		newTool.parameters![0].regex = '.+';
-
-		service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
-
-		expectIncreasement(newTool);
-	});
-
-	it('should increase when one customParameter has a changed type', () => {
-		const { oldTool, newTool } = setup();
-		newTool.parameters![0].type = CustomParameterType.BOOLEAN;
-
-		service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
-
-		expectIncreasement(newTool);
+					expectIncreasement(newTool);
+				});
+			});
+		});
 	});
 });

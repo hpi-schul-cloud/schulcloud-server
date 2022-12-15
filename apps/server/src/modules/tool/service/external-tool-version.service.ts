@@ -28,35 +28,40 @@ export class ExternalToolVersionService {
 	}
 
 	private hasNewRequiredParameter(oldParams: CustomParameterDO[], newParams: CustomParameterDO[]): boolean {
-		return newParams.some(
+		const increase = newParams.some(
 			(newParam) => !newParam.isOptional && oldParams.every((oldParam) => oldParam.name !== newParam.name)
 		);
+		return increase;
 	}
 
 	private hasChangedParameterNames(oldParams: CustomParameterDO[], newParams: CustomParameterDO[]): boolean {
-		const names1 = oldParams.map((parameter) => parameter.name);
-		const names2 = newParams.map((parameter) => parameter.name);
-		return !!(names1.some((name) => !names2.includes(name)) || names2.some((name) => !names1.includes(name)));
+		const names1: string[] = oldParams.map((parameter) => parameter.name);
+		const names2: string[] = newParams.map((parameter) => parameter.name);
+		const increase = !!(names1.some((name) => !names2.includes(name)) || names2.some((name) => !names1.includes(name)));
+		return increase;
 	}
 
 	private hasChangedRequiredParameters(newParams: CustomParameterDO[], matchingParams: CustomParameterDO[]): boolean {
-		return matchingParams.some((param) => {
+		const increase = matchingParams.some((param) => {
 			const newParam = newParams.find((p) => p.name === param.name);
 			return newParam && param.isOptional !== newParam.isOptional;
 		});
+		return increase;
 	}
 
 	private hasChangedParameterRegex(newParams: CustomParameterDO[], matchingParams: CustomParameterDO[]): boolean {
-		return matchingParams.some((param) => {
+		const increase = matchingParams.some((param) => {
 			const newParam = newParams.find((p) => p.name === param.name);
 			return newParam && param.regex !== newParam.regex;
 		});
+		return increase;
 	}
 
 	private hasChangedParameterTypes(newParams: CustomParameterDO[], matchingParams: CustomParameterDO[]): boolean {
-		return matchingParams.some((param) => {
+		const increase = matchingParams.some((param) => {
 			const newParam = newParams.find((p) => p.name === param.name);
 			return newParam && param.type !== newParam.type;
 		});
+		return increase;
 	}
 }
