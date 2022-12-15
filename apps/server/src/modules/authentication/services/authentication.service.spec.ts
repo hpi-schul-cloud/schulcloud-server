@@ -10,18 +10,18 @@ import { BruteForceError } from '../errors/brute-force.error';
 import { AuthenticationService } from './authentication.service';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
 
-const mockAccount: AccountDto = {
-	id: 'mockAccountId',
-	createdAt: new Date(),
-	updatedAt: new Date(),
-	username: 'mockedUsername',
-};
-
 describe('AuthenticationService', () => {
 	let module: TestingModule;
 	let authenticationService: AuthenticationService;
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
+
+	const mockAccount: AccountDto = {
+		id: 'mockAccountId',
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		username: 'mockedUsername',
+	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -50,100 +50,112 @@ describe('AuthenticationService', () => {
 		accountService = module.get(AccountService);
 		jwtService = module.get(JwtService);
 	});
+
 	describe('loadAccount', () => {
-		it('should load account without system', async () => {
-			accountService.searchByUsernameExactMatch.mockResolvedValueOnce({
-				accounts: [{ ...mockAccount, systemId: 'mockSystemId' }, mockAccount],
-				total: 2,
+		describe('when resolving an account', () => {
+			it('should load account without system', async () => {
+				accountService.searchByUsernameExactMatch.mockResolvedValueOnce({
+					accounts: [{ ...mockAccount, systemId: 'mockSystemId' }, mockAccount],
+					total: 2,
+				});
+				const account = await authenticationService.loadAccount('username');
+				expect(account).toEqual(mockAccount);
 			});
-			const account = await authenticationService.loadAccount('username');
-			expect(account).toEqual(mockAccount);
+
+			it('should find account with system', async () => {
+				accountService.findByUsernameAndSystemId.mockResolvedValueOnce({ ...mockAccount, systemId: 'mockSystemId' });
+				const account = await authenticationService.loadAccount('username', 'mockSystemId');
+				expect(account).toEqual({ ...mockAccount, systemId: 'mockSystemId' });
+			});
 		});
 
-		it('should find account with system', async () => {
-			accountService.findByUsernameAndSystemId.mockResolvedValueOnce({ ...mockAccount, systemId: 'mockSystemId' });
-			const account = await authenticationService.loadAccount('username', 'mockSystemId');
-			expect(account).toEqual({ ...mockAccount, systemId: 'mockSystemId' });
-		});
-
-		it('should throw unautherized exception if no account is found', async () => {
-			accountService.findByUsernameAndSystemId.mockResolvedValueOnce(null);
-			await expect(authenticationService.loadAccount('username', 'mockSystemId')).rejects.toThrow(
-				UnauthorizedException
-			);
+		describe('when resolving a not existent account', () => {
+			it('should throw unautherized exception', async () => {
+				accountService.findByUsernameAndSystemId.mockResolvedValueOnce(null);
+				await expect(authenticationService.loadAccount('username', 'mockSystemId')).rejects.toThrow(
+					UnauthorizedException
+				);
+			});
 		});
 	});
+
 	describe('generateJwt', () => {
-		it('should pass the correct parameters', async () => {
-			const mockCurrentUser: ICurrentUser = {
-				accountId: 'mockAccountId',
-				roles: ['student'],
-				schoolId: 'mockSchoolId',
-				userId: 'mockUserId',
-				user: {
-					id: 'mockUserId',
-					firstName: 'Samuel',
-					lastName: 'Vimes',
-					roles: [{ id: 'roleId', name: 'student' }],
-					permissions: [],
+		describe('when generating new jwt', () => {
+			it('should pass the correct parameters', async () => {
+				const mockCurrentUser: ICurrentUser = {
+					accountId: 'mockAccountId',
+					roles: ['student'],
 					schoolId: 'mockSchoolId',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				},
-			};
-			await authenticationService.generateJwt(mockCurrentUser);
-			expect(jwtService.sign).toBeCalledWith(
-				mockCurrentUser,
-				expect.objectContaining({
-					subject: mockCurrentUser.accountId,
-				})
-			);
+					userId: 'mockUserId',
+					user: {
+						id: 'mockUserId',
+						firstName: 'Samuel',
+						lastName: 'Vimes',
+						roles: [{ id: 'roleId', name: 'student' }],
+						permissions: [],
+						schoolId: 'mockSchoolId',
+						createdAt: new Date(),
+						updatedAt: new Date(),
+					},
+				};
+				await authenticationService.generateJwt(mockCurrentUser);
+				expect(jwtService.sign).toBeCalledWith(
+					mockCurrentUser,
+					expect.objectContaining({
+						subject: mockCurrentUser.accountId,
+					})
+				);
+			});
 		});
 	});
+
 	describe('checkBrutForce', () => {
-		beforeEach(() => {
-			accountService.updateLastTriedFailedLogin.mockClear();
-		});
+		describe('when user tries multiple logins', () => {
+			beforeEach(() => {
+				accountService.updateLastTriedFailedLogin.mockClear();
+			});
 
-		it('should fail for account with recently failed login', () => {
-			const lasttriedFailedLogin = new Date();
-			lasttriedFailedLogin.setSeconds(lasttriedFailedLogin.getSeconds() - 14);
-			expect(() =>
-				authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as AccountDto)
-			).toThrow(BruteForceError);
-		});
-		it('should not fail for account with failed login above threshold', () => {
-			const lasttriedFailedLogin = new Date();
-			lasttriedFailedLogin.setSeconds(lasttriedFailedLogin.getSeconds() - 16);
+			it('should fail for account with recently failed login', () => {
+				const lasttriedFailedLogin = new Date();
+				lasttriedFailedLogin.setSeconds(lasttriedFailedLogin.getSeconds() - 14);
+				expect(() =>
+					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as AccountDto)
+				).toThrow(BruteForceError);
+			});
 
-			expect(() =>
-				authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as AccountDto)
-			).not.toThrow();
+			it('should not fail for account with failed login above threshold', () => {
+				const lasttriedFailedLogin = new Date();
+				lasttriedFailedLogin.setSeconds(lasttriedFailedLogin.getSeconds() - 16);
+				expect(() =>
+					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as AccountDto)
+				).not.toThrow();
+			});
 		});
 	});
 
 	describe('normalizeUsername', () => {
-		it('should trim username', () => {
-			const username = '  username  ';
-			const result = authenticationService.normalizeUsername(username);
+		describe('when a username is entered', () => {
+			it('should trim username', () => {
+				const username = '  username  ';
+				const result = authenticationService.normalizeUsername(username);
+				expect(result).toEqual('username');
+			});
 
-			expect(result).toEqual('username');
-		});
-
-		it('should lowercase username', () => {
-			const username = 'UserName';
-			const result = authenticationService.normalizeUsername(username);
-
-			expect(result).toEqual('username');
+			it('should lowercase username', () => {
+				const username = 'UserName';
+				const result = authenticationService.normalizeUsername(username);
+				expect(result).toEqual('username');
+			});
 		});
 	});
 
 	describe('normalizePassword', () => {
-		it('should trim password', () => {
-			const password = '  password  ';
-			const result = authenticationService.normalizePassword(password);
-
-			expect(result).toEqual('password');
+		describe('when a password is entered', () => {
+			it('should trim password', () => {
+				const password = '  password  ';
+				const result = authenticationService.normalizePassword(password);
+				expect(result).toEqual('password');
+			});
 		});
 	});
 });
