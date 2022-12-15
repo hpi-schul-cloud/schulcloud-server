@@ -33,14 +33,14 @@ const algorithms = [
 if (!algorithms.includes(jwtConstants.jwtOptions.algorithm)) {
 	throw new Error(`${jwtConstants.jwtOptions.algorithm} is not a valid JWT signing algorithm`);
 }
-const signAlgoritm = jwtConstants.jwtOptions.algorithm as Algorithm;
+const signAlgorithm = jwtConstants.jwtOptions.algorithm as Algorithm;
 
 const signOptions: SignOptions = {
-	algorithm: signAlgoritm,
+	algorithm: signAlgorithm,
 	audience: jwtConstants.jwtOptions.audience,
 	expiresIn: jwtConstants.jwtOptions.expiresIn,
 	issuer: jwtConstants.jwtOptions.issuer,
-	header: { ...jwtConstants.jwtOptions.header, alg: signAlgoritm },
+	header: { ...jwtConstants.jwtOptions.header, alg: signAlgorithm },
 };
 const jwtModuleOptions: JwtModuleOptions = {
 	secret: jwtConstants.secret,
