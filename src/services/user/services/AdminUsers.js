@@ -182,25 +182,25 @@ class AdminUsers {
 		const params = await this.prepareParams(_id, _params);
 		await this.checkIfExternallyManaged(params.query.schoolId);
 
-		const userData = _data;
-		await this.checkMail(userData.email, _id);
-		if (!userData.createAccount) {
-			await this.updateAccount(userData.email, _id);
+		const { email, password, createAccount } = _data;
+		await this.checkMail(email, _id);
+		if (!createAccount) {
+			await this.updateAccount(email, _id);
 		}
 
 		// _id is part of params and will be combined with the schoolId
-		const createdUsers = await this.prepareRoleback(userData.email, _id, () =>
-			this.app.service('usersModel').patch(null, userData, params)
+		const createdUsers = await this.prepareRoleback(email, _id, () =>
+			this.app.service('usersModel').patch(null, _data, params)
 		);
 
 		if (createdUsers.length === 0) throw new BadRequest('user could not be edit');
 
 		const createdUser = createdUsers[0];
-		if (userData.createAccount) {
+		if (createAccount) {
 			await this.createAccount({
 				username: createdUser.email,
-				password: userData.password,
-				userId: createdUser._id,
+				password,
+				userId: createdUser._id.toString(),
 				activated: true,
 			});
 		}
