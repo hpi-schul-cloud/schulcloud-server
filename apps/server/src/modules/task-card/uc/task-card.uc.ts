@@ -30,7 +30,7 @@ export class TaskCardUc {
 
 		const title = CardElement.fromTitle(params.title);
 		cardElements.unshift(title);
-		await this.cardElementRepo.save(title);
+		//await this.cardElementRepo.save(title);
 
 		if (params.text) {
 			const texts = params.text.map((text) => CardElement.fromRichtext(text));
@@ -38,16 +38,25 @@ export class TaskCardUc {
 		}
 
 		const cardParams: ITaskCard = {
-			cardElements,
+			cardElements: [],
 			cardType: CardType.Task,
 			creator: user,
 			task: taskWithStatusVo.task,
 		};
 
 		const card = new TaskCard(cardParams);
+		/*
+		await Promise.all(
+			cardElements.map(async (element) => {
+				await this.cardElementRepo.save(element);
+			})
+		);
+*/
+		//await this.taskCardRepo.save(card);
 
-		await this.taskCardRepo.save(card);
-		//await this.taskCardRepo.createTaskCard(card);
+		//card.cardElements.set(cardElements);
+		//await this.taskCardRepo.save(card);
+		await this.taskCardRepo.createTaskCard(card);
 
 		return { card, taskWithStatusVo };
 	}
@@ -56,9 +65,9 @@ export class TaskCardUc {
 		// const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.taskCardRepo.findById(id);
 
-		const taskWithStatusVo = await this.taskService.find(userId, card.task.id);
+		//const taskWithStatusVo = await this.taskService.find(userId, card.task.id);
 		// this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
-		return { card, taskWithStatusVo };
+		//return { card, taskWithStatusVo };
 	}
 
 	// async findOne()

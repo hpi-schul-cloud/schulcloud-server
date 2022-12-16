@@ -27,12 +27,29 @@ export type CardProps = {
   workaround is using discriminatorMap in the abstract class and tableName in all classes,
  */
 @Entity({
-	discriminatorColumn: 'cardType',
-	discriminatorMap: { task: 'TaskCard' },
-	abstract: true,
+	//discriminatorColumn: 'cardType',
+	//discriminatorMap: { task: 'TaskCard' },
+	//abstract: true,
 	tableName: 'card',
 })
-export abstract class Card extends BaseEntityWithTimestamps {
+export class TaskCard extends BaseEntityWithTimestamps {
+	constructor(props: ITaskCard) {
+		super();
+
+		this.draggable = props.draggable || true;
+		this.cardType = CardType.Task;
+
+		if (props.cardElements.length > 0) {
+			this.cardElements.set(props.cardElements);
+		}
+
+		Object.assign(this, { creator: props.creator });
+
+		if (props.task) {
+			this.task = wrap(props.task).toReference();
+		}
+	}
+
 	//@OneToMany({ entity: () => CardElement, mappedBy: (cardElement) => cardElement.card, orphanRemoval: true }))
 	@ManyToMany('CardElement', undefined, { fieldName: 'referenceIds' })
 	cardElements = new Collection<CardElement>(this);
@@ -50,24 +67,6 @@ export abstract class Card extends BaseEntityWithTimestamps {
 	@Property()
 	isDraft = false;
 
-	protected constructor(props: CardProps) {
-		super();
-		if (props.cardElements) {
-			this.cardElements.set(props.cardElements);
-		}
-		Object.assign(this, { creator: props.creator });
-	}
-
-	/*
-	static createInstance(cardType: CardType, props: CardProps): Card {
-		let card: Card;
-		if (cardType === CardType.Task) {
-			card = new TaskCard(props);
-		}
-
-		return card;
-	}*/
-
 	// TODO
 	getCardElements() {
 		return this.cardElements.getItems();
@@ -81,23 +80,6 @@ export abstract class Card extends BaseEntityWithTimestamps {
 	private validateReordering(ids: EntityId[]) {
 	}
 	*/
-}
-
-@Entity({
-	tableName: 'card',
-})
-export class TaskCard extends Card {
-	constructor(props: ITaskCard) {
-		super(props);
-		//this.cardElements.set(props.cardElements);
-		this.cardType = CardType.Task;
-
-		if (props.draggable) {
-			this.draggable = props.draggable;
-		}
-
-		this.task = wrap(props.task).toReference();
-	}
 
 	@Index()
 	@OneToOne({ type: 'Task', fieldName: 'taskId', wrappedReference: true, unique: true })

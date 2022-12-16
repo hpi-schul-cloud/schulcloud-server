@@ -18,7 +18,7 @@ export class SchoolMapper {
 				return Reference.createFromPK(System, systemId);
 			}
 		);
-		school.systems.add(...refs);
+		//school.systems.add(...refs);
 
 		return school;
 	}
