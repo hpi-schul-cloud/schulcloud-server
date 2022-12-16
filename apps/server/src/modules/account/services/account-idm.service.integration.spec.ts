@@ -3,10 +3,11 @@ import { ConfigModule } from '@nestjs/config';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { IKeycloakSettings, KeycloakSettings } from '@shared/infra/identity-management/keycloak/interface';
+import { KeycloakSettings } from '@shared/infra/identity-management/keycloak/interface';
 import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import { IAccount } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
+import KeycloakConfiguration from '@shared/infra/identity-management/keycloak/keycloak-config';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountServiceIdm } from './account-idm.service';
@@ -16,7 +17,7 @@ describe('AccountService IDM Integration', () => {
 	let identityManagementService: IdentityManagementService;
 	let keycloakAdminService: KeycloakAdministrationService;
 	let keycloak: KeycloakAdminClient;
-	let isIdmReachable = false;
+	let isIdmReachable: boolean;
 	let accountIdmService: AbstractAccountService;
 
 	const testRealm = 'test-realm';
@@ -64,17 +65,7 @@ describe('AccountService IDM Integration', () => {
 				},
 				{
 					provide: KeycloakSettings,
-					useValue: {
-						clientId: 'admin-cli',
-						baseUrl: 'http://localhost:8080',
-						realmName: 'master',
-						credentials: {
-							clientId: 'admin-cli',
-							username: 'keycloak',
-							password: 'keycloak',
-							grantType: 'password',
-						},
-					} as IKeycloakSettings,
+					useValue: KeycloakConfiguration.keycloakSettings,
 				},
 			],
 		}).compile();
@@ -104,9 +95,8 @@ describe('AccountService IDM Integration', () => {
 		}
 	});
 
-	const itif = (condition) => (condition ? it : it.skip);
-
-	itif(isIdmReachable)('save should create a new account', async () => {
+	it('save should create a new account', async () => {
+		if (!isIdmReachable) return;
 		const createdAccount = await accountIdmService.save(testAccount);
 		const foundAccount = await identityManagementService.findAccountById(createdAccount.idmReferenceId ?? '');
 
@@ -121,7 +111,8 @@ describe('AccountService IDM Integration', () => {
 		);
 	});
 
-	itif(isIdmReachable)('save should update existing account', async () => {
+	it('save should update existing account', async () => {
+		if (!isIdmReachable) return;
 		const newUsername = 'jane.doe@mail.tld';
 		const idmId = await createAccount();
 
@@ -142,7 +133,8 @@ describe('AccountService IDM Integration', () => {
 		);
 	});
 
-	itif(isIdmReachable)('updateUsername should update username', async () => {
+	it('updateUsername should update username', async () => {
+		if (!isIdmReachable) return;
 		const newUserName = 'jane.doe@mail.tld';
 		const idmId = await createAccount();
 		await accountIdmService.updateUsername(technicalRefId, newUserName);
@@ -156,12 +148,14 @@ describe('AccountService IDM Integration', () => {
 		);
 	});
 
-	itif(isIdmReachable)('updatePassword should update password', async () => {
+	it('updatePassword should update password', async () => {
+		if (!isIdmReachable) return;
 		await createAccount();
 		await expect(accountIdmService.updatePassword(technicalRefId, 'newPassword')).resolves.not.toThrow();
 	});
 
-	itif(isIdmReachable)('delete should remove account', async () => {
+	it('delete should remove account', async () => {
+		if (!isIdmReachable) return;
 		const idmId = await createAccount();
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundAccount).toBeDefined();
@@ -170,7 +164,8 @@ describe('AccountService IDM Integration', () => {
 		await expect(identityManagementService.findAccountById(idmId)).rejects.toThrow();
 	});
 
-	itif(isIdmReachable)('deleteByUserId should remove account', async () => {
+	it('deleteByUserId should remove account', async () => {
+		if (!isIdmReachable) return;
 		const idmId = await createAccount();
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundAccount).toBeDefined();

@@ -5,15 +5,16 @@ import { IAccount, IAccountUpdate } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
-import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
+import { KeycloakSettings } from '../interface/keycloak-settings.interface';
 import { IdentityManagementService } from '../../identity-management.service';
+import KeycloakConfiguration from '../keycloak-config';
 
 describe('KeycloakIdentityManagementService Integration', () => {
 	let module: TestingModule;
 	let idmService: KeycloakIdentityManagementService;
 	let keycloakAdminService: KeycloakAdministrationService;
 	let keycloak: KeycloakAdminClient;
-	let isKeycloakReachable = false;
+	let isKeycloakReachable: boolean;
 
 	const testRealm = 'test-realm';
 	const testAccount: IAccount = {
@@ -52,17 +53,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 				},
 				{
 					provide: KeycloakSettings,
-					useValue: {
-						clientId: 'admin-cli',
-						baseUrl: 'http://localhost:8080',
-						realmName: 'master',
-						credentials: {
-							clientId: 'admin-cli',
-							username: 'keycloak',
-							password: 'keycloak',
-							grantType: 'password',
-						},
-					} as IKeycloakSettings,
+					useValue: KeycloakConfiguration.keycloakSettings,
 				},
 			],
 		}).compile();
@@ -91,9 +82,8 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		}
 	});
 
-	const itif = (condition) => (condition ? it : it.skip);
-
-	itif(isKeycloakReachable)('should create an account', async () => {
+	it('should create an account', async () => {
+		if (!isKeycloakReachable) return;
 		const id = await idmService.createAccount(testAccount);
 		const accounts = await listAccounts();
 
@@ -112,7 +102,8 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		);
 	});
 
-	itif(isKeycloakReachable)('should update an account', async () => {
+	it('should update an account', async () => {
+		if (!isKeycloakReachable) return;
 		const newAccount: IAccountUpdate = {
 			email: 'jane.doe@mail.tld',
 			username: 'jane.doe@mail.tld',
@@ -145,14 +136,16 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		);
 	});
 
-	itif(isKeycloakReachable)('should update password of an account', async () => {
+	it('should update password of an account', async () => {
+		if (!isKeycloakReachable) return;
 		const idmId = await createAccount();
 		const result = await idmService.updateAccountPassword(idmId, 'new-password');
 
 		expect(result).toEqual(idmId);
 	});
 
-	itif(isKeycloakReachable)('should find an account by id', async () => {
+	it('should find an account by id', async () => {
+		if (!isKeycloakReachable) return;
 		const idmId = await createAccount();
 		const account = await idmService.findAccountById(idmId);
 
@@ -166,7 +159,8 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		);
 	});
 
-	itif(isKeycloakReachable)('should find an account by username', async () => {
+	it('should find an account by username', async () => {
+		if (!isKeycloakReachable) return;
 		await createAccount();
 		const account = await idmService.findAccountByUsername(testAccount.username as string);
 
@@ -179,14 +173,16 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		);
 	});
 
-	itif(isKeycloakReachable)('should list all accounts', async () => {
+	it('should list all accounts', async () => {
+		if (!isKeycloakReachable) return;
 		await createAccount();
 		const accounts = await idmService.getAllAccounts();
 
 		expect(accounts).toHaveLength(1);
 	});
 
-	itif(isKeycloakReachable)('should delete an account', async () => {
+	it('should delete an account', async () => {
+		if (!isKeycloakReachable) return;
 		const idmId = await createAccount();
 		const result = await idmService.deleteAccountById(idmId);
 		const accounts = await listAccounts();

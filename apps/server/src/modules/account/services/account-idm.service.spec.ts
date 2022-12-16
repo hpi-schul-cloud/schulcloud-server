@@ -5,6 +5,7 @@ import { IAccount, IAccountUpdate } from '@shared/domain';
 import { NotImplementedException } from '@nestjs/common/exceptions/not-implemented.exception';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
 import { AccountServiceIdm } from './account-idm.service';
+import { AccountDto } from './dto/account.dto';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -124,9 +125,9 @@ describe('AccountService Integration', () => {
 			expect(createSpy).not.toHaveBeenCalled();
 
 			expect(ret).toBeDefined();
-			expect(ret).toMatchObject({
+			expect(ret).toMatchObject<Partial<AccountDto>>({
 				id: mockIdmAccount.attRefTechnicalId,
-				refId: mockIdmAccount.id,
+				idmReferenceId: mockIdmAccount.id,
 				createdAt: mockIdmAccount.createdDate,
 				updatedAt: mockIdmAccount.createdDate,
 				username: mockIdmAccount.username,
@@ -143,9 +144,9 @@ describe('AccountService Integration', () => {
 			expect(createSpy).toHaveBeenCalled();
 
 			expect(ret).toBeDefined();
-			expect(ret).toMatchObject({
+			expect(ret).toMatchObject<Partial<AccountDto>>({
 				id: mockIdmAccount.attRefTechnicalId,
-				refId: mockIdmAccount.id,
+				idmReferenceId: mockIdmAccount.id,
 				createdAt: mockIdmAccount.createdDate,
 				updatedAt: mockIdmAccount.createdDate,
 				username: mockIdmAccount.username,
@@ -158,9 +159,9 @@ describe('AccountService Integration', () => {
 			const ret = await accountIdmService.updateUsername(mockIdmAccountRefId, 'any');
 
 			expect(ret).toBeDefined();
-			expect(ret).toMatchObject({
+			expect(ret).toMatchObject<Partial<AccountDto>>({
 				id: mockIdmAccount.attRefTechnicalId,
-				refId: mockIdmAccount.id,
+				idmReferenceId: mockIdmAccount.id,
 				createdAt: mockIdmAccount.createdDate,
 				updatedAt: mockIdmAccount.createdDate,
 				username: mockIdmAccount.username,
@@ -173,9 +174,9 @@ describe('AccountService Integration', () => {
 			const ret = await accountIdmService.updatePassword(mockIdmAccountRefId, 'any');
 
 			expect(ret).toBeDefined();
-			expect(ret).toMatchObject({
+			expect(ret).toMatchObject<Partial<AccountDto>>({
 				id: mockIdmAccount.attRefTechnicalId,
-				refId: mockIdmAccount.id,
+				idmReferenceId: mockIdmAccount.id,
 				createdAt: mockIdmAccount.createdDate,
 				updatedAt: mockIdmAccount.createdDate,
 				username: mockIdmAccount.username,

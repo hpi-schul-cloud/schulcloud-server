@@ -1,17 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { Account, IAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { KeycloakSettings, IKeycloakSettings } from '@shared/infra/identity-management/keycloak/interface';
+import { KeycloakSettings } from '@shared/infra/identity-management/keycloak/interface';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import { ObjectId } from 'bson';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { IServerConfig } from '@src/modules/server';
+import { createMock } from '@golevelup/ts-jest';
+import KeycloakConfiguration from '@shared/infra/identity-management/keycloak/keycloak-config';
 import { Logger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountService } from './account.service';
@@ -54,8 +54,6 @@ describe('AccountService Integration', () => {
 			},
 			testAccount.password
 		);
-		console.log(accountEntity);
-		console.log(await identityManagementService.findAccountById(idmId));
 		return [accountEntity.id, idmId];
 	};
 
@@ -87,17 +85,7 @@ describe('AccountService Integration', () => {
 				},
 				{
 					provide: KeycloakSettings,
-					useValue: {
-						clientId: 'admin-cli',
-						baseUrl: 'http://localhost:8080',
-						realmName: 'master',
-						credentials: {
-							clientId: 'admin-cli',
-							username: 'keycloak',
-							password: 'keycloak',
-							grantType: 'password',
-						},
-					} as IKeycloakSettings,
+					useValue: KeycloakConfiguration.keycloakSettings,
 				},
 				{
 					provide: Logger,
@@ -110,8 +98,7 @@ describe('AccountService Integration', () => {
 		accountRepo = module.get(AccountRepo);
 		em = module.get(EntityManager);
 		keycloakAdminService = module.get(KeycloakAdministrationService);
-		// isIdmReachable = await keycloakAdminService.testKcConnection();
-		isIdmReachable = true;
+		isIdmReachable = await keycloakAdminService.testKcConnection();
 		if (isIdmReachable) {
 			keycloak = await keycloakAdminService.callKcAdminClient();
 		}
@@ -134,8 +121,6 @@ describe('AccountService Integration', () => {
 		}
 		await cleanupCollections(em);
 	});
-
-	const itif = (condition) => (condition ? it : it.skip);
 
 	const compareIdmAccount = async (idmId: string, createdAccount: AccountDto): Promise<void> => {
 		const foundAccount = await identityManagementService.findAccountById(idmId);
@@ -161,13 +146,15 @@ describe('AccountService Integration', () => {
 		);
 	};
 
-	itif(isIdmReachable)('save should create a new account', async () => {
+	it('save should create a new account', async () => {
+		if (!isIdmReachable) return;
 		const account = await accountService.save(testAccount);
 		await compareDbAccount(account.id, account);
 		await compareIdmAccount(account.idmReferenceId ?? '', account);
 	});
 
-	itif(isIdmReachable)('save should update existing account', async () => {
+	it('save should update existing account', async () => {
+		if (!isIdmReachable) return;
 		const newUsername = 'jane.doe@mail.tld';
 		const [dbId, idmId] = await createAccount();
 		const originalAccount = await accountService.findById(dbId);
@@ -179,7 +166,8 @@ describe('AccountService Integration', () => {
 		await compareIdmAccount(idmId, updatedAccount);
 	});
 
-	itif(isIdmReachable)('updateUsername should update username', async () => {
+	it('updateUsername should update username', async () => {
+		if (!isIdmReachable) return;
 		const newUserName = 'jane.doe@mail.tld';
 		const [dbId, idmId] = await createAccount();
 		await accountService.updateUsername(dbId, newUserName);
@@ -198,7 +186,8 @@ describe('AccountService Integration', () => {
 		);
 	});
 
-	itif(isIdmReachable)('updatePassword should update password', async () => {
+	it('updatePassword should update password', async () => {
+		if (!isIdmReachable) return;
 		const [dbId] = await createAccount();
 
 		const foundDbAccountBefore = await accountRepo.findById(dbId);
@@ -210,7 +199,8 @@ describe('AccountService Integration', () => {
 		expect(foundDbAccountAfter.password).not.toEqual(previousPasswordHash);
 	});
 
-	itif(isIdmReachable)('delete should remove account', async () => {
+	it('delete should remove account', async () => {
+		if (!isIdmReachable) return;
 		const [dbId, idmId] = await createAccount();
 		const foundIdmAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundIdmAccount).toBeDefined();
@@ -222,7 +212,8 @@ describe('AccountService Integration', () => {
 		await expect(accountRepo.findById(dbId)).rejects.toThrow();
 	});
 
-	itif(isIdmReachable)('deleteByUserId should remove account', async () => {
+	it('deleteByUserId should remove account', async () => {
+		if (!isIdmReachable) return;
 		const [dbId, idmId] = await createAccount();
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundAccount).toBeDefined();
