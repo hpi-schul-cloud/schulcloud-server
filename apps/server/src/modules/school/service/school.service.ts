@@ -55,6 +55,7 @@ export class SchoolService {
 			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
 			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
 			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
+			enableMigrationStart: !!schoolDo.officialSchoolNumber,
 		});
 
 		return response;
@@ -67,6 +68,7 @@ export class SchoolService {
 			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
 			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
 			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
+			enableMigrationStart: !!schoolDo.officialSchoolNumber,
 		});
 
 		return response;
