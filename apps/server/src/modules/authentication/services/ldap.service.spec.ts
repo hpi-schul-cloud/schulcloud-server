@@ -58,8 +58,9 @@ describe('LdapService', () => {
 		describe('when credentials are correct', () => {
 			it('should login successfully', async () => {
 				const system: System = systemFactory.withLdapConfig().buildWithId();
-				const connected = await ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword');
-				expect(connected).toBe(true);
+				await expect(
+					ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword')
+				).resolves.not.toThrow();
 			});
 		});
 
@@ -76,7 +77,7 @@ describe('LdapService', () => {
 			it('should throw unauthorized error', async () => {
 				const system: System = systemFactory.withLdapConfig().buildWithId();
 				await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
-					new UnauthorizedException('User could not authenticate')
+					new UnauthorizedException('an error', 'User could not authenticate')
 				);
 			});
 		});
