@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, Permission } from '@shared/domain';
+import { ICurrentUser, Permission, Submission } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseGroupFactory,
@@ -47,7 +47,7 @@ class API {
 		return {
 			status: response.status,
 			error: response.body as ApiValidationError,
-			result: response.body as SubmissionStatusListResponse,
+			result: response.text,
 		};
 	}
 }
@@ -243,7 +243,10 @@ describe('Submission Controller (e2e)', () => {
 
 				const { result } = await api.delete(submission.id);
 
-				expect(result).toBe(true);
+				expect(result).toBe('true');
+
+				const expectedSubmissionResult = await em.findOne(Submission, { id: submission.id });
+				expect(expectedSubmissionResult).toEqual(null);
 			});
 		});
 
