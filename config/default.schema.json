@@ -189,9 +189,9 @@
 			"default": false,
 			"description": "If enabled, adds video conferences to teams and courses."
 		},
-		"FEATURE_VIDEOCONFERENCE_DEFAULT_PRESENTATION": {
+		"VIDEOCONFERENCE_DEFAULT_PRESENTATION": {
 			"type": "string",
-			"default": "https://s3.hidrive.strato.com/cloud-instances/thr/bbb/presentation.pdf",
+			"default": "",
 			"description": "Link to a custom presentation, if empty, the default presentation will be used."
 		},
 		"VIDEOCONFERENCE_HOST": {

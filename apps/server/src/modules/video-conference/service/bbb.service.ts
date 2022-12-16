@@ -28,7 +28,7 @@ export class BBBService {
 	constructor(private readonly httpService: HttpService, private readonly converterUtil: ConverterUtil) {
 		this.baseURL = Configuration.get('VIDEOCONFERENCE_HOST') as string;
 		this.salt = Configuration.get('VIDEOCONFERENCE_SALT') as string;
-		this.presentationUrl = Configuration.get('FEATURE_VIDEOCONFERENCE_DEFAULT_PRESENTATION') as string;
+		this.presentationUrl = Configuration.get('VIDEOCONFERENCE_DEFAULT_PRESENTATION') as string;
 	}
 
 	/**
