@@ -53,6 +53,8 @@ describe('ExternalTool Entity', () => {
 				scope: CustomParameterScope.SCHOOL,
 				type: CustomParameterType.STRING,
 				regex: 'mockRegex',
+				regexComment: 'mockComment',
+				isOptional: false,
 			});
 			const externalTool: ExternalTool = new ExternalTool({
 				name: 'toolName',

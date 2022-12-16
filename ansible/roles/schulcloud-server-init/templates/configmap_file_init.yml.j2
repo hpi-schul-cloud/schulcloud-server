@@ -216,7 +216,8 @@ data:
             "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
             "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
             "userId": ObjectId("632d765840633294deaa1833"),
-            "__v": 0
+            "__v": 0,
+            "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
           },
           {
             "_id": ObjectId("632d7a9540633294deaa183e"),
@@ -225,7 +226,9 @@ data:
             "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
             "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
             "userId": ObjectId("632d77a940633294deaa183a"),
-            "__v": 0
+            "__v": 0,
+            "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
+
           },
           {
             "_id": ObjectId("0000d213816abba58471abcd"),
@@ -234,7 +237,8 @@ data:
             "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
             "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
             "userId": ObjectId("0000d213816abba584711234"),
-            "__v": 0
+            "__v": 0,
+            "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
           }
       ]);'
       mongo $DATABASE__URL --eval 'db.users.insert ([
