@@ -58,6 +58,20 @@ class API {
 			status: response.status,
 		};
 	}
+
+	async getDownloadFileBytesRange(routeName: string, bytesRange: string, query?: string | Record<string, unknown>) {
+		const response = await request(this.app.getHttpServer())
+			.get(routeName)
+			.set('Range', bytesRange)
+			.query(query || {});
+
+		return {
+			result: response.body as FileRecordResponse,
+			error: response.body as ApiValidationError,
+			status: response.status,
+			headers: response.headers as Record<string, string>,
+		};
+	}
 }
 
 const createRndInt = (max) => Math.floor(Math.random() * max);
@@ -337,6 +351,16 @@ describe('files-storage controller (e2e)', () => {
 				const response = await api.getDownloadFile(`/file/download/${result.id}/${result.name}`);
 
 				expect(response.status).toEqual(200);
+			});
+
+			it('should return status 206 and required headers for the successful partial file stream download', async () => {
+				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+				const response = await api.getDownloadFileBytesRange(`/file/download/${result.id}/${result.name}`, 'bytes=0-');
+
+				expect(response.status).toEqual(206);
+
+				expect(response.headers['accept-ranges']).toMatch('bytes');
+				expect(response.headers['content-range']).toMatch('bytes 0-3/4');
 			});
 		});
 	});
