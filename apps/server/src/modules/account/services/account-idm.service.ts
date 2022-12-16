@@ -64,7 +64,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		let accountId: string;
 		const idmAccount: IAccountUpdate = {
 			username: accountDto.username,
-			attRefTechnicalId: accountDto.refId,
+			attRefTechnicalId: accountDto.idmReferenceId,
 			attRefFunctionalIntId: accountDto.userId,
 			attRefFunctionalExtId: accountDto.systemId,
 		};

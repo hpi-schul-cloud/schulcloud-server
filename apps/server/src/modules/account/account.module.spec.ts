@@ -19,17 +19,6 @@ describe('AccountModule', () => {
 				MongoMemoryDatabaseModule.forRoot(),
 				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			],
-			// imports: [AccountModule],
-			// providers: [
-			// 	{
-			// 		provide: Logger,
-			// 		useValue: createMock<Logger>(),
-			// 	},
-			// 	{
-			// 		provide: ConfigService,
-			// 		useValue: createMock<ConfigService<IServerConfig, true>>(),
-			// 	},
-			// ],
 		}).compile();
 		accountUc = module.get(AccountUc);
 		accountService = module.get(AccountService);

@@ -28,7 +28,7 @@ describe('AccountIdmToDtoMapper', () => {
 			const ret = AccountIdmToDtoMapper.mapToDto(testIdmEntity);
 
 			expect(ret.id).toBe(testIdmEntity.attRefTechnicalId);
-			expect(ret.refId).toBe(testIdmEntity.id);
+			expect(ret.idmReferenceId).toBe(testIdmEntity.id);
 			expect(ret.userId).toBe(testIdmEntity.attRefFunctionalIntId);
 			expect(ret.systemId).toBe(testIdmEntity.attRefFunctionalExtId);
 			expect(ret.createdAt).toBe(testIdmEntity.createdDate);

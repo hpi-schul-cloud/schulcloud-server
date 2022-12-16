@@ -57,17 +57,17 @@ export class AccountService extends AbstractAccountService {
 		const newAccount: AccountSaveDto = {
 			...accountDto,
 			id: accountDto.id,
-			refId: ret.id,
+			idmReferenceId: ret.id,
 			password: accountDto.password,
 		};
-		await this.executeIdmMethod(async () => this.accountIdm.save(newAccount));
-		return ret;
+		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.save(newAccount));
+		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
 	async updateUsername(accountId: string, username: string): Promise<AccountDto> {
 		const ret = await this.accountDb.updateUsername(accountId, username);
-		await this.executeIdmMethod(async () => this.accountIdm.updateUsername(accountId, username));
-		return ret;
+		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.updateUsername(accountId, username));
+		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
 	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<AccountDto> {
@@ -77,20 +77,18 @@ export class AccountService extends AbstractAccountService {
 
 	async updatePassword(accountId: string, password: string): Promise<AccountDto> {
 		const ret = await this.accountDb.updatePassword(accountId, password);
-		await this.executeIdmMethod(async () => this.accountIdm.updatePassword(accountId, password));
-		return ret;
+		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.updatePassword(accountId, password));
+		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
 	async delete(accountId: string): Promise<void> {
-		const ret = await this.accountDb.delete(accountId);
+		await this.accountDb.delete(accountId);
 		await this.executeIdmMethod(async () => this.accountIdm.delete(accountId));
-		return ret;
 	}
 
 	async deleteByUserId(userId: string): Promise<void> {
-		const ret = await this.accountDb.deleteByUserId(userId);
+		await this.accountDb.deleteByUserId(userId);
 		await this.executeIdmMethod(async () => this.accountIdm.deleteByUserId(userId));
-		return ret;
 	}
 
 	private async executeIdmMethod<T>(idmCallback: () => Promise<T>) {

@@ -6,7 +6,7 @@ export class AccountIdmToDtoMapper {
 		const createdDate = account.createdDate ? account.createdDate : new Date();
 		return new AccountDto({
 			id: account.attRefTechnicalId ?? '',
-			refId: account.id,
+			idmReferenceId: account.id,
 			userId: account.attRefFunctionalIntId,
 			systemId: account.attRefFunctionalExtId,
 			username: account.username ?? '',

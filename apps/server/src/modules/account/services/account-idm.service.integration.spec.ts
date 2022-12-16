@@ -11,7 +11,7 @@ import { IdentityManagementService } from '../../../shared/infra/identity-manage
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountServiceIdm } from './account-idm.service';
 
-describe('AccountService Integration', () => {
+describe('AccountService IDM Integration', () => {
 	let module: TestingModule;
 	let identityManagementService: IdentityManagementService;
 	let keycloakAdminService: KeycloakAdministrationService;
@@ -26,7 +26,7 @@ describe('AccountService Integration', () => {
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
 		systemId: new ObjectId().toString(),
-		refId: technicalRefId,
+		idmReferenceId: technicalRefId,
 	});
 	const createAccount = async (): Promise<string> => {
 		return identityManagementService.createAccount(
@@ -104,15 +104,15 @@ describe('AccountService Integration', () => {
 		}
 	});
 
-	it('save should create a new account', async () => {
-		if (!isIdmReachable) return;
+	const itif = (condition) => (condition ? it : it.skip);
 
+	itif(isIdmReachable)('save should create a new account', async () => {
 		const createdAccount = await accountIdmService.save(testAccount);
-		const foundAccount = await identityManagementService.findAccountById(createdAccount.refId ?? '');
+		const foundAccount = await identityManagementService.findAccountById(createdAccount.idmReferenceId ?? '');
 
 		expect(foundAccount).toEqual(
 			expect.objectContaining<IAccount>({
-				id: createdAccount.refId ?? '',
+				id: createdAccount.idmReferenceId ?? '',
 				username: createdAccount.username,
 				attRefTechnicalId: technicalRefId,
 				attRefFunctionalIntId: createdAccount.userId,
@@ -121,9 +121,7 @@ describe('AccountService Integration', () => {
 		);
 	});
 
-	it('save should update existing account', async () => {
-		if (!isIdmReachable) return;
-
+	itif(isIdmReachable)('save should update existing account', async () => {
 		const newUsername = 'jane.doe@mail.tld';
 		const idmId = await createAccount();
 
@@ -135,7 +133,7 @@ describe('AccountService Integration', () => {
 
 		expect(foundAccount).toEqual(
 			expect.objectContaining<IAccount>({
-				id: updatedAccount.refId ?? '',
+				id: updatedAccount.idmReferenceId ?? '',
 				username: updatedAccount.username,
 				attRefTechnicalId: technicalRefId,
 				attRefFunctionalIntId: updatedAccount.userId,
@@ -144,9 +142,7 @@ describe('AccountService Integration', () => {
 		);
 	});
 
-	it('updateUsername should update username', async () => {
-		if (!isIdmReachable) return;
-
+	itif(isIdmReachable)('updateUsername should update username', async () => {
 		const newUserName = 'jane.doe@mail.tld';
 		const idmId = await createAccount();
 		await accountIdmService.updateUsername(technicalRefId, newUserName);
@@ -160,15 +156,12 @@ describe('AccountService Integration', () => {
 		);
 	});
 
-	it('updatePassword should update password', async () => {
-		if (!isIdmReachable) return;
-
+	itif(isIdmReachable)('updatePassword should update password', async () => {
 		await createAccount();
 		await expect(accountIdmService.updatePassword(technicalRefId, 'newPassword')).resolves.not.toThrow();
 	});
 
-	it('delete should remove account', async () => {
-		if (!isIdmReachable) return;
+	itif(isIdmReachable)('delete should remove account', async () => {
 		const idmId = await createAccount();
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundAccount).toBeDefined();
@@ -177,8 +170,7 @@ describe('AccountService Integration', () => {
 		await expect(identityManagementService.findAccountById(idmId)).rejects.toThrow();
 	});
 
-	it('deleteByUserId should remove account', async () => {
-		if (!isIdmReachable) return;
+	itif(isIdmReachable)('deleteByUserId should remove account', async () => {
 		const idmId = await createAccount();
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundAccount).toBeDefined();

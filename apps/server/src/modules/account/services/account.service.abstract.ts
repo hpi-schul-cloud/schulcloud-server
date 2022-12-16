@@ -18,6 +18,9 @@ export abstract class AbstractAccountService {
 
 	abstract updateUsername(accountId: EntityId, username: string): Promise<AccountDto>;
 
+	/**
+	 * @deprecated Used for brute force detection, but will become subject to IDM thus be removed.
+	 */
 	abstract updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto>;
 
 	abstract updatePassword(accountId: EntityId, password: string): Promise<AccountDto>;

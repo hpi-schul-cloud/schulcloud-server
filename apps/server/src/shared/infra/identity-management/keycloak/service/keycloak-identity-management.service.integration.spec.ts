@@ -91,9 +91,9 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		}
 	});
 
-	it('should create an account', async () => {
-		if (!isKeycloakReachable) return;
+	const itif = (condition) => (condition ? it : it.skip);
 
+	itif(isKeycloakReachable)('should create an account', async () => {
 		const id = await idmService.createAccount(testAccount);
 		const accounts = await listAccounts();
 
@@ -112,9 +112,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		);
 	});
 
-	it('should update an account', async () => {
-		if (!isKeycloakReachable) return;
-
+	itif(isKeycloakReachable)('should update an account', async () => {
 		const newAccount: IAccountUpdate = {
 			email: 'jane.doe@mail.tld',
 			username: 'jane.doe@mail.tld',
@@ -147,18 +145,14 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		);
 	});
 
-	it('should update password of an account', async () => {
-		if (!isKeycloakReachable) return;
-
+	itif(isKeycloakReachable)('should update password of an account', async () => {
 		const idmId = await createAccount();
 		const result = await idmService.updateAccountPassword(idmId, 'new-password');
 
 		expect(result).toEqual(idmId);
 	});
 
-	it('should find an account by id', async () => {
-		if (!isKeycloakReachable) return;
-
+	itif(isKeycloakReachable)('should find an account by id', async () => {
 		const idmId = await createAccount();
 		const account = await idmService.findAccountById(idmId);
 
@@ -172,9 +166,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		);
 	});
 
-	it('should find an account by username', async () => {
-		if (!isKeycloakReachable) return;
-
+	itif(isKeycloakReachable)('should find an account by username', async () => {
 		await createAccount();
 		const account = await idmService.findAccountByUsername(testAccount.username as string);
 
@@ -187,18 +179,14 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		);
 	});
 
-	it('should list all accounts', async () => {
-		if (!isKeycloakReachable) return;
-
+	itif(isKeycloakReachable)('should list all accounts', async () => {
 		await createAccount();
 		const accounts = await idmService.getAllAccounts();
 
 		expect(accounts).toHaveLength(1);
 	});
 
-	it('should delete an account', async () => {
-		if (!isKeycloakReachable) return;
-
+	itif(isKeycloakReachable)('should delete an account', async () => {
 		const idmId = await createAccount();
 		const result = await idmService.deleteAccountById(idmId);
 		const accounts = await listAccounts();
