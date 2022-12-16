@@ -1,4 +1,4 @@
-import { EntityId, SchoolFeatures } from '@shared/domain';
+import { SchoolFeatures } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolRepo } from '@shared/repo';
@@ -63,7 +63,7 @@ describe('SchoolService', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('saveProvisioningSchoolOutputDto', () => {
+	describe('saveProvisioningSchoolOutputDto is called', () => {
 		let schoolServiceSpy: jest.SpyInstance;
 		let provisioningDto: ProvisioningSchoolOutputDto;
 		let returnDO: SchoolDO;
@@ -81,103 +81,118 @@ describe('SchoolService', () => {
 		afterAll(() => {
 			schoolServiceSpy.mockRestore();
 		});
-		it('should call the createOrUpdateService', async () => {
-			const ret = await schoolService.saveProvisioningSchoolOutputDto(provisioningDto);
-			expect(ret).toBe(returnDO);
-			expect(schoolServiceSpy).toHaveBeenCalled();
+
+		describe('when provisioningDto is given', () => {
+			it('should call the createOrUpdateService', async () => {
+				const ret = await schoolService.saveProvisioningSchoolOutputDto(provisioningDto);
+				expect(ret).toBe(returnDO);
+				expect(schoolServiceSpy).toHaveBeenCalled();
+			});
 		});
 	});
 
-	describe('createOrUpdate', () => {
-		it('should create new school', async () => {
-			const { schoolUnsaved } = setup();
+	describe('createOrUpdate is called', () => {
+		describe('when school is given', () => {
+			it('should create new school', async () => {
+				const { schoolUnsaved } = setup();
 
-			await schoolService.createOrUpdateSchool(schoolUnsaved);
+				await schoolService.createOrUpdateSchool(schoolUnsaved);
 
-			expect(schoolRepo.save).toHaveBeenCalledWith(schoolUnsaved);
+				expect(schoolRepo.save).toHaveBeenCalledWith(schoolUnsaved);
+			});
 		});
 
-		it('should call the repo when update existing school', async () => {
-			const { schoolSaved } = setup();
+		describe('when update existing school', () => {
+			it('should call the repo', async () => {
+				const { schoolSaved } = setup();
 
-			await schoolService.createOrUpdateSchool(schoolSaved);
+				await schoolService.createOrUpdateSchool(schoolSaved);
 
-			expect(schoolRepo.findById).toHaveBeenCalledWith(schoolSaved.id);
-		});
+				expect(schoolRepo.findById).toHaveBeenCalledWith(schoolSaved.id);
+			});
 
-		it('should update existing school', async () => {
-			const { schoolSaved, schoolSavedId } = setup();
-			schoolSaved.name = 'loadedSchool';
-			schoolRepo.findById.mockResolvedValue(schoolSaved);
-			await schoolService.createOrUpdateSchool(schoolSaved);
+			it('should update existing school', async () => {
+				const { schoolSaved, schoolSavedId } = setup();
+				schoolSaved.name = 'loadedSchool';
+				schoolRepo.findById.mockResolvedValue(schoolSaved);
+				await schoolService.createOrUpdateSchool(schoolSaved);
 
-			expect(schoolRepo.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					name: 'loadedSchool',
-					id: schoolSavedId,
-				})
-			);
-		});
-	});
-
-	describe('hasFeature', () => {
-		it('should return true', async () => {
-			const { schoolSavedId } = setup();
-
-			const result = await schoolService.hasFeature(schoolSavedId, SchoolFeatures.VIDEOCONFERENCE);
-
-			expect(result).toBe(true);
-		});
-
-		it('should return false', async () => {
-			const { schoolSaved, schoolSavedId } = setup();
-			schoolSaved.features = [];
-			schoolRepo.findById.mockResolvedValue(schoolSaved);
-
-			const result = await schoolService.hasFeature(schoolSavedId, SchoolFeatures.VIDEOCONFERENCE);
-
-			expect(result).toBe(false);
+				expect(schoolRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						name: 'loadedSchool',
+						id: schoolSavedId,
+					})
+				);
+			});
 		});
 	});
 
-	describe('getSchoolById', () => {
-		it('should call the repo', async () => {
-			const { schoolSavedId } = setup();
+	describe('hasFeature is called', () => {
+		describe('when given schoolFeature exists on school', () => {
+			it('should return true', async () => {
+				const { schoolSavedId } = setup();
 
-			await schoolService.getSchoolById(schoolSavedId);
+				const result = await schoolService.hasFeature(schoolSavedId, SchoolFeatures.VIDEOCONFERENCE);
 
-			expect(schoolRepo.findById).toHaveBeenCalledWith(schoolSavedId);
+				expect(result).toBe(true);
+			});
 		});
 
-		it('should return a do', async () => {
-			const { schoolSavedId } = setup();
+		describe('when given schoolFeature does not exist on school', () => {
+			it('should return false', async () => {
+				const { schoolSaved, schoolSavedId } = setup();
+				schoolSaved.features = [];
+				schoolRepo.findById.mockResolvedValue(schoolSaved);
 
-			const schoolDO: SchoolDO = await schoolService.getSchoolById(schoolSavedId);
+				const result = await schoolService.hasFeature(schoolSavedId, SchoolFeatures.VIDEOCONFERENCE);
 
-			expect(schoolDO).toBeInstanceOf(SchoolDO);
-		});
-	});
-
-	describe('save', () => {
-		it('should call the repo', async () => {
-			const school: SchoolDO = new SchoolDO({ id: 'id', name: 'name' });
-
-			await schoolService.save(school);
-
-			expect(schoolRepo.save).toHaveBeenCalledWith(school);
-		});
-
-		it('should return a do', async () => {
-			const school: SchoolDO = new SchoolDO({ id: 'id', name: 'name' });
-			schoolRepo.save.mockResolvedValue(school);
-
-			const schoolDO: SchoolDO = await schoolService.save(school);
-
-			expect(schoolDO).toBeInstanceOf(SchoolDO);
+				expect(result).toBe(false);
+			});
 		});
 	});
 
-	describe('setMigration', () => {
+	describe('getSchoolById is called', () => {
+		describe('when id is given', () => {
+			it('should call the repo', async () => {
+				const { schoolSavedId } = setup();
+
+				await schoolService.getSchoolById(schoolSavedId);
+
+				expect(schoolRepo.findById).toHaveBeenCalledWith(schoolSavedId);
+			});
+
+			it('should return a do', async () => {
+				const { schoolSavedId } = setup();
+
+				const schoolDO: SchoolDO = await schoolService.getSchoolById(schoolSavedId);
+
+				expect(schoolDO).toBeInstanceOf(SchoolDO);
+			});
+		});
+	});
+
+	describe('save is called', () => {
+		describe('when school is given', () => {
+			it('should call the repo', async () => {
+				const school: SchoolDO = new SchoolDO({ id: 'id', name: 'name' });
+
+				await schoolService.save(school);
+
+				expect(schoolRepo.save).toHaveBeenCalledWith(school);
+			});
+
+			it('should return a do', async () => {
+				const school: SchoolDO = new SchoolDO({ id: 'id', name: 'name' });
+				schoolRepo.save.mockResolvedValue(school);
+
+				const schoolDO: SchoolDO = await schoolService.save(school);
+
+				expect(schoolDO).toBeInstanceOf(SchoolDO);
+			});
+		});
+	});
+
+	describe('setMigration is called', () => {
 		let testId: string;
 		let testDO: SchoolDO;
 		beforeAll(() => {
@@ -187,20 +202,26 @@ describe('SchoolService', () => {
 				name: 'testDO',
 				oauthMigrationPossible: true,
 				oauthMigrationMandatory: true,
+				officialSchoolNumber: '1337',
 			});
 			schoolRepo.findById.mockResolvedValue(testDO);
 			schoolRepo.save.mockResolvedValue(testDO);
 		});
-		it('it should set the migrationflags', async () => {
-			const resp: MigrationResponse = await schoolService.setMigration(testId, true, true);
-			expect(resp.oauthMigrationPossible).toBeTruthy();
-			expect(resp.oauthMigrationMandatory).toBeTruthy();
-			expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
-			expect(schoolRepo.save).toHaveBeenCalledWith(testDO);
+
+		describe('when migrationflags and schoolId are given', () => {
+			it('it should set the migrationflags', async () => {
+				const resp: MigrationResponse = await schoolService.setMigration(testId, true, true);
+
+				expect(resp.oauthMigrationPossible).toBeTruthy();
+				expect(resp.oauthMigrationMandatory).toBeTruthy();
+				expect(resp.enableMigrationStart).toBeTruthy();
+				expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
+				expect(schoolRepo.save).toHaveBeenCalledWith(testDO);
+			});
 		});
 	});
 
-	describe('getMigration', () => {
+	describe('getMigration is called', () => {
 		let testId: string;
 		let testDO: SchoolDO;
 		beforeEach(() => {
@@ -210,22 +231,35 @@ describe('SchoolService', () => {
 				name: 'testDO',
 				oauthMigrationPossible: true,
 				oauthMigrationMandatory: true,
+				officialSchoolNumber: '1337',
 			});
 			schoolRepo.findById.mockResolvedValue(testDO);
 		});
-		it('it should get the migrationflags', async () => {
-			const resp: MigrationResponse = await schoolService.getMigration(testId);
-			expect(resp.oauthMigrationPossible).toBeTruthy();
-			expect(resp.oauthMigrationMandatory).toBeTruthy();
-			expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
+
+		describe('when migrationfalgs and officialSchoolNumber are set and schoolId is given', () => {
+			it('it should get the migrationflags', async () => {
+				const resp: MigrationResponse = await schoolService.getMigration(testId);
+
+				expect(resp.oauthMigrationPossible).toBeTruthy();
+				expect(resp.oauthMigrationMandatory).toBeTruthy();
+				expect(resp.enableMigrationStart).toBeTruthy();
+				expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
+			});
 		});
-		it('it should get the migrationflags when not set', async () => {
-			testDO.oauthMigrationPossible = undefined;
-			testDO.oauthMigrationMandatory = undefined;
-			const resp: MigrationResponse = await schoolService.getMigration(testId);
-			expect(resp.oauthMigrationPossible).toBeFalsy();
-			expect(resp.oauthMigrationMandatory).toBeFalsy();
-			expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
+
+		describe('when migrationfalgs and officialSchoolNumber are not set and schoolId is given', () => {
+			it('it should get the migrationflags when not set', async () => {
+				testDO.oauthMigrationPossible = undefined;
+				testDO.oauthMigrationMandatory = undefined;
+				testDO.officialSchoolNumber = undefined;
+
+				const resp: MigrationResponse = await schoolService.getMigration(testId);
+
+				expect(resp.oauthMigrationPossible).toBeFalsy();
+				expect(resp.oauthMigrationMandatory).toBeFalsy();
+				expect(resp.enableMigrationStart).toBeFalsy();
+				expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
+			});
 		});
 	});
 });
