@@ -1,9 +1,7 @@
-import { HttpException } from '@nestjs/common';
-import { ApiValidationError, BusinessError } from '@shared/common';
+import { ApiValidationError } from '@shared/common';
 import { ErrorLogMessage, ILoggable, ValidationErrorLogMessage } from '../logger/interfaces/loggable';
-import { FeathersError } from './interface';
+import { ErrorUtils } from './utils/error.utils';
 
-// this file could also be placed in the error module
 export class ErrorLoggable implements ILoggable {
 	error: Error;
 
@@ -11,50 +9,31 @@ export class ErrorLoggable implements ILoggable {
 		this.error = error;
 	}
 
-	getLogMessage(): ErrorLogMessage | ValidationErrorLogMessage {
-		// what about unkown errors?
-		if (this.isFeathersError(this.error)) {
-			return {
-				error: this.error,
-				stack: this.error.stack,
-				type: 'Feathers Error',
-			};
-		}
-		if (this.isBusinessError(this.error)) {
-			if (this.error instanceof ApiValidationError) {
-				return this.writeValidationErrors(this.error);
-			}
-			return {
-				error: this.error,
-				stack: this.error.stack,
-				type: 'Business Error',
-			};
-		}
-		if (this.isTechnicalError(this.error)) {
-			return {
-				error: this.error,
-				stack: this.error.stack,
-				type: 'Technical Error',
-			};
-		}
-		return {
+	getLogMessage() {
+		let logMessage: ErrorLogMessage | ValidationErrorLogMessage = {
 			error: this.error,
 			stack: this.error.stack,
 			type: 'Unhandled or Unknown Error',
 		};
-	}
 
-	private isFeathersError(error: Error): error is FeathersError {
-		if (!(error && 'type' in error)) return false;
-		return (error as FeathersError)?.type === 'FeathersError';
-	}
+		if (ErrorUtils.isFeathersError(this.error)) {
+			logMessage.type = 'Feathers Error';
+		} else if (this.error instanceof ApiValidationError) {
+			logMessage = this.writeValidationErrors(this.error);
+		} else if (
+			ErrorUtils.isBusinessError(this.error) ||
+			(ErrorUtils.isNestHttpException(this.error) && this.error.getStatus() < 500)
+		) {
+			logMessage.type = 'Business Error';
+		} else if (ErrorUtils.isNestHttpException(this.error)) {
+			// IMO it is incorrect to classify all Nest HttpExceptions as technical errors, because they are often used as business errors,
+			// e.g. the ForbiddenExceptions in the authorization service or the UnauthorizedException in the CurrentUser decorator.
+			// As I understand the term "Technical Error" it would correspond to a 5xx status code. There are a few cases where we explicitly throw these.
+			// We could filter for the status like above. Or we could get rid of it altogether. Is it really needed?
+			logMessage.type = 'Technical Error';
+		}
 
-	private isBusinessError(error: Error): error is BusinessError {
-		return error instanceof BusinessError;
-	}
-
-	private isTechnicalError(error: Error): error is HttpException {
-		return error instanceof HttpException;
+		return logMessage;
 	}
 
 	private writeValidationErrors = (error: ApiValidationError) => {
