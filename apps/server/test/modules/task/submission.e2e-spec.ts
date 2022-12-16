@@ -88,7 +88,7 @@ describe('Submission Controller (e2e)', () => {
 			await app.close();
 		});
 
-		describe('WHEN user is not authorized', () => {
+		describe('WHEN user is not authenticated', () => {
 			it('should return 401', async () => {
 				const taskId = 'id';
 
