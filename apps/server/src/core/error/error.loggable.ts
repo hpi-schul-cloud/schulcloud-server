@@ -29,7 +29,7 @@ export class ErrorLoggable implements ILoggable {
 			// IMO it is incorrect to classify all Nest HttpExceptions as technical errors, because they are often used as business errors,
 			// e.g. the ForbiddenExceptions in the authorization service or the UnauthorizedException in the CurrentUser decorator.
 			// As I understand the term "Technical Error" it would correspond to a 5xx status code. There are a few cases where we explicitly throw these.
-			// We could filter for the status like above. Or we could get rid of it altogether. Is it really needed?
+			// We could filter for the status like above. Or we could get rid of the classification altogether. Is it really needed?
 			logMessage.type = 'Technical Error';
 		}
 
