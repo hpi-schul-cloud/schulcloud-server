@@ -84,9 +84,11 @@ export class ExternalToolResponseMapper {
 				name: customParameterDO.name,
 				default: customParameterDO.default,
 				regex: customParameterDO.regex,
+				regexComment: customParameterDO.regexComment,
 				scope: scopeMapping[customParameterDO.scope],
 				location: locationMapping[customParameterDO.location],
 				type: typeMapping[customParameterDO.type],
+				isOptional: customParameterDO.isOptional,
 			};
 		});
 	}
