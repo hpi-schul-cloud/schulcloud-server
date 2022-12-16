@@ -152,5 +152,18 @@ describe('ExternalToolVersionService', () => {
 				});
 			});
 		});
+
+		describe('hasChangedParameterScope is called', () => {
+			describe('when one customParameter has a changed scope', () => {
+				it('should increase version', () => {
+					const { oldTool, newTool, param1 } = setup();
+					param1.scope = CustomParameterScope.SCHOOL;
+
+					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+
+					expectIncreasement(newTool);
+				});
+			});
+		});
 	});
 });
