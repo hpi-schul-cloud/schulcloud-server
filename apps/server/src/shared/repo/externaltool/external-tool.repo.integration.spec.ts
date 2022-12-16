@@ -161,6 +161,8 @@ describe('ExternalToolRepo', () => {
 						scope: CustomParameterScope.SCHOOL,
 						default: 'default',
 						location: CustomParameterLocation.TOKEN,
+						regexComment: 'mockComment',
+						isOptional: false,
 					}),
 				],
 				isHidden: true,
