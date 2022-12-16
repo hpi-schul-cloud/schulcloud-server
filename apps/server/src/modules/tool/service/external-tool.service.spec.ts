@@ -16,9 +16,9 @@ import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/
 import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Logger } from '@src/core/logger';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './mapper';
-import { Logger } from '../../../core/logger';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;

@@ -14,9 +14,9 @@ import { Page } from '@shared/domain/interface/page';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
+import { Logger } from '@src/core/logger';
 import { TokenEndpointAuthMethod, ToolConfigType } from '../interface';
 import { ExternalToolServiceMapper } from './mapper';
-import { Logger } from '../../../core/logger';
 
 @Injectable()
 export class ExternalToolService {
