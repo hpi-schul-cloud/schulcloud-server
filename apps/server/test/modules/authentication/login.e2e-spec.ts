@@ -121,7 +121,7 @@ describe('Login Controller (e2e)', () => {
 
 			account = accountFactory.buildWithId({
 				userId: user.id,
-				username: `${schoolExternalId}/${ldapAccountUserName}`,
+				username: `${schoolExternalId}/${ldapAccountUserName.trim().toLowerCase()}`,
 				systemId: system.id,
 			});
 
@@ -140,7 +140,7 @@ describe('Login Controller (e2e)', () => {
 				schoolId: school.id,
 				systemId: system.id,
 			};
-			const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params).expect(200);
+			const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params);
 
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect(response.body.accessToken).toBeDefined();

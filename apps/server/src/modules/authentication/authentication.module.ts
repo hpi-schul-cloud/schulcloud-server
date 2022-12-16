@@ -16,7 +16,28 @@ import { SystemModule } from '../system';
 import { OauthStrategy } from './strategy/oauth.strategy';
 import { OauthModule } from '../oauth';
 
+// values copied from Algorithm definition. Type does not exist at runtime and can't be checked anymore otherwise
+const algorithms = [
+	'HS256',
+	'HS384',
+	'HS512',
+	'RS256',
+	'RS384',
+	'RS512',
+	'ES256',
+	'ES384',
+	'ES512',
+	'PS256',
+	'PS384',
+	'PS512',
+	'none',
+];
+
+if (!algorithms.includes(jwtConstants.jwtOptions.algorithm)) {
+	throw new Error(`${jwtConstants.jwtOptions.algorithm} is not a valid JWT signing algorithm`);
+}
 const signAlgoritm = jwtConstants.jwtOptions.algorithm as Algorithm;
+
 const signOptions: SignOptions = {
 	algorithm: signAlgoritm,
 	audience: jwtConstants.jwtOptions.audience,

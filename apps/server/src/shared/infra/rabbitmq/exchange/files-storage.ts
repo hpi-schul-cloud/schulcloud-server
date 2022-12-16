@@ -37,7 +37,7 @@ export interface IFileRecordParams {
 }
 
 export interface ICopyFileDO {
-	id: EntityId;
+	id?: EntityId;
 	sourceId: EntityId;
 	name: string;
 }

@@ -1,5 +1,5 @@
 import { CookieOptions, Response } from 'express';
-import { Controller, Req, Post, UseGuards, HttpCode, HttpStatus, Param, Query, Res } from '@nestjs/common';
+import { Controller, Post, UseGuards, HttpCode, HttpStatus, Query, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser } from '@shared/domain';

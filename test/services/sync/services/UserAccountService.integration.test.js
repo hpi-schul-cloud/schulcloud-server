@@ -104,7 +104,7 @@ describe('UserAccountService integration', () => {
 				...inputUser,
 				ldapId: firstLdapId,
 			};
-			const { user, account } = await service.createUserAndAccount(inputUserFirst, inputAccount);
+			const { user, account } = await service.createUserAndAccount(inputUserFirst, inputAccount, school);
 			createdUser = user;
 			createdAccount = account;
 
@@ -113,10 +113,21 @@ describe('UserAccountService integration', () => {
 				...inputUser,
 				ldapId: secondLdapId,
 			};
-			await expect(service.createUserAndAccount(inputUserSecond, inputAccount))
-				.to.be.rejectedWith(BadRequest)
-				.and.to.eventually.have.property('message')
-				.and.to.eventually.contain(firstLdapId);
+			try {
+				service.createUserAndAccount(inputUserSecond, inputAccount, school);
+			} catch (error) {
+				expect(error).to.be.an.instanceof(BadRequest);
+				expect(error).to.have.property('message');
+				expect(error.errors).to.have.all.keys(
+					'userId',
+					'ldapId',
+					'existsInSchool',
+					'userSchool',
+					'userSchoolId',
+					'existsInSchoolName'
+				);
+				expect(error.errors.ldapId).to.equal(firstLdapId);
+			}
 		});
 
 		it('should not create user if account creation fails', async () => {

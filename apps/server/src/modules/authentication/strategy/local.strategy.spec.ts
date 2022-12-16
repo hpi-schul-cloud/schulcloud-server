@@ -40,7 +40,10 @@ describe('local strategy', () => {
 				LocalStrategy,
 				{
 					provide: AuthenticationService,
-					useValue: createMock<AuthenticationService>(),
+					useValue: createMock<AuthenticationService>({
+						normalizeUsername: (username: string) => username,
+						normalizePassword: (password: string) => password,
+					}),
 				},
 				{
 					provide: UserRepo,

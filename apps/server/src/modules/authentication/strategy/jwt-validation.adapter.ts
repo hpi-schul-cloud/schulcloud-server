@@ -17,9 +17,9 @@ export class JwtValidationAdapter {
 		await ensureTokenIsWhitelisted({ accountId, jti, privateDevice: false });
 	}
 
-	async addToWhitelist(accountId: string, jti: string, privateDevice = false): Promise<void> {
+	async addToWhitelist(accountId: string, jti: string): Promise<void> {
 		const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-		await addTokenToWhitelist(redisIdentifier, privateDevice);
+		await addTokenToWhitelist(redisIdentifier);
 	}
 }

@@ -107,7 +107,7 @@ const injectUserId = async (context) => {
 };
 
 /**
- * @deprecated Remove when switched to new auth service
+ * @deprecated Remove when ldap, TSP and local strategy are removed
  */
 const lowerCaseUsername = (hook) => {
 	if (hook.data.username) {
@@ -117,7 +117,7 @@ const lowerCaseUsername = (hook) => {
 };
 
 /**
- * @deprecated Remove when switched to new auth service
+ * @deprecated Remove when ldap, TSP and local strategy are removed
  */
 const trimUsername = (hook) => {
 	if (hook.data.username) {
@@ -127,7 +127,7 @@ const trimUsername = (hook) => {
 };
 
 /**
- * @deprecated Remove when switched to new auth service
+ * @deprecated Remove when ldap, TSP and local strategy are removed
  */
 const trimPassword = (hook) => {
 	if (hook.data.password) {
@@ -144,7 +144,6 @@ const populateResult = (hook) => {
 /**
  * Requests need to be used after authentication as inner server calls
  * Provider is not allowed to be set to detect it as inner server call
- * @deprecated not needed in nest
  */
 const removeProvider = (context) => {
 	delete context.params.provider;
@@ -181,7 +180,7 @@ const removeJwtFromWhitelist = async (context) => {
 
 /**
  * increase jwt timeout for private devices on request
- * @deprecated remove when switched to v3 endpoint
+ * @deprecated remove when switched to v3 endpoint, was never in production and is more than 2 years old
  */
 const increaseJwtTimeoutForPrivateDevices = (context) => {
 	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true) {
@@ -210,23 +209,41 @@ const checkJwtAuthWhitelisted = async (context) => {
 const hooks = {
 	before: {
 		create: [
+			// NOTE: is ported to nest
 			checkJwtAuthWhitelisted,
+			// NOTE: is ported to nest
 			updateUsernameForLDAP,
+			// NOTE: is ported to nest
 			lowerCaseUsername,
+			// NOTE: is ported to nest
 			trimUsername,
+			// NOTE: is ported to nest
 			trimPassword,
+			// NOTE: is ported to nest
 			bruteForceCheck,
-			// NOTE: will not be ported
+			// NOTE: will not be ported to nest
 			globalHooks.blockDisposableEmail('username'),
 			injectUserId,
+			// NOTE: will not be ported to nest
 			increaseJwtTimeoutForPrivateDevices,
+			// NOTE: will not be ported to nest
 			removeProvider,
 		],
 		remove: [removeProvider],
 	},
 	after: {
-		all: [discard('account.password'), globalHooks.transformToDataTransferObject],
-		create: [bruteForceReset, addJwtToWhitelist],
+		all: [
+			// NOTE: will not be ported to nest
+			discard('account.password'),
+			// NOTE: will not be ported to nest
+			globalHooks.transformToDataTransferObject,
+		],
+		create: [
+			// NOTE: will not be ported to nest
+			bruteForceReset,
+			// NOTE: is ported to nest
+			addJwtToWhitelist,
+		],
 		remove: [populateResult, removeJwtFromWhitelist],
 	},
 };
