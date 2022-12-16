@@ -98,7 +98,7 @@ describe('Submission Controller (e2e)', () => {
 			});
 		});
 
-		describe('WHEN user is authorized, has permission', () => {
+		describe('WHEN user is authenticated and has permission', () => {
 			const setup = async () => {
 				const roles = roleFactory.buildList(1, {
 					permissions: [Permission.SUBMISSIONS_VIEW],
@@ -151,7 +151,7 @@ describe('Submission Controller (e2e)', () => {
 			});
 		});
 
-		describe('WHEN user is authorized and has no permission', () => {
+		describe('WHEN user is authenticated and has no permission', () => {
 			const setup = async () => {
 				const task = taskFactory.buildWithId();
 				const user = userFactory.buildWithId();
@@ -212,7 +212,7 @@ describe('Submission Controller (e2e)', () => {
 			await app.close();
 		});
 
-		describe('WHEN user is not authorized', () => {
+		describe('WHEN user is not authenticated', () => {
 			it('should return 401', async () => {
 				const submissionId = 'id';
 
@@ -222,7 +222,7 @@ describe('Submission Controller (e2e)', () => {
 			});
 		});
 
-		describe('WHEN user is authorized, has permission', () => {
+		describe('WHEN user is authenticated and has permission', () => {
 			const setup = async () => {
 				const roles = roleFactory.buildList(1, {
 					permissions: [Permission.SUBMISSIONS_EDIT],
@@ -261,7 +261,7 @@ describe('Submission Controller (e2e)', () => {
 			});
 		});
 
-		describe('WHEN user is authorized and has no permission', () => {
+		describe('WHEN user is authenticated and has no permission', () => {
 			const setup = async () => {
 				const task = taskFactory.buildWithId();
 				const user = userFactory.buildWithId();
