@@ -69,7 +69,7 @@ class API {
 			result: response.body as FileRecordResponse,
 			error: response.body as ApiValidationError,
 			status: response.status,
-			headers: response.headers,
+			headers: response.headers as Record<string, string>,
 		};
 	}
 }
@@ -359,8 +359,8 @@ describe('files-storage controller (e2e)', () => {
 
 				expect(response.status).toEqual(206);
 
-				expect(response.headers).toEqual(expect.objectContaining({ 'accept-ranges': 'bytes' }));
-				expect(response.headers).toEqual(expect.objectContaining({ 'content-range': 'bytes 0-3/4' }));
+				expect(response.headers['accept-ranges']).toMatch('bytes');
+				expect(response.headers['content-range']).toMatch('bytes 0-3/4');
 			});
 		});
 	});
