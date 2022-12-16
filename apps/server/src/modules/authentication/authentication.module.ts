@@ -13,8 +13,8 @@ import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { LdapService } from './services/ldap.service';
 import { SystemModule } from '../system';
-import { OauthStrategy } from './strategy/oauth.strategy';
 import { OauthModule } from '../oauth';
+import { OauthStrategy } from './strategy/oauth.strategy';
 
 // values copied from Algorithm definition. Type does not exist at runtime and can't be checked anymore otherwise
 const algorithms = [

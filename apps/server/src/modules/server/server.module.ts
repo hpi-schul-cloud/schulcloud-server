@@ -14,7 +14,7 @@ import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { LessonApiModule } from '@src/modules/lesson';
 import { NewsModule } from '@src/modules/news';
-import { OauthModule } from '@src/modules/oauth';
+import { OauthApiModule } from '@src/modules/oauth';
 import { OauthProviderModule } from '@src/modules/oauth-provider';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { RocketChatModule } from '@src/modules/rocketchat';
@@ -40,7 +40,7 @@ const serverModules = [
 	CoreModule,
 	AuthenticationApiModule,
 	CollaborativeStorageModule,
-	OauthModule,
+	OauthApiModule,
 	TaskModule,
 	LessonApiModule,
 	NewsModule,

@@ -1,5 +1,5 @@
 import { CookieOptions, Response } from 'express';
-import { Controller, Post, UseGuards, HttpCode, HttpStatus, Query, Res } from '@nestjs/common';
+import { Controller, Post, UseGuards, HttpCode, HttpStatus, Query, Res, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser } from '@shared/domain';
@@ -26,7 +26,7 @@ export class LoginController {
 
 	@UseGuards(AuthGuard('oauth'))
 	@HttpCode(HttpStatus.OK)
-	@Post('oauth')
+	@Get('oauth/:systemId')
 	async loginOauth(
 		@CurrentUser() user: ICurrentUser,
 		@Query() queryParams: { redirect: string },

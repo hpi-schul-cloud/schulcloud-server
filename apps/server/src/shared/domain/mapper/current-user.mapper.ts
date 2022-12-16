@@ -1,5 +1,4 @@
-import { BusinessError, ValidationError } from '@shared/common';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
+import { ValidationError } from '@shared/common';
 import { UserDO } from '../domainobject/user.do';
 import { Role, User } from '../entity';
 import { ICurrentUser } from '../interface';

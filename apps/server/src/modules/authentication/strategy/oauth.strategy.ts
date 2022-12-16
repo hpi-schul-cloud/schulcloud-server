@@ -51,6 +51,7 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 			throw new UnauthorizedException();
 		}
 
-		return CurrentUserMapper.userDoToICurrentUser(account.id, user, systemId);
+		const currentUser: ICurrentUser = CurrentUserMapper.userDoToICurrentUser(account.id, user, systemId);
+		return currentUser;
 	}
 }
