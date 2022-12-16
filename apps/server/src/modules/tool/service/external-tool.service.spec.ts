@@ -106,8 +106,8 @@ describe('ExternalToolService', () => {
 		};
 	};
 
-	describe('createExternalTool', () => {
-		describe('when basic config', () => {
+	describe('createExternalTool is called', () => {
+		describe('when basic config is set', () => {
 			it('should call the repo to save a tool', async () => {
 				const { externalToolDO } = setup();
 				externalToolRepo.save.mockResolvedValue(externalToolDO);
@@ -127,7 +127,7 @@ describe('ExternalToolService', () => {
 			});
 		});
 
-		describe('when oauth2 config', () => {
+		describe('when oauth2 config is set', () => {
 			const setupOauth2 = () => {
 				const { externalToolDO, oauth2ToolConfigDO, oauthClient } = setup();
 				externalToolDO.config = oauth2ToolConfigDO;
@@ -137,7 +137,6 @@ describe('ExternalToolService', () => {
 
 				return { externalToolDO, oauth2ToolConfigDO, oauthClient };
 			};
-
 			it('should create oauth2 client', async () => {
 				const { externalToolDO, oauthClient } = setupOauth2();
 
@@ -163,7 +162,7 @@ describe('ExternalToolService', () => {
 			});
 		});
 
-		describe('when lti11 config', () => {
+		describe('when lti11 config is set', () => {
 			const setupLti11 = () => {
 				const encryptedSecret = 'encryptedSecret';
 				const { externalToolDO, lti11ToolConfigDO } = setup();
@@ -201,210 +200,230 @@ describe('ExternalToolService', () => {
 				expect(result).toEqual(externalToolDOEncrypted);
 			});
 		});
-	});
 
-	describe('findExternalTool', () => {
-		const setupFind = () => {
-			const { externalToolDO } = setup();
-			const page = new Page<ExternalToolDO>([externalToolDO], 1);
-			const query: Partial<ExternalToolDO> = {
-				id: 'toolId',
-				name: 'toolName',
+		describe('findExternalTools is called', () => {
+			const setupFind = () => {
+				const { externalToolDO } = setup();
+				const page = new Page<ExternalToolDO>([externalToolDO], 1);
+				const query: Partial<ExternalToolDO> = {
+					id: 'toolId',
+					name: 'toolName',
+				};
+				const options: IFindOptions<ExternalToolDO> = {
+					order: {
+						id: SortOrder.asc,
+						name: SortOrder.asc,
+					},
+					pagination: {
+						limit: 2,
+						skip: 1,
+					},
+				};
+
+				return {
+					query,
+					options,
+					page,
+				};
 			};
-			const options: IFindOptions<ExternalToolDO> = {
-				order: {
-					id: SortOrder.asc,
-					name: SortOrder.asc,
-				},
-				pagination: {
-					limit: 2,
-					skip: 1,
-				},
-			};
 
-			return {
-				query,
-				options,
-				page,
-			};
-		};
+			describe('when pagination, order and scope are set', () => {
+				it('should get DOs', async () => {
+					const { query, options, page } = setupFind();
+					externalToolRepo.find.mockResolvedValue(page);
 
-		it('should get DOs', async () => {
-			const { query, options, page } = setupFind();
-			externalToolRepo.find.mockResolvedValue(page);
+					const result: Page<ExternalToolDO> = await service.findExternalTools(query, options);
 
-			const result: Page<ExternalToolDO> = await service.findExternalTools(query, options);
-
-			expect(result).toEqual(page);
-		});
-
-		it('should get DOs and add external oauth2 data', async () => {
-			const { query, options, page } = setupFind();
-			const { externalToolDO, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO, oauthClient } = setup();
-			oauth2ToolConfigDO.clientSecret = undefined;
-			externalToolDO.config = oauth2ToolConfigDOWithoutExternalData;
-			page.data = [externalToolDO];
-			externalToolRepo.find.mockResolvedValue(page);
-			oauthProviderService.getOAuth2Client.mockResolvedValue(oauthClient);
-
-			const result: Page<ExternalToolDO> = await service.findExternalTools(query, options);
-
-			expect(result).toEqual({ data: [{ ...externalToolDO, config: oauth2ToolConfigDO }], total: 1 });
-		});
-
-		it('should filter out oauth2tools with unresolved oauthConfig when oauthProvider throws an error', async () => {
-			const { query, options, page } = setupFind();
-			const { externalToolDO, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO, oauthClient } = setup();
-			oauth2ToolConfigDO.clientSecret = undefined;
-			externalToolDO.config = oauth2ToolConfigDOWithoutExternalData;
-			page.data = [externalToolDO, externalToolDOFactory.withOauth2Config().build()];
-			externalToolRepo.find.mockResolvedValue(page);
-			oauthProviderService.getOAuth2Client.mockResolvedValueOnce(oauthClient);
-			oauthProviderService.getOAuth2Client.mockRejectedValue(new Error('some error occurred during fetching data'));
-
-			const result: Page<ExternalToolDO> = await service.findExternalTools(query, options);
-
-			expect(result).toEqual({ data: [{ ...externalToolDO, config: oauth2ToolConfigDO }], total: 1 });
-		});
-	});
-
-	describe('findExternalToolById', () => {
-		it('should get DO', async () => {
-			const { externalToolDO } = setup();
-			externalToolRepo.findById.mockResolvedValue(externalToolDO);
-
-			const result: ExternalToolDO = await service.findExternalToolById('toolId');
-
-			expect(result).toEqual(externalToolDO);
-		});
-
-		it('should get DO and add external oauth2 data', async () => {
-			const { externalToolDO, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO, oauthClient } = setup();
-			oauth2ToolConfigDO.clientSecret = undefined;
-			externalToolDO.config = oauth2ToolConfigDOWithoutExternalData;
-			externalToolRepo.findById.mockResolvedValue(externalToolDO);
-			oauthProviderService.getOAuth2Client.mockResolvedValue(oauthClient);
-
-			const result: ExternalToolDO = await service.findExternalToolById('toolId');
-
-			expect(result).toEqual({ ...externalToolDO, config: oauth2ToolConfigDO });
-		});
-
-		it('should throw UnprocessableEntityException when oauthConfig could not be resolved', async () => {
-			const { externalToolDO, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO } = setup();
-			oauth2ToolConfigDO.clientSecret = undefined;
-			externalToolDO.config = oauth2ToolConfigDOWithoutExternalData;
-			externalToolRepo.findById.mockResolvedValue(externalToolDO);
-			oauthProviderService.getOAuth2Client.mockRejectedValueOnce(new Error('some error occurred during fetching data'));
-
-			const func = () => service.findExternalToolById('toolId');
-
-			await expect(func()).rejects.toThrow(`Could not resolve oauth2Config of tool ${externalToolDO.name}.`);
-		});
-	});
-
-	describe('deleteExternalTool', () => {
-		const setupDelete = () => {
-			const schoolExternalToolDO: SchoolExternalToolDO = new SchoolExternalToolDO({
-				id: 'schoolTool1',
-				toolId: 'tool1',
-				schoolId: 'school1',
-				parameters: [],
-				toolVersion: 1,
+					expect(result).toEqual(page);
+				});
 			});
 
-			schoolToolRepo.findByToolId.mockResolvedValue([schoolExternalToolDO]);
+			describe('when external tool with oauthConfig is set', () => {
+				it('should get DOs and add external oauth2 data', async () => {
+					const { query, options, page } = setupFind();
+					const { externalToolDO, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO, oauthClient } = setup();
+					oauth2ToolConfigDO.clientSecret = undefined;
+					externalToolDO.config = oauth2ToolConfigDOWithoutExternalData;
+					page.data = [externalToolDO];
+					externalToolRepo.find.mockResolvedValue(page);
+					oauthProviderService.getOAuth2Client.mockResolvedValue(oauthClient);
 
-			return { schoolExternalToolDO };
-		};
+					const result: Page<ExternalToolDO> = await service.findExternalTools(query, options);
 
-		it('should delete all related CourseExternalTools', async () => {
-			const toolId = 'tool1';
-			setup();
-			const { schoolExternalToolDO } = setupDelete();
+					expect(result).toEqual({ data: [{ ...externalToolDO, config: oauth2ToolConfigDO }], total: 1 });
+				});
+			});
 
-			await service.deleteExternalTool(toolId);
+			describe('when oauthProvider throws an error', () => {
+				it('should filter out oauth2tools with unresolved oauthConfig ', async () => {
+					const { query, options, page } = setupFind();
+					const { externalToolDO, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO, oauthClient } = setup();
+					oauth2ToolConfigDO.clientSecret = undefined;
+					externalToolDO.config = oauth2ToolConfigDOWithoutExternalData;
+					page.data = [externalToolDO, externalToolDOFactory.withOauth2Config().build()];
+					externalToolRepo.find.mockResolvedValue(page);
+					oauthProviderService.getOAuth2Client.mockResolvedValueOnce(oauthClient);
+					oauthProviderService.getOAuth2Client.mockRejectedValue(new Error('some error occurred during fetching data'));
 
-			expect(courseToolRepo.deleteBySchoolExternalToolIds).toHaveBeenCalledWith([schoolExternalToolDO.id]);
+					const result: Page<ExternalToolDO> = await service.findExternalTools(query, options);
+
+					expect(result).toEqual({ data: [{ ...externalToolDO, config: oauth2ToolConfigDO }], total: 1 });
+				});
+			});
 		});
 
-		it('should delete all related SchoolExternalTools', async () => {
-			const toolId = 'tool1';
-			setup();
-			setupDelete();
+		describe('findExternalToolById is called', () => {
+			describe('when external tool id is set', () => {
+				it('should get DO', async () => {
+					const { externalToolDO } = setup();
+					externalToolRepo.findById.mockResolvedValue(externalToolDO);
 
-			await service.deleteExternalTool(toolId);
+					const result: ExternalToolDO = await service.findExternalToolById('toolId');
 
-			expect(schoolToolRepo.deleteByToolId).toHaveBeenCalledWith(toolId);
+					expect(result).toEqual(externalToolDO);
+				});
+			});
+
+			describe('when external tool with oauthConfig is set', () => {
+				it('should get DO and add external oauth2 data', async () => {
+					const { externalToolDO, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO, oauthClient } = setup();
+					oauth2ToolConfigDO.clientSecret = undefined;
+					externalToolDO.config = oauth2ToolConfigDOWithoutExternalData;
+					externalToolRepo.findById.mockResolvedValue(externalToolDO);
+					oauthProviderService.getOAuth2Client.mockResolvedValue(oauthClient);
+
+					const result: ExternalToolDO = await service.findExternalToolById('toolId');
+
+					expect(result).toEqual({ ...externalToolDO, config: oauth2ToolConfigDO });
+				});
+			});
+
+			describe('when oauthConfig could not be resolved', () => {
+				it('should throw UnprocessableEntityException ', async () => {
+					const { externalToolDO, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO } = setup();
+					oauth2ToolConfigDO.clientSecret = undefined;
+					externalToolDO.config = oauth2ToolConfigDOWithoutExternalData;
+					externalToolRepo.findById.mockResolvedValue(externalToolDO);
+					oauthProviderService.getOAuth2Client.mockRejectedValueOnce(
+						new Error('some error occurred during fetching data')
+					);
+
+					const func = () => service.findExternalToolById('toolId');
+
+					await expect(func()).rejects.toThrow(`Could not resolve oauth2Config of tool ${externalToolDO.name}.`);
+				});
+			});
 		});
 
-		it('should delete the ExternalTool', async () => {
-			const toolId = 'tool1';
-			setup();
-			setupDelete();
+		describe('deleteExternalTool', () => {
+			const setupDelete = () => {
+				const schoolExternalToolDO: SchoolExternalToolDO = new SchoolExternalToolDO({
+					id: 'schoolTool1',
+					toolId: 'tool1',
+					schoolId: 'school1',
+					parameters: [],
+					toolVersion: 1,
+				});
 
-			await service.deleteExternalTool(toolId);
+				schoolToolRepo.findByToolId.mockResolvedValue([schoolExternalToolDO]);
 
-			expect(externalToolRepo.deleteById).toHaveBeenCalledWith(toolId);
-		});
-	});
+				return { schoolExternalToolDO };
+			};
+			describe('when tool id is set', () => {
+				it('should delete all related CourseExternalTools', async () => {
+					const toolId = 'tool1';
+					setup();
+					const { schoolExternalToolDO } = setupDelete();
 
-	describe('findExternalToolByName', () => {
-		it('should call the externalToolRepo', async () => {
-			const toolName = 'toolName';
+					await service.deleteExternalTool(toolId);
 
-			await service.findExternalToolByName(toolName);
+					expect(courseToolRepo.deleteBySchoolExternalToolIds).toHaveBeenCalledWith([schoolExternalToolDO.id]);
+				});
 
-			expect(externalToolRepo.findByName).toHaveBeenCalledWith(toolName);
-		});
+				it('should delete all related SchoolExternalTools', async () => {
+					const toolId = 'tool1';
+					setup();
+					setupDelete();
 
-		it('should return externalToolDO when tool was found', async () => {
-			const externalTool: ExternalToolDO = externalToolDOFactory.build();
-			externalToolRepo.findByName.mockResolvedValue(externalTool);
+					await service.deleteExternalTool(toolId);
 
-			const result: ExternalToolDO | null = await service.findExternalToolByName('toolName');
+					expect(schoolToolRepo.deleteByToolId).toHaveBeenCalledWith(toolId);
+				});
 
-			expect(result).toBeInstanceOf(ExternalToolDO);
-		});
+				it('should delete the ExternalTool', async () => {
+					const toolId = 'tool1';
+					setup();
+					setupDelete();
 
-		it('should return null when externalTool was not found', async () => {
-			externalToolRepo.findByName.mockResolvedValue(null);
+					await service.deleteExternalTool(toolId);
 
-			const result: ExternalToolDO | null = await service.findExternalToolByName('toolName');
-
-			expect(result).toBeNull();
-		});
-	});
-
-	describe('findExternalToolByOAuth2ConfigClientId', () => {
-		it('should call the externalToolRepo', async () => {
-			const clientId = 'clientId';
-
-			await service.findExternalToolByOAuth2ConfigClientId(clientId);
-
-			expect(externalToolRepo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(clientId);
-		});
-
-		it('should return externalToolDO when tool was found', async () => {
-			const externalTool: ExternalToolDO = externalToolDOFactory.build();
-			externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(externalTool);
-
-			const result: ExternalToolDO | null = await service.findExternalToolByOAuth2ConfigClientId('clientId');
-
-			expect(result).toBeInstanceOf(ExternalToolDO);
+					expect(externalToolRepo.deleteById).toHaveBeenCalledWith(toolId);
+				});
+			});
 		});
 
-		it('should return null when externalTool was not found', async () => {
-			externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(null);
+		describe('findExternalToolByName is called', () => {
+			describe('when name is set', () => {
+				it('should call the externalToolRepo', async () => {
+					const toolName = 'toolName';
 
-			const result: ExternalToolDO | null = await service.findExternalToolByOAuth2ConfigClientId('clientId');
+					await service.findExternalToolByName(toolName);
 
-			expect(result).toBeNull();
+					expect(externalToolRepo.findByName).toHaveBeenCalledWith(toolName);
+				});
+			});
+			describe('when tool was found', () => {
+				it('should return externalToolDO ', async () => {
+					const externalTool: ExternalToolDO = externalToolDOFactory.build();
+					externalToolRepo.findByName.mockResolvedValue(externalTool);
+
+					const result: ExternalToolDO | null = await service.findExternalToolByName('toolName');
+
+					expect(result).toBeInstanceOf(ExternalToolDO);
+				});
+			});
+			describe('when tool was not found', () => {
+				it('should return null', async () => {
+					externalToolRepo.findByName.mockResolvedValue(null);
+
+					const result: ExternalToolDO | null = await service.findExternalToolByName('toolName');
+
+					expect(result).toBeNull();
+				});
+			});
 		});
-	});
 
-	describe('updateExternalTool', () => {
-		describe('with oauth2ToolConfig', () => {
+		describe('findExternalToolByOAuth2ConfigClientId is called', () => {
+			describe('when oauthClient id is set', () => {
+				it('should call the externalToolRepo', async () => {
+					const clientId = 'clientId';
+
+					await service.findExternalToolByOAuth2ConfigClientId(clientId);
+
+					expect(externalToolRepo.findByOAuth2ConfigClientId).toHaveBeenCalledWith(clientId);
+				});
+
+				it('should return externalToolDO when tool was found', async () => {
+					const externalTool: ExternalToolDO = externalToolDOFactory.build();
+					externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(externalTool);
+
+					const result: ExternalToolDO | null = await service.findExternalToolByOAuth2ConfigClientId('clientId');
+
+					expect(result).toBeInstanceOf(ExternalToolDO);
+				});
+			});
+			describe(' when externalTool was not found', () => {
+				it('should return null', async () => {
+					externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(null);
+
+					const result: ExternalToolDO | null = await service.findExternalToolByOAuth2ConfigClientId('clientId');
+
+					expect(result).toBeNull();
+				});
+			});
+		});
+
+		describe('updateExternalTool is called', () => {
 			const setupOauthConfig = () => {
 				const existingTool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
 				const changedTool: ExternalToolDO = externalToolDOFactory
@@ -427,93 +446,110 @@ describe('ExternalToolService', () => {
 					oauthClientId,
 				};
 			};
+			describe('when external tool with oauthConfig is given', () => {
+				it('should call externalToolServiceMapper', async () => {
+					const { changedTool } = setupOauthConfig();
 
-			it('should call externalToolServiceMapper', async () => {
-				const { changedTool } = setupOauthConfig();
+					await service.updateExternalTool(changedTool);
 
-				await service.updateExternalTool(changedTool);
+					expect(mapper.mapDoToProviderOauthClient).toHaveBeenCalledWith(changedTool.name, changedTool.config);
+				});
+			});
+			describe('when oauthClientId is set', () => {
+				it('should call oauthProviderService', async () => {
+					const { changedTool, oauthClientId } = setupOauthConfig();
 
-				expect(mapper.mapDoToProviderOauthClient).toHaveBeenCalledWith(changedTool.name, changedTool.config);
+					await service.updateExternalTool(changedTool);
+
+					expect(oauthProviderService.getOAuth2Client).toHaveBeenCalledWith(oauthClientId);
+				});
+			});
+			describe('when oauthClientId is set and providerClient is given', () => {
+				it('should update the oauth2Client', async () => {
+					const { changedTool, oauthClientId, providerOauthClient } = setupOauthConfig();
+
+					await service.updateExternalTool(changedTool);
+
+					expect(oauthProviderService.updateOAuth2Client).toHaveBeenCalledWith(oauthClientId, providerOauthClient);
+				});
 			});
 
-			it('should call oauthProviderService', async () => {
-				const { changedTool, oauthClientId } = setupOauthConfig();
+			describe('when requested oauth2Client not exists', () => {
+				it('should throw an error ', async () => {
+					const { changedTool, providerOauthClient } = setupOauthConfig();
+					providerOauthClient.client_id = undefined;
+					oauthProviderService.getOAuth2Client.mockResolvedValue(providerOauthClient);
 
-				await service.updateExternalTool(changedTool);
+					const func = () => service.updateExternalTool(changedTool);
 
-				expect(oauthProviderService.getOAuth2Client).toHaveBeenCalledWith(oauthClientId);
+					await expect(func).rejects.toThrow(UnprocessableEntityException);
+				});
 			});
 
-			it('should update the oauth2Client when clientId exists already', async () => {
-				const { changedTool, oauthClientId, providerOauthClient } = setupOauthConfig();
+			describe('when external tool is given', () => {
+				it('should save the externalTool', async () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
 
-				await service.updateExternalTool(changedTool);
+					await service.updateExternalTool(externalToolDO);
 
-				expect(oauthProviderService.updateOAuth2Client).toHaveBeenCalledWith(oauthClientId, providerOauthClient);
+					expect(externalToolRepo.save).toHaveBeenCalled();
+				});
 			});
 
-			it('should throw an error when requested oauth2Client not exists', async () => {
-				const { changedTool, providerOauthClient } = setupOauthConfig();
-				providerOauthClient.client_id = undefined;
-				oauthProviderService.getOAuth2Client.mockResolvedValue(providerOauthClient);
+			describe('when specific tool attributes changes', () => {
+				it('should increase the version of the externalTool', async () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+					externalToolDO.version = 1;
 
-				const func = () => service.updateExternalTool(changedTool);
+					await service.updateExternalTool(externalToolDO);
 
-				await expect(func).rejects.toThrow(UnprocessableEntityException);
+					expect(externalToolRepo.save).toHaveBeenCalledWith({ ...externalToolDO, version: 2 });
+				});
 			});
 		});
 
-		it('should save the externalTool', async () => {
-			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+		describe('isLti11Config is called', () => {
+			describe('when external tool with config.type Lti11 is given', () => {
+				it('should return true', () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory.withLti11Config().buildWithId();
 
-			await service.updateExternalTool(externalToolDO);
+					const func = () => service.isLti11Config(externalToolDO.config);
 
-			expect(externalToolRepo.save).toHaveBeenCalled();
+					expect(func()).toBeTruthy();
+				});
+			});
+
+			describe('when external tool with config.type Lti11 is not given', () => {
+				it('should return false', () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+
+					const func = () => service.isLti11Config(externalToolDO.config);
+
+					expect(func()).toBeFalsy();
+				});
+			});
 		});
 
-		it('should increase the version of the externalTool', async () => {
-			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
-			externalToolDO.version = 1;
+		describe('isOauth2Config is called', () => {
+			describe('when external tool with config.type Oauth2 is given', () => {
+				it('should return true', () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
 
-			await service.updateExternalTool(externalToolDO);
+					const func = () => service.isOauth2Config(externalToolDO.config);
 
-			expect(externalToolRepo.save).toHaveBeenCalledWith({ ...externalToolDO, version: 2 });
-		});
-	});
+					expect(func()).toBeTruthy();
+				});
+			});
 
-	describe('isLti11Config', () => {
-		it('should return true when config.type is Lti11', () => {
-			const externalToolDO: ExternalToolDO = externalToolDOFactory.withLti11Config().buildWithId();
+			describe('when external tool with config.type Oauth2 is not given', () => {
+				it('should return false', () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
 
-			const func = () => service.isLti11Config(externalToolDO.config);
+					const func = () => service.isOauth2Config(externalToolDO.config);
 
-			expect(func()).toBeTruthy();
-		});
-
-		it('should return false when config.type is not Lti11', () => {
-			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
-
-			const func = () => service.isLti11Config(externalToolDO.config);
-
-			expect(func()).toBeFalsy();
-		});
-	});
-
-	describe('isOauth2Config', () => {
-		it('should return true when config.type is Oauth2', () => {
-			const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
-
-			const func = () => service.isOauth2Config(externalToolDO.config);
-
-			expect(func()).toBeTruthy();
-		});
-
-		it('should return false when config.type is not Oauth2', () => {
-			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
-
-			const func = () => service.isOauth2Config(externalToolDO.config);
-
-			expect(func()).toBeFalsy();
+					expect(func()).toBeFalsy();
+				});
+			});
 		});
 	});
 });
