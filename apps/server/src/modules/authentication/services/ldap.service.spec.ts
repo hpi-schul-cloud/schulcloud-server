@@ -11,7 +11,7 @@ const mockClient = {
 	on(eventName: string, callback: () => unknown) {
 		callback();
 	},
-	bind(username, password, callback: (error?: unknown) => unknown) {
+	bind(username: string, password: string, callback: (error?: unknown) => unknown) {
 		if (username === 'connectSucceeds') {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			this.connected = true;
@@ -54,32 +54,40 @@ describe('LdapService', () => {
 		ldapService = module.get(LdapService);
 	});
 
-	describe('when a user tries to authenticate', () => {
-		it('should throw error if no ldapconfig is given', async () => {
-			const system: System = systemFactory.buildWithId();
-			await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
-				new Error(`no LDAP config found in system ${system.id}`)
-			);
+	describe('checkLdapCredentials', () => {
+		describe('when credentials are correct', () => {
+			it('should login successfully', async () => {
+				const system: System = systemFactory.withLdapConfig().buildWithId();
+				const connected = await ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword');
+				expect(connected).toBe(true);
+			});
 		});
 
-		it('should throw error if user cannot be authorised', async () => {
-			const system: System = systemFactory.withLdapConfig().buildWithId();
-			await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
-				new UnauthorizedException('User could not authenticate')
-			);
+		describe('when no ldap config is provided', () => {
+			it('should throw error', async () => {
+				const system: System = systemFactory.buildWithId();
+				await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
+					new Error(`no LDAP config found in system ${system.id}`)
+				);
+			});
 		});
 
-		it('should throw error if connected flag is not set', async () => {
-			const system: System = systemFactory.withLdapConfig().buildWithId();
-			await expect(ldapService.checkLdapCredentials(system, 'connectWithoutFlag', 'mockPassword')).rejects.toThrow(
-				new UnauthorizedException('User could not authenticate')
-			);
+		describe('when user is not authorized', () => {
+			it('should throw unauthorized error', async () => {
+				const system: System = systemFactory.withLdapConfig().buildWithId();
+				await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
+					new UnauthorizedException('User could not authenticate')
+				);
+			});
 		});
 
-		it('should login successfully', async () => {
-			const system: System = systemFactory.withLdapConfig().buildWithId();
-			const connected = await ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword');
-			expect(connected).toBe(true);
+		describe('when connected flag is not set', () => {
+			it('should throw unauthorized error', async () => {
+				const system: System = systemFactory.withLdapConfig().buildWithId();
+				await expect(ldapService.checkLdapCredentials(system, 'connectWithoutFlag', 'mockPassword')).rejects.toThrow(
+					new UnauthorizedException('User could not authenticate')
+				);
+			});
 		});
 	});
 });

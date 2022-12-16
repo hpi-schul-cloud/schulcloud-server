@@ -14,10 +14,10 @@ import { AuthenticationService } from '../services/authentication.service';
 
 describe('LocalStrategy', () => {
 	let orm: MikroORM;
+	let module: TestingModule;
 	let strategy: LocalStrategy;
 	let userRepo: DeepMocked<UserRepo>;
 	let authenticationService: DeepMocked<AuthenticationService>;
-	let module: TestingModule;
 	let mockUser: User;
 	let mockAccount: AccountDto;
 
@@ -25,6 +25,7 @@ describe('LocalStrategy', () => {
 	const mockPasswordHash = bcrypt.hashSync(mockPassword);
 
 	beforeAll(async () => {
+		orm = await setupEntities();
 		module = await Test.createTestingModule({
 			imports: [PassportModule],
 			providers: [
@@ -43,13 +44,12 @@ describe('LocalStrategy', () => {
 			],
 		}).compile();
 
-		orm = await setupEntities();
 		strategy = module.get(LocalStrategy);
 		authenticationService = module.get(AuthenticationService);
 		userRepo = module.get(UserRepo);
 		mockUser = userFactory.withRole(RoleName.STUDENT).buildWithId();
 		mockAccount = AccountEntityToDtoMapper.mapToDto(
-			accountFactory.build({ userId: mockUser.id, password: mockPasswordHash })
+			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
 		);
 
 		authenticationService.loadAccount.mockResolvedValue(mockAccount);
@@ -57,8 +57,8 @@ describe('LocalStrategy', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
+		await orm.close();
 	});
 
 	describe('validate', () => {
