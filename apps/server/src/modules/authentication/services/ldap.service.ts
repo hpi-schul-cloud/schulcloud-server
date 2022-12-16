@@ -6,7 +6,7 @@ import { LdapConnectionError } from '../errors/ldap-connection.error';
 
 @Injectable()
 export class LdapService {
-	constructor(private logger: Logger) {
+	constructor(private readonly logger: Logger) {
 		this.logger.setContext(LdapService.name);
 	}
 
@@ -37,7 +37,7 @@ export class LdapService {
 				client.bind(username, password, (err) => {
 					if (err) {
 						this.logger.debug(err);
-						reject(new UnauthorizedException('User could not authenticate'));
+						reject(new UnauthorizedException(err, 'User could not authenticate'));
 					} else {
 						this.logger.debug('[LDAP] Bind successful');
 						resolve(client);
