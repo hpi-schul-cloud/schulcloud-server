@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, TaskCard } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
-
 /*
 export abstract class CardRepo extends BaseRepo<Card> {
 	get entityName() {
@@ -19,17 +18,13 @@ export class TaskCardRepo extends BaseRepo<TaskCard> {
 		return TaskCard;
 	}
 
-	async createTaskCard(taskCard: TaskCard): Promise<void> {
-		//  const cardElements = taskCard.cardElements;
-		//taskCard.cardElements = [];
-		return this.save(this.create(taskCard));
-	}
-
 	async findById(id: EntityId) {
 		const card = await this._em.findOneOrFail(this.entityName, { id });
-		if (card.task !== null) {
-			await this._em.populate(card, ['task']);
-		}
+		await card.cardElements.init();
+		await card.cardElements.loadItems();
+		//const elements = card.cardElements.getItems();
+		//card.cardElements = elements;
+		await this._em.populate(card, ['cardElements']);
 		return card;
 	}
 }

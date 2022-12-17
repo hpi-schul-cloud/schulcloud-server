@@ -7,7 +7,6 @@ import {
 	ManyToMany,
 	ManyToOne,
 	OneToOne,
-	OneToMany,
 	Property,
 	wrap,
 } from '@mikro-orm/core';
@@ -22,14 +21,7 @@ export type CardProps = {
 	creator: User;
 };
 
-/* TODO
-  using discriminatorValue in TaskCard leads to exception
-  workaround is using discriminatorMap in the abstract class and tableName in all classes,
- */
 @Entity({
-	//discriminatorColumn: 'cardType',
-	//discriminatorMap: { task: 'TaskCard' },
-	//abstract: true,
 	tableName: 'card',
 })
 export class TaskCard extends BaseEntityWithTimestamps {
@@ -37,21 +29,16 @@ export class TaskCard extends BaseEntityWithTimestamps {
 		super();
 
 		this.draggable = props.draggable || true;
+		this.cardType = props.cardType;
+
+		this.cardElements.set(props.cardElements);
+		this.task = wrap(props.task).toReference();
 		this.cardType = CardType.Task;
-
-		if (props.cardElements.length > 0) {
-			this.cardElements.set(props.cardElements);
-		}
-
 		Object.assign(this, { creator: props.creator });
-
-		if (props.task) {
-			this.task = wrap(props.task).toReference();
-		}
 	}
 
 	//@OneToMany({ entity: () => CardElement, mappedBy: (cardElement) => cardElement.card, orphanRemoval: true }))
-	@ManyToMany('CardElement', undefined, { fieldName: 'referenceIds' })
+	@ManyToMany('CardElement', undefined, { fieldName: 'cardElementsIds' })
 	cardElements = new Collection<CardElement>(this);
 
 	@Enum()

@@ -47,7 +47,7 @@ export class TaskCardMapper {
 	static mapCreateToDomain(params: CreateTaskCardParams): ITaskCardCreate {
 		const dto = {
 			title: params.title,
-			description: params.text,
+			text: params.text,
 		};
 
 		return dto;
