@@ -6,6 +6,7 @@ import { NotImplementedException } from '@nestjs/common/exceptions/not-implement
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountDto } from './dto/account.dto';
+import { AccountSaveDto } from './dto';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -132,6 +133,23 @@ describe('AccountService Integration', () => {
 				updatedAt: mockIdmAccount.createdDate,
 				username: mockIdmAccount.username,
 			});
+		});
+		it('should update an existing accounts password', async () => {
+			const updateSpy = jest.spyOn(identityManagementService, 'updateAccount');
+			const updatePasswordSpy = jest.spyOn(identityManagementService, 'updateAccountPassword');
+
+			const mockAccountDto: AccountSaveDto = {
+				id: mockIdmAccountRefId,
+				username: 'testUserName',
+				userId: 'userId',
+				systemId: 'systemId',
+				password: 'password',
+			};
+			const ret = await accountIdmService.save(mockAccountDto);
+
+			expect(updateSpy).toHaveBeenCalled();
+			expect(updatePasswordSpy).toHaveBeenCalled();
+			expect(ret).toBeDefined();
 		});
 		it('should create a new account', async () => {
 			const updateSpy = jest.spyOn(identityManagementService, 'updateAccount');
