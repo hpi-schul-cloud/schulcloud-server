@@ -1,16 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { TaskCard, EntityId, ITaskCard, ITaskCardCreate, CardType } from '@shared/domain';
+import { CardType, EntityId, ITaskCard, ITaskCardCreate, TaskCard } from '@shared/domain';
+import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import { TaskCardRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
-import { TitleCardElementRepo, TaskCardRepo } from '@shared/repo';
 import { TaskMapper } from '@src/modules/task/mapper/task.mapper';
 import { TaskService } from '@src/modules/task/service';
-import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 
 @Injectable()
 export class TaskCardUc {
 	constructor(
 		private taskCardRepo: TaskCardRepo,
-		private titleCardElementRepo: TitleCardElementRepo,
 		private readonly authorizationService: AuthorizationService,
 		@Inject(TaskService) private readonly taskService: TaskService
 	) {}
@@ -29,12 +28,12 @@ export class TaskCardUc {
 		cardElements.unshift(title);
 
 		if (params.text) {
-			const texts = params.text.map((text) => CardElement.fromRichtext(text));
+			const texts = params.text.map((text) => new RichTextCardElement(text));
 			cardElements.push(...texts);
 		}
 
 		const cardParams: ITaskCard = {
-			cardElements: cardElements,
+			cardElements,
 			cardType: CardType.Task,
 			creator: user,
 			task: taskWithStatusVo.task,

@@ -13,5 +13,9 @@ export class CardRichTextElementResponse {
 	})
 	value!: string;
 
+	@ApiProperty({
+		description: 'The input format type of the rich text',
+		type: InputFormat,
+	})
 	inputFormat!: InputFormat;
 }

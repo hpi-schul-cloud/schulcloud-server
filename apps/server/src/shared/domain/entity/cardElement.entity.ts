@@ -1,7 +1,7 @@
 import { Entity, Enum, Property } from '@mikro-orm/core';
+import { RichText } from '@shared/domain/types/richtext.types';
 import { InputFormat } from '../types/input-format.types';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { RichText } from '@shared/domain';
 
 export enum CardElementType {
 	'Title' = 'title',
@@ -27,15 +27,17 @@ export abstract class CardElement extends BaseEntityWithTimestamps {
 	// @Property()
 	// content!: TitleCardElement | RichTextCardElement;
 
-	static fromTitle(title: string): CardElement {
+	// TODO: still needed??
+	/* static fromTitle(title: string): CardElement {
 		const element = new TitleCardElement(title);
 		return element;
 	}
 
+	// TODO: still needed??
 	static fromRichtext(richText: RichText): CardElement {
 		const element = new RichTextCardElement(richText);
 		return element;
-	}
+	} */
 }
 
 @Entity({

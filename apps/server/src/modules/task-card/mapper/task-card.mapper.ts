@@ -1,13 +1,13 @@
-import { ITaskCardCreate, TaskCard, TaskWithStatusVo, ICardElement } from '@shared/domain';
-import { TaskResponse } from '@src/modules/task/controller/dto';
+import { ICardElement, ITaskCardCreate, TaskCard, TaskWithStatusVo } from '@shared/domain';
 import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import { TaskResponse } from '@src/modules/task/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
 import {
-	CardTitleElementResponse,
-	CardRichTextElementResponse,
 	CardElementResponse,
+	CardRichTextElementResponse,
+	CardTitleElementResponse,
 	CreateTaskCardParams,
-	TaskCardResponse,
+	TaskCardResponse
 } from '../controller/dto';
 
 export class TaskCardMapper {
@@ -45,10 +45,13 @@ export class TaskCardMapper {
 	}
 
 	static mapCreateToDomain(params: CreateTaskCardParams): ITaskCardCreate {
-		const dto = {
+		const dto: ITaskCardCreate = {
 			title: params.title,
-			text: params.text,
 		};
+
+		if (params.text) {
+			dto.text = params.text;
+		}
 
 		return dto;
 	}

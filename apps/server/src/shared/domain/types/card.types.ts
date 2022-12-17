@@ -1,7 +1,6 @@
+import type { RichText, Task, User } from '@shared/domain';
 import { CardElement, CardElementType } from '../entity/cardElement.entity';
-import type { Task, User } from '@shared/domain';
 import { InputFormat } from './input-format.types';
-import type { RichText } from '@shared/domain';
 
 // import { TaskResponse } from '@src/modules/task/controller/dto'
 
