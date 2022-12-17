@@ -1,19 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { TaskCard, EntityId, ITaskCard, ITaskCardCreate, CardType } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
-import { CardElementRepo, TaskCardRepo } from '@shared/repo';
+import { TitleCardElementRepo, TaskCardRepo } from '@shared/repo';
 import { TaskMapper } from '@src/modules/task/mapper/task.mapper';
-// import { TaskResponse } from '@src/modules/task/controller/dto';
-// import { TaskCardMapper } from '@src/modules/task-card/mapper/task-card.mapper';
 import { TaskService } from '@src/modules/task/service';
 import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
-// import { TaskUC } from '@src/modules/task/uc';
 
 @Injectable()
 export class TaskCardUc {
 	constructor(
 		private taskCardRepo: TaskCardRepo,
-		private cardElementRepo: CardElementRepo,
+		private titleCardElementRepo: TitleCardElementRepo,
 		private readonly authorizationService: AuthorizationService,
 		@Inject(TaskService) private readonly taskService: TaskService
 	) {}
@@ -28,9 +25,8 @@ export class TaskCardUc {
 
 		const cardElements: CardElement[] = [];
 
-		const title = CardElement.fromTitle(params.title);
+		const title = new TitleCardElement(params.title); // CardElement.fromTitle(params.title);
 		cardElements.unshift(title);
-		//await this.cardElementRepo.save(title);
 
 		if (params.text) {
 			const texts = params.text.map((text) => CardElement.fromRichtext(text));
@@ -38,36 +34,28 @@ export class TaskCardUc {
 		}
 
 		const cardParams: ITaskCard = {
-			cardElements: [],
+			cardElements: cardElements,
 			cardType: CardType.Task,
 			creator: user,
 			task: taskWithStatusVo.task,
 		};
 
-		const card = new TaskCard(cardParams);
-		/*
-		await Promise.all(
-			cardElements.map(async (element) => {
-				await this.cardElementRepo.save(element);
-			})
-		);
-*/
-		//await this.taskCardRepo.save(card);
+		const card = new TaskCard(cardParams); //Card.fromTaskCard(cardParams);
 
-		//card.cardElements.set(cardElements);
-		//await this.taskCardRepo.save(card);
-		await this.taskCardRepo.createTaskCard(card);
+		await this.taskCardRepo.save(card);
 
 		return { card, taskWithStatusVo };
 	}
 
 	async find(userId: EntityId, id: EntityId) {
-		// const user = await this.authorizationService.getUserWithPermissions(userId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.taskCardRepo.findById(id);
+		//card.cardElements = card.getCardElements();
+		//card.getCardElements()
 
-		//const taskWithStatusVo = await this.taskService.find(userId, card.task.id);
-		// this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
-		//return { card, taskWithStatusVo };
+		const taskWithStatusVo = await this.taskService.find(userId, card.task.id);
+		//this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
+		return { card, taskWithStatusVo };
 	}
 
 	// async findOne()

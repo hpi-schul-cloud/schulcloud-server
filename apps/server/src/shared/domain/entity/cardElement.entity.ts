@@ -1,7 +1,7 @@
-import { Entity, Enum, ManyToMany, Property } from '@mikro-orm/core';
+import { Entity, Enum, Property } from '@mikro-orm/core';
 import { InputFormat } from '../types/input-format.types';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { TaskCard, RichText } from '@shared/domain';
+import { RichText } from '@shared/domain';
 
 export enum CardElementType {
 	'Title' = 'title',
@@ -13,8 +13,7 @@ export type CardElementProps = {
 };
 
 @Entity({
-	discriminatorValue: 'cardElementType',
-	//discriminatorMap: { title: 'TitleCardElement', richText: 'RichTextCardElement' },
+	discriminatorColumn: 'cardElementType',
 	abstract: true,
 	tableName: 'card-element',
 })

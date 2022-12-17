@@ -27,7 +27,7 @@ export class TaskCardController {
 
 		return taskCardResponse;
 	}
-	/*
+
 	@Get(':id')
 	async find(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: TaskCardUrlParams) {
 		const { card, taskWithStatusVo } = await this.taskCardUc.find(currentUser.userId, urlParams.id);
@@ -35,7 +35,7 @@ export class TaskCardController {
 		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
 		return taskCardResponse;
 	}
-*/
+
 	// async update
 	// async delete
 }

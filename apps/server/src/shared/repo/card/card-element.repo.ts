@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CardElement } from '@shared/domain';
+import { CardElement, TitleCardElement } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()
@@ -8,7 +8,11 @@ export class CardElementRepo extends BaseRepo<CardElement> {
 		return CardElement;
 	}
 }
-
-export class TitleCardElementRepo extends CardElementRepo {}
+@Injectable()
+export class TitleCardElementRepo extends BaseRepo<TitleCardElement> {
+	get entityName() {
+		return TitleCardElement;
+	}
+}
 
 export class RichTextCardElementRepo extends CardElementRepo {}
