@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ISchoolProperties, School } from '@shared/domain';
 import { EntityName } from '@mikro-orm/core';
+import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { BaseDORepo, EntityProperties } from '../base.do.repo';
 import { SchoolDO } from '../../domain/domainobject/school.do';
-import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 
 @Injectable()
 export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> {

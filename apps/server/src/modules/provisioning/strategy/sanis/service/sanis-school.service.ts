@@ -8,10 +8,7 @@ import { SchoolService } from '@src/modules/school';
 
 @Injectable()
 export class SanisSchoolService {
-	constructor(
-		private readonly responseMapper: SanisResponseMapper,
-		private readonly schoolService: SchoolService,
-	) {}
+	constructor(private readonly responseMapper: SanisResponseMapper, private readonly schoolService: SchoolService) {}
 
 	async provisionSchool(data: SanisResponse, systemId: EntityId): Promise<SchoolDO> {
 		const school: ProvisioningSchoolOutputDto = this.responseMapper.mapToSchoolDto(data, systemId);

@@ -6,9 +6,9 @@ import { MikroORM } from '@mikro-orm/core';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { SchoolService } from './school.service';
 import { MigrationResponse } from '../controller/dto';
-import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 
 describe('SchoolService', () => {
 	let module: TestingModule;
@@ -42,13 +42,13 @@ describe('SchoolService', () => {
 	});
 
 	const setup = () => {
-		const systems: string[] = [ 'systemId' ];
+		const systems: string[] = ['systemId'];
 		const schoolSaved: SchoolDO = new SchoolDO({
 			id: 'testId',
 			name: 'schoolName',
 			externalId: 'externalId',
 			systems,
-			features: [ SchoolFeatures.VIDEOCONFERENCE ],
+			features: [SchoolFeatures.VIDEOCONFERENCE],
 		});
 		const schoolUnsaved: SchoolDO = new SchoolDO({ name: 'school #2}', systems: [] });
 		schoolRepo.findById.mockResolvedValue(schoolSaved);
@@ -120,7 +120,7 @@ describe('SchoolService', () => {
 				expect.objectContaining({
 					name: 'loadedSchool',
 					id: schoolSavedId,
-				}),
+				})
 			);
 		});
 	});
@@ -175,10 +175,7 @@ describe('SchoolService', () => {
 		it('should return a do', async () => {
 			const { schoolSavedExternalId, systems } = setup();
 
-			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId(
-				schoolSavedExternalId,
-				systems[0],
-			);
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId(schoolSavedExternalId, systems[0]);
 
 			expect(schoolDO).toBeInstanceOf(SchoolDO);
 		});
