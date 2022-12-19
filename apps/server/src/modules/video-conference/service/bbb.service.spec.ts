@@ -162,6 +162,20 @@ describe('BBB Service', () => {
 			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbCreateResponse.data);
 		});
 
+		it('should return a response with returncode success', async () => {
+			// Arrange
+			httpService.post.mockReturnValue(of(bbbCreateResponse));
+			converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
+
+			// Act
+			const result = await service.create(createBBBCreateConfig());
+
+			// Assert
+			expect(result).toBeDefined();
+			expect(httpService.post).toHaveBeenCalledTimes(1);
+			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbCreateResponse.data);
+		});
+
 		it('should throw an error if there is a different return code then success', async () => {
 			// Arrange
 			bbbCreateResponse.data.response.returncode = BBBStatus.ERROR;
