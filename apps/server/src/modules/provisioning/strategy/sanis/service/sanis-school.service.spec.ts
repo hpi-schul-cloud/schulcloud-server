@@ -26,7 +26,6 @@ describe('SanisSchoolService', () => {
 
 	let mapper: DeepMocked<SanisResponseMapper>;
 	let schoolService: DeepMocked<SchoolService>;
-	let schoolRepo: DeepMocked<SchoolRepo>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -42,17 +41,12 @@ describe('SanisSchoolService', () => {
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
 				},
-				{
-					provide: SchoolRepo,
-					useValue: createMock<SchoolRepo>(),
-				},
 			],
 		}).compile();
 
 		sanisSchoolService = module.get(SanisSchoolService);
 		mapper = module.get(SanisResponseMapper);
 		schoolService = module.get(SchoolService);
-		schoolRepo = module.get(SchoolRepo);
 	});
 
 	const setup = () => {
@@ -110,7 +104,7 @@ describe('SanisSchoolService', () => {
 		mapper.mapSanisRoleToRoleName.mockReturnValue(RoleName.ADMINISTRATOR);
 		mapper.mapToUserDO.mockReturnValue(userDO);
 		mapper.mapToSchoolDto.mockReturnValue(schoolProvisioningDto);
-		schoolRepo.findByExternalId.mockResolvedValue(schoolDO);
+		schoolService.getSchoolByExternalId.mockResolvedValue(schoolDO);
 		schoolService.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDO);
 
 		return {
@@ -142,7 +136,7 @@ describe('SanisSchoolService', () => {
 
 		it('should save new school', async () => {
 			const { sanisResponse, system, schoolDO } = setup();
-			schoolRepo.findByExternalId.mockResolvedValue(null);
+			schoolService.getSchoolByExternalId.mockResolvedValue(null);
 
 			const result: SchoolDO = await sanisSchoolService.provisionSchool(sanisResponse, system.id);
 

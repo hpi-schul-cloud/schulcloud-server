@@ -10,7 +10,7 @@ import { SchoolModule, SchoolService } from '../school';
 @Module({
 	imports: [LoggerModule, AccountModule, SchoolModule],
 	controllers: [ImportUserController],
-	providers: [UserImportUc, ImportUserRepo, PermissionService, SchoolRepo, SchoolService, SystemRepo, UserRepo],
+	providers: [UserImportUc, ImportUserRepo, PermissionService, SchoolRepo, SystemRepo, UserRepo],
 	exports: [],
 })
 /**

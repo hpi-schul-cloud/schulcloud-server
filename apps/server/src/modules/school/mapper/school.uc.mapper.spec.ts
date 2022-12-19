@@ -15,7 +15,7 @@ describe('SchoolUcMapper', () => {
 			expect(result.id).toEqual(dto.id);
 			expect(result.name).toEqual(dto.name);
 			expect(result.externalId).toEqual(dto.externalId);
-			expect(result.systems ? result.systems[0] : '').toEqual(dto.systemIds ? dto.systemIds[0] : '');
+			expect(result.systems).toEqual(dto.systemIds);
 		});
 	});
 });

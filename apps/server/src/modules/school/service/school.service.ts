@@ -73,6 +73,11 @@ export class SchoolService {
 		return schoolDO;
 	}
 
+	async getSchoolByExternalId(externalId: string, systemId: string): Promise<SchoolDO|null> {
+		const schoolDO: SchoolDO|null = await this.schoolRepo.findByExternalId(externalId,systemId);
+		return schoolDO;
+	}
+
 	async save(school: SchoolDO): Promise<SchoolDO> {
 		const ret: SchoolDO = await this.schoolRepo.save(school);
 		return ret;

@@ -4,7 +4,7 @@ import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { UserImportUc } from '../uc/user-import.uc';
 import { ImportUserController } from './import-user.controller';
-import { SchoolService } from '../../school';
+import { SchoolService } from '@src/modules/school';
 
 describe('ImportUserController', () => {
 	let module: TestingModule;

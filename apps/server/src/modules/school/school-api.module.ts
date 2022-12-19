@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { SchoolUc } from '@src/modules/school/uc/school.uc';
+import { SchoolUc } from './uc/school.uc';
 import { SchoolModule } from './school.module';
 import { SchoolController } from './controller/school.controller';
-import { AuthorizationModule } from '../authorization';
+import { AuthorizationModule } from '@src/modules/authorization';
 import { LoggerModule } from '../../core/logger';
 
 @Module({

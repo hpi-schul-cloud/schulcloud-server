@@ -8,7 +8,7 @@ import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolService } from './school.service';
 import { MigrationResponse } from '../controller/dto';
-import { ProvisioningSchoolOutputDto } from '../../provisioning/dto/provisioning-school-output.dto';
+import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 
 describe('SchoolService', () => {
 	let module: TestingModule;
@@ -46,15 +46,20 @@ describe('SchoolService', () => {
 		const schoolSaved: SchoolDO = new SchoolDO({
 			id: 'testId',
 			name: 'schoolName',
+			externalId: 'externalId',
 			systems,
 			features: [SchoolFeatures.VIDEOCONFERENCE],
 		});
 		const schoolUnsaved: SchoolDO = new SchoolDO({ name: 'school #2}', systems: [] });
 		schoolRepo.findById.mockResolvedValue(schoolSaved);
+		schoolRepo.findByExternalId.mockResolvedValue(schoolSaved);
 		const schoolSavedId = schoolSaved.id as string;
+		const schoolSavedExternalId = schoolSaved.externalId as string;
 		return {
 			schoolSaved,
 			schoolSavedId,
+			schoolSavedExternalId,
+			systems,
 			schoolUnsaved,
 		};
 	};
@@ -155,6 +160,33 @@ describe('SchoolService', () => {
 			const schoolDO: SchoolDO = await schoolService.getSchoolById(schoolSavedId);
 
 			expect(schoolDO).toBeInstanceOf(SchoolDO);
+		});
+	});
+
+	describe('getSchoolByExternalId', () => {
+		it('should call the repo', async () => {
+			const { schoolSavedExternalId,systems } = setup();
+
+			await schoolService.getSchoolByExternalId(schoolSavedExternalId,systems[0]);
+
+			expect(schoolRepo.findByExternalId).toHaveBeenCalledWith(schoolSavedExternalId,systems[0]);
+		});
+
+		it('should return a do', async () => {
+			const { schoolSavedExternalId,systems } = setup();
+
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId(schoolSavedExternalId,systems[0]);
+
+			expect(schoolDO).toBeInstanceOf(SchoolDO);
+		});
+		it('should return null', async () => {
+			const { systems } = setup();
+
+			schoolRepo.findByExternalId.mockResolvedValue(null);
+
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId('null',systems[0]);
+
+			expect(schoolDO).toBeNull();
 		});
 	});
 

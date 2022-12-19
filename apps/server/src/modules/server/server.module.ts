@@ -29,7 +29,7 @@ import { VideoConferenceModule } from '@src/modules/video-conference';
 import { ToolApiModule } from '@src/modules/tool';
 import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
-import { SchoolApiModule } from '../school/school-api.module';
+import { SchoolApiModule } from '@src/modules/school/school-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot({
