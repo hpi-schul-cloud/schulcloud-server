@@ -137,7 +137,7 @@ module.exports = function setup() {
 				const { teamId } = data;
 
 				if (email) {
-					const { data: userData } = await app.service('users').find({ query: { email } });
+					const { data: userData } = await app.service('users').find({ query: { email: email } });
 					if (userData && userData[0] && userData[0].importHash) {
 						linkInfo.hash = userData[0].importHash;
 					} else {

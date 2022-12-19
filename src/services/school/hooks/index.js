@@ -264,7 +264,9 @@ const validateCounty = async (context) => {
 		if (!isSuperHero && currentSchool.county && JSON.stringify(currentSchool.county) !== JSON.stringify(county)) {
 			throw new Error(`This school already have a county`);
 		}
-		context.data.county = currentSchool.federalState.counties.find((c) => c._id.toString() === county.toString());
+		context.data.county = currentSchool.federalState.counties.find((c) => {
+			return c._id.toString() === county.toString();
+		});
 	}
 	// checks for empty value and deletes it from context
 	if (context && context.data && Object.keys(context.data).includes('county') && !context.data.county) {

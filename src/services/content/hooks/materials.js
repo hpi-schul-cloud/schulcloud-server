@@ -47,15 +47,13 @@ const hasMaterialAccess = async (context, id, permissions) => {
  * @throws {Forbidden} Forbidden if not all permissions are granted on the course(s)
  * @returns {Context} hook context
  */
-const checkAssociatedCoursePermission =
-	(...permissions) =>
-	async (context) => {
-		const access = await hasMaterialAccess(context, context.id, permissions);
-		if (!access) {
-			throw new Forbidden('No permision to access this material');
-		}
-		return context;
-	};
+const checkAssociatedCoursePermission = (...permissions) => async (context) => {
+	const access = await hasMaterialAccess(context, context.id, permissions);
+	if (!access) {
+		throw new Forbidden('No permision to access this material');
+	}
+	return context;
+};
 
 /**
  * After-hook to filter results of a find query to materials of courses the requesting user
@@ -65,24 +63,22 @@ const checkAssociatedCoursePermission =
  * @param  {...String} permissions list of permissions necessary for this hook to resolve
  * @returns {Context} hook context
  */
-const checkAssociatedCoursePermissionForSearchResult =
-	(...permissions) =>
-	async (context) => {
-		const results = context.result.data ? context.result.data : context.result;
-		const filteredResults = [];
-		for (const result of results) {
-			if (await hasMaterialAccess(context, result._id, permissions)) {
-				filteredResults.push(result);
-			}
+const checkAssociatedCoursePermissionForSearchResult = (...permissions) => async (context) => {
+	const results = context.result.data ? context.result.data : context.result;
+	const filteredResults = [];
+	for (const result of results) {
+		if (await hasMaterialAccess(context, result._id, permissions)) {
+			filteredResults.push(result);
 		}
-		if (context.result.data) {
-			context.result.data = filteredResults;
-			context.result.total = filteredResults.length;
-		} else {
-			context.result = filteredResults;
-		}
-		return context;
-	};
+	}
+	if (context.result.data) {
+		context.result.data = filteredResults;
+		context.result.total = filteredResults.length;
+	} else {
+		context.result = filteredResults;
+	}
+	return context;
+};
 
 exports.before = {
 	all: [authenticate('jwt')],

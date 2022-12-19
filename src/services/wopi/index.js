@@ -6,7 +6,6 @@ const rp = require('request-promise-native');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const { Forbidden, NotFound, BadRequest } = require('../../errors');
 const logger = require('../../logger');
 const hooks = require('./hooks');
@@ -15,6 +14,7 @@ const { canWrite, canRead } = require('../fileStorage/utils/filePermissionHelper
 const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
 const filePostActionHelper = require('./utils/filePostActionHelper');
 const handleResponseHeaders = require('../../middleware/handleResponseHeaders');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const wopiPrefix = '/wopi/files/';
 

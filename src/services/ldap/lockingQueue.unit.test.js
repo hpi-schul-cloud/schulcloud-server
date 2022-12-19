@@ -10,7 +10,9 @@ describe('lockingQueue', () => {
 		const promise1 = lockingQueue.getLock();
 		expect(lockingQueue.locked).to.be.true;
 		promise1
-			.then(() => done())
+			.then(() => {
+				return done();
+			})
 			.catch(() => {
 				expect.fail('unexpected failed promise');
 			});
@@ -119,6 +121,7 @@ describe('lockingQueue', () => {
 			.catch(() => {
 				expect.fail('unexpected failed promise');
 			});
+
 
 		promise4
 			.then((lock) => {

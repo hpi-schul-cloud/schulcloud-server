@@ -18,24 +18,28 @@ const USER_ID = new ObjectId();
 const CURRENT_USER_ID = 'CURRENT_USER_ID';
 const CURRENT_SCHOOL_ID = new ObjectId();
 
-const createCurrentUser = (userId = CURRENT_USER_ID) => ({
-	_id: userId,
-	userId,
-	firstName: 'Admin',
-	lastName: 'Admin',
-	email: `admin@test.de`,
-	schoolId: CURRENT_SCHOOL_ID,
-	roles: [],
-});
+const createCurrentUser = (userId = CURRENT_USER_ID) => {
+	return {
+		_id: userId,
+		userId,
+		firstName: 'Admin',
+		lastName: 'Admin',
+		email: `admin@test.de`,
+		schoolId: CURRENT_SCHOOL_ID,
+		roles: [],
+	};
+};
 
-const createTestUser = (userId = USER_ID) => ({
-	_id: userId,
-	firstName: 'Max',
-	lastName: 'Mustermann',
-	email: `delete_me@test.de`,
-	schoolId: CURRENT_SCHOOL_ID,
-	roles: [],
-});
+const createTestUser = (userId = USER_ID) => {
+	return {
+		_id: userId,
+		firstName: 'Max',
+		lastName: 'Mustermann',
+		email: `delete_me@test.de`,
+		schoolId: CURRENT_SCHOOL_ID,
+		roles: [],
+	};
+};
 
 const createTestAccount = (userId = USER_ID) => {
 	const user = createTestUser(userId);

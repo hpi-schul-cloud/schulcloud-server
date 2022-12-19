@@ -163,8 +163,9 @@ const expandContentIds = async (data) => {
 	return data;
 };
 
-const messengerIsActivatedForSchool = (school) =>
-	school && Array.isArray(school.features) && school.features.includes(SCHOOL_FEATURES.MESSENGER);
+const messengerIsActivatedForSchool = (school) => {
+	return school && Array.isArray(school.features) && school.features.includes(SCHOOL_FEATURES.MESSENGER);
+};
 
 const isTeamModerator = (team, userId, moderatorRoles) => {
 	if (!userId || !moderatorRoles) {
@@ -220,23 +221,27 @@ const buildMatrixUserId = (userId) => {
 }
 */
 
-const buildCourseObject = (course, userId = null) => ({
-	id: course._id.toString(),
-	name: course.name,
-	description: 'Kurs',
-	type: 'course',
-	bidirectional: (course.features || []).includes(COURSE_FEATURES.MESSENGER),
-	is_moderator: isCourseModerator(course, userId),
-});
+const buildCourseObject = (course, userId = null) => {
+	return {
+		id: course._id.toString(),
+		name: course.name,
+		description: 'Kurs',
+		type: 'course',
+		bidirectional: (course.features || []).includes(COURSE_FEATURES.MESSENGER),
+		is_moderator: isCourseModerator(course, userId),
+	};
+};
 
-const buildTeamObject = (team, userId = null, moderatorRoles = null) => ({
-	id: team._id.toString(),
-	name: team.name,
-	description: 'Team',
-	type: 'team',
-	bidirectional: (team.features || []).includes(TEAM_FEATURES.MESSENGER),
-	is_moderator: isTeamModerator(team, userId, moderatorRoles),
-});
+const buildTeamObject = (team, userId = null, moderatorRoles = null) => {
+	return {
+		id: team._id.toString(),
+		name: team.name,
+		description: 'Team',
+		type: 'team',
+		bidirectional: (team.features || []).includes(TEAM_FEATURES.MESSENGER),
+		is_moderator: isTeamModerator(team, userId, moderatorRoles),
+	};
+};
 
 const buildMessageObject = async (data) => {
 	const user = data.user || (await getUserData(data.userId));
@@ -316,12 +321,14 @@ const buildAddUserMessage = async (data) => {
 	return buildMessageObject(data);
 };
 
-const buildDeleteUserMessage = async (data) => ({
-	method: 'removeUser',
-	user: {
-		id: buildMatrixUserId(data.userId),
-	},
-});
+const buildDeleteUserMessage = async (data) => {
+	return {
+		method: 'removeUser',
+		user: {
+			id: buildMatrixUserId(data.userId),
+		},
+	};
+};
 
 const buildAddTeamMessage = async (data) => {
 	// room
@@ -336,10 +343,12 @@ const buildAddTeamMessage = async (data) => {
 		const school = await getSchoolData(teamUser.schoolId);
 		return messengerIsActivatedForSchool(school);
 	});
-	const members = membersWithMessengerActivated.map((teamUser) => ({
-		id: buildMatrixUserId(teamUser.userId),
-		is_moderator: isTeamModerator(data.team, teamUser.userId, moderatorRoles),
-	}));
+	const members = membersWithMessengerActivated.map((teamUser) => {
+		return {
+			id: buildMatrixUserId(teamUser.userId),
+			is_moderator: isTeamModerator(data.team, teamUser.userId, moderatorRoles),
+		};
+	});
 
 	return {
 		method: 'addRoom',
@@ -348,23 +357,27 @@ const buildAddTeamMessage = async (data) => {
 	};
 };
 
-const buildDeleteTeamMessage = async (data) => ({
-	method: 'removeRoom',
-	room: {
-		type: 'team',
-		id: data.teamId,
-	},
-});
+const buildDeleteTeamMessage = async (data) => {
+	return {
+		method: 'removeRoom',
+		room: {
+			type: 'team',
+			id: data.teamId,
+		},
+	};
+};
 
 const buildAddCourseMessage = async (data) => {
 	// room
 	const room = buildCourseObject(data.course);
 
 	// members
-	const members = getAllCourseUserIds(data.course).map((userId) => ({
-		id: buildMatrixUserId(userId),
-		is_moderator: isCourseModerator(data.course, userId),
-	}));
+	const members = getAllCourseUserIds(data.course).map((userId) => {
+		return {
+			id: buildMatrixUserId(userId),
+			is_moderator: isCourseModerator(data.course, userId),
+		};
+	});
 
 	return {
 		method: 'addRoom',
@@ -373,13 +386,15 @@ const buildAddCourseMessage = async (data) => {
 	};
 };
 
-const buildDeleteCourseMessage = async (data) => ({
-	method: 'removeRoom',
-	room: {
-		type: 'course',
-		id: data.courseId,
-	},
-});
+const buildDeleteCourseMessage = async (data) => {
+	return {
+		method: 'removeRoom',
+		room: {
+			type: 'course',
+			id: data.courseId,
+		},
+	};
+};
 
 module.exports = {
 	expandContentIds,

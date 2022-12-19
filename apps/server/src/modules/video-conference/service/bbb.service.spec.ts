@@ -16,6 +16,7 @@ import {
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 import { AxiosResponse } from 'axios';
+import { Console } from 'console';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
