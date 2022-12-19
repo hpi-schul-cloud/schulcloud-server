@@ -91,7 +91,7 @@ export class SyncEmbeddedFilesUc {
 			}
 		}
 
-		if (entity instanceof Submission && entity.comment !== undefined) {
+		if (entity instanceof Submission && entity.comment) {
 			const contentFileIds = this.extractFileIdsFromContent(entity.comment);
 
 			if (contentFileIds !== null) {
