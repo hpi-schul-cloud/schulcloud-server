@@ -74,7 +74,7 @@ export class SchoolService {
 	}
 
 	async getSchoolByExternalId(externalId: string, systemId: string): Promise<SchoolDO | null> {
-		const schoolDO: SchoolDO | null = await this.schoolRepo.findByExternalId(externalId,systemId);
+		const schoolDO: SchoolDO | null = await this.schoolRepo.findByExternalId(externalId, systemId);
 		return schoolDO;
 	}
 
