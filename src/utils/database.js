@@ -5,7 +5,6 @@ const diffHistory = require('mongoose-diff-history/diffHistory');
 const uriFormat = require('mongodb-uri');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-
 const logger = require('../logger');
 const {
 	NODE_ENV,

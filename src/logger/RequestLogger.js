@@ -2,9 +2,7 @@ const winston = require('winston');
 
 const { format, transports, createLogger } = winston;
 
-const formater = format.printf((info) => {
-	return `Request ${info.message}`;
-});
+const formater = format.printf((info) => `Request ${info.message}`);
 
 const logger = createLogger({
 	levels: winston.config.syslog.levels,

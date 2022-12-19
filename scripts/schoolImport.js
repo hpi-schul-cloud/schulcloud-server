@@ -23,7 +23,7 @@ async function importFiles(type, files) {
 	const totalLength = files.length;
 	let i = 1;
 	for (const file of files) {
-		console.log('importing ' + type + ' ' +  + i++ + ' of ' + totalLength)
+		console.log(`importing ${type} ${+i++} of ${totalLength}`);
 		await FileModel.create(file);
 	}
 }
@@ -31,8 +31,8 @@ async function importFiles(type, files) {
 appPromise
 	.then(async () => {
 		// variable importDirectory needs to be created beforehand with schoolExport.js
-		const importDirectory = process.argv[2]
-		const fullJson = JSON.parse(await fs.readFile(importDirectory + "/main.json", {encoding: 'utf-8'}));
+		const importDirectory = process.argv[2];
+		const fullJson = JSON.parse(await fs.readFile(`${importDirectory}/main.json`, { encoding: 'utf-8' }));
 
 		await schoolModel.create(fullJson.school);
 
@@ -92,11 +92,20 @@ appPromise
 			await submissionModel.create(sub);
 		}
 
-		console.log('importing files')
+		console.log('importing files');
 
-		await importFiles('users', JSON.parse(await fs.readFile(importDirectory + '/userFiles.json', {encoding: 'utf-8'})));
-		await importFiles('teams', JSON.parse(await fs.readFile(importDirectory + '/teamFiles.json', {encoding: 'utf-8'})));
-		await importFiles('courses', JSON.parse(await fs.readFile(importDirectory + '/courseFiles.json', {encoding: 'utf-8'})));
+		await importFiles(
+			'users',
+			JSON.parse(await fs.readFile(`${importDirectory}/userFiles.json`, { encoding: 'utf-8' }))
+		);
+		await importFiles(
+			'teams',
+			JSON.parse(await fs.readFile(`${importDirectory}/teamFiles.json`, { encoding: 'utf-8' }))
+		);
+		await importFiles(
+			'courses',
+			JSON.parse(await fs.readFile(`${importDirectory}/courseFiles.json`, { encoding: 'utf-8' }))
+		);
 
 		console.log('done');
 

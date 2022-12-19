@@ -16,7 +16,6 @@ import {
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 import { AxiosResponse } from 'axios';
-import { Console } from 'console';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
@@ -162,7 +161,7 @@ describe('BBB Service', () => {
 			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbCreateResponse.data);
 		});
 
-		it('should return a xml configuration with provided presentation url', async () => {
+		it('should return a xml configuration with provided presentation url', () => {
 			// Arrange
 			const presentationUrl = 'https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf';
 
@@ -170,7 +169,9 @@ describe('BBB Service', () => {
 			const result = service.getBbbRequestConfig(presentationUrl);
 
 			// Assert
-			expect(result).toBe('<?xml version=\'1.0\' encoding=\'UTF-8\'?><modules><module name=\'presentation\'><document url=\'https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf\' /></module></modules>');
+			expect(result).toBe(
+				"<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf' /></module></modules>"
+			);
 		});
 
 		it('should return a response with returncode success', async () => {

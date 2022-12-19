@@ -1,17 +1,14 @@
 const { BadRequest } = require('../../../errors');
 
-const isValidLdapConfigStructure = (config) => {
-	return (
-		config &&
-		config.providerOptions &&
-		config.providerOptions.userAttributeNameMapping &&
-		// classPathAdditions are optional, but if they exist and are not empty string,
-		// classAttributeNameMapping needs to be set
-		(!config.providerOptions.classPathAdditions ||
-			config.providerOptions.classPathAdditions === '' ||
-			config.providerOptions.classAttributeNameMapping)
-	);
-};
+const isValidLdapConfigStructure = (config) =>
+	config &&
+	config.providerOptions &&
+	config.providerOptions.userAttributeNameMapping &&
+	// classPathAdditions are optional, but if they exist and are not empty string,
+	// classAttributeNameMapping needs to be set
+	(!config.providerOptions.classPathAdditions ||
+		config.providerOptions.classPathAdditions === '' ||
+		config.providerOptions.classAttributeNameMapping);
 
 /**
  * Sets sensible default values for LDAP configs to be consumed by

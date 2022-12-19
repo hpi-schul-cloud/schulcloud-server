@@ -52,17 +52,15 @@ class QrRegistrationLinks {
 						toHash: user.email,
 						hash: user.importHash,
 					})
-					.then(({ shortLink, hash }) => {
-						return {
-							hash,
-							email: user.email,
-							qrContent: shortLink,
-							firstName: user.firstName,
-							lastName: user.lastName,
-							title: `${user.firstName} ${user.lastName}`,
-							description: 'Zum Registrieren bitte den Link öffnen.',
-						};
-					})
+					.then(({ shortLink, hash }) => ({
+						hash,
+						email: user.email,
+						qrContent: shortLink,
+						firstName: user.firstName,
+						lastName: user.lastName,
+						title: `${user.firstName} ${user.lastName}`,
+						description: 'Zum Registrieren bitte den Link öffnen.',
+					}))
 			);
 		}
 		const result = await Promise.all(promiseList);
