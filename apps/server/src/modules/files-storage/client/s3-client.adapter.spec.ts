@@ -17,6 +17,7 @@ const config = {
 };
 
 const pathToFile = 'test/text.txt';
+const bytesRange = 'bytes=0-1';
 
 describe('S3ClientAdapter', () => {
 	let module: TestingModule;
@@ -49,6 +50,7 @@ describe('S3ClientAdapter', () => {
 			Body: { on: () => true },
 			ContentType: 'data.ContentType',
 			ContentLength: 'data.ContentLength',
+			ContentRange: 'data.ContentRange',
 			ETag: 'data.ETag',
 		};
 
@@ -92,12 +94,23 @@ describe('S3ClientAdapter', () => {
 			);
 		});
 
+		it('should call send() of client with bytes range', async () => {
+			await service.get(pathToFile, bytesRange);
+
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: { Bucket: config.bucket, Key: pathToFile, Range: bytesRange },
+				})
+			);
+		});
+
 		it('should return file', async () => {
 			const result = await service.get(pathToFile);
 			expect(result).toStrictEqual(
 				expect.objectContaining({
-					contentLength: 'data.ContentLength',
 					contentType: 'data.ContentType',
+					contentLength: 'data.ContentLength',
+					contentRange: 'data.ContentRange',
 					etag: 'data.ETag',
 				})
 			);
