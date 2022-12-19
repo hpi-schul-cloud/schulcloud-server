@@ -6,8 +6,9 @@ import { AuthorizationModule } from '@src/modules/authorization';
 import { LoggerModule } from '../../core/logger';
 
 @Module({
-	imports: [SchoolModule, AuthorizationModule, LoggerModule],
-	controllers: [SchoolController],
-	providers: [SchoolUc],
+	imports: [ SchoolModule, AuthorizationModule, LoggerModule ],
+	controllers: [ SchoolController ],
+	providers: [ SchoolUc ],
 })
-export class SchoolApiModule {}
+export class SchoolApiModule {
+}

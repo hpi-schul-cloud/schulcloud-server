@@ -5,7 +5,7 @@ import { PermissionService } from '@shared/domain';
 import { ImportUserController } from './controller/import-user.controller';
 import { UserImportUc } from './uc/user-import.uc';
 import { AccountModule } from '../account';
-import { SchoolModule, SchoolService } from '../school';
+import { SchoolModule } from '../school';
 
 @Module({
 	imports: [LoggerModule, AccountModule, SchoolModule],

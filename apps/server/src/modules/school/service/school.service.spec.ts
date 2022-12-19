@@ -1,4 +1,4 @@
-import { EntityId, SchoolFeatures } from '@shared/domain';
+import { SchoolFeatures } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolRepo } from '@shared/repo';
@@ -42,13 +42,13 @@ describe('SchoolService', () => {
 	});
 
 	const setup = () => {
-		const systems: string[] = ['systemId'];
+		const systems: string[] = [ 'systemId' ];
 		const schoolSaved: SchoolDO = new SchoolDO({
 			id: 'testId',
 			name: 'schoolName',
 			externalId: 'externalId',
 			systems,
-			features: [SchoolFeatures.VIDEOCONFERENCE],
+			features: [ SchoolFeatures.VIDEOCONFERENCE ],
 		});
 		const schoolUnsaved: SchoolDO = new SchoolDO({ name: 'school #2}', systems: [] });
 		schoolRepo.findById.mockResolvedValue(schoolSaved);
@@ -120,7 +120,7 @@ describe('SchoolService', () => {
 				expect.objectContaining({
 					name: 'loadedSchool',
 					id: schoolSavedId,
-				})
+				}),
 			);
 		});
 	});
@@ -165,17 +165,20 @@ describe('SchoolService', () => {
 
 	describe('getSchoolByExternalId', () => {
 		it('should call the repo', async () => {
-			const { schoolSavedExternalId,systems } = setup();
+			const { schoolSavedExternalId, systems } = setup();
 
-			await schoolService.getSchoolByExternalId(schoolSavedExternalId,systems[0]);
+			await schoolService.getSchoolByExternalId(schoolSavedExternalId, systems[0]);
 
-			expect(schoolRepo.findByExternalId).toHaveBeenCalledWith(schoolSavedExternalId,systems[0]);
+			expect(schoolRepo.findByExternalId).toHaveBeenCalledWith(schoolSavedExternalId, systems[0]);
 		});
 
 		it('should return a do', async () => {
-			const { schoolSavedExternalId,systems } = setup();
+			const { schoolSavedExternalId, systems } = setup();
 
-			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId(schoolSavedExternalId,systems[0]);
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId(
+				schoolSavedExternalId,
+				systems[0],
+			);
 
 			expect(schoolDO).toBeInstanceOf(SchoolDO);
 		});
@@ -184,7 +187,7 @@ describe('SchoolService', () => {
 
 			schoolRepo.findByExternalId.mockResolvedValue(null);
 
-			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId('null',systems[0]);
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId('null', systems[0]);
 
 			expect(schoolDO).toBeNull();
 		});

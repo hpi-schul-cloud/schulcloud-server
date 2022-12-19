@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, PermissionService, Role, RoleName, School, User } from '@shared/domain';
-import { RoleRepo, SchoolRepo, UserRepo } from '@shared/repo';
+import { RoleRepo, UserRepo } from '@shared/repo';
 import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';

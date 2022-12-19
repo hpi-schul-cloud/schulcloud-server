@@ -1,5 +1,4 @@
 import {
-	ApiForbiddenResponse,
 	ApiFoundResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,

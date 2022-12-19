@@ -1,7 +1,7 @@
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { ISchoolProperties, School, SchoolFeatures, SchoolYear, System } from '@shared/domain';
 import { schoolFactory, setupEntities, systemFactory } from '@shared/testing';
-import { MikroORM, Reference } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { EntityProperties } from '@shared/repo';
