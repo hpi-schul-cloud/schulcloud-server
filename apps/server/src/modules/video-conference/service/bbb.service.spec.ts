@@ -16,7 +16,6 @@ import {
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 import { AxiosResponse } from 'axios';
-import { Console } from 'console';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
@@ -173,20 +172,6 @@ describe('BBB Service', () => {
 			expect(result).toBe(
 				"<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf' /></module></modules>"
 			);
-		});
-
-		it('should return a response with returncode success', async () => {
-			// Arrange
-			httpService.post.mockReturnValue(of(bbbCreateResponse));
-			converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
-
-			// Act
-			const result = await service.create(createBBBCreateConfig());
-
-			// Assert
-			expect(result).toBeDefined();
-			expect(httpService.post).toHaveBeenCalledTimes(1);
-			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbCreateResponse.data);
 		});
 
 		it('should throw an error if there is a different return code then success', async () => {
