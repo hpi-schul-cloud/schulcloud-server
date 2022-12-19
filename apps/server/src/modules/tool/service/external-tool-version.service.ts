@@ -22,7 +22,8 @@ export class ExternalToolVersionService {
 			this.hasChangedRequiredParameters(oldParams, newParams) ||
 			this.hasChangedParameterNames(oldParams, newParams) ||
 			this.hasChangedParameterRegex(newParams, matchingParams) ||
-			this.hasChangedParameterTypes(newParams, matchingParams);
+			this.hasChangedParameterTypes(newParams, matchingParams) ||
+			this.hasChangedParameterScope(newParams, matchingParams);
 
 		return shouldIncrementVersion;
 	}
@@ -61,6 +62,14 @@ export class ExternalToolVersionService {
 		const increase = matchingParams.some((param) => {
 			const newParam = newParams.find((p) => p.name === param.name);
 			return newParam && param.type !== newParam.type;
+		});
+		return increase;
+	}
+
+	private hasChangedParameterScope(newParams: CustomParameterDO[], matchingParams: CustomParameterDO[]): boolean {
+		const increase = matchingParams.some((param) => {
+			const newParam = newParams.find((p) => p.name === param.name);
+			return newParam && param.scope !== newParam.scope;
 		});
 		return increase;
 	}
