@@ -40,7 +40,7 @@ export class BBBService {
 	create(config: BBBCreateConfig): Promise<BBBResponse<BBBCreateResponse>> {
 		const url: string = this.getUrl('create', this.toParams(config));
 		const conf = { headers: { 'Content-Type': 'application/xml' } };
-		const data = this.bbbConfig(this.presentationUrl);
+		const data = this.getBbbRequestConfig(this.presentationUrl);
 		const observable: Observable<AxiosResponse<string>> = this.httpService.post(url, data, conf);
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse<string>) => {
@@ -57,8 +57,9 @@ export class BBBService {
 			});
 	}
 
-	private bbbConfig(presentationUrl: string): string {
-		return presentationUrl === '' ? '' : `<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='${presentationUrl}' /></module></modules>`;
+	getBbbRequestConfig(presentationUrl: string): string {
+		if (presentationUrl === '') return '';
+		return `<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='${presentationUrl}' /></module></modules>`;
 	}
 
 	/**

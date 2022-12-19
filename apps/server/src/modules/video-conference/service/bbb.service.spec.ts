@@ -164,6 +164,17 @@ describe('BBB Service', () => {
 
 		it('should return a response with returncode success', async () => {
 			// Arrange
+			const presentationUrl = 'https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf';
+
+			// Act
+			const result = service.getBbbRequestConfig(presentationUrl);
+
+			// Assert
+			expect(result).toBe('<?xml version=\'1.0\' encoding=\'UTF-8\'?><modules><module name=\'presentation\'><document url=\'https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf\' /></module></modules>');
+		});
+
+		it('should return a response with returncode success', async () => {
+			// Arrange
 			httpService.post.mockReturnValue(of(bbbCreateResponse));
 			converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
 
