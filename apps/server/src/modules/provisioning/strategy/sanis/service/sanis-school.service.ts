@@ -5,7 +5,7 @@ import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provi
 import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
 import { SchoolRepo } from '@shared/repo';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolService } from '../../../../school';
+import { SchoolService } from '@src/modules/school';
 
 @Injectable()
 export class SanisSchoolService {
