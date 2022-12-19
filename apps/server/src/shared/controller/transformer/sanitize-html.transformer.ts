@@ -1,7 +1,7 @@
 import { NotImplementedException } from '@nestjs/common';
 import { Transform, TransformFnParams } from 'class-transformer';
 import sanitize, { AllowedAttribute } from 'sanitize-html';
-import { InputFormat } from '@shared/domain';
+import { InputFormat } from '@shared/domain/types/input-format.types';
 
 export type IInputFormatsConfig = {
 	allowedTags: string[]; // Note: tag names are not case-sensitive
@@ -199,18 +199,5 @@ export function SanitizeHtml(inputFormat?: InputFormat): PropertyDecorator {
 		}
 
 		throw new NotImplementedException('can only sanitize strings');
-	});
-}
-
-export function SanitizeHtmlArray(inputFormat?: InputFormat): PropertyDecorator {
-	return Transform((params: TransformFnParams) => {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-		const valueArr = params.obj[params.key];
-
-		if (Array.isArray(valueArr)) {
-			return valueArr.map((s) => sanitizeRichText(s, inputFormat));
-		}
-
-		throw new NotImplementedException('can only sanitize string[]');
 	});
 }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { InputFormat } from '@shared/domain/types/input-format.types';
-import { sanitizeRichText } from '@shared/controller/transformer/sanitize-html.transformer';
+import { InputFormat } from './input-format.types';
+import { sanitizeRichText } from '../../controller/transformer/sanitize-html.transformer';
 
 export class RichText {
 	constructor({ content, type }: RichText) {

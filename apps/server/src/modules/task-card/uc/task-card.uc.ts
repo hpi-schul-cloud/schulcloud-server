@@ -17,10 +17,7 @@ export class TaskCardUc {
 	async create(userId: EntityId, params: ITaskCardCreate) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		const taskParams = {
-			name: params.title,
-		};
-		const taskWithStatusVo = await this.taskService.create(userId, TaskMapper.mapTaskCreateToDomain(taskParams));
+		const taskWithStatusVo = await this.createTask(userId, params);
 
 		const cardElements: CardElement[] = [];
 
@@ -38,22 +35,28 @@ export class TaskCardUc {
 			creator: user,
 			task: taskWithStatusVo.task,
 		};
-
-		const card = new TaskCard(cardParams); //Card.fromTaskCard(cardParams);
+		const card = new TaskCard(cardParams);
 
 		await this.taskCardRepo.save(card);
 
 		return { card, taskWithStatusVo };
 	}
 
+	private async createTask(userId: EntityId, params: ITaskCardCreate) {
+		const taskParams = {
+			name: params.title,
+		};
+		const taskWithStatusVo = await this.taskService.create(userId, TaskMapper.mapTaskCreateToDomain(taskParams));
+
+		return taskWithStatusVo;
+	}
+
 	async find(userId: EntityId, id: EntityId) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.taskCardRepo.findById(id);
-		//card.cardElements = card.getCardElements();
-		//card.getCardElements()
 
 		const taskWithStatusVo = await this.taskService.find(userId, card.task.id);
-		//this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
+		// this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
 		return { card, taskWithStatusVo };
 	}
 

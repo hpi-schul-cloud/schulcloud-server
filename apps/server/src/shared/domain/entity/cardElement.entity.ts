@@ -20,24 +20,6 @@ export type CardElementProps = {
 export abstract class CardElement extends BaseEntityWithTimestamps {
 	@Enum()
 	cardElementType!: CardElementType;
-
-	//@ManyToOne({ entity: () => TaskCard, wrappedReference: true })
-	//card!: Card;
-
-	// @Property()
-	// content!: TitleCardElement | RichTextCardElement;
-
-	// TODO: still needed??
-	/* static fromTitle(title: string): CardElement {
-		const element = new TitleCardElement(title);
-		return element;
-	}
-
-	// TODO: still needed??
-	static fromRichtext(richText: RichText): CardElement {
-		const element = new RichTextCardElement(richText);
-		return element;
-	} */
 }
 
 @Entity({

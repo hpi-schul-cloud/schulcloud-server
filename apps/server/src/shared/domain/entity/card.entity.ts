@@ -37,7 +37,6 @@ export class TaskCard extends BaseEntityWithTimestamps {
 		Object.assign(this, { creator: props.creator });
 	}
 
-	//@OneToMany({ entity: () => CardElement, mappedBy: (cardElement) => cardElement.card, orphanRemoval: true }))
 	@ManyToMany('CardElement', undefined, { fieldName: 'cardElementsIds' })
 	cardElements = new Collection<CardElement>(this);
 
