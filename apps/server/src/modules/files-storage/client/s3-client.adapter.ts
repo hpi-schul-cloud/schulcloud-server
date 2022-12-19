@@ -41,13 +41,14 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async get(path: string): Promise<IGetFileResponse> {
+	public async get(path: string, bytesRange?: string): Promise<IGetFileResponse> {
 		try {
 			this.logger.log({ action: 'get', params: { path, bucket: this.config.bucket } });
 
 			const req = new GetObjectCommand({
 				Bucket: this.config.bucket,
 				Key: path,
+				Range: bytesRange,
 			});
 
 			const data = await this.client.send(req);
@@ -58,6 +59,7 @@ export class S3ClientAdapter implements IStorageClient {
 				data: stream,
 				contentType: data.ContentType,
 				contentLength: data.ContentLength,
+				contentRange: data.ContentRange,
 				etag: data.ETag,
 			};
 		} catch (err) {
