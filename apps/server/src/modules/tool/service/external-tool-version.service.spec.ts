@@ -36,6 +36,7 @@ describe('ExternalToolVersionService', () => {
 			oldTool,
 			newTool,
 			param1,
+			newToolParams: newTool.parameters as CustomParameterDO[],
 		};
 	};
 
@@ -110,6 +111,18 @@ describe('ExternalToolVersionService', () => {
 					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
 
 					expectIncreasement(newTool);
+				});
+			});
+
+			describe('when a new optional custom parameter added', () => {
+				it('should not increase version', () => {
+					const { oldTool, newTool, newToolParams } = setup();
+					const newOptionalParam: CustomParameterDO = customParameterDOFactory.build({ isOptional: true });
+					newToolParams.push(newOptionalParam);
+
+					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
+
+					expectNoIncreasement(newTool);
 				});
 			});
 		});
