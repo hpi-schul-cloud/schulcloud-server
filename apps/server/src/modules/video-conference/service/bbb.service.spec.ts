@@ -16,6 +16,7 @@ import {
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 import { AxiosResponse } from 'axios';
+import { Console } from 'console';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
@@ -116,6 +117,7 @@ describe('BBB Service', () => {
 
 	Configuration.set('VIDEOCONFERENCE_HOST', 'http://bbb.de');
 	Configuration.set('VIDEOCONFERENCE_SALT', 'salt12345');
+	Configuration.set('VIDEOCONFERENCE_DEFAULT_PRESENTATION', '');
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -148,7 +150,7 @@ describe('BBB Service', () => {
 
 		it('should return a response with returncode success', async () => {
 			// Arrange
-			httpService.get.mockReturnValue(of(bbbCreateResponse));
+			httpService.post.mockReturnValue(of(bbbCreateResponse));
 			converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
 
 			// Act
@@ -156,7 +158,7 @@ describe('BBB Service', () => {
 
 			// Assert
 			expect(result).toBeDefined();
-			expect(httpService.get).toHaveBeenCalledTimes(1);
+			expect(httpService.post).toHaveBeenCalledTimes(1);
 			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbCreateResponse.data);
 		});
 
