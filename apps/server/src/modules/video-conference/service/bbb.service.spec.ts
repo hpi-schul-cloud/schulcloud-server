@@ -116,6 +116,7 @@ describe('BBB Service', () => {
 
 	Configuration.set('VIDEOCONFERENCE_HOST', 'http://bbb.de');
 	Configuration.set('VIDEOCONFERENCE_SALT', 'salt12345');
+	Configuration.set('VIDEOCONFERENCE_DEFAULT_PRESENTATION', '');
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -148,7 +149,7 @@ describe('BBB Service', () => {
 
 		it('should return a response with returncode success', async () => {
 			// Arrange
-			httpService.get.mockReturnValue(of(bbbCreateResponse));
+			httpService.post.mockReturnValue(of(bbbCreateResponse));
 			converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
 
 			// Act
@@ -156,8 +157,21 @@ describe('BBB Service', () => {
 
 			// Assert
 			expect(result).toBeDefined();
-			expect(httpService.get).toHaveBeenCalledTimes(1);
+			expect(httpService.post).toHaveBeenCalledTimes(1);
 			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbCreateResponse.data);
+		});
+
+		it('should return a xml configuration with provided presentation url', () => {
+			// Arrange
+			const presentationUrl = 'https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf';
+
+			// Act
+			const result = service.getBbbRequestConfig(presentationUrl);
+
+			// Assert
+			expect(result).toBe(
+				"<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf' /></module></modules>"
+			);
 		});
 
 		it('should throw an error if there is a different return code then success', async () => {

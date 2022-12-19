@@ -23,9 +23,12 @@ export class BBBService {
 
 	private readonly salt: string;
 
+	private readonly presentationUrl: string;
+
 	constructor(private readonly httpService: HttpService, private readonly converterUtil: ConverterUtil) {
 		this.baseURL = Configuration.get('VIDEOCONFERENCE_HOST') as string;
 		this.salt = Configuration.get('VIDEOCONFERENCE_SALT') as string;
+		this.presentationUrl = Configuration.get('VIDEOCONFERENCE_DEFAULT_PRESENTATION') as string;
 	}
 
 	/**
@@ -36,8 +39,9 @@ export class BBBService {
 	 */
 	create(config: BBBCreateConfig): Promise<BBBResponse<BBBCreateResponse>> {
 		const url: string = this.getUrl('create', this.toParams(config));
-		const observable: Observable<AxiosResponse<string>> = this.httpService.get(url);
-
+		const conf = { headers: { 'Content-Type': 'application/xml' } };
+		const data = this.getBbbRequestConfig(this.presentationUrl);
+		const observable: Observable<AxiosResponse<string>> = this.httpService.post(url, data, conf);
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse<string>) => {
 				const bbbResp = this.converterUtil.xml2object<BBBResponse<BBBCreateResponse> | BBBResponse<BBBBaseResponse>>(
@@ -51,6 +55,11 @@ export class BBBService {
 			.catch((error) => {
 				throw new InternalServerErrorException(error);
 			});
+	}
+
+	getBbbRequestConfig(presentationUrl: string): string {
+		if (presentationUrl === '') return '';
+		return `<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='${presentationUrl}' /></module></modules>`;
 	}
 
 	/**
