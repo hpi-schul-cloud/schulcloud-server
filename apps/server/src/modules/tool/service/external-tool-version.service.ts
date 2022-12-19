@@ -36,9 +36,15 @@ export class ExternalToolVersionService {
 	}
 
 	private hasChangedParameterNames(oldParams: CustomParameterDO[], newParams: CustomParameterDO[]): boolean {
-		const names1: string[] = oldParams.map((parameter) => parameter.name);
-		const names2: string[] = newParams.map((parameter) => parameter.name);
-		const increase = !!(names1.some((name) => !names2.includes(name)) || names2.some((name) => !names1.includes(name)));
+		const nonOptionalParams = oldParams.filter((parameter) => !parameter.isOptional);
+		const nonOptionalParamNames = nonOptionalParams.map((parameter) => parameter.name);
+
+		const newNonOptionalParams = newParams.filter((parameter) => !parameter.isOptional);
+		const newNonOptionalParamNames = newNonOptionalParams.map((parameter) => parameter.name);
+
+		const increase =
+			nonOptionalParamNames.some((name) => !newNonOptionalParamNames.includes(name)) ||
+			newNonOptionalParamNames.some((name) => !nonOptionalParamNames.includes(name));
 		return increase;
 	}
 
