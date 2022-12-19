@@ -35,7 +35,6 @@ import { Logger, LoggerModule } from '../../core/logger';
 		LessonRepo,
 		TeamsRepo,
 		SubmissionRepo,
-		Logger,
 	],
 	exports: [FeathersAuthorizationService, FeathersJwtProvider, AuthorizationService],
 })
