@@ -175,7 +175,7 @@ export const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IInputFormats
 	}
 };
 
-export const sanitizeRichText = (value: string, inputFormat?: InputFormat) => {
+export const sanitizeRichText = (value: string, inputFormat?: InputFormat): string => {
 	const sanitizeHtmlOptions: sanitize.IOptions = getSanitizeHtmlOptions(inputFormat);
 
 	const sanitized = sanitize(value, sanitizeHtmlOptions);
@@ -199,5 +199,18 @@ export function SanitizeHtml(inputFormat?: InputFormat): PropertyDecorator {
 		}
 
 		throw new NotImplementedException('can only sanitize strings');
+	});
+}
+
+export function SanitizeHtmlArray(inputFormat?: InputFormat): PropertyDecorator {
+	return Transform((params: TransformFnParams) => {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+		const valueArr = params.obj[params.key];
+
+		if (Array.isArray(valueArr)) {
+			return valueArr.map((s) => sanitizeRichText(s, inputFormat));
+		}
+
+		throw new NotImplementedException('can only sanitize string[]');
 	});
 }

@@ -1,4 +1,4 @@
-import { ICardElement, ITaskCardCreate, TaskCard, TaskWithStatusVo } from '@shared/domain';
+import { ICardElement, InputFormat, ITaskCardCreate, RichText, TaskCard, TaskWithStatusVo } from '@shared/domain';
 import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
@@ -7,7 +7,7 @@ import {
 	CardRichTextElementResponse,
 	CardTitleElementResponse,
 	CreateTaskCardParams,
-	TaskCardResponse
+	TaskCardResponse,
 } from '../controller/dto';
 
 export class TaskCardMapper {
@@ -50,7 +50,13 @@ export class TaskCardMapper {
 		};
 
 		if (params.text) {
-			dto.text = params.text;
+			dto.text = params.text.map(
+				(content) =>
+					new RichText({
+						content,
+						type: InputFormat.RICH_TEXT_CK5,
+					})
+			);
 		}
 
 		return dto;

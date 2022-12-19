@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsArray, IsOptional, IsString } from 'class-validator';
-import { RichText } from '@shared/domain/types/richtext.types';
 import { SanitizeHtml } from '@shared/controller';
 
 export class CreateTaskCardParams {
@@ -12,8 +11,8 @@ export class CreateTaskCardParams {
 	})
 	title!: string;
 
-	@IsArray()
 	@IsOptional()
+	@IsArray()
 	@ApiPropertyOptional({ description: 'Description of the card' })
-	text?: RichText[];
+	text?: string[];
 }
