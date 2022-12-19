@@ -1,3 +1,4 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -12,6 +13,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { FilesStorageClientAdapterService } from '@src/modules';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { SubmissionStatusListResponse } from '@src/modules/task/controller/dto/submission.response';
@@ -182,6 +184,7 @@ describe('Submission Controller (e2e)', () => {
 		let currentUser: ICurrentUser;
 		let api: API;
 		let em: EntityManager;
+		let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
@@ -196,12 +199,15 @@ describe('Submission Controller (e2e)', () => {
 						return true;
 					},
 				})
+				.overrideProvider(FilesStorageClientAdapterService)
+				.useValue(createMock<FilesStorageClientAdapterService>())
 				.compile();
 
 			app = module.createNestApplication();
 			await app.init();
 			api = new API(app);
 			em = module.get(EntityManager);
+			filesStorageClientAdapterService = app.get(FilesStorageClientAdapterService);
 		});
 
 		beforeEach(async () => {
@@ -243,6 +249,7 @@ describe('Submission Controller (e2e)', () => {
 
 				const { result } = await api.delete(submission.id);
 
+				expect(filesStorageClientAdapterService.deleteFilesOfParent).toBeCalled();
 				expect(result).toBe('true');
 
 				const expectedSubmissionResult = await em.findOne(Submission, { id: submission.id });
