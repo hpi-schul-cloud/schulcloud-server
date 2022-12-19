@@ -162,7 +162,7 @@ describe('BBB Service', () => {
 			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbCreateResponse.data);
 		});
 
-		it('should return a response with returncode success', async () => {
+		it('should return a xml configuration with provided presentation url', async () => {
 			// Arrange
 			const presentationUrl = 'https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf';
 
