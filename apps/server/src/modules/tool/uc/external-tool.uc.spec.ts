@@ -285,7 +285,7 @@ describe('ExternalToolUc', () => {
 			const { externalToolDO, toolId } = setup();
 
 			const externalToolDOtoUpdate: ExternalToolDO = { ...externalToolDO, name: 'newName', url: undefined, version: 1 };
-			const updatedExternalToolDO: ExternalToolDO = { ...externalToolDO, name: 'newName' };
+			const updatedExternalToolDO: ExternalToolDO = { ...externalToolDO, name: 'newName', url: undefined };
 
 			externalToolService.updateExternalTool.mockResolvedValue(updatedExternalToolDO);
 			externalToolService.findExternalToolById.mockResolvedValue(externalToolDOtoUpdate);
@@ -357,11 +357,14 @@ describe('ExternalToolUc', () => {
 
 		it('should call the service to update the tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { toolId, updatedExternalToolDO } = setupUpdate();
+			const { toolId, updatedExternalToolDO, externalToolDOtoUpdate } = setupUpdate();
 
 			await uc.updateExternalTool(currentUser.userId, toolId, updatedExternalToolDO);
 
-			expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(updatedExternalToolDO);
+			expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(
+				externalToolDOtoUpdate,
+				updatedExternalToolDO
+			);
 		});
 
 		it('should return the updated tool', async () => {
