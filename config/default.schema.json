@@ -189,6 +189,11 @@
 			"default": false,
 			"description": "If enabled, adds video conferences to teams and courses."
 		},
+		"VIDEOCONFERENCE_DEFAULT_PRESENTATION": {
+			"type": "string",
+			"default": "",
+			"description": "Link to a custom presentation, if empty, the default presentation will be used."
+		},
 		"VIDEOCONFERENCE_HOST": {
 			"type": "string",
 			"format": "uri",
