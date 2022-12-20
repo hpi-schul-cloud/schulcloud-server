@@ -1,4 +1,5 @@
-import { Course, CourseGroup, Lesson, School, Submission, Task, Team, User } from '@shared/domain';
+import { Course, CourseGroup, Lesson, Submission, Task, Team, User } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 export enum AllowedAuthorizationEntityType {
 	'User' = 'users',
@@ -11,4 +12,4 @@ export enum AllowedAuthorizationEntityType {
 	'Submission' = 'submissions',
 }
 
-export type AllowedEntity = Task | Course | CourseGroup | User | School | Lesson | Team | Submission;
+export type AllowedEntity = Task | Course | CourseGroup | User | SchoolDO | Lesson | Team | Submission;

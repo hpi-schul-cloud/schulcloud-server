@@ -18,12 +18,12 @@ export class UserMapper {
 		});
 	}
 
-	static mapFromDtoToEntity(dto: UserDto, rolesEntity: Role[], schoolEntity: School): User {
+	static mapFromDtoToEntity(dto: UserDto, rolesEntity: Role[], school: School): User {
 		const user = new User({
 			email: dto.email,
 			firstName: dto.firstName,
 			lastName: dto.lastName,
-			school: schoolEntity,
+			school,
 			roles: rolesEntity,
 			ldapDn: dto.ldapDn,
 			externalId: dto.externalId,
