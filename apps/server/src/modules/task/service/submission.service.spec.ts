@@ -2,14 +2,17 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Counted, Submission } from '@shared/domain';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { SubmissionRepo } from '@shared/repo';
 import { setupEntities, submissionFactory, taskFactory } from '@shared/testing';
+import { FileDto, FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {
 	let module: TestingModule;
 	let service: SubmissionService;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
+	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let orm: MikroORM;
 
 	beforeAll(async () => {
@@ -23,11 +26,16 @@ describe('Submission Service', () => {
 					provide: SubmissionRepo,
 					useValue: createMock<SubmissionRepo>(),
 				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(SubmissionService);
 		submissionRepo = module.get(SubmissionRepo);
+		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 	});
 
 	afterAll(async () => {
@@ -41,6 +49,44 @@ describe('Submission Service', () => {
 
 	it('should be defined', () => {
 		expect(service).toBeDefined();
+	});
+
+	describe('findById is called', () => {
+		describe('repo returns successfully', () => {
+			const setup = () => {
+				const submission = submissionFactory.buildWithId();
+
+				submissionRepo.findById.mockResolvedValueOnce(submission);
+
+				return { submission };
+			};
+
+			it('should return submission', async () => {
+				const { submission } = setup();
+
+				const result = await service.findById(submission.id);
+
+				expect(submissionRepo.findById).toHaveBeenCalledWith(submission.id);
+				expect(result).toEqual(submission);
+			});
+		});
+
+		describe('repo returns error', () => {
+			const setup = () => {
+				const submission = submissionFactory.buildWithId();
+				const error = new Error();
+
+				submissionRepo.findById.mockRejectedValue(error);
+
+				return { submission, error };
+			};
+
+			it('should pass error', async () => {
+				const { submission, error } = setup();
+
+				await expect(service.findById(submission.id)).rejects.toThrow(error);
+			});
+		});
 	});
 
 	describe('findAllByTask is called', () => {
@@ -95,6 +141,77 @@ describe('Submission Service', () => {
 				const { taskId, error } = setup();
 
 				await expect(service.findAllByTask(taskId)).rejects.toThrow(error);
+			});
+		});
+	});
+
+	describe('delete is called', () => {
+		describe('delets successfully', () => {
+			const setup = () => {
+				const submission = submissionFactory.buildWithId();
+				const params = FileParamBuilder.build(submission.school.id, submission);
+				const fileDto = new FileDto({
+					id: 'id',
+					name: 'name',
+					parentType: FileRecordParentType.Submission,
+					parentId: 'parentId',
+				});
+
+				filesStorageClientAdapterService.deleteFilesOfParent.mockResolvedValueOnce([fileDto]);
+				submissionRepo.delete.mockResolvedValueOnce();
+
+				return { submission, params };
+			};
+
+			it('should resolve successfully', async () => {
+				const { submission, params } = setup();
+
+				await service.delete(submission);
+
+				expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(params);
+				expect(submissionRepo.delete).toHaveBeenCalledWith(submission);
+			});
+		});
+
+		describe('deleteFilesOfParent rejects with error', () => {
+			const setup = () => {
+				const submission = submissionFactory.buildWithId();
+				const error = new Error();
+
+				filesStorageClientAdapterService.deleteFilesOfParent.mockRejectedValueOnce(error);
+
+				return { submission, error };
+			};
+
+			it('should pass error', async () => {
+				const { submission, error } = setup();
+
+				await expect(service.delete(submission)).rejects.toThrow(error);
+			});
+		});
+
+		describe('submissionRepo rejects with error', () => {
+			const setup = () => {
+				const submission = submissionFactory.buildWithId();
+				const params = FileParamBuilder.build(submission.school.id, submission);
+				const fileDto = new FileDto({
+					id: 'id',
+					name: 'name',
+					parentType: FileRecordParentType.Submission,
+					parentId: 'parentId',
+				});
+				const error = new Error();
+
+				filesStorageClientAdapterService.deleteFilesOfParent.mockResolvedValueOnce([fileDto]);
+				submissionRepo.delete.mockRejectedValueOnce(error);
+
+				return { submission, params, error };
+			};
+
+			it('should pass error', async () => {
+				const { submission, error } = setup();
+
+				await expect(service.delete(submission)).rejects.toThrow(error);
 			});
 		});
 	});

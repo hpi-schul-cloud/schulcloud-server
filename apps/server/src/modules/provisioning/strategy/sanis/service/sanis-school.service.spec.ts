@@ -15,9 +15,9 @@ import {
 	SanisRole,
 } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { SanisSchoolService } from '@src/modules/provisioning/strategy/sanis/service/sanis-school.service';
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
-import { SchoolUc } from '@src/modules/school/uc/school.uc';
+import { SchoolService } from '@src/modules/school/service/school.service';
 import { UUID } from 'bson';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 describe('SanisSchoolService', () => {
 	let module: TestingModule;
@@ -25,8 +25,7 @@ describe('SanisSchoolService', () => {
 	let orm: MikroORM;
 
 	let mapper: DeepMocked<SanisResponseMapper>;
-	let schoolUc: DeepMocked<SchoolUc>;
-	let schoolRepo: DeepMocked<SchoolRepo>;
+	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -39,20 +38,15 @@ describe('SanisSchoolService', () => {
 					useValue: createMock<SanisResponseMapper>(),
 				},
 				{
-					provide: SchoolUc,
-					useValue: createMock<SchoolUc>(),
-				},
-				{
-					provide: SchoolRepo,
-					useValue: createMock<SchoolRepo>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 			],
 		}).compile();
 
 		sanisSchoolService = module.get(SanisSchoolService);
 		mapper = module.get(SanisResponseMapper);
-		schoolUc = module.get(SchoolUc);
-		schoolRepo = module.get(SchoolRepo);
+		schoolService = module.get(SchoolService);
 	});
 
 	const setup = () => {
@@ -95,11 +89,11 @@ describe('SanisSchoolService', () => {
 			schoolId: school.id,
 			externalId: userUUID.toHexString(),
 		});
-		const schoolDto: SchoolDto = new SchoolDto({
+		const schoolDO: SchoolDO = new SchoolDO({
 			id: school.id,
 			name: school.name,
 			externalId,
-			systemIds: [system.id],
+			systems: [system.id],
 		});
 		const schoolProvisioningDto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({
 			name: school.name,
@@ -110,14 +104,14 @@ describe('SanisSchoolService', () => {
 		mapper.mapSanisRoleToRoleName.mockReturnValue(RoleName.ADMINISTRATOR);
 		mapper.mapToUserDO.mockReturnValue(userDO);
 		mapper.mapToSchoolDto.mockReturnValue(schoolProvisioningDto);
-		schoolRepo.findByExternalId.mockResolvedValue(school);
-		schoolUc.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDto);
+		schoolService.getSchoolByExternalId.mockResolvedValue(schoolDO);
+		schoolService.saveProvisioningSchoolOutputDto.mockResolvedValue(schoolDO);
 
 		return {
 			system,
 			school,
 			sanisResponse,
-			schoolDto,
+			schoolDO,
 			schoolProvisioningDto,
 		};
 	};
@@ -137,25 +131,27 @@ describe('SanisSchoolService', () => {
 
 			await sanisSchoolService.provisionSchool(sanisResponse, system.id);
 
-			expect(schoolUc.saveProvisioningSchoolOutputDto).toHaveBeenCalledWith(schoolProvisioningDto);
+			expect(schoolService.saveProvisioningSchoolOutputDto).toHaveBeenCalledWith(schoolProvisioningDto);
 		});
 
 		it('should save new school', async () => {
-			const { sanisResponse, system, schoolDto } = setup();
-			schoolRepo.findByExternalId.mockResolvedValue(null);
+			const { sanisResponse, system, schoolDO } = setup();
+			schoolService.getSchoolByExternalId.mockResolvedValue(null);
 
-			const result: SchoolDto = await sanisSchoolService.provisionSchool(sanisResponse, system.id);
+			const result: SchoolDO = await sanisSchoolService.provisionSchool(sanisResponse, system.id);
 
-			expect(result).toEqual(schoolDto);
-			expect(schoolUc.saveProvisioningSchoolOutputDto).toHaveBeenCalledWith(expect.objectContaining({ id: undefined }));
+			expect(result).toEqual(schoolDO);
+			expect(schoolService.saveProvisioningSchoolOutputDto).toHaveBeenCalledWith(
+				expect.objectContaining({ id: undefined })
+			);
 		});
 
 		it('should update school', async () => {
-			const { sanisResponse, system, schoolDto, schoolProvisioningDto, school } = setup();
+			const { sanisResponse, system, schoolDO, schoolProvisioningDto, school } = setup();
 
-			const result: SchoolDto = await sanisSchoolService.provisionSchool(sanisResponse, system.id);
+			const result: SchoolDO = await sanisSchoolService.provisionSchool(sanisResponse, system.id);
 
-			expect(result).toEqual(schoolDto);
+			expect(result).toEqual(schoolDO);
 			expect(schoolProvisioningDto.id).toEqual(school.id);
 		});
 	});
