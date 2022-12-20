@@ -1,4 +1,5 @@
 import type { RichText, Task, User } from '@shared/domain';
+import { Collection } from '@mikro-orm/core';
 import { CardElement, CardElementType } from '../entity/cardElement.entity';
 import { InputFormat } from './input-format.types';
 
@@ -14,14 +15,22 @@ export enum CardType {
 	'Task' = 'task',
 }
 
+export type ICardCProps = {
+	cardElements: CardElement[];
+	cardType: CardType;
+	creator: User;
+	draggable: boolean;
+};
+export type ITaskCardProps = ICardCProps & { task: Task };
+
 export interface ICard {
-	cardElements: CardElement[]; // ICardElement[];
+	cardElements: Collection<CardElement>;
 
 	cardType: CardType;
 
 	creator: User;
 
-	draggable?: boolean;
+	draggable: boolean;
 }
 
 export interface ITaskCard extends ICard {

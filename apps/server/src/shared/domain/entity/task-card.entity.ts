@@ -2,37 +2,32 @@ import {
 	Collection,
 	Entity,
 	Enum,
-	IdentifiedReference,
 	Index,
+	// IdentifiedReference,
 	ManyToMany,
 	ManyToOne,
 	OneToOne,
 	Property,
-	wrap,
+	// wrap,
 } from '@mikro-orm/core';
-import { CardType, ITaskCard } from '../types';
+import { CardType, ICard, ITaskCardProps, ITaskCard } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CardElement } from './cardElement.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';
 
-export type CardProps = {
-	cardElements: CardElement[];
-	creator: User;
-};
-
 @Entity({
 	tableName: 'card',
 })
-export class TaskCard extends BaseEntityWithTimestamps {
-	constructor(props: ITaskCard) {
+export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCard {
+	constructor(props: ITaskCardProps) {
 		super();
 
 		this.draggable = props.draggable || true;
 		this.cardType = props.cardType;
 
 		this.cardElements.set(props.cardElements);
-		this.task = wrap(props.task).toReference();
+		this.task = props.task; // wrap(props.task).toReference();
 		this.cardType = CardType.Task;
 		Object.assign(this, { creator: props.creator });
 	}
@@ -68,6 +63,6 @@ export class TaskCard extends BaseEntityWithTimestamps {
 	*/
 
 	@Index()
-	@OneToOne({ type: 'Task', fieldName: 'taskId', wrappedReference: true, unique: true })
-	task!: IdentifiedReference<Task>;
+	@OneToOne({ type: 'Task', fieldName: 'taskId', eager: true, unique: true })
+	task!: Task;
 }

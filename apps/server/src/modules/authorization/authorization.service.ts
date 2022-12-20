@@ -8,6 +8,7 @@ import {
 	SchoolRule,
 	SubmissionRule,
 	TaskRule,
+	TaskCardRule,
 	User,
 	UserRule,
 } from '@shared/domain';
@@ -24,6 +25,7 @@ export class AuthorizationService extends BasePermissionManager {
 		private readonly lessonRule: LessonRule,
 		private readonly schoolRule: SchoolRule,
 		private readonly taskRule: TaskRule,
+		private readonly taskCardRule: TaskCardRule,
 		private readonly userRule: UserRule,
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
@@ -35,6 +37,7 @@ export class AuthorizationService extends BasePermissionManager {
 			this.courseGroupRule,
 			this.lessonRule,
 			this.taskRule,
+			this.taskCardRule,
 			this.teamRule,
 			this.userRule,
 			this.schoolRule,

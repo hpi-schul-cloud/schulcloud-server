@@ -3,10 +3,14 @@ import { TaskCard, User } from '../entity';
 import { IPermissionContext } from '../interface/permission';
 import { Actions } from './actions.enum';
 import { BasePermission } from './base-permission';
-// import { TaskRule } from './task.rule';
+import { TaskRule } from './task.rule';
 
 @Injectable()
 export class TaskCardRule extends BasePermission<TaskCard> {
+	constructor(private readonly taskRule: TaskRule) {
+		super();
+	}
+
 	public isApplicable(user: User, entity: TaskCard): boolean {
 		const isMatched = entity instanceof TaskCard;
 
@@ -16,49 +20,42 @@ export class TaskCardRule extends BasePermission<TaskCard> {
 	public hasPermission(user: User, entity: TaskCard, context: IPermissionContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasPermission = this.utils.hasAllPermissions(user, requiredPermissions);
-		const isCreator = this.utils.hasAccessToEntity(user, entity, ['creator']);
+		if (!hasPermission) {
+			return false;
+		}
 
-		let hasTaskPermission = false;
+		const isCreator = this.utils.hasAccessToEntity(user, entity, ['creator']);
+		if (isCreator) {
+			return true;
+		}
 
 		if (action === Actions.read) {
-			hasTaskPermission = this.taskCardReadPermission(user, entity);
-		} else if (action === Actions.write) {
-			hasTaskPermission = this.taskCardWritePermission(user, entity);
+			return this.hasReadPermission(user, entity);
+		}
+		if (action === Actions.write) {
+			return this.hasWritePermission(user, entity);
 		}
 
-		const result = hasPermission && (isCreator || hasTaskPermission);
-
-		return result;
+		return false;
 	}
 
-	private taskCardReadPermission(user: User, entity: TaskCard): boolean {
-		let hasParentReadPermission = false;
-
+	private hasReadPermission(user: User, entity: TaskCard): boolean {
 		if (entity.isDraft) {
-			hasParentReadPermission = this.hasTaskPermission(user, entity, Actions.write);
-		} else {
-			hasParentReadPermission = this.hasTaskPermission(user, entity, Actions.read);
+			return this.hasWritePermission(user, entity);
 		}
 
-		const result = hasParentReadPermission;
-
-		return result;
+		return this.hasTaskPermission(user, entity, Actions.read);
 	}
 
-	private taskCardWritePermission(user: User, entity: TaskCard): boolean {
-		const hasParentWritePermission = this.hasTaskPermission(user, entity, Actions.write);
+	private hasWritePermission(user: User, entity: TaskCard): boolean {
+		const hasPermission = this.hasTaskPermission(user, entity, Actions.write);
 
-		return hasParentWritePermission;
+		return hasPermission;
 	}
 
-	// TODO
 	// private hasParentBoardPermission()
-
 	private hasTaskPermission(user: User, entity: TaskCard, action: Actions): boolean {
-		const hasParentPermission = true;
-		// TODO
-
-		// const hasParentPermission = this.taskRule.hasPermission(user, entity.task, { action, requiredPermissions: [] });
-		return hasParentPermission;
+		const hasPermission = this.taskRule.hasPermission(user, entity.task, { action, requiredPermissions: [] });
+		return hasPermission;
 	}
 }
