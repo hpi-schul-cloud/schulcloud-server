@@ -4,7 +4,7 @@ import { EntityId } from '@shared/domain';
 import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolService } from '@src/modules/school';
+import { SchoolService } from '../../../../school/service/school.service';
 
 @Injectable()
 export class SanisSchoolService {

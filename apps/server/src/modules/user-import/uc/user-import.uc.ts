@@ -22,7 +22,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolService } from '../../school';
+import { SchoolService } from '@src/modules/school/service/school.service';
 
 export type UserImportPermissions =
 	| Permission.SCHOOL_IMPORT_USERS_MIGRATE

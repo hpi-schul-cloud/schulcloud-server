@@ -11,7 +11,7 @@ import { SchoolModule } from '@src/modules/school/school.module';
 import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
 import { LoggerModule } from '@src/core/logger';
 import { ConverterUtil } from '@shared/common';
-import { SchoolService } from '../school';
+import { SchoolService } from '../school/service/school.service';
 
 @Module({
 	imports: [AuthorizationModule, CalendarModule, HttpModule, SchoolModule, LoggerModule],
