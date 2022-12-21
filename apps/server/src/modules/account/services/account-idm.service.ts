@@ -69,7 +69,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 			attRefFunctionalExtId: accountDto.systemId,
 		};
 		if (accountDto.id) {
-			const id = await this.getInternalId(accountDto.id);
+			const id = await this.getIdmAccountId(accountDto.id);
 			accountId = await this.identityManager.updateAccount(id, idmAccount);
 			if (accountDto.password) {
 				await this.identityManager.updateAccountPassword(id, accountDto.password);
@@ -83,21 +83,21 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	async updateUsername(accountRefId: EntityId, username: string): Promise<AccountDto> {
-		const id = await this.getInternalId(accountRefId);
+		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccount(id, { username });
 		const updatedAccount = await this.identityManager.findAccountById(id);
 		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	async updatePassword(accountRefId: EntityId, password: string): Promise<AccountDto> {
-		const id = await this.getInternalId(accountRefId);
+		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccountPassword(id, password);
 		const updatedAccount = await this.identityManager.findAccountById(id);
 		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	async delete(accountRefId: EntityId): Promise<void> {
-		const id = await this.getInternalId(accountRefId);
+		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.deleteAccountById(id);
 	}
 
@@ -106,8 +106,8 @@ export class AccountServiceIdm extends AbstractAccountService {
 		await this.identityManager.deleteAccountById(idmAccount.id);
 	}
 
-	private async getInternalId(accountRefId: string) {
-		const idmAccount = await this.identityManager.findAccountByTecRefId(accountRefId);
+	private async getIdmAccountId(schoolCloudId: string) {
+		const idmAccount = await this.identityManager.findAccountByTecRefId(schoolCloudId);
 		return idmAccount.id;
 	}
 }

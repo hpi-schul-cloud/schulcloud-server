@@ -36,7 +36,7 @@ describe('AccountIdmToDtoMapper', () => {
 			expect(ret.username).toBe(testIdmEntity.username);
 		});
 
-		it('should use actual date if date is', () => {
+		it('should use actual date if date is undefined', () => {
 			const testIdmEntity: IAccount = {
 				id: 'id',
 			};
