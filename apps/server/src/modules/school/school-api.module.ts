@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { SchoolUc } from './uc/school.uc';
 import { SchoolModule } from './school.module';
@@ -7,7 +7,7 @@ import { LoggerModule } from '../../core/logger';
 import { SchoolExternalToolController } from './controller/school-external-tool.controller';
 
 @Module({
-	imports: [SchoolModule, AuthorizationModule, LoggerModule],
+	imports: [forwardRef(() => SchoolModule), AuthorizationModule, LoggerModule],
 	controllers: [SchoolController, SchoolExternalToolController],
 	providers: [SchoolUc],
 })
