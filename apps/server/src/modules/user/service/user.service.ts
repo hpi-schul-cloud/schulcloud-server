@@ -2,7 +2,7 @@ import { RoleRepo, UserRepo } from '@shared/repo';
 import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IUserConfig } from '@src/modules/user/interfaces';
 import { RoleService } from '@src/modules/role/service/role.service';
@@ -16,7 +16,7 @@ export class UserService {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly roleRepo: RoleRepo,
-		@Inject(forwardRef(() => SchoolService)) private readonly schoolService: SchoolService,
+		private readonly schoolService: SchoolService,
 		private readonly permissionService: PermissionService,
 		private readonly configService: ConfigService<IUserConfig, true>,
 		private readonly roleService: RoleService

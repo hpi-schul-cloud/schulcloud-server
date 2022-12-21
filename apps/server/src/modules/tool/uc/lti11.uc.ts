@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CustomLtiProperty, LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo } from '@shared/repo';
 import { EntityId, LtiPrivacyPermission, RoleName } from '@shared/domain';
@@ -16,7 +16,7 @@ export class Lti11Uc {
 		private readonly lti11Service: Lti11Service,
 		private readonly ltiRoleMapper: LtiRoleMapper,
 		private readonly ltiToolRepo: LtiToolRepo,
-		@Inject(forwardRef(() => UserService)) private readonly userService: UserService
+		private readonly userService: UserService
 	) {}
 
 	async getLaunchParameters(

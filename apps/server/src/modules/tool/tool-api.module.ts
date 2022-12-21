@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
@@ -9,7 +9,6 @@ import { ToolController } from './controller/tool.controller';
 import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './controller/mapper';
 import { ExternalToolUc } from './uc/external-tool.uc';
 import { ToolModule } from './tool.module';
-import { SchoolExternalToolService } from './service/school-external-tool.service';
 
 @Module({
 	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule],
@@ -23,6 +22,5 @@ import { SchoolExternalToolService } from './service/school-external-tool.servic
 		ExternalToolRequestMapper,
 		ExternalToolResponseMapper,
 	],
-	exports: [SchoolExternalToolService],
 })
 export class ToolApiModule {}
