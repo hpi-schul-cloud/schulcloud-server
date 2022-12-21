@@ -9,7 +9,7 @@ import { SchoolExternalToolResponseMapper } from './mapper/school-external-tool-
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 
 @ApiTags('School')
-// @Authenticate('jwt')
+@Authenticate('jwt')
 @Controller('school')
 export class SchoolExternalToolController {
 	constructor(
@@ -20,7 +20,7 @@ export class SchoolExternalToolController {
 	@Get(':schoolId/tool/:schoolExternalToolId')
 	@ApiUnauthorizedResponse()
 	async getSchoolExternalTool(
-		// @CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Param() toolParams: SchoolExternalToolParams
 	): Promise<SchoolExternalToolResponse> {
 		const schoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolUc.getSchoolExternalTool(
