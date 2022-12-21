@@ -2,6 +2,9 @@ name: Publish to GitHub Pages
 
 on: [push]
 
+permissions:
+  contents: write
+
 jobs:
   publish-nest-documentation:
     runs-on: ubuntu-latest

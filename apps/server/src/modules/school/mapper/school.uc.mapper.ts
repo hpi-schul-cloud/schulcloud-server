@@ -1,13 +1,13 @@
 import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 export class SchoolUcMapper {
-	static mapFromProvisioningSchoolOutputDtoToSchoolDto(dto: ProvisioningSchoolOutputDto) {
-		return new SchoolDto({
+	static mapFromProvisioningSchoolOutputDtoToSchoolDO(dto: ProvisioningSchoolOutputDto) {
+		return new SchoolDO({
 			id: dto.id,
 			name: dto.name,
 			externalId: dto.externalId,
-			systemIds: dto.systemIds,
+			systems: dto.systemIds,
 		});
 	}
 }
