@@ -1,10 +1,8 @@
 import { ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Controller, Get, Param } from '@nestjs/common';
-import { ICurrentUser } from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { SchoolExternalToolUc } from '../uc/school-external-tool.uc';
-import { SchoolParams } from './dto';
+import { SchoolExternalToolParams } from './dto/school-external-tool.params';
 
 @ApiTags('School')
 // @Authenticate('jwt')
@@ -12,15 +10,15 @@ import { SchoolParams } from './dto';
 export class SchoolExternalToolController {
 	constructor(private readonly schoolExternalToolUc: SchoolExternalToolUc) {}
 
-	@Get(':schoolId/tool/:toolId')
+	@Get(':schoolId/tool/:schoolExternalToolId')
 	@ApiUnauthorizedResponse()
 	async getSchoolExternalTool(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() schoolParams: SchoolParams
+		// @CurrentUser() currentUser: ICurrentUser,
+		@Param() toolParams: SchoolExternalToolParams
 	): Promise<void> {
 		const schoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolUc.getSchoolExternalTool(
-			schoolParams.schoolId,
-			schoolParams.schoolExternalToolId
+			toolParams.schoolId,
+			toolParams.schoolExternalToolId
 		);
 		// return TODO: map DO to response and return
 	}
