@@ -194,7 +194,7 @@ describe('SchoolService', () => {
 		});
 	});
 
-	describe('getSchoolBySchoolNumber', () => {
+	describe('when a school is searched by schoolnumber', () => {
 		it('should call the repo', async () => {
 			const { schoolSavedNumber } = setup();
 
