@@ -99,7 +99,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	async findAccountByFctIntId(accountFctIntId: string): Promise<IAccount> {
 		const keycloakUsers = await (
 			await this.kcAdminClient.callKcAdminClient()
-		).users.find({ refFunctionalIntId: accountFctIntId });
+		).users.find({ q: `refFunctionalIntId:${accountFctIntId} }` });
 
 		if (keycloakUsers.length > 1) {
 			throw new Error('Multiple accounts for the same id!');
