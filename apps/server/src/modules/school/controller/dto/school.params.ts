@@ -9,4 +9,12 @@ export class SchoolParams {
 		nullable: false,
 	})
 	schoolId!: string;
+
+	@IsMongoId()
+	@ApiProperty({
+		description: 'The id of the schoolExternalTool.',
+		required: true,
+		nullable: false,
+	})
+	schoolExternalToolId!: string;
 }

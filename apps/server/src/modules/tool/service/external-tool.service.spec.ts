@@ -333,7 +333,7 @@ describe('ExternalToolService', () => {
 				toolVersion: 1,
 			});
 
-			schoolToolRepo.findByToolId.mockResolvedValue([schoolExternalToolDO]);
+			schoolToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalToolDO]);
 
 			return { schoolExternalToolDO };
 		};
