@@ -13,7 +13,6 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { AxiosResponse } from 'axios';
 import { BadRequestException, Inject, UnauthorizedException } from '@nestjs/common';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { FeathersJwtProvider } from '@src/modules/authorization';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto';
 import { UserDO } from '@shared/domain/domainobject/user.do';
@@ -28,7 +27,6 @@ import { AuthorizationParams } from '../controller/dto/authorization.params';
 export class OAuthService {
 	constructor(
 		private readonly userDORepo: UserDORepo,
-		private readonly jwtService: FeathersJwtProvider,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
 		private readonly logger: Logger,
@@ -174,15 +172,6 @@ export class OAuthService {
 				'sso_user_notfound'
 			);
 		}
-	}
-
-	async getJwtForUser(user: UserDO): Promise<string> {
-		if (!user.id) {
-			// unreachable. Users from DB have an ID
-			throw new UnauthorizedException();
-		}
-		const stringPromise = this.jwtService.generateJwt(user.id);
-		return stringPromise;
 	}
 
 	buildResponse(oauthConfig: OauthConfig, queryToken: OauthTokenResponse) {

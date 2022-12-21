@@ -7,11 +7,10 @@ import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { ProvisioningModule } from '@src/modules/provisioning/provisioning.module';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { AuthorizationModule } from '../authorization';
 import { SystemModule } from '../system';
 
 @Module({
-	imports: [LoggerModule, AuthorizationModule, HttpModule, ProvisioningModule, EncryptionModule, SystemModule],
+	imports: [LoggerModule, HttpModule, ProvisioningModule, EncryptionModule, SystemModule],
 	providers: [UserDORepo, OAuthService, HydraSsoService, LtiToolRepo],
 	exports: [OAuthService, HydraSsoService],
 })

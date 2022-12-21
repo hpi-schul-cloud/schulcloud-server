@@ -11,6 +11,8 @@ import { SystemService } from '@src/modules/system/service/system.service';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
 import resetAllMocks = jest.resetAllMocks;
+import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
+import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -19,6 +21,7 @@ describe('OAuthUc', () => {
 
 	let oauthService: DeepMocked<OAuthService>;
 	let systemService: DeepMocked<SystemService>;
+	let feathersJwtProvider: DeepMocked<FeathersJwtProvider>;
 
 	let testSystem: System;
 
@@ -40,12 +43,17 @@ describe('OAuthUc', () => {
 					provide: OAuthService,
 					useValue: createMock<OAuthService>(),
 				},
+				{
+					provide: FeathersJwtProvider,
+					useValue: createMock<FeathersJwtProvider>(),
+				},
 			],
 		}).compile();
 
 		service = await module.get(OauthUc);
 		systemService = await module.get(SystemService);
 		oauthService = await module.get(OAuthService);
+		feathersJwtProvider = await module.get(FeathersJwtProvider);
 	});
 
 	afterAll(async () => {
@@ -85,9 +93,9 @@ describe('OAuthUc', () => {
 			});
 			oauthService.validateToken.mockResolvedValue({ sub: 'sub' });
 			oauthService.findUser.mockResolvedValue(user);
-			oauthService.getJwtForUser.mockResolvedValue(jwt);
 			oauthService.buildResponse.mockReturnValue(baseResponse);
 			oauthService.getRedirectUrl.mockReturnValue(redirect);
+			feathersJwtProvider.generateJwt.mockResolvedValue(jwt);
 
 			const response: OAuthResponse = await service.processOAuth(query, testSystem.id);
 

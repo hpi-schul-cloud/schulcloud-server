@@ -276,20 +276,6 @@ describe('OAuthService', () => {
 		});
 	});
 
-	describe('getJwtForUser', () => {
-		it('should return a JWT for a user', async () => {
-			const jwtToken = 'schulcloudJwt';
-			const user: User = userFactory.buildWithId();
-
-			feathersJwtProvider.generateJwt.mockResolvedValue(jwtToken);
-
-			const jwtResult = await service.getJwtForUser(user);
-
-			expect(feathersJwtProvider.generateJwt).toHaveBeenCalled();
-			expect(jwtResult).toStrictEqual(jwtToken);
-		});
-	});
-
 	describe('buildResponse', () => {
 		it('should build the Response successfully', () => {
 			const tokenResponse: OauthTokenResponse = {

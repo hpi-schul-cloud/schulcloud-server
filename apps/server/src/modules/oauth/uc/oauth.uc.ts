@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { FeathersJwtProvider } from '@src/modules/authorization';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
@@ -13,6 +14,7 @@ import { AuthorizationParams } from '../controller/dto/authorization.params';
 export class OauthUc {
 	constructor(
 		private readonly oauthService: OAuthService,
+		private readonly feathersJwtProvider: FeathersJwtProvider,
 		private readonly systemService: SystemService,
 		private logger: Logger
 	) {
@@ -38,7 +40,11 @@ export class OauthUc {
 			systemId
 		);
 
-		const jwtResponse: string = await this.oauthService.getJwtForUser(user);
+		if (!user.id) {
+			// unreachable. Users from DB have an ID
+			throw new UnauthorizedException();
+		}
+		const jwtResponse: string = await this.feathersJwtProvider.generateJwt(user.id);
 
 		const response: OAuthResponse = new OAuthResponse();
 		response.jwt = jwtResponse;
