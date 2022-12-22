@@ -1051,7 +1051,7 @@
 		},
 		"FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "Enables Keycloak as account storage for the dBildungscloud"
 		}
 	},
