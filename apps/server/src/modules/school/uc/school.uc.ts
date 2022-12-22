@@ -1,23 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { SchoolService } from '@src/modules/school/service/school.service';
-import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
-import { SchoolUcMapper } from '@src/modules/school/mapper/school.uc.mapper';
-import { EntityId, SchoolFeatures } from '@shared/domain';
+import { Actions, Permission } from '@shared/domain';
+import { MigrationResponse } from '../controller/dto';
+import { AuthorizationService } from '../../authorization';
+import { AllowedAuthorizationEntityType } from '../../authorization/interfaces';
 
 @Injectable()
 export class SchoolUc {
-	constructor(readonly schoolService: SchoolService) {}
+	constructor(readonly schoolService: SchoolService, readonly authService: AuthorizationService) {}
 
-	async saveProvisioningSchoolOutputDto(schoolDto: ProvisioningSchoolOutputDto): Promise<SchoolDto> {
-		return this.createOrUpdate(SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDto(schoolDto));
+	async setMigration(
+		schoolId: string,
+		oauthMigrationPossible: boolean,
+		oauthMigrationMandatory: boolean,
+		userId: string
+	): Promise<MigrationResponse> {
+		await this.authService.checkPermissionByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
+			action: Actions.read,
+			requiredPermissions: [Permission.SCHOOL_EDIT],
+		});
+		const migrationResponse: MigrationResponse = await this.schoolService.setMigration(
+			schoolId,
+			oauthMigrationPossible,
+			oauthMigrationMandatory
+		);
+
+		return migrationResponse;
 	}
 
-	async createOrUpdate(schoolDto: SchoolDto): Promise<SchoolDto> {
-		return this.schoolService.createOrUpdateSchool(schoolDto);
-	}
+	async getMigration(schoolId: string, userId: string): Promise<MigrationResponse> {
+		await this.authService.checkPermissionByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
+			action: Actions.read,
+			requiredPermissions: [Permission.SCHOOL_EDIT],
+		});
+		const migrationResponse: MigrationResponse = await this.schoolService.getMigration(schoolId);
 
-	async hasFeature(schoolId: EntityId, feature: SchoolFeatures): Promise<boolean> {
-		return this.schoolService.hasFeature(schoolId, feature);
+		return migrationResponse;
 	}
 }

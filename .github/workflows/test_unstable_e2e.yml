@@ -9,6 +9,9 @@ on:
         label:
             name: 'run unstable tests'
 
+permissions:
+  contents: read
+
 jobs:
   end-to-end-unstable-tests:
     runs-on: ubuntu-latest

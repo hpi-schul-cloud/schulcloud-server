@@ -165,4 +165,116 @@ describe('Submission Uc', () => {
 			});
 		});
 	});
+
+	describe('delete is called', () => {
+		describe('WHEN user has permission and service deletes succesfully', () => {
+			const setup = () => {
+				const submission = submissionFactory.buildWithId();
+				const user = userFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				submissionService.findById.mockResolvedValueOnce(submission);
+				authorizationService.checkPermission.mockImplementation();
+				submissionService.delete.mockResolvedValueOnce();
+
+				return { submission, user };
+			};
+
+			it('should return true', async () => {
+				const { submission, user } = setup();
+
+				const result = await submissionUc.delete(user.id, submission.id);
+
+				expect(submissionService.findById).toHaveBeenCalledWith(submission.id);
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					submission,
+					PermissionContextBuilder.write([Permission.SUBMISSIONS_EDIT])
+				);
+				expect(submissionService.delete).toHaveBeenCalledWith(submission);
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('WHEN user can not be found', () => {
+			const setup = () => {
+				const submission = submissionFactory.buildWithId();
+				const user = userFactory.buildWithId();
+				const error = new Error();
+
+				authorizationService.getUserWithPermissions.mockRejectedValueOnce(error);
+
+				return { submission, user, error };
+			};
+
+			it('should pass error', async () => {
+				const { submission, user, error } = setup();
+
+				await expect(submissionUc.delete(user.id, submission.id)).rejects.toThrow(error);
+			});
+		});
+
+		describe('WHEN submission can not be found', () => {
+			const setup = () => {
+				const submission = submissionFactory.buildWithId();
+				const user = userFactory.buildWithId();
+				const error = new Error();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				submissionService.findById.mockRejectedValueOnce(error);
+
+				return { submission, user, error };
+			};
+
+			it('should pass error', async () => {
+				const { submission, user, error } = setup();
+
+				await expect(submissionUc.delete(user.id, submission.id)).rejects.toThrow(error);
+			});
+		});
+
+		describe('WHEN user has no permission', () => {
+			const setup = () => {
+				const submission = submissionFactory.buildWithId();
+				const user = userFactory.buildWithId();
+				const error = new Error();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				submissionService.findById.mockResolvedValueOnce(submission);
+				authorizationService.checkPermission.mockImplementation(() => {
+					throw error;
+				});
+
+				return { submission, user, error };
+			};
+
+			it('should pass error', async () => {
+				const { submission, user, error } = setup();
+
+				await expect(submissionUc.delete(user.id, submission.id)).rejects.toThrow(error);
+			});
+		});
+
+		describe('WHEN service returns error', () => {
+			const setup = () => {
+				const submission = submissionFactory.buildWithId();
+				const user = userFactory.buildWithId();
+				const error = new Error();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				submissionService.findById.mockResolvedValueOnce(submission);
+				authorizationService.checkPermission.mockImplementation();
+				submissionService.delete.mockRejectedValueOnce(error);
+
+				return { submission, user, error };
+			};
+
+			it('should pass error', async () => {
+				const { submission, user, error } = setup();
+
+				await expect(submissionUc.delete(user.id, submission.id)).rejects.toThrow(error);
+			});
+		});
+	});
 });

@@ -457,7 +457,11 @@ describe('AdminUsersService', () => {
 		const actingUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
 		const params = await testObjects.generateRequestParamsFromUser(actingUser);
 
-		const result = await adminStudentsService.patch(targetUser._id, { schoolId: otherSchoolId }, params);
+		const result = await adminStudentsService.patch(
+			targetUser._id,
+			{ schoolId: otherSchoolId, createAccount: false },
+			params
+		);
 		expect(equalIds(result.schoolId, schoolId)).to.equal(true);
 	});
 
@@ -467,7 +471,7 @@ describe('AdminUsersService', () => {
 		const actingUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
 		const params = await testObjects.generateRequestParamsFromUser(actingUser);
 
-		await adminStudentsService.patch(targetUser._id, { roles: ['superhero'] }, params);
+		await adminStudentsService.patch(targetUser._id, { roles: ['superhero'], createAccount: false }, params);
 		const result = await app.service('users').get(targetUser._id, { query: { $populate: 'roles' } });
 		expect(result.roles[0].name).to.equal('student');
 	});
@@ -631,7 +635,7 @@ describe('AdminUsersService', () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = {};
-			await adminStudentsService.patch(user._id.toString(), { email: 'foo@bar.baz' }, params);
+			await adminStudentsService.patch(user._id.toString(), { email: 'foo@bar.baz', createAccount: false }, params);
 
 			// then
 			const updatedAccount = await accountService.findById(account.id);

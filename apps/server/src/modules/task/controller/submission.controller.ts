@@ -1,11 +1,10 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { SubmissionMapper } from '../mapper';
 import { SubmissionUc } from '../uc';
-import { TaskUrlParams } from './dto';
-import { SubmissionStatusListResponse } from './dto/submission.response';
+import { SubmissionUrlParams, TaskUrlParams, SubmissionStatusListResponse } from './dto';
 
 @ApiTags('Submission')
 @Authenticate('jwt')
@@ -27,5 +26,12 @@ export class SubmissionController {
 		const listResponse = new SubmissionStatusListResponse(submissionResponses);
 
 		return listResponse;
+	}
+
+	@Delete(':submissionId')
+	async delete(@Param() urlParams: SubmissionUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
+		const result = await this.submissionUc.delete(currentUser.userId, urlParams.submissionId);
+
+		return result;
 	}
 }

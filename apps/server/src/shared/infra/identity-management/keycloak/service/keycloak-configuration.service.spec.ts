@@ -302,6 +302,32 @@ describe('KeycloakConfigurationService Unit', () => {
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(systemService.save).toHaveBeenCalledWith(expect.objectContaining({ _id: mockedSystem._id }));
 		});
+		it('should put the scdomain into the redirect', async () => {
+			const scDomain = 'test-sc-domain';
+			jest.spyOn(configService, 'get').mockReturnValue(scDomain);
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(systemService.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining({ redirectUri: expect.stringContaining(scDomain) }),
+				})
+			);
+		});
+		it('should take special localhost as redirect if scdomain is localhost', async () => {
+			const scDomain = 'localhost';
+			jest.spyOn(configService, 'get').mockReturnValue(scDomain);
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(systemService.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining({ redirectUri: expect.stringContaining('http://localhost:3030') }),
+				})
+			);
+		});
+		it('should ignore missing client secret but put empty string', async () => {
+			kcApiClientMock.generateNewClientSecret.mockResolvedValue({ type: 'secret', value: undefined });
+			await expect(service.configureClient()).resolves.not.toThrow();
+		});
 	});
 
 	describe('configureBrokerFlows', () => {
@@ -385,6 +411,18 @@ describe('KeycloakConfigurationService Unit', () => {
 					path: '/{realmName}/authentication/flows/{flowAlias}/executions',
 					urlParamKeys: ['realmName', 'flowAlias'],
 				})
+			);
+		});
+	});
+
+	describe('configureRealm', () => {
+		it('should update the realm', async () => {
+			const updateMock = jest.spyOn(kcApiRealmsMock, 'update');
+
+			await service.configureRealm();
+			expect(updateMock).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.objectContaining({ editUsernameAllowed: true })
 			);
 		});
 	});
