@@ -239,7 +239,31 @@ describe('SubmissionRule', () => {
 
 			describe('when action is "read"', () => {
 				describe('when submission is not submitted', () => {
-					describe('when user is a submitter', () => {
+					describe('when user is creator', () => {
+						const setup = () => {
+							const permission = 'a' as Permission;
+							const user = buildUserWithPermission(permission);
+							const user2 = buildUserWithPermission(permission);
+							const course = courseFactory.build({ students: [user, user2] });
+							const task = taskFactory.build({ course, publicSubmissions: true });
+							const submission = submissionFactory.build({ task, student: user });
+
+							return { user, submission, permission };
+						};
+
+						it('should return true', () => {
+							const { user, submission, permission } = setup();
+
+							const result = submissionRule.hasPermission(user, submission, {
+								action: Actions.read,
+								requiredPermissions: [permission],
+							});
+
+							expect(result).toBe(true);
+						});
+					});
+
+					describe('when user is team member', () => {
 						const setup = () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
@@ -247,6 +271,32 @@ describe('SubmissionRule', () => {
 							const course = courseFactory.build({ students: [user, user2] });
 							const task = taskFactory.build({ course, publicSubmissions: true });
 							const submission = submissionFactory.build({ task, student: user2, teamMembers: [user, user2] });
+
+							return { user, submission, permission };
+						};
+
+						it('should return true', () => {
+							const { user, submission, permission } = setup();
+
+							const result = submissionRule.hasPermission(user, submission, {
+								action: Actions.read,
+								requiredPermissions: [permission],
+							});
+
+							expect(result).toBe(true);
+						});
+					});
+
+					describe('when user is in associated course group', () => {
+						const setup = () => {
+							const permission = 'a' as Permission;
+							const user = buildUserWithPermission(permission);
+							const user2 = buildUserWithPermission(permission);
+							const course = courseFactory.build({ students: [user, user2] });
+							const courseGroup = courseGroupFactory.build({ course, students: [user] });
+							const task = taskFactory.build({ course, publicSubmissions: true });
+							const submission = submissionFactory.build({ task, student: user2, courseGroup });
+
 							return { user, submission, permission };
 						};
 
@@ -270,6 +320,7 @@ describe('SubmissionRule', () => {
 							const course = courseFactory.build({ students: [user, user2] });
 							const task = taskFactory.build({ course, publicSubmissions: true });
 							const submission = submissionFactory.build({ task, student: user2 });
+
 							return { user, submission, permission };
 						};
 
@@ -293,6 +344,31 @@ describe('SubmissionRule', () => {
 							const course = courseFactory.build({ students: [user2], teachers: [user] });
 							const task = taskFactory.build({ course });
 							const submission = submissionFactory.build({ task, student: user2 });
+
+							return { user, submission, permission };
+						};
+
+						it('should return false', () => {
+							const { user, submission, permission } = setup();
+
+							const result = submissionRule.hasPermission(user, submission, {
+								action: Actions.read,
+								requiredPermissions: [permission],
+							});
+
+							expect(result).toBe(false);
+						});
+					});
+
+					describe('when user is substitution teacher in same course', () => {
+						const setup = () => {
+							const permission = 'a' as Permission;
+							const user = buildUserWithPermission(permission);
+							const user2 = buildUserWithPermission(permission);
+							const course = courseFactory.build({ students: [user2], substitutionTeachers: [user] });
+							const task = taskFactory.build({ course });
+							const submission = submissionFactory.build({ task, student: user2 });
+
 							return { user, submission, permission };
 						};
 
@@ -310,7 +386,31 @@ describe('SubmissionRule', () => {
 				});
 
 				describe('when submission is submitted', () => {
-					describe('when user is a submitter', () => {
+					describe('when user is creator', () => {
+						const setup = () => {
+							const permission = 'a' as Permission;
+							const user = buildUserWithPermission(permission);
+							const user2 = buildUserWithPermission(permission);
+							const course = courseFactory.build({ students: [user, user2] });
+							const task = taskFactory.build({ course, publicSubmissions: true });
+							const submission = submissionFactory.submitted().build({ task, student: user });
+
+							return { user, submission, permission };
+						};
+
+						it('should return true', () => {
+							const { user, submission, permission } = setup();
+
+							const result = submissionRule.hasPermission(user, submission, {
+								action: Actions.read,
+								requiredPermissions: [permission],
+							});
+
+							expect(result).toBe(true);
+						});
+					});
+
+					describe('when user is team member', () => {
 						const setup = () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
@@ -320,6 +420,32 @@ describe('SubmissionRule', () => {
 							const submission = submissionFactory
 								.submitted()
 								.build({ task, student: user2, teamMembers: [user, user2] });
+
+							return { user, submission, permission };
+						};
+
+						it('should return true', () => {
+							const { user, submission, permission } = setup();
+
+							const result = submissionRule.hasPermission(user, submission, {
+								action: Actions.read,
+								requiredPermissions: [permission],
+							});
+
+							expect(result).toBe(true);
+						});
+					});
+
+					describe('when user is in associated course group', () => {
+						const setup = () => {
+							const permission = 'a' as Permission;
+							const user = buildUserWithPermission(permission);
+							const user2 = buildUserWithPermission(permission);
+							const course = courseFactory.build({ students: [user, user2] });
+							const courseGroup = courseGroupFactory.build({ course, students: [user] });
+							const task = taskFactory.build({ course, publicSubmissions: true });
+							const submission = submissionFactory.submitted().build({ task, student: user2, courseGroup });
+
 							return { user, submission, permission };
 						};
 
@@ -343,6 +469,7 @@ describe('SubmissionRule', () => {
 							const course = courseFactory.build({ students: [user, user2] });
 							const task = taskFactory.build({ course, publicSubmissions: true });
 							const submission = submissionFactory.submitted().build({ task, student: user2 });
+
 							return { user, submission, permission };
 						};
 
@@ -366,6 +493,31 @@ describe('SubmissionRule', () => {
 							const course = courseFactory.build({ students: [user2], teachers: [user] });
 							const task = taskFactory.build({ course });
 							const submission = submissionFactory.submitted().build({ task, student: user2 });
+
+							return { user, submission, permission };
+						};
+
+						it('should return true', () => {
+							const { user, submission, permission } = setup();
+
+							const result = submissionRule.hasPermission(user, submission, {
+								action: Actions.read,
+								requiredPermissions: [permission],
+							});
+
+							expect(result).toBe(true);
+						});
+					});
+
+					describe('when user is substitution teacher in same course', () => {
+						const setup = () => {
+							const permission = 'a' as Permission;
+							const user = buildUserWithPermission(permission);
+							const user2 = buildUserWithPermission(permission);
+							const course = courseFactory.build({ students: [user2], substitutionTeachers: [user] });
+							const task = taskFactory.build({ course });
+							const submission = submissionFactory.submitted().build({ task, student: user2 });
+
 							return { user, submission, permission };
 						};
 
@@ -390,6 +542,7 @@ describe('SubmissionRule', () => {
 						const course = courseFactory.build({ students: [user, user2] });
 						const task = taskFactory.build({ course });
 						const submission = submissionFactory.build({ task, student: user2 });
+
 						return { user, submission, permission };
 					};
 
