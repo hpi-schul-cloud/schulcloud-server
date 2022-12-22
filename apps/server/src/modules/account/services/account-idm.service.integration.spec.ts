@@ -50,7 +50,7 @@ describe('AccountService IDM Integration', () => {
 					ignoreEnvVars: true,
 					load: [
 						() => ({
-							FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED: true,
+							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
 						}),
 					],
 				}),

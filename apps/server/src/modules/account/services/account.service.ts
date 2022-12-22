@@ -92,7 +92,7 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	private async executeIdmMethod<T>(idmCallback: () => Promise<T>) {
-		if (this.configService.get('FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED')) {
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED')) {
 			try {
 				return await idmCallback();
 			} catch (error) {

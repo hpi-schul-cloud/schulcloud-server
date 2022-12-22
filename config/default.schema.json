@@ -320,6 +320,11 @@
 			"default": false,
 			"description": "Enables the Identity Management (ErWIn IDM) feature."
 		},
+		"FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the Identity Management (ErWIn IDM) as account storage."
+		},
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
 			"description": "Identity management server properties.",
@@ -1048,11 +1053,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enable the task assignment to individuals"
-		},
-		"FEATURE_KEYCLOAK_IDENTITY_STORE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables Keycloak as account storage for the dBildungscloud"
 		}
 	},
 	"required": [
