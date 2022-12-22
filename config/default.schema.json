@@ -320,6 +320,11 @@
 			"default": false,
 			"description": "Enables the Identity Management (ErWIn IDM) feature."
 		},
+		"FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the Identity Management (ErWIn IDM) as account storage."
+		},
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
 			"description": "Identity management server properties.",
