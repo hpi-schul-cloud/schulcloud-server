@@ -5,6 +5,8 @@ import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/is
 import { UUID } from 'bson';
 import jwt from 'jsonwebtoken';
 
+jest.mock('jsonwebtoken');
+
 const params = {
 	idToken: 'iservIdToken',
 };
