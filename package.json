@@ -168,7 +168,7 @@
 		"oauth-1.0a": "^2.2.6",
 		"papaparse": "^5.1.1",
 		"passport": "^0.4.1",
-		"passport-jwt": "^4.0.0",
+		"passport-jwt": "^4.0.1",
 		"passport-local": "^1.0.0",
 		"prom-client": "^13.1.0",
 		"prometheus-api-metrics": "^3.1.0",
