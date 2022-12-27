@@ -68,4 +68,12 @@ describe('resolve/scopes service', () => {
 		);
 		assert(courseAdmin.length > 0);
 	});
+
+	it('return empty courseAdmin scope if user is not an admin', async () => {
+		const data = await service.get(testUser._id);
+		const courseAdmin = data.data.filter(
+			(scope) => scope.attributes.scopeType === 'courseAdmin' && scope.id.equals(testCourse._id)
+		);
+		assert(courseAdmin.length === 0);
+	});
 });
