@@ -18,7 +18,6 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { ShareTokenBodyParams, ShareTokenResponse } from '@src/modules/sharing/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 const baseRouteName = '/sharetoken';
 
