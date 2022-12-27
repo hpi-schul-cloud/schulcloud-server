@@ -51,7 +51,7 @@ export class ShareTokenUC {
 			await this.checkContextReadPermission(userId, serviceOptions.context);
 		}
 		if (options?.expiresInDays) {
-			serviceOptions.expiresAt = this.nowPlusDays(options?.expiresInDays);
+			serviceOptions.expiresAt = this.nowPlusDays(options.expiresInDays);
 		}
 
 		const shareToken = await this.shareTokenService.createToken(payload, serviceOptions);
