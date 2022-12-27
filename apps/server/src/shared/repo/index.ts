@@ -20,7 +20,6 @@ export * from './pseudonyms';
 export * from './role';
 export * from './school';
 export * from './scope';
-export * from './sharetoken';
 export * from './storageprovider';
 export * from './submission';
 export * from './system';

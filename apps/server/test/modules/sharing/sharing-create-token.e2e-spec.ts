@@ -3,7 +3,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, Permission, ShareTokenParentType } from '@shared/domain';
+import { ICurrentUser, Permission } from '@shared/domain';
+import { ShareTokenParentType } from '@src/modules/sharing/domainobject/share-token.do';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -17,6 +18,7 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { ShareTokenBodyParams, ShareTokenResponse } from '@src/modules/sharing/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 const baseRouteName = '/sharetoken';
 

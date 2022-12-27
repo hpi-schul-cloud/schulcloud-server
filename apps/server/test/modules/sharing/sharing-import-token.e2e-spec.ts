@@ -3,15 +3,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
+import { CopyElementType, CopyStatusEnum, ICurrentUser, Permission } from '@shared/domain';
 import {
-	CopyElementType,
-	CopyStatusEnum,
-	ICurrentUser,
-	Permission,
 	ShareTokenContext,
 	ShareTokenContextType,
 	ShareTokenParentType,
-} from '@shared/domain';
+} from '@src/modules/sharing/domainobject/share-token.do';
 import {
 	cleanupCollections,
 	courseFactory,

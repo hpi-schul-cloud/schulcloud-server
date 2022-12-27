@@ -10,15 +10,15 @@ import {
 	LearnroomMetadata,
 	LearnroomTypes,
 	Permission,
-	ShareTokenContextType,
-	ShareTokenParentType,
 } from '@shared/domain';
+
 import { courseFactory, schoolFactory, setupEntities, shareTokenFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { CourseCopyService } from '@src/modules/learnroom';
 import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
+import { ShareTokenContextType, ShareTokenDO, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
 
@@ -257,7 +257,7 @@ describe('ShareTokenUC', () => {
 		it('should return service result', async () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
-			const shareToken = shareTokenFactory.build();
+			const shareToken: ShareTokenDO = shareTokenFactory.build();
 
 			service.createToken.mockResolvedValue(shareToken);
 
