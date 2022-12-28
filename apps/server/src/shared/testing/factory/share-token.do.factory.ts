@@ -5,6 +5,7 @@ import { ObjectId } from 'bson';
 import { Factory } from 'fishery';
 
 class ShareTokenFactory extends Factory<ShareTokenDO> {
+	/* istanbul ignore next */
 	withId(id?: EntityId) {
 		return this.params({ id: new ObjectId(id).toHexString() });
 	}
