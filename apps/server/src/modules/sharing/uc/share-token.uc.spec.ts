@@ -257,7 +257,7 @@ describe('ShareTokenUC', () => {
 		it('should return service result', async () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
-			const shareToken: ShareTokenDO = shareTokenFactory.build();
+			const shareToken = shareTokenFactory.build();
 
 			service.createToken.mockResolvedValue(shareToken);
 

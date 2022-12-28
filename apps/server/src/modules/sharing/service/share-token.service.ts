@@ -11,7 +11,7 @@ export class ShareTokenService {
 		payload: ShareTokenPayload,
 		options?: { context?: ShareTokenContext; expiresAt?: Date }
 	): Promise<ShareTokenDO> {
-		const token: string = this.tokenGenerator.generateShareToken();
+		const token = this.tokenGenerator.generateShareToken();
 		const shareToken = new ShareTokenDO({
 			token,
 			payload,
