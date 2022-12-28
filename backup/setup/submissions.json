@@ -25,30 +25,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "59a66754a2049554a93fed48"
-		},
-		"schoolId": {
-			"$oid": "5f2987e020834114b8efd6f6"
-		},
-		"studentId": {
-			"$oid": "599ec14d8e4e364ec18ff46d"
-		},
-		"homeworkId": {
-			"$oid": "59a662f6a2049554a93fed43"
-		},
-		"comment": "<p>Die Kurzgeschichte &raquo;Die Kirschen&laquo; von Wolfgang Borchert schildert eine Alltagsepisode im Nachkriegsdeutschland. Ein fieberkranker Junge,&nbsp;der seinen Vater f&auml;lschlicherweise des Diebstahls an einem Glas Kirschen verd&auml;chtigt, steht im Mittelpunkt der Geschichte. Angaben zu Handlungsort oder -zeit werden nicht gemacht. Die Erz&auml;hlung entstand im Sp&auml;tsommer 1947 und wurde 1948 erstmals ver&ouml;ffentlicht. Sie z&auml;hlt dadurch zur Tr&uuml;mmerliteratur.</p>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p>Der Junge der Geschichte liegt krank im Bett und h&ouml;rt nebenan etwas zu Bruch gehen. Sogleich vermutet er, dass es sich dabei um das Glas mit Kirschen handelt, das wegen seines Fiebers f&uuml;r ihn kalt gestellt worden war. M&uuml;hsam steht er auf und schleppt sich ins Nebenzimmer. Dort sieht er seinen Vater auf dem Boden sitzen. Die Fl&uuml;ssigkeit, die ihm &uuml;ber die Hand l&auml;uft, h&auml;lt der Junge f&uuml;r Kirschsaft.</p>\r\n\r\n<p>Die Gedanken des Jungen kreisen um die Kirschen, die der Vater ihm vermeintlich weggegessen hat. Als dieser ihn bemerkt, schickt er ihn besorgt zur&uuml;ck ins Bett. Der Vater erkl&auml;rt, er sei ausgerutscht und habe sich die Hand an den Scherben einer Tasse verletzt. Jetzt komme er nicht mehr auf die Beine. Wieder schickt er seinen Sohn zur&uuml;ck ins Bett. Er verspricht ihm, gleich die Kirschen zu bringen, die noch vor dem Fenster k&uuml;hl stehen.</p>\r\n\r\n<p>Als der Vater mit den Kirschen erscheint, versteckt der Junge seinen Kopf unter der Bettdecke.</p>\r\n\r\n<p>Die Kurzgeschichte ist in einer klaren Sprache und in einfachen, knappen S&auml;tzen verfasst. Damit ist sie typisch f&uuml;r die jungen Autoren der Tr&uuml;mmer- und Kahlschlagliteratur: Nach den Schrecken des Krieges konnte nicht mehr &raquo;sch&ouml;n&laquo; erz&auml;hlt werden. Als Wolfgang Borchert &raquo;Die Kirschen&laquo; verfasste, war er selbst schon bettl&auml;gerig krank. Es wird angenommen, dass der Autor pers&ouml;nliche Erfahrungen thematisierte.</p>\r\n",
-		"submitted": true,
-		"graded": false,
-		"updatedAt": {
-			"$date": "2017-08-30T07:20:52.806Z"
-		},
-		"createdAt": {
-			"$date": "2017-08-30T07:20:52.806Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
 			"$oid": "59a6bf51a2049554a93fed78"
 		},
 		"schoolId": {
@@ -528,38 +504,14 @@
 			"$oid": "59ae709d1f513506904e1ca9"
 		},
 		"comment": "<h2 style=\"font-style:italic\">Gruppe 2: Polem</h2>\r\n\r\n<p>Fl&auml;che:</p>\r\n\r\n<ul>\r\n\t<li>312.679 km&sup2;</li>\r\n</ul>\r\n\r\n<p>Einwohnerzahl:</p>\r\n\r\n<ul>\r\n\t<li>38.562.000</li>\r\n</ul>\r\n\r\n<p>Bev&ouml;lkerungsdichte:</p>\r\n\r\n<ul>\r\n\t<li>123 Einwohner pro km&sup2;</li>\r\n</ul>\r\n",
-		"submitted": true,
-		"graded": false,
-		"updatedAt": {
-			"$date": "2017-09-11T14:53:36.160Z"
-		},
-		"createdAt": {
-			"$date": "2017-09-11T14:53:36.160Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "59b6a37e5c9ec20c6f083656"
-		},
-		"schoolId": {
-			"$oid": "5f2987e020834114b8efd6f6"
-		},
-		"studentId": {
-			"$oid": "59ae89b71f513506904e1cc9"
-		},
-		"homeworkId": {
-			"$oid": "59ae709d1f513506904e1ca9"
-		},
-		"grade": null,
 		"gradeComment": "<p>Sehr gut!</p>\r\n",
 		"submitted": true,
 		"graded": true,
 		"updatedAt": {
-			"$date": "2017-09-11T14:53:50.762Z"
+			"$date": "2017-09-11T14:53:36.160Z"
 		},
 		"createdAt": {
-			"$date": "2017-09-11T14:53:50.762Z"
+			"$date": "2017-09-11T14:53:36.160Z"
 		},
 		"__v": 0
 	},
