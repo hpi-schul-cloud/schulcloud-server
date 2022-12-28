@@ -1,4 +1,4 @@
-import { ShareTokenDO } from '@shared/domain';
+import { ShareTokenDO } from '../domainobject/share-token.do';
 import { ShareTokenResponse } from '../controller/dto';
 
 export class ShareTokenResponseMapper {

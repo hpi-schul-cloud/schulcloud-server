@@ -1,7 +1,7 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps } from './base.entity';
-import { EntityId } from '../types/entity-id';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { EntityId } from '@shared/domain/types/entity-id';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenString } from '../domainobject/share-token.do';
 
 export interface IShareTokenProperties {
