@@ -1,14 +1,11 @@
+import { Request } from 'express';
+import request from 'supertest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser, Permission } from '@shared/domain';
-import {
-	ShareTokenContext,
-	ShareTokenContextType,
-	ShareTokenParentType,
-} from '@src/modules/sharing/domainobject/share-token.do';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -19,10 +16,9 @@ import {
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server';
-import { ShareTokenService } from '@src/modules/sharing';
-import { ShareTokenInfoResponse, ShareTokenResponse, ShareTokenUrlParams } from '@src/modules/sharing/controller/dto';
-import { Request } from 'express';
-import request from 'supertest';
+import { ShareTokenService } from '../../service';
+import { ShareTokenInfoResponse, ShareTokenResponse, ShareTokenUrlParams } from '../dto';
+import { ShareTokenContext, ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
 
 const baseRouteName = '/sharetoken';
 
