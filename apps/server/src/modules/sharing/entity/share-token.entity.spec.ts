@@ -1,5 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { setupEntities } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareToken } from './share-token.entity';
 
@@ -15,8 +16,8 @@ describe('share-token entity', () => {
 	});
 
 	const setup = () => {
-		const parentId = '012345678901234567890123';
-		const contextId = 'a01234567890123456789012';
+		const parentId = new ObjectId().toHexString();
+		const contextId = new ObjectId().toHexString();
 		const basicTokenProps = {
 			token: 'abc',
 			parentType: ShareTokenParentType.Course,
