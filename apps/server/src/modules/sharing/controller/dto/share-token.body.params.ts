@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ShareTokenParentType } from '@shared/domain';
 import { IsBoolean, IsEnum, IsInt, IsMongoId, IsOptional, IsPositive } from 'class-validator';
+import { ShareTokenParentType } from '../../domainobject/share-token.do';
 
 export class ShareTokenBodyParams {
 	@IsEnum(ShareTokenParentType)

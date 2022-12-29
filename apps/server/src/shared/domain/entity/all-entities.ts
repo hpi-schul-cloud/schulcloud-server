@@ -1,3 +1,4 @@
+import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { Account } from './account.entity';
 import { Board } from './board.entity';
 import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
@@ -15,7 +16,6 @@ import { Pseudonym } from './pseudonym.entity';
 import { Role } from './role.entity';
 import { School, SchoolRolePermission, SchoolRoles } from './school.entity';
 import { SchoolYear } from './schoolyear.entity';
-import { ShareToken } from './share-token.entity';
 import { StorageProvider } from './storageprovider.entity';
 import { Submission } from './submission.entity';
 import { System } from './system.entity';

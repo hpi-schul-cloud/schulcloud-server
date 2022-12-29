@@ -8,9 +8,10 @@ import { RoleModule } from '@src/modules/role/role.module';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { UserController } from './controller';
 import { UserUc } from './uc';
+import { LoggerModule } from '../../core/logger';
 
 @Module({
-	imports: [SchoolModule, RoleModule],
+	imports: [SchoolModule, RoleModule, LoggerModule],
 	controllers: [UserController],
 	providers: [UserRepo, PermissionService, UserUc, UserService, RoleRepo, RoleUc, SchoolRepo, RoleService],
 	exports: [UserUc, UserService],

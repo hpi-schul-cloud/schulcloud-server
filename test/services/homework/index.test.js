@@ -477,6 +477,8 @@ describe('homework service', () => {
 						homeworkId,
 						studentId,
 						comment: 'I dont know the answer',
+						submitted: true,
+						graded: true,
 					})
 				);
 			});

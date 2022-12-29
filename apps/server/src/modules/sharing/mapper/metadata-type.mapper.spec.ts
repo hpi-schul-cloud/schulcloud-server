@@ -1,5 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
-import { LearnroomTypes, ShareTokenParentType } from '@shared/domain';
+import { LearnroomTypes } from '@shared/domain';
+import { ShareTokenParentType } from '../domainobject/share-token.do';
 import { MetadataTypeMapper } from './metadata-type.mapper';
 
 describe('MetadataTypeMapper', () => {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ShareTokenContext, ShareTokenDO, ShareTokenPayload, ShareTokenString } from '@shared/domain';
-import { ShareTokenRepo } from '@shared/repo';
+import { ShareTokenContext, ShareTokenDO, ShareTokenPayload, ShareTokenString } from '../domainobject/share-token.do';
+import { ShareTokenRepo } from '../repo/share-token.repo';
 import { TokenGenerator } from './token-generator.service';
 
 @Injectable()
@@ -12,7 +12,6 @@ export class ShareTokenService {
 		options?: { context?: ShareTokenContext; expiresAt?: Date }
 	): Promise<ShareTokenDO> {
 		const token = this.tokenGenerator.generateShareToken();
-
 		const shareToken = new ShareTokenDO({
 			token,
 			payload,

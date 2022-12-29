@@ -16,9 +16,10 @@ import { FeathersAuthProvider } from './feathers-auth.provider';
 import { FeathersAuthorizationService } from './feathers-authorization.service';
 import { FeathersJwtProvider } from './feathers-jwt.provider';
 import { ReferenceLoader } from './reference.loader';
+import { LoggerModule } from '../../core/logger';
 
 @Module({
-	imports: [FeathersModule],
+	imports: [FeathersModule, LoggerModule],
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
