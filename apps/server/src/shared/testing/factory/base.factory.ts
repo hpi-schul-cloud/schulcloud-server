@@ -59,9 +59,10 @@ export class BaseFactory<T, U, I = any, C = U> {
 	 */
 	buildWithId(params?: DeepPartial<U>, id?: string, options: BuildOptions<U, I> = {}): T {
 		const entity = this.build(params, options);
-		const entityWithId = Object.assign(entity, { _id: new ObjectId(id) });
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const entityWithId = Object.assign(entity as any, { _id: new ObjectId(id) });
 
-		return entityWithId;
+		return entityWithId as T;
 	}
 
 	/**
