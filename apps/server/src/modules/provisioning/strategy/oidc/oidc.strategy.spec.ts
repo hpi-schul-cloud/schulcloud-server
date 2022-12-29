@@ -1,9 +1,11 @@
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { OidcProvisioningStrategy } from '@src/modules/provisioning/strategy/oidc/oidc.strategy';
-import { IservStrategyData } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import jwt from 'jsonwebtoken';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
+import { IservStrategyData } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
+import { OidcProvisioningStrategy } from '@src/modules/provisioning/strategy/oidc/oidc.strategy';
+import jwt from 'jsonwebtoken';
+
+jest.mock('jsonwebtoken');
 
 const params: IservStrategyData = {
 	idToken: 'oidcIdToken',
