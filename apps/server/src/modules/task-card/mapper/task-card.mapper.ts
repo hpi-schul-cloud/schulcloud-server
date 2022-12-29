@@ -1,13 +1,25 @@
-import { ICardElement, InputFormat, ITaskCardCreate, RichText, TaskCard, TaskWithStatusVo } from '@shared/domain';
+import {
+	ICardElement,
+	InputFormat,
+	ITaskCardCreate,
+	ITaskCardUpdate,
+	RichText,
+	TaskCard,
+	TaskWithStatusVo,
+} from '@shared/domain';
 import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
+import { ValidationError } from '@shared/common';
 import {
 	CardElementResponse,
 	CardRichTextElementResponse,
 	CardTitleElementResponse,
 	CreateTaskCardParams,
+	UpdateTaskCardParams,
 	TaskCardResponse,
+	TitleCardElementParam,
+	RichTextCardElementParam,
 } from '../controller/dto';
 
 export class TaskCardMapper {
@@ -31,12 +43,12 @@ export class TaskCardMapper {
 		cardElements.forEach((cardElement) => {
 			if (cardElement.cardElementType === CardElementType.Title) {
 				const content = new CardTitleElementResponse(cardElement as TitleCardElement);
-				const response = { cardElementType: cardElement.cardElementType, content };
+				const response = { id: cardElement.id, cardElementType: cardElement.cardElementType, content };
 				cardElementsResponse.push(response);
 			}
 			if (cardElement.cardElementType === CardElementType.RichText) {
 				const content = new CardRichTextElementResponse(cardElement as RichTextCardElement);
-				const response = { cardElementType: cardElement.cardElementType, content };
+				const response = { id: cardElement.id, cardElementType: cardElement.cardElementType, content };
 				cardElementsResponse.push(response);
 			}
 		});
@@ -58,6 +70,30 @@ export class TaskCardMapper {
 					})
 			);
 		}
+
+		return dto;
+	}
+
+	static mapUpdateToDomain(params: UpdateTaskCardParams): ITaskCardUpdate {
+		const title = params.cardElements.filter((element) => element.content instanceof TitleCardElementParam);
+		if (title.length !== 1) {
+			throw new ValidationError('The Task Card must have one title');
+		}
+
+		const dto: ITaskCardUpdate = {
+			title: title[0].content.value,
+		};
+
+		params.cardElements.forEach((element) => {
+			if (element.content instanceof RichTextCardElementParam) {
+				const richText = new RichText({ content: element.content.value, type: element.content.inputFormat });
+				if (!dto.text) {
+					dto.text = [richText];
+				} else {
+					dto.text.push();
+				}
+			}
+		});
 
 		return dto;
 	}

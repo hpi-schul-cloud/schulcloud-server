@@ -4,7 +4,7 @@ import { Task } from './task.entity';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 
-export type BoardElementReference = Task | Lesson /* | Card */;
+export type BoardElementReference = Task | Lesson;
 
 export enum BoardElementType {
 	'Task' = 'task',

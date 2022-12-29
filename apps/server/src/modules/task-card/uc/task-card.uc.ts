@@ -4,12 +4,13 @@ import {
 	EntityId,
 	ITaskCardCreate,
 	ITaskCardProps,
+	ITaskCardUpdate,
 	Permission,
 	PermissionContextBuilder,
 	TaskCard,
 } from '@shared/domain';
 import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
-import { TaskCardRepo } from '@shared/repo';
+import { CardElementRepo, RichTextCardElementRepo, TaskCardRepo, TitleCardElementRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '@src/modules/task/service';
 
@@ -17,6 +18,9 @@ import { TaskService } from '@src/modules/task/service';
 export class TaskCardUc {
 	constructor(
 		private taskCardRepo: TaskCardRepo,
+		private cardElementRepo: CardElementRepo,
+		private titleCardElementRepo: TitleCardElementRepo,
+		private richTextCardElementRepo: RichTextCardElementRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly taskService: TaskService
 	) {}
@@ -63,6 +67,15 @@ export class TaskCardUc {
 		return taskWithStatusVo;
 	}
 
+	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardUpdate) {
+		const taskParams = {
+			name: params.title,
+		};
+		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
+
+		return taskWithStatusVo;
+	}
+
 	async findOne(userId: EntityId, id: EntityId) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.taskCardRepo.findById(id);
@@ -74,6 +87,49 @@ export class TaskCardUc {
 		}
 
 		const taskWithStatusVo = await this.taskService.find(userId, card.task.id);
+
+		return { card, taskWithStatusVo };
+	}
+
+	async delete(userId: EntityId, id: EntityId) {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const card = await this.taskCardRepo.findById(id);
+
+		if (
+			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.write([Permission.TASK_CARD_EDIT]))
+		) {
+			throw new UnauthorizedException();
+		}
+
+		await this.taskCardRepo.delete(card);
+
+		return true;
+	}
+
+	async update(userId: EntityId, id: EntityId, params: ITaskCardUpdate) {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const card = await this.taskCardRepo.findById(id);
+
+		if (
+			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.write([Permission.TASK_CARD_EDIT]))
+		) {
+			throw new UnauthorizedException();
+		}
+
+		const taskWithStatusVo = await this.updateTask(userId, card.task.id, params);
+
+		const cardElements: CardElement[] = [];
+		const title = new TitleCardElement(params.title);
+		cardElements.unshift(title);
+
+		if (params.text) {
+			const texts = params.text.map((text) => new RichTextCardElement(text));
+			cardElements.push(...texts);
+		}
+
+		await this.cardElementRepo.delete(card.cardElements.getItems());
+		card.cardElements.set(cardElements);
+		await this.taskCardRepo.save(card);
 
 		return { card, taskWithStatusVo };
 	}

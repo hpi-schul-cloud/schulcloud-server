@@ -1,9 +1,8 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-// import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { CreateTaskCardParams, TaskCardResponse, TaskCardUrlParams } from './dto';
+import { CreateTaskCardParams, TaskCardResponse, TaskCardUrlParams, UpdateTaskCardParams } from './dto';
 import { TaskCardMapper } from '../mapper/task-card.mapper';
 import { TaskCardUc } from '../uc';
 
@@ -29,7 +28,10 @@ export class TaskCardController {
 	}
 
 	@Get(':id')
-	async find(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: TaskCardUrlParams) {
+	async findOne(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: TaskCardUrlParams
+	): Promise<TaskCardResponse> {
 		const { card, taskWithStatusVo } = await this.taskCardUc.findOne(currentUser.userId, urlParams.id);
 		const mapper = new TaskCardMapper();
 		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
@@ -37,5 +39,26 @@ export class TaskCardController {
 	}
 
 	// async update
-	// async delete
+	@Delete(':id')
+	async delete(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: TaskCardUrlParams): Promise<boolean> {
+		const result = await this.taskCardUc.delete(currentUser.userId, urlParams.id);
+
+		return result;
+	}
+
+	@Patch(':id')
+	async update(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: TaskCardUrlParams,
+		@Body() params: UpdateTaskCardParams
+	): Promise<TaskCardResponse> {
+		const { card, taskWithStatusVo } = await this.taskCardUc.update(
+			currentUser.userId,
+			urlParams.id,
+			TaskCardMapper.mapUpdateToDomain(params)
+		);
+		const mapper = new TaskCardMapper();
+		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
+		return taskCardResponse;
+	}
 }

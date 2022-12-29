@@ -5,6 +5,11 @@ import { CardRichTextElementResponse } from './card-richtext-element.response';
 
 export class CardElementResponse {
 	@ApiProperty({
+		description: 'The id of the card element',
+	})
+	id!: string;
+
+	@ApiProperty({
 		description: 'Type of element',
 		enum: CardElementType,
 	})

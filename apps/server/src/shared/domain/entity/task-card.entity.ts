@@ -1,5 +1,6 @@
 import {
 	Collection,
+	Cascade,
 	Entity,
 	Enum,
 	Index,
@@ -32,7 +33,7 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		Object.assign(this, { creator: props.creator });
 	}
 
-	@ManyToMany('CardElement', undefined, { fieldName: 'cardElementsIds' })
+	@ManyToMany('CardElement', undefined, { fieldName: 'cardElementsIds', cascade: [Cascade.ALL] })
 	cardElements = new Collection<CardElement>(this);
 
 	@Enum()
@@ -63,6 +64,6 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	*/
 
 	@Index()
-	@OneToOne({ type: 'Task', fieldName: 'taskId', eager: true, unique: true })
+	@OneToOne({ type: 'Task', fieldName: 'taskId', eager: true, unique: true, cascade: [Cascade.ALL] })
 	task!: Task;
 }

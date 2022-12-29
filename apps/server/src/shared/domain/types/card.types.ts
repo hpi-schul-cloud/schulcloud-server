@@ -5,6 +5,16 @@ import { InputFormat } from './input-format.types';
 
 // import { TaskResponse } from '@src/modules/task/controller/dto'
 
+export type RichTextUpdate = {
+	id?: string;
+	text: RichText;
+};
+export interface ITaskCardUpdate {
+	id?: string;
+	title: string;
+	text?: RichText[];
+}
+
 export interface ITaskCardCreate {
 	title: string;
 	text?: RichText[];
@@ -38,7 +48,10 @@ export interface ITaskCard extends ICard {
 }
 
 export type ICardElement = {
+	id: string;
+
 	cardElementType: CardElementType;
+
 	// content: ITitleCardElement | IRichTextCardElement;
 };
 
