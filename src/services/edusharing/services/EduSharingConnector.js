@@ -110,10 +110,12 @@ class EduSharingConnector {
 	async eduSharingRequest(options, retried = false) {
 		try {
 			await this.authorize();
+			console.log('Edusharing request:', options);
 			if (options.method.toUpperCase() === 'POST') {
 				return await request.post(options);
 			}
 			const res = await request.get(options);
+			console.log(res);
 			return res;
 		} catch (err) {
 			if (err.statusCode === 404) {
