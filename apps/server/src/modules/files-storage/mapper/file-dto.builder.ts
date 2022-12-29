@@ -21,15 +21,14 @@ export class FileDtoBuilder {
 		request: Request,
 		buffer: Buffer | Blob | ReadableStream | Readable
 	): FileDto {
-		const contentLength = request.get('content-length');
-		const size = contentLength ? Number.parseInt(contentLength!) : 0;
+		const size = Number(request.get('content-length'));
 		const file = FileDtoBuilder.build(fileInfo.filename, buffer, size, fileInfo.mimeType);
 
 		return file;
 	}
 
 	public static buildFromAxiosResponse(name: string, response: AxiosResponse<internal.Readable>): FileDto {
-		const size = Number.parseInt(response.headers['content-length']);
+		const size = Number(response.headers['content-length']);
 		const mimeType = response.headers['content-type'];
 		const file = FileDtoBuilder.build(name, response.data, size, mimeType);
 

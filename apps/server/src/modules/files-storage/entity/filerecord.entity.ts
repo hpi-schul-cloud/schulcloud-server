@@ -87,7 +87,7 @@ export class FileRecord extends BaseEntity {
 	@Property({ nullable: true })
 	deletedSince?: Date;
 
-	@Property({ type: types.bigint })
+	@Property({ type: types.integer })
 	size: number;
 
 	@Property()
