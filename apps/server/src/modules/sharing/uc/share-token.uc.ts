@@ -1,17 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import {
-	Actions,
-	CopyStatus,
-	EntityId,
-	LearnroomMetadata,
-	Permission,
-	ShareTokenContext,
-	ShareTokenContextType,
-	ShareTokenDO,
-	ShareTokenParentType,
-	ShareTokenPayload,
-} from '@shared/domain';
+import { Actions, CopyStatus, EntityId, LearnroomMetadata, Permission } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { CourseCopyService } from '@src/modules/learnroom';
@@ -20,6 +9,13 @@ import { ShareTokenContextTypeMapper, ShareTokenParentTypeMapper } from '../mapp
 import { MetadataTypeMapper } from '../mapper/metadata-type.mapper';
 import { ShareTokenService } from '../service';
 import { ShareTokenInfoDto } from './dto';
+import {
+	ShareTokenContext,
+	ShareTokenContextType,
+	ShareTokenDO,
+	ShareTokenParentType,
+	ShareTokenPayload,
+} from '../domainobject/share-token.do';
 
 @Injectable()
 export class ShareTokenUC {
@@ -55,7 +51,7 @@ export class ShareTokenUC {
 			await this.checkContextReadPermission(userId, serviceOptions.context);
 		}
 		if (options?.expiresInDays) {
-			serviceOptions.expiresAt = this.nowPlusDays(options?.expiresInDays);
+			serviceOptions.expiresAt = this.nowPlusDays(options.expiresInDays);
 		}
 
 		const shareToken = await this.shareTokenService.createToken(payload, serviceOptions);

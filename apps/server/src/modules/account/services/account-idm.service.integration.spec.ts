@@ -29,8 +29,8 @@ describe('AccountService IDM Integration', () => {
 		systemId: new ObjectId().toString(),
 		idmReferenceId: technicalRefId,
 	});
-	const createAccount = async (): Promise<string> => {
-		return identityManagementService.createAccount(
+	const createAccount = async (): Promise<string> =>
+		identityManagementService.createAccount(
 			{
 				username: testAccount.username,
 				attRefFunctionalIntId: testAccount.userId,
@@ -39,7 +39,6 @@ describe('AccountService IDM Integration', () => {
 			},
 			testAccount.password
 		);
-	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -49,9 +48,11 @@ describe('AccountService IDM Integration', () => {
 					ignoreEnvFile: true,
 					ignoreEnvVars: true,
 					load: [
-						() => ({
-							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-						}),
+						() => {
+							return {
+								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
+							};
+						},
 					],
 				}),
 			],

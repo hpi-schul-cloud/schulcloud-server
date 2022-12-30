@@ -232,21 +232,23 @@ export class VideoConferenceUc {
 
 		const response: VideoConferenceInfoDTO = await this.bbbService
 			.getMeetingInfo(config)
-			.then((bbbResponse: BBBResponse<BBBMeetingInfoResponse>) => {
-				return new VideoConferenceInfoDTO({
-					state: VideoConferenceState.RUNNING,
-					permission: PermissionMapping[bbbRole],
-					bbbResponse,
-					options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
-				});
-			})
-			.catch(() => {
-				return new VideoConferenceInfoDTO({
-					state: VideoConferenceState.NOT_STARTED,
-					permission: PermissionMapping[bbbRole],
-					options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
-				});
-			});
+			.then(
+				(bbbResponse: BBBResponse<BBBMeetingInfoResponse>) =>
+					new VideoConferenceInfoDTO({
+						state: VideoConferenceState.RUNNING,
+						permission: PermissionMapping[bbbRole],
+						bbbResponse,
+						options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
+					})
+			)
+			.catch(
+				() =>
+					new VideoConferenceInfoDTO({
+						state: VideoConferenceState.NOT_STARTED,
+						permission: PermissionMapping[bbbRole],
+						options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
+					})
+			);
 
 		const isGuest: boolean = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
 

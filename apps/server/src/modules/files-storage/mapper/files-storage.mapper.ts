@@ -54,9 +54,7 @@ export class FilesStorageMapper {
 		skip?: number,
 		limit?: number
 	): FileRecordListResponse {
-		const responseFileRecords = fileRecords.map((fileRecord) => {
-			return FilesStorageMapper.mapToFileRecordResponse(fileRecord);
-		});
+		const responseFileRecords = fileRecords.map((fileRecord) => FilesStorageMapper.mapToFileRecordResponse(fileRecord));
 
 		const response = new FileRecordListResponse(responseFileRecords, total, skip, limit);
 		return response;

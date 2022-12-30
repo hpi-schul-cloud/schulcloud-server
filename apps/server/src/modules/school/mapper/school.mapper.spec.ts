@@ -39,11 +39,11 @@ describe('SchoolMapper', () => {
 
 	it('mapToEntity', () => {
 		const system: System = systemFactory.buildWithId();
-		jest.mock('@mikro-orm/core/', () => {
-			return jest.fn().mockImplementation(() => {
+		jest.mock('@mikro-orm/core/', () =>
+			jest.fn().mockImplementation(() => {
 				return { createFromPK: jest.fn().mockReturnValue(system) };
-			});
-		});
+			})
+		);
 		const schoolYear: SchoolYear = schoolYearFactory.build();
 		const schoolDO: SchoolDO = new SchoolDO({
 			id: new ObjectId().toHexString(),

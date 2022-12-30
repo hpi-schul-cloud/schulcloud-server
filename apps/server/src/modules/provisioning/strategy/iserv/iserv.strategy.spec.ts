@@ -5,6 +5,8 @@ import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/is
 import { UUID } from 'bson';
 import jwt from 'jsonwebtoken';
 
+jest.mock('jsonwebtoken');
+
 const params = {
 	idToken: 'iservIdToken',
 };
@@ -51,9 +53,7 @@ describe('IservStrategy', () => {
 		});
 
 		it('should throw error when there is no idToken', async () => {
-			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
-				return null;
-			});
+			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => null);
 			await expect(iservStrategy.apply(params)).rejects.toThrow(OAuthSSOError);
 		});
 	});

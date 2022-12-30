@@ -10,7 +10,9 @@ export class ResolvedUserMapper {
 		dto.createdAt = user.createdAt;
 		dto.updatedAt = user.updatedAt;
 		dto.schoolId = user.school.toString();
-		dto.roles = roles.map((role) => ({ name: role.name, id: role.id }));
+		dto.roles = roles.map((role) => {
+			return { name: role.name, id: role.id };
+		});
 
 		dto.permissions = permissions;
 

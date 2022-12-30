@@ -4,9 +4,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ObjectId } from 'mongodb';
 import { DatabaseManagementService } from './database-management.service';
 
-const randomChars = () => {
-	return new ObjectId().toHexString();
-};
+const randomChars = () => new ObjectId().toHexString();
 describe('DatabaseManagementService', () => {
 	let service: DatabaseManagementService;
 	let module: TestingModule;

@@ -47,7 +47,7 @@ module.exports = {
 			},
 		],
 		'arrow-parens': ['error', 'always'],
-		'arrow-body-style': ['error', 'as-needed'],
+		'arrow-body-style': ['error', 'as-needed', { requireReturnForObjectLiteral: true }],
 		'no-only-tests/no-only-tests': 'error',
 	},
 	plugins: ['import', 'prettier', 'promise', 'no-only-tests'],
@@ -71,7 +71,7 @@ module.exports = {
 				'airbnb-typescript/base',
 				'plugin:@typescript-eslint/recommended',
 				'plugin:@typescript-eslint/recommended-requiring-type-checking',
-				'plugin:prettier/recommended',
+				'prettier',
 				'plugin:promise/recommended',
 			],
 			parserOptions: {
