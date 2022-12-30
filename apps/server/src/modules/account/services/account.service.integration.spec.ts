@@ -66,9 +66,11 @@ describe('AccountService Integration', () => {
 					ignoreEnvFile: true,
 					ignoreEnvVars: true,
 					load: [
-						() => ({
-							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-						}),
+						() => {
+							return {
+								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
+							};
+						},
 					],
 				}),
 			],

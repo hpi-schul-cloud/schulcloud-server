@@ -216,12 +216,12 @@ describe('UserService', () => {
 
 		beforeEach(() => {
 			roles = [roleFactory.buildWithId(), roleFactory.buildWithId()];
-			roleRepo.findByNames.mockImplementation((names: RoleName[]): Promise<Role[]> => {
-				return Promise.resolve(roles.filter((role) => names.includes(role.name)));
-			});
-			roleRepo.findByIds.mockImplementation((ids: string[]): Promise<Role[]> => {
-				return Promise.resolve(roles.filter((role: Role) => ids.includes(role.id)));
-			});
+			roleRepo.findByNames.mockImplementation(
+				(names: RoleName[]): Promise<Role[]> => Promise.resolve(roles.filter((role) => names.includes(role.name)))
+			);
+			roleRepo.findByIds.mockImplementation(
+				(ids: string[]): Promise<Role[]> => Promise.resolve(roles.filter((role: Role) => ids.includes(role.id)))
+			);
 			user = userFactory.buildWithId({ roles });
 			userRepo.findById.mockResolvedValue(user);
 			userRepo.save.mockImplementation((entities: User[] | User): Promise<void> => {

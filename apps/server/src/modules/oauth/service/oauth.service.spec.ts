@@ -33,8 +33,8 @@ const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
 	};
 };
 
-jest.mock('jwks-rsa', () => {
-	return () => ({
+jest.mock('jwks-rsa', () => () => {
+	return {
 		getKeys: jest.fn(),
 		getSigningKey: jest.fn().mockResolvedValue({
 			kid: 'kid',
@@ -43,7 +43,7 @@ jest.mock('jwks-rsa', () => {
 			rsaPublicKey: 'publicKey',
 		}),
 		getSigningKeys: jest.fn(),
-	});
+	};
 });
 
 jest.mock('jsonwebtoken');
@@ -204,9 +204,7 @@ describe('OAuthService', () => {
 		});
 
 		it('should throw if no payload was returned', async () => {
-			jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => {
-				return 'string';
-			});
+			jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => 'string');
 
 			await expect(service.validateToken('idToken', testOauthConfig)).rejects.toEqual(
 				new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
@@ -270,9 +268,7 @@ describe('OAuthService', () => {
 		});
 
 		it('should throw if idToken is invalid and has no sub', async () => {
-			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
-				return null;
-			});
+			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => null);
 
 			await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(BadRequestException);
 		});

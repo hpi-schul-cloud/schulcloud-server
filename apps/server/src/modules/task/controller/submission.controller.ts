@@ -19,9 +19,7 @@ export class SubmissionController {
 	): Promise<SubmissionStatusListResponse> {
 		const submissions = await this.submissionUc.findAllByTask(currentUser.userId, params.taskId);
 
-		const submissionResponses = submissions.map((submission) => {
-			return SubmissionMapper.mapToStatusResponse(submission);
-		});
+		const submissionResponses = submissions.map((submission) => SubmissionMapper.mapToStatusResponse(submission));
 
 		const listResponse = new SubmissionStatusListResponse(submissionResponses);
 

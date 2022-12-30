@@ -1,6 +1,6 @@
-import CryptoJs from 'crypto-js';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Type, Platform } from '@mikro-orm/core';
+import { Type } from '@mikro-orm/core';
+import CryptoJs from 'crypto-js';
 
 /**
  * Serialization type to transparent encrypt string values in database.
@@ -18,7 +18,7 @@ export class StorageProviderEncryptedStringType extends Type<string, string> {
 		}
 	}
 
-	convertToDatabaseValue(value: string | undefined, platform: Platform): string {
+	convertToDatabaseValue(value: string | undefined): string {
 		// keep nullish values
 		if (value == null) {
 			return value as unknown as string;
@@ -33,7 +33,7 @@ export class StorageProviderEncryptedStringType extends Type<string, string> {
 		return encryptedString;
 	}
 
-	convertToJSValue(value: string | undefined, platform: Platform): string {
+	convertToJSValue(value: string | undefined): string {
 		// keep nullish values
 		if (value == null) {
 			return value as unknown as string;
