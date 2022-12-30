@@ -87,8 +87,9 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush(fileRecord);
 			const origUpdatedAt = fileRecord.updatedAt;
 
-			// eslint-disable-next-line no-promise-executor-return
-			await new Promise((resolve) => setTimeout(resolve, 20));
+			await new Promise((resolve) => {
+				setTimeout(resolve, 20);
+			});
 			fileRecord.name = `updated-${fileRecord.name}`;
 
 			await repo.save(fileRecord);
