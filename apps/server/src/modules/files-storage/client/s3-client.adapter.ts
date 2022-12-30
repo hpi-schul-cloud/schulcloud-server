@@ -172,7 +172,9 @@ export class S3ClientAdapter implements IStorageClient {
 	}
 
 	private async remove(paths: string[]) {
-		const pathObjects = paths.map((p) => ({ Key: p }));
+		const pathObjects = paths.map((p) => {
+			return { Key: p };
+		});
 		const req = new DeleteObjectsCommand({
 			Bucket: this.config.bucket,
 			Delete: { Objects: pathObjects },

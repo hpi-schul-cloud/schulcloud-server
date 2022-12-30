@@ -28,13 +28,15 @@ jest.mock('nanoid', () => {
 	};
 });
 
-const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => ({
-	data,
-	status: 0,
-	statusText: '',
-	headers: {},
-	config: {},
-});
+const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
+	return {
+		data,
+		status: 0,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
+};
 
 describe('HydraService', () => {
 	let module: TestingModule;
@@ -135,9 +137,7 @@ describe('HydraService', () => {
 			headers: {},
 			withCredentials: true,
 			maxRedirects: 0,
-			validateStatus: jest.fn().mockImplementationOnce(() => {
-				return true;
-			}),
+			validateStatus: jest.fn().mockImplementationOnce(() => true),
 		};
 		let axiosResponse1: AxiosResponse;
 		let axiosResponse2: AxiosResponse;

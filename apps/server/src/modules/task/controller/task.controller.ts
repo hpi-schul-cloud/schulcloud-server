@@ -45,9 +45,7 @@ export class TaskController {
 			? await this.taskUc.findAllFinished(currentUser.userId, pagination)
 			: await this.taskUc.findAll(currentUser.userId, pagination);
 
-		const taskResponses = tasksWithStatus.map((task) => {
-			return TaskMapper.mapToResponse(task);
-		});
+		const taskResponses = tasksWithStatus.map((task) => TaskMapper.mapToResponse(task));
 
 		const { skip, limit } = pagination;
 		const result = new TaskListResponse(taskResponses, total, skip, limit);

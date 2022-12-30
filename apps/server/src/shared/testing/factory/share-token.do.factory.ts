@@ -11,10 +11,12 @@ class ShareTokenFactory extends Factory<ShareTokenDO> {
 	}
 }
 
-export const shareTokenFactory = ShareTokenFactory.define(({ sequence }) => ({
-	token: `share-token-${sequence}`,
-	payload: {
-		parentType: ShareTokenParentType.Course,
-		parentId: new ObjectId().toHexString(),
-	},
-}));
+export const shareTokenFactory = ShareTokenFactory.define(({ sequence }) => {
+	return {
+		token: `share-token-${sequence}`,
+		payload: {
+			parentType: ShareTokenParentType.Course,
+			parentId: new ObjectId().toHexString(),
+		},
+	};
+});

@@ -4,8 +4,8 @@ import { cleanupCollections, fileRecordFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { FileRecordRepo } from './filerecord.repo';
 import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecordRepo } from './filerecord.repo';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
@@ -87,7 +87,9 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush(fileRecord);
 			const origUpdatedAt = fileRecord.updatedAt;
 
-			await new Promise((resolve) => setTimeout(resolve, 20));
+			await new Promise((resolve) => {
+				setTimeout(resolve, 20);
+			});
 			fileRecord.name = `updated-${fileRecord.name}`;
 
 			await repo.save(fileRecord);

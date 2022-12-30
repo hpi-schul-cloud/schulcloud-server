@@ -4,7 +4,9 @@ import { BaseFactory } from './base.factory';
 import { taskFactory } from './task.factory';
 
 export const taskBoardElementFactory = BaseFactory.define<TaskBoardElement, { target: Task }>(TaskBoardElement, () => {
-	return { target: taskFactory.build() };
+	return {
+		target: taskFactory.build(),
+	};
 });
 
 export const lessonBoardElementFactory = BaseFactory.define<LessonBoardElement, { target: Lesson }>(

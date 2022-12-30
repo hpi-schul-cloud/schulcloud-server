@@ -45,9 +45,7 @@ describe('OidcStrategy', () => {
 		});
 
 		it('should throw error when there is no idToken', async () => {
-			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
-				return null;
-			});
+			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => null);
 			await expect(oidcStrategy.apply(params)).rejects.toThrow(OAuthSSOError);
 		});
 	});

@@ -53,9 +53,7 @@ describe('IservStrategy', () => {
 		});
 
 		it('should throw error when there is no idToken', async () => {
-			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
-				return null;
-			});
+			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => null);
 			await expect(iservStrategy.apply(params)).rejects.toThrow(OAuthSSOError);
 		});
 	});
