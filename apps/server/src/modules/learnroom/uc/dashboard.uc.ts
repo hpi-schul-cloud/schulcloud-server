@@ -14,7 +14,11 @@ export class DashboardUc {
 		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
 		const [courses] = showSubstitute
 			? await this.courseRepo.findAllByUserId(userId, { onlyActiveCourses: true }, { order: { name: SortOrder.asc } })
-			: await this.courseRepo.findAllForTeacher(userId, { onlyActiveCourses: true }, { order: { name: SortOrder.asc } });
+			: await this.courseRepo.findAllForTeacher(
+					userId,
+					{ onlyActiveCourses: true },
+					{ order: { name: SortOrder.asc } }
+			  );
 
 		dashboard.setLearnRooms(courses);
 		await this.dashboardRepo.persistAndFlush(dashboard);

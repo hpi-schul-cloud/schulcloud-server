@@ -259,7 +259,7 @@ describe('course repo', () => {
 
 			expect(count).toEqual(0);
 		});
-	})
+	});
 
 	describe('findAllForTeacherOrSubstituteTeacher', () => {
 		it('should find courses of teachers', async () => {
