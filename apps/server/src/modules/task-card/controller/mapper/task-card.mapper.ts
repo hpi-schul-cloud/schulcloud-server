@@ -1,8 +1,9 @@
 import {
-	ICardElement,
+	CardElementResponse,
+	CardRichTextElementResponse,
+	CardTitleElementResponse,
+	CardElement,
 	InputFormat,
-	ITaskCardCreate,
-	ITaskCardUpdate,
 	RichText,
 	TaskCard,
 	TaskWithStatusVo,
@@ -12,15 +13,23 @@ import { TaskResponse } from '@src/modules/task/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
 import { ValidationError } from '@shared/common';
 import {
-	CardElementResponse,
-	CardRichTextElementResponse,
-	CardTitleElementResponse,
 	CreateTaskCardParams,
-	UpdateTaskCardParams,
+	RichTextCardElementParam,
 	TaskCardResponse,
 	TitleCardElementParam,
-	RichTextCardElementParam,
-} from '../controller/dto';
+	UpdateTaskCardParams,
+} from '../dto';
+
+export interface ITaskCardUpdate {
+	id?: string;
+	title: string;
+	text?: RichText[];
+}
+
+export interface ITaskCardCreate {
+	title: string;
+	text?: RichText[];
+}
 
 export class TaskCardMapper {
 	mapToResponse(card: TaskCard, taskWithStatusVo: TaskWithStatusVo): TaskCardResponse {
@@ -38,17 +47,17 @@ export class TaskCardMapper {
 		return dto;
 	}
 
-	private mapElements(cardElements: ICardElement[]): CardElementResponse[] {
+	private mapElements(cardElements: CardElement[]): CardElementResponse[] {
 		const cardElementsResponse: CardElementResponse[] = [];
-		cardElements.forEach((cardElement) => {
-			if (cardElement.cardElementType === CardElementType.Title) {
-				const content = new CardTitleElementResponse(cardElement as TitleCardElement);
-				const response = { id: cardElement.id, cardElementType: cardElement.cardElementType, content };
+		cardElements.forEach((element) => {
+			if (element.cardElementType === CardElementType.Title) {
+				const content = new CardTitleElementResponse(element as TitleCardElement);
+				const response = { id: element.id, cardElementType: element.cardElementType, content };
 				cardElementsResponse.push(response);
 			}
-			if (cardElement.cardElementType === CardElementType.RichText) {
-				const content = new CardRichTextElementResponse(cardElement as RichTextCardElement);
-				const response = { id: cardElement.id, cardElementType: cardElement.cardElementType, content };
+			if (element.cardElementType === CardElementType.RichText) {
+				const content = new CardRichTextElementResponse(element as RichTextCardElement);
+				const response = { id: element.id, cardElementType: element.cardElementType, content };
 				cardElementsResponse.push(response);
 			}
 		});
@@ -90,7 +99,7 @@ export class TaskCardMapper {
 				if (!dto.text) {
 					dto.text = [richText];
 				} else {
-					dto.text.push();
+					dto.text.push(richText);
 				}
 			}
 		});
@@ -98,5 +107,3 @@ export class TaskCardMapper {
 		return dto;
 	}
 }
-
-// export class ElementMapper

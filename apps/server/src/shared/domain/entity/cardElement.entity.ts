@@ -8,10 +8,6 @@ export enum CardElementType {
 	'RichText' = 'richText',
 }
 
-export type CardElementProps = {
-	cardElementType: CardElementType;
-};
-
 @Entity({
 	discriminatorColumn: 'cardElementType',
 	abstract: true,

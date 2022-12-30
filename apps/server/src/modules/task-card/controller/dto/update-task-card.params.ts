@@ -37,7 +37,7 @@ export class RichTextCardElementParam extends CardElementBase {
 
 @ApiExtraModels(TitleCardElementParam, RichTextCardElementParam)
 export class CardElementUpdateParams {
-	@ApiProperty({})
+	@ApiProperty()
 	@IsString()
 	@IsMongoId()
 	id?: string;

@@ -1,27 +1,11 @@
-import type { RichText, Task, User } from '@shared/domain';
+import type { User } from '@shared/domain';
+import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { Collection } from '@mikro-orm/core';
-import { CardElement, CardElementType } from '../entity/cardElement.entity';
+import { CardElement, CardElementType, RichTextCardElement, TitleCardElement } from '../entity/cardElement.entity';
 import { InputFormat } from './input-format.types';
 
-// import { TaskResponse } from '@src/modules/task/controller/dto'
-
-export type RichTextUpdate = {
-	id?: string;
-	text: RichText;
-};
-export interface ITaskCardUpdate {
-	id?: string;
-	title: string;
-	text?: RichText[];
-}
-
-export interface ITaskCardCreate {
-	title: string;
-	text?: RichText[];
-}
-
 export enum CardType {
-	'Text' = 'text',
+	// 'Text' = 'text',
 	'Task' = 'task',
 }
 
@@ -31,7 +15,6 @@ export type ICardCProps = {
 	creator: User;
 	draggable: boolean;
 };
-export type ITaskCardProps = ICardCProps & { task: Task };
 
 export interface ICard {
 	cardElements: Collection<CardElement>;
@@ -43,23 +26,49 @@ export interface ICard {
 	draggable: boolean;
 }
 
-export interface ITaskCard extends ICard {
-	task: Task;
+export class CardTitleElementResponse {
+	constructor(props: TitleCardElement) {
+		this.value = props.value;
+	}
+
+	@ApiProperty()
+	value!: string;
 }
 
-export type ICardElement = {
-	id: string;
+export class CardRichTextElementResponse {
+	constructor(props: RichTextCardElement) {
+		this.value = props.value;
+		this.inputFormat = props.inputFormat;
+	}
 
-	cardElementType: CardElementType;
+	@ApiProperty({
+		description: 'The value of the rich text',
+	})
+	value!: string;
 
-	// content: ITitleCardElement | IRichTextCardElement;
-};
+	@ApiProperty({
+		description: 'The input format type of the rich text',
+		enum: InputFormat,
+	})
+	inputFormat!: InputFormat;
+}
 
-export type ITitleCardElement = {
-	value: string;
-};
+@ApiExtraModels(CardTitleElementResponse, CardRichTextElementResponse)
+export class CardElementResponse {
+	@ApiProperty({
+		description: 'The id of the card element',
+	})
+	id!: string;
 
-export type IRichTextCardElement = {
-	value: string;
-	inputFormat: InputFormat;
-};
+	@ApiProperty({
+		description: 'Type of element',
+		enum: CardElementType,
+	})
+	cardElementType!: CardElementType;
+
+	@ApiProperty({
+		description: 'Content of the element, depending of type',
+		oneOf: [{ $ref: getSchemaPath(CardTitleElementResponse) }, { $ref: getSchemaPath(CardRichTextElementResponse) }],
+	})
+	content!: CardTitleElementResponse | CardRichTextElementResponse;
+}

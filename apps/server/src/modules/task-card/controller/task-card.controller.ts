@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CreateTaskCardParams, TaskCardResponse, TaskCardUrlParams, UpdateTaskCardParams } from './dto';
-import { TaskCardMapper } from '../mapper/task-card.mapper';
+import { TaskCardMapper } from './mapper/task-card.mapper';
 import { TaskCardUc } from '../uc';
 
 @ApiTags('Cards')

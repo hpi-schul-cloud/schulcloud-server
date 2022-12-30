@@ -11,12 +11,17 @@ import {
 	Property,
 	// wrap,
 } from '@mikro-orm/core';
-import { CardType, ICard, ITaskCardProps, ITaskCard } from '../types';
+import { CardType, ICard, ICardCProps } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CardElement } from './cardElement.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';
 
+export type ITaskCardProps = ICardCProps & { task: Task };
+
+export interface ITaskCard extends ICard {
+	task: Task;
+}
 @Entity({
 	tableName: 'card',
 })
