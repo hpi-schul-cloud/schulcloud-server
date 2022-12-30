@@ -125,8 +125,12 @@ describe('TaskUC', () => {
 	};
 
 	const setCourseRepoMock = {
-		findAllForTeacher: (courses: Course[] = []) => {
+		findlAllForTeacher: (courses: Course[] = []) => {
 			const spy = courseRepo.findAllForTeacher.mockResolvedValue([courses, courses.length]);
+			return spy;
+		},
+		findAllForTeacherOrSubstituteTeacher: (courses: Course[] = []) => {
+			const spy = courseRepo.findAllForTeacherOrSubstituteTeacher.mockResolvedValue([courses, courses.length]);
 			return spy;
 		},
 		findAllByUserId: (courses: Course[] = []) => {
@@ -152,17 +156,19 @@ describe('TaskUC', () => {
 		hasWritePermission?: boolean;
 	}) => {
 		const spy1 = setTaskRepoMock.findAllFinishedByParentIds(data?.tasks);
-		const spy2 = setCourseRepoMock.findAllForTeacher(data?.courses);
+		const spy2 = setCourseRepoMock.findAllForTeacherOrSubstituteTeacher(data?.courses);
 		const spy3 = setCourseRepoMock.findAllByUserId(data?.courses);
-		const spy4 = setLessonRepoMock.findAllForTeacher(data?.lessons);
-		const spy5 = setAuthorizationServiceMock.getUserWithPermissions();
-		const spy6 = setUserRepoMock.findById();
-		const spy7 = setTaskRepoMock.findAllByParentIds(data?.tasks);
+		const spy4 = setCourseRepoMock.findlAllForTeacher(data?.courses)
+		const spy5 = setLessonRepoMock.findAllForTeacher(data?.lessons);
+		const spy6 = setAuthorizationServiceMock.getUserWithPermissions();
+		const spy7 = setUserRepoMock.findById();
+		const spy8 = setTaskRepoMock.findAllByParentIds(data?.tasks);
 
 		const mockRestore = () => {
 			spy1.mockRestore();
 			spy2.mockRestore();
 			spy3.mockRestore();
+			spy4.mockRestore();
 			spy5.mockRestore();
 			spy4.mockRestore();
 			spy6.mockRestore();

@@ -236,7 +236,7 @@ describe('course repo', () => {
 			expect(count).toEqual(1);
 		});
 
-		it('should find courses of substitution teachers', async () => {
+		it('should "not" find courses of substitution teachers', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ substitutionTeachers: [user] });
 
@@ -244,6 +244,44 @@ describe('course repo', () => {
 			em.clear();
 
 			const [, count] = await repo.findAllForTeacher(user.id);
+
+			expect(count).toEqual(0);
+		});
+
+		it('should "not" find courses of students', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [user] });
+
+			await em.persistAndFlush([course]);
+			em.clear();
+
+			const [, count] = await repo.findAllForTeacherOrSubstituteTeacher(user.id);
+
+			expect(count).toEqual(0);
+		});
+	})
+
+	describe('findAllForTeacherOrSubstituteTeacher', () => {
+		it('should find courses of teachers', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user] });
+
+			await em.persistAndFlush([course]);
+			em.clear();
+
+			const [, count] = await repo.findAllForTeacherOrSubstituteTeacher(user.id);
+
+			expect(count).toEqual(1);
+		});
+
+		it('should find courses of substitution teachers', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ substitutionTeachers: [user] });
+
+			await em.persistAndFlush([course]);
+			em.clear();
+
+			const [, count] = await repo.findAllForTeacherOrSubstituteTeacher(user.id);
 
 			expect(count).toEqual(1);
 		});
@@ -255,7 +293,7 @@ describe('course repo', () => {
 			await em.persistAndFlush([course]);
 			em.clear();
 
-			const [, count] = await repo.findAllForTeacher(user.id);
+			const [, count] = await repo.findAllForTeacherOrSubstituteTeacher(user.id);
 
 			expect(count).toEqual(0);
 		});

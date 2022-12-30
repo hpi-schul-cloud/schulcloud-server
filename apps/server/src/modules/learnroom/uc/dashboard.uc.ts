@@ -10,13 +10,12 @@ export class DashboardUc {
 		private readonly courseRepo: CourseRepo
 	) {}
 
-	async getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
+	async getUsersDashboard(userId: EntityId, showSubstitute: boolean): Promise<DashboardEntity> {
 		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
-		const [courses] = await this.courseRepo.findAllByUserId(
-			userId,
-			{ onlyActiveCourses: true },
-			{ order: { name: SortOrder.asc } }
-		);
+		const [courses] = showSubstitute
+			? await this.courseRepo.findAllByUserId(userId, { onlyActiveCourses: true }, { order: { name: SortOrder.asc } })
+			: await this.courseRepo.findAllForTeacher(userId, { onlyActiveCourses: true }, { order: { name: SortOrder.asc } });
+
 		dashboard.setLearnRooms(courses);
 		await this.dashboardRepo.persistAndFlush(dashboard);
 		return dashboard;
