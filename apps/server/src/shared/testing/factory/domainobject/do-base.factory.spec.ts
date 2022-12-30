@@ -8,7 +8,9 @@ class TestClass {
 	}
 }
 
-const testFactory = DoBaseFactory.define<TestClass, TestClass>(TestClass, () => ({}));
+const testFactory = DoBaseFactory.define<TestClass, TestClass>(TestClass, () => {
+	return {};
+});
 
 describe('DoBaseFactory', () => {
 	describe('buildWithId', () => {

@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakAdministrationService } from '../service/keycloak-administration.service';
 import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
@@ -10,12 +8,9 @@ import { KeycloakManagementUc } from './Keycloak-management.uc';
 describe('KeycloakManagementUc', () => {
 	let module: TestingModule;
 	let uc: KeycloakManagementUc;
-	const kcAdminClient = createMock<KeycloakAdminClient>();
-	let keycloakAdministrationService: DeepMocked<KeycloakAdministrationService>;
-	let keycloakConfigurationService: DeepMocked<KeycloakConfigurationService>;
-	let keycloakSeedService: DeepMocked<KeycloakSeedService>;
-
-	const adminUsername = 'admin';
+	let keycloakAdminServiceMock: DeepMocked<KeycloakAdministrationService>;
+	let keycloakConfigServiceMock: DeepMocked<KeycloakConfigurationService>;
+	let keycloakSeedServiceMock: DeepMocked<KeycloakSeedService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -23,46 +18,22 @@ describe('KeycloakManagementUc', () => {
 				KeycloakManagementUc,
 				{
 					provide: KeycloakAdministrationService,
-					useValue: {
-						callKcAdminClient: jest.fn().mockImplementation(async (): Promise<KeycloakAdminClient> => {
-							return Promise.resolve(kcAdminClient);
-						}),
-						testKcConnection: jest.fn().mockResolvedValue(true),
-						getAdminUser: jest.fn().mockReturnValue(adminUsername),
-						setPasswordPolicy: jest.fn().mockResolvedValue(undefined),
-					},
+					useValue: createMock<KeycloakAdministrationService>(),
 				},
 				{
 					provide: KeycloakConfigurationService,
-					useValue: {
-						configureClient: jest.fn().mockImplementation(async (): Promise<void> => {
-							return Promise.resolve();
-						}),
-						configureIdentityProviders: jest.fn().mockImplementation(async (): Promise<number> => {
-							return Promise.resolve(3);
-						}),
-						configureBrokerFlows: jest.fn().mockImplementation(async (): Promise<void> => {
-							return Promise.resolve();
-						}),
-					},
+					useValue: createMock<KeycloakConfigurationService>(),
 				},
 				{
 					provide: KeycloakSeedService,
-					useValue: {
-						clean: jest.fn().mockImplementation(async (): Promise<number> => {
-							return Promise.resolve(4);
-						}),
-						seed: jest.fn().mockImplementation(async (): Promise<number> => {
-							return Promise.resolve(5);
-						}),
-					},
+					useValue: createMock<KeycloakSeedService>(),
 				},
 			],
 		}).compile();
 		uc = module.get(KeycloakManagementUc);
-		keycloakAdministrationService = module.get(KeycloakAdministrationService);
-		keycloakConfigurationService = module.get(KeycloakConfigurationService);
-		keycloakSeedService = module.get(KeycloakSeedService);
+		keycloakAdminServiceMock = module.get(KeycloakAdministrationService);
+		keycloakConfigServiceMock = module.get(KeycloakConfigurationService);
+		keycloakSeedServiceMock = module.get(KeycloakSeedService);
 	});
 
 	afterAll(async () => {
@@ -71,38 +42,44 @@ describe('KeycloakManagementUc', () => {
 
 	describe('check', () => {
 		it('should return connection status', async () => {
-			let expected = true;
-			jest.spyOn(keycloakAdministrationService, 'testKcConnection').mockResolvedValue(expected);
-			await expect(uc.check()).resolves.toBe(expected);
+			keycloakAdminServiceMock.testKcConnection.mockResolvedValueOnce(true);
 
-			expected = false;
-			jest.spyOn(keycloakAdministrationService, 'testKcConnection').mockResolvedValue(expected);
-			await expect(uc.check()).resolves.toBe(expected);
+			await expect(uc.check()).resolves.toBe(true);
+
+			keycloakAdminServiceMock.testKcConnection.mockResolvedValueOnce(false);
+
+			await expect(uc.check()).resolves.toBe(false);
 		});
 	});
 
 	describe('clean', () => {
 		it('should call service', async () => {
+			keycloakSeedServiceMock.clean.mockResolvedValueOnce(4);
+
 			const numberOfCleanedUsers = await uc.clean();
-			expect(keycloakSeedService.clean).toBeCalledTimes(1);
+			expect(keycloakSeedServiceMock.clean).toBeCalledTimes(1);
 			expect(numberOfCleanedUsers).toBe(4);
 		});
 	});
 
 	describe('seed', () => {
 		it('should call service', async () => {
+			keycloakSeedServiceMock.seed.mockResolvedValueOnce(5);
+
 			const numberOfSeeds = await uc.seed();
-			expect(keycloakSeedService.seed).toBeCalledTimes(1);
+			expect(keycloakSeedServiceMock.seed).toBeCalledTimes(1);
 			expect(numberOfSeeds).toBe(5);
 		});
 	});
+
 	describe('configure', () => {
 		it('should call services', async () => {
 			await uc.configure();
-			expect(keycloakConfigurationService.configureClient).toBeCalledTimes(1);
-			expect(keycloakConfigurationService.configureBrokerFlows).toBeCalledTimes(1);
-			expect(keycloakConfigurationService.configureIdentityProviders).toBeCalledTimes(1);
-			expect(keycloakAdministrationService.setPasswordPolicy).toBeCalledTimes(1);
+			expect(keycloakConfigServiceMock.configureClient).toBeCalledTimes(1);
+			expect(keycloakConfigServiceMock.configureBrokerFlows).toBeCalledTimes(1);
+			expect(keycloakConfigServiceMock.configureIdentityProviders).toBeCalledTimes(1);
+			expect(keycloakConfigServiceMock.configureRealm).toBeCalledTimes(1);
+			expect(keycloakAdminServiceMock.setPasswordPolicy).toBeCalledTimes(1);
 		});
 	});
 });

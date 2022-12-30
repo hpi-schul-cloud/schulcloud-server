@@ -126,9 +126,7 @@ describe('AccountUc', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
-						create: (): Promise<void> => {
-							return Promise.resolve();
-						},
+						create: (): Promise<void> => Promise.resolve(),
 						findByUserId: (userId: EntityId): Promise<AccountDto | null> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 
@@ -190,12 +188,11 @@ describe('AccountUc', () => {
 								total: 0,
 							});
 						},
-						searchByUsernamePartialMatch: (): Promise<{ accounts: AccountDto[]; total: number }> => {
-							return Promise.resolve({
+						searchByUsernamePartialMatch: (): Promise<{ accounts: AccountDto[]; total: number }> =>
+							Promise.resolve({
 								accounts: mockAccounts.map((mockAccount) => AccountEntityToDtoMapper.mapToDto(mockAccount)),
 								total: mockAccounts.length,
-							});
-						},
+							}),
 						updateLastTriedFailedLogin: jest.fn(),
 					},
 				},

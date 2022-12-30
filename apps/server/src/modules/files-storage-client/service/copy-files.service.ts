@@ -49,11 +49,13 @@ export class CopyFilesService {
 	}
 
 	private deriveCopyStatus(fileDtos: CopyFileDto[]): CopyStatus {
-		const fileStatuses: CopyStatus[] = fileDtos.map(({ sourceId, id, name }) => ({
-			type: CopyElementType.FILE,
-			status: id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
-			title: name ?? `(old fileid: ${sourceId})`,
-		}));
+		const fileStatuses: CopyStatus[] = fileDtos.map(({ sourceId, id, name }) => {
+			return {
+				type: CopyElementType.FILE,
+				status: id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
+				title: name ?? `(old fileid: ${sourceId})`,
+			};
+		});
 
 		const fileGroupStatus = {
 			type: CopyElementType.FILE_GROUP,

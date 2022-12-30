@@ -54,8 +54,6 @@ export class SystemMapper {
 	}
 
 	static mapFromEntitiesToDtos(enities: System[]): SystemDto[] {
-		return enities.map((entity) => {
-			return this.mapFromEntityToDto(entity);
-		});
+		return enities.map((entity) => this.mapFromEntityToDto(entity));
 	}
 }

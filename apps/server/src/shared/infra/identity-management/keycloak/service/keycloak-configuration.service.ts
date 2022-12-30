@@ -9,7 +9,7 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { SystemService } from '@src/modules/system/service/system.service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { ConfigService } from '@nestjs/config';
-import { IServerConfig } from '@src/modules/server';
+import { IServerConfig } from '@src/modules/server/server.config';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { IdentityProviderConfig, IKeycloakSettings, KeycloakSettings } from '../interface';
@@ -138,7 +138,7 @@ export class KeycloakConfigurationService {
 		} else {
 			[keycloakSystem] = systems;
 		}
-		await this.setKeycloakSystemInformation(
+		keycloakSystem = await this.setKeycloakSystemInformation(
 			keycloakSystem,
 			kcRealmBaseUrl,
 			redirectUri,
@@ -172,6 +172,18 @@ export class KeycloakConfigurationService {
 			}
 		}
 		return count;
+	}
+
+	async configureRealm(): Promise<void> {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		await kc.realms.update(
+			{
+				realm: kc.realmName,
+			},
+			{
+				editUsernameAllowed: true,
+			}
+		);
 	}
 
 	private async setKeycloakSystemInformation(

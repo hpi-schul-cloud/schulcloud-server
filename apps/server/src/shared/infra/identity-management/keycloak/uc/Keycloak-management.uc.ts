@@ -27,7 +27,7 @@ export class KeycloakManagementUc {
 		await this.kcAdmin.setPasswordPolicy();
 		await this.keycloakConfigService.configureClient();
 		await this.keycloakConfigService.configureBrokerFlows();
-		const result = this.keycloakConfigService.configureIdentityProviders();
-		return result;
+		await this.keycloakConfigService.configureRealm();
+		return this.keycloakConfigService.configureIdentityProviders();
 	}
 }

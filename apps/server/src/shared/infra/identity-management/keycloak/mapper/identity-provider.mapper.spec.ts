@@ -77,6 +77,21 @@ describe('OidcIdentityProviderMapper', () => {
 			expect(ret).toEqual(keycloakRepresentation);
 		});
 
+		it('should ignore missing optional', () => {
+			const ret = mapper.mapToKeycloakIdentityProvider(
+				{ ...internalRepresentation, oidcConfig: undefined },
+				brokerFlowAlias
+			);
+
+			expect(ret.config?.clientId).toBeUndefined();
+			expect(ret.config?.clientSecret).toBeUndefined();
+			expect(ret.config?.authorizationUrl).toBeUndefined();
+			expect(ret.config?.tokenUrl).toBeUndefined();
+			expect(ret.config?.logoutUrl).toBeUndefined();
+			expect(ret.config?.userInfoUrl).toBeUndefined();
+			expect(ret.config?.defaultScope).toBeUndefined();
+		});
+
 		it('should map system alias if no display name is given', () => {
 			const internalRepresentationWithoutDisplayName = { ...internalRepresentation };
 			const theAlias = 'alias';

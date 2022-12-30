@@ -1,27 +1,27 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, System, User } from '@shared/domain';
+import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { UserRepo } from '@shared/repo/user/user.repo';
+import { setupEntities, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
 import { FeathersJwtProvider } from '@src/modules/authorization';
+import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
+import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { of, throwError } from 'rxjs';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { setupEntities, userFactory } from '@shared/testing';
-import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { BadRequestException } from '@nestjs/common';
-import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
-import { OAuthResponse } from './dto/oauth.response';
-import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthSSOError } from '../error/oauth-sso.error';
+import { IJwt } from '../interface/jwt.base.interface';
+import { OAuthResponse } from './dto/oauth.response';
+import { OAuthService } from './oauth.service';
 
 const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
 	return {
@@ -33,8 +33,8 @@ const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
 	};
 };
 
-jest.mock('jwks-rsa', () => {
-	return () => ({
+jest.mock('jwks-rsa', () => () => {
+	return {
 		getKeys: jest.fn(),
 		getSigningKey: jest.fn().mockResolvedValue({
 			kid: 'kid',
@@ -43,8 +43,10 @@ jest.mock('jwks-rsa', () => {
 			rsaPublicKey: 'publicKey',
 		}),
 		getSigningKeys: jest.fn(),
-	});
+	};
 });
+
+jest.mock('jsonwebtoken');
 
 describe('OAuthService', () => {
 	let module: TestingModule;
@@ -202,9 +204,7 @@ describe('OAuthService', () => {
 		});
 
 		it('should throw if no payload was returned', async () => {
-			jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => {
-				return 'string';
-			});
+			jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => 'string');
 
 			await expect(service.validateToken('idToken', testOauthConfig)).rejects.toEqual(
 				new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
@@ -268,9 +268,7 @@ describe('OAuthService', () => {
 		});
 
 		it('should throw if idToken is invalid and has no sub', async () => {
-			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
-				return null;
-			});
+			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => null);
 
 			await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(BadRequestException);
 		});

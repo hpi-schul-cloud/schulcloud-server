@@ -277,13 +277,15 @@ export class LessonCopyService {
 
 	private copyLernStore(element: IComponentProperties) {
 		const resources = ((element.content as IComponentLernstoreProperties).resources ?? []).map(
-			({ client, description, merlinReference, title, url }) => ({
-				client,
-				description,
-				merlinReference,
-				title,
-				url,
-			})
+			({ client, description, merlinReference, title, url }) => {
+				return {
+					client,
+					description,
+					merlinReference,
+					title,
+					url,
+				};
+			}
 		);
 
 		const lernstore = {
@@ -350,14 +352,14 @@ export class LessonCopyService {
 		const linkedTasks = params.originalLesson.getLessonLinkedTasks();
 		if (linkedTasks.length > 0) {
 			const copiedTasksStatus = await Promise.all(
-				linkedTasks.map((element) => {
-					return this.taskCopyService.copyTask({
+				linkedTasks.map((element) =>
+					this.taskCopyService.copyTask({
 						originalTask: element,
 						destinationCourse: params.destinationCourse,
 						destinationLesson,
 						user: params.user,
-					});
-				})
+					})
+				)
 			);
 			const taskGroupStatus = {
 				type: CopyElementType.TASK_GROUP,
