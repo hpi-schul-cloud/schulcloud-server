@@ -83,7 +83,7 @@ describe('dashboard uc', () => {
 				return Promise.resolve(dashboard);
 			});
 			jest.spyOn(courseRepo, 'findAllByUserId').mockImplementation(() => Promise.resolve([[], 0]));
-			const dashboard = await service.getUsersDashboard('userId');
+			const dashboard = await service.getUsersDashboard('userId',true);
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
 			expect(spy).toHaveBeenCalledWith('userId');
@@ -102,7 +102,7 @@ describe('dashboard uc', () => {
 			const syncSpy = jest.spyOn(dashboard, 'setLearnRooms');
 			const persistSpy = jest.spyOn(repo, 'persistAndFlush');
 
-			const result = await service.getUsersDashboard('userId');
+			const result = await service.getUsersDashboard('userId', true);
 
 			expect(result instanceof DashboardEntity).toEqual(true);
 			expect(dashboardRepoSpy).toHaveBeenCalledWith('userId');
