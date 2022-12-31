@@ -71,7 +71,7 @@ describe('Dashboard Controller (e2e)', () => {
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await request(app.getHttpServer()).get('/dashboard');
+			const response = await request(app.getHttpServer()).get('/dashboard?showSubstitute=true');
 
 			expect(response.status).toEqual(200);
 			const body = response.body as DashboardResponse;
