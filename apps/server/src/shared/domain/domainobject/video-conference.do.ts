@@ -1,5 +1,5 @@
-import { BaseWithTimestampsDO } from '@shared/domain/domainobject/base.do';
-import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { BaseDO } from './base.do';
+import { VideoConferenceScope } from '@shared/domain/interface';
 
 export class VideoConferenceOptionsDO {
 	everyAttendeeJoinsMuted: boolean;
@@ -15,7 +15,11 @@ export class VideoConferenceOptionsDO {
 	}
 }
 
-export class VideoConferenceDO extends BaseWithTimestampsDO {
+export class VideoConferenceDO extends BaseDO {
+	createdAt?: Date;
+
+	updatedAt?: Date;
+
 	target: string;
 
 	targetModel: VideoConferenceScope;
@@ -23,7 +27,10 @@ export class VideoConferenceDO extends BaseWithTimestampsDO {
 	options: VideoConferenceOptionsDO;
 
 	constructor(domainObject: VideoConferenceDO) {
-		super(domainObject);
+		super(domainObject.id);
+
+		this.createdAt = domainObject.createdAt;
+		this.updatedAt = domainObject.updatedAt;
 		this.target = domainObject.target;
 		this.targetModel = domainObject.targetModel;
 		this.options = domainObject.options;
