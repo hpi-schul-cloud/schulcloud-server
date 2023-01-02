@@ -1,7 +1,11 @@
 import { EntityId } from '../types';
-import { BaseWithTimestampsDO } from './base.do';
+import { BaseDO } from './base.do';
 
-export class PseudonymDO extends BaseWithTimestampsDO {
+export class PseudonymDO extends BaseDO {
+	createdAt?: Date;
+
+	updatedAt?: Date;
+
 	pseudonym: string;
 
 	toolId: EntityId;
@@ -9,7 +13,10 @@ export class PseudonymDO extends BaseWithTimestampsDO {
 	userId: EntityId;
 
 	constructor(props: PseudonymDO) {
-		super(props);
+		super(props.id);
+
+		this.createdAt = props.createdAt;
+		this.updatedAt = props.updatedAt;
 		this.pseudonym = props.pseudonym;
 		this.toolId = props.toolId;
 		this.userId = props.userId;
