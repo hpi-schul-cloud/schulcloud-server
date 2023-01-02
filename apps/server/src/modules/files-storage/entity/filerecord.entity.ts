@@ -3,12 +3,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { type EntityId, BaseEntity } from '@shared/domain';
-import { ErrorType } from '../error';
 import mongoose from 'mongoose';
 import mongooseLong from 'mongoose-long';
-mongooseLong(mongoose);
+import { ErrorType } from '../error';
 
-const Long = mongoose.Schema.Types.Long;
+mongooseLong(mongoose);
+const { Long } = mongoose.Schema.Types;
 
 export enum ScanStatus {
 	PENDING = 'pending',

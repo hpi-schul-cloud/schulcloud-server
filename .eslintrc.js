@@ -76,6 +76,7 @@ module.exports = {
 			],
 			parserOptions: {
 				project: 'apps/server/tsconfig.lint.json',
+				tsconfigRootDir: __dirname,
 			},
 			env: {
 				node: true,
