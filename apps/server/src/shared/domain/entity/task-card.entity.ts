@@ -68,7 +68,6 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	}
 	*/
 
-	@Index()
 	@OneToOne({ type: 'Task', fieldName: 'taskId', eager: true, unique: true, cascade: [Cascade.ALL] })
 	task!: Task;
 }
