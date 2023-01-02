@@ -66,6 +66,9 @@ describe('dashboard uc', () => {
 						findAllByUserId(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
 							throw new Error('Please write a mock for CourseRepo.findAllByUserId');
 						},
+						findAllForTeacher(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
+							throw new Error('Please write a mock for CourseRepo.findAllForTeacher');
+						},
 					},
 				},
 			],
