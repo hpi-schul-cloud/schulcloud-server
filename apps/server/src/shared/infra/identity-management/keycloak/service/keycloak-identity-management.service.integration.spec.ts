@@ -38,9 +38,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		});
 		return id;
 	};
-	const listAccounts = async (): Promise<UserRepresentation[]> => {
-		return keycloak.users.find();
-	};
+	const listAccounts = async (): Promise<UserRepresentation[]> => keycloak.users.find();
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({

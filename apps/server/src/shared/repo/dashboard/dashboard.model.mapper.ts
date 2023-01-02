@@ -35,11 +35,7 @@ export class DashboardModelMapper {
 		if (!modelEntity.gridElements.isInitialized()) {
 			await modelEntity.gridElements.init();
 		}
-		const grid = await Promise.all(
-			Array.from(modelEntity.gridElements).map(async (e) => {
-				return this.mapElementToEntity(e);
-			})
-		);
+		const grid = await Promise.all(Array.from(modelEntity.gridElements).map(async (e) => this.mapElementToEntity(e)));
 		return new DashboardEntity(modelEntity.id, { grid, userId: modelEntity.user.id });
 	}
 

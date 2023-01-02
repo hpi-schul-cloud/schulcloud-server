@@ -49,9 +49,7 @@ describe('TaskController', () => {
 					status: 'SUCCESS' as CopyStatusEnum,
 					elements: [],
 				} as CopyStatus;
-				const ucSpy = jest.spyOn(uc, 'copyTask').mockImplementation(() => {
-					return Promise.resolve(ucResult);
-				});
+				const ucSpy = jest.spyOn(uc, 'copyTask').mockImplementation(() => Promise.resolve(ucResult));
 				return { currentUser, ucSpy };
 			};
 			it('should call uc with two parentIds', async () => {

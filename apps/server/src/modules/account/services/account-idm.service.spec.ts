@@ -35,9 +35,11 @@ describe('AccountService Integration', () => {
 					ignoreEnvFile: true,
 					ignoreEnvVars: true,
 					load: [
-						() => ({
-							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-						}),
+						() => {
+							return {
+								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
+							};
+						},
 					],
 				}),
 			],
@@ -49,50 +51,59 @@ describe('AccountService Integration', () => {
 						createAccount: jest
 							.fn()
 							// eslint-disable-next-line @typescript-eslint/no-unused-vars
-							.mockImplementation((account: IAccountUpdate, password?: string | undefined): Promise<string> => {
-								return Promise.resolve(mockIdmAccount.id);
-							}),
+							.mockImplementation(
+								(account: IAccountUpdate, password?: string | undefined): Promise<string> =>
+									Promise.resolve(mockIdmAccount.id)
+							),
 						updateAccount: jest
 							.fn()
 							// eslint-disable-next-line @typescript-eslint/no-unused-vars
-							.mockImplementation((accountId: string, account: IAccountUpdate): Promise<string> => {
-								return Promise.resolve(accountId);
-							}),
+							.mockImplementation(
+								(accountId: string, account: IAccountUpdate): Promise<string> => Promise.resolve(accountId)
+							),
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						updateAccountPassword: jest
 							.fn()
 							// eslint-disable-next-line @typescript-eslint/no-unused-vars
-							.mockImplementation((accountId: string, password: string): Promise<string> => {
-								return Promise.resolve(accountId);
-							}),
+							.mockImplementation((accountId: string, password: string): Promise<string> => Promise.resolve(accountId)),
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findAccountById: jest.fn().mockImplementation((accountId: string): Promise<IAccount> => {
-							return accountId === mockIdmAccount.id ? Promise.resolve(mockIdmAccount) : Promise.reject();
-						}),
+						findAccountById: jest
+							.fn()
+							.mockImplementation(
+								(accountId: string): Promise<IAccount> =>
+									accountId === mockIdmAccount.id ? Promise.resolve(mockIdmAccount) : Promise.reject()
+							),
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findAccountByTecRefId: jest.fn().mockImplementation((accountTecRefId: string): Promise<IAccount> => {
-							return accountTecRefId === mockIdmAccount.attRefTechnicalId
-								? Promise.resolve(mockIdmAccount)
-								: Promise.reject();
-						}),
+						findAccountByTecRefId: jest
+							.fn()
+							.mockImplementation(
+								(accountTecRefId: string): Promise<IAccount> =>
+									accountTecRefId === mockIdmAccount.attRefTechnicalId
+										? Promise.resolve(mockIdmAccount)
+										: Promise.reject()
+							),
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findAccountByFctIntId: jest.fn().mockImplementation((accountFctIntId: string): Promise<IAccount> => {
-							return accountFctIntId === mockIdmAccount.attRefFunctionalIntId
-								? Promise.resolve(mockIdmAccount)
-								: Promise.reject();
-						}),
+						findAccountByFctIntId: jest
+							.fn()
+							.mockImplementation(
+								(accountFctIntId: string): Promise<IAccount> =>
+									accountFctIntId === mockIdmAccount.attRefFunctionalIntId
+										? Promise.resolve(mockIdmAccount)
+										: Promise.reject()
+							),
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findAccountByUsername: jest.fn().mockImplementation((username: string): Promise<IAccount | undefined> => {
-							return username === mockIdmAccount.username ? Promise.resolve(mockIdmAccount) : Promise.reject();
-						}),
+						findAccountByUsername: jest
+							.fn()
+							.mockImplementation(
+								(username: string): Promise<IAccount | undefined> =>
+									username === mockIdmAccount.username ? Promise.resolve(mockIdmAccount) : Promise.reject()
+							),
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						getAllAccounts: jest.fn().mockImplementation((): Promise<IAccount[]> => {
-							return Promise.resolve([mockIdmAccount]);
-						}),
+						getAllAccounts: jest.fn().mockImplementation((): Promise<IAccount[]> => Promise.resolve([mockIdmAccount])),
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						deleteAccountById: jest.fn().mockImplementation((accountId: string): Promise<string> => {
-							return Promise.resolve(accountId);
-						}),
+						deleteAccountById: jest
+							.fn()
+							.mockImplementation((accountId: string): Promise<string> => Promise.resolve(accountId)),
 					},
 				},
 			],

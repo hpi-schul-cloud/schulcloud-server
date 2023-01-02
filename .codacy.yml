@@ -5,7 +5,7 @@ exclude_paths:
   - "**/backup/**"
   - "**/migrations/**"
   - "**/tests/**"
-  - "**.test.js"
+  - "**.js"
   - "**.spec.js"
   - "**.spec.ts"
   - "**.e2e-spec.ts"

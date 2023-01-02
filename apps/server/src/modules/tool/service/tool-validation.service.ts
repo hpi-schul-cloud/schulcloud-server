@@ -79,9 +79,9 @@ export class ToolValidationService {
 	}
 
 	private hasDuplicateAttributes(customParameter: CustomParameterDO[]): boolean {
-		return customParameter.some((item, itemIndex) => {
-			return customParameter.some((other, otherIndex) => itemIndex !== otherIndex && item.name === other.name);
-		});
+		return customParameter.some((item, itemIndex) =>
+			customParameter.some((other, otherIndex) => itemIndex !== otherIndex && item.name === other.name)
+		);
 	}
 
 	private validateByRegex(customParameter: CustomParameterDO[]): boolean {

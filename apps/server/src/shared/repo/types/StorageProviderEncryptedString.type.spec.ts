@@ -1,5 +1,4 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Platform } from '@mikro-orm/core';
 import { StorageProviderEncryptedStringType } from './StorageProviderEncryptedString.type';
 
 describe('EncryptedString type', () => {
@@ -20,22 +19,19 @@ describe('EncryptedString type', () => {
 
 		describe('When convertToDatabaseValue', () => {
 			it('should pass null value', () => {
-				const result = serializer.convertToDatabaseValue(
-					null as unknown as undefined,
-					undefined as unknown as Platform
-				);
+				const result = serializer.convertToDatabaseValue(null as unknown as undefined);
 				expect(result).toBeNull();
 			});
 			it('should pass undefined value', () => {
-				const result = serializer.convertToDatabaseValue(undefined, undefined as unknown as Platform);
+				const result = serializer.convertToDatabaseValue(undefined);
 				expect(result).toBeUndefined();
 			});
 			it('should pass empty string value', () => {
-				const result = serializer.convertToDatabaseValue('', undefined as unknown as Platform);
+				const result = serializer.convertToDatabaseValue('');
 				expect(result).toEqual('');
 			});
 			it('should encrypt not-empty string value', () => {
-				const result = serializer.convertToDatabaseValue(text, undefined as unknown as Platform);
+				const result = serializer.convertToDatabaseValue(text);
 				// result is always different but with same length
 				expect(result.length).toEqual(textEncrypted.length);
 			});
@@ -43,19 +39,19 @@ describe('EncryptedString type', () => {
 
 		describe('When convertToJSValue', () => {
 			it('should pass null value', () => {
-				const result = serializer.convertToJSValue(null as unknown as undefined, undefined as unknown as Platform);
+				const result = serializer.convertToJSValue(null as unknown as undefined);
 				expect(result).toBeNull();
 			});
 			it('should pass undefined value', () => {
-				const result = serializer.convertToJSValue(undefined as unknown as undefined, undefined as unknown as Platform);
+				const result = serializer.convertToJSValue(undefined as unknown as undefined);
 				expect(result).toBeUndefined();
 			});
 			it('should pass empty string value', () => {
-				const result = serializer.convertToJSValue('', undefined as unknown as Platform);
+				const result = serializer.convertToJSValue('');
 				expect(result).toEqual('');
 			});
 			it('should decrypt not-empty string value', () => {
-				const result = serializer.convertToJSValue(textEncrypted, undefined as unknown as Platform);
+				const result = serializer.convertToJSValue(textEncrypted);
 				expect(result).toEqual(text);
 			});
 		});
