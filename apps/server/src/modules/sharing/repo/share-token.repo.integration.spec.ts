@@ -1,10 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ShareTokenContextType } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, schoolFactory, shareTokenFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { ShareTokenContextType } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from './share-token.repo';
 
 describe('ShareTokenRepo', () => {

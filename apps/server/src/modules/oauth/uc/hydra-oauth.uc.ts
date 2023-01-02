@@ -31,9 +31,7 @@ export class HydraOauthUc {
 		return queryToken;
 	}
 
-	protected validateStatus = (status: number): boolean => {
-		return status === 200 || status === 302;
-	};
+	protected validateStatus = (status: number): boolean => status === 200 || status === 302;
 
 	async requestAuthCode(userId: string, jwt: string, oauthClientId: string): Promise<AuthorizationParams> {
 		const hydraOauthConfig: OauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);

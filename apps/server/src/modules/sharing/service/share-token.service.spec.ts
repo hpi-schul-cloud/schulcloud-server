@@ -2,12 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ShareTokenContextType, ShareTokenParentType } from '@shared/domain';
-import { ShareTokenRepo } from '@shared/repo';
 import { setupEntities, shareTokenFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { ShareTokenService } from './share-token.service';
 import { TokenGenerator } from './token-generator.service';
+import { ShareTokenService } from './share-token.service';
+import { ShareTokenRepo } from '../repo/share-token.repo';
+import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 
 const buildId = () => new ObjectId().toHexString();
 

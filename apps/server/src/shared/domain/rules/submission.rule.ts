@@ -3,12 +3,11 @@ import { Submission, User } from '../entity';
 import { IPermissionContext, PermissionTypes } from '../interface/permission';
 import { Actions } from './actions.enum';
 import { BasePermission } from './base-permission';
-import { CourseGroupRule } from './course-group.rule';
 import { TaskRule } from './task.rule';
 
 @Injectable()
 export class SubmissionRule extends BasePermission<Submission> {
-	constructor(private readonly taskRule: TaskRule, private readonly courseGroupRule: CourseGroupRule) {
+	constructor(private readonly taskRule: TaskRule) {
 		super();
 	}
 
@@ -46,9 +45,15 @@ export class SubmissionRule extends BasePermission<Submission> {
 	}
 
 	private hasReadAccess(user: User, submission: Submission) {
-		const hasReadAccess =
-			this.hasWriteAccess(user, submission) ||
-			(this.hasParentTaskReadAccess(user, submission) && submission.task.areSubmissionsPublic());
+		let hasReadAccess = false;
+
+		if (submission.isSubmitted()) {
+			hasReadAccess =
+				this.hasWriteAccess(user, submission) ||
+				(this.hasParentTaskReadAccess(user, submission) && submission.task.areSubmissionsPublic());
+		} else {
+			hasReadAccess = submission.isUserSubmitter(user);
+		}
 
 		return hasReadAccess;
 	}

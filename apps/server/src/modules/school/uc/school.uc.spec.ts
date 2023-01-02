@@ -46,9 +46,7 @@ describe('SchoolUc', () => {
 				oauthMigrationMandatory: true,
 			});
 			schoolService.setMigration.mockResolvedValue(migrationResponse);
-			authService.checkPermissionByReferences.mockImplementation(() => {
-				return Promise.resolve();
-			});
+			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
 		});
 		it('should call the service', async () => {
 			await schoolUc.setMigration(mockId, true, true, mockId);
@@ -62,9 +60,7 @@ describe('SchoolUc', () => {
 		const mockId = 'someId';
 		beforeAll(() => {
 			schoolService.getMigration.mockResolvedValue(migrationResponse);
-			authService.checkPermissionByReferences.mockImplementation(() => {
-				return Promise.resolve();
-			});
+			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
 		});
 		it('should call the service', async () => {
 			await schoolUc.getMigration(mockId, mockId);

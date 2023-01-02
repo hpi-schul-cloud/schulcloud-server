@@ -637,9 +637,7 @@ describe('[ImportUserModule]', () => {
 			});
 			it('Should save school params', async () => {
 				schoolServiceSaveSpy.mockRestore();
-				schoolServiceSaveSpy = schoolService.save.mockImplementation((schoolDo: SchoolDO) => {
-					return Promise.resolve(schoolDo);
-				});
+				schoolServiceSaveSpy = schoolService.save.mockImplementation((schoolDo: SchoolDO) => Promise.resolve(schoolDo));
 				await uc.startSchoolInUserMigration(currentUser.id);
 				const schoolParams: SchoolDO = { ...createMockSchoolDo(school) };
 				schoolParams.inUserMigration = true;

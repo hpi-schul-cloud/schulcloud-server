@@ -36,7 +36,11 @@ const buildFileRecordsWithParams = () => {
 };
 
 const createRequestParams = (schoolId: EntityId, userId: EntityId) => {
-	return { schoolId, parentId: userId, parentType: FileRecordParentType.User };
+	return {
+		schoolId,
+		parentId: userId,
+		parentType: FileRecordParentType.User,
+	};
 };
 
 const createParams = () => {
