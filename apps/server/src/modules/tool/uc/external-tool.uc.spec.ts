@@ -12,6 +12,7 @@ import {
 	oauth2ToolConfigDOFactory,
 } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService } from '../service/external-tool.service';
 import { ToolValidationService } from '../service/tool-validation.service';
@@ -415,11 +416,15 @@ describe('ExternalToolUc', () => {
 	describe('getExternalToolForScope', () => {
 		const setupForScope = () => {
 			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-			const externalToolId = new ObjectId().toHexString();
+			const externalToolId: string = new ObjectId().toHexString();
+			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId(undefined, externalToolId);
 			const scope: ConfigurationScope = ConfigurationScope.SCHOOL;
+
+			externalToolService.getExternalToolForScope.mockResolvedValue(externalToolDO);
 
 			return {
 				currentUser,
+				externalToolDO,
 				externalToolId,
 				scope,
 			};
@@ -428,32 +433,31 @@ describe('ExternalToolUc', () => {
 		describe('Authorization', () => {
 			it('should call getUserWithPermissions', async () => {
 				const { currentUser } = setupAuthorization();
+				const { externalToolId, scope } = setupForScope();
 
-				await uc.getExternalToolForScope(currentUser.userId, 'toolId', ConfigurationScope.SCHOOL);
+				await uc.getExternalToolForScope(currentUser.userId, externalToolId, scope);
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
 			});
 
 			it('should successfully check the user permission with the authorization service', async () => {
 				const { currentUser, user } = setupAuthorization();
+				const { externalToolId, scope } = setupForScope();
 
-				await uc.getExternalToolForScope(currentUser.userId, 'toolId', ConfigurationScope.SCHOOL);
+				await uc.getExternalToolForScope(currentUser.userId, externalToolId, scope);
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.SCHOOL_TOOL_ADMIN]);
 			});
 
 			it('should throw if the user has insufficient permission to create an external tool', async () => {
 				const { currentUser } = setupAuthorization();
+				const { externalToolId, scope } = setupForScope();
 
 				authorizationService.checkAllPermissions.mockImplementation(() => {
 					throw new UnauthorizedException();
 				});
 
-				const result: Promise<ExternalToolDO> = uc.getExternalToolForScope(
-					currentUser.userId,
-					'toolId',
-					ConfigurationScope.SCHOOL
-				);
+				const result: Promise<ExternalToolDO> = uc.getExternalToolForScope(currentUser.userId, externalToolId, scope);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -468,6 +472,17 @@ describe('ExternalToolUc', () => {
 				externalToolId,
 				ConfigurationScope.SCHOOL
 			);
+		});
+
+		describe('should throw error', () => {
+			it('when tool is hidden', async () => {
+				const { externalToolId, currentUser, scope, externalToolDO } = setupForScope();
+				externalToolDO.isHidden = true;
+
+				const result = uc.getExternalToolForScope(currentUser.userId, externalToolId, scope);
+
+				await expect(result).rejects.toThrow(new NotFoundException('Could not find the Tool Template'));
+			});
 		});
 	});
 });

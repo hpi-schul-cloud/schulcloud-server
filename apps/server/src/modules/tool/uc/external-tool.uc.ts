@@ -73,13 +73,9 @@ export class ExternalToolUc {
 	async getExternalToolForScope(
 		userId: EntityId,
 		externalToolId: EntityId,
-		scope: ConfigurationScope
+		scope: ConfigurationScope // For later use with School and Course
 	): Promise<ExternalToolDO> {
-		if (scope === ConfigurationScope.SCHOOL) {
-			await this.ensurePermission(userId, Permission.SCHOOL_TOOL_ADMIN);
-		} else {
-			throw new BadRequestException(`Unknown scope for reading external tool`);
-		}
+		await this.ensurePermission(userId, Permission.SCHOOL_TOOL_ADMIN);
 
 		const externalToolDO: ExternalToolDO = await this.externalToolService.getExternalToolForScope(
 			externalToolId,

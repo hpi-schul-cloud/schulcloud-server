@@ -12,7 +12,7 @@ import { UserUc } from './uc';
 import { LoggerModule } from '../../core/logger';
 
 @Module({
-	imports: [forwardRef(() => SchoolModule), RoleModule, LoggerModule],
+	imports: [SchoolModule, RoleModule, LoggerModule],
 	controllers: [UserController],
 	providers: [UserRepo, PermissionService, UserUc, UserService, RoleRepo, RoleUc, SchoolRepo, RoleService],
 	exports: [UserUc, UserService],
