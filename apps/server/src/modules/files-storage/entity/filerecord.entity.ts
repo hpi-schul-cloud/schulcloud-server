@@ -1,4 +1,4 @@
-import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, Enum, Index, Property, types } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
@@ -87,7 +87,7 @@ export class FileRecord extends BaseEntity {
 	@Property({ nullable: true })
 	deletedSince?: Date;
 
-	@Property()
+	@Property({ type: types.mediumint })
 	size: number;
 
 	@Property()
