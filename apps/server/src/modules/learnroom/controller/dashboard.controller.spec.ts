@@ -102,7 +102,7 @@ describe('dashboard uc', () => {
 			const currentUser = { userId: 'userId' } as ICurrentUser;
 			await controller.findForUser(currentUser, true);
 
-			expect(spy).toHaveBeenCalledWith('userId');
+			expect(spy).toHaveBeenCalledWith('userId', true);
 		});
 	});
 
