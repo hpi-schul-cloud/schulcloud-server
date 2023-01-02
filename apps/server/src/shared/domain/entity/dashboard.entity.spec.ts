@@ -2,15 +2,19 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { ILearnroom, LearnroomTypes } from '@shared/domain';
 import { DashboardEntity, GridElement } from './dashboard.entity';
 
-const getLearnroomMock = (id: string): ILearnroom => ({
-	getMetadata: () => ({
-		id,
-		type: LearnroomTypes.Course,
-		title: 'Reference',
-		shortTitle: 'Re',
-		displayColor: '#FFFFFF',
-	}),
-});
+const getLearnroomMock = (id: string): ILearnroom => {
+	return {
+		getMetadata: () => {
+			return {
+				id,
+				type: LearnroomTypes.Course,
+				title: 'Reference',
+				shortTitle: 'Re',
+				displayColor: '#FFFFFF',
+			};
+		},
+	};
+};
 
 describe('dashboard entity', () => {
 	describe('constructor', () => {

@@ -186,10 +186,9 @@ describe('DatabaseManagementService', () => {
 							const adapter = new FileSystemAdapter();
 							return adapter.joinPath(...paths);
 						},
-						readDir: () => {
+						readDir: () =>
 							// expect json files in folder
-							return Promise.resolve(collectionNames.map((name) => `${name}.json`));
-						},
+							Promise.resolve(collectionNames.map((name) => `${name}.json`)),
 						readFile: jest.fn().mockImplementation((fileName: string) => {
 							if (fileName === `${collection1Name}.json`) {
 								return JSON.stringify(collection1Data);

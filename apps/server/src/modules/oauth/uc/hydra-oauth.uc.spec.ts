@@ -15,9 +15,7 @@ import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.
 import { HydraOauthUc } from '.';
 
 class HydraOauthUcSpec extends HydraOauthUc {
-	public validateStatusSpec = (status: number) => {
-		return this.validateStatus(status);
-	};
+	public validateStatusSpec = (status: number) => this.validateStatus(status);
 }
 
 describe('HydraOauthUc', () => {
@@ -130,9 +128,7 @@ describe('HydraOauthUc', () => {
 				headers: {},
 				withCredentials: true,
 				maxRedirects: 0,
-				validateStatus: jest.fn().mockImplementationOnce(() => {
-					return true;
-				}),
+				validateStatus: jest.fn().mockImplementationOnce(() => true),
 			};
 			axiosResponse1 = {
 				data: expectedAuthParams,

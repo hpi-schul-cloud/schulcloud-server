@@ -46,12 +46,10 @@ describe('SystemUc', () => {
 			}
 			return Promise.resolve(mockSystems);
 		});
-		systemService.findOAuth.mockImplementation(() => {
-			return Promise.resolve([system2]);
-		});
-		systemService.findById.mockImplementation((id: EntityId): Promise<SystemDto> => {
-			return id === system1.id ? Promise.resolve(system1) : Promise.reject();
-		});
+		systemService.findOAuth.mockImplementation(() => Promise.resolve([system2]));
+		systemService.findById.mockImplementation(
+			(id: EntityId): Promise<SystemDto> => (id === system1.id ? Promise.resolve(system1) : Promise.reject())
+		);
 	});
 
 	describe('findByFilter', () => {

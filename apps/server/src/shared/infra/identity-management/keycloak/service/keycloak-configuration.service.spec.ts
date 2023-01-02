@@ -99,9 +99,9 @@ describe('KeycloakConfigurationService Unit', () => {
 				{
 					provide: KeycloakAdministrationService,
 					useValue: {
-						callKcAdminClient: jest.fn().mockImplementation(async (): Promise<KeycloakAdminClient> => {
-							return Promise.resolve(client);
-						}),
+						callKcAdminClient: jest
+							.fn()
+							.mockImplementation(async (): Promise<KeycloakAdminClient> => Promise.resolve(client)),
 						testKcConnection: jest.fn().mockResolvedValue(true),
 						getAdminUser: jest.fn().mockReturnValue(adminUser.username),
 					},
