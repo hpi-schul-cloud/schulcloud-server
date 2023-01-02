@@ -19,8 +19,9 @@ export interface ISchoolProperties {
 	externalId?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
-	oauthMigrationPossible?: boolean;
-	oauthMigrationMandatory?: boolean;
+	oauthMigrationPossible?: Date;
+	oauthMigrationMandatory?: Date;
+	oauthMigrationFinished?: Date;
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: System[];
@@ -59,10 +60,13 @@ export class School extends BaseEntity {
 	inUserMigration?: boolean;
 
 	@Property({ nullable: true })
-	oauthMigrationPossible?: boolean;
+	oauthMigrationPossible?: Date;
 
 	@Property({ nullable: true })
-	oauthMigrationMandatory?: boolean;
+	oauthMigrationMandatory?: Date;
+
+	@Property({ nullable: true })
+	oauthMigrationFinished?: Date;
 
 	@Property({ nullable: true, fieldName: 'ldapSchoolIdentifier' })
 	externalId?: string;
@@ -84,15 +88,36 @@ export class School extends BaseEntity {
 
 	constructor(props: ISchoolProperties) {
 		super();
-		if (props.externalId) this.externalId = props.externalId;
-		if (props.inMaintenanceSince) this.inMaintenanceSince = props.inMaintenanceSince;
-		if (props.inUserMigration !== null) this.inUserMigration = props.inUserMigration;
-		if (props.oauthMigrationPossible !== null) this.oauthMigrationPossible = props.oauthMigrationPossible;
-		if (props.oauthMigrationMandatory !== null) this.oauthMigrationMandatory = props.oauthMigrationMandatory;
+		if (props.externalId) {
+			this.externalId = props.externalId;
+		}
+		if (props.inMaintenanceSince) {
+			this.inMaintenanceSince = props.inMaintenanceSince;
+		}
+		if (props.inUserMigration !== null) {
+			this.inUserMigration = props.inUserMigration;
+		}
+		if (props.oauthMigrationPossible !== null) {
+			this.oauthMigrationPossible = props.oauthMigrationPossible;
+		}
+		if (props.oauthMigrationMandatory !== null) {
+			this.oauthMigrationMandatory = props.oauthMigrationMandatory;
+		}
+		if (props.oauthMigrationFinished !== null) {
+			this.oauthMigrationFinished = props.oauthMigrationFinished;
+		}
 		this.name = props.name;
-		if (props.officialSchoolNumber) this.officialSchoolNumber = props.officialSchoolNumber;
-		if (props.systems) this.systems.set(props.systems);
-		if (props.features) this.features = props.features;
-		if (props.schoolYear) this.schoolYear = props.schoolYear;
+		if (props.officialSchoolNumber) {
+			this.officialSchoolNumber = props.officialSchoolNumber;
+		}
+		if (props.systems) {
+			this.systems.set(props.systems);
+		}
+		if (props.features) {
+			this.features = props.features;
+		}
+		if (props.schoolYear) {
+			this.schoolYear = props.schoolYear;
+		}
 	}
 }

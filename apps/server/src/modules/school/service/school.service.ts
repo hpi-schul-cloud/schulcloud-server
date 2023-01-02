@@ -41,17 +41,20 @@ export class SchoolService {
 	async setMigration(
 		schoolId: EntityId,
 		oauthMigrationPossible: boolean,
-		oauthMigrationMandatory: boolean
+		oauthMigrationMandatory: boolean,
+		oauthMigrationFinished: boolean
 	): Promise<MigrationResponse> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
-		schoolDo.oauthMigrationPossible = oauthMigrationPossible;
-		schoolDo.oauthMigrationMandatory = oauthMigrationMandatory;
+		schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : schoolDo.oauthMigrationPossible;
+		schoolDo.oauthMigrationMandatory = oauthMigrationMandatory ? new Date() : schoolDo.oauthMigrationMandatory;
+		schoolDo.oauthMigrationFinished = oauthMigrationFinished ? new Date() : schoolDo.oauthMigrationFinished;
 
 		await this.schoolRepo.save(schoolDo);
 
 		const response: MigrationResponse = new MigrationResponse({
 			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
 			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
+			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
 		});
 
 		return response;
@@ -61,8 +64,9 @@ export class SchoolService {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
 
 		const response: MigrationResponse = new MigrationResponse({
-			oauthMigrationPossible: schoolDo.oauthMigrationPossible ?? false,
-			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory ?? false,
+			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
+			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
+			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
 		});
 
 		return response;
