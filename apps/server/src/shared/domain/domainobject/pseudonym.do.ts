@@ -12,13 +12,13 @@ export class PseudonymDO extends BaseDO {
 
 	userId: EntityId;
 
-	constructor(props: PseudonymDO) {
-		super(props.id);
+	constructor(domainObject: PseudonymDO) {
+		super(domainObject.id);
 
-		this.createdAt = props.createdAt;
-		this.updatedAt = props.updatedAt;
-		this.pseudonym = props.pseudonym;
-		this.toolId = props.toolId;
-		this.userId = props.userId;
+		this.createdAt = domainObject.createdAt;
+		this.updatedAt = domainObject.updatedAt;
+		this.pseudonym = domainObject.pseudonym;
+		this.toolId = domainObject.toolId;
+		this.userId = domainObject.userId;
 	}
 }
