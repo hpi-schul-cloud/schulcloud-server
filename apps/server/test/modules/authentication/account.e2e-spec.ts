@@ -52,13 +52,12 @@ describe('Account Controller (e2e)', () => {
 		studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 		superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
 
-		const mapUserToAccount = (user: User): Account => {
-			return accountFactory.buildWithId({
+		const mapUserToAccount = (user: User): Account =>
+			accountFactory.buildWithId({
 				userId: user.id,
 				username: user.email,
 				password: defaultPasswordHash,
 			});
-		};
 		adminAccount = mapUserToAccount(adminUser);
 		teacherAccount = mapUserToAccount(teacherUser);
 		studentAccount = mapUserToAccount(studentUser);

@@ -8,10 +8,9 @@ import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { ManagementModule } from './management.module';
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
-	},
+		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
 };
 
 @Module({

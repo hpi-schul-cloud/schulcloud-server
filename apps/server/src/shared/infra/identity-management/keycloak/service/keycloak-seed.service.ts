@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import { Inject } from '@nestjs/common';
+import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { IJsonAccount, IJsonUser, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
@@ -44,7 +45,7 @@ export class KeycloakSeedService {
 	}
 
 	private async createOrUpdateIdmAccount(account: IJsonAccount, user: IJsonUser): Promise<boolean> {
-		const idmUserRepresentation = {
+		const idmUserRepresentation: UserRepresentation = {
 			username: account.username,
 			firstName: user.firstName,
 			lastName: user.lastName,
@@ -57,6 +58,11 @@ export class KeycloakSeedService {
 					credentialData: '{ "hashIterations": 10, "algorithm": "bcrypt", "additionalParameters": {}}',
 				},
 			],
+			attributes: {
+				refTechnicalId: account._id.$oid,
+				refFunctionalIntId: account.userId.$oid,
+				refFunctionalExtId: account.systemId,
+			},
 		};
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const existingAccounts = await kc.users.find({ username: account.username, exact: true });

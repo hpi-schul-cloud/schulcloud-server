@@ -1,6 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
-import { ShareTokenContextType } from '@shared/domain';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { ShareTokenContextType } from '../domainobject/share-token.do';
 
 export class ShareTokenContextTypeMapper {
 	static mapToAllowedAuthorizationEntityType(type: ShareTokenContextType): AllowedAuthorizationEntityType {

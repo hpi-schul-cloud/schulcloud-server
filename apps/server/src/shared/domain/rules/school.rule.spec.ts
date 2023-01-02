@@ -5,12 +5,13 @@ import { Role, School, User } from '../entity';
 import { Permission } from '../interface';
 import { Actions } from './actions.enum';
 import { SchoolRule } from './school.rule';
+import { SchoolDO } from '../domainobject/school.do';
 
 describe('SchoolRule', () => {
 	let orm: MikroORM;
 	let service: SchoolRule;
 	let user: User;
-	let entity: School;
+	let entity: School | SchoolDO;
 	let role: Role;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
@@ -58,7 +59,7 @@ describe('SchoolRule', () => {
 	});
 
 	it('should return "false" if user has not some school', () => {
-		entity = schoolFactory.build();
+		entity = new SchoolDO({ name: 'testschool', id: 'invalidId' });
 		user = userFactory.build({ roles: [role] });
 		const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [permissionA] });
 		expect(res).toBe(false);

@@ -22,16 +22,18 @@ import { MikroORM } from '@mikro-orm/core';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 import { SanisSchoolService } from '@src/modules/provisioning/strategy/sanis/service/sanis-school.service';
 import { SanisUserService } from '@src/modules/provisioning/strategy/sanis/service/sanis-user.service';
-import { SchoolDto } from '../../../school/uc/dto/school.dto';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SanisResponseMapper } from './sanis-response.mapper';
 
-const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> => ({
-	data: data ?? {},
-	status: 0,
-	statusText: '',
-	headers: {},
-	config: {},
-});
+const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> => {
+	return {
+		data: data ?? {},
+		status: 0,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
+};
 
 describe('SanisStrategy', () => {
 	let module: TestingModule;
@@ -115,11 +117,11 @@ describe('SanisStrategy', () => {
 			schoolId: school.id,
 			externalId: userUUID.toHexString(),
 		});
-		const schoolDto: SchoolDto = new SchoolDto({
+		const schoolDo: SchoolDO = new SchoolDO({
 			id: school.id,
 			name: school.name,
 			externalId,
-			systemIds: [system.id],
+			systems: [system.id],
 		});
 		const schoolProvisioningDto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({
 			name: school.name,
@@ -131,12 +133,12 @@ describe('SanisStrategy', () => {
 		mapper.mapSanisRoleToRoleName.mockReturnValue(RoleName.ADMINISTRATOR);
 		mapper.mapToUserDO.mockReturnValue(userDO);
 		mapper.mapToSchoolDto.mockReturnValue(schoolProvisioningDto);
-		sanisSchoolService.provisionSchool.mockResolvedValue(schoolDto);
+		sanisSchoolService.provisionSchool.mockResolvedValue(schoolDo);
 		sanisUserService.provisionUser.mockResolvedValue(userDO);
 
 		return {
 			userUUID,
-			schoolDto,
+			schoolDo,
 			sanisResponse,
 		};
 	};
@@ -165,8 +167,8 @@ describe('SanisStrategy', () => {
 		});
 
 		it('should throw error when there is no school saved', async () => {
-			const { schoolDto } = setup();
-			schoolDto.id = undefined;
+			const { schoolDo } = setup();
+			schoolDo.id = undefined;
 
 			const apply = () => sanisStrategy.apply(sanisParams);
 

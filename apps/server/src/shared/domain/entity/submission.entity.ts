@@ -1,4 +1,4 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
 
 import { InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '../types';
@@ -26,6 +26,7 @@ export interface ISubmissionProperties {
 
 @Entity({ tableName: 'submissions' })
 @Index({ properties: ['student', 'teamMembers'] })
+@Unique({ properties: ['student', 'task'] })
 export class Submission extends BaseEntityWithTimestamps {
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	@Index()

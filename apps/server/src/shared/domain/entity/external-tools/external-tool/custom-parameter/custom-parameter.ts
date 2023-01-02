@@ -14,6 +14,9 @@ export class CustomParameter {
 	@Property({ nullable: true })
 	regex?: string;
 
+	@Property({ nullable: true })
+	regexComment?: string;
+
 	@Enum()
 	scope: CustomParameterScope;
 
@@ -23,6 +26,9 @@ export class CustomParameter {
 	@Enum()
 	type: CustomParameterType;
 
+	@Property()
+	isOptional: boolean;
+
 	constructor(props: CustomParameter) {
 		this.name = props.name;
 		this.default = props.default;
@@ -30,5 +36,7 @@ export class CustomParameter {
 		this.scope = props.scope;
 		this.type = props.type;
 		this.regex = props.regex;
+		this.regexComment = props.regexComment;
+		this.isOptional = props.isOptional;
 	}
 }

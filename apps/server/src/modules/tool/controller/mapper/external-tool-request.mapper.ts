@@ -69,8 +69,8 @@ export class ExternalToolRequestMapper {
 			logoUrl: externalToolPostParams.logoUrl,
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
-			isHidden: externalToolPostParams.isHidden || true,
-			openNewTab: externalToolPostParams.openNewTab || true,
+			isHidden: externalToolPostParams.isHidden === undefined ? true : externalToolPostParams.isHidden,
+			openNewTab: externalToolPostParams.openNewTab === undefined ? true : externalToolPostParams.openNewTab,
 			version,
 		};
 	}
@@ -101,9 +101,11 @@ export class ExternalToolRequestMapper {
 				name: customParameterParam.name,
 				default: customParameterParam.default,
 				regex: customParameterParam.regex,
+				regexComment: customParameterParam.regexComment,
 				scope: scopeMapping[customParameterParam.scope],
 				location: locationMapping[customParameterParam.location],
 				type: typeMapping[customParameterParam.type],
+				isOptional: customParameterParam.isOptional,
 			};
 		});
 	}
