@@ -1,5 +1,5 @@
-import { EntityId } from '../types';
 import { BaseDO } from './base.do';
+import { EntityId } from '@shared/domain/types';
 
 export class PseudonymDO extends BaseDO {
 	createdAt?: Date;
