@@ -7,6 +7,7 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
+import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 import {
 	CustomParameterLocationParams,
@@ -24,6 +25,7 @@ import {
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
 } from '../dto';
+import { ExternalToolConfigurationTemplateResponse } from '../dto/response/external-tool-configuration-template.response';
 
 describe('ExternalToolResponseMapper', () => {
 	let module: TestingModule;
@@ -191,6 +193,47 @@ describe('ExternalToolResponseMapper', () => {
 
 				expect(result).toEqual(externalToolResponse);
 			});
+		});
+	});
+
+	describe('mapToConfigurationTemplateResponse', () => {
+		it('should map a ExternalToolDO to a ExternalToolConfigurationTemplateResponse', () => {
+			const externalToolDO: ExternalToolDO = externalToolDOFactory
+				.withCustomParameters(1, {
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.STRING,
+					location: CustomParameterLocation.PATH,
+					name: 'customParameter',
+					isOptional: false,
+				})
+				.buildWithId(
+					{
+						name: 'toolName',
+						logoUrl: 'logoUrl',
+						version: 1,
+					},
+					'toolId'
+				);
+			const expected: ExternalToolConfigurationTemplateResponse = new ExternalToolConfigurationTemplateResponse({
+				id: 'toolId',
+				name: 'toolName',
+				logoUrl: 'logoUrl',
+				parameters: [
+					new CustomParameterResponse({
+						scope: CustomParameterScopeParams.SCHOOL,
+						type: CustomParameterTypeParams.STRING,
+						location: CustomParameterLocationParams.PATH,
+						name: 'customParameter',
+						isOptional: false,
+					}),
+				],
+				version: 1,
+			});
+
+			const result: ExternalToolConfigurationTemplateResponse =
+				mapper.mapToConfigurationTemplateResponse(externalToolDO);
+
+			expect(result).toEqual(expected);
 		});
 	});
 });

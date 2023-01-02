@@ -15,6 +15,7 @@ import {
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
 } from '../dto';
+import { ExternalToolConfigurationTemplateResponse } from '../dto/response/external-tool-configuration-template.response';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeParams.GLOBAL,
@@ -90,6 +91,20 @@ export class ExternalToolResponseMapper {
 				type: typeMapping[customParameterDO.type],
 				isOptional: customParameterDO.isOptional,
 			};
+		});
+	}
+
+	mapToConfigurationTemplateResponse(externalToolDO: ExternalToolDO): ExternalToolConfigurationTemplateResponse {
+		const mappedCustomParameter: CustomParameterResponse[] = this.mapCustomParameterDOToResponse(
+			externalToolDO.parameters ?? []
+		);
+
+		return new ExternalToolConfigurationTemplateResponse({
+			id: externalToolDO.id || '',
+			name: externalToolDO.name,
+			logoUrl: externalToolDO.logoUrl,
+			parameters: mappedCustomParameter,
+			version: externalToolDO.version,
 		});
 	}
 }

@@ -1,13 +1,13 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
+	CustomParameterDO,
 	ExternalToolConfigDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
-import { EntityId, IFindOptions } from '@shared/domain';
-import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
+import { CustomParameterScope, EntityId, IFindOptions } from '@shared/domain';
 import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { Page } from '@shared/domain/interface/page';
@@ -163,5 +163,15 @@ export class ExternalToolService {
 
 	isOauth2Config(config: ExternalToolConfigDO): config is Oauth2ToolConfigDO {
 		return ToolConfigType.OAUTH2 === config.type;
+	}
+
+	async getExternalToolForScope(externalToolId: EntityId, scope: CustomParameterScope): Promise<ExternalToolDO> {
+		const externalTool: ExternalToolDO = await this.externalToolRepo.findById(externalToolId);
+		if (externalTool.parameters) {
+			externalTool.parameters = externalTool.parameters.filter(
+				(parameter: CustomParameterDO) => parameter.scope === scope
+			);
+		}
+		return externalTool;
 	}
 }

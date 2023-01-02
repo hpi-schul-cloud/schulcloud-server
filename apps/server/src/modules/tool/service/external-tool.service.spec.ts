@@ -1,9 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
-import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
-import { IFindOptions, SortOrder } from '@shared/domain';
 import {
+	CustomParameterDO,
+	ExternalToolDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
+} from '@shared/domain/domainobject/external-tool';
+import { CustomParameterScope, IFindOptions, SortOrder } from '@shared/domain';
+import {
+	customParameterDOFactory,
 	externalToolDOFactory,
 	lti11ToolConfigDOFactory,
 	oauth2ToolConfigDOFactory,
@@ -574,6 +580,31 @@ describe('ExternalToolService', () => {
 
 				expect(func()).toBeFalsy();
 			});
+		});
+	});
+
+	describe('getExternalToolForScope', () => {
+		it('should return an external tool with only school scoped custom parameters', async () => {
+			const schoolParameters: CustomParameterDO[] = customParameterDOFactory.buildList(1, {
+				scope: CustomParameterScope.SCHOOL,
+			});
+			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId(
+				{
+					parameters: [
+						...schoolParameters,
+						...customParameterDOFactory.buildList(1, { scope: CustomParameterScope.COURSE }),
+						...customParameterDOFactory.buildList(2, { scope: CustomParameterScope.GLOBAL }),
+					],
+				},
+				'toolId'
+			);
+			const expected: ExternalToolDO = { ...externalToolDO, parameters: schoolParameters };
+
+			externalToolRepo.findById.mockResolvedValue(externalToolDO);
+
+			const result: ExternalToolDO = await service.getExternalToolForScope('toolId', CustomParameterScope.SCHOOL);
+
+			expect(result).toEqual(expected);
 		});
 	});
 });

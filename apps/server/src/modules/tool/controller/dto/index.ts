@@ -8,6 +8,7 @@ export * from './request/lti11-launch.query';
 export * from './request/lti11-tool-config.params';
 export * from './request/oauth2-tool-config.params';
 export * from './request/tool-id.params';
+export * from './request/scope.query';
 
 export * from './response/basic-tool-config.response';
 export * from './response/custom-parameter.response';

@@ -11,9 +11,11 @@ import {
 	externalToolDOFactory,
 	oauth2ToolConfigDOFactory,
 } from '@shared/testing/factory/domainobject/external-tool.factory';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService } from '../service/external-tool.service';
 import { ToolValidationService } from '../service/tool-validation.service';
+import { ConfigurationScope } from '../interface';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;
@@ -407,6 +409,65 @@ describe('ExternalToolUc', () => {
 			await uc.deleteExternalTool(currentUser.userId, toolId);
 
 			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(toolId);
+		});
+	});
+
+	describe('getExternalToolForScope', () => {
+		const setupForScope = () => {
+			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+			const externalToolId = new ObjectId().toHexString();
+			const scope: ConfigurationScope = ConfigurationScope.SCHOOL;
+
+			return {
+				currentUser,
+				externalToolId,
+				scope,
+			};
+		};
+
+		describe('Authorization', () => {
+			it('should call getUserWithPermissions', async () => {
+				const { currentUser } = setupAuthorization();
+
+				await uc.getExternalToolForScope(currentUser.userId, 'toolId', ConfigurationScope.SCHOOL);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
+			});
+
+			it('should successfully check the user permission with the authorization service', async () => {
+				const { currentUser, user } = setupAuthorization();
+
+				await uc.getExternalToolForScope(currentUser.userId, 'toolId', ConfigurationScope.SCHOOL);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.SCHOOL_TOOL_ADMIN]);
+			});
+
+			it('should throw if the user has insufficient permission to create an external tool', async () => {
+				const { currentUser } = setupAuthorization();
+
+				authorizationService.checkAllPermissions.mockImplementation(() => {
+					throw new UnauthorizedException();
+				});
+
+				const result: Promise<ExternalToolDO> = uc.getExternalToolForScope(
+					currentUser.userId,
+					'toolId',
+					ConfigurationScope.SCHOOL
+				);
+
+				await expect(result).rejects.toThrow(UnauthorizedException);
+			});
+		});
+
+		it('should call the externalToolService', async () => {
+			const { externalToolId, currentUser, scope } = setupForScope();
+
+			await uc.getExternalToolForScope(currentUser.userId, externalToolId, scope);
+
+			expect(externalToolService.getExternalToolForScope).toHaveBeenCalledWith(
+				externalToolId,
+				ConfigurationScope.SCHOOL
+			);
 		});
 	});
 });
