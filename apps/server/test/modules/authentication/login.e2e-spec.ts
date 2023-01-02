@@ -36,7 +36,9 @@ jest.mock('ldapjs', () => {
 	return {
 		__esModule: true,
 		...originalModule,
-		createClient: () => ({ ...mockClient }),
+		createClient: () => {
+			return { ...mockClient };
+		},
 	};
 });
 

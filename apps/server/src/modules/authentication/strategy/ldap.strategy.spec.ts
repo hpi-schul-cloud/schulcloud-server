@@ -5,7 +5,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { AccountDto } from '@src/modules/account/services/dto';
-import { RoleName, School, System, User } from '@shared/domain';
+import { RoleName, System, User } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MikroORM } from '@mikro-orm/core';
 import { setupEntities, accountFactory, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
@@ -56,9 +57,9 @@ describe('LdapStrategy', () => {
 					useValue: createMock<SchoolRepo>({
 						findById: (id: string) => {
 							if (id !== 'missingExternalId') {
-								return Promise.resolve({ id, externalId: 'mockExternalId' } as School);
+								return Promise.resolve({ id, externalId: 'mockExternalId' } as SchoolDO);
 							}
-							return Promise.resolve({ id } as School);
+							return Promise.resolve({ id } as SchoolDO);
 						},
 					}),
 				},
@@ -166,7 +167,7 @@ describe('LdapStrategy', () => {
 						systemId: 'mockSystemId',
 					},
 				};
-				schoolRepo.findById.mockResolvedValueOnce({} as School);
+				schoolRepo.findById.mockResolvedValueOnce({} as SchoolDO);
 				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 			});
 		});
