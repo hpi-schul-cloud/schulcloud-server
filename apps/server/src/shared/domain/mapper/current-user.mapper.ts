@@ -55,7 +55,9 @@ export class CurrentUserMapper {
 				updatedAt: user.updatedAt,
 				firstName: user.firstName,
 				lastName: user.lastName,
-				roles: user.roleIds.map((role: string) => ({ id: role, name: role })),
+				roles: user.roleIds.map((role: string) => {
+					return { id: role, name: role };
+				}),
 				schoolId: user.schoolId,
 				permissions: Array.from(permissions),
 			},
