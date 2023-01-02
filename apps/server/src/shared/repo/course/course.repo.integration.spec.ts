@@ -236,6 +236,18 @@ describe('course repo', () => {
 			expect(count).toEqual(1);
 		});
 
+		it('should find courses of teachers that are active', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user] });
+
+			await em.persistAndFlush([course]);
+			em.clear();
+
+			const [result, count] = await repo.findAllByUserId(user.id, { onlyActiveCourses: true });
+
+			expect(count).toEqual(1);
+		});
+
 		it('should "not" find courses of substitution teachers', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ substitutionTeachers: [user] });
