@@ -160,6 +160,7 @@
 		"mongoose-diff-history": "git://github.com/schul-cloud/mongoose-diff-history.git",
 		"mongoose-id-validator": "^0.6.0",
 		"mongoose-lean-virtuals": "^0.8.1",
+		"mongoose-long": "^0.6.0",
 		"mongoose-shortid-nodeps": "git://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
 		"nanoid": "^3.3.4",
