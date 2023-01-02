@@ -89,7 +89,7 @@ describe('dashboard uc', () => {
 			});
 			const currentUser = { userId: 'userId' } as ICurrentUser;
 
-			const response = await controller.findForUser(currentUser,true);
+			const response = await controller.findForUser(currentUser, true);
 			expect(response instanceof DashboardResponse).toEqual(true);
 			expect(response.gridElements[0]).toHaveProperty('groupElements');
 		});
@@ -100,7 +100,7 @@ describe('dashboard uc', () => {
 				return Promise.resolve(dashboard);
 			});
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			await controller.findForUser(currentUser,true);
+			await controller.findForUser(currentUser, true);
 
 			expect(spy).toHaveBeenCalledWith('userId');
 		});
