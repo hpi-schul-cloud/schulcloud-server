@@ -243,7 +243,7 @@ describe('course repo', () => {
 			await em.persistAndFlush([course]);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(user.id, { onlyActiveCourses: true });
+			const [, count] = await repo.findAllForTeacher(user.id, { onlyActiveCourses: true });
 
 			expect(count).toEqual(1);
 		});
