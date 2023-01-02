@@ -1,5 +1,5 @@
-import { Command, CommandOption, Console } from 'nestjs-console';
 import { ConsoleWriterService } from '@shared/infra/console';
+import { Command, CommandOption, Console } from 'nestjs-console';
 import { KeycloakManagementUc } from '../../uc/Keycloak-management.uc';
 
 const defaultError = new Error('IDM is not reachable or authentication failed.');
@@ -137,6 +137,8 @@ export class KeycloakConsole {
 	}
 
 	private delay(ms: number) {
-		return new Promise((resolve) => setTimeout(resolve, ms));
+		return new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
 	}
 }

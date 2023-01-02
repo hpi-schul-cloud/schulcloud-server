@@ -1,6 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, System } from '@shared/domain';
 import { SystemService } from '@src/modules/system/service/system.service';
@@ -11,42 +13,38 @@ import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { of, throwError } from 'rxjs';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { BadRequestException } from '@nestjs/common';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
-import { OAuthResponse } from './dto/oauth.response';
-import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthSSOError } from '../error/oauth-sso.error';
+import { IJwt } from '../interface/jwt.base.interface';
+import { OAuthResponse } from './dto/oauth.response';
 
-const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
-	return {
-		data,
-		status: 0,
-		statusText: '',
-		headers: {},
-		config: {},
-	};
-};
-
-jest.mock('jwks-rsa', () => {
-	return () => ({
-		getKeys: jest.fn(),
-		getSigningKey: jest.fn().mockResolvedValue({
-			kid: 'kid',
-			alg: 'alg',
-			getPublicKey: jest.fn().mockReturnValue('publicKey'),
-			rsaPublicKey: 'publicKey',
-		}),
-		getSigningKeys: jest.fn(),
-	});
+const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => ({
+	data,
+	status: 0,
+	statusText: '',
+	headers: {},
+	config: {},
 });
+
+jest.mock('jwks-rsa', () => () => ({
+	getKeys: jest.fn(),
+	getSigningKey: jest.fn().mockResolvedValue({
+		kid: 'kid',
+		alg: 'alg',
+		getPublicKey: jest.fn().mockReturnValue('publicKey'),
+		rsaPublicKey: 'publicKey',
+	}),
+	getSigningKeys: jest.fn(),
+}));
+
+jest.mock('jsonwebtoken');
 
 describe('OAuthService', () => {
 	let module: TestingModule;
@@ -196,9 +194,7 @@ describe('OAuthService', () => {
 		});
 
 		it('should validate id_token and return it decoded', async () => {
-			jest.spyOn(jwt, 'verify').mockImplementationOnce((): JwtPayload => {
-				return { sub: 'mockSub' };
-			});
+			jest.spyOn(jwt, 'verify').mockImplementationOnce((): JwtPayload => ({ sub: 'mockSub' }));
 
 			const decodedJwt: IJwt = await service.validateToken('idToken', testOauthConfig);
 
@@ -206,9 +202,7 @@ describe('OAuthService', () => {
 		});
 
 		it('should throw if no payload was returned', async () => {
-			jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => {
-				return 'string';
-			});
+			jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => 'string');
 
 			await expect(service.validateToken('idToken', testOauthConfig)).rejects.toEqual(
 				new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
@@ -219,9 +213,7 @@ describe('OAuthService', () => {
 	describe('findUser', () => {
 		const decodedJwtMock = { sub: new ObjectId().toHexString(), email: 'peter.tester@example.com' };
 		beforeEach(() => {
-			jest.spyOn(jwt, 'decode').mockImplementation((): JwtPayload => {
-				return decodedJwtMock;
-			});
+			jest.spyOn(jwt, 'decode').mockImplementation((): JwtPayload => decodedJwtMock);
 		});
 
 		afterEach(() => {
@@ -270,9 +262,7 @@ describe('OAuthService', () => {
 		});
 
 		it('should throw if idToken is invalid and has no sub', async () => {
-			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
-				return null;
-			});
+			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => null);
 
 			await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(BadRequestException);
 		});

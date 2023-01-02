@@ -7,11 +7,15 @@ export class CustomParameterDO {
 
 	regex?: string;
 
+	regexComment?: string;
+
 	scope: CustomParameterScope;
 
 	location: CustomParameterLocation;
 
 	type: CustomParameterType;
+
+	isOptional: boolean;
 
 	constructor(props: CustomParameterDO) {
 		this.name = props.name;
@@ -20,5 +24,7 @@ export class CustomParameterDO {
 		this.scope = props.scope;
 		this.type = props.type;
 		this.regex = props.regex;
+		this.regexComment = props.regexComment;
+		this.isOptional = props.isOptional;
 	}
 }

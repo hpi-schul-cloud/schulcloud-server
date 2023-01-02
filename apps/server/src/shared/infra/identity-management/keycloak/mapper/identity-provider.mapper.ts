@@ -17,8 +17,12 @@ export class OidcIdentityProviderMapper {
 			enabled: true,
 			firstBrokerLoginFlowAlias: flowAlias,
 			config: {
-				clientId: this.defaultEncryptionService.decrypt(system.oidcConfig?.clientId ?? ''),
-				clientSecret: this.defaultEncryptionService.decrypt(system.oidcConfig?.clientSecret ?? ''),
+				clientId: system.oidcConfig?.clientId
+					? this.defaultEncryptionService.decrypt(system.oidcConfig.clientId)
+					: undefined,
+				clientSecret: system.oidcConfig?.clientSecret
+					? this.defaultEncryptionService.decrypt(system.oidcConfig?.clientSecret)
+					: undefined,
 				authorizationUrl: system.oidcConfig?.authorizationUrl,
 				tokenUrl: system.oidcConfig?.tokenUrl,
 				logoutUrl: system.oidcConfig?.logoutUrl,

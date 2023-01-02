@@ -77,7 +77,9 @@ const getExpectedNewsResponse = (
 	target: NewsTarget
 ): NewsResponse => {
 	const schoolInfoResponse = Object.create(SchoolInfoResponse.prototype) as SchoolInfoResponse;
-	const schoolProps = (({ id, name }) => ({ id, name }))(school);
+	const schoolProps = (({ id, name }) => {
+		return { id, name };
+	})(school);
 	Object.assign(schoolInfoResponse, schoolProps);
 	const creatorResponse = Object.create(UserInfoResponse.prototype) as UserInfoResponse;
 	const creatorProps = {

@@ -19,7 +19,6 @@ import { OauthProviderModule } from '@src/modules/oauth-provider';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { RoleModule } from '@src/modules/role/role.module';
-import { SchoolModule } from '@src/modules/school/school.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemModule } from '@src/modules/system';
 import { TaskModule } from '@src/modules/task';
@@ -27,6 +26,7 @@ import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { VideoConferenceModule } from '@src/modules/video-conference';
 import { ToolApiModule } from '@src/modules/tool';
+import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
@@ -60,7 +60,7 @@ const serverModules = [
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
-	SchoolModule,
+	SchoolApiModule,
 	ProvisioningModule,
 	RoleModule,
 	VideoConferenceModule,
@@ -70,10 +70,9 @@ const serverModules = [
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
-	},
+		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
 };
 
 /**

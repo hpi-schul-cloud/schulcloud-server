@@ -3,7 +3,7 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Counted, File, Lesson, Task } from '@shared/domain';
+import { Counted, File, Lesson, Submission, Task } from '@shared/domain';
 import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { SyncFileItemMapper } from '../mapper';
 import { AvailableSyncEntityType, AvailableSyncParentType, SyncFileItem } from '../types';
@@ -18,6 +18,10 @@ const lessonsQuery = {
 	'contents.component': { $eq: 'text' },
 	'contents.content.text': { $regex: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i') },
 } as FilterQuery<Lesson>;
+
+const submissionsQuery = {
+	comment: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i'),
+};
 
 const filesQuery = (fileIds: ObjectId[], parentId: ObjectId) => [
 	{
@@ -101,13 +105,18 @@ const filesQuery = (fileIds: ObjectId[], parentId: ObjectId) => [
 export class EmbeddedFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
-	async findElementsToSyncFiles(type: AvailableSyncParentType, limit: number): Promise<Counted<Task[] | Lesson[]>> {
-		let results: Counted<Task[] | Lesson[]> = [[], 0];
+	async findElementsToSyncFiles(
+		type: AvailableSyncParentType,
+		limit: number
+	): Promise<Counted<Task[] | Lesson[] | Submission[]>> {
+		let results: Counted<Task[] | Lesson[] | Submission[]> = [[], 0];
 
 		if (type === FileRecordParentType.Task) {
 			results = await this._em.findAndCount(Task, tasksQuery, { limit });
 		} else if (type === FileRecordParentType.Lesson) {
 			results = await this._em.findAndCount(Lesson, lessonsQuery, { limit });
+		} else if (type === FileRecordParentType.Submission) {
+			results = await this._em.findAndCount(Submission, submissionsQuery, { limit });
 		}
 		return results;
 	}
@@ -133,6 +142,8 @@ export class EmbeddedFilesRepo {
 			await this._em.aggregate(Task, [{ $match: {} }, { $out: `homeworks_backup_${date.getTime()}` }]);
 		} else if (type === FileRecordParentType.Lesson) {
 			await this._em.aggregate(Lesson, [{ $match: {} }, { $out: `lessons_backup_${date.getTime()}` }]);
+		} else if (type === FileRecordParentType.Submission) {
+			await this._em.aggregate(Submission, [{ $match: {} }, { $out: `submission_backup_${date.getTime()}` }]);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ShareTokenParentType, ShareTokenPayload } from '@shared/domain';
+import { ShareTokenParentType, ShareTokenPayload } from '../../domainobject/share-token.do';
 
 export class ShareTokenPayloadResponse {
 	constructor(payload: ShareTokenPayload) {

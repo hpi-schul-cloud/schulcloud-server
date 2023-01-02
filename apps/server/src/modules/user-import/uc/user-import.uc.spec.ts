@@ -14,12 +14,15 @@ import {
 	System,
 	User,
 	Permission,
+	SchoolFeatures,
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserImportUc } from './user-import.uc';
+import { SchoolService } from '../../school';
 
 describe('[ImportUserModule]', () => {
 	describe('UserUc', () => {
@@ -27,7 +30,7 @@ describe('[ImportUserModule]', () => {
 		let uc: UserImportUc;
 		let accountService: DeepMocked<AccountService>;
 		let importUserRepo: DeepMocked<ImportUserRepo>;
-		let schoolRepo: DeepMocked<SchoolRepo>;
+		let schoolService: DeepMocked<SchoolService>;
 		let systemRepo: DeepMocked<SystemRepo>;
 		let userRepo: DeepMocked<UserRepo>;
 		let permissionService: DeepMocked<PermissionService>;
@@ -47,8 +50,8 @@ describe('[ImportUserModule]', () => {
 						useValue: createMock<ImportUserRepo>(),
 					},
 					{
-						provide: SchoolRepo,
-						useValue: createMock<SchoolRepo>(),
+						provide: SchoolService,
+						useValue: createMock<SchoolService>(),
 					},
 					{
 						provide: SystemRepo,
@@ -67,7 +70,7 @@ describe('[ImportUserModule]', () => {
 			uc = module.get(UserImportUc); // TODO UserRepo not available in UserUc?!
 			accountService = module.get(AccountService);
 			importUserRepo = module.get(ImportUserRepo);
-			schoolRepo = module.get(SchoolRepo);
+			schoolService = module.get(SchoolService);
 			systemRepo = module.get(SystemRepo);
 			userRepo = module.get(UserRepo);
 			permissionService = module.get(PermissionService);
@@ -81,7 +84,7 @@ describe('[ImportUserModule]', () => {
 			expect(uc).toBeDefined();
 			expect(accountService).toBeDefined();
 			expect(importUserRepo).toBeDefined();
-			expect(schoolRepo).toBeDefined();
+			expect(schoolService).toBeDefined();
 			expect(systemRepo).toBeDefined();
 			expect(userRepo).toBeDefined();
 			expect(permissionService).toBeDefined();
@@ -100,13 +103,36 @@ describe('[ImportUserModule]', () => {
 			});
 		};
 
+		const createMockSchoolDo = (school?: School): SchoolDO => {
+			const name = school ? school.name : 'testSchool';
+			const id = school ? school.id : 'someId';
+			const features = school ? school.features ?? [SchoolFeatures.LDAP_UNIVENTION_MIGRATION] : [];
+			const externalId = school ? school.externalId : undefined;
+			const officialSchoolNumber = school ? school.officialSchoolNumber : undefined;
+			const inMaintenanceSince = school ? school.inMaintenanceSince : undefined;
+			const inUserMigration = school ? school.inUserMigration : undefined;
+
+			return new SchoolDO({
+				id,
+				name,
+				features,
+				externalId,
+				officialSchoolNumber,
+				inMaintenanceSince,
+				inUserMigration,
+				systems: [],
+			});
+		};
+
 		beforeEach(() => {
 			setConfig();
 		});
+
 		describe('[findAllImportUsers]', () => {
 			it('Should request authorization service', async () => {
 				const user = userFactory.buildWithId();
 				const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
+				const schoolServiceSpy = jest.spyOn(schoolService, 'getSchoolById').mockResolvedValue(createMockSchoolDo());
 				const permissionServiceSpy = jest
 					.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 					.mockReturnValue();
@@ -119,6 +145,8 @@ describe('[ImportUserModule]', () => {
 				expect(importUserRepoFindImportUsersSpy).toHaveBeenCalledWith(user.school, {}, {});
 				expect(result[0]).toHaveLength(0);
 				expect(result[1]).toEqual(0);
+				expect(schoolServiceSpy).toHaveBeenCalledWith(user.school.id);
+				schoolServiceSpy.mockRestore();
 				userRepoByIdSpy.mockRestore();
 				permissionServiceSpy.mockRestore();
 				importUserRepoFindImportUsersSpy.mockRestore();
@@ -129,6 +157,7 @@ describe('[ImportUserModule]', () => {
 			it('Should request authorization service', async () => {
 				const user = userFactory.buildWithId();
 				const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
+				const schoolServiceSpy = jest.spyOn(schoolService, 'getSchoolById').mockResolvedValue(createMockSchoolDo());
 				const permissionServiceSpy = jest
 					.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 					.mockReturnValue();
@@ -139,6 +168,8 @@ describe('[ImportUserModule]', () => {
 				expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_VIEW]);
 				expect(result.length).toEqual(0);
 				expect(count).toEqual(0);
+				expect(schoolServiceSpy).toHaveBeenCalledWith(user.school.id);
+				schoolServiceSpy.mockRestore();
 				userRepoByIdSpy.mockRestore();
 				permissionServiceSpy.mockRestore();
 				userRepoFindUnmatchedSpy.mockRestore();
@@ -152,6 +183,9 @@ describe('[ImportUserModule]', () => {
 					const user = userFactory.buildWithId();
 					const importUser = importUserFactory.buildWithId({ school });
 					const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
+					const schoolServiceSpy = jest
+						.spyOn(schoolService, 'getSchoolById')
+						.mockResolvedValue(createMockSchoolDo(school));
 					const permissionServiceSpy = jest
 						.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 						.mockReturnValue();
@@ -162,6 +196,8 @@ describe('[ImportUserModule]', () => {
 						ForbiddenException
 					);
 					expect(importUser.flagged).not.toEqual(true);
+					expect(schoolServiceSpy).toHaveBeenCalledWith(user.school.id);
+					schoolServiceSpy.mockRestore();
 					userRepoByIdSpy.mockRestore();
 					permissionServiceSpy.mockRestore();
 					importUserRepoFindByIdSpy.mockRestore();
@@ -175,6 +211,9 @@ describe('[ImportUserModule]', () => {
 						const currentUser = userFactory.buildWithId({ school });
 						const usermatch = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.buildWithId({ school });
+						const schoolServiceSpy = jest
+							.spyOn(schoolService, 'getSchoolById')
+							.mockResolvedValue(createMockSchoolDo(school));
 						const userRepoByIdSpy = jest
 							.spyOn(userRepo, 'findById')
 							.mockResolvedValueOnce(currentUser)
@@ -199,6 +238,8 @@ describe('[ImportUserModule]', () => {
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(importUser.user).toEqual(usermatch);
 						expect(importUser.matchedBy).toEqual(MatchCreator.MANUAL);
+						expect(schoolServiceSpy).toHaveBeenCalledWith(currentUser.school.id);
+						schoolServiceSpy.mockRestore();
 						userRepoByIdSpy.mockRestore();
 						permissionServiceSpy.mockRestore();
 						importUserRepoFindByIdSpy.mockRestore();
@@ -213,6 +254,9 @@ describe('[ImportUserModule]', () => {
 						const currentUser = userFactory.buildWithId({ school });
 						const usermatch = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.buildWithId({ school });
+						const schoolServiceSpy = jest
+							.spyOn(schoolService, 'getSchoolById')
+							.mockResolvedValue(createMockSchoolDo(school));
 						const userRepoByIdSpy = jest
 							.spyOn(userRepo, 'findById')
 							.mockResolvedValueOnce(currentUser)
@@ -241,6 +285,8 @@ describe('[ImportUserModule]', () => {
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(importUser.user).not.toEqual(usermatch);
 						expect(importUser.matchedBy).not.toEqual(MatchCreator.MANUAL);
+						expect(schoolServiceSpy).toHaveBeenCalledWith(currentUser.school.id);
+						schoolServiceSpy.mockRestore();
 						userRepoByIdSpy.mockRestore();
 						permissionServiceSpy.mockRestore();
 						importUserRepoFindByIdSpy.mockRestore();
@@ -264,11 +310,14 @@ describe('[ImportUserModule]', () => {
 							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
 						const importUserSaveSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce();
+						const schoolServiceSpy = jest.spyOn(schoolService, 'getSchoolById').mockResolvedValue(createMockSchoolDo());
 
 						await expect(async () => uc.updateFlag(user.id, importUser.id, true)).rejects.toThrowError(
 							ForbiddenException
 						);
 						expect(importUser.flagged).not.toEqual(true);
+						expect(schoolServiceSpy).toHaveBeenCalledWith(user.school.id);
+						schoolServiceSpy.mockRestore();
 						userRepoByIdSpy.mockRestore();
 						permissionServiceSpy.mockRestore();
 						importUserRepoFindByIdSpy.mockRestore();
@@ -281,6 +330,9 @@ describe('[ImportUserModule]', () => {
 						const user = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.buildWithId({ school });
 						const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
+						const schoolServiceSpy = jest
+							.spyOn(schoolService, 'getSchoolById')
+							.mockResolvedValue(createMockSchoolDo(school));
 						const permissionServiceSpy = jest
 							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 							.mockReturnValue();
@@ -294,6 +346,8 @@ describe('[ImportUserModule]', () => {
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(result).toBe(importUser);
 						expect(importUser.flagged).toEqual(true);
+						expect(schoolServiceSpy).toHaveBeenCalledWith(user.school.id);
+						schoolServiceSpy.mockRestore();
 						userRepoByIdSpy.mockRestore();
 						permissionServiceSpy.mockRestore();
 						importUserRepoFindByIdSpy.mockRestore();
@@ -304,6 +358,9 @@ describe('[ImportUserModule]', () => {
 						const user = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.buildWithId({ school });
 						const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
+						const schoolServiceSpy = jest
+							.spyOn(schoolService, 'getSchoolById')
+							.mockResolvedValue(createMockSchoolDo(school));
 						const permissionServiceSpy = jest
 							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 							.mockReturnValue();
@@ -317,6 +374,8 @@ describe('[ImportUserModule]', () => {
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(result).toBe(importUser);
 						expect(importUser.flagged).toEqual(false);
+						expect(schoolServiceSpy).toHaveBeenCalledWith(user.school.id);
+						schoolServiceSpy.mockRestore();
 						userRepoByIdSpy.mockRestore();
 						permissionServiceSpy.mockRestore();
 						importUserRepoFindByIdSpy.mockRestore();
@@ -333,6 +392,9 @@ describe('[ImportUserModule]', () => {
 						const school = schoolFactory.buildWithId();
 						const user = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.matched(MatchCreator.AUTO, user).buildWithId({ school });
+						const schoolServiceSpy = jest
+							.spyOn(schoolService, 'getSchoolById')
+							.mockResolvedValue(createMockSchoolDo(school));
 						const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
 						const permissionServiceSpy = jest
 							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
@@ -351,6 +413,8 @@ describe('[ImportUserModule]', () => {
 						expect(result).toBe(importUser);
 						expect(result.user).toBeUndefined();
 						expect(result.matchedBy).toBeUndefined();
+						expect(schoolServiceSpy).toHaveBeenCalledWith(user.school.id);
+						schoolServiceSpy.mockRestore();
 						userRepoByIdSpy.mockRestore();
 						permissionServiceSpy.mockRestore();
 						importUserRepoFindByIdSpy.mockRestore();
@@ -364,6 +428,7 @@ describe('[ImportUserModule]', () => {
 						const usermatch = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.matched(MatchCreator.AUTO, usermatch).buildWithId({ school });
 						const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
+						const schoolServiceSpy = jest.spyOn(schoolService, 'getSchoolById').mockResolvedValue(createMockSchoolDo());
 						const permissionServiceSpy = jest
 							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 							.mockReturnValue();
@@ -380,6 +445,8 @@ describe('[ImportUserModule]', () => {
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(importUser.user).toEqual(usermatch);
 						expect(importUser.matchedBy).toEqual(MatchCreator.AUTO);
+						expect(schoolServiceSpy).toHaveBeenCalledWith(user.school.id);
+						schoolServiceSpy.mockRestore();
 						userRepoByIdSpy.mockRestore();
 						permissionServiceSpy.mockRestore();
 						importUserRepoFindByIdSpy.mockRestore();
@@ -402,7 +469,8 @@ describe('[ImportUserModule]', () => {
 			let permissionServiceSpy: jest.SpyInstance;
 			let importUserRepoFindImportUsersSpy: jest.SpyInstance;
 			let importUserRepoDeleteImportUsersBySchoolSpy: jest.SpyInstance;
-			let schoolRepoSaveSpy: jest.SpyInstance;
+			let schoolServiceSaveSpy: jest.SpyInstance;
+			let schoolServiceSpy: jest.SpyInstance;
 			let userRepoFlushSpy: jest.SpyInstance;
 			let accountServiceFindByUserIdSpy: jest.SpyInstance;
 			beforeEach(() => {
@@ -435,6 +503,7 @@ describe('[ImportUserModule]', () => {
 					system,
 				});
 				userRepoByIdSpy = userRepo.findById.mockResolvedValue(currentUser);
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
 				userRepoFlushSpy = userRepo.flush.mockResolvedValueOnce();
 				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
 				importUserRepoFindImportUsersSpy = importUserRepo.findImportUsers.mockResolvedValue([[], 0]);
@@ -446,7 +515,7 @@ describe('[ImportUserModule]', () => {
 					updatedAt: new Date(),
 				});
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
-				schoolRepoSaveSpy = schoolRepo.save.mockReturnValueOnce(Promise.resolve());
+				schoolServiceSaveSpy = schoolService.save.mockReturnValueOnce(Promise.resolve(createMockSchoolDo(school)));
 			});
 			afterEach(() => {
 				userRepoByIdSpy.mockRestore();
@@ -454,7 +523,8 @@ describe('[ImportUserModule]', () => {
 				importUserRepoFindImportUsersSpy.mockRestore();
 				accountServiceFindByUserIdSpy.mockRestore();
 				importUserRepoDeleteImportUsersBySchoolSpy.mockRestore();
-				schoolRepoSaveSpy.mockRestore();
+				schoolServiceSpy.mockRestore();
+				schoolServiceSaveSpy.mockRestore();
 				userRepoFlushSpy.mockRestore();
 			});
 			it('Should request authorization service', async () => {
@@ -497,18 +567,24 @@ describe('[ImportUserModule]', () => {
 				expect(importUserRepoDeleteImportUsersBySchoolSpy).toHaveBeenCalledWith(school);
 			});
 			it('should throw if school data is inconsistent', async () => {
+				schoolServiceSpy.mockRestore();
 				school.externalId = undefined;
 				currentUser = userFactory.buildWithId({ school });
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
 				const result2 = () => uc.saveAllUsersMatches(currentUser.id);
 				await expect(result2).rejects.toThrowError(BadRequestException);
 
+				schoolServiceSpy.mockRestore();
 				school.inUserMigration = undefined;
 				currentUser = userFactory.buildWithId({ school });
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
 				const result3 = () => uc.saveAllUsersMatches(currentUser.id);
 				await expect(result3).rejects.toThrowError(BadRequestException);
 
+				schoolServiceSpy.mockRestore();
 				school.inMaintenanceSince = new Date();
 				currentUser = userFactory.buildWithId({ school });
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
 				const result4 = () => uc.saveAllUsersMatches(currentUser.id);
 				await expect(result4).rejects.toThrowError(BadRequestException);
 			});
@@ -520,7 +596,8 @@ describe('[ImportUserModule]', () => {
 			let currentUser: User;
 			let userRepoByIdSpy: jest.SpyInstance;
 			let permissionServiceSpy: jest.SpyInstance;
-			let schoolRepoSaveSpy: jest.SpyInstance;
+			let schoolServiceSaveSpy: jest.SpyInstance;
+			let schoolServiceSpy: jest.SpyInstance;
 			let systemRepoSpy: jest.SpyInstance;
 			const currentDate = new Date('2022-03-10T00:00:00.000Z');
 			let dateSpy: jest.SpyInstance;
@@ -531,7 +608,8 @@ describe('[ImportUserModule]', () => {
 				currentUser = userFactory.buildWithId({ school });
 				userRepoByIdSpy = userRepo.findById.mockResolvedValueOnce(currentUser);
 				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
-				schoolRepoSaveSpy = schoolRepo.save.mockReturnValueOnce(Promise.resolve());
+				schoolServiceSaveSpy = schoolService.save.mockReturnValueOnce(Promise.resolve(createMockSchoolDo(school)));
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
 				systemRepoSpy = systemRepo.findById.mockReturnValueOnce(Promise.resolve(system));
 				setConfig(system.id);
 				dateSpy = jest.spyOn(global, 'Date').mockReturnValue(currentDate as unknown as string);
@@ -539,7 +617,8 @@ describe('[ImportUserModule]', () => {
 			afterEach(() => {
 				userRepoByIdSpy.mockRestore();
 				permissionServiceSpy.mockRestore();
-				schoolRepoSaveSpy.mockRestore();
+				schoolServiceSaveSpy.mockRestore();
+				schoolServiceSpy.mockRestore();
 				systemRepoSpy.mockRestore();
 				configurationSpy.mockRestore();
 				dateSpy.mockRestore();
@@ -557,28 +636,33 @@ describe('[ImportUserModule]', () => {
 				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
 			});
 			it('Should save school params', async () => {
+				schoolServiceSaveSpy.mockRestore();
+				schoolServiceSaveSpy = schoolService.save.mockImplementation((schoolDo: SchoolDO) => Promise.resolve(schoolDo));
 				await uc.startSchoolInUserMigration(currentUser.id);
-
-				const schoolParams = { ...school };
+				const schoolParams: SchoolDO = { ...createMockSchoolDo(school) };
 				schoolParams.inUserMigration = true;
 				schoolParams.externalId = 'foo';
 				schoolParams.inMaintenanceSince = currentDate;
-				schoolParams.systems.add(system);
-				expect(schoolRepoSaveSpy).toHaveBeenCalledWith(schoolParams);
+				schoolParams.systems = [system.id];
+				expect(schoolServiceSaveSpy).toHaveBeenCalledWith(schoolParams);
 			});
 
 			it('should throw if school is already in inUserMigration', async () => {
+				schoolServiceSpy.mockRestore();
 				school.inUserMigration = true;
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result = uc.startSchoolInUserMigration(currentUser.id);
 				await expect(result).rejects.toThrowError(BadRequestException);
 			});
 			it('should throw if school has no officialSchoolNumber ', async () => {
 				school.officialSchoolNumber = undefined;
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result = uc.startSchoolInUserMigration(currentUser.id);
 				await expect(result).rejects.toThrowError(BadRequestException);
 			});
 			it('should not throw if school has no school number but its own LDAP', async () => {
 				school.officialSchoolNumber = undefined;
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result = uc.startSchoolInUserMigration(currentUser.id, false);
 				await expect(result).resolves.toBe(undefined);
 			});
@@ -586,26 +670,38 @@ describe('[ImportUserModule]', () => {
 
 		describe('[endSchoolMaintenance]', () => {
 			let school: School;
+			let schoolDo: SchoolDO;
 			let currentUser: User;
 			let userRepoByIdSpy: jest.SpyInstance;
 			let permissionServiceSpy: jest.SpyInstance;
-			let schoolRepoSaveSpy: jest.SpyInstance;
+			let schoolServiceSaveSpy: jest.SpyInstance;
+			let schoolServiceSpy: jest.SpyInstance;
 			beforeEach(() => {
 				school = schoolFactory.buildWithId();
 				school.externalId = 'foo';
 				school.inMaintenanceSince = new Date();
 				school.inUserMigration = false;
 				school.officialSchoolNumber = 'foo';
+				schoolDo = new SchoolDO({
+					name: 'foo',
+					externalId: 'foo',
+					features: [SchoolFeatures.LDAP_UNIVENTION_MIGRATION],
+					inMaintenanceSince: new Date(),
+					inUserMigration: false,
+					officialSchoolNumber: 'foo',
+				});
 				currentUser = userFactory.buildWithId({ school });
 
 				userRepoByIdSpy = userRepo.findById.mockResolvedValueOnce(currentUser);
 				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
-				schoolRepoSaveSpy = schoolRepo.save.mockReturnValue(Promise.resolve());
+				schoolServiceSaveSpy = schoolService.save.mockReturnValue(Promise.resolve(createMockSchoolDo(school)));
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
 			});
 			afterEach(() => {
 				userRepoByIdSpy.mockRestore();
 				permissionServiceSpy.mockRestore();
-				schoolRepoSaveSpy.mockRestore();
+				schoolServiceSaveSpy.mockRestore();
+				schoolServiceSpy.mockRestore();
 			});
 			it('Should request authorization service', async () => {
 				await uc.endSchoolInMaintenance(currentUser.id);
@@ -615,24 +711,30 @@ describe('[ImportUserModule]', () => {
 			});
 			it('should remove inMaitenanceSince for school', async () => {
 				await uc.endSchoolInMaintenance(currentUser.id);
-				const school2 = { ...school, inMaintenanceSince: undefined };
-				expect(schoolRepoSaveSpy).toHaveBeenCalledWith(school2);
+				const school2 = { ...createMockSchoolDo(school), inMaintenanceSince: undefined };
+				expect(schoolServiceSaveSpy).toHaveBeenCalledWith(school2);
 			});
 			it('should throw if school is missing ldapSchoolIdenfitier', async () => {
+				schoolServiceSpy.mockRestore();
 				school.externalId = undefined;
 				currentUser = userFactory.buildWithId({ school });
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result1 = () => uc.endSchoolInMaintenance(currentUser.id);
 				await expect(result1).rejects.toThrowError(BadRequestException);
 			});
 			it('should throw if school is missing inMaintenanceSince', async () => {
+				schoolServiceSpy.mockRestore();
 				school.inMaintenanceSince = undefined;
 				currentUser = userFactory.buildWithId({ school });
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result3 = () => uc.endSchoolInMaintenance(currentUser.id);
 				await expect(result3).rejects.toThrowError(BadRequestException);
 			});
 			it('should throw if school is still inUserMigration mode', async () => {
+				schoolServiceSpy.mockRestore();
 				school.inUserMigration = true;
 				currentUser = userFactory.buildWithId({ school });
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result4 = () => uc.endSchoolInMaintenance(currentUser.id);
 				await expect(result4).rejects.toThrowError(BadRequestException);
 			});
