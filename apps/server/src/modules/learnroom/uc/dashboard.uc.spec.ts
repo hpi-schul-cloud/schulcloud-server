@@ -86,7 +86,19 @@ describe('dashboard uc', () => {
 			const dashboard = await service.getUsersDashboard('userId', true);
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
-			expect(spy).toHaveBeenCalledWith('userId');
+			expect(spy).toHaveBeenCalledWith('userId', true);
+		});
+
+		it('should return a dashboard for teacher only courses', async () => {
+			const spy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((userId: EntityId) => {
+				const dashboard = new DashboardEntity('someid', { grid: [], userId });
+				return Promise.resolve(dashboard);
+			});
+			jest.spyOn(courseRepo, 'findAllForTeacher').mockImplementation(() => Promise.resolve([[], 0]));
+			const dashboard = await service.getUsersDashboard('userId', false);
+
+			expect(dashboard instanceof DashboardEntity).toEqual(true);
+			expect(spy).toHaveBeenCalledWith('userId', false);
 		});
 
 		it('should synchronize which courses are on the board', async () => {
