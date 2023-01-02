@@ -3,12 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { type EntityId, BaseEntity } from '@shared/domain';
-import mongoose from 'mongoose';
-import mongooseLong from 'mongoose-long';
 import { ErrorType } from '../error';
-
-mongooseLong(mongoose);
-const { Long } = mongoose.Schema.Types;
 
 export enum ScanStatus {
 	PENDING = 'pending',
@@ -92,7 +87,7 @@ export class FileRecord extends BaseEntity {
 	@Property({ nullable: true })
 	deletedSince?: Date;
 
-	@Property({ type: Long })
+	@Property()
 	size: number;
 
 	@Property()
