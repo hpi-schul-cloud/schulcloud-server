@@ -82,7 +82,6 @@ describe('dashboard uc', () => {
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
 
-
 		it('should return a dashboard with a group', async () => {
 			jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
 				const dashboard = new DashboardEntity('someid', {
