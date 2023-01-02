@@ -86,7 +86,7 @@ describe('dashboard uc', () => {
 			const dashboard = await service.getUsersDashboard('userId', true);
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
-			expect(spy).toHaveBeenCalledWith('userId', true);
+			expect(spy).toHaveBeenCalledWith('userId');
 		});
 
 		it('should return a dashboard for teacher only courses', async () => {
@@ -98,7 +98,7 @@ describe('dashboard uc', () => {
 			const dashboard = await service.getUsersDashboard('userId', false);
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
-			expect(spy).toHaveBeenCalledWith('userId', false);
+			expect(spy).toHaveBeenCalledWith('userId');
 		});
 
 		it('should synchronize which courses are on the board', async () => {
