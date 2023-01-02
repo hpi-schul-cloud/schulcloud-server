@@ -3,16 +3,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/index';
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
-import { setupEntities, systemFactory, userFactory } from '@shared/testing/index';
-import { System, User } from '@shared/domain/index';
+import { setupEntities, systemFactory } from '@shared/testing/index';
+import { System } from '@shared/domain/index';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
+import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
 import resetAllMocks = jest.resetAllMocks;
-import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
-import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -77,24 +77,20 @@ describe('OAuthUc', () => {
 			const jwt = 'schulcloudJwt';
 			const redirect = 'redirect';
 			const baseResponse: OAuthResponse = {
-				idToken: 'idToken',
-				logoutEndpoint: 'logoutEndpoint',
-				provider: 'provider',
 				redirect,
 			};
-			const user: User = userFactory.buildWithId();
+			const user: UserDO = new UserDO({
+				id: 'mockUserId',
+				firstName: 'firstName',
+				lastName: 'lastame',
+				email: '',
+				roleIds: [],
+				schoolId: 'mockSchoolId',
+				externalId: 'mockExternalId',
+			});
 
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			systemService.findOAuthById.mockResolvedValue(testSystem);
-			oauthService.requestToken.mockResolvedValue({
-				access_token: 'accessToken',
-				refresh_token: 'refreshToken',
-				id_token: 'idToken',
-			});
-			oauthService.validateToken.mockResolvedValue({ sub: 'sub' });
-			oauthService.findUser.mockResolvedValue(user);
-			oauthService.buildResponse.mockReturnValue(baseResponse);
-			oauthService.getRedirectUrl.mockReturnValue(redirect);
+			oauthService.authenticateUser.mockResolvedValue({ user, redirect: baseResponse.redirect });
 			feathersJwtProvider.generateJwt.mockResolvedValue(jwt);
 
 			const response: OAuthResponse = await service.processOAuth(query, testSystem.id);
