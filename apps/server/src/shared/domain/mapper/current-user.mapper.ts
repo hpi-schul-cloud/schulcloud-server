@@ -27,7 +27,9 @@ export class CurrentUserMapper {
 				updatedAt: user.updatedAt,
 				firstName: user.firstName,
 				lastName: user.lastName,
-				roles: user.roles.getItems().map((role: Role) => ({ id: role.id, name: role.name })),
+				roles: user.roles.getItems().map((role: Role) => {
+					return { id: role.id, name: role.name };
+				}),
 				schoolId: user.school.id,
 				permissions: Array.from(permissions),
 			},

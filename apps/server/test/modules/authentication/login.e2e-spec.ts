@@ -1,3 +1,4 @@
+import request from 'supertest';
 import { EntityManager } from '@mikro-orm/core';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -5,12 +6,11 @@ import { Account, RoleName, School, System, User } from '@shared/domain';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
 import { RequestBody } from '@src/modules/authentication/strategy/ldap.strategy';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import request from 'supertest';
 
 const schoolExternalId = 'mockSchoolExternalId';
 const ldapAccountUserName = 'ldapAccountUserName';
 const mockUserLdapDN = 'mockUserLdapDN';
-// It is not completly end-to-end
+// It is not completely end-to-end
 // LDAP client is mocked because no suitable LDAP server exists in test environment.
 const mockClient = {
 	connected: false,
@@ -36,7 +36,9 @@ jest.mock('ldapjs', () => {
 	return {
 		__esModule: true,
 		...originalModule,
-		createClient: () => ({ ...mockClient }),
+		createClient: () => {
+			return { ...mockClient };
+		},
 	};
 });
 
@@ -73,7 +75,6 @@ describe('Login Controller (e2e)', () => {
 			const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 
 			user = userFactory.buildWithId({ school, roles: [studentRoles] });
-
 			account = accountFactory.buildWithId({
 				userId: user.id,
 				username: user.email,
@@ -87,25 +88,30 @@ describe('Login Controller (e2e)', () => {
 			await em.flush();
 		});
 
-		it(`should return jwt`, async () => {
-			const params = {
-				username: user.email,
-				password: defaultPassword,
-			};
-			const response = await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(200);
+		describe('when user login succeeds', () => {
+			it('should return jwt', async () => {
+				const params = {
+					username: user.email,
+					password: defaultPassword,
+				};
+				const response = await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(200);
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			expect(response.body.accessToken).toBeDefined();
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect(response.body.accessToken).toBeDefined();
+			});
 		});
 
-		it(`should fail to login`, async () => {
-			const params = {
-				username: user.email,
-				password: 'wrongPassword',
-			};
-			await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
+		describe('when user login fails', () => {
+			it('should return error response', async () => {
+				const params = {
+					username: user.email,
+					password: 'wrongPassword',
+				};
+				await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
+			});
 		});
 	});
+
 	describe('loginLdap', () => {
 		let account: Account;
 		let user: User;
@@ -133,25 +139,29 @@ describe('Login Controller (e2e)', () => {
 			await em.flush();
 		});
 
-		it(`should return jwt`, async () => {
-			const params: RequestBody = {
-				username: ldapAccountUserName,
-				password: defaultPassword,
-				schoolId: school.id,
-				systemId: system.id,
-			};
-			const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params);
+		describe('when user login succeeds', () => {
+			it('should return jwt', async () => {
+				const params: RequestBody = {
+					username: ldapAccountUserName,
+					password: defaultPassword,
+					schoolId: school.id,
+					systemId: system.id,
+				};
+				const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params);
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			expect(response.body.accessToken).toBeDefined();
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect(response.body.accessToken).toBeDefined();
+			});
 		});
 
-		it(`should fail to login`, async () => {
-			const params = {
-				username: 'nonExistentUser',
-				password: 'wrongPassword',
-			};
-			await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params).expect(401);
+		describe('when user login fails', () => {
+			it('should return error response', async () => {
+				const params = {
+					username: 'nonExistentUser',
+					password: 'wrongPassword',
+				};
+				await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params).expect(401);
+			});
 		});
 	});
 });
