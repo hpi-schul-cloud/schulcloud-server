@@ -54,9 +54,9 @@ export class FileSecurityCheck {
 	}
 }
 
-export class Long extends Type<Number, string>{
+export class Long extends Type<number, string>{
 	convertToDatabaseValue(value: number): string {
-		return `NumberLong(${value})`;
+		return `{ $toLong: NumberLong(${value}) }`;
 	}
 
 	convertToJSValue(value: number): number {
