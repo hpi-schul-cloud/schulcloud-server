@@ -1,6 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { equal } = require('../../../helper/compare').ObjectId;
-const { hasPermission } = require('../../../hooks');
 
 // get an json api conform entry
 const getDataEntry = ({ type, id, name, authorities = ['can-read'], attributes = {} }) => ({
@@ -38,6 +37,8 @@ class ScopeResolver {
 		const userId = user._id;
 		const { schoolId } = user;
 
+		const hasAdminViewPermission = user.permissions.some((p) => p === 'ADMIN_VIEW');
+
 		response.data.push(
 			getDataEntry({
 				type: 'user',
@@ -54,14 +55,14 @@ class ScopeResolver {
 					$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
 				},
 			}),
-			hasPermission('ADMIN_VIEW')
+			hasAdminViewPermission
 				? courseService.find({
 						query: {
 							$limit: false,
 							$or: [{ schoolId }],
 						},
 				  })
-				: null,
+				: { data: [] },
 			classService.find({
 				query: {
 					$limit: false,
@@ -83,14 +84,12 @@ class ScopeResolver {
 			return c;
 		});
 
-		if (coursesAdmin != null) {
-			coursesAdmin.data = coursesAdmin.data.map((c) => {
-				c.attributes = {
-					scopeType: 'courseAdmin',
-				};
-				return c;
-			});
-		}
+		coursesAdmin.data = coursesAdmin.data.map((c) => {
+			c.attributes = {
+				scopeType: 'courseAdmin',
+			};
+			return c;
+		});
 
 		classes.data = classes.data.map((c) => {
 			c.attributes = {

@@ -4,7 +4,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RequestTimeout, TimeoutInterceptor } from '@shared/common';
 import request from 'supertest';
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const delay = (ms: number) =>
+	new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
 
 @Controller()
 class DelayController {
@@ -23,8 +26,8 @@ class DelayController {
 	}
 }
 
-export const createTestModule = (interceptor: NestInterceptor): Promise<TestingModule> => {
-	return Test.createTestingModule({
+export const createTestModule = (interceptor: NestInterceptor): Promise<TestingModule> =>
+	Test.createTestingModule({
 		providers: [
 			{
 				provide: APP_INTERCEPTOR,
@@ -33,7 +36,6 @@ export const createTestModule = (interceptor: NestInterceptor): Promise<TestingM
 		],
 		controllers: [DelayController],
 	}).compile();
-};
 
 describe('TimeoutInterceptor', () => {
 	describe('when integrate TimeoutInterceptor', () => {

@@ -189,6 +189,11 @@
 			"default": false,
 			"description": "If enabled, adds video conferences to teams and courses."
 		},
+		"VIDEOCONFERENCE_DEFAULT_PRESENTATION": {
+			"type": "string",
+			"default": "",
+			"description": "Link to a custom presentation, if empty, the default presentation will be used."
+		},
 		"VIDEOCONFERENCE_HOST": {
 			"type": "string",
 			"format": "uri",
@@ -314,6 +319,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the Identity Management (ErWIn IDM) feature."
+		},
+		"FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the Identity Management (ErWIn IDM) as account storage."
 		},
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
@@ -518,6 +528,11 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Login via Link generation (to the right form)."
+		},
+		"FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the oauth system (iserv to sanis) migration feature."
 		},
 		"SC_TITLE": {
 			"type": "string",
@@ -954,7 +969,7 @@
 		"FEATURE_USER_MIGRATION_SYSTEM_ID": {
 			"type": "string",
 			"default": "",
-			"description": "SystemId for migration of users from system"
+			"description": "SystemId for migration of users from system. To use this please set FEATURE_USER_MIGRATION_CENTRAL_LDAP in the client"
 		},
 		"FEATURE_COPY_SERVICE_ENABLED": {
 			"type": "boolean",

@@ -38,15 +38,13 @@ export interface IComponentGeogebraProperties {
 }
 
 export interface IComponentLernstoreProperties {
-	resources: [
-		{
-			client: string;
-			description: string;
-			merlinReference?: string;
-			title: string;
-			url: string;
-		}
-	];
+	resources: {
+		client: string;
+		description: string;
+		merlinReference?: string;
+		title: string;
+		url: string;
+	}[];
 }
 
 export interface IComponentEtherpadProperties {
@@ -67,6 +65,7 @@ export interface IComponentInternalProperties {
 }
 
 export interface IComponentProperties {
+	_id?: string;
 	title?: string;
 	hidden: boolean;
 	component: ComponentType;
@@ -139,25 +138,19 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 
 	getNumberOfPublishedTasks(): number {
 		const tasks = this.getTasksItems();
-		const filtered = tasks.filter((task) => {
-			return task.isPublished();
-		});
+		const filtered = tasks.filter((task) => task.isPublished());
 		return filtered.length;
 	}
 
 	getNumberOfDraftTasks(): number {
 		const tasks = this.getTasksItems();
-		const filtered = tasks.filter((task) => {
-			return task.isDraft();
-		});
+		const filtered = tasks.filter((task) => task.isDraft());
 		return filtered.length;
 	}
 
 	getNumberOfPlannedTasks(): number {
 		const tasks = this.getTasksItems();
-		const filtered = tasks.filter((task) => {
-			return task.isPlanned();
-		});
+		const filtered = tasks.filter((task) => task.isPlanned());
 		return filtered.length;
 	}
 

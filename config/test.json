@@ -36,11 +36,11 @@
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
 		"URI": "http://localhost:8080/",
-		"TENANT": "dBildungscloud",
+		"TENANT": "master",
 		"CLIENTID": "dbc",
 		"ADMIN_CLIENTID": "admin-cli",
-		"ADMIN_USER": "dbildungscloud",
-		"ADMIN_PASSWORD": "dBildungscloud"
+		"ADMIN_USER": "keycloak",
+		"ADMIN_PASSWORD": "keycloak"
 	},
 	"NEST_LOG_LEVEL": "error",
 	"CALENDAR_URI": "https://schul.tech:3000",

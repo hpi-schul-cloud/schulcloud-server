@@ -368,9 +368,7 @@ export class AccountUc {
 	}
 
 	private hasRole(user: User, roleName: string) {
-		return user.roles.getItems().some((role) => {
-			return role.name === roleName;
-		});
+		return user.roles.getItems().some((role) => role.name === roleName);
 	}
 
 	private async isSuperhero(currentUser: ICurrentUser): Promise<boolean> {

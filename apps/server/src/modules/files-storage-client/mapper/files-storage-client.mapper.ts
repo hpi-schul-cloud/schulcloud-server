@@ -1,4 +1,4 @@
-import { Lesson, Task } from '@shared/domain';
+import { Lesson, Submission, Task } from '@shared/domain';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { CopyFileDto, FileDto } from '../dto';
 import { EntitiesWithFiles, ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
@@ -63,6 +63,8 @@ export class FilesStorageClientMapper {
 		if (entity instanceof Lesson) return FileRecordParentType.Lesson;
 
 		if (entity instanceof Task) return FileRecordParentType.Task;
+
+		if (entity instanceof Submission) return FileRecordParentType.Submission;
 
 		throw new Error(`Mapping type is not supported.`);
 	}

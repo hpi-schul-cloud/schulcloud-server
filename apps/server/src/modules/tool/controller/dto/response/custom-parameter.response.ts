@@ -15,6 +15,9 @@ export class CustomParameterResponse {
 	@ApiPropertyOptional()
 	regex?: string;
 
+	@ApiPropertyOptional()
+	regexComment?: string;
+
 	@ApiProperty()
 	scope: CustomParameterScopeParams;
 
@@ -24,6 +27,9 @@ export class CustomParameterResponse {
 	@ApiProperty()
 	type: CustomParameterTypeParams;
 
+	@ApiProperty()
+	isOptional: boolean;
+
 	constructor(props: CustomParameterResponse) {
 		this.name = props.name;
 		this.default = props.default;
@@ -31,5 +37,7 @@ export class CustomParameterResponse {
 		this.scope = props.scope;
 		this.type = props.type;
 		this.regex = props.regex;
+		this.regexComment = props.regexComment;
+		this.isOptional = props.isOptional;
 	}
 }

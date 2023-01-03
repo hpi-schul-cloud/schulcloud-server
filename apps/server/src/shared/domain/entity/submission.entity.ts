@@ -1,20 +1,24 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
 
 import { InternalServerErrorException } from '@nestjs/common';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { CourseGroup } from './coursegroup.entity';
 import type { File } from './file.entity';
+import { School } from './school.entity';
 import type { Task } from './task.entity';
-import { EntityId } from '../types';
 import type { User } from './user.entity';
 
 export interface ISubmissionProperties {
+	school: School;
 	task: Task;
 	student: User;
 	courseGroup?: CourseGroup;
 	teamMembers?: User[];
 	comment: string;
 	studentFiles?: File[];
+	submitted?: boolean;
+	graded?: boolean;
 	grade?: number;
 	gradeComment?: string;
 	gradeFiles?: File[];
@@ -22,7 +26,12 @@ export interface ISubmissionProperties {
 
 @Entity({ tableName: 'submissions' })
 @Index({ properties: ['student', 'teamMembers'] })
+@Unique({ properties: ['student', 'task'] })
 export class Submission extends BaseEntityWithTimestamps {
+	@ManyToOne('School', { fieldName: 'schoolId' })
+	@Index()
+	school: School;
+
 	@ManyToOne('Task', { fieldName: 'homeworkId' })
 	@Index()
 	task: Task;
@@ -36,7 +45,6 @@ export class Submission extends BaseEntityWithTimestamps {
 	@ManyToMany('User', undefined, { fieldName: 'teamMembers' })
 	teamMembers = new Collection<User>(this);
 
-	/* ***** student uploads ***** */
 	@Property({ nullable: true })
 	comment?: string;
 
@@ -44,7 +52,12 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Index()
 	studentFiles = new Collection<File>(this);
 
-	/* ***** teacher uploads ***** */
+	@Property()
+	submitted: boolean;
+
+	@Property()
+	graded: boolean;
+
 	@Property({ nullable: true })
 	grade?: number;
 
@@ -57,9 +70,12 @@ export class Submission extends BaseEntityWithTimestamps {
 
 	constructor(props: ISubmissionProperties) {
 		super();
+		this.school = props.school;
 		this.student = props.student;
 		this.comment = props.comment;
 		this.task = props.task;
+		this.submitted = props.submitted || false;
+		this.graded = props.graded || false;
 		this.grade = props.grade;
 		this.gradeComment = props.gradeComment;
 		this.courseGroup = props.courseGroup;
@@ -98,37 +114,8 @@ export class Submission extends BaseEntityWithTimestamps {
 		return teamMemberIds;
 	}
 
-	private getGradeFileIds(): EntityId[] {
-		const gradeFilesObjectIds = this.gradeFiles.getIdentifiers('_id');
-		const gradeFilesIds = gradeFilesObjectIds.map((id): string => id.toString());
-
-		return gradeFilesIds;
-	}
-
-	private hasGrade(): boolean {
-		const gradeExists = typeof this.grade === 'number' && this.grade >= 0;
-
-		return gradeExists;
-	}
-
-	private hasGradeComment(): boolean {
-		const gradeCommentExists = typeof this.gradeComment === 'string' && this.gradeComment.length > 0;
-
-		return gradeCommentExists;
-	}
-
-	private hasGradeFiles(): boolean {
-		const gradedFileIds = this.getGradeFileIds();
-		const gradeFilesExists = gradedFileIds.length > 0;
-
-		return gradeFilesExists;
-	}
-
 	public isSubmitted(): boolean {
-		// Always submitted for now, but can be changed in future.
-		const isSubmitted = true;
-
-		return isSubmitted;
+		return this.submitted;
 	}
 
 	public isSubmittedForUser(user: User): boolean {
@@ -160,9 +147,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	}
 
 	public isGraded(): boolean {
-		const isGraded = this.hasGrade() || this.hasGradeComment() || this.hasGradeFiles();
-
-		return isGraded;
+		return this.graded;
 	}
 
 	public isGradedForUser(user: User): boolean {

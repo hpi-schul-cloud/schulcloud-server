@@ -10,12 +10,12 @@ describe('SchoolUcMapper', () => {
 				systemIds: ['systemId'],
 			});
 
-			const result = SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDto(dto);
+			const result = SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDO(dto);
 
 			expect(result.id).toEqual(dto.id);
 			expect(result.name).toEqual(dto.name);
 			expect(result.externalId).toEqual(dto.externalId);
-			expect(result.systemIds).toEqual(dto.systemIds);
+			expect(result.systems).toEqual(dto.systemIds);
 		});
 	});
 });

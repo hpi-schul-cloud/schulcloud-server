@@ -62,7 +62,7 @@ export class CopyFileResponse {
 	}
 
 	@ApiProperty()
-	id: string;
+	id?: string | undefined;
 
 	@ApiProperty()
 	sourceId: string;

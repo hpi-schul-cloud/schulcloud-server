@@ -15,7 +15,7 @@ export class AccountResponseMapper {
 	static mapToResponse(account: AccountDto): AccountResponse {
 		return new AccountResponse({
 			id: account.id,
-			userId: account.userId?.toString(),
+			userId: account.userId,
 			activated: account.activated,
 			username: account.username,
 		});

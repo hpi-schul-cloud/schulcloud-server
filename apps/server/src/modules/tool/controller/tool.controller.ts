@@ -5,6 +5,7 @@ import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
+	ApiOkResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
@@ -12,12 +13,12 @@ import {
 import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Lti11Uc } from '../uc/lti11.uc';
-import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './mapper';
+import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ExternalToolUc } from '../uc/external-tool.uc';
+import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './mapper';
 import {
-	ExternalToolParams,
+	ExternalToolPostParams,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
@@ -26,6 +27,7 @@ import {
 	SortExternalToolParams,
 	ToolIdParams,
 } from './dto';
+import { CreateExternalTool, UpdateExternalTool } from '../uc/dto';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -62,9 +64,9 @@ export class ToolController {
 	@ApiUnauthorizedResponse()
 	async createExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() externalToolParams: ExternalToolParams
+		@Body() externalToolParams: ExternalToolPostParams
 	): Promise<ExternalToolResponse> {
-		const externalToolDO: ExternalToolDO = this.externalToolDOMapper.mapRequestToExternalToolDO(externalToolParams);
+		const externalToolDO: CreateExternalTool = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
 		return mapped;
@@ -105,6 +107,25 @@ export class ToolController {
 	): Promise<ExternalToolResponse> {
 		const externalToolDO: ExternalToolDO = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(externalToolDO);
+		return mapped;
+	}
+
+	@Post('/:toolId')
+	@ApiOkResponse({ description: 'The Tool has been successfully updated.', type: ExternalToolResponse })
+	@ApiForbiddenResponse()
+	@ApiUnauthorizedResponse()
+	async updateExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ToolIdParams,
+		@Body() externalToolParams: ExternalToolPostParams
+	): Promise<ExternalToolResponse> {
+		const externalTool: UpdateExternalTool = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
+		const updated: ExternalToolDO = await this.externalToolUc.updateExternalTool(
+			currentUser.userId,
+			params.toolId,
+			externalTool
+		);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(updated);
 		return mapped;
 	}
 

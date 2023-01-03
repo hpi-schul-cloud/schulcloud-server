@@ -62,7 +62,7 @@ describe('user repo', () => {
 				roles: [TEST_ROLE],
 			};
 
-			const user = await UserRepo.createUser(inputUser);
+			const user = await UserRepo.createUser(inputUser, school);
 			expect(user._id).to.be.not.undefined;
 
 			expect(user.ldapDn).to.be.not.undefined;
@@ -94,7 +94,7 @@ describe('user repo', () => {
 				...inputUser,
 				ldapId: firstLdapId,
 			};
-			await UserRepo.createUser(inputUserFirst);
+			await UserRepo.createUser(inputUserFirst, school);
 
 			const secondLdapId = 'newLdapId';
 			const inputUserSecond = {
@@ -102,10 +102,18 @@ describe('user repo', () => {
 				ldapId: secondLdapId,
 			};
 			try {
-				await UserRepo.createUser(inputUserSecond);
+				await UserRepo.createUser(inputUserSecond, school);
 			} catch (error) {
 				expect(error).to.be.an.instanceof(BadRequest);
-				expect(error.message).to.contain(firstLdapId);
+				expect(error.errors).to.have.all.keys(
+					'userId',
+					'ldapId',
+					'existsInSchool',
+					'userSchool',
+					'userSchoolId',
+					'existsInSchoolName'
+				);
+				expect(error.errors.ldapId).to.equal(firstLdapId);
 			}
 		});
 	});
