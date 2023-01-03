@@ -1,5 +1,5 @@
+import { VideoConferenceScope } from '@shared/domain/interface/video-conference-scope.enum';
 import { BaseDO } from './base.do';
-import { VideoConferenceScope } from '@shared/domain/interface';
 
 export class VideoConferenceOptionsDO {
 	everyAttendeeJoinsMuted: boolean;

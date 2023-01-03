@@ -1,6 +1,6 @@
-import { BaseDO } from './base.do';
 import { EntityId } from '@shared/domain/types';
 import { LanguageType } from '@shared/domain/entity';
+import { BaseDO } from './base.do';
 
 export class UserDO extends BaseDO {
 	createdAt?: Date;
