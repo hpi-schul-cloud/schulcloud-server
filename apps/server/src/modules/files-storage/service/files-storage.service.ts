@@ -302,6 +302,7 @@ export class FilesStorageService {
 
 				return fileResponse;
 			} catch (error) {
+				this.logger.error(`copy file failed for source fileRecordId ${sourceFile.id}`, error);
 				return {
 					sourceId: sourceFile._id.toString(),
 					name: sourceFile.name,
