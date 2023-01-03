@@ -17,4 +17,12 @@ export class MigrationBody {
 		nullable: false,
 	})
 	oauthMigrationMandatory!: boolean;
+
+	@IsBoolean()
+	@ApiProperty({
+		description: 'Set if migration is finished in this school',
+		required: true,
+		nullable: false,
+	})
+	oauthMigrationFinished!: boolean;
 }

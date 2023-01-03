@@ -13,6 +13,7 @@ export class SchoolUc {
 		schoolId: string,
 		oauthMigrationPossible: boolean,
 		oauthMigrationMandatory: boolean,
+		oauthMigrationFinished: boolean,
 		userId: string
 	): Promise<MigrationResponse> {
 		await this.authService.checkPermissionByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
@@ -22,7 +23,8 @@ export class SchoolUc {
 		const migrationResponse: MigrationResponse = await this.schoolService.setMigration(
 			schoolId,
 			oauthMigrationPossible,
-			oauthMigrationMandatory
+			oauthMigrationMandatory,
+			oauthMigrationFinished
 		);
 
 		return migrationResponse;
