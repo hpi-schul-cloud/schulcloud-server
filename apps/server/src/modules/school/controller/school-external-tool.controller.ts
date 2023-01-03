@@ -16,7 +16,7 @@ export class SchoolExternalToolController {
 		private readonly schoolExternalToolMapper: SchoolExternalToolMapper
 	) {}
 
-	@Get(':schoolId/tools/available')
+	@Get(':schoolId/available-tools')
 	async getAvailableToolsForSchool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() schoolParams: SchoolParams
