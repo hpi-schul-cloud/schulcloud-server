@@ -17,6 +17,7 @@ import {
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { SubmissionService } from '../service';
 import { TaskUC } from './task.uc';
 
 const mockStatus: ITaskStatus = {
@@ -37,6 +38,7 @@ describe('TaskUC', () => {
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let fileStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
+	let submissionService: DeepMocked<SubmissionService>;
 	let orm: MikroORM;
 	let user!: User;
 
@@ -83,6 +85,10 @@ describe('TaskUC', () => {
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
+				{
+					provide: SubmissionService,
+					useValue: createMock<SubmissionService>(),
+				},
 			],
 		}).compile();
 
@@ -93,6 +99,7 @@ describe('TaskUC', () => {
 		lessonRepo = module.get(LessonRepo);
 		authorizationService = module.get(AuthorizationService);
 		fileStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
+		submissionService = module.get(SubmissionService);
 	});
 
 	afterEach(async () => {
@@ -1076,6 +1083,15 @@ describe('TaskUC', () => {
 			await service.delete(user.id, task.id);
 			const params = FileParamBuilder.build(task.school.id, task);
 			expect(fileStorageClientAdapterService.deleteFilesOfParent).toBeCalledWith(params);
+		});
+
+		it('should call submissionService.delete() for all related submissions', async () => {
+			const submissions = submissionFactory.buildList(3, { task });
+
+			await service.delete(user.id, task.id);
+
+			expect(submissionService.delete).toBeCalledTimes(3);
+			expect(submissionService.delete).toBeCalledWith(submissions[0]);
 		});
 	});
 
