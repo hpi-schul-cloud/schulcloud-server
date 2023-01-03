@@ -7,10 +7,11 @@ import { LoggerModule } from '../../core/logger';
 import { SchoolExternalToolController } from './controller/school-external-tool.controller';
 import { ToolModule } from '../tool';
 import { SchoolExternalToolUc } from './uc/school-external-tool.uc';
+import { SchoolExternalToolMapper } from './controller/mapper/school-external-tool.mapper';
 
 @Module({
 	imports: [SchoolModule, AuthorizationModule, LoggerModule, ToolModule],
 	controllers: [SchoolController, SchoolExternalToolController],
-	providers: [SchoolUc, SchoolExternalToolUc],
+	providers: [SchoolUc, SchoolExternalToolUc, SchoolExternalToolMapper],
 })
 export class SchoolApiModule {}
