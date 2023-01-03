@@ -1,4 +1,4 @@
-import { Embeddable, Embedded, Entity, Enum, Index, Property, types } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, Enum, Index, Property, Type } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
@@ -54,6 +54,16 @@ export class FileSecurityCheck {
 	}
 }
 
+export class Long extends Type<Number, string>{
+	convertToDatabaseValue(value: number): string {
+		return `NumberLong(${value})`;
+	}
+
+	convertToJSValue(value: number): number {
+		return value;
+	}
+}
+
 export interface IFileRecordProperties {
 	size: number;
 	name: string;
@@ -87,7 +97,7 @@ export class FileRecord extends BaseEntity {
 	@Property({ nullable: true })
 	deletedSince?: Date;
 
-	@Property({ type: types.mediumint })
+	@Property({ type: Long })
 	size: number;
 
 	@Property()
