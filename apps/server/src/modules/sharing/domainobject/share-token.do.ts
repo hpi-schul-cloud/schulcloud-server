@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain/types';
-import { BaseWithTimestampsDO } from '@shared/domain/domainobject/base.do';
+import { BaseDO } from '@shared/domain/domainobject';
 
 export enum ShareTokenParentType {
 	'Course' = 'courses',
@@ -23,7 +23,11 @@ export type ShareTokenContext = {
 	contextId: EntityId;
 };
 
-export class ShareTokenDO extends BaseWithTimestampsDO {
+export class ShareTokenDO extends BaseDO {
+	createdAt?: Date;
+
+	updatedAt?: Date;
+
 	token: ShareTokenString;
 
 	payload: ShareTokenPayload;
@@ -32,11 +36,14 @@ export class ShareTokenDO extends BaseWithTimestampsDO {
 
 	expiresAt?: Date;
 
-	constructor(props: ShareTokenDO) {
-		super(props);
-		this.token = props.token;
-		this.payload = props.payload;
-		this.context = props.context;
-		this.expiresAt = props.expiresAt;
+	constructor(domainObject: ShareTokenDO) {
+		super(domainObject.id);
+
+		this.createdAt = domainObject.createdAt;
+		this.updatedAt = domainObject.updatedAt;
+		this.token = domainObject.token;
+		this.payload = domainObject.payload;
+		this.context = domainObject.context;
+		this.expiresAt = domainObject.expiresAt;
 	}
 }
