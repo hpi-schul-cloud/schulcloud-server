@@ -59,9 +59,7 @@ describe('AccountService', () => {
 
 							return Promise.resolve();
 						}),
-						deleteById: jest.fn().mockImplementation((): Promise<void> => {
-							return Promise.resolve();
-						}),
+						deleteById: jest.fn().mockImplementation((): Promise<void> => Promise.resolve()),
 						findMultipleByUserId: (userIds: EntityId[]): Promise<Account[]> => {
 							const accounts = mockAccounts.filter((tempAccount) =>
 								userIds.find((userId) => tempAccount.userId?.toString() === userId)
@@ -101,15 +99,15 @@ describe('AccountService', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						}),
-						searchByUsernameExactMatch: jest.fn().mockImplementation((): Promise<[Account[], number]> => {
-							return Promise.resolve([[mockTeacherAccount], 1]);
-						}),
-						searchByUsernamePartialMatch: jest.fn().mockImplementation((): Promise<[Account[], number]> => {
-							return Promise.resolve([mockAccounts, mockAccounts.length]);
-						}),
-						deleteByUserId: jest.fn().mockImplementation((): Promise<void> => {
-							return Promise.resolve();
-						}),
+						searchByUsernameExactMatch: jest
+							.fn()
+							.mockImplementation((): Promise<[Account[], number]> => Promise.resolve([[mockTeacherAccount], 1])),
+						searchByUsernamePartialMatch: jest
+							.fn()
+							.mockImplementation(
+								(): Promise<[Account[], number]> => Promise.resolve([mockAccounts, mockAccounts.length])
+							),
+						deleteByUserId: jest.fn().mockImplementation((): Promise<void> => Promise.resolve()),
 					},
 				},
 				{

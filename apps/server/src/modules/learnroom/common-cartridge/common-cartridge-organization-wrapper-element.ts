@@ -16,9 +16,7 @@ export class CommonCartridgeOrganizationWrapperElement implements ICommonCartrid
 							$: {
 								identifier: 'LearningModules',
 							},
-							item: this.organizationElements.map((organizationElement) => {
-								return organizationElement.transform();
-							}),
+							item: this.organizationElements.map((organizationElement) => organizationElement.transform()),
 						},
 					],
 				},

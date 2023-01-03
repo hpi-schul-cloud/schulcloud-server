@@ -22,17 +22,19 @@ const usersFile = 'users.json';
 let jsonAccounts: IJsonAccount[];
 let jsonUsers: IJsonUser[];
 
-jest.mock('node:fs/promises', () => ({
-	readFile: jest.fn().mockImplementation((path: string) => {
-		if (path.toString() === accountsFile) {
-			return Promise.resolve(JSON.stringify(jsonAccounts));
-		}
-		if (path.toString() === usersFile) {
-			return Promise.resolve(JSON.stringify(jsonUsers));
-		}
-		throw new Error();
-	}),
-}));
+jest.mock('node:fs/promises', () => {
+	return {
+		readFile: jest.fn().mockImplementation((path: string) => {
+			if (path.toString() === accountsFile) {
+				return Promise.resolve(JSON.stringify(jsonAccounts));
+			}
+			if (path.toString() === usersFile) {
+				return Promise.resolve(JSON.stringify(jsonUsers));
+			}
+			throw new Error();
+		}),
+	};
+});
 
 describe('KeycloakSeedService', () => {
 	let module: TestingModule;
@@ -107,9 +109,9 @@ describe('KeycloakSeedService', () => {
 				{
 					provide: KeycloakAdministrationService,
 					useValue: {
-						callKcAdminClient: jest.fn().mockImplementation(async (): Promise<KeycloakAdminClient> => {
-							return Promise.resolve(kcAdminClient);
-						}),
+						callKcAdminClient: jest
+							.fn()
+							.mockImplementation(async (): Promise<KeycloakAdminClient> => Promise.resolve(kcAdminClient)),
 						testKcConnection: jest.fn().mockResolvedValue(true),
 						getAdminUser: jest.fn().mockReturnValue(adminUser.username),
 					},

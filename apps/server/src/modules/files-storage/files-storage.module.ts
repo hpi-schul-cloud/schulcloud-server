@@ -33,8 +33,8 @@ const providers = [
 	FilesStorageService,
 	{
 		provide: 'S3_Client',
-		useFactory: (configProvider: S3Config) => {
-			return new S3Client({
+		useFactory: (configProvider: S3Config) =>
+			new S3Client({
 				region: configProvider.region,
 				credentials: {
 					accessKeyId: configProvider.accessKeyId,
@@ -43,8 +43,7 @@ const providers = [
 				endpoint: configProvider.endpoint,
 				forcePathStyle: true,
 				tls: true,
-			});
-		},
+			}),
 		inject: ['S3_Config'],
 	},
 	{
@@ -56,10 +55,9 @@ const providers = [
 ];
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
-	},
+		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
 };
 
 @Module({

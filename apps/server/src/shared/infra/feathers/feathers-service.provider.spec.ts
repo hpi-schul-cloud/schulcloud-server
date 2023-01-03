@@ -51,9 +51,7 @@ describe('FeathersServiceProvider', () => {
 						provide: REQUEST,
 						useValue: {
 							app: {
-								get: () => {
-									return undefined;
-								},
+								get: () => undefined,
 							},
 						},
 						scope: Scope.REQUEST,

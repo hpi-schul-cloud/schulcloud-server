@@ -12,18 +12,14 @@ const isFeathersError = (error: Error): error is FeathersError => {
 	return (error as FeathersError)?.type === 'FeathersError';
 };
 
-const isBusinessError = (error: Error): error is BusinessError => {
-	return error instanceof BusinessError;
-};
+const isBusinessError = (error: Error): error is BusinessError => error instanceof BusinessError;
 
 /**
  * Compare helper to detect an error is a build in NestJS http exception.
  * @param error
  * @returns
  */
-const isTechnicalError = (error: Error): error is HttpException => {
-	return error instanceof HttpException;
-};
+const isTechnicalError = (error: Error): error is HttpException => error instanceof HttpException;
 
 /**
  * Creates ErrorResponse from NestJS build in technical exceptions

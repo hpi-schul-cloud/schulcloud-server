@@ -10,7 +10,7 @@ const dbName = () => _.times(20, () => _.random(35).toString(36)).join('');
 const createMikroOrmModule = (options: MikroOrmModuleAsyncOptions): DynamicModule => {
 	const mikroOrmModule = MikroOrmModule.forRootAsync({
 		useFactory: () => {
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, no-process-env
 			const clientUrl = `${process.env.MONGO_TEST_URI}/${dbName()}`;
 			return {
 				allowGlobalContext: true, // can be overridden by options

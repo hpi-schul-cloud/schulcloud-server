@@ -13,9 +13,9 @@ export class ExternalToolVersionService {
 	}
 
 	private compareParameters(oldParams: CustomParameterDO[], newParams: CustomParameterDO[]): boolean {
-		const matchingParams: CustomParameterDO[] = oldParams.filter((oldParam) => {
-			return newParams.some((newParam) => oldParam.name === newParam.name);
-		});
+		const matchingParams: CustomParameterDO[] = oldParams.filter((oldParam) =>
+			newParams.some((newParam) => oldParam.name === newParam.name)
+		);
 
 		const shouldIncrementVersion =
 			this.hasNewRequiredParameter(oldParams, newParams) ||
