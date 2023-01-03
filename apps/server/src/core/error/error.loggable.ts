@@ -16,10 +16,10 @@ export class ErrorLoggable implements ILoggable {
 			type: 'Unhandled or Unknown Error',
 		};
 
-		if (ErrorUtils.isFeathersError(this.error)) {
+		if (this.error instanceof ApiValidationError) {
+			logMessage = this.createLogMessageForValidationErrors(this.error);
+		} else if (ErrorUtils.isFeathersError(this.error)) {
 			logMessage.type = 'Feathers Error';
-		} else if (this.error instanceof ApiValidationError) {
-			logMessage = this.writeValidationErrors(this.error);
 		} else if (
 			ErrorUtils.isBusinessError(this.error) ||
 			(ErrorUtils.isNestHttpException(this.error) && this.error.getStatus() < 500)
@@ -36,7 +36,7 @@ export class ErrorLoggable implements ILoggable {
 		return logMessage;
 	}
 
-	private writeValidationErrors = (error: ApiValidationError) => {
+	private createLogMessageForValidationErrors = (error: ApiValidationError) => {
 		const errorMsg = error.validationErrors.map(
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			(e) => `Wrong property ${e.property} got ${e.value} : ${JSON.stringify(e.constraints)}`

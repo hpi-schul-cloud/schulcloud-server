@@ -7,33 +7,42 @@ import { ErrorUtils } from './error.utils';
 
 export class ErrorResponseUtils {
 	static createErrorResponse(error: unknown): ErrorResponse {
+		let response: ErrorResponse;
+
 		if (error instanceof Error) {
 			if (ErrorUtils.isFeathersError(error)) {
-				return this.createErrorResponseForFeathersError(error);
+				response = this.createErrorResponseForFeathersError(error);
 			}
 			if (ErrorUtils.isBusinessError(error)) {
-				return this.createErrorResponseForBusinessError(error);
+				response = this.createErrorResponseForBusinessError(error);
 			}
 			if (ErrorUtils.isNestHttpException(error)) {
-				return this.createErrorResponseForNestHttpException(error);
+				response = this.createErrorResponseForNestHttpException(error);
 			}
 		}
-		return this.createErrorResponseForUnknownError();
+
+		response = this.createErrorResponseForUnknownError();
+
+		return response;
 	}
 
 	private static createErrorResponseForFeathersError(error: FeathersError) {
 		const { code, className, name, message } = error;
 		const type = _.snakeCase(className).toUpperCase();
 		const title = _.startCase(name);
+
 		return new ErrorResponse(type, title, message, code);
 	}
 
 	private static createErrorResponseForBusinessError(error: BusinessError): ErrorResponse {
+		let response: ErrorResponse;
+
 		if (error instanceof ApiValidationError) {
-			const response = new ApiValidationErrorResponse(error);
-			return response;
+			response = new ApiValidationErrorResponse(error);
+		} else {
+			response = error.getResponse();
 		}
-		const response = error.getResponse();
+
 		return response;
 	}
 
@@ -43,12 +52,14 @@ export class ErrorResponseUtils {
 		const exceptionName = exception.constructor.name.replace('Loggable', '').replace('Exception', '');
 		const type = _.snakeCase(exceptionName).toUpperCase();
 		const title = _.startCase(exceptionName);
+
 		return new ErrorResponse(type, title, msg, code);
 	}
 
 	private static createErrorResponseForUnknownError(error?: unknown): ErrorResponse {
 		const unknownError = new InternalServerErrorException(error);
 		const response = this.createErrorResponseForNestHttpException(unknownError);
+
 		return response;
 	}
 }
