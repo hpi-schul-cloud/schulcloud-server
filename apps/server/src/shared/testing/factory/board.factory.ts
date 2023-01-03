@@ -3,5 +3,8 @@ import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';
 
 export const boardFactory = BaseFactory.define<Board, BoardProps>(Board, () => {
-	return { references: [], course: courseFactory.build() };
+	return {
+		references: [],
+		course: courseFactory.build(),
+	};
 });

@@ -1,8 +1,7 @@
+import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { FilterQuery } from '@mikro-orm/core';
-import { BaseRepo } from '@shared/repo/base.repo';
-import { QueryOrderMap } from '@mikro-orm/core/enums';
 import { Counted, CourseNews, EntityId, IFindOptions, News, SchoolNews, TeamNews } from '@shared/domain';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { NewsScope } from './news-scope';
 import { NewsTargetFilter } from './news-target-filter';
 

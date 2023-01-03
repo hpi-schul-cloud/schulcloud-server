@@ -29,13 +29,15 @@ class HydraAdapterSpec extends HydraAdapter {
 	}
 }
 
-const createAxiosResponse = <T>(data: T): AxiosResponse<T> => ({
-	data,
-	status: 200,
-	statusText: '',
-	headers: {},
-	config: {},
-});
+const createAxiosResponse = <T>(data: T): AxiosResponse<T> => {
+	return {
+		data,
+		status: 200,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
+};
 
 describe('HydraService', () => {
 	let module: TestingModule;

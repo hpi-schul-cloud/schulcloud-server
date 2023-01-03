@@ -19,6 +19,8 @@ module.exports = async (context) => {
 				'inMaintenanceSince',
 				'inMaintenance',
 				'inUserMigration',
+				'oauthMigrationPossible',
+				'oauthMigrationMandatory',
 				'enableStudentTeamCreation',
 				'language',
 				'timezone',

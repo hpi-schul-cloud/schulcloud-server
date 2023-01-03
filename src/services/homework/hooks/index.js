@@ -36,8 +36,8 @@ const getAverageRating = function getAverageRating(submissions) {
 	}
 	return undefined;
 };
-function isValidSubmission(submission) {
-	return (submission.comment && submission.comment !== '') || (submission.fileIds && submission.fileIds.length > 0);
+function isSubmitted(submission) {
+	return submission.submitted;
 }
 function isGraded(submission) {
 	return submission.graded;
@@ -170,7 +170,7 @@ const addStats = (hook) => {
 						copy.hasEvaluation = true;
 					}
 
-					copy.submissions = filteredSubmission.filter(isValidSubmission).length;
+					copy.submissions = filteredSubmission.filter(isSubmitted).length;
 				}
 
 				if (
@@ -181,7 +181,7 @@ const addStats = (hook) => {
 				) {
 					const NumberOfCourseMembers = ((copy.courseId || {}).userIds || []).length;
 					const currentSubmissions = submissions.filter((s) => equalIds(copy._id, s.homeworkId));
-					const validSubmissions = currentSubmissions.filter(isValidSubmission);
+					const validSubmissions = currentSubmissions.filter(isSubmitted);
 					const gradedSubmissions = currentSubmissions.filter(isGraded);
 					const NumberOfUsersWithSubmission = validSubmissions
 						.map((e) =>

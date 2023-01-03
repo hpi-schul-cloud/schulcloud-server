@@ -126,13 +126,14 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		const nextcloudLtiTool: LtiToolDO = await this.findNextcloudTool();
 
 		let convertedTeamUserIds: string[] = await Promise.all<Promise<string>[]>(
-			teamUsers.map(async (teamUser: TeamUserDto): Promise<string> => {
-				// The Oauth authentication generates a pseudonym which will be used from external systems as identifier
-				return this.pseudonymsRepo
-					.findByUserIdAndToolId(teamUser.userId, nextcloudLtiTool.id as string)
-					.then((pseudonymDO: PseudonymDO) => this.client.getNameWithPrefix(pseudonymDO.pseudonym))
-					.catch(() => '');
-			})
+			teamUsers.map(
+				async (teamUser: TeamUserDto): Promise<string> =>
+					// The Oauth authentication generates a pseudonym which will be used from external systems as identifier
+					this.pseudonymsRepo
+						.findByUserIdAndToolId(teamUser.userId, nextcloudLtiTool.id as string)
+						.then((pseudonymDO: PseudonymDO) => this.client.getNameWithPrefix(pseudonymDO.pseudonym))
+						.catch(() => '')
+			)
 		);
 		convertedTeamUserIds = convertedTeamUserIds.filter(Boolean);
 

@@ -1,8 +1,9 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, Permission } from '@shared/domain';
+import { ICurrentUser, Permission, Submission } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseGroupFactory,
@@ -12,6 +13,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { FilesStorageClientAdapterService } from '@src/modules';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { SubmissionStatusListResponse } from '@src/modules/task/controller/dto/submission.response';
@@ -37,128 +39,258 @@ class API {
 			result: response.body as SubmissionStatusListResponse,
 		};
 	}
+
+	async delete(submissionId: string) {
+		const response = await request(this.app.getHttpServer())
+			.delete(`/submissions/${submissionId}`)
+			.set('Accept', 'application/json')
+			.set('Authorization', 'jwt');
+
+		return {
+			status: response.status,
+			error: response.body as ApiValidationError,
+			result: response.text,
+		};
+	}
 }
 
 describe('Submission Controller (e2e)', () => {
-	let app: INestApplication;
-	let currentUser: ICurrentUser;
-	let api: API;
-	let em: EntityManager;
+	describe('find statuses by task', () => {
+		let app: INestApplication;
+		let currentUser: ICurrentUser;
+		let api: API;
+		let em: EntityManager;
 
-	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
-			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-
-					return true;
-				},
+		beforeAll(async () => {
+			const module: TestingModule = await Test.createTestingModule({
+				imports: [ServerTestModule],
 			})
-			.compile();
+				.overrideGuard(JwtAuthGuard)
+				.useValue({
+					canActivate(context: ExecutionContext) {
+						const req: Request = context.switchToHttp().getRequest();
+						req.user = currentUser;
 
-		app = module.createNestApplication();
-		await app.init();
-		api = new API(app);
-		em = module.get(EntityManager);
-	});
-
-	beforeEach(async () => {
-		await cleanupCollections(em);
-	});
-
-	afterAll(async () => {
-		await app.close();
-	});
-
-	describe('WHEN user is not authorized', () => {
-		it('should return 401', async () => {
-			const taskId = 'id';
-
-			const { status } = await api.findStatusesByTask(taskId);
-
-			expect(status).toEqual(401);
-		});
-	});
-
-	describe('WHEN user is authorized, has permission', () => {
-		const setup = async () => {
-			const roles = roleFactory.buildList(1, {
-				permissions: [Permission.SUBMISSIONS_VIEW],
-			});
-			const user = userFactory.buildWithId({ roles });
-			const task = taskFactory.buildWithId();
-			const courseGroup = courseGroupFactory.buildWithId();
-			const submission = submissionFactory.buildWithId({ task, student: user, grade: 97, courseGroup });
-
-			await em.persistAndFlush([submission]);
-			em.clear();
-			currentUser = mapUserToCurrentUser(user);
-
-			return { task, submission };
-		};
-
-		it('should return status', async () => {
-			const { task, submission } = await setup();
-
-			const { result: statuses } = await api.findStatusesByTask(task.id);
-
-			const expectedSubmissionStatuses = {
-				data: [
-					{
-						id: submission.id,
-						submitters: submission.getSubmitterIds(),
-						isSubmitted: submission.isSubmitted(),
-						isGraded: submission.isGraded(),
-						grade: submission.grade,
-						submittingCourseGroupName: submission.courseGroup?.name,
+						return true;
 					},
-				],
+				})
+				.compile();
+
+			app = module.createNestApplication();
+			await app.init();
+			api = new API(app);
+			em = module.get(EntityManager);
+		});
+
+		beforeEach(async () => {
+			await cleanupCollections(em);
+		});
+
+		afterAll(async () => {
+			await app.close();
+		});
+
+		describe('WHEN user is not authenticated', () => {
+			it('should return 401', async () => {
+				const taskId = 'id';
+
+				const { status } = await api.findStatusesByTask(taskId);
+
+				expect(status).toEqual(401);
+			});
+		});
+
+		describe('WHEN user is authenticated and has permission', () => {
+			const setup = async () => {
+				const roles = roleFactory.buildList(1, {
+					permissions: [Permission.SUBMISSIONS_VIEW],
+				});
+				const user = userFactory.buildWithId({ roles });
+				const task = taskFactory.buildWithId();
+				const courseGroup = courseGroupFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ task, student: user, grade: 97, courseGroup });
+
+				await em.persistAndFlush([submission]);
+				em.clear();
+				currentUser = mapUserToCurrentUser(user);
+
+				return { task, submission };
 			};
 
-			expect(statuses).toEqual(expectedSubmissionStatuses);
+			it('should return status', async () => {
+				const { task, submission } = await setup();
+
+				const { result: statuses } = await api.findStatusesByTask(task.id);
+
+				const expectedSubmissionStatuses = {
+					data: [
+						{
+							id: submission.id,
+							submitters: submission.getSubmitterIds(),
+							isSubmitted: submission.isSubmitted(),
+							isGraded: submission.isGraded(),
+							grade: submission.grade,
+							submittingCourseGroupName: submission.courseGroup?.name,
+						},
+					],
+				};
+
+				expect(statuses).toEqual(expectedSubmissionStatuses);
+			});
+		});
+
+		describe('with bad request data', () => {
+			it('should return status 400 for invalid taskId', async () => {
+				const response = await api.findStatusesByTask('123');
+
+				expect(response.status).toEqual(400);
+				expect(response.error.validationErrors).toEqual([
+					{
+						errors: ['taskId must be a mongodb id'],
+						field: 'taskId',
+					},
+				]);
+			});
+		});
+
+		describe('WHEN user is authenticated and has no permission', () => {
+			const setup = async () => {
+				const task = taskFactory.buildWithId();
+				const user = userFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ task });
+
+				await em.persistAndFlush([submission, user]);
+				em.clear();
+				currentUser = mapUserToCurrentUser(user);
+
+				return { task };
+			};
+
+			it('should return 200 and empty array', async () => {
+				const { task } = await setup();
+
+				const { status, result } = await api.findStatusesByTask(task.id);
+
+				const expectedResult = { data: [] };
+
+				expect(status).toEqual(200);
+				expect(result).toEqual(expectedResult);
+			});
 		});
 	});
 
-	describe('with bad request data', () => {
-		it('should return status 400 for invalid taskId', async () => {
-			const response = await api.findStatusesByTask('123');
+	describe('delete submission', () => {
+		let app: INestApplication;
+		let currentUser: ICurrentUser;
+		let api: API;
+		let em: EntityManager;
+		let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
-			expect(response.status).toEqual(400);
-			expect(response.error.validationErrors).toEqual([
-				{
-					errors: ['taskId must be a mongodb id'],
-					field: 'taskId',
-				},
-			]);
+		beforeAll(async () => {
+			const module: TestingModule = await Test.createTestingModule({
+				imports: [ServerTestModule],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue({
+					canActivate(context: ExecutionContext) {
+						const req: Request = context.switchToHttp().getRequest();
+						req.user = currentUser;
+
+						return true;
+					},
+				})
+				.overrideProvider(FilesStorageClientAdapterService)
+				.useValue(createMock<FilesStorageClientAdapterService>())
+				.compile();
+
+			app = module.createNestApplication();
+			await app.init();
+			api = new API(app);
+			em = module.get(EntityManager);
+			filesStorageClientAdapterService = app.get(FilesStorageClientAdapterService);
 		});
-	});
 
-	describe('WHEN user is authorized and has no permission', () => {
-		const setup = async () => {
-			const task = taskFactory.buildWithId();
-			const user = userFactory.buildWithId();
-			const submission = submissionFactory.buildWithId({ task });
+		beforeEach(async () => {
+			await cleanupCollections(em);
+		});
 
-			await em.persistAndFlush([submission, user]);
-			em.clear();
-			currentUser = mapUserToCurrentUser(user);
+		afterAll(async () => {
+			await app.close();
+		});
 
-			return { task };
-		};
+		describe('WHEN user is not authenticated', () => {
+			it('should return 401', async () => {
+				const submissionId = 'id';
 
-		it('should return 200 and empty array', async () => {
-			const { task } = await setup();
+				const { status } = await api.delete(submissionId);
 
-			const { status, result } = await api.findStatusesByTask(task.id);
+				expect(status).toEqual(401);
+			});
+		});
 
-			const expectedResult = { data: [] };
+		describe('WHEN user is authenticated and has permission', () => {
+			const setup = async () => {
+				const roles = roleFactory.buildList(1, {
+					permissions: [Permission.SUBMISSIONS_EDIT],
+				});
+				const user = userFactory.buildWithId({ roles });
+				const task = taskFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ task, student: user, grade: 97 });
 
-			expect(status).toEqual(200);
-			expect(result).toEqual(expectedResult);
+				await em.persistAndFlush([submission]);
+				em.clear();
+				currentUser = mapUserToCurrentUser(user);
+
+				return { submission };
+			};
+
+			it('should return status', async () => {
+				const { submission } = await setup();
+
+				const { result } = await api.delete(submission.id);
+
+				expect(filesStorageClientAdapterService.deleteFilesOfParent).toBeCalled();
+				expect(result).toBe('true');
+
+				const expectedSubmissionResult = await em.findOne(Submission, { id: submission.id });
+				expect(expectedSubmissionResult).toEqual(null);
+			});
+		});
+
+		describe('with bad request data', () => {
+			it('should return status 400 for invalid taskId', async () => {
+				const response = await api.delete('123');
+
+				expect(response.status).toEqual(400);
+				expect(response.error.validationErrors).toEqual([
+					{
+						errors: ['submissionId must be a mongodb id'],
+						field: 'submissionId',
+					},
+				]);
+			});
+		});
+
+		describe('WHEN user is authenticated and has no permission', () => {
+			const setup = async () => {
+				const task = taskFactory.buildWithId();
+				const user = userFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ task });
+
+				await em.persistAndFlush([submission, user]);
+				em.clear();
+				currentUser = mapUserToCurrentUser(user);
+
+				return { submission };
+			};
+
+			it('should return 403', async () => {
+				const { submission } = await setup();
+
+				const { status } = await api.delete(submission.id);
+
+				expect(status).toEqual(403);
+			});
 		});
 	});
 });

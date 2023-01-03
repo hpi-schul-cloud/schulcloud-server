@@ -53,9 +53,7 @@ export class NextcloudClient {
 
 		return this.handleOcsRequest<NextcloudGroups, string>(
 			request,
-			(data: NextcloudGroups) => {
-				return data.groups[0];
-			},
+			(data: NextcloudGroups) => data.groups[0],
 			(error) => {
 				throw new NotFoundException(error, `Group ${groupName} not found in Nextcloud!`);
 			}
@@ -186,9 +184,7 @@ export class NextcloudClient {
 
 		return this.handleOcsRequest<GroupfoldersFolder[], number>(
 			request,
-			(data: GroupfoldersFolder[]) => {
-				return data[0].folder_id;
-			},
+			(data: GroupfoldersFolder[]) => data[0].folder_id,
 			(error) => {
 				throw new NotFoundException(error, `Folder for ${groupId} not found in Nextcloud!`);
 			}

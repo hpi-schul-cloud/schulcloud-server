@@ -1,6 +1,7 @@
 const { MikroORM } = require('@mikro-orm/core');
 const { Test } = require('@nestjs/testing');
 const { MikroOrmModule } = require('@mikro-orm/nestjs');
+const { ConfigModule } = require('@nestjs/config');
 
 // run 'npm run nest:build' for the following imports to work,
 // this is a workaround to make TypeScript modules available in JavaScript
@@ -25,6 +26,7 @@ const setupNestServices = async (app) => {
 				allowGlobalContext: true,
 				// debug: true, // use it for locally debugging of querys
 			}),
+			ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			AccountModule,
 		],
 	}).compile();
@@ -37,6 +39,7 @@ const setupNestServices = async (app) => {
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
 	app.services['nest-account-validation-service'] = accountValidationService;
+	app.services['nest-orm'] = orm;
 
 	return { nestApp, orm, accountUc, accountService };
 };

@@ -6,11 +6,11 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SanisSchoolService } from '@src/modules/provisioning/strategy/sanis/service/sanis-school.service';
 import { SanisUserService } from '@src/modules/provisioning/strategy/sanis/service/sanis-user.service';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 export type SanisStrategyData = {
 	provisioningUrl: string;
@@ -32,7 +32,7 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrateg
 	override async apply(params: SanisStrategyData): Promise<ProvisioningDto> {
 		const data: SanisResponse = await this.getSanisCustomUserinfo(params);
 
-		const school: SchoolDto = await this.sanisSchoolService.provisionSchool(data, params.systemId);
+		const school: SchoolDO = await this.sanisSchoolService.provisionSchool(data, params.systemId);
 
 		if (!school.id) {
 			throw new InternalServerErrorException(

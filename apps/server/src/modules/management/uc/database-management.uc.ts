@@ -78,10 +78,12 @@ export class DatabaseManagementUc {
 	 */
 	private async loadAllCollectionsFromDatabase(targetFolder: string): Promise<ICollectionFilePath[]> {
 		const collections = await this.databaseManagementService.getCollectionNames();
-		const collectionsWithFilePaths = collections.map((collectionName) => ({
-			filePath: this.fileSystemAdapter.joinPath(targetFolder, `${collectionName}.json`),
-			collectionName,
-		}));
+		const collectionsWithFilePaths = collections.map((collectionName) => {
+			return {
+				filePath: this.fileSystemAdapter.joinPath(targetFolder, `${collectionName}.json`),
+				collectionName,
+			};
+		});
 		return collectionsWithFilePaths;
 	}
 
@@ -91,10 +93,12 @@ export class DatabaseManagementUc {
 	 */
 	private async loadAllCollectionsFromFilesystem(baseDir: string): Promise<ICollectionFilePath[]> {
 		const filenames = await this.fileSystemAdapter.readDir(baseDir);
-		const collectionsWithFilePaths = filenames.map((fileName) => ({
-			filePath: this.fileSystemAdapter.joinPath(baseDir, fileName),
-			collectionName: fileName.split('.')[0],
-		}));
+		const collectionsWithFilePaths = filenames.map((fileName) => {
+			return {
+				filePath: this.fileSystemAdapter.joinPath(baseDir, fileName),
+				collectionName: fileName.split('.')[0],
+			};
+		});
 		return collectionsWithFilePaths;
 	}
 

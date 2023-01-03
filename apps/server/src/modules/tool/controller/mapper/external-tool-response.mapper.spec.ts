@@ -49,6 +49,8 @@ describe('ExternalToolResponseMapper', () => {
 			scope: CustomParameterScopeParams.SCHOOL,
 			type: CustomParameterTypeParams.STRING,
 			regex: 'mockRegex',
+			regexComment: 'mockComment',
+			isOptional: false,
 		});
 		const basicToolConfigResponse: BasicToolConfigResponse = new BasicToolConfigResponse({
 			type: ToolConfigType.BASIC,
@@ -79,6 +81,8 @@ describe('ExternalToolResponseMapper', () => {
 			scope: CustomParameterScope.SCHOOL,
 			type: CustomParameterType.STRING,
 			regex: 'mockRegex',
+			regexComment: 'mockComment',
+			isOptional: false,
 		});
 		const externalToolDO: ExternalToolDO = new ExternalToolDO({
 			id: '1',

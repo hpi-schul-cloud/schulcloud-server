@@ -28,7 +28,11 @@ export class SyncFilesConsole {
 
 	@Command({ command: 'embedded [type] [limit]' })
 	async syncEmbeddedFiles(type: AvailableSyncParentType, limit = 1000): Promise<void> {
-		if (type !== FileRecordParentType.Lesson && type !== FileRecordParentType.Task) {
+		if (
+			type !== FileRecordParentType.Lesson &&
+			type !== FileRecordParentType.Task &&
+			type !== FileRecordParentType.Submission
+		) {
 			// this.logger.log('wrong parent type');
 			return;
 		}

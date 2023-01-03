@@ -48,12 +48,12 @@ export class IdTokenService {
 	}
 
 	protected buildGroupsClaim(teams: Team[]): GroupNameIdTuple[] {
-		return teams.map(
-			(team: Team): GroupNameIdTuple => ({
+		return teams.map((team: Team): GroupNameIdTuple => {
+			return {
 				gid: team.id,
 				displayName: team.name,
-			})
-		);
+			};
+		});
 	}
 
 	// TODO N21-335 How we can refactor the iframe in the id token?
