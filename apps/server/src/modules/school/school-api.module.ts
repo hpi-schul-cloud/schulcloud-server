@@ -6,10 +6,11 @@ import { SchoolController } from './controller/school.controller';
 import { LoggerModule } from '../../core/logger';
 import { SchoolExternalToolController } from './controller/school-external-tool.controller';
 import { ToolModule } from '../tool';
+import { SchoolExternalToolUc } from './uc/school-external-tool.uc';
 
 @Module({
 	imports: [SchoolModule, AuthorizationModule, LoggerModule, ToolModule],
 	controllers: [SchoolController, SchoolExternalToolController],
-	providers: [SchoolUc],
+	providers: [SchoolUc, SchoolExternalToolUc],
 })
 export class SchoolApiModule {}
