@@ -196,44 +196,46 @@ describe('ExternalToolResponseMapper', () => {
 		});
 	});
 
-	describe('mapToConfigurationTemplateResponse', () => {
-		it('should map a ExternalToolDO to a ExternalToolConfigurationTemplateResponse', () => {
-			const externalToolDO: ExternalToolDO = externalToolDOFactory
-				.withCustomParameters(1, {
-					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.STRING,
-					location: CustomParameterLocation.PATH,
-					name: 'customParameter',
-					isOptional: false,
-				})
-				.buildWithId(
-					{
-						name: 'toolName',
-						logoUrl: 'logoUrl',
-						version: 1,
-					},
-					'toolId'
-				);
-			const expected: ExternalToolConfigurationTemplateResponse = new ExternalToolConfigurationTemplateResponse({
-				id: 'toolId',
-				name: 'toolName',
-				logoUrl: 'logoUrl',
-				parameters: [
-					new CustomParameterResponse({
-						scope: CustomParameterScopeParams.SCHOOL,
-						type: CustomParameterTypeParams.STRING,
-						location: CustomParameterLocationParams.PATH,
+	describe('mapToConfigurationTemplateResponse is called', () => {
+		describe('when  ExternalToolDO is given', () => {
+			it('should map ExternalToolDO to ExternalToolConfigurationTemplateResponse', () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, {
+						scope: CustomParameterScope.SCHOOL,
+						type: CustomParameterType.STRING,
+						location: CustomParameterLocation.PATH,
 						name: 'customParameter',
 						isOptional: false,
-					}),
-				],
-				version: 1,
+					})
+					.buildWithId(
+						{
+							name: 'toolName',
+							logoUrl: 'logoUrl',
+							version: 1,
+						},
+						'toolId'
+					);
+				const expected: ExternalToolConfigurationTemplateResponse = new ExternalToolConfigurationTemplateResponse({
+					id: 'toolId',
+					name: 'toolName',
+					logoUrl: 'logoUrl',
+					parameters: [
+						new CustomParameterResponse({
+							scope: CustomParameterScopeParams.SCHOOL,
+							type: CustomParameterTypeParams.STRING,
+							location: CustomParameterLocationParams.PATH,
+							name: 'customParameter',
+							isOptional: false,
+						}),
+					],
+					version: 1,
+				});
+
+				const result: ExternalToolConfigurationTemplateResponse =
+					mapper.mapToConfigurationTemplateResponse(externalToolDO);
+
+				expect(result).toEqual(expected);
 			});
-
-			const result: ExternalToolConfigurationTemplateResponse =
-				mapper.mapToConfigurationTemplateResponse(externalToolDO);
-
-			expect(result).toEqual(expected);
 		});
 	});
 });

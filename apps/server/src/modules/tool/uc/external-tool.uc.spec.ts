@@ -413,7 +413,7 @@ describe('ExternalToolUc', () => {
 		});
 	});
 
-	describe('getExternalToolForScope', () => {
+	describe('getExternalToolForScope is called', () => {
 		const setupForScope = () => {
 			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 			const externalToolId: string = new ObjectId().toHexString();
@@ -430,7 +430,7 @@ describe('ExternalToolUc', () => {
 			};
 		};
 
-		describe('Authorization', () => {
+		describe('when the user has permission to read an external tool', () => {
 			it('should call getUserWithPermissions', async () => {
 				const { currentUser } = setupAuthorization();
 				const { externalToolId, scope } = setupForScope();
@@ -449,7 +449,19 @@ describe('ExternalToolUc', () => {
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.SCHOOL_TOOL_ADMIN]);
 			});
 
-			it('should throw if the user has insufficient permission to create an external tool', async () => {
+			it('should call the externalToolService', async () => {
+				const { externalToolId, currentUser, scope } = setupForScope();
+
+				await uc.getExternalToolForScope(currentUser.userId, externalToolId, scope);
+
+				expect(externalToolService.getExternalToolForScope).toHaveBeenCalledWith(
+					externalToolId,
+					ConfigurationScope.SCHOOL
+				);
+			});
+		});
+		describe('when the user has insufficient permission to read an external tool', () => {
+			it('should throw UnauthorizedException ', async () => {
 				const { currentUser } = setupAuthorization();
 				const { externalToolId, scope } = setupForScope();
 
@@ -463,19 +475,8 @@ describe('ExternalToolUc', () => {
 			});
 		});
 
-		it('should call the externalToolService', async () => {
-			const { externalToolId, currentUser, scope } = setupForScope();
-
-			await uc.getExternalToolForScope(currentUser.userId, externalToolId, scope);
-
-			expect(externalToolService.getExternalToolForScope).toHaveBeenCalledWith(
-				externalToolId,
-				ConfigurationScope.SCHOOL
-			);
-		});
-
-		describe('should throw error', () => {
-			it('when tool is hidden', async () => {
+		describe('when tool is hidden', () => {
+			it(' should throw NotFoundException', async () => {
 				const { externalToolId, currentUser, scope, externalToolDO } = setupForScope();
 				externalToolDO.isHidden = true;
 

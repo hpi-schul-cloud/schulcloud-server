@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { SchoolUc } from './uc/school.uc';
 import { SchoolModule } from './school.module';

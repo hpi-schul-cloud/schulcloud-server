@@ -583,28 +583,30 @@ describe('ExternalToolService', () => {
 		});
 	});
 
-	describe('getExternalToolForScope', () => {
-		it('should return an external tool with only school scoped custom parameters', async () => {
-			const schoolParameters: CustomParameterDO[] = customParameterDOFactory.buildList(1, {
-				scope: CustomParameterScope.SCHOOL,
+	describe('getExternalToolForScope is called', () => {
+		describe('when scope school is given', () => {
+			it('should return an external tool with only school scoped custom parameters', async () => {
+				const schoolParameters: CustomParameterDO[] = customParameterDOFactory.buildList(1, {
+					scope: CustomParameterScope.SCHOOL,
+				});
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId(
+					{
+						parameters: [
+							...schoolParameters,
+							...customParameterDOFactory.buildList(1, { scope: CustomParameterScope.COURSE }),
+							...customParameterDOFactory.buildList(2, { scope: CustomParameterScope.GLOBAL }),
+						],
+					},
+					'toolId'
+				);
+				const expected: ExternalToolDO = { ...externalToolDO, parameters: schoolParameters };
+
+				externalToolRepo.findById.mockResolvedValue(externalToolDO);
+
+				const result: ExternalToolDO = await service.getExternalToolForScope('toolId', CustomParameterScope.SCHOOL);
+
+				expect(result).toEqual(expected);
 			});
-			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId(
-				{
-					parameters: [
-						...schoolParameters,
-						...customParameterDOFactory.buildList(1, { scope: CustomParameterScope.COURSE }),
-						...customParameterDOFactory.buildList(2, { scope: CustomParameterScope.GLOBAL }),
-					],
-				},
-				'toolId'
-			);
-			const expected: ExternalToolDO = { ...externalToolDO, parameters: schoolParameters };
-
-			externalToolRepo.findById.mockResolvedValue(externalToolDO);
-
-			const result: ExternalToolDO = await service.getExternalToolForScope('toolId', CustomParameterScope.SCHOOL);
-
-			expect(result).toEqual(expected);
 		});
 	});
 });
