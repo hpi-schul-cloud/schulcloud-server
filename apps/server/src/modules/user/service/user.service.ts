@@ -8,7 +8,7 @@ import { IUserConfig } from '@src/modules/user/interfaces';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolService } from '@src/modules/school/service/school.service';
+import { SchoolService } from '../../school';
 import { SchoolMapper } from '../../school/mapper/school.mapper';
 
 @Injectable()
