@@ -6,8 +6,8 @@ export class ExternalToolConfigurationTemplateResponse {
 	@ApiProperty()
 	id: EntityId;
 
-	@ApiPropertyOptional()
-	name?: string;
+	@ApiProperty()
+	name: string;
 
 	@ApiPropertyOptional()
 	logoUrl?: string;
