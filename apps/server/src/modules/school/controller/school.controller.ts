@@ -29,7 +29,7 @@ export class SchoolController {
 			schoolParams.schoolId,
 			migrationBody.oauthMigrationPossible,
 			migrationBody.oauthMigrationMandatory,
-			migrationBody.oauthMigrationFinished,
+			!!migrationBody.oauthMigrationFinished,
 			currentUser.userId
 		);
 

@@ -1,8 +1,13 @@
+import { IsDate } from 'class-validator';
+
 export class MigrationResponse {
+	@IsDate()
 	oauthMigrationPossible: Date | undefined;
 
+	@IsDate()
 	oauthMigrationMandatory: Date | undefined;
 
+	@IsDate()
 	oauthMigrationFinished: Date | undefined;
 
 	constructor(params: MigrationResponse) {

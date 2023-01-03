@@ -39,16 +39,17 @@ describe('SchoolUc', () => {
 		const mockId = 'someId';
 		beforeAll(() => {
 			migrationResponse = new MigrationResponse({
-				oauthMigrationPossible: true,
-				oauthMigrationMandatory: true,
+				oauthMigrationPossible: new Date(),
+				oauthMigrationMandatory: new Date(),
+				oauthMigrationFinished: new Date(),
 			});
 			schoolService.setMigration.mockResolvedValue(migrationResponse);
 			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
 		});
 		it('should call the service', async () => {
-			await schoolUc.setMigration(mockId, true, true, mockId);
+			await schoolUc.setMigration(mockId, true, true, true, mockId);
 
-			expect(schoolService.setMigration).toHaveBeenCalledWith(mockId, true, true);
+			expect(schoolService.setMigration).toHaveBeenCalledWith(mockId, true, true, true);
 		});
 	});
 

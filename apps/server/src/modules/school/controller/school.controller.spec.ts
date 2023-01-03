@@ -49,7 +49,11 @@ describe('School Controller', () => {
 	describe('setMigration', () => {
 		it('should call UC', async () => {
 			setupBasicData();
-			const migrationResp: MigrationResponse = { oauthMigrationMandatory: true, oauthMigrationPossible: true };
+			const migrationResp: MigrationResponse = {
+				oauthMigrationMandatory: new Date(),
+				oauthMigrationPossible: new Date(),
+				oauthMigrationFinished: new Date(),
+			};
 			schoolUc.setMigration.mockResolvedValue(migrationResp);
 			const body: MigrationBody = { oauthMigrationPossible: true, oauthMigrationMandatory: true };
 			const res: MigrationResponse = await controller.setMigration(schoolParams, body, testUser);
@@ -62,7 +66,11 @@ describe('School Controller', () => {
 	describe('getMigration', () => {
 		it('should call UC', async () => {
 			setupBasicData();
-			const migrationResp: MigrationResponse = { oauthMigrationMandatory: true, oauthMigrationPossible: true };
+			const migrationResp: MigrationResponse = {
+				oauthMigrationMandatory: new Date(),
+				oauthMigrationPossible: new Date(),
+				oauthMigrationFinished: new Date(),
+			};
 			schoolUc.getMigration.mockResolvedValue(migrationResp);
 			const res: MigrationResponse = await controller.getMigration(schoolParams, testUser);
 			expect(schoolUc.getMigration).toHaveBeenCalled();

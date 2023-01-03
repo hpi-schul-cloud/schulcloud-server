@@ -212,21 +212,32 @@ describe('SchoolService', () => {
 	describe('setMigration', () => {
 		let testId: string;
 		let testDO: SchoolDO;
-		beforeAll(() => {
+		beforeEach(() => {
 			testId = 'migration';
 			testDO = new SchoolDO({
 				id: testId,
 				name: 'testDO',
-				oauthMigrationPossible: true,
-				oauthMigrationMandatory: true,
+				oauthMigrationPossible: new Date(),
+				oauthMigrationMandatory: new Date(),
+				oauthMigrationFinished: new Date(),
 			});
 			schoolRepo.findById.mockResolvedValue(testDO);
 			schoolRepo.save.mockResolvedValue(testDO);
 		});
-		it('it should set the migrationflags', async () => {
-			const resp: MigrationResponse = await schoolService.setMigration(testId, true, true);
-			expect(resp.oauthMigrationPossible).toBeTruthy();
-			expect(resp.oauthMigrationMandatory).toBeTruthy();
+		it('should set the migrationflags', async () => {
+			const resp: MigrationResponse = await schoolService.setMigration(testId, true, true, true);
+			expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
+			expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
+			expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
+			expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
+			expect(schoolRepo.save).toHaveBeenCalledWith(testDO);
+		});
+
+		it('should not set the migrationflags', async () => {
+			const resp: MigrationResponse = await schoolService.setMigration(testId, false, false, false);
+			expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
+			expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
+			expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
 			expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
 			expect(schoolRepo.save).toHaveBeenCalledWith(testDO);
 		});
@@ -240,23 +251,27 @@ describe('SchoolService', () => {
 			testDO = new SchoolDO({
 				id: testId,
 				name: 'testDO',
-				oauthMigrationPossible: true,
-				oauthMigrationMandatory: true,
+				oauthMigrationPossible: new Date(),
+				oauthMigrationMandatory: new Date(),
+				oauthMigrationFinished: new Date(),
 			});
 			schoolRepo.findById.mockResolvedValue(testDO);
 		});
 		it('it should get the migrationflags', async () => {
 			const resp: MigrationResponse = await schoolService.getMigration(testId);
-			expect(resp.oauthMigrationPossible).toBeTruthy();
-			expect(resp.oauthMigrationMandatory).toBeTruthy();
+			expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
+			expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
+			expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
 			expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
 		});
 		it('it should get the migrationflags when not set', async () => {
 			testDO.oauthMigrationPossible = undefined;
 			testDO.oauthMigrationMandatory = undefined;
+			testDO.oauthMigrationFinished = undefined;
 			const resp: MigrationResponse = await schoolService.getMigration(testId);
-			expect(resp.oauthMigrationPossible).toBeFalsy();
-			expect(resp.oauthMigrationMandatory).toBeFalsy();
+			expect(resp.oauthMigrationPossible).toBeUndefined();
+			expect(resp.oauthMigrationMandatory).toBeUndefined();
+			expect(resp.oauthMigrationFinished).toBeUndefined();
 			expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
 		});
 	});
