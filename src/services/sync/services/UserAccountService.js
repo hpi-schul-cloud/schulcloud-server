@@ -1,3 +1,4 @@
+const { RequestContext } = require('@mikro-orm/core');
 const { UserRepo } = require('../repo');
 
 class UserAccountService {
@@ -29,20 +30,25 @@ class UserAccountService {
 	}
 
 	async createAccount(account) {
-		return this.app.service('nest-account-service').save({
-			userId: account.userId,
-			username: account.username.toLowerCase(),
-			systemId: account.systemId,
-			activated: true,
+		return RequestContext.createAsync(this.app.service('nest-orm').em, async () => {
+			const newAccountData = {
+				userId: account.userId,
+				username: account.username.toLowerCase(),
+				systemId: account.systemId,
+				activated: true,
+			};
+			return this.app.service('nest-account-service').save(newAccountData);
 		});
 	}
 
 	async updateAccount(userId, account) {
-		const nestAccountService = this.app.service('nest-account-service');
-		const createdAccount = await nestAccountService.findByUserId(userId);
-		createdAccount.username = account.username;
-		createdAccount.activated = true;
-		return nestAccountService.save(createdAccount);
+		return RequestContext.createAsync(this.app.service('nest-orm').em, async () => {
+			const nestAccountService = this.app.service('nest-account-service');
+			const createdAccount = await nestAccountService.findByUserId(userId);
+			createdAccount.username = account.username;
+			createdAccount.activated = true;
+			return this.app.service('nest-account-service').save(createdAccount);
+		});
 	}
 }
 
