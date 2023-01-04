@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { ValidationError } from '@shared/common';
 import {
 	Actions,
 	Counted,
@@ -20,9 +21,7 @@ import {
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
-import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { ValidationError } from '@shared/common';
-import { SubmissionService } from '../service';
+import { TaskService } from '../service';
 
 @Injectable()
 export class TaskUC {
@@ -31,8 +30,7 @@ export class TaskUC {
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly submissionsService: SubmissionService
+		private readonly taskService: TaskService
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -324,12 +322,8 @@ export class TaskUC {
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
 
-		const params = FileParamBuilder.build(task.school.id, task);
-		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
+		await this.taskService.delete(task);
 
-		await this.deleteSubmissions(task);
-
-		await this.taskRepo.delete(task);
 		return true;
 	}
 
@@ -344,11 +338,5 @@ export class TaskUC {
 		if (!enabled) {
 			throw new InternalServerErrorException('Feature not enabled');
 		}
-	}
-
-	private async deleteSubmissions(task: Task): Promise<void> {
-		const submissions = task.submissions.getItems();
-		const promises = submissions.map((submission) => this.submissionsService.delete(submission));
-		await Promise.all(promises);
 	}
 }

@@ -16,8 +16,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { SubmissionService } from '../service';
+import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
 
 const mockStatus: ITaskStatus = {
@@ -37,8 +36,7 @@ describe('TaskUC', () => {
 	let courseRepo: DeepMocked<CourseRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let fileStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
-	let submissionService: DeepMocked<SubmissionService>;
+	let taskService: DeepMocked<TaskService>;
 	let orm: MikroORM;
 	let user!: User;
 
@@ -82,12 +80,8 @@ describe('TaskUC', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: FilesStorageClientAdapterService,
-					useValue: createMock<FilesStorageClientAdapterService>(),
-				},
-				{
-					provide: SubmissionService,
-					useValue: createMock<SubmissionService>(),
+					provide: TaskService,
+					useValue: createMock<TaskService>(),
 				},
 			],
 		}).compile();
@@ -98,8 +92,7 @@ describe('TaskUC', () => {
 		courseRepo = module.get(CourseRepo);
 		lessonRepo = module.get(LessonRepo);
 		authorizationService = module.get(AuthorizationService);
-		fileStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
-		submissionService = module.get(SubmissionService);
+		taskService = module.get(TaskService);
 	});
 
 	afterEach(async () => {
@@ -1052,7 +1045,6 @@ describe('TaskUC', () => {
 			task = taskFactory.buildWithId({ creator: user });
 			userRepo.findById.mockResolvedValue(user);
 			taskRepo.findById.mockResolvedValue(task);
-			taskRepo.delete.mockResolvedValue();
 		});
 
 		it('should throw UnauthorizedException when not permitted', async () => {
@@ -1066,32 +1058,19 @@ describe('TaskUC', () => {
 			}).rejects.toThrow(new ForbiddenException());
 		});
 
-		it('should call TaskRepo.delete() with Task', async () => {
-			await service.delete(user.id, task.id);
-			expect(taskRepo.delete).toBeCalledWith(task);
-		});
-
 		it('should call authorizationService.hasPermission() with User Task Aktion.write', async () => {
 			await service.delete(user.id, task.id);
+
 			expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 				action: Actions.write,
 				requiredPermissions: [],
 			});
 		});
 
-		it('should call fileStorageClientAdapterService.deleteFilesOfParent', async () => {
-			await service.delete(user.id, task.id);
-			const params = FileParamBuilder.build(task.school.id, task);
-			expect(fileStorageClientAdapterService.deleteFilesOfParent).toBeCalledWith(params);
-		});
-
-		it('should call submissionService.delete() for all related submissions', async () => {
-			const submissions = submissionFactory.buildList(3, { task });
-
+		it('should call taskService.delete', async () => {
 			await service.delete(user.id, task.id);
 
-			expect(submissionService.delete).toBeCalledTimes(3);
-			expect(submissionService.delete).toBeCalledWith(submissions[0]);
+			expect(taskService.delete).toBeCalledWith(task);
 		});
 	});
 
