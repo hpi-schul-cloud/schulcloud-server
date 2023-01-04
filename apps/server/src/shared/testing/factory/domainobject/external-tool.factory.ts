@@ -75,7 +75,6 @@ class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolDO
 		const params: DeepPartial<ExternalToolDO> = {
 			config: oauth2ToolConfigDOFactory.build(customParam),
 		};
-
 		return this.params(params);
 	}
 
@@ -83,7 +82,6 @@ class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolDO
 		const params: DeepPartial<ExternalToolDO> = {
 			config: lti11ToolConfigDOFactory.build(customParam),
 		};
-
 		return this.params(params);
 	}
 
@@ -91,7 +89,6 @@ class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolDO
 		const params: DeepPartial<ExternalToolDO> = {
 			parameters: customParameterDOFactory.buildList(number, customParam),
 		};
-
 		return this.params(params);
 	}
 }
@@ -105,4 +102,3 @@ export const externalToolDOFactory = ExternalToolDOFactory.define(ExternalToolDO
 	openNewTab: false,
 	version: 1,
 }));
-
