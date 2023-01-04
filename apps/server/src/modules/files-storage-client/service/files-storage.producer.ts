@@ -29,6 +29,7 @@ export class FilesStorageProducer {
 
 	async copyFilesOfParent(payload: ICopyFilesOfParentParams): Promise<ICopyFileDO[]> {
 		this.logger.debug({ action: 'copyFilesOfParent:started', payload });
+		console.log('start copy files');
 		const response = await this.amqpConnection.request<RpcMessage<ICopyFileDO[]>>(
 			this.createRequest(FilesStorageEvents.COPY_FILES_OF_PARENT, payload)
 		);
