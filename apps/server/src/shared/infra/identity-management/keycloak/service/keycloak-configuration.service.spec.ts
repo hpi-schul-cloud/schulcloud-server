@@ -50,17 +50,19 @@ describe('KeycloakConfigurationService Unit', () => {
 		username: adminUsername,
 	};
 
-	const getSettings = (): IKeycloakSettings => ({
-		baseUrl: 'http://localhost:8080',
-		realmName: 'master',
-		clientId: 'dBildungscloud',
-		credentials: {
-			username: adminUsername,
-			password: 'password',
-			grantType: 'password',
-			clientId: 'client-id',
-		},
-	});
+	const getSettings = (): IKeycloakSettings => {
+		return {
+			baseUrl: 'http://localhost:8080',
+			realmName: 'master',
+			clientId: 'dBildungscloud',
+			credentials: {
+				username: adminUsername,
+				password: 'password',
+				grantType: 'password',
+				clientId: 'client-id',
+			},
+		};
+	};
 
 	const idps: IdentityProviderRepresentation[] = [
 		{
@@ -337,7 +339,9 @@ describe('KeycloakConfigurationService Unit', () => {
 			expect(systemService.save).toHaveBeenCalledWith(
 				expect.objectContaining<Partial<SystemDto>>({
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({ redirectUri: 'https://SC_DOMAIN-value/api/v3/sso/oauth/' }),
+					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({
+						redirectUri: 'https://SC_DOMAIN-value/api/v3/sso/oauth/',
+					}),
 				})
 			);
 		});
