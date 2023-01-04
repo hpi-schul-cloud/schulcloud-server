@@ -25,13 +25,15 @@ import { SanisUserService } from '@src/modules/provisioning/strategy/sanis/servi
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SanisResponseMapper } from './sanis-response.mapper';
 
-const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> => ({
-	data: data ?? {},
-	status: 0,
-	statusText: '',
-	headers: {},
-	config: {},
-});
+const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> => {
+	return {
+		data: data ?? {},
+		status: 0,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
+};
 
 describe('SanisStrategy', () => {
 	let module: TestingModule;
@@ -104,6 +106,7 @@ describe('SanisStrategy', () => {
 						typ: 'SCHULE',
 					}),
 					personenstatus: 'dead',
+					email: 'test@te.st',
 				}),
 			],
 		});

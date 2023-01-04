@@ -19,6 +19,7 @@ import { v1 } from 'uuid';
 import { HttpService } from '@nestjs/axios';
 import { of } from 'rxjs';
 import { AxiosResponse } from 'axios';
+import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -99,9 +100,9 @@ describe('KeycloakConfigurationService Unit', () => {
 				{
 					provide: KeycloakAdministrationService,
 					useValue: {
-						callKcAdminClient: jest.fn().mockImplementation(async (): Promise<KeycloakAdminClient> => {
-							return Promise.resolve(client);
-						}),
+						callKcAdminClient: jest
+							.fn()
+							.mockImplementation(async (): Promise<KeycloakAdminClient> => Promise.resolve(client)),
 						testKcConnection: jest.fn().mockResolvedValue(true),
 						getAdminUser: jest.fn().mockReturnValue(adminUser.username),
 					},
@@ -243,6 +244,7 @@ describe('KeycloakConfigurationService Unit', () => {
 					authorization_endpoint: 'authEndpoint',
 					end_session_endpoint: 'logoutEndpoint',
 					jwks_uri: 'jwksUrl',
+					issuer: 'issuer',
 				},
 			} as AxiosResponse<unknown>;
 			httpServiceMock.get.mockReturnValue(of(response));
@@ -296,11 +298,100 @@ describe('KeycloakConfigurationService Unit', () => {
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(systemService.save).toHaveBeenCalledWith(expect.objectContaining({ type: SystemTypeEnum.KEYCLOAK }));
 		});
+		it('should configure grantType for Keycloak system', async () => {
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(systemService.save).toHaveBeenCalledWith(
+				expect.objectContaining<Partial<SystemDto>>({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({ grantType: 'authorization_code' }),
+				})
+			);
+		});
+		it('should configure scope for Keycloak system', async () => {
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(systemService.save).toHaveBeenCalledWith(
+				expect.objectContaining<Partial<SystemDto>>({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({ scope: 'openid profile email' }),
+				})
+			);
+		});
+		it('should configure responseType for Keycloak system', async () => {
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(systemService.save).toHaveBeenCalledWith(
+				expect.objectContaining<Partial<SystemDto>>({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({ responseType: 'code' }),
+				})
+			);
+		});
+		it('should configure provider for Keycloak system', async () => {
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(systemService.save).toHaveBeenCalledWith(
+				expect.objectContaining<Partial<SystemDto>>({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({ provider: 'oauth' }),
+				})
+			);
+		});
+		it('should configure redirectUri for Keycloak system', async () => {
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(systemService.save).toHaveBeenCalledWith(
+				expect.objectContaining<Partial<SystemDto>>({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({
+						redirectUri: 'https://SC_DOMAIN-value/api/v3/sso/oauth/',
+					}),
+				})
+			);
+		});
+		it('should configure well known information for Keycloak system', async () => {
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(systemService.save).toHaveBeenCalledWith(
+				expect.objectContaining<Partial<SystemDto>>({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({
+						tokenEndpoint: 'tokenEndpoint',
+						authEndpoint: 'authEndpoint',
+						logoutEndpoint: 'logoutEndpoint',
+						jwksEndpoint: 'jwksUrl',
+						issuer: 'issuer',
+					}),
+				})
+			);
+		});
+
 		it('should not create Keycloak system if already exists', async () => {
 			const mockedSystem = systemFactory.buildWithId();
 			systemService.find.mockResolvedValueOnce([mockedSystem]);
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(systemService.save).toHaveBeenCalledWith(expect.objectContaining({ _id: mockedSystem._id }));
+		});
+		it('should put the scdomain into the redirect', async () => {
+			const scDomain = 'test-sc-domain';
+			jest.spyOn(configService, 'get').mockReturnValue(scDomain);
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(systemService.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining({ redirectUri: expect.stringContaining(scDomain) }),
+				})
+			);
+		});
+		it('should take special localhost as redirect if scdomain is localhost', async () => {
+			const scDomain = 'localhost';
+			jest.spyOn(configService, 'get').mockReturnValue(scDomain);
+			await expect(service.configureClient()).resolves.not.toThrow();
+			expect(systemService.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					oauthConfig: expect.objectContaining({ redirectUri: expect.stringContaining('http://localhost:3030') }),
+				})
+			);
+		});
+		it('should ignore missing client secret but put empty string', async () => {
+			kcApiClientMock.generateNewClientSecret.mockResolvedValue({ type: 'secret', value: undefined });
+			await expect(service.configureClient()).resolves.not.toThrow();
 		});
 	});
 
@@ -385,6 +476,18 @@ describe('KeycloakConfigurationService Unit', () => {
 					path: '/{realmName}/authentication/flows/{flowAlias}/executions',
 					urlParamKeys: ['realmName', 'flowAlias'],
 				})
+			);
+		});
+	});
+
+	describe('configureRealm', () => {
+		it('should update the realm', async () => {
+			const updateMock = jest.spyOn(kcApiRealmsMock, 'update');
+
+			await service.configureRealm();
+			expect(updateMock).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.objectContaining({ editUsernameAllowed: true })
 			);
 		});
 	});

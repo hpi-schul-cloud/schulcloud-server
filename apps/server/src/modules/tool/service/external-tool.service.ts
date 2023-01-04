@@ -145,10 +145,9 @@ export class ExternalToolService {
 	async deleteExternalTool(toolId: EntityId): Promise<void> {
 		const schoolExternalTools: SchoolExternalToolDO[] = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
 		const schoolExternalToolIds: string[] = schoolExternalTools.map(
-			(schoolExternalTool: SchoolExternalToolDO): string => {
+			(schoolExternalTool: SchoolExternalToolDO): string =>
 				// We can be sure that the repo returns the id
-				return schoolExternalTool.id as string;
-			}
+				schoolExternalTool.id as string
 		);
 
 		await Promise.all([

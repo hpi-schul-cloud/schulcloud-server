@@ -37,11 +37,7 @@ describe('FileSystemAdapter', () => {
 				namesSet.add(tmpDirPath);
 			}
 			expect(namesSet.size).toEqual(100);
-			await Promise.all(
-				[...namesSet].map((folder) => {
-					return adapter.removeDirRecursive(folder);
-				})
-			);
+			await Promise.all([...namesSet].map((folder) => adapter.removeDirRecursive(folder)));
 		});
 		it('should remove an directory containing files recursively', async () => {
 			const tmpDirPath = await adapter.createTmpDir('prefix');

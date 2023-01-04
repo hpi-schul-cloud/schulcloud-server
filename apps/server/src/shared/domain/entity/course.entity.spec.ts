@@ -104,8 +104,8 @@ describe('CourseEntity', () => {
 		});
 
 		it('should include start and enddate if course has them', () => {
-			const startDate = Date.now() - 200000;
-			const untilDate = Date.now() + 200000;
+			const startDate = new Date(Date.now() - 200000);
+			const untilDate = new Date(Date.now() + 200000);
 			const course = courseFactory.build({
 				name: 'History',
 				color: '#445566',

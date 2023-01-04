@@ -2,10 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { storageProviderFactory } from '@shared/testing';
-import { Platform } from '@mikro-orm/core';
-import { StorageProviderEncryptedStringType } from '@shared/repo/types/StorageProviderEncryptedString.type';
 import { StorageProvider } from '@shared/domain';
+import { StorageProviderEncryptedStringType } from '@shared/repo/types/StorageProviderEncryptedString.type';
+import { storageProviderFactory } from '@shared/testing';
 import { StorageProviderRepo } from '.';
 
 describe('StorageProviderRepo', () => {
@@ -55,10 +54,7 @@ describe('StorageProviderRepo', () => {
 
 		// secretAccessKey should be encrypted in persistence
 		expect(result.secretAccessKey).not.toEqual(secretAccessKey);
-		const decryptedSecretAccessKey = encryptedStringType.convertToJSValue(
-			result.secretAccessKey,
-			undefined as unknown as Platform
-		);
+		const decryptedSecretAccessKey = encryptedStringType.convertToJSValue(result.secretAccessKey);
 		expect(decryptedSecretAccessKey).toEqual(secretAccessKey);
 
 		em.clear();

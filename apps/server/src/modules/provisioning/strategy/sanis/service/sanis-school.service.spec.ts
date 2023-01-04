@@ -3,7 +3,6 @@ import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, RoleName, School, System } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { SchoolRepo } from '@shared/repo';
 import { roleFactory, schoolFactory, setupEntities, systemFactory } from '@shared/testing';
 import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
@@ -78,6 +77,7 @@ describe('SanisSchoolService', () => {
 						typ: 'SCHULE',
 					}),
 					personenstatus: 'dead',
+					email: 'test@te.st',
 				}),
 			],
 		});

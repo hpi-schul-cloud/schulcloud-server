@@ -1579,7 +1579,7 @@ describe('TaskRepo', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ untilDate: undefined });
 
-			const dueDate = Date.now();
+			const dueDate = new Date();
 			const task1 = taskFactory.build({ course, finished: [user], dueDate });
 			const task2 = taskFactory.build({ course, finished: [user], dueDate });
 			const task3 = taskFactory.build({ course, finished: [user], dueDate });

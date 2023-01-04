@@ -7,7 +7,9 @@ import { NewsTargetFilter } from './news-target-filter';
 export class NewsScope extends Scope<News> {
 	byTargets(targets: NewsTargetFilter[]): NewsScope {
 		const queries: FilterQuery<News>[] = targets.map((target) => {
-			return { $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] };
+			return {
+				$and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }],
+			};
 		});
 		if (queries.length === 0) {
 			// mission impossile query to ensure empty query result
