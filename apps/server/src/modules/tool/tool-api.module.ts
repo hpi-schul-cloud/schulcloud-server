@@ -14,7 +14,7 @@ import { ExternalToolConfigurationUc } from './uc/external-tool-configuration.uc
 
 @Module({
 	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule],
-	controllers: [ToolController, ToolConfigurationController],
+	controllers: [ToolConfigurationController, ToolController],
 	providers: [
 		Lti11Uc,
 		LtiRoleMapper,
