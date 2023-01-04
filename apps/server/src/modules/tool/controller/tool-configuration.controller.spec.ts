@@ -59,7 +59,7 @@ describe('ToolConfigurationController', () => {
 
 		const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1).buildWithId();
 
-		externalToolConfigurationUc.getExternalToolForScope.mockResolvedValue(externalToolDO);
+		externalToolConfigurationUc.getExternalToolForSchool.mockResolvedValue(externalToolDO);
 		externalToolResponseMapper.mapToConfigurationTemplateResponse.mockReturnValue(mockResponse);
 
 		return {
@@ -78,10 +78,9 @@ describe('ToolConfigurationController', () => {
 
 				await controller.getExternalToolForScope(currentUser, toolIdParams, scopeQuery);
 
-				expect(externalToolConfigurationUc.getExternalToolForScope).toHaveBeenCalledWith(
+				expect(externalToolConfigurationUc.getExternalToolForSchool).toHaveBeenCalledWith(
 					currentUser.userId,
-					toolIdParams.toolId,
-					scopeQuery.scope
+					toolIdParams.toolId
 				);
 			});
 

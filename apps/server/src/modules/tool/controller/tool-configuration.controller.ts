@@ -1,4 +1,4 @@
-import { ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiFoundResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ICurrentUser } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
@@ -19,15 +19,15 @@ export class ToolConfigurationController {
 
 	@Get(':toolId/configuration')
 	@ApiUnauthorizedResponse()
+	@ApiFoundResponse({ description: 'Configuration has been found.', type: ExternalToolConfigurationTemplateResponse })
 	async getExternalToolForScope(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams,
 		@Query() scopeQuery: ScopeQuery
 	): Promise<ExternalToolConfigurationTemplateResponse> {
-		const externalToolDO: ExternalToolDO = await this.externalToolConfigurationUc.getExternalToolForScope(
+		const externalToolDO: ExternalToolDO = await this.externalToolConfigurationUc.getExternalToolForSchool(
 			currentUser.userId,
-			params.toolId,
-			scopeQuery.scope
+			params.toolId
 		);
 		const mapped: ExternalToolConfigurationTemplateResponse =
 			this.externalResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);

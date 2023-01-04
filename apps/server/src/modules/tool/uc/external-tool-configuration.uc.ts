@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { CustomParameterScope, EntityId, Permission, User } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { ConfigurationScope } from '../interface';
 import { ExternalToolService } from '../service/external-tool.service';
 import { AuthorizationService } from '../../authorization';
 
@@ -13,11 +12,7 @@ export class ExternalToolConfigurationUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async getExternalToolForScope(
-		userId: EntityId,
-		externalToolId: EntityId,
-		scope: ConfigurationScope // For later use with School and Course
-	): Promise<ExternalToolDO> {
+	async getExternalToolForSchool(userId: EntityId, externalToolId: EntityId): Promise<ExternalToolDO> {
 		await this.ensurePermission(userId, Permission.SCHOOL_TOOL_ADMIN);
 
 		const externalToolDO: ExternalToolDO = await this.externalToolService.getExternalToolForScope(

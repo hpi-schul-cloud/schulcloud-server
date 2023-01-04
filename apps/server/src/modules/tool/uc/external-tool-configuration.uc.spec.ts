@@ -65,7 +65,7 @@ describe('ExternalToolConfigurationUc', () => {
 	};
 
 	describe('getExternalToolForScope is called', () => {
-		const setupForScope = () => {
+		const setupForSchool = () => {
 			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 			const externalToolId: string = new ObjectId().toHexString();
 			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId(undefined, externalToolId);
@@ -84,26 +84,26 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when the user has permission to read an external tool', () => {
 			it('should call getUserWithPermissions', async () => {
 				const { currentUser } = setupAuthorization();
-				const { externalToolId, scope } = setupForScope();
+				const { externalToolId } = setupForSchool();
 
-				await uc.getExternalToolForScope(currentUser.userId, externalToolId, scope);
+				await uc.getExternalToolForSchool(currentUser.userId, externalToolId);
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
 			});
 
 			it('should successfully check the user permission with the authorization service', async () => {
 				const { currentUser, user } = setupAuthorization();
-				const { externalToolId, scope } = setupForScope();
+				const { externalToolId } = setupForSchool();
 
-				await uc.getExternalToolForScope(currentUser.userId, externalToolId, scope);
+				await uc.getExternalToolForSchool(currentUser.userId, externalToolId);
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.SCHOOL_TOOL_ADMIN]);
 			});
 
 			it('should call the externalToolService', async () => {
-				const { externalToolId, currentUser, scope } = setupForScope();
+				const { externalToolId, currentUser } = setupForSchool();
 
-				await uc.getExternalToolForScope(currentUser.userId, externalToolId, scope);
+				await uc.getExternalToolForSchool(currentUser.userId, externalToolId);
 
 				expect(externalToolService.getExternalToolForScope).toHaveBeenCalledWith(
 					externalToolId,
@@ -114,13 +114,13 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when the user has insufficient permission to read an external tool', () => {
 			it('should throw UnauthorizedException ', async () => {
 				const { currentUser } = setupAuthorization();
-				const { externalToolId, scope } = setupForScope();
+				const { externalToolId } = setupForSchool();
 
 				authorizationService.checkAllPermissions.mockImplementation(() => {
 					throw new UnauthorizedException();
 				});
 
-				const result: Promise<ExternalToolDO> = uc.getExternalToolForScope(currentUser.userId, externalToolId, scope);
+				const result: Promise<ExternalToolDO> = uc.getExternalToolForSchool(currentUser.userId, externalToolId);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -128,10 +128,10 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when tool is hidden', () => {
 			it(' should throw NotFoundException', async () => {
-				const { externalToolId, currentUser, scope, externalToolDO } = setupForScope();
+				const { externalToolId, currentUser, externalToolDO } = setupForSchool();
 				externalToolDO.isHidden = true;
 
-				const result = uc.getExternalToolForScope(currentUser.userId, externalToolId, scope);
+				const result = uc.getExternalToolForSchool(currentUser.userId, externalToolId);
 
 				await expect(result).rejects.toThrow(new NotFoundException('Could not find the Tool Template'));
 			});
