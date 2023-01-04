@@ -27,8 +27,8 @@ export class SchoolController {
 	): Promise<MigrationResponse> {
 		const result: MigrationResponse = await this.schoolUc.setMigration(
 			schoolParams.schoolId,
-			migrationBody.oauthMigrationPossible,
-			migrationBody.oauthMigrationMandatory,
+			!!migrationBody.oauthMigrationPossible,
+			!!migrationBody.oauthMigrationMandatory,
 			!!migrationBody.oauthMigrationFinished,
 			currentUser.userId
 		);
