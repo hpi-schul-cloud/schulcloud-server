@@ -9,16 +9,19 @@ import { ToolController } from './controller/tool.controller';
 import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './controller/mapper';
 import { ExternalToolUc } from './uc/external-tool.uc';
 import { ToolModule } from './tool.module';
+import { ToolConfigurationController } from './controller/tool-configuration.controller';
+import { ExternalToolConfigurationUc } from './uc/external-tool-configuration.uc';
 
 @Module({
 	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule],
-	controllers: [ToolController],
+	controllers: [ToolController, ToolConfigurationController],
 	providers: [
 		Lti11Uc,
 		LtiRoleMapper,
 		Lti11ResponseMapper,
 		LtiToolRepo,
 		ExternalToolUc,
+		ExternalToolConfigurationUc,
 		ExternalToolRequestMapper,
 		ExternalToolResponseMapper,
 	],

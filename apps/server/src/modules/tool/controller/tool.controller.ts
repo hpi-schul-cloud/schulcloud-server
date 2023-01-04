@@ -26,10 +26,8 @@ import {
 	Lti11LaunchResponse,
 	SortExternalToolParams,
 	ToolIdParams,
-	ScopeQuery,
 } from './dto';
 import { CreateExternalTool, UpdateExternalTool } from '../uc/dto';
-import { ExternalToolConfigurationTemplateResponse } from './dto/response/external-tool-configuration-template.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -135,22 +133,5 @@ export class ToolController {
 	async deleteExternalTool(@CurrentUser() currentUser: ICurrentUser, @Param() params: ToolIdParams): Promise<void> {
 		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.toolId);
 		return promise;
-	}
-
-	@Get(':toolId/configuration')
-	@ApiUnauthorizedResponse()
-	async getExternalToolForScope(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolIdParams,
-		@Query() scopeQuery: ScopeQuery
-	): Promise<ExternalToolConfigurationTemplateResponse> {
-		const externalToolDO: ExternalToolDO = await this.externalToolUc.getExternalToolForScope(
-			currentUser.userId,
-			params.toolId,
-			scopeQuery.scope
-		);
-		const mapped: ExternalToolConfigurationTemplateResponse =
-			this.externalResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);
-		return mapped;
 	}
 }

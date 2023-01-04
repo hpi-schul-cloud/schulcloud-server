@@ -25,12 +25,10 @@ import {
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigParams,
 	Oauth2ToolConfigResponse,
-	ScopeQuery,
 	SortExternalToolParams,
 	ToolIdParams,
 } from './dto';
 import {
-	ConfigurationScope,
 	CustomParameterLocationParams,
 	CustomParameterScopeParams,
 	CustomParameterTypeParams,
@@ -39,7 +37,6 @@ import {
 	TokenEndpointAuthMethod,
 	ToolConfigType,
 } from '../interface';
-import { ExternalToolConfigurationTemplateResponse } from './dto/response/external-tool-configuration-template.response';
 
 describe('ToolController', () => {
 	let module: TestingModule;
@@ -498,60 +495,6 @@ describe('ToolController', () => {
 			const result: ExternalToolResponse = await controller.updateExternalTool(currentUser, toolIdParams, body);
 
 			expect(result).toEqual(externalToolResponse);
-		});
-	});
-
-	describe('getExternalToolForScope', () => {
-		it('should call the uc to fetch a tool', async () => {
-			const { currentUser, externalToolDO } = setupExternalTool();
-			const mockResponse: ExternalToolConfigurationTemplateResponse = new ExternalToolConfigurationTemplateResponse({
-				id: 'toolId',
-				name: 'toolName',
-				logoUrl: 'logoUrl',
-				parameters: [],
-				version: 1,
-			});
-			const toolIdParams: ToolIdParams = new ToolIdParams();
-			toolIdParams.toolId = 'toolId';
-			const scopeQuery: ScopeQuery = new ScopeQuery();
-			scopeQuery.scope = ConfigurationScope.SCHOOL;
-
-			externalToolUc.getExternalToolForScope.mockResolvedValue(externalToolDO);
-			externalToolResponseMapper.mapToConfigurationTemplateResponse.mockReturnValue(mockResponse);
-
-			await controller.getExternalToolForScope(currentUser, toolIdParams, scopeQuery);
-
-			expect(externalToolUc.getExternalToolForScope).toHaveBeenCalledWith(
-				currentUser.userId,
-				toolIdParams.toolId,
-				scopeQuery.scope
-			);
-		});
-
-		it('should return a tool for scope "school"', async () => {
-			const { currentUser, externalToolDO } = setupExternalTool();
-			const mockResponse: ExternalToolConfigurationTemplateResponse = new ExternalToolConfigurationTemplateResponse({
-				id: 'toolId',
-				name: 'toolName',
-				logoUrl: 'logoUrl',
-				parameters: [],
-				version: 1,
-			});
-			const toolIdParams: ToolIdParams = new ToolIdParams();
-			toolIdParams.toolId = 'toolId';
-			const scopeQuery: ScopeQuery = new ScopeQuery();
-			scopeQuery.scope = ConfigurationScope.SCHOOL;
-
-			externalToolUc.getExternalToolForScope.mockResolvedValue(externalToolDO);
-			externalToolResponseMapper.mapToConfigurationTemplateResponse.mockReturnValue(mockResponse);
-
-			const result: ExternalToolConfigurationTemplateResponse = await controller.getExternalToolForScope(
-				currentUser,
-				toolIdParams,
-				scopeQuery
-			);
-
-			expect(result).toEqual(mockResponse);
 		});
 	});
 });
