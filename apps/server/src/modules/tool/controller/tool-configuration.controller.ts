@@ -16,7 +16,7 @@ export class ToolConfigurationController {
 		private readonly externalToolMapper: ExternalToolResponseMapper
 	) {}
 
-	@Get('tools/available')
+	@Get('available')
 	async getAvailableToolsForSchool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scopeQuery: ScopeQuery,
