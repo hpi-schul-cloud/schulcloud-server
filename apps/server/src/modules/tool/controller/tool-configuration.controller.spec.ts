@@ -3,17 +3,17 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
-import { IdQuery, SchoolExternalToolListResponse, SchoolExternalToolResponse, ScopeQuery } from './dto';
+import { IdQuery, ScopeQuery, ToolConfigurationEntryResponse, ToolConfigurationListResponse } from './dto';
 import { ExternalToolResponseMapper } from './mapper';
 import { ExternalToolConfigurationUc } from '../uc/tool-configuration.uc';
 import { ToolConfigurationController } from './tool-configuration.controller';
 import { ConfigurationScope } from '../interface';
 
-describe('SchoolExternalToolController', () => {
+describe('ToolConfigurationController', () => {
 	let module: TestingModule;
 	let controller: ToolConfigurationController;
 
-	let schoolExternalToolUc: DeepMocked<ExternalToolConfigurationUc>;
+	let externalToolConfigurationUc: DeepMocked<ExternalToolConfigurationUc>;
 	let externalToolMapper: DeepMocked<ExternalToolResponseMapper>;
 
 	beforeAll(async () => {
@@ -32,7 +32,7 @@ describe('SchoolExternalToolController', () => {
 		}).compile();
 
 		controller = module.get(ToolConfigurationController);
-		schoolExternalToolUc = module.get(ExternalToolConfigurationUc);
+		externalToolConfigurationUc = module.get(ExternalToolConfigurationUc);
 		externalToolMapper = module.get(ExternalToolResponseMapper);
 	});
 
@@ -49,16 +49,16 @@ describe('SchoolExternalToolController', () => {
 				const scopeQuery: ScopeQuery = new ScopeQuery();
 				scopeQuery.scope = ConfigurationScope.SCHOOL;
 				const externalToolDOs: ExternalToolDO[] = externalToolDOFactory.buildListWithId(2);
-				const response: SchoolExternalToolListResponse = new SchoolExternalToolListResponse([
-					new SchoolExternalToolResponse({
+				const response: ToolConfigurationListResponse = new ToolConfigurationListResponse([
+					new ToolConfigurationEntryResponse({
 						id: 'toolId',
 						name: 'toolName',
 						logoUrl: 'logoUrl',
 					}),
 				]);
 
-				schoolExternalToolUc.getAvailableToolsForSchool.mockResolvedValue(externalToolDOs);
-				externalToolMapper.mapExternalToolDOsToSchoolExternalToolListResponse.mockReturnValue(response);
+				externalToolConfigurationUc.getAvailableToolsForSchool.mockResolvedValue(externalToolDOs);
+				externalToolMapper.mapExternalToolDOsToToolConfigurationListResponse.mockReturnValue(response);
 
 				return {
 					currentUser,
@@ -69,18 +69,21 @@ describe('SchoolExternalToolController', () => {
 				};
 			};
 
-			it('should call schoolExternalToolUc.getAvailableToolsForSchool', async () => {
+			it('should call externalToolConfigurationUc.getAvailableToolsForSchool', async () => {
 				const { currentUser, idQuery, scopeQuery } = setup();
 
 				await controller.getAvailableToolsForSchool(currentUser, scopeQuery, idQuery);
 
-				expect(schoolExternalToolUc.getAvailableToolsForSchool).toHaveBeenCalledWith(currentUser.userId, idQuery.id);
+				expect(externalToolConfigurationUc.getAvailableToolsForSchool).toHaveBeenCalledWith(
+					currentUser.userId,
+					idQuery.id
+				);
 			});
 
 			it('should return a list of available external tools', async () => {
 				const { currentUser, idQuery, scopeQuery, response } = setup();
 
-				const result: SchoolExternalToolListResponse = await controller.getAvailableToolsForSchool(
+				const result: ToolConfigurationListResponse = await controller.getAvailableToolsForSchool(
 					currentUser,
 					scopeQuery,
 					idQuery

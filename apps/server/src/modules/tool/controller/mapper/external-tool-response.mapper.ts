@@ -14,8 +14,8 @@ import {
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
-	SchoolExternalToolListResponse,
-	SchoolExternalToolResponse,
+	ToolConfigurationEntryResponse,
+	ToolConfigurationListResponse,
 } from '../dto';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeParams> = {
@@ -95,16 +95,16 @@ export class ExternalToolResponseMapper {
 		});
 	}
 
-	mapExternalToolDOsToSchoolExternalToolListResponse(externalTools: ExternalToolDO[]): SchoolExternalToolListResponse {
-		return new SchoolExternalToolListResponse(this.mapExternalToolDOsToSchoolExternalToolResponses(externalTools));
+	mapExternalToolDOsToToolConfigurationListResponse(externalTools: ExternalToolDO[]): ToolConfigurationListResponse {
+		return new ToolConfigurationListResponse(this.mapExternalToolDOsToToolConfigurationResponses(externalTools));
 	}
 
-	private mapExternalToolDOsToSchoolExternalToolResponses(
+	private mapExternalToolDOsToToolConfigurationResponses(
 		externalTools: ExternalToolDO[]
-	): SchoolExternalToolResponse[] {
+	): ToolConfigurationEntryResponse[] {
 		return externalTools.map(
 			(tool: ExternalToolDO) =>
-				new SchoolExternalToolResponse({
+				new ToolConfigurationEntryResponse({
 					id: tool.id || '',
 					name: tool.name,
 					logoUrl: tool.logoUrl,

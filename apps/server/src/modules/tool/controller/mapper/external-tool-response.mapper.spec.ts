@@ -24,8 +24,8 @@ import {
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
-	SchoolExternalToolListResponse,
-	SchoolExternalToolResponse,
+	ToolConfigurationEntryResponse,
+	ToolConfigurationListResponse,
 } from '../dto';
 
 describe('ExternalToolResponseMapper', () => {
@@ -197,22 +197,22 @@ describe('ExternalToolResponseMapper', () => {
 		});
 	});
 
-	describe('mapExternalToolDOsToSchoolExternalToolListResponse is called', () => {
-		describe('when mapping from ExternalToolDOs to SchoolExternalToolListResponse', () => {
-			it('should map from ExternalToolDOs to SchoolExternalToolListResponse', () => {
+	describe('mapExternalToolDOsToToolConfigurationListResponse is called', () => {
+		describe('when mapping from ExternalToolDOs to ToolConfigurationListResponse', () => {
+			it('should map from ExternalToolDOs to ToolConfigurationListResponse', () => {
 				const externalToolDOs: ExternalToolDO[] = externalToolDOFactory.buildList(3, {
 					id: 'toolId',
 					name: 'toolName',
 					logoUrl: 'logoUrl',
 				});
-				const expectedResponse: SchoolExternalToolResponse = new SchoolExternalToolResponse({
+				const expectedResponse: ToolConfigurationEntryResponse = new ToolConfigurationEntryResponse({
 					id: 'toolId',
 					name: 'toolName',
 					logoUrl: 'logoUrl',
 				});
 
-				const result: SchoolExternalToolListResponse =
-					mapper.mapExternalToolDOsToSchoolExternalToolListResponse(externalToolDOs);
+				const result: ToolConfigurationListResponse =
+					mapper.mapExternalToolDOsToToolConfigurationListResponse(externalToolDOs);
 
 				expect(result.data).toEqual(expect.arrayContaining([expectedResponse, expectedResponse, expectedResponse]));
 			});

@@ -13,7 +13,7 @@ import { ExternalToolService } from '../service/external-tool.service';
 import { SchoolExternalToolService } from '../service/school-external-tool.service';
 import { ExternalToolConfigurationUc } from './tool-configuration.uc';
 
-describe('SchoolExternalToolUc', () => {
+describe('ExternalToolConfigurationUc', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
 	let uc: ExternalToolConfigurationUc;

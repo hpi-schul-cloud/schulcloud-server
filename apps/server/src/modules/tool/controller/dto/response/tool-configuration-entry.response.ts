@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class SchoolExternalToolResponse {
+export class ToolConfigurationEntryResponse {
 	@ApiProperty()
 	id: EntityId;
 
@@ -11,7 +11,7 @@ export class SchoolExternalToolResponse {
 	@ApiPropertyOptional()
 	logoUrl?: string;
 
-	constructor(response: SchoolExternalToolResponse) {
+	constructor(response: ToolConfigurationEntryResponse) {
 		this.id = response.id;
 		this.name = response.name;
 		this.logoUrl = response.logoUrl;

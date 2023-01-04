@@ -19,5 +19,5 @@ export * from './response/external-tool-search-list.response';
 export * from './response/lti11-launch.response';
 export * from './response/lti11-tool-config.response';
 export * from './response/oauth2-tool-config.response';
-export * from './response/school-external-tool.response';
-export * from './response/school-external-tool-list.response';
+export * from './response/tool-configuration-entry.response';
+export * from './response/tool-configuration-list.response';
