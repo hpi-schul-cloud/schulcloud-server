@@ -7,9 +7,9 @@ import { ExternalToolResponseMapper } from './mapper';
 import { IdQuery, ScopeQuery, ToolConfigurationListResponse } from './dto';
 import { ExternalToolConfigurationUc } from '../uc/tool-configuration.uc';
 
-@ApiTags('School')
+@ApiTags('Tool')
 @Authenticate('jwt')
-@Controller('school')
+@Controller('tools')
 export class ToolConfigurationController {
 	constructor(
 		private readonly externalToolConfigurationUc: ExternalToolConfigurationUc,
