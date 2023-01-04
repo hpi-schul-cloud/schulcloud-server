@@ -316,7 +316,7 @@ export class TaskUC {
 		return taskWithStatusVo;
 	}
 
-	async delete(userId: EntityId, taskId: EntityId) {
+	async delete(userId: EntityId, taskId: EntityId): Promise<boolean> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 

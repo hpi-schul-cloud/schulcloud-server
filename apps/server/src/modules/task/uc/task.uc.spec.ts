@@ -1047,12 +1047,13 @@ describe('TaskUC', () => {
 			taskRepo.findById.mockResolvedValue(task);
 		});
 
-		it('should throw UnauthorizedException when not permitted', async () => {
+		it('should throw ForbiddenException when not permitted', async () => {
 			task = taskFactory.buildWithId();
 			taskRepo.findById.mockResolvedValue(task);
 			authorizationService.checkPermission.mockImplementation(() => {
 				throw new ForbiddenException();
 			});
+
 			await expect(async () => {
 				await service.delete(user.id, task.id);
 			}).rejects.toThrow(new ForbiddenException());
@@ -1071,6 +1072,19 @@ describe('TaskUC', () => {
 			await service.delete(user.id, task.id);
 
 			expect(taskService.delete).toBeCalledWith(task);
+		});
+
+		it('should pass error when taskService.delete rejects', async () => {
+			const error = new Error('test message');
+			taskService.delete.mockRejectedValue(error);
+
+			await expect(() => service.delete(user.id, task.id)).rejects.toThrow(error);
+		});
+
+		it('should return true when there is no exception', async () => {
+			const result = await service.delete(user.id, task.id);
+
+			expect(result).toBe(true);
 		});
 	});
 
