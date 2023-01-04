@@ -3,7 +3,7 @@ import { VideoConferenceController } from '@src/modules/video-conference/control
 import { VideoConferenceUc } from '@src/modules/video-conference/uc/video-conference.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@shared/domain';
-import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import {
 	VideoConferenceDTO,
 	VideoConferenceInfoDTO,
