@@ -3,6 +3,7 @@ import { BasicToolConfigResponse } from './basic-tool-config.response';
 import { Oauth2ToolConfigResponse } from './oauth2-tool-config.response';
 import { Lti11ToolConfigResponse } from './lti11-tool-config.response';
 import { CustomParameterResponse } from './custom-parameter.response';
+import { IsArray } from 'class-validator';
 
 export class ExternalToolResponse {
 	@ApiProperty()

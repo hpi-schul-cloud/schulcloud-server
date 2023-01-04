@@ -9,6 +9,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { CustomParameterEntryDO } from '../../domain/domainobject/external-tool/custom-parameter-entry.do';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
+import { schoolExternalToolDOFactory } from '../../testing/factory/domainobject/school-external-tool.factory';
 
 describe('SchoolExternalToolRepo', () => {
 	let module: TestingModule;
@@ -106,6 +107,31 @@ describe('SchoolExternalToolRepo', () => {
 			expect(result.id).toBeDefined();
 			expect(result.updatedAt).toBeDefined();
 			expect(result.createdAt).toBeDefined();
+		});
+	});
+
+	describe('find is called', () => {
+		describe('when school is set', () => {
+			it('should return a do', async () => {
+				const { schoolExternalTool1 } = await setup();
+				const query: SchoolExternalToolDO = schoolExternalToolDOFactory
+					.withSchoolId(schoolExternalTool1.school.id)
+					.build();
+
+				const result: SchoolExternalToolDO[] = await repo.find(query);
+
+				expect(result[0].schoolId).toEqual(schoolExternalTool1.school.id);
+			});
+
+			it('should return all dos', async () => {
+				await setup();
+				const query: Partial<SchoolExternalToolDO> = schoolExternalToolDOFactory.build();
+				query.schoolId = undefined;
+
+				const result: SchoolExternalToolDO[] = await repo.find(query);
+
+				expect(result.length).toBeGreaterThan(0);
+			});
 		});
 	});
 });
