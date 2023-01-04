@@ -4,11 +4,13 @@ import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Page } from '@shared/domain/interface/page';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
-import { UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { setupEntities, userFactory } from '@shared/testing';
-import { Permission, User } from '@shared/domain';
+import { Actions, Permission, User } from '@shared/domain';
 import { MikroORM } from '@mikro-orm/core';
-import { AuthorizationService } from '../../authorization';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { SchoolService } from '@src/modules/school';
+import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolService } from '../service/external-tool.service';
 import { SchoolExternalToolService } from '../service/school-external-tool.service';
 import { ExternalToolConfigurationUc } from './tool-configuration.uc';
@@ -21,6 +23,7 @@ describe('ExternalToolConfigurationUc', () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -40,6 +43,10 @@ describe('ExternalToolConfigurationUc', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
 			],
 		}).compile();
 
@@ -47,6 +54,7 @@ describe('ExternalToolConfigurationUc', () => {
 		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		authorizationService = module.get(AuthorizationService);
+		schoolService = module.get(SchoolService);
 	});
 
 	afterEach(() => {
@@ -62,34 +70,43 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when checking for the users permission', () => {
 			const setupAuthorization = () => {
 				const user: User = userFactory.buildWithId();
+				const school: SchoolDO = new SchoolDO({
+					id: user.school.id,
+					name: user.school.name,
+				});
 
 				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalToolDO>([], 0));
 				schoolExternalToolService.findSchoolExternalToolsBySchoolId.mockResolvedValue([]);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				schoolService.getSchoolById.mockResolvedValue(school);
 
 				return {
 					user,
+					school,
 				};
 			};
 
 			it('should call the authorizationService with SCHOOL_TOOL_ADMIN permission', async () => {
-				const { user } = setupAuthorization();
+				const { user, school } = setupAuthorization();
 
 				await uc.getAvailableToolsForSchool('userId', 'schoolId');
 
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.SCHOOL_TOOL_ADMIN]);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, school, {
+					action: Actions.read,
+					requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+				});
 			});
 
-			it('should fail when authorizationService throws UnauthorizedException', async () => {
+			it('should fail when authorizationService throws ForbiddenException', async () => {
 				setupAuthorization();
 
-				authorizationService.checkAllPermissions.mockImplementation(() => {
-					throw new UnauthorizedException();
+				authorizationService.checkPermission.mockImplementation(() => {
+					throw new ForbiddenException();
 				});
 
 				const func = uc.getAvailableToolsForSchool('userId', 'schoolId');
 
-				await expect(func).rejects.toThrow(UnauthorizedException);
+				await expect(func).rejects.toThrow(ForbiddenException);
 			});
 		});
 

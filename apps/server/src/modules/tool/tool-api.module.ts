@@ -3,6 +3,7 @@ import { AuthorizationModule } from '@src/modules/authorization';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { UserModule } from '@src/modules/user';
+import { SchoolModule } from '@src/modules/school';
 import { Lti11Uc } from './uc/lti11.uc';
 import { LtiRoleMapper } from './uc/mapper';
 import { ToolController } from './controller/tool.controller';
@@ -13,7 +14,7 @@ import { ToolConfigurationController } from './controller/tool-configuration.con
 import { ExternalToolConfigurationUc } from './uc/tool-configuration.uc';
 
 @Module({
-	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule],
+	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule, SchoolModule],
 	controllers: [ToolConfigurationController, ToolController],
 	providers: [
 		Lti11Uc,

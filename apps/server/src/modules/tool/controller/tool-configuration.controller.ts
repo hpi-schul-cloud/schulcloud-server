@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Query } from '@nestjs/common';
 import { ICurrentUser } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
@@ -17,6 +17,7 @@ export class ToolConfigurationController {
 	) {}
 
 	@Get('available')
+	@ApiForbiddenResponse()
 	async getAvailableToolsForSchool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scopeQuery: ScopeQuery,
