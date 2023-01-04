@@ -4,18 +4,19 @@ import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Page } from '@shared/domain/interface/page';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
-import { ExternalToolService, SchoolExternalToolService } from '@src/modules/tool';
-import { AuthorizationService } from '@src/modules/authorization';
 import { UnauthorizedException } from '@nestjs/common';
 import { setupEntities, userFactory } from '@shared/testing';
 import { Permission, User } from '@shared/domain';
 import { MikroORM } from '@mikro-orm/core';
-import { SchoolExternalToolUc } from './school-external-tool.uc';
+import { AuthorizationService } from '../../authorization';
+import { ExternalToolService } from '../service/external-tool.service';
+import { SchoolExternalToolService } from '../service/school-external-tool.service';
+import { ExternalToolConfigurationUc } from './tool-configuration.uc';
 
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
-	let uc: SchoolExternalToolUc;
+	let uc: ExternalToolConfigurationUc;
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
@@ -26,7 +27,7 @@ describe('SchoolExternalToolUc', () => {
 
 		module = await Test.createTestingModule({
 			providers: [
-				SchoolExternalToolUc,
+				ExternalToolConfigurationUc,
 				{
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
@@ -42,7 +43,7 @@ describe('SchoolExternalToolUc', () => {
 			],
 		}).compile();
 
-		uc = module.get(SchoolExternalToolUc);
+		uc = module.get(ExternalToolConfigurationUc);
 		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		authorizationService = module.get(AuthorizationService);
@@ -57,7 +58,7 @@ describe('SchoolExternalToolUc', () => {
 		await orm.close();
 	});
 
-	describe('getAvailableToolsForSchool', () => {
+	describe('getAvailableToolsForSchool is called', () => {
 		describe('when checking for the users permission', () => {
 			const setupAuthorization = () => {
 				const user: User = userFactory.buildWithId();

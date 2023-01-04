@@ -3,11 +3,12 @@ import { EntityId, Permission, User } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { Page } from '@shared/domain/interface/page';
-import { AuthorizationService } from '@src/modules/authorization';
-import { ExternalToolService, SchoolExternalToolService } from '@src/modules/tool';
+import { AuthorizationService } from '../../authorization';
+import { SchoolExternalToolService } from '../service/school-external-tool.service';
+import { ExternalToolService } from '../service/external-tool.service';
 
 @Injectable()
-export class SchoolExternalToolUc {
+export class ExternalToolConfigurationUc {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
