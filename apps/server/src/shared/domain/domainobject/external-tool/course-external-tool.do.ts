@@ -1,7 +1,11 @@
 import { CustomParameterEntryDO } from './custom-parameter-entry.do';
-import { BaseWithTimestampsDO } from '../base.do';
+import { BaseDO } from '../base.do';
 
-export class CourseExternalToolDO extends BaseWithTimestampsDO {
+export class CourseExternalToolDO extends BaseDO {
+	createdAt?: Date;
+
+	updatedAt?: Date;
+
 	schoolToolId: string;
 
 	courseId: string;
@@ -10,11 +14,14 @@ export class CourseExternalToolDO extends BaseWithTimestampsDO {
 
 	toolVersion: number;
 
-	constructor(props: CourseExternalToolDO) {
-		super(props);
-		this.schoolToolId = props.schoolToolId;
-		this.courseId = props.courseId;
-		this.parameters = props.parameters;
-		this.toolVersion = props.toolVersion;
+	constructor(domainObject: CourseExternalToolDO) {
+		super(domainObject.id);
+
+		this.createdAt = domainObject.createdAt;
+		this.updatedAt = domainObject.updatedAt;
+		this.schoolToolId = domainObject.schoolToolId;
+		this.courseId = domainObject.courseId;
+		this.parameters = domainObject.parameters;
+		this.toolVersion = domainObject.toolVersion;
 	}
 }

@@ -25,7 +25,7 @@ export class SanisResponseMapper {
 		return new UserDO({
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
-			email: '',
+			email: source.personenkontexte[0].email,
 			roleIds: [roleId],
 			schoolId,
 			externalId: source.pid,

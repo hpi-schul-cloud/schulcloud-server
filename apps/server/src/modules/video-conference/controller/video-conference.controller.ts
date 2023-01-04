@@ -15,7 +15,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VideoConferenceUc } from '@src/modules/video-conference/uc/video-conference.uc';
 import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
 import { BBBBaseResponse } from '@src/modules/video-conference/interface/bbb-response.interface';
-import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import {
 	VideoConferenceDTO,
 	VideoConferenceInfoDTO,
