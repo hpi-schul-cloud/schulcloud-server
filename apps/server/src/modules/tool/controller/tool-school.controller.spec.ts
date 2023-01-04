@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@shared/domain';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { ToolSchoolController } from './tool-school.controller';
 import { SchoolExternalToolUc } from '../uc/school-external-tool.uc';
 import { SchoolExternalToolResponseMapper } from './mapper/school-external-tool-response.mapper';
 import { SchoolExternalToolParams } from './dto/request/school-external-tool.params';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { SchoolExternalToolSearchListResponse } from './dto/response/school-external-tool-search-list.response';
 import { SchoolExternalToolResponse } from './dto/response/school-external-tool.response';
 
