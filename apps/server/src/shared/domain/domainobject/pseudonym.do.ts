@@ -1,17 +1,24 @@
-import { EntityId } from '../types';
-import { BaseWithTimestampsDO } from './base.do';
+import { EntityId } from '@shared/domain/types';
+import { BaseDO } from './base.do';
 
-export class PseudonymDO extends BaseWithTimestampsDO {
+export class PseudonymDO extends BaseDO {
+	createdAt?: Date;
+
+	updatedAt?: Date;
+
 	pseudonym: string;
 
 	toolId: EntityId;
 
 	userId: EntityId;
 
-	constructor(props: PseudonymDO) {
-		super(props);
-		this.pseudonym = props.pseudonym;
-		this.toolId = props.toolId;
-		this.userId = props.userId;
+	constructor(domainObject: PseudonymDO) {
+		super(domainObject.id);
+
+		this.createdAt = domainObject.createdAt;
+		this.updatedAt = domainObject.updatedAt;
+		this.pseudonym = domainObject.pseudonym;
+		this.toolId = domainObject.toolId;
+		this.userId = domainObject.userId;
 	}
 }
