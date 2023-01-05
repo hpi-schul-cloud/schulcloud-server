@@ -12,9 +12,10 @@ import { ToolModule } from './tool.module';
 import { ToolSchoolController } from './controller/tool-school.controller';
 import { SchoolExternalToolResponseMapper } from './controller/mapper/school-external-tool-response.mapper';
 import { SchoolExternalToolUc } from './uc/school-external-tool.uc';
+import { SchoolModule } from '../school';
 
 @Module({
-	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule],
+	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule, SchoolModule],
 	controllers: [ToolSchoolController, ToolController],
 	providers: [
 		Lti11Uc,
