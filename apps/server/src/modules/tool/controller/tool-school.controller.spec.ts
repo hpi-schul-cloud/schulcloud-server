@@ -9,6 +9,7 @@ import { SchoolExternalToolResponseMapper } from './mapper/school-external-tool-
 import { SchoolExternalToolParams } from './dto/request/school-external-tool.params';
 import { SchoolExternalToolSearchListResponse } from './dto/response/school-external-tool-search-list.response';
 import { SchoolExternalToolResponse } from './dto/response/school-external-tool.response';
+import { SchoolExternalToolStatusResponse } from './dto/response/school-external-tool-status.response';
 
 describe('ToolSchoolController', () => {
 	let module: TestingModule;
@@ -78,6 +79,7 @@ describe('ToolSchoolController', () => {
 				const { currentUser, params } = setup();
 				const expectedResponse: SchoolExternalToolSearchListResponse = new SchoolExternalToolSearchListResponse([
 					new SchoolExternalToolResponse({
+						name: 'name',
 						schoolId: 'schoolId',
 						toolId: 'toolId',
 						toolVersion: 2,
@@ -87,6 +89,7 @@ describe('ToolSchoolController', () => {
 								value: 'value',
 							},
 						],
+						status: SchoolExternalToolStatusResponse.LATEST,
 					}),
 				]);
 

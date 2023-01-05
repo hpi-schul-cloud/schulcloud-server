@@ -1,6 +1,7 @@
 import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from './do-base.factory';
 import { SchoolExternalToolDO } from '../../../domain/domainobject/external-tool/school-external-tool.do';
+import { SchoolExternalToolStatus } from '../../../domain/domainobject/external-tool/school-external-tool-status';
 
 class SchoolExternalToolDOFactory extends DoBaseFactory<SchoolExternalToolDO, SchoolExternalToolDO> {
 	withSchoolId(schoolId: string): this {
@@ -11,11 +12,13 @@ class SchoolExternalToolDOFactory extends DoBaseFactory<SchoolExternalToolDO, Sc
 	}
 }
 
-export const schoolExternalToolDOFactory = SchoolExternalToolDOFactory.define(SchoolExternalToolDO, () => {
+export const schoolExternalToolDOFactory = SchoolExternalToolDOFactory.define(SchoolExternalToolDO, ({ sequence }) => {
 	return {
-		schoolId: 'schoolId',
+		name: `schoolExternal-${sequence}`,
+		schoolId: `schoolId-${sequence}`,
 		toolVersion: 1,
 		parameters: [{ name: 'name', value: 'value' }],
 		toolId: 'toolId',
+		status: SchoolExternalToolStatus.LATEST,
 	};
 });
