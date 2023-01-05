@@ -1,4 +1,4 @@
-import { BaseDORepo, EntityProperties, Scope } from '@shared/repo';
+import { BaseDORepo, EntityProperties } from '@shared/repo';
 import { EntityName, Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ExternalTool, ISchoolExternalToolProperties, School, SchoolExternalTool } from '@shared/domain';
@@ -45,16 +45,21 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 	}
 
 	async find(query: Partial<SchoolExternalToolDO>): Promise<SchoolExternalToolDO[]> {
-		const scope: SchoolExternalToolScope = new SchoolExternalToolScope();
-		if (query.schoolId) {
-			scope.bySchoolId(query.schoolId);
-		}
-		scope.allowEmptyQuery(true);
+		const scope: SchoolExternalToolScope = this.buildScope(query);
 
 		const entities: SchoolExternalTool[] = await this._em.find(this.entityName, scope.query);
 
 		const dos: SchoolExternalToolDO[] = entities.map((entity: SchoolExternalTool) => this.mapEntityToDO(entity));
 		return dos;
+	}
+
+	private buildScope(query: Partial<SchoolExternalToolDO>): SchoolExternalToolScope {
+		const scope: SchoolExternalToolScope = new SchoolExternalToolScope();
+		if (query.schoolId) {
+			scope.bySchoolId(query.schoolId);
+		}
+		scope.allowEmptyQuery(true);
+		return scope;
 	}
 
 	mapEntityToDO(entity: SchoolExternalTool): SchoolExternalToolDO {
