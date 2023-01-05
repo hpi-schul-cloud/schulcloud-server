@@ -1,84 +1,83 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { OauthProvisioningInputDto, ProvisioningSystemInputDto, ProvisioningDataResponseDto, ProvisioningDto } from '../dto';
+import { SystemService } from '@src/modules/system';
+import { UserService } from '@src/modules/user';
+import { SchoolService } from '@src/modules/school';
+import { OauthDataAdapterInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
 import { ProvisioningSystemInputMapper } from '../mapper/provisioning-system-input.mapper';
 import {
-	OidcProvisioningStrategy,
 	IservProvisioningStrategy,
+	OidcMockProvisioningStrategy,
+	ProvisioningStrategy,
 	SanisProvisioningStrategy,
-	ProvisioningStrategy
 } from '../strategy';
-import { SystemService } from '@src/modules/system';
-import { MigrationService } from './migration.service';
-import { MigrationOutputDto } from '../dto/migration-output.dto';
-import { UserService } from '@src/modules/user';
+import { OauthDataDto } from '../dto/oauth-data.dto';
+import { AccountUc } from '../../account/uc/account.uc';
+import { RoleService } from '../../role';
 
 @Injectable()
 export class ProvisioningService {
-	strategies: Map<SystemProvisioningStrategy, ProvisioningStrategy<ProvisioningDataResponseDto>> = new Map<SystemProvisioningStrategy, ProvisioningStrategy<ProvisioningDataResponseDto>>();
+	strategies: Map<SystemProvisioningStrategy, ProvisioningStrategy> = new Map<
+		SystemProvisioningStrategy,
+		ProvisioningStrategy
+	>();
 
 	constructor(
 		private readonly systemService: SystemService,
 		private readonly userService: UserService,
+		private readonly schoolService: SchoolService,
+		private readonly roleService: RoleService,
+		private readonly accountUc: AccountUc,
 		private readonly sanisStrategy: SanisProvisioningStrategy,
 		private readonly iservStrategy: IservProvisioningStrategy,
-		private readonly oidcStrategy: OidcProvisioningStrategy,
-		private readonly migrationService: MigrationService,
+		private readonly oidcMockStrategy: OidcMockProvisioningStrategy
 	) {
 		this.registerStrategy(sanisStrategy);
 		this.registerStrategy(iservStrategy);
-		this.registerStrategy(oidcStrategy);
+		this.registerStrategy(oidcMockStrategy);
 	}
 
-	protected registerStrategy(strategy: ProvisioningStrategy<ProvisioningDataResponseDto>) {
+	protected registerStrategy(strategy: ProvisioningStrategy) {
 		this.strategies.set(strategy.getType(), strategy);
 	}
 
-	async process(accessToken: string, idToken: string, systemId: string): Promise<ProvisioningDto> {
-		const system: ProvisioningSystemInputDto = await this.determineInput(systemId);
-		const input: OauthProvisioningInputDto = new OauthProvisioningInputDto({
+	async fetchData(accessToken: string, idToken: string, systemId: string): Promise<OauthDataDto> {
+		const system: ProvisioningSystemDto = await this.determineInput(systemId);
+		const input: OauthDataAdapterInputDto = new OauthDataAdapterInputDto({
 			accessToken,
 			idToken,
-			system
+			system,
 		});
 
-		const strategy: ProvisioningStrategy<ProvisioningDataResponseDto> | undefined = this.strategies.get(system.provisioningStrategy);
-		if(!strategy) {
-			throw new InternalServerErrorException('Provisioning Strategy is not defined.');
-		}
+		const strategy: ProvisioningStrategy = this.getProvisioningStrategy(system.provisioningStrategy);
 
-		const data: ProvisioningDataResponseDto = await strategy.fetch(input);
-
-		if(data.officialSchoolNumber) {
-			const userExists: boolean = this.userService.findByExternalId(data.externalUserId, system.systemId);
-			const migration: boolean = this.migrationService.isSchoolInMigration(data.officialSchoolNumber);
-
-			if(!userExists && migration) {
-				// no provisioning
-				const redirect: string = this.migrationService.getMigrationStrategy(migration, systemId);
-				return redirect;
-			}
-		}
-
-		const provisioningDto: ProvisioningDto = await strategy.apply(data);
-		return provisioningDto;
+		const data: OauthDataDto = await strategy.fetch(input);
+		return data;
 	}
 
-	private async determineInput(systemId: string): Promise<ProvisioningSystemInputDto> {
+	private async determineInput(systemId: string): Promise<ProvisioningSystemDto> {
 		try {
 			const systemDto = await this.systemService.findById(systemId);
-			const inputDto: ProvisioningSystemInputDto = ProvisioningSystemInputMapper.mapToInternal(systemDto);
+			const inputDto: ProvisioningSystemDto = ProvisioningSystemInputMapper.mapToInternal(systemDto);
 			return inputDto;
 		} catch (e) {
 			throw new NotFoundException(`System with id "${systemId}" does not exist.`);
 		}
 	}
 
-	private async checkMigration(officialSchoolNumber: string) {
-		const migration: MigrationOutputDto = await this.migrationService.checkMigrationForSchool(officialSchoolNumber);
-
-		return migration;
+	async provisionOauthData(oauthData: OauthDataDto): Promise<ProvisioningDto> {
+		const strategy: ProvisioningStrategy = this.getProvisioningStrategy(oauthData.system.provisioningStrategy);
+		const provisioningDto: Promise<ProvisioningDto> = strategy.apply(oauthData);
+		return provisioningDto;
 	}
 
+	private getProvisioningStrategy(systemStrategy: SystemProvisioningStrategy): ProvisioningStrategy {
+		const strategy: ProvisioningStrategy | undefined = this.strategies.get(systemStrategy);
 
+		if (!strategy) {
+			throw new InternalServerErrorException('Provisioning Strategy is not defined.');
+		}
+
+		return strategy;
+	}
 }

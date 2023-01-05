@@ -1,11 +1,11 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
-import { OauthProvisioningInputDto, ProvisioningDataResponseDto } from '../dto';
+import { OauthDataAdapterInputDto, ProvisioningDto } from '../dto';
+import { OauthDataDto } from '../dto/oauth-data.dto';
 
-export abstract class ProvisioningStrategy<T extends ProvisioningDataResponseDto> {
+export abstract class ProvisioningStrategy {
 	abstract getType(): SystemProvisioningStrategy;
 
-	abstract fetch(input :OauthProvisioningInputDto): Promise<T>;
+	abstract fetch(input: OauthDataAdapterInputDto): Promise<OauthDataDto>;
 
-	abstract apply(data: T): Promise<ProvisioningDto>;
+	abstract apply(data: OauthDataDto): Promise<ProvisioningDto>;
 }

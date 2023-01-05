@@ -8,6 +8,8 @@ import { IUserConfig } from '@src/modules/user/interfaces';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { SchoolService } from '../../school';
 import { SchoolMapper } from '../../school/mapper/school.mapper';
 
@@ -15,6 +17,7 @@ import { SchoolMapper } from '../../school/mapper/school.mapper';
 export class UserService {
 	constructor(
 		private readonly userRepo: UserRepo,
+		private readonly userDORepo: UserDORepo,
 		private readonly roleRepo: RoleRepo,
 		private readonly schoolService: SchoolService,
 		private readonly permissionService: PermissionService,
@@ -33,6 +36,16 @@ export class UserService {
 		const userEntity = await this.userRepo.findById(id, true);
 		const userDto = UserMapper.mapFromEntityToDto(userEntity);
 		return userDto;
+	}
+
+	async save(user: UserDO): Promise<UserDO> {
+		const savedUser: Promise<UserDO> = this.userDORepo.save(user);
+		return savedUser;
+	}
+
+	async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDO | null> {
+		const user: Promise<UserDO | null> = this.userDORepo.findByExternalId(externalId, systemId);
+		return user;
 	}
 
 	async getDisplayName(userDto: UserDto): Promise<string> {

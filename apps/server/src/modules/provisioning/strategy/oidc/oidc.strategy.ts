@@ -1,29 +1,26 @@
-import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
-import { Injectable } from '@nestjs/common';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { OauthProvisioningInputDto, ProvisioningDataResponseDto } from '../../dto';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { ProvisioningStrategy } from '../base.strategy';
+import { OauthDataDto } from '../../dto/oauth-data.dto';
+import { ProvisioningDto } from '../../dto';
+import { OidcProvisioningService } from './service/oidc-provisioning.service';
 
-@Injectable()
-export class OidcProvisioningStrategy extends ProvisioningStrategy<ProvisioningDataResponseDto> {
-	override async fetch(input : OauthProvisioningInputDto): Promise<ProvisioningDataResponseDto> {
-		const idToken: JwtPayload | null = jwt.decode(input.idToken, { json: true });
-		if (!idToken || !idToken.preferred_username) {
-			throw new OAuthSSOError('Failed to extract preferred_username', 'sso_jwt_problem');
+export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
+	protected constructor(protected readonly oidcProvisioningService: OidcProvisioningService) {
+		super();
+	}
+
+	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
+		let school: SchoolDO | undefined;
+		if (data.externalSchool) {
+			school = await this.oidcProvisioningService.provisionExternalSchool(data.externalSchool, data.system.systemId);
 		}
 
-		return new ProvisioningDataResponseDto({
-			externalUserId: idToken.preferred_username
-		});
-	}
-
-	override async apply(data: ProvisioningDataResponseDto): Promise<ProvisioningDto> {
-		return Promise.resolve(new ProvisioningDto({ externalUserId: data.externalUserId }));
-	}
-
-	getType(): SystemProvisioningStrategy {
-		return SystemProvisioningStrategy.OIDC;
+		const user: UserDO = await this.oidcProvisioningService.provisionExternalUser(
+			data.externalUser,
+			data.system.systemId,
+			school?.id
+		);
+		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
 	}
 }

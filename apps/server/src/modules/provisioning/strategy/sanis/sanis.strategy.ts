@@ -1,4 +1,3 @@
-import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SanisResponse } from '@src/modules/provisioning/strategy/sanis/sanis.response';
@@ -6,36 +5,32 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
-import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { SanisSchoolService } from '@src/modules/provisioning/strategy/sanis/service/sanis-school.service';
-import { SanisUserService } from '@src/modules/provisioning/strategy/sanis/service/sanis-user.service';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { OauthProvisioningInputDto, ProvisioningDataResponseDto } from '../../dto';
-
-export type SanisStrategyData = {
-	provisioningUrl: string;
-	accessToken: string;
-	systemId: string;
-};
-
-// TODO
-export type sanisdto = ProvisioningDataResponseDto & SanisResponse & {systemId: string};
+import { OauthDataAdapterInputDto } from '../../dto';
+import { OauthDataDto } from '../../dto/oauth-data.dto';
+import { ExternalUserDto } from '../../dto/external-user.dto';
+import { ExternalSchoolDto } from '../../dto/external-school.dto';
+import { OidcProvisioningStrategy } from '../oidc/oidc.strategy';
+import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
 
 @Injectable()
-export class SanisProvisioningStrategy extends ProvisioningStrategy<sanisdto> {
+export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 	constructor(
 		private readonly responseMapper: SanisResponseMapper,
 		private readonly httpService: HttpService,
-		private readonly sanisSchoolService: SanisSchoolService,
-		private readonly sanisUserService: SanisUserService,
+		oidcProvisioningService: OidcProvisioningService
 	) {
-		super();
+		super(oidcProvisioningService);
 	}
 
-	override async fetch(input: OauthProvisioningInputDto): Promise<sanisdto> {
+	getType(): SystemProvisioningStrategy {
+		return SystemProvisioningStrategy.SANIS;
+	}
+
+	override async fetch(input: OauthDataAdapterInputDto): Promise<OauthDataDto> {
 		if (!input.system.provisioningUrl) {
-			throw new InternalServerErrorException(`Sanis system with id: ${input.system.systemId} is missing a provisioning url`);
+			throw new InternalServerErrorException(
+				`Sanis system with id: ${input.system.systemId} is missing a provisioning url`
+			);
 		}
 
 		const axiosConfig: AxiosRequestConfig = {
@@ -43,32 +38,17 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<sanisdto> {
 		};
 
 		const axiosResponse: AxiosResponse<SanisResponse> = await firstValueFrom(
-			this.httpService.get(`${input.system.provisioningUrl}`, axiosConfig)
+			this.httpService.get(input.system.provisioningUrl, axiosConfig)
 		);
 
-		return {
-			systemId: input.system.systemId,
-			externalUserId: axiosResponse.data.pid,
-			officialSchoolNumber: axiosResponse.data.personenkontexte[0].id.toString(),
-			...axiosResponse.data
-		};
-	}
+		const externalUser: ExternalUserDto = this.responseMapper.mapToExternalUserDto(axiosResponse.data);
+		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(axiosResponse.data);
 
-	override async apply(data: sanisdto): Promise<ProvisioningDto> {
-		const school: SchoolDO = await this.sanisSchoolService.provisionSchool(data, data.systemId);
-
-		if (!school.id) {
-			throw new InternalServerErrorException(
-				`Provisioning of sanis strategy: ${data.pid} failed. No school id supplied.`
-			);
-		}
-
-		const user: UserDO = await this.sanisUserService.provisionUser(data, data.systemId, school.id);
-
-		return new ProvisioningDto({ externalUserId: user.externalId as string });
-	}
-
-	getType(): SystemProvisioningStrategy {
-		return SystemProvisioningStrategy.SANIS;
+		const oauthData: OauthDataDto = new OauthDataDto({
+			system: input.system,
+			externalSchool,
+			externalUser,
+		});
+		return oauthData;
 	}
 }

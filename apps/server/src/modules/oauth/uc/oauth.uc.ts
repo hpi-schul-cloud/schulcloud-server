@@ -8,6 +8,8 @@ import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
+import { ProvisioningDto } from '../../provisioning';
+import { OauthDataDto } from '../../provisioning/dto/oauth-data.dto';
 
 @Injectable()
 export class OauthUc {
@@ -44,6 +46,20 @@ export class OauthUc {
 		await this.oauthService.validateToken(queryToken.id_token, oauthConfig);
 
 		const user: User = await this.oauthService.findUser(queryToken.access_token, queryToken.id_token, system.id);
+		const data: OauthDataDto = await this.provisioningService.fetchData(accessToken, idToken, systemId);
+
+		if (data.externalSchool?.officialSchoolNumber) {
+			const userExists: boolean = this.userService.findByExternalId(data.externalUserId, system.systemId);
+			const migration: boolean = this.migrationService.isSchoolInMigration(data.officialSchoolNumber);
+
+			if (!userExists && migration) {
+				// no provisioning
+				const redirect: string = this.migrationService.getMigrationStrategy(migration, systemId);
+				return redirect;
+			}
+		}
+
+		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionOauthData(data);
 
 		const jwtResponse: string = await this.oauthService.getJwtForUser(user);
 
