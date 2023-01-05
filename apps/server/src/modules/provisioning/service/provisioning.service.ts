@@ -1,41 +1,67 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ProvisioningSystemInputDto } from '@src/modules/provisioning/dto/provisioning-system-input.dto';
-import { ProvisioningSystemInputMapper } from '@src/modules/provisioning/mapper/provisioning-system-input.mapper';
-import { SanisProvisioningStrategy, SanisStrategyData } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
-import { IservProvisioningStrategy, IservStrategyData } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
-import { OidcProvisioningStrategy, OidcStrategyData } from '@src/modules/provisioning/strategy/oidc/oidc.strategy';
-import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
-import { SystemService } from '@src/modules/system/service/system.service';
+import { OauthProvisioningInputDto, ProvisioningSystemInputDto, ProvisioningDataResponseDto, ProvisioningDto } from '../dto';
+import { ProvisioningSystemInputMapper } from '../mapper/provisioning-system-input.mapper';
+import {
+	OidcProvisioningStrategy,
+	IservProvisioningStrategy,
+	SanisProvisioningStrategy,
+	ProvisioningStrategy
+} from '../strategy';
+import { SystemService } from '@src/modules/system';
+import { MigrationService } from './migration.service';
+import { MigrationOutputDto } from '../dto/migration-output.dto';
+import { UserService } from '@src/modules/user';
 
 @Injectable()
 export class ProvisioningService {
+	strategies: Map<SystemProvisioningStrategy, ProvisioningStrategy<ProvisioningDataResponseDto>> = new Map<SystemProvisioningStrategy, ProvisioningStrategy<ProvisioningDataResponseDto>>();
+
 	constructor(
 		private readonly systemService: SystemService,
+		private readonly userService: UserService,
 		private readonly sanisStrategy: SanisProvisioningStrategy,
 		private readonly iservStrategy: IservProvisioningStrategy,
-		private readonly oidcStrategy: OidcProvisioningStrategy
-	) {}
+		private readonly oidcStrategy: OidcProvisioningStrategy,
+		private readonly migrationService: MigrationService,
+	) {
+		this.registerStrategy(sanisStrategy);
+		this.registerStrategy(iservStrategy);
+		this.registerStrategy(oidcStrategy);
+	}
+
+	protected registerStrategy(strategy: ProvisioningStrategy<ProvisioningDataResponseDto>) {
+		this.strategies.set(strategy.getType(), strategy);
+	}
 
 	async process(accessToken: string, idToken: string, systemId: string): Promise<ProvisioningDto> {
 		const system: ProvisioningSystemInputDto = await this.determineInput(systemId);
+		const input: OauthProvisioningInputDto = new OauthProvisioningInputDto({
+			accessToken,
+			idToken,
+			system
+		});
 
-		switch (system.provisioningStrategy) {
-			case SystemProvisioningStrategy.SANIS: {
-				const provisioningDtoPromise = this.provisionSanis(system, systemId, accessToken);
-				return provisioningDtoPromise;
-			}
-			case SystemProvisioningStrategy.ISERV: {
-				const provisioningDtoPromise = this.provisionIserv(idToken);
-				return provisioningDtoPromise;
-			}
-			case SystemProvisioningStrategy.OIDC: {
-				const provisioningDtoPromise = this.provisionOidc(idToken);
-				return provisioningDtoPromise;
-			}
-			default:
-				throw new InternalServerErrorException('Provisioning Strategy is not defined.');
+		const strategy: ProvisioningStrategy<ProvisioningDataResponseDto> | undefined = this.strategies.get(system.provisioningStrategy);
+		if(!strategy) {
+			throw new InternalServerErrorException('Provisioning Strategy is not defined.');
 		}
+
+		const data: ProvisioningDataResponseDto = await strategy.fetch(input);
+
+		if(data.officialSchoolNumber) {
+			const userExists: boolean = this.userService.findByExternalId(data.externalUserId, system.systemId);
+			const migration: boolean = this.migrationService.isSchoolInMigration(data.officialSchoolNumber);
+
+			if(!userExists && migration) {
+				// no provisioning
+				const redirect: string = this.migrationService.getMigrationStrategy(migration, systemId);
+				return redirect;
+			}
+		}
+
+		const provisioningDto: ProvisioningDto = await strategy.apply(data);
+		return provisioningDto;
 	}
 
 	private async determineInput(systemId: string): Promise<ProvisioningSystemInputDto> {
@@ -48,37 +74,11 @@ export class ProvisioningService {
 		}
 	}
 
-	private provisionIserv(idToken: string): Promise<ProvisioningDto> {
-		const params: IservStrategyData = {
-			idToken,
-		};
-		const provisioningDtoPromise = this.iservStrategy.apply(params);
-		return provisioningDtoPromise;
+	private async checkMigration(officialSchoolNumber: string) {
+		const migration: MigrationOutputDto = await this.migrationService.checkMigrationForSchool(officialSchoolNumber);
+
+		return migration;
 	}
 
-	private provisionSanis(
-		system: ProvisioningSystemInputDto,
-		systemId: string,
-		accessToken: string
-	): Promise<ProvisioningDto> {
-		if (!system.provisioningUrl) {
-			throw new InternalServerErrorException(`Sanis system with id: ${systemId} is missing a provisioning url`);
-		}
 
-		const params: SanisStrategyData = {
-			provisioningUrl: system.provisioningUrl,
-			accessToken,
-			systemId,
-		};
-		const provisioningDtoPromise = this.sanisStrategy.apply(params);
-		return provisioningDtoPromise;
-	}
-
-	private provisionOidc(idToken: string): Promise<ProvisioningDto> {
-		const params: OidcStrategyData = {
-			idToken,
-		};
-		const provisioningDtoPromise = this.oidcStrategy.apply(params);
-		return provisioningDtoPromise;
-	}
 }

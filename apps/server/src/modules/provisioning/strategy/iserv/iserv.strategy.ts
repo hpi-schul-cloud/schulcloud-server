@@ -4,19 +4,23 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-
-export type IservStrategyData = {
-	idToken: string;
-};
+import { OauthProvisioningInputDto, ProvisioningDataResponseDto } from '../../dto';
 
 @Injectable()
-export class IservProvisioningStrategy extends ProvisioningStrategy<IservStrategyData> {
-	override async apply(params: IservStrategyData): Promise<ProvisioningDto> {
-		const idToken: JwtPayload | null = jwt.decode(params.idToken, { json: true });
+export class IservProvisioningStrategy extends ProvisioningStrategy<ProvisioningDataResponseDto> {
+	override async fetch(input: OauthProvisioningInputDto): Promise<ProvisioningDataResponseDto> {
+		const idToken: JwtPayload | null = jwt.decode(input.idToken, { json: true });
 		if (!idToken || !idToken.uuid) {
 			throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');
 		}
-		return Promise.resolve(new ProvisioningDto({ externalUserId: idToken.uuid as string }));
+
+		return new ProvisioningDataResponseDto({
+			externalUserId: idToken.uuid,
+		});
+	}
+
+	override async apply(data: ProvisioningDataResponseDto): Promise<ProvisioningDto> {
+		return Promise.resolve(new ProvisioningDto({ externalUserId: data.externalUserId }));
 	}
 
 	getType(): SystemProvisioningStrategy {

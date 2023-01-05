@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { EntityId, RoleName } from '@shared/domain';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { SanisResponse, SanisRole } from './sanis.response';
+import { ProvisioningSchoolOutputDto } from '../../dto';
 
 const RoleMapping = {
 	[SanisRole.LEHR]: RoleName.TEACHER,

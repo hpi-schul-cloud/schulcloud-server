@@ -11,6 +11,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SanisSchoolService } from '@src/modules/provisioning/strategy/sanis/service/sanis-school.service';
 import { SanisUserService } from '@src/modules/provisioning/strategy/sanis/service/sanis-user.service';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { OauthProvisioningInputDto, ProvisioningDataResponseDto } from '../../dto';
 
 export type SanisStrategyData = {
 	provisioningUrl: string;
@@ -18,21 +19,43 @@ export type SanisStrategyData = {
 	systemId: string;
 };
 
+// TODO
+export type sanisdto = ProvisioningDataResponseDto & SanisResponse & {systemId: string};
+
 @Injectable()
-export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrategyData> {
+export class SanisProvisioningStrategy extends ProvisioningStrategy<sanisdto> {
 	constructor(
 		private readonly responseMapper: SanisResponseMapper,
 		private readonly httpService: HttpService,
 		private readonly sanisSchoolService: SanisSchoolService,
-		private readonly sanisUserService: SanisUserService
+		private readonly sanisUserService: SanisUserService,
 	) {
 		super();
 	}
 
-	override async apply(params: SanisStrategyData): Promise<ProvisioningDto> {
-		const data: SanisResponse = await this.getSanisCustomUserinfo(params);
+	override async fetch(input: OauthProvisioningInputDto): Promise<sanisdto> {
+		if (!input.system.provisioningUrl) {
+			throw new InternalServerErrorException(`Sanis system with id: ${input.system.systemId} is missing a provisioning url`);
+		}
 
-		const school: SchoolDO = await this.sanisSchoolService.provisionSchool(data, params.systemId);
+		const axiosConfig: AxiosRequestConfig = {
+			headers: { Authorization: `Bearer ${input.accessToken}` },
+		};
+
+		const axiosResponse: AxiosResponse<SanisResponse> = await firstValueFrom(
+			this.httpService.get(`${input.system.provisioningUrl}`, axiosConfig)
+		);
+
+		return {
+			systemId: input.system.systemId,
+			externalUserId: axiosResponse.data.pid,
+			officialSchoolNumber: axiosResponse.data.personenkontexte[0].id.toString(),
+			...axiosResponse.data
+		};
+	}
+
+	override async apply(data: sanisdto): Promise<ProvisioningDto> {
+		const school: SchoolDO = await this.sanisSchoolService.provisionSchool(data, data.systemId);
 
 		if (!school.id) {
 			throw new InternalServerErrorException(
@@ -40,21 +63,9 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisStrateg
 			);
 		}
 
-		const user: UserDO = await this.sanisUserService.provisionUser(data, params.systemId, school.id);
+		const user: UserDO = await this.sanisUserService.provisionUser(data, data.systemId, school.id);
 
 		return new ProvisioningDto({ externalUserId: user.externalId as string });
-	}
-
-	private async getSanisCustomUserinfo(params: SanisStrategyData): Promise<SanisResponse> {
-		const axiosConfig: AxiosRequestConfig = {
-			headers: { Authorization: `Bearer ${params.accessToken}` },
-		};
-
-		const axiosResponse: AxiosResponse<SanisResponse> = await firstValueFrom(
-			this.httpService.get(`${params.provisioningUrl}`, axiosConfig)
-		);
-
-		return axiosResponse.data;
 	}
 
 	getType(): SystemProvisioningStrategy {

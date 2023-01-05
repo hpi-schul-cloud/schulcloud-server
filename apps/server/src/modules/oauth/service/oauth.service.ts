@@ -128,19 +128,23 @@ export class OAuthService {
 			const user: User = await this.userRepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
 			return user;
 		} catch (error) {
-			let additionalInfo = '';
-			const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
-			const email = decodedToken?.email as string | undefined;
-			if (email) {
-				const usersWithEmail: User[] = await this.userRepo.findByEmail(email);
-				const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
-				additionalInfo = ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
-			}
+			const additionalInfo: string = await this.getAdditionalErrorInfo(idToken);
 			throw new OAuthSSOError(
 				`Failed to find user with Id ${provisioningDto.externalUserId} ${additionalInfo}`,
 				'sso_user_notfound'
 			);
 		}
+	}
+
+	private async getAdditionalErrorInfo(idToken): Promise<string> {
+		const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
+		const email = decodedToken?.email as string | undefined;
+		if (email) {
+			const usersWithEmail: User[] = await this.userRepo.findByEmail(email);
+			const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
+			return ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
+		}
+		return '';
 	}
 
 	async getJwtForUser(user: User): Promise<string> {

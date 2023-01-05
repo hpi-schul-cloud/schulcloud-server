@@ -29,26 +29,12 @@ export class UserService {
 		return [user, permissions];
 	}
 
-	/**
-	 * Gets a user based on their id.
-	 *
-	 * @param id
-	 * @return {@link UserDto}
-	 */
 	async getUser(id: string): Promise<UserDto> {
 		const userEntity = await this.userRepo.findById(id, true);
 		const userDto = UserMapper.mapFromEntityToDto(userEntity);
 		return userDto;
 	}
 
-	/**
-	 * Gets the display name of an user.
-	 *
-	 * For this, it is checked which role he has.
-	 *
-	 * @param userDto
-	 * @return concatenated string
-	 */
 	async getDisplayName(userDto: UserDto): Promise<string> {
 		const id: string = userDto.id ? userDto.id : '';
 

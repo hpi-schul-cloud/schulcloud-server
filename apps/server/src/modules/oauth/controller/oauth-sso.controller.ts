@@ -31,8 +31,13 @@ export class OauthSSOController {
 			secure: Configuration.get('COOKIE__SECURE') as boolean,
 			expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
 		};
-		res.cookie('jwt', oauthResponse.jwt ? oauthResponse.jwt : '', cookieDefaultOptions);
-		res.redirect(oauthResponse.redirect ? oauthResponse.redirect : '');
+
+		if(oauthResponse.jwt) {
+			res.cookie('jwt', oauthResponse.jwt, cookieDefaultOptions);
+		}
+		if(oauthResponse.redirect) {
+			res.redirect(oauthResponse.redirect);
+		}
 	}
 
 	@Get('hydra/:oauthClientId')
