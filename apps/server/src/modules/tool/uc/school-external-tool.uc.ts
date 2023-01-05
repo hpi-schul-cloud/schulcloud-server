@@ -5,6 +5,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { AuthorizationService } from '../../authorization';
 import { SchoolExternalToolService } from '../service/school-external-tool.service';
 import { SchoolService } from '../../school';
+import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 
 @Injectable()
 export class SchoolExternalToolUc {
@@ -16,12 +17,12 @@ export class SchoolExternalToolUc {
 
 	async findSchoolExternalTools(
 		userId: EntityId,
-		query: Partial<SchoolExternalToolDO>
+		query: SchoolExternalToolQueryInput
 	): Promise<SchoolExternalToolDO[]> {
 		let tools: SchoolExternalToolDO[] = [];
 		if (query.schoolId) {
 			await this.ensureSchoolPermission(userId, query.schoolId);
-			tools = await this.schoolExternalToolService.findSchoolExternalTools(query);
+			tools = await this.schoolExternalToolService.findSchoolExternalTools({ schoolId: query.schoolId });
 		}
 		return tools;
 	}

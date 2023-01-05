@@ -11,6 +11,7 @@ import { SchoolExternalToolUc } from './school-external-tool.uc';
 import { AuthorizationService } from '../../authorization';
 import { SchoolExternalToolService } from '../service/school-external-tool.service';
 import { SchoolService } from '../../school';
+import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
@@ -105,16 +106,16 @@ describe('SchoolExternalToolUc', () => {
 
 			await uc.findSchoolExternalTools(user.id, tool);
 
-			expect(schoolExternalToolService.findSchoolExternalTools).toHaveBeenCalledWith(tool);
+			expect(schoolExternalToolService.findSchoolExternalTools).toHaveBeenCalledWith({ schoolId: tool.schoolId });
 		});
 
 		describe('when query parameters', () => {
 			describe('are empty', () => {
 				it('should not call the service', async () => {
 					const { user } = setup();
-					const emptyQuery: Partial<SchoolExternalToolDO> = {};
+					const emptyQuery: SchoolExternalToolQueryInput = {};
 
-					const result: SchoolExternalToolDO[] = await uc.findSchoolExternalTools(user.id, emptyQuery);
+					await uc.findSchoolExternalTools(user.id, emptyQuery);
 
 					expect(schoolExternalToolService.findSchoolExternalTools).not.toHaveBeenCalled();
 				});

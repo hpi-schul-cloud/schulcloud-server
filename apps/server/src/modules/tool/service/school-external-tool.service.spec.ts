@@ -52,7 +52,7 @@ describe('SchoolExternalToolService', () => {
 
 				await service.findSchoolExternalTools(tool);
 
-				expect(schoolExternalToolRepo.find).toHaveBeenCalledWith(tool);
+				expect(schoolExternalToolRepo.find).toHaveBeenCalledWith({ schoolId: tool.schoolId });
 			});
 
 			it('should return schoolExternalToolDO array', async () => {

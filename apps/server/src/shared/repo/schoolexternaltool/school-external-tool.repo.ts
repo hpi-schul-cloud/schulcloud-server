@@ -7,6 +7,7 @@ import { SchoolExternalToolDO } from '../../domain/domainobject/external-tool/sc
 import { ExternalToolRepoMapper } from '../externaltool/external-tool.repo.mapper';
 import { Logger } from '../../../core/logger';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
+import { SchoolExternalToolQuery } from '../../../modules/tool/uc/dto/school-external-tool.types';
 
 @Injectable()
 export class SchoolExternalToolRepo extends BaseDORepo<
@@ -44,7 +45,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 		return count;
 	}
 
-	async find(query: Partial<SchoolExternalToolDO>): Promise<SchoolExternalToolDO[]> {
+	async find(query: SchoolExternalToolQuery): Promise<SchoolExternalToolDO[]> {
 		const scope: SchoolExternalToolScope = this.buildScope(query);
 
 		const entities: SchoolExternalTool[] = await this._em.find(this.entityName, scope.query);
@@ -53,7 +54,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 		return dos;
 	}
 
-	private buildScope(query: Partial<SchoolExternalToolDO>): SchoolExternalToolScope {
+	private buildScope(query: SchoolExternalToolQuery): SchoolExternalToolScope {
 		const scope: SchoolExternalToolScope = new SchoolExternalToolScope();
 		if (query.schoolId) {
 			scope.bySchoolId(query.schoolId);

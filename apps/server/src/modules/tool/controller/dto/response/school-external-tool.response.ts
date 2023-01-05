@@ -12,7 +12,7 @@ export class SchoolExternalToolResponse {
 	@ApiProperty()
 	schoolId: string;
 
-	@ApiProperty()
+	@ApiProperty({ type: [CustomParameterEntryResponse] })
 	parameters: CustomParameterEntryResponse[];
 
 	@ApiProperty()

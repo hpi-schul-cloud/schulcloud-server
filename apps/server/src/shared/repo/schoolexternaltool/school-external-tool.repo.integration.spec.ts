@@ -7,9 +7,10 @@ import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.
 import { Logger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { CustomParameterEntryDO } from '../../domain/domainobject/external-tool/custom-parameter-entry.do';
+import { CustomParameterEntryDO } from '@shared/domain/domainobject/external-tool/custom-parameter-entry.do';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
-import { schoolExternalToolDOFactory } from '../../testing/factory/domainobject/school-external-tool.factory';
+import { SchoolExternalToolQuery } from '../../../modules/tool/uc/dto/school-external-tool.types';
 
 describe('SchoolExternalToolRepo', () => {
 	let module: TestingModule;
@@ -125,7 +126,7 @@ describe('SchoolExternalToolRepo', () => {
 
 			it('should return all dos', async () => {
 				await setup();
-				const query: Partial<SchoolExternalToolDO> = schoolExternalToolDOFactory.build();
+				const query: SchoolExternalToolQuery = schoolExternalToolDOFactory.build();
 				query.schoolId = undefined;
 
 				const result: SchoolExternalToolDO[] = await repo.find(query);

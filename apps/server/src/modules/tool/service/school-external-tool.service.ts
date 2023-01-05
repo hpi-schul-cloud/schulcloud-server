@@ -4,6 +4,7 @@ import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { SchoolExternalToolStatus } from '@shared/domain/domainobject/external-tool/school-external-tool-status';
 import { ExternalToolService } from './external-tool.service';
+import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 
 @Injectable()
 export class SchoolExternalToolService {
@@ -12,8 +13,10 @@ export class SchoolExternalToolService {
 		private readonly externalToolService: ExternalToolService
 	) {}
 
-	async findSchoolExternalTools(query: Partial<SchoolExternalToolDO>): Promise<SchoolExternalToolDO[]> {
-		let schoolExternalToolDOs: SchoolExternalToolDO[] = await this.schoolExternalToolRepo.find(query);
+	async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise<SchoolExternalToolDO[]> {
+		let schoolExternalToolDOs: SchoolExternalToolDO[] = await this.schoolExternalToolRepo.find({
+			schoolId: query.schoolId,
+		});
 
 		schoolExternalToolDOs = await this.enrichWithDataFromExternalTool(schoolExternalToolDOs);
 
