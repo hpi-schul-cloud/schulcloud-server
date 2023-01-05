@@ -13,7 +13,7 @@ import {
 } from '@shared/domain';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 import { NotFoundError } from '@mikro-orm/core';
-import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { createMock } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
 
