@@ -97,5 +97,16 @@
 			"$date": "2022-11-28T09:39:29.773Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "63b59158f877054b54decd9d"
+		},
+		"state": "up",
+		"name": "add-school-tool-admin-permission",
+		"createdAt": {
+			"$date": "2023-01-04T14:41:52.212Z"
+		},
+		"__v": 0
 	}
 ]
