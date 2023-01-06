@@ -1,6 +1,7 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemService } from '@src/modules/system';
+import { SystemDto } from '../../system/service/dto/system.dto';
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
 import { ProvisioningSystemInputMapper } from '../mapper/provisioning-system-input.mapper';
 import {
@@ -47,13 +48,9 @@ export class ProvisioningService {
 	}
 
 	private async determineInput(systemId: string): Promise<ProvisioningSystemDto> {
-		try {
-			const systemDto = await this.systemService.findById(systemId);
-			const inputDto: ProvisioningSystemDto = ProvisioningSystemInputMapper.mapToInternal(systemDto);
-			return inputDto;
-		} catch (e) {
-			throw new NotFoundException(`System with id "${systemId}" does not exist.`);
-		}
+		const systemDto: SystemDto = await this.systemService.findById(systemId);
+		const inputDto: ProvisioningSystemDto = ProvisioningSystemInputMapper.mapToInternal(systemDto);
+		return inputDto;
 	}
 
 	async provisionData(oauthData: OauthDataDto): Promise<ProvisioningDto> {

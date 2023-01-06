@@ -14,7 +14,7 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 	override getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
 		const idToken: JwtPayload | null = jwt.decode(input.idToken, { json: true });
 		if (!idToken || !idToken.uuid) {
-			throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');
+			return Promise.reject(new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem'));
 		}
 
 		const externalUser: ExternalUserDto = new ExternalUserDto({

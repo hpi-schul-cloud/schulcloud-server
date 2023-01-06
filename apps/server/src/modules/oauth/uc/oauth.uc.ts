@@ -66,9 +66,7 @@ export class OauthUc {
 			);
 
 			if (!existingUser && migration) {
-				const redirect: string = await this.userMigrationService.getMigrationRedirect(
-					data.externalSchool.officialSchoolNumber
-				);
+				const redirect: string = this.userMigrationService.getMigrationRedirect();
 				const response: OAuthResponse = new OAuthResponse({
 					provider: oauthConfig.provider,
 					redirect,

@@ -12,7 +12,7 @@ export class UserMigrationService {
 		return isInMigration;
 	}
 
-	async getMigrationRedirect(officialSchoolNumber: string): Promise<string> {
-		return '/migration?source=sanistarget=iserv';
+	getMigrationRedirect(): string {
+		return '/migration';
 	}
 }

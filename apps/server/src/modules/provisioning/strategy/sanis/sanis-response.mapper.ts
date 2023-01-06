@@ -29,7 +29,7 @@ export class SanisResponseMapper {
 		});
 	}
 
-	mapSanisRoleToRoleName(source: SanisResponse): RoleName {
+	private mapSanisRoleToRoleName(source: SanisResponse): RoleName {
 		return RoleMapping[source.personenkontexte[0].rolle];
 	}
 }

@@ -1,22 +1,25 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
-import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
-import { OidcProvisioningStrategy } from '@src/modules/provisioning/strategy/oidc/oidc.strategy';
-import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
+import {
+	ExternalUserDto,
+	OauthDataDto,
+	OauthDataStrategyInputDto,
+	ProvisioningDto,
+	ProvisioningSystemDto,
+} from '../dto';
+import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from '../strategy';
+import { ProvisioningService } from './provisioning.service';
 
 describe('ProvisioningService', () => {
 	let module: TestingModule;
-	let provisioningService: ProvisioningService;
+	let service: ProvisioningService;
 
 	let systemService: DeepMocked<SystemService>;
-	let sanisProvisioningStrategy: DeepMocked<SanisProvisioningStrategy>;
-	let iservProvisioningStrategy: DeepMocked<IservProvisioningStrategy>;
-	let oidcProvisioningStrategy: DeepMocked<OidcProvisioningStrategy>;
+	let provisioningStrategy: DeepMocked<SanisProvisioningStrategy>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -28,24 +31,34 @@ describe('ProvisioningService', () => {
 				},
 				{
 					provide: SanisProvisioningStrategy,
-					useValue: createMock<SanisProvisioningStrategy>(),
+					useValue: createMock<SanisProvisioningStrategy>({
+						getType(): SystemProvisioningStrategy {
+							return SystemProvisioningStrategy.SANIS;
+						},
+					}),
 				},
 				{
 					provide: IservProvisioningStrategy,
-					useValue: createMock<IservProvisioningStrategy>(),
+					useValue: createMock<IservProvisioningStrategy>({
+						getType(): SystemProvisioningStrategy {
+							return SystemProvisioningStrategy.ISERV;
+						},
+					}),
 				},
 				{
-					provide: OidcProvisioningStrategy,
-					useValue: createMock<OidcProvisioningStrategy>(),
+					provide: OidcMockProvisioningStrategy,
+					useValue: createMock<OidcMockProvisioningStrategy>({
+						getType(): SystemProvisioningStrategy {
+							return SystemProvisioningStrategy.OIDC;
+						},
+					}),
 				},
 			],
 		}).compile();
-		provisioningService = module.get(ProvisioningService);
 
+		service = module.get(ProvisioningService);
 		systemService = module.get(SystemService);
-		sanisProvisioningStrategy = module.get(SanisProvisioningStrategy);
-		iservProvisioningStrategy = module.get(IservProvisioningStrategy);
-		oidcProvisioningStrategy = module.get(OidcProvisioningStrategy);
+		provisioningStrategy = module.get(SanisProvisioningStrategy);
 	});
 
 	afterAll(async () => {
@@ -56,76 +69,128 @@ describe('ProvisioningService', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('process', () => {
-		const sanisSystemStrategyId = 'sanisSystemId';
-		const iservSystemStrategyId = 'iservSystemId';
-		const oidcSystemStrategyId = 'oidcSystemId';
-
-		const sanisStrategySystem: SystemDto = new SystemDto({
+	const setupSystemData = () => {
+		const systemId = 'sanisSystemId';
+		const system: SystemDto = new SystemDto({
+			id: systemId,
 			type: 'sanis',
 			provisioningUrl: 'sanisUrl',
 			provisioningStrategy: SystemProvisioningStrategy.SANIS,
 		});
-		const iservStrategySystem: SystemDto = new SystemDto({
-			type: 'iserv',
-			provisioningStrategy: SystemProvisioningStrategy.ISERV,
+		const provisioningSystemDto: ProvisioningSystemDto = new ProvisioningSystemDto({
+			systemId,
+			provisioningUrl: 'sanisUrl',
+			provisioningStrategy: SystemProvisioningStrategy.SANIS,
 		});
-		const oidcStrategySystem: SystemDto = new SystemDto({
-			type: 'oidc',
-			provisioningStrategy: SystemProvisioningStrategy.OIDC,
+		const oauthDataDto: OauthDataDto = new OauthDataDto({
+			system: provisioningSystemDto,
+			externalUser: new ExternalUserDto({
+				externalId: 'externalUserId',
+			}),
 		});
-
-		it('should throw error when system does not exists', async () => {
-			systemService.findById.mockRejectedValue(NotFoundException);
-
-			const process = () => provisioningService.process('accessToken', 'idToken', 'no system found');
-
-			await expect(process()).rejects.toThrow(NotFoundException);
+		const provisioningDto: ProvisioningDto = new ProvisioningDto({
+			externalUserId: 'externalUserId',
 		});
 
-		it('should apply sanis provisioning strategy', async () => {
-			systemService.findById.mockResolvedValue(sanisStrategySystem);
+		return {
+			systemId,
+			system,
+			provisioningSystemDto,
+			oauthDataDto,
+			provisioningDto,
+		};
+	};
 
-			await provisioningService.process('accessToken', 'idToken', sanisSystemStrategyId);
+	describe('getData is called', () => {
+		const setup = () => {
+			const { systemId, system, provisioningSystemDto, oauthDataDto } = setupSystemData();
+			const accessToken = 'accessToken';
+			const idToken = 'idToken';
 
-			expect(sanisProvisioningStrategy.apply).toHaveBeenCalled();
-		});
+			systemService.findById.mockResolvedValue(system);
+			provisioningStrategy.getData.mockResolvedValue(oauthDataDto);
 
-		it('should throw error when sanis system has no provisioning url', async () => {
-			sanisStrategySystem.provisioningUrl = undefined;
-			systemService.findById.mockResolvedValue(sanisStrategySystem);
+			return {
+				accessToken,
+				idToken,
+				systemId,
+				system,
+				provisioningSystemDto,
+				oauthDataDto,
+			};
+		};
 
-			const process = () => provisioningService.process('accessToken', 'idToken', sanisSystemStrategyId);
+		describe('when the provisioning strategy is found', () => {
+			it('should call strategy.getData', async () => {
+				const { accessToken, idToken, systemId, provisioningSystemDto } = setup();
 
-			await expect(process()).rejects.toThrow(InternalServerErrorException);
-		});
+				await service.getData(accessToken, idToken, systemId);
 
-		it('should apply iserv provisioning strategy', async () => {
-			systemService.findById.mockResolvedValue(iservStrategySystem);
-
-			await provisioningService.process('accessToken', 'idToken', iservSystemStrategyId);
-
-			expect(iservProvisioningStrategy.apply).toHaveBeenCalled();
-		});
-
-		it('should apply oidc provisioning strategy', async () => {
-			systemService.findById.mockResolvedValue(oidcStrategySystem);
-
-			await provisioningService.process('accessToken', 'idToken', oidcSystemStrategyId);
-
-			expect(oidcProvisioningStrategy.apply).toHaveBeenCalled();
-		});
-
-		it('should throw error when provisioning stratgey is missing', async () => {
-			const missingStrategySystem: SystemDto = new SystemDto({
-				type: 'unknown',
-				provisioningStrategy: 'unknown strategy' as SystemProvisioningStrategy,
+				expect(provisioningStrategy.getData).toHaveBeenCalledWith(
+					new OauthDataStrategyInputDto({
+						accessToken,
+						idToken,
+						system: provisioningSystemDto,
+					})
+				);
 			});
-			systemService.findById.mockReset();
-			systemService.findById.mockResolvedValueOnce(missingStrategySystem);
-			const process = () => provisioningService.process('accessToken', 'idToken', 'missingStrategySystemId');
 
-			await expect(process()).rejects.toThrow(InternalServerErrorException);
+			it('should return the oauth data', async () => {
+				const { accessToken, idToken, systemId, oauthDataDto } = setup();
+
+				const result: OauthDataDto = await service.getData(accessToken, idToken, systemId);
+
+				expect(result).toEqual(oauthDataDto);
+			});
+		});
+
+		describe('when no provisioning strategy is found', () => {
+			it('should throw an InternalServerErrorException', async () => {
+				const { accessToken, idToken } = setup();
+				const systemWithoutStrategy: SystemDto = new SystemDto({
+					type: '',
+					provisioningStrategy: SystemProvisioningStrategy.UNDEFINED,
+				});
+
+				systemService.findById.mockResolvedValue(systemWithoutStrategy);
+
+				const promise: Promise<OauthDataDto> = service.getData(accessToken, idToken, 'systemId');
+
+				await expect(promise).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+	});
+
+	describe('provisionData is called', () => {
+		describe('when the provisioning strategy is found', () => {
+			it('should call strategy.apply', async () => {
+				const { oauthDataDto, provisioningDto } = setupSystemData();
+				provisioningStrategy.apply.mockResolvedValue(provisioningDto);
+
+				await service.provisionData(oauthDataDto);
+
+				expect(provisioningStrategy.apply).toHaveBeenCalledWith(oauthDataDto);
+			});
+
+			it('should return the provisioning data', async () => {
+				const { oauthDataDto, provisioningDto } = setupSystemData();
+				provisioningStrategy.apply.mockResolvedValue(provisioningDto);
+
+				const result: ProvisioningDto = await service.provisionData(oauthDataDto);
+
+				expect(result).toEqual(provisioningDto);
+			});
+		});
+
+		describe('when no provisioning strategy is found', () => {
+			it('should throw an InternalServerErrorException', async () => {
+				const { oauthDataDto } = setupSystemData();
+				oauthDataDto.system.provisioningStrategy = SystemProvisioningStrategy.UNDEFINED;
+
+				const promise: Promise<ProvisioningDto> = service.provisionData(oauthDataDto);
+
+				await expect(promise).rejects.toThrow(InternalServerErrorException);
+			});
 		});
 	});
 });

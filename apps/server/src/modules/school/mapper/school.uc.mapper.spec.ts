@@ -1,6 +1,5 @@
-import { SchoolUcMapper } from '@src/modules/school/mapper/school.uc.mapper';
-import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { SchoolUcMapper } from '@src/modules/school/mapper/school.uc.mapper';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
 
 describe('SchoolUcMapper', () => {

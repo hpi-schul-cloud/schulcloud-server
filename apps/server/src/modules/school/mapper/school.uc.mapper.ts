@@ -1,4 +1,3 @@
-import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
 
