@@ -90,6 +90,7 @@ describe('SanisUserService', () => {
 						typ: 'SCHULE',
 					}),
 					personenstatus: 'dead',
+					email: 'test@te.st',
 				}),
 			],
 		});
