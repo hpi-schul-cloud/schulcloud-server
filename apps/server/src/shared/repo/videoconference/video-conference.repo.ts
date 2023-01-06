@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IVideoConferenceProperties, VideoConferenceDO } from '@shared/domain';
 import { TargetModels, VideoConference } from '@shared/domain/entity/video-conference.entity';
-import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { BaseDORepo, EntityProperties } from '@shared/repo/base.do.repo';
 import { EntityName } from '@mikro-orm/core';
 

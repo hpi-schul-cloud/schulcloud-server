@@ -72,6 +72,11 @@ export class SchoolService {
 		return schoolDO;
 	}
 
+	async getSchoolBySchoolNumber(schoolNumber: string): Promise<SchoolDO | null> {
+		const schoolDO: SchoolDO | null = await this.schoolRepo.findBySchoolNumber(schoolNumber);
+		return schoolDO;
+	}
+
 	async save(school: SchoolDO): Promise<SchoolDO> {
 		const ret: SchoolDO = await this.schoolRepo.save(school);
 		return ret;

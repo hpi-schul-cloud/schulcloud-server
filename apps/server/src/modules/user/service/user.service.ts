@@ -19,6 +19,7 @@ export class UserService {
 		private readonly userRepo: UserRepo,
 		private readonly userDORepo: UserDORepo,
 		private readonly roleRepo: RoleRepo,
+		private readonly schoolMapper: SchoolMapper,
 		private readonly schoolService: SchoolService,
 		private readonly permissionService: PermissionService,
 		private readonly configService: ConfigService<IUserConfig, true>,
@@ -82,7 +83,7 @@ export class UserService {
 	async createOrUpdate(user: UserDto): Promise<void> {
 		const userRoles: Role[] = await this.roleRepo.findByIds(user.roleIds);
 		const schoolDO: SchoolDO = await this.schoolService.getSchoolById(user.schoolId);
-		const schoolEntity: School = new School(SchoolMapper.mapDOToEntityProperties(schoolDO));
+		const schoolEntity: School = new School(this.schoolMapper.mapDOToEntityProperties(schoolDO));
 
 		let saveEntity: User;
 		if (user.id) {

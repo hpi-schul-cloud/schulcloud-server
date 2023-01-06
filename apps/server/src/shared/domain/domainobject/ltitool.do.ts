@@ -1,6 +1,6 @@
 import { EntityId } from '@shared/domain/types';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
-import { BaseWithTimestampsDO } from './base.do';
+import { BaseDO } from './base.do';
 
 export class CustomLtiProperty {
 	key: string;
@@ -13,7 +13,11 @@ export class CustomLtiProperty {
 	}
 }
 
-export class LtiToolDO extends BaseWithTimestampsDO {
+export class LtiToolDO extends BaseDO {
+	createdAt?: Date;
+
+	updatedAt?: Date;
+
 	name: string;
 
 	url: string;
@@ -54,27 +58,30 @@ export class LtiToolDO extends BaseWithTimestampsDO {
 
 	isHidden: boolean;
 
-	constructor(props: LtiToolDO) {
-		super(props);
-		this.name = props.name;
-		this.url = props.url;
-		this.key = props.key;
-		this.secret = props.secret;
-		this.logo_url = props.logo_url;
-		this.lti_message_type = props.lti_message_type;
-		this.lti_version = props.lti_version;
-		this.resource_link_id = props.resource_link_id;
-		this.roles = props.roles;
-		this.privacy_permission = props.privacy_permission;
-		this.customs = props.customs;
-		this.isTemplate = props.isTemplate;
-		this.isLocal = props.isLocal;
-		this.originToolId = props.originToolId;
-		this.oAuthClientId = props.oAuthClientId;
-		this.friendlyUrl = props.friendlyUrl;
-		this.skipConsent = props.skipConsent;
-		this.openNewTab = props.openNewTab;
-		this.frontchannel_logout_uri = props.frontchannel_logout_uri;
-		this.isHidden = props.isHidden;
+	constructor(domainObject: LtiToolDO) {
+		super(domainObject.id);
+
+		this.createdAt = domainObject.createdAt;
+		this.updatedAt = domainObject.updatedAt;
+		this.name = domainObject.name;
+		this.url = domainObject.url;
+		this.key = domainObject.key;
+		this.secret = domainObject.secret;
+		this.logo_url = domainObject.logo_url;
+		this.lti_message_type = domainObject.lti_message_type;
+		this.lti_version = domainObject.lti_version;
+		this.resource_link_id = domainObject.resource_link_id;
+		this.roles = domainObject.roles;
+		this.privacy_permission = domainObject.privacy_permission;
+		this.customs = domainObject.customs;
+		this.isTemplate = domainObject.isTemplate;
+		this.isLocal = domainObject.isLocal;
+		this.originToolId = domainObject.originToolId;
+		this.oAuthClientId = domainObject.oAuthClientId;
+		this.friendlyUrl = domainObject.friendlyUrl;
+		this.skipConsent = domainObject.skipConsent;
+		this.openNewTab = domainObject.openNewTab;
+		this.frontchannel_logout_uri = domainObject.frontchannel_logout_uri;
+		this.isHidden = domainObject.isHidden;
 	}
 }

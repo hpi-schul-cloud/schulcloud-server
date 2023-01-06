@@ -46,18 +46,22 @@ describe('SchoolService', () => {
 			id: 'testId',
 			name: 'schoolName',
 			externalId: 'externalId',
+			officialSchoolNumber: '9999',
 			systems,
 			features: [SchoolFeatures.VIDEOCONFERENCE],
 		});
 		const schoolUnsaved: SchoolDO = new SchoolDO({ name: 'school #2}', systems: [] });
 		schoolRepo.findById.mockResolvedValue(schoolSaved);
 		schoolRepo.findByExternalId.mockResolvedValue(schoolSaved);
+		schoolRepo.findBySchoolNumber.mockResolvedValue(schoolSaved);
 		const schoolSavedId = schoolSaved.id as string;
 		const schoolSavedExternalId = schoolSaved.externalId as string;
+		const schoolSavedNumber = schoolSaved.officialSchoolNumber as string;
 		return {
 			schoolSaved,
 			schoolSavedId,
 			schoolSavedExternalId,
+			schoolSavedNumber,
 			systems,
 			schoolUnsaved,
 		};
@@ -159,6 +163,31 @@ describe('SchoolService', () => {
 			schoolRepo.findByExternalId.mockResolvedValue(null);
 
 			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId('null', systems[0]);
+
+			expect(schoolDO).toBeNull();
+		});
+	});
+
+	describe('when a school is searched by schoolnumber', () => {
+		it('should call the repo', async () => {
+			const { schoolSavedNumber } = setup();
+
+			await schoolService.getSchoolBySchoolNumber(schoolSavedNumber);
+
+			expect(schoolRepo.findBySchoolNumber).toHaveBeenCalledWith(schoolSavedNumber);
+		});
+
+		it('should return a do', async () => {
+			const { schoolSavedNumber } = setup();
+
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolBySchoolNumber(schoolSavedNumber);
+
+			expect(schoolDO).toBeInstanceOf(SchoolDO);
+		});
+		it('should return null', async () => {
+			schoolRepo.findBySchoolNumber.mockResolvedValue(null);
+
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolBySchoolNumber('null');
 
 			expect(schoolDO).toBeNull();
 		});
