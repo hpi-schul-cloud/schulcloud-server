@@ -21,7 +21,7 @@ export class OauthUc {
 		private readonly provisioningService: ProvisioningService,
 		private readonly userService: UserService,
 		private readonly userMigrationService: UserMigrationService,
-		private logger: Logger
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(OauthUc.name);
 	}
@@ -66,7 +66,9 @@ export class OauthUc {
 			);
 
 			if (!existingUser && migration) {
-				const redirect = 'redirect here'; // TODO
+				const redirect: string = await this.userMigrationService.getMigrationRedirect(
+					data.externalSchool.officialSchoolNumber
+				);
 				const response: OAuthResponse = new OAuthResponse({
 					provider: oauthConfig.provider,
 					redirect,
