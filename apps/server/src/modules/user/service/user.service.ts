@@ -1,15 +1,15 @@
-import { RoleRepo, UserRepo } from '@shared/repo';
-import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IUserConfig } from '@src/modules/user/interfaces';
-import { RoleService } from '@src/modules/role/service/role.service';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { RoleService } from '@src/modules/role/service/role.service';
+import { IUserConfig } from '@src/modules/user/interfaces';
+import { UserMapper } from '@src/modules/user/mapper/user.mapper';
+import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { SchoolService } from '../../school';
 import { SchoolMapper } from '../../school/mapper/school.mapper';
 
@@ -45,6 +45,11 @@ export class UserService {
 
 	async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDO | null> {
 		const user: Promise<UserDO | null> = this.userDORepo.findByExternalId(externalId, systemId);
+		return user;
+	}
+
+	async findByEmail(email: string): Promise<User[]> {
+		const user: Promise<User[]> = this.userRepo.findByEmail(email);
 		return user;
 	}
 

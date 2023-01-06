@@ -1,11 +1,9 @@
-import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
 import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { OauthDataAdapterInputDto, ProvisioningDto } from '../../dto';
-import { OauthDataDto } from '../../dto/oauth-data.dto';
-import { ExternalUserDto } from '../../dto/external-user.dto';
+import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
 
 @Injectable()
 export class IservProvisioningStrategy extends ProvisioningStrategy {
@@ -13,7 +11,7 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 		return SystemProvisioningStrategy.ISERV;
 	}
 
-	override fetch(input: OauthDataAdapterInputDto): Promise<OauthDataDto> {
+	override getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
 		const idToken: JwtPayload | null = jwt.decode(input.idToken, { json: true });
 		if (!idToken || !idToken.uuid) {
 			throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');

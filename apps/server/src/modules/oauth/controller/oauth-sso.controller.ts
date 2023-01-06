@@ -1,13 +1,13 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Controller, Get, Param, Query, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Logger } from '@src/core/logger';
-import { CookieOptions, Request, Response } from 'express';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
+import { Logger } from '@src/core/logger';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
-import { OauthUc } from '../uc/oauth.uc';
+import { CookieOptions, Request, Response } from 'express';
+import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
 
 @ApiTags('SSO')
@@ -32,10 +32,10 @@ export class OauthSSOController {
 			expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
 		};
 
-		if(oauthResponse.jwt) {
+		if (oauthResponse.jwt) {
 			res.cookie('jwt', oauthResponse.jwt, cookieDefaultOptions);
 		}
-		if(oauthResponse.redirect) {
+		if (oauthResponse.redirect) {
 			res.redirect(oauthResponse.redirect);
 		}
 	}

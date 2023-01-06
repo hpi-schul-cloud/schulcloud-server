@@ -1,35 +1,32 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { HttpService } from '@nestjs/axios';
+import { BadRequestException, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { EntityId, OauthConfig, User } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { Logger } from '@src/core/logger';
+import { FeathersJwtProvider } from '@src/modules/authorization';
+import { UserService } from '@src/modules/user';
+import { AxiosResponse } from 'axios';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { OauthConfig, User } from '@shared/domain';
-import { Logger } from '@src/core/logger';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { UserRepo } from '@shared/repo';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { AxiosResponse } from 'axios';
-import { BadRequestException, Inject } from '@nestjs/common';
-import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { FeathersJwtProvider } from '@src/modules/authorization';
-import { TokenRequestMapper } from '../mapper/token-request.mapper';
-import { TokenRequestPayload } from '../controller/dto/token-request.payload';
+import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { IJwt } from '../interface/jwt.base.interface';
+import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { OAuthResponse } from './dto/oauth.response';
-import { AuthorizationParams } from '../controller/dto/authorization.params';
 
 @Injectable()
 export class OAuthService {
 	constructor(
-		private readonly userRepo: UserRepo,
+		private readonly userService: UserService,
 		private readonly jwtService: FeathersJwtProvider,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
-		private readonly logger: Logger,
-		private readonly provisioningService: ProvisioningService
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
@@ -114,49 +111,42 @@ export class OAuthService {
 		return verifiedJWT as IJwt;
 	}
 
-	async findUser(accessToken: string, idToken: string, systemId: string): Promise<User> {
-		const sub: string | undefined = jwt.decode(idToken, { json: true })?.sub;
+	async findUser(idToken: string, externalUserId: EntityId, systemId: EntityId): Promise<UserDO> {
+		const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
 
-		if (!sub) {
+		if (!decodedToken?.sub) {
 			throw new BadRequestException(`Provided idToken: ${idToken} has no sub.`);
 		}
 
-		this.logger.debug(`provisioning is running for user with sub: ${sub} and system with id: ${systemId}`);
-		const provisioningDto: ProvisioningDto = await this.provisioningService.process(accessToken, idToken, systemId);
-
-		try {
-			const user: User = await this.userRepo.findByExternalIdOrFail(provisioningDto.externalUserId, systemId);
-			return user;
-		} catch (error) {
-			const additionalInfo: string = await this.getAdditionalErrorInfo(idToken);
-			throw new OAuthSSOError(
-				`Failed to find user with Id ${provisioningDto.externalUserId} ${additionalInfo}`,
-				'sso_user_notfound'
-			);
+		this.logger.debug(`provisioning is running for user with sub: ${decodedToken.sub} and system with id: ${systemId}`);
+		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+		if (!user) {
+			const additionalInfo: string = await this.getAdditionalErrorInfo(decodedToken?.email as string | undefined);
+			throw new OAuthSSOError(`Failed to find user with Id ${externalUserId} ${additionalInfo}`, 'sso_user_notfound');
 		}
+		return user;
 	}
 
-	private async getAdditionalErrorInfo(idToken): Promise<string> {
-		const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
-		const email = decodedToken?.email as string | undefined;
+	private async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
 		if (email) {
-			const usersWithEmail: User[] = await this.userRepo.findByEmail(email);
+			const usersWithEmail: User[] = await this.userService.findByEmail(email);
 			const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
 			return ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
 		}
 		return '';
 	}
 
-	async getJwtForUser(user: User): Promise<string> {
-		const stringPromise = this.jwtService.generateJwt(user.id);
+	async getJwtForUser(userId: EntityId): Promise<string> {
+		const stringPromise: Promise<string> = this.jwtService.generateJwt(userId);
 		return stringPromise;
 	}
 
 	buildResponse(oauthConfig: OauthConfig, queryToken: OauthTokenResponse) {
-		const response: OAuthResponse = new OAuthResponse();
-		response.idToken = queryToken.id_token;
-		response.logoutEndpoint = oauthConfig.logoutEndpoint;
-		response.provider = oauthConfig.provider;
+		const response: OAuthResponse = new OAuthResponse({
+			idToken: queryToken.id_token,
+			logoutEndpoint: oauthConfig.logoutEndpoint,
+			provider: oauthConfig.provider,
+		});
 		return response;
 	}
 
@@ -186,20 +176,20 @@ export class OAuthService {
 	getOAuthErrorResponse(error: unknown, provider: string): OAuthResponse {
 		this.logger.error(error);
 
-		const oauthResponse = new OAuthResponse();
-
-		oauthResponse.provider = provider;
-
+		let errorCode: string;
 		if (error instanceof OAuthSSOError) {
-			oauthResponse.errorcode = error.errorcode;
+			errorCode = error.errorcode;
 		} else {
-			oauthResponse.errorcode = 'oauth_login_failed';
+			errorCode = 'oauth_login_failed';
 		}
 
-		oauthResponse.redirect = `${Configuration.get('HOST') as string}/login?error=${
-			oauthResponse.errorcode
-		}&provider=${provider}`;
+		const redirect = `${Configuration.get('HOST') as string}/login?error=${errorCode}&provider=${provider}`;
 
+		const oauthResponse = new OAuthResponse({
+			provider,
+			errorCode,
+			redirect,
+		});
 		return oauthResponse;
 	}
 }

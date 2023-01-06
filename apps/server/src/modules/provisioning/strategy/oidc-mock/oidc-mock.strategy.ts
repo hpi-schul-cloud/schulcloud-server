@@ -1,11 +1,9 @@
-import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
 import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { OauthDataAdapterInputDto, ProvisioningDto } from '../../dto';
-import { ExternalUserDto } from '../../dto/external-user.dto';
-import { OauthDataDto } from '../../dto/oauth-data.dto';
+import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
 
 @Injectable()
 export class OidcMockProvisioningStrategy extends ProvisioningStrategy {
@@ -13,7 +11,7 @@ export class OidcMockProvisioningStrategy extends ProvisioningStrategy {
 		return SystemProvisioningStrategy.OIDC;
 	}
 
-	override async fetch(input: OauthDataAdapterInputDto): Promise<OauthDataDto> {
+	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
 		const idToken: JwtPayload | null = jwt.decode(input.idToken, { json: true });
 		if (!idToken || !idToken.preferred_username) {
 			throw new OAuthSSOError('Failed to extract preferred_username', 'sso_jwt_problem');
@@ -24,7 +22,7 @@ export class OidcMockProvisioningStrategy extends ProvisioningStrategy {
 		});
 
 		const oauthData: OauthDataDto = new OauthDataDto({
-			systemId: input.system.systemId,
+			system: input.system,
 			externalUser,
 		});
 		return Promise.resolve(oauthData);

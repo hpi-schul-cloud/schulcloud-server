@@ -1,31 +1,30 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class OAuthResponse {
-	@IsOptional()
-	@IsString()
-	@IsNotEmpty()
+	@ApiProperty()
 	jwt?: string;
 
-	@IsOptional()
-	@IsString()
-	@IsNotEmpty()
-	errorcode?: string;
+	@ApiProperty()
+	errorCode?: string;
 
-	@IsOptional()
-	@IsString()
-	@IsNotEmpty()
+	@ApiProperty()
 	idToken?: string;
 
-	@IsOptional()
-	@IsString()
-	@IsNotEmpty()
+	@ApiProperty()
 	logoutEndpoint?: string;
 
-	@IsString()
-	@IsNotEmpty()
-	provider!: string;
+	@ApiProperty()
+	provider: string;
 
-	@IsString()
-	@IsNotEmpty()
-	redirect!: string;
+	@ApiProperty()
+	redirect?: string;
+
+	constructor(response: OAuthResponse) {
+		this.jwt = response.jwt;
+		this.errorCode = response.errorCode;
+		this.idToken = response.idToken;
+		this.logoutEndpoint = response.logoutEndpoint;
+		this.provider = response.provider;
+		this.redirect = response.redirect;
+	}
 }

@@ -2,15 +2,14 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import CryptoJS from 'crypto-js';
+import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { AccountUc } from '@src/modules/account/uc/account.uc';
-import { UserService } from '@src/modules/user';
-import { SchoolService } from '@src/modules/school';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { ExternalUserDto } from '../../../dto/external-user.dto';
-import { ExternalSchoolDto } from '../../../dto/external-school.dto';
+import { SchoolService } from '@src/modules/school';
+import { UserService } from '@src/modules/user';
+import CryptoJS from 'crypto-js';
+import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 
 @Injectable()
 export class OidcProvisioningService {
@@ -29,10 +28,13 @@ export class OidcProvisioningService {
 		let school: SchoolDO;
 		if (existingSchool) {
 			school = existingSchool;
+			school.name = externalSchool.name;
+			school.officialSchoolNumber = externalSchool.officialSchoolNumber ?? existingSchool.officialSchoolNumber;
 		} else {
 			school = new SchoolDO({
 				externalId: externalSchool.externalId,
 				name: externalSchool.name,
+				officialSchoolNumber: externalSchool.officialSchoolNumber,
 			});
 		}
 
@@ -52,11 +54,11 @@ export class OidcProvisioningService {
 		let createNewAccount = false;
 		if (existingUser) {
 			user = existingUser;
-			user.firstName = externalUser.firstName || existingUser.firstName;
-			user.lastName = externalUser.lastName || existingUser.lastName;
-			user.email = externalUser.email || existingUser.email;
-			user.roleIds = roleIds || existingUser.roleIds;
-			user.schoolId = schoolId || existingUser.schoolId;
+			user.firstName = externalUser.firstName ?? existingUser.firstName;
+			user.lastName = externalUser.lastName ?? existingUser.lastName;
+			user.email = externalUser.email ?? existingUser.email;
+			user.roleIds = roleIds ?? existingUser.roleIds;
+			user.schoolId = schoolId ?? existingUser.schoolId;
 		} else {
 			createNewAccount = true;
 
@@ -68,10 +70,10 @@ export class OidcProvisioningService {
 
 			user = new UserDO({
 				externalId: externalUser.externalId,
-				firstName: externalUser.firstName || '',
-				lastName: externalUser.lastName || '',
-				email: externalUser.email || '',
-				roleIds: roleIds || [],
+				firstName: externalUser.firstName ?? '',
+				lastName: externalUser.lastName ?? '',
+				email: externalUser.email ?? '',
+				roleIds: roleIds ?? [],
 				schoolId,
 			});
 		}

@@ -1,8 +1,7 @@
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
-import { OauthDataDto } from '../../dto/oauth-data.dto';
-import { ProvisioningDto } from '../../dto';
 import { OidcProvisioningService } from './service/oidc-provisioning.service';
 
 export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {

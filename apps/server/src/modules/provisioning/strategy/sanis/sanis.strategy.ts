@@ -1,14 +1,11 @@
+import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SanisResponse } from '@src/modules/provisioning/strategy/sanis/sanis.response';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
-import { OauthDataAdapterInputDto } from '../../dto';
-import { OauthDataDto } from '../../dto/oauth-data.dto';
-import { ExternalUserDto } from '../../dto/external-user.dto';
-import { ExternalSchoolDto } from '../../dto/external-school.dto';
+import { SanisResponse } from '@src/modules/provisioning/strategy/sanis/sanis.response';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { firstValueFrom } from 'rxjs';
+import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto } from '../../dto';
 import { OidcProvisioningStrategy } from '../oidc/oidc.strategy';
 import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
 
@@ -26,7 +23,7 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 		return SystemProvisioningStrategy.SANIS;
 	}
 
-	override async fetch(input: OauthDataAdapterInputDto): Promise<OauthDataDto> {
+	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
 		if (!input.system.provisioningUrl) {
 			throw new InternalServerErrorException(
 				`Sanis system with id: ${input.system.systemId} is missing a provisioning url`

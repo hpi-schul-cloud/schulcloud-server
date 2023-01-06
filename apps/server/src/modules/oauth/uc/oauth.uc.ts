@@ -1,21 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { OauthConfig } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
-import { OauthConfig, User } from '@shared/domain';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto';
-import { SystemService } from '@src/modules/system/service/system.service';
+import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
+import { OauthDataDto } from '@src/modules/provisioning/dto/oauth-data.dto';
+import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { OAuthService } from '../service/oauth.service';
+import { UserService } from '@src/modules/user';
+import { UserMigrationService } from '@src/modules/user-migration';
+import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
+import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthResponse } from '../service/dto/oauth.response';
-import { AuthorizationParams } from '../controller/dto/authorization.params';
-import { ProvisioningDto } from '../../provisioning';
-import { OauthDataDto } from '../../provisioning/dto/oauth-data.dto';
+import { OAuthService } from '../service/oauth.service';
 
 @Injectable()
 export class OauthUc {
 	constructor(
 		private readonly oauthService: OAuthService,
 		private readonly systemService: SystemService,
+		private readonly provisioningService: ProvisioningService,
+		private readonly userService: UserService,
+		private readonly userMigrationService: UserMigrationService,
 		private logger: Logger
 	) {
 		this.logger.setContext(OauthUc.name);
@@ -45,28 +50,54 @@ export class OauthUc {
 
 		await this.oauthService.validateToken(queryToken.id_token, oauthConfig);
 
-		const user: User = await this.oauthService.findUser(queryToken.access_token, queryToken.id_token, system.id);
-		const data: OauthDataDto = await this.provisioningService.fetchData(accessToken, idToken, systemId);
+		const data: OauthDataDto = await this.provisioningService.getData(
+			queryToken.access_token,
+			queryToken.id_token,
+			system.id
+		);
 
 		if (data.externalSchool?.officialSchoolNumber) {
-			const userExists: boolean = this.userService.findByExternalId(data.externalUserId, system.systemId);
-			const migration: boolean = this.migrationService.isSchoolInMigration(data.officialSchoolNumber);
+			const existingUser: UserDO | null = await this.userService.findByExternalId(
+				data.externalUser.externalId,
+				system.id
+			);
+			const migration: boolean = await this.userMigrationService.isSchoolInMigration(
+				data.externalSchool.officialSchoolNumber
+			);
 
-			if (!userExists && migration) {
-				// no provisioning
-				const redirect: string = this.migrationService.getMigrationStrategy(migration, systemId);
-				return redirect;
+			if (!existingUser && migration) {
+				const redirect = 'redirect here'; // TODO
+				const response: OAuthResponse = new OAuthResponse({
+					provider: oauthConfig.provider,
+					redirect,
+				});
+				return response;
 			}
 		}
 
-		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionOauthData(data);
+		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
 
-		const jwtResponse: string = await this.oauthService.getJwtForUser(user);
+		const user: UserDO = await this.oauthService.findUser(
+			queryToken.id_token,
+			provisioningDto.externalUserId,
+			system.id
+		);
+
+		const jwtResponse: string = await this.oauthService.getJwtForUser(user.id as string);
 
 		// TODO: N21-305 Build response in oauth controller
-		const response: OAuthResponse = this.oauthService.buildResponse(oauthConfig, queryToken);
-		response.redirect = this.oauthService.getRedirectUrl(response.provider, response.idToken, response.logoutEndpoint);
-		response.jwt = jwtResponse;
+		const redirect: string = this.oauthService.getRedirectUrl(
+			oauthConfig.provider,
+			queryToken.id_token,
+			oauthConfig.logoutEndpoint
+		);
+		const response: OAuthResponse = new OAuthResponse({
+			jwt: jwtResponse,
+			idToken: queryToken.id_token,
+			logoutEndpoint: oauthConfig.logoutEndpoint,
+			provider: oauthConfig.provider,
+			redirect,
+		});
 		return response;
 	}
 

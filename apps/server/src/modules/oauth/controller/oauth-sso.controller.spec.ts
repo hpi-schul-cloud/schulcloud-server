@@ -9,8 +9,8 @@ import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { Request } from 'express';
-import { OauthUc } from '../uc/oauth.uc';
-import { AuthorizationParams } from './dto/authorization.params';
+import { OauthUc } from '../uc';
+import { AuthorizationParams } from './dto';
 import { OauthSSOController } from './oauth-sso.controller';
 
 describe('OAuthController', () => {

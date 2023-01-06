@@ -1,9 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemService } from '@src/modules/system';
-import { UserService } from '@src/modules/user';
-import { SchoolService } from '@src/modules/school';
-import { OauthDataAdapterInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
+import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
 import { ProvisioningSystemInputMapper } from '../mapper/provisioning-system-input.mapper';
 import {
 	IservProvisioningStrategy,
@@ -11,9 +9,6 @@ import {
 	ProvisioningStrategy,
 	SanisProvisioningStrategy,
 } from '../strategy';
-import { OauthDataDto } from '../dto/oauth-data.dto';
-import { AccountUc } from '../../account/uc/account.uc';
-import { RoleService } from '../../role';
 
 @Injectable()
 export class ProvisioningService {
@@ -24,10 +19,6 @@ export class ProvisioningService {
 
 	constructor(
 		private readonly systemService: SystemService,
-		private readonly userService: UserService,
-		private readonly schoolService: SchoolService,
-		private readonly roleService: RoleService,
-		private readonly accountUc: AccountUc,
 		private readonly sanisStrategy: SanisProvisioningStrategy,
 		private readonly iservStrategy: IservProvisioningStrategy,
 		private readonly oidcMockStrategy: OidcMockProvisioningStrategy
@@ -41,9 +32,9 @@ export class ProvisioningService {
 		this.strategies.set(strategy.getType(), strategy);
 	}
 
-	async fetchData(accessToken: string, idToken: string, systemId: string): Promise<OauthDataDto> {
+	async getData(accessToken: string, idToken: string, systemId: string): Promise<OauthDataDto> {
 		const system: ProvisioningSystemDto = await this.determineInput(systemId);
-		const input: OauthDataAdapterInputDto = new OauthDataAdapterInputDto({
+		const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 			accessToken,
 			idToken,
 			system,
@@ -51,7 +42,7 @@ export class ProvisioningService {
 
 		const strategy: ProvisioningStrategy = this.getProvisioningStrategy(system.provisioningStrategy);
 
-		const data: OauthDataDto = await strategy.fetch(input);
+		const data: OauthDataDto = await strategy.getData(input);
 		return data;
 	}
 
@@ -65,7 +56,7 @@ export class ProvisioningService {
 		}
 	}
 
-	async provisionOauthData(oauthData: OauthDataDto): Promise<ProvisioningDto> {
+	async provisionData(oauthData: OauthDataDto): Promise<ProvisioningDto> {
 		const strategy: ProvisioningStrategy = this.getProvisioningStrategy(oauthData.system.provisioningStrategy);
 		const provisioningDto: Promise<ProvisioningDto> = strategy.apply(oauthData);
 		return provisioningDto;

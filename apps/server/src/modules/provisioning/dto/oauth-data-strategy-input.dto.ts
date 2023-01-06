@@ -1,13 +1,13 @@
 import { ProvisioningSystemDto } from './provisioning-system.dto';
 
-export class OauthDataAdapterInputDto {
+export class OauthDataStrategyInputDto {
 	accessToken: string;
 
 	idToken: string;
 
 	system: ProvisioningSystemDto;
 
-	constructor(props: OauthDataAdapterInputDto) {
+	constructor(props: OauthDataStrategyInputDto) {
 		this.accessToken = props.accessToken;
 		this.idToken = props.idToken;
 		this.system = props.system;

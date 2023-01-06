@@ -1,18 +1,12 @@
-import { SchoolRepo } from '@shared/repo';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
+import { EntityId, SchoolFeatures } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { SchoolRepo } from '@shared/repo';
 import { MigrationResponse } from '../controller/dto';
-import { ProvisioningSchoolOutputDto } from '../../provisioning/dto/provisioning-school-output.dto';
-import { SchoolUcMapper } from '../mapper/school.uc.mapper';
 
 @Injectable()
 export class SchoolService {
 	constructor(readonly schoolRepo: SchoolRepo) {}
-
-	async saveProvisioningSchoolOutputDto(schoolDto: ProvisioningSchoolOutputDto): Promise<SchoolDO> {
-		return this.createOrUpdateSchool(SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDO(schoolDto));
-	}
 
 	async createOrUpdateSchool(school: SchoolDO): Promise<SchoolDO> {
 		let createdSchool: SchoolDO;
