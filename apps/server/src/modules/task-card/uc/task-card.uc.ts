@@ -60,15 +60,6 @@ export class TaskCardUc {
 		return taskWithStatusVo;
 	}
 
-	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardUpdate) {
-		const taskParams = {
-			name: params.title,
-		};
-		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
-
-		return taskWithStatusVo;
-	}
-
 	async findOne(userId: EntityId, id: EntityId) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.taskCardRepo.findById(id);
@@ -125,5 +116,14 @@ export class TaskCardUc {
 		await this.taskCardRepo.save(card);
 
 		return { card, taskWithStatusVo };
+	}
+
+	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardUpdate) {
+		const taskParams = {
+			name: params.title,
+		};
+		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
+
+		return taskWithStatusVo;
 	}
 }

@@ -19,4 +19,5 @@ export * from './storageprovider.factory';
 export * from './submission.factory';
 export * from './system.factory';
 export * from './task.factory';
+export * from './task-card.factory';
 export * from './user.factory';
