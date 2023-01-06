@@ -1,12 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { FileRecord } from '@shared/domain';
-import { fileRecordFactory } from '@shared/testing';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { fileRecordFactory } from '@shared/testing';
+import { FileRecord } from '@src/modules/files-storage/entity/filerecord.entity';
 import { AntivirusService } from './antivirus.service';
 
 describe('AntivirusService', () => {
+	let module: TestingModule;
 	let service: AntivirusService;
 	let amqpConnection: DeepMocked<AmqpConnection>;
 
@@ -17,8 +18,8 @@ describe('AntivirusService', () => {
 		routingKey: 'routingKey',
 	};
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [
 				AntivirusService,
 				{ provide: AmqpConnection, useValue: createMock<AmqpConnection>() },
@@ -28,6 +29,10 @@ describe('AntivirusService', () => {
 
 		service = module.get(AntivirusService);
 		amqpConnection = module.get(AmqpConnection);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {
@@ -42,8 +47,8 @@ describe('AntivirusService', () => {
 			fileRecord.securityCheck.requestToken = 'test-token';
 		});
 
-		it('should send given data to queue', async () => {
-			await service.send(fileRecord);
+		it('should send given data to queue', () => {
+			service.send(fileRecord);
 
 			const expectedParams = [
 				antivirusServiceOptions.exchange,
@@ -58,10 +63,12 @@ describe('AntivirusService', () => {
 			expect(amqpConnection.publish).toHaveBeenCalledWith(...expectedParams);
 		});
 
-		it('should throw with InternalServerErrorException by error', async () => {
-			amqpConnection.publish.mockRejectedValueOnce(new Error('fail'));
+		it('should throw with InternalServerErrorException by error', () => {
+			amqpConnection.publish.mockImplementationOnce(() => {
+				throw new Error('fail');
+			});
 
-			await expect(service.send(fileRecord)).rejects.toThrow(InternalServerErrorException);
+			expect(() => service.send(fileRecord)).toThrow(InternalServerErrorException);
 		});
 	});
 });

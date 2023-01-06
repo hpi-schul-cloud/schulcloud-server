@@ -1,5 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
+import { IError, RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
 import { ILogger, Logger } from '@src/core/logger';
 import { Response } from 'express';
 import _ from 'lodash';
@@ -11,18 +12,14 @@ const isFeathersError = (error: Error): error is FeathersError => {
 	return (error as FeathersError)?.type === 'FeathersError';
 };
 
-const isBusinessError = (error: Error): error is BusinessError => {
-	return error instanceof BusinessError;
-};
+const isBusinessError = (error: Error): error is BusinessError => error instanceof BusinessError;
 
 /**
  * Compare helper to detect an error is a build in NestJS http exception.
  * @param error
  * @returns
  */
-const isTechnicalError = (error: Error): error is HttpException => {
-	return error instanceof HttpException;
-};
+const isTechnicalError = (error: Error): error is HttpException => error instanceof HttpException;
 
 /**
  * Creates ErrorResponse from NestJS build in technical exceptions
@@ -114,18 +111,23 @@ const writeErrorLog = (error: unknown, logger: ILogger): void => {
 };
 
 @Catch()
-export class GlobalErrorFilter<T = unknown> implements ExceptionFilter<T> {
+export class GlobalErrorFilter<T extends IError | undefined> implements ExceptionFilter<T> {
 	constructor(private logger: Logger) {
 		this.logger.setContext('Error');
 	}
 
-	// eslint-disable-next-line class-methods-use-this
-	catch(error: T, host: ArgumentsHost): void {
-		const ctx = host.switchToHttp();
-		const response = ctx.getResponse<Response>();
+	// eslint-disable-next-line consistent-return
+	catch(error: T, host: ArgumentsHost): void | RpcMessage<unknown> {
+		const contextType = host.getType<'http' | 'rmq'>();
 		writeErrorLog(error, this.logger);
 		const errorResponse: ErrorResponse = this.createErrorResponse(error);
-		response.status(errorResponse.code).json(errorResponse);
+		if (contextType === 'http') {
+			const ctx = host.switchToHttp();
+			const response = ctx.getResponse<Response>();
+			response.status(errorResponse.code).json(errorResponse);
+		} else if (contextType === 'rmq') {
+			return { message: undefined, error };
+		}
 	}
 
 	createErrorResponse(error: T): ErrorResponse {

@@ -24,7 +24,10 @@ export class CopyHelperService {
 		return CopyStatusEnum.SUCCESS;
 	}
 
-	deriveCopyName(name: string, existingNames?: string[]): string {
+	deriveCopyName(name: string, existingNames: string[] = []): string {
+		if (!existingNames.includes(name)) {
+			return name;
+		}
 		let num = 1;
 		const matches = name.match(/^(?<name>.*) \((?<number>\d+)\)$/);
 		if (matches && matches.groups) {
@@ -32,7 +35,7 @@ export class CopyHelperService {
 			num = Number(matches.groups.number) + 1;
 		}
 		const composedName = `${name} (${num})`;
-		if (existingNames?.includes(composedName)) {
+		if (existingNames.includes(composedName)) {
 			return this.deriveCopyName(composedName, existingNames);
 		}
 		return composedName;

@@ -1,22 +1,14 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import {
-	CopyHelperService,
-	CopyStatus,
-	EntityId,
-	Lesson,
-	LessonCopyService,
-	PermissionContextBuilder,
-	User,
-} from '@shared/domain';
+import { CopyHelperService, CopyStatus, EntityId, PermissionContextBuilder, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
-import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
+import { LessonCopyService } from '../service';
 
 export type LessonCopyParentParams = {
 	courseId?: EntityId;
-	jwt: string;
+	userId: string;
 };
 
 @Injectable()
@@ -26,8 +18,7 @@ export class LessonCopyUC {
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly lessonRepo: LessonRepo,
 		private readonly courseRepo: CourseRepo,
-		private readonly copyHelperService: CopyHelperService,
-		private readonly fileCopyAppendService: FileCopyAppendService
+		private readonly copyHelperService: CopyHelperService
 	) {}
 
 	async copyLesson(userId: EntityId, lessonId: EntityId, parentParams: LessonCopyParentParams): Promise<CopyStatus> {
@@ -48,29 +39,14 @@ export class LessonCopyUC {
 		const existingNames = existingLessons.map((l) => l.name);
 		const copyName = this.copyHelperService.deriveCopyName(originalLesson.name, existingNames);
 
-		let status = await this.lessonCopyService.copyLesson({
+		const copyStatus = await this.lessonCopyService.copyLesson({
 			originalLesson,
 			destinationCourse,
 			user,
 			copyName,
 		});
 
-		if (status.copyEntity) {
-			const lessonCopy = status.copyEntity as Lesson;
-			await this.lessonRepo.save(lessonCopy);
-			status = this.lessonCopyService.updateCopiedEmbeddedTasks(status);
-			status = await this.fileCopyAppendService.appendFiles(status, parentParams.jwt);
-			status = await this.fileCopyAppendService.copyEmbeddedFilesOfLessons(
-				status,
-				lessonCopy.course.id,
-				userId,
-				parentParams.jwt
-			);
-			const updatedLesson = status.copyEntity as Lesson;
-			await this.lessonRepo.save(updatedLesson);
-		}
-
-		return status;
+		return copyStatus;
 	}
 
 	private async getDestinationCourse(courseId: string, user: User) {

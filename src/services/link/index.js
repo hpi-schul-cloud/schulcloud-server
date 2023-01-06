@@ -78,7 +78,7 @@ module.exports = function setup() {
 					if (user && user.importHash) linkData.hash = user.importHash;
 					else {
 						if (user) {
-							const account = ((await app.service('accounts').find({ query: { userId: user._id } })) || {})[0];
+							const account = await app.service('nest-account-service').findByUserId(user._id);
 							if (account && account.userId) {
 								throw new BadRequest(`User already has an account.`);
 							}
@@ -137,7 +137,7 @@ module.exports = function setup() {
 				const { teamId } = data;
 
 				if (email) {
-					const { data: userData } = await app.service('users').find({ query: { email: data.toHash } });
+					const { data: userData } = await app.service('users').find({ query: { email: email } });
 					if (userData && userData[0] && userData[0].importHash) {
 						linkInfo.hash = userData[0].importHash;
 					} else {

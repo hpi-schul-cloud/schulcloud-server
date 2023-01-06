@@ -1,14 +1,20 @@
+import AuthenticationExecutionInfoRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionInfoRepresentation';
+import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
+import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clientRepresentation';
+import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Inject } from '@nestjs/common';
-import { System } from '@shared/domain';
-import { SystemRepo } from '@shared/repo';
-import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
-import AuthenticationExecutionInfoRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionInfoRepresentation';
+import { SystemTypeEnum } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { IdentityProviderConfig } from '../interface';
-import { KeycloakAdministrationService } from './keycloak-administration.service';
-import { SysType } from '../../sys.type';
+import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { ConfigService } from '@nestjs/config';
+import { IServerConfig } from '@src/modules/server/server.config';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
+import { IdentityProviderConfig, IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
+import { KeycloakAdministrationService } from './keycloak-administration.service';
 
 enum ConfigureAction {
 	CREATE = 'create',
@@ -16,13 +22,17 @@ enum ConfigureAction {
 	DELETE = 'delete',
 }
 
-export const flowAlias = 'Direct Broker Flow';
-
+const flowAlias = 'Direct Broker Flow';
+const clientId = 'dbildungscloud-server';
+const defaultIdpMapperName = 'oidc-username-idp-mapper';
 export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
-		private readonly systemRepo: SystemRepo,
+		private readonly httpService: HttpService,
+		private readonly systemService: SystemService,
+		private readonly configService: ConfigService<IServerConfig, true>,
 		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
+		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService
 	) {}
 
@@ -100,11 +110,48 @@ export class KeycloakConfigurationService {
 		}
 	}
 
+	public async configureClient(): Promise<void> {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		const scDomain = this.configService.get<string>('SC_DOMAIN');
+		const redirectUri =
+			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
+		const kcRealmBaseUrl = `${this.kcSettings.baseUrl}/realms/${kc.realmName}`;
+		const cr: ClientRepresentation = {
+			clientId,
+			enabled: true,
+			protocol: 'openid-connect',
+			publicClient: false,
+			redirectUris: [`${redirectUri}*`],
+		};
+		let defaultClientInternalId = (await kc.clients.find({ clientId }))[0]?.id;
+		if (!defaultClientInternalId) {
+			({ id: defaultClientInternalId } = await kc.clients.create(cr));
+		} else {
+			await kc.clients.update({ id: defaultClientInternalId }, cr);
+		}
+		const generatedClientSecret = await kc.clients.generateNewClientSecret({ id: defaultClientInternalId });
+
+		let keycloakSystem: SystemDto;
+		const systems = await this.systemService.find(SystemTypeEnum.KEYCLOAK);
+		if (systems.length === 0) {
+			keycloakSystem = new SystemDto({ type: SystemTypeEnum.KEYCLOAK });
+		} else {
+			[keycloakSystem] = systems;
+		}
+		keycloakSystem = await this.setKeycloakSystemInformation(
+			keycloakSystem,
+			kcRealmBaseUrl,
+			redirectUri,
+			generatedClientSecret.value ?? ''
+		);
+		await this.systemService.save(keycloakSystem);
+	}
+
 	public async configureIdentityProviders(): Promise<number> {
 		let count = 0;
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const oldConfigs = await kc.identityProviders.find();
-		const newConfigs = await this.loadConfigs([SysType.OIDC]);
+		const newConfigs = (await this.systemService.findOidc()) as IdentityProviderConfig[];
 		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const configureAction of configureActions) {
@@ -127,6 +174,46 @@ export class KeycloakConfigurationService {
 		return count;
 	}
 
+	async configureRealm(): Promise<void> {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		await kc.realms.update(
+			{
+				realm: kc.realmName,
+			},
+			{
+				editUsernameAllowed: true,
+			}
+		);
+	}
+
+	private async setKeycloakSystemInformation(
+		keycloakSystem: SystemDto,
+		kcRealmBaseUrl: string,
+		redirectUri: string,
+		generatedClientSecret: string
+	) {
+		const wellKnownUrl = `${kcRealmBaseUrl}/.well-known/openid-configuration`;
+		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
+
+		keycloakSystem.type = SystemTypeEnum.KEYCLOAK;
+		keycloakSystem.alias = 'Keycloak';
+		keycloakSystem.oauthConfig = {
+			clientId,
+			clientSecret: this.defaultEncryptionService.encrypt(generatedClientSecret),
+			grantType: 'authorization_code',
+			scope: 'openid profile email',
+			responseType: 'code',
+			provider: 'oauth',
+			redirectUri,
+			tokenEndpoint: response.token_endpoint as string,
+			authEndpoint: response.authorization_endpoint as string,
+			logoutEndpoint: response.end_session_endpoint as string,
+			jwksEndpoint: response.jwks_uri as string,
+			issuer: response.issuer as string,
+		};
+		return keycloakSystem;
+	}
+
 	/**
 	 * decides for each system if it needs to be added, updated or deleted in keycloak
 	 *
@@ -134,7 +221,7 @@ export class KeycloakConfigurationService {
 	 * @param oldConfigs
 	 * @returns
 	 */
-	private selectConfigureAction(newConfigs: System[], oldConfigs: IdentityProviderRepresentation[]) {
+	private selectConfigureAction(newConfigs: SystemDto[], oldConfigs: IdentityProviderRepresentation[]) {
 		const result = [] as (
 			| { action: ConfigureAction.CREATE; config: IdentityProviderConfig }
 			| { action: ConfigureAction.UPDATE; config: IdentityProviderConfig }
@@ -159,28 +246,56 @@ export class KeycloakConfigurationService {
 
 	private async createIdentityProvider(system: IdentityProviderConfig): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		if (system.type === SysType.OIDC) {
+		if (system.type === SystemTypeEnum.OIDC) {
 			await kc.identityProviders.create(
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
 			);
+			await this.createIdpDefaultMapper(system.alias);
 		}
 	}
 
 	private async updateIdentityProvider(system: IdentityProviderConfig): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		if (system.type === SysType.OIDC) {
+		if (system.type === SystemTypeEnum.OIDC) {
 			await kc.identityProviders.update(
 				{ alias: system.alias },
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
 			);
+			await this.updateOrCreateIdpDefaultMapper(system.alias);
 		}
 	}
 
-	private async loadConfigs(sysTypes: SysType[]): Promise<IdentityProviderConfig[]> {
-		const systems = (await this.systemRepo.findAll()).filter((system) =>
-			sysTypes.includes(system.type as SysType)
-		) as IdentityProviderConfig[];
-		return systems;
+	private async updateOrCreateIdpDefaultMapper(idpAlias: string) {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		const allMappers = await kc.identityProviders.findMappers({ alias: idpAlias });
+		const defaultMapper = allMappers.find((mapper) => mapper.name === defaultIdpMapperName);
+		if (defaultMapper?.id) {
+			await kc.identityProviders.updateMapper(
+				{ alias: idpAlias, id: defaultMapper.id },
+				this.getIdpMapperConfiguration(idpAlias, defaultMapper.id)
+			);
+		} else {
+			await this.createIdpDefaultMapper(idpAlias);
+		}
+	}
+
+	private async createIdpDefaultMapper(idpAlias: string) {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		await kc.identityProviders.createMapper({
+			alias: idpAlias,
+			identityProviderMapper: this.getIdpMapperConfiguration(idpAlias),
+		});
+	}
+
+	private getIdpMapperConfiguration(idpAlias: string, id?: string): IdentityProviderMapperRepresentation {
+		return {
+			id,
+			identityProviderAlias: idpAlias,
+			name: defaultIdpMapperName,
+			identityProviderMapper: defaultIdpMapperName,
+			// eslint-disable-next-line no-template-curly-in-string
+			config: { syncMode: 'FORCE', target: 'LOCAL', template: '${CLAIM.sub}' },
+		};
 	}
 
 	private async deleteIdentityProvider(alias: string): Promise<void> {

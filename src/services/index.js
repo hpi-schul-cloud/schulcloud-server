@@ -42,7 +42,6 @@ const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
 const alert = require('./alert');
-const videoconference = require('./videoconference');
 const messenger = require('./messenger');
 const messengerSync = require('./messengerSync');
 const nexboard = require('./nexboard');
@@ -100,7 +99,6 @@ module.exports = function initializeServices() {
 	app.configure(alert);
 	app.configure(edusharing);
 	app.configure(webuntis);
-	app.configure(videoconference);
 	app.configure(messenger);
 	app.configure(messengerSync);
 	app.configure(nexboard);

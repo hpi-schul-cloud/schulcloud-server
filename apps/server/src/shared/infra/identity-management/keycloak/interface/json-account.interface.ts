@@ -4,6 +4,7 @@ export interface IJsonAccount {
 	};
 	username: string;
 	password: string;
+	systemId?: string;
 	userId: {
 		$oid: string;
 	};

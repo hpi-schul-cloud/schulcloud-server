@@ -25,9 +25,10 @@ describe('copy helper service', () => {
 
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [CopyHelperService],
 		}).compile();
@@ -147,21 +148,32 @@ describe('copy helper service', () => {
 	});
 
 	describe('deriveCopyName', () => {
-		it('should get name of element and extend it by number in brackets', () => {
-			const originalName = 'Test';
-			const nameCopy = copyHelperService.deriveCopyName(originalName);
+		describe('when name already exists', () => {
+			it('should get name of element and extend it by number in brackets', () => {
+				const originalName = 'Test';
+				const nameCopy = copyHelperService.deriveCopyName(originalName, [originalName]);
 
-			expect(nameCopy).toEqual(`${originalName} (1)`);
+				expect(nameCopy).toEqual(`${originalName} (1)`);
+			});
+
+			it('should get name of element and increase an existing number in brackets', () => {
+				let originalName = 'Test';
+				const basename = originalName;
+				originalName += ' (12)';
+
+				const nameCopy = copyHelperService.deriveCopyName(originalName, [originalName]);
+
+				expect(nameCopy).toEqual(`${basename} (13)`);
+			});
 		});
 
-		it('should get name of element and increase an existing number in brackets', () => {
-			let originalName = 'Test';
-			const basename = originalName;
-			originalName += ' (12)';
+		describe("when name doesn't exist", () => {
+			it('should get name of element and return it', () => {
+				const originalName = 'Test';
+				const nameCopy = copyHelperService.deriveCopyName(originalName);
 
-			const nameCopy = copyHelperService.deriveCopyName(originalName);
-
-			expect(nameCopy).toEqual(`${basename} (13)`);
+				expect(nameCopy).toEqual(`${originalName}`);
+			});
 		});
 
 		describe('avoid name collisions with existing names', () => {
@@ -175,7 +187,7 @@ describe('copy helper service', () => {
 
 			it('should return the right name regardless of existing names order', () => {
 				const originalName = 'Test';
-				const existingNames = ['Test (2)', 'Test (3)', 'Test (1)'];
+				const existingNames = ['Test', 'Test (2)', 'Test (3)', 'Test (1)'];
 
 				const nameCopy = copyHelperService.deriveCopyName(originalName, existingNames);
 				expect(nameCopy).toEqual('Test (4)');
@@ -183,7 +195,7 @@ describe('copy helper service', () => {
 
 			it('should use the first available gap in the list', () => {
 				const originalName = 'Test';
-				const existingNames = ['Test (1)', 'Test (3)'];
+				const existingNames = ['Test', 'Test (1)', 'Test (3)'];
 
 				const nameCopy = copyHelperService.deriveCopyName(originalName, existingNames);
 				expect(nameCopy).toEqual('Test (2)');
@@ -201,7 +213,7 @@ describe('copy helper service', () => {
 				const originalName = 'Test';
 				const existingNames = Array.from(Array(2000).keys()).map((n) => `Test (${n})`);
 
-				const nameCopy = copyHelperService.deriveCopyName(originalName, existingNames);
+				const nameCopy = copyHelperService.deriveCopyName(originalName, [originalName, ...existingNames]);
 				expect(nameCopy).toEqual('Test (2000)');
 			});
 		});

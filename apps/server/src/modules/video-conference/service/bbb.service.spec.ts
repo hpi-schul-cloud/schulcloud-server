@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { BBBService } from '@src/modules/video-conference/service/bbb.service';
-import { HttpService } from '@nestjs/axios';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { AxiosResponse } from 'axios';
-import { of } from 'rxjs';
-import { BBBCreateConfig, GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
+import { HttpService } from '@nestjs/axios';
+import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ConverterUtil } from '@shared/common';
+import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
+import { BBBCreateConfig, GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
+import { BBBJoinConfig, BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
 import {
 	BBBBaseResponse,
 	BBBCreateResponse,
@@ -14,37 +14,41 @@ import {
 	BBBResponse,
 	BBBStatus,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
-import { InternalServerErrorException } from '@nestjs/common';
-import { BBBJoinConfig, BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
-import { URLSearchParams } from 'url';
+import { BBBService } from '@src/modules/video-conference/service/bbb.service';
+import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
-import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
+import { of } from 'rxjs';
+import { URLSearchParams } from 'url';
 
-const createBBBCreateResponse = (): BBBResponse<BBBCreateResponse> => ({
-	response: {
-		returncode: BBBStatus.SUCCESS,
-		messageKey: 'messageKey',
-		message: 'message',
-		meetingID: 'meetingId',
-		internalMeetingID: 'internalMeetingID',
-		parentMeetingID: 'parentMeetingID',
-		createTime: new Date().getTime(),
-		voiceBridge: 123,
-		dialNumber: '4910790393',
-		createDate: '2022-02-15',
-		hasUserJoined: false,
-		duration: 2333,
-		hasBeenForciblyEnded: false,
-	},
-});
+const createBBBCreateResponse = (): BBBResponse<BBBCreateResponse> => {
+	return {
+		response: {
+			returncode: BBBStatus.SUCCESS,
+			messageKey: 'messageKey',
+			message: 'message',
+			meetingID: 'meetingId',
+			internalMeetingID: 'internalMeetingID',
+			parentMeetingID: 'parentMeetingID',
+			createTime: new Date().getTime(),
+			voiceBridge: 123,
+			dialNumber: '4910790393',
+			createDate: '2022-02-15',
+			hasUserJoined: false,
+			duration: 2333,
+			hasBeenForciblyEnded: false,
+		},
+	};
+};
 
-const createBBBBaseResponse = (): BBBResponse<BBBBaseResponse> => ({
-	response: {
-		returncode: BBBStatus.SUCCESS,
-		messageKey: 'messageKey',
-		message: 'message',
-	},
-});
+const createBBBBaseResponse = (): BBBResponse<BBBBaseResponse> => {
+	return {
+		response: {
+			returncode: BBBStatus.SUCCESS,
+			messageKey: 'messageKey',
+			message: 'message',
+		},
+	};
+};
 
 const createBBBMeetingInfoResponse = (): BBBResponse<BBBMeetingInfoResponse> =>
 	({
@@ -56,35 +60,41 @@ const createBBBMeetingInfoResponse = (): BBBResponse<BBBMeetingInfoResponse> =>
 		},
 	} as unknown as BBBResponse<BBBMeetingInfoResponse>);
 
-const createBBBCreateConfig = (): BBBCreateConfig => ({
-	name: 'config.name',
-	meetingID: 'config.meetingID',
-	logoutURL: 'config.logoutURL',
-	welcome: 'config.welcome',
-	guestPolicy: GuestPolicy.ALWAYS_ACCEPT,
-	moderatorPW: 'config.moderatorPW',
-	attendeePW: 'config.attendeePW',
-	allowModsToUnmuteUsers: true,
-});
+const createBBBCreateConfig = (): BBBCreateConfig => {
+	return {
+		name: 'config.name',
+		meetingID: 'config.meetingID',
+		logoutURL: 'config.logoutURL',
+		welcome: 'config.welcome',
+		guestPolicy: GuestPolicy.ALWAYS_ACCEPT,
+		moderatorPW: 'config.moderatorPW',
+		attendeePW: 'config.attendeePW',
+		allowModsToUnmuteUsers: true,
+	};
+};
 
-const createBBBJoinConfig = (): BBBJoinConfig => ({
-	meetingID: 'config.meetingID',
-	fullName: 'fullName',
-	role: BBBRole.MODERATOR,
-	userID: 'userID',
-	guest: false,
-	redirect: 'redirect',
-});
+const createBBBJoinConfig = (): BBBJoinConfig => {
+	return {
+		meetingID: 'config.meetingID',
+		fullName: 'fullName',
+		role: BBBRole.MODERATOR,
+		userID: 'userID',
+		guest: false,
+		redirect: 'redirect',
+	};
+};
 
 const createAxiosResponse = (
 	data: BBBResponse<BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse>
-): AxiosResponse<BBBResponse<BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse>> => ({
-	data: data ?? {},
-	status: 0,
-	statusText: '',
-	headers: {},
-	config: {},
-});
+): AxiosResponse<BBBResponse<BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse>> => {
+	return {
+		data: data ?? {},
+		status: 0,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
+};
 
 class BBBServiceTest extends BBBService {
 	public superToParams(object: BBBCreateConfig | BBBBaseMeetingConfig): URLSearchParams {
@@ -116,6 +126,7 @@ describe('BBB Service', () => {
 
 	Configuration.set('VIDEOCONFERENCE_HOST', 'http://bbb.de');
 	Configuration.set('VIDEOCONFERENCE_SALT', 'salt12345');
+	Configuration.set('VIDEOCONFERENCE_DEFAULT_PRESENTATION', '');
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -136,6 +147,10 @@ describe('BBB Service', () => {
 		converterUtil = module.get(ConverterUtil);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('create', () => {
 		let bbbCreateResponse: AxiosResponse<BBBResponse<BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse>>;
 		beforeEach(() => {
@@ -144,7 +159,7 @@ describe('BBB Service', () => {
 
 		it('should return a response with returncode success', async () => {
 			// Arrange
-			httpService.get.mockReturnValue(of(bbbCreateResponse));
+			httpService.post.mockReturnValue(of(bbbCreateResponse));
 			converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
 
 			// Act
@@ -152,8 +167,21 @@ describe('BBB Service', () => {
 
 			// Assert
 			expect(result).toBeDefined();
-			expect(httpService.get).toHaveBeenCalledTimes(1);
+			expect(httpService.post).toHaveBeenCalledTimes(1);
 			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbCreateResponse.data);
+		});
+
+		it('should return a xml configuration with provided presentation url', () => {
+			// Arrange
+			const presentationUrl = 'https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf';
+
+			// Act
+			const result = service.getBbbRequestConfig(presentationUrl);
+
+			// Assert
+			expect(result).toBe(
+				"<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf' /></module></modules>"
+			);
 		});
 
 		it('should throw an error if there is a different return code then success', async () => {
@@ -309,9 +337,7 @@ describe('BBB Service', () => {
 				update: jest.fn().mockReturnThis(),
 				digest: jest.fn().mockReturnValue('encrypt 123'),
 			} as unknown as Hash;
-			const createHashMock = jest.spyOn(crypto, 'createHash').mockImplementation((): Hash => {
-				return hashMock;
-			});
+			const createHashMock = jest.spyOn(crypto, 'createHash').mockImplementation((): Hash => hashMock);
 			const createConfig: BBBCreateConfig = createBBBCreateConfig();
 			const callName = 'create';
 			const urlSearchParams: URLSearchParams = service.superToParams(createConfig);

@@ -53,9 +53,7 @@ export class NextcloudClient {
 
 		return this.handleOcsRequest<NextcloudGroups, string>(
 			request,
-			(data: NextcloudGroups) => {
-				return data.groups[0];
-			},
+			(data: NextcloudGroups) => data.groups[0],
 			(error) => {
 				throw new NotFoundException(error, `Group ${groupName} not found in Nextcloud!`);
 			}
@@ -99,9 +97,7 @@ export class NextcloudClient {
 
 		return this.handleOcsRequest(
 			request,
-			() => {
-				return this.logger.log(`Successfully created group with group id: ${groupId} in Nextcloud`);
-			},
+			() => this.logger.log(`Successfully created group with group id: ${groupId} in Nextcloud`),
 			(error) => {
 				throw new UnprocessableEntityException(error, `Group "${groupId}" could not be created in Nextcloud!`);
 			}
@@ -118,9 +114,7 @@ export class NextcloudClient {
 
 		return this.handleOcsRequest<Meta, void>(
 			request,
-			() => {
-				return this.logger.log(`Successfully removed group with group id: ${groupId} in Nextcloud`);
-			},
+			() => this.logger.log(`Successfully removed group with group id: ${groupId} in Nextcloud`),
 			(error) => {
 				throw new UnprocessableEntityException(error, `Group "${groupId}" could not be deleted in Nextcloud!`);
 			}
@@ -141,9 +135,7 @@ export class NextcloudClient {
 
 		return this.handleOcsRequest(
 			request,
-			() => {
-				return this.logger.log(`Successfully renamed group with group id: ${groupId} in Nextcloud`);
-			},
+			() => this.logger.log(`Successfully renamed group with group id: ${groupId} in Nextcloud`),
 			(error) => {
 				throw new UnprocessableEntityException(error, `Group "${groupId}" could not be renamed in Nextcloud!`);
 			}
@@ -186,9 +178,7 @@ export class NextcloudClient {
 
 		return this.handleOcsRequest<GroupfoldersFolder[], number>(
 			request,
-			(data: GroupfoldersFolder[]) => {
-				return data[0].folder_id;
-			},
+			(data: GroupfoldersFolder[]) => data[0].folder_id,
 			(error) => {
 				throw new NotFoundException(error, `Folder for ${groupId} not found in Nextcloud!`);
 			}

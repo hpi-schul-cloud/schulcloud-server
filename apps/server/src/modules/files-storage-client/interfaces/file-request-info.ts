@@ -1,9 +1,8 @@
 import { EntityId } from '@shared/domain';
-import { FileRecordParamsParentTypeEnum } from '../filesStorageApi/v3';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 
-export interface FileRequestInfo {
-	jwt: string; // todo replace with existing type
+export interface IFileRequestInfo {
 	schoolId: EntityId;
-	parentType: FileRecordParamsParentTypeEnum;
+	parentType: FileRecordParentType;
 	parentId: EntityId;
 }

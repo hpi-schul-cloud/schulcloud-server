@@ -1,48 +1,25 @@
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
-import { AxiosError, AxiosResponse } from 'axios';
-import { FileStorageErrors } from '../interfaces';
-import {
-	castToAxiosError,
-	extractAxiosResponse,
-	hasAxiosResponse,
-	isAxiosError,
-	isValidationError,
-} from './error.mapper.utils';
+import { FileStorageErrors, IFileStorageErrors } from '../interfaces';
 
+export const isValidationError = (error: IFileStorageErrors): boolean => {
+	const checked = !!(error.validationErrors && error.validationErrors.length > 0);
+
+	return checked;
+};
 export class ErrorMapper {
-	static mapAxiosToDomainError(axiosError: AxiosError<FileStorageErrors>): FileStorageErrors {
+	static mapErrorToDomainError(errorObj: IFileStorageErrors): FileStorageErrors {
 		let error: FileStorageErrors;
-		if (!hasAxiosResponse(axiosError)) {
-			error = new InternalServerErrorException(axiosError);
-		} else if (axiosError.code === '400' && isValidationError(axiosError)) {
-			const response = extractAxiosResponse(axiosError) as AxiosResponse<ApiValidationError>;
-			error = new ApiValidationError(response.data.validationErrors);
-		} else if (axiosError.code === '400' && !isValidationError(axiosError)) {
-			const response = extractAxiosResponse(axiosError);
-			error = new BadRequestException(response.data);
-		} else if (axiosError.code === '403') {
-			const response = extractAxiosResponse(axiosError);
-			error = new ForbiddenException(response.data);
-		} else if (axiosError.code) {
-			const response = extractAxiosResponse(axiosError);
-			error = new InternalServerErrorException(response.data);
+		if (errorObj.status === 400 && isValidationError(errorObj)) {
+			error = new ApiValidationError(errorObj.validationErrors);
+		} else if (errorObj.status === 400 && !isValidationError(errorObj)) {
+			error = new BadRequestException(errorObj.message);
+		} else if (errorObj.status === 403) {
+			error = new ForbiddenException(errorObj.message);
 		} else {
-			error = new InternalServerErrorException(axiosError);
+			error = new InternalServerErrorException(errorObj);
 		}
 
 		return error;
-	}
-
-	// expected inputs AxiosError<FileStorageErrors> | Error
-	static mapErrorToDomainError(requestResponse: unknown): FileStorageErrors {
-		if (isAxiosError(requestResponse)) {
-			const axiosError = castToAxiosError(requestResponse);
-			return ErrorMapper.mapAxiosToDomainError(axiosError);
-		}
-
-		const internalServerError = new InternalServerErrorException(requestResponse);
-
-		return internalServerError;
 	}
 }

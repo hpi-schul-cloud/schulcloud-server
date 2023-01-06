@@ -20,6 +20,10 @@
 				"file": "cross-cutting-concerns.md"
 			},
 			{
+				"title": "Domain Object Validation",
+				"file": "domain-object-validation.md"
+			},
+			{
 				"title": "Testing",
 				"file": "testing.md"
 			},
@@ -38,6 +42,14 @@
 			{
 				"title": "Rocket.Chat",
 				"file": "rocket-chat.md"
+			},
+			{
+				"title": "Configuration",
+				"file": "../../../README.md"
+			},
+			{
+				"title": "Authorisation",
+				"file": "../src/modules/authorization/README.md"
 			}
 		]
 	}

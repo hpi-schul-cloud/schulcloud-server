@@ -1,22 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
-import { MikroORM } from '@mikro-orm/core';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@src/server.module';
-import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ICurrentUser, Permission } from '@shared/domain';
+import { cleanupCollections, courseFactory, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { userFactory, courseFactory, cleanupCollections, roleFactory, mapUserToCurrentUser } from '@shared/testing';
-import { ICurrentUser } from '@shared/domain';
+import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
+import { ServerTestModule } from '@src/modules/server/server.module';
+import { Request } from 'express';
+import request from 'supertest';
 
 describe('Course Controller (e2e)', () => {
 	let app: INestApplication;
-	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
@@ -32,18 +31,16 @@ describe('Course Controller (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
-		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await cleanupCollections(em);
 		await app.close();
-		await orm.close();
 	});
 
 	const setup = () => {
-		const roles = roleFactory.buildList(1, { permissions: [] });
+		const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_EDIT] });
 		const user = userFactory.build({ roles });
 
 		return user;
@@ -62,5 +59,19 @@ describe('Course Controller (e2e)', () => {
 		expect(response.status).toEqual(200);
 		const body = response.body as CourseMetadataListResponse;
 		expect(typeof body.data[0].title).toBe('string');
+	});
+
+	it('[GET] course export', async () => {
+		if (!Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) return;
+		const user = setup();
+		const course = courseFactory.build({ name: 'course #1', students: [user] });
+		await em.persistAndFlush(course);
+		em.clear();
+		currentUser = mapUserToCurrentUser(user);
+
+		const response = await request(app.getHttpServer()).get(`/courses/${course.id}/export`);
+
+		expect(response.status).toEqual(200);
+		expect(response.body).toBeDefined();
 	});
 });

@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
-import { FileRecordParentType } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
+import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { Command, Console } from 'nestjs-console';
 import { AvailableSyncParentType } from '../types';
 import { SyncEmbeddedFilesUc } from '../uc/sync-embedded-files.uc';
@@ -17,14 +17,22 @@ export class SyncFilesConsole {
 		private logger: Logger
 	) {}
 
-	@Command({ command: 'tasks [aggregationSize] [numParallelPromises]' })
-	async syncFilesForTasks(aggregationSize = 5000, numParallelPromises = 50) {
-		await this.syncFilesUc.syncFilesForParentType(FileRecordParentType.Task, aggregationSize, numParallelPromises);
+	@Command({ command: 'submissions [aggregationSize] [numParallelPromises]' })
+	async syncFilesForSubmissions(aggregationSize = 5000, numParallelPromises = 50) {
+		await this.syncFilesUc.syncFilesForParentType(
+			FileRecordParentType.Submission,
+			aggregationSize,
+			numParallelPromises
+		);
 	}
 
 	@Command({ command: 'embedded [type] [limit]' })
 	async syncEmbeddedFiles(type: AvailableSyncParentType, limit = 1000): Promise<void> {
-		if (type !== FileRecordParentType.Lesson && type !== FileRecordParentType.Task) {
+		if (
+			type !== FileRecordParentType.Lesson &&
+			type !== FileRecordParentType.Task &&
+			type !== FileRecordParentType.Submission
+		) {
 			this.logger.log('wrong parent type');
 			return;
 		}

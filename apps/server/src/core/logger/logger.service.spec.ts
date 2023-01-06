@@ -1,31 +1,30 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { createMock } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger as WinstonLogger } from 'winston';
 import { Logger } from './logger.service';
 
 describe('Logger', () => {
 	let service: Logger;
 	let processStdoutWriteSpy;
 	let processStderrWriteSpy;
-	const msg = {
-		request: { url: '/', method: 'POST', params: {}, query: {} },
-		error: undefined,
-	};
+	let winstonLogger: DeepMocked<WinstonLogger>;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				Logger,
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: WINSTON_MODULE_PROVIDER,
+					useValue: createMock<WinstonLogger>(),
 				},
 			],
 		}).compile();
 
 		service = await module.resolve(Logger);
+		winstonLogger = module.get(WINSTON_MODULE_PROVIDER);
 	});
 
 	beforeEach(() => {
@@ -38,35 +37,47 @@ describe('Logger', () => {
 		processStderrWriteSpy.mockRestore();
 	});
 
-	describe('http requests logging', () => {
-		it('should call to stdout', () => {
-			service.http(msg);
-
-			expect(processStdoutWriteSpy).toBeCalled();
-		});
-
-		it('should write to stdout', () => {
-			service.http(msg);
-			expect(processStdoutWriteSpy).toBeCalledWith(expect.stringMatching(/HTTP REQUEST/));
-		});
-
-		it('should write to stdout with CUSTOM_CONTEXT', () => {
-			service.http(msg, 'CUSTOM_CONTEXT');
-			expect(processStdoutWriteSpy).toBeCalledWith(expect.stringMatching(/CUSTOM_CONTEXT/));
-		});
-
-		it('should write to stderr with a newline only at the end', () => {
+	describe('WHEN error logging', () => {
+		it('should call winstonLogger.error', () => {
 			const error = new Error('custom error');
 			service.error(error.message, error.stack);
-			expect(processStderrWriteSpy).toBeCalledWith(expect.stringMatching(/^[^\n]*\n$/g));
+			expect(winstonLogger.error).toBeCalled();
 		});
 
 		it('should work also when providing circular references', () => {
-			const a: { name: string; b?: any } = { name: 'great' };
+			const a: { name: string; b?: object | undefined } = { name: 'great' };
 			const b = { a };
 			a.b = b;
 			service.error(a);
-			expect(processStderrWriteSpy).toBeCalledWith(expect.stringMatching(/name.*great/));
+			expect(winstonLogger.error).toBeCalledWith(
+				expect.objectContaining({
+					message: expect.stringMatching(/name.*great/) as string,
+				})
+			);
+		});
+	});
+
+	describe('WHEN warn logging', () => {
+		it('should call winstonLogger.warning', () => {
+			const error = new Error('custom error');
+			service.warn(error.message, error.stack);
+			expect(winstonLogger.warning).toBeCalled();
+		});
+	});
+
+	describe('WHEN debug logging', () => {
+		it('should call winstonLogger.debug', () => {
+			const error = new Error('custom error');
+			service.debug(error.message, error.stack);
+			expect(winstonLogger.debug).toBeCalled();
+		});
+	});
+
+	describe('WHEN verbose logging', () => {
+		it('should call winstonLogger.verbose', () => {
+			const error = new Error('custom error');
+			service.verbose(error.message, error.stack);
+			expect(winstonLogger.verbose).toBeCalled();
 		});
 	});
 });

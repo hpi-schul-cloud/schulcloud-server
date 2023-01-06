@@ -3,13 +3,18 @@ import path from 'path';
 import { FileSystemAdapter } from './file-system.adapter';
 
 describe('FileSystemAdapter', () => {
+	let module: TestingModule;
 	let adapter: FileSystemAdapter;
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [FileSystemAdapter],
 		}).compile();
 		adapter = module.get(FileSystemAdapter);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {
@@ -32,11 +37,7 @@ describe('FileSystemAdapter', () => {
 				namesSet.add(tmpDirPath);
 			}
 			expect(namesSet.size).toEqual(100);
-			await Promise.all(
-				[...namesSet].map((folder) => {
-					return adapter.removeDirRecursive(folder);
-				})
-			);
+			await Promise.all([...namesSet].map((folder) => adapter.removeDirRecursive(folder)));
 		});
 		it('should remove an directory containing files recursively', async () => {
 			const tmpDirPath = await adapter.createTmpDir('prefix');

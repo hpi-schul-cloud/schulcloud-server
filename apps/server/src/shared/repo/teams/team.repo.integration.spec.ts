@@ -3,9 +3,10 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, Team } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, roleFactory } from '@shared/testing';
 import { TeamsRepo } from '@shared/repo';
+import { cleanupCollections, roleFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
+import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 
 describe('team repo', () => {
 	let module: TestingModule;
@@ -26,6 +27,7 @@ describe('team repo', () => {
 	});
 
 	afterEach(async () => {
+		em.clear();
 		await cleanupCollections(em);
 	});
 
@@ -43,6 +45,8 @@ describe('team repo', () => {
 			const team = teamFactory.build();
 
 			await em.persistAndFlush([team]);
+			em.clear();
+
 			const result = await repo.findById(team.id);
 			expect(Object.keys(result).sort()).toEqual(['name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort());
 		});
@@ -62,16 +66,16 @@ describe('team repo', () => {
 
 			const team: Team = teamFactory.withRoleAndUserId(role, userId).buildWithId();
 			await em.persistAndFlush(team);
-
 			em.clear();
 
 			// Act
 			const result = await repo.findById(team.id, true);
 
 			// Assert
-			expect(result.teamUsers[0].role.roles).toBeDefined();
-			expect(result.teamUsers[0].role.roles.getItems()).toEqual(roles2);
-			expect(result.teamUsers[0].role.roles[0].roles.getItems()).toEqual(roles3);
+			const teamUserRoles = result.teamUsers[0].role.roles;
+			expect(teamUserRoles).toBeDefined();
+			expect(teamUserRoles.toArray()).toEqual(role.roles.toArray());
+			expect(teamUserRoles[0].roles.toArray()).toEqual(roles2[0].roles.toArray());
 		});
 
 		it('should return one role that matched by id', async () => {
@@ -79,14 +83,57 @@ describe('team repo', () => {
 			const teamB = teamFactory.build();
 
 			await em.persistAndFlush([teamA, teamB]);
+			em.clear();
+
 			const result = await repo.findById(teamA.id, true);
-			expect(result).toEqual(teamA);
+
+			expect(result).toMatchObject({
+				id: teamA.id,
+				name: teamA.name,
+			});
 		});
 
 		it('should throw an error if roles by id doesnt exist', async () => {
 			const idA = new ObjectId().toHexString();
 
 			await expect(repo.findById(idA)).rejects.toThrow(NotFoundError);
+		});
+	});
+
+	describe('findByUserId', () => {
+		it('should return right keys', async () => {
+			// Arrange
+			const team = teamFactory.buildWithId();
+			await em.persistAndFlush([team]);
+			em.clear();
+
+			// Act
+			const result = await repo.findByUserId(team.teamUsers[0].user.id);
+
+			// Assert
+			expect(result[0]).toBeDefined();
+			expect(Object.keys(result[0]).sort()).toEqual(['name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort());
+		});
+
+		it('should return teams which contains a specific userId', async () => {
+			// Arrange
+			const teamUser = teamUserFactory.buildWithId();
+			const team1 = teamFactory.withTeamUser(teamUser).build();
+			const team2 = teamFactory.withTeamUser(teamUser).build();
+			const team3 = teamFactory.buildWithId();
+			await em.persistAndFlush([team1, team2, team3]);
+			em.clear();
+
+			// Act
+			const result = await repo.findByUserId(teamUser.user.id);
+
+			// Assert
+			expect(result.length).toEqual([team1, team2].length);
+			result.forEach((team: Team) => {
+				expect(team.teamUsers.flatMap((user) => user.userId.id).includes(teamUser.userId.id)).toBeTruthy();
+			});
+			expect(result.some((team: Team) => team.id === team3.id)).toBeFalsy();
+			expect(Object.keys(result[0]).sort()).toEqual(['name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort());
 		});
 	});
 });

@@ -1,16 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolService } from '@src/modules/school/service/school.service';
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
-import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchoolFeatures } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { NotFoundException } from '@nestjs/common';
+import { MigrationResponse } from '../controller/dto';
+import { AuthorizationService } from '../../authorization';
+import { PublicSchoolResponse } from '../controller/dto/public.school.response';
 
 describe('SchoolUc', () => {
 	let module: TestingModule;
 	let schoolUc: SchoolUc;
 	let schoolService: DeepMocked<SchoolService>;
-	let schoolDto: SchoolDto;
+	let authService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -20,9 +22,14 @@ describe('SchoolUc', () => {
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
 				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
 			],
 		}).compile();
 		schoolService = module.get(SchoolService);
+		authService = module.get(AuthorizationService);
 		schoolUc = module.get(SchoolUc);
 	});
 
@@ -30,51 +37,55 @@ describe('SchoolUc', () => {
 		await module.close();
 	});
 
-	beforeEach(() => {
-		schoolDto = new SchoolDto({ name: 'schule1234' });
+	describe('setMigration', () => {
+		let migrationResponse: MigrationResponse;
+		const mockId = 'someId';
+		beforeAll(() => {
+			migrationResponse = new MigrationResponse({
+				oauthMigrationPossible: true,
+				oauthMigrationMandatory: true,
+			});
+			schoolService.setMigration.mockResolvedValue(migrationResponse);
+			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+		});
+		it('should call the service', async () => {
+			await schoolUc.setMigration(mockId, true, true, mockId);
 
-		schoolService.createOrUpdateSchool.mockImplementation((): Promise<SchoolDto> => {
-			return Promise.resolve(schoolDto);
+			expect(schoolService.setMigration).toHaveBeenCalledWith(mockId, true, true);
 		});
 	});
 
-	describe('createOrUpdate', () => {
-		it('should call schoolService', async () => {
-			// Act
-			await schoolUc.createOrUpdate(schoolDto);
+	describe('getMigration', () => {
+		let migrationResponse: MigrationResponse;
+		const mockId = 'someId';
+		beforeAll(() => {
+			schoolService.getMigration.mockResolvedValue(migrationResponse);
+			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+		});
+		it('should call the service', async () => {
+			await schoolUc.getMigration(mockId, mockId);
 
-			// Assert
-			expect(schoolService.createOrUpdateSchool).toHaveBeenCalledWith(
-				expect.objectContaining({ name: schoolDto.name })
-			);
+			expect(schoolService.getMigration).toHaveBeenCalledWith(mockId);
 		});
 	});
 
-	describe('saveProvisioningSchoolOutputDto', () => {
-		afterEach(() => {
-			schoolUc = module.get(SchoolUc);
+	describe('when it calls the service to get public school data', () => {
+		let schoolDO: SchoolDO;
+		const mockSchoolnumber = '1234';
+		beforeEach(() => {
+			schoolDO = new SchoolDO({ name: 'mockSchool', officialSchoolNumber: '1234' });
+			schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
 		});
+		it('should call the service and return an object', async () => {
+			const response: PublicSchoolResponse = await schoolUc.getPublicSchoolData(mockSchoolnumber);
 
-		it('should call save', async () => {
-			// Arrange
-			const dto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({ name: schoolDto.name });
-			schoolUc.createOrUpdate = jest.fn();
-
-			// Act
-			await schoolUc.saveProvisioningSchoolOutputDto(dto);
-
-			// Assert
-			expect(schoolUc.createOrUpdate).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
+			expect(schoolService.getSchoolBySchoolNumber).toHaveBeenCalledWith(mockSchoolnumber);
+			expect(response).not.toBeNull();
 		});
-	});
-
-	describe('hasFeature', () => {
-		it('should call hasFeature', async () => {
-			// Act
-			await schoolUc.hasFeature('schoolId', SchoolFeatures.VIDEOCONFERENCE);
-
-			// Assert
-			expect(schoolService.hasFeature).toHaveBeenCalledWith('schoolId', SchoolFeatures.VIDEOCONFERENCE);
+		it('should call the service and throw an exception', async () => {
+			schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
+			const resp: Promise<PublicSchoolResponse> = schoolUc.getPublicSchoolData(mockSchoolnumber);
+			await expect(resp).rejects.toThrow(NotFoundException);
 		});
 	});
 });

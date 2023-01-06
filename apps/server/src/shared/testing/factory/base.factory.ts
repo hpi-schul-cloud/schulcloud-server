@@ -57,11 +57,12 @@ export class BaseFactory<T, U, I = any, C = U> {
 	 * @param id
 	 * @returns an entity
 	 */
-	buildWithId(params?: DeepPartial<U>, id?: string): T {
-		const entity = this.build(params);
-		const entityWithId = Object.assign(entity, { _id: new ObjectId(id) });
+	buildWithId(params?: DeepPartial<U>, id?: string, options: BuildOptions<U, I> = {}): T {
+		const entity = this.build(params, options);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const entityWithId = Object.assign(entity as any, { _id: new ObjectId(id) });
 
-		return entityWithId;
+		return entityWithId as T;
 	}
 
 	/**
@@ -74,6 +75,15 @@ export class BaseFactory<T, U, I = any, C = U> {
 		const list: T[] = [];
 		for (let i = 0; i < number; i += 1) {
 			list.push(this.build(params, options));
+		}
+
+		return list;
+	}
+
+	buildListWithId(number: number, params?: DeepPartial<U>, options: BuildOptions<U, I> = {}): T[] {
+		const list: T[] = [];
+		for (let i = 0; i < number; i += 1) {
+			list.push(this.buildWithId(params, undefined, options));
 		}
 
 		return list;
@@ -136,7 +146,7 @@ export class BaseFactory<T, U, I = any, C = U> {
 
 	protected clone<F extends BaseFactory<T, U, I, C>>(this: F, propsFactory: Factory<U, I, C>): F {
 		const copy = new (this.constructor as {
-			new (EntityClass: { new (props: U): T }, propsFactory: Factory<U, I, C>): F;
+			new (EntityClass: { new (props: U): T }, propsOfFactory: Factory<U, I, C>): F;
 		})(this.EntityClass, propsFactory);
 
 		return copy;

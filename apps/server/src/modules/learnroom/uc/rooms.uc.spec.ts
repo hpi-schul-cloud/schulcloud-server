@@ -4,9 +4,9 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardRepo, CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { RoomsService } from '../service/rooms.service';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
-import { RoomsService } from './rooms.service';
 import { RoomsUc } from './rooms.uc';
 
 describe('rooms usecase', () => {
@@ -16,21 +16,19 @@ describe('rooms usecase', () => {
 	let taskRepo: DeepMocked<TaskRepo>;
 	let userRepo: DeepMocked<UserRepo>;
 	let boardRepo: DeepMocked<BoardRepo>;
-	let orm: MikroORM;
 	let factory: DeepMocked<RoomBoardDTOFactory>;
 	let authorisation: DeepMocked<RoomsAuthorisationService>;
 	let roomsService: DeepMocked<RoomsService>;
-
-	beforeAll(async () => {
-		orm = await setupEntities();
-	});
+	let module: TestingModule;
+	let orm: MikroORM;
 
 	afterAll(async () => {
 		await orm.close();
+		await module.close();
 	});
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			imports: [],
 			providers: [
 				RoomsUc,
@@ -78,6 +76,7 @@ describe('rooms usecase', () => {
 		factory = module.get(RoomBoardDTOFactory);
 		authorisation = module.get(RoomsAuthorisationService);
 		roomsService = module.get(RoomsService);
+		orm = await setupEntities();
 	});
 
 	describe('getBoard', () => {

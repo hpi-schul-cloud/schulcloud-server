@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Course, Counted, SortOrder } from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
 import { PaginationParams } from '@shared/controller/';
+import { Counted, Course, EntityId, SortOrder } from '@shared/domain';
+import { CourseRepo } from '@shared/repo';
 
 @Injectable()
 export class CourseUc {

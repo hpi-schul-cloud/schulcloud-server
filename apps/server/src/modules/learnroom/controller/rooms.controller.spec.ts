@@ -16,7 +16,7 @@ describe('rooms controller', () => {
 	let courseCopyUc: CourseCopyUC;
 	let lessonCopyUc: LessonCopyUC;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [],
 			providers: [
@@ -74,14 +74,10 @@ describe('rooms controller', () => {
 				const currentUser = { userId: 'userId' } as ICurrentUser;
 
 				const ucResult = { roomId: 'id', title: 'title', displayColor: '#FFFFFF', elements: [] } as RoomBoardDTO;
-				const ucSpy = jest.spyOn(uc, 'getBoard').mockImplementation(() => {
-					return Promise.resolve(ucResult);
-				});
+				const ucSpy = jest.spyOn(uc, 'getBoard').mockImplementation(() => Promise.resolve(ucResult));
 
 				const mapperResult = new BoardResponse({ roomId: 'id', title: 'title', displayColor: '#FFFFFF', elements: [] });
-				const mapperSpy = jest.spyOn(mapper, 'mapToResponse').mockImplementation(() => {
-					return mapperResult;
-				});
+				const mapperSpy = jest.spyOn(mapper, 'mapToResponse').mockImplementation(() => mapperResult);
 				return { currentUser, ucResult, ucSpy, mapperResult, mapperSpy };
 			};
 
@@ -114,9 +110,7 @@ describe('rooms controller', () => {
 	describe('patchVisibility', () => {
 		it('should call uc', async () => {
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			const ucSpy = jest.spyOn(uc, 'updateVisibilityOfBoardElement').mockImplementation(() => {
-				return Promise.resolve();
-			});
+			const ucSpy = jest.spyOn(uc, 'updateVisibilityOfBoardElement').mockImplementation(() => Promise.resolve());
 			await controller.patchElementVisibility(
 				{ roomId: 'roomid', elementId: 'elementId' },
 				{ visibility: true },
@@ -129,9 +123,7 @@ describe('rooms controller', () => {
 	describe('patchOrder', () => {
 		it('should call uc', async () => {
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			const ucSpy = jest.spyOn(uc, 'reorderBoardElements').mockImplementation(() => {
-				return Promise.resolve();
-			});
+			const ucSpy = jest.spyOn(uc, 'reorderBoardElements').mockImplementation(() => Promise.resolve());
 			await controller.patchOrderingOfElements({ roomId: 'roomid' }, { elements: ['id', 'id', 'id'] }, currentUser);
 			expect(ucSpy).toHaveBeenCalledWith('roomid', 'userId', ['id', 'id', 'id']);
 		});
@@ -147,22 +139,20 @@ describe('rooms controller', () => {
 					status: 'SUCCESS' as CopyStatusEnum,
 					elements: [],
 				} as CopyStatus;
-				const ucSpy = jest.spyOn(courseCopyUc, 'copyCourse').mockImplementation(() => {
-					return Promise.resolve(ucResult);
-				});
+				const ucSpy = jest.spyOn(courseCopyUc, 'copyCourse').mockImplementation(() => Promise.resolve(ucResult));
 				return { currentUser, ucSpy };
 			};
 			it('should call uc', async () => {
 				const { currentUser, ucSpy } = setup();
-				const fakejwt = `jwt${Date.now()}`;
-				await controller.copyCourse(currentUser, { roomId: 'roomId' }, fakejwt);
-				expect(ucSpy).toHaveBeenCalledWith('userId', 'roomId', fakejwt);
+
+				await controller.copyCourse(currentUser, { roomId: 'roomId' });
+				expect(ucSpy).toHaveBeenCalledWith('userId', 'roomId');
 			});
 
 			it('should return result of correct type', async () => {
 				const { currentUser } = setup();
-				const fakejwt = `jwt${Date.now()}`;
-				const result = await controller.copyCourse(currentUser, { roomId: 'roomId' }, fakejwt);
+
+				const result = await controller.copyCourse(currentUser, { roomId: 'roomId' });
 				expect(result).toBeInstanceOf(CopyApiResponse);
 			});
 		});
@@ -178,23 +168,21 @@ describe('rooms controller', () => {
 					status: 'SUCCESS' as CopyStatusEnum,
 					elements: [],
 				} as CopyStatus;
-				const ucSpy = jest.spyOn(lessonCopyUc, 'copyLesson').mockImplementation(() => {
-					return Promise.resolve(ucResult);
-				});
+				const ucSpy = jest.spyOn(lessonCopyUc, 'copyLesson').mockImplementation(() => Promise.resolve(ucResult));
 				return { currentUser, ucSpy };
 			};
 
 			it('should call uc with parentId', async () => {
 				const { currentUser, ucSpy } = setup();
-				const fakejwt = `jwt${Date.now()}`;
-				await controller.copyLesson(currentUser, { lessonId: 'lessonId' }, { courseId: 'id' }, fakejwt);
-				expect(ucSpy).toHaveBeenCalledWith('userId', 'lessonId', { courseId: 'id', jwt: fakejwt });
+
+				await controller.copyLesson(currentUser, { lessonId: 'lessonId' }, { courseId: 'id' });
+				expect(ucSpy).toHaveBeenCalledWith('userId', 'lessonId', { courseId: 'id', userId: 'userId' });
 			});
 
 			it('should return result of correct type', async () => {
 				const { currentUser } = setup();
-				const fakejwt = `jwt${Date.now()}`;
-				const result = await controller.copyLesson(currentUser, { lessonId: 'lessonId' }, {}, fakejwt);
+
+				const result = await controller.copyLesson(currentUser, { lessonId: 'lessonId' }, {});
 				expect(result).toBeInstanceOf(CopyApiResponse);
 			});
 		});

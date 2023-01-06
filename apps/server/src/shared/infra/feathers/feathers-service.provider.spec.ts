@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { REQUEST } from '@nestjs/core';
 import { ImATeapotException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Test, TestingModule } from '@nestjs/testing';
 import { FeathersServiceProvider } from './feathers-service.provider';
 
 describe('FeathersServiceProvider', () => {
 	let provider: FeathersServiceProvider;
 
 	describe('When the feathers instance is defined (here mocked)', () => {
-		beforeEach(async () => {
+		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
 				providers: [
 					FeathersServiceProvider,
@@ -43,7 +43,7 @@ describe('FeathersServiceProvider', () => {
 	});
 
 	describe('When the feathers instance is not defined', () => {
-		beforeEach(async () => {
+		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
 				providers: [
 					FeathersServiceProvider,
@@ -51,9 +51,7 @@ describe('FeathersServiceProvider', () => {
 						provide: REQUEST,
 						useValue: {
 							app: {
-								get: () => {
-									return undefined;
-								},
+								get: () => undefined,
 							},
 						},
 						scope: Scope.REQUEST,

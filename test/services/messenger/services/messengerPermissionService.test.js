@@ -15,7 +15,6 @@ describe('MessengerPermissionService', () => {
 
 		before(async () => {
 			configBefore = Configuration.toObject({ plainSecrets: true });
-			Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 			Configuration.update({
 				FEATURE_MATRIX_MESSENGER_ENABLED: true,
 				MATRIX_MESSENGER: {
@@ -75,7 +74,6 @@ describe('MessengerPermissionService', () => {
 
 		before(async () => {
 			configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
-			Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 			Configuration.update({
 				FEATURE_MATRIX_MESSENGER_ENABLED: true,
 				MATRIX_MESSENGER: {

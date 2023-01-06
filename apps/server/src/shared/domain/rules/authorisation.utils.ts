@@ -19,7 +19,7 @@ export class AuthorisationUtils {
 		return rolesAndPermissions;
 	}
 
-	public resolvePermissionsByRoles(inputRoles: Role[]): string[] {
+	private resolvePermissionsByRoles(inputRoles: Role[]): string[] {
 		let permissions: string[] = [];
 
 		for (let i = 0; i < inputRoles.length; i += 1) {
@@ -46,6 +46,15 @@ export class AuthorisationUtils {
 			return true;
 		}
 		const usersPermissions = this.resolvePermissions(user);
+		return this.hasEveryPermission(requiredPermissions, usersPermissions);
+	}
+
+	hasAllPermissionsByRole(role: Role, requiredPermissions: string[]): boolean {
+		const usersPermissions = this.resolvePermissionsByRoles([role]);
+		return this.hasEveryPermission(requiredPermissions, usersPermissions);
+	}
+
+	private hasEveryPermission(requiredPermissions: string[], usersPermissions: string[]) {
 		const hasPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));
 		return hasPermissions;
 	}
@@ -91,7 +100,7 @@ export class AuthorisationUtils {
 	 * @param userRefProps Array of properties in the entity the user is associated with
 	 * @returns
 	 */
-	hasAccessToEntity<T, K extends keyof T>(user: User, entity: T, userRefProps: K[]) {
+	hasAccessToEntity<T, K extends keyof T>(user: User, entity: T, userRefProps: K[]): boolean {
 		const res = userRefProps.some((prop) => {
 			const reference = entity[prop];
 			if (reference instanceof Collection) {
@@ -130,8 +139,6 @@ export class AuthorisationUtils {
 		if (!user.roles.isInitialized(true)) {
 			throw new Error('Roles items are not loaded.');
 		}
-		return user.roles.getItems().some((role) => {
-			return role.name === roleName;
-		});
+		return user.roles.getItems().some((role) => role.name === roleName);
 	}
 }

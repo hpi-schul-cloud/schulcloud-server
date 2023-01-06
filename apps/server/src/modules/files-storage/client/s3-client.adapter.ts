@@ -11,7 +11,8 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { Readable } from 'stream';
-import { ICopyFiles, IFile, IGetFileResponse, IStorageClient, S3Config } from '../interface';
+import { FileDto } from '../dto';
+import { ICopyFiles, IGetFileResponse, IStorageClient, S3Config } from '../interface';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
@@ -40,13 +41,14 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async get(path: string): Promise<IGetFileResponse> {
+	public async get(path: string, bytesRange?: string): Promise<IGetFileResponse> {
 		try {
 			this.logger.log({ action: 'get', params: { path, bucket: this.config.bucket } });
 
 			const req = new GetObjectCommand({
 				Bucket: this.config.bucket,
 				Key: path,
+				Range: bytesRange,
 			});
 
 			const data = await this.client.send(req);
@@ -57,6 +59,7 @@ export class S3ClientAdapter implements IStorageClient {
 				data: stream,
 				contentType: data.ContentType,
 				contentLength: data.ContentLength,
+				contentRange: data.ContentRange,
 				etag: data.ETag,
 			};
 		} catch (err) {
@@ -69,7 +72,7 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async create(path: string, file: IFile): Promise<ServiceOutputTypes> {
+	public async create(path: string, file: FileDto): Promise<ServiceOutputTypes> {
 		try {
 			this.logger.log({ action: 'create', params: { path, bucket: this.config.bucket } });
 
@@ -169,7 +172,9 @@ export class S3ClientAdapter implements IStorageClient {
 	}
 
 	private async remove(paths: string[]) {
-		const pathObjects = paths.map((p) => ({ Key: p }));
+		const pathObjects = paths.map((p) => {
+			return { Key: p };
+		});
 		const req = new DeleteObjectsCommand({
 			Bucket: this.config.bucket,
 			Delete: { Objects: pathObjects },

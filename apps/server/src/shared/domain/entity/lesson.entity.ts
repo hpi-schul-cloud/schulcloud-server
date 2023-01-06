@@ -1,13 +1,14 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ILearnroomElement } from '@shared/domain/interface';
-import _ from 'lodash';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
 import { Task } from './task.entity';
+import type { ITaskParent } from './task.entity';
+import { User } from './user.entity';
 
 export interface ILessonProperties {
 	name: string;
@@ -37,15 +38,13 @@ export interface IComponentGeogebraProperties {
 }
 
 export interface IComponentLernstoreProperties {
-	resources: [
-		{
-			client: string;
-			description: string;
-			merlinReference?: string;
-			title: string;
-			url: string;
-		}
-	];
+	resources: {
+		client: string;
+		description: string;
+		merlinReference?: string;
+		title: string;
+		url: string;
+	}[];
 }
 
 export interface IComponentEtherpadProperties {
@@ -66,10 +65,12 @@ export interface IComponentInternalProperties {
 }
 
 export interface IComponentProperties {
-	title: string;
+	_id?: string;
+	title?: string;
 	hidden: boolean;
 	component: ComponentType;
-	content:
+	user?: User;
+	content?:
 		| IComponentTextProperties
 		| IComponentGeogebraProperties
 		| IComponentLernstoreProperties
@@ -78,8 +79,12 @@ export interface IComponentProperties {
 		| IComponentNexboardProperties;
 }
 
+export interface ILessonParent {
+	getStudentIds(): EntityId[];
+}
+
 @Entity({ tableName: 'lessons' })
-export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElement {
+export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElement, ITaskParent {
 	@Property()
 	name: string;
 
@@ -117,6 +122,12 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		if (props.materials) this.materials.set(props.materials);
 	}
 
+	private getParent(): ILessonParent {
+		const parent = this.courseGroup || this.course;
+
+		return parent;
+	}
+
 	private getTasksItems(): Task[] {
 		if (!this.tasks.isInitialized(true)) {
 			throw new InternalServerErrorException('Lessons trying to access their tasks that are not loaded.');
@@ -127,25 +138,19 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 
 	getNumberOfPublishedTasks(): number {
 		const tasks = this.getTasksItems();
-		const filtered = tasks.filter((task) => {
-			return task.isPublished();
-		});
+		const filtered = tasks.filter((task) => task.isPublished());
 		return filtered.length;
 	}
 
 	getNumberOfDraftTasks(): number {
 		const tasks = this.getTasksItems();
-		const filtered = tasks.filter((task) => {
-			return task.isDraft();
-		});
+		const filtered = tasks.filter((task) => task.isDraft());
 		return filtered.length;
 	}
 
 	getNumberOfPlannedTasks(): number {
 		const tasks = this.getTasksItems();
-		const filtered = tasks.filter((task) => {
-			return task.isPlanned();
-		});
+		const filtered = tasks.filter((task) => task.isPlanned());
 		return filtered.length;
 	}
 
@@ -180,5 +185,12 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 
 	unpublish() {
 		this.hidden = true;
+	}
+
+	public getStudentIds(): EntityId[] {
+		const parent = this.getParent();
+		const studentIds = parent.getStudentIds();
+
+		return studentIds;
 	}
 }

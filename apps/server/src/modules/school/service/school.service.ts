@@ -1,30 +1,32 @@
-import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { SchoolRepo } from '@shared/repo';
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
-import { School, EntityId, SchoolFeatures } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
+import { MigrationResponse } from '../controller/dto';
+import { ProvisioningSchoolOutputDto } from '../../provisioning/dto/provisioning-school-output.dto';
+import { SchoolUcMapper } from '../mapper/school.uc.mapper';
 
 @Injectable()
 export class SchoolService {
 	constructor(readonly schoolRepo: SchoolRepo) {}
 
-	async createOrUpdateSchool(schoolDto: SchoolDto): Promise<SchoolDto> {
-		const school: School = SchoolMapper.mapToEntity(schoolDto);
+	async saveProvisioningSchoolOutputDto(schoolDto: ProvisioningSchoolOutputDto): Promise<SchoolDO> {
+		return this.createOrUpdateSchool(SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDO(schoolDto));
+	}
 
-		let createdSchool: School;
+	async createOrUpdateSchool(school: SchoolDO): Promise<SchoolDO> {
+		let createdSchool: SchoolDO;
 		if (school.id) {
 			createdSchool = await this.patchSchool(school);
 		} else {
-			createdSchool = this.schoolRepo.create(school);
-			await this.schoolRepo.save(school);
+			createdSchool = await this.schoolRepo.save(school);
 		}
-		const returnSchoolDto: SchoolDto = SchoolMapper.mapToDto(createdSchool);
-		return returnSchoolDto;
+		return createdSchool;
 	}
 
-	private async patchSchool(school: School) {
-		const entity: School = await this.schoolRepo.findById(school.id);
-		const patchedEntity = SchoolMapper.mapEntityToEntity(entity, school);
+	private async patchSchool(school: SchoolDO) {
+		const entity: SchoolDO = await this.schoolRepo.findById(school.id as string);
+		const patchedEntity: SchoolDO = { ...entity, ...school };
 
 		await this.schoolRepo.save(patchedEntity);
 
@@ -32,7 +34,57 @@ export class SchoolService {
 	}
 
 	async hasFeature(schoolId: EntityId, feature: SchoolFeatures): Promise<boolean> {
-		const entity: School = await this.schoolRepo.findById(schoolId);
+		const entity: SchoolDO = await this.schoolRepo.findById(schoolId);
 		return entity.features ? entity.features.includes(feature) : false;
+	}
+
+	async setMigration(
+		schoolId: EntityId,
+		oauthMigrationPossible: boolean,
+		oauthMigrationMandatory: boolean
+	): Promise<MigrationResponse> {
+		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
+		schoolDo.oauthMigrationPossible = oauthMigrationPossible;
+		schoolDo.oauthMigrationMandatory = oauthMigrationMandatory;
+
+		await this.schoolRepo.save(schoolDo);
+
+		const response: MigrationResponse = new MigrationResponse({
+			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
+			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
+		});
+
+		return response;
+	}
+
+	async getMigration(schoolId: string): Promise<MigrationResponse> {
+		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
+
+		const response: MigrationResponse = new MigrationResponse({
+			oauthMigrationPossible: schoolDo.oauthMigrationPossible ?? false,
+			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory ?? false,
+		});
+
+		return response;
+	}
+
+	async getSchoolById(id: string): Promise<SchoolDO> {
+		const schoolDO: SchoolDO = await this.schoolRepo.findById(id);
+		return schoolDO;
+	}
+
+	async getSchoolByExternalId(externalId: string, systemId: string): Promise<SchoolDO | null> {
+		const schoolDO: SchoolDO | null = await this.schoolRepo.findByExternalId(externalId, systemId);
+		return schoolDO;
+	}
+
+	async getSchoolBySchoolNumber(schoolNumber: string): Promise<SchoolDO | null> {
+		const schoolDO: SchoolDO | null = await this.schoolRepo.findBySchoolNumber(schoolNumber);
+		return schoolDO;
+	}
+
+	async save(school: SchoolDO): Promise<SchoolDO> {
+		const ret: SchoolDO = await this.schoolRepo.save(school);
+		return ret;
 	}
 }

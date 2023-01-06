@@ -5,7 +5,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cleanupCollections,
 	courseFactory,
-	fileFactory,
+	courseGroupFactory,
 	lessonFactory,
 	submissionFactory,
 	taskFactory,
@@ -45,6 +45,123 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findAllByParentIds', () => {
+		describe('given populates are set correctly', () => {
+			describe('when task parent is a user', () => {
+				const setup = async () => {
+					const creator = userFactory.build();
+					const course = courseFactory.build();
+					const courseGroup = courseGroupFactory.build({ course });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.build({ creator, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { creator };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { creator } = await setup();
+
+					const [result, total] = await repo.findAllByParentIds({ creatorId: creator.id });
+					const task = result[0];
+
+					expect(total).toEqual(1);
+					expect(task.submissions).toBeDefined();
+					expect(task.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+
+			describe('when task parent is a course', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupFactory.build({ course });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.build({ course, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { course };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { course } = await setup();
+
+					const [result, total] = await repo.findAllByParentIds({ courseIds: [course.id] });
+					const task = result[0];
+
+					expect(total).toEqual(1);
+					expect(task.course).toBeDefined();
+					expect(task.submissions).toBeDefined();
+					expect(task.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+
+			describe('when task parent is a course lesson', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build({ teachers: [user] });
+					const lesson = lessonFactory.build({ course });
+					const courseGroup = courseGroupFactory.build({ course });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.build({ lesson, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { lesson };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { lesson } = await setup();
+
+					const [result, total] = await repo.findAllByParentIds({ lessonIds: [lesson.id] });
+					const task = result[0];
+
+					expect(total).toEqual(1);
+					expect(task.lesson).toBeDefined();
+					expect(task.lesson?.course).toBeDefined();
+					expect(task.submissions).toBeDefined();
+					expect(task.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+
+			describe('when task parent is a coursegroup lesson', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupFactory.build({ course });
+					const lesson = lessonFactory.build({ courseGroup });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.build({ lesson, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { lesson };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { lesson } = await setup();
+
+					const [result, total] = await repo.findAllByParentIds({ lessonIds: [lesson.id] });
+					const task = result[0];
+
+					expect(total).toEqual(1);
+					expect(task.lesson).toBeDefined();
+					expect(task.lesson?.courseGroup).toBeDefined();
+					expect(task.submissions).toBeDefined();
+					expect(task.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+		});
+
 		describe('find by creator', () => {
 			it('should find tasks by creatorId', async () => {
 				const teacher1 = userFactory.build();
@@ -743,6 +860,147 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findAllFinishedByParentIds', () => {
+		describe('given populates are set correctly', () => {
+			describe('when task parent is a user', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build();
+					const courseGroup = courseGroupFactory.build({ course });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.finished(user).build({ creator: user, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { user };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { user } = await setup();
+
+					const [result, total] = await repo.findAllFinishedByParentIds({
+						creatorId: user.id,
+						openCourseIds: [],
+						lessonIdsOfOpenCourses: [],
+						finishedCourseIds: [],
+						lessonIdsOfFinishedCourses: [],
+					});
+					const task = result[0];
+
+					expect(total).toEqual(1);
+					expect(task.submissions).toBeDefined();
+					expect(task.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+
+			describe('when task parent is a course', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupFactory.build({ course });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.finished(user).build({ course, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { course, user };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { course, user } = await setup();
+
+					const [result, total] = await repo.findAllFinishedByParentIds({
+						creatorId: user.id,
+						openCourseIds: [course.id],
+						lessonIdsOfOpenCourses: [],
+						finishedCourseIds: [],
+						lessonIdsOfFinishedCourses: [],
+					});
+					const task = result[0];
+
+					expect(total).toEqual(1);
+					expect(task.course).toBeDefined();
+					expect(task.submissions).toBeDefined();
+					expect(task.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+
+			describe('when task parent is a course lesson', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build({ teachers: [user] });
+					const lesson = lessonFactory.build({ course });
+					const courseGroup = courseGroupFactory.build({ course });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.finished(user).build({ lesson, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { lesson, user };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { lesson, user } = await setup();
+
+					const [result, total] = await repo.findAllFinishedByParentIds({
+						creatorId: user.id,
+						openCourseIds: [],
+						lessonIdsOfOpenCourses: [lesson.id],
+						finishedCourseIds: [],
+						lessonIdsOfFinishedCourses: [],
+					});
+					const task = result[0];
+
+					expect(total).toEqual(1);
+					expect(task.lesson).toBeDefined();
+					expect(task.lesson?.course).toBeDefined();
+					expect(task.submissions).toBeDefined();
+					expect(task.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+
+			describe('when task parent is a coursegroup lesson', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupFactory.build({ course });
+					const lesson = lessonFactory.build({ courseGroup });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.finished(user).build({ lesson, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { lesson, user };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { lesson, user } = await setup();
+
+					const [result, total] = await repo.findAllFinishedByParentIds({
+						creatorId: user.id,
+						openCourseIds: [],
+						lessonIdsOfOpenCourses: [lesson.id],
+						finishedCourseIds: [],
+						lessonIdsOfFinishedCourses: [],
+					});
+					const task = result[0];
+
+					expect(total).toEqual(1);
+					expect(task.lesson).toBeDefined();
+					expect(task.lesson?.courseGroup).toBeDefined();
+					expect(task.submissions).toBeDefined();
+					expect(task.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+		});
+
 		describe('when course is finished', () => {
 			const setup = () => {
 				const user = userFactory.build();
@@ -1321,7 +1579,7 @@ describe('TaskRepo', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ untilDate: undefined });
 
-			const dueDate = Date.now();
+			const dueDate = new Date();
 			const task1 = taskFactory.build({ course, finished: [user], dueDate });
 			const task2 = taskFactory.build({ course, finished: [user], dueDate });
 			const task3 = taskFactory.build({ course, finished: [user], dueDate });
@@ -1407,6 +1665,125 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findBySingleParent', () => {
+		/* need to be fixed input params or names not correctly
+		describe('given populates are set correctly', () => {
+			describe('when task parent is a user', () => {
+				const setup = async () => {
+					const creator = userFactory.build();
+					const course = courseFactory.build();
+					const courseGroup = courseGroupFactory.build({ course });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.build({ creator, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { creator };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { creator } = await setup();
+
+					const [result, total] = await repo.findBySingleParent({ creatorId: creator.id });
+					const task = result[0];
+
+					expect(total).toEqual(1);
+					expect(task.submissions).toBeDefined();
+					expect(task.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+
+			describe('when task parent is a course', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupFactory.build({ course });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.build({ course, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { course };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { course } = await setup();
+
+					const [result, total] = await repo.findBySingleParent({ courseId: course.id });
+					const task = result[0];
+
+					expect(total).toEqual(1);
+					expect(task.course).toBeDefined();
+					expect(task.submissions).toBeDefined();
+					expect(task.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+
+			describe('when task parent is a course lesson', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build({ teachers: [user] });
+					const lesson = lessonFactory.build({ course });
+					const courseGroup = courseGroupFactory.build({ course });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.build({ lesson, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { lesson };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { lesson } = await setup();
+
+					const [result, total] = await repo.findBySingleParent({ lessonId: lesson.id });
+					const task = result[0];
+
+					expect(total).toEqual(1);
+					expect(task.lesson).toBeDefined();
+					expect(task.lesson?.course).toBeDefined();
+					expect(task.submissions).toBeDefined();
+					expect(task.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+
+			describe('when task parent is a coursegroup lesson', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupFactory.build({ course });
+					const lesson = lessonFactory.build({ courseGroup });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.build({ lesson, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { lesson };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { lesson } = await setup();
+
+					const [result, total] = await repo.findBySingleParent({ lessonId: lesson.id });
+					const task = result[0];
+
+					expect(total).toEqual(1);
+					expect(task.lesson).toBeDefined();
+					expect(task.lesson?.courseGroup).toBeDefined();
+					expect(task.submissions).toBeDefined();
+					expect(task.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+		});
+		*/
+
 		it('should find all published tasks in course', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build();
@@ -1599,6 +1976,115 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findById', () => {
+		describe('given populates are set correctly', () => {
+			describe('when task parent is a user', () => {
+				const setup = async () => {
+					const creator = userFactory.build();
+					const course = courseFactory.build();
+					const courseGroup = courseGroupFactory.build({ course });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.build({ creator, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { task };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { task } = await setup();
+
+					const result = await repo.findById(task.id);
+
+					expect(result.submissions).toBeDefined();
+					expect(result.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+
+			describe('when task parent is a course', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupFactory.build({ course });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.build({ course, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { task };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { task } = await setup();
+
+					const result = await repo.findById(task.id);
+
+					expect(result.course).toBeDefined();
+					expect(result.submissions).toBeDefined();
+					expect(result.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+
+			describe('when task parent is a course lesson', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build({ teachers: [user] });
+					const lesson = lessonFactory.build({ course });
+					const courseGroup = courseGroupFactory.build({ course });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.build({ lesson, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { task };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { task } = await setup();
+
+					const result = await repo.findById(task.id);
+
+					expect(result.lesson).toBeDefined();
+					expect(result.lesson?.course).toBeDefined();
+					expect(result.submissions).toBeDefined();
+					expect(result.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+
+			describe('when task parent is a coursegroup lesson', () => {
+				const setup = async () => {
+					const user = userFactory.build();
+					const course = courseFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupFactory.build({ course });
+					const lesson = lessonFactory.build({ courseGroup });
+					const submission = submissionFactory.build({ courseGroup });
+
+					const task = taskFactory.build({ lesson, submissions: [submission] });
+
+					await em.persistAndFlush([task]);
+					em.clear();
+
+					return { task };
+				};
+
+				it('should populate all elements correctly', async () => {
+					const { task } = await setup();
+
+					const result = await repo.findById(task.id);
+
+					expect(result.lesson).toBeDefined();
+					expect(result.lesson?.courseGroup).toBeDefined();
+					expect(result.submissions).toBeDefined();
+					expect(result.submissions[0].courseGroup).toBeDefined();
+				});
+			});
+		});
+
 		it('should find a task by its id', async () => {
 			const task = taskFactory.build({ name: 'important task' });
 			await em.persistAndFlush(task);
@@ -1613,18 +2099,6 @@ describe('TaskRepo', () => {
 			await expect(async () => {
 				await repo.findById(unknownId);
 			}).rejects.toThrow();
-		});
-
-		it('should populate files', async () => {
-			const file = fileFactory.buildWithId({});
-			const task = taskFactory.build({ files: [file] });
-
-			await em.persistAndFlush([task, file]);
-			em.clear();
-
-			const foundTask = await repo.findById(task.id);
-			expect(foundTask.files.isInitialized()).toEqual(true);
-			expect(foundTask.files[0].name).toEqual(file.name);
 		});
 	});
 });

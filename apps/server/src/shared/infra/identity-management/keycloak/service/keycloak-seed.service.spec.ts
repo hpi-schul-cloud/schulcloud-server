@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { v1 } from 'uuid';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
+import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
+import { Test, TestingModule } from '@nestjs/testing';
+import { v1 } from 'uuid';
 import {
 	IJsonAccount,
 	IJsonUser,
@@ -21,17 +21,20 @@ const accountsFile = 'accounts.json';
 const usersFile = 'users.json';
 let jsonAccounts: IJsonAccount[];
 let jsonUsers: IJsonUser[];
-jest.mock('node:fs/promises', () => ({
-	readFile: jest.fn().mockImplementation((path: string) => {
-		if (path.toString() === accountsFile) {
-			return Promise.resolve(JSON.stringify(jsonAccounts));
-		}
-		if (path.toString() === usersFile) {
-			return Promise.resolve(JSON.stringify(jsonUsers));
-		}
-		throw new Error();
-	}),
-}));
+
+jest.mock('node:fs/promises', () => {
+	return {
+		readFile: jest.fn().mockImplementation((path: string) => {
+			if (path.toString() === accountsFile) {
+				return Promise.resolve(JSON.stringify(jsonAccounts));
+			}
+			if (path.toString() === usersFile) {
+				return Promise.resolve(JSON.stringify(jsonUsers));
+			}
+			throw new Error();
+		}),
+	};
+});
 
 describe('KeycloakSeedService', () => {
 	let module: TestingModule;
@@ -61,6 +64,11 @@ describe('KeycloakSeedService', () => {
 			lastName: 'Doe',
 			email: 'john.doe@email.tld',
 			username: 'john.doe',
+			attributes: {
+				refTechnicalId: '1tec',
+				refFunctionalIntId: '1int',
+				refFunctionalExtId: 'sysId',
+			},
 		},
 		{
 			id: v1(),
@@ -101,9 +109,9 @@ describe('KeycloakSeedService', () => {
 				{
 					provide: KeycloakAdministrationService,
 					useValue: {
-						callKcAdminClient: jest.fn().mockImplementation(async (): Promise<KeycloakAdminClient> => {
-							return Promise.resolve(kcAdminClient);
-						}),
+						callKcAdminClient: jest
+							.fn()
+							.mockImplementation(async (): Promise<KeycloakAdminClient> => Promise.resolve(kcAdminClient)),
 						testKcConnection: jest.fn().mockResolvedValue(true),
 						getAdminUser: jest.fn().mockReturnValue(adminUser.username),
 					},
@@ -144,7 +152,13 @@ describe('KeycloakSeedService', () => {
 		const missingFirstName = 'missingFirstName';
 
 		validAccountsNoDuplicates = [
-			{ _id: { $oid: '1' }, username: users[0].username ?? missingUsername, password: '', userId: { $oid: '1' } },
+			{
+				_id: { $oid: '1tec' },
+				username: users[0].username ?? missingUsername,
+				password: '',
+				userId: { $oid: '1int' },
+				systemId: 'sysId',
+			},
 			{ _id: { $oid: '2' }, username: users[1].username ?? missingUsername, password: '', userId: { $oid: '2' } },
 		];
 
@@ -156,7 +170,7 @@ describe('KeycloakSeedService', () => {
 		jsonAccounts = [...validAccounts, { _id: { $oid: '4' }, username: 'NoUser', password: '', userId: { $oid: '99' } }];
 
 		jsonUsers = [
-			{ _id: { $oid: '1' }, firstName: users[0].firstName ?? missingFirstName, lastName: '', email: '' },
+			{ _id: { $oid: '1int' }, firstName: users[0].firstName ?? missingFirstName, lastName: '', email: '' },
 			{ _id: { $oid: '2' }, firstName: users[1].firstName ?? missingFirstName, lastName: '', email: '' },
 			{ _id: { $oid: '3' }, firstName: users[2].firstName ?? missingFirstName, lastName: '', email: '' },
 			{ _id: { $oid: '4' }, firstName: 'NoAccount', lastName: '', email: '' },
@@ -182,6 +196,8 @@ describe('KeycloakSeedService', () => {
 		kcApiUsersMock.create.mockRestore();
 		kcApiUsersMock.del.mockRestore();
 		kcApiUsersMock.find.mockRestore();
+		jest.clearAllMocks();
+		jest.resetModules();
 	});
 
 	describe('clean', () => {

@@ -1,9 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { MailService } from './mail.service';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Mail } from './mail.interface';
+import { MailService } from './mail.service';
 
 describe('MailService', () => {
+	let module: TestingModule;
 	let service: MailService;
 	let amqpConnection: AmqpConnection;
 
@@ -12,8 +13,8 @@ describe('MailService', () => {
 		routingKey: 'routingKey',
 	};
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			providers: [
 				MailService,
 				{ provide: AmqpConnection, useValue: { publish: () => {} } },
@@ -25,14 +26,18 @@ describe('MailService', () => {
 		amqpConnection = module.get(AmqpConnection);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	it('should be defined', () => {
 		expect(service).toBeDefined();
 	});
 
-	it('should send given data to queue', async () => {
+	it('should send given data to queue', () => {
 		const data: Mail = { mail: { plainTextContent: 'content', subject: 'Test' }, recipients: ['test@example.com'] };
 		const amqpConnectionSpy = jest.spyOn(amqpConnection, 'publish');
-		await service.send(data);
+		service.send(data);
 		const expectedParams = [mailServiceOptions.exchange, mailServiceOptions.routingKey, data, { persistent: true }];
 		expect(amqpConnectionSpy).toHaveBeenCalledWith(...expectedParams);
 	});

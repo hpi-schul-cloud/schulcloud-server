@@ -1,32 +1,34 @@
 import { NotFound } from '@feathersjs/errors';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, HttpStatus } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { BusinessError } from '@shared/common';
 import { Logger } from '@src/core/logger';
 import { ErrorResponse } from '../dto/error.response';
 import { GlobalErrorFilter } from './global-error.filter';
 
+class SampleError extends BusinessError {
+	constructor(message?: string) {
+		super(
+			{
+				type: 'SAMPLE_ERROR',
+				title: 'Sample Error',
+				defaultMessage: message || 'default sample error message',
+			},
+			HttpStatus.NOT_IMPLEMENTED
+		);
+	}
+}
+
 describe('GlobalErrorFilter', () => {
-	let errorFilter: GlobalErrorFilter;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let errorFilter: GlobalErrorFilter<any>;
 	const logger: DeepMocked<Logger> = createMock<Logger>();
 	beforeAll(() => {
 		errorFilter = new GlobalErrorFilter(logger);
 	});
 
 	describe('createErrorResponse', () => {
-		class SampleError extends BusinessError {
-			constructor(message?: string) {
-				super(
-					{
-						type: 'SAMPLE_ERROR',
-						title: 'Sample Error',
-						defaultMessage: message || 'default sample error message',
-					},
-					HttpStatus.NOT_IMPLEMENTED
-				);
-			}
-		}
 		it('should process a feathers error correctly', () => {
 			const feathersError = new NotFound('Not found message');
 			const result: ErrorResponse = errorFilter.createErrorResponse(feathersError);
@@ -141,6 +143,78 @@ describe('GlobalErrorFilter', () => {
 				HttpStatus.INTERNAL_SERVER_ERROR
 			);
 			expect(result).toStrictEqual(expected);
+		});
+	});
+
+	describe('catch', () => {
+		describe('should call logger.error', () => {
+			const context = createMock<ArgumentsHost>();
+			it('should process a feathers error correctly', () => {
+				const feathersError = new NotFound('Not found message');
+				// eslint-disable-next-line promise/valid-params
+				errorFilter.catch(feathersError, context);
+				expect(logger.error).toBeCalledWith(feathersError, expect.any(String), 'Feathers Error');
+			});
+
+			it('should process a business error correctly', () => {
+				const errorMsg = 'Business error msg';
+				const businessError = new SampleError(errorMsg);
+				// eslint-disable-next-line promise/valid-params
+				errorFilter.catch(businessError, context);
+
+				expect(logger.error).toBeCalledWith(businessError, expect.any(String), 'Business Error');
+			});
+
+			it('should process a nest error without parameters correctly', () => {
+				const nestError = new NotFoundException();
+				// eslint-disable-next-line promise/valid-params
+				errorFilter.catch(nestError, context);
+				expect(logger.error).toBeCalledWith(nestError, expect.any(String), 'Technical Error');
+			});
+
+			it('should process a generic error without parameters correctly', () => {
+				const error = new Error();
+				// eslint-disable-next-line promise/valid-params
+				errorFilter.catch(error, context);
+				expect(logger.error).toBeCalledWith(error, expect.any(String), 'Unhandled Error');
+			});
+
+			it('should process an unknown error without parameters correctly', () => {
+				const error = { msg: 'Unknown error' };
+				// eslint-disable-next-line promise/valid-params
+				errorFilter.catch(error, context);
+				expect(logger.error).toBeCalledWith(error, 'Unknown error');
+			});
+		});
+
+		describe('when context type === http', () => {
+			const context = createMock<ArgumentsHost>();
+			context.getType.mockReturnValue('http');
+			const error = new SampleError();
+
+			it('should call switchToHttp()', () => {
+				// eslint-disable-next-line promise/valid-params
+				errorFilter.catch(error, context);
+				expect(context.switchToHttp).toBeCalled();
+			});
+
+			it('should call context.switchToHttp().getResponse()', () => {
+				// eslint-disable-next-line promise/valid-params
+				errorFilter.catch(error, context);
+				expect(context.switchToHttp().getResponse).toBeCalled();
+			});
+		});
+
+		describe('when context type === rmq', () => {
+			const context = createMock<ArgumentsHost>();
+			context.getType.mockReturnValue('rmq');
+
+			it('should process a feathers error correctly', () => {
+				const error = new NotFound('Not found message');
+				// eslint-disable-next-line promise/valid-params
+				const result = errorFilter.catch(error, context);
+				expect(result).toStrictEqual({ message: undefined, error });
+			});
 		});
 	});
 });

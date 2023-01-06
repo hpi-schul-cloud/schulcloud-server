@@ -23,8 +23,8 @@ export class UserRepo extends BaseRepo<User> {
 		return user;
 	}
 
-	async findByLdapIdOrFail(ldapId: string, systemId: string): Promise<User> {
-		const [users] = await this._em.findAndCount(User, { ldapId }, { populate: ['school.systems'] });
+	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<User> {
+		const [users] = await this._em.findAndCount(User, { externalId }, { populate: ['school.systems'] });
 		const resultUser = users.find((user) => {
 			const { systems } = user.school;
 			return systems && systems.getItems().find((system) => system.id === systemId);

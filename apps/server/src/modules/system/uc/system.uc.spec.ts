@@ -12,6 +12,7 @@ describe('SystemUc', () => {
 	let systemUc: SystemUc;
 	let mockSystems: SystemDto[];
 	let system1: System;
+	let system2: System;
 
 	let systemService: DeepMocked<SystemService>;
 
@@ -35,38 +36,57 @@ describe('SystemUc', () => {
 
 	beforeEach(() => {
 		system1 = systemFactory.buildWithId();
+		system2 = systemFactory.buildWithId();
 
-		mockSystems = [];
-		mockSystems.push(SystemMapper.mapFromEntityToDto(systemFactory.buildWithId()));
-		mockSystems.push(SystemMapper.mapFromEntityToDto(system1));
+		mockSystems = [system1, system2].map((element) => SystemMapper.mapFromEntityToDto(element));
 
-		systemService.find.mockResolvedValue(mockSystems);
-		systemService.findById.mockImplementation((id: EntityId): Promise<SystemDto> => {
-			return id === system1.id ? Promise.resolve(system1) : Promise.reject();
+		systemService.find.mockImplementation((type: string | undefined) => {
+			if (type === 'type') {
+				return Promise.resolve([system1]);
+			}
+			return Promise.resolve(mockSystems);
 		});
+		systemService.findOAuth.mockImplementation(() => Promise.resolve([system2]));
+		systemService.findById.mockImplementation(
+			(id: EntityId): Promise<SystemDto> => (id === system1.id ? Promise.resolve(system1) : Promise.reject())
+		);
 	});
 
 	describe('findByFilter', () => {
-		it('should return systems with oauthConfigs', async () => {
+		it('should return systems by default', async () => {
 			const systems: SystemDto[] = await systemUc.findByFilter();
 
 			expect(systems.length).toEqual(mockSystems.length);
-			expect(systems[0].oauthConfig?.clientId).toEqual(mockSystems[0].oauthConfig?.clientId);
-			expect(systems[1].oauthConfig?.clientId).toEqual(mockSystems[1].oauthConfig?.clientId);
+			expect(systems).toContainEqual(expect.objectContaining({ alias: system1.alias }));
+			expect(systems).toContainEqual(expect.objectContaining({ alias: system2.alias }));
+		});
+
+		it('should return specified systems by type', async () => {
+			const systems: SystemDto[] = await systemUc.findByFilter('type');
+
+			expect(systems.length).toEqual(1);
+			expect(systems[0].oauthConfig?.clientId).toEqual(system1.oauthConfig?.clientId);
+		});
+
+		it('should return oauth systems if requested', async () => {
+			const systems: SystemDto[] = await systemUc.findByFilter(undefined, true);
+
+			expect(systems.length).toEqual(1);
+			expect(systems[0].oauthConfig?.clientId).toEqual(system2.oauthConfig?.clientId);
 		});
 
 		it('should return empty system list, because none exist', async () => {
 			systemService.find.mockResolvedValue([]);
 			const resultResponse = await systemUc.findByFilter();
-			expect(resultResponse).toEqual([]);
+			expect(resultResponse).toHaveLength(0);
 		});
 	});
 
 	describe('findById', () => {
 		it('should return a system by id', async () => {
-			const system: SystemDto = await systemUc.findById(system1.id);
+			const receivedSystem: SystemDto = await systemUc.findById(system1.id);
 
-			expect(system.alias).toEqual(mockSystems[1].alias);
+			expect(receivedSystem.alias).toEqual(system1.alias);
 		});
 
 		it('should reject promise, because no entity was found', async () => {

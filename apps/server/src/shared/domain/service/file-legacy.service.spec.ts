@@ -9,7 +9,7 @@ describe('Etherpad service', () => {
 	let fileLegacyService: FileLegacyService;
 	let feathersServiceProvider: DeepMocked<FeathersServiceProvider>;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FileLegacyService,
@@ -26,6 +26,10 @@ describe('Etherpad service', () => {
 
 		fileLegacyService = module.get(FileLegacyService);
 		feathersServiceProvider = module.get(FeathersServiceProvider);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('copyCourseFile', () => {

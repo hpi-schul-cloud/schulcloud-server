@@ -1,13 +1,17 @@
 import { EntityManager } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { School, SchoolRolePermission, SchoolRoles, SchoolYear } from '@shared/domain';
+import { School, SchoolRolePermission, SchoolRoles, SchoolYear, System } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { schoolFactory } from '@shared/testing';
+import { schoolFactory, systemFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
+import { createMock } from '@golevelup/ts-jest';
 import { SchoolRepo } from '..';
-import { SchoolYearRepo } from '../schoolyear';
+import { SchoolDO } from '../../domain/domainobject/school.do';
+import { Logger } from '../../../core/logger';
+import { SchoolMapper } from '../../../modules/school/mapper/school.mapper';
 
-describe('school repo', () => {
+describe('SchoolRepo', () => {
 	let module: TestingModule;
 	let repo: SchoolRepo;
 	let em: EntityManager;
@@ -15,7 +19,14 @@ describe('school repo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [SchoolRepo, SchoolYearRepo],
+			providers: [
+				SchoolRepo,
+				SchoolMapper,
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+			],
 		}).compile();
 		repo = module.get(SchoolRepo);
 		em = module.get(EntityManager);
@@ -41,7 +52,6 @@ describe('school repo', () => {
 		school.permissions.teacher = new SchoolRolePermission();
 		school.permissions.teacher.STUDENT_LIST = true;
 		await em.persistAndFlush([school, schoolYear]);
-		em.clear();
 		const storedSchoolYears = await em.find(SchoolYear, {});
 		expect(storedSchoolYears).toHaveLength(1);
 		expect(storedSchoolYears[0]).toEqual(schoolYear);
@@ -55,17 +65,47 @@ describe('school repo', () => {
 		expect(storedSchool.permissions?.teacher?.STUDENT_LIST).toBe(true);
 	});
 
-	it('createAndSave', async () => {
-		// Arrange
-		const schoolEntity: School = schoolFactory.build();
+	describe('findByExternalId', () => {
+		it('should find school by external ID', async () => {
+			const system: System = systemFactory.buildWithId();
+			const schoolEntity: School = schoolFactory.build({ externalId: 'externalId' });
+			schoolEntity.systems.add(system);
 
-		// Act
-		const createdSchool: School = repo.create(schoolEntity);
-		await repo.save(createdSchool);
+			await em.persistAndFlush(schoolEntity);
 
-		// Assert
-		const savedSchoolEntity = await em.find(School, {});
-		expect(savedSchoolEntity[0].id).toBeDefined();
-		expect(createdSchool.id).toBeDefined();
+			const result: SchoolDO | null = await repo.findByExternalId(
+				schoolEntity.externalId as string,
+				schoolEntity.systems[0].id
+			);
+
+			expect(result?.externalId).toEqual(schoolEntity.externalId);
+		});
+
+		it('should return null when no school is found', async () => {
+			const result: SchoolDO | null = await repo.findByExternalId(
+				new ObjectId().toHexString(),
+				new ObjectId().toHexString()
+			);
+
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('findBySchoolNumber', () => {
+		it('should find school by schoolnumber', async () => {
+			const schoolEntity: School = schoolFactory.build({ officialSchoolNumber: '12345' });
+
+			await em.persistAndFlush(schoolEntity);
+
+			const result: SchoolDO | null = await repo.findBySchoolNumber(schoolEntity.officialSchoolNumber as string);
+
+			expect(result?.officialSchoolNumber).toEqual(schoolEntity.officialSchoolNumber);
+		});
+
+		it('should return null when no school is found', async () => {
+			const result: SchoolDO | null = await repo.findBySchoolNumber('fail');
+
+			expect(result).toBeNull();
+		});
 	});
 });

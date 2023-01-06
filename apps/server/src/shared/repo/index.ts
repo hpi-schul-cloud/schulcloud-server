@@ -4,14 +4,12 @@
  * It is forbidden to reuse existing ones from different layers.
  */
 
-export * from './account';
 export * from './base.repo';
 export * from './base.do.repo';
 export * from './board';
 export * from './course';
 export * from './coursegroup';
 export * from './dashboard';
-export * from './filerecord';
 export * from './files';
 export * from './importuser';
 export * from './lesson';

@@ -3,9 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
+import { FileDto } from '../dto';
 import { ICopyFiles } from '../interface';
 import { S3Config } from '../interface/config';
-import { IFile } from '../interface/file';
 import { S3ClientAdapter } from './s3-client.adapter';
 
 const config = {
@@ -17,6 +17,7 @@ const config = {
 };
 
 const pathToFile = 'test/text.txt';
+const bytesRange = 'bytes=0-1';
 
 describe('S3ClientAdapter', () => {
 	let module: TestingModule;
@@ -49,6 +50,7 @@ describe('S3ClientAdapter', () => {
 			Body: { on: () => true },
 			ContentType: 'data.ContentType',
 			ContentLength: 'data.ContentLength',
+			ContentRange: 'data.ContentRange',
 			ETag: 'data.ETag',
 		};
 
@@ -92,12 +94,23 @@ describe('S3ClientAdapter', () => {
 			);
 		});
 
+		it('should call send() of client with bytes range', async () => {
+			await service.get(pathToFile, bytesRange);
+
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: { Bucket: config.bucket, Key: pathToFile, Range: bytesRange },
+				})
+			);
+		});
+
 		it('should return file', async () => {
 			const result = await service.get(pathToFile);
 			expect(result).toStrictEqual(
 				expect.objectContaining({
-					contentLength: 'data.ContentLength',
 					contentType: 'data.ContentType',
+					contentLength: 'data.ContentLength',
+					contentRange: 'data.ContentRange',
 					etag: 'data.ETag',
 				})
 			);
@@ -120,12 +133,12 @@ describe('S3ClientAdapter', () => {
 
 	describe('create', () => {
 		const buffer = Buffer.from('ddd');
-		const file: IFile = {
+		const file = new FileDto({
 			buffer,
 			name: 'test.txt',
 			mimeType: 'text/plain',
 			size: 100,
-		};
+		});
 		const path = 'test/test.txt';
 
 		it('should call send() of client', async () => {

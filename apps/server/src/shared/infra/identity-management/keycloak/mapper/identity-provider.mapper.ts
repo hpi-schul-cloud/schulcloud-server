@@ -13,16 +13,21 @@ export class OidcIdentityProviderMapper {
 		return {
 			providerId: system.type,
 			alias: system.alias,
+			displayName: system.displayName ? system.displayName : system.alias,
 			enabled: true,
 			firstBrokerLoginFlowAlias: flowAlias,
 			config: {
-				clientId: this.defaultEncryptionService.decrypt(system.config.clientId),
-				clientSecret: this.defaultEncryptionService.decrypt(system.config.clientSecret),
-				authorizationUrl: system.config.authorizationUrl,
-				tokenUrl: system.config.tokenUrl,
-				logoutUrl: system.config.logoutUrl,
-				userInfoUrl: system.config.userinfoUrl,
-				defaultScope: system.config.defaultScopes,
+				clientId: system.oidcConfig?.clientId
+					? this.defaultEncryptionService.decrypt(system.oidcConfig.clientId)
+					: undefined,
+				clientSecret: system.oidcConfig?.clientSecret
+					? this.defaultEncryptionService.decrypt(system.oidcConfig?.clientSecret)
+					: undefined,
+				authorizationUrl: system.oidcConfig?.authorizationUrl,
+				tokenUrl: system.oidcConfig?.tokenUrl,
+				logoutUrl: system.oidcConfig?.logoutUrl,
+				userInfoUrl: system.oidcConfig?.userinfoUrl,
+				defaultScope: system.oidcConfig?.defaultScopes,
 				syncMode: 'IMPORT',
 				sync_mode: 'import',
 				clientAuthMethod: 'client_secret_post',

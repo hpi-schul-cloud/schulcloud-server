@@ -1,6 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { courseFactory, setupEntities } from '@shared/testing';
+import { courseFactory, courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseGroup } from './coursegroup.entity';
 
 describe('CourseEntity', () => {
@@ -15,29 +14,63 @@ describe('CourseEntity', () => {
 	});
 
 	describe('constructor', () => {
-		it('should throw an error by empty constructor', () => {
+		it('should throw an error if constructor is called without arguments', () => {
 			// @ts-expect-error: Test case
 			const test = () => new CourseGroup();
+
 			expect(test).toThrow();
 		});
 
-		it('should create a course by passing required properties', () => {
+		it('should create a courseGroup when passing required properties', () => {
+			const name = 'someName';
 			const course = courseFactory.build();
-			course._id = new ObjectId();
-			const courseGroup = new CourseGroup({ course });
+
+			const courseGroup = new CourseGroup({ name, course });
+
 			expect(courseGroup instanceof CourseGroup).toEqual(true);
 		});
 	});
 
-	// TODO check if and how we need this
-	describe('getParent', () => {
-		it('should return the right id.', () => {
-			const course = courseFactory.build();
-			course._id = new ObjectId();
-			const courseGroup = new CourseGroup({ course });
+	describe('getStudentIds is called', () => {
+		describe('when students exist', () => {
+			const setup = () => {
+				const student1 = userFactory.buildWithId();
+				const student2 = userFactory.buildWithId();
+				const student3 = userFactory.buildWithId();
+				const students = [student1, student2, student3];
+				const studentIds = [student1.id, student2.id, student3.id];
 
-			const result = courseGroup.getParentId();
-			expect(result).toEqual(course._id);
+				const courseGroup = courseGroupFactory.build({ students });
+
+				return { courseGroup, studentIds };
+			};
+
+			it('should return the userIds of the students', () => {
+				const { courseGroup, studentIds } = setup();
+
+				const result = courseGroup.getStudentIds();
+
+				expect(result.length).toEqual(3);
+				expect(result).toContain(studentIds[0]);
+				expect(result).toContain(studentIds[1]);
+				expect(result).toContain(studentIds[2]);
+			});
+		});
+
+		describe('when course group is not populated', () => {
+			const setup = () => {
+				const courseGroup = courseGroupFactory.build();
+				Object.assign(courseGroup, { students: undefined });
+
+				return { courseGroup };
+			};
+
+			it('should return empty array', () => {
+				const { courseGroup } = setup();
+
+				const result = courseGroup.getStudentIds();
+				expect(result).toEqual([]);
+			});
 		});
 	});
 });

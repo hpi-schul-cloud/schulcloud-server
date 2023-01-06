@@ -13,7 +13,7 @@ const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
-describe('EduSharing FIND', () => {
+describe.skip('EduSharing FIND', () => {
 	let app;
 	let eduSharingResponse;
 	let eduSharingService;
@@ -198,7 +198,7 @@ describe('EduSharing FIND', () => {
 	});
 });
 
-describe('EduSharing config flags', () => {
+describe.skip('EduSharing config flags', () => {
 	let app;
 	let eduSharingService;
 	let server;

@@ -11,18 +11,18 @@ import {
 	MatchCreator,
 	MatchCreatorScope,
 	PermissionService,
-	School,
 	SchoolFeatures,
 	System,
 	User,
 	Permission,
 } from '@shared/domain';
 
-import { ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { SchoolService } from '../../school';
 
 export type UserImportPermissions =
 	| Permission.SCHOOL_IMPORT_USERS_MIGRATE
@@ -35,17 +35,13 @@ export class UserImportUc {
 		private readonly accountService: AccountService,
 		private readonly importUserRepo: ImportUserRepo,
 		private readonly permissionService: PermissionService,
-		private readonly schoolRepo: SchoolRepo,
+		private readonly schoolService: SchoolService,
 		private readonly systemRepo: SystemRepo,
 		private readonly userRepo: UserRepo
 	) {}
 
-	private featureEnabled(school: School) {
+	private checkFeatureEnabled(school: SchoolDO) {
 		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
-		const systemId = Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string;
-		if (!ObjectId.isValid(systemId)) {
-			throw new InternalServerErrorException('User Migration not configured');
-		}
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
 			throw new InternalServerErrorException('User Migration not enabled');
@@ -65,7 +61,9 @@ export class UserImportUc {
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
-		this.featureEnabled(currentUser.school);
+		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		// TODO Change ImportUserRepo to DO to fix this workaround
 		const countedImportUsers = await this.importUserRepo.findImportUsers(currentUser.school, query, options);
 		return countedImportUsers;
 	}
@@ -79,16 +77,13 @@ export class UserImportUc {
 	 */
 	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId) {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
-		this.featureEnabled(currentUser.school);
+		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
 		const importUser = await this.importUserRepo.findById(importUserId);
 		const userMatch = await this.userRepo.findById(userMatchId, true);
 
 		// check same school
-		if (
-			!currentUser.school.id ||
-			currentUser.school.id !== userMatch.school.id ||
-			currentUser.school.id !== importUser.school.id
-		) {
+		if (!school.id || school.id !== userMatch.school.id || school.id !== importUser.school.id) {
 			throw new ForbiddenException('not same school');
 		}
 
@@ -104,10 +99,11 @@ export class UserImportUc {
 
 	async removeMatch(currentUserId: EntityId, importUserId: EntityId) {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
-		this.featureEnabled(currentUser.school);
+		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
 		const importUser = await this.importUserRepo.findById(importUserId);
 		// check same school
-		if (currentUser.school.id !== importUser.school.id) {
+		if (school.id !== importUser.school.id) {
 			throw new ForbiddenException('not same school');
 		}
 
@@ -119,11 +115,12 @@ export class UserImportUc {
 
 	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean) {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
-		this.featureEnabled(currentUser.school);
+		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
 		const importUser = await this.importUserRepo.findById(importUserId);
 
 		// check same school
-		if (currentUser.school.id !== importUser.school.id) {
+		if (school.id !== importUser.school.id) {
 			throw new ForbiddenException('not same school');
 		}
 
@@ -148,70 +145,78 @@ export class UserImportUc {
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
-		this.featureEnabled(currentUser.school);
+		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		// TODO Change to UserService to fix this workaround
 		const unmatchedCountedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
 		return unmatchedCountedUsers;
 	}
 
 	async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-		this.featureEnabled(currentUser.school);
-		const { school } = currentUser;
-
+		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
 		const filters: IImportUserScope = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
 		// TODO batch/paginated import?
 		const options: IFindOptions<ImportUser> = {};
-		const [importUsers, total] = await this.importUserRepo.findImportUsers(school, filters, options);
+		// TODO Change ImportUserRepo to DO to fix this workaround
+		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
 		if (total > 0) {
 			importUsers.map(async (importUser) => {
 				await this.updateUserAndAccount(importUser, school);
 			});
 			await this.userRepo.flush();
 		}
-
-		await this.importUserRepo.deleteImportUsersBySchool(school);
+		// TODO Change ImportUserRepo to DO to fix this workaround
+		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
 		await this.endSchoolInUserMigration(currentUserId);
 	}
 
 	private async endSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-		this.featureEnabled(currentUser.school);
-		const { school } = currentUser;
-		if (!school.ldapSchoolIdentifier || school.inUserMigration !== true || !school.inMaintenanceSince) {
+		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		if (!school.externalId || school.inUserMigration !== true || !school.inMaintenanceSince) {
 			throw new BadRequestException('School cannot exit from user migration mode');
 		}
 		school.inUserMigration = false;
-		await this.schoolRepo.save(school);
+		await this.schoolService.save(school);
 	}
 
-	async startSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
+	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-		const { school } = currentUser;
-		this.featureEnabled(school);
-		const migrationSystem = await this.getMigrationSystem();
-		if (!school.officialSchoolNumber || (school.inUserMigration !== undefined && school.inUserMigration !== null)) {
+		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		// official school number is used to find the correct school in the central LDAP
+		if (
+			(useCentralLdap && !school.officialSchoolNumber) ||
+			(school.inUserMigration !== undefined && school.inUserMigration !== null)
+		) {
 			throw new BadRequestException('School cannot be set in user migration');
 		}
 
 		school.inUserMigration = true;
 		school.inMaintenanceSince = new Date();
-		school.ldapSchoolIdentifier = school.officialSchoolNumber;
-		if (!school.systems.contains(migrationSystem)) {
-			school.systems.add(migrationSystem);
+		school.externalId = school.officialSchoolNumber;
+		if (useCentralLdap) {
+			const migrationSystem = await this.getMigrationSystem();
+			if (school.systems && !school.systems.includes(migrationSystem.id)) {
+				school.systems.push(migrationSystem.id);
+			}
 		}
 
-		await this.schoolRepo.save(school);
+		await this.schoolService.save(school);
 	}
 
 	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-		this.featureEnabled(currentUser.school);
-		const { school } = currentUser;
-		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.ldapSchoolIdentifier) {
+		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.externalId) {
 			throw new BadRequestException('Sync cannot be activated for school');
 		}
 		school.inMaintenanceSince = undefined;
-		await this.schoolRepo.save(school);
+		await this.schoolService.save(school);
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
@@ -221,19 +226,19 @@ export class UserImportUc {
 		return currentUser;
 	}
 
-	private async updateUserAndAccount(importUser: ImportUser, school: School): Promise<[User, Account] | undefined> {
-		if (!importUser.user || !importUser.loginName || !school.ldapSchoolIdentifier) {
+	private async updateUserAndAccount(importUser: ImportUser, school: SchoolDO): Promise<[User, Account] | undefined> {
+		if (!importUser.user || !importUser.loginName || !school.externalId) {
 			return;
 		}
 		const { user } = importUser;
 		user.ldapDn = importUser.ldapDn;
-		user.ldapId = importUser.ldapId;
+		user.externalId = importUser.externalId;
 
 		const account: AccountDto = await this.accountService.findByUserIdOrFail(user.id);
 
 		account.systemId = importUser.system.id;
 		account.password = undefined;
-		account.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;
+		account.username = `${school.externalId}/${importUser.loginName}`;
 
 		await this.userRepo.save(user);
 		await this.accountService.save(account);

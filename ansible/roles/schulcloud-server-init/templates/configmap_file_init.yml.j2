@@ -8,6 +8,11 @@ metadata:
 data:
   update.sh: |
     #! /bin/bash
+    # necessary for secret handling and legacy indexes
+    git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
+    cd /schulcloud-server
+    git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    npm install
     until mongo $DATABASE__URL --eval "print(\"waited for connection\")"
       do
         sleep 1
@@ -28,3 +33,270 @@ data:
     else
       echo "Skip IDM initialization"
     fi
+    ###
+    every mongo statement now is due to special dev system initialization, most of this will only work on dev probably
+    ###
+
+    SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
+    mongo $DATABASE__URL --eval 'db.systems.insert([
+    {
+      "type" : "ldap",
+      "alias" : "schoolOne0",
+      "ldapConfig" : {
+        "active" : true,
+        "federalState": ObjectId("0000b186816abba584714c56"),
+        "url" : "ldap://sc-openldap-single-svc.sc-common.svc.cluster.local:389",
+        "rootPath" : "o=schoolOne0,dc=de,dc=example,dc=org",
+        "searchUser" : "cn=admin,dc=example,dc=org",
+        "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
+        "provider" : "general",
+        "providerOptions" : {
+          "schoolName" : "School One 0",
+          "userPathAdditions" : "ou=users",
+          "classPathAdditions" : "ou=groups",
+          "roleType" : "group",
+          "userAttributeNameMapping" : {
+            "givenName" : "givenName",
+            "sn" : "sn",
+            "uuid" : "uuid",
+            "dn" : "dn",
+            "uid" : "uid",
+            "mail" : "mail",
+            "role" : "memberOf"
+          },
+          "roleAttributeNameMapping" : {
+            "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org"
+          },
+          "classAttributeNameMapping" : {
+            "description" : "description",
+            "dn" : "dn",
+            "uniqueMember" : "member"
+          }
+        }
+      }
+    },
+    {
+      "type" : "ldap",
+      "alias" : "schoolOne1",
+      "ldapConfig" : {
+        "active" : true,
+        "federalState": ObjectId("0000b186816abba584714c54"),
+        "url" : "ldap://sc-openldap-single-svc.sc-common.svc.cluster.local:389",
+        "rootPath" : "o=schoolOne1,dc=de,dc=example,dc=org",
+        "searchUser" : "cn=admin,dc=example,dc=org",
+        "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
+        "provider" : "general",
+        "providerOptions" : {
+          "schoolName" : "School One 1",
+          "userPathAdditions" : "ou=users",
+          "roleType" : "group",
+          "userAttributeNameMapping" : {
+            "givenName" : "givenName",
+            "sn" : "sn",
+            "uuid" : "uuid",
+            "dn" : "dn",
+            "uid" : "uid",
+            "mail" : "mail",
+            "role" : "memberOf"
+          },
+          "roleAttributeNameMapping" : {
+            "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org"
+          },
+          "classAttributeNameMapping" : {
+            "dn" : "dn"
+          }
+        }
+      }
+    }]);'
+    mongo $DATABASE__URL --eval 'db.storageproviders.insert( {
+                                       "isShared" : true,
+                                       "region" : "eu-central-1",
+                                       "type" : "S3",
+                                       "endpointUrl" : "https://storage-{{ DOMAIN }}",
+                                       "accessKeyId" : "'$AWS_ACCESS_KEY'",
+                                       "secretAccessKey" : "'$AWS_SECRET_ACCESS_KEY_AES'",
+                                       "maxBuckets" : 999999,
+                                       "freeBuckets" : 999999,
+                                       "createdAt" : ISODate("2021-07-16T09:03:18.536Z"),
+                                       "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
+                                     } );'
+    # env specific things
+    ISERV_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $ISERV_CLIENT_SECRET)
+    ISERV_SYSTEM_ID=0000d186816abba584714c92
+    SANIS_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $SANIS_CLIENT_SECRET)
+    SANIS_SYSTEM_ID=0000d186816abba584714c93
+    if [[ $SC_THEME == "n21" ]]; then
+      mongo $DATABASE__URL --eval 'db.schools.updateOne(
+          {
+            "_id": ObjectId("5f2987e020834114b8efd6f7")
+          },
+          {
+            $set: { "systems" : [ ObjectId("'$ISERV_SYSTEM_ID'") ] }
+          }
+      );'
+      mongo $DATABASE__URL --eval 'db.schools.updateOne(
+          {
+            "_id": ObjectId("5f2987e020834114b8efd6f8")
+          },
+          {
+            $set: { "systems" : [ ObjectId("'$ISERV_SYSTEM_ID'"),
+            ObjectId("'$SANIS_SYSTEM_ID'") ] }
+          }
+      );'
+      mongo $DATABASE__URL --eval 'db.systems.insert([
+      {
+            "_id": ObjectId("'$ISERV_SYSTEM_ID'"),
+            "alias" : "Schulserver",
+            "displayName" : "Schulserver",
+            "ldapConfig" : {
+              "active" : true,
+              "federalState": ObjectId("0000b186816abba584714c58"),
+              "url" : "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
+              "rootPath" : "dc=de,dc=example,dc=org",
+              "searchUser" : "cn=admin,dc=example,dc=org",
+              "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
+              "provider" : "iserv-idm",
+              "providerOptions" : {
+                "userAttributeNameMapping" : {},
+                "roleAttributeNameMapping" : {},
+                "classAttributeNameMapping" : {}
+              }
+            },
+            "type" : "ldap",
+            "provisioningStrategy": "iserv",
+            "oauthConfig": {
+              "clientId": "'$ISERV_CLIENT_ID'",
+              "clientSecret": "'$ISERV_CLIENT_SECRET'",
+              "tokenEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
+              "grantType": "authorization_code",
+              "scope": "openid uuid",
+              "responseType": "code",
+              "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/'$ISERV_SYSTEM_ID'",
+              "authEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
+              "provider": "iserv",
+              "logoutEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout",
+              "jwksEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/public/jwk",
+              "issuer": "https://iserv.n21.dbildungscloud.de"
+            }
+          },
+          {
+            "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
+            "alias" : "SANIS",
+            "displayName" : "SANIS",
+            "type" : "oauth",
+            "provisioningStrategy": "sanis",
+            "provisioningUrl": "https://api-dienste.niedersachsen-login.schule/v1/person-info",
+            "oauthConfig": {
+              "clientId": "'$SANIS_CLIENT_ID'",
+              "clientSecret": "'$SANIS_CLIENT_SECRET'",
+              "tokenEndpoint": "https://auth.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/token",
+              "grantType": "authorization_code",
+              "scope": "openid",
+              "responseType": "code",
+              "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/'$SANIS_SYSTEM_ID'",
+              "authEndpoint": "https://auth.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/auth",
+              "provider": "sanis",
+              "logoutEndpoint": "https://auth.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/logout",
+              "jwksEndpoint": "https://auth.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/certs",
+              "issuer": "https://auth.niedersachsen-login.schule/realms/SANIS"
+            }
+          }
+      ]);'
+      mongo $DATABASE__URL --eval 'db.accounts.insert ([
+          {
+            "_id": ObjectId("632d776240633294deaa1837"),
+            "username": "iserv.testlehrer@iserv.n21.dbildungscloud.de",
+            "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "userId": ObjectId("632d765840633294deaa1833"),
+            "__v": 0,
+            "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
+          },
+          {
+            "_id": ObjectId("632d7a9540633294deaa183e"),
+            "username": "iserv.testschueler@iserv.n21.dbildungscloud.de",
+            "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "userId": ObjectId("632d77a940633294deaa183a"),
+            "__v": 0,
+            "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
+
+          },
+          {
+            "_id": ObjectId("0000d213816abba58471abcd"),
+            "username": "max.mustermann@iserv.n21.dbildungscloud.de",
+            "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "userId": ObjectId("0000d213816abba584711234"),
+            "__v": 0,
+            "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
+          }
+      ]);'
+      mongo $DATABASE__URL --eval 'db.users.insert ([
+          {
+            "_id": ObjectId("632d765840633294deaa1833"),
+            "__v": 0,
+            "firstName": "Iserv",
+            "lastName": "Testlehrer",
+            "email": "iserv.testlehrer@iserv.n21.dbildungscloud.de",
+            "ldapId": "5fee8bdf-ad12-442c-9674-1770ce9f810b",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "birthday": ISODate("1979-01-01T11:25:43.556Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "preferences": {
+              "firstLogin": true
+            },
+            "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
+            "roles": [
+              ObjectId("0000d186816abba584714c98")
+            ]
+          },
+          {
+            "_id": ObjectId("632d77a940633294deaa183a"),
+            "__v": 0,
+            "firstName": "Iserv",
+            "lastName": "Testschueler",
+            "email": "iserv.testschueler@iserv.n21.dbildungscloud.de",
+            "ldapId": "7c5ca4fd-f564-4dd9-98e4-07eaf7ec4480",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "birthday": ISODate("1979-01-01T11:25:43.556Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "preferences": {
+              "firstLogin": true
+            },
+            "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
+            "roles": [
+                ObjectId("0000d186816abba584714c99")
+            ]
+          },
+          {
+            "_id": ObjectId("0000d213816abba584711234"),
+            "__v": 0,
+            "firstName": "Max",
+            "lastName": "Mustermann",
+            "email": "max.mustermann@iserv.n21.dbildungscloud.de",
+            "ldapId": "5190046d-aeed-424e-bfd7-8f281ae494a1",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "birthday": ISODate("1979-01-01T11:25:43.556Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "preferences": {
+                "firstLogin": true
+            },
+            "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
+            "roles": [
+                ObjectId("0000d186816abba584714c96")
+            ]
+          }
+      ]);'
+    fi
+    # this is crucial, until we have all entities in nest!
+    npm run syncIndexes

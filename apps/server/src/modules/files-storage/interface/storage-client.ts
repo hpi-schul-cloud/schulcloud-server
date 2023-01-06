@@ -1,10 +1,11 @@
 import internal from 'stream';
-import type { IFile } from './file';
+import { FileDto } from '../dto';
 
 export interface IGetFileResponse {
 	data: internal.Readable;
 	contentType: string | undefined;
 	contentLength: number | undefined;
+	contentRange: string | undefined;
 	etag: string | undefined;
 }
 
@@ -14,9 +15,9 @@ export interface ICopyFiles {
 }
 
 export interface IStorageClient {
-	create(path: string, file: IFile): unknown;
+	create(path: string, file: FileDto): unknown;
 
-	get(path: string): unknown;
+	get(path: string, bytesRange?: string): unknown;
 
 	delete(paths: string[]): unknown;
 

@@ -64,5 +64,49 @@
 			"$date": "2022-08-25T14:19:14.069Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "632c5fafc744915f90d1c73b"
+		},
+		"state": "up",
+		"name": "add_oauth_client_permissions",
+		"createdAt": {
+			"$date": "2022-09-22T13:01:17.867Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "637b9cf270305294b01b749c"
+		},
+		"state": "up",
+		"name": "add-tool-admin-permission",
+		"createdAt": {
+			"$date": "2022-11-21T15:44:50.170Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "638622fdc5fa134eb24df95f"
+		},
+		"state": "up",
+		"name": "add-submitted-and-graded-keys-to-submission",
+		"createdAt": {
+			"$date": "2022-11-28T09:39:29.773Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "63b59158f877054b54decd9d"
+		},
+		"state": "up",
+		"name": "add-school-tool-admin-permission",
+		"createdAt": {
+			"$date": "2023-01-04T14:41:52.212Z"
+		},
+		"__v": 0
 	}
 ]

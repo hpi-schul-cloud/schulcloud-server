@@ -1,13 +1,11 @@
 // jest.config.ts
 import type { Config } from '@jest/types';
 
-const { pathsToModuleNameMapper } = require('ts-jest');
-const { compilerOptions } = require('./tsconfig.json');
-
 // Sync object
 const config: Config.InitialOptions = {
 	moduleFileExtensions: ['js', 'json', 'ts'],
 	rootDir: '.',
+	preset: 'ts-jest',
 	/* we have tests in src/...*.spec.ts and test/...*.e2e-spec.ts either we test all files via `npm run nest:test` or override the regex in npm scripts to separate the execution via `npm run nest:test:spec` or `npm run nest:test:e2e` */
 	testRegex: '\\.(e2e-)?spec\\.ts$',
 	// ignore legacy mocha tests
@@ -17,27 +15,13 @@ const config: Config.InitialOptions = {
 	},
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',
-	coveragePathIgnorePatterns: [
-		'.module.ts$',
-		'index.ts$',
-		'spec.ts$',
-		// Temporary functionality for migration to new fileservice
-		// TODO: Remove when BC-1496 is done!
-		// The two paths below regarding the file-sync-job are added because istanbul-ignore-file is somehow not working on them. They can be removed when the job is done.
-		'apps/server/src/modules/files/mapper',
-		'apps/server/src/modules/files/types',
-		'apps/server/src/modules/files/repo',
-		'apps/server/src/modules/files/uc',
-		'apps/server/src/modules/files-storage-client/filesStorageApi',
-		// TODO: Will be removed with ticket N21-138. Is also defined as acceptance criteria.
-		'apps/server/src/modules/provisioning/strategy/placeholder',
-	],
+	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$'],
 	coverageThreshold: {
 		global: {
-			branches: 80,
-			functions: 80,
-			lines: 80,
-			statements: -7,
+			branches: 95,
+			functions: 95,
+			lines: 95,
+			statements: -3,
 		},
 		// add custom paths: './apps/server/path...': { branches: X, functions: ... }
 	},
@@ -45,6 +29,8 @@ const config: Config.InitialOptions = {
 	// detectOpenHandles: true,
 	// detectLeaks: true,
 	roots: ['<rootDir>/apps/'],
+	globalSetup: '<rootDir>/apps/server/test/globalSetup.ts',
+	globalTeardown: '<rootDir>/apps/server/test/globalTeardown.ts',
 	moduleNameMapper: {
 		// add ts-config path's here as regex
 		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',

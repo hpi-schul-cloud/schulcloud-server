@@ -6,11 +6,6 @@ export enum FilesStorageInternalActions {
 }
 export const API_VERSION_PATH = '/api/v3';
 
-export enum ErrorType {
-	FILE_IS_BLOCKED = 'File is blocked.',
-	FILE_NOT_FOUND = 'File not found.',
-}
-
 export const PermissionContexts = {
 	create: PermissionContextBuilder.write([Permission.FILESTORAGE_CREATE]),
 	read: PermissionContextBuilder.read([Permission.FILESTORAGE_VIEW]),

@@ -6,24 +6,29 @@ on:
     branches-ignore:
       - dependabot/**
 
+permissions:
+  contents: read
+
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Docker meta Service Name
         id: docker_meta_img
-        uses: crazy-max/ghaction-docker-meta@v2
+        uses: crazy-max/ghaction-docker-meta@v4
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=ref,event=branch,enable=false,priority=600
             type=sha,enable=true,priority=600,prefix=
 
-      - name: Log into registry
-        uses: docker/login-action@v1
+      - name: Login to registry
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -37,11 +42,11 @@ jobs:
 
       - name: Set up Docker Buildx
         if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Build and push ${{ github.repository }}
         if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: ./Dockerfile
@@ -57,7 +62,7 @@ jobs:
     steps:
       - name: Extract branch name
         shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
         id: extract_branch
 
   deploy:
@@ -79,6 +84,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "deploy was successful"
+
+  trivy-vulnerability-scanning:
+    needs:
+      - build_and_push
+      - branch_name
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: run trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@9ab158e8597f3b310480b9a69402b419bc03dbd5
+        with:
+          image-ref: 'ghcr.io/${{ github.repository }}:${{ github.sha }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: 1
+          ignore-unfixed: true
+      - name: upload trivy results
+        if: ${{ always() }}
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
 
   end-to-end-tests:
     needs:

@@ -1,39 +1,16 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { School } from '@shared/domain/entity/school.entity';
-import _ from 'lodash';
-import { IEntityWithSchool } from '../interface';
-import { ILearnroomElement } from '../interface/learnroom';
-import { EntityId } from '../types/entity-id';
+import { InputFormat } from '@shared/domain/types/input-format.types';
+import { InternalServerErrorException } from '@nestjs/common';
+import type { IEntityWithSchool } from '../interface';
+import type { ILearnroomElement } from '../interface/learnroom';
+import type { EntityId } from '../types/entity-id';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
-import type { File } from './file.entity';
 import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
-import type { User } from './user.entity';
-
-export interface ITaskProperties {
-	name: string;
-	description?: string;
-	availableDate?: Date;
-	dueDate?: Date;
-	private?: boolean;
-	creator: User;
-	course?: Course;
-	school: School;
-	lesson?: Lesson;
-	submissions?: Submission[];
-	finished?: User[];
-	files?: File[];
-}
-
-export interface ITaskStatus {
-	submitted: number;
-	maxSubmissions: number;
-	graded: number;
-	isDraft: boolean;
-	isSubstitutionTeacher: boolean;
-	isFinished: boolean;
-}
+import { User } from './user.entity';
+import type { ITaskProperties, ITaskStatus } from '../types/task.types';
 
 export class TaskWithStatusVo {
 	task!: Task;
@@ -46,7 +23,17 @@ export class TaskWithStatusVo {
 	}
 }
 
-export type TaskParentDescriptions = { courseName: string; courseId: string; lessonName: string; color: string };
+export type TaskParentDescriptions = {
+	courseName: string;
+	courseId: string;
+	lessonName: string;
+	lessonHidden: boolean;
+	color: string;
+};
+
+export interface ITaskParent {
+	getStudentIds(): EntityId[];
+}
 
 @Entity({ tableName: 'homeworks' })
 @Index({ properties: ['private', 'dueDate', 'finished'] })
@@ -60,6 +47,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@Property()
 	description: string;
 
+	@Property()
+	descriptionInputFormat: InputFormat;
+
 	@Property({ nullable: true })
 	availableDate?: Date;
 
@@ -70,9 +60,12 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@Property()
 	private = true;
 
+	@Property({ nullable: true })
+	publicSubmissions?: boolean;
+
 	@Index()
-	@ManyToOne('User', { fieldName: 'teacherId', nullable: true })
-	creator?: User;
+	@ManyToOne('User', { fieldName: 'teacherId' })
+	creator: User;
 
 	@Index()
 	@ManyToOne('Course', { fieldName: 'courseId', nullable: true })
@@ -86,22 +79,21 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
 	lesson?: Lesson; // In database exist also null, but it can not set.
 
-	@OneToMany('Submission', 'task', { orphanRemoval: true })
+	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);
 
 	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
 	finished = new Collection<User>(this);
 
-	@ManyToMany('File', undefined, { fieldName: 'fileIds', nullable: true })
-	files = new Collection<File>(this);
-
 	constructor(props: ITaskProperties) {
 		super();
 		this.name = props.name;
 		this.description = props.description || '';
+		this.descriptionInputFormat = props.descriptionInputFormat || InputFormat.RICH_TEXT_CK4;
 		this.availableDate = props.availableDate;
 		this.dueDate = props.dueDate;
+
 		if (props.private !== undefined) this.private = props.private;
 		this.creator = props.creator;
 		this.course = props.course;
@@ -109,101 +101,149 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
 		this.finished.set(props.finished || []);
-		this.files.set(props.files || []);
+		this.publicSubmissions = props.publicSubmissions || false;
 	}
 
-	isFinishedForUser(user: User): boolean {
-		return !!(this.finished?.contains(user) || this.course?.isFinished());
+	private getSubmissionItems(): Submission[] {
+		if (!this.submissions || !this.submissions.isInitialized(true)) {
+			throw new InternalServerErrorException('Submissions items are not loaded.');
+		}
+		const submissions = this.submissions.getItems();
+
+		return submissions;
 	}
 
-	isDraft(): boolean {
+	private getFinishedUserIds(): EntityId[] {
+		if (!this.finished) {
+			throw new InternalServerErrorException('Task.finished is undefined. The task need to be populated.');
+		}
+
+		const finishedObjectIds = this.finished.getIdentifiers('_id');
+		const finishedIds = finishedObjectIds.map((id): string => id.toString());
+
+		return finishedIds;
+	}
+
+	private getParent(): ITaskParent | User {
+		const parent = this.lesson || this.course || this.creator;
+
+		return parent;
+	}
+
+	private getMaxSubmissions(): number {
+		const parent = this.getParent();
+		// For draft (user as parent) propaly user is not a student, but for maxSubmission one is valid result
+		const maxSubmissions = parent instanceof User ? 1 : parent.getStudentIds().length;
+
+		return maxSubmissions;
+	}
+
+	private isFinishedForUser(user: User): boolean {
+		const finishedUserIds = this.getFinishedUserIds();
+		const isUserInFinishedUser = finishedUserIds.some((finishedUserId) => finishedUserId === user.id);
+
+		const isCourseFinished = this.course ? this.course.isFinished() : false;
+
+		const isFinishedForUser = isUserInFinishedUser || isCourseFinished;
+
+		return isFinishedForUser;
+	}
+
+	public isDraft(): boolean {
 		// private can be undefined in the database
 		return !!this.private;
 	}
 
-	isPublished(): boolean {
+	public isPublished(): boolean {
 		if (this.isDraft()) {
 			return false;
 		}
-		if (this.availableDate && this.availableDate > new Date(Date.now())) {
+		if (this.availableDate && this.availableDate > new Date()) {
 			return false;
 		}
+
 		return true;
 	}
 
-	isPlanned(): boolean {
+	public isPlanned(): boolean {
 		if (this.isDraft()) {
 			return false;
 		}
-		if (this.availableDate && this.availableDate > new Date(Date.now())) {
+		if (this.availableDate && this.availableDate > new Date()) {
 			return true;
 		}
+
 		return false;
 	}
 
-	private getSubmissionItems(): Submission[] {
-		if (!this.submissions.isInitialized(true)) {
-			throw new Error('Submissions items are not loaded.');
-		}
-		const submissions = this.submissions.getItems();
-		return submissions;
+	private getSubmittedSubmissions(): Submission[] {
+		const submissions = this.getSubmissionItems();
+		const submittedSubmissions = submissions.filter((submission) => submission.isSubmitted());
+
+		return submittedSubmissions;
 	}
 
-	getSubmittedUserIds(): EntityId[] {
-		const submittedUserIds = this.getSubmissionItems().map((submission) => submission.student.id);
-		const uniqueSubmittedUserIds = [...new Set(submittedUserIds)];
+	public areSubmissionsPublic(): boolean {
+		const areSubmissionsPublic = !!this.publicSubmissions;
 
-		return uniqueSubmittedUserIds;
+		return areSubmissionsPublic;
 	}
 
-	getNumberOfSubmittedUsers(): number {
-		const submittedUserIds = this.getSubmittedUserIds();
-		const count = submittedUserIds.length;
+	private getGradedSubmissions(): Submission[] {
+		const submissions = this.getSubmissionItems();
+		const gradedSubmissions = submissions.filter((submission) => submission.isGraded());
 
-		return count;
+		return gradedSubmissions;
 	}
 
-	getGradedUserIds(): EntityId[] {
-		const gradedUserIds = this.getSubmissionItems()
-			.filter((submission) => submission.isGraded())
-			.map((submission) => submission.student.id);
-		const uniqueGradedUserIds = [...new Set(gradedUserIds)];
+	private isSubmittedForUser(user: User): boolean {
+		const submissions = this.getSubmissionItems();
+		const isSubmitted = submissions.some((submission) => submission.isSubmittedForUser(user));
 
-		return uniqueGradedUserIds;
+		return isSubmitted;
 	}
 
-	getNumberOfGradedUsers(): number {
-		const gradedUserIds = this.getGradedUserIds();
-		const count = gradedUserIds.length;
+	private isGradedForUser(user: User): boolean {
+		const submissions = this.getSubmissionItems();
+		const isGraded = submissions.some((submission) => submission.isGradedForUser(user));
 
-		return count;
+		return isGraded;
 	}
 
-	// attention based on this parent use this.getParent() instant
-	getMaxSubmissions(): number {
-		// hack until parents are defined
-		const numberOfStudents = this.course ? this.course.getNumberOfStudents() : 0;
+	private calculateNumberOfSubmitters(submissions: Submission[]): number {
+		let taskSubmitterIds: EntityId[] = [];
 
-		return numberOfStudents;
+		submissions.forEach((submission) => {
+			const submitterIds = submission.getSubmitterIds();
+			taskSubmitterIds = [...taskSubmitterIds, ...submitterIds];
+		});
+
+		const uniqueIds = [...new Set(taskSubmitterIds)];
+		const numberOfSubmitters = uniqueIds.length;
+
+		return numberOfSubmitters;
 	}
 
-	createTeacherStatusForUser(user: User): ITaskStatus {
-		const submitted = this.getNumberOfSubmittedUsers();
-		const graded = this.getNumberOfGradedUsers();
+	private isUserSubstitutionTeacherInCourse(user: User): boolean {
+		const isSubstitutionTeacher = this.course ? this.course.isUserSubstitutionTeacher(user) : false;
+
+		return isSubstitutionTeacher;
+	}
+
+	public createTeacherStatusForUser(user: User): ITaskStatus {
+		const submittedSubmissions = this.getSubmittedSubmissions();
+		const gradedSubmissions = this.getGradedSubmissions();
+
+		const numberOfSubmitters = this.calculateNumberOfSubmitters(submittedSubmissions);
+		const numberOfSubmittersWithGrade = this.calculateNumberOfSubmitters(gradedSubmissions);
 		const maxSubmissions = this.getMaxSubmissions();
 		const isDraft = this.isDraft();
 		const isFinished = this.isFinishedForUser(user);
-		// only point that need the parameter
-		// const isSubstitutionTeacher = this.isSubstitutionTeacher(userId);
-		// work with getParent()
-		let isSubstitutionTeacher = false;
-		if (this.course) {
-			isSubstitutionTeacher = this.course.substitutionTeachers.contains(user);
-		}
+		const isSubstitutionTeacher = this.isUserSubstitutionTeacherInCourse(user);
 
 		const status = {
-			submitted,
-			graded,
+			submitted: numberOfSubmitters,
+			graded: numberOfSubmittersWithGrade,
 			maxSubmissions,
 			isDraft,
 			isSubstitutionTeacher,
@@ -213,19 +253,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return status;
 	}
 
-	isSubmittedForUser(user: User): boolean {
-		const submitted = this.getSubmittedUserIds().some((uid) => uid === user.id);
-
-		return submitted;
-	}
-
-	isGradedForUser(user: User): boolean {
-		const graded = this.getGradedUserIds().some((uid) => uid === user.id);
-
-		return graded;
-	}
-
-	createStudentStatusForUser(user: User): ITaskStatus {
+	public createStudentStatusForUser(user: User): ITaskStatus {
 		const isSubmitted = this.isSubmittedForUser(user);
 		const isGraded = this.isGradedForUser(user);
 		const maxSubmissions = 1;
@@ -240,21 +268,20 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 			isDraft,
 			isSubstitutionTeacher,
 			isFinished,
-			// TODO: visibility of parent is missed ..but isSubstitutionTeacher and this is not really a part from task,
-			// for this we must add parent relationship
 		};
 
 		return status;
 	}
 
 	// TODO: based on the parent relationship
-	getParentData(): TaskParentDescriptions {
+	public getParentData(): TaskParentDescriptions {
 		let descriptions: TaskParentDescriptions;
 		if (this.course) {
 			descriptions = {
 				courseName: this.course.name,
 				courseId: this.course.id,
 				lessonName: this.lesson ? this.lesson.name : '',
+				lessonHidden: this.lesson ? this.lesson.hidden : false,
 				color: this.course.color,
 			};
 		} else {
@@ -262,6 +289,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 				courseName: '',
 				courseId: '',
 				lessonName: '',
+				lessonHidden: false,
 				color: '#ACACAC',
 			};
 		}
@@ -269,45 +297,24 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return descriptions;
 	}
 
-	private getFileItems(): File[] {
-		if (!this.files.isInitialized(true)) {
-			throw new Error('File items are not loaded.');
-		}
-		const files = this.files.getItems();
-		return files;
-	}
-
-	getFileNames(): string[] {
-		const attachedFileIds = this.getFileItems().map((file) => file.name);
-		return attachedFileIds;
-	}
-
-	finishForUser(user: User) {
+	public finishForUser(user: User): void {
 		this.finished.add(user);
 	}
 
-	restoreForUser(user: User) {
+	public restoreForUser(user: User): void {
 		this.finished.remove(user);
 	}
 
-	getSchoolId(): EntityId {
-		if (this.lesson) {
-			return this.lesson.getSchoolId();
-		}
-
-		if (this.course) {
-			return this.course.school.id;
-		}
-
-		throw new Error(`Couldn't find parent of task.`);
+	public getSchoolId(): EntityId {
+		return this.school.id;
 	}
 
-	publish() {
+	public publish(): void {
 		this.private = false;
-		this.availableDate = new Date(Date.now());
+		this.availableDate = new Date();
 	}
 
-	unpublish() {
+	public unpublish(): void {
 		this.private = true;
 	}
 }

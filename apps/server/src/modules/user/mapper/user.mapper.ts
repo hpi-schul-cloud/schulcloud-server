@@ -11,22 +11,22 @@ export class UserMapper {
 			schoolId: entity.school.id,
 			roleIds: entity.roles.getItems().map((role: Role) => role.id),
 			ldapDn: entity.ldapDn,
-			ldapId: entity.ldapId,
+			externalId: entity.externalId,
 			language: entity.language,
 			forcePasswordChange: entity.forcePasswordChange,
 			preferences: entity.preferences,
 		});
 	}
 
-	static mapFromDtoToEntity(dto: UserDto, rolesEntity: Role[], schoolEntity: School): User {
+	static mapFromDtoToEntity(dto: UserDto, rolesEntity: Role[], school: School): User {
 		const user = new User({
 			email: dto.email,
 			firstName: dto.firstName,
 			lastName: dto.lastName,
-			school: schoolEntity,
+			school,
 			roles: rolesEntity,
 			ldapDn: dto.ldapDn,
-			ldapId: dto.ldapId,
+			externalId: dto.externalId,
 			language: dto.language,
 			forcePasswordChange: dto.forcePasswordChange,
 			preferences: dto.preferences,
@@ -44,7 +44,7 @@ export class UserMapper {
 		target.school = source.school;
 		target.roles = source.roles;
 		target.ldapDn = source.ldapDn ?? target.ldapDn;
-		target.ldapId = source.ldapId ?? target.ldapId;
+		target.externalId = source.externalId ?? target.externalId;
 		target.forcePasswordChange = source.forcePasswordChange ?? target.forcePasswordChange;
 		target.language = source.language ?? target.language;
 		// Cannot patch preferences with empty object, because preferences is optional, but is always set in the constructor of the entity,

@@ -1,8 +1,8 @@
-import { SystemOauthResponse } from '@src/modules/system/controller/dto/system-oauth.response';
 import { OauthConfigResponse } from '@src/modules/system/controller/dto/oauth-config.response';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemOauthResponse } from '@src/modules/system/controller/dto/system-oauth.response';
 import { SystemResponse } from '@src/modules/system/controller/dto/system.response';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 
 export class SystemOauthResponseMapper {
 	static mapFromDtoToResponse(systems: SystemDto[]): SystemOauthResponse {
@@ -13,6 +13,7 @@ export class SystemOauthResponseMapper {
 					type: system.type,
 					url: system.url,
 					alias: system.alias,
+					displayName: system.displayName,
 					oauthConfig: system.oauthConfig
 						? SystemOauthResponseMapper.mapFromOauthConfigDtoToResponse(system.oauthConfig)
 						: undefined,

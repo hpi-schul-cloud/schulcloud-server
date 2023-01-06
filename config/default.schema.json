@@ -41,12 +41,12 @@
 			"description": "The URI to the Calendar Service"
 		},
 		"CONSENT_AGE_FIRST": {
-			"tpye": "integer",
+			"type": "integer",
 			"default": 14,
 			"description": "First gate for consent. Starting at this age the user have to give his/her consent"
 		},
 		"CONSENT_AGE_SECOND": {
-			"tpye": "integer",
+			"type": "integer",
 			"default": 16,
 			"description": "Second gate for consent. Starting at this age parent consent is not required"
 		},
@@ -54,6 +54,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "To disabled the brute force prevention hooks for by authentication."
+		},
+		"LOGIN_BLOCK_TIME": {
+			"type": "integer",
+			"default": 15,
+			"description": "Time difference for the brute force check"
 		},
 		"FORCE_SEND_EMAIL": {
 			"type": "boolean",
@@ -184,6 +189,11 @@
 			"default": false,
 			"description": "If enabled, adds video conferences to teams and courses."
 		},
+		"VIDEOCONFERENCE_DEFAULT_PRESENTATION": {
+			"type": "string",
+			"default": "",
+			"description": "Link to a custom presentation, if empty, the default presentation will be used."
+		},
 		"VIDEOCONFERENCE_HOST": {
 			"type": "string",
 			"format": "uri",
@@ -292,6 +302,11 @@
 				"S3_SECRET_ACCESS_KEY": {
 					"type": "string",
 					"description": "Secret key to S3"
+				},
+				"EXCHANGE": {
+					"type": "string",
+					"default": "files-storage",
+					"description": "rabbitmq exchange name for antivirus"
 				}
 			}
 		},
@@ -304,6 +319,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the Identity Management (ErWIn IDM) feature."
+		},
+		"FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the Identity Management (ErWIn IDM) as account storage."
 		},
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
@@ -364,11 +384,6 @@
 				}
 			}
 		},
-		"FEATURE_RABBITMQ_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, adds support to send RabbitMQ messages"
-		},
 		"RABBITMQ_URI": {
 			"type": "string",
 			"format": "uri",
@@ -427,6 +442,12 @@
 		"NEXBOARD_USER_ID": {
 			"type": "string",
 			"description": "The nexboard 'schul-cloud' userId."
+		},
+		"HYDRA_URI": {
+			"type": "string",
+			"format": "uri",
+			"default": "http://localhost:9001",
+			"description": "The hydra url."
 		},
 		"FEATURE_NEXBOARD_ENABLED": {
 			"type": "boolean",
@@ -507,6 +528,11 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Login via Link generation (to the right form)."
+		},
+		"FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the oauth system (iserv to sanis) migration feature."
 		},
 		"SC_TITLE": {
 			"type": "string",
@@ -658,10 +684,20 @@
 			"default": "admin",
 			"description": "Admin-password for Nextcloud-API"
 		},
+		"NEXTCLOUD_SCOPES": {
+			"type:": "string",
+			"default": "openid offline profile email groups",
+			"description": "ClientId for Nextcloud Oauth2 Login"
+		},
 		"NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME": {
 			"type:": "string",
 			"default": "SchulcloudNextcloud",
 			"description": "Internal name of schulcloud oidc provider of nextcloud's social login app"
+		},
+		"HYDRA_PUBLIC_URI": {
+			"type:": "string",
+			"default": "http://hydra.localhost:9000",
+			"description": "Internal Hydra URI"
 		},
 		"COLLABORATIVE_STORAGE_PROVIDER": {
 			"type:": "string",
@@ -828,10 +864,11 @@
 			"description": "Log level for api.",
 			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
-		"NEST_AVAILABLE_LOG_LEVELS": {
+		"NEST_LOG_LEVEL": {
 			"type": "string",
-			"default": "error,http",
-			"description": "Nest Log level for api. Different log level can be activated separately by adding the value to the comma separated list. For example 'log,error,warn,debug,verbose,http' The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'."
+			"default": "notice",
+			"description": "Nest Log level for api. The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'.",
+			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
 		"SYSTEM_LOG_LEVEL": {
 			"type": "string",
@@ -914,6 +951,11 @@
 			"default": false,
 			"description": "Toggle for course sharing feature."
 		},
+		"FEATURE_COURSE_SHARE_NEW": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the new course sharing feature."
+		},
 		"FEATURE_LESSON_SHARE": {
 			"type": "boolean",
 			"default": false,
@@ -927,12 +969,17 @@
 		"FEATURE_USER_MIGRATION_SYSTEM_ID": {
 			"type": "string",
 			"default": "",
-			"description": "SystemId for migration of users from system"
+			"description": "SystemId for migration of users from system. To use this please set FEATURE_USER_MIGRATION_CENTRAL_LDAP in the client"
 		},
 		"FEATURE_COPY_SERVICE_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for copy course feature."
+		},
+		"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the IMSCC course download feature."
 		},
 		"GHOST_BASE_URL": {
 			"type": "string",
@@ -977,13 +1024,7 @@
 					"description": "Expiration in seconds from now"
 				}
 			},
-			"required": [
-				"SAME_SITE",
-				"HTTP_ONLY",
-				"HOST_ONLY",
-				"SECURE",
-				"EXPIRES_SECONDS"
-			],
+			"required": ["SAME_SITE", "HTTP_ONLY", "HOST_ONLY", "SECURE", "EXPIRES_SECONDS"],
 			"allOf": [
 				{
 					"$ref": "#/properties/COOKIE/definitions/SAME_SITE_SECURE_VALID"
@@ -1007,6 +1048,11 @@
 					}
 				}
 			}
+		},
+		"FEATURE_NEW_TASK_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable the task assignment to individuals"
 		}
 	},
 	"required": [

@@ -55,10 +55,7 @@ const globals = {
 	ENVIRONMENTS,
 	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
 	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
-	// secrets smtp
-	SMTP: process.env.SMTP,
-	SMTP_HOST: process.env.SMTP_HOST,
-	SMTP_PORT: process.env.SMTP_PORT,
+	API_HOST: process.env.API_HOST,
 	// secrets aws
 	AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
 	AWS_SECRET_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
@@ -68,7 +65,6 @@ const globals = {
 	//
 	DISPLAY_REQUEST_LEVEL: Number(process.env.DISPLAY_REQUEST_LEVEL || 0),
 	ANALYTICS_LOGGING: process.env.ANALYTICS_LOGGING,
-	LOGIN_BLOCK_TIME: process.env.LOGIN_BLOCK_TIME || 15, // allowedTimeDifference
 	CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS: parseInt(process.env.CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS || 16, 10),
 
 	/** used in tests only currently */
@@ -106,6 +102,7 @@ const globals = {
 	NEXTCLOUD_BASE_URL: process.env.NEXTCLOUD_BASE_URL,
 	NEXTCLOUD_ADMIN_USER: process.env.NEXTCLOUD_ADMIN_USER,
 	NEXTCLOUD_ADMIN_PASS: process.env.NEXTCLOUD_ADMIN_PASS,
+	NEXTCLOUD_SCOPES: process.env.NEXTCLOUD_SCOPES,
 
 	// calendar
 	CALENDAR_URI: process.env.CALENDAR_URI,

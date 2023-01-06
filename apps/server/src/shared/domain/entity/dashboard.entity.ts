@@ -264,11 +264,7 @@ export class DashboardEntity {
 
 	private allRooms(): ILearnroom[] {
 		const elements = [...this.grid.values()];
-		const references = elements
-			.map((el) => {
-				return el.getReferences();
-			})
-			.flat();
+		const references = elements.map((el) => el.getReferences()).flat();
 		return references;
 	}
 

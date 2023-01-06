@@ -1,9 +1,9 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { PseudonymsRepo } from '@shared/repo/index';
+import { PseudonymsRepo } from '@shared/repo/';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
-import { PseudonymDO } from '@shared/domain/index';
-import { LtiToolRepo } from '@shared/repo/ltitool/index';
+import { PseudonymDO } from '@shared/domain/';
+import { LtiToolRepo } from '@shared/repo/ltitool/';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { ICollaborativeStorageStrategy } from '../base.interface.strategy';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
@@ -123,16 +123,17 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	 */
 	protected async updateTeamUsersInGroup(groupId: string, teamUsers: TeamUserDto[]): Promise<void[][]> {
 		const groupUserIds: string[] = await this.client.getGroupUsers(groupId);
-		const nextcloudLtiTool: LtiToolDO = await this.ltiToolRepo.findByName(this.client.oidcInternalName);
+		const nextcloudLtiTool: LtiToolDO = await this.findNextcloudTool();
 
 		let convertedTeamUserIds: string[] = await Promise.all<Promise<string>[]>(
-			teamUsers.map(async (teamUser: TeamUserDto): Promise<string> => {
-				// The Oauth authentication generates a pseudonym which will be used from external systems as identifier
-				return this.pseudonymsRepo
-					.findByUserIdAndToolId(teamUser.userId, nextcloudLtiTool.id as string)
-					.then((pseudonymDO: PseudonymDO) => this.client.getNameWithPrefix(pseudonymDO.pseudonym))
-					.catch(() => '');
-			})
+			teamUsers.map(
+				async (teamUser: TeamUserDto): Promise<string> =>
+					// The Oauth authentication generates a pseudonym which will be used from external systems as identifier
+					this.pseudonymsRepo
+						.findByUserIdAndToolId(teamUser.userId, nextcloudLtiTool.id as string)
+						.then((pseudonymDO: PseudonymDO) => this.client.getNameWithPrefix(pseudonymDO.pseudonym))
+						.catch(() => '')
+			)
 		);
 		convertedTeamUserIds = convertedTeamUserIds.filter(Boolean);
 
@@ -145,6 +146,17 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 			Promise.all(removeUserIds.map((nextcloudUserId) => this.client.removeUserFromGroup(nextcloudUserId, groupId))),
 			Promise.all(addUserIds.map((nextcloudUserId) => this.client.addUserToGroup(nextcloudUserId, groupId))),
 		]);
+	}
+
+	private async findNextcloudTool(): Promise<LtiToolDO> {
+		const foundTools: LtiToolDO[] = await this.ltiToolRepo.findByName(this.client.oidcInternalName);
+		if (foundTools.length > 1) {
+			this.logger.warn(
+				`Please check the configured lti tools. There should one be one tool with the name ${this.client.oidcInternalName}. 
+				Otherwise teams can not be created or updated on demand.`
+			);
+		}
+		return foundTools[0];
 	}
 
 	/**

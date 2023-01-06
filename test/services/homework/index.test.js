@@ -16,6 +16,7 @@ describe('homework service', () => {
 	let homeworkCopyService;
 	let server;
 	let nestServices;
+	// let lessonService;
 
 	const setupPrivateHomework = async () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'] });
@@ -316,6 +317,8 @@ describe('homework service', () => {
 				studentId: studentOne._id,
 				comment: 'hello teacher, my dog has eaten this database entry...',
 				grade: 67,
+				submitted: true,
+				graded: true,
 			});
 			return {
 				teacher,
@@ -434,6 +437,8 @@ describe('homework service', () => {
 				studentId: students[1]._id,
 				comment: 'hello teacher, his dog has eaten this database entry also...',
 				grade: 67,
+				submitted: true,
+				graded: true,
 			});
 
 			const params = await testObjects.generateRequestParamsFromUser(students[0]);
@@ -472,6 +477,8 @@ describe('homework service', () => {
 						homeworkId,
 						studentId,
 						comment: 'I dont know the answer',
+						submitted: true,
+						graded: true,
 					})
 				);
 			});

@@ -6,8 +6,7 @@ import { FileSystemAdapter } from '@shared/infra/file-system';
 import { DatabaseManagementService } from '@shared/infra/database';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
-import { StorageProvider, System } from '@shared/domain';
-import { SysType } from '@shared/infra/identity-management';
+import { StorageProvider, System, SystemTypeEnum } from '@shared/domain';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
 import { BsonConverter } from '../converter/bson.converter';
@@ -79,10 +78,12 @@ export class DatabaseManagementUc {
 	 */
 	private async loadAllCollectionsFromDatabase(targetFolder: string): Promise<ICollectionFilePath[]> {
 		const collections = await this.databaseManagementService.getCollectionNames();
-		const collectionsWithFilePaths = collections.map((collectionName) => ({
-			filePath: this.fileSystemAdapter.joinPath(targetFolder, `${collectionName}.json`),
-			collectionName,
-		}));
+		const collectionsWithFilePaths = collections.map((collectionName) => {
+			return {
+				filePath: this.fileSystemAdapter.joinPath(targetFolder, `${collectionName}.json`),
+				collectionName,
+			};
+		});
 		return collectionsWithFilePaths;
 	}
 
@@ -92,10 +93,12 @@ export class DatabaseManagementUc {
 	 */
 	private async loadAllCollectionsFromFilesystem(baseDir: string): Promise<ICollectionFilePath[]> {
 		const filenames = await this.fileSystemAdapter.readDir(baseDir);
-		const collectionsWithFilePaths = filenames.map((fileName) => ({
-			filePath: this.fileSystemAdapter.joinPath(baseDir, fileName),
-			collectionName: fileName.split('.')[0],
-		}));
+		const collectionsWithFilePaths = filenames.map((fileName) => {
+			return {
+				filePath: this.fileSystemAdapter.joinPath(baseDir, fileName),
+				collectionName: fileName.split('.')[0],
+			};
+		});
 		return collectionsWithFilePaths;
 	}
 
@@ -276,11 +279,11 @@ export class DatabaseManagementUc {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oauthConfig.clientSecret);
 			}
-			if (system.type === SysType.OIDC && system.config) {
+			if (system.type === SystemTypeEnum.OIDC && system.config) {
 				system.config.clientSecret = this.defaultEncryptionService.encrypt(system.config.clientSecret as string);
 				system.config.clientId = this.defaultEncryptionService.encrypt(system.config.clientId as string);
 			}
-			if (system.type === SysType.LDAP && system.ldapConfig) {
+			if (system.type === SystemTypeEnum.LDAP && system.ldapConfig) {
 				system.ldapConfig.searchUserPassword = this.ldapEncryptionService.encrypt(
 					system.ldapConfig.searchUserPassword as string
 				);
@@ -315,11 +318,11 @@ export class DatabaseManagementUc {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = defaultSecretReplacementHintText;
 			}
-			if (system.type === SysType.OIDC && system.config) {
+			if (system.type === SystemTypeEnum.OIDC && system.config) {
 				system.config.clientSecret = defaultSecretReplacementHintText;
 				system.config.clientId = defaultSecretReplacementHintText;
 			}
-			if (system.type === SysType.LDAP && system.ldapConfig) {
+			if (system.type === SystemTypeEnum.LDAP && system.ldapConfig) {
 				system.ldapConfig.searchUserPassword = defaultSecretReplacementHintText;
 			}
 		});
