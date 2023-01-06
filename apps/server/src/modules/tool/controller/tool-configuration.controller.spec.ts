@@ -42,8 +42,7 @@ describe('ToolConfigurationController', () => {
 	});
 
 	const setupExternalTool = () => {
-		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-
+		const currentUser: ICurrentUser = { userId: 'userId', schoolId: 'schoolId' } as ICurrentUser;
 		const toolIdParams: ToolIdParams = new ToolIdParams();
 		toolIdParams.toolId = 'toolId';
 		const scopeQuery: ScopeQuery = new ScopeQuery();
@@ -80,7 +79,8 @@ describe('ToolConfigurationController', () => {
 
 				expect(externalToolConfigurationUc.getExternalToolForSchool).toHaveBeenCalledWith(
 					currentUser.userId,
-					toolIdParams.toolId
+					toolIdParams.toolId,
+					currentUser.schoolId
 				);
 			});
 

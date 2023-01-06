@@ -23,11 +23,12 @@ export class ToolConfigurationController {
 	async getExternalToolForScope(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams,
-		@Query() scopeQuery: ScopeQuery
+		@Query() scopeQuery: ScopeQuery,
 	): Promise<ExternalToolConfigurationTemplateResponse> {
 		const externalToolDO: ExternalToolDO = await this.externalToolConfigurationUc.getExternalToolForSchool(
 			currentUser.userId,
-			params.toolId
+			params.toolId,
+			currentUser.schoolId
 		);
 		const mapped: ExternalToolConfigurationTemplateResponse =
 			this.externalResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);

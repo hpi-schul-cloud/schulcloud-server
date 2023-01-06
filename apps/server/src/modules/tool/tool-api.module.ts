@@ -11,9 +11,10 @@ import { ExternalToolUc } from './uc/external-tool.uc';
 import { ToolModule } from './tool.module';
 import { ToolConfigurationController } from './controller/tool-configuration.controller';
 import { ExternalToolConfigurationUc } from './uc/external-tool-configuration.uc';
+import { SchoolModule } from '../school';
 
 @Module({
-	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule],
+	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule, SchoolModule],
 	controllers: [ToolConfigurationController, ToolController],
 	providers: [
 		Lti11Uc,
