@@ -10,9 +10,9 @@ export class DashboardUc {
 		private readonly courseRepo: CourseRepo
 	) {}
 
-	async getUsersDashboard(userId: EntityId, showSubstitute: boolean): Promise<DashboardEntity> {
+	async getUsersDashboard(userId: EntityId, showAll: boolean): Promise<DashboardEntity> {
 		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
-		const [courses] = showSubstitute
+		const [courses] = showAll
 			? await this.courseRepo.findAllByUserId(userId, { onlyActiveCourses: true }, { order: { name: SortOrder.asc } })
 			: await this.courseRepo.findAllForTeacher(
 					userId,
