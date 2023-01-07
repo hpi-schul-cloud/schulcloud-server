@@ -10,6 +10,7 @@ import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { SchoolService } from '../../school';
+import { SchoolMapper } from '../../school/mapper/school.mapper';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -27,6 +28,7 @@ describe('UserService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				UserService,
+				SchoolMapper,
 				{
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
