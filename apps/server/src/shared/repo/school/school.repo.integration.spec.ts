@@ -9,6 +9,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { SchoolRepo } from '..';
 import { SchoolDO } from '../../domain/domainobject/school.do';
 import { Logger } from '../../../core/logger';
+import { SchoolMapper } from '../../../modules/school/mapper/school.mapper';
 
 describe('SchoolRepo', () => {
 	let module: TestingModule;
@@ -20,6 +21,7 @@ describe('SchoolRepo', () => {
 			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
 				SchoolRepo,
+				SchoolMapper,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
