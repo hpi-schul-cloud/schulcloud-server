@@ -36,6 +36,7 @@ describe('SanisResponseMapper', () => {
 					typ: 'SCHULE',
 				}),
 				personenstatus: '',
+				email: 'test@te.st',
 			}),
 		],
 	});
@@ -60,7 +61,7 @@ describe('SanisResponseMapper', () => {
 			const userDO = mapper.mapToUserDO(sanisResponse, schoolId, roleId);
 			expect(userDO.firstName).toEqual(sanisResponse.person.name.vorname);
 			expect(userDO.lastName).toEqual(sanisResponse.person.name.familienname);
-			expect(userDO.email).toEqual('');
+			expect(userDO.email).toEqual(sanisResponse.personenkontexte[0].email);
 			expect(userDO.schoolId).toEqual(schoolId);
 			expect(userDO.roleIds[0]).toEqual(RoleName.STUDENT);
 			expect(userDO.externalId).toStrictEqual(sanisResponse.pid);
