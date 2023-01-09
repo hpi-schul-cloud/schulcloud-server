@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard } from '@shared/domain';
 import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, RichTextCardElementRepo, TaskCardRepo, TitleCardElementRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '@src/modules/task/service';
-import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { ITaskCardCreate, ITaskCardUpdate } from '../controller/mapper/task-card.mapper';
 
 @Injectable()
@@ -111,8 +111,7 @@ export class TaskCardUc {
 			cardElements.push(...texts);
 		}
 
-		await this.cardElementRepo.delete(card.cardElements.getItems());
-		card.cardElements.set(cardElements);
+		await this.replaceCardElements(card, cardElements);
 		await this.taskCardRepo.save(card);
 
 		return { card, taskWithStatusVo };
@@ -125,5 +124,12 @@ export class TaskCardUc {
 		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
 
 		return taskWithStatusVo;
+	}
+
+	private async replaceCardElements(taskCard: TaskCard, newCardElements: CardElement[]) {
+		await this.cardElementRepo.delete(taskCard.cardElements.getItems());
+		taskCard.cardElements.set(newCardElements);
+
+		return taskCard;
 	}
 }

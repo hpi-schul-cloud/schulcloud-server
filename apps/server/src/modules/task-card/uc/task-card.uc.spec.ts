@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, CardType, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
-import { RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { RichText } from '@shared/domain/types/richtext.types';
 import { CardElementRepo, RichTextCardElementRepo, TaskCardRepo, TitleCardElementRepo, UserRepo } from '@shared/repo';
 import {
@@ -246,9 +246,11 @@ describe('TaskCardUc', () => {
 		beforeEach(() => {
 			user = userFactory.buildWithId();
 
-			const titleCardElement = titleCardElementFactory.build();
-			const richTextCardElements = richTextCardElementFactory.buildList(2);
-			taskCard = taskCardFactory.buildWithId({ cardElements: [titleCardElement, ...richTextCardElements] });
+			const originalTitleCardElement = titleCardElementFactory.build();
+			const originalRichTextCardElements = richTextCardElementFactory.buildList(2);
+			taskCard = taskCardFactory.buildWithId({
+				cardElements: [originalTitleCardElement, ...originalRichTextCardElements],
+			});
 
 			const status = taskCard.task.createTeacherStatusForUser(user);
 			const taskWithStatusVo = new TaskWithStatusVo(taskCard.task, status);
@@ -293,17 +295,22 @@ describe('TaskCardUc', () => {
 		});
 		it('should delete existing card elements and set the new elements', async () => {
 			const originalCardElements = taskCard.cardElements.getItems();
-			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
-			const newTitleCardElement = titleCardElementFactory.build(title);
-			/* const newRichTextCardElementOne = richTextCardElementFactory.build(
-				new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 })
-			);
-			const newRichTextCardElementTwo = richTextCardElementFactory.build(
-				new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 })
-			); */
-
+			const result = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			expect(cardElementRepo.delete).toBeCalledWith(originalCardElements);
-			// expect(taskCard.cardElements.set).toBeCalledWith(newTitleCardElement);
+
+			const updatedCardElements = result.card.cardElements.getItems();
+
+			const titleCardElement = updatedCardElements.find(
+				(element) => element.cardElementType === CardElementType.Title
+			) as TitleCardElement;
+			expect(titleCardElement.value).toEqual(taskCardUpdateParams.title);
+
+			const richTextCardElements = updatedCardElements.filter(
+				(element) => element.cardElementType === CardElementType.RichText
+			) as RichTextCardElement[];
+			expect(richTextCardElements).toHaveLength(2);
+			expect(richTextCardElements[0].value).toEqual(richText[0]);
+			expect(richTextCardElements[1].value).toEqual(richText[1]);
 		});
 		it('should return the task card and task', async () => {
 			const result = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
