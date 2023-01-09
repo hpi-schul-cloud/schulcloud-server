@@ -141,15 +141,6 @@ export class OAuthService {
 		return stringPromise;
 	}
 
-	buildResponse(oauthConfig: OauthConfig, queryToken: OauthTokenResponse) {
-		const response: OAuthResponse = new OAuthResponse({
-			idToken: queryToken.id_token,
-			logoutEndpoint: oauthConfig.logoutEndpoint,
-			provider: oauthConfig.provider,
-		});
-		return response;
-	}
-
 	/**
 	 * Builds the URL from the given parameters.
 	 *

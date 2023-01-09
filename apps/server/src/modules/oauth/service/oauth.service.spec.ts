@@ -1,23 +1,23 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MikroORM, NotFoundError } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfig, System, User } from '@shared/domain';
+import { OauthConfig, System } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { UserRepo } from '@shared/repo/user/user.repo';
-import { setupEntities, userFactory } from '@shared/testing';
+import { schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
 import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { of, throwError } from 'rxjs';
-import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
+import { UserService } from '../../user';
+import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthResponse } from './dto/oauth.response';
@@ -54,9 +54,8 @@ describe('OAuthService', () => {
 	let service: OAuthService;
 
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
-	let userRepo: DeepMocked<UserRepo>;
+	let userService: DeepMocked<UserService>;
 	let feathersJwtProvider: DeepMocked<FeathersJwtProvider>;
-	let provisioningService: DeepMocked<ProvisioningService>;
 	let httpService: DeepMocked<HttpService>;
 
 	let testSystem: System;
@@ -80,8 +79,8 @@ describe('OAuthService', () => {
 			providers: [
 				OAuthService,
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 				{
 					provide: FeathersJwtProvider,
@@ -99,18 +98,13 @@ describe('OAuthService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
-				{
-					provide: ProvisioningService,
-					useValue: createMock<ProvisioningService>(),
-				},
 			],
 		}).compile();
 		service = module.get(OAuthService);
 
 		oAuthEncryptionService = module.get(DefaultEncryptionService);
-		userRepo = module.get(UserRepo);
+		userService = module.get(UserService);
 		feathersJwtProvider = module.get(FeathersJwtProvider);
-		provisioningService = module.get(ProvisioningService);
 		httpService = module.get(HttpService);
 	});
 
@@ -224,47 +218,48 @@ describe('OAuthService', () => {
 		});
 
 		it('should return the user according to the externalId', async () => {
-			const externalId = new ObjectId().toHexString();
-			const user: User = userFactory.buildWithId({ externalId });
+			const externalUserId = 'externalUserId';
+			const user: UserDO = new UserDO({
+				firstName: 'firstName',
+				lastName: 'lastName',
+				email: 'email',
+				schoolId: 'schoolId',
+				roleIds: ['roleId'],
+				externalId: externalUserId,
+			});
 
-			provisioningService.process.mockResolvedValue({ externalUserId: externalId });
-			userRepo.findByExternalIdOrFail.mockResolvedValue(user);
+			userService.findByExternalId.mockResolvedValue(user);
 
-			const result: User = await service.findUser('accessToken', 'idToken', testSystem.id);
+			const result: UserDO = await service.findUser('idToken', externalUserId, testSystem.id);
 
-			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
-			expect(result).toBe(user);
+			expect(result).toEqual(user);
 		});
 
 		it('should throw if no user is found with this id and give helpful context', async () => {
-			const schoolId = '123';
-			const userLdapId = '321-my-current-ldap-id';
-			userRepo.findByExternalIdOrFail.mockRejectedValue(new NotFoundError('User not found'));
-			userRepo.findByEmail.mockResolvedValue([
-				{ school: { id: schoolId, name: 'testschool' }, externalId: userLdapId },
-			] as User[]);
+			const schoolId = new ObjectId().toHexString();
+			const externalUserId = '321-my-current-ldap-id';
+			userService.findByExternalId.mockResolvedValue(null);
+			userService.findByEmail.mockResolvedValue([
+				userFactory.buildWithId({ school: schoolFactory.buildWithId(undefined, schoolId), externalId: externalUserId }),
+			]);
 
-			try {
-				await service.findUser('accessToken', 'idToken', testSystem.id);
-			} catch (error) {
-				expect(error).toBeInstanceOf(OAuthSSOError);
-				expect((error as OAuthSSOError).message).toContain(schoolId);
-				expect((error as OAuthSSOError).message).toContain(userLdapId);
-			}
-		});
+			const promise: Promise<UserDO> = service.findUser('idToken', externalUserId, testSystem.id);
 
-		it('should return the user according to the id', async () => {
-			const externalId: string = new ObjectId().toHexString();
-			const user: User = userFactory.buildWithId({ externalId });
-			const provisioning: ProvisioningDto = new ProvisioningDto({ externalUserId: externalId });
-
-			provisioningService.process.mockResolvedValue(provisioning);
-			userRepo.findByExternalIdOrFail.mockResolvedValue(user);
-
-			const result: User = await service.findUser('accessToken', 'idToken', testSystem.id);
-
-			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
-			expect(result).toBe(user);
+			await expect(promise).rejects.toThrow(OAuthSSOError);
+			await expect(promise).rejects.toThrow(
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				expect.objectContaining<Partial<OAuthSSOError>>({
+					// eslint-disable-next-line ,@typescript-eslint/no-unsafe-assignment
+					message: expect.stringContaining(schoolId),
+				})
+			);
+			await expect(promise).rejects.toThrow(
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				expect.objectContaining<Partial<OAuthSSOError>>({
+					// eslint-disable-next-line ,@typescript-eslint/no-unsafe-assignment
+					message: expect.stringContaining(externalUserId),
+				})
+			);
 		});
 
 		it('should throw if idToken is invalid and has no sub', async () => {
@@ -277,32 +272,13 @@ describe('OAuthService', () => {
 	describe('getJwtForUser', () => {
 		it('should return a JWT for a user', async () => {
 			const jwtToken = 'schulcloudJwt';
-			const user: User = userFactory.buildWithId();
 
 			feathersJwtProvider.generateJwt.mockResolvedValue(jwtToken);
 
-			const jwtResult = await service.getJwtForUser(user);
+			const jwtResult = await service.getJwtForUser('userId');
 
 			expect(feathersJwtProvider.generateJwt).toHaveBeenCalled();
 			expect(jwtResult).toStrictEqual(jwtToken);
-		});
-	});
-
-	describe('buildResponse', () => {
-		it('should build the Response successfully', () => {
-			const tokenResponse: OauthTokenResponse = {
-				access_token: 'accessToken',
-				refresh_token: 'refreshToken',
-				id_token: 'idToken',
-			};
-
-			const response: OAuthResponse = service.buildResponse(testOauthConfig, tokenResponse);
-
-			expect(response).toEqual({
-				idToken: tokenResponse.id_token,
-				logoutEndpoint: testOauthConfig.logoutEndpoint,
-				provider: testOauthConfig.provider,
-			});
 		});
 	});
 
@@ -327,7 +303,7 @@ describe('OAuthService', () => {
 			const response: OAuthResponse = service.getOAuthErrorResponse(generalError, 'provider');
 
 			expect(response.provider).toStrictEqual('provider');
-			expect(response.errorcode).toStrictEqual('oauth_login_failed');
+			expect(response.errorCode).toStrictEqual('oauth_login_failed');
 			expect(response.redirect).toStrictEqual(`${hostUri}/login?error=oauth_login_failed&provider=provider`);
 		});
 
@@ -337,7 +313,7 @@ describe('OAuthService', () => {
 			const response = service.getOAuthErrorResponse(specialError, 'provider');
 
 			expect(response.provider).toStrictEqual('provider');
-			expect(response.errorcode).toStrictEqual('special_error_code');
+			expect(response.errorCode).toStrictEqual('special_error_code');
 			expect(response.redirect).toStrictEqual(`${hostUri}/login?error=special_error_code&provider=provider`);
 		});
 	});

@@ -50,7 +50,7 @@ describe('OidcMockProvisioningStrategy', () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.ISERV,
+						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
 					accessToken: 'accessToken',
 					idToken: 'idToken',
@@ -104,7 +104,7 @@ describe('OidcMockProvisioningStrategy', () => {
 				const data: OauthDataDto = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.ISERV,
+						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
 					externalUser: new ExternalUserDto({ externalId: userName }),
 				});
