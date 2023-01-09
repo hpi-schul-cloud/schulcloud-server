@@ -39,6 +39,7 @@ export class OAuthService {
 	async authenticateUser(authCode: string, systemId: string): Promise<{ user: UserDO; redirect: string }> {
 		const system = await this.systemService.findOAuthById(systemId);
 		if (!system.id) {
+			// unreachable. System loaded from DB always has an ID
 			throw new UnauthorizedException(`System with id "${systemId}" does not exist.`);
 		}
 

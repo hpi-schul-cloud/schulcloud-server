@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, System } from '@shared/domain';
 import { SystemService } from '@src/modules/system/service/system.service';
@@ -16,7 +16,7 @@ import { of, throwError } from 'rxjs';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
+import { ProvisioningService } from '@src/modules/provisioning';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { OAuthService } from './oauth.service';
@@ -24,25 +24,30 @@ import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthResponse } from './dto/oauth.response';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 
-const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => ({
-	data,
-	status: 0,
-	statusText: '',
-	headers: {},
-	config: {},
+const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
+	return {
+		data,
+		status: 0,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
+};
+
+jest.mock('jwks-rsa', () => () => {
+	return {
+		getKeys: jest.fn(),
+		getSigningKey: jest.fn().mockResolvedValue({
+			kid: 'kid',
+			alg: 'alg',
+			getPublicKey: jest.fn().mockReturnValue('publicKey'),
+			rsaPublicKey: 'publicKey',
+		}),
+		getSigningKeys: jest.fn(),
+	};
 });
-
-jest.mock('jwks-rsa', () => () => ({
-	getKeys: jest.fn(),
-	getSigningKey: jest.fn().mockResolvedValue({
-		kid: 'kid',
-		alg: 'alg',
-		getPublicKey: jest.fn().mockReturnValue('publicKey'),
-		rsaPublicKey: 'publicKey',
-	}),
-	getSigningKeys: jest.fn(),
-}));
 
 jest.mock('jsonwebtoken');
 
@@ -55,6 +60,7 @@ describe('OAuthService', () => {
 	let userRepo: DeepMocked<UserDORepo>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let httpService: DeepMocked<HttpService>;
+	let systemService: DeepMocked<SystemService>;
 
 	let testSystem: System;
 	let testOauthConfig: OauthConfig;
@@ -112,6 +118,7 @@ describe('OAuthService', () => {
 		userRepo = module.get(UserDORepo);
 		provisioningService = module.get(ProvisioningService);
 		httpService = module.get(HttpService);
+		systemService = module.get(SystemService);
 	});
 
 	afterAll(async () => {
@@ -171,12 +178,14 @@ describe('OAuthService', () => {
 			expect(responseToken).toStrictEqual(tokenResponse);
 		});
 
-		it('should throw error if no token got returned', async () => {
-			httpService.post.mockReturnValueOnce(throwError(() => 'error'));
+		describe('if no token got returned', () => {
+			it('should throw error', async () => {
+				httpService.post.mockReturnValueOnce(throwError(() => 'error'));
 
-			await expect(service.requestToken(code, testOauthConfig)).rejects.toEqual(
-				new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step')
-			);
+				await expect(service.requestToken(code, testOauthConfig)).rejects.toEqual(
+					new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step')
+				);
+			});
 		});
 	});
 
@@ -194,19 +203,23 @@ describe('OAuthService', () => {
 		});
 
 		it('should validate id_token and return it decoded', async () => {
-			jest.spyOn(jwt, 'verify').mockImplementationOnce((): JwtPayload => ({ sub: 'mockSub' }));
+			jest.spyOn(jwt, 'verify').mockImplementationOnce((): JwtPayload => {
+				return { sub: 'mockSub' };
+			});
 
 			const decodedJwt: IJwt = await service.validateToken('idToken', testOauthConfig);
 
 			expect(decodedJwt.sub).toStrictEqual('mockSub');
 		});
 
-		it('should throw if no payload was returned', async () => {
-			jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => 'string');
+		describe('if no payload was returned', () => {
+			it('should throw', async () => {
+				jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => 'string');
 
-			await expect(service.validateToken('idToken', testOauthConfig)).rejects.toEqual(
-				new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
-			);
+				await expect(service.validateToken('idToken', testOauthConfig)).rejects.toEqual(
+					new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
+				);
+			});
 		});
 	});
 
@@ -225,7 +238,7 @@ describe('OAuthService', () => {
 			const user: UserDO = userDoFactory.buildWithId({ externalId });
 
 			provisioningService.process.mockResolvedValue({ externalUserId: externalId });
-			userRepo.findByExternalIdOrFail.mockResolvedValue(user);
+			userRepo.findByExternalIdOrFail.mockResolvedValueOnce(user);
 
 			const result: UserDO = await service.findUser('accessToken', 'idToken', testSystem.id);
 
@@ -233,38 +246,28 @@ describe('OAuthService', () => {
 			expect(result).toBe(user);
 		});
 
-		it('should throw if no user is found with this id and give helpful context', async () => {
-			const userLdapId = '321-my-current-ldap-id';
-			userRepo.findByExternalIdOrFail.mockRejectedValue(new NotFoundError('User not found'));
-			provisioningService.process.mockResolvedValueOnce({ externalUserId: userLdapId });
+		describe('if no user is found with this id and give helpful context', () => {
+			it('should throw', async () => {
+				const userLdapId = '321-my-current-ldap-id';
+				userRepo.findByExternalIdOrFail.mockRejectedValueOnce(new NotFoundError('User not found'));
+				provisioningService.process.mockResolvedValueOnce({ externalUserId: userLdapId });
 
-			try {
-				await service.findUser('accessToken', 'idToken', testSystem.id);
-			} catch (error) {
-				expect(error).toBeInstanceOf(OAuthSSOError);
-				expect((error as OAuthSSOError).message).toContain(decodedJwtMock.email);
-				expect((error as OAuthSSOError).message).toContain(userLdapId);
-			}
+				try {
+					await service.findUser('accessToken', 'idToken', testSystem.id);
+				} catch (error) {
+					expect(error).toBeInstanceOf(OAuthSSOError);
+					expect((error as OAuthSSOError).message).toContain(decodedJwtMock.email);
+					expect((error as OAuthSSOError).message).toContain(userLdapId);
+				}
+			});
 		});
 
-		it('should return the user according to the id', async () => {
-			const externalId: string = new ObjectId().toHexString();
-			const user: UserDO = userDoFactory.buildWithId({ externalId });
-			const provisioning: ProvisioningDto = new ProvisioningDto({ externalUserId: externalId });
+		describe('if idToken is invalid and has no sub', () => {
+			it('should throw', async () => {
+				jest.spyOn(jwt, 'decode').mockImplementationOnce(() => null);
 
-			provisioningService.process.mockResolvedValue(provisioning);
-			userRepo.findByExternalIdOrFail.mockResolvedValue(user);
-
-			const result: UserDO = await service.findUser('accessToken', 'idToken', testSystem.id);
-
-			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
-			expect(result).toBe(user);
-		});
-
-		it('should throw if idToken is invalid and has no sub', async () => {
-			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => null);
-
-			await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(BadRequestException);
+				await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(BadRequestException);
+			});
 		});
 	});
 
@@ -319,6 +322,63 @@ describe('OAuthService', () => {
 			expect(response.provider).toStrictEqual('provider');
 			expect(response.errorcode).toStrictEqual('special_error_code');
 			expect(response.redirect).toStrictEqual(`${hostUri}/login?error=special_error_code&provider=provider`);
+		});
+	});
+
+	describe('authenticateUser', () => {
+		const tokenResponse: OauthTokenResponse = {
+			access_token: 'accessToken',
+			refresh_token: 'refreshToken',
+			id_token: 'idToken',
+		};
+		const decodedJwtMock = { sub: new ObjectId().toHexString(), email: 'peter.tester@example.com' };
+
+		beforeEach(() => {
+			jest.spyOn(jwt, 'decode').mockImplementation((): JwtPayload => decodedJwtMock);
+			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
+			httpService.post.mockReturnValue(of(createAxiosResponse<OauthTokenResponse>(tokenResponse)));
+		});
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+		// const mockSystemDto: SystemDto = {};
+
+		it('should authenticate a user', async () => {
+			const authCode = 'mockAuthCode';
+			const externalId = new ObjectId().toHexString();
+			const mockUser: UserDO = userDoFactory.buildWithId({ externalId });
+			systemService.findOAuthById.mockResolvedValueOnce(testSystem);
+			userRepo.findByExternalIdOrFail.mockResolvedValueOnce(mockUser);
+
+			const { user, redirect } = await service.authenticateUser(authCode, testSystem.id);
+			expect(redirect).toStrictEqual(`${hostUri}/dashboard`);
+			expect(user).toStrictEqual(mockUser);
+		});
+
+		describe('when system id does not exist (impossible case)', () => {
+			it('the authentication should fail', async () => {
+				const authCode = 'mockAuthCode';
+				const externalId = new ObjectId().toHexString();
+				const mockUser: UserDO = userDoFactory.buildWithId({ externalId });
+
+				systemService.findOAuthById.mockResolvedValueOnce({} as SystemDto);
+				userRepo.findByExternalIdOrFail.mockResolvedValueOnce(mockUser);
+
+				await expect(service.authenticateUser(authCode, testSystem.id)).rejects.toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when system does not have oauth config', () => {
+			it('the authentication should fail', async () => {
+				const authCode = 'mockAuthCode';
+				const externalId = new ObjectId().toHexString();
+				const mockUser: UserDO = userDoFactory.buildWithId({ externalId });
+				const testSystemWithoutConfig = systemFactory.buildWithId();
+				systemService.findOAuthById.mockResolvedValueOnce(testSystemWithoutConfig);
+				userRepo.findByExternalIdOrFail.mockResolvedValueOnce(mockUser);
+
+				await expect(service.authenticateUser(authCode, testSystem.id)).rejects.toThrow(UnauthorizedException);
+			});
 		});
 	});
 });

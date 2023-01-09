@@ -104,83 +104,132 @@ describe('OAuthUc', () => {
 			expect(response.jwt).toStrictEqual(jwt);
 		});
 
-		it('should oauthResponse with error when oauthconfig is missing', async () => {
-			const system: System = systemFactory.buildWithId();
-			const errorResponse: OAuthResponse = {
-				provider: 'unknown-provider',
-				errorcode: 'sso_internal_error',
-				redirect: 'errorRedirect',
-			};
+		describe('when oauthconfig is missing', () => {
+			it('should oauthResponse with error', async () => {
+				const system: System = systemFactory.buildWithId();
+				const errorResponse: OAuthResponse = {
+					provider: 'unknown-provider',
+					errorcode: 'sso_internal_error',
+					redirect: 'errorRedirect',
+				};
 
-			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			systemService.findOAuthById.mockResolvedValue(system);
-			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
+				oauthService.checkAuthorizationCode.mockReturnValue(code);
+				systemService.findOAuthById.mockResolvedValue(system);
+				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
-			const response: OAuthResponse = await service.processOAuth(query, system.id);
+				const response: OAuthResponse = await service.processOAuth(query, system.id);
 
-			expect(oauthService.getOAuthErrorResponse).toHaveBeenCalledWith(expect.any(Error), 'unknown-provider');
-			expect(response).toEqual(errorResponse);
-		});
-
-		it('should return an error response that contains the provider when internal error occurred', async () => {
-			const system: System = systemFactory.withOauthConfig().buildWithId();
-
-			const errorResponse: OAuthResponse = {
-				provider: system.oauthConfig?.provider,
-				errorcode: 'sso_internal_error',
-				redirect: 'errorRedirect',
-			} as OAuthResponse;
-
-			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			systemService.findOAuthById.mockResolvedValue(system);
-			oauthService.requestToken.mockRejectedValue(new OAuthSSOError());
-			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
-
-			const response: OAuthResponse = await service.processOAuth(query, system.id);
-
-			expect(oauthService.getOAuthErrorResponse).toHaveBeenCalledWith(expect.any(Error), system.oauthConfig?.provider);
-			expect(response).toEqual(errorResponse);
-		});
-
-		it('should return an error response if processOAuth failed and the provider cannot be fetched from the system', async () => {
-			const system: System = systemFactory.buildWithId();
-			const errorResponse: OAuthResponse = {
-				provider: 'unknown-provider',
-				errorcode: 'sso_internal_error',
-				redirect: 'errorRedirect',
-			} as OAuthResponse;
-
-			oauthService.checkAuthorizationCode.mockImplementation(() => {
-				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
+				expect(oauthService.getOAuthErrorResponse).toHaveBeenCalledWith(expect.any(Error), 'unknown-provider');
+				expect(response).toEqual(errorResponse);
 			});
-			systemService.findOAuthById.mockResolvedValue(system);
-			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
-
-			const response: OAuthResponse = await service.processOAuth(query, '');
-
-			expect(response).toEqual(errorResponse);
 		});
 
-		it('should throw if no system was found', async () => {
-			oauthService.checkAuthorizationCode.mockImplementation(() => {
-				throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step');
+		describe('when internal error occurred', () => {
+			it('should return an error response that contains the provider', async () => {
+				const system: System = systemFactory.withOauthConfig().buildWithId();
+
+				const errorResponse: OAuthResponse = {
+					provider: system.oauthConfig?.provider,
+					errorcode: 'sso_internal_error',
+					redirect: 'errorRedirect',
+				} as OAuthResponse;
+
+				oauthService.checkAuthorizationCode.mockReturnValue(code);
+				systemService.findOAuthById.mockResolvedValue(system);
+				oauthService.requestToken.mockRejectedValue(new OAuthSSOError());
+				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
+
+				const response: OAuthResponse = await service.processOAuth(query, system.id);
+
+				expect(oauthService.getOAuthErrorResponse).toHaveBeenCalledWith(
+					expect.any(Error),
+					system.oauthConfig?.provider
+				);
+				expect(response).toEqual(errorResponse);
 			});
-			systemService.findOAuthById.mockRejectedValue(new NotFoundError('Not Found'));
-
-			await expect(service.processOAuth(query, 'unknown id')).rejects.toThrow(NotFoundError);
 		});
 
-		it('should throw if no system.id exist', async () => {
-			const errorResponse: OAuthResponse = {
-				provider: 'unknown-provider',
-				errorcode: 'sso_internal_error',
-				redirect: 'errorRedirect',
-			} as OAuthResponse;
-			oauthService.checkAuthorizationCode.mockReturnValue('ignore');
-			systemService.findOAuthById.mockResolvedValue({ id: undefined, type: 'ignore' });
-			oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
-			const response: OAuthResponse = await service.processOAuth(query, 'brokenId');
-			expect(response).toEqual(errorResponse);
+		describe('if processOAuth failed and the provider cannot be fetched from the system', () => {
+			it('should return an error response', async () => {
+				const system: System = systemFactory.buildWithId();
+				const errorResponse: OAuthResponse = {
+					provider: 'unknown-provider',
+					errorcode: 'sso_internal_error',
+					redirect: 'errorRedirect',
+				} as OAuthResponse;
+
+				oauthService.checkAuthorizationCode.mockImplementation(() => {
+					throw new OAuthSSOError(
+						'Authorization Query Object has no authorization code or error',
+						'sso_auth_code_step'
+					);
+				});
+				systemService.findOAuthById.mockResolvedValue(system);
+				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
+
+				const response: OAuthResponse = await service.processOAuth(query, '');
+
+				expect(response).toEqual(errorResponse);
+			});
+		});
+
+		describe('if no system was found', () => {
+			it('should throw', async () => {
+				oauthService.checkAuthorizationCode.mockImplementation(() => {
+					throw new OAuthSSOError(
+						'Authorization Query Object has no authorization code or error',
+						'sso_auth_code_step'
+					);
+				});
+				systemService.findOAuthById.mockRejectedValue(new NotFoundError('Not Found'));
+
+				await expect(service.processOAuth(query, 'unknown id')).rejects.toThrow(NotFoundError);
+			});
+		});
+
+		describe('if user has no id (not reachable outside of test since the user is loaded from DB)', () => {
+			it('should throw', async () => {
+				const redirect = 'redirect';
+				const baseResponse: OAuthResponse = {
+					redirect,
+				};
+				const user: UserDO = new UserDO({
+					firstName: 'firstName',
+					lastName: 'lastame',
+					email: '',
+					roleIds: [],
+					schoolId: 'mockSchoolId',
+					externalId: 'mockExternalId',
+				});
+				const errorResponse: OAuthResponse = {
+					provider: 'unknown-provider',
+					errorcode: 'sso_internal_error',
+					redirect: 'errorRedirect',
+				} as OAuthResponse;
+
+				oauthService.checkAuthorizationCode.mockReturnValue(code);
+				oauthService.authenticateUser.mockResolvedValue({ user, redirect: baseResponse.redirect });
+				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
+
+				const response: OAuthResponse = await service.processOAuth(query, testSystem.id);
+
+				expect(response).toEqual(errorResponse);
+			});
+		});
+
+		describe('if no system.id exist', () => {
+			it('should throw', async () => {
+				const errorResponse: OAuthResponse = {
+					provider: 'unknown-provider',
+					errorcode: 'sso_internal_error',
+					redirect: 'errorRedirect',
+				} as OAuthResponse;
+				oauthService.checkAuthorizationCode.mockReturnValue('ignore');
+				systemService.findOAuthById.mockResolvedValue({ id: undefined, type: 'ignore' });
+				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
+				const response: OAuthResponse = await service.processOAuth(query, 'brokenId');
+				expect(response).toEqual(errorResponse);
+			});
 		});
 	});
 });

@@ -54,7 +54,7 @@ export class OauthUc {
 
 	private async getOauthErrorResponse(error, systemId: string): Promise<OAuthResponse> {
 		const system = await this.systemService.findOAuthById(systemId);
-		const provider = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
+		const provider = system?.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
 		const oAuthError = this.oauthService.getOAuthErrorResponse(error, provider);
 		return oAuthError;
 	}
