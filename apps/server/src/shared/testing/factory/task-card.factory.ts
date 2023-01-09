@@ -4,8 +4,6 @@ import { BaseFactory } from './base.factory';
 import { schoolFactory } from './school.factory';
 import { userFactory } from './user.factory';
 
-const yesterday = new Date(Date.now() - 86400000);
-
 class TaskCardFactory extends BaseFactory<TaskCard, ITaskCardProps> {}
 
 export const taskCardFactory = TaskCardFactory.define(TaskCard, ({ sequence }) => {
