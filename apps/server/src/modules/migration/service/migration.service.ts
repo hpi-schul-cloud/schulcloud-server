@@ -5,11 +5,8 @@ import { BadRequestException } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { PageTypes } from '../controller/dto/page-type.query.param';
 import { PageContentDto } from './dto/page-content.dto';
-import { CancelKeys, ContentKeys } from '../interface/keys.enum';
 
 export class MigrationService {
-	private readonly CHECK_MIGRATION_BASE_URL: string = `${Configuration.get('HOST') as string}/api/v3/migration/check`;
-
 	private readonly PROCESS_MIGRATION_BASE_URL: string = `${
 		Configuration.get('HOST') as string
 	}/api/v3/migration/process`;
@@ -21,32 +18,20 @@ export class MigrationService {
 		const sourceSystem: System = await this.systemRepo.findById(sourceId);
 		const targetSystem: System = await this.systemRepo.findById(targetId);
 
+		content.proceedButtonUrl = this.getLoginUrl(targetSystem, `${this.PROCESS_MIGRATION_BASE_URL}`);
+
 		switch (pageType) {
 			case PageTypes.START_FROM_NEW_SYSTEM:
-				content.contentKey = ContentKeys.START_FROM_NEW_SYSTEM;
 				content.proceedButtonUrl = this.getLoginUrl(
 					sourceSystem,
-					`${this.CHECK_MIGRATION_BASE_URL}/${sourceSystem.id}?skip=true`
+					this.getLoginUrl(targetSystem, `${this.PROCESS_MIGRATION_BASE_URL}`)
 				);
-				content.cancelButtonKey = CancelKeys.BUTTON_LOGOUT;
 				content.cancelButtonUrl = this.getLogoutUrl();
 				break;
 			case PageTypes.START_FROM_OLD_SYSTEM:
-				content.contentKey = ContentKeys.START_FROM_OLD_SYSTEM;
-				content.proceedButtonUrl = this.getLoginUrl(
-					targetSystem,
-					`${this.PROCESS_MIGRATION_BASE_URL}/${sourceSystem.id}`
-				);
-				content.cancelButtonKey = CancelKeys.BUTTON_NOTNOW;
 				content.cancelButtonUrl = this.getDashboardUrl();
 				break;
 			case PageTypes.START_FROM_OLD_SYSTEM_MANDATORY:
-				content.contentKey = ContentKeys.START_FROM_OLD_SYSTEM_MANDATORY;
-				content.proceedButtonUrl = this.getLoginUrl(
-					targetSystem,
-					`${this.PROCESS_MIGRATION_BASE_URL}/${sourceSystem.id}`
-				);
-				content.cancelButtonKey = CancelKeys.BUTTON_LOGOUT;
 				content.cancelButtonUrl = this.getLogoutUrl();
 				break;
 			default:
@@ -56,7 +41,7 @@ export class MigrationService {
 		return content;
 	}
 
-	private getLoginUrl(system: System, redirectUri?: string): string {
+	private getLoginUrl(system: System, postLoginUri?: string): string {
 		if (!system.oauthConfig) throw new EntityNotFoundError(OauthConfig.name);
 
 		const { oauthConfig } = system;
@@ -66,7 +51,7 @@ export class MigrationService {
 			'?client_id=',
 			oauthConfig.clientId,
 			'&redirect_uri=',
-			redirectUri ?? oauthConfig.redirectUri,
+			this.createPostLoginUri(oauthConfig.redirectUri, postLoginUri),
 			'&response_type=',
 			oauthConfig.responseType,
 			'&scope=',
@@ -74,6 +59,13 @@ export class MigrationService {
 		].join('');
 
 		return encodedURI;
+	}
+
+	private createPostLoginUri(redirectUri: string, postLoginUri?: string): string {
+		if (!postLoginUri) return redirectUri;
+		const combinedUri = [redirectUri, 'postLoginRedirect=', postLoginUri].join(redirectUri.includes('?') ? '&' : '?');
+
+		return combinedUri;
 	}
 
 	private getDashboardUrl(): string {

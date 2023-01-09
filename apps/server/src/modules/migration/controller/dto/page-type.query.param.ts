@@ -6,7 +6,7 @@ export enum PageTypes {
 	START_FROM_OLD_SYSTEM_MANDATORY = 'start_from_old_system_mandatory',
 }
 
-export class PageTypeQueryParams {
+export class PageContentQueryParams {
 	pageType!: PageTypes;
 
 	@IsMongoId()
