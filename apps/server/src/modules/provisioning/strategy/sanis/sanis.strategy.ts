@@ -14,7 +14,7 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 	constructor(
 		private readonly responseMapper: SanisResponseMapper,
 		private readonly httpService: HttpService,
-		oidcProvisioningService: OidcProvisioningService
+		protected readonly oidcProvisioningService: OidcProvisioningService
 	) {
 		super(oidcProvisioningService);
 	}

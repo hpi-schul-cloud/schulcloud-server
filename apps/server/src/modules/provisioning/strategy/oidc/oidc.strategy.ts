@@ -1,11 +1,13 @@
+import { Injectable } from '@nestjs/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 import { OidcProvisioningService } from './service/oidc-provisioning.service';
 
+@Injectable()
 export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
-	protected constructor(protected readonly oidcProvisioningService: OidcProvisioningService) {
+	constructor(protected readonly oidcProvisioningService: OidcProvisioningService) {
 		super();
 	}
 
