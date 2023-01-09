@@ -6,7 +6,6 @@ import {
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { DeepPartial } from 'fishery';
-import { DoBaseFactory } from './do-base.factory';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -14,8 +13,9 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 	ToolConfigType,
-} from '../../../domain';
-import { TokenEndpointAuthMethod } from '../../../../modules/tool/interface/token-endpoint-auth-method.enum';
+} from '@shared/domain';
+import { TokenEndpointAuthMethod } from '@src/modules/tool/interface';
+import { DoBaseFactory } from './do-base.factory';
 
 export const basicToolConfigDOFactory = DoBaseFactory.define<BasicToolConfigDO, BasicToolConfigDO>(
 	BasicToolConfigDO,

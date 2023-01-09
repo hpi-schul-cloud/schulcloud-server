@@ -3,6 +3,7 @@ import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-e
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { SchoolExternalToolStatus } from '@shared/domain/domainobject/external-tool/school-external-tool-status';
+import { EntityId } from '@shared/domain';
 import { ExternalToolService } from './external-tool.service';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 
@@ -12,6 +13,11 @@ export class SchoolExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly externalToolService: ExternalToolService
 	) {}
+
+	async getSchoolExternalToolById(schoolExternalToolId: EntityId): Promise<SchoolExternalToolDO> {
+		const schoolExternalTool = await this.schoolExternalToolRepo.findById(schoolExternalToolId);
+		return schoolExternalTool;
+	}
 
 	async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise<SchoolExternalToolDO[]> {
 		let schoolExternalToolDOs: SchoolExternalToolDO[] = await this.schoolExternalToolRepo.find({
@@ -38,5 +44,9 @@ export class SchoolExternalToolService {
 			return SchoolExternalToolStatus.LATEST;
 		}
 		return SchoolExternalToolStatus.OUTDATED;
+	}
+
+	async deleteSchoolExternalToolById(schoolExternalToolId: EntityId): Promise<void> {
+		await this.schoolExternalToolRepo.deleteById(schoolExternalToolId);
 	}
 }

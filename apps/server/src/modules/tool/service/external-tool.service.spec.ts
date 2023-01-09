@@ -333,7 +333,7 @@ describe('ExternalToolService', () => {
 				toolVersion: 1,
 			});
 
-			schoolToolRepo.findByToolId.mockResolvedValue([schoolExternalToolDO]);
+			schoolToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalToolDO]);
 
 			return { schoolExternalToolDO };
 		};
@@ -346,7 +346,7 @@ describe('ExternalToolService', () => {
 
 				await service.deleteExternalTool(toolId);
 
-				expect(courseToolRepo.deleteBySchoolExternalToolIds).toHaveBeenCalledWith([schoolExternalToolDO.id]);
+				expect(courseToolRepo.delete).toHaveBeenCalledWith([schoolExternalToolDO.id]);
 			});
 
 			it('should delete all related SchoolExternalTools', async () => {
@@ -356,7 +356,7 @@ describe('ExternalToolService', () => {
 
 				await service.deleteExternalTool(toolId);
 
-				expect(schoolToolRepo.deleteByToolId).toHaveBeenCalledWith(toolId);
+				expect(schoolToolRepo.deleteByExternalToolId).toHaveBeenCalledWith(toolId);
 			});
 
 			it('should delete the ExternalTool', async () => {

@@ -62,7 +62,7 @@ describe('ExternalTool Entity', () => {
 				version: 1,
 			});
 			const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
-				tool: externalTool,
+				schoolExternalTool: externalTool,
 				school: schoolFactory.buildWithId(),
 				schoolParameters: [],
 				toolVersion: 1,

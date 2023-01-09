@@ -17,7 +17,7 @@ class LtiToolRepoSpec extends LtiToolRepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntityPropertiesSpec(entityDO: LtiToolDO): EntityProperties<ILtiToolProperties> {
+	mapDOToEntityPropertiesSpec(entityDO: LtiToolDO): ILtiToolProperties {
 		return super.mapDOToEntityProperties(entityDO);
 	}
 }

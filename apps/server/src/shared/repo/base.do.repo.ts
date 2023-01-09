@@ -1,10 +1,8 @@
 import { EntityName, FilterQuery } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BaseDO, BaseEntity, baseEntityProperties, EntityId, IBaseEntityProps } from '@shared/domain';
+import { BaseDO, BaseEntity, baseEntityProperties, CourseExternalTool, EntityId } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-
-export type EntityProperties<P> = P & IBaseEntityProps;
 
 @Injectable()
 export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
@@ -16,7 +14,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 
 	protected abstract mapEntityToDO(entity: E): DO;
 
-	protected abstract mapDOToEntityProperties(entityDO: DO): EntityProperties<P>;
+	protected abstract mapDOToEntityProperties(entityDO: DO): P;
 
 	async save(entityDo: DO): Promise<DO> {
 		const savedDos: DO[] = await this.saveAll([entityDo]);
@@ -62,9 +60,14 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 		return updated;
 	}
 
-	private createNewEntityFromDO(domainObject: DO) {
-		const entityProps: EntityProperties<P> = this.mapDOToEntityProperties(domainObject);
+	protected createNewEntityFromDO(domainObject: DO) {
+		const entityProps: P = this.mapDOToEntityProperties(domainObject);
 		const newEntity: E = this.entityFactory(entityProps);
+
+		if (domainObject.id) {
+			newEntity.id = domainObject.id;
+			newEntity._id = new ObjectId(domainObject.id);
+		}
 		return newEntity;
 	}
 
@@ -79,6 +82,19 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 		});
 	}
 
+	async delete(domainObjects: DO[] | DO): Promise<void> {
+		const dos: DO[] = Array.isArray(domainObjects) ? domainObjects : [domainObjects];
+
+		const entities: E[] = dos.map((domainObj: DO): E => this.createNewEntityFromDO(domainObj));
+
+		this._em.remove(entities);
+		await this._em.flush();
+	}
+
+	// TODO: https://ticketsystem.dbildungscloud.de/browse/ARC-173 replace with delete(domainObject: DO)
+	/**
+	 * @deprecated Please use {@link delete} instead
+	 */
 	async deleteById(id: EntityId | EntityId[]): Promise<number> {
 		const ids: string[] = Array.isArray(id) ? id : [id];
 
