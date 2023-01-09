@@ -1,15 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, userFactory, taskCardFactory, taskFactory } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
-import { CardElementRepo, TaskCardRepo, UserRepo, TitleCardElementRepo, RichTextCardElementRepo } from '@shared/repo';
-import { Actions, CardType, InputFormat, Permission, Task, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
-import { TaskService } from '@src/modules/task/service';
 import { UnauthorizedException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Actions, CardType, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
+import { RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { RichText } from '@shared/domain/types/richtext.types';
+import { CardElementRepo, RichTextCardElementRepo, TaskCardRepo, TitleCardElementRepo, UserRepo } from '@shared/repo';
+import {
+	richTextCardElementFactory,
+	setupEntities,
+	taskCardFactory,
+	taskFactory,
+	titleCardElementFactory,
+	userFactory
+} from '@shared/testing';
+import { AuthorizationService } from '@src/modules/authorization';
 import { ITaskCardCreate, ITaskCardUpdate } from '@src/modules/task-card/controller/mapper/task-card.mapper';
-import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import { TaskService } from '@src/modules/task/service';
 import { TaskCardUc } from './task-card.uc';
 import objectContaining = jasmine.objectContaining;
 
@@ -234,11 +241,14 @@ describe('TaskCardUc', () => {
 	describe('update', () => {
 		let taskWithStatus: TaskWithStatusVo;
 		let taskCardUpdateParams: ITaskCardUpdate;
-		const title = 'text title';
-		const richText = ['test richtext 1', 'test richtext 2'];
+		const title = 'changed text title';
+		const richText = ['changed richtext 1', 'changed richtext 2'];
 		beforeEach(() => {
 			user = userFactory.buildWithId();
-			taskCard = taskCardFactory.buildWithId();
+
+			const titleCardElement = titleCardElementFactory.build();
+			const richTextCardElements = richTextCardElementFactory.buildList(2);
+			taskCard = taskCardFactory.buildWithId({ cardElements: [titleCardElement, ...richTextCardElements] });
 
 			const status = taskCard.task.createTeacherStatusForUser(user);
 			const taskWithStatusVo = new TaskWithStatusVo(taskCard.task, status);
@@ -282,16 +292,18 @@ describe('TaskCardUc', () => {
 			expect(taskService.update).toBeCalledWith(user.id, taskCard.task.id, taskParams);
 		});
 		it('should delete existing card elements and set the new elements', async () => {
+			const originalCardElements = taskCard.cardElements.getItems();
 			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
-			const newCardElements = [
-				new TitleCardElement(taskCardUpdateParams.title),
-				// @ts-ignore
-				new RichTextCardElement(taskCardUpdateParams.text[0]),
-				// @ts-ignore
-				new RichTextCardElement(taskCardUpdateParams.text[1]),
-			];
-			// expect(cardElementRepo.delete).toBeCalledWith(taskCard.cardElements.getItems());
-			//expect(taskCard.cardElements.set).toBeCalledWith(newCardElements);
+			const newTitleCardElement = titleCardElementFactory.build(title);
+			/* const newRichTextCardElementOne = richTextCardElementFactory.build(
+				new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 })
+			);
+			const newRichTextCardElementTwo = richTextCardElementFactory.build(
+				new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 })
+			); */
+
+			expect(cardElementRepo.delete).toBeCalledWith(originalCardElements);
+			// expect(taskCard.cardElements.set).toBeCalledWith(newTitleCardElement);
 		});
 		it('should return the task card and task', async () => {
 			const result = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
