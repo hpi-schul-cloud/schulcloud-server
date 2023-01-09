@@ -12,7 +12,7 @@ import {
 	taskCardFactory,
 	taskFactory,
 	titleCardElementFactory,
-	userFactory
+	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ITaskCardCreate, ITaskCardUpdate } from '@src/modules/task-card/controller/mapper/task-card.mapper';
