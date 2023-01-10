@@ -30,6 +30,7 @@ describe('UserMigrationService', () => {
 		}).compile();
 
 		service = module.get(UserMigrationService);
+		schoolService = module.get(SchoolService);
 		systemService = module.get(SystemService);
 	});
 
