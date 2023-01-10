@@ -207,17 +207,25 @@ describe('OAuthService', () => {
 	});
 
 	describe('findUser', () => {
-		beforeEach(() => {
-			jest.spyOn(jwt, 'decode').mockImplementation((): JwtPayload => {
-				return { sub: new ObjectId().toHexString(), email: 'peter.tester@example.com' };
-			});
-		});
+		const setupJwt = () => {
+			const decodedJwt: JwtPayload = {
+				sub: new ObjectId().toHexString(),
+				email: 'peter.tester@example.com',
+			};
+
+			jest.spyOn(jwt, 'decode').mockReturnValue(decodedJwt);
+
+			return {
+				decodedJwt,
+			};
+		};
 
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
 
 		it('should return the user according to the externalId', async () => {
+			setupJwt();
 			const externalUserId = 'externalUserId';
 			const user: UserDO = new UserDO({
 				firstName: 'firstName',
@@ -236,6 +244,7 @@ describe('OAuthService', () => {
 		});
 
 		it('should throw if no user is found with this id and give helpful context', async () => {
+			setupJwt();
 			const schoolId = new ObjectId().toHexString();
 			const externalUserId = '321-my-current-ldap-id';
 			userService.findByExternalId.mockResolvedValue(null);
@@ -262,8 +271,21 @@ describe('OAuthService', () => {
 			);
 		});
 
+		describe('when the token has no email information', () => {
+			it('should throw without additional information', async () => {
+				const { decodedJwt } = setupJwt();
+				jest.spyOn(jwt, 'decode').mockReturnValue({ ...decodedJwt, email: undefined });
+				const externalUserId = '321-my-current-ldap-id';
+				userService.findByExternalId.mockResolvedValue(null);
+
+				const promise: Promise<UserDO> = service.findUser('idToken', externalUserId, testSystem.id);
+
+				await expect(promise).rejects.toThrow(OAuthSSOError);
+			});
+		});
+
 		it('should throw if idToken is invalid and has no sub', async () => {
-			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => null);
+			jest.spyOn(jwt, 'decode').mockReturnValue(null);
 
 			await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(BadRequestException);
 		});

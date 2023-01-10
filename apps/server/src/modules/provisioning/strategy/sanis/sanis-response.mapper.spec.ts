@@ -77,7 +77,7 @@ describe('SanisResponseMapper', () => {
 
 				expect(result).toEqual<ExternalUserDto>({
 					externalId: externalUserId,
-					firstName: 'lastName',
+					firstName: 'firstName',
 					lastName: 'lastName',
 					email: 'test@te.st',
 					roles: [RoleName.STUDENT],
