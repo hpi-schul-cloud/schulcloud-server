@@ -7,6 +7,7 @@ import { Type } from 'class-transformer';
 export abstract class CardElementBase {}
 
 export class TitleCardElementParam extends CardElementBase {
+	@ApiProperty({ description: 'type of element, needed for discriminator' })
 	type = CardElementType.Title;
 
 	@ApiProperty({
@@ -20,6 +21,7 @@ export class TitleCardElementParam extends CardElementBase {
 }
 
 export class RichTextCardElementParam extends CardElementBase {
+	@ApiProperty({ description: 'type of element, needed for discriminator' })
 	type = CardElementType.RichText;
 
 	@ApiProperty({

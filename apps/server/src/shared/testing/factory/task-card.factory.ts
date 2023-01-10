@@ -1,5 +1,5 @@
 import { CardType, ITaskCardProps, TaskCard } from '@shared/domain';
-import { taskFactory } from '@shared/testing';
+import { taskFactory } from './task.factory';
 import { BaseFactory } from './base.factory';
 import { schoolFactory } from './school.factory';
 import { userFactory } from './user.factory';
