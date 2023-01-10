@@ -1,4 +1,3 @@
-import { EntityProperties } from '@shared/repo';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -185,7 +184,7 @@ describe('LtiTool Repo', () => {
 				frontchannel_logout_uri: 'frontchannel_logout_uri',
 			});
 
-			const result: EntityProperties<ILtiToolProperties> = repo.mapDOToEntityPropertiesSpec(testDO);
+			const result: ILtiToolProperties = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			expect(testDO).toEqual(expect.objectContaining(result));
 		});

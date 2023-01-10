@@ -1,4 +1,4 @@
-import { BaseDORepo, EntityProperties } from '@shared/repo';
+import { BaseDORepo } from '@shared/repo';
 import { EntityName, Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ExternalTool, ISchoolExternalToolProperties, School, SchoolExternalTool } from '@shared/domain';
@@ -75,9 +75,8 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: SchoolExternalToolDO): EntityProperties<ISchoolExternalToolProperties> {
+	mapDOToEntityProperties(entityDO: SchoolExternalToolDO): ISchoolExternalToolProperties {
 		return {
-			id: entityDO.id,
 			school: Reference.createFromPK(School, entityDO.schoolId),
 			tool: Reference.createFromPK(ExternalTool, entityDO.toolId),
 			toolVersion: entityDO.toolVersion,

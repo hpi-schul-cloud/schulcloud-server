@@ -5,7 +5,6 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { EntityProperties } from '@shared/repo';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	BasicToolConfig,
@@ -81,7 +80,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: ExternalToolDO): EntityProperties<IExternalToolProperties> {
+	mapDOToEntityProperties(entityDO: ExternalToolDO): IExternalToolProperties {
 		let config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
 		switch (entityDO.config.type) {
 			case ToolConfigType.BASIC:

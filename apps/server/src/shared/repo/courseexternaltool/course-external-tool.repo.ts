@@ -68,7 +68,7 @@ export class CourseExternalToolRepo extends BaseDORepo<
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: CourseExternalToolDO): EntityProperties<ICourseExternalToolProperties> {
+	mapDOToEntityProperties(entityDO: CourseExternalToolDO): ICourseExternalToolProperties {
 		return {
 			course: Reference.createFromPK(Course, entityDO.courseId),
 			schoolTool: Reference.createFromPK(SchoolExternalTool, entityDO.schoolToolId),
