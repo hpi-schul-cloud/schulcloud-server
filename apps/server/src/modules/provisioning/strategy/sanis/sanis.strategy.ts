@@ -1,13 +1,13 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
-import { SanisResponse } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto } from '../../dto';
 import { OidcProvisioningStrategy } from '../oidc/oidc.strategy';
 import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
+import { SanisResponseMapper } from './sanis-response.mapper';
+import { SanisResponse } from './sanis.response';
 
 @Injectable()
 export class SanisProvisioningStrategy extends OidcProvisioningStrategy {

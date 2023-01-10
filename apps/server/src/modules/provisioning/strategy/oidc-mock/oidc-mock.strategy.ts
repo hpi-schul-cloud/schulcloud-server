@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
+import { ProvisioningStrategy } from '../base.strategy';
 
 @Injectable()
 export class OidcMockProvisioningStrategy extends ProvisioningStrategy {

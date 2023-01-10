@@ -3,8 +3,8 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolService } from '@src/modules/school';
-import { SystemService } from '../../system';
-import { SystemDto } from '../../system/service/dto/system.dto';
+import { SystemService } from '@src/modules/system';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserMigrationService } from './user-migration.service';
 
 describe('UserMigrationService', () => {

@@ -7,11 +7,11 @@ import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleService } from '@src/modules/role/service/role.service';
-import { IUserConfig } from '@src/modules/user/interfaces';
-import { UserMapper } from '@src/modules/user/mapper/user.mapper';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { SchoolService } from '../../school';
 import { SchoolMapper } from '../../school/mapper/school.mapper';
+import { IUserConfig } from '../interfaces';
+import { UserMapper } from '../mapper/user.mapper';
+import { UserDto } from '../uc/dto/user.dto';
 
 @Injectable()
 export class UserService {

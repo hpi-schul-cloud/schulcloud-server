@@ -1,14 +1,14 @@
 import { RoleName } from '@shared/domain';
-import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
+import { UUID } from 'bson';
+import { ExternalSchoolDto, ExternalUserDto } from '../../dto';
+import { SanisResponseMapper } from './sanis-response.mapper';
 import {
 	SanisResponse,
 	SanisResponseName,
 	SanisResponseOrganisation,
 	SanisResponsePersonenkontext,
 	SanisRole,
-} from '@src/modules/provisioning/strategy/sanis/sanis.response';
-import { UUID } from 'bson';
-import { ExternalSchoolDto, ExternalUserDto } from '../../dto';
+} from './sanis.response';
 
 describe('SanisResponseMapper', () => {
 	let mapper: SanisResponseMapper;

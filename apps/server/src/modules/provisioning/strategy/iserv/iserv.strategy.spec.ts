@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
 import jwt from 'jsonwebtoken';
 import {
 	ExternalUserDto,
@@ -10,6 +9,7 @@ import {
 	ProvisioningDto,
 	ProvisioningSystemDto,
 } from '../../dto';
+import { IservProvisioningStrategy } from './iserv.strategy';
 
 jest.mock('jsonwebtoken');
 

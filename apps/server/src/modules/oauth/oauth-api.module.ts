@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ProvisioningModule } from '../provisioning';
-import { SystemModule } from '../system';
-import { UserModule } from '../user';
-import { UserMigrationModule } from '../user-migration';
+import { ProvisioningModule } from '@src/modules/provisioning';
+import { SystemModule } from '@src/modules/system';
+import { UserModule } from '@src/modules/user';
+import { UserMigrationModule } from '@src/modules/user-migration';
 import { OauthSSOController } from './controller/oauth-sso.controller';
 import { OauthModule } from './oauth.module';
 import { HydraOauthUc, OauthUc } from './uc';

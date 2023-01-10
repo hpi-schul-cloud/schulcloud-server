@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemService } from '@src/modules/system';
-import { SystemDto } from '../../system/service/dto/system.dto';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
 import { ProvisioningSystemInputMapper } from '../mapper/provisioning-system-input.mapper';
 import {

@@ -1,6 +1,6 @@
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolUcMapper } from '@src/modules/school/mapper/school.uc.mapper';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
+import { SchoolUcMapper } from './school.uc.mapper';
 
 describe('SchoolUcMapper', () => {
 	describe('when it maps from a SchoolDO to a PublicSchoolResponse', () => {

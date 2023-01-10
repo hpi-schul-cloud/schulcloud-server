@@ -5,14 +5,6 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@shared/testing';
-import {
-	SanisResponse,
-	SanisResponseName,
-	SanisResponseOrganisation,
-	SanisResponsePersonenkontext,
-	SanisRole,
-} from '@src/modules/provisioning/strategy/sanis/sanis.response';
-import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
 import { AxiosResponse } from 'axios';
 import { UUID } from 'bson';
 import { of } from 'rxjs';
@@ -25,6 +17,14 @@ import {
 } from '../../dto';
 import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
 import { SanisResponseMapper } from './sanis-response.mapper';
+import {
+	SanisResponse,
+	SanisResponseName,
+	SanisResponseOrganisation,
+	SanisResponsePersonenkontext,
+	SanisRole,
+} from './sanis.response';
+import { SanisProvisioningStrategy } from './sanis.strategy';
 
 const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> => {
 	return {

@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolService } from '@src/modules/school';
-import { SystemService } from '../../system';
-import { SystemDto } from '../../system/service/dto/system.dto';
+import { SystemService } from '@src/modules/system';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 
 @Injectable()
 export class UserMigrationService {

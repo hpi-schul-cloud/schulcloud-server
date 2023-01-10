@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { SchoolModule } from '../school';
-import { SystemModule } from '../system';
+import { SchoolModule } from '@src/modules/school';
+import { SystemModule } from '@src/modules/system';
 import { UserMigrationService } from './service/user-migration.service';
 
 @Module({
