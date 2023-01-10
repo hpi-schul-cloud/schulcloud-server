@@ -12,8 +12,10 @@ import {
 	TaskWithStatusVo,
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
+import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ValidationError } from '@shared/common';
+import { SubmissionService } from './submission.service';
 
 @Injectable()
 export class TaskService {
@@ -21,7 +23,9 @@ export class TaskService {
 		private readonly taskRepo: TaskRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
-		private readonly lessonRepo: LessonRepo
+		private readonly lessonRepo: LessonRepo,
+		private readonly submissionService: SubmissionService,
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
 
 	async findBySingleParent(
@@ -31,6 +35,22 @@ export class TaskService {
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		return this.taskRepo.findBySingleParent(creatorId, courseId, filters, options);
+	}
+
+	async delete(task: Task): Promise<void> {
+		const params = FileParamBuilder.build(task.school.id, task);
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
+
+		await this.deleteSubmissions(task);
+
+		await this.taskRepo.delete(task);
+	}
+
+	private async deleteSubmissions(task: Task): Promise<void> {
+		const submissions = task.submissions.getItems();
+		const promises = submissions.map((submission) => this.submissionService.delete(submission));
+
+		await Promise.all(promises);
 	}
 
 	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {

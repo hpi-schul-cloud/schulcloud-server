@@ -3,12 +3,20 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { AuthorizationService } from '@src/modules';
-
 import { Actions, Course, Permission, Task, User } from '@shared/domain';
-import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import {
+	courseFactory,
+	lessonFactory,
+	setupEntities,
+	submissionFactory,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
+import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
 let user!: User;
@@ -19,9 +27,11 @@ let authorizationService: DeepMocked<AuthorizationService>;
 
 describe('TaskService', () => {
 	let module: TestingModule;
+	let orm: MikroORM;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let taskService: TaskService;
-	let orm: MikroORM;
+	let submissionService: DeepMocked<SubmissionService>;
+	let fileStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -39,20 +49,36 @@ describe('TaskService', () => {
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
 				},
+				{
+					provide: SubmissionService,
+					useValue: createMock<SubmissionService>(),
+				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
 			],
 		}).compile();
+
 		taskRepo = module.get(TaskRepo);
 		taskService = module.get(TaskService);
-
+		submissionService = module.get(SubmissionService);
 		userRepo = module.get(UserRepo);
 		courseRepo = module.get(CourseRepo);
 		lessonRepo = module.get(LessonRepo);
 		authorizationService = module.get(AuthorizationService);
+		fileStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
+
+		orm = await setupEntities();
 	});
 
 	afterAll(async () => {
 		await orm.close();
 		await module.close();
+	});
+
+	beforeEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('findBySingleParent', () => {
@@ -63,6 +89,41 @@ describe('TaskService', () => {
 
 			await expect(taskService.findBySingleParent(userId, courseId)).resolves.toEqual([[], 0]);
 			expect(taskRepo.findBySingleParent).toBeCalledWith(userId, courseId, undefined, undefined);
+		});
+	});
+
+	describe('delete', () => {
+		const setup = () => {
+			const task = taskFactory.buildWithId();
+			const submissions = submissionFactory.buildList(3, { task });
+
+			return { task, submissions };
+		};
+
+		it('should call fileStorageClientAdapterService.deleteFilesOfParent', async () => {
+			const { task } = setup();
+
+			await taskService.delete(task);
+
+			const params = FileParamBuilder.build(task.school.id, task);
+			expect(fileStorageClientAdapterService.deleteFilesOfParent).toBeCalledWith(params);
+		});
+
+		it('should call submissionService.delete() for all related submissions', async () => {
+			const { task, submissions } = setup();
+
+			await taskService.delete(task);
+
+			expect(submissionService.delete).toBeCalledTimes(3);
+			expect(submissionService.delete).toBeCalledWith(submissions[0]);
+		});
+
+		it('should call TaskRepo.delete() with Task', async () => {
+			const { task } = setup();
+
+			await taskService.delete(task);
+
+			expect(taskRepo.delete).toBeCalledWith(task);
 		});
 	});
 

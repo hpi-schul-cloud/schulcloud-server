@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { ValidationError } from '@shared/common';
 import {
 	Actions,
 	Counted,
@@ -18,18 +19,16 @@ import {
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
-import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { TaskService } from '../service/task.service';
+import { TaskService } from '../service';
 
 @Injectable()
 export class TaskUC {
 	constructor(
-		private readonly taskService: TaskService,
 		private readonly taskRepo: TaskRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
+		private readonly taskService: TaskService
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -234,16 +233,14 @@ export class TaskUC {
 		return this.taskService.update(userId, taskId, params);
 	}
 
-	async delete(userId: EntityId, taskId: EntityId) {
+	async delete(userId: EntityId, taskId: EntityId): Promise<boolean> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
 
-		const params = FileParamBuilder.build(task.school.id, task);
-		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
+		await this.taskService.delete(task);
 
-		await this.taskRepo.delete(task);
 		return true;
 	}
 
