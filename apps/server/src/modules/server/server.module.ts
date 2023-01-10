@@ -15,19 +15,19 @@ import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { LessonApiModule } from '@src/modules/lesson';
 import { NewsModule } from '@src/modules/news';
-import { OauthModule } from '@src/modules/oauth';
 import { OauthProviderModule } from '@src/modules/oauth-provider';
+import { OauthApiModule } from '@src/modules/oauth/oauth-api.module';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { RoleModule } from '@src/modules/role/role.module';
+import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemModule } from '@src/modules/system';
 import { TaskModule } from '@src/modules/task';
+import { ToolApiModule } from '@src/modules/tool';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { VideoConferenceModule } from '@src/modules/video-conference';
-import { ToolApiModule } from '@src/modules/tool';
-import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
 
@@ -40,7 +40,7 @@ const serverModules = [
 	CoreModule,
 	AuthModule,
 	CollaborativeStorageModule,
-	OauthModule,
+	OauthApiModule,
 	TaskModule,
 	LessonApiModule,
 	NewsModule,
