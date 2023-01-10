@@ -5,7 +5,7 @@ import { ServerConsoleModule } from '@src/console/console.module';
 import { ConsoleWriterService } from '@shared/infra/console';
 import { execute, TestBootstrapConsole } from './bootstrap.console';
 
-describe('ServerConsole (e2e)', () => {
+describe('ServerConsole (API)', () => {
 	let app: INestApplicationContext;
 	let bootstrap: BootstrapConsole;
 	let consoleService: ConsoleService;

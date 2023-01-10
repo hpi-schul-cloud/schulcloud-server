@@ -63,7 +63,7 @@ class API {
 	}
 }
 
-describe('Task Controller (e2e)', () => {
+describe('Task Controller (API)', () => {
 	describe('without permissions', () => {
 		let app: INestApplication;
 		let api: API;

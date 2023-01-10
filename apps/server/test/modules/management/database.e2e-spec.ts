@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ManagementServerTestModule } from '@src/modules/management/management-server.module';
 import request from 'supertest';
 
-describe('Database Management Controller (e2e)', () => {
+describe('Database Management Controller (API)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	const sampleCollectionName = 'accounts';

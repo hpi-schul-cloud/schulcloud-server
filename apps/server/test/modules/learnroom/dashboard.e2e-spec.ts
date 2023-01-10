@@ -10,7 +10,7 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
-describe('Dashboard Controller (e2e)', () => {
+describe('Dashboard Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let dashboardRepo: IDashboardRepo;

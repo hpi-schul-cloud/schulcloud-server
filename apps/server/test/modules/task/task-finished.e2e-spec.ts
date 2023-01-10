@@ -40,7 +40,7 @@ class API {
 	}
 }
 
-describe('Task controller (e2e)', () => {
+describe('Task controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;

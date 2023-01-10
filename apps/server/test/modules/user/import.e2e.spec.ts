@@ -45,7 +45,7 @@ import {
 import { Request } from 'express';
 import request from 'supertest';
 
-describe('ImportUser Controller (e2e)', () => {
+describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;

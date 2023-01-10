@@ -11,7 +11,7 @@ import { Request } from 'express';
 import moment from 'moment';
 import request from 'supertest';
 
-describe('News Controller (e2e)', () => {
+describe('News Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	const user = {
