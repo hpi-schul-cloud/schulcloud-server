@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolService } from '@src/modules/school';
+import { SystemService } from '../../system';
+import { SystemDto } from '../../system/service/dto/system.dto';
 
 @Injectable()
 export class UserMigrationService {
-	constructor(private readonly schoolService: SchoolService) {}
+	constructor(private readonly schoolService: SchoolService, private readonly systemService: SystemService) {}
 
 	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {
 		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
@@ -12,7 +14,21 @@ export class UserMigrationService {
 		return isInMigration;
 	}
 
-	getMigrationRedirect(): string {
-		return '/migration';
+	async getMigrationRedirect(): Promise<string> {
+		const oauthSystems: SystemDto[] = await this.systemService.findOAuth();
+		const sanisSystem: SystemDto | undefined = oauthSystems.find(
+			(system: SystemDto): boolean => system.alias === 'sanis'
+		);
+		const iservSystem: SystemDto | undefined = oauthSystems.find(
+			(system: SystemDto): boolean => system.alias === 'iserv'
+		);
+
+		if (!iservSystem?.id || !sanisSystem?.id) {
+			throw new InternalServerErrorException(
+				'Unable to generate migration redirect url. Iserv or Sanis system information is invalid.'
+			);
+		}
+
+		return `/migration?source=${iservSystem.id}&target=${sanisSystem.id}`;
 	}
 }

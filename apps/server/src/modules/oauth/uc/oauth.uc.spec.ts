@@ -294,7 +294,7 @@ describe('OAuthUc', () => {
 					officialSchoolNumber: 'officialSchoolNumber',
 				});
 
-				userMigrationService.getMigrationRedirect.mockReturnValue(migrationRedirect);
+				userMigrationService.getMigrationRedirect.mockResolvedValue(migrationRedirect);
 
 				return {
 					...setupData,
