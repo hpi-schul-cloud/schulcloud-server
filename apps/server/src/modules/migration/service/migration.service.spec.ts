@@ -6,6 +6,7 @@ import { setupEntities, systemFactory } from '@shared/testing';
 import { System } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException } from '@nestjs/common';
+import { EntityNotFoundError } from '@shared/common';
 import { MigrationService } from './migration.service';
 import { PageTypes } from '../controller/dto/page-type.query.param';
 import { PageContentDto } from './dto/page-content.dto';
@@ -47,9 +48,12 @@ describe('MigrationService', () => {
 
 	describe('when the pagecontent for different keys is called', () => {
 		let mockSystem: System;
-		beforeAll(() => {
+		beforeEach(() => {
 			mockSystem = systemFactory.withOauthConfig().build();
 			systemRepo.findById.mockResolvedValue(mockSystem);
+		});
+		afterEach(() => {
+			systemRepo.findById.mockRestore();
 		});
 		it('is requested for NEW_SYSTEM', async () => {
 			const contentDto: PageContentDto = await service.getPageContent(
@@ -77,6 +81,12 @@ describe('MigrationService', () => {
 		});
 		it('throws an exception without a type', async () => {
 			await expect(service.getPageContent('undefined' as PageTypes, '', '')).rejects.toThrow(BadRequestException);
+		});
+		it('throws an exception without oauthconfig', async () => {
+			mockSystem.oauthConfig = undefined;
+			await expect(service.getPageContent(PageTypes.START_FROM_NEW_SYSTEM, 'invalid', 'invalid')).rejects.toThrow(
+				EntityNotFoundError
+			);
 		});
 	});
 });

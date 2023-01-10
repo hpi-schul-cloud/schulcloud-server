@@ -42,7 +42,7 @@ export class MigrationService {
 		return content;
 	}
 
-	private getLoginUrl(system: System, postLoginUri?: string): string {
+	private getLoginUrl(system: System, postLoginUri: string): string {
 		if (!system.oauthConfig) throw new EntityNotFoundError(OauthConfig.name);
 
 		const { oauthConfig } = system;
@@ -62,8 +62,7 @@ export class MigrationService {
 		return encodedURI;
 	}
 
-	private createPostLoginUri(redirectUri: string, postLoginUri?: string): string {
-		if (!postLoginUri) return redirectUri;
+	private createPostLoginUri(redirectUri: string, postLoginUri: string): string {
 		const combinedUri = [redirectUri, 'postLoginRedirect=', postLoginUri].join(redirectUri.includes('?') ? '&' : '?');
 
 		return combinedUri;
