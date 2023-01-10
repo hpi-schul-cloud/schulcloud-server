@@ -3,11 +3,11 @@ import { EntityName, Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ExternalTool, ISchoolExternalToolProperties, School, SchoolExternalTool } from '@shared/domain';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { SchoolExternalToolDO } from '../../domain/domainobject/external-tool/school-external-tool.do';
+import { Logger } from '@src/core/logger';
+import { SchoolExternalToolQuery } from '@src/modules/tool/uc/dto/school-external-tool.types';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { ExternalToolRepoMapper } from '../externaltool/external-tool.repo.mapper';
-import { Logger } from '../../../core/logger';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
-import { SchoolExternalToolQuery } from '../../../modules/tool/uc/dto/school-external-tool.types';
 
 @Injectable()
 export class SchoolExternalToolRepo extends BaseDORepo<
