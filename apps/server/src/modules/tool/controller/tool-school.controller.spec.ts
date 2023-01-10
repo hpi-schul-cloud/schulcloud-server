@@ -84,6 +84,7 @@ describe('ToolSchoolController', () => {
 				const { currentUser, searchParams } = setup();
 				const expectedResponse: SchoolExternalToolSearchListResponse = new SchoolExternalToolSearchListResponse([
 					new SchoolExternalToolResponse({
+						id: 'id',
 						name: 'name',
 						schoolId: 'schoolId',
 						toolId: 'toolId',

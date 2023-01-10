@@ -38,19 +38,6 @@ export class CourseExternalToolRepo extends BaseDORepo<
 		return count;
 	}
 
-	async delete(courseExternalTools: CourseExternalToolDO[] | CourseExternalToolDO): Promise<void> {
-		const tools: CourseExternalToolDO[] = Array.isArray(courseExternalTools)
-			? courseExternalTools
-			: [courseExternalTools];
-
-		const entities: CourseExternalTool[] = tools.map(
-			(domainObj: CourseExternalToolDO): CourseExternalTool => this.createNewEntityFromDO(domainObj)
-		);
-
-		this._em.remove(entities);
-		await this._em.flush();
-	}
-
 	async find(query: CourseExternalToolQuery): Promise<CourseExternalToolDO[]> {
 		const scope: CourseExternalToolScope = this.buildScope(query);
 

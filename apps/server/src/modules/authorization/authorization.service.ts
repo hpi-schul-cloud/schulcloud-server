@@ -13,6 +13,7 @@ import {
 } from '@shared/domain';
 import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
+import { SchoolExternalToolRule } from '@shared/domain/rules/school-external-tool.rule';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
@@ -27,7 +28,8 @@ export class AuthorizationService extends BasePermissionManager {
 		private readonly userRule: UserRule,
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
-		private readonly loader: ReferenceLoader
+		private readonly loader: ReferenceLoader,
+		private readonly schoolExternalToolRule: SchoolExternalToolRule
 	) {
 		super();
 		this.registerPermissions([
@@ -39,6 +41,7 @@ export class AuthorizationService extends BasePermissionManager {
 			this.userRule,
 			this.schoolRule,
 			this.submissionRule,
+			this.schoolExternalToolRule,
 		]);
 	}
 

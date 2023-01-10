@@ -138,4 +138,16 @@ describe('SchoolExternalToolService', () => {
 			});
 		});
 	});
+
+	describe('getSchoolExternalToolById is called', () => {
+		describe('when schoolExternalToolId is given', () => {
+			it('should call schoolExternalToolRepo.findById', async () => {
+				const { schoolExternalToolId } = setup();
+
+				await service.getSchoolExternalToolById(schoolExternalToolId);
+
+				expect(schoolExternalToolRepo.findById).toHaveBeenCalledWith(schoolExternalToolId);
+			});
+		});
+	});
 });

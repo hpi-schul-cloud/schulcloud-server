@@ -24,6 +24,7 @@ export class SchoolExternalToolResponseMapper {
 
 	private mapToSchoolExternalToolResponse(schoolExternalToolDO: SchoolExternalToolDO): SchoolExternalToolResponse {
 		return {
+			id: schoolExternalToolDO.id as string,
 			name: schoolExternalToolDO.name ?? '',
 			toolId: schoolExternalToolDO.toolId,
 			schoolId: schoolExternalToolDO.schoolId,
