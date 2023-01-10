@@ -15,7 +15,7 @@ import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
 import { SystemDto } from '../../system/service/dto/system.dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
-import { OAuthResponse } from '../service/dto/oauth.response';
+import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import resetAllMocks = jest.resetAllMocks;
 
@@ -134,7 +134,7 @@ describe('OAuthUc', () => {
 			});
 
 			const postLoginRedirect = 'postLoginRedirect';
-			const successResponse: OAuthResponse = new OAuthResponse({
+			const successResponse: OAuthProcessDto = new OAuthProcessDto({
 				idToken: 'idToken',
 				logoutEndpoint: oauthConfig.logoutEndpoint,
 				provider: oauthConfig.provider,
@@ -170,9 +170,9 @@ describe('OAuthUc', () => {
 			it('should return a valid jwt', async () => {
 				const { query, userJwt, successResponse } = setup();
 
-				const response: OAuthResponse = await service.processOAuth(query, 'systemId');
+				const response: OAuthProcessDto = await service.processOAuth(query, 'systemId');
 
-				expect(response).toEqual<OAuthResponse>({
+				expect(response).toEqual<OAuthProcessDto>({
 					...successResponse,
 					jwt: userJwt,
 				});
@@ -184,7 +184,7 @@ describe('OAuthUc', () => {
 				const { query, system } = setup();
 				system.oauthConfig = undefined;
 
-				const errorResponse: OAuthResponse = new OAuthResponse({
+				const errorResponse: OAuthProcessDto = new OAuthProcessDto({
 					provider: 'unknown-provider',
 					errorCode: 'sso_internal_error',
 					redirect: 'errorRedirect',
@@ -192,7 +192,7 @@ describe('OAuthUc', () => {
 
 				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
-				const response: OAuthResponse = await service.processOAuth(query, 'systemId');
+				const response: OAuthProcessDto = await service.processOAuth(query, 'systemId');
 
 				expect(oauthService.getOAuthErrorResponse).toHaveBeenCalledWith(expect.any(Error), 'unknown-provider');
 				expect(response).toEqual(errorResponse);
@@ -203,7 +203,7 @@ describe('OAuthUc', () => {
 			it('should return an error response that contains the provider', async () => {
 				const { query } = setup();
 
-				const errorResponse: OAuthResponse = new OAuthResponse({
+				const errorResponse: OAuthProcessDto = new OAuthProcessDto({
 					provider: 'mock_provider',
 					errorCode: 'sso_internal_error',
 					redirect: 'errorRedirect',
@@ -212,7 +212,7 @@ describe('OAuthUc', () => {
 				oauthService.requestToken.mockRejectedValue(new OAuthSSOError());
 				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
-				const response: OAuthResponse = await service.processOAuth(query, 'systemId');
+				const response: OAuthProcessDto = await service.processOAuth(query, 'systemId');
 
 				expect(oauthService.getOAuthErrorResponse).toHaveBeenCalledWith(expect.any(Error), 'mock_provider');
 				expect(response).toEqual(errorResponse);
@@ -224,7 +224,7 @@ describe('OAuthUc', () => {
 				const { query, system } = setup();
 				system.oauthConfig = undefined;
 
-				const errorResponse: OAuthResponse = new OAuthResponse({
+				const errorResponse: OAuthProcessDto = new OAuthProcessDto({
 					provider: 'unknown-provider',
 					errorCode: 'sso_internal_error',
 					redirect: 'errorRedirect',
@@ -239,7 +239,7 @@ describe('OAuthUc', () => {
 				systemService.findOAuthById.mockResolvedValue(system);
 				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
-				const response: OAuthResponse = await service.processOAuth(query, 'systemId');
+				const response: OAuthProcessDto = await service.processOAuth(query, 'systemId');
 
 				expect(response).toEqual(errorResponse);
 			});
@@ -264,7 +264,7 @@ describe('OAuthUc', () => {
 		describe('when no system.id exist', () => {
 			it('should return an OAuthResponse with error', async () => {
 				const { query } = setup();
-				const errorResponse: OAuthResponse = new OAuthResponse({
+				const errorResponse: OAuthProcessDto = new OAuthProcessDto({
 					provider: 'unknown-provider',
 					errorCode: 'sso_internal_error',
 					redirect: 'errorRedirect',
@@ -273,7 +273,7 @@ describe('OAuthUc', () => {
 				systemService.findOAuthById.mockResolvedValue({ id: undefined, type: 'ignore' });
 				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
-				const response: OAuthResponse = await service.processOAuth(query, 'brokenId');
+				const response: OAuthProcessDto = await service.processOAuth(query, 'brokenId');
 
 				expect(response).toEqual(errorResponse);
 			});
@@ -283,7 +283,7 @@ describe('OAuthUc', () => {
 			const setupMigration = () => {
 				const setupData = setup();
 				const migrationRedirect = 'migrationRedirectUrl';
-				const migrationResponse: OAuthResponse = new OAuthResponse({
+				const migrationResponse: OAuthProcessDto = new OAuthProcessDto({
 					provider: setupData.oauthConfig.provider,
 					redirect: migrationRedirect,
 				});
@@ -309,7 +309,7 @@ describe('OAuthUc', () => {
 					userService.findByExternalId.mockResolvedValue(null);
 					userMigrationService.isSchoolInMigration.mockResolvedValue(true);
 
-					const response: OAuthResponse = await service.processOAuth(query, 'brokenId');
+					const response: OAuthProcessDto = await service.processOAuth(query, 'brokenId');
 
 					expect(response).toEqual(migrationResponse);
 				});
@@ -322,9 +322,9 @@ describe('OAuthUc', () => {
 					userService.findByExternalId.mockResolvedValue(user);
 					userMigrationService.isSchoolInMigration.mockResolvedValue(true);
 
-					const response: OAuthResponse = await service.processOAuth(query, 'brokenId');
+					const response: OAuthProcessDto = await service.processOAuth(query, 'brokenId');
 
-					expect(response).toEqual<OAuthResponse>({
+					expect(response).toEqual<OAuthProcessDto>({
 						...successResponse,
 						jwt: userJwt,
 					});
@@ -338,9 +338,9 @@ describe('OAuthUc', () => {
 					userService.findByExternalId.mockResolvedValue(null);
 					userMigrationService.isSchoolInMigration.mockResolvedValue(false);
 
-					const response: OAuthResponse = await service.processOAuth(query, 'brokenId');
+					const response: OAuthProcessDto = await service.processOAuth(query, 'brokenId');
 
-					expect(response).toEqual<OAuthResponse>({
+					expect(response).toEqual<OAuthProcessDto>({
 						...successResponse,
 						jwt: userJwt,
 					});

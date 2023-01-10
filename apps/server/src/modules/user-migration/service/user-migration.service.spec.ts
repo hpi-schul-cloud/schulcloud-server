@@ -90,12 +90,12 @@ describe('UserMigrationService', () => {
 				const iservSystem: SystemDto = new SystemDto({
 					id: 'iservId',
 					type: '',
-					alias: 'iserv',
+					alias: 'Schulserver',
 				});
 				const sanisSystem: SystemDto = new SystemDto({
 					id: 'sanisId',
 					type: '',
-					alias: 'sanis',
+					alias: 'SANIS',
 				});
 
 				systemService.findOAuth.mockResolvedValue([iservSystem, sanisSystem]);

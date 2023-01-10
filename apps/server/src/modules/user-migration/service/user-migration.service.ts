@@ -10,17 +10,17 @@ export class UserMigrationService {
 
 	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {
 		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
-		const isInMigration: boolean = !!school && (!!school.oauthMigrationPossible || !!school.oauthMigrationMandatory);
+		const isInMigration: boolean = !!school?.oauthMigrationPossible || !!school?.oauthMigrationMandatory;
 		return isInMigration;
 	}
 
 	async getMigrationRedirect(): Promise<string> {
 		const oauthSystems: SystemDto[] = await this.systemService.findOAuth();
 		const sanisSystem: SystemDto | undefined = oauthSystems.find(
-			(system: SystemDto): boolean => system.alias === 'sanis'
+			(system: SystemDto): boolean => system.alias === 'SANIS'
 		);
 		const iservSystem: SystemDto | undefined = oauthSystems.find(
-			(system: SystemDto): boolean => system.alias === 'iserv'
+			(system: SystemDto): boolean => system.alias === 'Schulserver'
 		);
 
 		if (!iservSystem?.id || !sanisSystem?.id) {

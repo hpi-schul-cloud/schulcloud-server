@@ -10,7 +10,7 @@ import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { OAuthResponse } from '../service/dto/oauth.response';
+import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class OauthUc {
 		this.logger.setContext(OauthUc.name);
 	}
 
-	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
+	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthProcessDto> {
 		try {
 			const oAuthResponsePromise = this.process(query, systemId);
 			return await oAuthResponsePromise;
@@ -35,7 +35,7 @@ export class OauthUc {
 		}
 	}
 
-	private async process(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
+	private async process(query: AuthorizationParams, systemId: string): Promise<OAuthProcessDto> {
 		this.logger.debug(`Oauth process started for systemId ${systemId}`);
 
 		const authCode: string = this.oauthService.checkAuthorizationCode(query);
@@ -67,7 +67,7 @@ export class OauthUc {
 
 			if (!existingUser && migration) {
 				const redirect: string = await this.userMigrationService.getMigrationRedirect();
-				const response: OAuthResponse = new OAuthResponse({
+				const response: OAuthProcessDto = new OAuthProcessDto({
 					provider: oauthConfig.provider,
 					redirect,
 				});
@@ -91,7 +91,7 @@ export class OauthUc {
 			queryToken.id_token,
 			oauthConfig.logoutEndpoint
 		);
-		const response: OAuthResponse = new OAuthResponse({
+		const response: OAuthProcessDto = new OAuthProcessDto({
 			jwt: jwtResponse,
 			idToken: queryToken.id_token,
 			logoutEndpoint: oauthConfig.logoutEndpoint,
@@ -112,10 +112,10 @@ export class OauthUc {
 		return oauthConfig;
 	}
 
-	private async getOauthErrorResponse(error, systemId: string): Promise<OAuthResponse> {
+	private async getOauthErrorResponse(error, systemId: string): Promise<OAuthProcessDto> {
 		const system: SystemDto = await this.systemService.findOAuthById(systemId);
 		const provider: string = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
-		const oAuthError: OAuthResponse = this.oauthService.getOAuthErrorResponse(error, provider);
+		const oAuthError: OAuthProcessDto = this.oauthService.getOAuthErrorResponse(error, provider);
 		return oAuthError;
 	}
 }

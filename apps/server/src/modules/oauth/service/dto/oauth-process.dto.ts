@@ -1,4 +1,4 @@
-export class OAuthResponse {
+export class OAuthProcessDto {
 	jwt?: string;
 
 	errorCode?: string;
@@ -11,7 +11,7 @@ export class OAuthResponse {
 
 	redirect?: string;
 
-	constructor(response: OAuthResponse) {
+	constructor(response: OAuthProcessDto) {
 		this.jwt = response.jwt;
 		this.errorCode = response.errorCode;
 		this.idToken = response.idToken;

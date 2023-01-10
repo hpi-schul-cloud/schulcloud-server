@@ -156,7 +156,9 @@ describe('ProvisioningService', () => {
 
 				const promise: Promise<OauthDataDto> = service.getData(accessToken, idToken, 'systemId');
 
-				await expect(promise).rejects.toThrow(InternalServerErrorException);
+				await expect(promise).rejects.toThrow(
+					new InternalServerErrorException('Provisioning Strategy is not defined.')
+				);
 			});
 		});
 	});

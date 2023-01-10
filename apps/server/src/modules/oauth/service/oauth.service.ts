@@ -17,7 +17,7 @@ import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '..
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
-import { OAuthResponse } from './dto/oauth.response';
+import { OAuthProcessDto } from './dto/oauth-process.dto';
 
 @Injectable()
 export class OAuthService {
@@ -164,7 +164,7 @@ export class OAuthService {
 		return redirect;
 	}
 
-	getOAuthErrorResponse(error: unknown, provider: string): OAuthResponse {
+	getOAuthErrorResponse(error: unknown, provider: string): OAuthProcessDto {
 		this.logger.error(error);
 
 		let errorCode: string;
@@ -176,7 +176,7 @@ export class OAuthService {
 
 		const redirect = `${Configuration.get('HOST') as string}/login?error=${errorCode}&provider=${provider}`;
 
-		const oauthResponse = new OAuthResponse({
+		const oauthResponse = new OAuthProcessDto({
 			provider,
 			errorCode,
 			redirect,

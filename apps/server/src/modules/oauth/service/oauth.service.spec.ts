@@ -20,7 +20,7 @@ import { UserService } from '../../user';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
-import { OAuthResponse } from './dto/oauth.response';
+import { OAuthProcessDto } from './dto/oauth-process.dto';
 import { OAuthService } from './oauth.service';
 
 const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
@@ -206,7 +206,7 @@ describe('OAuthService', () => {
 		});
 	});
 
-	describe('findUser', () => {
+	describe('findUser is called', () => {
 		const setupJwt = () => {
 			const decodedJwt: JwtPayload = {
 				sub: new ObjectId().toHexString(),
@@ -224,51 +224,58 @@ describe('OAuthService', () => {
 			jest.clearAllMocks();
 		});
 
-		it('should return the user according to the externalId', async () => {
-			setupJwt();
-			const externalUserId = 'externalUserId';
-			const user: UserDO = new UserDO({
-				firstName: 'firstName',
-				lastName: 'lastName',
-				email: 'email',
-				schoolId: 'schoolId',
-				roleIds: ['roleId'],
-				externalId: externalUserId,
+		describe('when an external id is given', () => {
+			it('should return the user according to the externalId', async () => {
+				setupJwt();
+				const externalUserId = 'externalUserId';
+				const user: UserDO = new UserDO({
+					firstName: 'firstName',
+					lastName: 'lastName',
+					email: 'email',
+					schoolId: 'schoolId',
+					roleIds: ['roleId'],
+					externalId: externalUserId,
+				});
+
+				userService.findByExternalId.mockResolvedValue(user);
+
+				const result: UserDO = await service.findUser('idToken', externalUserId, testSystem.id);
+
+				expect(result).toEqual(user);
 			});
-
-			userService.findByExternalId.mockResolvedValue(user);
-
-			const result: UserDO = await service.findUser('idToken', externalUserId, testSystem.id);
-
-			expect(result).toEqual(user);
 		});
 
-		it('should throw if no user is found with this id and give helpful context', async () => {
-			setupJwt();
-			const schoolId = new ObjectId().toHexString();
-			const externalUserId = '321-my-current-ldap-id';
-			userService.findByExternalId.mockResolvedValue(null);
-			userService.findByEmail.mockResolvedValue([
-				userFactory.buildWithId({ school: schoolFactory.buildWithId(undefined, schoolId), externalId: externalUserId }),
-			]);
+		describe('when no user is found with this id', () => {
+			it('should throw OAuthSSOError and give helpful context', async () => {
+				setupJwt();
+				const schoolId = new ObjectId().toHexString();
+				const externalUserId = '321-my-current-ldap-id';
+				userService.findByExternalId.mockResolvedValue(null);
+				userService.findByEmail.mockResolvedValue([
+					userFactory.buildWithId({
+						school: schoolFactory.buildWithId(undefined, schoolId),
+						externalId: externalUserId,
+					}),
+				]);
 
-			const promise: Promise<UserDO> = service.findUser('idToken', externalUserId, testSystem.id);
+				const promise: Promise<UserDO> = service.findUser('idToken', externalUserId, testSystem.id);
 
-			await expect(promise).rejects.toThrow(OAuthSSOError);
-			await expect(promise).rejects.toThrow(
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-				expect.objectContaining<Partial<OAuthSSOError>>({
-					// eslint-disable-next-line ,@typescript-eslint/no-unsafe-assignment
-					message: expect.stringContaining(schoolId),
-				})
-			);
-			await expect(promise).rejects.toThrow(
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-				expect.objectContaining<Partial<OAuthSSOError>>({
-					// eslint-disable-next-line ,@typescript-eslint/no-unsafe-assignment
-					message: expect.stringContaining(externalUserId),
-				})
-			);
+				await expect(promise).rejects.toThrow(OAuthSSOError);
+				await expect(promise).rejects.toThrow(
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+					expect.objectContaining<Partial<OAuthSSOError>>({
+						// eslint-disable-next-line ,@typescript-eslint/no-unsafe-assignment
+						message: expect.stringContaining(schoolId),
+					})
+				);
+				await expect(promise).rejects.toThrow(
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+					expect.objectContaining<Partial<OAuthSSOError>>({
+						// eslint-disable-next-line ,@typescript-eslint/no-unsafe-assignment
+						message: expect.stringContaining(externalUserId),
+					})
+				);
+			});
 		});
 
 		describe('when the token has no email information', () => {
@@ -284,10 +291,12 @@ describe('OAuthService', () => {
 			});
 		});
 
-		it('should throw if idToken is invalid and has no sub', async () => {
-			jest.spyOn(jwt, 'decode').mockReturnValue(null);
+		describe('when the id token has no sub', () => {
+			it('should throw BadRequestException', async () => {
+				jest.spyOn(jwt, 'decode').mockReturnValue(null);
 
-			await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(BadRequestException);
+				await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(BadRequestException);
+			});
 		});
 	});
 
@@ -322,7 +331,7 @@ describe('OAuthService', () => {
 		it('should return a login url string within an error', () => {
 			const generalError: Error = new Error('foo');
 
-			const response: OAuthResponse = service.getOAuthErrorResponse(generalError, 'provider');
+			const response: OAuthProcessDto = service.getOAuthErrorResponse(generalError, 'provider');
 
 			expect(response.provider).toStrictEqual('provider');
 			expect(response.errorCode).toStrictEqual('oauth_login_failed');

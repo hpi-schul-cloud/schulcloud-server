@@ -7,7 +7,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { Request } from 'express';
-import { OAuthResponse } from '../service/dto/oauth.response';
+import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
 import { OauthSSOController } from './oauth-sso.controller';
@@ -89,7 +89,7 @@ describe('OAuthController', () => {
 		describe('when a redirect url is defined', () => {
 			it('should redirect to the redirect url', async () => {
 				const { res } = getMockRes();
-				const response: OAuthResponse = new OAuthResponse({
+				const response: OAuthProcessDto = new OAuthProcessDto({
 					provider: 'iserv',
 					redirect: 'postLoginRedirect',
 				});
@@ -104,7 +104,7 @@ describe('OAuthController', () => {
 		describe('when no redirect url is defined', () => {
 			it('should not redirect', async () => {
 				const { res } = getMockRes();
-				const response: OAuthResponse = new OAuthResponse({
+				const response: OAuthProcessDto = new OAuthProcessDto({
 					idToken: '2222',
 					provider: 'iserv',
 				});
@@ -119,7 +119,7 @@ describe('OAuthController', () => {
 		describe('when a jwt is defined', () => {
 			it('should set a jwt cookie', async () => {
 				const { res } = getMockRes();
-				const response: OAuthResponse = new OAuthResponse({
+				const response: OAuthProcessDto = new OAuthProcessDto({
 					idToken: '2222',
 					provider: 'iserv',
 					jwt: 'userJwt',
@@ -135,7 +135,7 @@ describe('OAuthController', () => {
 		describe('when no jwt is defined', () => {
 			it('should not set a jwt cookie', async () => {
 				const { res } = getMockRes();
-				const response: OAuthResponse = new OAuthResponse({
+				const response: OAuthProcessDto = new OAuthProcessDto({
 					idToken: '2222',
 					provider: 'iserv',
 				});
