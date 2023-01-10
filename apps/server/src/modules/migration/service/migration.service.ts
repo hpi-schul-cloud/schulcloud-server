@@ -1,11 +1,12 @@
 import { SystemRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthConfig, System } from '@shared/domain';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { PageTypes } from '../controller/dto/page-type.query.param';
 import { PageContentDto } from './dto/page-content.dto';
 
+@Injectable()
 export class MigrationService {
 	private readonly PROCESS_MIGRATION_BASE_URL: string = `${
 		Configuration.get('HOST') as string

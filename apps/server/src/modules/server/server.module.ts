@@ -30,6 +30,7 @@ import { ToolApiModule } from '@src/modules/tool';
 import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
+import { MigrationModule } from '../migration';
 
 const serverModules = [
 	ConfigModule.forRoot({
@@ -53,6 +54,7 @@ const serverModules = [
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 	}),
+	MigrationModule,
 	RocketChatModule.forRoot({
 		uri: Configuration.get('ROCKET_CHAT_URI') as string,
 		adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,

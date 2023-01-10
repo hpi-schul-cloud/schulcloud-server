@@ -10,7 +10,7 @@ describe('PageContentMapper', () => {
 		module = await Test.createTestingModule({
 			providers: [PageContentMapper],
 		}).compile();
-		mapper = module.get(TestingModule);
+		mapper = module.get(PageContentMapper);
 	});
 
 	afterAll(async () => {

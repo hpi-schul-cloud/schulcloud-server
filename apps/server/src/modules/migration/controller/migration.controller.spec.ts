@@ -42,10 +42,10 @@ describe('MigrationController', () => {
 				sourceSystem: 'source',
 				targetSystem: 'target',
 			};
-			response = {
+			response = new PageContentResponse({
 				proceedButtonUrl: 'proceedUrl',
 				cancelButtonUrl: 'cancelUrl',
-			};
+			});
 			uc.getPageContent.mockResolvedValue(response);
 		});
 		it('should return a response', async () => {

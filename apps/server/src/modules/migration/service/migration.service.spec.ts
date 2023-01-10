@@ -5,6 +5,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { setupEntities, systemFactory } from '@shared/testing';
 import { System } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { BadRequestException } from '@nestjs/common';
 import { MigrationService } from './migration.service';
 import { PageTypes } from '../controller/dto/page-type.query.param';
 import { PageContentDto } from './dto/page-content.dto';
@@ -18,15 +19,15 @@ describe('MigrationService', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				MigrationService,
 				{
 					provide: SystemRepo,
 					useValue: createMock<SystemRepo>(),
 				},
+				MigrationService,
 			],
 		}).compile();
-		service = module.get(MigrationService);
 		systemRepo = module.get(SystemRepo);
+		service = module.get(MigrationService);
 		orm = await setupEntities();
 
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
@@ -46,7 +47,6 @@ describe('MigrationService', () => {
 
 	describe('when the pagecontent for different keys is called', () => {
 		let mockSystem: System;
-		let loginString: string;
 		beforeAll(() => {
 			mockSystem = systemFactory.withOauthConfig().build();
 			systemRepo.findById.mockResolvedValue(mockSystem);
@@ -57,8 +57,26 @@ describe('MigrationService', () => {
 				'source',
 				'target'
 			);
-
 			expect(contentDto.cancelButtonUrl).toEqual('mockHost/logout');
+		});
+		it('is requested for OLD_SYSTEM', async () => {
+			const contentDto: PageContentDto = await service.getPageContent(
+				PageTypes.START_FROM_OLD_SYSTEM,
+				'source',
+				'target'
+			);
+			expect(contentDto.cancelButtonUrl).toEqual('mockHost/dashboard');
+		});
+		it('is requested for OLD_SYSTEM_MANDATORY', async () => {
+			const contentDto: PageContentDto = await service.getPageContent(
+				PageTypes.START_FROM_OLD_SYSTEM_MANDATORY,
+				'source',
+				'target'
+			);
+			expect(contentDto.cancelButtonUrl).toEqual('mockHost/logout');
+		});
+		it('throws an exception without a type', async () => {
+			await expect(service.getPageContent('undefined' as PageTypes, '', '')).rejects.toThrow(BadRequestException);
 		});
 	});
 });

@@ -8,7 +8,7 @@ import { PageContentMapper } from './mapper/page-content.mapper';
 
 @Module({
 	imports: [LoggerModule, SystemModule],
-	providers: [SystemRepo],
+	providers: [SystemRepo, MigrationService],
 	exports: [MigrationService],
 })
 export class MigrationModule {}
