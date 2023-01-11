@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { OauthConfig } from '@shared/domain';
+import { EntityId, OauthConfig } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
@@ -57,15 +57,12 @@ export class OauthUc {
 		);
 
 		if (data.externalSchool?.officialSchoolNumber) {
-			const existingUser: UserDO | null = await this.userService.findByExternalId(
+			const shouldMigrate: boolean = await this.shouldUserMigrate(
 				data.externalUser.externalId,
+				data.externalSchool.officialSchoolNumber,
 				system.id
 			);
-			const migration: boolean = await this.userMigrationService.isSchoolInMigration(
-				data.externalSchool.officialSchoolNumber
-			);
-
-			if (!existingUser && migration) {
+			if (shouldMigrate) {
 				const redirect: string = await this.userMigrationService.getMigrationRedirect();
 				const response: OAuthProcessDto = new OAuthProcessDto({
 					provider: oauthConfig.provider,
@@ -99,6 +96,14 @@ export class OauthUc {
 			redirect,
 		});
 		return response;
+	}
+
+	private async shouldUserMigrate(externalUserId: string, officialSchoolNumber: string, systemId: EntityId) {
+		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+		const isSchoolInMigration: boolean = await this.userMigrationService.isSchoolInMigration(officialSchoolNumber);
+
+		const shouldMigrate = !existingUser && isSchoolInMigration;
+		return shouldMigrate;
 	}
 
 	private extractOauthConfigFromSystem(system: SystemDto): OauthConfig {
