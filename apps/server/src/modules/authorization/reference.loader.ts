@@ -9,9 +9,9 @@ import {
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
+	SchoolExternalToolRepo,
 } from '@shared/repo';
 import { AllowedAuthorizationEntityType, AllowedEntity } from './interfaces';
-import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
 
 type RepoType =
 	| TaskRepo
