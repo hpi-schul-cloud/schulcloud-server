@@ -1,7 +1,7 @@
 import { EntityName, FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BaseDO, BaseEntity, baseEntityProperties, CourseExternalTool, EntityId } from '@shared/domain';
+import { BaseDO, BaseEntity, baseEntityProperties, EntityId } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 
 @Injectable()
