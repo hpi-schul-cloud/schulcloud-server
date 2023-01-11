@@ -10,7 +10,9 @@ import {
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
+	SchoolExternalToolRepo,
 } from '@shared/repo';
+import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 import { FeathersAuthorizationService } from './feathers-authorization.service';
@@ -36,6 +38,8 @@ import { SchoolModule } from '../school';
 		LessonRepo,
 		TeamsRepo,
 		SubmissionRepo,
+		SchoolExternalToolRepo,
+		ExternalToolRepoMapper,
 	],
 	exports: [FeathersAuthorizationService, FeathersJwtProvider, AuthorizationService],
 })

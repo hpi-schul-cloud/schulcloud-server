@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { Actions, EntityId, Permission, User } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { Actions, EntityId, Permission } from '@shared/domain';
 import { AuthorizationService } from '../../authorization';
 import { SchoolExternalToolService } from '../service/school-external-tool.service';
-import { SchoolService } from '../../school';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { CourseExternalToolService } from '../service/course-external-tool.service';
+import { AllowedAuthorizationEntityType } from '../../authorization/interfaces';
 
 @Injectable()
 export class SchoolExternalToolUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
-		private readonly schoolService: SchoolService,
 		private readonly courseExternalToolService: CourseExternalToolService
 	) {}
 
@@ -30,13 +28,15 @@ export class SchoolExternalToolUc {
 	}
 
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId): Promise<void> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
-
-		this.authorizationService.checkPermission(user, school, {
-			action: Actions.read,
-			requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-		});
+		return this.authorizationService.checkPermissionByReferences(
+			userId,
+			AllowedAuthorizationEntityType.School,
+			schoolId,
+			{
+				action: Actions.read,
+				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+			}
+		);
 	}
 
 	async deleteSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
@@ -49,14 +49,14 @@ export class SchoolExternalToolUc {
 	}
 
 	private async ensureSchoolExternalToolPermission(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const schoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolService.getSchoolExternalToolById(
-			schoolExternalToolId
+		return this.authorizationService.checkPermissionByReferences(
+			userId,
+			AllowedAuthorizationEntityType.SchoolExternalTool,
+			schoolExternalToolId,
+			{
+				action: Actions.read,
+				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+			}
 		);
-
-		this.authorizationService.checkPermission(user, schoolExternalTool, {
-			action: Actions.write,
-			requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-		});
 	}
 }

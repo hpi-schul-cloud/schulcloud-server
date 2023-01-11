@@ -10,10 +10,10 @@ import {
 	TaskRule,
 	User,
 	UserRule,
+	SchoolExternalToolRule,
 } from '@shared/domain';
 import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
-import { SchoolExternalToolRule } from '@shared/domain/rules/school-external-tool.rule';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
