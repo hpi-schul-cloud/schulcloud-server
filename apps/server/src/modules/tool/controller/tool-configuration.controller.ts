@@ -1,11 +1,11 @@
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Query } from '@nestjs/common';
 import { ICurrentUser } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { ExternalToolResponseMapper } from './mapper';
-import { IdQuery, ScopeQuery, ToolConfigurationListResponse } from './dto';
 import { ExternalToolConfigurationUc } from '../uc/tool-configuration.uc';
+import { IdParams, ScopeParams, ToolConfigurationListResponse } from './dto';
+import { ExternalToolResponseMapper } from './mapper';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -16,16 +16,16 @@ export class ToolConfigurationController {
 		private readonly externalToolMapper: ExternalToolResponseMapper
 	) {}
 
-	@Get('available')
+	@Get('available/:scope/:id')
 	@ApiForbiddenResponse()
 	async getAvailableToolsForSchool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() scopeQuery: ScopeQuery,
-		@Query() idQuery: IdQuery
+		@Param() scopeParams: ScopeParams,
+		@Param() idParams: IdParams
 	): Promise<ToolConfigurationListResponse> {
 		const availableTools: ExternalToolDO[] = await this.externalToolConfigurationUc.getAvailableToolsForSchool(
 			currentUser.userId,
-			idQuery.id
+			idParams.id
 		);
 		const mapped: ToolConfigurationListResponse =
 			this.externalToolMapper.mapExternalToolDOsToToolConfigurationListResponse(availableTools);

@@ -1,12 +1,12 @@
+import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalTool, School, SchoolExternalTool } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, externalToolFactory, schoolExternalToolFactory, schoolFactory } from '@shared/testing';
-import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import { Logger } from '@src/core/logger';
-import { createMock } from '@golevelup/ts-jest';
+import { ExternalTool, type School, SchoolExternalTool } from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
+import { cleanupCollections, externalToolFactory, schoolExternalToolFactory, schoolFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { CustomParameterEntryDO } from '../../domain/domainobject/external-tool/custom-parameter-entry.do';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 

@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
-import { IdQuery, ScopeQuery, ToolConfigurationEntryResponse, ToolConfigurationListResponse } from './dto';
-import { ExternalToolResponseMapper } from './mapper';
-import { ExternalToolConfigurationUc } from '../uc/tool-configuration.uc';
-import { ToolConfigurationController } from './tool-configuration.controller';
 import { ConfigurationScope } from '../interface';
+import { ExternalToolConfigurationUc } from '../uc/tool-configuration.uc';
+import { IdParams, ScopeParams, ToolConfigurationEntryResponse, ToolConfigurationListResponse } from './dto';
+import { ExternalToolResponseMapper } from './mapper';
+import { ToolConfigurationController } from './tool-configuration.controller';
 
 describe('ToolConfigurationController', () => {
 	let module: TestingModule;
@@ -44,9 +44,9 @@ describe('ToolConfigurationController', () => {
 		describe('when getting the list of external tools that can be added to a school', () => {
 			const setup = () => {
 				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-				const idQuery: IdQuery = new IdQuery();
+				const idQuery: IdParams = new IdParams();
 				idQuery.id = 'schoolId';
-				const scopeQuery: ScopeQuery = new ScopeQuery();
+				const scopeQuery: ScopeParams = new ScopeParams();
 				scopeQuery.scope = ConfigurationScope.SCHOOL;
 				const externalToolDOs: ExternalToolDO[] = externalToolDOFactory.buildListWithId(2);
 				const response: ToolConfigurationListResponse = new ToolConfigurationListResponse([
