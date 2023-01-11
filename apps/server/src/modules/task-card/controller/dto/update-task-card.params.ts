@@ -1,5 +1,5 @@
-import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { IsArray, IsEnum, IsMongoId, IsString, MinLength, ValidateNested } from 'class-validator';
+import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
+import { IsArray, IsEnum, IsMongoId, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
 import { SanitizeHtml } from '@shared/controller';
 import { CardElementType, InputFormat } from '@shared/domain';
 import { Type } from 'class-transformer';
@@ -47,7 +47,8 @@ export class RichTextCardElementParam extends CardElementBase {
 
 @ApiExtraModels(TitleCardElementParam, RichTextCardElementParam)
 export class CardElementUpdateParams {
-	@ApiProperty()
+	@ApiPropertyOptional()
+	@IsOptional()
 	@IsString()
 	@IsMongoId()
 	id?: string;
