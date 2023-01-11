@@ -1,13 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
+import { ConfigurationScope } from '../interface';
+import { ExternalToolConfigurationUc } from '../uc/tool-configuration.uc';
+import { ToolIdParams, IdParams, ScopeParams, ToolConfigurationEntryResponse, ToolConfigurationListResponse } from './dto';
 import { ExternalToolResponseMapper } from './mapper';
-import { ExternalToolConfigurationUc } from '../uc/external-tool-configuration.uc';
 import { ToolConfigurationController } from './tool-configuration.controller';
 import { ExternalToolConfigurationTemplateResponse } from './dto/response/external-tool-configuration-template.response';
-import { ToolIdParams } from './dto';
 
 describe('ToolConfigurationController', () => {
 	let module: TestingModule;
@@ -65,6 +66,60 @@ describe('ToolConfigurationController', () => {
 			externalToolDO,
 		};
 	};
+
+	describe('getAvailableToolsForSchool is called', () => {
+		describe('when getting the list of external tools that can be added to a school', () => {
+			const setup = () => {
+				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+				const idQuery: IdParams = new IdParams();
+				idQuery.id = 'schoolId';
+				const scopeQuery: ScopeParams = new ScopeParams();
+				scopeQuery.scope = ConfigurationScope.SCHOOL;
+				const externalToolDOs: ExternalToolDO[] = externalToolDOFactory.buildListWithId(2);
+				const response: ToolConfigurationListResponse = new ToolConfigurationListResponse([
+					new ToolConfigurationEntryResponse({
+						id: 'toolId',
+						name: 'toolName',
+						logoUrl: 'logoUrl',
+					}),
+				]);
+
+				externalToolConfigurationUc.getAvailableToolsForSchool.mockResolvedValue(externalToolDOs);
+				externalToolResponseMapper.mapExternalToolDOsToToolConfigurationListResponse.mockReturnValue(response);
+
+				return {
+					currentUser,
+					idQuery,
+					scopeQuery,
+					response,
+					externalToolDOs,
+				};
+			};
+
+			it('should call externalToolConfigurationUc.getAvailableToolsForSchool', async () => {
+				const { currentUser, idQuery, scopeQuery } = setup();
+
+				await controller.getAvailableToolsForSchool(currentUser, scopeQuery, idQuery);
+
+				expect(externalToolConfigurationUc.getAvailableToolsForSchool).toHaveBeenCalledWith(
+					currentUser.userId,
+					idQuery.id
+				);
+			});
+
+			it('should return a list of available external tools', async () => {
+				const { currentUser, idQuery, scopeQuery, response } = setup();
+
+				const result: ToolConfigurationListResponse = await controller.getAvailableToolsForSchool(
+					currentUser,
+					scopeQuery,
+					idQuery
+				);
+
+				expect(result).toEqual(response);
+			});
+		});
+	});
 
 	describe('getExternalToolForScope', () => {
 		describe('when scope "school" is given', () => {

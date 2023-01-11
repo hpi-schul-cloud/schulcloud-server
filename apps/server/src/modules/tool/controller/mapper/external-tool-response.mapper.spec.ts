@@ -24,6 +24,8 @@ import {
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
+	ToolConfigurationEntryResponse,
+	ToolConfigurationListResponse,
 } from '../dto';
 import { ExternalToolConfigurationTemplateResponse } from '../dto/response/external-tool-configuration-template.response';
 
@@ -192,6 +194,28 @@ describe('ExternalToolResponseMapper', () => {
 				const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
 
 				expect(result).toEqual(externalToolResponse);
+			});
+		});
+	});
+
+	describe('mapExternalToolDOsToToolConfigurationListResponse is called', () => {
+		describe('when mapping from ExternalToolDOs to ToolConfigurationListResponse', () => {
+			it('should map from ExternalToolDOs to ToolConfigurationListResponse', () => {
+				const externalToolDOs: ExternalToolDO[] = externalToolDOFactory.buildList(3, {
+					id: 'toolId',
+					name: 'toolName',
+					logoUrl: 'logoUrl',
+				});
+				const expectedResponse: ToolConfigurationEntryResponse = new ToolConfigurationEntryResponse({
+					id: 'toolId',
+					name: 'toolName',
+					logoUrl: 'logoUrl',
+				});
+
+				const result: ToolConfigurationListResponse =
+					mapper.mapExternalToolDOsToToolConfigurationListResponse(externalToolDOs);
+
+				expect(result.data).toEqual(expect.arrayContaining([expectedResponse, expectedResponse, expectedResponse]));
 			});
 		});
 	});

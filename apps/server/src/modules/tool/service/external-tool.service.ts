@@ -83,7 +83,7 @@ export class ExternalToolService {
 
 	async findExternalTools(
 		query: Partial<ExternalToolDO>,
-		options: IFindOptions<ExternalToolDO>
+		options?: IFindOptions<ExternalToolDO>
 	): Promise<Page<ExternalToolDO>> {
 		const tools: Page<ExternalToolDO> = await this.externalToolRepo.find(query, options);
 

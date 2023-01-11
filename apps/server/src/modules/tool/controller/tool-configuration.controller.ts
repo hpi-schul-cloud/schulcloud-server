@@ -1,12 +1,12 @@
-import { ApiFoundResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Controller, Get, Param } from '@nestjs/common';
+import { ApiForbiddenResponse, ApiTags, ApiUnauthorizedResponse, ApiFoundResponse } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { ToolIdParams } from './dto';
-import { ExternalToolConfigurationTemplateResponse } from './dto/response/external-tool-configuration-template.response';
+import { ExternalToolConfigurationUc } from '../uc/tool-configuration.uc';
+import { ToolIdParams, IdParams, ScopeParams, ToolConfigurationListResponse } from './dto';
 import { ExternalToolResponseMapper } from './mapper';
-import { ExternalToolConfigurationUc } from '../uc/external-tool-configuration.uc';
+import { ExternalToolConfigurationTemplateResponse } from './dto/response/external-tool-configuration-template.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -14,8 +14,24 @@ import { ExternalToolConfigurationUc } from '../uc/external-tool-configuration.u
 export class ToolConfigurationController {
 	constructor(
 		private readonly externalToolConfigurationUc: ExternalToolConfigurationUc,
-		private readonly externalResponseMapper: ExternalToolResponseMapper
+		private readonly externalToolResponseMapper: ExternalToolResponseMapper
 	) {}
+
+	@Get('available/:scope/:id')
+	@ApiForbiddenResponse()
+	async getAvailableToolsForSchool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() scopeParams: ScopeParams,
+		@Param() idParams: IdParams
+	): Promise<ToolConfigurationListResponse> {
+		const availableTools: ExternalToolDO[] = await this.externalToolConfigurationUc.getAvailableToolsForSchool(
+			currentUser.userId,
+			idParams.id
+		);
+		const mapped: ToolConfigurationListResponse =
+			this.externalToolResponseMapper.mapExternalToolDOsToToolConfigurationListResponse(availableTools);
+		return mapped;
+	}
 
 	@Get(':toolId/configuration')
 	@ApiUnauthorizedResponse()
@@ -30,7 +46,7 @@ export class ToolConfigurationController {
 			currentUser.schoolId
 		);
 		const mapped: ExternalToolConfigurationTemplateResponse =
-			this.externalResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);
+			this.externalToolResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);
 		return mapped;
 	}
 }
