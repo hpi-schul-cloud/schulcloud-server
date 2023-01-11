@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ServerTestModule } from '@src/modules/server';
 import request from 'supertest';
 
-describe('ServerController (API)', () => {
+describe('Server Controller (API)', () => {
 	let app: INestApplication;
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
