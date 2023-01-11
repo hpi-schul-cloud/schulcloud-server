@@ -1,6 +1,6 @@
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { Injectable, Inject } from '@nestjs/common';
 import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
+import { KeycloakAdminClient } from '../interface/keycloak-admin-client.interface';
 
 @Injectable()
 export class KeycloakAdministrationService {
@@ -8,9 +8,12 @@ export class KeycloakAdministrationService {
 
 	private static AUTHORIZATION_TIMEBOX_MS = 59 * 1000;
 
+	// private kcAdminClient: import('@keycloak/keycloak-admin-client/lib/client.js').KeycloakAdminClient;
+
 	public constructor(
-		private readonly kcAdminClient: KeycloakAdminClient,
-		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings
+		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings,
+		@Inject(KeycloakAdminClient)
+		private readonly kcAdminClient: import('@keycloak/keycloak-admin-client/lib/client.js').KeycloakAdminClient
 	) {
 		this.kcAdminClient.setConfig({
 			baseUrl: kcSettings.baseUrl,
@@ -18,7 +21,9 @@ export class KeycloakAdministrationService {
 		});
 	}
 
-	public async callKcAdminClient(): Promise<KeycloakAdminClient> {
+	public async callKcAdminClient(): Promise<
+		import('@keycloak/keycloak-admin-client/lib/client.js').KeycloakAdminClient
+	> {
 		await this.authorizeAccess();
 		return this.kcAdminClient;
 	}
@@ -37,8 +42,11 @@ export class KeycloakAdministrationService {
 	}
 
 	public async setPasswordPolicy() {
-		const kc = await this.callKcAdminClient();
-		await kc.realms.update({ realm: this.kcSettings.realmName }, { passwordPolicy: 'hashIterations(310000)' });
+		await this.callKcAdminClient();
+		await this.kcAdminClient.realms.update(
+			{ realm: this.kcSettings.realmName },
+			{ passwordPolicy: 'hashIterations(310000)' }
+		);
 	}
 
 	private async authorizeAccess() {

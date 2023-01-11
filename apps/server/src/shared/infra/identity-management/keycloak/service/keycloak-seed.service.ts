@@ -1,13 +1,12 @@
 import fs from 'node:fs/promises';
 import { Inject } from '@nestjs/common';
-import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { IJsonAccount, IJsonUser, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
 export class KeycloakSeedService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
-		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles // @Inject(KeycloakManagementInputFiles) private readonly fs: IKeycloakManagementInputFiles
+		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles
 	) {}
 
 	async seed(): Promise<number> {
@@ -32,7 +31,7 @@ export class KeycloakSeedService {
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const user of users) {
-			// needs to be called once per minute. To be save we call it in the loop. Ineffcient but ok, since only used to locally revert seeding
+			// needs to be called once per minute. To be save we call it in the loop. Inefficient but ok, since only used to locally revert seeding
 			// eslint-disable-next-line no-await-in-loop
 			kc = await this.kcAdmin.callKcAdminClient();
 			// eslint-disable-next-line no-await-in-loop
@@ -45,7 +44,7 @@ export class KeycloakSeedService {
 	}
 
 	private async createOrUpdateIdmAccount(account: IJsonAccount, user: IJsonUser): Promise<boolean> {
-		const idmUserRepresentation: UserRepresentation = {
+		const idmUserRepresentation: import('@keycloak/keycloak-admin-client/lib/defs/userRepresentation').default = {
 			username: account.username,
 			firstName: user.firstName,
 			lastName: user.lastName,
