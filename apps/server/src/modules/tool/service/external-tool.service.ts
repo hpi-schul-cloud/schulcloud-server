@@ -92,9 +92,9 @@ export class ExternalToolService {
 					try {
 						await this.addExternalOauth2DataToConfig(tool.config);
 					} catch (e) {
-						this.logger.debug(
-							`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
-						);
+						// this.logger.debug(
+						// 	`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
+						// );
 						return undefined;
 					}
 				}
@@ -113,9 +113,9 @@ export class ExternalToolService {
 			try {
 				await this.addExternalOauth2DataToConfig(tool.config);
 			} catch (e) {
-				this.logger.debug(
-					`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
-				);
+				// this.logger.debug(
+				// 	`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
+				// );
 				throw new UnprocessableEntityException(`Could not resolve oauth2Config of tool ${tool.name}.`);
 			}
 		}

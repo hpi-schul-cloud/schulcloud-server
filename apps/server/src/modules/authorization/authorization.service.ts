@@ -46,7 +46,8 @@ export class AuthorizationService extends BasePermissionManager {
 
 	checkPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {
 		if (!this.hasPermission(user, entity, context)) {
-			throw new LoggableForbiddenException(user.id, entity.id, context);
+			// I added the ! in the below line because of a problem with PermissionTypes, which is not part of this POC.
+			throw new LoggableForbiddenException(user.id, entity.id!, context);
 		}
 	}
 

@@ -97,9 +97,9 @@ export class AccountService extends AbstractAccountService {
 				return await idmCallback();
 			} catch (error) {
 				if (error instanceof Error) {
-					this.logger.error(error, error.stack);
+					// this.logger.error(error, error.stack);
 				} else {
-					this.logger.error(error);
+					// this.logger.error(error);
 				}
 			}
 		}
