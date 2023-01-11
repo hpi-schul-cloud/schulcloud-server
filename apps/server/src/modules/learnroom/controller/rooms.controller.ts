@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { CopyApiResponse } from '@src/modules/copy-helper';
 import { LessonCopyUC } from '@src/modules/learnroom/uc/lesson-copy.uc';
 import { serverConfig } from '@src/modules/server/server.config';
 import { CopyMapper } from '../mapper/copy.mapper';
@@ -18,7 +19,6 @@ import {
 	RoomElementUrlParams,
 	RoomUrlParams,
 } from './dto';
-import { CopyApiResponse } from './dto/copy.response';
 
 @ApiTags('Rooms')
 @Authenticate('jwt')

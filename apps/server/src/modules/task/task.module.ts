@@ -1,20 +1,17 @@
 import { Module } from '@nestjs/common';
-import { CopyHelperService } from '@shared/domain';
 import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import { CourseRepo, LessonRepo, SubmissionRepo, TaskRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
+import { CopyHelperModule } from '../copy-helper/copy-helper.module';
 import { FilesStorageClientModule } from '../files-storage-client';
 import { SubmissionController, TaskController } from './controller';
-import { TaskService } from './service/task.service';
-import { SubmissionUc, TaskUC } from './uc';
-import { SubmissionService } from './service';
-import { TaskCopyUC } from '../learnroom/uc/task-copy.uc';
-import { TaskCopyService } from '../learnroom/service';
+import { SubmissionService, TaskCopyService, TaskService } from './service';
+import { SubmissionUc, TaskCopyUC, TaskUC } from './uc';
 
 @Module({
-	imports: [AuthorizationModule, FilesStorageClientModule],
+	imports: [AuthorizationModule, FilesStorageClientModule, CopyHelperModule],
 	controllers: [TaskController, SubmissionController],
 	providers: [
 		TaskUC,
@@ -24,7 +21,6 @@ import { TaskCopyService } from '../learnroom/service';
 		CourseRepo,
 		TaskCopyUC,
 		TaskCopyService,
-		CopyHelperService,
 		FeathersServiceProvider,
 		FileLegacyService,
 		Logger,
@@ -32,6 +28,6 @@ import { TaskCopyService } from '../learnroom/service';
 		SubmissionService,
 		SubmissionRepo,
 	],
-	exports: [TaskService],
+	exports: [TaskService, TaskCopyService],
 })
 export class TaskModule {}

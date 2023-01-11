@@ -1,14 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Actions, CopyStatus, EntityId, LearnroomMetadata, Permission } from '@shared/domain';
+import { Actions, EntityId, LearnroomMetadata, Permission } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
+import { CopyStatus } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
 import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
-import { ShareTokenContextTypeMapper, ShareTokenParentTypeMapper } from '../mapper';
-import { MetadataTypeMapper } from '../mapper/metadata-type.mapper';
-import { ShareTokenService } from '../service';
-import { ShareTokenInfoDto } from './dto';
 import {
 	ShareTokenContext,
 	ShareTokenContextType,
@@ -16,6 +13,10 @@ import {
 	ShareTokenParentType,
 	ShareTokenPayload,
 } from '../domainobject/share-token.do';
+import { ShareTokenContextTypeMapper, ShareTokenParentTypeMapper } from '../mapper';
+import { MetadataTypeMapper } from '../mapper/metadata-type.mapper';
+import { ShareTokenService } from '../service';
+import { ShareTokenInfoDto } from './dto';
 
 @Injectable()
 export class ShareTokenUC {

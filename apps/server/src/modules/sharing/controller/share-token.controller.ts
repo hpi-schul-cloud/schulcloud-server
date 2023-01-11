@@ -13,7 +13,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestTimeout } from '@shared/common';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { CopyApiResponse } from '@src/modules/learnroom/controller/dto';
+import { CopyApiResponse } from '@src/modules/copy-helper';
 import { CopyMapper } from '@src/modules/learnroom/mapper/copy.mapper';
 import { serverConfig } from '@src/modules/server/server.config';
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';

@@ -4,9 +4,6 @@ import {
 	BoardElement,
 	BoardElementReference,
 	BoardElementType,
-	CopyElementType,
-	CopyHelperService,
-	CopyStatus,
 	Course,
 	Lesson,
 	Task,
@@ -14,10 +11,11 @@ import {
 } from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { getResolvedValues } from '@src/modules/files-storage/helper';
+import { TaskCopyService } from '@src/modules/task';
 import { sortBy } from 'lodash';
 import { LessonCopyService } from './lesson-copy.service';
-import { TaskCopyService } from './task-copy.service';
 
 type BoardCopyParams = {
 	originalBoard: Board;

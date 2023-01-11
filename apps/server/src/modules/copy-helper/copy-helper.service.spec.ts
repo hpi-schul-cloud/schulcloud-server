@@ -1,8 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities } from '@shared/testing';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from './copy.types';
 
 function createStates(elementStates: CopyStatusEnum[]): CopyStatus[] {
 	return elementStates.map((status: CopyStatusEnum) => {

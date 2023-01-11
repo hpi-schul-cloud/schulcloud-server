@@ -1,9 +1,9 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CopyElementType, CopyStatus, CopyStatusEnum, ICurrentUser } from '@shared/domain';
-import { CopyApiResponse } from '@src/modules/learnroom/controller/dto/copy.response';
-import { TaskCopyUC } from '@src/modules/learnroom/uc/task-copy.uc';
-import { TaskUC } from '../uc';
+import { ICurrentUser } from '@shared/domain';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { CopyApiResponse } from '@src/modules/copy-helper/copy.response';
+import { TaskCopyUC, TaskUC } from '../uc';
 import { TaskController } from './task.controller';
 
 describe('TaskController', () => {

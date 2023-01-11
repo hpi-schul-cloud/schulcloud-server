@@ -1,16 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import {
-	CopyHelperService,
-	CopyStatus,
-	Course,
-	EntityId,
-	Lesson,
-	PermissionContextBuilder,
-	User,
-} from '@shared/domain';
+import { Course, EntityId, Lesson, PermissionContextBuilder, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
+import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { TaskCopyService } from '../service';
 
 // todo: it look like it is required not optional

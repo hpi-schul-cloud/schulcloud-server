@@ -4,14 +4,13 @@ import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-// todo  @src/modules/learnroom/* must be replaced
-import { CopyApiResponse } from '@src/modules/learnroom/controller/dto/copy.response';
+// TODO  @src/modules/learnroom/* must be replaced
+import { CopyApiResponse } from '@src/modules/copy-helper/copy.response';
 import { CopyMapper } from '@src/modules/learnroom/mapper/copy.mapper';
-import { TaskCopyUC } from '@src/modules/learnroom/uc/task-copy.uc';
 import { serverConfig } from '@src/modules/server/server.config';
 import { TaskMapper } from '../mapper';
-import { TaskUC } from '../uc/task.uc';
-import { TaskListResponse, TaskResponse, TaskUrlParams, TaskCreateParams, TaskUpdateParams } from './dto';
+import { TaskCopyUC, TaskUC } from '../uc';
+import { TaskCreateParams, TaskListResponse, TaskResponse, TaskUpdateParams, TaskUrlParams } from './dto';
 import { TaskCopyApiParams } from './dto/task-copy.params';
 
 @ApiTags('Task')
