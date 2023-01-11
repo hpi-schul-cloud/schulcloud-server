@@ -1,18 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { Actions, EntityId, Permission, User } from '@shared/domain';
-import { setupEntities, userFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
-import { SchoolExternalToolUc } from './school-external-tool.uc';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Actions, Permission, User, EntityId } from '@shared/domain';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
+import { setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '../../authorization';
+import { AllowedAuthorizationEntityType } from '../../authorization/interfaces';
 import { SchoolExternalToolService } from '../service/school-external-tool.service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
+import { SchoolExternalToolUc } from './school-external-tool.uc';
 import { CourseExternalToolService } from '../service/course-external-tool.service';
-import { AllowedAuthorizationEntityType } from '../../authorization/interfaces';
 
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
@@ -61,27 +59,27 @@ describe('SchoolExternalToolUc', () => {
 	const setup = () => {
 		const tool: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
 		const user: User = userFactory.buildWithId();
-		const school: SchoolDO = schoolDOFactory.build({ id: tool.schoolId });
+
 		return {
 			user,
 			userId: user.id,
 			tool,
+			schoolId: tool.schoolId,
 			schoolExternalToolId: tool.id as EntityId,
-			school,
 		};
 	};
 
 	describe('findSchoolExternalTools is called', () => {
 		describe('when checks permission', () => {
 			it('should check the permissions of the user', async () => {
-				const { user, tool, school } = setup();
+				const { user, tool, schoolId } = setup();
 
 				await uc.findSchoolExternalTools(user.id, tool);
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.School,
-					school.id,
+					schoolId,
 					{
 						action: Actions.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
