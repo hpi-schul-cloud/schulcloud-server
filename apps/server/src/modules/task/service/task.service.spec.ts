@@ -1,11 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { AuthorizationService } from '@src/modules';
+import { MikroORM } from '@mikro-orm/core';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, Course, Permission, Task, User } from '@shared/domain';
+import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import {
 	courseFactory,
 	lessonFactory,
@@ -14,8 +14,8 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
-import { MikroORM } from '@mikro-orm/core';
+import { AuthorizationService } from '@src/modules';
+import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
@@ -34,7 +34,6 @@ describe('TaskService', () => {
 	let fileStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				TaskService,
@@ -78,7 +77,7 @@ describe('TaskService', () => {
 	});
 
 	beforeEach(() => {
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	describe('findBySingleParent', () => {
