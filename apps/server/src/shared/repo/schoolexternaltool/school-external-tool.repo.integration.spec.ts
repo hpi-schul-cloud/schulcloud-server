@@ -1,9 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalTool, SchoolExternalTool } from '@shared/domain';
+import { ExternalTool, type School, SchoolExternalTool } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
+import { cleanupCollections, externalToolFactory, schoolExternalToolFactory, schoolFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
@@ -44,14 +44,21 @@ describe('SchoolExternalToolRepo', () => {
 
 	const setup = async () => {
 		const externalTool: ExternalTool = externalToolFactory.buildWithId();
-		const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ tool: externalTool });
+		const school: School = schoolFactory.buildWithId();
+		const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+			tool: externalTool,
+			school,
+		});
 		const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-		const schoolExternalTool3: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ tool: externalTool });
+		const schoolExternalTool3: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+			tool: externalTool,
+			school,
+		});
 
 		await em.persistAndFlush([externalTool, schoolExternalTool1, schoolExternalTool2, schoolExternalTool3]);
 		em.clear();
 
-		return { externalTool, schoolExternalTool1, schoolExternalTool3 };
+		return { externalTool, school, schoolExternalTool1, schoolExternalTool3 };
 	};
 
 	it('getEntityName should return SchoolExternalTool', () => {
@@ -81,6 +88,23 @@ describe('SchoolExternalToolRepo', () => {
 					expect.objectContaining({ id: schoolExternalTool3.id }),
 				])
 			);
+		});
+	});
+
+	describe('findBySchoolId', () => {
+		describe('when searching for SchoolExternalTools by school id', () => {
+			it('should find all SchoolExternalTools with reference to a given school id', async () => {
+				const { school, schoolExternalTool1, schoolExternalTool3 } = await setup();
+
+				const result: SchoolExternalToolDO[] = await repo.findBySchoolId(school.id);
+
+				expect(result).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({ id: schoolExternalTool1.id }),
+						expect.objectContaining({ id: schoolExternalTool3.id }),
+					])
+				);
+			});
 		});
 	});
 
