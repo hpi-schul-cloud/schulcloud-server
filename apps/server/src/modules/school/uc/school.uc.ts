@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { Actions, Permission } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { AuthorizationService } from '../../authorization';
 import { AllowedAuthorizationEntityType } from '../../authorization/interfaces';
 import { MigrationDto } from '../dto/migration.dto';
+import { PublicSchoolResponse } from '../controller/dto/public.school.response';
+import { SchoolUcMapper } from '../mapper/school.uc.mapper';
 
 @Injectable()
 export class SchoolUc {
@@ -38,5 +41,14 @@ export class SchoolUc {
 		const migrationDto: MigrationDto = await this.schoolService.getMigration(schoolId);
 
 		return migrationDto;
+	}
+
+	async getPublicSchoolData(schoolnumber: string): Promise<PublicSchoolResponse> {
+		const schoolDO: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(schoolnumber);
+		if (schoolDO) {
+			const response: PublicSchoolResponse = SchoolUcMapper.mapDOToPublicResponse(schoolDO);
+			return response;
+		}
+		throw new NotFoundException(`No school found for schoolnumber: ${schoolnumber}`);
 	}
 }
