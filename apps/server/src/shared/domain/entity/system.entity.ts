@@ -1,4 +1,4 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, Enum, Property } from '@mikro-orm/core';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
@@ -67,45 +67,46 @@ export class OauthConfig {
 	jwksEndpoint: string;
 }
 
+@Embeddable()
 export class LdapConfig {
-	constructor(ldapConfig: LdapConfig) {
+	constructor(ldapConfig: Readonly<LdapConfig>) {
 		this.url = ldapConfig.url;
 	}
 
-	@Property()
+	@Property({ nullable: true })
 	active?: boolean;
 
-	@Property()
+	@Property({ nullable: true })
 	federalState?: EntityId;
 
-	@Property()
+	@Property({ nullable: true })
 	lastSyncAttempt?: Date;
 
-	@Property()
+	@Property({ nullable: true })
 	lastSuccessfulFullSync?: Date;
 
-	@Property()
+	@Property({ nullable: true })
 	lastSuccessfulPartialSync?: Date;
 
-	@Property()
+	@Property({ nullable: true })
 	lastModifyTimestamp?: string;
 
 	@Property()
 	url: string;
 
-	@Property()
+	@Property({ nullable: true })
 	rootPath?: string;
 
-	@Property()
+	@Property({ nullable: true })
 	searchUser?: string;
 
-	@Property()
+	@Property({ nullable: true })
 	searchUserPassword?: string;
 
-	@Property()
+	@Property({ nullable: true })
 	provider?: string;
 
-	@Property()
+	@Property({ nullable: true })
 	providerOptions?: {
 		schoolName?: string;
 		userPathAdditions?: string;
@@ -170,7 +171,7 @@ export class System extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	config?: Record<string, unknown>;
 
-	@Property({ nullable: true })
+	@Embedded({ entity: () => LdapConfig, object: true, nullable: true })
 	ldapConfig?: LdapConfig;
 
 	@Property({ nullable: true })
