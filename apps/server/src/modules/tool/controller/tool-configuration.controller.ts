@@ -1,9 +1,9 @@
 import { ApiFoundResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ICurrentUser } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { ScopeQuery, ToolIdParams } from './dto';
+import { ToolIdParams } from './dto';
 import { ExternalToolConfigurationTemplateResponse } from './dto/response/external-tool-configuration-template.response';
 import { ExternalToolResponseMapper } from './mapper';
 import { ExternalToolConfigurationUc } from '../uc/external-tool-configuration.uc';
@@ -22,8 +22,7 @@ export class ToolConfigurationController {
 	@ApiFoundResponse({ description: 'Configuration has been found.', type: ExternalToolConfigurationTemplateResponse })
 	async getExternalToolForScope(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolIdParams,
-		@Query() scopeQuery: ScopeQuery
+		@Param() params: ToolIdParams
 	): Promise<ExternalToolConfigurationTemplateResponse> {
 		const externalToolDO: ExternalToolDO = await this.externalToolConfigurationUc.getExternalToolForSchool(
 			currentUser.userId,

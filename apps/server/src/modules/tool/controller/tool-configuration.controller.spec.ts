@@ -7,8 +7,7 @@ import { ExternalToolResponseMapper } from './mapper';
 import { ExternalToolConfigurationUc } from '../uc/external-tool-configuration.uc';
 import { ToolConfigurationController } from './tool-configuration.controller';
 import { ExternalToolConfigurationTemplateResponse } from './dto/response/external-tool-configuration-template.response';
-import { ScopeQuery, ToolIdParams } from './dto';
-import { ConfigurationScope } from '../interface';
+import { ToolIdParams } from './dto';
 
 describe('ToolConfigurationController', () => {
 	let module: TestingModule;
@@ -45,8 +44,6 @@ describe('ToolConfigurationController', () => {
 		const currentUser: ICurrentUser = { userId: 'userId', schoolId: 'schoolId' } as ICurrentUser;
 		const toolIdParams: ToolIdParams = new ToolIdParams();
 		toolIdParams.toolId = 'toolId';
-		const scopeQuery: ScopeQuery = new ScopeQuery();
-		scopeQuery.scope = ConfigurationScope.SCHOOL;
 
 		const mockResponse: ExternalToolConfigurationTemplateResponse = new ExternalToolConfigurationTemplateResponse({
 			id: 'toolId',
@@ -64,7 +61,6 @@ describe('ToolConfigurationController', () => {
 		return {
 			currentUser,
 			toolIdParams,
-			scopeQuery,
 			mockResponse,
 			externalToolDO,
 		};
@@ -73,9 +69,9 @@ describe('ToolConfigurationController', () => {
 	describe('getExternalToolForScope', () => {
 		describe('when scope "school" is given', () => {
 			it('should call the uc to fetch a tool', async () => {
-				const { currentUser, toolIdParams, scopeQuery } = setupExternalTool();
+				const { currentUser, toolIdParams } = setupExternalTool();
 
-				await controller.getExternalToolForScope(currentUser, toolIdParams, scopeQuery);
+				await controller.getExternalToolForScope(currentUser, toolIdParams);
 
 				expect(externalToolConfigurationUc.getExternalToolForSchool).toHaveBeenCalledWith(
 					currentUser.userId,
@@ -85,12 +81,11 @@ describe('ToolConfigurationController', () => {
 			});
 
 			it('should return a tool', async () => {
-				const { currentUser, toolIdParams, scopeQuery, mockResponse } = setupExternalTool();
+				const { currentUser, toolIdParams, mockResponse } = setupExternalTool();
 
 				const result: ExternalToolConfigurationTemplateResponse = await controller.getExternalToolForScope(
 					currentUser,
-					toolIdParams,
-					scopeQuery
+					toolIdParams
 				);
 
 				expect(result).toEqual(mockResponse);

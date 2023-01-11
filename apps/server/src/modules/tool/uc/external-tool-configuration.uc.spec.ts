@@ -8,12 +8,11 @@ import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { ConfigurationScope } from '../interface';
 import { AuthorizationService } from '../../authorization';
 import { ExternalToolService } from '../service/external-tool.service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
-import { SchoolService } from '../../school';
+import { AllowedAuthorizationEntityType } from '../../authorization/interfaces';
 
 describe('ExternalToolConfigurationUc', () => {
 	let module: TestingModule;
@@ -22,7 +21,6 @@ describe('ExternalToolConfigurationUc', () => {
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -38,17 +36,12 @@ describe('ExternalToolConfigurationUc', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
-				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
-				},
 			],
 		}).compile();
 
 		uc = module.get(ExternalToolConfigurationUc);
 		externalToolService = module.get(ExternalToolService);
 		authorizationService = module.get(AuthorizationService);
-		schoolService = module.get(SchoolService);
 	});
 
 	afterAll(async () => {
@@ -64,22 +57,13 @@ describe('ExternalToolConfigurationUc', () => {
 		const setupAuthorization = () => {
 			const user: User = userFactory.buildWithId();
 			const currentUser: ICurrentUser = { userId: user.id, schoolId: user.school.id } as ICurrentUser;
-			const school: SchoolDO = new SchoolDO({
-				id: user.school.id,
-				name: user.school.name,
-			});
-
-			authorizationService.getUserWithPermissions.mockResolvedValue(user);
-			schoolService.getSchoolById.mockResolvedValue(school);
 
 			return {
 				user,
 				currentUser,
-				school,
 			};
 		};
 		const setupForSchool = () => {
-			// const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 			const externalToolId: string = new ObjectId().toHexString();
 			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId(undefined, externalToolId);
 			const scope: ConfigurationScope = ConfigurationScope.SCHOOL;
@@ -87,7 +71,6 @@ describe('ExternalToolConfigurationUc', () => {
 			externalToolService.getExternalToolForScope.mockResolvedValue(externalToolDO);
 
 			return {
-				// currentUser,
 				externalToolDO,
 				externalToolId,
 				scope,
@@ -95,25 +78,21 @@ describe('ExternalToolConfigurationUc', () => {
 		};
 
 		describe('when the user has permission to read an external tool', () => {
-			it('should call getUserWithPermissions', async () => {
-				const { currentUser } = setupAuthorization();
-				const { externalToolId } = setupForSchool();
-
-				await uc.getExternalToolForSchool(currentUser.userId, externalToolId, 'schoolId');
-
-				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
-			});
-
 			it('should successfully check the user permission with the authorization service', async () => {
-				const { currentUser, user, school } = setupAuthorization();
+				const { currentUser, user } = setupAuthorization();
 				const { externalToolId } = setupForSchool();
 
 				await uc.getExternalToolForSchool(currentUser.userId, externalToolId, 'schoolId');
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, school, {
-					action: Actions.read,
-					requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-				});
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+					user.id,
+					AllowedAuthorizationEntityType.School,
+					'schoolId',
+					{
+						action: Actions.read,
+						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+					}
+				);
 			});
 
 			it('should call the externalToolService', async () => {
@@ -134,7 +113,7 @@ describe('ExternalToolConfigurationUc', () => {
 				const { currentUser } = setupAuthorization();
 				const { externalToolId } = setupForSchool();
 
-				authorizationService.checkPermission.mockImplementation(() => {
+				authorizationService.checkPermissionByReferences.mockImplementation(() => {
 					throw new ForbiddenException();
 				});
 
