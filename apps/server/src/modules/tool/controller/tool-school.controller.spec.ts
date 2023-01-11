@@ -6,11 +6,13 @@ import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/
 import { ToolSchoolController } from './tool-school.controller';
 import { SchoolExternalToolUc } from '../uc/school-external-tool.uc';
 import { SchoolExternalToolResponseMapper } from './mapper/school-external-tool-response.mapper';
-import { SchoolExternalToolSearchParams } from './dto/request/school-external-tool-search.params';
-import { SchoolExternalToolSearchListResponse } from './dto/response/school-external-tool-search-list.response';
-import { SchoolExternalToolResponse } from './dto/response/school-external-tool.response';
-import { SchoolExternalToolStatusResponse } from './dto/response/school-external-tool-status.response';
-import { SchoolExternalToolIdParams } from './dto/request/school-external-tool-id.params';
+import {
+	SchoolExternalToolIdParams,
+	SchoolExternalToolResponse,
+	SchoolExternalToolSearchListResponse,
+	SchoolExternalToolSearchParams,
+	SchoolExternalToolStatusResponse,
+} from './dto';
 
 describe('ToolSchoolController', () => {
 	let module: TestingModule;

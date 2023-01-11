@@ -6,11 +6,10 @@ import { cleanupCollections, courseExternalToolFactory, schoolExternalToolFactor
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { Logger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
+import { CourseExternalToolDO, CustomParameterEntryDO } from '@shared/domain/domainobject/external-tool/';
+import { courseExternalToolDOFactory } from '@shared/testing/factory/domainobject/course-external-tool.factory';
+import { CourseExternalToolQuery } from '@src/modules/tool/uc/dto/course-external-tool.types';
 import { CourseExternalToolRepo } from './course-external-tool.repo';
-import { CourseExternalToolDO } from '../../domain/domainobject/external-tool/course-external-tool.do';
-import { CourseExternalToolQuery } from '../../../modules/tool/uc/dto/course-external-tool.types';
-import { courseExternalToolDOFactory } from '../../testing/factory/domainobject/course-external-tool.factory';
-import { CustomParameterEntryDO } from '../../domain/domainobject/external-tool/custom-parameter-entry.do';
 
 describe('CourseExternalToolRepo', () => {
 	let module: TestingModule;

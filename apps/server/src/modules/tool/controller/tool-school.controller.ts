@@ -1,14 +1,16 @@
 import { ApiForbiddenResponse, ApiFoundResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { Controller, Delete, Get, Param, Query } from '@nestjs/common';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ICurrentUser } from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { SchoolExternalToolSearchParams } from './dto/request/school-external-tool-search.params';
-import { ExternalToolSearchListResponse } from './dto';
-import { SchoolExternalToolSearchListResponse } from './dto/response/school-external-tool-search-list.response';
+import {
+	ExternalToolSearchListResponse,
+	SchoolExternalToolIdParams,
+	SchoolExternalToolSearchListResponse,
+	SchoolExternalToolSearchParams,
+} from './dto';
 import { SchoolExternalToolUc } from '../uc/school-external-tool.uc';
 import { SchoolExternalToolResponseMapper } from './mapper/school-external-tool-response.mapper';
-import { SchoolExternalToolIdParams } from './dto/request/school-external-tool-id.params';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -19,13 +21,13 @@ export class ToolSchoolController {
 		private readonly responseMapper: SchoolExternalToolResponseMapper
 	) {}
 
-	@Get()
+	@Get(':id')
 	@ApiFoundResponse({ description: 'SchoolExternalTools has been found.', type: ExternalToolSearchListResponse })
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	async getSchoolExternalTools(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams
+		@Param() schoolExternalToolParams: SchoolExternalToolSearchParams
 	): Promise<SchoolExternalToolSearchListResponse> {
 		const found: SchoolExternalToolDO[] = await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
 			schoolId: schoolExternalToolParams.schoolId,

@@ -4,6 +4,7 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
+	CustomParameterEntryDO,
 } from '@shared/domain/domainobject/external-tool';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
@@ -16,7 +17,6 @@ import {
 	Oauth2ToolConfig,
 	ToolConfigType,
 } from '../../domain';
-import { CustomParameterEntryDO } from '../../domain/domainobject/external-tool/custom-parameter-entry.do';
 
 @Injectable()
 export class ExternalToolRepoMapper {
