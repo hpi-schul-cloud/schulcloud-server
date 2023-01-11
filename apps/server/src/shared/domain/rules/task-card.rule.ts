@@ -25,9 +25,9 @@ export class TaskCardRule extends BasePermission<TaskCard> {
 		let hasTaskCardPermission = false;
 
 		if (action === Actions.read) {
-			hasTaskCardPermission = this.hasReadPermission(user, entity);
+			hasTaskCardPermission = this.hasTaskPermission(user, entity, Actions.read);
 		} else if (action === Actions.write) {
-			hasTaskCardPermission = this.hasWritePermission(user, entity);
+			hasTaskCardPermission = this.hasTaskPermission(user, entity, Actions.write);
 		}
 
 		const result = hasPermission && (isCreator || hasTaskCardPermission);
@@ -35,22 +35,6 @@ export class TaskCardRule extends BasePermission<TaskCard> {
 		return result;
 	}
 
-	private hasReadPermission(user: User, entity: TaskCard): boolean {
-		/* if (entity.isDraft) {
-			return this.hasWritePermission(user, entity);
-		} */
-		// TODO: clarify if isDraft is necessary as not set by anything
-
-		return this.hasTaskPermission(user, entity, Actions.read);
-	}
-
-	private hasWritePermission(user: User, entity: TaskCard): boolean {
-		const hasPermission = this.hasTaskPermission(user, entity, Actions.write);
-
-		return hasPermission;
-	}
-
-	// private hasParentBoardPermission()
 	private hasTaskPermission(user: User, entity: TaskCard, action: Actions): boolean {
 		const hasPermission = this.taskRule.hasPermission(user, entity.task, { action, requiredPermissions: [] });
 		return hasPermission;

@@ -1,6 +1,6 @@
 import {
-	Collection,
 	Cascade,
+	Collection,
 	Entity,
 	Enum,
 	Index,
@@ -9,7 +9,6 @@ import {
 	ManyToOne,
 	OneToOne,
 	Property,
-	// wrap,
 } from '@mikro-orm/core';
 import { CardType, ICard, ICardCProps } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
@@ -51,11 +50,8 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	@Property()
 	draggable = true;
 
-	@Property()
-	isDraft = false;
-
 	// TODO
-	getCardElements() {
+	public getCardElements() {
 		return this.cardElements.getItems();
 	}
 
