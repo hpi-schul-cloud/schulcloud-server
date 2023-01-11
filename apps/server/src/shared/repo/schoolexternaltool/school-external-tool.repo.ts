@@ -1,4 +1,4 @@
-import { BaseDORepo } from '@shared/repo';
+import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { EntityName, Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ExternalTool, ISchoolExternalToolProperties, School, SchoolExternalTool } from '@shared/domain';
