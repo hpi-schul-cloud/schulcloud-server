@@ -11,10 +11,13 @@ import { ExternalToolUc } from './uc/external-tool.uc';
 import { Lti11Uc } from './uc/lti11.uc';
 import { LtiRoleMapper } from './uc/mapper';
 import { ExternalToolConfigurationUc } from './uc/tool-configuration.uc';
+import { ToolSchoolController } from './controller/tool-school.controller';
+import { SchoolExternalToolResponseMapper } from './controller/mapper/school-external-tool-response.mapper';
+import { SchoolExternalToolUc } from './uc/school-external-tool.uc';
 
 @Module({
 	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule],
-	controllers: [ToolConfigurationController, ToolController],
+	controllers: [ToolConfigurationController, ToolSchoolController, ToolController],
 	providers: [
 		Lti11Uc,
 		LtiRoleMapper,
@@ -24,6 +27,8 @@ import { ExternalToolConfigurationUc } from './uc/tool-configuration.uc';
 		ExternalToolConfigurationUc,
 		ExternalToolRequestMapper,
 		ExternalToolResponseMapper,
+		SchoolExternalToolUc,
+		SchoolExternalToolResponseMapper,
 	],
 })
 export class ToolApiModule {}

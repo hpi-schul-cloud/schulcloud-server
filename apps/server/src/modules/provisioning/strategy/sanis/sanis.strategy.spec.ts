@@ -106,6 +106,7 @@ describe('SanisStrategy', () => {
 						typ: 'SCHULE',
 					}),
 					personenstatus: 'dead',
+					email: 'test@te.st',
 				}),
 			],
 		});

@@ -2,8 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { NotFoundException } from '@nestjs/common';
 import { MigrationResponse } from '../controller/dto';
 import { AuthorizationService } from '../../authorization';
+import { PublicSchoolResponse } from '../controller/dto/public.school.response';
 
 describe('SchoolUc', () => {
 	let module: TestingModule;
@@ -63,6 +66,26 @@ describe('SchoolUc', () => {
 			await schoolUc.getMigration(mockId, mockId);
 
 			expect(schoolService.getMigration).toHaveBeenCalledWith(mockId);
+		});
+	});
+
+	describe('when it calls the service to get public school data', () => {
+		let schoolDO: SchoolDO;
+		const mockSchoolnumber = '1234';
+		beforeEach(() => {
+			schoolDO = new SchoolDO({ name: 'mockSchool', officialSchoolNumber: '1234' });
+			schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
+		});
+		it('should call the service and return an object', async () => {
+			const response: PublicSchoolResponse = await schoolUc.getPublicSchoolData(mockSchoolnumber);
+
+			expect(schoolService.getSchoolBySchoolNumber).toHaveBeenCalledWith(mockSchoolnumber);
+			expect(response).not.toBeNull();
+		});
+		it('should call the service and throw an exception', async () => {
+			schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
+			const resp: Promise<PublicSchoolResponse> = schoolUc.getPublicSchoolData(mockSchoolnumber);
+			await expect(resp).rejects.toThrow(NotFoundException);
 		});
 	});
 });

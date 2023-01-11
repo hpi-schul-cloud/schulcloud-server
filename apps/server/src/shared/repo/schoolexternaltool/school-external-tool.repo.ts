@@ -6,6 +6,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolExternalToolDO } from '../../domain/domainobject/external-tool/school-external-tool.do';
 import { ExternalToolRepoMapper } from '../externaltool/external-tool.repo.mapper';
 import { Logger } from '../../../core/logger';
+import { SchoolExternalToolScope } from './school-external-tool.scope';
+import { SchoolExternalToolQuery } from '../../../modules/tool/uc/dto/school-external-tool.types';
 
 @Injectable()
 export class SchoolExternalToolRepo extends BaseDORepo<
@@ -50,6 +52,24 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 	async deleteByToolId(toolId: string): Promise<number> {
 		const count: Promise<number> = this._em.nativeDelete(this.entityName, { tool: toolId });
 		return count;
+	}
+
+	async find(query: SchoolExternalToolQuery): Promise<SchoolExternalToolDO[]> {
+		const scope: SchoolExternalToolScope = this.buildScope(query);
+
+		const entities: SchoolExternalTool[] = await this._em.find(this.entityName, scope.query);
+
+		const dos: SchoolExternalToolDO[] = entities.map((entity: SchoolExternalTool) => this.mapEntityToDO(entity));
+		return dos;
+	}
+
+	private buildScope(query: SchoolExternalToolQuery): SchoolExternalToolScope {
+		const scope: SchoolExternalToolScope = new SchoolExternalToolScope();
+		if (query.schoolId) {
+			scope.bySchoolId(query.schoolId);
+		}
+		scope.allowEmptyQuery(true);
+		return scope;
 	}
 
 	mapEntityToDO(entity: SchoolExternalTool): SchoolExternalToolDO {

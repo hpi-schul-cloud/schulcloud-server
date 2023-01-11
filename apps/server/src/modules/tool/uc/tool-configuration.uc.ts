@@ -20,9 +20,9 @@ export class ExternalToolConfigurationUc {
 		await this.ensureSchoolPermission(userId, schoolId);
 
 		const externalTools: Page<ExternalToolDO> = await this.externalToolService.findExternalTools({});
-		const toolsInUse: SchoolExternalToolDO[] = await this.schoolExternalToolService.findSchoolExternalToolsBySchoolId(
-			schoolId
-		);
+		const toolsInUse: SchoolExternalToolDO[] = await this.schoolExternalToolService.findSchoolExternalTools({
+			schoolId,
+		});
 		const toolIdsInUse: EntityId[] = toolsInUse.map(
 			(schoolExternalTool: SchoolExternalToolDO): EntityId => schoolExternalTool.toolId
 		);
