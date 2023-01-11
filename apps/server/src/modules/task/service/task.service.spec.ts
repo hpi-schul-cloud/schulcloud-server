@@ -337,7 +337,16 @@ describe('TaskService', () => {
 				await taskService.find(user.id, task.id);
 				expect(authorizationService.hasOneOfPermissions).toBeCalledWith(user, [Permission.HOMEWORK_EDIT]);
 			});
-			it('should return the task with its status', async () => {
+			it('should return the task with its status for student if user has only view permission', async () => {
+				authorizationService.hasOneOfPermissions.mockReturnValue(false);
+
+				const result = await taskService.find(user.id, task.id);
+				expect(result.task).toEqual(task);
+				expect(result.status).toBeDefined();
+			});
+			it('should return the task with its status for student if user has only edit permission', async () => {
+				authorizationService.hasOneOfPermissions.mockReturnValue(true);
+
 				const result = await taskService.find(user.id, task.id);
 				expect(result.task).toEqual(task);
 				expect(result.status).toBeDefined();
