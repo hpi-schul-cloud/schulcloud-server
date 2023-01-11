@@ -18,10 +18,10 @@ describe('LdapStrategy', () => {
 	let orm: MikroORM;
 	let module: TestingModule;
 	let strategy: LdapStrategy;
-	let userRepo: DeepMocked<UserRepo>;
-	let schoolRepo: DeepMocked<SchoolRepo>;
-	let authenticationService: DeepMocked<AuthenticationService>;
-	let ldapService: DeepMocked<LdapService>;
+	let userRepoMock: DeepMocked<UserRepo>;
+	let schoolRepoMock: DeepMocked<SchoolRepo>;
+	let authenticationServiceMock: DeepMocked<AuthenticationService>;
+	let ldapServiceMock: DeepMocked<LdapService>;
 	let mockUser: User;
 	let mockAccount: AccountDto;
 
@@ -73,10 +73,10 @@ describe('LdapStrategy', () => {
 		}).compile();
 
 		strategy = module.get(LdapStrategy);
-		authenticationService = module.get(AuthenticationService);
-		schoolRepo = module.get(SchoolRepo);
-		userRepo = module.get(UserRepo);
-		ldapService = module.get(LdapService);
+		authenticationServiceMock = module.get(AuthenticationService);
+		schoolRepoMock = module.get(SchoolRepo);
+		userRepoMock = module.get(UserRepo);
+		ldapServiceMock = module.get(LdapService);
 
 		mockUser = userFactory.withRole(RoleName.STUDENT).buildWithId();
 		mockAccount = AccountEntityToDtoMapper.mapToDto(
@@ -87,6 +87,10 @@ describe('LdapStrategy', () => {
 	afterAll(async () => {
 		await module.close();
 		await orm.close();
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('validate', () => {
@@ -152,7 +156,7 @@ describe('LdapStrategy', () => {
 						systemId: 'mockSystemId',
 					},
 				};
-				userRepo.findById.mockResolvedValueOnce({ ...mockUser });
+				userRepoMock.findById.mockResolvedValueOnce({ ...mockUser });
 				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -167,7 +171,7 @@ describe('LdapStrategy', () => {
 						systemId: 'mockSystemId',
 					},
 				};
-				schoolRepo.findById.mockResolvedValueOnce({} as SchoolDO);
+				schoolRepoMock.findById.mockResolvedValueOnce({} as SchoolDO);
 				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -184,7 +188,7 @@ describe('LdapStrategy', () => {
 				};
 				const mockAccountWithoutUserId = { ...mockAccount };
 				delete mockAccountWithoutUserId.userId;
-				authenticationService.loadAccount.mockResolvedValueOnce(mockAccountWithoutUserId);
+				authenticationServiceMock.loadAccount.mockResolvedValueOnce(mockAccountWithoutUserId);
 				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -199,9 +203,36 @@ describe('LdapStrategy', () => {
 						systemId: 'mockSystemId',
 					},
 				};
-				ldapService.checkLdapCredentials.mockRejectedValueOnce(new UnauthorizedException());
+				ldapServiceMock.checkLdapCredentials.mockRejectedValueOnce(new UnauthorizedException());
 				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
-				expect(authenticationService.updateLastTriedFailedLogin).toHaveBeenCalledWith(mockAccount.id);
+				expect(authenticationServiceMock.updateLastTriedFailedLogin).toHaveBeenCalledWith(mockAccount.id);
+			});
+		});
+
+		describe('when connection to ldap fails', () => {
+			const setup = () => {
+				const error = new Error('error');
+				const request: { body: RequestBody } = {
+					body: {
+						username: 'mockUserName',
+						password: 'somePassword1234$',
+						schoolId: 'mockSchoolId',
+						systemId: 'mockSystemId',
+					},
+				};
+				ldapServiceMock.checkLdapCredentials.mockRejectedValueOnce(error);
+				return { error, request };
+			};
+
+			it('should throw error', async () => {
+				const { error, request } = setup();
+				await expect(strategy.validate(request)).rejects.toThrow(error);
+			});
+
+			it('should not update last tried login failed', async () => {
+				const { error, request } = setup();
+				await expect(strategy.validate(request)).rejects.toThrow(error);
+				expect(authenticationServiceMock.updateLastTriedFailedLogin).not.toHaveBeenCalledWith(mockAccount.id);
 			});
 		});
 
