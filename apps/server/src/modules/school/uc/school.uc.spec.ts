@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MigrationResponse } from '../controller/dto';
 import { AuthorizationService } from '../../authorization';
+import { MigrationDto } from '../dto/migration.dto';
 
 describe('SchoolUc', () => {
 	let module: TestingModule;
@@ -35,10 +35,10 @@ describe('SchoolUc', () => {
 	});
 
 	describe('setMigration is called', () => {
-		let migrationResponse: MigrationResponse;
+		let migrationResponse: MigrationDto;
 		const mockId = 'someId';
 		beforeAll(() => {
-			migrationResponse = new MigrationResponse({
+			migrationResponse = new MigrationDto({
 				oauthMigrationPossible: new Date(),
 				oauthMigrationMandatory: new Date(),
 				oauthMigrationFinished: new Date(),
@@ -58,7 +58,7 @@ describe('SchoolUc', () => {
 	});
 
 	describe('getMigration is called', () => {
-		let migrationResponse: MigrationResponse;
+		let migrationResponse: MigrationDto;
 		const mockId = 'someId';
 		beforeAll(() => {
 			schoolService.getMigration.mockResolvedValue(migrationResponse);

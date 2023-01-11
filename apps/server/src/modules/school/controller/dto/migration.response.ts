@@ -1,15 +1,27 @@
-import { IsDate } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class MigrationResponse {
-	@IsDate()
-	oauthMigrationPossible: Date | undefined;
+	@ApiPropertyOptional({
+		description: 'Date from when Migration is possible',
+		type: Date,
+	})
+	oauthMigrationPossible?: Date;
 
-	@IsDate()
-	oauthMigrationMandatory: Date | undefined;
+	@ApiPropertyOptional({
+		description: 'Date from when Migration is mandatory',
+		type: Date,
+	})
+	oauthMigrationMandatory?: Date;
 
-	@IsDate()
-	oauthMigrationFinished: Date | undefined;
+	@ApiPropertyOptional({
+		description: 'Date from when Migration is finished',
+		type: Date,
+	})
+	oauthMigrationFinished?: Date;
 
+	@ApiProperty({
+		description: 'Enable the Migration',
+	})
 	enableMigrationStart!: boolean;
 
 	constructor(params: MigrationResponse) {
