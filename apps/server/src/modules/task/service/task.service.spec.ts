@@ -333,6 +333,10 @@ describe('TaskService', () => {
 					requiredPermissions: [Permission.HOMEWORK_VIEW],
 				});
 			});
+			it('should check also user permission to edit task', async () => {
+				await taskService.find(user.id, task.id);
+				expect(authorizationService.hasOneOfPermissions).toBeCalledWith(user, [Permission.HOMEWORK_EDIT]);
+			});
 			it('should return the task with its status', async () => {
 				const result = await taskService.find(user.id, task.id);
 				expect(result.task).toEqual(task);
