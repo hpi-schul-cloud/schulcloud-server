@@ -3,7 +3,7 @@ import { ApiForbiddenResponse, ApiTags, ApiUnauthorizedResponse, ApiFoundRespons
 import { ICurrentUser } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { ExternalToolConfigurationUc } from '../uc/tool-configuration.uc';
+import { ExternalToolConfigurationUc } from '../uc/external-tool-configuration.uc';
 import { ToolIdParams, IdParams, ScopeParams, ToolConfigurationListResponse } from './dto';
 import { ExternalToolResponseMapper } from './mapper';
 import { ExternalToolConfigurationTemplateResponse } from './dto/response/external-tool-configuration-template.response';

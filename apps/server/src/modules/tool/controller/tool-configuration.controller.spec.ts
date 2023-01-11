@@ -4,8 +4,14 @@ import { ICurrentUser } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ConfigurationScope } from '../interface';
-import { ExternalToolConfigurationUc } from '../uc/tool-configuration.uc';
-import { ToolIdParams, IdParams, ScopeParams, ToolConfigurationEntryResponse, ToolConfigurationListResponse } from './dto';
+import { ExternalToolConfigurationUc } from '../uc/external-tool-configuration.uc';
+import {
+	ToolIdParams,
+	IdParams,
+	ScopeParams,
+	ToolConfigurationEntryResponse,
+	ToolConfigurationListResponse,
+} from './dto';
 import { ExternalToolResponseMapper } from './mapper';
 import { ToolConfigurationController } from './tool-configuration.controller';
 import { ExternalToolConfigurationTemplateResponse } from './dto/response/external-tool-configuration-template.response';
