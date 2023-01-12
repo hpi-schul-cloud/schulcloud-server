@@ -129,7 +129,7 @@ describe('TaskService', () => {
 	describe('Single task', () => {
 		beforeEach(() => {
 			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
-				if (config === 'FEATURE_NEW_TASK_ENABLED') {
+				if (config === 'FEATURE_TASK_CARD_ENABLED') {
 					return true;
 				}
 				return null;

@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { CardElementType, CardTitleElementResponse, ICurrentUser, Permission, Task, TaskCard } from '@shared/domain';
 import {
 	cleanupCollections,
 	mapUserToCurrentUser,
@@ -14,11 +13,22 @@ import {
 	titleCardElementFactory,
 	userFactory,
 } from '@shared/testing';
+import {
+	CardElementType,
+	CardRichTextElementResponse,
+	CardTitleElementResponse,
+	ICurrentUser,
+	InputFormat,
+	Permission,
+	Task,
+	TaskCard,
+} from '@shared/domain';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { TaskCardResponse } from '@src/modules/task-card/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
+import { sanitizeRichText } from '@shared/controller';
 
 describe('Task-Card Controller (2e2)', () => {
 	let app: INestApplication;
@@ -59,10 +69,89 @@ describe('Task-Card Controller (2e2)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		Configuration.set('FEATURE_NEW_TASK_ENABLED', true);
+		Configuration.set('FEATURE_TASK_CARD_ENABLED', true);
 	});
 
-	describe('when user has all needed permissions', () => {
+	describe('When feature is not enabled', () => {
+		beforeEach(async () => {
+			await cleanupCollections(em);
+			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
+		});
+
+		it('create task-card should throw', async () => {
+			const user = setupUser([]);
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const params = {
+				title: 'title test',
+			};
+			await request(app.getHttpServer()).post(`/cards/task`).set('Accept', 'application/json').send(params).expect(500);
+		});
+
+		it('Find task-card should throw', async () => {
+			const user = setupUser([]);
+			const taskCard = taskCardFactory.buildWithId({ creator: user });
+
+			await em.persistAndFlush([user, taskCard]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			await request(app.getHttpServer())
+				.get(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.expect(500);
+		});
+
+		it('Delete task-card should throw', async () => {
+			const user = setupUser([]);
+
+			const taskCard = taskCardFactory.build({ creator: user });
+
+			await em.persistAndFlush([user, taskCard]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			await request(app.getHttpServer())
+				.delete(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.expect(500);
+		});
+
+		it('Update task-card should throw', async () => {
+			const user = setupUser([]);
+
+			const taskCard = taskCardFactory.build({ creator: user });
+
+			await em.persistAndFlush([user, taskCard]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const params = {
+				cardElements: [
+					{
+						content: {
+							type: 'title',
+							value: 'title updated',
+						},
+					},
+				],
+			};
+			await request(app.getHttpServer())
+				.patch(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.send(params)
+				.expect(500);
+		});
+	});
+
+	describe('when feature is enabled', () => {
 		it('GET :id should return existing task-card', async () => {
 			const user = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
 			const title = 'title test';
@@ -183,6 +272,82 @@ describe('Task-Card Controller (2e2)', () => {
 			expect(responseTaskCard.id).toEqual(taskCard.id);
 			expect(responseTaskCard.cardElements.length).toEqual(3);
 			expect((responseTitle[0].content as CardTitleElementResponse).value).toEqual('title updated');
+		});
+
+		describe('Sanitize richText', () => {
+			it('should sanitize richtext on create with inputformat ck5', async () => {
+				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE]);
+
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				const text = '<iframe>rich text 1</iframe> some more text';
+				const taskCardCreateParams = {
+					title: 'title test',
+					text: [text],
+				};
+
+				const sanitisedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
+
+				const response = await request(app.getHttpServer())
+					.post(`/cards/task/`)
+					.set('Accept', 'application/json')
+					.send(taskCardCreateParams)
+					.expect(201);
+
+				const responseTaskCard = response.body as TaskCardResponse;
+				const richTextElement = responseTaskCard.cardElements.filter(
+					(element) => element.cardElementType === CardElementType.RichText
+				);
+				expect((richTextElement[0].content as CardRichTextElementResponse).value).toEqual(sanitisedText);
+			});
+
+			it('should sanitise richtext on update, with given format', async () => {
+				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
+				// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+				const task = taskFactory.build({ creator: user });
+				const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+
+				await em.persistAndFlush([user, task, taskCard]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				const text = '<iframe>rich text 1</iframe> some more text';
+				const sanitisedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
+
+				const taskCardUpdateParams = {
+					cardElements: [
+						{
+							content: {
+								type: 'title',
+								value: 'title updated',
+							},
+						},
+						{
+							content: {
+								type: 'richText',
+								value: text,
+								inputFormat: InputFormat.RICH_TEXT_CK5,
+							},
+						},
+					],
+				};
+
+				const response = await request(app.getHttpServer())
+					.patch(`/cards/task/${taskCard.id}`)
+					.set('Accept', 'application/json')
+					.send(taskCardUpdateParams)
+					.expect(200);
+
+				const responseTaskCard = response.body as TaskCardResponse;
+				const richTextElement = responseTaskCard.cardElements.filter(
+					(element) => element.cardElementType === CardElementType.RichText
+				);
+				expect((richTextElement[0].content as CardRichTextElementResponse).value).toEqual(sanitisedText);
+			});
 		});
 	});
 });

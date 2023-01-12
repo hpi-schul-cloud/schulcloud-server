@@ -1,4 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
+
+import { Body, Controller, Delete, Get, InternalServerErrorException, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -17,6 +19,8 @@ export class TaskCardController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: CreateTaskCardParams
 	): Promise<TaskCardResponse> {
+		this.featureEnabled();
+
 		const mapper = new TaskCardMapper();
 		const { card, taskWithStatusVo } = await this.taskCardUc.create(
 			currentUser.userId,
@@ -32,6 +36,8 @@ export class TaskCardController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: TaskCardUrlParams
 	): Promise<TaskCardResponse> {
+		this.featureEnabled();
+
 		const { card, taskWithStatusVo } = await this.taskCardUc.findOne(currentUser.userId, urlParams.id);
 		const mapper = new TaskCardMapper();
 		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
@@ -41,6 +47,8 @@ export class TaskCardController {
 	// async update
 	@Delete(':id')
 	async delete(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: TaskCardUrlParams): Promise<boolean> {
+		this.featureEnabled();
+
 		const result = await this.taskCardUc.delete(currentUser.userId, urlParams.id);
 
 		return result;
@@ -52,6 +60,8 @@ export class TaskCardController {
 		@Param() urlParams: TaskCardUrlParams,
 		@Body() params: UpdateTaskCardParams
 	): Promise<TaskCardResponse> {
+		this.featureEnabled();
+
 		const { card, taskWithStatusVo } = await this.taskCardUc.update(
 			currentUser.userId,
 			urlParams.id,
@@ -60,5 +70,12 @@ export class TaskCardController {
 		const mapper = new TaskCardMapper();
 		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
 		return taskCardResponse;
+	}
+
+	private featureEnabled() {
+		const enabled = Configuration.get('FEATURE_TASK_CARD_ENABLED') as boolean;
+		if (!enabled) {
+			throw new InternalServerErrorException('Feature not enabled');
+		}
 	}
 }

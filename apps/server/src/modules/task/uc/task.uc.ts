@@ -1,15 +1,11 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import {
 	Actions,
 	Counted,
 	Course,
 	EntityId,
 	IPagination,
-	ITaskCreate,
 	ITaskStatus,
-	ITaskUpdate,
 	Lesson,
 	Permission,
 	PermissionContextBuilder,
@@ -215,24 +211,6 @@ export class TaskUC {
 		return oneWeekAgo;
 	}
 
-	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
-		this.checkNewTaskEnabled();
-
-		return this.taskService.create(userId, params);
-	}
-
-	async find(userId: EntityId, taskId: EntityId) {
-		this.checkNewTaskEnabled();
-
-		return this.taskService.find(userId, taskId);
-	}
-
-	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
-		this.checkNewTaskEnabled();
-
-		return this.taskService.update(userId, taskId, params);
-	}
-
 	async delete(userId: EntityId, taskId: EntityId): Promise<boolean> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
@@ -242,12 +220,5 @@ export class TaskUC {
 		await this.taskService.delete(task);
 
 		return true;
-	}
-
-	private checkNewTaskEnabled() {
-		const enabled = Configuration.get('FEATURE_NEW_TASK_ENABLED') as boolean;
-		if (!enabled) {
-			throw new InternalServerErrorException('Feature not enabled');
-		}
 	}
 }
