@@ -31,8 +31,17 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 		return new SchoolExternalTool(props);
 	}
 
-	async findByToolId(toolId: string): Promise<SchoolExternalToolDO[]> {
+	async findByExternalToolId(toolId: string): Promise<SchoolExternalToolDO[]> {
 		const entities: SchoolExternalTool[] = await this._em.find(this.entityName, { tool: toolId });
+		const domainObjects: SchoolExternalToolDO[] = entities.map((entity: SchoolExternalTool): SchoolExternalToolDO => {
+			const domainObject: SchoolExternalToolDO = this.mapEntityToDO(entity);
+			return domainObject;
+		});
+		return domainObjects;
+	}
+
+	async findBySchoolId(schoolId: string): Promise<SchoolExternalToolDO[]> {
+		const entities: SchoolExternalTool[] = await this._em.find(this.entityName, { school: schoolId });
 		const domainObjects: SchoolExternalToolDO[] = entities.map((entity: SchoolExternalTool): SchoolExternalToolDO => {
 			const domainObject: SchoolExternalToolDO = this.mapEntityToDO(entity);
 			return domainObject;
