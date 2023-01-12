@@ -27,7 +27,7 @@ import { TaskCardModule } from '@src/modules/task-card';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { VideoConferenceModule } from '@src/modules/video-conference';
-import { ToolApiModule } from '@src/modules/tool';
+import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
