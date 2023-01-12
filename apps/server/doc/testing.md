@@ -304,10 +304,10 @@ Since a [usecase](./architecture.md#domain-layer) only contains orchestration, i
 
 to be documented
 
-## E2E Tests
+## API Tests
 
-Unlike unit testing, which focuses on individual modules, end-to-end testing covers the interaction between classes and
-modules at a more aggregate level. Automated end-to-end tests help us to ensure that the overall behavior of the system is correct.
+Unlike unit testing, which focuses on individual modules, API testing covers the interaction between classes and
+modules at a more aggregate level. Automated API tests help us to ensure that the overall behavior of the system is correct.
 
 ### Controller Tests
 
