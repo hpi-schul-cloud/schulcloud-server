@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BaseDORepo, EntityProperties } from '@shared/repo/base.do.repo';
+import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { EntityName, NotFoundError } from '@mikro-orm/core';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { ILtiToolProperties, LtiPrivacyPermission, LtiTool } from '@shared/domain';
@@ -61,9 +61,8 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		});
 	}
 
-	protected mapDOToEntityProperties(entityDO: LtiToolDO): EntityProperties<ILtiToolProperties> {
+	protected mapDOToEntityProperties(entityDO: LtiToolDO): ILtiToolProperties {
 		return {
-			id: entityDO.id,
 			name: entityDO.name,
 			url: entityDO.url,
 			key: entityDO.key,
