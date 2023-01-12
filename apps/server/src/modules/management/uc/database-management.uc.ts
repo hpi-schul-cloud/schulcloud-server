@@ -279,11 +279,11 @@ export class DatabaseManagementUc {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oauthConfig.clientSecret);
 			}
-			if (system.type === SystemTypeEnum.OIDC && system.config) {
-				system.config.clientSecret = this.defaultEncryptionService.encrypt(system.config.clientSecret as string);
-				system.config.clientId = this.defaultEncryptionService.encrypt(system.config.clientId as string);
+			if (system.oidcConfig) {
+				system.oidcConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oidcConfig.clientSecret);
+				system.oidcConfig.clientId = this.defaultEncryptionService.encrypt(system.oidcConfig.clientId);
 			}
-			if (system.type === SystemTypeEnum.LDAP && system.ldapConfig) {
+			if (system.ldapConfig) {
 				system.ldapConfig.searchUserPassword = this.ldapEncryptionService.encrypt(
 					system.ldapConfig.searchUserPassword as string
 				);
@@ -318,11 +318,11 @@ export class DatabaseManagementUc {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = defaultSecretReplacementHintText;
 			}
-			if (system.type === SystemTypeEnum.OIDC && system.config) {
-				system.config.clientSecret = defaultSecretReplacementHintText;
-				system.config.clientId = defaultSecretReplacementHintText;
+			if (system.oidcConfig) {
+				system.oidcConfig.clientSecret = defaultSecretReplacementHintText;
+				system.oidcConfig.clientId = defaultSecretReplacementHintText;
 			}
-			if (system.type === SystemTypeEnum.LDAP && system.ldapConfig) {
+			if (system.ldapConfig) {
 				system.ldapConfig.searchUserPassword = defaultSecretReplacementHintText;
 			}
 		});

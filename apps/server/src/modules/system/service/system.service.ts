@@ -36,13 +36,13 @@ export class SystemService {
 	}
 
 	async findOidc(): Promise<SystemDto[]> {
-		const systemEntities = await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
+		const systemEntities = await this.systemRepo.findByFilter(undefined, false, true);
 		return SystemMapper.mapFromEntitiesToDtos(systemEntities);
 	}
 
 	async findOAuthById(id: EntityId): Promise<SystemDto> {
 		let systemEntity = await this.systemRepo.findById(id);
-		if (systemEntity.type === SystemTypeEnum.OIDC) {
+		if (systemEntity.oidcConfig) {
 			const keycloakSystem = await this.lookupIdentityManagement();
 			if (keycloakSystem) {
 				systemEntity = this.generateBrokerSystem(systemEntity, keycloakSystem);
@@ -89,7 +89,7 @@ export class SystemService {
 		if (!keycloakSystem) {
 			return [];
 		}
-		const oidcSystems = await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
+		const oidcSystems = await this.systemRepo.findByFilter(undefined, false, true);
 
 		const generatedOAuthsystems: System[] = [];
 		oidcSystems.forEach((systemEntity) => {

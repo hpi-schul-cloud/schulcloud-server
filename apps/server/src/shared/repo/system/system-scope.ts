@@ -11,4 +11,9 @@ export class SystemScope extends Scope<System> {
 		this.addQuery({ oauthConfig: { $ne: null } });
 		return this;
 	}
+
+	withOidcConfigOnly(): SystemScope {
+		this.addQuery({ oidcConfig: { $ne: null } });
+		return this;
+	}
 }

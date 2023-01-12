@@ -9,13 +9,16 @@ export class SystemRepo extends BaseRepo<System> {
 		return System;
 	}
 
-	async findByFilter(type: string | SystemType = '', onlyOauth = false): Promise<System[]> {
+	async findByFilter(type: string | SystemType = '', onlyOauth = false, onlyOidc = false): Promise<System[]> {
 		const scope = new SystemScope();
 		if (type) {
 			scope.byType(type);
 		}
 		if (onlyOauth) {
 			scope.withOauthConfigOnly();
+		}
+		if (onlyOidc) {
+			scope.withOidcConfigOnly();
 		}
 		return this._em.find(System, scope.query);
 	}

@@ -9,8 +9,12 @@ export interface ISystemProperties {
 	alias?: string;
 	displayName?: string;
 	oauthConfig?: OauthConfig;
-	oidcConfig?: OidcConfig;
+<<<<<<< HEAD
 	ldapConfig?: LdapConfig;
+||||||| parent of 395d36a2c (move system)
+=======
+	oidcConfig?: OidcConfig;
+>>>>>>> 395d36a2c (move system)
 	provisioningStrategy?: SystemProvisioningStrategy;
 	provisioningUrl?: string;
 }
@@ -67,6 +71,7 @@ export class OauthConfig {
 	@Property()
 	jwksEndpoint: string;
 }
+<<<<<<< HEAD
 
 @Embeddable()
 export class LdapConfig {
@@ -135,6 +140,10 @@ export class LdapConfig {
 		};
 	};
 }
+
+||||||| parent of 395d36a2c (move system)
+=======
+
 export class OidcConfig {
 	constructor(oidcConfig: OidcConfig) {
 		this.clientId = oidcConfig.clientId;
@@ -167,7 +176,7 @@ export class OidcConfig {
 	@Property()
 	defaultScopes: string;
 }
-
+>>>>>>> 395d36a2c (move system)
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {
 	constructor(props: ISystemProperties) {
@@ -177,8 +186,12 @@ export class System extends BaseEntityWithTimestamps {
 		this.alias = props.alias;
 		this.displayName = props.displayName;
 		this.oauthConfig = props.oauthConfig;
-		this.oidcConfig = props.oidcConfig;
+<<<<<<< HEAD
 		this.ldapConfig = props.ldapConfig;
+||||||| parent of 395d36a2c (move system)
+=======
+		this.oidcConfig = props.oidcConfig;
+>>>>>>> 395d36a2c (move system)
 		this.provisioningStrategy = props.provisioningStrategy;
 		this.provisioningUrl = props.provisioningUrl;
 	}
