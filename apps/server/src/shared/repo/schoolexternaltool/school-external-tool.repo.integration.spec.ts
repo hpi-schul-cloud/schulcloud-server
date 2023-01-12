@@ -80,7 +80,7 @@ describe('SchoolExternalToolRepo', () => {
 		it('should find all SchoolExternalTools with reference to a given ExternalTool', async () => {
 			const { externalTool, schoolExternalTool1, schoolExternalTool3 } = await setup();
 
-			const result: SchoolExternalToolDO[] = await repo.findByToolId(externalTool.id);
+			const result: SchoolExternalToolDO[] = await repo.findByExternalToolId(externalTool.id);
 
 			expect(result).toEqual(
 				expect.arrayContaining([

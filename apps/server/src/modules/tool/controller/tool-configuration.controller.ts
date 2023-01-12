@@ -1,11 +1,12 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
+import { ApiForbiddenResponse, ApiTags, ApiUnauthorizedResponse, ApiFoundResponse } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { ExternalToolConfigurationUc } from '../uc/tool-configuration.uc';
-import { IdParams, ScopeParams, ToolConfigurationListResponse } from './dto';
+import { ExternalToolConfigurationUc } from '../uc/external-tool-configuration.uc';
+import { ToolIdParams, IdParams, ScopeParams, ToolConfigurationListResponse } from './dto';
 import { ExternalToolResponseMapper } from './mapper';
+import { ExternalToolConfigurationTemplateResponse } from './dto/response/external-tool-configuration-template.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -13,7 +14,7 @@ import { ExternalToolResponseMapper } from './mapper';
 export class ToolConfigurationController {
 	constructor(
 		private readonly externalToolConfigurationUc: ExternalToolConfigurationUc,
-		private readonly externalToolMapper: ExternalToolResponseMapper
+		private readonly externalToolResponseMapper: ExternalToolResponseMapper
 	) {}
 
 	@Get('available/:scope/:id')
@@ -28,7 +29,24 @@ export class ToolConfigurationController {
 			idParams.id
 		);
 		const mapped: ToolConfigurationListResponse =
-			this.externalToolMapper.mapExternalToolDOsToToolConfigurationListResponse(availableTools);
+			this.externalToolResponseMapper.mapExternalToolDOsToToolConfigurationListResponse(availableTools);
+		return mapped;
+	}
+
+	@Get(':toolId/configuration')
+	@ApiUnauthorizedResponse()
+	@ApiFoundResponse({ description: 'Configuration has been found.', type: ExternalToolConfigurationTemplateResponse })
+	async getExternalToolForScope(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ToolIdParams
+	): Promise<ExternalToolConfigurationTemplateResponse> {
+		const externalToolDO: ExternalToolDO = await this.externalToolConfigurationUc.getExternalToolForSchool(
+			currentUser.userId,
+			params.toolId,
+			currentUser.schoolId
+		);
+		const mapped: ExternalToolConfigurationTemplateResponse =
+			this.externalToolResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);
 		return mapped;
 	}
 }
