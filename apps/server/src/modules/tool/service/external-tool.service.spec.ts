@@ -362,7 +362,7 @@ describe('ExternalToolService', () => {
 
 				await service.deleteExternalTool(toolId);
 
-				expect(schoolToolRepo.deleteByToolId).toHaveBeenCalledWith(toolId);
+				expect(schoolToolRepo.deleteByExternalToolId).toHaveBeenCalledWith(toolId);
 			});
 
 			it('should delete the ExternalTool', async () => {

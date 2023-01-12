@@ -3,7 +3,7 @@ import { EntityName } from '@mikro-orm/core';
 import { EntityId, IPseudonymProperties, Pseudonym } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseDORepo, EntityProperties } from '../base.do.repo';
+import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()
 export class PseudonymsRepo extends BaseDORepo<PseudonymDO, Pseudonym, IPseudonymProperties> {
@@ -35,9 +35,8 @@ export class PseudonymsRepo extends BaseDORepo<PseudonymDO, Pseudonym, IPseudony
 		});
 	}
 
-	protected mapDOToEntityProperties(entityDO: PseudonymDO): EntityProperties<IPseudonymProperties> {
+	protected mapDOToEntityProperties(entityDO: PseudonymDO): IPseudonymProperties {
 		return {
-			id: entityDO.id,
 			pseudonym: entityDO.pseudonym,
 			toolId: new ObjectId(entityDO.toolId),
 			userId: new ObjectId(entityDO.userId),

@@ -1,11 +1,13 @@
-import { BaseDORepo, EntityProperties } from '@shared/repo';
+import { BaseDORepo } from '@shared/repo';
 import { EntityName, Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Course, CourseExternalTool, ICourseExternalToolProperties, SchoolExternalTool } from '@shared/domain';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { CourseExternalToolDO } from '../../domain/domainobject/external-tool/course-external-tool.do';
+import { Logger } from '@src/core/logger';
+import { CourseExternalToolQuery } from '@src/modules/tool/uc/dto/course-external-tool.types';
+import { CourseExternalToolDO } from '@shared/domain/domainobject/external-tool/course-external-tool.do';
 import { ExternalToolRepoMapper } from '../externaltool/external-tool.repo.mapper';
-import { Logger } from '../../../core/logger';
+import { CourseExternalToolScope } from './course-external-tool.scope';
 
 @Injectable()
 export class CourseExternalToolRepo extends BaseDORepo<
@@ -36,6 +38,24 @@ export class CourseExternalToolRepo extends BaseDORepo<
 		return count;
 	}
 
+	async find(query: CourseExternalToolQuery): Promise<CourseExternalToolDO[]> {
+		const scope: CourseExternalToolScope = this.buildScope(query);
+
+		const entities: CourseExternalTool[] = await this._em.find(this.entityName, scope.query);
+
+		const dos: CourseExternalToolDO[] = entities.map((entity: CourseExternalTool) => this.mapEntityToDO(entity));
+		return dos;
+	}
+
+	private buildScope(query: CourseExternalToolQuery): CourseExternalToolScope {
+		const scope: CourseExternalToolScope = new CourseExternalToolScope();
+		if (query.schoolToolId) {
+			scope.bySchoolToolId(query.schoolToolId);
+		}
+		scope.allowEmptyQuery(true);
+		return scope;
+	}
+
 	mapEntityToDO(entity: CourseExternalTool): CourseExternalToolDO {
 		return new CourseExternalToolDO({
 			id: entity.id,
@@ -48,9 +68,8 @@ export class CourseExternalToolRepo extends BaseDORepo<
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: CourseExternalToolDO): EntityProperties<ICourseExternalToolProperties> {
+	mapDOToEntityProperties(entityDO: CourseExternalToolDO): ICourseExternalToolProperties {
 		return {
-			id: entityDO.id,
 			course: Reference.createFromPK(Course, entityDO.courseId),
 			schoolTool: Reference.createFromPK(SchoolExternalTool, entityDO.schoolToolId),
 			toolVersion: entityDO.toolVersion,

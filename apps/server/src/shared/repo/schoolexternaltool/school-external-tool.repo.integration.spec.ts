@@ -70,7 +70,7 @@ describe('SchoolExternalToolRepo', () => {
 		it('should delete all SchoolExternalTools with reference to a given ExternalTool', async () => {
 			const { externalTool } = await setup();
 
-			const result: number = await repo.deleteByToolId(externalTool.id);
+			const result: number = await repo.deleteByExternalToolId(externalTool.id);
 
 			expect(result).toEqual(2);
 		});

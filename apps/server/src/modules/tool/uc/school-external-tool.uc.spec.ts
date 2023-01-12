@@ -1,15 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, Permission, User } from '@shared/domain';
+import { Actions, Permission, User, EntityId } from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { setupEntities, userFactory } from '@shared/testing';
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
-import { AuthorizationService } from '../../authorization';
-import { AllowedAuthorizationEntityType } from '../../authorization/interfaces';
+import { setupEntities, userFactory } from '@shared/testing';
+import { AuthorizationService, AllowedAuthorizationEntityType } from '@src/modules/authorization';
 import { SchoolExternalToolService } from '../service/school-external-tool.service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
+import { CourseExternalToolService } from '../service/course-external-tool.service';
 
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
@@ -18,6 +18,7 @@ describe('SchoolExternalToolUc', () => {
 
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
+	let courseExternalToolService: DeepMocked<CourseExternalToolService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -32,12 +33,17 @@ describe('SchoolExternalToolUc', () => {
 					provide: SchoolExternalToolService,
 					useValue: createMock<SchoolExternalToolService>(),
 				},
+				{
+					provide: CourseExternalToolService,
+					useValue: createMock<CourseExternalToolService>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(SchoolExternalToolUc);
 		authorizationService = module.get(AuthorizationService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
+		courseExternalToolService = module.get(CourseExternalToolService);
 	});
 
 	afterAll(async () => {
@@ -50,7 +56,7 @@ describe('SchoolExternalToolUc', () => {
 	});
 
 	const setup = () => {
-		const tool: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
+		const tool: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
 		const user: User = userFactory.buildWithId();
 
 		return {
@@ -58,6 +64,7 @@ describe('SchoolExternalToolUc', () => {
 			userId: user.id,
 			tool,
 			schoolId: tool.schoolId,
+			schoolExternalToolId: tool.id as EntityId,
 		};
 	};
 
@@ -118,6 +125,44 @@ describe('SchoolExternalToolUc', () => {
 
 					expect(result).toEqual([tool, tool]);
 				});
+			});
+		});
+	});
+
+	describe('deleteSchoolExternalTool is called', () => {
+		describe('when checks permission', () => {
+			it('should check the permissions of the user', async () => {
+				const { user, schoolExternalToolId } = setup();
+
+				await uc.deleteSchoolExternalTool(user.id, schoolExternalToolId);
+
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+					user.id,
+					AllowedAuthorizationEntityType.SchoolExternalTool,
+					schoolExternalToolId,
+					{
+						action: Actions.read,
+						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+					}
+				);
+			});
+		});
+
+		describe('when calls services', () => {
+			it('should call the courseExternalToolService', async () => {
+				const { userId, schoolExternalToolId } = setup();
+
+				await uc.deleteSchoolExternalTool(userId, schoolExternalToolId);
+
+				expect(courseExternalToolService.deleteBySchoolExternalToolId).toHaveBeenCalledWith(schoolExternalToolId);
+			});
+
+			it('should call the schoolExternalToolService', async () => {
+				const { userId, schoolExternalToolId } = setup();
+
+				await uc.deleteSchoolExternalTool(userId, schoolExternalToolId);
+
+				expect(schoolExternalToolService.deleteSchoolExternalToolById).toHaveBeenCalledWith(schoolExternalToolId);
 			});
 		});
 	});
