@@ -3,6 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { ValidationError } from '@shared/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, Course, Permission, Task, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
@@ -153,6 +154,14 @@ describe('TaskService', () => {
 				authorizationService.hasOneOfPermissions.mockRestore();
 			});
 
+			it('should throw if availableDate is not before dueDate', async () => {
+				const availableDate = new Date('2023-01-12T00:00:00');
+				const dueDate = new Date('2023-01-11T00:00:00');
+				const params = { name: 'test', availableDate, dueDate };
+				await expect(async () => {
+					await taskService.create(user.id, params);
+				}).rejects.toThrow(ValidationError);
+			});
 			it('should check for permission to create the task', async () => {
 				await taskService.create(user.id, { name: 'test' });
 				expect(authorizationService.hasAllPermissions).toBeCalledWith(user, [Permission.HOMEWORK_CREATE]);
@@ -251,7 +260,14 @@ describe('TaskService', () => {
 				taskRepo.save.mockRestore();
 				taskRepo.findById.mockRestore();
 			});
-
+			it('should throw if availableDate is not before dueDate', async () => {
+				const availableDate = new Date('2023-01-12T00:00:00');
+				const dueDate = new Date('2023-01-11T00:00:00');
+				const params = { name: 'test', availableDate, dueDate };
+				await expect(async () => {
+					await taskService.update(user.id, task.id, params);
+				}).rejects.toThrow(ValidationError);
+			});
 			it('should check for permission to update the task', async () => {
 				const params = {
 					name: 'test',

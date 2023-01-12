@@ -60,6 +60,7 @@ export class TaskService {
 			school: user.school,
 			creator: user,
 		};
+		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
 
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.HOMEWORK_CREATE])) {
 			throw new UnauthorizedException();
@@ -79,8 +80,6 @@ export class TaskService {
 			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
 			taskParams.lesson = lesson;
 		}
-
-		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
 
 		const task = new Task(taskParams);
 
