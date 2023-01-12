@@ -62,10 +62,6 @@ describe('Task-Card Controller (2e2)', () => {
 		Configuration.set('FEATURE_NEW_TASK_ENABLED', true);
 	});
 
-	describe('when user has insufficient permissions', () => {
-		it.todo('user has no task card permission');
-		it.todo('user has no task permission');
-	});
 	describe('when user has all needed permissions', () => {
 		it('GET :id should return existing task-card', async () => {
 			const user = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
@@ -85,7 +81,9 @@ describe('Task-Card Controller (2e2)', () => {
 				.set('Accept', 'application/json')
 				.expect(200);
 
-			expect((response.body as TaskCardResponse).id).toEqual(taskCard.id);
+			const responseTaskCard = response.body as TaskCardResponse;
+
+			expect(responseTaskCard.id).toEqual(taskCard.id);
 		});
 		it('POST should return new task-card', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE]);
@@ -105,8 +103,10 @@ describe('Task-Card Controller (2e2)', () => {
 				.send(taskCardCreateParams)
 				.expect(201);
 
-			expect((response.body as TaskCardResponse).cardElements.length).toEqual(3);
-			expect((response.body as TaskCardResponse).task.name).toEqual('title test');
+			const responseTaskCard = response.body as TaskCardResponse;
+
+			expect(responseTaskCard.cardElements.length).toEqual(3);
+			expect(responseTaskCard.task.name).toEqual('title test');
 		});
 		it('DELETE should remove task and task-card', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT]);
