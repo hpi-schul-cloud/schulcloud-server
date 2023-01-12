@@ -39,6 +39,7 @@ import { CourseExternalToolService } from './service/course-external-tool.servic
 		ToolValidationService,
 		SchoolExternalToolService,
 		CourseExternalToolService,
+		ExternalToolRepoMapper,
 	],
 })
 export class ToolModule {}
