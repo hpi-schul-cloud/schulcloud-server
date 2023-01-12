@@ -30,7 +30,7 @@ import { ToolApiModule } from '@src/modules/tool';
 import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
-import { MigrationModule } from '../migration';
+import { MigrationModule } from '../user-migration';
 
 const serverModules = [
 	ConfigModule.forRoot({
