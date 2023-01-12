@@ -11,7 +11,7 @@ import {
 } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Page } from '@shared/domain/interface/page';
-import { BaseDORepo, EntityProperties, Scope } from '@shared/repo';
+import { BaseDORepo, Scope } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { ExternalToolSortingMapper } from './external-tool-sorting.mapper';
 import { ExternalToolRepoMapper } from './external-tool.repo.mapper';
@@ -90,7 +90,7 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 		return this.externalToolRepoMapper.mapEntityToDO(entity);
 	}
 
-	mapDOToEntityProperties(entityDO: ExternalToolDO): EntityProperties<IExternalToolProperties> {
+	mapDOToEntityProperties(entityDO: ExternalToolDO): IExternalToolProperties {
 		return this.externalToolRepoMapper.mapDOToEntityProperties(entityDO);
 	}
 }

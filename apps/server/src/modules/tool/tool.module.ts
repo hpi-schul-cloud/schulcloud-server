@@ -14,6 +14,7 @@ import { ExternalToolServiceMapper } from './service/mapper';
 import { ToolValidationService } from './service/tool-validation.service';
 import { ExternalToolVersionService } from './service/external-tool-version.service';
 import { SchoolExternalToolService } from './service/school-external-tool.service';
+import { CourseExternalToolService } from './service/course-external-tool.service';
 
 @Module({
 	imports: [LoggerModule, OauthProviderServiceModule, EncryptionModule],
@@ -30,7 +31,15 @@ import { SchoolExternalToolService } from './service/school-external-tool.servic
 		ToolValidationService,
 		ExternalToolVersionService,
 		SchoolExternalToolService,
+		CourseExternalToolService,
 	],
-	exports: [Lti11Service, ExternalToolService, ToolValidationService, SchoolExternalToolService],
+	exports: [
+		Lti11Service,
+		ExternalToolService,
+		ToolValidationService,
+		SchoolExternalToolService,
+		CourseExternalToolService,
+		ExternalToolRepoMapper,
+	],
 })
 export class ToolModule {}
