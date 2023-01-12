@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Actions, EntityId, Permission } from '@shared/domain';
+import { Actions, CustomParameterScope, EntityId, Permission } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { Page } from '@shared/domain/interface/page';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { Page } from '@shared/domain/interface/page';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { ExternalToolService } from '../service/external-tool.service';
 import { SchoolExternalToolService } from '../service/school-external-tool.service';
 
@@ -31,6 +32,25 @@ export class ExternalToolConfigurationUc {
 			(tool: ExternalToolDO): boolean => !tool.isHidden && !!tool.id && !toolIdsInUse.includes(tool.id)
 		);
 		return availableTools;
+	}
+
+	async getExternalToolForSchool(
+		userId: EntityId,
+		externalToolId: EntityId,
+		schoolId: EntityId
+	): Promise<ExternalToolDO> {
+		await this.ensureSchoolPermission(userId, schoolId);
+
+		const externalToolDO: ExternalToolDO = await this.externalToolService.getExternalToolForScope(
+			externalToolId,
+			CustomParameterScope.SCHOOL
+		);
+
+		if (externalToolDO.isHidden) {
+			throw new NotFoundException('Could not find the Tool Template');
+		}
+
+		return externalToolDO;
 	}
 
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId) {

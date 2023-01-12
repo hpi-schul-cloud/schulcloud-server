@@ -55,7 +55,7 @@ export const lti11ToolConfigDOFactory = DoBaseFactory.define<Lti11ToolConfigDO, 
 	() => {
 		return {
 			type: ToolConfigType.LTI11,
-			baseUrl: 'https://www.oauth2-baseUrl.com/',
+			baseUrl: 'https://www.lti11-baseUrl.com/',
 			key: 'key',
 			secret: 'secret',
 			privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
@@ -83,7 +83,6 @@ class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolDO
 		const params: DeepPartial<ExternalToolDO> = {
 			config: oauth2ToolConfigDOFactory.build(customParam),
 		};
-
 		return this.params(params);
 	}
 
@@ -91,7 +90,6 @@ class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolDO
 		const params: DeepPartial<ExternalToolDO> = {
 			config: lti11ToolConfigDOFactory.build(customParam),
 		};
-
 		return this.params(params);
 	}
 
@@ -99,7 +97,6 @@ class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolDO
 		const params: DeepPartial<ExternalToolDO> = {
 			parameters: customParameterDOFactory.buildList(number, customParam),
 		};
-
 		return this.params(params);
 	}
 }
