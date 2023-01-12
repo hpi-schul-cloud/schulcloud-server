@@ -8,6 +8,7 @@ export class CardElementRepo extends BaseRepo<CardElement> {
 		return CardElement;
 	}
 }
+
 @Injectable()
 export class TitleCardElementRepo extends BaseRepo<TitleCardElement> {
 	get entityName() {

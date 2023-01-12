@@ -3,16 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import {
-	cleanupCollections,
-	mapUserToCurrentUser,
-	richTextCardElementFactory,
-	roleFactory,
-	taskCardFactory,
-	taskFactory,
-	titleCardElementFactory,
-	userFactory,
-} from '@shared/testing';
+import { sanitizeRichText } from '@shared/controller';
 import {
 	CardElementType,
 	CardRichTextElementResponse,
@@ -23,12 +14,21 @@ import {
 	Task,
 	TaskCard,
 } from '@shared/domain';
+import {
+	cleanupCollections,
+	mapUserToCurrentUser,
+	richTextCardElementFactory,
+	roleFactory,
+	taskCardFactory,
+	taskFactory,
+	titleCardElementFactory,
+	userFactory,
+} from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { TaskCardResponse } from '@src/modules/task-card/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
-import { sanitizeRichText } from '@shared/controller';
 
 describe('Task-Card Controller (2e2)', () => {
 	let app: INestApplication;
@@ -78,7 +78,7 @@ describe('Task-Card Controller (2e2)', () => {
 			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
 		});
 
-		it('create task-card should throw', async () => {
+		it('Create task-card should throw', async () => {
 			const user = setupUser([]);
 
 			await em.persistAndFlush([user]);
@@ -274,7 +274,7 @@ describe('Task-Card Controller (2e2)', () => {
 			expect((responseTitle[0].content as CardTitleElementResponse).value).toEqual('title updated');
 		});
 
-		describe('Sanitize richText', () => {
+		describe('Sanitize richtext', () => {
 			it('should sanitize richtext on create with inputformat ck5', async () => {
 				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE]);
 
@@ -289,7 +289,7 @@ describe('Task-Card Controller (2e2)', () => {
 					text: [text],
 				};
 
-				const sanitisedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
+				const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
 				const response = await request(app.getHttpServer())
 					.post(`/cards/task/`)
@@ -301,10 +301,10 @@ describe('Task-Card Controller (2e2)', () => {
 				const richTextElement = responseTaskCard.cardElements.filter(
 					(element) => element.cardElementType === CardElementType.RichText
 				);
-				expect((richTextElement[0].content as CardRichTextElementResponse).value).toEqual(sanitisedText);
+				expect((richTextElement[0].content as CardRichTextElementResponse).value).toEqual(sanitizedText);
 			});
 
-			it('should sanitise richtext on update, with given format', async () => {
+			it('should sanitize richtext on update, with given format', async () => {
 				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
 				// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 				const task = taskFactory.build({ creator: user });
@@ -316,7 +316,7 @@ describe('Task-Card Controller (2e2)', () => {
 				currentUser = mapUserToCurrentUser(user);
 
 				const text = '<iframe>rich text 1</iframe> some more text';
-				const sanitisedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
+				const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
 				const taskCardUpdateParams = {
 					cardElements: [
@@ -346,7 +346,7 @@ describe('Task-Card Controller (2e2)', () => {
 				const richTextElement = responseTaskCard.cardElements.filter(
 					(element) => element.cardElementType === CardElementType.RichText
 				);
-				expect((richTextElement[0].content as CardRichTextElementResponse).value).toEqual(sanitisedText);
+				expect((richTextElement[0].content as CardRichTextElementResponse).value).toEqual(sanitizedText);
 			});
 		});
 	});

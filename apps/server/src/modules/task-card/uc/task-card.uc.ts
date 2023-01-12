@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard } from '@shared/domain';
 import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
-import { CardElementRepo, RichTextCardElementRepo, TaskCardRepo, TitleCardElementRepo } from '@shared/repo';
+import { CardElementRepo, TaskCardRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '@src/modules/task/service';
 import { ITaskCardCreate, ITaskCardUpdate } from '../controller/mapper/task-card.mapper';
@@ -12,8 +12,6 @@ export class TaskCardUc {
 	constructor(
 		private taskCardRepo: TaskCardRepo,
 		private cardElementRepo: CardElementRepo,
-		private titleCardElementRepo: TitleCardElementRepo,
-		private richTextCardElementRepo: RichTextCardElementRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly taskService: TaskService
 	) {}

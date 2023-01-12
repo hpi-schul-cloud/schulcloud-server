@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, CardType, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
@@ -10,7 +9,6 @@ import {
 	richTextCardElementFactory,
 	setupEntities,
 	taskCardFactory,
-	taskFactory,
 	titleCardElementFactory,
 	userFactory,
 } from '@shared/testing';
@@ -18,25 +16,20 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { ITaskCardCreate, ITaskCardUpdate } from '@src/modules/task-card/controller/mapper/task-card.mapper';
 import { TaskService } from '@src/modules/task/service';
 import { TaskCardUc } from './task-card.uc';
-import objectContaining = jasmine.objectContaining;
 
 describe('TaskCardUc', () => {
 	let module: TestingModule;
 	let uc: TaskCardUc;
 	let cardElementRepo: DeepMocked<CardElementRepo>;
-	let titleCardElementRepo: DeepMocked<TitleCardElementRepo>;
-	let richTextCardElementRepo: DeepMocked<RichTextCardElementRepo>;
 	let taskCardRepo: DeepMocked<TaskCardRepo>;
 	let userRepo: DeepMocked<UserRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let taskService: DeepMocked<TaskService>;
-	let orm: MikroORM;
-
 	let taskCard: TaskCard;
 	let user!: User;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [
@@ -74,8 +67,8 @@ describe('TaskCardUc', () => {
 
 		uc = module.get(TaskCardUc);
 		cardElementRepo = module.get(CardElementRepo);
-		titleCardElementRepo = module.get(TitleCardElementRepo);
-		richTextCardElementRepo = module.get(RichTextCardElementRepo);
+		module.get(TitleCardElementRepo);
+		module.get(RichTextCardElementRepo);
 		taskCardRepo = module.get(TaskCardRepo);
 		userRepo = module.get(UserRepo);
 		authorizationService = module.get(AuthorizationService);
@@ -211,16 +204,12 @@ describe('TaskCardUc', () => {
 		});
 		it('should create task-card', async () => {
 			await uc.create(user.id, taskCardCreateParams);
-			const task = taskFactory.build({ name: taskCardCreateParams.title });
 
 			expect(taskCardRepo.save).toBeCalledWith(
 				expect.objectContaining({
 					cardType: CardType.Task,
 					draggable: true,
 					creator: user,
-					// cardElements
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					// task: expect.objectContaining({ name: task.name }),
 				})
 			);
 		});
@@ -233,13 +222,10 @@ describe('TaskCardUc', () => {
 			expect((result.card.cardElements.getItems()[0] as TitleCardElement).value).toEqual(title);
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[2] as RichTextCardElement).value).toEqual(richText[1]);
-
-			// expect(result.card.creator.id).toEqual(user.id);
 		});
 	});
 
 	describe('update', () => {
-		let taskWithStatus: TaskWithStatusVo;
 		let taskCardUpdateParams: ITaskCardUpdate;
 		const title = 'changed text title';
 		const richText = ['changed richtext 1', 'changed richtext 2'];
@@ -316,15 +302,12 @@ describe('TaskCardUc', () => {
 			const result = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 
 			expect(result.card.task.id).toEqual(result.taskWithStatusVo.task.id);
-			// expect(result.card.task.name).toEqual(title);
 			expect(result.card.cardType).toEqual(CardType.Task);
 
 			expect(result.card.cardElements.length).toEqual(3);
 			expect((result.card.cardElements.getItems()[0] as TitleCardElement).value).toEqual(title);
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[2] as RichTextCardElement).value).toEqual(richText[1]);
-
-			// expect(result.card.creator.id).toEqual(user.id);
 		});
 	});
 });

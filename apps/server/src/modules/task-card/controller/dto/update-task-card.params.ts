@@ -1,21 +1,21 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { IsArray, IsEnum, IsMongoId, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
 import { SanitizeHtml } from '@shared/controller';
 import { CardElementType, InputFormat } from '@shared/domain';
 import { Type } from 'class-transformer';
+import { IsArray, IsEnum, IsMongoId, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
 
 export abstract class CardElementBase {}
 
 export class TitleCardElementParam extends CardElementBase {
 	@ApiProperty({
-		description: 'type of element, i.e. text (needed for discriminator)',
+		description: 'Type of card element, i.e. text (needed for discriminator)',
 		type: String,
 		example: CardElementType.Title,
 	})
 	type = CardElementType.Title;
 
 	@ApiProperty({
-		description: 'Title of the card',
+		description: 'Title of the card, content of title card element',
 		required: true,
 	})
 	@IsString()
@@ -26,21 +26,21 @@ export class TitleCardElementParam extends CardElementBase {
 
 export class RichTextCardElementParam extends CardElementBase {
 	@ApiProperty({
-		description: 'type of element, i.e. richText (needed for discriminator)',
+		description: 'Type of card element, i.e. richText (needed for discriminator)',
 		type: String,
 		example: CardElementType.RichText,
 	})
 	type = CardElementType.RichText;
 
 	@ApiProperty({
-		description: 'Content of the rich text element',
+		description: 'Content of the rich text card element',
 		required: true,
 	})
 	@MinLength(2)
 	@IsString()
 	value!: string;
 
-	@ApiProperty({ description: 'Input format', enum: InputFormat })
+	@ApiProperty({ description: 'Input format of card element content', enum: InputFormat })
 	@IsEnum(InputFormat)
 	inputFormat!: InputFormat;
 }
@@ -54,7 +54,7 @@ export class CardElementUpdateParams {
 	id?: string;
 
 	@ApiProperty({
-		description: 'Content of the element, depending on its type',
+		description: 'Content of the card element, depending on its type',
 		required: true,
 		oneOf: [{ $ref: getSchemaPath(TitleCardElementParam) }, { $ref: getSchemaPath(RichTextCardElementParam) }],
 	})

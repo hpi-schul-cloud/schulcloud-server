@@ -28,7 +28,6 @@ export class TaskUC {
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		// load the user including all roles
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		this.authorizationService.checkOneOfPermissions(user, [
@@ -60,7 +59,6 @@ export class TaskUC {
 			if (this.authorizationService.hasPermission(user, task, PermissionContextBuilder.write([]))) {
 				status = task.createTeacherStatusForUser(user);
 			} else {
-				// TaskParentPermission.read check is not needed on this place
 				status = task.createStudentStatusForUser(user);
 			}
 
@@ -73,7 +71,6 @@ export class TaskUC {
 	async findAll(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		let response: Counted<TaskWithStatusVo[]>;
 
-		// load the user including all roles
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_VIEW_V3])) {

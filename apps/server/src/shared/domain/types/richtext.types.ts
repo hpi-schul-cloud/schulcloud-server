@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { InputFormat } from './input-format.types';
 import { sanitizeRichText } from '../../controller/transformer/sanitize-html.transformer';
+import { InputFormat } from './input-format.types';
 
 export class RichText {
 	constructor({ content, type }: RichText) {
@@ -8,10 +8,13 @@ export class RichText {
 		this.type = type;
 	}
 
-	@ApiProperty()
+	@ApiProperty({
+		description: 'Content of the rich text element',
+	})
 	content: string;
 
 	@ApiProperty({
+		description: 'Input format of the rich text element',
 		enum: InputFormat,
 	})
 	type: InputFormat;

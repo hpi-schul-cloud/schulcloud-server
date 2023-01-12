@@ -1,15 +1,4 @@
-import {
-	Cascade,
-	Collection,
-	Entity,
-	Enum,
-	Index,
-	// IdentifiedReference,
-	ManyToMany,
-	ManyToOne,
-	OneToOne,
-	Property,
-} from '@mikro-orm/core';
+import { Cascade, Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
 import { CardType, ICard, ICardCProps } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CardElement } from './cardElement.entity';
@@ -32,7 +21,7 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		this.cardType = props.cardType;
 
 		this.cardElements.set(props.cardElements);
-		this.task = props.task; // wrap(props.task).toReference();
+		this.task = props.task;
 		this.cardType = CardType.Task;
 		Object.assign(this, { creator: props.creator });
 	}
@@ -50,19 +39,9 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	@Property()
 	draggable = true;
 
-	// TODO
 	public getCardElements() {
 		return this.cardElements.getItems();
 	}
-
-	/*
-	reorderElements(ids: EntityId[]) {
-		this.validateReordering();
-	}
-
-	private validateReordering(ids: EntityId[]) {
-	}
-	*/
 
 	@OneToOne({ type: 'Task', fieldName: 'taskId', eager: true, unique: true, cascade: [Cascade.ALL] })
 	task!: Task;

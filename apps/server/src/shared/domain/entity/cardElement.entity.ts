@@ -49,5 +49,3 @@ export class RichTextCardElement extends CardElement {
 	@Property()
 	inputFormat: InputFormat;
 }
-
-// availableFrom/Until date element

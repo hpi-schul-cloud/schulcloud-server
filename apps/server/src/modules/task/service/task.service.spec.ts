@@ -3,8 +3,8 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common';
 import { Actions, Course, Permission, Task, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import {

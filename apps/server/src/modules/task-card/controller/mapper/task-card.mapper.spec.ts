@@ -1,15 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
-import {
-	richTextCardElementFactory,
-	setupEntities,
-	taskCardFactory,
-	titleCardElementFactory,
-	userFactory,
-} from '@shared/testing';
+import { ValidationError } from '@shared/common';
 import {
 	CardElementResponse,
 	CardElementType,
-	CardRichTextElementResponse,
 	CardTitleElementResponse,
 	InputFormat,
 	RichText,
@@ -17,9 +10,15 @@ import {
 	TaskWithStatusVo,
 	TitleCardElement,
 } from '@shared/domain';
-import { TaskMapper } from '@src/modules/task/mapper';
+import {
+	richTextCardElementFactory,
+	setupEntities,
+	taskCardFactory,
+	titleCardElementFactory,
+	userFactory,
+} from '@shared/testing';
 import { RichTextCardElementParam, TitleCardElementParam } from '@src/modules/task-card/controller/dto';
-import { ValidationError } from '@shared/common';
+import { TaskMapper } from '@src/modules/task/mapper';
 import { TaskCardMapper } from './task-card.mapper';
 
 describe('task-card mapper', () => {
@@ -55,11 +54,6 @@ describe('task-card mapper', () => {
 		it('should map card elements to response', () => {
 			const user = userFactory.buildWithId();
 			const richTextCardElement: RichTextCardElement = richTextCardElementFactory.buildWithId();
-			const richTextCardElementResponse: CardElementResponse = {
-				id: richTextCardElement.id,
-				cardElementType: CardElementType.RichText,
-				content: new CardRichTextElementResponse(richTextCardElement),
-			};
 			const titleCardElement: TitleCardElement = titleCardElementFactory.buildWithId();
 			const titleCardElementResponse: CardElementResponse = {
 				id: titleCardElement.id,
@@ -74,7 +68,6 @@ describe('task-card mapper', () => {
 
 			const status = taskCard.task.createTeacherStatusForUser(user);
 			const taskWithStatusVo = new TaskWithStatusVo(taskCard.task, status);
-			const taskResponse = TaskMapper.mapToResponse(taskWithStatusVo);
 
 			const mapper = new TaskCardMapper();
 			const result = mapper.mapToResponse(taskCard, taskWithStatusVo);

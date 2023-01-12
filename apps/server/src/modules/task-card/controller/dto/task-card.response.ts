@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TaskResponse } from '@src/modules/task/controller/dto';
 import { CardElementResponse } from '@shared/domain';
+import { TaskResponse } from '@src/modules/task/controller/dto';
 
 export class TaskCardResponse {
 	constructor({ id, draggable, cardElements, task }: TaskCardResponse) {
@@ -11,7 +11,7 @@ export class TaskCardResponse {
 	}
 
 	@ApiProperty({
-		description: 'The id of the Card entity',
+		description: 'The id of the task card',
 		pattern: '[a-f0-9]{24}',
 	})
 	id: string;
@@ -28,7 +28,7 @@ export class TaskCardResponse {
 	draggable: boolean;
 
 	@ApiProperty({
-		description: 'The task details',
+		description: 'The task attached to the card',
 	})
 	task: TaskResponse;
 }
