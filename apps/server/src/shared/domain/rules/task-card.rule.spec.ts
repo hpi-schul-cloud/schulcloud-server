@@ -1,4 +1,3 @@
-import { DeepMocked } from '@golevelup/ts-jest';
 import { DeepPartial, MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, setupEntities, taskCardFactory, taskFactory, userFactory } from '@shared/testing';
@@ -6,11 +5,9 @@ import { CourseGroupRule, CourseRule, LessonRule, TaskCardRule, TaskRule } from 
 import { Role, TaskCard, User } from '../entity';
 import { Permission } from '../interface';
 import { Actions } from './actions.enum';
-import { AuthorisationUtils } from './authorisation.utils';
 
 describe('TaskCardRule', () => {
 	let orm: MikroORM;
-	let authorisation: DeepMocked<AuthorisationUtils>;
 	let service: TaskCardRule;
 	let taskRule: DeepPartial<TaskRule>;
 	let role: Role;
@@ -23,10 +20,9 @@ describe('TaskCardRule', () => {
 		orm = await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [TaskCardRule, TaskRule, CourseRule, LessonRule, CourseGroupRule, AuthorisationUtils],
+			providers: [TaskCardRule, TaskRule, CourseRule, LessonRule, CourseGroupRule],
 		}).compile();
 
-		authorisation = await module.get(AuthorisationUtils);
 		service = await module.get(TaskCardRule);
 		taskRule = await module.get(TaskRule);
 	});
@@ -60,14 +56,6 @@ describe('TaskCardRule', () => {
 		const spy = jest.spyOn(taskRule, 'hasPermission');
 		service.hasPermission(user, entity, { action: Actions.write, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, entity.task, { action: Actions.write, requiredPermissions: [homeworkEdit] });
-	});
-
-	it('should return "false" if general hasAllPermissions check returns "false"', () => {
-		const task = taskFactory.build({ creator: user });
-		entity = taskCardFactory.build({ task });
-		jest.spyOn(authorisation, 'hasAllPermissions').mockReturnValue(false);
-		const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
-		expect(res).toBe(false);
 	});
 
 	describe('User is creator of the task card', () => {

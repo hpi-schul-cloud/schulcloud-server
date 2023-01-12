@@ -21,11 +21,6 @@ export class TaskCardRule extends BasePermission<TaskCard> {
 	public hasPermission(user: User, entity: TaskCard, context: IPermissionContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasPermission = this.utils.hasAllPermissions(user, requiredPermissions);
-
-		if (!hasPermission) {
-			return false;
-		}
-
 		const isCreator = this.utils.hasAccessToEntity(user, entity, ['creator']);
 
 		let hasTaskPermission = false;
@@ -42,7 +37,7 @@ export class TaskCardRule extends BasePermission<TaskCard> {
 			});
 		}
 
-		const result = isCreator && hasTaskPermission;
+		const result = hasPermission && isCreator && hasTaskPermission;
 
 		return result;
 	}
