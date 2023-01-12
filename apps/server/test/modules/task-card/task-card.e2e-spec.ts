@@ -1,24 +1,24 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { EntityManager } from '@mikro-orm/mongodb';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { CardElementType, CardTitleElementResponse, ICurrentUser, Permission, Task, TaskCard } from '@shared/domain';
 import {
 	cleanupCollections,
 	mapUserToCurrentUser,
+	richTextCardElementFactory,
 	roleFactory,
-	taskFactory,
 	taskCardFactory,
+	taskFactory,
 	titleCardElementFactory,
 	userFactory,
-	richTextCardElementFactory,
 } from '@shared/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { CardElementType, CardTitleElementResponse, ICurrentUser, Permission, Task, TaskCard } from '@shared/domain';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
+import { TaskCardResponse } from '@src/modules/task-card/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
-import { TaskCardResponse } from '@src/modules/task-card/controller/dto';
 
 describe('Task-Card Controller (2e2)', () => {
 	let app: INestApplication;
@@ -109,11 +109,12 @@ describe('Task-Card Controller (2e2)', () => {
 			expect(responseTaskCard.task.name).toEqual('title test');
 		});
 		it('DELETE should remove task and task-card', async () => {
-			const user = setupUser([Permission.TASK_CARD_EDIT]);
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
+			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+			const task = taskFactory.build({ creator: user });
+			const taskCard = taskCardFactory.build({ creator: user, task });
 
-			const taskCard = taskCardFactory.build({ creator: user });
-
-			await em.persistAndFlush([user, taskCard]);
+			await em.persistAndFlush([user, task, taskCard]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);

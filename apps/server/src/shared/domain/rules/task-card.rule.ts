@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TaskCard, User } from '../entity';
+import { Permission } from '../interface';
 import { IPermissionContext } from '../interface/permission';
 import { Actions } from './actions.enum';
 import { BasePermission } from './base-permission';
@@ -20,23 +21,29 @@ export class TaskCardRule extends BasePermission<TaskCard> {
 	public hasPermission(user: User, entity: TaskCard, context: IPermissionContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasPermission = this.utils.hasAllPermissions(user, requiredPermissions);
-		const isCreator = this.utils.hasAccessToEntity(user, entity, ['creator']);
 
-		let hasTaskCardPermission = false;
-
-		if (action === Actions.read) {
-			hasTaskCardPermission = this.hasTaskPermission(user, entity, Actions.read);
-		} else if (action === Actions.write) {
-			hasTaskCardPermission = this.hasTaskPermission(user, entity, Actions.write);
+		if (!hasPermission) {
+			return false;
 		}
 
-		const result = hasPermission && (isCreator || hasTaskCardPermission);
+		const isCreator = this.utils.hasAccessToEntity(user, entity, ['creator']);
+
+		let hasTaskPermission = false;
+
+		if (action === Actions.read) {
+			hasTaskPermission = this.taskRule.hasPermission(user, entity.task, {
+				action,
+				requiredPermissions: [Permission.HOMEWORK_VIEW],
+			});
+		} else if (action === Actions.write) {
+			hasTaskPermission = this.taskRule.hasPermission(user, entity.task, {
+				action,
+				requiredPermissions: [Permission.HOMEWORK_EDIT],
+			});
+		}
+
+		const result = isCreator && hasTaskPermission;
 
 		return result;
-	}
-
-	private hasTaskPermission(user: User, entity: TaskCard, action: Actions): boolean {
-		const hasPermission = this.taskRule.hasPermission(user, entity.task, { action, requiredPermissions: [] });
-		return hasPermission;
 	}
 }

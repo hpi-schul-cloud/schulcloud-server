@@ -6,17 +6,15 @@ import { userFactory } from './user.factory';
 
 class TaskCardFactory extends BaseFactory<TaskCard, ITaskCardProps> {}
 
-export const taskCardFactory = TaskCardFactory.define(TaskCard, ({ sequence }) => {
+export const taskCardFactory = TaskCardFactory.define(TaskCard, () => {
 	const task = taskFactory.buildWithId();
 	const school = schoolFactory.build();
 	const creator = userFactory.build({ school });
-	const cardElements = [];
 	return {
-		isDraft: false,
 		cardType: CardType.Task,
-		cardElements,
 		draggable: true,
 		creator,
 		task,
+		cardElements: [],
 	};
 });

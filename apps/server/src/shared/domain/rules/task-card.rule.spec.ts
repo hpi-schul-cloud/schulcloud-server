@@ -1,28 +1,32 @@
+import { DeepMocked } from '@golevelup/ts-jest';
 import { DeepPartial, MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, setupEntities, taskCardFactory, taskFactory, userFactory } from '@shared/testing';
 import { CourseGroupRule, CourseRule, LessonRule, TaskCardRule, TaskRule } from '.';
-import { TaskCard, User } from '../entity';
-import { Permission, RoleName } from '../interface';
+import { Role, TaskCard, User } from '../entity';
+import { Permission } from '../interface';
 import { Actions } from './actions.enum';
+import { AuthorisationUtils } from './authorisation.utils';
 
 describe('TaskCardRule', () => {
 	let orm: MikroORM;
+	let authorisation: DeepMocked<AuthorisationUtils>;
 	let service: TaskCardRule;
 	let taskRule: DeepPartial<TaskRule>;
+	let role: Role;
 	let user: User;
 	let entity: TaskCard;
-	const permissionA = 'a' as Permission;
-	const permissionB = 'b' as Permission;
-	const permissionC = 'c' as Permission;
+	const homeworkEdit = Permission.HOMEWORK_EDIT;
+	const homeworkView = Permission.HOMEWORK_VIEW;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [TaskCardRule, TaskRule, CourseRule, LessonRule, CourseGroupRule],
+			providers: [TaskCardRule, TaskRule, CourseRule, LessonRule, CourseGroupRule, AuthorisationUtils],
 		}).compile();
 
+		authorisation = await module.get(AuthorisationUtils);
 		service = await module.get(TaskCardRule);
 		taskRule = await module.get(TaskRule);
 	});
@@ -32,7 +36,7 @@ describe('TaskCardRule', () => {
 	});
 
 	beforeEach(() => {
-		const role = roleFactory.build({ permissions: [permissionA, permissionB] });
+		role = roleFactory.build({ permissions: [homeworkEdit, homeworkView] });
 		user = userFactory.build({ roles: [role] });
 	});
 
@@ -54,66 +58,135 @@ describe('TaskCardRule', () => {
 		const task = taskFactory.build({ creator: user });
 		entity = taskCardFactory.build({ task });
 		const spy = jest.spyOn(taskRule, 'hasPermission');
-		service.hasPermission(user, entity, { action: Actions.write, requiredPermissions: [permissionA] });
-		expect(spy).toBeCalledWith(user, entity.task, { action: Actions.write, requiredPermissions: [] });
+		service.hasPermission(user, entity, { action: Actions.write, requiredPermissions: [] });
+		expect(spy).toBeCalledWith(user, entity.task, { action: Actions.write, requiredPermissions: [homeworkEdit] });
 	});
 
-	describe('User [TEACHER]', () => {
-		it('should return "true" if user is creator', () => {
-			entity = taskCardFactory.build({ creator: user });
-			const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(true);
+	it('should return "false" if general hasAllPermissions check returns "false"', () => {
+		const task = taskFactory.build({ creator: user });
+		entity = taskCardFactory.build({ task });
+		jest.spyOn(authorisation, 'hasAllPermissions').mockReturnValue(false);
+		const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
+		expect(res).toBe(false);
+	});
+
+	describe('User is creator of the task card', () => {
+		describe('Access via read action', () => {
+			it('should return "true" if user has HOMEWORK_EDIT and HOMEWORK_VIEW permission', () => {
+				role = roleFactory.build({ permissions: [homeworkEdit, homeworkView] });
+				const creator = userFactory.build({ roles: [role] });
+				const task = taskFactory.build({ creator });
+				entity = taskCardFactory.build({ creator, task });
+				const res = service.hasPermission(creator, entity, { action: Actions.read, requiredPermissions: [] });
+				expect(res).toBe(true);
+			});
+
+			it('should return "true" if user has HOMEWORK_VIEW permission', () => {
+				role = roleFactory.build({ permissions: [homeworkView] });
+				const creator = userFactory.build({ roles: [role] });
+				const task = taskFactory.build({ creator });
+				entity = taskCardFactory.build({ creator, task });
+				const res = service.hasPermission(creator, entity, { action: Actions.read, requiredPermissions: [] });
+				expect(res).toBe(true);
+			});
+
+			it('should return "false" if user does not have HOMEWORK_VIEW or HOMEWORK_EDIT permission', () => {
+				role = roleFactory.build({ permissions: [] });
+				const creator = userFactory.build({ roles: [role] });
+				const task = taskFactory.build({ creator });
+				entity = taskCardFactory.build({ creator, task });
+				const res = service.hasPermission(creator, entity, { action: Actions.read, requiredPermissions: [] });
+				expect(res).toBe(false);
+			});
 		});
 
-		it('should return "true" if user is in scope of task', () => {
-			const task = taskFactory.build({ creator: user });
-			entity = taskCardFactory.build({ task });
-			const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(true);
-		});
+		describe('Access via write action', () => {
+			it('should return "true" if user has HOMEWORK_EDIT and HOMEWORK_VIEW permission', () => {
+				role = roleFactory.build({ permissions: [homeworkEdit, homeworkView] });
+				const creator = userFactory.build({ roles: [role] });
+				const task = taskFactory.build({ creator });
+				entity = taskCardFactory.build({ creator, task });
+				const res = service.hasPermission(creator, entity, { action: Actions.write, requiredPermissions: [] });
+				expect(res).toBe(true);
+			});
 
-		it('should return "false" if user does not have permission', () => {
-			entity = taskCardFactory.build({ creator: user });
-			const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [permissionC] });
-			expect(res).toBe(false);
-		});
+			it('should return "false" if user has HOMEWORK_VIEW permission', () => {
+				role = roleFactory.build({ permissions: [homeworkView] });
+				const creator = userFactory.build({ roles: [role] });
+				const task = taskFactory.build({ creator });
+				entity = taskCardFactory.build({ creator, task });
+				const res = service.hasPermission(creator, entity, { action: Actions.write, requiredPermissions: [] });
+				expect(res).toBe(false);
+			});
 
-		it('should return "false" if user does not have access to entity', () => {
-			entity = taskCardFactory.build();
-			const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [permissionC] });
-			expect(res).toBe(false);
+			it('should return "false" if user does not have HOMEWORK_VIEW or HOMEWORK_EDIT permission', () => {
+				role = roleFactory.build({ permissions: [] });
+				const creator = userFactory.build({ roles: [role] });
+				const task = taskFactory.build({ creator });
+				entity = taskCardFactory.build({ creator, task });
+				const res = service.hasPermission(creator, entity, { action: Actions.write, requiredPermissions: [] });
+				expect(res).toBe(false);
+			});
 		});
 	});
 
-	describe('User [STUDENT]', () => {
-		let student: User;
-		beforeEach(() => {
-			const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
-			student = userFactory.build({ roles: [role] });
-		});
-		it('should return "true" if user is creator', () => {
-			entity = taskCardFactory.build({ creator: user });
-			const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(true);
+	describe('User is NOT creator of the task card', () => {
+		describe('Access via read action', () => {
+			it('should return "false" if user has HOMEWORK_EDIT and HOMEWORK_VIEW permission', () => {
+				role = roleFactory.build({ permissions: [homeworkEdit, homeworkView] });
+				const notCreator = userFactory.build({ roles: [role] });
+				const task = taskFactory.build();
+				entity = taskCardFactory.build({ task });
+				const res = service.hasPermission(notCreator, entity, { action: Actions.read, requiredPermissions: [] });
+				expect(res).toBe(false);
+			});
+
+			it('should return "false" if user has HOMEWORK_VIEW permission', () => {
+				role = roleFactory.build({ permissions: [homeworkView] });
+				const notCreator = userFactory.build({ roles: [role] });
+				const task = taskFactory.build();
+				entity = taskCardFactory.build({ task });
+				const res = service.hasPermission(notCreator, entity, { action: Actions.read, requiredPermissions: [] });
+				expect(res).toBe(false);
+			});
+
+			it('should return "false" if user does not have HOMEWORK_VIEW or HOMEWORK_EDIT permission', () => {
+				role = roleFactory.build({ permissions: [] });
+				const notCreator = userFactory.build({ roles: [role] });
+				const task = taskFactory.build();
+				entity = taskCardFactory.build({ task });
+				const res = service.hasPermission(notCreator, entity, { action: Actions.read, requiredPermissions: [] });
+				expect(res).toBe(false);
+			});
 		});
 
-		it('should return "true" if user is in scope of task', () => {
-			const task = taskFactory.build({ creator: student });
-			entity = taskCardFactory.build({ task });
-			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(true);
-		});
+		describe('Access via write action', () => {
+			it('should return "false" if user has HOMEWORK_EDIT and HOMEWORK_VIEW permission', () => {
+				role = roleFactory.build({ permissions: [homeworkEdit, homeworkView] });
+				const notCreator = userFactory.build({ roles: [role] });
+				const task = taskFactory.build();
+				entity = taskCardFactory.build({ task });
+				const res = service.hasPermission(notCreator, entity, { action: Actions.write, requiredPermissions: [] });
+				expect(res).toBe(false);
+			});
 
-		it('should return "false" if user does not have permission', () => {
-			entity = taskCardFactory.build({ creator: student });
-			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [permissionC] });
-			expect(res).toBe(false);
-		});
+			it('should return "false" if user has HOMEWORK_VIEW permission', () => {
+				role = roleFactory.build({ permissions: [homeworkView] });
+				const notCreator = userFactory.build({ roles: [role] });
+				const task = taskFactory.build();
+				entity = taskCardFactory.build({ task });
+				const res = service.hasPermission(notCreator, entity, { action: Actions.write, requiredPermissions: [] });
+				expect(res).toBe(false);
+			});
 
-		it('should return "false" if user has not access to entity', () => {
-			entity = taskCardFactory.build();
-			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [permissionC] });
-			expect(res).toBe(false);
+			it('should return "false" if user does not have HOMEWORK_VIEW or HOMEWORK_EDIT permission', () => {
+				role = roleFactory.build({ permissions: [] });
+				const notCreator = userFactory.build({ roles: [role] });
+				const task = taskFactory.build();
+				entity = taskCardFactory.build({ task });
+				const res = service.hasPermission(notCreator, entity, { action: Actions.write, requiredPermissions: [] });
+				expect(res).toBe(false);
+			});
 		});
 	});
 });
