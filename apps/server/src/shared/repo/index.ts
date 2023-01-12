@@ -28,3 +28,4 @@ export * from './teams';
 export * from './user';
 export * from './videoconference';
 export * from './ltitool';
+export * from './schoolexternaltool';
