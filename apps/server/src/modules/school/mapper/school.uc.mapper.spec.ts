@@ -26,8 +26,8 @@ describe('SchoolUcMapper', () => {
 			const schoolDO: SchoolDO = new SchoolDO({
 				name: 'Testschool',
 				officialSchoolNumber: '1234',
-				oauthMigrationPossible: true,
-				oauthMigrationMandatory: false,
+				oauthMigrationPossible: new Date(),
+				oauthMigrationMandatory: new Date(),
 			});
 
 			const result: PublicSchoolResponse = SchoolUcMapper.mapDOToPublicResponse(schoolDO);
