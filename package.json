@@ -71,7 +71,7 @@
 		"nest:start:console:debug": "nest start console --debug --watch --",
 		"nest:test": "npm run nest:test:cov && npm run nest:lint",
 		"nest:test:all": "jest",
-		"nest:test:unit": "jest \"^((?!\\.api).)*\\.spec\\.ts$\"",
+		"nest:test:unit": "jest \"^((?!\\.api\\.spec\\.ts).)*\\.spec\\.ts$\"",
 		"nest:test:api": "jest \"\\.api\\.spec\\.ts$\"",
 		"nest:test:watch": "jest --watch",
 		"nest:test:cov": "jest --coverage",
