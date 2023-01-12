@@ -152,7 +152,7 @@ export class ExternalToolService {
 
 		await Promise.all([
 			this.courseExternalToolRepo.deleteBySchoolExternalToolIds(schoolExternalToolIds),
-			this.schoolExternalToolRepo.deleteByToolId(toolId),
+			this.schoolExternalToolRepo.deleteByExternalToolId(toolId),
 			this.externalToolRepo.deleteById(toolId),
 		]);
 	}
