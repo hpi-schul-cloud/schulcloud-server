@@ -217,18 +217,21 @@ export class DashboardEntity {
 		return element;
 	}
 
-	moveElement(from: GridPositionWithGroupIndex, to: GridPositionWithGroupIndex, substituteCourses: ILearnroom[]): GridElementWithPosition {
+	moveElement(
+		from: GridPositionWithGroupIndex,
+		to: GridPositionWithGroupIndex,
+		substituteCourses: ILearnroom[]
+	): GridElementWithPosition {
 		const elementToMove = this.getReferencesFromPosition(from);
 		this.checkIfMovedToSubstitute(elementToMove, substituteCourses);
-		try{
+		try {
 			this.checkIfMovedToSubstitute(this.getReferencesFromPosition(to), substituteCourses);
-		} catch(ex: any){
-			if(!(ex instanceof NotFoundException)){
+		} catch (ex: any) {
+			if (!(ex instanceof NotFoundException)) {
 				throw ex;
 			}
 		}
-		
-		
+
 		const resultElement = this.mergeElementIntoPosition(elementToMove, to);
 		this.removeFromPosition(from);
 		return {
@@ -237,11 +240,11 @@ export class DashboardEntity {
 		};
 	}
 
-	checkIfMovedToSubstitute(element:IGridElement, substituteCourses: ILearnroom[]){
+	checkIfMovedToSubstitute(element: IGridElement, substituteCourses: ILearnroom[]) {
 		element.getReferences().forEach(course => {
 			const id = course.getMetadata().id;
-			substituteCourses.forEach(substitute=>{
-				if(substitute.getMetadata().id===id){
+			substituteCourses.forEach(substitute => {
+				if (substitute.getMetadata().id === id) {
 					throw new BadRequestException('substitute courses cannot be arranged');
 				}
 			})
