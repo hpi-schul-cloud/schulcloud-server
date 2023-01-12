@@ -5,7 +5,7 @@ import { PageContentResponse } from '../controller/dto/page-content.response';
 @Injectable()
 export class PageContentMapper {
 	mapDtoToResponse(dto: PageContentDto): PageContentResponse {
-		const response = new PageContentResponse({
+		const response: PageContentResponse = new PageContentResponse({
 			proceedButtonUrl: dto.proceedButtonUrl,
 			cancelButtonUrl: dto.cancelButtonUrl,
 		});

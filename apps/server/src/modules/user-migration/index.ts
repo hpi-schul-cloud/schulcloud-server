@@ -1,1 +1,1 @@
-export * from './migration.module';
+export * from './user-migration-api.module';

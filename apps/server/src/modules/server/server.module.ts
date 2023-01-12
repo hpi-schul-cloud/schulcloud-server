@@ -28,9 +28,9 @@ import { ImportUserModule } from '@src/modules/user-import';
 import { VideoConferenceModule } from '@src/modules/video-conference';
 import { ToolApiModule } from '@src/modules/tool';
 import { SchoolApiModule } from '@src/modules/school/school-api.module';
+import { UserMigrationApiModule } from '@src/modules/user-migration';
 import { serverConfig } from './server.config';
 import { ServerController } from './server.controller';
-import { MigrationModule } from '../user-migration';
 
 const serverModules = [
 	ConfigModule.forRoot({
@@ -54,7 +54,7 @@ const serverModules = [
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 	}),
-	MigrationModule,
+	UserMigrationApiModule,
 	RocketChatModule.forRoot({
 		uri: Configuration.get('ROCKET_CHAT_URI') as string,
 		adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
