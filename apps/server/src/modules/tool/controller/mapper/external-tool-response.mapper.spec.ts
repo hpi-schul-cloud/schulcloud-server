@@ -7,6 +7,7 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
+import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 import {
 	CustomParameterLocationParams,
@@ -23,6 +24,8 @@ import {
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
+	ToolConfigurationEntryResponse,
+	ToolConfigurationListResponse,
 } from '../dto';
 
 describe('ExternalToolResponseMapper', () => {
@@ -190,6 +193,28 @@ describe('ExternalToolResponseMapper', () => {
 				const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
 
 				expect(result).toEqual(externalToolResponse);
+			});
+		});
+	});
+
+	describe('mapExternalToolDOsToToolConfigurationListResponse is called', () => {
+		describe('when mapping from ExternalToolDOs to ToolConfigurationListResponse', () => {
+			it('should map from ExternalToolDOs to ToolConfigurationListResponse', () => {
+				const externalToolDOs: ExternalToolDO[] = externalToolDOFactory.buildList(3, {
+					id: 'toolId',
+					name: 'toolName',
+					logoUrl: 'logoUrl',
+				});
+				const expectedResponse: ToolConfigurationEntryResponse = new ToolConfigurationEntryResponse({
+					id: 'toolId',
+					name: 'toolName',
+					logoUrl: 'logoUrl',
+				});
+
+				const result: ToolConfigurationListResponse =
+					mapper.mapExternalToolDOsToToolConfigurationListResponse(externalToolDOs);
+
+				expect(result.data).toEqual(expect.arrayContaining([expectedResponse, expectedResponse, expectedResponse]));
 			});
 		});
 	});

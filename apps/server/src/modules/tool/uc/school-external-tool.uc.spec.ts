@@ -1,17 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { Actions, Permission, User } from '@shared/domain';
-import { setupEntities, userFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
-import { SchoolExternalToolUc } from './school-external-tool.uc';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Actions, Permission, User } from '@shared/domain';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { setupEntities, userFactory } from '@shared/testing';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
 import { AuthorizationService } from '../../authorization';
+import { AllowedAuthorizationEntityType } from '../../authorization/interfaces';
 import { SchoolExternalToolService } from '../service/school-external-tool.service';
-import { SchoolService } from '../../school';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
+import { SchoolExternalToolUc } from './school-external-tool.uc';
 
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
@@ -20,7 +18,6 @@ describe('SchoolExternalToolUc', () => {
 
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
-	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -35,17 +32,12 @@ describe('SchoolExternalToolUc', () => {
 					provide: SchoolExternalToolService,
 					useValue: createMock<SchoolExternalToolService>(),
 				},
-				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
-				},
 			],
 		}).compile();
 
 		uc = module.get(SchoolExternalToolUc);
 		authorizationService = module.get(AuthorizationService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
-		schoolService = module.get(SchoolService);
 	});
 
 	afterAll(async () => {
@@ -60,44 +52,31 @@ describe('SchoolExternalToolUc', () => {
 	const setup = () => {
 		const tool: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
 		const user: User = userFactory.buildWithId();
-		const school: SchoolDO = schoolDOFactory.build({ id: tool.schoolId });
+
 		return {
 			user,
 			userId: user.id,
 			tool,
-			school,
+			schoolId: tool.schoolId,
 		};
 	};
 
 	describe('findSchoolExternalTools is called', () => {
 		describe('when checks permission', () => {
-			it('should get the user', async () => {
-				const { userId, tool } = setup();
-
-				await uc.findSchoolExternalTools(userId, tool);
-
-				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(userId);
-			});
-
-			it('should get the school', async () => {
-				const { userId, tool } = setup();
-
-				await uc.findSchoolExternalTools(userId, tool);
-
-				expect(schoolService.getSchoolById).toHaveBeenCalledWith(tool.schoolId);
-			});
-
 			it('should check the permissions of the user', async () => {
-				const { user, tool, school } = setup();
-				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				schoolService.getSchoolById.mockResolvedValue(school);
+				const { user, tool, schoolId } = setup();
 
 				await uc.findSchoolExternalTools(user.id, tool);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, school, {
-					action: Actions.read,
-					requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-				});
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+					user.id,
+					AllowedAuthorizationEntityType.School,
+					schoolId,
+					{
+						action: Actions.read,
+						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+					}
+				);
 			});
 		});
 
