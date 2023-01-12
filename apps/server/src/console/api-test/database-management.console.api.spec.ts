@@ -1,10 +1,10 @@
 import { INestApplicationContext } from '@nestjs/common';
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
-import { execute, TestBootstrapConsole } from '@src/console/test/bootstrap.console';
 import { ServerConsoleModule } from '@src/console/console.module';
 import { CommanderError } from 'commander';
+import { execute, TestBootstrapConsole } from './test-bootstrap.console';
 
-describe.skip('IdentityManagementConsole (API)', () => {
+describe('DatabaseManagementConsole (API)', () => {
 	let app: INestApplicationContext;
 	let console: BootstrapConsole;
 	let consoleService: ConsoleService;
@@ -22,9 +22,9 @@ describe.skip('IdentityManagementConsole (API)', () => {
 		await app.close();
 	});
 
-	describe('Command "idm"', () => {
+	describe('Command "database"', () => {
 		beforeEach(() => {
-			const cli = consoleService.getCli('idm');
+			const cli = consoleService.getCli('database');
 			const exitFn = (err: CommanderError) => {
 				if (err.exitCode !== 0) throw err;
 			};
@@ -33,19 +33,20 @@ describe.skip('IdentityManagementConsole (API)', () => {
 			rootCli.exitOverride(exitFn);
 		});
 
+		afterEach(() => {
+			consoleService.resetCli();
+		});
+
 		it('should fail for unknown command', async () => {
-			await expect(execute(console, ['idm', 'not_existing_command'])).rejects.toThrow(
-				"error: unknown command 'not_existing_command'"
+			await expect(execute(console, ['database', 'not_existing_command'])).rejects.toThrow(
+				`error: unknown command 'not_existing_command'`
 			);
 		});
-		it('should provide command "check"', async () => {
-			await execute(console, ['idm', 'check']);
-		});
-		it('should provide command "clean"', async () => {
-			await execute(console, ['idm', 'clean']);
-		});
 		it('should provide command "seed"', async () => {
-			await execute(console, ['idm', 'seed']);
+			await execute(console, ['database', 'seed']);
+		});
+		it('should provide command "export"', async () => {
+			await execute(console, ['database', 'export']);
 		});
 	});
 });
