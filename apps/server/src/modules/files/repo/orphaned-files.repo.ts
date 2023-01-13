@@ -9,6 +9,7 @@ import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/ent
 import { FileRecordMapper } from '../mapper/filerecord-mapper';
 
 const orphanedFilesQuery = (collectionName: string) => [
+	{ $match: { parentType: collectionName } },
 	{
 		$lookup: {
 			from: collectionName,
