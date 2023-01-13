@@ -5,12 +5,14 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { SchoolExternalToolService } from '../service/school-external-tool.service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
+import { CourseExternalToolService } from '../service/course-external-tool.service';
 
 @Injectable()
 export class SchoolExternalToolUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolExternalToolService: SchoolExternalToolService
+		private readonly schoolExternalToolService: SchoolExternalToolService,
+		private readonly courseExternalToolService: CourseExternalToolService
 	) {}
 
 	async findSchoolExternalTools(
@@ -25,11 +27,32 @@ export class SchoolExternalToolUc {
 		return tools;
 	}
 
-	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId) {
+	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId): Promise<void> {
 		return this.authorizationService.checkPermissionByReferences(
 			userId,
 			AllowedAuthorizationEntityType.School,
 			schoolId,
+			{
+				action: Actions.read,
+				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+			}
+		);
+	}
+
+	async deleteSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
+		await this.ensureSchoolExternalToolPermission(userId, schoolExternalToolId);
+
+		await Promise.all([
+			this.courseExternalToolService.deleteBySchoolExternalToolId(schoolExternalToolId),
+			this.schoolExternalToolService.deleteSchoolExternalToolById(schoolExternalToolId),
+		]);
+	}
+
+	private async ensureSchoolExternalToolPermission(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
+		return this.authorizationService.checkPermissionByReferences(
+			userId,
+			AllowedAuthorizationEntityType.SchoolExternalTool,
+			schoolExternalToolId,
 			{
 				action: Actions.read,
 				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],

@@ -1,15 +1,12 @@
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { EntityProperties } from '@shared/repo/base.do.repo';
 import { ISchoolProperties, School, System } from '@shared/domain';
 import { Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class SchoolMapper {
-	mapDOToEntityProperties(entityDO: SchoolDO): EntityProperties<ISchoolProperties> {
+	mapDOToEntityProperties(entityDO: SchoolDO): ISchoolProperties {
 		return {
-			id: entityDO.id,
-			_id: entityDO.id,
 			externalId: entityDO.externalId,
 			features: entityDO.features,
 			inMaintenanceSince: entityDO.inMaintenanceSince,
