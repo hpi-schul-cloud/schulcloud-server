@@ -5,6 +5,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
 import {
+	CardElement,
 	CardElementType,
 	CardRichTextElementResponse,
 	CardTitleElementResponse,
@@ -197,14 +198,22 @@ describe('Task-Card Controller (2e2)', () => {
 			expect(responseTaskCard.cardElements.length).toEqual(3);
 			expect(responseTaskCard.task.name).toEqual('title test');
 		});
-		it('DELETE should remove task and task-card', async () => {
+		it('DELETE should remove task-card, its card-elements and associated task', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
 			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 			const task = taskFactory.build({ creator: user });
-			const taskCard = taskCardFactory.build({ creator: user, task });
+			const taskCard = taskCardFactory.build({
+				creator: user,
+				cardElements: [titleCardElementFactory.buildWithId(), richTextCardElementFactory.buildWithId()],
+				task,
+			});
 
 			await em.persistAndFlush([user, task, taskCard]);
 			em.clear();
+
+			const cardElementsIds = taskCard.getCardElements().map((element) => element.id);
+			const foundCardElementsInitial = await em.findAndCount(CardElement, { id: { $in: cardElementsIds } });
+			expect(foundCardElementsInitial[1]).toEqual(2);
 
 			currentUser = mapUserToCurrentUser(user);
 
@@ -212,6 +221,9 @@ describe('Task-Card Controller (2e2)', () => {
 				.delete(`/cards/task/${taskCard.id}`)
 				.set('Accept', 'application/json')
 				.expect(200);
+
+			const foundCardElements = await em.findAndCount(CardElement, { id: { $in: cardElementsIds } });
+			expect(foundCardElements[1]).toEqual(0);
 
 			const foundTask = await em.findOne(Task, { id: taskCard.task.id });
 			expect(foundTask).toEqual(null);

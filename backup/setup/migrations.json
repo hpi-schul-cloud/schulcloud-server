@@ -113,7 +113,7 @@
 		"_id": {
 			"$oid": "63c05072858dd481877593a9"
 		},
-		"state": "down",
+		"state": "up",
 		"name": "add-task-card-permission",
 		"createdAt": {
 			"$date": "2023-01-12T18:24:50.878Z"
