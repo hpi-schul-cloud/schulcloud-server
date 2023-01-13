@@ -12,14 +12,6 @@ import {
 import { CourseRepo, IDashboardRepo } from '@shared/repo';
 import { createMock } from '@golevelup/ts-jest';
 import { DashboardUc } from './dashboard.uc';
-import {
-	boardFactory,
-	courseFactory,
-	courseGroupFactory,
-	schoolFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
 
 const learnroomMock = (id: string, name: string) => {
 	return {
