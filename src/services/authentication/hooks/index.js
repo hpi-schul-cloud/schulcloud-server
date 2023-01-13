@@ -12,6 +12,12 @@ const globalHooks = require('../../../hooks');
 
 const disabledBruteForceCheck = Configuration.get('DISABLED_BRUTE_FORCE_CHECK');
 
+/**
+ *
+ * @deprecated
+ *
+ * Remove when ldap strategy is removed
+ */
 const updateUsernameForLDAP = async (context) => {
 	const { schoolId, strategy } = context.data;
 
@@ -27,6 +33,10 @@ const updateUsernameForLDAP = async (context) => {
 	return context;
 };
 
+/**
+ *
+ * @deprecated Remove when ldap, TSP and local strategy are removed
+ */
 const bruteForceCheck = async (context) => {
 	if (disabledBruteForceCheck) {
 		return context;
@@ -39,6 +49,10 @@ const bruteForceCheck = async (context) => {
 	return context;
 };
 
+/**
+ *
+ * @deprecated Remove when ldap, TSP and local strategy are removed
+ */
 // Invalid Login will not call this function
 const bruteForceReset = async (context) => {
 	if (disabledBruteForceCheck) {
@@ -49,6 +63,12 @@ const bruteForceReset = async (context) => {
 	return context;
 };
 
+/**
+ * Based on the account ID this adds user ID and system ID to the context.
+ * For Moodle and iServ it creates a new Account. Neither strategy is used anymore
+ *
+ * @deprecated Remove when ldap, TSP and local strategy are removed
+ */
 const injectUserId = async (context) => {
 	const { strategy } = context.data;
 	const systemId = strategy === 'local' ? undefined : context.data.systemId;
@@ -86,6 +106,9 @@ const injectUserId = async (context) => {
 	return context;
 };
 
+/**
+ * @deprecated Remove when ldap, TSP and local strategy are removed
+ */
 const lowerCaseUsername = (hook) => {
 	if (hook.data.username) {
 		hook.data.username = hook.data.username.toLowerCase();
@@ -93,6 +116,9 @@ const lowerCaseUsername = (hook) => {
 	return hook;
 };
 
+/**
+ * @deprecated Remove when ldap, TSP and local strategy are removed
+ */
 const trimUsername = (hook) => {
 	if (hook.data.username) {
 		hook.data.username = hook.data.username.trim();
@@ -100,6 +126,9 @@ const trimUsername = (hook) => {
 	return hook;
 };
 
+/**
+ * @deprecated Remove when ldap, TSP and local strategy are removed
+ */
 const trimPassword = (hook) => {
 	if (hook.data.password) {
 		hook.data.password = hook.data.password.trim();
@@ -112,8 +141,10 @@ const populateResult = (hook) => {
 	return hook;
 };
 
-// Requests need to be used after authentication as inner server calls
-// Provider is not allowed to be set to detect it as inner server call
+/**
+ * Requests need to be used after authentication as inner server calls
+ * Provider is not allowed to be set to detect it as inner server call
+ */
 const removeProvider = (context) => {
 	delete context.params.provider;
 	return context;
@@ -122,6 +153,7 @@ const removeProvider = (context) => {
 /**
  * If a redis connection exists, the newly created is added to the whitelist.
  * @param {Object} context feathers context
+ * @deprecated
  */
 const addJwtToWhitelist = async (context) => {
 	if (getRedisClient()) {
@@ -148,7 +180,7 @@ const removeJwtFromWhitelist = async (context) => {
 
 /**
  * increase jwt timeout for private devices on request
-  @param {} context
+ * @deprecated remove when switched to v3 endpoint, was never in production and is more than 2 years old
  */
 const increaseJwtTimeoutForPrivateDevices = (context) => {
 	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true) {
@@ -162,6 +194,9 @@ const increaseJwtTimeoutForPrivateDevices = (context) => {
 	return context;
 };
 
+/**
+ * @deprecated can be removed after switching to v3 endpoint
+ */
 const checkJwtAuthWhitelisted = async (context) => {
 	const { strategy, accessToken } = context.data;
 	if (strategy === 'jwt') {
@@ -174,22 +209,41 @@ const checkJwtAuthWhitelisted = async (context) => {
 const hooks = {
 	before: {
 		create: [
+			// NOTE: is ported to nest
 			checkJwtAuthWhitelisted,
+			// NOTE: is ported to nest
 			updateUsernameForLDAP,
+			// NOTE: is ported to nest
 			lowerCaseUsername,
+			// NOTE: is ported to nest
 			trimUsername,
+			// NOTE: is ported to nest
 			trimPassword,
+			// NOTE: is ported to nest
 			bruteForceCheck,
+			// NOTE: will not be ported to nest
 			globalHooks.blockDisposableEmail('username'),
 			injectUserId,
+			// NOTE: will not be ported to nest
 			increaseJwtTimeoutForPrivateDevices,
+			// NOTE: will not be ported to nest
 			removeProvider,
 		],
 		remove: [removeProvider],
 	},
 	after: {
-		all: [discard('account.password'), globalHooks.transformToDataTransferObject],
-		create: [bruteForceReset, addJwtToWhitelist],
+		all: [
+			// NOTE: will not be ported to nest
+			discard('account.password'),
+			// NOTE: will not be ported to nest
+			globalHooks.transformToDataTransferObject,
+		],
+		create: [
+			// NOTE: will not be ported to nest
+			bruteForceReset,
+			// NOTE: is ported to nest
+			addJwtToWhitelist,
+		],
 		remove: [populateResult, removeJwtFromWhitelist],
 	},
 };

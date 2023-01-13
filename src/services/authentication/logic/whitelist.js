@@ -70,11 +70,14 @@ const redisClientExists = () => !!getRedisClient();
  */
 const isTokenAvailable = (token) => !!token;
 
+// eslint-disable-next-line consistent-return
 const addTokenToWhitelist = async (redisIdentifier, privateDevice = false) => {
-	const redisData = getRedisData({ privateDevice });
-	const { expirationInSeconds } = redisData;
-	await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
-	return { ttl: expirationInSeconds };
+	if (redisClientExists()) {
+		const redisData = getRedisData({ privateDevice });
+		const { expirationInSeconds } = redisData;
+		await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
+		return { ttl: expirationInSeconds };
+	}
 };
 
 // eslint-disable-next-line consistent-return
@@ -82,7 +85,7 @@ const addTokenToWhitelistWithIdAndJti = async (accountId, jti, privateDevice = f
 	if (redisClientExists()) {
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;
-		const redisIdentifier = await createRedisIdentifierFromJwtData(accountId, jti);
+		const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
 		await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
 		return { ttl: expirationInSeconds };
 	}
