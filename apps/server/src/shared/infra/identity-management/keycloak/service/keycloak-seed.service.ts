@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import { Inject } from '@nestjs/common';
+import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { IJsonAccount, IJsonUser, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
@@ -44,7 +45,7 @@ export class KeycloakSeedService {
 	}
 
 	private async createOrUpdateIdmAccount(account: IJsonAccount, user: IJsonUser): Promise<boolean> {
-		const idmUserRepresentation: import('@keycloak/keycloak-admin-client/lib/defs/userRepresentation').default = {
+		const idmUserRepresentation: UserRepresentation = {
 			username: account.username,
 			firstName: user.firstName,
 			lastName: user.lastName,

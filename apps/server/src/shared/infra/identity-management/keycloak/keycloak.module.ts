@@ -18,10 +18,6 @@ import { OidcIdentityProviderMapper } from './mapper/identity-provider.mapper';
 	controllers: [],
 	providers: [
 		{
-			provide: 'test',
-			useFactory: () => '1',
-		},
-		{
 			provide: KeycloakAdminClient,
 			useFactory: async () => {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, no-eval
