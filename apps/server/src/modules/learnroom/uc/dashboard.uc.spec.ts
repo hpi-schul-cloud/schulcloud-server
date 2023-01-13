@@ -12,7 +12,8 @@ import {
 	LearnroomTypes,
 	SortOrder,
 } from '@shared/domain';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { createMock } from '@golevelup/ts-jest';
+import { courseFactory, setupEntities } from '@shared/testing';
 import { CourseRepo, IDashboardRepo } from '@shared/repo';
 import { DashboardUc } from './dashboard.uc';
 
@@ -49,34 +50,11 @@ describe('dashboard uc', () => {
 				DashboardUc,
 				{
 					provide: 'DASHBOARD_REPO',
-					useValue: {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						getUsersDashboard(userId: EntityId) {
-							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
-						},
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						getDashboardById(id: EntityId) {
-							throw new Error('Please write a mock for DashboardRepo.getDashboardById.');
-						},
-						persistAndFlush(entity: DashboardEntity) {
-							return Promise.resolve(entity);
-						},
-					},
+					useValue: createMock<DashboardUc>()
 				},
 				{
 					provide: CourseRepo,
-					useValue: {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findAllByUserId(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
-							throw new Error('Please write a mock for CourseRepo.findAllByUserId');
-						},
-						findAllForTeacher(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
-							throw new Error('Please write a mock for CourseRepo.findAllForTeacher');
-						},
-						findAllForSubstituteTeacher(userId: EntityId): Promise<Counted<Course[]>> {
-							throw new Error('Please write a mock for CourseRepo.findAllForTeacher');
-						},
-					},
+					useValue: createMock<CourseRepo>()
 				},
 			],
 		}).compile();

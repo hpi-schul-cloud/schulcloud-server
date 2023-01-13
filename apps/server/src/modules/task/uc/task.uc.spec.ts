@@ -125,7 +125,7 @@ describe('TaskUC', () => {
 	};
 
 	const setCourseRepoMock = {
-		findlAllForTeacher: (courses: Course[] = []) => {
+		findAllForTeacher: (courses: Course[] = []) => {
 			const spy = courseRepo.findAllForTeacher.mockResolvedValue([courses, courses.length]);
 			return spy;
 		},
@@ -158,11 +158,11 @@ describe('TaskUC', () => {
 		const spy1 = setTaskRepoMock.findAllFinishedByParentIds(data?.tasks);
 		const spy2 = setCourseRepoMock.findAllForTeacherOrSubstituteTeacher(data?.courses);
 		const spy3 = setCourseRepoMock.findAllByUserId(data?.courses);
-		const spy4 = setCourseRepoMock.findlAllForTeacher(data?.courses);
+		const spy4 = setCourseRepoMock.findAllForTeacher(data?.courses);
 		const spy5 = setLessonRepoMock.findAllForTeacher(data?.lessons);
 		const spy6 = setAuthorizationServiceMock.getUserWithPermissions();
 		const spy7 = setUserRepoMock.findById();
-		const spy8 = setTaskRepoMock.findAllByParentIds(data?.tasks);
+		setTaskRepoMock.findAllByParentIds(data?.tasks);
 
 		const mockRestore = () => {
 			spy1.mockRestore();
