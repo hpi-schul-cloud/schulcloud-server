@@ -6,7 +6,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 // TODO  @src/modules/learnroom/* must be replaced
 import { CopyMapper } from '@src/modules/copy-helper';
-import { CopyApiResponse } from '@src/modules/copy-helper/copy.response';
+import { CopyApiResponse } from '@src/modules/copy-helper/dto/copy.response';
 import { serverConfig } from '@src/modules/server/server.config';
 import { TaskMapper } from '../mapper';
 import { TaskCopyUC, TaskUC } from '../uc';

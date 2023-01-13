@@ -6,9 +6,9 @@ import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
 import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
 import { TaskCopyParentParams } from '@src/modules/task/types';
-import { LessonCopyParentParams } from '../lesson/types/lesson-copy-parent.params';
+import { LessonCopyParentParams } from '../../lesson/types/lesson-copy-parent.params';
+import { CopyApiResponse } from '../dto/copy.response';
 import { CopyMapper } from './copy.mapper';
-import { CopyApiResponse } from './copy.response';
 
 describe('copy mapper', () => {
 	let module: TestingModule;

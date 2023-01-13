@@ -3,8 +3,8 @@ import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesso
 import { LessonCopyParentParams } from '@src/modules/lesson/types';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
 import { TaskCopyParentParams } from '@src/modules/task/types';
-import { CopyStatus, CopyStatusEnum } from '../copy.types';
 import { CopyApiResponse } from '../dto/copy.response';
+import { CopyStatus, CopyStatusEnum } from '../types/copy.types';
 
 export class CopyMapper {
 	static mapToResponse(copyStatus: CopyStatus): CopyApiResponse {

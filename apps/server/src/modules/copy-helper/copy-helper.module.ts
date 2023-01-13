@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CopyHelperService } from './copy-helper.service';
+import { CopyHelperService } from './service/copy-helper.service';
 
 @Module({
 	providers: [CopyHelperService],

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BaseEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CopyStatus, CopyStatusEnum } from './copy.types';
+import { CopyStatus, CopyStatusEnum } from '../types/copy.types';
 
 const isAtLeastPartialSuccessfull = (status) => status === CopyStatusEnum.PARTIAL || status === CopyStatusEnum.SUCCESS;
 
