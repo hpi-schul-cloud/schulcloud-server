@@ -6,10 +6,13 @@ import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/
 import { ToolSchoolController } from './tool-school.controller';
 import { SchoolExternalToolUc } from '../uc/school-external-tool.uc';
 import { SchoolExternalToolResponseMapper } from './mapper/school-external-tool-response.mapper';
-import { SchoolExternalToolParams } from './dto/request/school-external-tool.params';
-import { SchoolExternalToolSearchListResponse } from './dto/response/school-external-tool-search-list.response';
-import { SchoolExternalToolResponse } from './dto/response/school-external-tool.response';
-import { SchoolExternalToolStatusResponse } from './dto/response/school-external-tool-status.response';
+import {
+	SchoolExternalToolIdParams,
+	SchoolExternalToolResponse,
+	SchoolExternalToolSearchListResponse,
+	SchoolExternalToolSearchParams,
+	SchoolExternalToolStatusResponse,
+} from './dto';
 
 describe('ToolSchoolController', () => {
 	let module: TestingModule;
@@ -44,41 +47,46 @@ describe('ToolSchoolController', () => {
 
 	const setup = () => {
 		const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-		const params: SchoolExternalToolParams = new SchoolExternalToolParams();
-		params.schoolId = 'schoolId';
+		const searchParams: SchoolExternalToolSearchParams = new SchoolExternalToolSearchParams();
+		searchParams.schoolId = 'schoolId';
+
+		const idParams: SchoolExternalToolIdParams = new SchoolExternalToolIdParams();
+		idParams.schoolExternalToolId = 'schoolExternalToolId';
 
 		return {
 			currentUser,
-			params,
+			searchParams,
+			idParams,
 		};
 	};
 
 	describe('getSchoolExternalTools is called', () => {
 		describe('when endpoint is called', () => {
 			it('should call the uc', async () => {
-				const { currentUser, params } = setup();
+				const { currentUser, searchParams } = setup();
 
-				await controller.getSchoolExternalTools(currentUser, params);
+				await controller.getSchoolExternalTools(currentUser, searchParams);
 
 				expect(schoolExternalToolUc.findSchoolExternalTools).toHaveBeenCalledWith(currentUser.userId, {
-					schoolId: params.schoolId,
+					schoolId: searchParams.schoolId,
 				});
 			});
 
 			it('should call the response mapper', async () => {
-				const { currentUser, params } = setup();
+				const { currentUser, searchParams } = setup();
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
 				schoolExternalToolUc.findSchoolExternalTools.mockResolvedValue([schoolExternalToolDO]);
 
-				await controller.getSchoolExternalTools(currentUser, params);
+				await controller.getSchoolExternalTools(currentUser, searchParams);
 
 				expect(schoolExternalToolResponseMapper.mapToSearchListResponse).toHaveBeenCalledWith([schoolExternalToolDO]);
 			});
 
 			it('should return a schoolExternalToolSearchListResponse', async () => {
-				const { currentUser, params } = setup();
+				const { currentUser, searchParams } = setup();
 				const expectedResponse: SchoolExternalToolSearchListResponse = new SchoolExternalToolSearchListResponse([
 					new SchoolExternalToolResponse({
+						id: 'id',
 						name: 'name',
 						schoolId: 'schoolId',
 						toolId: 'toolId',
@@ -95,9 +103,24 @@ describe('ToolSchoolController', () => {
 
 				schoolExternalToolResponseMapper.mapToSearchListResponse.mockReturnValue(expectedResponse);
 
-				const response = await controller.getSchoolExternalTools(currentUser, params);
+				const response = await controller.getSchoolExternalTools(currentUser, searchParams);
 
 				expect(response).toEqual(expectedResponse);
+			});
+		});
+	});
+
+	describe('deleteSchoolExternalTool is called', () => {
+		describe('when params are given', () => {
+			it('should call the uc', async () => {
+				const { currentUser, idParams } = setup();
+
+				await controller.deleteSchoolExternalTool(currentUser, idParams);
+
+				expect(schoolExternalToolUc.deleteSchoolExternalTool).toHaveBeenCalledWith(
+					currentUser.userId,
+					idParams.schoolExternalToolId
+				);
 			});
 		});
 	});

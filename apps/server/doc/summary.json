@@ -50,6 +50,10 @@
 			{
 				"title": "Authorisation",
 				"file": "../src/modules/authorization/README.md"
+			},
+			{
+				"title": "Code Style",
+				"file": "code-style.md"
 			}
 		]
 	}

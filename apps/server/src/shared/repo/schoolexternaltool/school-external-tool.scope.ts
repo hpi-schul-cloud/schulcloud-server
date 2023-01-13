@@ -1,4 +1,4 @@
-import { Scope } from '@shared/repo';
+import { Scope } from '@shared/repo/scope';
 import { EntityId, SchoolExternalTool } from '@shared/domain';
 
 export class SchoolExternalToolScope extends Scope<SchoolExternalTool> {

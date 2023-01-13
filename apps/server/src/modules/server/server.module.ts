@@ -26,7 +26,7 @@ import { TaskModule } from '@src/modules/task';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { VideoConferenceModule } from '@src/modules/video-conference';
-import { ToolApiModule } from '@src/modules/tool';
+import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { UserMigrationApiModule } from '@src/modules/user-migration';
 import { serverConfig } from './server.config';
