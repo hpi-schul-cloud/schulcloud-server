@@ -1,16 +1,19 @@
-import { NotFoundException } from '@nestjs/common/';
+import { BadRequestException, NotFoundException } from '@nestjs/common/';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MikroORM } from '@mikro-orm/core';
 import {
+	Counted,
 	Course,
 	DashboardEntity,
 	EntityId,
 	GridElement,
+	IFindOptions,
 	LearnroomMetadata,
 	LearnroomTypes,
 	SortOrder,
 } from '@shared/domain';
+import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseRepo, IDashboardRepo } from '@shared/repo';
-import { createMock } from '@golevelup/ts-jest';
 import { DashboardUc } from './dashboard.uc';
 
 const learnroomMock = (id: string, name: string) => {
@@ -28,6 +31,7 @@ const learnroomMock = (id: string, name: string) => {
 };
 
 describe('dashboard uc', () => {
+	let orm: MikroORM;
 	let module: TestingModule;
 	let service: DashboardUc;
 	let repo: IDashboardRepo;
@@ -35,6 +39,7 @@ describe('dashboard uc', () => {
 
 	afterAll(async () => {
 		await module.close();
+		await orm.close();
 	});
 
 	beforeAll(async () => {
@@ -60,34 +65,29 @@ describe('dashboard uc', () => {
 				},
 				{
 					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					useValue: {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						findAllByUserId(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
+							throw new Error('Please write a mock for CourseRepo.findAllByUserId');
+						},
+						findAllForTeacher(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
+							throw new Error('Please write a mock for CourseRepo.findAllForTeacher');
+						},
+						findAllForSubstituteTeacher(userId: EntityId): Promise<Counted<Course[]>> {
+							throw new Error('Please write a mock for CourseRepo.findAllForTeacher');
+						},
+					},
 				},
-				// {
-				// 	provide: CourseRepo,
-				// 	useValue: {
-				// 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				// 		findAllByUserId(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
-				// 			throw new Error('Please write a mock for CourseRepo.findAllByUserId');
-				// 		},
-				// 		findAllForTeacher(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
-				// 			throw new Error('Please write a mock for CourseRepo.findAllForTeacher');
-				// 		},
-				// 		findAllForSubstituteTeacher(userId: EntityId): Promise<Counted<Course[]>> {
-				// 			throw new Error('Please write a mock for CourseRepo.findAllForTeacher');
-				// 		},
-				// 	},
-				// },
 			],
 		}).compile();
 
 		service = module.get(DashboardUc);
 		repo = module.get('DASHBOARD_REPO');
 		courseRepo = module.get(CourseRepo);
+		orm = await setupEntities();
 	});
 
 	afterEach(() => {
-		// jest.clearAllMocks();
-		// jest.restoreAllMocks();
 		jest.resetAllMocks();
 	});
 
@@ -145,6 +145,7 @@ describe('dashboard uc', () => {
 
 	describe('moveElementOnDashboard', () => {
 		it('should update position of existing element', async () => {
+			const course = courseFactory.buildWithId();
 			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
 				const dashboard = new DashboardEntity(id, {
 					grid: [
@@ -157,13 +158,19 @@ describe('dashboard uc', () => {
 				});
 				return Promise.resolve(dashboard);
 			});
-			jest.spyOn(courseRepo, 'findAllForSubstituteTeacher').mockImplementation(() => Promise.resolve([[], 0]));
+			jest.spyOn(courseRepo, 'findAllForSubstituteTeacher').mockImplementation((userId: EntityId) => {
+				if (userId === 'userId') {
+					return Promise.resolve([[course], 1]);
+				}
+				throw new Error('not found');
+			});
 			const result = await service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
 			const resultGrid = result.getGrid();
 			expect(resultGrid[0].pos).toEqual({ x: 2, y: 1 });
 		});
 
 		it('should persist the change', async () => {
+			const course = courseFactory.buildWithId();
 			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
 				if (id === 'dashboardId')
 					return Promise.resolve(
@@ -179,8 +186,13 @@ describe('dashboard uc', () => {
 					);
 				throw new Error('not found');
 			});
+			jest.spyOn(courseRepo, 'findAllForSubstituteTeacher').mockImplementation((userId: EntityId) => {
+				if (userId === 'userId') {
+					return Promise.resolve([[course], 1]);
+				}
+				throw new Error('not found');
+			});
 			const spy = jest.spyOn(repo, 'persistAndFlush');
-			jest.spyOn(courseRepo, 'findAllForSubstituteTeacher').mockImplementation(() => Promise.resolve([[], 0]));
 			const result = await service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
 			expect(spy).toHaveBeenCalledWith(result);
 		});
@@ -202,6 +214,70 @@ describe('dashboard uc', () => {
 
 			const callFut = () => service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
 			await expect(callFut).rejects.toThrow(NotFoundException);
+		});
+
+		it('should throw if moving substitute course', async () => {
+			const course = courseFactory.buildWithId();
+			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
+				if (id === 'dashboardId')
+					return Promise.resolve(
+						new DashboardEntity(id, {
+							grid: [
+								{
+									pos: { x: 1, y: 2 },
+									gridElement: GridElement.FromPersistedReference(
+										'elementId',
+										learnroomMock(course._id.toString(), 'Mathe')
+									),
+								},
+							],
+							userId: 'userId',
+						})
+					);
+				throw new Error('not found');
+			});
+			jest.spyOn(courseRepo, 'findAllForSubstituteTeacher').mockImplementation((userId: EntityId) => {
+				if (userId === 'userId') {
+					return Promise.resolve([[course], 1]);
+				}
+				throw new Error('not found');
+			});
+			const callFut = () => service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
+			await expect(callFut).rejects.toThrow(BadRequestException);
+		});
+
+		it('should throw if moving into substitute course', async () => {
+			const course = courseFactory.buildWithId();
+			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
+				if (id === 'dashboardId')
+					return Promise.resolve(
+						new DashboardEntity(id, {
+							grid: [
+								{
+									pos: { x: 1, y: 2 },
+									gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+								},
+								{
+									pos: { x: 2, y: 1 },
+									gridElement: GridElement.FromPersistedReference(
+										'elementId',
+										learnroomMock(course._id.toString(), 'Substitute Course')
+									),
+								},
+							],
+							userId: 'userId',
+						})
+					);
+				throw new Error('not found');
+			});
+			jest.spyOn(courseRepo, 'findAllForSubstituteTeacher').mockImplementation((userId: EntityId) => {
+				if (userId === 'userId') {
+					return Promise.resolve([[course], 1]);
+				}
+				throw new Error('not found');
+			});
+			const callFut = () => service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
+			await expect(callFut).rejects.toThrow(BadRequestException);
 		});
 	});
 
