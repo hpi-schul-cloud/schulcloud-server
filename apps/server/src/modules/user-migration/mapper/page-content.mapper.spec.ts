@@ -17,18 +17,22 @@ describe('PageContentMapper', () => {
 		await module.close();
 	});
 
+	const setup = () => {
+		const dto: PageContentDto = {
+			proceedButtonUrl: 'proceed',
+			cancelButtonUrl: 'cancel',
+		};
+		return { dto };
+	};
+
 	describe('when it maps from dto to response', () => {
-		let dto: PageContentDto;
-		beforeAll(() => {
-			dto = {
-				proceedButtonUrl: 'proceed',
-				cancelButtonUrl: 'cancel',
-			};
-		});
-		it('should map the dto to a response', () => {
-			const response = mapper.mapDtoToResponse(dto);
-			expect(response.proceedButtonUrl).toEqual(dto.proceedButtonUrl);
-			expect(response.cancelButtonUrl).toEqual(dto.cancelButtonUrl);
+		describe('mapDtoToResponse is called', () => {
+			it('should map the dto to a response', () => {
+				const { dto } = setup();
+				const response = mapper.mapDtoToResponse(dto);
+				expect(response.proceedButtonUrl).toEqual(dto.proceedButtonUrl);
+				expect(response.cancelButtonUrl).toEqual(dto.cancelButtonUrl);
+			});
 		});
 	});
 });

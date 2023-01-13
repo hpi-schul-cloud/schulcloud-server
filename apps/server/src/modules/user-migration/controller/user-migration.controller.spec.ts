@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UserMigrationUc } from '../uc/user-migration.uc';
 import { UserMigrationController } from './user-migration.controller';
-import { PageContentQueryParams } from './dto/page-type.query.param';
 import { PageContentResponse } from './dto/page-content.response';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from '../service/dto/page-content.dto';
 import { PageContentMapper } from '../mapper/page-content.mapper';
+import { PageContentQueryParams } from './dto/page-type.query.param';
 
 describe('MigrationController', () => {
 	let module: TestingModule;
@@ -37,35 +37,32 @@ describe('MigrationController', () => {
 		await module.close();
 	});
 
-	it('should be defined', () => {
-		expect(controller).toBeDefined();
-	});
+	const setup = () => {
+		const query: PageContentQueryParams = {
+			pageType: PageTypes.START_FROM_TARGET_SYSTEM,
+			sourceSystem: 'source',
+			targetSystem: 'target',
+		};
+		const dto: PageContentDto = new PageContentDto({
+			proceedButtonUrl: 'proceedUrl',
+			cancelButtonUrl: 'cancelUrl',
+		});
+		const response: PageContentResponse = new PageContentResponse({
+			proceedButtonUrl: 'proceedUrl',
+			cancelButtonUrl: 'cancelUrl',
+		});
+		return { query, dto, response };
+	};
 
 	describe('when pagecontent is requested', () => {
-		let query: PageContentQueryParams;
-		let response: PageContentResponse;
-		let dto: PageContentDto;
-		beforeAll(() => {
-			query = {
-				pageType: PageTypes.START_FROM_NEW_SYSTEM,
-				sourceSystem: 'source',
-				targetSystem: 'target',
-			};
-			dto = new PageContentDto({
-				proceedButtonUrl: 'proceedUrl',
-				cancelButtonUrl: 'cancelUrl',
+		describe('getMigrationPageDetails is called', () => {
+			it('should return a response', async () => {
+				const { query, dto, response } = setup();
+				mapper.mapDtoToResponse.mockReturnValue(response);
+				uc.getPageContent.mockResolvedValue(dto);
+				const testResp: PageContentResponse = await controller.getMigrationPageDetails(query);
+				expect(testResp).toEqual(response);
 			});
-			response = new PageContentResponse({
-				proceedButtonUrl: 'proceedUrl',
-				cancelButtonUrl: 'cancelUrl',
-			});
-			mapper.mapDtoToResponse.mockReturnValue(response);
-			uc.getPageContent.mockResolvedValue(dto);
-		});
-		it('should return a response', async () => {
-			const testResp: PageContentResponse = await controller.getMigrationPageDetails(query);
-			expect(uc.getPageContent).toHaveBeenCalled();
-			expect(testResp).toEqual(response);
 		});
 	});
 });

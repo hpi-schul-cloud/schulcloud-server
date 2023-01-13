@@ -1,15 +1,15 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PageContentResponse {
-	@ApiPropertyOptional({
+	@ApiProperty({
 		description: 'The URL for the proceed button',
 	})
-	proceedButtonUrl?: string;
+	proceedButtonUrl: string;
 
-	@ApiPropertyOptional({
+	@ApiProperty({
 		description: 'The URL for the proceed button',
 	})
-	cancelButtonUrl?: string;
+	cancelButtonUrl: string;
 
 	constructor(props: PageContentResponse) {
 		this.proceedButtonUrl = props.proceedButtonUrl;

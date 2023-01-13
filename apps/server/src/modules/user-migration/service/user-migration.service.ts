@@ -2,13 +2,13 @@ import { OauthConfig } from '@shared/domain';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { SystemService } from '@src/modules/system/service/';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { PageContentDto } from './dto/page-content.dto';
 import { PageTypes } from '../interface/page-types.enum';
-import { SystemDto } from '../../system/service/dto/system.dto';
 
 @Injectable()
 export class UserMigrationService {
-	private readonly PROCESS_MIGRATION_BASE_URL: string = '/api/v3/migration/process';
+	private readonly PROCESS_MIGRATION_BASE_URL: string = '/api/v3/oauth/migration';
 
 	constructor(private readonly systemService: SystemService) {}
 
@@ -20,17 +20,17 @@ export class UserMigrationService {
 		content.proceedButtonUrl = this.getOauthLoginUrl(targetSystem, `${this.PROCESS_MIGRATION_BASE_URL}`);
 
 		switch (pageType) {
-			case PageTypes.START_FROM_NEW_SYSTEM:
+			case PageTypes.START_FROM_TARGET_SYSTEM:
 				content.proceedButtonUrl = this.getOauthLoginUrl(
 					sourceSystem,
 					this.getOauthLoginUrl(targetSystem, `${this.PROCESS_MIGRATION_BASE_URL}`)
 				);
 				content.cancelButtonUrl = this.getLoginUrl();
 				break;
-			case PageTypes.START_FROM_OLD_SYSTEM:
+			case PageTypes.START_FROM_SOURCE_SYSTEM:
 				content.cancelButtonUrl = this.getDashboardUrl();
 				break;
-			case PageTypes.START_FROM_OLD_SYSTEM_MANDATORY:
+			case PageTypes.START_FROM_SOURCE_SYSTEM_MANDATORY:
 				content.cancelButtonUrl = this.getLogoutUrl();
 				break;
 			default:

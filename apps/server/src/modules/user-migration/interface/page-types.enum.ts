@@ -1,5 +1,5 @@
 export enum PageTypes {
-	START_FROM_NEW_SYSTEM = 'start_from_new_system',
-	START_FROM_OLD_SYSTEM = 'start_from_old_system',
-	START_FROM_OLD_SYSTEM_MANDATORY = 'start_from_old_system_mandatory',
+	START_FROM_TARGET_SYSTEM = 'start_from_target_system',
+	START_FROM_SOURCE_SYSTEM = 'start_from_source_system',
+	START_FROM_SOURCE_SYSTEM_MANDATORY = 'start_from_source_system_mandatory',
 }
