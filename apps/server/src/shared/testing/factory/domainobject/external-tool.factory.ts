@@ -6,7 +6,6 @@ import {
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { DeepPartial } from 'fishery';
-import { DoBaseFactory } from './do-base.factory';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -14,8 +13,9 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 	ToolConfigType,
-} from '../../../domain';
-import { TokenEndpointAuthMethod } from '../../../../modules/tool/interface/token-endpoint-auth-method.enum';
+} from '@shared/domain';
+import { TokenEndpointAuthMethod } from '@src/modules/tool/interface';
+import { DoBaseFactory } from './do-base.factory';
 
 export const basicToolConfigDOFactory = DoBaseFactory.define<BasicToolConfigDO, BasicToolConfigDO>(
 	BasicToolConfigDO,
@@ -55,7 +55,7 @@ export const lti11ToolConfigDOFactory = DoBaseFactory.define<Lti11ToolConfigDO, 
 	() => {
 		return {
 			type: ToolConfigType.LTI11,
-			baseUrl: 'https://www.oauth2-baseUrl.com/',
+			baseUrl: 'https://www.lti11-baseUrl.com/',
 			key: 'key',
 			secret: 'secret',
 			privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
@@ -83,7 +83,6 @@ class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolDO
 		const params: DeepPartial<ExternalToolDO> = {
 			config: oauth2ToolConfigDOFactory.build(customParam),
 		};
-
 		return this.params(params);
 	}
 
@@ -91,7 +90,6 @@ class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolDO
 		const params: DeepPartial<ExternalToolDO> = {
 			config: lti11ToolConfigDOFactory.build(customParam),
 		};
-
 		return this.params(params);
 	}
 
@@ -99,7 +97,6 @@ class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolDO
 		const params: DeepPartial<ExternalToolDO> = {
 			parameters: customParameterDOFactory.buildList(number, customParam),
 		};
-
 		return this.params(params);
 	}
 }

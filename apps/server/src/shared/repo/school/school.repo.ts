@@ -3,7 +3,7 @@ import { ISchoolProperties, School } from '@shared/domain';
 import { EntityName } from '@mikro-orm/core';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { BaseDORepo, EntityProperties } from '../base.do.repo';
+import { BaseDORepo } from '../base.do.repo';
 import { SchoolDO } from '../../domain/domainobject/school.do';
 import { Logger } from '../../../core/logger';
 
@@ -39,7 +39,7 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 		return new School(props);
 	}
 
-	protected mapDOToEntityProperties(entityDO: SchoolDO): EntityProperties<ISchoolProperties> {
+	protected mapDOToEntityProperties(entityDO: SchoolDO): ISchoolProperties {
 		return this.schoolMapper.mapDOToEntityProperties(entityDO);
 	}
 
