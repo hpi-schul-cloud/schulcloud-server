@@ -433,6 +433,7 @@
 		"permissions": [
 			"COURSE_VIEW",
 			"TOOL_VIEW",
+			"TOOL_CREATE",
 			"NEWS_VIEW",
 			"ROLE_VIEW",
 			"USERGROUP_VIEW",
