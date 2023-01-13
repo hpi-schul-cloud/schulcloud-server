@@ -455,7 +455,8 @@
 			"FILESTORAGE_REMOVE",
 			"CONTENT_VIEW",
 			"CONTENT_NON_OER_VIEW",
-			"JOIN_MEETING"
+			"JOIN_MEETING",
+			"TOOL_CREATE"
 		],
 		"__v": 0
 	},
