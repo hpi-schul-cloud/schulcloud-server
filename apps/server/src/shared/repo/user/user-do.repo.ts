@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BaseDORepo, EntityProperties } from '@shared/repo';
+import { BaseDORepo } from '@shared/repo';
 import { EntityId, IUserProperties, Role, School, System, User } from '@shared/domain';
 import { EntityName, FilterQuery, Reference } from '@mikro-orm/core';
 import { UserDO } from '@shared/domain/domainobject/user.do';
@@ -76,9 +76,8 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		return user;
 	}
 
-	protected mapDOToEntityProperties(entityDO: UserDO): EntityProperties<IUserProperties> {
+	protected mapDOToEntityProperties(entityDO: UserDO): IUserProperties {
 		return {
-			id: entityDO.id,
 			email: entityDO.email,
 			firstName: entityDO.firstName,
 			lastName: entityDO.lastName,
