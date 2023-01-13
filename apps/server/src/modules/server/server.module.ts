@@ -29,7 +29,7 @@ import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { serverConfig } from './server.config';
 import { ServerController } from './controller/server.controller';
-import { AuthenticationApiModule } from '@src/authentication/authentication-api.module';
+import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot({
