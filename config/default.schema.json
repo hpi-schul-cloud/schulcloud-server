@@ -58,7 +58,7 @@
 		"LOGIN_BLOCK_TIME": {
 			"type": "integer",
 			"default": 15,
-			"description": "Time difference for the brute force check"
+			"description": "Time difference for the brute force check in seconds"
 		},
 		"FORCE_SEND_EMAIL": {
 			"type": "boolean",

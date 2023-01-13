@@ -13,6 +13,7 @@ import {
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
+	SchoolExternalToolRepo,
 } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from './interfaces';
@@ -29,6 +30,7 @@ describe('reference.loader', () => {
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
+	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -69,6 +71,10 @@ describe('reference.loader', () => {
 					provide: SubmissionRepo,
 					useValue: createMock<SubmissionRepo>(),
 				},
+				{
+					provide: SchoolExternalToolRepo,
+					useValue: createMock<SchoolExternalToolRepo>(),
+				},
 			],
 		}).compile();
 
@@ -81,6 +87,7 @@ describe('reference.loader', () => {
 		lessonRepo = await module.get(LessonRepo);
 		teamsRepo = await module.get(TeamsRepo);
 		submissionRepo = await module.get(SubmissionRepo);
+		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
 	});
 
 	afterAll(async () => {
@@ -142,6 +149,12 @@ describe('reference.loader', () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.Submission, entityId);
 
 			expect(submissionRepo.findById).toBeCalledWith(entityId);
+		});
+
+		it('should call schoolExternalToolRepo.findById', async () => {
+			await service.loadEntity(AllowedAuthorizationEntityType.SchoolExternalTool, entityId);
+
+			expect(schoolExternalToolRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should return entity', async () => {

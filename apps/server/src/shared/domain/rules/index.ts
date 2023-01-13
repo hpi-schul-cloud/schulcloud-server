@@ -6,6 +6,7 @@ import { SubmissionRule } from './submission.rule';
 import { TaskRule } from './task.rule';
 import { TeamRule } from './team.rule';
 import { UserRule } from './user.rule';
+import { SchoolExternalToolRule } from './school-external-tool.rule';
 
 export * from './actions.enum';
 export * from './base-permission';
@@ -19,6 +20,7 @@ export * from './submission.rule';
 export * from './task.rule';
 export * from './team.rule';
 export * from './user.rule';
+export * from './school-external-tool.rule';
 
 export const ALL_RULES = [
 	LessonRule,
@@ -29,4 +31,5 @@ export const ALL_RULES = [
 	TaskRule,
 	TeamRule,
 	UserRule,
+	SchoolExternalToolRule,
 ];
