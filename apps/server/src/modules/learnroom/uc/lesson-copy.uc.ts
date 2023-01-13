@@ -5,8 +5,8 @@ import { Permission } from '@shared/domain/interface/permission.enum';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
-import { LessonCopyService } from '../service';
-import { LessonCopyParentParams } from '../types/lesson-copy-parent.params';
+import { LessonCopyParentParams } from '@src/modules/lesson';
+import { LessonCopyService } from '@src/modules/lesson/service';
 
 @Injectable()
 export class LessonCopyUC {

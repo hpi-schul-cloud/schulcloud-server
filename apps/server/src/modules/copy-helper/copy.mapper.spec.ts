@@ -5,10 +5,10 @@ import { setupEntities } from '@shared/testing';
 import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
 import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
-import { TaskCopyParentParams } from '@src/modules/task/uc';
-import { CopyApiResponse } from '../../copy-helper/copy.response';
-import { LessonCopyParentParams } from '../types/lesson-copy-parent.params';
+import { TaskCopyParentParams } from '@src/modules/task/types';
+import { LessonCopyParentParams } from '../lesson/types/lesson-copy-parent.params';
 import { CopyMapper } from './copy.mapper';
+import { CopyApiResponse } from './copy.response';
 
 describe('copy mapper', () => {
 	let module: TestingModule;

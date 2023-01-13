@@ -1,10 +1,10 @@
 import { EntityId, Lesson, Task } from '@shared/domain';
-import { CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
+import { LessonCopyParentParams } from '@src/modules/lesson/types';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
-import { TaskCopyParentParams } from '@src/modules/task/uc';
-import { CopyApiResponse } from '../../copy-helper/copy.response';
-import { LessonCopyParentParams } from '../types/lesson-copy-parent.params';
+import { TaskCopyParentParams } from '@src/modules/task/types';
+import { CopyApiResponse } from './copy.response';
+import { CopyStatus, CopyStatusEnum } from './copy.types';
 
 export class CopyMapper {
 	static mapToResponse(copyStatus: CopyStatus): CopyApiResponse {

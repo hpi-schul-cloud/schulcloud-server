@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { EtherpadService, NexboardService } from '@shared/domain';
 import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import {
@@ -12,8 +11,8 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { CopyHelperModule } from '@src/modules/copy-helper';
 import { AuthorizationModule } from '../authorization';
-import { CopyHelperModule } from '../copy-helper/copy-helper.module';
 import { FilesStorageClientModule } from '../files-storage-client';
 import { LessonModule } from '../lesson';
 import { TaskModule } from '../task';
@@ -25,7 +24,6 @@ import { BoardCopyService } from './service/board-copy.service';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CourseCopyService } from './service/course-copy.service';
 import { CourseService } from './service/course.service';
-import { LessonCopyService } from './service/lesson-copy.service';
 import { MetadataLoader } from './service/metadata-loader.service';
 import { RoomsService } from './service/rooms.service';
 import { CourseCopyUC } from './uc/course-copy.uc';
@@ -58,13 +56,10 @@ import { RoomsUc } from './uc/rooms.uc';
 		RoomsAuthorisationService,
 		RoomBoardDTOFactory,
 		BoardCopyService,
-		LessonCopyService,
 		LessonCopyUC,
 		CourseCopyService,
 		CourseCopyUC,
 		RoomsService,
-		EtherpadService,
-		NexboardService,
 		FileLegacyService,
 		FeathersServiceProvider,
 		Logger,

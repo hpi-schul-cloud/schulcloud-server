@@ -5,13 +5,7 @@ import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { TaskCopyService } from '../service';
-
-// todo: it look like it is required not optional
-export type TaskCopyParentParams = {
-	courseId?: EntityId;
-	lessonId?: EntityId;
-	userId: string;
-};
+import { TaskCopyParentParams } from '../types';
 
 @Injectable()
 export class TaskCopyUC {

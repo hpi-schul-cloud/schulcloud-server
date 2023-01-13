@@ -13,9 +13,9 @@ import { BoardRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { getResolvedValues } from '@src/modules/files-storage/helper';
+import { LessonCopyService } from '@src/modules/lesson/service';
 import { TaskCopyService } from '@src/modules/task';
 import { sortBy } from 'lodash';
-import { LessonCopyService } from './lesson-copy.service';
 
 type BoardCopyParams = {
 	originalBoard: Board;

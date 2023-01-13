@@ -4,7 +4,6 @@ import {
 	BaseEntity,
 	ComponentType,
 	EntityId,
-	EtherpadService,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
 	IComponentInternalProperties,
@@ -14,7 +13,6 @@ import {
 	IComponentTextProperties,
 	Lesson,
 	Material,
-	NexboardService,
 } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
@@ -23,6 +21,8 @@ import { FileUrlReplacement } from '@src/modules/files-storage-client/service/co
 import { TaskCopyService } from '@src/modules/task';
 import { randomBytes } from 'crypto';
 import { LessonCopyParams } from '../types/lesson-copy.params';
+import { EtherpadService } from './etherpad.service';
+import { NexboardService } from './nexboard.service';
 
 @Injectable()
 export class LessonCopyService {

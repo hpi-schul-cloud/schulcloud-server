@@ -7,7 +7,6 @@ import { FilesStorageProducer } from './service/files-storage.producer';
 
 @Module({
 	imports: [LoggerModule, CopyHelperModule],
-	controllers: [],
 	providers: [FilesStorageClientAdapterService, CopyFilesService, FilesStorageProducer],
 	exports: [FilesStorageClientAdapterService, CopyFilesService],
 })
