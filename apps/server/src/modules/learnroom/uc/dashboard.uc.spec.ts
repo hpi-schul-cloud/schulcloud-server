@@ -1,18 +1,25 @@
 import { NotFoundException } from '@nestjs/common/';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-	Counted,
 	Course,
 	DashboardEntity,
 	EntityId,
 	GridElement,
-	IFindOptions,
 	LearnroomMetadata,
 	LearnroomTypes,
 	SortOrder,
 } from '@shared/domain';
 import { CourseRepo, IDashboardRepo } from '@shared/repo';
+import { createMock } from '@golevelup/ts-jest';
 import { DashboardUc } from './dashboard.uc';
+import {
+	boardFactory,
+	courseFactory,
+	courseGroupFactory,
+	schoolFactory,
+	setupEntities,
+	userFactory,
+} from '@shared/testing';
 
 const learnroomMock = (id: string, name: string) => {
 	return {
@@ -61,22 +68,35 @@ describe('dashboard uc', () => {
 				},
 				{
 					provide: CourseRepo,
-					useValue: {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findAllByUserId(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
-							throw new Error('Please write a mock for CourseRepo.findAllByUserId');
-						},
-						findAllForTeacher(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
-							throw new Error('Please write a mock for CourseRepo.findAllForTeacher');
-						},
-					},
+					useValue: createMock<CourseRepo>(),
 				},
+				// {
+				// 	provide: CourseRepo,
+				// 	useValue: {
+				// 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				// 		findAllByUserId(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
+				// 			throw new Error('Please write a mock for CourseRepo.findAllByUserId');
+				// 		},
+				// 		findAllForTeacher(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
+				// 			throw new Error('Please write a mock for CourseRepo.findAllForTeacher');
+				// 		},
+				// 		findAllForSubstituteTeacher(userId: EntityId): Promise<Counted<Course[]>> {
+				// 			throw new Error('Please write a mock for CourseRepo.findAllForTeacher');
+				// 		},
+				// 	},
+				// },
 			],
 		}).compile();
 
 		service = module.get(DashboardUc);
 		repo = module.get('DASHBOARD_REPO');
 		courseRepo = module.get(CourseRepo);
+	});
+
+	afterEach(() => {
+		// jest.clearAllMocks();
+		// jest.restoreAllMocks();
+		jest.resetAllMocks();
 	});
 
 	describe('getUsersDashboard', () => {
@@ -145,6 +165,7 @@ describe('dashboard uc', () => {
 				});
 				return Promise.resolve(dashboard);
 			});
+			jest.spyOn(courseRepo, 'findAllForSubstituteTeacher').mockImplementation(() => Promise.resolve([[], 0]));
 			const result = await service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
 			const resultGrid = result.getGrid();
 			expect(resultGrid[0].pos).toEqual({ x: 2, y: 1 });
@@ -167,6 +188,7 @@ describe('dashboard uc', () => {
 				throw new Error('not found');
 			});
 			const spy = jest.spyOn(repo, 'persistAndFlush');
+			jest.spyOn(courseRepo, 'findAllForSubstituteTeacher').mockImplementation(() => Promise.resolve([[], 0]));
 			const result = await service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
 			expect(spy).toHaveBeenCalledWith(result);
 		});

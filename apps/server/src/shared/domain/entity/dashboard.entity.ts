@@ -226,9 +226,9 @@ export class DashboardEntity {
 		this.checkIfMovedToSubstitute(elementToMove, substituteCourses);
 		try {
 			this.checkIfMovedToSubstitute(this.getReferencesFromPosition(to), substituteCourses);
-		} catch (ex: any) {
-			if (!(ex instanceof NotFoundException)) {
-				throw ex;
+		} catch (error: unknown) {
+			if (!(error instanceof NotFoundException)) {
+				throw error;
 			}
 		}
 
@@ -241,13 +241,13 @@ export class DashboardEntity {
 	}
 
 	checkIfMovedToSubstitute(element: IGridElement, substituteCourses: ILearnroom[]) {
-		element.getReferences().forEach(course => {
-			const id = course.getMetadata().id;
-			substituteCourses.forEach(substitute => {
+		element.getReferences().forEach((course) => {
+			const { id } = course.getMetadata();
+			substituteCourses.forEach((substitute) => {
 				if (substitute.getMetadata().id === id) {
 					throw new BadRequestException('substitute courses cannot be arranged');
 				}
-			})
+			});
 		});
 	}
 
