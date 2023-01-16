@@ -271,7 +271,8 @@
 			"TASK_DASHBOARD_VIEW_V3",
 			"JOIN_MEETING",
 			"TEAM_CREATE",
-			"TEAM_EDIT"
+			"TEAM_EDIT",
+			"TOOL_CREATE"
 		],
 		"__v": 0
 	},
