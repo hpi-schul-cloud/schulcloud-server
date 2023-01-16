@@ -80,7 +80,10 @@ export class ToolValidationService {
 
 	private hasDuplicateAttributes(customParameter: CustomParameterDO[]): boolean {
 		return customParameter.some((item, itemIndex) =>
-			customParameter.some((other, otherIndex) => itemIndex !== otherIndex && item.name === other.name)
+			customParameter.some(
+				(other, otherIndex) =>
+					itemIndex !== otherIndex && item.name.toLocaleLowerCase() === other.name.toLocaleLowerCase()
+			)
 		);
 	}
 

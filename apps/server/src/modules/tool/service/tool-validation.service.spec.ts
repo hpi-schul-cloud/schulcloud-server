@@ -1,4 +1,7 @@
-import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
+import {
+	customParameterDOFactory,
+	externalToolDOFactory,
+} from '@shared/testing/factory/domainobject/external-tool.factory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
@@ -72,27 +75,39 @@ describe('ToolValidation', () => {
 			});
 		});
 
-		describe('hasDuplicateAttributes', () => {
-			it('should not find duplicate custom parameters', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(2).build();
+		describe('hasDuplicateAttributes is called', () => {
+			describe('when duplicates are given', () => {
+				it('throw when external tool', async () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+						parameters: [
+							customParameterDOFactory.build({ name: 'param1CaseSensitive' }),
+							customParameterDOFactory.build({ name: 'Param1casesensitive' }),
+						],
+					});
 
-				const result: Promise<void> = service.validateCreate(externalToolDO);
+					const result: Promise<void> = service.validateCreate(externalToolDO);
 
-				await expect(result).resolves.not.toThrow();
+					await expect(result).rejects.toThrow(
+						new UnprocessableEntityException(
+							`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
+						)
+					);
+				});
 			});
 
-			it('throw when external tool has duplicate custom parameter keys', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
-					.withCustomParameters(2, { name: 'sameKey' })
-					.build();
+			describe('when no duplicates are given', () => {
+				it('should not find duplicate custom parameters', async () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+						parameters: [
+							customParameterDOFactory.build({ name: 'sameKey' }),
+							customParameterDOFactory.build({ name: 'sameKey' }),
+						],
+					});
 
-				const result: Promise<void> = service.validateCreate(externalToolDO);
+					const result: Promise<void> = service.validateCreate(externalToolDO);
 
-				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(
-						`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
-					)
-				);
+					await expect(result).resolves.not.toThrow();
+				});
 			});
 		});
 
