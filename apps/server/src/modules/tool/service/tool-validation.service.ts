@@ -90,6 +90,10 @@ export class ToolValidationService {
 				try {
 					// eslint-disable-next-line no-new
 					new RegExp(param.regex);
+					if (param.default) {
+						// eslint-disable-next-line no-new
+						new RegExp(param.default);
+					}
 				} catch (e) {
 					return false;
 				}
