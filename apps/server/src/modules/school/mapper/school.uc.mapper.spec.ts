@@ -26,16 +26,16 @@ describe('SchoolUcMapper', () => {
 			const schoolDO: SchoolDO = new SchoolDO({
 				name: 'Testschool',
 				officialSchoolNumber: '1234',
-				oauthMigrationPossible: true,
-				oauthMigrationMandatory: false,
+				oauthMigrationPossible: new Date(),
+				oauthMigrationMandatory: new Date(),
 			});
 
 			const result: PublicSchoolResponse = SchoolUcMapper.mapDOToPublicResponse(schoolDO);
 
 			expect(result.schoolName).toEqual(schoolDO.name);
 			expect(result.schoolNumber).toEqual(schoolDO.officialSchoolNumber);
-			expect(result.oauthMigrationPossible).toEqual(schoolDO.oauthMigrationPossible);
-			expect(result.oauthMigrationMandatory).toEqual(schoolDO.oauthMigrationMandatory);
+			expect(result.oauthMigrationPossible).toBeTruthy();
+			expect(result.oauthMigrationMandatory).toBeTruthy();
 		});
 	});
 });
