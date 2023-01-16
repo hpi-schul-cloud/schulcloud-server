@@ -7,7 +7,6 @@ import { CopyFilesOfParentParamBuilder, FileParamBuilder } from '../mapper';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
 const FILE_COULD_NOT_BE_COPIED_HINT = 'fileCouldNotBeCopied';
-// TODO  missing FileCopyParams  ...passing user instead of userId
 
 export type FileUrlReplacement = {
 	regex: RegExp;
