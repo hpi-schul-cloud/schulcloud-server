@@ -1,3 +1,4 @@
+import { Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import {
 	Board,
@@ -5,6 +6,9 @@ import {
 	BoardElementReference,
 	BoardElementType,
 	Course,
+	InputFormat,
+	isLesson,
+	isTask,
 	Lesson,
 	Task,
 	User,
@@ -69,11 +73,11 @@ export class BoardCopyService {
 				return Promise.reject(new Error('Broken boardelement - not pointing to any target entity'));
 			}
 
-			if (element.boardElementType === BoardElementType.Task) {
+			if (element.boardElementType === BoardElementType.Task && isTask(element.target)) {
 				return this.copyTask(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
-			if (element.boardElementType === BoardElementType.Lesson) {
+			if (element.boardElementType === BoardElementType.Lesson && isLesson(element.target)) {
 				return this.copyLesson(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
@@ -89,12 +93,7 @@ export class BoardCopyService {
 		return statuses;
 	}
 
-	private async copyLesson(
-		reference: BoardElementReference,
-		user: User,
-		destinationCourse: Course
-	): Promise<CopyStatus> {
-		const originalLesson = reference as Lesson;
+	private async copyLesson(originalLesson: Lesson, user: User, destinationCourse: Course): Promise<CopyStatus> {
 		return this.lessonCopyService.copyLesson({
 			originalLesson,
 			user,
@@ -102,8 +101,7 @@ export class BoardCopyService {
 		});
 	}
 
-	private async copyTask(reference: BoardElementReference, user: User, destinationCourse: Course): Promise<CopyStatus> {
-		const originalTask = reference as Task;
+	private async copyTask(originalTask: Task, user: User, destinationCourse: Course): Promise<CopyStatus> {
 		return this.taskCopyService.copyTask({
 			originalTask,
 			user,

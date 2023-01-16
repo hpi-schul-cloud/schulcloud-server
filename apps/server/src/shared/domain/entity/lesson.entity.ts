@@ -194,3 +194,7 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		return studentIds;
 	}
 }
+
+export function isLesson(reference: unknown): reference is Lesson {
+	return reference instanceof Lesson;
+}
