@@ -100,7 +100,7 @@ describe('ToolValidation', () => {
 					const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 						parameters: [
 							customParameterDOFactory.build({ name: 'sameKey' }),
-							customParameterDOFactory.build({ name: 'sameKey' }),
+							customParameterDOFactory.build({ name: 'notSameKey' }),
 						],
 					});
 
