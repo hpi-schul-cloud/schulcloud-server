@@ -54,6 +54,11 @@ export class ToolValidationService {
 					`A custom Parameter of the tool: ${externalToolDO.name || ''} has wrong regex attribute`
 				);
 			}
+			if (!this.validateDefault(externalToolDO.parameters)) {
+				throw new UnprocessableEntityException(
+					`The default value of a custom parameter of the tool: ${externalToolDO.name || ''} does not match its regex`
+				);
+			}
 			externalToolDO.parameters.forEach((param: CustomParameterDO) => {
 				if (!this.isRegexCommentMandatoryAndFilled(param)) {
 					throw new UnprocessableEntityException(`The "${param.name}" parameter is missing a regex comment.`);
@@ -89,16 +94,21 @@ export class ToolValidationService {
 			if (param.regex) {
 				try {
 					// eslint-disable-next-line no-new
-					const reg = new RegExp(param.regex);
-					if (param.default) {
-						if (!reg.test(param.default))
-							throw new UnprocessableEntityException(
-								`The default value of a custom parameter does not match its regex`
-							);
-					}
+					new RegExp(param.regex);
 				} catch (e) {
 					return false;
 				}
+			}
+			return true;
+		});
+	}
+
+	private validateDefault(customParameter: CustomParameterDO[]): boolean {
+		return customParameter.every((param: CustomParameterDO) => {
+			if (param.regex && param.default) {
+				const reg: RegExp = new RegExp(param.regex);
+				const match: boolean = reg.test(param.default);
+				return match;
 			}
 			return true;
 		});
