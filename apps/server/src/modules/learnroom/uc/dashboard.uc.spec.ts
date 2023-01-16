@@ -50,11 +50,11 @@ describe('dashboard uc', () => {
 				DashboardUc,
 				{
 					provide: 'DASHBOARD_REPO',
-					useValue: createMock<DashboardUc>()
+					useValue: createMock<DashboardUc>(),
 				},
 				{
 					provide: CourseRepo,
-					useValue: createMock<CourseRepo>()
+					useValue: createMock<CourseRepo>(),
 				},
 			],
 		}).compile();
