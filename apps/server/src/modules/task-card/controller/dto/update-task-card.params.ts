@@ -45,7 +45,22 @@ export class RichTextCardElementParam extends CardElementBase {
 	inputFormat!: InputFormat;
 }
 
-@ApiExtraModels(TitleCardElementParam, RichTextCardElementParam)
+export class CompletionDateCardElementParam extends CardElementBase {
+	@ApiProperty({
+		description: 'Type of card element, i.e. completionDate (needed for discriminator)',
+		type: String,
+		example: CardElementType.CompletionDate,
+	})
+	type = CardElementType.CompletionDate;
+
+	@ApiProperty({
+		description: 'Content of the completion date card element',
+		required: true,
+	})
+	value!: Date;
+}
+
+@ApiExtraModels(TitleCardElementParam, RichTextCardElementParam, CompletionDateCardElementParam)
 export class CardElementUpdateParams {
 	@ApiPropertyOptional()
 	@IsOptional()
@@ -56,7 +71,11 @@ export class CardElementUpdateParams {
 	@ApiProperty({
 		description: 'Content of the card element, depending on its type',
 		required: true,
-		oneOf: [{ $ref: getSchemaPath(TitleCardElementParam) }, { $ref: getSchemaPath(RichTextCardElementParam) }],
+		oneOf: [
+			{ $ref: getSchemaPath(TitleCardElementParam) },
+			{ $ref: getSchemaPath(RichTextCardElementParam) },
+			{ $ref: getSchemaPath(CompletionDateCardElementParam) },
+		],
 	})
 	@ValidateNested()
 	@Type(() => CardElementBase, {
@@ -65,10 +84,11 @@ export class CardElementUpdateParams {
 			subTypes: [
 				{ value: TitleCardElementParam, name: CardElementType.Title },
 				{ value: RichTextCardElementParam, name: CardElementType.RichText },
+				{ value: CompletionDateCardElementParam, name: CardElementType.CompletionDate },
 			],
 		},
 	})
-	content!: RichTextCardElementParam | TitleCardElementParam;
+	content!: RichTextCardElementParam | TitleCardElementParam | CompletionDateCardElementParam;
 }
 
 export class UpdateTaskCardParams {

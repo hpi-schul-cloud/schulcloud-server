@@ -1,18 +1,25 @@
+import { ValidationError } from '@shared/common';
 import {
+	CardCompletionDateElementResponse,
+	CardElement,
 	CardElementResponse,
 	CardRichTextElementResponse,
 	CardTitleElementResponse,
-	CardElement,
 	InputFormat,
 	RichText,
 	TaskCard,
 	TaskWithStatusVo,
 } from '@shared/domain';
-import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import {
+	CardElementType,
+	CompletionDateCardElement,
+	RichTextCardElement,
+	TitleCardElement,
+} from '@shared/domain/entity/cardElement.entity';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
-import { ValidationError } from '@shared/common';
 import {
+	CompletionDateCardElementParam,
 	CreateTaskCardParams,
 	RichTextCardElementParam,
 	TaskCardResponse,
@@ -24,11 +31,13 @@ export interface ITaskCardUpdate {
 	id?: string;
 	title: string;
 	text?: RichText[];
+	completionDate?: Date;
 }
 
 export interface ITaskCardCreate {
 	title: string;
 	text?: RichText[];
+	completionDate?: Date;
 }
 
 export class TaskCardMapper {
@@ -60,6 +69,11 @@ export class TaskCardMapper {
 				const response = { id: element.id, cardElementType: element.cardElementType, content };
 				cardElementsResponse.push(response);
 			}
+			if (element.cardElementType === CardElementType.CompletionDate) {
+				const content = new CardCompletionDateElementResponse(element as CompletionDateCardElement);
+				const response = { id: element.id, cardElementType: element.cardElementType, content };
+				cardElementsResponse.push(response);
+			}
 		});
 
 		return cardElementsResponse;
@@ -80,6 +94,10 @@ export class TaskCardMapper {
 			);
 		}
 
+		if (params.completionDate) {
+			dto.completionDate = params.completionDate;
+		}
+
 		return dto;
 	}
 
@@ -89,8 +107,9 @@ export class TaskCardMapper {
 			throw new ValidationError('The Task Card must have one title');
 		}
 
+		const titleValue = title[0].content as TitleCardElementParam;
 		const dto: ITaskCardUpdate = {
-			title: title[0].content.value,
+			title: titleValue.value,
 		};
 
 		params.cardElements.forEach((element) => {
@@ -101,6 +120,9 @@ export class TaskCardMapper {
 				} else {
 					dto.text.push(richText);
 				}
+			}
+			if (element.content instanceof CompletionDateCardElementParam) {
+				dto.completionDate = element.content.value;
 			}
 		});
 

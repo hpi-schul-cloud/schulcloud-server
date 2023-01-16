@@ -1,6 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard } from '@shared/domain';
-import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import {
+	CardElement,
+	CompletionDateCardElement,
+	RichTextCardElement,
+	TitleCardElement,
+} from '@shared/domain/entity/cardElement.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, TaskCardRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -33,6 +38,14 @@ export class TaskCardUc {
 		if (params.text) {
 			const texts = params.text.map((text) => new RichTextCardElement(text));
 			cardElements.push(...texts);
+		}
+
+		if (params.completionDate) {
+			const completionDate = new CompletionDateCardElement(params.completionDate);
+			if (completionDate.pastCompletionDate()) {
+				throw new BadRequestException();
+			}
+			cardElements.splice(1, 0, completionDate);
 		}
 
 		const cardParams: ITaskCardProps = {
@@ -107,6 +120,14 @@ export class TaskCardUc {
 		if (params.text) {
 			const texts = params.text.map((text) => new RichTextCardElement(text));
 			cardElements.push(...texts);
+		}
+
+		if (params.completionDate) {
+			const completionDate = new CompletionDateCardElement(params.completionDate);
+			if (completionDate.pastCompletionDate()) {
+				throw new BadRequestException();
+			}
+			cardElements.splice(1, 0, completionDate);
 		}
 
 		await this.replaceCardElements(card, cardElements);
