@@ -2,7 +2,9 @@ const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
 
 const { omit } = require('lodash');
 const { NotAuthenticated } = require('../../../errors');
-
+/**
+ * @deprecated Reimplemented in nest stack. Will be removed soon
+ */
 class LdapStrategy extends AuthenticationBaseStrategy {
 	verifyConfiguration() {
 		const config = this.configuration;
