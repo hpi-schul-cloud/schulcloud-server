@@ -271,7 +271,8 @@
 			"TASK_DASHBOARD_VIEW_V3",
 			"JOIN_MEETING",
 			"TEAM_CREATE",
-			"TEAM_EDIT"
+			"TEAM_EDIT",
+			"TOOL_CREATE"
 		],
 		"__v": 0
 	},
@@ -433,6 +434,7 @@
 		"permissions": [
 			"COURSE_VIEW",
 			"TOOL_VIEW",
+			"TOOL_CREATE",
 			"NEWS_VIEW",
 			"ROLE_VIEW",
 			"USERGROUP_VIEW",
