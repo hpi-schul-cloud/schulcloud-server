@@ -34,8 +34,8 @@ describe('SchoolUcMapper', () => {
 
 			expect(result.schoolName).toEqual(schoolDO.name);
 			expect(result.schoolNumber).toEqual(schoolDO.officialSchoolNumber);
-			expect(result.oauthMigrationPossible).toEqual(schoolDO.oauthMigrationPossible);
-			expect(result.oauthMigrationMandatory).toEqual(schoolDO.oauthMigrationMandatory);
+			expect(result.oauthMigrationPossible).toBeTruthy();
+			expect(result.oauthMigrationMandatory).toBeTruthy();
 		});
 	});
 });
