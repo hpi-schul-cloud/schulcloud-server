@@ -1,5 +1,6 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, Enum, Property } from '@mikro-orm/core';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface ISystemProperties {
@@ -8,6 +9,7 @@ export interface ISystemProperties {
 	alias?: string;
 	displayName?: string;
 	oauthConfig?: OauthConfig;
+	ldapConfig?: LdapConfig;
 	provisioningStrategy?: SystemProvisioningStrategy;
 	provisioningUrl?: string;
 }
@@ -64,6 +66,75 @@ export class OauthConfig {
 	@Property()
 	jwksEndpoint: string;
 }
+
+@Embeddable()
+export class LdapConfig {
+	constructor(ldapConfig: Readonly<LdapConfig>) {
+		this.url = ldapConfig.url;
+	}
+
+	@Property({ nullable: true })
+	active?: boolean;
+
+	@Property({ nullable: true })
+	federalState?: EntityId;
+
+	@Property({ nullable: true })
+	lastSyncAttempt?: Date;
+
+	@Property({ nullable: true })
+	lastSuccessfulFullSync?: Date;
+
+	@Property({ nullable: true })
+	lastSuccessfulPartialSync?: Date;
+
+	@Property({ nullable: true })
+	lastModifyTimestamp?: string;
+
+	@Property()
+	url: string;
+
+	@Property({ nullable: true })
+	rootPath?: string;
+
+	@Property({ nullable: true })
+	searchUser?: string;
+
+	@Property({ nullable: true })
+	searchUserPassword?: string;
+
+	@Property({ nullable: true })
+	provider?: string;
+
+	@Property({ nullable: true })
+	providerOptions?: {
+		schoolName?: string;
+		userPathAdditions?: string;
+		classPathAdditions?: string;
+		roleType?: string;
+		userAttributeNameMapping?: {
+			givenName?: string;
+			sn?: string;
+			dn?: string;
+			uuid?: string;
+			uid?: string;
+			mail?: string;
+			role?: string;
+		};
+		roleAttributeNameMapping?: {
+			roleStudent?: string;
+			roleTeacher?: string;
+			roleAdmin?: string;
+			roleNoSc?: string;
+		};
+		classAttributeNameMapping?: {
+			description?: string;
+			dn?: string;
+			uniqueMember?: string;
+		};
+	};
+}
+
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {
 	constructor(props: ISystemProperties) {
@@ -73,6 +144,7 @@ export class System extends BaseEntityWithTimestamps {
 		this.alias = props.alias;
 		this.displayName = props.displayName;
 		this.oauthConfig = props.oauthConfig;
+		this.ldapConfig = props.ldapConfig;
 		this.provisioningStrategy = props.provisioningStrategy;
 		this.provisioningUrl = props.provisioningUrl;
 	}
@@ -99,8 +171,8 @@ export class System extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	config?: Record<string, unknown>;
 
-	@Property({ nullable: true })
-	ldapConfig?: Record<string, unknown>;
+	@Embedded({ entity: () => LdapConfig, object: true, nullable: true })
+	ldapConfig?: LdapConfig;
 
 	@Property({ nullable: true })
 	provisioningUrl?: string;

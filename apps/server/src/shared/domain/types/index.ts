@@ -1,3 +1,4 @@
+export * from './card.types';
 export * from './copy.types';
 export * from './counted';
 export * from './entity-id';

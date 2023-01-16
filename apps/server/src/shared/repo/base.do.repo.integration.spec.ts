@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Entity, EntityName, Property } from '@mikro-orm/core';
-import { BaseDO, BaseEntityWithTimestamps, IBaseEntityProps } from '@shared/domain';
+import { BaseDO, BaseEntityWithTimestamps } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
@@ -30,7 +30,9 @@ describe('BaseDORepo', () => {
 		}
 	}
 
-	type ITestEntityProperties = Readonly<Omit<TestEntity, keyof BaseEntityWithTimestamps>>;
+	interface ITestEntityProperties {
+		name: string;
+	}
 
 	@Injectable()
 	class TestRepo extends BaseDORepo<TestDO, TestEntity, ITestEntityProperties> {
@@ -46,9 +48,8 @@ describe('BaseDORepo', () => {
 			return new TestDO({ id: entity.id, name: entity.name });
 		}
 
-		mapDOToEntityProperties(entityDO: TestDO): ITestEntityProperties & IBaseEntityProps {
+		mapDOToEntityProperties(entityDO: TestDO): ITestEntityProperties {
 			return {
-				id: entityDO.id as string,
 				name: entityDO.name,
 			};
 		}
@@ -228,6 +229,50 @@ describe('BaseDORepo', () => {
 			await expect(async () => {
 				await repo.findById(unknownId);
 			}).rejects.toThrow('TestEntity not found');
+		});
+	});
+
+	describe('delete is called', () => {
+		const setupDelete = async () => {
+			const testEntity1 = new TestEntity({ name: 'test1' });
+			const testEntity2 = new TestEntity({ name: 'test2' });
+			await em.persistAndFlush([testEntity1, testEntity2]);
+
+			const testDO1 = new TestDO({ id: testEntity1.id, name: testEntity1.name });
+			const testDO2 = new TestDO({ id: testEntity2.id, name: testEntity2.name });
+
+			em.clear();
+			return {
+				testEntity1,
+				testEntity2,
+				testDO1,
+				testDO2,
+			};
+		};
+
+		describe('when domainObject is given', () => {
+			it('should remove the entity', async () => {
+				const { testDO1, testEntity1 } = await setupDelete();
+
+				await repo.delete(testDO1);
+
+				const entities: TestEntity[] = await em.find(repo.entityName, {});
+
+				expect(entities.length).toEqual(1);
+				expect(entities.includes(testEntity1)).toBeFalsy();
+			});
+		});
+
+		describe('when array of domainObjects is given', () => {
+			it('should remove the entities', async () => {
+				const { testDO1, testDO2 } = await setupDelete();
+
+				await repo.delete([testDO1, testDO2]);
+
+				const entities: TestEntity[] = await em.find(repo.entityName, {});
+
+				expect(entities.length).toEqual(0);
+			});
 		});
 	});
 });
