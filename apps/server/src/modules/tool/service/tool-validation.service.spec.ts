@@ -105,6 +105,16 @@ describe('ToolValidation', () => {
 				await expect(result).resolves.not.toThrow();
 			});
 
+			it('should validate the default with the regular expression', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, { default: '[' })
+					.buildWithId();
+
+				const result: Promise<void> = service.validateCreate(externalToolDO);
+
+				await expect(result).resolves.not.toThrow();
+			});
+
 			it('throw when external tools has a faulty regular expression', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1, { regex: '[' }).build();
 
@@ -272,6 +282,16 @@ describe('ToolValidation', () => {
 		describe('validateByRegex', () => {
 			it('should validate the regular expression', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1).buildWithId();
+
+				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
+
+				await expect(result).resolves.not.toThrow();
+			});
+
+			it('should validate the default with the regular expression', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, { default: '[' })
+					.buildWithId();
 
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
