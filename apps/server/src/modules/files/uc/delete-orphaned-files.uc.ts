@@ -51,7 +51,7 @@ export class DeleteOrphanedFilesUc {
 	}
 
 	private async deleteOrphans(fileRecords: FileRecord[]) {
-		const chunkSize = 500;
+		const chunkSize = 50;
 		const chunks: FileRecord[][] = [];
 		for (let i = 0; i < fileRecords.length; i += chunkSize) {
 			const chunk = fileRecords.slice(i, i + chunkSize);
