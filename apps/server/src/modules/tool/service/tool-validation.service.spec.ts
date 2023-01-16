@@ -77,7 +77,7 @@ describe('ToolValidation', () => {
 
 		describe('hasDuplicateAttributes is called', () => {
 			describe('when duplicates are given', () => {
-				it('throw when external tool', async () => {
+				it('should throw when external tool', async () => {
 					const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 						parameters: [
 							customParameterDOFactory.build({ name: 'param1CaseSensitive' }),
