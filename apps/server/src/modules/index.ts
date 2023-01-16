@@ -8,6 +8,7 @@ export * from './news';
 export * from './oauth';
 export * from './rocketchat';
 export * from './task';
+export * from './task-card';
 export * from './user';
 export * from './user-import';
 export * from './system';

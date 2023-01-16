@@ -1049,10 +1049,10 @@
 				}
 			}
 		},
-		"FEATURE_NEW_TASK_ENABLED": {
+		"FEATURE_TASK_CARD_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Enable the task assignment to individuals"
+			"description": "Enable task card feature"
 		}
 	},
 	"required": [
