@@ -5,6 +5,7 @@ import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/e
 import { UnprocessableEntityException } from '@nestjs/common';
 import { ExternalToolService } from './external-tool.service';
 import { ToolValidationService } from './tool-validation.service';
+import { CustomParameterScope } from '@shared/domain';
 
 describe('ToolValidation', () => {
 	let module: TestingModule;
@@ -146,6 +147,69 @@ describe('ToolValidation', () => {
 				const result: Promise<void> = service.validateCreate(externalToolDO);
 
 				await expect(result).resolves.not.toThrow();
+			});
+		});
+
+		describe('isGlobalParameterValid is called', () => {
+			describe('when parameter with scope global is given', () => {
+				describe('and parameter has a default value', () => {
+					it('should pass', async () => {
+						const externalToolDO: ExternalToolDO = externalToolDOFactory
+							.withCustomParameters(1, {
+								scope: CustomParameterScope.GLOBAL,
+								default: 'defaultValue',
+							})
+							.build();
+
+						const result: Promise<void> = service.validateCreate(externalToolDO);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+
+				describe('parameter has a default value', () => {
+					describe('and the defaultValue is empty', () => {
+						it('should throw an error', async () => {
+							const externalToolDO: ExternalToolDO = externalToolDOFactory
+								.withCustomParameters(1, {
+									scope: CustomParameterScope.GLOBAL,
+									default: undefined,
+								})
+								.build();
+
+							const result: Promise<void> = service.validateCreate(externalToolDO);
+
+							await expect(result).rejects.toThrow(
+								new UnprocessableEntityException(
+									`The "${
+										(externalToolDO.parameters as CustomParameterDO[])[0].name
+									}" is a global parameter and requires a default value.`
+								)
+							);
+						});
+					});
+
+					describe('and the defaultValue is undefined', () => {
+						it('should throw an error', async () => {
+							const externalToolDO: ExternalToolDO = externalToolDOFactory
+								.withCustomParameters(1, {
+									scope: CustomParameterScope.GLOBAL,
+									default: '',
+								})
+								.build();
+
+							const result: Promise<void> = service.validateCreate(externalToolDO);
+
+							await expect(result).rejects.toThrow(
+								new UnprocessableEntityException(
+									`The "${
+										(externalToolDO.parameters as CustomParameterDO[])[0].name
+									}" is a global parameter and requires a default value.`
+								)
+							);
+						});
+					});
+				});
 			});
 		});
 

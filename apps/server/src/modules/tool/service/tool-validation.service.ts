@@ -1,6 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CustomParameterDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolService } from './external-tool.service';
+import { CustomParameterScope } from '@shared/domain';
 
 @Injectable()
 export class ToolValidationService {
@@ -58,6 +59,11 @@ export class ToolValidationService {
 				if (!this.isRegexCommentMandatoryAndFilled(param)) {
 					throw new UnprocessableEntityException(`The "${param.name}" parameter is missing a regex comment.`);
 				}
+				if (!this.isGlobalParameterValid(param)) {
+					throw new UnprocessableEntityException(
+						`The "${param.name}" is a global parameter and requires a default value.`
+					);
+				}
 			});
 		}
 	}
@@ -100,6 +106,13 @@ export class ToolValidationService {
 
 	isRegexCommentMandatoryAndFilled(customParameter: CustomParameterDO): boolean {
 		if (customParameter.regex && !customParameter.regexComment) {
+			return false;
+		}
+		return true;
+	}
+
+	isGlobalParameterValid(customParameter: CustomParameterDO): boolean {
+		if (CustomParameterScope.GLOBAL === customParameter.scope && !customParameter.default) {
 			return false;
 		}
 		return true;
