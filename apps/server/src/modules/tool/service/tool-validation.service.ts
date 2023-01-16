@@ -89,10 +89,12 @@ export class ToolValidationService {
 			if (param.regex) {
 				try {
 					// eslint-disable-next-line no-new
-					new RegExp(param.regex);
+					const reg = new RegExp(param.regex);
 					if (param.default) {
-						// eslint-disable-next-line no-new
-						new RegExp(param.default);
+						if (!reg.test(param.default))
+							throw new UnprocessableEntityException(
+								`The default value of a custom parameter does not match its regex`
+							);
 					}
 				} catch (e) {
 					return false;

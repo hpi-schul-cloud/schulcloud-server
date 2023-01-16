@@ -107,12 +107,22 @@ describe('ToolValidation', () => {
 
 			it('should validate the default with the regular expression', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory
-					.withCustomParameters(1, { default: '[' })
+					.withCustomParameters(1, { default: 'test', regex: '[t]', regexComment: 'mockComment' })
 					.buildWithId();
 
 				const result: Promise<void> = service.validateCreate(externalToolDO);
 
 				await expect(result).resolves.not.toThrow();
+			});
+
+			it('should not validate the default with the regular expression', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
+					.buildWithId();
+
+				const result: Promise<void> = service.validateCreate(externalToolDO);
+
+				await expect(result).rejects.toThrow();
 			});
 
 			it('throw when external tools has a faulty regular expression', async () => {
@@ -296,6 +306,26 @@ describe('ToolValidation', () => {
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
 				await expect(result).resolves.not.toThrow();
+			});
+
+			it('should validate the default with the regular expression', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, { default: 'test', regex: '[t]', regexComment: 'mockComment' })
+					.buildWithId();
+
+				const result: Promise<void> = service.validateCreate(externalToolDO);
+
+				await expect(result).resolves.not.toThrow();
+			});
+
+			it('should not validate the default with the regular expression', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
+					.buildWithId();
+
+				const result: Promise<void> = service.validateCreate(externalToolDO);
+
+				await expect(result).rejects.toThrow();
 			});
 
 			it('throw when external tools has a faulty regular expression', async () => {
