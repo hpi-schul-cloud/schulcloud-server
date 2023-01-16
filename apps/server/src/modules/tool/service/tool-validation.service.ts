@@ -1,7 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CustomParameterDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
-import { ExternalToolService } from './external-tool.service';
 import { CustomParameterScope } from '@shared/domain';
+import { ExternalToolService } from './external-tool.service';
 
 @Injectable()
 export class ToolValidationService {
