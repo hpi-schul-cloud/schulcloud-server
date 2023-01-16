@@ -1,4 +1,4 @@
-export class MigrationDto {
+export class OauthMigrationDto {
 	oauthMigrationPossible?: Date;
 
 	oauthMigrationMandatory?: Date;
@@ -7,7 +7,7 @@ export class MigrationDto {
 
 	enableMigrationStart!: boolean;
 
-	constructor(params: MigrationDto) {
+	constructor(params: OauthMigrationDto) {
 		this.oauthMigrationPossible = params.oauthMigrationPossible;
 		this.oauthMigrationMandatory = params.oauthMigrationMandatory;
 		this.oauthMigrationFinished = params.oauthMigrationFinished;

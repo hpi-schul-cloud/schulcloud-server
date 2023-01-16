@@ -4,7 +4,7 @@ import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
 import { ProvisioningSchoolOutputDto } from '../../provisioning/dto/provisioning-school-output.dto';
 import { SchoolUcMapper } from '../mapper/school.uc.mapper';
-import { MigrationDto } from '../dto/migration.dto';
+import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 @Injectable()
 export class SchoolService {
@@ -43,7 +43,7 @@ export class SchoolService {
 		oauthMigrationPossible: boolean,
 		oauthMigrationMandatory: boolean,
 		oauthMigrationFinished: boolean
-	): Promise<MigrationDto> {
+	): Promise<OauthMigrationDto> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
 		schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
 		schoolDo.oauthMigrationMandatory = oauthMigrationMandatory ? new Date() : undefined;
@@ -51,7 +51,7 @@ export class SchoolService {
 
 		await this.schoolRepo.save(schoolDo);
 
-		const response: MigrationDto = new MigrationDto({
+		const response: OauthMigrationDto = new OauthMigrationDto({
 			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
 			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
 			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
@@ -61,10 +61,10 @@ export class SchoolService {
 		return response;
 	}
 
-	async getMigration(schoolId: string): Promise<MigrationDto> {
+	async getMigration(schoolId: string): Promise<OauthMigrationDto> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
 
-		const response: MigrationDto = new MigrationDto({
+		const response: OauthMigrationDto = new OauthMigrationDto({
 			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
 			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
 			oauthMigrationFinished: schoolDo.oauthMigrationFinished,

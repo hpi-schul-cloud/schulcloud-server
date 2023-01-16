@@ -2,9 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { Actions, Permission } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { AuthorizationService } from '../../authorization';
-import { AllowedAuthorizationEntityType } from '../../authorization/interfaces';
-import { MigrationDto } from '../dto/migration.dto';
+import { AuthorizationService, AllowedAuthorizationEntityType } from '../../authorization';
+import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
 import { SchoolUcMapper } from '../mapper/school.uc.mapper';
 
@@ -18,12 +17,12 @@ export class SchoolUc {
 		oauthMigrationMandatory: boolean,
 		oauthMigrationFinished: boolean,
 		userId: string
-	): Promise<MigrationDto> {
+	): Promise<OauthMigrationDto> {
 		await this.authService.checkPermissionByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
 			action: Actions.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
-		const migrationDto: MigrationDto = await this.schoolService.setMigration(
+		const migrationDto: OauthMigrationDto = await this.schoolService.setMigration(
 			schoolId,
 			oauthMigrationPossible,
 			oauthMigrationMandatory,
@@ -33,12 +32,12 @@ export class SchoolUc {
 		return migrationDto;
 	}
 
-	async getMigration(schoolId: string, userId: string): Promise<MigrationDto> {
+	async getMigration(schoolId: string, userId: string): Promise<OauthMigrationDto> {
 		await this.authService.checkPermissionByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
 			action: Actions.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
-		const migrationDto: MigrationDto = await this.schoolService.getMigration(schoolId);
+		const migrationDto: OauthMigrationDto = await this.schoolService.getMigration(schoolId);
 
 		return migrationDto;
 	}

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { MigrationDto } from '../dto/migration.dto';
+import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { MigrationResponse } from '../controller/dto';
 
 @Injectable()
 export class MigrationMapper {
-	public mapDtoToResponse(dto: MigrationDto): MigrationResponse {
+	public mapDtoToResponse(dto: OauthMigrationDto): MigrationResponse {
 		const response: MigrationResponse = new MigrationResponse({
 			oauthMigrationPossible: dto.oauthMigrationPossible,
 			oauthMigrationMandatory: dto.oauthMigrationMandatory,

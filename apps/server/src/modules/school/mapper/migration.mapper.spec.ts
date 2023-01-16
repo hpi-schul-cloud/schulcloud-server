@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MigrationMapper } from './migration.mapper';
-import { MigrationDto } from '../dto/migration.dto';
+import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { MigrationResponse } from '../controller/dto';
 
 describe('MigrationMapper', () => {
@@ -18,10 +18,10 @@ describe('MigrationMapper', () => {
 		await module.close();
 	});
 	describe('when it maps migration data', () => {
-		let dtoRef: MigrationDto;
+		let dtoRef: OauthMigrationDto;
 		let responseRef: MigrationResponse;
 		beforeAll(() => {
-			dtoRef = new MigrationDto({
+			dtoRef = new OauthMigrationDto({
 				oauthMigrationPossible: new Date(),
 				oauthMigrationMandatory: new Date(),
 				oauthMigrationFinished: new Date(),

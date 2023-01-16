@@ -6,7 +6,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { NotFoundException } from '@nestjs/common';
 import { AuthorizationService } from '../../authorization';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
-import { MigrationDto } from '../dto/migration.dto';
+import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 describe('SchoolUc', () => {
 	let module: TestingModule;
@@ -38,10 +38,10 @@ describe('SchoolUc', () => {
 	});
 
 	describe('setMigration is called', () => {
-		let migrationResponse: MigrationDto;
+		let migrationResponse: OauthMigrationDto;
 		const mockId = 'someId';
 		beforeAll(() => {
-			migrationResponse = new MigrationDto({
+			migrationResponse = new OauthMigrationDto({
 				oauthMigrationPossible: new Date(),
 				oauthMigrationMandatory: new Date(),
 				oauthMigrationFinished: new Date(),
@@ -61,7 +61,7 @@ describe('SchoolUc', () => {
 	});
 
 	describe('getMigration is called', () => {
-		let migrationResponse: MigrationDto;
+		let migrationResponse: OauthMigrationDto;
 		const mockId = 'someId';
 		beforeAll(() => {
 			schoolService.getMigration.mockResolvedValue(migrationResponse);

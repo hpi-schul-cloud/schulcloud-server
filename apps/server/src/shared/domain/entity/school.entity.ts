@@ -94,18 +94,12 @@ export class School extends BaseEntity {
 		if (props.inMaintenanceSince) {
 			this.inMaintenanceSince = props.inMaintenanceSince;
 		}
-		if (props.inUserMigration) {
+		if (props.inUserMigration !== null) {
 			this.inUserMigration = props.inUserMigration;
 		}
-		if (props.oauthMigrationPossible) {
-			this.oauthMigrationPossible = props.oauthMigrationPossible;
-		}
-		if (props.oauthMigrationMandatory) {
-			this.oauthMigrationMandatory = props.oauthMigrationMandatory;
-		}
-		if (props.oauthMigrationFinished) {
-			this.oauthMigrationFinished = props.oauthMigrationFinished;
-		}
+		this.oauthMigrationPossible = props.oauthMigrationPossible;
+		this.oauthMigrationMandatory = props.oauthMigrationMandatory;
+		this.oauthMigrationFinished = props.oauthMigrationFinished;
 		this.name = props.name;
 		if (props.officialSchoolNumber) {
 			this.officialSchoolNumber = props.officialSchoolNumber;

@@ -11,7 +11,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { SchoolUc } from '../uc/school.uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
 import { MigrationMapper } from '../mapper/migration.mapper';
-import { MigrationDto } from '../dto/migration.dto';
+import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { PublicSchoolResponse } from './dto/public.school.response';
 import { SchoolQueryParams } from './dto/school.query.params';
 
@@ -30,7 +30,7 @@ export class SchoolController {
 		@Body() migrationBody: MigrationBody,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<MigrationResponse> {
-		const migrationDto: MigrationDto = await this.schoolUc.setMigration(
+		const migrationDto: OauthMigrationDto = await this.schoolUc.setMigration(
 			schoolParams.schoolId,
 			!!migrationBody.oauthMigrationPossible,
 			!!migrationBody.oauthMigrationMandatory,
@@ -52,7 +52,7 @@ export class SchoolController {
 		@Param() schoolParams: SchoolParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<MigrationResponse> {
-		const migrationDto: MigrationDto = await this.schoolUc.getMigration(schoolParams.schoolId, currentUser.userId);
+		const migrationDto: OauthMigrationDto = await this.schoolUc.getMigration(schoolParams.schoolId, currentUser.userId);
 
 		const result: MigrationResponse = this.migrationMapper.mapDtoToResponse(migrationDto);
 

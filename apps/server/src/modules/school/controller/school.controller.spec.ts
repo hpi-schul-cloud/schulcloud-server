@@ -6,7 +6,7 @@ import { SchoolController } from './school.controller';
 import { SchoolUc } from '../uc/school.uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
 import { MigrationMapper } from '../mapper/migration.mapper';
-import { MigrationDto } from '../dto/migration.dto';
+import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { PublicSchoolResponse } from './dto/public.school.response';
 import { SchoolQueryParams } from './dto/school.query.params';
 
@@ -55,7 +55,7 @@ describe('School Controller', () => {
 			oauthMigrationFinished: new Date(),
 			enableMigrationStart: true,
 		};
-		const migrationDto: MigrationDto = new MigrationDto({
+		const migrationDto: OauthMigrationDto = new OauthMigrationDto({
 			oauthMigrationMandatory: new Date(),
 			oauthMigrationPossible: new Date(),
 			oauthMigrationFinished: new Date(),
@@ -65,13 +65,15 @@ describe('School Controller', () => {
 	};
 
 	describe('setMigration', () => {
-		describe('when migrationflags, schoolId and userId is given', () => {
-			it('should call UC', async () => {
+		describe('when migrationflags exist and schoolId and userId are given', () => {
+			it('should call UC and recieve a response', async () => {
 				const { schoolParams, testUser, migrationDto, migrationResp } = setupBasicData();
 				schoolUc.setMigration.mockResolvedValue(migrationDto);
 				mapper.mapDtoToResponse.mockReturnValue(migrationResp);
 				const body: MigrationBody = { oauthMigrationPossible: true, oauthMigrationMandatory: true };
+
 				const res: MigrationResponse = await controller.setMigration(schoolParams, body, testUser);
+
 				expect(schoolUc.setMigration).toHaveBeenCalled();
 				expect(res).toBe(migrationResp);
 			});
@@ -80,15 +82,19 @@ describe('School Controller', () => {
 
 	describe('getMigration', () => {
 		describe('when schoolId and UserId are given', () => {
-			it('should call UC', async () => {
+			it('should call UC and recieve a response', async () => {
 				const { schoolParams, testUser, migrationDto, migrationResp } = setupBasicData();
 				schoolUc.getMigration.mockResolvedValue(migrationDto);
 				mapper.mapDtoToResponse.mockReturnValue(migrationResp);
+
 				const res: MigrationResponse = await controller.getMigration(schoolParams, testUser);
+
 				expect(schoolUc.getMigration).toHaveBeenCalled();
 				expect(res).toBe(migrationResp);
 			});
 		});
+	});
+	describe('getPublicSchool', () => {
 		describe('when it gets the public schooldata', () => {
 			it('should call UC', async () => {
 				const { schoolQueryParams } = setupBasicData();
@@ -99,7 +105,9 @@ describe('School Controller', () => {
 					oauthMigrationPossible: true,
 				};
 				schoolUc.getPublicSchoolData.mockResolvedValue(publicSchoolResponse);
+
 				const res: PublicSchoolResponse = await controller.getPublicSchool(schoolQueryParams);
+
 				expect(schoolUc.getPublicSchoolData).toHaveBeenCalled();
 				expect(res).toBe(publicSchoolResponse);
 			});
