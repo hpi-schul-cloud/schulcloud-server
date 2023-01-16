@@ -23,7 +23,7 @@ export class ToolValidationService {
 
 		const loadedTool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
 		if (
-			loadedTool.config instanceof Oauth2ToolConfigDO &&
+			this.externalToolService.isOauth2Config(loadedTool.config) &&
 			externalToolDO.config &&
 			externalToolDO.config.type !== loadedTool.config.type
 		) {
@@ -31,8 +31,9 @@ export class ToolValidationService {
 		}
 
 		if (
-			externalToolDO.config instanceof Oauth2ToolConfigDO &&
-			loadedTool.config instanceof Oauth2ToolConfigDO &&
+			externalToolDO.config &&
+			this.externalToolService.isOauth2Config(externalToolDO.config) &&
+			this.externalToolService.isOauth2Config(loadedTool.config) &&
 			externalToolDO.config.clientId !== loadedTool.config.clientId
 		) {
 			throw new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name || ''} is immutable`);
