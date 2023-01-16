@@ -6,6 +6,7 @@ import { EntityWithEmbeddedFiles } from '../interfaces';
 import { CopyFilesOfParentParamBuilder, FileParamBuilder } from '../mapper';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
+const FILE_COULD_NOT_BE_COPIED_HINT = 'fileCouldNotBeCopied';
 // TODO  missing FileCopyParams  ...passing user instead of userId
 
 export type FileUrlReplacement = {
@@ -40,12 +41,18 @@ export class CopyFilesService {
 	}
 
 	private createFileUrlReplacements(fileDtos: CopyFileDto[]): FileUrlReplacement[] {
-		return fileDtos.map((fileDto) => {
+		return fileDtos.map((fileDto): FileUrlReplacement => {
 			const { sourceId, id, name } = fileDto;
-			return {
+
+			// use hint as id replacement, if file could not be copied
+			const newId = id ?? FILE_COULD_NOT_BE_COPIED_HINT;
+
+			const fileUrlReplacement: FileUrlReplacement = {
 				regex: new RegExp(`${sourceId}.+?"`, 'g'),
-				replacement: `${id ?? 'fileCouldNotBeCopied'}/${name}"`,
+				replacement: `${newId}/${name}"`,
 			};
+
+			return fileUrlReplacement;
 		});
 	}
 
