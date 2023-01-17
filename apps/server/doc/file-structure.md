@@ -38,7 +38,7 @@ src/ // sourcecode & unit tests
         - core/ // shared concepts (decorators, pipes, guards, errors, ...) folders might be added
         - domain // (abstract) domain base entities which will be extended in the modules
         - util/ // helpers, tools, utils can be located here (but find a better name)
-test/ // e2e tests against controllers should use same folder names like controllers
+test/ // contains globalSetup and globalTeardown for MongoMemoryServer for tests
 
 ```
 

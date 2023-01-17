@@ -1,13 +1,11 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
-
+const { ObjectId } = require('bson');
 const { NotAuthenticated, BadRequest } = require('../../../errors');
-
 const logger = require('../../../logger');
 const {
 	verifyToken,
 	decryptToken,
 	createUserAndAccount,
-	shortenedRegistrationProcess,
 	findSchool,
 	ENTITY_SOURCE,
 	SOURCE_ID_ATTRIBUTE,
@@ -144,10 +142,6 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 				roles,
 				systemId
 			);
-
-			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
-				await shortenedRegistrationProcess(app, user);
-			}
 		} else if (Array.isArray(roles)) {
 			// if we know the user and roles were supplied, we need to reflect role & school changes
 			await app.service('users').patch(user._id, { roles, schoolId: school._id });
@@ -181,13 +175,8 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		}
 
 		// find account and generate JWT payload
-		const [account] = await app.service('accounts').find({
-			query: {
-				userId: user._id,
-				$limit: 1,
-			},
-			paginate: false,
-		});
+		const account = await app.service('nest-account-service').findByUserId(user._id.toString());
+		account._id = new ObjectId(account.id);
 		const { entity } = this.configuration;
 		return {
 			authentication: { strategy: this.name },

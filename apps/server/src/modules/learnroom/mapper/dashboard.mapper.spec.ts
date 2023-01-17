@@ -5,11 +5,11 @@ import {
 	LearnroomMetadata,
 	LearnroomTypes,
 } from '@shared/domain';
-import { DashboardMapper } from './dashboard.mapper';
 import { DashboardResponse } from '../controller/dto';
+import { DashboardMapper } from './dashboard.mapper';
 
 const learnroomMock = (id: string, name: string) => {
-	return {
+	const mock = {
 		getMetadata(): LearnroomMetadata {
 			return {
 				id,
@@ -20,6 +20,7 @@ const learnroomMock = (id: string, name: string) => {
 			};
 		},
 	};
+	return mock;
 };
 
 describe('dashboard mapper', () => {
