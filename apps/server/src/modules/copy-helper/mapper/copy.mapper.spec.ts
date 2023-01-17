@@ -4,9 +4,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
 import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
+import { LessonCopyParentParams } from '@src/modules/lesson';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
 import { TaskCopyParentParams } from '@src/modules/task/types';
-import { LessonCopyParentParams } from '../../lesson/types/lesson-copy-parent.params';
 import { CopyApiResponse } from '../dto/copy.response';
 import { CopyMapper } from './copy.mapper';
 

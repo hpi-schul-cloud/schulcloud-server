@@ -12,10 +12,10 @@ import {
 } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { CopyHelperModule } from '@src/modules/copy-helper';
+import { LessonModule } from '@src/modules/lesson';
+import { TaskModule } from '@src/modules/task';
 import { AuthorizationModule } from '../authorization';
 import { FilesStorageClientModule } from '../files-storage-client';
-import { LessonModule } from '../lesson';
-import { TaskModule } from '../task';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';

@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import { LessonRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { CopyHelperModule } from '../copy-helper';
-import { FilesStorageClientModule } from '../files-storage-client';
-import { TaskModule } from '../task';
+import { CopyHelperModule } from '@src/modules/copy-helper';
+import { FilesStorageClientModule } from '@src/modules/files-storage-client';
+import { TaskModule } from '@src/modules/task';
 import { EtherpadService, LessonCopyService, LessonService, NexboardService } from './service';
 
 @Module({
