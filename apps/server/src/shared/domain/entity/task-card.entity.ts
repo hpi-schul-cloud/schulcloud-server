@@ -5,10 +5,11 @@ import { CardElement } from './cardElement.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';
 
-export type ITaskCardProps = ICardCProps & { task: Task };
+export type ITaskCardProps = ICardCProps & { task: Task; completionDate?: Date };
 
 export interface ITaskCard extends ICard {
 	task: Task;
+	completionDate?: Date;
 }
 @Entity({
 	tableName: 'card',
@@ -45,15 +46,6 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 
 	public getCardElements() {
 		return this.cardElements.getItems();
-	}
-
-	public pastCompletionDate(): boolean {
-		const now = new Date(Date.now());
-		if (this.completionDate) {
-			const pastCompletionDate = now > this.completionDate;
-			return pastCompletionDate;
-		}
-		return false;
 	}
 
 	@OneToOne({ type: 'Task', fieldName: 'taskId', eager: true, unique: true, cascade: [Cascade.ALL] })

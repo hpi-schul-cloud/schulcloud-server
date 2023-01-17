@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, CardType, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
 import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
@@ -205,20 +205,6 @@ describe('TaskCardUc', () => {
 			await uc.create(user.id, taskCardCreateParams);
 			expect(taskService.create).toBeCalledWith(user.id, taskParams);
 		});
-		it('should throw if completion date is in the past', async () => {
-			const yesterday = new Date(Date.now() - 86400000);
-			const failingTaskCardCreateParams = {
-				title,
-				text: [
-					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
-					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
-				],
-				completionDate: yesterday,
-			};
-			await expect(async () => {
-				await uc.create(user.id, failingTaskCardCreateParams);
-			}).rejects.toThrow(BadRequestException);
-		});
 		it('should create task-card', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 
@@ -296,21 +282,6 @@ describe('TaskCardUc', () => {
 			await expect(async () => {
 				await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			}).rejects.toThrow(UnauthorizedException);
-		});
-		it('should throw if completion date is in the past', async () => {
-			const yesterday = new Date(Date.now() - 86400000);
-			const failingTaskCardUpdateParams = {
-				id: taskCard.id,
-				title,
-				text: [
-					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
-					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
-				],
-				completionDate: yesterday,
-			};
-			await expect(async () => {
-				await uc.update(user.id, taskCard.id, failingTaskCardUpdateParams);
-			}).rejects.toThrow(BadRequestException);
 		});
 		it('should call task update and with task name same like task-card title', async () => {
 			const taskParams = { name: taskCardUpdateParams.title };

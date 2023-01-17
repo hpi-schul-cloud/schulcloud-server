@@ -45,31 +45,4 @@ describe('Task Card Entity', () => {
 			});
 		});
 	});
-
-	describe('pastCompletionDate is called', () => {
-		describe('when task card has no completion date', () => {
-			it('should return false', () => {
-				const taskCard = taskCardFactory.build();
-
-				expect(taskCard.pastCompletionDate()).toEqual(false);
-			});
-		});
-
-		describe('when task card has completion date in the past', () => {
-			it('should return true', () => {
-				const yesterday = new Date(Date.now() - 86400000);
-				const taskCard = taskCardFactory.build({ completionDate: yesterday });
-
-				expect(taskCard.pastCompletionDate()).toEqual(true);
-			});
-		});
-
-		describe('when task card has valid completion date in the future', () => {
-			it('should return true', () => {
-				const taskCard = taskCardFactory.dueInOneDay().build();
-
-				expect(taskCard.pastCompletionDate()).toEqual(false);
-			});
-		});
-	});
 });

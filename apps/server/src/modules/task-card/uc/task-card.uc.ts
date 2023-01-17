@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard } from '@shared/domain';
 import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
@@ -48,10 +48,6 @@ export class TaskCardUc {
 		}
 
 		const card = new TaskCard(cardParams);
-
-		if (card.pastCompletionDate()) {
-			throw new BadRequestException();
-		}
 
 		await this.taskCardRepo.save(card);
 
@@ -119,9 +115,8 @@ export class TaskCardUc {
 		}
 
 		if (params.completionDate) {
-			this.replaceCompletionDate(card, params.completionDate);
+			card.completionDate = params.completionDate;
 		}
-
 		await this.replaceCardElements(card, cardElements);
 		await this.taskCardRepo.save(card);
 
@@ -140,15 +135,6 @@ export class TaskCardUc {
 	private async replaceCardElements(taskCard: TaskCard, newCardElements: CardElement[]) {
 		await this.cardElementRepo.delete(taskCard.cardElements.getItems());
 		taskCard.cardElements.set(newCardElements);
-
-		return taskCard;
-	}
-
-	private replaceCompletionDate(taskCard: TaskCard, newCompletionDate: Date) {
-		taskCard.completionDate = newCompletionDate;
-		if (taskCard.pastCompletionDate()) {
-			throw new BadRequestException();
-		}
 
 		return taskCard;
 	}
