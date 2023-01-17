@@ -35,7 +35,8 @@ describe('task-card mapper', () => {
 	describe('mapToResponse', () => {
 		it('should map task-card to response', () => {
 			const user = userFactory.buildWithId();
-			const taskCard = taskCardFactory.buildWithId({ creator: user });
+			const tomorrow = new Date(Date.now() + 86400000);
+			const taskCard = taskCardFactory.dueInOneDay().buildWithId({ creator: user });
 			const status = taskCard.task.createTeacherStatusForUser(user);
 
 			const taskWithStatusVo = new TaskWithStatusVo(taskCard.task, status);
@@ -49,6 +50,7 @@ describe('task-card mapper', () => {
 				draggable: true,
 				cardElements: [],
 				task: taskResponse,
+				completionDate: tomorrow,
 			});
 		});
 		it('should map card elements to response', () => {
@@ -78,9 +80,11 @@ describe('task-card mapper', () => {
 
 	describe('mapCreateToDomain', () => {
 		it('should map create to domain', () => {
+			const tomorrow = new Date(Date.now() + 86400000);
 			const params = {
 				title: 'test title',
 				text: ['rich text 1', 'rich text 2'],
+				completionDate: tomorrow,
 			};
 			const result = TaskCardMapper.mapCreateToDomain(params);
 			const expectedDto = {
@@ -89,6 +93,7 @@ describe('task-card mapper', () => {
 					new RichText({ content: 'rich text 1', type: InputFormat.RICH_TEXT_CK5 }),
 					new RichText({ content: 'rich text 2', type: InputFormat.RICH_TEXT_CK5 }),
 				],
+				completionDate: tomorrow,
 			};
 			expect(result).toEqual(expectedDto);
 		});
@@ -131,6 +136,8 @@ describe('task-card mapper', () => {
 			expect(() => TaskCardMapper.mapUpdateToDomain(params)).toThrowError(ValidationError);
 		});
 		it('should map update params to domain', () => {
+			const tomorrow = new Date(Date.now() + 86400000);
+
 			const cardElementTitle = new TitleCardElementParam();
 			cardElementTitle.type = CardElementType.Title;
 			cardElementTitle.value = 'update title';
@@ -157,6 +164,7 @@ describe('task-card mapper', () => {
 						content: cardElementRichText2,
 					},
 				],
+				completionDate: tomorrow,
 			};
 			const result = TaskCardMapper.mapUpdateToDomain(params);
 
@@ -166,6 +174,7 @@ describe('task-card mapper', () => {
 					new RichText({ content: 'update richtext 1', type: InputFormat.RICH_TEXT_CK5 }),
 					new RichText({ content: 'update richtext 2', type: InputFormat.RICH_TEXT_CK5 }),
 				],
+				completionDate: tomorrow,
 			};
 			expect(result).toEqual(expectedDto);
 		});

@@ -2,7 +2,7 @@ import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from 
 import { SanitizeHtml } from '@shared/controller';
 import { CardElementType, InputFormat } from '@shared/domain';
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsMongoId, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
+import { IsArray, IsDate, IsEnum, IsMongoId, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
 
 export abstract class CardElementBase {}
 
@@ -45,22 +45,7 @@ export class RichTextCardElementParam extends CardElementBase {
 	inputFormat!: InputFormat;
 }
 
-export class CompletionDateCardElementParam extends CardElementBase {
-	@ApiProperty({
-		description: 'Type of card element, i.e. completionDate (needed for discriminator)',
-		type: String,
-		example: CardElementType.CompletionDate,
-	})
-	type = CardElementType.CompletionDate;
-
-	@ApiProperty({
-		description: 'Content of the completion date card element',
-		required: true,
-	})
-	value!: Date;
-}
-
-@ApiExtraModels(TitleCardElementParam, RichTextCardElementParam, CompletionDateCardElementParam)
+@ApiExtraModels(TitleCardElementParam, RichTextCardElementParam)
 export class CardElementUpdateParams {
 	@ApiPropertyOptional()
 	@IsOptional()
@@ -71,11 +56,7 @@ export class CardElementUpdateParams {
 	@ApiProperty({
 		description: 'Content of the card element, depending on its type',
 		required: true,
-		oneOf: [
-			{ $ref: getSchemaPath(TitleCardElementParam) },
-			{ $ref: getSchemaPath(RichTextCardElementParam) },
-			{ $ref: getSchemaPath(CompletionDateCardElementParam) },
-		],
+		oneOf: [{ $ref: getSchemaPath(TitleCardElementParam) }, { $ref: getSchemaPath(RichTextCardElementParam) }],
 	})
 	@ValidateNested()
 	@Type(() => CardElementBase, {
@@ -84,14 +65,18 @@ export class CardElementUpdateParams {
 			subTypes: [
 				{ value: TitleCardElementParam, name: CardElementType.Title },
 				{ value: RichTextCardElementParam, name: CardElementType.RichText },
-				{ value: CompletionDateCardElementParam, name: CardElementType.CompletionDate },
 			],
 		},
 	})
-	content!: RichTextCardElementParam | TitleCardElementParam | CompletionDateCardElementParam;
+	content!: RichTextCardElementParam | TitleCardElementParam;
 }
 
 export class UpdateTaskCardParams {
+	@IsOptional()
+	@IsDate()
+	@ApiPropertyOptional({ description: 'Completion date of the card' })
+	completionDate?: Date;
+
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => CardElementUpdateParams)

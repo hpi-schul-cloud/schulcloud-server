@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, CardType, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
 import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
@@ -168,6 +168,8 @@ describe('TaskCardUc', () => {
 		let taskCardCreateParams: ITaskCardCreate;
 		const title = 'text title';
 		const richText = ['test richtext 1', 'test richtext 2'];
+		const tomorrow = new Date(Date.now() + 86400000);
+		const completionDate = tomorrow;
 		beforeEach(() => {
 			user = userFactory.buildWithId();
 			taskCardCreateParams = {
@@ -176,6 +178,7 @@ describe('TaskCardUc', () => {
 					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
 					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
 				],
+				completionDate,
 			};
 
 			userRepo.findById.mockResolvedValue(user);
@@ -202,6 +205,20 @@ describe('TaskCardUc', () => {
 			await uc.create(user.id, taskCardCreateParams);
 			expect(taskService.create).toBeCalledWith(user.id, taskParams);
 		});
+		it('should throw if completion date is in the past', async () => {
+			const yesterday = new Date(Date.now() - 86400000);
+			const failingTaskCardCreateParams = {
+				title,
+				text: [
+					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
+					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
+				],
+				completionDate: yesterday,
+			};
+			await expect(async () => {
+				await uc.create(user.id, failingTaskCardCreateParams);
+			}).rejects.toThrow(BadRequestException);
+		});
 		it('should create task-card', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 
@@ -217,6 +234,7 @@ describe('TaskCardUc', () => {
 			const result = await uc.create(user.id, taskCardCreateParams);
 			expect(result.card.task).toEqual(result.taskWithStatusVo.task);
 			expect(result.card.cardType).toEqual(CardType.Task);
+			expect(result.card.completionDate).toEqual(tomorrow);
 
 			expect(result.card.cardElements.length).toEqual(3);
 			expect((result.card.cardElements.getItems()[0] as TitleCardElement).value).toEqual(title);
@@ -229,12 +247,16 @@ describe('TaskCardUc', () => {
 		let taskCardUpdateParams: ITaskCardUpdate;
 		const title = 'changed text title';
 		const richText = ['changed richtext 1', 'changed richtext 2'];
+		const tomorrow = new Date(Date.now() + 86400000);
+		const inTwoDays = new Date(Date.now() + 172800000);
+		const completionDate = tomorrow;
 		beforeEach(() => {
 			user = userFactory.buildWithId();
 
 			const originalTitleCardElement = titleCardElementFactory.build();
 			const originalRichTextCardElements = richTextCardElementFactory.buildList(2);
 			taskCard = taskCardFactory.buildWithId({
+				completionDate,
 				cardElements: [originalTitleCardElement, ...originalRichTextCardElements],
 			});
 
@@ -249,6 +271,7 @@ describe('TaskCardUc', () => {
 					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
 					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
 				],
+				completionDate: inTwoDays,
 			};
 
 			userRepo.findById.mockResolvedValue(user);
@@ -274,6 +297,21 @@ describe('TaskCardUc', () => {
 				await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			}).rejects.toThrow(UnauthorizedException);
 		});
+		it('should throw if completion date is in the past', async () => {
+			const yesterday = new Date(Date.now() - 86400000);
+			const failingTaskCardUpdateParams = {
+				id: taskCard.id,
+				title,
+				text: [
+					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
+					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
+				],
+				completionDate: yesterday,
+			};
+			await expect(async () => {
+				await uc.update(user.id, taskCard.id, failingTaskCardUpdateParams);
+			}).rejects.toThrow(BadRequestException);
+		});
 		it('should call task update and with task name same like task-card title', async () => {
 			const taskParams = { name: taskCardUpdateParams.title };
 			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
@@ -285,6 +323,7 @@ describe('TaskCardUc', () => {
 			expect(cardElementRepo.delete).toBeCalledWith(originalCardElements);
 
 			const updatedCardElements = result.card.cardElements.getItems();
+			expect(updatedCardElements).toHaveLength(3);
 
 			const titleCardElement = updatedCardElements.find(
 				(element) => element.cardElementType === CardElementType.Title
@@ -303,6 +342,7 @@ describe('TaskCardUc', () => {
 
 			expect(result.card.task.id).toEqual(result.taskWithStatusVo.task.id);
 			expect(result.card.cardType).toEqual(CardType.Task);
+			expect(result.card.completionDate).toEqual(inTwoDays);
 
 			expect(result.card.cardElements.length).toEqual(3);
 			expect((result.card.cardElements.getItems()[0] as TitleCardElement).value).toEqual(title);

@@ -1,11 +1,6 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard } from '@shared/domain';
-import {
-	CardElement,
-	CompletionDateCardElement,
-	RichTextCardElement,
-	TitleCardElement,
-} from '@shared/domain/entity/cardElement.entity';
+import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, TaskCardRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -40,14 +35,6 @@ export class TaskCardUc {
 			cardElements.push(...texts);
 		}
 
-		if (params.completionDate) {
-			const completionDate = new CompletionDateCardElement(params.completionDate);
-			if (completionDate.pastCompletionDate()) {
-				throw new BadRequestException();
-			}
-			cardElements.splice(1, 0, completionDate);
-		}
-
 		const cardParams: ITaskCardProps = {
 			cardElements,
 			cardType: CardType.Task,
@@ -55,7 +42,16 @@ export class TaskCardUc {
 			draggable: true,
 			task: taskWithStatusVo.task,
 		};
+
+		if (params.completionDate) {
+			cardParams.completionDate = params.completionDate;
+		}
+
 		const card = new TaskCard(cardParams);
+
+		if (card.pastCompletionDate()) {
+			throw new BadRequestException();
+		}
 
 		await this.taskCardRepo.save(card);
 
@@ -123,11 +119,7 @@ export class TaskCardUc {
 		}
 
 		if (params.completionDate) {
-			const completionDate = new CompletionDateCardElement(params.completionDate);
-			if (completionDate.pastCompletionDate()) {
-				throw new BadRequestException();
-			}
-			cardElements.splice(1, 0, completionDate);
+			this.replaceCompletionDate(card, params.completionDate);
 		}
 
 		await this.replaceCardElements(card, cardElements);
@@ -148,6 +140,15 @@ export class TaskCardUc {
 	private async replaceCardElements(taskCard: TaskCard, newCardElements: CardElement[]) {
 		await this.cardElementRepo.delete(taskCard.cardElements.getItems());
 		taskCard.cardElements.set(newCardElements);
+
+		return taskCard;
+	}
+
+	private replaceCompletionDate(taskCard: TaskCard, newCompletionDate: Date) {
+		taskCard.completionDate = newCompletionDate;
+		if (taskCard.pastCompletionDate()) {
+			throw new BadRequestException();
+		}
 
 		return taskCard;
 	}

@@ -1,6 +1,5 @@
 import { ValidationError } from '@shared/common';
 import {
-	CardCompletionDateElementResponse,
 	CardElement,
 	CardElementResponse,
 	CardRichTextElementResponse,
@@ -10,16 +9,10 @@ import {
 	TaskCard,
 	TaskWithStatusVo,
 } from '@shared/domain';
-import {
-	CardElementType,
-	CompletionDateCardElement,
-	RichTextCardElement,
-	TitleCardElement,
-} from '@shared/domain/entity/cardElement.entity';
+import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
 import {
-	CompletionDateCardElementParam,
 	CreateTaskCardParams,
 	RichTextCardElementParam,
 	TaskCardResponse,
@@ -52,6 +45,9 @@ export class TaskCardMapper {
 			cardElements: cardElementsResponse,
 			task: taskResponse,
 		});
+		if (card.completionDate) {
+			dto.completionDate = card.completionDate;
+		}
 
 		return dto;
 	}
@@ -66,11 +62,6 @@ export class TaskCardMapper {
 			}
 			if (element.cardElementType === CardElementType.RichText) {
 				const content = new CardRichTextElementResponse(element as RichTextCardElement);
-				const response = { id: element.id, cardElementType: element.cardElementType, content };
-				cardElementsResponse.push(response);
-			}
-			if (element.cardElementType === CardElementType.CompletionDate) {
-				const content = new CardCompletionDateElementResponse(element as CompletionDateCardElement);
 				const response = { id: element.id, cardElementType: element.cardElementType, content };
 				cardElementsResponse.push(response);
 			}
@@ -112,6 +103,10 @@ export class TaskCardMapper {
 			title: titleValue.value,
 		};
 
+		if (params.completionDate) {
+			dto.completionDate = params.completionDate;
+		}
+
 		params.cardElements.forEach((element) => {
 			if (element.content instanceof RichTextCardElementParam) {
 				const richText = new RichText({ content: element.content.value, type: element.content.inputFormat });
@@ -120,9 +115,6 @@ export class TaskCardMapper {
 				} else {
 					dto.text.push(richText);
 				}
-			}
-			if (element.content instanceof CompletionDateCardElementParam) {
-				dto.completionDate = element.content.value;
 			}
 		});
 

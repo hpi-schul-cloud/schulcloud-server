@@ -19,6 +19,7 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 
 		this.draggable = props.draggable || true;
 		this.cardType = props.cardType;
+		if (props.completionDate) this.completionDate = props.completionDate;
 
 		this.cardElements.set(props.cardElements);
 		this.task = props.task;
@@ -39,8 +40,20 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	@Property()
 	draggable = true;
 
+	@Property({ nullable: true })
+	completionDate?: Date;
+
 	public getCardElements() {
 		return this.cardElements.getItems();
+	}
+
+	public pastCompletionDate(): boolean {
+		const now = new Date(Date.now());
+		if (this.completionDate) {
+			const pastCompletionDate = now > this.completionDate;
+			return pastCompletionDate;
+		}
+		return false;
 	}
 
 	@OneToOne({ type: 'Task', fieldName: 'taskId', eager: true, unique: true, cascade: [Cascade.ALL] })

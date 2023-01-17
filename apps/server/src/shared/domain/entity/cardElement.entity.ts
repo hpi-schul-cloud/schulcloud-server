@@ -6,7 +6,6 @@ import { BaseEntityWithTimestamps } from './base.entity';
 export enum CardElementType {
 	'Title' = 'title',
 	'RichText' = 'richText',
-	'CompletionDate' = 'completionDate',
 }
 
 @Entity({
@@ -49,24 +48,4 @@ export class RichTextCardElement extends CardElement {
 
 	@Property()
 	inputFormat: InputFormat;
-}
-
-@Entity({
-	discriminatorValue: CardElementType.CompletionDate,
-})
-export class CompletionDateCardElement extends CardElement {
-	@Property()
-	value!: Date;
-
-	constructor(date: Date) {
-		super();
-		this.cardElementType = CardElementType.CompletionDate;
-		this.value = date;
-	}
-
-	public pastCompletionDate(): boolean {
-		const now = new Date(Date.now());
-		const pastCompletionDate = now > this.value;
-		return pastCompletionDate;
-	}
 }

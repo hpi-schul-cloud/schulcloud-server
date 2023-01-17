@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsDate, IsOptional, IsString } from 'class-validator';
 
 // TODO make this more like the update params - specify the input format type
 export class CreateTaskCardParams {
@@ -18,6 +18,7 @@ export class CreateTaskCardParams {
 	text?: string[];
 
 	@IsOptional()
+	@IsDate()
 	@ApiPropertyOptional({ description: 'Completion date of the card' })
 	completionDate?: Date;
 }
