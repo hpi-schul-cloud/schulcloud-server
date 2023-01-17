@@ -8,9 +8,7 @@ export class TaskCardResponse {
 		this.draggable = draggable;
 		this.cardElements = cardElements;
 		this.task = task;
-		if (this.completionDate) {
-			this.completionDate = completionDate;
-		}
+		this.completionDate = completionDate;
 	}
 
 	@ApiProperty({
