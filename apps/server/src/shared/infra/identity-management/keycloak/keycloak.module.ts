@@ -32,6 +32,6 @@ import { OidcIdentityProviderMapper } from './mapper/identity-provider.mapper';
 		KeycloakConfigurationService,
 		KeycloakSeedService,
 	],
-	exports: [KeycloakAdministrationService, KeycloakManagementUc],
+	exports: [KeycloakAdministrationService, KeycloakManagementUc, KeycloakSettings],
 })
 export class KeycloakModule {}
