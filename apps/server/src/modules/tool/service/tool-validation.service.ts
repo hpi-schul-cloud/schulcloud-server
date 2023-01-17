@@ -104,14 +104,15 @@ export class ToolValidationService {
 	}
 
 	private validateDefaultValue(customParameter: CustomParameterDO[]): boolean {
-		return customParameter.every((param: CustomParameterDO) => {
+		const isValid: boolean = customParameter.every((param: CustomParameterDO) => {
 			if (param.regex && param.default) {
-				const reg: RegExp = new RegExp(param.regex);
+				const reg = new RegExp(param.regex);
 				const match: boolean = reg.test(param.default);
 				return match;
 			}
 			return true;
 		});
+		return isValid;
 	}
 
 	isRegexCommentMandatoryAndFilled(customParameter: CustomParameterDO): boolean {
