@@ -21,6 +21,7 @@ module.exports = async (context) => {
 				'inUserMigration',
 				'oauthMigrationPossible',
 				'oauthMigrationMandatory',
+				'oauthMigrationFinished',
 				'enableStudentTeamCreation',
 				'language',
 				'timezone',
