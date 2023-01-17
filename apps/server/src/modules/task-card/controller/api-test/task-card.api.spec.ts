@@ -31,7 +31,7 @@ import { TaskCardResponse } from '@src/modules/task-card/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 
-describe('Task-Card Controller (2e2)', () => {
+describe('Task-Card Controller (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;

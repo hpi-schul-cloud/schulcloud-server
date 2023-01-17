@@ -54,7 +54,7 @@ class API {
 	}
 }
 
-describe('Submission Controller (e2e)', () => {
+describe('Submission Controller (API)', () => {
 	describe('find statuses by task', () => {
 		let app: INestApplication;
 		let currentUser: ICurrentUser;

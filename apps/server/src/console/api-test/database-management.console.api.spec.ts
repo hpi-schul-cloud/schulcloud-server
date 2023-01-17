@@ -2,9 +2,9 @@ import { INestApplicationContext } from '@nestjs/common';
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
 import { ServerConsoleModule } from '@src/console/console.module';
 import { CommanderError } from 'commander';
-import { execute, TestBootstrapConsole } from './bootstrap.console';
+import { execute, TestBootstrapConsole } from './test-bootstrap.console';
 
-describe('DatabaseManagementConsole (e2e)', () => {
+describe('DatabaseManagementConsole (API)', () => {
 	let app: INestApplicationContext;
 	let console: BootstrapConsole;
 	let consoleService: ConsoleService;

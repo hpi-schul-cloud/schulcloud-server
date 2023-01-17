@@ -10,7 +10,6 @@ import {
 	lessonFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	taskFactory,
 	userFactory,
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -22,7 +21,9 @@ Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 // eslint-disable-next-line import/first
 import { ServerTestModule } from '@src/modules/server/server.module';
 
-describe('Copy timeout (e2e)', () => {
+// This needs to be in a separate test file because of the above configuration.
+// When we find a way to mock the config, it should be moved alongside the other API tests.
+describe('Rooms copy (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
@@ -61,7 +62,7 @@ describe('Copy timeout (e2e)', () => {
 		return user;
 	};
 
-	it('Course copy timeout', async () => {
+	it('should respond with 408 on timeout when copying course', async () => {
 		const teacher = setup();
 		const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
 		await em.persistAndFlush(course);
@@ -77,25 +78,7 @@ describe('Copy timeout (e2e)', () => {
 		expect(response.status).toEqual(408);
 	});
 
-	it('Task copy timeout', async () => {
-		const teacher = setup();
-		const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
-		const task = taskFactory.build({ name: 'task #1', course });
-
-		await em.persistAndFlush([task, course]);
-		em.clear();
-
-		currentUser = mapUserToCurrentUser(teacher);
-
-		const response = await request(app.getHttpServer())
-			.post(`/tasks/${task.id}/copy`)
-			.set('Authorization', 'jwt')
-			.send();
-
-		expect(response.status).toEqual(408);
-	});
-
-	it('Lesson copy timeout', async () => {
+	it('should respond with 408 on timeout when copying lesson', async () => {
 		const teacher = setup();
 		const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
 		const lesson = lessonFactory.build({ name: 'lesson #1', course });

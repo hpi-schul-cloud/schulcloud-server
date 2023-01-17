@@ -15,7 +15,7 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
-describe('Account Controller (e2e)', () => {
+describe('Account Controller (API)', () => {
 	const basePath = '/account';
 
 	let app: INestApplication;

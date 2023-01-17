@@ -76,7 +76,7 @@ class API {
 
 const createRndInt = (max) => Math.floor(Math.random() * max);
 
-describe('files-storage controller (e2e)', () => {
+describe('files-storage controller (API)', () => {
 	let module: TestingModule;
 	let app: INestApplication;
 	let em: EntityManager;

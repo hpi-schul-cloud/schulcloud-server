@@ -1,10 +1,10 @@
 import { INestApplicationContext } from '@nestjs/common';
-import { BootstrapConsole, ConsoleService } from 'nestjs-console';
-import { execute, TestBootstrapConsole } from '@src/console/test/bootstrap.console';
 import { ServerConsoleModule } from '@src/console/console.module';
 import { CommanderError } from 'commander';
+import { BootstrapConsole, ConsoleService } from 'nestjs-console';
+import { execute, TestBootstrapConsole } from './test-bootstrap.console';
 
-describe.skip('IdentityManagementConsole (e2e)', () => {
+describe.skip('IdentityManagementConsole (API)', () => {
 	let app: INestApplicationContext;
 	let console: BootstrapConsole;
 	let consoleService: ConsoleService;
