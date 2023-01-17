@@ -2,9 +2,9 @@ import { SchoolRepo } from '@shared/repo';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
-import { MigrationResponse } from '../controller/dto';
 import { ProvisioningSchoolOutputDto } from '../../provisioning/dto/provisioning-school-output.dto';
 import { SchoolUcMapper } from '../mapper/school.uc.mapper';
+import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 @Injectable()
 export class SchoolService {
@@ -41,28 +41,34 @@ export class SchoolService {
 	async setMigration(
 		schoolId: EntityId,
 		oauthMigrationPossible: boolean,
-		oauthMigrationMandatory: boolean
-	): Promise<MigrationResponse> {
+		oauthMigrationMandatory: boolean,
+		oauthMigrationFinished: boolean
+	): Promise<OauthMigrationDto> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
-		schoolDo.oauthMigrationPossible = oauthMigrationPossible;
-		schoolDo.oauthMigrationMandatory = oauthMigrationMandatory;
+		schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
+		schoolDo.oauthMigrationMandatory = oauthMigrationMandatory ? new Date() : undefined;
+		schoolDo.oauthMigrationFinished = oauthMigrationFinished ? new Date() : undefined;
 
 		await this.schoolRepo.save(schoolDo);
 
-		const response: MigrationResponse = new MigrationResponse({
+		const response: OauthMigrationDto = new OauthMigrationDto({
 			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
 			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
+			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
+			enableMigrationStart: !!schoolDo.officialSchoolNumber,
 		});
 
 		return response;
 	}
 
-	async getMigration(schoolId: string): Promise<MigrationResponse> {
+	async getMigration(schoolId: string): Promise<OauthMigrationDto> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
 
-		const response: MigrationResponse = new MigrationResponse({
-			oauthMigrationPossible: schoolDo.oauthMigrationPossible ?? false,
-			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory ?? false,
+		const response: OauthMigrationDto = new OauthMigrationDto({
+			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
+			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
+			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
+			enableMigrationStart: !!schoolDo.officialSchoolNumber,
 		});
 
 		return response;
@@ -75,6 +81,11 @@ export class SchoolService {
 
 	async getSchoolByExternalId(externalId: string, systemId: string): Promise<SchoolDO | null> {
 		const schoolDO: SchoolDO | null = await this.schoolRepo.findByExternalId(externalId, systemId);
+		return schoolDO;
+	}
+
+	async getSchoolBySchoolNumber(schoolNumber: string): Promise<SchoolDO | null> {
+		const schoolDO: SchoolDO | null = await this.schoolRepo.findBySchoolNumber(schoolNumber);
 		return schoolDO;
 	}
 

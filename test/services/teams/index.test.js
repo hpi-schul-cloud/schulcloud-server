@@ -195,10 +195,44 @@ describe('Test team extern add services', () => {
 		expect(exist).to.be.true;
 	});
 
+	it('add new teammember with userId', async () => {
+		const { _id: teamId } = await teamsHelper.create(owner);
+		const userId = teacher._id.toString();
+		const data = {
+			role: 'teammember',
+			userId,
+		};
+
+		const fakeParams = { ...params, query: {} };
+		const { message } = await addService.patch(teamId, data, fakeParams);
+
+		expect(message).to.equal('Success!');
+		const { userIds } = await teamsHelper.getById(teamId);
+		expect(userIds).to.be.an('array').with.lengthOf(2);
+		const exist = userIds.some((teamUser) => teamUser.userId.toString() === userId);
+		expect(exist).to.be.true;
+	});
+
 	it('add new teamadministrator without userId should do nothing', async () => {
 		const { _id: teamId } = await teamsHelper.create(owner);
 		const data = {
 			role: 'teamadministrator',
+		};
+
+		const fakeParams = { ...params, query: {} };
+		const { message } = await addService.patch(teamId, data, fakeParams);
+
+		expect(message).to.equal('Success!');
+		const { userIds } = await teamsHelper.getById(teamId);
+		expect(userIds).to.be.an('array').with.lengthOf(1);
+	});
+
+
+
+	it('add new teammember without userId should do nothing', async () => {
+		const { _id: teamId } = await teamsHelper.create(owner);
+		const data = {
+			role: 'teammember',
 		};
 
 		const fakeParams = { ...params, query: {} };
