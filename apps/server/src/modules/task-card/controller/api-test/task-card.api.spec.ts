@@ -13,7 +13,7 @@ import {
 	InputFormat,
 	Permission,
 	Task,
-	TaskCard,
+	TaskCard
 } from '@shared/domain';
 import {
 	cleanupCollections,
@@ -23,7 +23,7 @@ import {
 	taskCardFactory,
 	taskFactory,
 	titleCardElementFactory,
-	userFactory,
+	userFactory
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
@@ -31,7 +31,7 @@ import { TaskCardResponse } from '@src/modules/task-card/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 
-describe('Task-Card Controller (2e2)', () => {
+describe('Task-Card Controller (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
