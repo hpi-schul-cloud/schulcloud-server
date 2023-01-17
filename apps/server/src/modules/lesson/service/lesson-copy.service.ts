@@ -3,13 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
 	BaseEntity,
 	ComponentType,
-	CopyElementType,
-	CopyHelperService,
-	CopyStatus,
-	CopyStatusEnum,
-	Course,
 	EntityId,
-	EtherpadService,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
 	IComponentInternalProperties,
@@ -19,21 +13,16 @@ import {
 	IComponentTextProperties,
 	Lesson,
 	Material,
-	NexboardService,
-	User,
 } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CopyFilesService } from '@src/modules/files-storage-client';
 import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
+import { TaskCopyService } from '@src/modules/task';
 import { randomBytes } from 'crypto';
-import { TaskCopyService } from './task-copy.service';
-
-type LessonCopyParams = {
-	originalLesson: Lesson;
-	destinationCourse: Course;
-	user: User;
-	copyName?: string;
-};
+import { LessonCopyParams } from '../types/lesson-copy.params';
+import { EtherpadService } from './etherpad.service';
+import { NexboardService } from './nexboard.service';
 
 @Injectable()
 export class LessonCopyService {
@@ -278,13 +267,14 @@ export class LessonCopyService {
 	private copyLernStore(element: IComponentProperties) {
 		const resources = ((element.content as IComponentLernstoreProperties).resources ?? []).map(
 			({ client, description, merlinReference, title, url }) => {
-				return {
+				const result = {
 					client,
 					description,
 					merlinReference,
 					title,
 					url,
 				};
+				return result;
 			}
 		);
 

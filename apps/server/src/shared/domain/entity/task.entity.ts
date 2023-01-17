@@ -318,3 +318,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.private = true;
 	}
 }
+
+export function isTask(reference: unknown): reference is Task {
+	return reference instanceof Task;
+}
