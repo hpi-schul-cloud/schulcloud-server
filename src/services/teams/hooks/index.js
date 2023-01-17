@@ -390,6 +390,20 @@ exports.teamRolesToHook = teamRolesToHook;
 /**
  * @hook
  * @method get,patch,delete,create but do not work with find
+ * @return {function::function(hook)}
+ * @ifNotLocal
+ */
+const ifCheckRenameTeamPermission = globalHooks.ifNotLocal(async (hook) => {
+	if (!isUndefined(hook.data.action) && hook.data.action === 'leave') {
+		return Promise.resolve(hook);
+	}
+	return hasTeamPermission('RENAME_TEAM')(hook);
+});
+exports.ifCheckRenameTeamPermission = ifCheckRenameTeamPermission;
+
+/**
+ * @hook
+ * @method get,patch,delete,create but do not work with find
  * @param {Array::String||String} permsissions
  * @param {String} _teamId
  * @return {function::function(hook)}
@@ -829,7 +843,7 @@ exports.before = {
 		testChangesForPermissionRouting,
 		updateUsersForEachClass,
 		teamMainHook,
-		hasTeamPermission('RENAME_TEAM'),
+		ifCheckRenameTeamPermission,
 	], // todo: filterToRelated(keys.data,'data')
 	remove: [teamMainHook, hasTeamPermission('DELETE_TEAM'), deleteTeamInCollaborativeStorage],
 };
