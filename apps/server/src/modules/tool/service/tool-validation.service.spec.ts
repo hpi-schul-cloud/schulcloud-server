@@ -105,28 +105,6 @@ describe('ToolValidation', () => {
 				await expect(result).resolves.not.toThrow();
 			});
 
-			describe('when default is set', () => {
-				it('should validate the default with the regular expression', async () => {
-					const externalToolDO: ExternalToolDO = externalToolDOFactory
-						.withCustomParameters(1, { default: 'test', regex: '[t]', regexComment: 'mockComment' })
-						.buildWithId();
-
-					const result: Promise<void> = service.validateCreate(externalToolDO);
-
-					await expect(result).resolves.not.toThrow();
-				});
-
-				it('should not validate the default with the regular expression', async () => {
-					const externalToolDO: ExternalToolDO = externalToolDOFactory
-						.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
-						.buildWithId();
-
-					const result: Promise<void> = service.validateCreate(externalToolDO);
-
-					await expect(result).rejects.toThrow('The default value');
-				});
-			});
-
 			it('throw when external tools has a faulty regular expression', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1, { regex: '[' }).build();
 
@@ -137,6 +115,30 @@ describe('ToolValidation', () => {
 						`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute`
 					)
 				);
+			});
+		});
+
+		describe('validateDefaultValue', () => {
+			describe('when default value matches regex', () => {
+				it('should not throw', async () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory
+						.withCustomParameters(1, { default: 'test', regex: '[t]', regexComment: 'mockComment' })
+						.buildWithId();
+
+					const result: Promise<void> = service.validateCreate(externalToolDO);
+
+					await expect(result).resolves.not.toThrow();
+				});
+
+				it('should throw', async () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory
+						.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
+						.buildWithId();
+
+					const result: Promise<void> = service.validateCreate(externalToolDO);
+
+					await expect(result).rejects.toThrow('The default value');
+				});
 			});
 		});
 
@@ -310,28 +312,6 @@ describe('ToolValidation', () => {
 				await expect(result).resolves.not.toThrow();
 			});
 
-			describe('when default is set', () => {
-				it('should validate the default with the regular expression', async () => {
-					const externalToolDO: ExternalToolDO = externalToolDOFactory
-						.withCustomParameters(1, { default: 'test', regex: '[t]', regexComment: 'mockComment' })
-						.buildWithId();
-
-					const result: Promise<void> = service.validateCreate(externalToolDO);
-
-					await expect(result).resolves.not.toThrow();
-				});
-
-				it('should not validate the default with the regular expression', async () => {
-					const externalToolDO: ExternalToolDO = externalToolDOFactory
-						.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
-						.buildWithId();
-
-					const result: Promise<void> = service.validateCreate(externalToolDO);
-
-					await expect(result).rejects.toThrow('The default value');
-				});
-			});
-
 			it('throw when external tools has a faulty regular expression', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory
 					.withCustomParameters(1, { regex: '[' })
@@ -344,6 +324,30 @@ describe('ToolValidation', () => {
 						`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute`
 					)
 				);
+			});
+		});
+
+		describe('validateDefaultValue', () => {
+			describe('when default value matches regex', () => {
+				it('should not throw', async () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory
+						.withCustomParameters(1, { default: 'test', regex: '[t]', regexComment: 'mockComment' })
+						.buildWithId();
+
+					const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
+
+					await expect(result).resolves.not.toThrow();
+				});
+
+				it('should throw', async () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory
+						.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
+						.buildWithId();
+
+					const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
+
+					await expect(result).rejects.toThrow('The default value');
+				});
 			});
 		});
 

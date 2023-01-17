@@ -54,7 +54,7 @@ export class ToolValidationService {
 					`A custom Parameter of the tool: ${externalToolDO.name || ''} has wrong regex attribute`
 				);
 			}
-			if (!this.validateDefault(externalToolDO.parameters)) {
+			if (!this.validateDefaultValue(externalToolDO.parameters)) {
 				throw new UnprocessableEntityException(
 					`The default value of a custom parameter of the tool: ${externalToolDO.name || ''} does not match its regex`
 				);
@@ -103,7 +103,7 @@ export class ToolValidationService {
 		});
 	}
 
-	private validateDefault(customParameter: CustomParameterDO[]): boolean {
+	private validateDefaultValue(customParameter: CustomParameterDO[]): boolean {
 		return customParameter.every((param: CustomParameterDO) => {
 			if (param.regex && param.default) {
 				const reg: RegExp = new RegExp(param.regex);
