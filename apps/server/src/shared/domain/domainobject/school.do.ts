@@ -9,9 +9,11 @@ export class SchoolDO extends BaseDO {
 
 	inUserMigration?: boolean;
 
-	oauthMigrationPossible?: boolean;
+	oauthMigrationPossible?: Date;
 
-	oauthMigrationMandatory?: boolean;
+	oauthMigrationMandatory?: Date;
+
+	oauthMigrationFinished?: Date;
 
 	name: string;
 
@@ -33,6 +35,7 @@ export class SchoolDO extends BaseDO {
 		this.name = params.name;
 		this.oauthMigrationMandatory = params.oauthMigrationMandatory;
 		this.oauthMigrationPossible = params.oauthMigrationPossible;
+		this.oauthMigrationFinished = params.oauthMigrationFinished;
 		this.officialSchoolNumber = params.officialSchoolNumber;
 		this.schoolYear = params.schoolYear;
 		this.systems = params.systems;
