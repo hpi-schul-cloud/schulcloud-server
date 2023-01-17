@@ -42,6 +42,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 				expect(response.data).toEqual(
 					expect.objectContaining<SchoolExternalToolResponse[]>([
 						{
+							id: do1.id as string,
 							name: do1.name as string,
 							schoolId: do1.schoolId,
 							toolId: do1.toolId,
@@ -55,6 +56,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 							status: SchoolExternalToolStatusResponse.LATEST,
 						},
 						{
+							id: do2.id as string,
 							name: do2.name as string,
 							schoolId: do2.schoolId,
 							toolId: do2.toolId,

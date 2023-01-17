@@ -5,7 +5,3 @@ export abstract class BaseDO {
 		this.id = id;
 	}
 }
-
-export interface IBaseEntityProps {
-	id?: string;
-}

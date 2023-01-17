@@ -3,6 +3,7 @@ const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { NotAuthenticated } = require('../../../errors');
 
+// NOTE: during strategy execution the accountModel service will not be called
 class ApiKeyStrategy extends AuthenticationBaseStrategy {
 	parse(req, res) {
 		if (this.validateApiKey(req.headers['x-api-key'])) {

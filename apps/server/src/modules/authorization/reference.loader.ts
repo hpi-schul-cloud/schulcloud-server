@@ -9,6 +9,7 @@ import {
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
+	SchoolExternalToolRepo,
 } from '@shared/repo';
 import { AllowedAuthorizationEntityType, AllowedEntity } from './interfaces';
 
@@ -20,7 +21,8 @@ type RepoType =
 	| LessonRepo
 	| TeamsRepo
 	| CourseGroupRepo
-	| SubmissionRepo;
+	| SubmissionRepo
+	| SchoolExternalToolRepo;
 
 interface IRepoLoader {
 	repo: RepoType;
@@ -39,7 +41,8 @@ export class ReferenceLoader {
 		private readonly schoolRepo: SchoolRepo,
 		private readonly lessonRepo: LessonRepo,
 		private readonly teamsRepo: TeamsRepo,
-		private readonly submissionRepo: SubmissionRepo
+		private readonly submissionRepo: SubmissionRepo,
+		private readonly schoolExternalToolRepo: SchoolExternalToolRepo
 	) {
 		this.repos.set(AllowedAuthorizationEntityType.Task, { repo: this.taskRepo });
 		this.repos.set(AllowedAuthorizationEntityType.Course, { repo: this.courseRepo });
@@ -49,6 +52,7 @@ export class ReferenceLoader {
 		this.repos.set(AllowedAuthorizationEntityType.Lesson, { repo: this.lessonRepo });
 		this.repos.set(AllowedAuthorizationEntityType.Team, { repo: this.teamsRepo, populate: true });
 		this.repos.set(AllowedAuthorizationEntityType.Submission, { repo: this.submissionRepo });
+		this.repos.set(AllowedAuthorizationEntityType.SchoolExternalTool, { repo: this.schoolExternalToolRepo });
 	}
 
 	private resolveRepo(type: AllowedAuthorizationEntityType): IRepoLoader {
