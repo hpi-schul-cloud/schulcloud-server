@@ -34,6 +34,8 @@ export interface ICurrentUser {
 	/** account id as string */
 	accountId: string;
 
+	systemId?: string;
+
 	user: IResolvedUser;
 }
 

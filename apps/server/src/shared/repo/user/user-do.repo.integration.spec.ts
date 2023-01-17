@@ -1,4 +1,3 @@
-import { EntityProperties } from '@shared/repo';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -15,7 +14,7 @@ class UserRepoSpec extends UserDORepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntityPropertiesSpec(entityDO: UserDO): EntityProperties<IUserProperties> {
+	mapDOToEntityPropertiesSpec(entityDO: UserDO): IUserProperties {
 		return super.mapDOToEntityProperties(entityDO);
 	}
 }
@@ -235,11 +234,10 @@ describe('UserRepo', () => {
 				preferences: { firstLogin: true },
 			});
 
-			const result: EntityProperties<IUserProperties> = repo.mapDOToEntityPropertiesSpec(testDO);
+			const result: IUserProperties = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			expect(result).toEqual(
 				expect.objectContaining({
-					id: testDO.id,
 					email: testDO.email,
 					firstName: testDO.firstName,
 					lastName: testDO.lastName,

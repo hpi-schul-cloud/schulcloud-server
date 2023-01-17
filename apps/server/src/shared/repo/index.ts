@@ -7,6 +7,7 @@
 export * from './base.repo';
 export * from './base.do.repo';
 export * from './board';
+export * from './card';
 export * from './course';
 export * from './coursegroup';
 export * from './dashboard';
@@ -28,3 +29,4 @@ export * from './teams';
 export * from './user';
 export * from './videoconference';
 export * from './ltitool';
+export * from './schoolexternaltool';

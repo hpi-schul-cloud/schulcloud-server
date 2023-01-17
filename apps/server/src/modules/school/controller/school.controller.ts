@@ -10,13 +10,16 @@ import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { SchoolUc } from '../uc/school.uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
+import { MigrationMapper } from '../mapper/migration.mapper';
+import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { PublicSchoolResponse } from './dto/public.school.response';
 import { SchoolQueryParams } from './dto/school.query.params';
 
 @ApiTags('School')
+@Authenticate('jwt')
 @Controller('school')
 export class SchoolController {
-	constructor(private readonly schoolUc: SchoolUc) {}
+	constructor(private readonly schoolUc: SchoolUc, private readonly migrationMapper: MigrationMapper) {}
 
 	@Put(':schoolId/migration')
 	@Authenticate('jwt')
@@ -27,12 +30,15 @@ export class SchoolController {
 		@Body() migrationBody: MigrationBody,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<MigrationResponse> {
-		const result: MigrationResponse = await this.schoolUc.setMigration(
+		const migrationDto: OauthMigrationDto = await this.schoolUc.setMigration(
 			schoolParams.schoolId,
-			migrationBody.oauthMigrationPossible,
-			migrationBody.oauthMigrationMandatory,
+			!!migrationBody.oauthMigrationPossible,
+			!!migrationBody.oauthMigrationMandatory,
+			!!migrationBody.oauthMigrationFinished,
 			currentUser.userId
 		);
+
+		const result: MigrationResponse = this.migrationMapper.mapDtoToResponse(migrationDto);
 
 		return result;
 	}
@@ -46,7 +52,10 @@ export class SchoolController {
 		@Param() schoolParams: SchoolParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<MigrationResponse> {
-		const result: MigrationResponse = await this.schoolUc.getMigration(schoolParams.schoolId, currentUser.userId);
+		const migrationDto: OauthMigrationDto = await this.schoolUc.getMigration(schoolParams.schoolId, currentUser.userId);
+
+		const result: MigrationResponse = this.migrationMapper.mapDtoToResponse(migrationDto);
+
 		return result;
 	}
 

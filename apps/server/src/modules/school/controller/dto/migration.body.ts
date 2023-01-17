@@ -1,20 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean } from 'class-validator';
+import { IsBoolean, IsOptional } from 'class-validator';
 
 export class MigrationBody {
 	@IsBoolean()
+	@IsOptional()
 	@ApiProperty({
 		description: 'Set if migration is possible in this school',
-		required: true,
-		nullable: false,
+		required: false,
+		nullable: true,
 	})
-	oauthMigrationPossible!: boolean;
+	oauthMigrationPossible?: boolean;
 
 	@IsBoolean()
+	@IsOptional()
 	@ApiProperty({
 		description: 'Set if migration is mandatory in this school',
-		required: true,
-		nullable: false,
+		required: false,
+		nullable: true,
 	})
-	oauthMigrationMandatory!: boolean;
+	oauthMigrationMandatory?: boolean;
+
+	@IsBoolean()
+	@IsOptional()
+	@ApiProperty({
+		description: 'Set if migration is finished in this school',
+		required: false,
+		nullable: true,
+	})
+	oauthMigrationFinished?: boolean;
 }
