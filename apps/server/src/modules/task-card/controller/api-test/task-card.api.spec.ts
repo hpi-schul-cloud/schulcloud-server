@@ -13,7 +13,7 @@ import {
 	InputFormat,
 	Permission,
 	Task,
-	TaskCard
+	TaskCard,
 } from '@shared/domain';
 import {
 	cleanupCollections,
@@ -23,7 +23,7 @@ import {
 	taskCardFactory,
 	taskFactory,
 	titleCardElementFactory,
-	userFactory
+	userFactory,
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
