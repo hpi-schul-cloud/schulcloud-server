@@ -4,12 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	BaseEntity,
 	ComponentType,
-	CopyElementType,
-	CopyHelperService,
-	CopyStatus,
-	CopyStatusEnum,
 	EntityId,
-	EtherpadService,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
 	IComponentInternalProperties,
@@ -18,7 +13,6 @@ import {
 	IComponentTextProperties,
 	Lesson,
 	Material,
-	NexboardService,
 } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
 import {
@@ -29,9 +23,12 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CopyFilesService } from '@src/modules/files-storage-client';
+import { TaskCopyService } from '@src/modules/task';
+import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
-import { TaskCopyService } from './task-copy.service';
+import { NexboardService } from './nexboard.service';
 
 describe('lesson copy service', () => {
 	let module: TestingModule;

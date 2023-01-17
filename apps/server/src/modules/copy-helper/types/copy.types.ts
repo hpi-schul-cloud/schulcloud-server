@@ -1,4 +1,4 @@
-import { BaseEntity } from '../entity/base.entity';
+import { BaseEntity } from '@shared/domain/entity/base.entity';
 
 export type CopyStatus = {
 	id?: string;

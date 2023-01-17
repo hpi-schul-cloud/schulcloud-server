@@ -1,18 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CopyHelperService } from '@shared/domain';
-import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
+import { Task } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo';
 import {
 	courseFactory,
+	fileFactory,
 	lessonFactory,
 	schoolFactory,
 	setupEntities,
-	fileFactory,
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { Task } from '@shared/domain/entity';
+import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CopyFilesService } from '@src/modules/files-storage-client';
 import { TaskCopyService } from './task-copy.service';
 
