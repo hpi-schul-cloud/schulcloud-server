@@ -1,15 +1,12 @@
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { EntityProperties } from '@shared/repo/base.do.repo';
 import { ISchoolProperties, School, System } from '@shared/domain';
 import { Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class SchoolMapper {
-	mapDOToEntityProperties(entityDO: SchoolDO): EntityProperties<ISchoolProperties> {
+	mapDOToEntityProperties(entityDO: SchoolDO): ISchoolProperties {
 		return {
-			id: entityDO.id,
-			_id: entityDO.id,
 			externalId: entityDO.externalId,
 			features: entityDO.features,
 			inMaintenanceSince: entityDO.inMaintenanceSince,
@@ -17,6 +14,7 @@ export class SchoolMapper {
 			name: entityDO.name,
 			oauthMigrationMandatory: entityDO.oauthMigrationMandatory,
 			oauthMigrationPossible: entityDO.oauthMigrationPossible,
+			oauthMigrationFinished: entityDO.oauthMigrationFinished,
 			officialSchoolNumber: entityDO.officialSchoolNumber,
 			schoolYear: entityDO.schoolYear,
 			systems: entityDO.systems
@@ -35,6 +33,7 @@ export class SchoolMapper {
 			name: entity.name,
 			oauthMigrationMandatory: entity.oauthMigrationMandatory,
 			oauthMigrationPossible: entity.oauthMigrationPossible,
+			oauthMigrationFinished: entity.oauthMigrationFinished,
 			officialSchoolNumber: entity.officialSchoolNumber,
 			schoolYear: entity.schoolYear,
 			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: System) => system.id) : [],

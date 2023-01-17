@@ -4,6 +4,9 @@ import { SchoolExternalToolStatusResponse } from './school-external-tool-status.
 
 export class SchoolExternalToolResponse {
 	@ApiProperty()
+	id: string;
+
+	@ApiProperty()
 	name: string;
 
 	@ApiProperty()
@@ -22,6 +25,7 @@ export class SchoolExternalToolResponse {
 	status: SchoolExternalToolStatusResponse;
 
 	constructor(response: SchoolExternalToolResponse) {
+		this.id = response.id;
 		this.name = response.name;
 		this.toolId = response.toolId;
 		this.schoolId = response.schoolId;

@@ -51,6 +51,7 @@ describe('system repo', () => {
 					'alias',
 					'displayName',
 					'oauthConfig',
+					'ldapConfig',
 					'_id',
 					'provisioningStrategy',
 					'provisioningUrl',
