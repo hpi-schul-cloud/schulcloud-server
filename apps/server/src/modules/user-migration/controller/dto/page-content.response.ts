@@ -7,7 +7,7 @@ export class PageContentResponse {
 	proceedButtonUrl: string;
 
 	@ApiProperty({
-		description: 'The URL for the proceed button',
+		description: 'The URL for the cancel button',
 	})
 	cancelButtonUrl: string;
 

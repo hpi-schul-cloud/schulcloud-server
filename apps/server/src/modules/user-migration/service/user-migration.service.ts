@@ -1,8 +1,7 @@
 import { OauthConfig } from '@shared/domain';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { SystemService } from '@src/modules/system/service/';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemService, SystemDto } from '@src/modules/system/service';
 import { PageContentDto } from './dto/page-content.dto';
 import { PageTypes } from '../interface/page-types.enum';
 
@@ -47,28 +46,20 @@ export class UserMigrationService {
 
 		const { oauthConfig } = system;
 
-		const encodedURI = encodeURI(
-			[
-				oauthConfig.authEndpoint,
-				'?client_id=',
-				oauthConfig.clientId,
-				'&redirect_uri=',
-				this.createPostLoginUri(oauthConfig.redirectUri, postLoginUri),
-				'&response_type=',
-				oauthConfig.responseType,
-				'&scope=',
-				oauthConfig.scope,
-			].join('')
-		);
-		return encodedURI;
+		const encodedURI = new URL(oauthConfig.authEndpoint);
+		encodedURI.searchParams.append('client_id', oauthConfig.clientId);
+		encodedURI.searchParams.append('redirect_uri', this.createPostLoginUri(oauthConfig.redirectUri, postLoginUri));
+		encodedURI.searchParams.append('response_type', oauthConfig.responseType);
+		encodedURI.searchParams.append('scope', oauthConfig.scope);
+
+		return encodedURI.toString();
 	}
 
 	private createPostLoginUri(redirectUri: string, postLoginUri: string): string {
-		const combinedUri = encodeURI(
-			[redirectUri, 'postLoginRedirect=', postLoginUri].join(redirectUri.includes('?') ? '&' : '?')
-		);
+		const combinedUri = new URL(redirectUri);
+		combinedUri.searchParams.append('postLoginRedirect', postLoginUri);
 
-		return combinedUri;
+		return combinedUri.toString();
 	}
 
 	private getDashboardUrl(): string {

@@ -45,12 +45,12 @@ describe('MigrationService', () => {
 			grantType: 'authorization_code',
 			scope: 'openid uuid',
 			responseType: 'code',
-			authEndpoint: 'mock_authEndpoint',
+			authEndpoint: 'http://mock.de/mock/auth',
 			provider: 'mock_provider',
 			logoutEndpoint: 'mock_logoutEndpoint',
 			issuer: 'mock_issuer',
 			jwksEndpoint: 'mock_jwksEndpoint',
-			redirectUri: 'mock_codeRedirectUri',
+			redirectUri: 'http://mock.de/mock/redirect',
 		});
 		const mockSystem: SystemDto = new SystemDto({
 			type: 'oauth',
@@ -74,7 +74,7 @@ describe('MigrationService', () => {
 					'source',
 					'target'
 				);
-				expect(contentDto.proceedButtonUrl).toContain('mock_codeRedirectUri');
+				expect(contentDto.proceedButtonUrl).toContain('http://mock.de');
 				expect(contentDto.cancelButtonUrl).toEqual('/login');
 			});
 			it('is requested for OLD_SYSTEM', async () => {
@@ -83,7 +83,7 @@ describe('MigrationService', () => {
 					'source',
 					'target'
 				);
-				expect(contentDto.proceedButtonUrl).toContain('mock_codeRedirectUri');
+				expect(contentDto.proceedButtonUrl).toContain('http://mock.de');
 				expect(contentDto.cancelButtonUrl).toEqual('/dashboard');
 			});
 			it('is requested for OLD_SYSTEM_MANDATORY', async () => {
@@ -92,7 +92,7 @@ describe('MigrationService', () => {
 					'source',
 					'target'
 				);
-				expect(contentDto.proceedButtonUrl).toContain('mock_codeRedirectUri');
+				expect(contentDto.proceedButtonUrl).toContain('http://mock.de');
 				expect(contentDto.cancelButtonUrl).toEqual('/logout');
 			});
 			it('throws an exception without a type', async () => {
