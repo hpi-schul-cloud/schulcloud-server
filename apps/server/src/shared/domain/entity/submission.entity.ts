@@ -16,7 +16,6 @@ export interface ISubmissionProperties {
 	courseGroup?: CourseGroup;
 	teamMembers?: User[];
 	comment: string;
-	studentFiles?: File[];
 	submitted?: boolean;
 	graded?: boolean;
 	grade?: number;
@@ -47,10 +46,6 @@ export class Submission extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	comment?: string;
-
-	@ManyToMany('File', undefined, { fieldName: 'fileIds' })
-	@Index()
-	studentFiles = new Collection<File>(this);
 
 	@Property()
 	submitted: boolean;
@@ -83,9 +78,7 @@ export class Submission extends BaseEntityWithTimestamps {
 		if (props.teamMembers !== undefined) {
 			this.teamMembers.set(props.teamMembers);
 		}
-		if (props.studentFiles !== undefined) {
-			this.studentFiles.set(props.studentFiles);
-		}
+
 		if (props.gradeFiles !== undefined) {
 			this.gradeFiles.set(props.gradeFiles);
 		}
