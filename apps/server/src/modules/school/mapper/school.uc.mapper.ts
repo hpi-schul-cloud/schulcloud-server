@@ -6,8 +6,8 @@ export class SchoolUcMapper {
 		const response: PublicSchoolResponse = new PublicSchoolResponse({
 			schoolName: schoolDO.name,
 			schoolNumber: schoolDO.officialSchoolNumber ?? 'N/A',
-			oauthMigrationPossible: schoolDO.oauthMigrationPossible ?? false,
-			oauthMigrationMandatory: schoolDO.oauthMigrationMandatory ?? false,
+			oauthMigrationPossible: !!schoolDO.oauthMigrationPossible,
+			oauthMigrationMandatory: !!schoolDO.oauthMigrationMandatory,
 		});
 		return response;
 	}
