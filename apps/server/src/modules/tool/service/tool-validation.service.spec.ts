@@ -3,9 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { CustomParameterScope } from '@shared/domain';
 import { ExternalToolService } from './external-tool.service';
 import { ToolValidationService } from './tool-validation.service';
-import { CustomParameterScope } from '@shared/domain';
 
 describe('ToolValidation', () => {
 	let module: TestingModule;
