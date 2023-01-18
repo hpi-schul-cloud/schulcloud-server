@@ -1,7 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentType, CopyElementType, CopyHelperService, IComponentProperties } from '@shared/domain';
+import { ComponentType, IComponentProperties } from '@shared/domain';
 import { courseFactory, fileFactory, lessonFactory, schoolFactory, setupEntities } from '@shared/testing';
+import { CopyElementType, CopyHelperService } from '@src/modules/copy-helper';
 import { CopyFilesService } from './copy-files.service';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
