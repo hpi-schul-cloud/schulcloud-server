@@ -39,7 +39,7 @@ const serverModules = [
 		load: [serverConfig],
 	}),
 	CoreModule,
-	AuthModule,
+	AuthenticationApiModule,
 	CollaborativeStorageModule,
 	OauthModule,
 	TaskModule,
@@ -68,6 +68,7 @@ const serverModules = [
 	OauthProviderModule,
 	SharingApiModule,
 	ToolApiModule,
+	UserMigrationApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
