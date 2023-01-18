@@ -94,6 +94,8 @@ class AdminUsers {
 					'importHash',
 					'birthday',
 					'preferences.registrationMailSend',
+					'lastLoginSystemChange',
+					'outdated',
 				],
 				skip: clientQuery.$skip || clientQuery.skip,
 				limit: clientQuery.$limit || clientQuery.limit,
