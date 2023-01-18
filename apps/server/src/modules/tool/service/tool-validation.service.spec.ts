@@ -193,7 +193,69 @@ describe('ToolValidation', () => {
 		});
 	});
 
-	describe('validateUpdate', () => {
+	describe('validateUpdate is called', () => {
+		describe('when validating an oauth2 tool', () => {
+			it('should call the externalToolService.isOauth2Config', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
+
+				await service.validateUpdate(externalToolDO.id as string, externalToolDO);
+
+				expect(externalToolService.isOauth2Config).toHaveBeenCalledWith(externalToolDO.config);
+			});
+
+			describe('the config type', () => {
+				describe('has changed', () => {
+					it('should throw', async () => {
+						const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+						const existingExternalToolDO: ExternalToolDO = externalToolDOFactory
+							.withOauth2Config({ clientId: 'clientId1' })
+							.buildWithId();
+						externalToolService.findExternalToolById.mockResolvedValue(existingExternalToolDO);
+
+						const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
+
+						await expect(result).rejects.toThrow(
+							new UnprocessableEntityException(`The Config Type of the tool ${externalToolDO.name} is immutable`)
+						);
+					});
+				});
+			});
+
+			describe('the clientId', () => {
+				it('should call the externalToolService.isOauth2Config', () => {});
+
+				describe('has changed', () => {
+					it('should throw', async () => {
+						const externalToolDO: ExternalToolDO = externalToolDOFactory
+							.withOauth2Config({ clientId: 'clientId2' })
+							.buildWithId();
+						const existingExternalToolDO: ExternalToolDO = externalToolDOFactory
+							.withOauth2Config({ clientId: 'clientId1' })
+							.buildWithId();
+						externalToolService.findExternalToolById.mockResolvedValue(existingExternalToolDO);
+
+						const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
+
+						await expect(result).rejects.toThrow(
+							new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name} is immutable`)
+						);
+					});
+				});
+
+				describe('is the same', () => {
+					it('should pass', async () => {
+						const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+						externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
+
+						const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+			});
+		});
+
 		describe('isNameUnique', () => {
 			it('should not return true when no name is given', async () => {
 				const externalToolDO: Partial<ExternalToolDO> = externalToolDOFactory.buildWithId();
@@ -343,47 +405,6 @@ describe('ToolValidation', () => {
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id, externalToolDO);
 
 				await expect(result).resolves.not.toThrow();
-			});
-		});
-
-		describe('Oauth2 config', () => {
-			it('should throw if config type was changed', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
-				const existingExternalToolDO: ExternalToolDO = externalToolDOFactory
-					.withOauth2Config({ clientId: 'clientId1' })
-					.buildWithId();
-				externalToolService.findExternalToolById.mockResolvedValue(existingExternalToolDO);
-
-				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
-
-				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The Config Type of the tool ${externalToolDO.name} is immutable`)
-				);
-			});
-
-			it('should pass if tool has the same clientId as before', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
-				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
-
-				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
-
-				await expect(result).resolves.not.toThrow();
-			});
-
-			it('should throw if clientId was changed', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
-					.withOauth2Config({ clientId: 'clientId2' })
-					.buildWithId();
-				const existingExternalToolDO: ExternalToolDO = externalToolDOFactory
-					.withOauth2Config({ clientId: 'clientId1' })
-					.buildWithId();
-				externalToolService.findExternalToolById.mockResolvedValue(existingExternalToolDO);
-
-				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
-
-				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name} is immutable`)
-				);
 			});
 		});
 	});
