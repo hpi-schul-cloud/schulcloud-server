@@ -10,11 +10,6 @@ import { DeleteOrphanedFilesUc } from '../uc';
 export class DeleteOrphanedFilesConsole {
 	constructor(private deleteOrphanedFilesUc: DeleteOrphanedFilesUc) {}
 
-	@Command({ command: 'tasks' })
-	async deleteOrphanedFilesForTasks(): Promise<void> {
-		await this.deleteOrphanedFilesUc.deleteOrphanedFilesForParentType(FileRecordParentType.Task);
-	}
-
 	@Command({ command: 'submissions' })
 	async deleteOrphanedFilesForSubmissions(): Promise<void> {
 		await this.deleteOrphanedFilesUc.deleteOrphanedFilesForParentType(FileRecordParentType.Submission);

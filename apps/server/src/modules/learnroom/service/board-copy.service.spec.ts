@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@shared/domain';
+import { Board } from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import {
 	boardFactory,
@@ -13,9 +13,10 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { LessonCopyService } from '@src/modules/lesson/service';
+import { TaskCopyService } from '@src/modules/task';
 import { BoardCopyService } from './board-copy.service';
-import { LessonCopyService } from './lesson-copy.service';
-import { TaskCopyService } from './task-copy.service';
 
 describe('board copy service', () => {
 	let module: TestingModule;
