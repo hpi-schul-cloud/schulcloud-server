@@ -23,8 +23,8 @@ export interface IUserProperties {
 	forcePasswordChange?: boolean;
 	preferences?: Record<string, unknown>;
 	deletedAt?: Date;
-	lastLoginSystemChange: Date;
-	outdated: Date;
+	lastLoginSystemChange?: Date;
+	outdated?: Date;
 }
 
 @Entity({ tableName: 'users' })
@@ -104,10 +104,10 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 	deletedAt?: Date;
 
 	@Property({ nullable: true })
-	lastLoginSystemChange: Date;
+	lastLoginSystemChange?: Date;
 
 	@Property({ nullable: true })
-	outdated: Date;
+	outdated?: Date;
 
 	constructor(props: IUserProperties) {
 		super();
