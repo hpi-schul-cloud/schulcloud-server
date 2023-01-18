@@ -7,7 +7,7 @@ import { PageTypes } from '../interface/page-types.enum';
 
 @Injectable()
 export class UserMigrationService {
-	protected readonly PROCESS_MIGRATION_BASE_URL: string = '/api/v3/oauth/migration';
+	private readonly PROCESS_MIGRATION_BASE_URL: string = '/api/v3/oauth/migration';
 
 	constructor(private readonly systemService: SystemService) {}
 
@@ -39,7 +39,7 @@ export class UserMigrationService {
 		return content;
 	}
 
-	protected getOauthLoginUrl(system: SystemDto, postLoginUri?: string): string {
+	private getOauthLoginUrl(system: SystemDto, postLoginUri?: string): string {
 		if (!system.oauthConfig) {
 			throw new EntityNotFoundError(OauthConfig.name);
 		}

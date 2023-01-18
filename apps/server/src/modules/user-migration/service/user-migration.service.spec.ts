@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { setupEntities } from '@shared/testing';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { SystemService } from '@src/modules/system/service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -11,18 +11,9 @@ import { UserMigrationService } from './user-migration.service';
 import { PageContentDto } from './dto/page-content.dto';
 import { PageTypes } from '../interface/page-types.enum';
 
-@Injectable()
-export class UserMigrationServiceSpy extends UserMigrationService {
-	public readonly PROCESS_MIGRATION_BASE_URL: string = '/api/v3/oauth/migration';
-
-	public getOauthLoginUrlSpy(system: SystemDto, postLoginUri?: string): string {
-		return this.getOauthLoginUrl(system, postLoginUri);
-	}
-}
-
 describe('MigrationService', () => {
 	let module: TestingModule;
-	let service: UserMigrationServiceSpy;
+	let service: UserMigrationService;
 	let systemService: DeepMocked<SystemService>;
 	let orm: MikroORM;
 
@@ -33,11 +24,11 @@ describe('MigrationService', () => {
 					provide: SystemService,
 					useValue: createMock<SystemService>(),
 				},
-				UserMigrationServiceSpy,
+				UserMigrationService,
 			],
 		}).compile();
 		systemService = module.get(SystemService);
-		service = module.get(UserMigrationServiceSpy);
+		service = module.get(UserMigrationService);
 		orm = await setupEntities();
 	});
 
@@ -68,26 +59,25 @@ describe('MigrationService', () => {
 			oauthConfig: defaultOauthConfigDto,
 		});
 
-		const proceedUrl: string = service.getOauthLoginUrlSpy(mockSystem);
-		const postLoginUrl: string = service.PROCESS_MIGRATION_BASE_URL;
+		const proceedUrl =
+			'http://mock.de/mock/auth?client_id=12345&redirect_uri=http%3A%2F%2Fmock.de%2Fmock%2Fredirect&response_type=code&scope=openid+uuid';
 
-		return { mockSystem, proceedUrl, postLoginUrl };
+		return { mockSystem, proceedUrl };
 	};
 
 	describe('getPageContent is called', () => {
 		describe('when the pagecontent for different keys is called', () => {
 			let mockSystem: SystemDto;
 			let proceedUrl: string;
-			let postLoginUrl: string;
 			beforeEach(() => {
 				const setupObjects = setup();
 				mockSystem = setupObjects.mockSystem;
 				proceedUrl = setupObjects.proceedUrl;
-				postLoginUrl = setupObjects.postLoginUrl;
 				systemService.findById.mockResolvedValue(mockSystem);
 			});
 			it('is requested for TARGET_SYSTEM', async () => {
-				proceedUrl = service.getOauthLoginUrlSpy(mockSystem, service.getOauthLoginUrlSpy(mockSystem, postLoginUrl));
+				proceedUrl =
+					'http://mock.de/mock/auth?client_id=12345&redirect_uri=http%3A%2F%2Fmock.de%2Fmock%2Fredirect%3FpostLoginRedirect%3Dhttp%253A%252F%252Fmock.de%252Fmock%252Fauth%253Fclient_id%253D12345%2526redirect_uri%253Dhttp%25253A%25252F%25252Fmock.de%25252Fmock%25252Fredirect%25253FpostLoginRedirect%25253D%2525252Fapi%2525252Fv3%2525252Foauth%2525252Fmigration%2526response_type%253Dcode%2526scope%253Dopenid%252Buuid&response_type=code&scope=openid+uuid';
 
 				const contentDto: PageContentDto = await service.getPageContent(
 					PageTypes.START_FROM_TARGET_SYSTEM,
