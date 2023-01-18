@@ -54,8 +54,8 @@ describe('MigrationController', () => {
 		return { query, dto, response };
 	};
 
-	describe('when pagecontent is requested', () => {
-		describe('getMigrationPageDetails is called', () => {
+	describe('getMigrationPageDetails is called', () => {
+		describe('when pagecontent is requested', () => {
 			it('should return a response', async () => {
 				const { query, dto, response } = setup();
 				mapper.mapDtoToResponse.mockReturnValue(response);

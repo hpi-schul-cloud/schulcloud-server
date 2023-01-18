@@ -7,7 +7,7 @@ import { PageTypes } from '../interface/page-types.enum';
 
 @Injectable()
 export class UserMigrationService {
-	private readonly PROCESS_MIGRATION_BASE_URL: string = '/api/v3/oauth/migration';
+	protected readonly PROCESS_MIGRATION_BASE_URL: string = '/api/v3/oauth/migration';
 
 	constructor(private readonly systemService: SystemService) {}
 
@@ -16,7 +16,7 @@ export class UserMigrationService {
 		const sourceSystem: SystemDto = await this.systemService.findById(sourceId);
 		const targetSystem: SystemDto = await this.systemService.findById(targetId);
 
-		content.proceedButtonUrl = this.getOauthLoginUrl(targetSystem, `${this.PROCESS_MIGRATION_BASE_URL}`);
+		content.proceedButtonUrl = this.getOauthLoginUrl(targetSystem);
 
 		switch (pageType) {
 			case PageTypes.START_FROM_TARGET_SYSTEM:
@@ -39,7 +39,7 @@ export class UserMigrationService {
 		return content;
 	}
 
-	private getOauthLoginUrl(system: SystemDto, postLoginUri: string): string {
+	protected getOauthLoginUrl(system: SystemDto, postLoginUri?: string): string {
 		if (!system.oauthConfig) {
 			throw new EntityNotFoundError(OauthConfig.name);
 		}
@@ -48,16 +48,18 @@ export class UserMigrationService {
 
 		const encodedURI = new URL(oauthConfig.authEndpoint);
 		encodedURI.searchParams.append('client_id', oauthConfig.clientId);
-		encodedURI.searchParams.append('redirect_uri', this.createPostLoginUri(oauthConfig.redirectUri, postLoginUri));
+		encodedURI.searchParams.append('redirect_uri', this.createRedirectUri(oauthConfig.redirectUri, postLoginUri));
 		encodedURI.searchParams.append('response_type', oauthConfig.responseType);
 		encodedURI.searchParams.append('scope', oauthConfig.scope);
 
 		return encodedURI.toString();
 	}
 
-	private createPostLoginUri(redirectUri: string, postLoginUri: string): string {
+	private createRedirectUri(redirectUri: string, postLoginUri?: string): string {
 		const combinedUri = new URL(redirectUri);
-		combinedUri.searchParams.append('postLoginRedirect', postLoginUri);
+		if (postLoginUri) {
+			combinedUri.searchParams.append('postLoginRedirect', postLoginUri);
+		}
 
 		return combinedUri.toString();
 	}

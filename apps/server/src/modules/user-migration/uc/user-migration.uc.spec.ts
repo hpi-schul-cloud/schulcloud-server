@@ -35,13 +35,19 @@ describe('MigrationUc', () => {
 		return { dto };
 	};
 
-	describe('when it should get page-content', () => {
-		it('should return a response', async () => {
-			const { dto } = setup();
-			service.getPageContent.mockResolvedValue(dto);
-			const testResp: PageContentDto = await uc.getPageContent(PageTypes.START_FROM_TARGET_SYSTEM, 'source', 'target');
-			expect(testResp.proceedButtonUrl).toEqual(dto.proceedButtonUrl);
-			expect(testResp.cancelButtonUrl).toEqual(dto.cancelButtonUrl);
+	describe('getPageContent is called', () => {
+		describe('when it should get page-content', () => {
+			it('should return a response', async () => {
+				const { dto } = setup();
+				service.getPageContent.mockResolvedValue(dto);
+				const testResp: PageContentDto = await uc.getPageContent(
+					PageTypes.START_FROM_TARGET_SYSTEM,
+					'source',
+					'target'
+				);
+				expect(testResp.proceedButtonUrl).toEqual(dto.proceedButtonUrl);
+				expect(testResp.cancelButtonUrl).toEqual(dto.cancelButtonUrl);
+			});
 		});
 	});
 });

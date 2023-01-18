@@ -25,8 +25,8 @@ describe('PageContentMapper', () => {
 		return { dto };
 	};
 
-	describe('when it maps from dto to response', () => {
-		describe('mapDtoToResponse is called', () => {
+	describe('mapDtoToResponse is called', () => {
+		describe('when it maps from dto to response', () => {
 			it('should map the dto to a response', () => {
 				const { dto } = setup();
 				const response = mapper.mapDtoToResponse(dto);

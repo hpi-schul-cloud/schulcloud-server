@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { setupEntities } from '@shared/testing';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { SystemService } from '@src/modules/system/service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -11,9 +11,18 @@ import { UserMigrationService } from './user-migration.service';
 import { PageContentDto } from './dto/page-content.dto';
 import { PageTypes } from '../interface/page-types.enum';
 
+@Injectable()
+export class UserMigrationServiceSpy extends UserMigrationService {
+	public readonly PROCESS_MIGRATION_BASE_URL: string = '/api/v3/oauth/migration';
+
+	public getOauthLoginUrlSpy(system: SystemDto, postLoginUri?: string): string {
+		return this.getOauthLoginUrl(system, postLoginUri);
+	}
+}
+
 describe('MigrationService', () => {
 	let module: TestingModule;
-	let service: UserMigrationService;
+	let service: UserMigrationServiceSpy;
 	let systemService: DeepMocked<SystemService>;
 	let orm: MikroORM;
 
@@ -24,11 +33,11 @@ describe('MigrationService', () => {
 					provide: SystemService,
 					useValue: createMock<SystemService>(),
 				},
-				UserMigrationService,
+				UserMigrationServiceSpy,
 			],
 		}).compile();
 		systemService = module.get(SystemService);
-		service = module.get(UserMigrationService);
+		service = module.get(UserMigrationServiceSpy);
 		orm = await setupEntities();
 	});
 
@@ -59,41 +68,59 @@ describe('MigrationService', () => {
 			oauthConfig: defaultOauthConfigDto,
 		});
 
-		return { mockSystem };
+		const proceedUrl: string = service.getOauthLoginUrlSpy(mockSystem);
+		const postLoginUrl: string = service.PROCESS_MIGRATION_BASE_URL;
+
+		return { mockSystem, proceedUrl, postLoginUrl };
 	};
 
-	describe('when the pagecontent for different keys is called', () => {
-		describe('getPageContent is called', () => {
+	describe('getPageContent is called', () => {
+		describe('when the pagecontent for different keys is called', () => {
+			let mockSystem: SystemDto;
+			let proceedUrl: string;
+			let postLoginUrl: string;
 			beforeEach(() => {
-				const { mockSystem } = setup();
+				const setupObjects = setup();
+				mockSystem = setupObjects.mockSystem;
+				proceedUrl = setupObjects.proceedUrl;
+				postLoginUrl = setupObjects.postLoginUrl;
 				systemService.findById.mockResolvedValue(mockSystem);
 			});
-			it('is requested for NEW_SYSTEM', async () => {
+			it('is requested for TARGET_SYSTEM', async () => {
+				proceedUrl = service.getOauthLoginUrlSpy(mockSystem, service.getOauthLoginUrlSpy(mockSystem, postLoginUrl));
+
 				const contentDto: PageContentDto = await service.getPageContent(
 					PageTypes.START_FROM_TARGET_SYSTEM,
 					'source',
 					'target'
 				);
-				expect(contentDto.proceedButtonUrl).toContain('http://mock.de');
-				expect(contentDto.cancelButtonUrl).toEqual('/login');
+
+				expect(contentDto).toEqual<PageContentDto>({
+					proceedButtonUrl: proceedUrl,
+					cancelButtonUrl: '/login',
+				});
 			});
-			it('is requested for OLD_SYSTEM', async () => {
+			it('is requested for SOURCE_SYSTEM', async () => {
 				const contentDto: PageContentDto = await service.getPageContent(
 					PageTypes.START_FROM_SOURCE_SYSTEM,
 					'source',
 					'target'
 				);
-				expect(contentDto.proceedButtonUrl).toContain('http://mock.de');
-				expect(contentDto.cancelButtonUrl).toEqual('/dashboard');
+				expect(contentDto).toEqual<PageContentDto>({
+					proceedButtonUrl: proceedUrl,
+					cancelButtonUrl: '/dashboard',
+				});
 			});
-			it('is requested for OLD_SYSTEM_MANDATORY', async () => {
+			it('is requested for SOURCE_SYSTEM_MANDATORY', async () => {
 				const contentDto: PageContentDto = await service.getPageContent(
 					PageTypes.START_FROM_SOURCE_SYSTEM_MANDATORY,
 					'source',
 					'target'
 				);
-				expect(contentDto.proceedButtonUrl).toContain('http://mock.de');
-				expect(contentDto.cancelButtonUrl).toEqual('/logout');
+				expect(contentDto).toEqual<PageContentDto>({
+					proceedButtonUrl: proceedUrl,
+					cancelButtonUrl: '/logout',
+				});
 			});
 			it('throws an exception without a type', async () => {
 				const promise: Promise<PageContentDto> = service.getPageContent('undefined' as PageTypes, '', '');
@@ -101,9 +128,9 @@ describe('MigrationService', () => {
 				await expect(promise).rejects.toThrow(BadRequestException);
 			});
 			it('throws an exception without oauthconfig', async () => {
-				const { mockSystem } = setup();
 				mockSystem.oauthConfig = undefined;
 				systemService.findById.mockResolvedValue(mockSystem);
+
 				const promise: Promise<PageContentDto> = service.getPageContent(
 					PageTypes.START_FROM_TARGET_SYSTEM,
 					'invalid',
