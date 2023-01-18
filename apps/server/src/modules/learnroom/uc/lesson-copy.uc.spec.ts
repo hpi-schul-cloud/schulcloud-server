@@ -3,13 +3,13 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, CopyHelperService, EtherpadService, PermissionTypes, User } from '@shared/domain';
+import { Actions, PermissionTypes, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
-import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { LessonCopyService } from '../service';
+import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
+import { EtherpadService, LessonCopyService } from '@src/modules/lesson/service';
 import { LessonCopyUC } from './lesson-copy.uc';
 
 describe('lesson copy uc', () => {
