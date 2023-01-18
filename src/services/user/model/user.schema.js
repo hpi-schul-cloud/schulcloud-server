@@ -83,7 +83,8 @@ const userSchema = new Schema(
 				enum: ['all', 'dateOfPrivacyConsent', 'dateOfTermsOfUseConsent'],
 			},
 		},
-
+		lastLoginSystemChange: { type: Date },
+		outdated: { type: Date },
 		/**
 		 * depending on system settings,
 		 * a user may opt-in or -out,
