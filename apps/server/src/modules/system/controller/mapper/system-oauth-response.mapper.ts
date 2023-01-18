@@ -10,6 +10,7 @@ export class SystemOauthResponseMapper {
 		systems.forEach((system) =>
 			systemResponses.push(
 				new SystemResponse({
+					id: system.id || '',
 					type: system.type,
 					url: system.url,
 					alias: system.alias,
