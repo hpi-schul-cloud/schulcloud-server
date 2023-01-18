@@ -6,8 +6,7 @@ const config: Config.InitialOptions = {
 	moduleFileExtensions: ['js', 'json', 'ts'],
 	rootDir: '.',
 	preset: 'ts-jest',
-	/* we have tests in src/...*.spec.ts and test/...*.e2e-spec.ts either we test all files via `npm run nest:test` or override the regex in npm scripts to separate the execution via `npm run nest:test:spec` or `npm run nest:test:e2e` */
-	testRegex: '\\.(e2e-)?spec\\.ts$',
+	testRegex: '\\.spec\\.ts$',
 	// ignore legacy mocha tests
 	testPathIgnorePatterns: ['^src', '^test'],
 	transform: {

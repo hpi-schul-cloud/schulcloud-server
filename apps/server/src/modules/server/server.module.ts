@@ -9,7 +9,7 @@ import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
-import { AuthModule } from '@src/modules/authentication';
+import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { LearnroomModule } from '@src/modules/learnroom';
@@ -29,8 +29,8 @@ import { VideoConferenceModule } from '@src/modules/video-conference';
 import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { UserMigrationApiModule } from '@src/modules/user-migration';
+import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
-import { ServerController } from './server.controller';
 
 const serverModules = [
 	ConfigModule.forRoot({
@@ -54,7 +54,6 @@ const serverModules = [
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 	}),
-	UserMigrationApiModule,
 	RocketChatModule.forRoot({
 		uri: Configuration.get('ROCKET_CHAT_URI') as string,
 		adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
