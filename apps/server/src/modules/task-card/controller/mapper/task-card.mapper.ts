@@ -24,13 +24,15 @@ export interface ITaskCardUpdate {
 	id?: string;
 	title: string;
 	text?: RichText[];
-	completionDate?: Date;
+	visibleAtDate?: Date;
+	dueDate?: Date;
 }
 
 export interface ITaskCardCreate {
 	title: string;
 	text?: RichText[];
-	completionDate?: Date;
+	visibleAtDate?: Date;
+	dueDate?: Date;
 }
 
 export class TaskCardMapper {
@@ -44,10 +46,9 @@ export class TaskCardMapper {
 			draggable: card.draggable || true,
 			cardElements: cardElementsResponse,
 			task: taskResponse,
+			visibleAtDate: card.visibleAtDate,
+			dueDate: card.dueDate,
 		});
-		if (card.completionDate) {
-			dto.completionDate = card.completionDate;
-		}
 
 		return dto;
 	}
@@ -85,8 +86,12 @@ export class TaskCardMapper {
 			);
 		}
 
-		if (params.completionDate) {
-			dto.completionDate = params.completionDate;
+		if (params.visibleAtDate) {
+			dto.visibleAtDate = params.visibleAtDate;
+		}
+
+		if (params.dueDate) {
+			dto.dueDate = params.dueDate;
 		}
 
 		return dto;
@@ -103,8 +108,12 @@ export class TaskCardMapper {
 			title: titleValue.value,
 		};
 
-		if (params.completionDate) {
-			dto.completionDate = params.completionDate;
+		if (params.visibleAtDate) {
+			dto.visibleAtDate = params.visibleAtDate;
+		}
+
+		if (params.dueDate) {
+			dto.dueDate = params.dueDate;
 		}
 
 		params.cardElements.forEach((element) => {

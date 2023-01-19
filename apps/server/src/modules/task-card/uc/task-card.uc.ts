@@ -1,5 +1,5 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard } from '@shared/domain';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
 import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, TaskCardRepo } from '@shared/repo';
@@ -23,6 +23,8 @@ export class TaskCardUc {
 			throw new UnauthorizedException();
 		}
 
+		const defaultDueDate = this.getDefaultDueDate(user);
+
 		const taskWithStatusVo = await this.createTask(userId, params);
 
 		const cardElements: CardElement[] = [];
@@ -41,13 +43,23 @@ export class TaskCardUc {
 			creator: user,
 			draggable: true,
 			task: taskWithStatusVo.task,
+			visibleAtDate: new Date(),
+			dueDate: defaultDueDate,
 		};
 
-		if (params.completionDate) {
-			cardParams.completionDate = params.completionDate;
+		if (params.visibleAtDate) {
+			cardParams.visibleAtDate = params.visibleAtDate;
+		}
+
+		if (params.dueDate) {
+			cardParams.dueDate = params.dueDate;
 		}
 
 		const card = new TaskCard(cardParams);
+
+		if (!card.isVisibleBeforeDueDate()) {
+			throw new BadRequestException();
+		}
 
 		await this.taskCardRepo.save(card);
 
@@ -61,6 +73,15 @@ export class TaskCardUc {
 		const taskWithStatusVo = await this.taskService.create(userId, taskParams);
 
 		return taskWithStatusVo;
+	}
+
+	private getDefaultDueDate(user: User) {
+		const currentSchoolYear = user.school.schoolYear;
+		if (currentSchoolYear) {
+			return currentSchoolYear.endDate;
+		}
+		const lastDayOfYear = new Date(new Date().getFullYear(), 11, 31);
+		return lastDayOfYear;
 	}
 
 	async findOne(userId: EntityId, id: EntityId) {
@@ -114,9 +135,18 @@ export class TaskCardUc {
 			cardElements.push(...texts);
 		}
 
-		if (params.completionDate) {
-			card.completionDate = params.completionDate;
+		if (params.visibleAtDate) {
+			card.visibleAtDate = params.visibleAtDate;
 		}
+
+		if (params.dueDate) {
+			card.dueDate = params.dueDate;
+		}
+
+		if (!card.isVisibleBeforeDueDate()) {
+			throw new BadRequestException();
+		}
+
 		await this.replaceCardElements(card, cardElements);
 		await this.taskCardRepo.save(card);
 

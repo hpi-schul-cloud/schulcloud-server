@@ -20,6 +20,12 @@ export class CreateTaskCardParams {
 	@IsOptional()
 	@IsDate()
 	@MinDate(new Date())
-	@ApiPropertyOptional({ description: 'Completion date of the card' })
-	completionDate?: Date;
+	@ApiPropertyOptional({ description: 'Visible at date of the card' })
+	visibleAtDate?: Date;
+
+	@IsOptional()
+	@IsDate()
+	@MinDate(new Date())
+	@ApiPropertyOptional({ description: 'Due date of the card' })
+	dueDate?: Date;
 }
