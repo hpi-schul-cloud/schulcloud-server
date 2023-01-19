@@ -9,46 +9,11 @@ import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/ent
 import { FileRecordMapper } from '../mapper/filerecord-mapper';
 
 const orphanedFilesQuery = (collectionName: string) => [
-	{
-		$lookup: {
-			from: collectionName,
-			localField: 'parent',
-			foreignField: '_id',
-			as: collectionName,
-		},
-	},
-	{
-		$set: {
-			entity: { $arrayElemAt: [`$${collectionName}`, 0] },
-		},
-	},
-	{
-		$lookup: {
-			from: 'files_filerecords',
-			localField: '_id',
-			foreignField: 'filerecordId',
-			as: 'files_filerecords',
-		},
-	},
-	{
-		$set: {
-			file_filerecord: { $arrayElemAt: ['$files_filerecords', 0] },
-		},
-	},
-	{
-		$match: {
-			$or: [
-				{ entity: null },
-				{
-					$expr: {
-						$not: {
-							$in: ['$file_filerecord.fileId', '$entity.fileIds'],
-						},
-					},
-				},
-			],
-		},
-	},
+	{ $lookup: { from: collectionName, localField: 'fileId', foreignField: 'gradeFileIds', as: 'entity' } },
+	{ $unwind: { path: '$entity', preserveNullAndEmptyArrays: true } },
+	{ $lookup: { from: 'filerecords', localField: 'filerecordId', foreignField: '_id', as: 'filerecord' } },
+	{ $unwind: { path: '$filerecord' } },
+	{ $match: { entity: { $exists: false } } },
 ];
 
 // Temporary functionality for migration to new fileservice
@@ -114,9 +79,9 @@ export class OrphanedFilesRepo {
 			query = orphanedFilesQuery('submissions');
 		}
 
-		const result = await this._em.aggregate(FileRecord, query);
+		const result = await this._em.aggregate('files_filerecords', query);
 
-		const fileRecords = result.map((item) => FileRecordMapper.mapToFileRecord(item));
+		const fileRecords = result.map((item) => FileRecordMapper.mapToFileRecord(item.filerecord));
 
 		return fileRecords;
 	}

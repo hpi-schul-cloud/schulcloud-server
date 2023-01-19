@@ -89,7 +89,7 @@ To run a specific command run `npm run nest:console:dev -- command <param>`. The
 
 ## How to test the nest-application with jest
 
-NestJS must not use \_.test.[ts|js] as filename but instead either \*.spec.ts for unit-tests beside tested files or \*.e2e-spec.ts in test folder for end-to-end tests. This ensures legacy/feathers/mocha tests can be separated from jest test suites.
+NestJS must not use \_.test.[ts|js] as filename but instead either \*.spec.ts for unit tests or \*.api.spec.ts API tests. This ensures legacy/feathers/mocha tests can be separated from jest test suites.
 
 The application must pass the following statement which executes separate checks:
 
@@ -97,9 +97,9 @@ The application must pass the following statement which executes separate checks
 
 To test a subset, use
 
-- `nest:test:all` execute unit and e2e tests
-- `nest:test:e2e` execute e2e tests only
-- `nest:test:spec` execute unit tests (without e2e) only
+- `nest:test:all` execute unit and API tests
+- `nest:test:api` execute API tests only
+- `nest:test:unit` execute unit tests only
 
 - `nest:test:cov` executes all jest tests with coverage check
 
@@ -114,7 +114,7 @@ To test a subset, use
 With coverage on tests and static code analysis we ensure some quality gates which are all handled by running `nest:test`:
 
 - ESLint with prettier ensures formatting and static code analysis to pass, see `.eslintrc.js` for details.
-- Tests ensure functional requirements via unit & e2e tests.
+- Tests ensure functional requirements via unit & API tests.
 - Coverage on tests ensures a coverage of 80% on NestJS code, see `jest.config.ts` for details.
 
 Gates are part of pull request checks.
