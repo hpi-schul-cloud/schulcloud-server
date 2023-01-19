@@ -63,7 +63,7 @@ export class CourseCopyService {
 			teachers: [user],
 			startDate: user.school.schoolYear?.startDate,
 			untilDate: user.school.schoolYear?.endDate,
-			copyStartDate: new Date(),
+			copyingSince: new Date(),
 		});
 
 		await this.courseRepo.createCourse(courseCopy);
@@ -71,7 +71,7 @@ export class CourseCopyService {
 	}
 
 	private async finishCourseCopying(courseCopy: Course) {
-		courseCopy.copyStartDate = undefined;
+		courseCopy.copyingSince = undefined;
 		await this.courseRepo.save(courseCopy);
 		return courseCopy;
 	}

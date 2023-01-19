@@ -20,7 +20,7 @@ export interface ICourseProperties {
 	color?: string;
 	startDate?: Date;
 	untilDate?: Date;
-	copyStartDate?: Date;
+	copyingSince?: Date;
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
@@ -73,7 +73,7 @@ export class Course
 	untilDate?: Date;
 
 	@Property({ nullable: true })
-	copyStartDate?: Date;
+	copyingSince?: Date;
 
 	@Property({ nullable: true })
 	@Unique({ options: { sparse: true } })
@@ -90,7 +90,7 @@ export class Course
 		if (props.color) this.color = props.color;
 		if (props.untilDate) this.untilDate = props.untilDate;
 		if (props.startDate) this.startDate = props.startDate;
-		if (props.copyStartDate) this.copyStartDate = props.copyStartDate;
+		if (props.copyingSince) this.copyingSince = props.copyingSince;
 	}
 
 	public getStudentIds(): EntityId[] {
