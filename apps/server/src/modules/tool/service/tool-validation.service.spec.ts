@@ -129,7 +129,9 @@ describe('ToolValidation', () => {
 
 					await expect(result).resolves.not.toThrow();
 				});
+			});
 
+			describe('when default value does not match regex', () => {
 				it('should throw', async () => {
 					const externalToolDO: ExternalToolDO = externalToolDOFactory
 						.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
@@ -302,16 +304,6 @@ describe('ToolValidation', () => {
 				await expect(result).resolves.not.toThrow();
 			});
 
-			it('should validate the default with the regular expression', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
-					.withCustomParameters(1, { default: '[' })
-					.buildWithId();
-
-				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
-
-				await expect(result).resolves.not.toThrow();
-			});
-
 			it('throw when external tools has a faulty regular expression', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory
 					.withCustomParameters(1, { regex: '[' })
@@ -338,7 +330,9 @@ describe('ToolValidation', () => {
 
 					await expect(result).resolves.not.toThrow();
 				});
+			});
 
+			describe('when default value does not match regex', () => {
 				it('should throw', async () => {
 					const externalToolDO: ExternalToolDO = externalToolDOFactory
 						.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
