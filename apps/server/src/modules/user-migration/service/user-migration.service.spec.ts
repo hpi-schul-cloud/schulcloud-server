@@ -42,10 +42,11 @@ describe('UserMigrationService', () => {
 		describe('when the migration is possible', () => {
 			it('should return true', async () => {
 				const officialSchoolNumber = '3';
+				const date = new Date();
 				const school: SchoolDO = new SchoolDO({
 					name: 'schoolName',
 					officialSchoolNumber,
-					oauthMigrationPossible: true,
+					oauthMigrationPossible: date,
 				});
 
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
@@ -59,10 +60,11 @@ describe('UserMigrationService', () => {
 		describe('when the migration is mandatory', () => {
 			it('should return true', async () => {
 				const officialSchoolNumber = '3';
+				const date = new Date();
 				const school: SchoolDO = new SchoolDO({
 					name: 'schoolName',
 					officialSchoolNumber,
-					oauthMigrationMandatory: true,
+					oauthMigrationMandatory: date,
 				});
 
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
