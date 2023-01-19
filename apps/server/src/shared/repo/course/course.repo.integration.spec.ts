@@ -346,4 +346,20 @@ describe('course repo', () => {
 			expect(foundCourse.courseGroups[0].id).toEqual(courseGroup.id);
 		});
 	});
+
+	describe('unset optional property', () => {
+		it('should remove a property that was set to undefined', async () => {
+			const course = courseFactory.build({ students: [] });
+			course.copyingSince = new Date();
+			await em.persistAndFlush([course]);
+
+			delete course.copyingSince;
+			await em.persistAndFlush([course]);
+
+			const result = await repo.findOne(course.id);
+
+			expect(result.copyingSince).toBeUndefined();
+			expect(Object.keys(result)).not.toContain('copyingSince');
+		});
+	});
 });

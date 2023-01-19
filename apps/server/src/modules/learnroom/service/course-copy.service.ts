@@ -71,7 +71,7 @@ export class CourseCopyService {
 	}
 
 	private async finishCourseCopying(courseCopy: Course) {
-		courseCopy.copyingSince = undefined;
+		delete courseCopy.copyingSince;
 		await this.courseRepo.save(courseCopy);
 		return courseCopy;
 	}
