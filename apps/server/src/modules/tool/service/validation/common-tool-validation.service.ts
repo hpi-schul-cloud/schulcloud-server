@@ -1,4 +1,4 @@
-import { CustomParameterDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ExternalToolService } from '../external-tool.service';
 
@@ -27,14 +27,6 @@ export class CommonToolValidationService {
 				}
 			});
 		}
-	}
-
-	async isClientIdUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
-		let duplicate: ExternalToolDO | null = null;
-		if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
-			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalToolDO.config.clientId);
-		}
-		return duplicate == null || duplicate.id === externalToolDO.id;
 	}
 
 	private async isNameUnique(externalToolDO: ExternalToolDO | Partial<ExternalToolDO>): Promise<boolean> {

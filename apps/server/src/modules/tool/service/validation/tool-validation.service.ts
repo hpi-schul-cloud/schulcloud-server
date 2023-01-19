@@ -13,12 +13,17 @@ export class ToolValidationService {
 	async validateCreate(externalToolDO: ExternalToolDO): Promise<void> {
 		await this.commonToolValidationService.validateCommon(externalToolDO);
 
-		if (
-			externalToolDO.config instanceof Oauth2ToolConfigDO &&
-			!(await this.commonToolValidationService.isClientIdUnique(externalToolDO))
-		) {
+		if (externalToolDO.config instanceof Oauth2ToolConfigDO && !(await this.isClientIdUnique(externalToolDO))) {
 			throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`);
 		}
+	}
+
+	private async isClientIdUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
+		let duplicate: ExternalToolDO | null = null;
+		if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
+			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalToolDO.config.clientId);
+		}
+		return duplicate == null || duplicate.id === externalToolDO.id;
 	}
 
 	async validateUpdate(toolId: string, externalToolDO: Partial<ExternalToolDO>): Promise<void> {

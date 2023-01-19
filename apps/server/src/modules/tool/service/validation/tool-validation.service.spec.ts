@@ -52,36 +52,38 @@ describe('ToolValidation', () => {
 		});
 
 		describe('when external tool config has oauth config', () => {
-			it('should call service to check if clientId is unique', async () => {
+			it('should not find a tool with this client id', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().build();
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
 
-				await service.validateCreate(externalToolDO);
+				const result: Promise<void> = service.validateCreate(externalToolDO);
 
-				expect(commonToolValidationService.isClientIdUnique).toHaveBeenCalledWith(externalToolDO);
+				await expect(result).resolves.not.toThrow();
 			});
 
-			describe('when clientId is not unique', () => {
-				it('should throw exception', async () => {
-					const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().build();
-					commonToolValidationService.isClientIdUnique.mockResolvedValue(false);
+			it('should return when clientId is unique', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalToolDO);
 
-					const func = () => service.validateCreate(externalToolDO);
+				const result: Promise<void> = service.validateCreate(externalToolDO);
 
-					await expect(func).rejects.toThrow(
-						new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`)
-					);
-				});
+				await expect(result).resolves.not.toThrow();
 			});
 
-			describe('when clientId is unique', () => {
-				it('should return without error', async () => {
-					const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().build();
-					commonToolValidationService.isClientIdUnique.mockResolvedValue(true);
+			it('should find a tool with this client id', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withOauth2Config({ clientId: 'sameClientId' })
+					.build();
+				const existingExternalToolDO: ExternalToolDO = externalToolDOFactory
+					.withOauth2Config({ clientId: 'sameClientId' })
+					.buildWithId();
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(existingExternalToolDO);
 
-					await service.validateCreate(externalToolDO);
+				const result: Promise<void> = service.validateCreate(externalToolDO);
 
-					expect(commonToolValidationService.isClientIdUnique).toHaveBeenCalledWith(externalToolDO);
-				});
+				await expect(result).rejects.toThrow(
+					new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`)
+				);
 			});
 		});
 	});
