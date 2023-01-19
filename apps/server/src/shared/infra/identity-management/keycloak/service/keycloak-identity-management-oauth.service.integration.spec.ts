@@ -1,23 +1,33 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
-import { ServerModule } from '@src/modules/server';
-import { KeycloakPasswordCredentialsService } from './keycloak-password-credentials.service';
+import { LoggerModule } from '@src/core/logger';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { ConfigModule } from '@nestjs/config';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
+import { KeycloakIdentityManagementOauthService } from './keycloak-identity-management-oauth.service';
+import { KeycloakConfigurationService } from './keycloak-configuration.service';
 
-describe('KeycloakPasswordCredentialsService Integration', () => {
+describe('KeycloakIdentityManagementOauthService Integration', () => {
 	let module: TestingModule;
-	let kcPasswordCredentialsService: KeycloakPasswordCredentialsService;
+	let kcIdmOauthService: KeycloakIdentityManagementOauthService;
 	let kcAdministrationService: KeycloakAdministrationService;
+	let kcConfigurationService: KeycloakConfigurationService;
 	let isKeycloakReachable: boolean;
 
 	const testRealm = 'test-realm';
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [KeycloakModule, ServerModule],
+			imports: [
+				KeycloakModule,
+				LoggerModule,
+				MongoMemoryDatabaseModule.forRoot({ allowGlobalContext: true }),
+				ConfigModule.forRoot({ isGlobal: true }),
+			],
 		}).compile();
-		kcPasswordCredentialsService = module.get(KeycloakPasswordCredentialsService);
+		kcIdmOauthService = module.get(KeycloakIdentityManagementOauthService);
 		kcAdministrationService = module.get(KeycloakAdministrationService);
+		kcConfigurationService = module.get(KeycloakConfigurationService);
 		isKeycloakReachable = await kcAdministrationService.testKcConnection();
 	});
 
@@ -28,7 +38,7 @@ describe('KeycloakPasswordCredentialsService Integration', () => {
 	beforeEach(async () => {
 		if (isKeycloakReachable) {
 			const kc = await kcAdministrationService.callKcAdminClient();
-			await kc.realms.create({ realm: testRealm, editUsernameAllowed: true });
+			await kc.realms.create({ realm: testRealm, enabled: true, editUsernameAllowed: true });
 			kc.setConfig({ realmName: testRealm });
 		}
 	});
@@ -40,7 +50,7 @@ describe('KeycloakPasswordCredentialsService Integration', () => {
 		}
 	});
 
-	describe('checkCredentials', () => {
+	describe('resourceOwnerPasswordGrant', () => {
 		describe('when entering valid credentials', () => {
 			const setup = async () => {
 				const username = 'john.doe';
@@ -48,6 +58,7 @@ describe('KeycloakPasswordCredentialsService Integration', () => {
 				const kc = await kcAdministrationService.callKcAdminClient();
 				await kc.users.create({
 					username,
+					enabled: true,
 					credentials: [
 						{
 							type: 'password',
@@ -55,13 +66,14 @@ describe('KeycloakPasswordCredentialsService Integration', () => {
 						},
 					],
 				});
+				await kcConfigurationService.configureClient();
 				return { username, password };
 			};
 
 			it('should return jwt', async () => {
 				if (!isKeycloakReachable) return;
 				const { username, password } = await setup();
-				const jwt = await kcPasswordCredentialsService.checkCredentials(username, password);
+				const jwt = await kcIdmOauthService.resourceOwnerPasswordGrant(username, password);
 				expect(jwt).toBeDefined();
 			});
 		});
@@ -76,7 +88,7 @@ describe('KeycloakPasswordCredentialsService Integration', () => {
 			it('should return undefined', async () => {
 				if (!isKeycloakReachable) return;
 				const { username, password } = setup();
-				const jwt = await kcPasswordCredentialsService.checkCredentials(username, password);
+				const jwt = await kcIdmOauthService.resourceOwnerPasswordGrant(username, password);
 				expect(jwt).not.toBeDefined();
 			});
 		});
