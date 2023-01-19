@@ -244,7 +244,7 @@ Mocking in unit and integration tests.
 
 ```
 
-Mocking in api (.e2e) tests.
+Mocking in api tests.
 > A better solution based on nestjs configuration module must be figured out and implemented.
 > Please feel free to improve this part and documentation.
 

@@ -51,11 +51,19 @@ export class DeleteOrphanedFilesUc {
 	}
 
 	private async deleteOrphans(fileRecords: FileRecord[]) {
-		const promises = fileRecords.map(async (fileRecord) => {
-			await this.deleteOrphan(fileRecord);
-		});
+		const chunkSize = 50;
+		const chunks: FileRecord[][] = [];
+		for (let i = 0; i < fileRecords.length; i += chunkSize) {
+			const chunk = fileRecords.slice(i, i + chunkSize);
+			chunks.push(chunk);
+		}
 
-		await Promise.all(promises);
+		// eslint-disable-next-line no-restricted-syntax
+		for await (const chunk of chunks) {
+			const promises = chunk.map(async (fileRecord) => this.deleteOrphan(fileRecord));
+
+			await Promise.all(promises);
+		}
 	}
 
 	private async deleteOrphan(fileRecord: FileRecord) {

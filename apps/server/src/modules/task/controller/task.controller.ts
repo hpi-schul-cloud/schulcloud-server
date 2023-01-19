@@ -4,12 +4,10 @@ import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-// todo  @src/modules/learnroom/* must be replaced
-import { CopyApiResponse } from '@src/modules/learnroom/controller/dto/copy.response';
-import { CopyMapper } from '@src/modules/learnroom/mapper/copy.mapper';
-import { TaskCopyUC } from '@src/modules/learnroom/uc/task-copy.uc';
+import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
 import { serverConfig } from '@src/modules/server/server.config';
 import { TaskMapper } from '../mapper';
+import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
 import { TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
 import { TaskCopyApiParams } from './dto/task-copy.params';
