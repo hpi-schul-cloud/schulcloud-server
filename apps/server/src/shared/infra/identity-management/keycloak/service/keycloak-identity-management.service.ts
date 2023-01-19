@@ -5,14 +5,10 @@ import { Injectable } from '@nestjs/common';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
-import { KeycloakPasswordCredentialsService } from './keycloak-password-credentials.service';
 
 @Injectable()
 export class KeycloakIdentityManagementService extends IdentityManagementService {
-	public constructor(
-		private readonly kcAdminClient: KeycloakAdministrationService,
-		private readonly kcPasswordCredentialsService: KeycloakPasswordCredentialsService
-	) {
+	public constructor(private readonly kcAdminClient: KeycloakAdministrationService) {
 		super();
 	}
 
@@ -126,10 +122,6 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	async getAllAccounts(): Promise<IAccount[]> {
 		const keycloakUsers = await (await this.kcAdminClient.callKcAdminClient()).users.find();
 		return keycloakUsers.map((user: UserRepresentation) => this.extractAccount(user));
-	}
-
-	async checkPasswordCredentials(username: string, password: string): Promise<string | undefined> {
-		return this.kcPasswordCredentialsService.checkCredentials(username, password);
 	}
 
 	async deleteAccountById(id: string): Promise<string> {

@@ -8,14 +8,14 @@ import { ICurrentUser } from '@shared/domain';
 import { CurrentUserMapper } from '@shared/domain/mapper/current-user.mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { GuardAgainst } from '@shared/common/utils/guard-against';
-import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
+import { IdentityManagementOathService } from '@shared/infra/identity-management';
 import { AuthenticationService } from '../services/authentication.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
 	constructor(
 		private readonly authenticationService: AuthenticationService,
-		private readonly idmService: IdentityManagementService,
+		private readonly idmOauthService: IdentityManagementOathService,
 		private readonly configService: ConfigService,
 		private readonly userRepo: UserRepo
 	) {
@@ -29,7 +29,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
 		// TODO: create a new feature flag?
 		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED')) {
-			const jwt = await this.idmService.checkPasswordCredentials(username, password);
+			const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(username, password);
 			GuardAgainst.nullOrUndefined(jwt, new UnauthorizedException());
 		} else {
 			await this.checkCredentials(password, accountPassword, account);
