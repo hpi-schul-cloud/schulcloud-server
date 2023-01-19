@@ -1,84 +1,89 @@
-import { OauthConfig } from '@shared/domain';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { SystemService, SystemDto } from '@src/modules/system/service';
-import { PageContentDto } from './dto/page-content.dto';
+import { SystemDto, SystemService } from '@src/modules/system/service';
 import { PageTypes } from '../interface/page-types.enum';
+import { PageContentDto } from './dto/page-content.dto';
 
 @Injectable()
 export class UserMigrationService {
-	private readonly PROCESS_MIGRATION_BASE_URL: string = '/api/v3/oauth/migration';
+	private readonly hostUrl: string;
 
-	constructor(private readonly systemService: SystemService) {}
+	private readonly dashboardUrl: string = '/dashboard';
+
+	private readonly logoutUrl: string = '/logout';
+
+	private readonly loginUrl: string = '/login';
+
+	constructor(private readonly systemService: SystemService) {
+		this.hostUrl = Configuration.get('HOST') as string;
+	}
 
 	async getPageContent(pageType: PageTypes, sourceId: string, targetId: string): Promise<PageContentDto> {
-		const content: PageContentDto = new PageContentDto({ proceedButtonUrl: '', cancelButtonUrl: '' });
 		const sourceSystem: SystemDto = await this.systemService.findById(sourceId);
 		const targetSystem: SystemDto = await this.systemService.findById(targetId);
 
-		content.proceedButtonUrl = this.getOauthLoginUrl(targetSystem);
+		const targetSystemLoginUrl: URL = this.getOauthLoginUrl(targetSystem);
+		targetSystemLoginUrl.searchParams.set('redirect_uri', this.getMigrationRedirectUri(targetId));
 
 		switch (pageType) {
-			case PageTypes.START_FROM_TARGET_SYSTEM:
-				content.proceedButtonUrl = this.getOauthLoginUrl(
-					sourceSystem,
-					this.getOauthLoginUrl(targetSystem, `${this.PROCESS_MIGRATION_BASE_URL}`)
-				);
-				content.cancelButtonUrl = this.getLoginUrl();
-				break;
-			case PageTypes.START_FROM_SOURCE_SYSTEM:
-				content.cancelButtonUrl = this.getDashboardUrl();
-				break;
-			case PageTypes.START_FROM_SOURCE_SYSTEM_MANDATORY:
-				content.cancelButtonUrl = this.getLogoutUrl();
-				break;
-			default:
-				throw new BadRequestException('Unknown PageType requested');
-		}
+			case PageTypes.START_FROM_TARGET_SYSTEM: {
+				const sourceSystemLoginUrl: URL = this.getOauthLoginUrl(sourceSystem, targetSystemLoginUrl.toString());
 
-		return content;
+				const content: PageContentDto = new PageContentDto({
+					proceedButtonUrl: sourceSystemLoginUrl.toString(),
+					cancelButtonUrl: this.loginUrl,
+				});
+				return content;
+			}
+			case PageTypes.START_FROM_SOURCE_SYSTEM: {
+				const content: PageContentDto = new PageContentDto({
+					proceedButtonUrl: targetSystemLoginUrl.toString(),
+					cancelButtonUrl: this.dashboardUrl,
+				});
+				return content;
+			}
+			case PageTypes.START_FROM_SOURCE_SYSTEM_MANDATORY: {
+				const content: PageContentDto = new PageContentDto({
+					proceedButtonUrl: targetSystemLoginUrl.toString(),
+					cancelButtonUrl: this.logoutUrl,
+				});
+				return content;
+			}
+			default: {
+				throw new BadRequestException('Unknown PageType requested');
+			}
+		}
 	}
 
-	private getOauthLoginUrl(system: SystemDto, postLoginUri?: string): string {
+	private getOauthLoginUrl(system: SystemDto, postLoginUri?: string): URL {
 		if (!system.oauthConfig) {
-			throw new EntityNotFoundError(OauthConfig.name);
+			throw new EntityNotFoundError(`System ${system?.id || 'unknown'} has no oauth config`);
 		}
 
 		const { oauthConfig } = system;
 
-		const encodedURI = new URL(oauthConfig.authEndpoint);
-		encodedURI.searchParams.append('client_id', oauthConfig.clientId);
-		encodedURI.searchParams.append('redirect_uri', this.createRedirectUri(oauthConfig.redirectUri, postLoginUri));
-		encodedURI.searchParams.append('response_type', oauthConfig.responseType);
-		encodedURI.searchParams.append('scope', oauthConfig.scope);
+		const loginUrl: URL = new URL(oauthConfig.authEndpoint);
+		loginUrl.searchParams.append('client_id', oauthConfig.clientId);
+		loginUrl.searchParams.append('redirect_uri', this.getRedirectUri(oauthConfig.redirectUri, postLoginUri).toString());
+		loginUrl.searchParams.append('response_type', oauthConfig.responseType);
+		loginUrl.searchParams.append('scope', oauthConfig.scope);
 
-		return encodedURI.toString();
+		return loginUrl;
 	}
 
-	private createRedirectUri(redirectUri: string, postLoginUri?: string): string {
+	private getRedirectUri(redirectUri: string, postLoginUri?: string): URL {
 		const combinedUri = new URL(redirectUri);
 		if (postLoginUri) {
 			combinedUri.searchParams.append('postLoginRedirect', postLoginUri);
 		}
 
+		return combinedUri;
+	}
+
+	private getMigrationRedirectUri(systemId: string): string {
+		const combinedUri = new URL(this.hostUrl);
+		combinedUri.pathname = `/api/v3/sso/oauth/${systemId}/migration`;
 		return combinedUri.toString();
-	}
-
-	private getDashboardUrl(): string {
-		const dashboardUrl = '/dashboard';
-
-		return dashboardUrl;
-	}
-
-	private getLogoutUrl(): string {
-		const logoutUrl = '/logout';
-
-		return logoutUrl;
-	}
-
-	private getLoginUrl(): string {
-		const loginUrl = '/login';
-
-		return loginUrl;
 	}
 }
