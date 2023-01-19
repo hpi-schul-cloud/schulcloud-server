@@ -1,15 +1,18 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { CustomParameterDO, ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolService } from './external-tool.service';
 
 @Injectable()
-export class ToolValidationService {
+export class ExternalToolValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
 	async validateCreate(externalToolDO: ExternalToolDO): Promise<void> {
 		await this.validateCommon(externalToolDO);
 
-		if (externalToolDO.config instanceof Oauth2ToolConfigDO && !(await this.isClientIdUnique(externalToolDO))) {
+		if (
+			this.externalToolService.isOauth2Config(externalToolDO.config) &&
+			!(await this.isClientIdUnique(externalToolDO))
+		) {
 			throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`);
 		}
 	}
@@ -73,7 +76,7 @@ export class ToolValidationService {
 
 	private async isClientIdUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
 		let duplicate: ExternalToolDO | null = null;
-		if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
+		if (this.externalToolService.isOauth2Config(externalToolDO.config)) {
 			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalToolDO.config.clientId);
 		}
 		return duplicate == null || duplicate.id === externalToolDO.id;

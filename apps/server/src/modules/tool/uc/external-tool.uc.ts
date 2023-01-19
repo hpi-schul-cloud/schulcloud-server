@@ -4,7 +4,7 @@ import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolService } from '../service/external-tool.service';
-import { ToolValidationService } from '../service/tool-validation.service';
+import { ExternalToolValidationService } from '../service/external-tool-validation.service';
 import { CreateExternalTool, UpdateExternalTool } from './dto';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class ExternalToolUc {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly toolValidationService: ToolValidationService
+		private readonly toolValidationService: ExternalToolValidationService
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolDO: CreateExternalTool): Promise<ExternalToolDO> {

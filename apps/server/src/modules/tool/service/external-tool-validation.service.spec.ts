@@ -4,18 +4,18 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { ExternalToolService } from './external-tool.service';
-import { ToolValidationService } from './tool-validation.service';
+import { ExternalToolValidationService } from './external-tool-validation.service';
 
-describe('ToolValidation', () => {
+describe('ExternalToolValidation', () => {
 	let module: TestingModule;
-	let service: ToolValidationService;
+	let service: ExternalToolValidationService;
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				ToolValidationService,
+				ExternalToolValidationService,
 				{
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
@@ -23,7 +23,7 @@ describe('ToolValidation', () => {
 			],
 		}).compile();
 
-		service = module.get(ToolValidationService);
+		service = module.get(ExternalToolValidationService);
 		externalToolService = module.get(ExternalToolService);
 	});
 

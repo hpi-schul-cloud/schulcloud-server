@@ -1,16 +1,27 @@
-import { ApiForbiddenResponse, ApiFoundResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { Controller, Delete, Get, Param, Query } from '@nestjs/common';
+import {
+	ApiCreatedResponse,
+	ApiForbiddenResponse,
+	ApiFoundResponse,
+	ApiTags,
+	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { ICurrentUser } from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { Logger } from '@src/core/logger';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import {
 	ExternalToolSearchListResponse,
 	SchoolExternalToolIdParams,
+	SchoolExternalToolPostParams,
+	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 } from './dto';
 import { SchoolExternalToolUc } from '../uc/school-external-tool.uc';
-import { SchoolExternalToolResponseMapper } from './mapper/school-external-tool-response.mapper';
+import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from './mapper';
+import { SchoolExternalTool } from '../uc/dto/school-external-tool.types';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -18,7 +29,9 @@ import { SchoolExternalToolResponseMapper } from './mapper/school-external-tool-
 export class ToolSchoolController {
 	constructor(
 		private readonly schoolExternalToolUc: SchoolExternalToolUc,
-		private readonly responseMapper: SchoolExternalToolResponseMapper
+		private readonly responseMapper: SchoolExternalToolResponseMapper,
+		private readonly requestMapper: SchoolExternalToolRequestMapper,
+		private readonly logger: Logger
 	) {}
 
 	@Get()
@@ -44,5 +57,35 @@ export class ToolSchoolController {
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<void> {
 		await this.schoolExternalToolUc.deleteSchoolExternalTool(currentUser.userId, params.schoolExternalToolId);
+		this.logger.debug(
+			`SchoolExternalTool with id ${params.schoolExternalToolId} was deleted by user with id ${currentUser.userId}`
+		);
+	}
+
+	@Post()
+	@ApiCreatedResponse({
+		description: 'The SchoolExternalTool has been successfully created.',
+		type: SchoolExternalToolResponse,
+	})
+	@ApiForbiddenResponse()
+	@ApiUnprocessableEntityResponse()
+	@ApiUnauthorizedResponse()
+	async createSchoolExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() body: SchoolExternalToolPostParams
+	): Promise<SchoolExternalToolResponse> {
+		const schoolExternalTool: SchoolExternalTool = this.requestMapper.mapSchoolExternalToolRequest(body);
+
+		const createdSchoolExternalToolDO: SchoolExternalToolDO = await this.schoolExternalToolUc.createSchoolExternalTool(
+			currentUser.userId,
+			schoolExternalTool
+		);
+
+		const response: SchoolExternalToolResponse =
+			this.responseMapper.mapToSchoolExternalToolResponse(createdSchoolExternalToolDO);
+
+		this.logger.debug(`SchoolExternalTool with id ${response.id} was created by user with id ${currentUser.userId}`);
+
+		return response;
 	}
 }

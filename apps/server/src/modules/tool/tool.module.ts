@@ -11,10 +11,11 @@ import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-to
 import { Lti11Service } from './service/lti11.service';
 import { ExternalToolService } from './service/external-tool.service';
 import { ExternalToolServiceMapper } from './service/mapper';
-import { ToolValidationService } from './service/tool-validation.service';
+import { ExternalToolValidationService } from './service/external-tool-validation.service';
 import { ExternalToolVersionService } from './service/external-tool-version.service';
 import { SchoolExternalToolService } from './service/school-external-tool.service';
 import { CourseExternalToolService } from './service/course-external-tool.service';
+import { SchoolExternalToolValidationService } from './service/school-external-tool-validation.service';
 
 @Module({
 	imports: [LoggerModule, OauthProviderServiceModule, EncryptionModule],
@@ -28,18 +29,20 @@ import { CourseExternalToolService } from './service/course-external-tool.servic
 		ExternalToolSortingMapper,
 		SchoolExternalToolRepo,
 		CourseExternalToolRepo,
-		ToolValidationService,
+		ExternalToolValidationService,
 		ExternalToolVersionService,
 		SchoolExternalToolService,
 		CourseExternalToolService,
+		SchoolExternalToolValidationService,
 	],
 	exports: [
 		Lti11Service,
 		ExternalToolService,
-		ToolValidationService,
+		ExternalToolValidationService,
 		SchoolExternalToolService,
 		CourseExternalToolService,
 		ExternalToolRepoMapper,
+		SchoolExternalToolValidationService,
 	],
 })
 export class ToolModule {}
