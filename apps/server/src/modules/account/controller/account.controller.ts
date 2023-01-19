@@ -51,7 +51,6 @@ export class AccountController {
 	// IMPORTANT!!!
 	// updateMyAccount has to occur before updateAccountById, because Nest.js
 	// will always use the first path match and me will be treated as a path parameter
-	// (some e2e tests might fail, if the method order is changed)
 	@Patch('me')
 	@ApiOperation({ summary: 'Updates an account for the authenticated user.' })
 	@ApiResponse({ status: 200, description: 'Account was successfully updated.' })
