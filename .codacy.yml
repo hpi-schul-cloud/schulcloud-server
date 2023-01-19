@@ -8,4 +8,3 @@ exclude_paths:
   - "**.js"
   - "**.spec.js"
   - "**.spec.ts"
-  - "**.e2e-spec.ts"
