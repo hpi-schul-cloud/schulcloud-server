@@ -40,7 +40,30 @@ describe('CommonToolValidationService', () => {
 
 	describe('validateCommon is called', () => {
 		describe('when tool is valid', () => {
-			it('should throw no excpetion', async () => {
+			it('should return without exception', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+				externalToolService.findExternalToolByName.mockResolvedValue(externalToolDO);
+
+				const result: Promise<void> = service.validateCommon(externalToolDO);
+
+				await expect(result).resolves.not.toThrow();
+			});
+		});
+
+		describe('when checking if tool name is unique', () => {
+			it('should throw an exception when name already exists', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({ name: 'sameName' });
+				const existingExternalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId({ name: 'sameName' });
+				externalToolService.findExternalToolByName.mockResolvedValue(existingExternalToolDO);
+
+				const result: Promise<void> = service.validateCommon(externalToolDO);
+
+				await expect(result).rejects.toThrow(
+					new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used.`)
+				);
+			});
+
+			it('should return when tool name is undefined', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					name: undefined,
 					parameters: [
@@ -52,29 +75,6 @@ describe('CommonToolValidationService', () => {
 				const func = () => service.validateCommon(externalToolDO);
 
 				await expect(func()).resolves.not.toThrow();
-			});
-		});
-
-		describe('when name already exists', () => {
-			it('should find itself', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
-				externalToolService.findExternalToolByName.mockResolvedValue(externalToolDO);
-
-				const result: Promise<void> = service.validateCommon(externalToolDO);
-
-				await expect(result).resolves.not.toThrow();
-			});
-
-			it('should find a tool with the same name', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({ name: 'sameName' });
-				const existingExternalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId({ name: 'sameName' });
-				externalToolService.findExternalToolByName.mockResolvedValue(existingExternalToolDO);
-
-				const result: Promise<void> = service.validateCommon(externalToolDO);
-
-				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used.`)
-				);
 			});
 		});
 
