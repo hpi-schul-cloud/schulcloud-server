@@ -11,7 +11,7 @@ import { SyncFileItem, SyncFileItemData } from '../types';
 // TODO: Remove when BC-1496 is done!
 const query = (aggregationSize: number) => [
 	{
-		$match: { fileIds: { $exists: true, $ne: [] } },
+		$match: { gradeFileIds: { $exists: true, $ne: [] } },
 	},
 	{
 		$sort: {
@@ -21,7 +21,7 @@ const query = (aggregationSize: number) => [
 	{
 		$lookup: {
 			from: 'files',
-			localField: 'fileIds',
+			localField: 'gradeFileIds',
 			foreignField: '_id',
 			as: 'files',
 		},
