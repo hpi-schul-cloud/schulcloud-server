@@ -51,9 +51,13 @@ describe('AuthenticationService', () => {
 		jwtService = module.get(JwtService);
 	});
 
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('loadAccount', () => {
-		describe('when resolving an account', () => {
-			it('should load account without system', async () => {
+		describe('when resolving an account without system id', () => {
+			it('should find an account', async () => {
 				accountService.searchByUsernameExactMatch.mockResolvedValueOnce({
 					accounts: [{ ...mockAccount, systemId: 'mockSystemId' }, mockAccount],
 					total: 2,
@@ -61,8 +65,10 @@ describe('AuthenticationService', () => {
 				const account = await authenticationService.loadAccount('username');
 				expect(account).toEqual(mockAccount);
 			});
+		});
 
-			it('should find account with system', async () => {
+		describe('when resolving an account with system id', () => {
+			it('should find an account', async () => {
 				accountService.findByUsernameAndSystemId.mockResolvedValueOnce({ ...mockAccount, systemId: 'mockSystemId' });
 				const account = await authenticationService.loadAccount('username', 'mockSystemId');
 				expect(account).toEqual({ ...mockAccount, systemId: 'mockSystemId' });
@@ -111,21 +117,21 @@ describe('AuthenticationService', () => {
 
 	describe('checkBrutForce', () => {
 		describe('when user tries multiple logins', () => {
-			beforeEach(() => {
-				accountService.updateLastTriedFailedLogin.mockClear();
-			});
+			const setup = (elapsedSeconds: number) => {
+				const lasttriedFailedLogin = new Date();
+				lasttriedFailedLogin.setSeconds(lasttriedFailedLogin.getSeconds() - elapsedSeconds);
+				return lasttriedFailedLogin;
+			};
 
 			it('should fail for account with recently failed login', () => {
-				const lasttriedFailedLogin = new Date();
-				lasttriedFailedLogin.setSeconds(lasttriedFailedLogin.getSeconds() - 14);
+				const lasttriedFailedLogin = setup(14);
 				expect(() =>
 					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as AccountDto)
 				).toThrow(BruteForceError);
 			});
 
 			it('should not fail for account with failed login above threshold', () => {
-				const lasttriedFailedLogin = new Date();
-				lasttriedFailedLogin.setSeconds(lasttriedFailedLogin.getSeconds() - 16);
+				const lasttriedFailedLogin = setup(16);
 				expect(() =>
 					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as AccountDto)
 				).not.toThrow();

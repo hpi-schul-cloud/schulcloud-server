@@ -15,7 +15,7 @@ import {
 	User,
 	VideoConferenceDO,
 } from '@shared/domain';
-import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { CalendarService } from '@shared/infra/calendar';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { CourseRepo, TeamsRepo, UserRepo, VideoConferenceRepo } from '@shared/repo';

@@ -4,7 +4,7 @@ import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolService } from '../service/external-tool.service';
-import { ToolValidationService } from '../service/tool-validation.service';
+import { ToolValidationService } from '../service/validation/tool-validation.service';
 import { CreateExternalTool, UpdateExternalTool } from './dto';
 
 @Injectable()
@@ -16,16 +16,16 @@ export class ExternalToolUc {
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolDO: CreateExternalTool): Promise<ExternalToolDO> {
-		await this.ensurePermission(userId);
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateCreate(externalToolDO);
 
 		const tool: Promise<ExternalToolDO> = this.externalToolService.createExternalTool(externalToolDO);
 		return tool;
 	}
 
-	private async ensurePermission(userId: string) {
+	private async ensurePermission(userId: EntityId, permission: Permission) {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+		this.authorizationService.checkAllPermissions(user, [permission]);
 	}
 
 	async updateExternalTool(
@@ -33,7 +33,7 @@ export class ExternalToolUc {
 		toolId: string,
 		externalTool: UpdateExternalTool
 	): Promise<ExternalToolDO> {
-		await this.ensurePermission(userId);
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
 		const loaded: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
@@ -48,21 +48,21 @@ export class ExternalToolUc {
 		query: Partial<ExternalToolDO>,
 		options: IFindOptions<ExternalToolDO>
 	): Promise<Page<ExternalToolDO>> {
-		await this.ensurePermission(userId);
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
 		const tools: Page<ExternalToolDO> = await this.externalToolService.findExternalTools(query, options);
 		return tools;
 	}
 
 	async getExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolDO> {
-		await this.ensurePermission(userId);
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
 		const tool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
 		return tool;
 	}
 
 	async deleteExternalTool(userId: EntityId, toolId: EntityId): Promise<void> {
-		await this.ensurePermission(userId);
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
 		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);
 		return promise;

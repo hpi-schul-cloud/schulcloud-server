@@ -209,7 +209,7 @@ export class KeycloakConfigurationService {
 			authEndpoint: response.authorization_endpoint as string,
 			logoutEndpoint: response.end_session_endpoint as string,
 			jwksEndpoint: response.jwks_uri as string,
-			issuer: kcRealmBaseUrl,
+			issuer: response.issuer as string,
 		};
 		return keycloakSystem;
 	}
