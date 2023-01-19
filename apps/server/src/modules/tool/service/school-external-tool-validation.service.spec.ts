@@ -63,93 +63,93 @@ describe('SchoolExternalToolValidationService', () => {
 				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(schoolExternalToolDO.toolId);
 			});
 		});
-	});
 
-	describe('checkVersionMatch is called', () => {
-		describe('when version of externalTool and schoolExternalTool are equal', () => {
-			it('should return without error', async () => {
-				const { schoolExternalToolDO, externalToolDO } = setup({ version: 1337 }, { toolVersion: 1337 });
+		describe('when checking version', () => {
+			describe('version of externalTool and schoolExternalTool are equal', () => {
+				it('should return without error', async () => {
+					const { schoolExternalToolDO, externalToolDO } = setup({ version: 1337 }, { toolVersion: 1337 });
 
-				const func = () => service.validateCreate(schoolExternalToolDO);
+					const func = () => service.validateCreate(schoolExternalToolDO);
 
-				await expect(func()).resolves.not.toThrowError(
-					new UnprocessableEntityException(
-						`The version ${schoolExternalToolDO.toolVersion} of given schoolExternalTool does not match the externalTool version ${externalToolDO.version}`
-					)
-				);
+					await expect(func()).resolves.not.toThrowError(
+						new UnprocessableEntityException(
+							`The version ${schoolExternalToolDO.toolVersion} of given schoolExternalTool does not match the externalTool version ${externalToolDO.version}`
+						)
+					);
+				});
+			});
+
+			describe('version of externalTool and schoolExternalTool are different', () => {
+				it('should throw error', async () => {
+					const { schoolExternalToolDO, externalToolDO } = setup({ version: 8383 }, { toolVersion: 1337 });
+
+					const func = () => service.validateCreate(schoolExternalToolDO);
+
+					await expect(func()).rejects.toThrowError(
+						new UnprocessableEntityException(
+							`The version ${schoolExternalToolDO.toolVersion} of given schoolExternalTool does not match the externalTool version ${externalToolDO.version}.`
+						)
+					);
+				});
 			});
 		});
 
-		describe('when externalTool and schoolExternalTool have different versions', () => {
-			it('should throw error', async () => {
-				const { schoolExternalToolDO, externalToolDO } = setup({ version: 8383 }, { toolVersion: 1337 });
+		describe('when checking parameters', () => {
+			const expectedException: UnprocessableEntityException = new UnprocessableEntityException(
+				'The given schoolExternalTool has one or more duplicates in its parameters.'
+			);
 
-				const func = () => service.validateCreate(schoolExternalToolDO);
+			describe('checking for duplicates', () => {
+				describe('when given parameters have a case sensitive duplicate', () => {
+					it('should throw error', async () => {
+						const { schoolExternalToolDO } = setup(undefined, {
+							parameters: [
+								{ name: 'nameDuplicate', value: 'value' },
+								{ name: 'nameDuplicate', value: 'value' },
+							],
+						});
 
-				await expect(func()).rejects.toThrowError(
-					new UnprocessableEntityException(
-						`The version ${schoolExternalToolDO.toolVersion} of given schoolExternalTool does not match the externalTool version ${externalToolDO.version}.`
-					)
-				);
-			});
-		});
-	});
+						const func = () => service.validateCreate(schoolExternalToolDO);
 
-	describe('checkForDuplicateParameters is called', () => {
-		const expectedException: UnprocessableEntityException = new UnprocessableEntityException(
-			'The given schoolExternalTool has one or more duplicates in its parameters.'
-		);
-
-		describe('when given parameters has duplicates', () => {
-			it('should throw error', async () => {
-				const { schoolExternalToolDO } = setup(undefined, {
-					parameters: [
-						{ name: 'nameDuplicate', value: 'value' },
-						{ name: 'nameDuplicate', value: 'value' },
-					],
+						await expect(func()).rejects.toThrowError(expectedException);
+					});
 				});
 
-				const func = () => service.validateCreate(schoolExternalToolDO);
+				describe('when given parameters have case insensitive duplicates', () => {
+					it('should throw error', async () => {
+						const { schoolExternalToolDO } = setup(undefined, {
+							parameters: [
+								{ name: 'nameDuplicate', value: 'value' },
+								{ name: 'nameduplicate', value: 'value' },
+							],
+						});
 
-				await expect(func()).rejects.toThrowError(expectedException);
-			});
-		});
+						const func = () => service.validateCreate(schoolExternalToolDO);
 
-		describe('when given parameters has case insensitive duplicates', () => {
-			it('should throw error', async () => {
-				const { schoolExternalToolDO } = setup(undefined, {
-					parameters: [
-						{ name: 'nameDuplicate', value: 'value' },
-						{ name: 'nameduplicate', value: 'value' },
-					],
+						await expect(func()).rejects.toThrowError(expectedException);
+					});
 				});
 
-				const func = () => service.validateCreate(schoolExternalToolDO);
+				describe('when given parameters have no duplicates', () => {
+					it('should return without error', async () => {
+						const { schoolExternalToolDO } = setup(undefined, {
+							parameters: [
+								{ name: 'nameNoDuplicate1', value: 'value' },
+								{ name: 'nameNoDuplicate2', value: 'value' },
+							],
+						});
 
-				await expect(func()).rejects.toThrowError(expectedException);
-			});
-		});
+						const func = () => service.validateCreate(schoolExternalToolDO);
 
-		describe('when given parameters has no duplicates', () => {
-			it('should return without error', async () => {
-				const { schoolExternalToolDO } = setup(undefined, {
-					parameters: [
-						{ name: 'nameNoDuplicate1', value: 'value' },
-						{ name: 'nameNoDuplicate2', value: 'value' },
-					],
+						await expect(func()).resolves.not.toThrowError(expectedException);
+					});
 				});
-
-				const func = () => service.validateCreate(schoolExternalToolDO);
-
-				await expect(func()).resolves.not.toThrowError(expectedException);
 			});
-		});
 
-		describe('checkCustomParameterEntries is called', () => {
-			describe('externalToolDO has an parameter', () => {
-				describe('with scope', () => {
-					describe('school', () => {
-						describe('which is required and is missing on schoolExternalToolDO params', () => {
+			describe('when parameter entries are given', () => {
+				describe('when checking scope', () => {
+					describe('when scope is school', () => {
+						describe('when required parameter is missing', () => {
 							it('should throw exception', async () => {
 								const missingParam: CustomParameterDO = customParameterDOFactory.build({
 									name: 'isMissing',
@@ -173,7 +173,7 @@ describe('SchoolExternalToolValidationService', () => {
 							});
 						});
 
-						describe('which is optional and is missing on schoolExternalToolDO params', () => {
+						describe('when parameter is optional but is missing on params', () => {
 							it('should return without error', async () => {
 								const { schoolExternalToolDO } = setup(
 									{
@@ -199,7 +199,7 @@ describe('SchoolExternalToolValidationService', () => {
 						});
 					});
 
-					describe('with another scope than school', () => {
+					describe('when scope is not school', () => {
 						it('should return without any error', async () => {
 							const notSchoolParam: CustomParameterDO = customParameterDOFactory.build({
 								name: 'notSchoolParam',
@@ -222,9 +222,9 @@ describe('SchoolExternalToolValidationService', () => {
 					});
 				});
 
-				describe('with type', () => {
-					describe('string', () => {
-						describe('which matches the schoolExternalToolDO param value', () => {
+				describe('when validating type', () => {
+					describe('when type is string', () => {
+						describe('that matches param value', () => {
 							it('should return without error', async () => {
 								const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
 									name: 'correctType',
@@ -249,8 +249,8 @@ describe('SchoolExternalToolValidationService', () => {
 						});
 					});
 
-					describe('number', () => {
-						describe('which matches the schoolExternalToolDO param value', () => {
+					describe('when type is number', () => {
+						describe('that matches param value', () => {
 							it('should return without error', async () => {
 								const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
 									name: 'correctType',
@@ -274,7 +274,7 @@ describe('SchoolExternalToolValidationService', () => {
 							});
 						});
 
-						describe('which not matches schoolExternalToolDO param value', () => {
+						describe('that not matches param value', () => {
 							it('should throw exception', async () => {
 								const wrongTypeParam: CustomParameterDO = customParameterDOFactory.build({
 									name: 'wrongType',
@@ -299,8 +299,8 @@ describe('SchoolExternalToolValidationService', () => {
 						});
 					});
 
-					describe('boolean', () => {
-						describe('which matches the schoolExternalToolDO param value', () => {
+					describe('when type is boolean', () => {
+						describe('that matches param value', () => {
 							it('should return without error', async () => {
 								const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
 									name: 'correctType',
@@ -324,7 +324,7 @@ describe('SchoolExternalToolValidationService', () => {
 							});
 						});
 
-						describe('which not matches schoolExternalToolDO param value', () => {
+						describe('that not matches param value', () => {
 							it('should throw exception', async () => {
 								const wrongTypeParam: CustomParameterDO = customParameterDOFactory.build({
 									name: 'wrongType',
@@ -349,8 +349,8 @@ describe('SchoolExternalToolValidationService', () => {
 						});
 					});
 
-					describe('auto_courseId', () => {
-						describe('which matches the schoolExternalToolDO param value', () => {
+					describe('when type is auto_courseId', () => {
+						describe('that matches param value', () => {
 							it('should return without error', async () => {
 								const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
 									name: 'correctType',
@@ -375,8 +375,8 @@ describe('SchoolExternalToolValidationService', () => {
 						});
 					});
 
-					describe('auto_courseName', () => {
-						describe('which matches the schoolExternalToolDO param value', () => {
+					describe('when type is auto_courseName', () => {
+						describe('that matches param value', () => {
 							it('should return without error', async () => {
 								const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
 									name: 'correctType',
@@ -401,8 +401,8 @@ describe('SchoolExternalToolValidationService', () => {
 						});
 					});
 
-					describe('auto_schoolId', () => {
-						describe('which matches the schoolExternalToolDO param value', () => {
+					describe('when type is auto_schoolId', () => {
+						describe('that matches the param value', () => {
 							it('should return without error', async () => {
 								const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
 									name: 'correctType',
@@ -428,7 +428,7 @@ describe('SchoolExternalToolValidationService', () => {
 					});
 				});
 
-				describe('with type string and regex', () => {
+				describe('when validating regex', () => {
 					describe('param value fit the regex', () => {
 						it('should return without error', async () => {
 							const validRegex: CustomParameterDO = customParameterDOFactory.build({

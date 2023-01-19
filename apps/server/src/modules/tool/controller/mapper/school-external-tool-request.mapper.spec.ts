@@ -1,7 +1,6 @@
 import { SchoolExternalToolRequestMapper } from './school-external-tool-request.mapper';
 import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../dto';
 import { SchoolExternalTool } from '../../uc/dto/school-external-tool.types';
-import { CustomParameterEntryDO } from '@shared/domain/domainobject/external-tool';
 
 describe('SchoolExternalToolRequestMapper', () => {
 	const mapper: SchoolExternalToolRequestMapper = new SchoolExternalToolRequestMapper();
