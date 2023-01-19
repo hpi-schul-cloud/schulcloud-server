@@ -91,8 +91,8 @@ export class SyncEmbeddedFilesUc {
 			}
 		}
 
-		if (entity instanceof Submission && entity.comment) {
-			const contentFileIds = this.extractFileIdsFromContent(entity.comment);
+		if (entity instanceof Submission && entity.gradeComment) {
+			const contentFileIds = this.extractFileIdsFromContent(entity.gradeComment);
 
 			if (contentFileIds !== null) {
 				fileIds.push(...contentFileIds);
@@ -176,8 +176,8 @@ export class SyncEmbeddedFilesUc {
 			});
 		} else if (entity instanceof Task && entity?.description) {
 			entity.description = this.replaceLink(entity.description, sourceFileId, fileRecordId, fileRecordName);
-		} else if (entity instanceof Submission && entity?.gradeComment) {
-			entity.gradeComment = this.replaceLink(entity.gradeComment, sourceFileId, fileRecordId, fileRecordName);
+		} else if (entity instanceof Submission && entity?.comment) {
+			entity.comment = this.replaceLink(entity.comment, sourceFileId, fileRecordId, fileRecordName);
 		} else {
 			throw new Error(`no matching condition in updateEntityLinks() for entity ${entity._id.toHexString()}`);
 		}
