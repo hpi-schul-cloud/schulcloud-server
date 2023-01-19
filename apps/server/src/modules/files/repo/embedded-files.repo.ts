@@ -20,7 +20,7 @@ const lessonsQuery = {
 } as FilterQuery<Lesson>;
 
 const submissionsQuery = {
-	gradeComment: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i'),
+	comment: new RegExp(`src=${fileUrlRegex}${fileIdRegex}`, 'i'),
 };
 
 const filesQuery = (fileIds: ObjectId[], parentId: ObjectId) => [

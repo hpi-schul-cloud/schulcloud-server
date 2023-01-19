@@ -20,15 +20,16 @@ import { OauthProviderModule } from '@src/modules/oauth-provider';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { RoleModule } from '@src/modules/role/role.module';
+import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemModule } from '@src/modules/system';
 import { TaskModule } from '@src/modules/task';
+import { TaskCardModule } from '@src/modules/task-card';
+import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
-import { VideoConferenceModule } from '@src/modules/video-conference';
-import { ToolApiModule } from '@src/modules/tool/tool-api.module';
-import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { UserMigrationApiModule } from '@src/modules/user-migration';
+import { VideoConferenceModule } from '@src/modules/video-conference';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -43,6 +44,7 @@ const serverModules = [
 	CollaborativeStorageModule,
 	OauthModule,
 	TaskModule,
+	TaskCardModule,
 	LessonApiModule,
 	NewsModule,
 	UserModule,
