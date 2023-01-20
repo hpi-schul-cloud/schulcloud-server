@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common/error';
 import { Actions, CardType, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
 import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { RichText } from '@shared/domain/types/richtext.types';
@@ -221,7 +222,7 @@ describe('TaskCardUc', () => {
 			};
 			await expect(async () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
-			}).rejects.toThrow(BadRequestException);
+			}).rejects.toThrow(ValidationError);
 		});
 		it('should create task-card', async () => {
 			await uc.create(user.id, taskCardCreateParams);
@@ -357,7 +358,7 @@ describe('TaskCardUc', () => {
 			};
 			await expect(async () => {
 				await uc.update(user.id, taskCard.id, failingTaskCardUpdateParams);
-			}).rejects.toThrow(BadRequestException);
+			}).rejects.toThrow(ValidationError);
 		});
 		it('should delete existing card elements and set the new elements', async () => {
 			const originalCardElements = taskCard.cardElements.getItems();

@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ValidationError } from '@shared/common/error';
 import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
 import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
@@ -58,7 +59,7 @@ export class TaskCardUc {
 		const card = new TaskCard(cardParams);
 
 		if (!card.isVisibleBeforeDueDate()) {
-			throw new BadRequestException();
+			throw new ValidationError('Invalid date combination');
 		}
 
 		await this.taskCardRepo.save(card);
@@ -144,7 +145,7 @@ export class TaskCardUc {
 		}
 
 		if (!card.isVisibleBeforeDueDate()) {
-			throw new BadRequestException();
+			throw new ValidationError('Invalid date combination');
 		}
 
 		await this.replaceCardElements(card, cardElements);
