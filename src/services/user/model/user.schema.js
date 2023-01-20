@@ -84,7 +84,7 @@ const userSchema = new Schema(
 			},
 		},
 		lastLoginSystemChange: { type: Date },
-		outdated: { type: Date },
+		outdatedSince: { type: Date },
 		/**
 		 * depending on system settings,
 		 * a user may opt-in or -out,

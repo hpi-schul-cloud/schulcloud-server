@@ -95,7 +95,7 @@ class AdminUsers {
 					'birthday',
 					'preferences.registrationMailSend',
 					'lastLoginSystemChange',
-					'outdated',
+					'outdatedSince',
 				],
 				skip: clientQuery.$skip || clientQuery.skip,
 				limit: clientQuery.$limit || clientQuery.limit,

@@ -68,7 +68,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			forcePasswordChange: entity.forcePasswordChange,
 			preferences: entity.preferences,
 			lastLoginSystemChange: entity.lastLoginSystemChange,
-			outdated: entity.outdated,
+			outdatedSince: entity.outdatedSince,
 		});
 
 		if (entity.roles.isInitialized(true)) {
@@ -91,7 +91,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			forcePasswordChange: entityDO.forcePasswordChange,
 			preferences: entityDO.preferences,
 			lastLoginSystemChange: entityDO.lastLoginSystemChange,
-			outdated: entityDO.outdated,
+			outdatedSince: entityDO.outdatedSince,
 		};
 	}
 }

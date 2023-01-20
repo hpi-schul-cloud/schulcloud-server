@@ -37,7 +37,7 @@ export class UserDO extends BaseDO {
 
 	lastLoginSystemChange?: Date;
 
-	outdated?: Date;
+	outdatedSince?: Date;
 
 	constructor(domainObject: UserDO) {
 		super(domainObject.id);
@@ -59,6 +59,6 @@ export class UserDO extends BaseDO {
 		this.forcePasswordChange = domainObject.forcePasswordChange;
 		this.preferences = domainObject.preferences;
 		this.lastLoginSystemChange = domainObject.lastLoginSystemChange;
-		this.outdated = domainObject.outdated;
+		this.outdatedSince = domainObject.outdatedSince;
 	}
 }
