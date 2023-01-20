@@ -42,7 +42,9 @@ describe('CommonToolValidationService', () => {
 	describe('validateCommon is called', () => {
 		describe('when tool is valid', () => {
 			it('should return without exception', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, { default: 'test', regex: '[t]', regexComment: 'testComment' })
+					.buildWithId();
 				externalToolService.findExternalToolByName.mockResolvedValue(externalToolDO);
 
 				const result: Promise<void> = service.validateCommon(externalToolDO);
@@ -129,6 +131,19 @@ describe('CommonToolValidationService', () => {
 						`A custom Parameter of the tool ${externalToolDO.name} has wrong regex attribute.`
 					)
 				);
+			});
+		});
+
+		describe('when default value does not match regex', () => {
+			it('should throw', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
+					.buildWithId();
+				externalToolService.findExternalToolByName.mockResolvedValue(null);
+
+				const func = () => service.validateCommon(externalToolDO);
+
+				await expect(func()).rejects.toThrow('The default value');
 			});
 		});
 
