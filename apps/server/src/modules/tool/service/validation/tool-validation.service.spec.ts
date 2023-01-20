@@ -116,9 +116,10 @@ describe('ToolValidation', () => {
 			});
 
 			it('should return without error if matches', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
 				externalToolDO.id = 'toolId';
-				externalToolService.isOauth2Config.mockReturnValue(false);
+				externalToolService.isOauth2Config.mockReturnValue(true);
+				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
 
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id, externalToolDO);
 
@@ -167,6 +168,18 @@ describe('ToolValidation', () => {
 				await expect(result).rejects.toThrow(
 					new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name} is immutable.`)
 				);
+			});
+		});
+
+		describe('when external tool has another config type then oauth', () => {
+			it('should validate and returns without throwing an exception', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.withLti11Config().buildWithId();
+				externalToolDO.id = 'toolId';
+				externalToolService.isOauth2Config.mockReturnValue(false);
+
+				const result: Promise<void> = service.validateUpdate(externalToolDO.id, externalToolDO);
+
+				await expect(result).resolves.not.toThrow();
 			});
 		});
 	});
