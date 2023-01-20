@@ -67,6 +67,8 @@ describe('user repo', () => {
 					'preferences',
 					'language',
 					'deletedAt',
+					'lastLoginSystemChange',
+					'outdatedSince',
 				].sort()
 			);
 		});
@@ -152,6 +154,8 @@ describe('user repo', () => {
 					'preferences',
 					'language',
 					'deletedAt',
+					'lastLoginSystemChange',
+					'outdatedSince',
 				].sort()
 			);
 		});
