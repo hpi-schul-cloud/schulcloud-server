@@ -13,7 +13,7 @@ import {
 } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService } from '../service/external-tool.service';
-import { ExternalToolValidationService } from '../service/external-tool-validation.service';
+import { ExternalToolValidationService } from '../service/validation/external-tool-validation.service';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;

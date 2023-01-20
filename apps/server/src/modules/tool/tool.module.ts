@@ -15,6 +15,7 @@ import { ExternalToolValidationService } from './service/external-tool-validatio
 import { ExternalToolVersionService } from './service/external-tool-version.service';
 import { SchoolExternalToolService } from './service/school-external-tool.service';
 import { CourseExternalToolService } from './service/course-external-tool.service';
+import { CommonToolValidationService } from './service/validation/common-tool-validation.service';
 import { SchoolExternalToolValidationService } from './service/school-external-tool-validation.service';
 
 @Module({
@@ -33,6 +34,7 @@ import { SchoolExternalToolValidationService } from './service/school-external-t
 		ExternalToolVersionService,
 		SchoolExternalToolService,
 		CourseExternalToolService,
+		CommonToolValidationService,
 		SchoolExternalToolValidationService,
 	],
 	exports: [
@@ -42,6 +44,7 @@ import { SchoolExternalToolValidationService } from './service/school-external-t
 		SchoolExternalToolService,
 		CourseExternalToolService,
 		ExternalToolRepoMapper,
+		CommonToolValidationService,
 		SchoolExternalToolValidationService,
 	],
 })
