@@ -22,6 +22,11 @@ export class CommonToolValidationService {
 					`A custom Parameter of the tool ${externalToolDO.name || ''} has wrong regex attribute.`
 				);
 			}
+			if (!this.validateDefaultValue(externalToolDO.parameters)) {
+				throw new UnprocessableEntityException(
+					`The default value of a custom parameter of the tool: ${externalToolDO.name || ''} does not match its regex`
+				);
+			}
 			externalToolDO.parameters.forEach((param: CustomParameterDO) => {
 				if (!this.isGlobalParameterValid(param)) {
 					throw new UnprocessableEntityException(
@@ -64,6 +69,18 @@ export class CommonToolValidationService {
 			}
 			return true;
 		});
+	}
+
+	private validateDefaultValue(customParameter: CustomParameterDO[]): boolean {
+		const isValid: boolean = customParameter.every((param: CustomParameterDO) => {
+			if (param.regex && param.default) {
+				const reg = new RegExp(param.regex);
+				const match: boolean = reg.test(param.default);
+				return match;
+			}
+			return true;
+		});
+		return isValid;
 	}
 
 	private isRegexCommentMandatoryAndFilled(customParameter: CustomParameterDO): boolean {
