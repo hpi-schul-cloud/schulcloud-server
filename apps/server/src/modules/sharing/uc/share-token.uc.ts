@@ -1,11 +1,14 @@
+import { NotImplemented } from '@feathersjs/errors';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Actions, EntityId, LearnroomMetadata, Permission } from '@shared/domain';
+import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { Actions, Course, EntityId, LearnroomMetadata, Lesson, Permission, User } from '@shared/domain';
+import { CourseRepo, LessonRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { CopyStatus } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
 import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
+import { LessonCopyService } from '@src/modules/lesson/service';
 import {
 	ShareTokenContext,
 	ShareTokenContextType,
@@ -25,6 +28,9 @@ export class ShareTokenUC {
 		private readonly authorizationService: AuthorizationService,
 		private readonly metadataLoader: MetadataLoader,
 		private readonly courseCopyService: CourseCopyService,
+		private readonly lessonCopyService: LessonCopyService,
+		private readonly lessonRepo: LessonRepo,
+		private readonly courseRepo: CourseRepo,
 
 		private readonly logger: Logger
 	) {
@@ -81,7 +87,12 @@ export class ShareTokenUC {
 		return shareTokenInfo;
 	}
 
-	async importShareToken(userId: EntityId, token: string, newName: string): Promise<CopyStatus> {
+	async importShareToken(
+		userId: EntityId,
+		token: string,
+		newName: string,
+		destinationCourseId?: string
+	): Promise<CopyStatus> {
 		this.checkFeatureEnabled();
 
 		this.logger.debug({ action: 'importShareToken', userId, token, newName });
@@ -94,13 +105,43 @@ export class ShareTokenUC {
 
 		await this.checkCreatePermission(userId, shareToken.payload.parentType);
 
-		const result = await this.courseCopyService.copyCourse({
-			userId,
-			courseId: shareToken.payload.parentId,
-			newName,
-		});
+		let result: CopyStatus;
+		// eslint-disable-next-line default-case
+		switch (shareToken.payload.parentType) {
+			case ShareTokenParentType.Course:
+				result = await this.copyCourse(userId, shareToken.payload.parentId, newName);
+				break;
+			case ShareTokenParentType.Lesson:
+				if (destinationCourseId === undefined) {
+					throw new BadRequestException('Destination course id is required to copy lesson');
+				}
+				result = await this.copyLesson(userId, shareToken.payload.parentId, destinationCourseId, newName);
+				break;
+			case ShareTokenParentType.Task:
+				throw new NotImplementedException();
+		}
 
 		return result;
+	}
+
+	private async copyCourse(userId: EntityId, courseId: string, newName: string): Promise<CopyStatus> {
+		return this.courseCopyService.copyCourse({
+			userId,
+			courseId,
+			newName,
+		});
+	}
+
+	private async copyLesson(userId: string, lessonId: string, courseId: string, copyName?: string): Promise<CopyStatus> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const originalLesson = await this.lessonRepo.findById(lessonId);
+		const destinationCourse = await this.courseRepo.findById(courseId);
+		return this.lessonCopyService.copyLesson({
+			user,
+			originalLesson,
+			destinationCourse,
+			copyName,
+		});
 	}
 
 	private async checkParentWritePermission(userId: EntityId, payload: ShareTokenPayload) {

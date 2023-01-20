@@ -1,5 +1,6 @@
 export enum LearnroomTypes {
 	'Course' = 'course',
+	'Lesson' = 'lesson',
 }
 
 export type LearnroomMetadata = {

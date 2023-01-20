@@ -1,15 +1,16 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
+import { Course, EntityId, LearnroomMetadata, LearnroomTypes, Lesson } from '@shared/domain';
+import { CourseRepo, LessonRepo } from '@shared/repo';
 
-type RepoType = CourseRepo;
+type RepoType = CourseRepo | LessonRepo;
 
 @Injectable()
 export class MetadataLoader {
 	private repos: Map<LearnroomTypes, RepoType> = new Map();
 
-	constructor(private readonly courseRepo: CourseRepo) {
+	constructor(private readonly courseRepo: CourseRepo, private readonly lessonRepo: LessonRepo) {
 		this.repos.set(LearnroomTypes.Course, this.courseRepo);
+		this.repos.set(LearnroomTypes.Lesson, this.lessonRepo);
 	}
 
 	private resolveRepo(parentType: LearnroomTypes): RepoType {
@@ -23,7 +24,7 @@ export class MetadataLoader {
 	async loadMetadata({ type, id }: { type: LearnroomTypes; id: EntityId }): Promise<LearnroomMetadata> {
 		const repo = this.resolveRepo(type);
 
-		const entity = await repo.findById(id);
+		const entity: Lesson | Course = await repo.findById(id);
 
 		const metadata: LearnroomMetadata = entity.getMetadata();
 		return metadata;
