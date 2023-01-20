@@ -80,8 +80,8 @@ export class TaskCardUc {
 		if (currentSchoolYear) {
 			return currentSchoolYear.endDate;
 		}
-		const lastDayOfYear = new Date(new Date().getFullYear(), 11, 31);
-		return lastDayOfYear;
+		const lastDayOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31);
+		return lastDayOfNextYear;
 	}
 
 	async findOne(userId: EntityId, id: EntityId) {

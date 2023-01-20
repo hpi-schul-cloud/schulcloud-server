@@ -209,7 +209,7 @@ describe('TaskCardUc', () => {
 			await uc.create(user.id, taskCardCreateParams);
 			expect(taskService.create).toBeCalledWith(user.id, taskParams);
 		});
-		it('should throw if completion date is before visible at date', async () => {
+		it('should throw if due date is before visible at date', async () => {
 			const failingTaskCardCreateParams = {
 				title,
 				text: [
@@ -246,7 +246,7 @@ describe('TaskCardUc', () => {
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[2] as RichTextCardElement).value).toEqual(richText[1]);
 		});
-		it('should return the task card with default visible at date and completion date if params are not given and creator does NOT provide current school year', async () => {
+		it('should return the task card with default visible at date and due date if params are not given and creator does NOT provide current school year', async () => {
 			const taskCardCreateDefaultParams = {
 				title,
 				text: [
@@ -256,11 +256,11 @@ describe('TaskCardUc', () => {
 			};
 			const result = await uc.create(user.id, taskCardCreateDefaultParams);
 			const expectedVisibleAtDate = new Date();
-			const expectedDueDate = new Date(new Date().getFullYear(), 11, 31);
+			const expectedDueDate = new Date(new Date().getFullYear() + 1, 11, 31);
 			expect(result.card.visibleAtDate).toEqual(expectedVisibleAtDate);
 			expect(result.card.dueDate).toEqual(expectedDueDate);
 		});
-		it('should return the task card with default visible at date and completion date if params are not given and creator does provide current school year', async () => {
+		it('should return the task card with default visible at date and due date if params are not given and creator does provide current school year', async () => {
 			const school = schoolFactory.buildWithId();
 			const userWithSchool = userFactory.buildWithId({ school });
 			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
@@ -344,7 +344,7 @@ describe('TaskCardUc', () => {
 			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			expect(taskService.update).toBeCalledWith(user.id, taskCard.task.id, taskParams);
 		});
-		it('should throw if completion date is before visible at date', async () => {
+		it('should throw if due date is before visible at date', async () => {
 			const failingTaskCardUpdateParams = {
 				id: taskCard.id,
 				title,
