@@ -8,15 +8,17 @@ import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-e
 import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import { EncryptionModule } from '@shared/infra/encryption';
 import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-tool-sorting.mapper';
-import { Lti11Service } from './service/lti11.service';
-import { ExternalToolService } from './service/external-tool.service';
+import {
+	CommonToolValidationService,
+	CourseExternalToolService,
+	ExternalToolService,
+	ExternalToolValidationService,
+	ExternalToolVersionService,
+	Lti11Service,
+	SchoolExternalToolService,
+	SchoolExternalToolValidationService,
+} from './service';
 import { ExternalToolServiceMapper } from './service/mapper';
-import { ExternalToolValidationService } from './service/external-tool-validation.service';
-import { ExternalToolVersionService } from './service/external-tool-version.service';
-import { SchoolExternalToolService } from './service/school-external-tool.service';
-import { CourseExternalToolService } from './service/course-external-tool.service';
-import { CommonToolValidationService } from './service/validation/common-tool-validation.service';
-import { SchoolExternalToolValidationService } from './service/school-external-tool-validation.service';
 
 @Module({
 	imports: [LoggerModule, OauthProviderServiceModule, EncryptionModule],

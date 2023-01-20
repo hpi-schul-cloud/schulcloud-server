@@ -3,8 +3,7 @@ import { EntityId, IFindOptions, Permission, User } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Page } from '@shared/domain/interface/page';
-import { ExternalToolService } from '../service/external-tool.service';
-import { ExternalToolValidationService } from '../service/validation/external-tool-validation.service';
+import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { CreateExternalTool, UpdateExternalTool } from './dto';
 
 @Injectable()

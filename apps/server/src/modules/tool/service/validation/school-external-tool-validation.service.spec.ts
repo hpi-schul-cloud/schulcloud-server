@@ -9,7 +9,7 @@ import {
 } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { CustomParameterScope, CustomParameterType } from '@shared/domain';
-import { ExternalToolService } from './external-tool.service';
+import { ExternalToolService } from '../external-tool.service';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
 describe('SchoolExternalToolValidationService', () => {

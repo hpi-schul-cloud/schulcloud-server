@@ -3,7 +3,7 @@ import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/
 import { CustomParameterDO, CustomParameterEntryDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { CustomParameterScope, CustomParameterType } from '@shared/domain';
 import { isNaN } from 'lodash';
-import { ExternalToolService } from './external-tool.service';
+import { ExternalToolService } from '../external-tool.service';
 
 const typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } = {
 	[CustomParameterType.STRING]: () => true,

@@ -3,10 +3,8 @@ import { Actions, EntityId, Permission } from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
-import { SchoolExternalToolService } from '../service/school-external-tool.service';
+import { CourseExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { SchoolExternalTool, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
-import { CourseExternalToolService } from '../service/course-external-tool.service';
-import { SchoolExternalToolValidationService } from '../service/school-external-tool-validation.service';
 
 @Injectable()
 export class SchoolExternalToolUc {
