@@ -174,12 +174,14 @@ export class OAuthService {
 			errorCode = 'oauth_login_failed';
 		}
 
-		const redirect = `${Configuration.get('HOST') as string}/login?error=${errorCode}&provider=${provider}`;
+		const redirect = new URL('/login', Configuration.get('HOST') as string);
+		redirect.searchParams.append('error', errorCode);
+		redirect.searchParams.append('provider', provider);
 
 		const oauthResponse = new OAuthProcessDto({
 			provider,
 			errorCode,
-			redirect,
+			redirect: redirect.toString(),
 		});
 		return oauthResponse;
 	}

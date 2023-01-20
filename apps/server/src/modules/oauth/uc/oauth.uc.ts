@@ -63,7 +63,10 @@ export class OauthUc {
 				system.id
 			);
 			if (shouldMigrate) {
-				const redirect: string = await this.userMigrationService.getMigrationRedirect();
+				const redirect: string = await this.userMigrationService.getMigrationRedirect(
+					data.externalSchool.officialSchoolNumber,
+					system.id
+				);
 				const response: OAuthProcessDto = new OAuthProcessDto({
 					provider: oauthConfig.provider,
 					redirect,

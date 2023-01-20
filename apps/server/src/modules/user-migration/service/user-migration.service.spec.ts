@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
@@ -15,6 +16,8 @@ describe('UserMigrationService', () => {
 	let systemService: DeepMocked<SystemService>;
 
 	beforeAll(async () => {
+		jest.spyOn(Configuration, 'get').mockReturnValue('http://mock.de');
+
 		module = await Test.createTestingModule({
 			providers: [
 				UserMigrationService,
@@ -38,16 +41,24 @@ describe('UserMigrationService', () => {
 		await module.close();
 	});
 
+	const setup = () => {
+		const officialSchoolNumber = '3';
+		const school: SchoolDO = new SchoolDO({
+			name: 'schoolName',
+			officialSchoolNumber,
+		});
+
+		return {
+			officialSchoolNumber,
+			school,
+		};
+	};
+
 	describe('isSchoolInMigration is called', () => {
 		describe('when the migration is possible', () => {
 			it('should return true', async () => {
-				const officialSchoolNumber = '3';
-				const date = new Date();
-				const school: SchoolDO = new SchoolDO({
-					name: 'schoolName',
-					officialSchoolNumber,
-					oauthMigrationPossible: date,
-				});
+				const { school, officialSchoolNumber } = setup();
+				school.oauthMigrationPossible = new Date();
 
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
 
@@ -59,13 +70,8 @@ describe('UserMigrationService', () => {
 
 		describe('when the migration is mandatory', () => {
 			it('should return true', async () => {
-				const officialSchoolNumber = '3';
-				const date = new Date();
-				const school: SchoolDO = new SchoolDO({
-					name: 'schoolName',
-					officialSchoolNumber,
-					oauthMigrationMandatory: date,
-				});
+				const { school, officialSchoolNumber } = setup();
+				school.oauthMigrationMandatory = new Date();
 
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
 
@@ -89,6 +95,7 @@ describe('UserMigrationService', () => {
 	describe('getMigrationRedirect is called', () => {
 		describe('when finding the migration systems', () => {
 			it('should return a url to the migration endpoint', async () => {
+				const { school, officialSchoolNumber } = setup();
 				const iservSystem: SystemDto = new SystemDto({
 					id: 'iservId',
 					type: '',
@@ -100,19 +107,23 @@ describe('UserMigrationService', () => {
 					alias: 'SANIS',
 				});
 
+				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
 				systemService.findOAuth.mockResolvedValue([iservSystem, sanisSystem]);
 
-				const result: string = await service.getMigrationRedirect();
+				const result: string = await service.getMigrationRedirect(officialSchoolNumber, 'iservId');
 
-				expect(result).toEqual('/migration?source=iservId&target=sanisId');
+				expect(result).toEqual(
+					'http://mock.de/migration?sourceSystem=iservId&targetSystem=sanisId&origin=iservId&mandatory=false'
+				);
 			});
 		});
 
 		describe('when the migration systems have invalid data', () => {
 			it('should throw InternalServerErrorException', async () => {
+				const { officialSchoolNumber } = setup();
 				systemService.findOAuth.mockResolvedValue([]);
 
-				const promise: Promise<string> = service.getMigrationRedirect();
+				const promise: Promise<string> = service.getMigrationRedirect(officialSchoolNumber, 'unknownSystemId');
 
 				await expect(promise).rejects.toThrow(InternalServerErrorException);
 			});
