@@ -271,8 +271,7 @@
 			"TASK_DASHBOARD_VIEW_V3",
 			"JOIN_MEETING",
 			"TEAM_CREATE",
-			"TEAM_EDIT",
-			"TOOL_CREATE"
+			"TEAM_EDIT"
 		],
 		"__v": 0
 	},
@@ -455,8 +454,7 @@
 			"FILESTORAGE_REMOVE",
 			"CONTENT_VIEW",
 			"CONTENT_NON_OER_VIEW",
-			"JOIN_MEETING",
-			"TOOL_CREATE"
+			"JOIN_MEETING"
 		],
 		"__v": 0
 	},
