@@ -45,6 +45,7 @@ describe('ExternalToolValidation', () => {
 	describe('validateCreate is called', () => {
 		it('should call the common validation service', async () => {
 			const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
+			externalToolService.isOauth2Config.mockReturnValue(false);
 
 			await service.validateCreate(externalToolDO);
 
@@ -77,6 +78,7 @@ describe('ExternalToolValidation', () => {
 				const existingExternalToolDO: ExternalToolDO = externalToolDOFactory
 					.withOauth2Config({ clientId: 'sameClientId' })
 					.buildWithId();
+				externalToolService.isOauth2Config.mockReturnValue(true);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(existingExternalToolDO);
 
 				const result: Promise<void> = service.validateCreate(externalToolDO);

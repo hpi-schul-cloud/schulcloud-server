@@ -13,7 +13,10 @@ export class ExternalToolValidationService {
 	async validateCreate(externalToolDO: ExternalToolDO): Promise<void> {
 		await this.commonToolValidationService.validateCommon(externalToolDO);
 
-		if (externalToolDO.config instanceof Oauth2ToolConfigDO && !(await this.isClientIdUnique(externalToolDO))) {
+		if (
+			this.externalToolService.isOauth2Config(externalToolDO.config) &&
+			!(await this.isClientIdUnique(externalToolDO))
+		) {
 			throw new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name} is already used.`);
 		}
 	}
