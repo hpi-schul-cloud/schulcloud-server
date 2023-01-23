@@ -141,7 +141,7 @@ describe('UserMigrationService', () => {
 	});
 
 	describe('getPageContent is called', () => {
-		const setup = () => {
+		const setupPageContent = () => {
 			const sourceOauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: 'sourceClientId',
 				clientSecret: 'sourceSecret',
@@ -190,7 +190,7 @@ describe('UserMigrationService', () => {
 
 		describe('when coming from the target system', () => {
 			it('should return the url to the source system and a frontpage url', async () => {
-				const { sourceSystem, targetSystem, sourceOauthConfig, migrationRedirect } = setup();
+				const { sourceSystem, targetSystem, sourceOauthConfig, migrationRedirect } = setupPageContent();
 				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
 					migrationRedirect
 				)}&response_type=code&scope=openid+uuid`;
@@ -219,7 +219,7 @@ describe('UserMigrationService', () => {
 
 		describe('when coming from the source system', () => {
 			it('should return the url to the target system and a dashboard url', async () => {
-				const { sourceSystem, targetSystem, migrationRedirect } = setup();
+				const { sourceSystem, targetSystem, migrationRedirect } = setupPageContent();
 				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
 					migrationRedirect
 				)}&response_type=code&scope=openid+uuid`;
@@ -242,7 +242,7 @@ describe('UserMigrationService', () => {
 
 		describe('when coming from the source system and the migration is mandatory', () => {
 			it('should return the url to the target system and a logout url', async () => {
-				const { sourceSystem, targetSystem, migrationRedirect } = setup();
+				const { sourceSystem, targetSystem, migrationRedirect } = setupPageContent();
 				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
 					migrationRedirect
 				)}&response_type=code&scope=openid+uuid`;
@@ -265,7 +265,7 @@ describe('UserMigrationService', () => {
 
 		describe('when a wrong page type is given', () => {
 			it('throws a BadRequestException', async () => {
-				const { sourceSystem, targetSystem } = setup();
+				const { sourceSystem, targetSystem } = setupPageContent();
 				systemService.findById.mockResolvedValueOnce(sourceSystem);
 				systemService.findById.mockResolvedValueOnce(targetSystem);
 
@@ -277,7 +277,7 @@ describe('UserMigrationService', () => {
 
 		describe('when a system has no oauth config', () => {
 			it('throws a EntityNotFoundError', async () => {
-				const { sourceSystem, targetSystem } = setup();
+				const { sourceSystem, targetSystem } = setupPageContent();
 				sourceSystem.oauthConfig = undefined;
 				systemService.findById.mockResolvedValueOnce(sourceSystem);
 				systemService.findById.mockResolvedValueOnce(targetSystem);
