@@ -31,9 +31,6 @@ import {
 	SchoolExternalToolStatusResponse,
 } from '../dto';
 
-// TODO: remove
-jest.setTimeout(999999);
-
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
