@@ -1,12 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common/error';
 import { Actions, CardType, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
 import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { RichText } from '@shared/domain/types/richtext.types';
 import { CardElementRepo, RichTextCardElementRepo, TaskCardRepo, TitleCardElementRepo, UserRepo } from '@shared/repo';
 import {
 	richTextCardElementFactory,
+	schoolFactory,
 	setupEntities,
 	taskCardFactory,
 	titleCardElementFactory,
@@ -168,6 +170,10 @@ describe('TaskCardUc', () => {
 		let taskCardCreateParams: ITaskCardCreate;
 		const title = 'text title';
 		const richText = ['test richtext 1', 'test richtext 2'];
+		const tomorrow = new Date(Date.now() + 86400000);
+		const inTwoDays = new Date(Date.now() + 172800000);
+		const visibleAtDate = tomorrow;
+		const dueDate = inTwoDays;
 		beforeEach(() => {
 			user = userFactory.buildWithId();
 			taskCardCreateParams = {
@@ -176,6 +182,8 @@ describe('TaskCardUc', () => {
 					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
 					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
 				],
+				visibleAtDate,
+				dueDate,
 			};
 
 			userRepo.findById.mockResolvedValue(user);
@@ -202,6 +210,20 @@ describe('TaskCardUc', () => {
 			await uc.create(user.id, taskCardCreateParams);
 			expect(taskService.create).toBeCalledWith(user.id, taskParams);
 		});
+		it('should throw if due date is before visible at date', async () => {
+			const failingTaskCardCreateParams = {
+				title,
+				text: [
+					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
+					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
+				],
+				visibleAtDate: inTwoDays,
+				dueDate: tomorrow,
+			};
+			await expect(async () => {
+				await uc.create(user.id, failingTaskCardCreateParams);
+			}).rejects.toThrow(ValidationError);
+		});
 		it('should create task-card', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 
@@ -217,11 +239,44 @@ describe('TaskCardUc', () => {
 			const result = await uc.create(user.id, taskCardCreateParams);
 			expect(result.card.task).toEqual(result.taskWithStatusVo.task);
 			expect(result.card.cardType).toEqual(CardType.Task);
+			expect(result.card.visibleAtDate).toEqual(tomorrow);
+			expect(result.card.dueDate).toEqual(inTwoDays);
 
 			expect(result.card.cardElements.length).toEqual(3);
 			expect((result.card.cardElements.getItems()[0] as TitleCardElement).value).toEqual(title);
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[2] as RichTextCardElement).value).toEqual(richText[1]);
+		});
+		it('should return the task card with default visible at date and due date if params are not given and creator does NOT provide current school year', async () => {
+			const taskCardCreateDefaultParams = {
+				title,
+				text: [
+					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
+					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
+				],
+			};
+			const result = await uc.create(user.id, taskCardCreateDefaultParams);
+			const expectedVisibleAtDate = new Date();
+			const expectedDueDate = new Date(new Date().getFullYear() + 1, 11, 31);
+			expect(result.card.visibleAtDate).toEqual(expectedVisibleAtDate);
+			expect(result.card.dueDate).toEqual(expectedDueDate);
+		});
+		it('should return the task card with default visible at date and due date if params are not given and creator does provide current school year', async () => {
+			const school = schoolFactory.buildWithId();
+			const userWithSchool = userFactory.buildWithId({ school });
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+			const taskCardCreateDefaultParams = {
+				title,
+				text: [
+					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
+					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
+				],
+			};
+			const result = await uc.create(userWithSchool.id, taskCardCreateDefaultParams);
+			const expectedVisibleAtDate = new Date();
+			const expectedDueDate = userWithSchool.school.schoolYear?.endDate;
+			expect(result.card.visibleAtDate).toEqual(expectedVisibleAtDate);
+			expect(result.card.dueDate).toEqual(expectedDueDate);
 		});
 	});
 
@@ -229,12 +284,19 @@ describe('TaskCardUc', () => {
 		let taskCardUpdateParams: ITaskCardUpdate;
 		const title = 'changed text title';
 		const richText = ['changed richtext 1', 'changed richtext 2'];
+		const tomorrow = new Date(Date.now() + 86400000);
+		const inTwoDays = new Date(Date.now() + 172800000);
+		const inThreeDays = new Date(Date.now() + 259200000);
+		const visibleAtDate = tomorrow;
+		const dueDate = inTwoDays;
 		beforeEach(() => {
 			user = userFactory.buildWithId();
 
 			const originalTitleCardElement = titleCardElementFactory.build();
 			const originalRichTextCardElements = richTextCardElementFactory.buildList(2);
 			taskCard = taskCardFactory.buildWithId({
+				visibleAtDate,
+				dueDate,
 				cardElements: [originalTitleCardElement, ...originalRichTextCardElements],
 			});
 
@@ -249,16 +311,20 @@ describe('TaskCardUc', () => {
 					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
 					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
 				],
+				visibleAtDate: inTwoDays,
+				dueDate: inThreeDays,
 			};
 
 			userRepo.findById.mockResolvedValue(user);
 			taskCardRepo.findById.mockResolvedValue(taskCard);
 			authorizationService.hasPermission.mockReturnValue(true);
+			authorizationService.getUserWithPermissions.mockResolvedValue(user);
 		});
 		afterEach(() => {
 			userRepo.findById.mockRestore();
 			taskCardRepo.findById.mockRestore();
 			authorizationService.hasPermission.mockRestore();
+			authorizationService.getUserWithPermissions.mockRestore();
 			taskService.update.mockRestore();
 		});
 		it('should check for permission to edit the TaskCard', async () => {
@@ -279,12 +345,28 @@ describe('TaskCardUc', () => {
 			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			expect(taskService.update).toBeCalledWith(user.id, taskCard.task.id, taskParams);
 		});
+		it('should throw if due date is before visible at date', async () => {
+			const failingTaskCardUpdateParams = {
+				id: taskCard.id,
+				title,
+				text: [
+					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
+					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
+				],
+				visibleAtDate: inThreeDays,
+				dueDate: inTwoDays,
+			};
+			await expect(async () => {
+				await uc.update(user.id, taskCard.id, failingTaskCardUpdateParams);
+			}).rejects.toThrow(ValidationError);
+		});
 		it('should delete existing card elements and set the new elements', async () => {
 			const originalCardElements = taskCard.cardElements.getItems();
 			const result = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			expect(cardElementRepo.delete).toBeCalledWith(originalCardElements);
 
 			const updatedCardElements = result.card.cardElements.getItems();
+			expect(updatedCardElements).toHaveLength(3);
 
 			const titleCardElement = updatedCardElements.find(
 				(element) => element.cardElementType === CardElementType.Title
@@ -303,6 +385,8 @@ describe('TaskCardUc', () => {
 
 			expect(result.card.task.id).toEqual(result.taskWithStatusVo.task.id);
 			expect(result.card.cardType).toEqual(CardType.Task);
+			expect(result.card.visibleAtDate).toEqual(inTwoDays);
+			expect(result.card.dueDate).toEqual(inThreeDays);
 
 			expect(result.card.cardElements.length).toEqual(3);
 			expect((result.card.cardElements.getItems()[0] as TitleCardElement).value).toEqual(title);
