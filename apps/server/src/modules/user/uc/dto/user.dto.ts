@@ -13,6 +13,8 @@ export class UserDto {
 		this.language = user.language;
 		this.forcePasswordChange = user.forcePasswordChange;
 		this.preferences = user.preferences;
+		this.lastLoginSystemChange = user.lastLoginSystemChange;
+		this.outdatedSince = user.outdatedSince;
 	}
 
 	id?: EntityId;
@@ -37,4 +39,8 @@ export class UserDto {
 
 	// See user entity
 	preferences?: Record<string, unknown> = {};
+
+	lastLoginSystemChange?: Date;
+
+	outdatedSince?: Date;
 }

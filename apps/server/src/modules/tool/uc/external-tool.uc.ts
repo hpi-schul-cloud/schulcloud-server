@@ -4,7 +4,7 @@ import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolService } from '../service/external-tool.service';
-import { ToolValidationService } from '../service/tool-validation.service';
+import { ToolValidationService } from '../service/validation/tool-validation.service';
 import { CreateExternalTool, UpdateExternalTool } from './dto';
 
 @Injectable()
