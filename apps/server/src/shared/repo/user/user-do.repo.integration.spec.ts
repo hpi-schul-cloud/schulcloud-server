@@ -191,6 +191,8 @@ describe('UserRepo', () => {
 			testEntity.lastNameSearchValues = ['em'];
 			testEntity.emailSearchValues = ['em'];
 			testEntity.importHash = 'importHash';
+			testEntity.outdatedSince = new Date();
+			testEntity.lastLoginSystemChange = new Date();
 
 			const userDO: UserDO = repo.mapEntityToDOSpec(testEntity);
 
@@ -213,6 +215,8 @@ describe('UserRepo', () => {
 					language: testEntity.language,
 					forcePasswordChange: testEntity.forcePasswordChange,
 					preferences: testEntity.preferences,
+					outdatedSince: testEntity.outdatedSince,
+					lastLoginSystemChange: testEntity.lastLoginSystemChange,
 				})
 			);
 		});
@@ -232,6 +236,8 @@ describe('UserRepo', () => {
 				language: LanguageType.DE,
 				forcePasswordChange: false,
 				preferences: { firstLogin: true },
+				outdatedSince: new Date(),
+				lastLoginSystemChange: new Date(),
 			});
 
 			const result: IUserProperties = repo.mapDOToEntityPropertiesSpec(testDO);
@@ -248,6 +254,8 @@ describe('UserRepo', () => {
 					language: testDO.language,
 					forcePasswordChange: testDO.forcePasswordChange,
 					preferences: testDO.preferences,
+					outdatedSince: testDO.outdatedSince,
+					lastLoginSystemChange: testDO.lastLoginSystemChange,
 				})
 			);
 		});
