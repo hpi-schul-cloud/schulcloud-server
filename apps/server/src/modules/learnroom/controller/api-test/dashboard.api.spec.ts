@@ -71,7 +71,7 @@ describe('Dashboard Controller (API)', () => {
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await request(app.getHttpServer()).get('/dashboard?showAll=true');
+			const response = await request(app.getHttpServer()).get('/dashboard?showSubstitute=false');
 
 			expect(response.status).toEqual(200);
 			const body = response.body as DashboardResponse;

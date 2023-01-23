@@ -15,9 +15,9 @@ export class DashboardController {
 	@Get()
 	async findForUser(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query('showAll') showAll: boolean
+		@Query('showSubstitute') showSubstitute: boolean
 	): Promise<DashboardResponse> {
-		const dashboard = await this.dashboardUc.getUsersDashboard(currentUser.userId, showAll);
+		const dashboard = await this.dashboardUc.getUsersDashboard(currentUser.userId, showSubstitute);
 		const dto = DashboardMapper.mapToResponse(dashboard);
 		return dto;
 	}
