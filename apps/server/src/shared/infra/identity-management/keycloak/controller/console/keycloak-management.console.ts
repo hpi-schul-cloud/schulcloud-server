@@ -135,6 +135,7 @@ export class KeycloakConsole {
 				}
 			}
 		}
+		error.name = "last seen error";
 		throw new Error(error);
 	}
 
