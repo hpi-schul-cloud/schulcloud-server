@@ -115,6 +115,7 @@ export class KeycloakConsole {
 		delay: number
 	): Promise<T> {
 		let repetitions = 0;
+		let error;
 		while (repetitions < count) {
 			repetitions += 1;
 			try {
@@ -122,6 +123,7 @@ export class KeycloakConsole {
 				return await command();
 			} catch (err) {
 				this.console.info(JSON.stringify(err));
+				error = err;
 				if (repetitions < count) {
 					this.console.info(
 						`Command '${commandName}' failed, retry in ${delay} seconds. Execution ${repetitions} / ${count}`
@@ -133,7 +135,7 @@ export class KeycloakConsole {
 				}
 			}
 		}
-		throw defaultError;
+		throw new Error(error);
 	}
 
 	private delay(ms: number) {
