@@ -118,6 +118,14 @@ This allows us to include the domain modules in different server deployments, wi
 
 Notice that in the above example, the `PublicService` can be used anywhere within the ApiModule, including in the `ExampleUc`, whereas the `InternalRepo` can not.
 
+### Injectables
+
+Any functions that execute some kind of logic should be part of an injectable. This includes service functions, mappers, helpers, repository functions and the like. This ensures that they can be easily replaced in the future, or mocked away for testing purposes.
+
+Only type definitions, interfaces and similar definitions are allowed to be defined and used outside this injection framework.
+
+This means that there are no static classes, no functions outside a class, and no non-abstract classes that are not injectables.
+
 ## Horizontal Architecture
 
 The application is split into different modules that implement different parts of our domain.
