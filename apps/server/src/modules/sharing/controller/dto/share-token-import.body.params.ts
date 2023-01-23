@@ -1,6 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class ShareTokenImportBodyParams {
 	@IsString()
@@ -12,6 +12,7 @@ export class ShareTokenImportBodyParams {
 	})
 	newName!: string;
 
+	@IsOptional()
 	@IsString()
 	@ApiProperty({
 		description: 'Id of the course to which the lesson/task will be added',
