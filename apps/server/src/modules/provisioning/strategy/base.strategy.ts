@@ -1,12 +1,10 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { NotImplementedException } from '@nestjs/common';
-import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
+import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../dto';
 
-export abstract class ProvisioningStrategy<T> {
+export abstract class ProvisioningStrategy {
 	abstract getType(): SystemProvisioningStrategy;
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/require-await
-	async apply(params: T): Promise<ProvisioningDto> {
-		throw new NotImplementedException();
-	}
+	abstract getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto>;
+
+	abstract apply(data: OauthDataDto): Promise<ProvisioningDto>;
 }
