@@ -381,6 +381,29 @@ describe('SchoolExternalToolValidationService', () => {
 		});
 
 		describe('when validating regex', () => {
+			it('should skip validation when no regex is given', async () => {
+				const undefinedRegex: CustomParameterDO = customParameterDOFactory.build({
+					name: 'undefinedRegex',
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.STRING,
+					regex: undefined,
+				});
+				const { schoolExternalToolDO } = setup(
+					{
+						parameters: [undefinedRegex],
+					},
+					{
+						parameters: [{ name: 'undefinedRegex', value: 'xxxx' }],
+					}
+				);
+
+				const func = () => service.validateCreate(schoolExternalToolDO);
+
+				await expect(func()).resolves.not.toThrowError(
+					`The given entry for the parameter with name ${undefinedRegex.name} does not fit the regex.`
+				);
+			});
+
 			it('should return without error when param value is valid', async () => {
 				const validRegex: CustomParameterDO = customParameterDOFactory.build({
 					name: 'validRegex',
