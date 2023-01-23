@@ -1,15 +1,15 @@
-# NestJS Authorisation Module
+# NestJS Authorization Module
 
 ## Objectives
 
 Breaking down complexity and isolate it.
-One place to solve a specific authorisation for a scope.
+One place to solve a specific authorization for a scope.
 One implementation to handle all different situations in our system.
 It should not be possible to use it in a wrong way.
 
-> You should not need to understand the complete system, to know if something is authorised
+> You should not need to understand the complete system, to know if something is authorized
 
-We also want to avoid any specific code for modules, collections, or something else, in the authorisation module.
+We also want to avoid any specific code for modules, collections, or something else, in the authorization module.
 
 ## Explanation of Terms
 
@@ -41,13 +41,13 @@ The "real" user roles by name are expert, student, teacher and administrator. Al
 ### Entities
 
 The entities are the representation of a single document of the collection, or the type.
-They are used for authorisation for now, but should be replaced by domain objects soon.
+They are used for authorization for now, but should be replaced by domain objects soon.
 
 ### Domain Objects
 
 They are not really introduced. They should map between the repository layer and the domain.
 
-> In future they are the base for authorisation and the authorisation service doesn't know anything about entities anymore.
+> In future they are the base for authorization and the authorization service doesn't know anything about entities anymore.
 
 ### Scopes
 
@@ -58,7 +58,7 @@ The scopes are highly bind to the real domain objects that we have in our domain
 #### Scope Actions
 
 The permission for a base action, like they are defined in CRUD operations, is needed to execute something in a scope.
-The most implicit action you ever need is the "read" action. That means, you must have the authorisation to "read" the scope, otherwise it should not exist for you. :-)
+The most implicit action you ever need is the "read" action. That means, you must have the authorization to "read" the scope, otherwise it should not exist for you. :-)
 The other possible action is to have write access to the scope.
 It is a combination of delete, edit, create from CRUD side.
 
@@ -71,7 +71,7 @@ We have different situations where it is hard to say you can write/read to the d
 We need the possibility to define differents for a single domain scope, or a single domain object it self.
 
 > Let say the user can edit his own user account, but we want to disallow that they can change his age.
-> But an administrator should have the authorisation to do it.
+> But an administrator should have the authorization to do it.
 
 or a other case..
 
@@ -79,21 +79,21 @@ or a other case..
 
 ### User(s)
 
-In authorisation scope it can be a system user, or a real user in our application.
+In authorization scope it can be a system user, or a real user in our application.
 Each user has a role with permissions in the scope of the domain object they want to interact with.
-Each authorisation requires a user.
+Each authorization requires a user.
 
 #### System Users
 
-We have console operations, or operations based on API_KEYS that are used between internal services for already authorised operations like copy and copy files in file service.
+We have console operations, or operations based on API_KEYS that are used between internal services for already authorized operations like copy and copy files in file service.
 For this we want to use system user and roles with own permissions.
 
 > They are not introduced for now
 
 ## Rules
 
-The rules are implemented with a strategy pattern and are called from the authorisation service.
-The implementation should solve the authorisation for a domain object based on the executed action.
+The rules are implemented with a strategy pattern and are called from the authorization service.
+The implementation should solve the authorization for a domain object based on the executed action.
 It implements a check for which domain object, entity, or additional conditions should be used.
 
 > The rule must validate our scope actions.
@@ -110,17 +110,17 @@ It exists also scope based permissions. A user can have different (scope)roles i
 > At the moment we must handle scope-, user- and system-user-permissions as seperated special cases in our implementation.
 > By implementing user role permissions bind to scopes, we can do it in one way for all situations.
 
-## How should you Authorise an Operation?
+## How should you Authorize an Operation?
 
-Authorisation must be handled in use cases (UC). They solve the authorisation and _orchestrate_ the logic that should be done in services, or private methods.
-You should never implement authorisation on service level, to avoid different authorisation steps.
-When calling other internal micro service for already authorised operations please use a queue based on RabbitMQ.
+Authorization must be handled in use cases (UC). They solve the authorization and _orchestrate_ the logic that should be done in services, or private methods.
+You should never implement authorization on service level, to avoid different authorization steps.
+When calling other internal micro service for already authorized operations please use a queue based on RabbitMQ.
 
 > Not implemented but coming soon.
 
-## How to use Authorisation Service
+## How to use Authorization Service
 
-> Please avoid to catch the errors of the authorisation in UC.
+> Please avoid to catch the errors of the authorization in UC.
 > We set empty array as required for passing permissions to make it visible that no string base permission is needed.
 
 ### Example 1 - Execute a Single Operation
@@ -140,7 +140,7 @@ this.checkPermission(userId, AllowedEntity.course, courseId, PermissionContextBu
 ### Example 3 - Set Permission(s) of User as Required
 
 ```javascript
-// Multiple permissions can be added. For a sussesful authorisation, the user need all of them.
+// Multiple permissions can be added. For a sussesful authorization, the user need all of them.
 await this.hasPermission(userId, course, PermissionContextBuilder.read([Permissions.COURSE_VIEW]));
 // next orechstration steps
 ```
@@ -161,18 +161,18 @@ this.hasPermission(userId, course, PermissionContexts.create);
 // do other orchestration steps
 ```
 
-## Structure of the Authorisation Components
+## Structure of the Authorization Components
 
 ### feathers-\* (legacy/deprecated)
 
-It exists a adapter to call featherJS endpoints that solve authorisations.
+It exists a adapter to call featherJS endpoints that solve authorizations.
 
 > This service is only used in news and should not be used in any other place.
 > We want to remove it completly.
 
-### Authorisation Module
+### Authorization Module
 
-The authorisation module is the core of authorisation. It collects all needed information and handles it behind a small interface. It exports the authoriation service that can be used in your use case over injections.
+The authorization module is the core of authorization. It collects all needed information and handles it behind a small interface. It exports the authoriation service that can be used in your use case over injections.
 
 ### Reference.loader
 
@@ -188,9 +188,9 @@ The location to add new rules for entities / domain objects.
 
 #### permission-context.builder
 
-We export a permission context builder to prepare the parameter for the authorisation service called "authorisation context".
+We export a permission context builder to prepare the parameter for the authorization service called "authorization context".
 This is optional and not required.
-But it enables us to easily change the structure of the authorisation context without touching many different places.
+But it enables us to easily change the structure of the authorization context without touching many different places.
 
 ### shared/domain/interface/\*
 
@@ -213,12 +213,12 @@ We add a files storage client module to the server.
 This module exports a service to communicate with the file service.
 
 For communication it uses RabbitMQ.
-Every operation must already be authorised in the UC of the server. There is no need to do it again in files storage service.
-For this reason, we want the consumer of the RabbitMQ item to call the files storage service directly without authorisation.
+Every operation must already be authorized in the UC of the server. There is no need to do it again in files storage service.
+For this reason, we want the consumer of the RabbitMQ item to call the files storage service directly without authorization.
 
 ## Legacy Tech Stack FeatherJS Hooks
 
-In featherJS all the authorisation is done in hooks. Mostly before hooks and sometimes in after hooks.
+In featherJS all the authorization is done in hooks. Mostly before hooks and sometimes in after hooks.
 Before and after means before, or after the database operation. For self writen services before, or after the call of the operation that should be executed.
 They work similar to express middleware and bring their own request context.
 
@@ -240,24 +240,24 @@ They follow our general target.
 1. Implementation of Scope Based Permissions as generell solution instead of User Permissions that has only implicit school scopes for now.
    Remove populate logic in reference loader.
    Solve eager loading in coursegroups.
-2. Introduce RabbitMQ. Splitting Service(logic) from UC, that we can call services over the consumer for internal communication between micro services of already authorised operations.
+2. Introduce RabbitMQ. Splitting Service(logic) from UC, that we can call services over the consumer for internal communication between micro services of already authorized operations.
    Think about: Move hasPermission checks from rules to a more generic place.
    Remove jwt decorator and cleanup copy logic.
-   Move authorisation-context.builder to authorisation module.
+   Move authorization-context.builder to authorization module.
 3. Remove inheritance from roles, because we want to write it explicitly into the collection documents.
    Moving role api endpoints to nestjs.
    Fixing of dashboard to handle roles in the right way as superhero.
-4. Switching entity based authorisation to domain objects based in steps.
+4. Switching entity based authorization to domain objects based in steps.
 5. Cleanup of feature flags from user permissions.
    Add existing feature flags to rules on places where it make sense.
 6. Introduce instance as a scope to have an implemenation that handles all scopes/rules/permissions/user types in the same way.
 
 ### Refactoring Todos
 
-- Task module should fully use authorisation service.
-- News module should start to use authorisation service.
+- Task module should fully use authorization service.
+- News module should start to use authorization service.
 
 ### Is Needed
 
-- We can introduce a new layer called "policy" that combine different rules (any of them has their own matching strategy) for a single domain object between authorisation and rule to reduce complexity in a single rule.
-- We can switch to a behaviour where rules register themself at the authorisation service than.
+- We can introduce a new layer called "policy" that combine different rules (any of them has their own matching strategy) for a single domain object between authorization and rule to reduce complexity in a single rule.
+- We can switch to a behaviour where rules register themself at the authorization service than.
