@@ -17,7 +17,7 @@ export class DashboardUc {
 	constructor(
 		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo,
 		private readonly courseRepo: CourseRepo,
-		@Inject('AUTH_UTILS') private readonly authorisationUtils: AuthorisationUtils,
+		private readonly authorisationUtils: AuthorisationUtils,
 		private readonly userRepo: UserRepo
 	) {}
 
