@@ -1,8 +1,9 @@
+import { ValidationError } from '@shared/common';
 import {
+	CardElement,
 	CardElementResponse,
 	CardRichTextElementResponse,
 	CardTitleElementResponse,
-	CardElement,
 	InputFormat,
 	RichText,
 	TaskCard,
@@ -11,7 +12,6 @@ import {
 import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
-import { ValidationError } from '@shared/common';
 import {
 	CreateTaskCardParams,
 	RichTextCardElementParam,
@@ -24,11 +24,15 @@ export interface ITaskCardUpdate {
 	id?: string;
 	title: string;
 	text?: RichText[];
+	visibleAtDate?: Date;
+	dueDate?: Date;
 }
 
 export interface ITaskCardCreate {
 	title: string;
 	text?: RichText[];
+	visibleAtDate?: Date;
+	dueDate?: Date;
 }
 
 export class TaskCardMapper {
@@ -42,6 +46,8 @@ export class TaskCardMapper {
 			draggable: card.draggable || true,
 			cardElements: cardElementsResponse,
 			task: taskResponse,
+			visibleAtDate: card.visibleAtDate,
+			dueDate: card.dueDate,
 		});
 
 		return dto;
@@ -80,6 +86,14 @@ export class TaskCardMapper {
 			);
 		}
 
+		if (params.visibleAtDate) {
+			dto.visibleAtDate = params.visibleAtDate;
+		}
+
+		if (params.dueDate) {
+			dto.dueDate = params.dueDate;
+		}
+
 		return dto;
 	}
 
@@ -89,9 +103,18 @@ export class TaskCardMapper {
 			throw new ValidationError('The Task Card must have one title');
 		}
 
+		const titleValue = title[0].content as TitleCardElementParam;
 		const dto: ITaskCardUpdate = {
-			title: title[0].content.value,
+			title: titleValue.value,
 		};
+
+		if (params.visibleAtDate) {
+			dto.visibleAtDate = params.visibleAtDate;
+		}
+
+		if (params.dueDate) {
+			dto.dueDate = params.dueDate;
+		}
 
 		params.cardElements.forEach((element) => {
 			if (element.content instanceof RichTextCardElementParam) {
