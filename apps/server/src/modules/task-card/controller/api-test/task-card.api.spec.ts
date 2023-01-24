@@ -88,7 +88,14 @@ describe('Task-Card Controller (api)', () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const params = {
-				title: 'title test',
+				cardElements: [
+					{
+						content: {
+							type: 'title',
+							value: 'title updated',
+						},
+					},
+				],
 			};
 			await request(app.getHttpServer()).post(`/cards/task`).set('Accept', 'application/json').send(params).expect(500);
 		});
@@ -183,14 +190,34 @@ describe('Task-Card Controller (api)', () => {
 
 			currentUser = mapUserToCurrentUser(user);
 
-			const taskCardCreateParams = {
-				title: 'title test',
-				text: ['rich text 1', 'rich text 2'],
+			const taskCardParams = {
+				cardElements: [
+					{
+						content: {
+							type: 'title',
+							value: 'title test',
+						},
+					},
+					{
+						content: {
+							type: 'richText',
+							value: 'rich 2',
+							inputFormat: 'richtext_ck5',
+						},
+					},
+					{
+						content: {
+							type: 'richText',
+							value: 'rich 2',
+							inputFormat: 'richtext_ck5',
+						},
+					},
+				],
 			};
 			const response = await request(app.getHttpServer())
 				.post(`/cards/task/`)
 				.set('Accept', 'application/json')
-				.send(taskCardCreateParams)
+				.send(taskCardParams)
 				.expect(201);
 
 			const responseTaskCard = response.body as TaskCardResponse;
@@ -296,9 +323,23 @@ describe('Task-Card Controller (api)', () => {
 				currentUser = mapUserToCurrentUser(user);
 
 				const text = '<iframe>rich text 1</iframe> some more text';
-				const taskCardCreateParams = {
-					title: 'title test',
-					text: [text],
+
+				const taskCardParams = {
+					cardElements: [
+						{
+							content: {
+								type: 'title',
+								value: 'title test',
+							},
+						},
+						{
+							content: {
+								type: 'richText',
+								value: text,
+								inputFormat: 'richtext_ck5',
+							},
+						},
+					],
 				};
 
 				const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
@@ -306,7 +347,7 @@ describe('Task-Card Controller (api)', () => {
 				const response = await request(app.getHttpServer())
 					.post(`/cards/task/`)
 					.set('Accept', 'application/json')
-					.send(taskCardCreateParams)
+					.send(taskCardParams)
 					.expect(201);
 
 				const responseTaskCard = response.body as TaskCardResponse;
