@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { SystemTypeEnum } from '@shared/domain';
@@ -14,17 +14,29 @@ export class KeycloakSystemService {
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService
 	) {}
 
-	getClientId(): Promise<string> {
-		throw new NotImplementedException();
+	resetCache(): void {
+		this._keycloak = undefined;
 	}
 
-	getClientSecret(): Promise<string> {
-		// TODO: the client secret is encrypted in the db
-		throw new NotImplementedException();
+	async getClientId(): Promise<string | never> {
+		const kc = await this.getKeycloak();
+		const clientId = GuardAgainst.nullOrUndefined(kc.oauthConfig?.clientId, new Error('No client id set'));
+		return clientId;
 	}
 
-	getTokenEndpoint(): Promise<string> {
-		throw new NotImplementedException();
+	async getClientSecret(): Promise<string | never> {
+		const kc = await this.getKeycloak();
+		const clientSecret = GuardAgainst.nullOrUndefined(kc.oauthConfig?.clientSecret, new Error('No client secret set'));
+		return this.encryptionService.decrypt(clientSecret);
+	}
+
+	async getTokenEndpoint(): Promise<string | never> {
+		const kc = await this.getKeycloak();
+		const tokenEndpoint = GuardAgainst.nullOrUndefined(
+			kc.oauthConfig?.tokenEndpoint,
+			new Error('No token endpoint set')
+		);
+		return tokenEndpoint;
 	}
 
 	private async getKeycloak(): Promise<SystemDto> {

@@ -36,6 +36,11 @@ import { KeycloakSystemService } from './service/keycloak-system.service';
 		KeycloakSystemService,
 		KeycloakIdentityManagementOauthService,
 	],
-	exports: [KeycloakAdministrationService, KeycloakManagementUc, KeycloakIdentityManagementOauthService],
+	exports: [
+		KeycloakAdministrationService,
+		KeycloakManagementUc,
+		KeycloakSystemService,
+		KeycloakIdentityManagementOauthService,
+	],
 })
 export class KeycloakModule {}

@@ -9,6 +9,8 @@ import { setupEntities, accountFactory, userFactory } from '@shared/testing';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { MikroORM } from '@mikro-orm/core';
+import { IdentityManagementOathService } from '@shared/infra/identity-management';
+import { ConfigModule } from '@nestjs/config';
 import { LocalStrategy } from './local.strategy';
 import { AuthenticationService } from '../services/authentication.service';
 
@@ -20,6 +22,7 @@ describe('LocalStrategy', () => {
 	let authenticationService: DeepMocked<AuthenticationService>;
 	let mockUser: User;
 	let mockAccount: AccountDto;
+	let mockIdmOauthService: DeepMocked<IdentityManagementOathService>;
 
 	const mockPassword = 'mockPassword123&';
 	const mockPasswordHash = bcrypt.hashSync(mockPassword);
@@ -27,7 +30,7 @@ describe('LocalStrategy', () => {
 	beforeAll(async () => {
 		orm = await setupEntities();
 		module = await Test.createTestingModule({
-			imports: [PassportModule],
+			imports: [PassportModule, ConfigModule.forRoot({ isGlobal: true })],
 			providers: [
 				LocalStrategy,
 				{
@@ -41,6 +44,10 @@ describe('LocalStrategy', () => {
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
 				},
+				{
+					provide: IdentityManagementOathService,
+					useValue: createMock<IdentityManagementOathService>(),
+				},
 			],
 		}).compile();
 
@@ -51,6 +58,7 @@ describe('LocalStrategy', () => {
 		mockAccount = AccountEntityToDtoMapper.mapToDto(
 			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
 		);
+		mockIdmOauthService = module.get(IdentityManagementOathService);
 
 		authenticationService.loadAccount.mockResolvedValue(mockAccount);
 		userRepo.findById.mockResolvedValue(mockUser);
@@ -61,11 +69,11 @@ describe('LocalStrategy', () => {
 		await orm.close();
 	});
 
-	describe('validate', () => {
-		beforeEach(() => {
-			authenticationService.updateLastTriedFailedLogin.mockClear();
-		});
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
 
+	describe('validate', () => {
 		describe('when a local user logs in', () => {
 			it('should return user', async () => {
 				const user = await strategy.validate('mockUsername', mockPassword);
