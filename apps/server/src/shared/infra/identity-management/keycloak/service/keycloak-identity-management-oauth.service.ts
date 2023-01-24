@@ -2,18 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import qs from 'qs';
-import { Logger } from '@src/core/logger';
-import { AxiosError } from 'axios';
 import { IdentityManagementOathService } from '../../identity-management-oath.service';
 import { KeycloakSystemService } from './keycloak-system.service';
 
 @Injectable()
 export class KeycloakIdentityManagementOauthService extends IdentityManagementOathService {
-	constructor(
-		private readonly httpService: HttpService,
-		private readonly kcSystemService: KeycloakSystemService,
-		private readonly logger: Logger
-	) {
+	constructor(private readonly kcSystemService: KeycloakSystemService, private readonly httpService: HttpService) {
 		super();
 	}
 
@@ -41,11 +35,6 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			);
 			return response.data.access_token;
 		} catch (err) {
-			if (err instanceof AxiosError && err.response?.status === 400) {
-				this.logger.log(err);
-			} else {
-				this.logger.error(err);
-			}
 			return undefined;
 		}
 	}
