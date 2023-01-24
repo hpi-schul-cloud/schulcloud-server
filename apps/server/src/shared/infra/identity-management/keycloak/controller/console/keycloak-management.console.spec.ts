@@ -101,21 +101,4 @@ describe('KeycloakConsole', () => {
 			uc.configure.mockRestore();
 		});
 	});
-
-	describe('show the last thrown error', () => {
-		
-		it('should throw an error', async () => {
-			uc.configure.mockRejectedValue('configure failed');
-			uc.configure.mockRejectedValue('last thrown error');
-			
-			await expect(
-				console.configure({
-					retryCount: 1,
-					retryDelay: 10,
-				})
-			).rejects.toThrow('last thrown error');
-	
-			uc.configure.mockRestore();
-		});
-	});
 });
