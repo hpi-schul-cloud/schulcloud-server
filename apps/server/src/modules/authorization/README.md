@@ -145,7 +145,7 @@ await this.hasPermissionByReferences(userId, AllowedEntity.course, courseId, Per
 ### Example 3 - Set Permission(s) of User as Required
 
 ```javascript
-// Multiple permissions can be added. For a useful authorization, the user need all of them.
+// Multiple permissions can be added. For a successful authorization, the user need all of them.
 await this.hasPermission(userId, course, PermissionContextBuilder.read([Permissions.COURSE_VIEW]));
 // next orchestration steps
 ```
