@@ -1,14 +1,15 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
+import { BaseEntity, type EntityId } from '@shared/domain';
 import { v4 as uuid } from 'uuid';
-import { type EntityId, BaseEntity } from '@shared/domain';
 import { ErrorType } from '../error';
 
 export enum ScanStatus {
 	PENDING = 'pending',
 	VERIFIED = 'verified',
 	BLOCKED = 'blocked',
+	WONT_CHECK = 'wont-check',
 }
 
 export enum FileRecordParentType {

@@ -58,6 +58,10 @@ export class ScanResultParams {
 	@ApiProperty()
 	@Allow()
 	virus_signature?: string;
+
+	@ApiProperty()
+	@Allow()
+	error?: string;
 }
 
 export class SingleFileParams {
