@@ -158,7 +158,7 @@ export class FileRecord extends BaseEntity {
 		this.deletedSince = props.deletedSince;
 	}
 
-	updateSecurityCheckStatus(status: ScanStatus, reason = 'Clean'): void {
+	updateSecurityCheckStatus(status: ScanStatus, reason: string): void {
 		this.securityCheck.status = status;
 		this.securityCheck.reason = reason;
 		this.securityCheck.updatedAt = new Date();

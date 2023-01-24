@@ -34,6 +34,7 @@ import {
 } from '../helper';
 import { IGetFileResponse } from '../interface';
 import { CopyFileResponseBuilder, FilesStorageMapper } from '../mapper';
+import { mapScanResultParamsToDto } from '../mapper/scan-result.mapper';
 import { FileRecordRepo } from '../repo';
 
 @Injectable()
@@ -119,10 +120,10 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
+	public async updateSecurityStatus(token: string, scanResultParams: ScanResultParams) {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 
-		const { status, reason } = getScanResult(scanResultDto);
+		const { status, reason } = mapScanResultParamsToDto(scanResultParams);
 		fileRecord.updateSecurityCheckStatus(status, reason);
 
 		await this.fileRecordRepo.save(fileRecord);
