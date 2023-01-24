@@ -155,10 +155,10 @@ await this.hasPermission(userId, course, PermissionContextBuilder.read([Permissi
 ```javascript
 /** const **/
 export const PermissionContexts = {
- create: PermissionContextBuilder.write([Permission.FILESTORAGE_CREATE]),
- read: PermissionContextBuilder.read([Permission.FILESTORAGE_VIEW]),
- update: PermissionContextBuilder.write([Permission.FILESTORAGE_EDIT]),
- delete: PermissionContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
+   create: PermissionContextBuilder.write([Permission.FILESTORAGE_CREATE]),
+   read: PermissionContextBuilder.read([Permission.FILESTORAGE_VIEW]),
+   update: PermissionContextBuilder.write([Permission.FILESTORAGE_EDIT]),
+   delete: PermissionContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
 };
 
 /** UC **/
