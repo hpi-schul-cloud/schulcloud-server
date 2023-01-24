@@ -1,20 +1,23 @@
-import { RoleRepo, UserRepo } from '@shared/repo';
-import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IUserConfig } from '@src/modules/user/interfaces';
-import { RoleService } from '@src/modules/role/service/role.service';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolService } from '../../school';
-import { SchoolMapper } from '../../school/mapper/school.mapper';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { RoleRepo, UserRepo } from '@shared/repo';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { RoleService } from '@src/modules/role/service/role.service';
+import { SchoolService } from '@src/modules/school';
+import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
+import { IUserConfig } from '../interfaces';
+import { UserMapper } from '../mapper/user.mapper';
+import { UserDto } from '../uc/dto/user.dto';
 
 @Injectable()
 export class UserService {
 	constructor(
 		private readonly userRepo: UserRepo,
+		private readonly userDORepo: UserDORepo,
 		private readonly roleRepo: RoleRepo,
 		private readonly schoolMapper: SchoolMapper,
 		private readonly schoolService: SchoolService,
@@ -30,26 +33,27 @@ export class UserService {
 		return [user, permissions];
 	}
 
-	/**
-	 * Gets a user based on their id.
-	 *
-	 * @param id
-	 * @return {@link UserDto}
-	 */
 	async getUser(id: string): Promise<UserDto> {
 		const userEntity = await this.userRepo.findById(id, true);
 		const userDto = UserMapper.mapFromEntityToDto(userEntity);
 		return userDto;
 	}
 
-	/**
-	 * Gets the display name of an user.
-	 *
-	 * For this, it is checked which role he has.
-	 *
-	 * @param userDto
-	 * @return concatenated string
-	 */
+	async save(user: UserDO): Promise<UserDO> {
+		const savedUser: Promise<UserDO> = this.userDORepo.save(user);
+		return savedUser;
+	}
+
+	async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDO | null> {
+		const user: Promise<UserDO | null> = this.userDORepo.findByExternalId(externalId, systemId);
+		return user;
+	}
+
+	async findByEmail(email: string): Promise<User[]> {
+		const user: Promise<User[]> = this.userRepo.findByEmail(email);
+		return user;
+	}
+
 	async getDisplayName(userDto: UserDto): Promise<string> {
 		const id: string = userDto.id ? userDto.id : '';
 

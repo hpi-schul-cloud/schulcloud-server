@@ -32,6 +32,9 @@ describe('TaskCardUc', () => {
 
 	beforeAll(async () => {
 		await setupEntities();
+		jest.useFakeTimers();
+		jest.setSystemTime(new Date('2023-01-23T09:34:54.854Z'));
+
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [

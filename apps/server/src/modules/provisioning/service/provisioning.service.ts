@@ -1,84 +1,71 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ProvisioningSystemInputDto } from '@src/modules/provisioning/dto/provisioning-system-input.dto';
-import { ProvisioningSystemInputMapper } from '@src/modules/provisioning/mapper/provisioning-system-input.mapper';
-import { SanisProvisioningStrategy, SanisStrategyData } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
-import { IservProvisioningStrategy, IservStrategyData } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
-import { OidcProvisioningStrategy, OidcStrategyData } from '@src/modules/provisioning/strategy/oidc/oidc.strategy';
-import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
-import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemService } from '@src/modules/system';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
+import { ProvisioningSystemInputMapper } from '../mapper/provisioning-system-input.mapper';
+import {
+	IservProvisioningStrategy,
+	OidcMockProvisioningStrategy,
+	ProvisioningStrategy,
+	SanisProvisioningStrategy,
+} from '../strategy';
 
 @Injectable()
 export class ProvisioningService {
+	strategies: Map<SystemProvisioningStrategy, ProvisioningStrategy> = new Map<
+		SystemProvisioningStrategy,
+		ProvisioningStrategy
+	>();
+
 	constructor(
 		private readonly systemService: SystemService,
 		private readonly sanisStrategy: SanisProvisioningStrategy,
 		private readonly iservStrategy: IservProvisioningStrategy,
-		private readonly oidcStrategy: OidcProvisioningStrategy
-	) {}
-
-	async process(accessToken: string, idToken: string, systemId: string): Promise<ProvisioningDto> {
-		const system: ProvisioningSystemInputDto = await this.determineInput(systemId);
-
-		switch (system.provisioningStrategy) {
-			case SystemProvisioningStrategy.SANIS: {
-				const provisioningDtoPromise = this.provisionSanis(system, systemId, accessToken);
-				return provisioningDtoPromise;
-			}
-			case SystemProvisioningStrategy.ISERV: {
-				const provisioningDtoPromise = this.provisionIserv(idToken);
-				return provisioningDtoPromise;
-			}
-			case SystemProvisioningStrategy.OIDC: {
-				const provisioningDtoPromise = this.provisionOidc(idToken);
-				return provisioningDtoPromise;
-			}
-			default:
-				throw new InternalServerErrorException('Provisioning Strategy is not defined.');
-		}
+		private readonly oidcMockStrategy: OidcMockProvisioningStrategy
+	) {
+		this.registerStrategy(sanisStrategy);
+		this.registerStrategy(iservStrategy);
+		this.registerStrategy(oidcMockStrategy);
 	}
 
-	private async determineInput(systemId: string): Promise<ProvisioningSystemInputDto> {
-		try {
-			const systemDto = await this.systemService.findById(systemId);
-			const inputDto: ProvisioningSystemInputDto = ProvisioningSystemInputMapper.mapToInternal(systemDto);
-			return inputDto;
-		} catch (e) {
-			throw new NotFoundException(`System with id "${systemId}" does not exist.`);
-		}
+	protected registerStrategy(strategy: ProvisioningStrategy) {
+		this.strategies.set(strategy.getType(), strategy);
 	}
 
-	private provisionIserv(idToken: string): Promise<ProvisioningDto> {
-		const params: IservStrategyData = {
-			idToken,
-		};
-		const provisioningDtoPromise = this.iservStrategy.apply(params);
-		return provisioningDtoPromise;
-	}
-
-	private provisionSanis(
-		system: ProvisioningSystemInputDto,
-		systemId: string,
-		accessToken: string
-	): Promise<ProvisioningDto> {
-		if (!system.provisioningUrl) {
-			throw new InternalServerErrorException(`Sanis system with id: ${systemId} is missing a provisioning url`);
-		}
-
-		const params: SanisStrategyData = {
-			provisioningUrl: system.provisioningUrl,
+	async getData(accessToken: string, idToken: string, systemId: string): Promise<OauthDataDto> {
+		const system: ProvisioningSystemDto = await this.determineInput(systemId);
+		const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 			accessToken,
-			systemId,
-		};
-		const provisioningDtoPromise = this.sanisStrategy.apply(params);
-		return provisioningDtoPromise;
+			idToken,
+			system,
+		});
+
+		const strategy: ProvisioningStrategy = this.getProvisioningStrategy(system.provisioningStrategy);
+
+		const data: OauthDataDto = await strategy.getData(input);
+		return data;
 	}
 
-	private provisionOidc(idToken: string): Promise<ProvisioningDto> {
-		const params: OidcStrategyData = {
-			idToken,
-		};
-		const provisioningDtoPromise = this.oidcStrategy.apply(params);
-		return provisioningDtoPromise;
+	private async determineInput(systemId: string): Promise<ProvisioningSystemDto> {
+		const systemDto: SystemDto = await this.systemService.findById(systemId);
+		const inputDto: ProvisioningSystemDto = ProvisioningSystemInputMapper.mapToInternal(systemDto);
+		return inputDto;
+	}
+
+	async provisionData(oauthData: OauthDataDto): Promise<ProvisioningDto> {
+		const strategy: ProvisioningStrategy = this.getProvisioningStrategy(oauthData.system.provisioningStrategy);
+		const provisioningDto: Promise<ProvisioningDto> = strategy.apply(oauthData);
+		return provisioningDto;
+	}
+
+	private getProvisioningStrategy(systemStrategy: SystemProvisioningStrategy): ProvisioningStrategy {
+		const strategy: ProvisioningStrategy | undefined = this.strategies.get(systemStrategy);
+
+		if (!strategy) {
+			throw new InternalServerErrorException('Provisioning Strategy is not defined.');
+		}
+
+		return strategy;
 	}
 }
