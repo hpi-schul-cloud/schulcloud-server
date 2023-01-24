@@ -126,23 +126,28 @@ When calling other internal micro service for already authorized operations plea
 ### Example 1 - Execute a Single Operation
 
 ```javascript
-    this.authorizationService.hasPermission(user, course, PermissionContextBuilder.write([])
-    // next orechstration steps
+   this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([])
+   // or
+   this.authorizationService.hasPermission(user, course, PermissionContextBuilder.write([])
+   // next orchestration steps
 ```
 
-### Example 2 - Execute a Single Operation with Loading Ressouces
+### Example 2 - Execute a Single Operation with Loading Resources
 
 ```javascript
-this.checkPermission(userId, AllowedEntity.course, courseId, PermissionContextBuilder.read([]));
-// next orechstration steps
+// If you don't have an entity but an entity type and id, you can check permission by reference
+await this.checkPermissionByReferences(userId, AllowedEntity.course, courseId, PermissionContextBuilder.read([]));
+// or
+await this.hasPermissionByReferences(userId, AllowedEntity.course, courseId, PermissionContextBuilder.read([]));
+// next orchestration steps
 ```
 
 ### Example 3 - Set Permission(s) of User as Required
 
 ```javascript
-// Multiple permissions can be added. For a sussesful authorization, the user need all of them.
+// Multiple permissions can be added. For a useful authorization, the user need all of them.
 await this.hasPermission(userId, course, PermissionContextBuilder.read([Permissions.COURSE_VIEW]));
-// next orechstration steps
+// next orchestration steps
 ```
 
 ### Example 4 - Define Context for Multiple Places
@@ -150,10 +155,10 @@ await this.hasPermission(userId, course, PermissionContextBuilder.read([Permissi
 ```javascript
 /** const **/
 export const PermissionContexts = {
-	create: PermissionContextBuilder.write([Permission.FILESTORAGE_CREATE]),
-	read: PermissionContextBuilder.read([Permission.FILESTORAGE_VIEW]),
-	update: PermissionContextBuilder.write([Permission.FILESTORAGE_EDIT]),
-	delete: PermissionContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
+ create: PermissionContextBuilder.write([Permission.FILESTORAGE_CREATE]),
+ read: PermissionContextBuilder.read([Permission.FILESTORAGE_VIEW]),
+ update: PermissionContextBuilder.write([Permission.FILESTORAGE_EDIT]),
+ delete: PermissionContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
 };
 
 /** UC **/
@@ -161,6 +166,168 @@ this.hasPermission(userId, course, PermissionContexts.create);
 // do other orchestration steps
 ```
 
+## How to use in our use cases
+
+### Example - Create a school by **superhero**
+
+```ts
+async createSchoolBySuperhero(userId: EntityId, params: { name: string }) {
+
+    const user = this.authorizationService.getUserWithPermissions(userId);
+    this.authorizationService.hasAllPermissions(user, [Permission.INSTANCE]);
+
+    const school = new School(params);
+
+    await this.schoolService.save(school);
+
+    return true;
+}
+
+```
+
+### Example - Create user by **admin**
+
+```ts
+
+async createUserByAdmin(userId: EntityId, params: { email: string, firstName: string, lastName: string, schoolId: EntityId }) {
+
+    const user = this.authorizationService.getUserWithPermissions(userId);
+
+   await this.checkPermissionByReferences(userId, AllowedEntity.school, schoolId, PermissionContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]));
+
+    const newUser = new User(params)
+
+    await this.userService.save(newUser);
+
+    return true;
+}
+
+```
+
+### Example - Edit course by **admin**
+
+```ts
+// admin
+async editCourseByAdmin(userId: EntityId, params: { courseId: EntityId, description: string }) {
+
+    const course = this.courseService.getCourse(params.courseId);
+    const user = this.authorizationService.getUserWithPermissions(userId);
+
+   const school = course.school
+
+    this.authorizationService.hasPermissions(user, school, [Permission.INSTANCE, Permission.COURSE_EDIT]);
+
+    course.description = params.description;
+
+    await this.courseService.save(course);
+
+    return true;
+}
+
+```
+
+### Example - Create a Course
+
+```ts
+// User can create a course in scope a school, you need to check if he can it by school
+async createCourse(userId: EntityId, params: { schoolId: EntityId }) {
+   const user = this.authorizationService.getUserWithPermissions(userId);
+   const school = this.schoolService.getSchool(params.schoolId);
+
+        this.authorizationService.checkPermission(user, school
+            {
+                action: Actions.write,
+                requiredPermissions: [Permission.COURSE_CREATE],
+            }
+        );
+
+    const course = new Course({ school });
+
+    await this.courseService.saveCourse(course);
+
+    return course;
+}
+
+```
+
+### Example - Create a Lesson
+
+```ts
+// User can create a lesson to course, so you have a courseId
+async createLesson(userId: EntityId, params: { courseId: EntityId }) {
+    const course = this.courseService.getCourse(params.courseId);
+    const user = this.authorizationService.getUserWithPermissions(userId);
+         // check permission for user and course
+        this.authorizationService.checkPermission(user, course
+            {
+                action: Actions.write,
+                requiredPermissions: [Permission.COURSE_EDIT],
+            }
+        );
+
+    const lesson = new Lesson({course});
+
+    await this.lessonService.saveLesson(lesson);
+
+    return true;
+}
+```
+
+## How to write a rule
+
+So a rule must validate our scope actions. For example we have a _news_ for the school or course. The news has a creator and target model.
+
+> Attention: The target model must are populate
+
+```ts
+@Injectable()
+export class NewsRule extends BasePermission<News> {
+   constructor(private readonly schoolRule: SchoolRule, private readonly courseRule: CourseRule) {
+         super();
+   }
+
+   public isApplicable(user: User, entity: News): boolean {
+      const isMatched = entity instanceof News;
+
+      return isMatched;
+   }
+
+   public hasPermission(user: User, entity: News, context: IPermissionContext): boolean {
+      const { action, requiredPermissions } = context;
+
+      // check required permissions passed by UC
+      const hasPermission = this.utils.hasAllPermissions(user, requiredPermissions);
+      // check access to entity by property
+      const isCreator = this.utils.hasAccessToEntity(user, entity, ['creator']);
+      let hasNewsPermission = false;
+
+      if (action === Actions.read) {
+         hasNewsPermission = this.parentPermission(user, entity, action);
+      } else if (action === Actions.write) {
+         hasNewsPermission = isCreator;
+      }
+
+      const result = hasPermission && hasNewsPermission;
+
+      return result;
+   }
+
+   private parentPermission(user: User, entity: News, action: Actions): boolean {
+      let hasParentPermission = false;
+      // check by parentRule, because the schoolRule can contain extra logic
+      // e.g. school is offline
+      // or courseRule has complex permissions-resolves
+      if (entity.targetModel === NewsTargetModel.School) {
+         hasParentPermission = this.schoolRule.hasPermission(user, entity.target, { action, requiredPermissions: [] });
+      } else if (entity.targetModel === NewsTargetModel.Course) {
+         hasParentPermission = this.courseRule.hasPermission(user, entity.target, { action, requiredPermissions: [] });
+      }
+
+      return hasParentPermission;
+   }
+}
+
+```
 ## Structure of the Authorization Components
 
 ### feathers-\* (legacy/deprecated)
