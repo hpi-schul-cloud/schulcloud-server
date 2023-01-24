@@ -426,5 +426,5 @@ They follow our general target.
 
 ### Is Needed
 
-- We can introduce a new layer called "policy" that combine different rules (any of them has their own matching strategy) for a single domain object between authorization and rule to reduce complexity in a single rule.
+- We can introduce a new layer called "policy" that combines different rules (any of them has their own matching strategy) for a single domain object between authorization and rule to reduce complexity in a single rule.
 - We can switch to a behaviour where rules register themself at the authorization service than.
