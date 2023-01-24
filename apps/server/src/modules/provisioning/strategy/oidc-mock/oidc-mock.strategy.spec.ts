@@ -9,20 +9,20 @@ import {
 	ProvisioningDto,
 	ProvisioningSystemDto,
 } from '../../dto';
-import { IservProvisioningStrategy } from './iserv.strategy';
+import { OidcMockProvisioningStrategy } from './oidc-mock.strategy';
 
 jest.mock('jsonwebtoken');
 
-describe('IservStrategy', () => {
+describe('OidcMockProvisioningStrategy', () => {
 	let module: TestingModule;
-	let strategy: IservProvisioningStrategy;
+	let strategy: OidcMockProvisioningStrategy;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [IservProvisioningStrategy],
+			providers: [OidcMockProvisioningStrategy],
 		}).compile();
 
-		strategy = module.get(IservProvisioningStrategy);
+		strategy = module.get(OidcMockProvisioningStrategy);
 	});
 
 	afterAll(async () => {
@@ -31,10 +31,10 @@ describe('IservStrategy', () => {
 
 	describe('getType is called', () => {
 		describe('when it is called', () => {
-			it('should return type ISERV', () => {
+			it('should return type OIDC', () => {
 				const result: SystemProvisioningStrategy = strategy.getType();
 
-				expect(result).toEqual(SystemProvisioningStrategy.ISERV);
+				expect(result).toEqual(SystemProvisioningStrategy.OIDC);
 			});
 		});
 	});
@@ -46,38 +46,38 @@ describe('IservStrategy', () => {
 			});
 
 			const setup = () => {
-				const userUUID = 'aef1f4fd-c323-466e-962b-a84354c0e713';
+				const userName = 'preferredUserName';
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.ISERV,
+						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
 					accessToken: 'accessToken',
 					idToken: 'idToken',
 				});
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
-					return { uuid: userUUID };
+					return { preferred_username: userName };
 				});
 
 				return {
-					userUUID,
+					userName,
 					input,
 				};
 			};
 
 			it('should fetch the user data', async () => {
-				const { input, userUUID } = setup();
+				const { input, userName } = setup();
 
 				const result: OauthDataDto = await strategy.getData(input);
 
 				expect(result).toEqual<OauthDataDto>({
 					system: input.system,
-					externalUser: new ExternalUserDto({ externalId: userUUID }),
+					externalUser: new ExternalUserDto({ externalId: userName }),
 				});
 			});
 
-			it('should throw error when there is no uuid in the idToken', async () => {
+			it('should throw error when there is no preferred_username in the idToken', async () => {
 				const { input } = setup();
 				jest.spyOn(jwt, 'decode').mockReturnValue({});
 
@@ -100,19 +100,19 @@ describe('IservStrategy', () => {
 	describe('apply is called', () => {
 		describe('when oauth data is provided', () => {
 			it('should return a provisioning dto with the external user id', async () => {
-				const userUUID = 'aef1f4fd-c323-466e-962b-a84354c0e713';
+				const userName = 'preferredUserName';
 				const data: OauthDataDto = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.ISERV,
+						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
-					externalUser: new ExternalUserDto({ externalId: userUUID }),
+					externalUser: new ExternalUserDto({ externalId: userName }),
 				});
 
 				const result: ProvisioningDto = await strategy.apply(data);
 
 				expect(result).toEqual<ProvisioningDto>({
-					externalUserId: userUUID,
+					externalUserId: userName,
 				});
 			});
 		});
