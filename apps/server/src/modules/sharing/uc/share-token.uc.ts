@@ -1,7 +1,6 @@
-import { NotImplemented } from '@feathersjs/errors';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { Actions, Course, EntityId, LearnroomMetadata, Lesson, Permission, User } from '@shared/domain';
+import { Actions, EntityId, LearnroomMetadata, Permission } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -42,7 +41,7 @@ export class ShareTokenUC {
 		payload: ShareTokenPayload,
 		options?: { schoolExclusive?: boolean; expiresInDays?: number }
 	): Promise<ShareTokenDO> {
-		this.checkFeatureEnabled();
+		this.checkFeatureEnabled(payload.parentType);
 
 		this.logger.debug({ action: 'createShareToken', userId, payload, options });
 
@@ -66,11 +65,11 @@ export class ShareTokenUC {
 	}
 
 	async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfoDto> {
-		this.checkFeatureEnabled();
-
 		this.logger.debug({ action: 'lookupShareToken', userId, token });
 
 		const shareToken = await this.shareTokenService.lookupToken(token);
+
+		this.checkFeatureEnabled(shareToken.payload.parentType);
 
 		if (shareToken.context) {
 			await this.checkContextReadPermission(userId, shareToken.context);
@@ -93,11 +92,11 @@ export class ShareTokenUC {
 		newName: string,
 		destinationCourseId?: string
 	): Promise<CopyStatus> {
-		this.checkFeatureEnabled();
-
 		this.logger.debug({ action: 'importShareToken', userId, token, newName });
 
 		const shareToken = await this.shareTokenService.lookupToken(token);
+
+		this.checkFeatureEnabled(shareToken.payload.parentType);
 
 		if (shareToken.context) {
 			await this.checkContextReadPermission(userId, shareToken.context);
@@ -185,10 +184,20 @@ export class ShareTokenUC {
 		return date;
 	}
 
-	private checkFeatureEnabled() {
-		const enabled = Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean;
-		if (!enabled) {
-			throw new InternalServerErrorException('Import Feature not enabled');
+	private checkFeatureEnabled(parentType: ShareTokenParentType) {
+		switch (parentType) {
+			case ShareTokenParentType.Course:
+				if (!(Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean)) {
+					throw new InternalServerErrorException('Import Course Feature not enabled');
+				}
+				break;
+			case ShareTokenParentType.Lesson:
+				if (!(Configuration.get('FEATURE_LESSON_SHARE_NEW') as boolean)) {
+					throw new InternalServerErrorException('Import Lesson Feature not enabled');
+				}
+				break;
+			default:
+				throw new NotImplementedException('Import Feature not implemented');
 		}
 	}
 }
