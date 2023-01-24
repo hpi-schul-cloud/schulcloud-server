@@ -174,7 +174,7 @@ this.hasPermission(userId, course, PermissionContexts.create);
 async createSchoolBySuperhero(userId: EntityId, params: { name: string }) {
 
     const user = this.authorizationService.getUserWithPermissions(userId);
-    this.authorizationService.hasAllPermissions(user, [Permission.INSTANCE]);
+    this.authorizationService.hasAllPermissions(user, [Permission.SCHOOL_CREATE]);
 
     const school = new School(params);
 
