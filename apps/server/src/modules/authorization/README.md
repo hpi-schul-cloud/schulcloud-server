@@ -68,7 +68,7 @@ It is a combination of delete, edit, create from CRUD side.
 #### Scope Permission
 
 We have different situations where it is hard to say you can write/read to the domain scope.
-We need the possibility to define differents for a single domain scope, or a single domain object it self.
+We need the possibility to define different permissions for a single domain scope, or a single domain object it self.
 
 > Let say the user can edit his own user account, but we want to disallow that they can change his age.
 > But an administrator should have the authorization to do it.
