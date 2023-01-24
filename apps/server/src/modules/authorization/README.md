@@ -277,7 +277,7 @@ async createLesson(userId: EntityId, params: { courseId: EntityId }) {
 
 So a rule must validate our scope actions. For example we have a _news_ for the school or course. The news has a creator and target model.
 
-> Attention: The target model must are populate
+> Attention: The target model must be populated
 
 ```ts
 @Injectable()
