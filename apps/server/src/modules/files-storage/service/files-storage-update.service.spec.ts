@@ -11,7 +11,7 @@ import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
-import { FilesStorageMapper, mapScanResultParamsToDto } from '../mapper';
+import { FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
@@ -235,7 +235,7 @@ describe('FilesStorageService update methods', () => {
 
 				await service.updateSecurityStatus(token, scanResult);
 
-				const { status, reason } = mapScanResultParamsToDto(scanResult);
+				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResult);
 				expect(spy).toHaveBeenCalledWith(status, reason);
 			});
 
@@ -272,7 +272,7 @@ describe('FilesStorageService update methods', () => {
 
 				await service.updateSecurityStatus(token, scanResult);
 
-				const { status, reason } = mapScanResultParamsToDto(scanResult);
+				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResult);
 				expect(spy).toHaveBeenCalledWith(status, reason);
 			});
 
@@ -309,7 +309,7 @@ describe('FilesStorageService update methods', () => {
 
 				await service.updateSecurityStatus(token, scanResult);
 
-				const { status, reason } = mapScanResultParamsToDto(scanResult);
+				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResult);
 				expect(spy).toHaveBeenCalledWith(status, reason);
 			});
 

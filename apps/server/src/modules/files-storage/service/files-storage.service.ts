@@ -33,7 +33,7 @@ import {
 	unmarkForDelete,
 } from '../helper';
 import { IGetFileResponse } from '../interface';
-import { CopyFileResponseBuilder, FilesStorageMapper, mapScanResultParamsToDto } from '../mapper';
+import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
 @Injectable()
@@ -122,7 +122,7 @@ export class FilesStorageService {
 	public async updateSecurityStatus(token: string, scanResultParams: ScanResultParams) {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 
-		const { status, reason } = mapScanResultParamsToDto(scanResultParams);
+		const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResultParams);
 		fileRecord.updateSecurityCheckStatus(status, reason);
 
 		await this.fileRecordRepo.save(fileRecord);
