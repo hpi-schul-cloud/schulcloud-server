@@ -26,7 +26,12 @@ export class FileSecurityController {
 
 	@ApiExcludeEndpoint()
 	@Put(FilesStorageInternalActions.updateSecurityStatus)
-	async updateSecurityStatus(@Body() scanResultDto: ScanResultParams, @Param('token') token: string) {
+	async updateSecurityStatus(
+		@Body() scanResultDto: ScanResultParams,
+		@Param('token') token: string,
+		@Req() req: Request
+	) {
+		console.log(req);
 		await this.filesStorageUC.updateSecurityStatus(token, scanResultDto);
 	}
 }
