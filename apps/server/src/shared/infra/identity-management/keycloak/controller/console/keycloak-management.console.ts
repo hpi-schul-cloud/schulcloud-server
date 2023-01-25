@@ -115,7 +115,7 @@ export class KeycloakConsole {
 		delay: number
 	): Promise<T> {
 		let repetitions = 0;
-		let error;
+		let error: any;
 		while (repetitions < count) {
 			repetitions += 1;
 			try {
