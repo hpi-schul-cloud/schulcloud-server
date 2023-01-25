@@ -71,6 +71,8 @@ export class ShareTokenUC {
 
 		this.checkFeatureEnabled(shareToken.payload.parentType);
 
+		await this.checkCreatePermission(userId, shareToken.payload.parentType);
+
 		if (shareToken.context) {
 			await this.checkContextReadPermission(userId, shareToken.context);
 		}
@@ -165,7 +167,19 @@ export class ShareTokenUC {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		this.authorizationService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
+		let requiredPermissions: string[];
+		switch (parentType) {
+			case ShareTokenParentType.Course:
+				requiredPermissions = [Permission.COURSE_CREATE];
+				break;
+			case ShareTokenParentType.Lesson:
+				requiredPermissions = [Permission.TOPIC_CREATE];
+				break;
+			default:
+				throw new NotImplementedException();
+		}
+
+		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
 
 	private async loadMetadata(payload: ShareTokenPayload): Promise<LearnroomMetadata> {
