@@ -1,18 +1,14 @@
-import { EntityId } from '../types';
-import { BaseDO } from './base.do';
+import { BaseDO2 } from './base2.do';
 
 describe('BaseDO', () => {
 	describe('when own class is extended', () => {
 		const setup = () => {
 			type MyProp = {
-				id: EntityId;
 				key: string;
 			};
 
-			class MyDO extends BaseDO<MyProp> {}
-
+			class MyDO extends BaseDO2<MyProp> {}
 			const props = { id: '123', key: 'abc' };
-
 			const myDO = new MyDO(props);
 
 			return { myDO, props };

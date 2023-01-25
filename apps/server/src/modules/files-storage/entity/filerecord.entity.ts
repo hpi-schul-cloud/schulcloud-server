@@ -1,31 +1,20 @@
+// TODO: move to repo layer
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { type EntityId, BaseEntity } from '@shared/domain';
 import { ErrorType } from '../error';
+import { FileRecordParentType, FileSecurityCheckParams, ScanStatus } from './filerecord.do';
 
-export enum ScanStatus {
-	PENDING = 'pending',
-	VERIFIED = 'verified',
-	BLOCKED = 'blocked',
-}
-
-export enum FileRecordParentType {
-	'User' = 'users',
-	'School' = 'schools',
-	'Course' = 'courses',
-	'Task' = 'tasks',
-	'Lesson' = 'lessons',
-	'Submission' = 'submissions',
-}
 export interface IFileSecurityCheckProperties {
 	status?: ScanStatus;
 	reason?: string;
 	requestToken?: string;
 }
+
 @Embeddable()
-export class FileSecurityCheck {
+export class FileSecurityCheck implements FileSecurityCheckParams {
 	@Enum()
 	status: ScanStatus = ScanStatus.PENDING;
 

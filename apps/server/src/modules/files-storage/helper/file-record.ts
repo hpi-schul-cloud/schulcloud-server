@@ -1,32 +1,29 @@
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord } from '../entity';
+import { FileRecordDO, FileRecordDOParams } from '../entity';
 
-export function markForDelete(fileRecords: FileRecord[]): FileRecord[] {
-	const markedFileRecords = fileRecords.map((fileRecord) => {
+export function markForDelete(fileRecords: FileRecordDO[]): void {
+	fileRecords.map((fileRecord) => {
 		fileRecord.markForDelete();
 		return fileRecord;
 	});
-
-	return markedFileRecords;
 }
 
-export function unmarkForDelete(fileRecords: FileRecord[]): FileRecord[] {
-	const unmarkedFileRecords = fileRecords.map((fileRecord) => {
+export function unmarkForDelete(fileRecords: FileRecordDO[]): void {
+	fileRecords.map((fileRecord) => {
 		fileRecord.unmarkForDelete();
 		return fileRecord;
 	});
-
-	return unmarkedFileRecords;
 }
 
-export function createFileRecord(
+// TODO: builder
+export function getFileRecordParams(
 	name: string,
 	size: number,
 	mimeType: string,
 	params: FileRecordParams,
 	userId: string
-) {
-	const entity = new FileRecord({
+): FileRecordDOParams {
+	const props: FileRecordDOParams = {
 		size,
 		name,
 		mimeType,
@@ -34,7 +31,7 @@ export function createFileRecord(
 		parentId: params.parentId,
 		creatorId: userId,
 		schoolId: params.schoolId,
-	});
+	};
 
-	return entity;
+	return props;
 }

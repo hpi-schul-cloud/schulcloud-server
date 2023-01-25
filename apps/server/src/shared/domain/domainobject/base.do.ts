@@ -1,17 +1,8 @@
-import { EntityId } from '../types';
+// TODO: rename to BaseDOLegacy
+export abstract class BaseDO {
+	id?: string;
 
-interface BaseDOProps {
-	id: EntityId;
-}
-
-export abstract class BaseDO<T extends BaseDOProps> {
-	props: T; // possible to make it protected
-
-	constructor(props: T) {
-		this.props = props;
-	}
-
-	get id() {
-		return this.props.id;
+	protected constructor(id?: string) {
+		this.id = id;
 	}
 }

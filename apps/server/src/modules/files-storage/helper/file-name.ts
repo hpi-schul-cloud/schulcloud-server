@@ -1,13 +1,13 @@
 import path from 'path';
-import { FileRecord } from '../entity';
+import { FileRecordDO } from '../entity';
 
-export function hasDuplicateName(fileRecords: FileRecord[], name: string): FileRecord | undefined {
-	const foundFileRecord = fileRecords.find((item: FileRecord) => item.name === name);
+export function hasDuplicateName(fileRecords: FileRecordDO[], name: string): FileRecordDO | undefined {
+	const foundFileRecord = fileRecords.find((fileRecord) => fileRecord.hasSameName(name));
 
 	return foundFileRecord;
 }
 
-export function resolveFileNameDuplicates(filename: string, fileRecords: FileRecord[]): string {
+export function resolveFileNameDuplicates(filename: string, fileRecords: FileRecordDO[]): string {
 	let counter = 0;
 	const filenameObj = path.parse(filename);
 	let newFilename = filename;

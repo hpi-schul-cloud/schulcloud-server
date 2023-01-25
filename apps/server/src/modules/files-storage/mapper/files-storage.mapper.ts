@@ -8,7 +8,7 @@ import {
 	FileRecordResponse,
 	SingleFileParams,
 } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordDO, FileRecordParentType } from '../entity';
 
 export class FilesStorageMapper {
 	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AllowedAuthorizationEntityType {
@@ -34,11 +34,11 @@ export class FilesStorageMapper {
 		return singleFileParams;
 	}
 
-	static mapFileRecordToFileRecordParams(fileRecord: FileRecord): FileRecordParams {
+	static mapFileRecordToFileRecordParams(fileRecord: FileRecordDO): FileRecordParams {
 		const fileRecordParams = plainToClass(FileRecordParams, {
-			schoolId: fileRecord.schoolId,
-			parentId: fileRecord.parentId,
-			parentType: fileRecord.parentType,
+			schoolId: fileRecord.getSchoolId(),
+			parentId: fileRecord.props.parentId,
+			parentType: fileRecord.props.parentType,
 		});
 
 		return fileRecordParams;
