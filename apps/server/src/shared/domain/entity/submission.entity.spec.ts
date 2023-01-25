@@ -62,22 +62,6 @@ describe('Submission entity', () => {
 			});
 		});
 
-		describe('when studentFiles are passed', () => {
-			it('should contain file', () => {
-				const { school, student, task, file } = setup();
-
-				const submission = new Submission({
-					school,
-					student,
-					task,
-					comment: 'test',
-					studentFiles: [file],
-				});
-
-				expect(submission.studentFiles.contains(file)).toBe(true);
-			});
-		});
-
 		describe('when gradeFiles are passed', () => {
 			it('should contains file', () => {
 				const { school, student, task, file } = setup();

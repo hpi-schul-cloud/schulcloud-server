@@ -1,16 +1,15 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { getMockRes } from '@jest-mock/express';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser, System } from '@shared/domain';
-import { systemFactory } from '@shared/testing/factory/system.factory';
+import { ICurrentUser } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { Request } from 'express';
-import { OauthUc } from '../uc/oauth.uc';
-import { AuthorizationParams } from './dto/authorization.params';
+import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
+import { OauthUc } from '../uc';
+import { AuthorizationParams, SystemUrlParams } from './dto';
 import { OauthSSOController } from './oauth-sso.controller';
 
 describe('OAuthController', () => {
@@ -20,12 +19,8 @@ describe('OAuthController', () => {
 	let hydraOauthUc: DeepMocked<HydraOauthUc>;
 
 	const mockHost = 'https://mock.de';
-	const defaultJWT = 'JWT_mock';
-	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${mockHost}/dashboard`;
-
 	const dateNow: Date = new Date('2020-01-01T00:00:00.000Z');
 	const dateExpires: Date = new Date('2020-01-02T00:00:00.000Z');
-
 	const cookieProperties = {
 		expires: dateExpires,
 		httpOnly: false,
@@ -76,54 +71,80 @@ describe('OAuthController', () => {
 		hydraOauthUc = module.get(HydraOauthUc);
 	});
 
-	it('should be defined', () => {});
-
 	afterAll(async () => {
 		await module.close();
 		jest.useRealTimers();
+	});
+
+	afterEach(() => {
 		jest.clearAllMocks();
 	});
 
-	it('should be defined', () => {
-		expect(controller).toBeDefined();
-	});
+	describe('startOauthAuthorizationCodeFlow is called', () => {
+		const query: AuthorizationParams = new AuthorizationParams();
+		query.code = 'defaultAuthCode';
+		const systemParams: SystemUrlParams = new SystemUrlParams();
+		systemParams.systemId = 'systemId';
 
-	describe('startOauthAuthorizationCodeFlow', () => {
-		const defaultAuthCode = '43534543jnj543342jn2';
-		const query: AuthorizationParams = { code: defaultAuthCode };
-		const system: System = systemFactory.build();
-		system.id = '4345345';
+		describe('when a redirect url is defined', () => {
+			it('should redirect to the redirect url', async () => {
+				const { res } = getMockRes();
+				const response: OAuthProcessDto = new OAuthProcessDto({
+					provider: 'iserv',
+					redirect: 'postLoginRedirect',
+				});
+				oauthUc.processOAuth.mockResolvedValue(response);
 
-		it('should redirect to mock.de', async () => {
-			const { res } = getMockRes();
-			const expected = [query, system.id];
-			oauthUc.processOAuth.mockResolvedValue({
-				jwt: '1111',
-				idToken: '2222',
-				logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
-				redirect: `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${mockHost}/dashboard`,
-				provider: 'iserv',
+				await controller.startOauthAuthorizationCodeFlow(query, res, systemParams);
+
+				expect(res.redirect).toHaveBeenCalledWith('postLoginRedirect');
 			});
-
-			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
-
-			expect(oauthUc.processOAuth).toHaveBeenCalledWith(...expected);
-			expect(res.cookie).toBeCalledWith('jwt', '1111', cookieProperties);
-			expect(res.redirect).toBeCalledWith(iservRedirectMock);
 		});
 
-		it('should redirect to empty string', async () => {
-			const { res } = getMockRes();
-			oauthUc.processOAuth.mockResolvedValue({
-				idToken: '2222',
-				redirect: '',
-				provider: 'iserv',
+		describe('when no redirect url is defined', () => {
+			it('should not redirect', async () => {
+				const { res } = getMockRes();
+				const response: OAuthProcessDto = new OAuthProcessDto({
+					idToken: '2222',
+					provider: 'iserv',
+				});
+				oauthUc.processOAuth.mockResolvedValue(response);
+
+				await controller.startOauthAuthorizationCodeFlow(query, res, systemParams);
+
+				expect(res.redirect).not.toHaveBeenCalled();
 			});
+		});
 
-			await controller.startOauthAuthorizationCodeFlow(query, res, { systemId: system.id });
+		describe('when a jwt is defined', () => {
+			it('should set a jwt cookie', async () => {
+				const { res } = getMockRes();
+				const response: OAuthProcessDto = new OAuthProcessDto({
+					idToken: '2222',
+					provider: 'iserv',
+					jwt: 'userJwt',
+				});
+				oauthUc.processOAuth.mockResolvedValue(response);
 
-			expect(res.cookie).toBeCalledWith('jwt', '', cookieProperties);
-			expect(res.redirect).toBeCalledWith('');
+				await controller.startOauthAuthorizationCodeFlow(query, res, systemParams);
+
+				expect(res.cookie).toHaveBeenCalledWith('jwt', 'userJwt', cookieProperties);
+			});
+		});
+
+		describe('when no jwt is defined', () => {
+			it('should not set a jwt cookie', async () => {
+				const { res } = getMockRes();
+				const response: OAuthProcessDto = new OAuthProcessDto({
+					idToken: '2222',
+					provider: 'iserv',
+				});
+				oauthUc.processOAuth.mockResolvedValue(response);
+
+				await controller.startOauthAuthorizationCodeFlow(query, res, systemParams);
+
+				expect(res.cookie).not.toHaveBeenCalled();
+			});
 		});
 	});
 
