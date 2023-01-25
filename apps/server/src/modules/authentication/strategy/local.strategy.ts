@@ -27,8 +27,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		const account = await this.authenticationService.loadAccount(username);
 		const accountPassword = GuardAgainst.nullOrUndefined(account.password, new UnauthorizedException());
 
-		// TODO: create a new feature flag?
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED')) {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED')) {
 			const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(username, password);
 			GuardAgainst.nullOrUndefined(jwt, new UnauthorizedException());
 		} else {
