@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { FileRecordListResponse, FileRecordResponse } from '../controller/dto';
 import { FileRecord } from '../entity';
-import { FilesStorageMapper } from './file-record.mapper';
+import { FileRecordMapper } from './file-record.mapper';
 
 describe('FilesStorageMapper', () => {
 	let orm: MikroORM;
@@ -18,7 +18,7 @@ describe('FilesStorageMapper', () => {
 	describe('mapToFileRecordResponse()', () => {
 		it('should return FileRecordResponse DO', () => {
 			const fileRecord = fileRecordFactory.buildWithId();
-			const result = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+			const result = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 			expect(result).toEqual(
 				expect.objectContaining({
 					creatorId: expect.any(String),
@@ -37,12 +37,12 @@ describe('FilesStorageMapper', () => {
 	describe('mapToFileRecordListResponse()', () => {
 		it('should return instance of FileRecordListResponse', () => {
 			const fileRecords = fileRecordFactory.buildList(3);
-			const result = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
+			const result = FileRecordMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 			expect(result).toBeInstanceOf(FileRecordListResponse);
 		});
 		it('should contains props [data, total, skip, limit]', () => {
 			const fileRecords = fileRecordFactory.buildList(3);
-			const result = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length, 0, 5);
+			const result = FileRecordMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length, 0, 5);
 			expect(result).toEqual(
 				expect.objectContaining({
 					data: expect.any(Array) as FileRecordResponse[],
@@ -54,7 +54,7 @@ describe('FilesStorageMapper', () => {
 		});
 		it('should contains instances of FileRecordResponse', () => {
 			const fileRecords = fileRecordFactory.buildList(3);
-			const result = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
+			const result = FileRecordMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data[0]).toBeInstanceOf(FileRecordResponse);
