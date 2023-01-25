@@ -31,7 +31,6 @@ export class FileSecurityController {
 		@Param('token') token: string,
 		@Req() req: Request
 	) {
-		console.log(req);
 		await this.filesStorageUC.updateSecurityStatus(token, scanResultDto);
 	}
 }

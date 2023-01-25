@@ -230,7 +230,6 @@ export class FilesStorageUC {
 	}
 
 	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
-		this.logger.warn(scanResultDto);
 		// No authorisation is possible atm.
 		await this.filesStorageService.updateSecurityStatus(token, scanResultDto);
 	}
