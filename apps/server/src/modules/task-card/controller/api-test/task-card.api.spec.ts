@@ -221,9 +221,12 @@ describe('Task-Card Controller (api)', () => {
 				.expect(201);
 
 			const responseTaskCard = response.body as TaskCardResponse;
+			const expectedDueDate = user.school.schoolYear?.endDate;
 
 			expect(responseTaskCard.cardElements.length).toEqual(3);
 			expect(responseTaskCard.task.name).toEqual('title test');
+			expect(responseTaskCard.visibleAtDate).toBeDefined();
+			expect(new Date(responseTaskCard.dueDate)).toEqual(expectedDueDate);
 		});
 		it('DELETE should remove task-card, its card-elements and associated task', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
@@ -272,6 +275,8 @@ describe('Task-Card Controller (api)', () => {
 
 			currentUser = mapUserToCurrentUser(user);
 
+			const inThreeDays = new Date(Date.now() + 259200000);
+			const inFourDays = new Date(Date.now() + 345600000);
 			const taskCardUpdateParams = {
 				cardElements: [
 					{
@@ -297,6 +302,8 @@ describe('Task-Card Controller (api)', () => {
 						},
 					},
 				],
+				visibleAtDate: inThreeDays,
+				dueDate: inFourDays,
 			};
 			const response = await request(app.getHttpServer())
 				.patch(`/cards/task/${taskCard.id}`)
@@ -311,6 +318,8 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.id).toEqual(taskCard.id);
 			expect(responseTaskCard.cardElements.length).toEqual(3);
 			expect((responseTitle[0].content as CardTitleElementResponse).value).toEqual('title updated');
+			expect(new Date(responseTaskCard.visibleAtDate)).toEqual(inThreeDays);
+			expect(new Date(responseTaskCard.dueDate)).toEqual(inFourDays);
 		});
 
 		describe('Sanitize richtext', () => {
