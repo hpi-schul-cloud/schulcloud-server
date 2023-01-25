@@ -60,15 +60,7 @@ module.exports = {
 			const noneSpecific = [];
 
 			const promises = rawData.data.map(async (element) => {
-				// if (Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
-				// 	// only mind messages for own instance (including none instance specific messages)
-				// 	const isinstance = await getInstance(instance, element.component_id);
-				// 	if (isinstance !== importance.ALL_INSTANCES && isinstance !== importance.INGORE) {
-				// 		instanceSpecific.push(element);
-				// 	} else if (isinstance !== importance.INGORE) {
-				// 		noneSpecific.push(element);
-				// 	}
-				// }
+
 				if (element.status !== 4) {
 					const isinstance = await getInstance(instance, element.component_id);
 					if (isinstance !== importance.ALL_INSTANCES && isinstance !== importance.INGORE) {
