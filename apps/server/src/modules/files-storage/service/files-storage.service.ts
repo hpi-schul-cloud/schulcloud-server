@@ -33,8 +33,7 @@ import {
 	unmarkForDelete,
 } from '../helper';
 import { IGetFileResponse } from '../interface';
-import { CopyFileResponseBuilder, FilesStorageMapper } from '../mapper';
-import { mapScanResultParamsToDto } from '../mapper/scan-result.mapper';
+import { CopyFileResponseBuilder, FilesStorageMapper, mapScanResultParamsToDto } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
 @Injectable()
