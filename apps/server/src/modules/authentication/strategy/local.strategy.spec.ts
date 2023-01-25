@@ -1,6 +1,4 @@
 import bcrypt from 'bcryptjs';
-import { PassportModule } from '@nestjs/passport';
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { UserRepo } from '@shared/repo';
@@ -8,65 +6,49 @@ import { RoleName, User } from '@shared/domain';
 import { setupEntities, accountFactory, userFactory } from '@shared/testing';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
-import { MikroORM } from '@mikro-orm/core';
 import { IdentityManagementOathService } from '@shared/infra/identity-management';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
+import { IServerConfig } from '@src/modules/server';
+import { MikroORM } from '@mikro-orm/core';
 import { LocalStrategy } from './local.strategy';
 import { AuthenticationService } from '../services/authentication.service';
 
 describe('LocalStrategy', () => {
 	let orm: MikroORM;
-	let module: TestingModule;
 	let strategy: LocalStrategy;
-	let userRepo: DeepMocked<UserRepo>;
-	let authenticationService: DeepMocked<AuthenticationService>;
 	let mockUser: User;
 	let mockAccount: AccountDto;
-	let mockIdmOauthService: DeepMocked<IdentityManagementOathService>;
+	let userRepoMock: DeepMocked<UserRepo>;
+	let authenticationServiceMock: DeepMocked<AuthenticationService>;
+	let idmOauthServiceMock: DeepMocked<IdentityManagementOathService>;
+	let configServiceMock: DeepMocked<ConfigService>;
 
 	const mockPassword = 'mockPassword123&';
 	const mockPasswordHash = bcrypt.hashSync(mockPassword);
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-		module = await Test.createTestingModule({
-			imports: [PassportModule, ConfigModule.forRoot({ isGlobal: true })],
-			providers: [
-				LocalStrategy,
-				{
-					provide: AuthenticationService,
-					useValue: createMock<AuthenticationService>({
-						normalizeUsername: (username: string) => username,
-						normalizePassword: (password: string) => password,
-					}),
-				},
-				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
-				},
-				{
-					provide: IdentityManagementOathService,
-					useValue: createMock<IdentityManagementOathService>(),
-				},
-			],
-		}).compile();
-
-		strategy = module.get(LocalStrategy);
-		authenticationService = module.get(AuthenticationService);
-		userRepo = module.get(UserRepo);
+		authenticationServiceMock = createMock<AuthenticationService>();
+		idmOauthServiceMock = createMock<IdentityManagementOathService>();
+		configServiceMock = createMock<ConfigService<IServerConfig, true>>();
+		userRepoMock = createMock<UserRepo>();
+		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userRepoMock);
 		mockUser = userFactory.withRole(RoleName.STUDENT).buildWithId();
 		mockAccount = AccountEntityToDtoMapper.mapToDto(
 			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
 		);
-		mockIdmOauthService = module.get(IdentityManagementOathService);
-
-		authenticationService.loadAccount.mockResolvedValue(mockAccount);
-		userRepo.findById.mockResolvedValue(mockUser);
 	});
 
 	afterAll(async () => {
-		await module.close();
 		await orm.close();
+	});
+
+	beforeEach(() => {
+		authenticationServiceMock.loadAccount.mockResolvedValue(mockAccount);
+		authenticationServiceMock.normalizeUsername.mockImplementation((username: string) => username);
+		authenticationServiceMock.normalizePassword.mockImplementation((password: string) => password);
+		userRepoMock.findById.mockResolvedValue(mockUser);
+		configServiceMock.get.mockReturnValue(false);
 	});
 
 	afterEach(() => {
@@ -74,6 +56,21 @@ describe('LocalStrategy', () => {
 	});
 
 	describe('validate', () => {
+		describe('when idm feature is active', () => {
+			const setup = () => {
+				const jwt = 'mock-jwt';
+				configServiceMock.get.mockReturnValue(true);
+				idmOauthServiceMock.resourceOwnerPasswordGrant.mockResolvedValueOnce(jwt);
+				return jwt;
+			};
+
+			it('should use idm for credential validation', async () => {
+				setup();
+				await expect(strategy.validate('username', 'password')).resolves.not.toThrow();
+				expect(idmOauthServiceMock.resourceOwnerPasswordGrant).toBeCalledTimes(1);
+			});
+		});
+
 		describe('when a local user logs in', () => {
 			it('should return user', async () => {
 				const user = await strategy.validate('mockUsername', mockPassword);
@@ -96,7 +93,7 @@ describe('LocalStrategy', () => {
 			it('should throw unauthorized error', async () => {
 				const accountNoPassword = { ...mockAccount };
 				delete accountNoPassword.password;
-				authenticationService.loadAccount.mockResolvedValueOnce(accountNoPassword);
+				authenticationServiceMock.loadAccount.mockResolvedValueOnce(accountNoPassword);
 				await expect(strategy.validate(mockAccount.username, mockPassword)).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -104,7 +101,7 @@ describe('LocalStrategy', () => {
 		describe('when an account has a wrong password', () => {
 			it('should throw unauthorized error', async () => {
 				await expect(strategy.validate(mockAccount.username, 'wrongPassword')).rejects.toThrow(UnauthorizedException);
-				expect(authenticationService.updateLastTriedFailedLogin).toHaveBeenCalledWith(mockAccount.id);
+				expect(authenticationServiceMock.updateLastTriedFailedLogin).toHaveBeenCalledWith(mockAccount.id);
 			});
 		});
 
@@ -112,7 +109,7 @@ describe('LocalStrategy', () => {
 			it('should throw error', async () => {
 				const accountNoUser = { ...mockAccount };
 				delete accountNoUser.userId;
-				authenticationService.loadAccount.mockResolvedValueOnce(accountNoUser);
+				authenticationServiceMock.loadAccount.mockResolvedValueOnce(accountNoUser);
 				await expect(strategy.validate('mockUsername', mockPassword)).rejects.toThrow(
 					new Error(`login failing, because account ${mockAccount.id} has no userId`)
 				);

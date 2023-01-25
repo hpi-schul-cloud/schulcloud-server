@@ -1,6 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { ICoreModuleConfig } from '@src/core';
 import type { IAccountConfig, IFilesStorageClientConfig, IUserConfig } from '@src/modules/';
+import type { IIdentityManagementConfig } from '@shared/infra/identity-management';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -9,18 +10,12 @@ export enum NodeEnvType {
 	MIGRATION = 'migration',
 }
 
-interface IFeatureConfig {
-	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: boolean;
-	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: boolean;
-	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: boolean;
-}
-
 export interface IServerConfig
 	extends ICoreModuleConfig,
-		IFeatureConfig,
 		IUserConfig,
 		IFilesStorageClientConfig,
-		IAccountConfig {
+		IAccountConfig,
+		IIdentityManagementConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
