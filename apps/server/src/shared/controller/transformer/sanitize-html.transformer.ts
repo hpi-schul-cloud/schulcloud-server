@@ -146,9 +146,8 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 		},
 	},
 
-	// TODO
 	RichTextCk5Simple: {
-		allowedTags: ['b', 'i', 'em', 'strong', 'small', 's', 'u'],
+		allowedTags: ['p', 'br', 'b', 'strong', 'i', 'em', 'u'],
 		allowedAttributes: {},
 	},
 };

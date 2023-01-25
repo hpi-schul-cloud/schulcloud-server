@@ -68,11 +68,14 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		});
 	});
 
-	describe('when sanitizing richtext ck5 inline formatting', () => {
-		it('should remove all html but richtext ck5 inline tags', () => {
-			const plainString = { contentCk5Simple: '<b>html text</b>' };
+	describe('when sanitizing richtext ck5 simple formatting', () => {
+		it('should remove all html but richtext ck5 simple tags', () => {
+			const plainString = {
+				contentCk5Simple:
+					'<p><b>strong</b><br />text</p><h2></h2><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+			};
 			const instance = plainToClass(WithHtmlDto, plainString);
-			expect(instance.contentCk5Simple).toEqual('<b>html text</b>');
+			expect(instance.contentCk5Simple).toEqual('<p><b>strong</b><br />text</p>');
 		});
 	});
 
