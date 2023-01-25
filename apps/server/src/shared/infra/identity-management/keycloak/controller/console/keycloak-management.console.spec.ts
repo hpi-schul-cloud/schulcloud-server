@@ -3,12 +3,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
 import { KeycloakManagementUc } from '../../uc/Keycloak-management.uc';
 import { KeycloakConsole } from './keycloak-management.console';
+import { Logger } from '../../../../../../core/logger';
 
 describe('KeycloakConsole', () => {
 	let module: TestingModule;
 	let console: KeycloakConsole;
 	let writer: DeepMocked<ConsoleWriterService>;
 	let uc: DeepMocked<KeycloakManagementUc>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -21,12 +23,17 @@ describe('KeycloakConsole', () => {
 					provide: KeycloakManagementUc,
 					useValue: createMock<KeycloakManagementUc>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
 		writer = module.get(ConsoleWriterService);
 		uc = module.get(KeycloakManagementUc);
-		console = new KeycloakConsole(writer, uc);
+		logger = module.get(Logger);
+		console = new KeycloakConsole(writer, uc, logger);
 	});
 
 	afterAll(async () => {
@@ -89,14 +96,15 @@ describe('KeycloakConsole', () => {
 			uc.configure.mockRestore();
 		});
 		it('should throw on error', async () => {
-			uc.configure.mockRejectedValue('configure failed');
+			const expectedError = new Error('test error');
+			uc.configure.mockRejectedValue(expectedError);
 
 			await expect(
 				console.configure({
 					retryCount: 1,
 					retryDelay: 10,
 				})
-			).rejects.toThrow();
+			).rejects.toBe(expectedError);
 
 			uc.configure.mockRestore();
 		});
