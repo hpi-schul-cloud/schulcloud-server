@@ -124,6 +124,7 @@ export class KeycloakConsole {
 			} catch (err) {
 				this.console.info(JSON.stringify(err));
 				error = err;
+				error.name = 'last seen error';
 				if (repetitions < count) {
 					this.console.info(
 						`Command '${commandName}' failed, retry in ${delay} seconds. Execution ${repetitions} / ${count}`
@@ -135,7 +136,6 @@ export class KeycloakConsole {
 				}
 			}
 		}
-		error.name = "last seen error";
 		throw new Error(error);
 	}
 
