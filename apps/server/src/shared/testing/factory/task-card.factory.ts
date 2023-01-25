@@ -10,11 +10,15 @@ export const taskCardFactory = TaskCardFactory.define(TaskCard, () => {
 	const task = taskFactory.buildWithId();
 	const school = schoolFactory.build();
 	const creator = userFactory.build({ school });
+	const tomorrow = new Date(Date.now() + 86400000);
+	const inTwoDays = new Date(Date.now() + 172800000);
 	return {
 		cardType: CardType.Task,
 		draggable: true,
 		creator,
 		task,
 		cardElements: [],
+		visibleAtDate: tomorrow,
+		dueDate: inTwoDays,
 	};
 });

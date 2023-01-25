@@ -15,8 +15,8 @@ import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { LessonApiModule } from '@src/modules/lesson';
 import { NewsModule } from '@src/modules/news';
-import { OauthModule } from '@src/modules/oauth';
 import { OauthProviderModule } from '@src/modules/oauth-provider';
+import { OauthApiModule } from '@src/modules/oauth/oauth-api.module';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { RoleModule } from '@src/modules/role/role.module';
@@ -28,6 +28,7 @@ import { TaskCardModule } from '@src/modules/task-card';
 import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
+import { UserMigrationApiModule } from '@src/modules/user-migration';
 import { VideoConferenceModule } from '@src/modules/video-conference';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
@@ -41,7 +42,7 @@ const serverModules = [
 	CoreModule,
 	AuthenticationApiModule,
 	CollaborativeStorageModule,
-	OauthModule,
+	OauthApiModule,
 	TaskModule,
 	TaskCardModule,
 	LessonApiModule,
@@ -69,6 +70,7 @@ const serverModules = [
 	OauthProviderModule,
 	SharingApiModule,
 	ToolApiModule,
+	UserMigrationApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
