@@ -26,7 +26,7 @@ export class DashboardUc {
 		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
 		const user = await this.userRepo.findById(userId, true);
 
-		if (this.authorisationUtils.hasRole(user, RoleName.TEACHER) && showSubstitute) {
+		if (this.authorisationUtils.hasRole(user, RoleName.TEACHER) && !showSubstitute) {
 			[courses] = await this.courseRepo.findAllForTeacher(
 				userId,
 				{ onlyActiveCourses: true },
