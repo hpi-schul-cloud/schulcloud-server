@@ -240,7 +240,7 @@ export class DashboardEntity {
 		};
 	}
 
-	checkIfMovedToSubstitute(element: IGridElement, substituteCourses: ILearnroom[]) {
+	private checkIfMovedToSubstitute(element: IGridElement, substituteCourses: ILearnroom[]) {
 		element.getReferences().forEach((course) => {
 			const { id } = course.getMetadata();
 			substituteCourses.forEach((substitute) => {

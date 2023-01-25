@@ -26,14 +26,12 @@ export class DashboardUc {
 		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
 		const user = await this.userRepo.findById(userId, true);
 
-		if (this.authorisationUtils.hasRole(user, RoleName.TEACHER)) {
-			[courses] = showSubstitute
-				? await this.courseRepo.findAllByUserId(userId, { onlyActiveCourses: true }, { order: { name: SortOrder.asc } })
-				: await this.courseRepo.findAllForTeacher(
-						userId,
-						{ onlyActiveCourses: true },
-						{ order: { name: SortOrder.asc } }
-				  );
+		if (this.authorisationUtils.hasRole(user, RoleName.TEACHER) && showSubstitute) {
+			[courses] = await this.courseRepo.findAllForTeacher(
+				userId,
+				{ onlyActiveCourses: true },
+				{ order: { name: SortOrder.asc } }
+			);
 		} else {
 			[courses] = await this.courseRepo.findAllByUserId(
 				userId,
