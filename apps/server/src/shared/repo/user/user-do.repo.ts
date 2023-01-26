@@ -3,6 +3,7 @@ import { BaseDORepo } from '@shared/repo';
 import { EntityId, IUserProperties, Role, School, System, User } from '@shared/domain';
 import { EntityName, FilterQuery, Reference } from '@mikro-orm/core';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Timestamp } from 'bson';
 
 @Injectable()
 export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
@@ -34,6 +35,30 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 
 		const userDo: UserDO | null = userEntity ? this.mapEntityToDO(userEntity) : null;
 		return userDo;
+	}
+
+	// systemId wird wahrscheinlich nicht benötigt
+	async migrate(userId: EntityId, externalId: string, systemId: string) {
+		const em = this._em.fork();
+		await em.begin();
+
+		try {
+			// ... do some work
+			const user: UserDO = await super.findById(userId);
+			user.legacyExternalId = user.externalId;
+			user.externalId = externalId;
+			user.lastLoginSystemChange = new Date();
+			// DO ebene nicht möglich
+			const userEntity: User = await this._em.findOneOrFail(this.entityName, userId as FilterQuery<User>);
+
+			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.schoolYear']);
+
+			em.persist(user);
+			await em.commit(); // will flush before making the actual commit query
+		} catch (e) {
+			await em.rollback();
+			throw e;
+		}
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {

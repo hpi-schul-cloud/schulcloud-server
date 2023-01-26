@@ -68,4 +68,18 @@ export class OauthSSOController {
 		}
 		return this.hydraUc.requestAuthCode(currentUser.userId, jwt, oauthClientId);
 	}
+
+	@Get('oauth/:systemId/migration')
+	@Authenticate('jwt')
+	async migrateUser(
+		@CurrentUser() currentUser,
+		@Query() query: AuthorizationParams,
+		@Res() res: Response,
+		@Param() urlParams: SystemUrlParams
+	): Promise<void> {
+		const migration = await this.oauthUc.migrateUser(currentUser.userId, query, urlParams.systemId);
+		if (migration.redirect) {
+			res.redirect(migration.redirect);
+		}
+	}
 }

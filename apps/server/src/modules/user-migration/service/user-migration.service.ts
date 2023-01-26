@@ -4,8 +4,12 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolService } from '@src/modules/school';
 import { EntityNotFoundError } from '@shared/common';
 import { SystemDto, SystemService } from '@src/modules/system/service';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
+import { UserService } from '../../user';
+import { UserMigrationDto } from '../../oauth/controller/dto/userMigrationDto';
+import { OAuthSSOError } from '../../oauth/error/oauth-sso.error';
 
 @Injectable()
 export class UserMigrationService {
@@ -17,7 +21,11 @@ export class UserMigrationService {
 
 	private readonly loginUrl: string = '/login';
 
-	constructor(private readonly schoolService: SchoolService, private readonly systemService: SystemService) {
+	constructor(
+		private readonly schoolService: SchoolService,
+		private readonly systemService: SystemService,
+		private readonly userService: UserService
+	) {
 		this.hostUrl = Configuration.get('HOST') as string;
 	}
 
@@ -86,6 +94,16 @@ export class UserMigrationService {
 				throw new BadRequestException('Unknown PageType requested');
 			}
 		}
+	}
+
+	async migrateUser(currentUserId: string, idToken: string, targetSystemId: string): Promise<UserMigrationDto> {
+		const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
+		if (!decodedToken || !decodedToken.uuid) {
+			return Promise.reject(new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem'));
+		}
+		const externalUserId: string = decodedToken.uuid as string;
+
+		await this.userService.migrateUser(currentUserId, externalUserId, targetSystemId);
 	}
 
 	private getOauthLoginUrl(system: SystemDto, postLoginUri?: string): URL {

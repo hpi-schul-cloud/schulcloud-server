@@ -8,10 +8,11 @@ import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
-import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
+import { AuthorizationParams, OauthTokenResponse, SystemUrlParams } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
+import { UserMigrationDto } from '../controller/dto/userMigrationDto';
 
 @Injectable()
 export class OauthUc {
@@ -125,5 +126,21 @@ export class OauthUc {
 		const provider: string = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
 		const oAuthError: OAuthProcessDto = this.oauthService.getOAuthErrorResponse(error, provider);
 		return oAuthError;
+	}
+
+	async migrateUser(currentUserId: string, query: AuthorizationParams, systemId: string): Promise<UserMigrationDto> {
+		const authCode: string = this.oauthService.checkAuthorizationCode(query);
+
+		const system: SystemDto = await this.systemService.findOAuthById(systemId);
+		if (!system.id) {
+			throw new NotFoundException(`System with id "${systemId}" does not exist.`);
+		}
+		const oauthConfig: OauthConfig = this.extractOauthConfigFromSystem(system);
+
+		const queryToken: OauthTokenResponse = await this.oauthService.requestToken(authCode, oauthConfig);
+
+		await this.oauthService.validateToken(queryToken.id_token, oauthConfig);
+
+		return this.userMigrationService.migrateUser(currentUserId, queryToken.id_token, systemId);
 	}
 }

@@ -19,6 +19,8 @@ export class UserDO extends BaseDO {
 
 	ldapDn?: string;
 
+	legacyExternalId?: string;
+
 	externalId?: string;
 
 	importHash?: string;
@@ -60,5 +62,6 @@ export class UserDO extends BaseDO {
 		this.preferences = domainObject.preferences;
 		this.lastLoginSystemChange = domainObject.lastLoginSystemChange;
 		this.outdatedSince = domainObject.outdatedSince;
+		this.legacyExternalId = domainObject.legacyExternalId;
 	}
 }

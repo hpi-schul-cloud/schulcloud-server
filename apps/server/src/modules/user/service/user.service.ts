@@ -97,4 +97,8 @@ export class UserService {
 		const promise: Promise<void> = this.userRepo.save(saveEntity);
 		return promise;
 	}
+
+	async migrateUser(currentUserId: string, externalId: string, targetSystemId: string) {
+		await this.userDORepo.migrate(currentUserId, externalId, targetSystemId);
+	}
 }
