@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LearnroomTypes } from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo } from '@shared/repo';
 import { courseFactory, setupEntities } from '@shared/testing';
 import { MetadataLoader } from './metadata-loader.service';
 
@@ -26,6 +26,10 @@ describe('metadata loader service', () => {
 				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
+				},
+				{
+					provide: LessonRepo,
+					useValue: createMock<LessonRepo>(),
 				},
 			],
 		}).compile();

@@ -3,6 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, LearnroomMetadata, LearnroomTypes, Permission } from '@shared/domain';
+import { CourseRepo, LessonRepo } from '@shared/repo';
 
 import { courseFactory, schoolFactory, setupEntities, shareTokenFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
@@ -11,6 +12,7 @@ import { AllowedAuthorizationEntityType } from '@src/modules/authorization/inter
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
 import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
+import { LessonCopyService } from '@src/modules/lesson/service';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
@@ -43,6 +45,18 @@ describe('ShareTokenUC', () => {
 				{
 					provide: CourseCopyService,
 					useValue: createMock<CourseCopyService>(),
+				},
+				{
+					provide: LessonCopyService,
+					useValue: createMock<LessonCopyService>(),
+				},
+				{
+					provide: LessonRepo,
+					useValue: createMock<LessonRepo>(),
+				},
+				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 				{
 					provide: Logger,

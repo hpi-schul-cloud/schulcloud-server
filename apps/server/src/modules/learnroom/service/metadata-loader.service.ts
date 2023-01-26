@@ -1,5 +1,5 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { Course, EntityId, LearnroomMetadata, LearnroomTypes, Lesson } from '@shared/domain';
+import { BaseMetadata, Course, EntityId, LearnroomTypes, Lesson } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 
 type RepoType = CourseRepo | LessonRepo;
@@ -21,12 +21,12 @@ export class MetadataLoader {
 		throw new NotImplementedException('REPO_NOT_IMPLEMENTED');
 	}
 
-	async loadMetadata({ type, id }: { type: LearnroomTypes; id: EntityId }): Promise<LearnroomMetadata> {
+	async loadMetadata({ type, id }: { type: LearnroomTypes; id: EntityId }): Promise<BaseMetadata> {
 		const repo = this.resolveRepo(type);
 
 		const entity: Lesson | Course = await repo.findById(id);
 
-		const metadata: LearnroomMetadata = entity.getMetadata();
+		const metadata: BaseMetadata = entity.getMetadata();
 		return metadata;
 	}
 }

@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { Actions, EntityId, LearnroomMetadata, Permission } from '@shared/domain';
+import { Actions, BaseMetadata, EntityId, Permission } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -77,7 +77,7 @@ export class ShareTokenUC {
 			await this.checkContextReadPermission(userId, shareToken.context);
 		}
 
-		const metadata: LearnroomMetadata = await this.loadMetadata(shareToken.payload);
+		const metadata: BaseMetadata = await this.loadMetadata(shareToken.payload);
 
 		const shareTokenInfo: ShareTokenInfoDto = {
 			token,
@@ -107,7 +107,6 @@ export class ShareTokenUC {
 		await this.checkCreatePermission(userId, shareToken.payload.parentType);
 
 		let result: CopyStatus;
-		// eslint-disable-next-line default-case
 		switch (shareToken.payload.parentType) {
 			case ShareTokenParentType.Course:
 				result = await this.copyCourse(userId, shareToken.payload.parentId, newName);
@@ -118,7 +117,7 @@ export class ShareTokenUC {
 				}
 				result = await this.copyLesson(userId, shareToken.payload.parentId, destinationCourseId, newName);
 				break;
-			case ShareTokenParentType.Task:
+			default:
 				throw new NotImplementedException();
 		}
 
@@ -182,7 +181,7 @@ export class ShareTokenUC {
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
 
-	private async loadMetadata(payload: ShareTokenPayload): Promise<LearnroomMetadata> {
+	private async loadMetadata(payload: ShareTokenPayload): Promise<BaseMetadata> {
 		const learnroomType = MetadataTypeMapper.mapToAlloweMetadataType(payload.parentType);
 		const metadata = await this.metadataLoader.loadMetadata({
 			type: learnroomType,
