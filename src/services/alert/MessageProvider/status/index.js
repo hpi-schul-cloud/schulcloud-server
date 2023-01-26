@@ -58,9 +58,7 @@ module.exports = {
 			const rawData = await statusApi.getIncidents();
 			const instanceSpecific = [];
 			const noneSpecific = [];
-
 			const promises = rawData.data.map(async (element) => {
-
 				if (element.status !== 4) {
 					const isinstance = await getInstance(instance, element.component_id);
 					if (isinstance !== importance.ALL_INSTANCES && isinstance !== importance.INGORE) {
