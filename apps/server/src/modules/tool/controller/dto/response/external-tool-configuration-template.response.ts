@@ -1,7 +1,6 @@
 import { EntityId } from '@shared/domain';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CustomParameterResponse } from './custom-parameter.response';
-import { CustomParameterEntryResponse } from './custom-parameter-entry.response';
 
 export class ExternalToolConfigurationTemplateResponse {
 	@ApiProperty()
