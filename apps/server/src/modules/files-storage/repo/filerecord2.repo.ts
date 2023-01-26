@@ -1,8 +1,8 @@
 import { MongoEntityManager } from '@mikro-orm/mongodb';
+import { Reference } from '@mikro-orm/core';
 import { BaseRepo2, Counted, EntityId, IFindOptions, SortOrder } from '@shared/domain';
-import { FileRecordDO, FileRecordDOParams } from '../entity';
-import { IFilesStorageRepo } from '../service/files-storage.service';
-import { FileRecord, IFileRecordProperties } from '../entity/filerecord.entity';
+import { FileRecordDO, FileRecordDOParams, IFileRecordProperties, FileRecord } from '../entity';
+import { IFilesStorageRepo } from '../service';
 import { FileRecordDOMapper } from './fileRecordDO.mapper';
 import { FileRecordScope } from './filerecord-scope';
 
@@ -63,31 +63,32 @@ export class FileRecordRepo extends BaseRepo2<FileRecordDO> implements IFilesSto
 	}
 
 	public async delete(fileRecordDOs: FileRecordDO[]): Promise<void> {
-		const asArray = getArray(fileRecordDOs);
-		/*
-		const entityIdentifiere: FileRecord[] = asArray.map<FileRecord>((do) => {
-			return this.em.getReference(FileRecord, do.id);
-		});
-		*/
-
-		// param = DOs
-		// map to array?
-		// load entities ?
-		// removeAndFlush
-		await Promise.resolve();
-
-		// await this.em.removeAndFlush(entityIdentifiere);
+		const entities = this.getEntitiesReferenceFromDOs(fileRecordDOs);
+		await this.em.removeAndFlush(entities);
 	}
 
 	public async update(fileRecordDOs: FileRecordDO[]): Promise<void> {
 		// param = DO
-		// toArray
 		// map to entity
 		// load entities
 		// override keys?
 		// persistAndFlush
 		// return DO ?? -> no
+		const entities = this.getEntitiesReferenceFromDOs(fileRecordDOs);
+
 		await Promise.resolve();
+	}
+
+	private getEntitiesReferenceFromDOs(fileRecordDOs: FileRecordDO[]): FileRecord[] {
+		const entities = fileRecordDOs.map((item) => this.getEntityReferenceFromDO(item));
+
+		return entities;
+	}
+
+	private getEntityReferenceFromDO(fileRecordDO: FileRecordDO): FileRecord {
+		const fileRecord = Reference.createFromPK(FileRecord, fileRecordDO.id);
+
+		return fileRecord;
 	}
 
 	public async save(fileRecordDOParams: FileRecordDOParams[]): Promise<FileRecordDO[]> {

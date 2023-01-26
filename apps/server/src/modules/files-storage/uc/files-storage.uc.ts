@@ -19,7 +19,7 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../controller/dto';
-import { FileRecordDO, FileRecordParentType } from '../entity';
+import { FileRecordDO, FileRecordDOParams, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { FilesStorageMapper, FileDtoBuilder } from '../mapper';
@@ -51,7 +51,7 @@ export class FilesStorageUC {
 		userId: EntityId,
 		params: FileRecordParams,
 		req: Request
-	): Promise<FileRecordDO> {
+	): Promise<FileRecordDOParams> {
 		const result = await new Promise((resolve, reject) => {
 			const requestStream = busboy({ headers: req.headers, defParamCharset: 'utf8' });
 
@@ -74,11 +74,11 @@ export class FilesStorageUC {
 			req.pipe(requestStream);
 		});
 
-		// TODO: as FileRecordDO ...mapper!??!
-		return result;
+		// TODO: missing validation check
+		return result as FileRecordDOParams;
 	}
 
-	public async upload(userId: EntityId, params: FileRecordParams, req: Request) {
+	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecordDOParams> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 
 		const result = await this.addRequestStreamToRequestPipe(userId, params, req);
@@ -134,7 +134,9 @@ export class FilesStorageUC {
 
 		await this.checkPermission(userId, fileRecord.props.parentType, fileRecord.props.parentId, PermissionContexts.read);
 
-		return this.filesStorageService.download(fileRecord, params, bytesRange);
+		const fileResponse = this.filesStorageService.download(fileRecord, params, bytesRange);
+
+		return fileResponse;
 	}
 
 	public async downloadBySecurityToken(token: string) {
