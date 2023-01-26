@@ -1,11 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
+import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, LearnroomMetadata, LearnroomTypes, Permission } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 
-import { courseFactory, schoolFactory, setupEntities, shareTokenFactory, userFactory } from '@shared/testing';
+import {
+	courseFactory,
+	lessonFactory,
+	schoolFactory,
+	setupEntities,
+	shareTokenFactory,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
@@ -13,7 +22,7 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-h
 import { CourseCopyService } from '@src/modules/learnroom';
 import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
 import { LessonCopyService } from '@src/modules/lesson/service';
-import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
+import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
 
@@ -24,6 +33,7 @@ describe('ShareTokenUC', () => {
 	let service: DeepMocked<ShareTokenService>;
 	let metadataLoader: DeepMocked<MetadataLoader>;
 	let courseCopyService: DeepMocked<CourseCopyService>;
+	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let authorization: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
@@ -69,6 +79,7 @@ describe('ShareTokenUC', () => {
 		service = module.get(ShareTokenService);
 		metadataLoader = module.get(MetadataLoader);
 		courseCopyService = module.get(CourseCopyService);
+		lessonCopyService = module.get(LessonCopyService);
 		authorization = module.get(AuthorizationService);
 		orm = await setupEntities();
 	});
@@ -80,7 +91,9 @@ describe('ShareTokenUC', () => {
 
 	beforeEach(() => {
 		jest.resetAllMocks();
+		jest.clearAllMocks();
 		Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
+		Configuration.set('FEATURE_LESSON_SHARE_NEW', true);
 	});
 
 	describe('create a sharetoken', () => {
@@ -393,19 +406,102 @@ describe('ShareTokenUC', () => {
 			return { user, school, shareToken, status };
 		};
 
-		it('should throw if the feature is not enabled', async () => {
+		const setupLesson = () => {
+			const school = schoolFactory.buildWithId();
+
+			const user = userFactory.buildWithId({ school });
+			authorization.getUserWithPermissions.mockResolvedValue(user);
+
+			const course = courseFactory.buildWithId();
+			const lesson = lessonFactory.buildWithId();
+			const status: CopyStatus = {
+				type: CopyElementType.LESSON,
+				status: CopyStatusEnum.SUCCESS,
+				copyEntity: lesson,
+			};
+			lessonCopyService.copyLesson.mockResolvedValue(status);
+
+			const payload: ShareTokenPayload = { parentType: ShareTokenParentType.Lesson, parentId: lesson._id.toString() };
+			const shareToken = shareTokenFactory.build({ payload });
+			service.lookupToken.mockResolvedValue(shareToken);
+
+			return { user, school, shareToken, status, course };
+		};
+
+		const setupTask = () => {
+			const school = schoolFactory.buildWithId();
+
+			const user = userFactory.buildWithId({ school });
+			authorization.getUserWithPermissions.mockResolvedValue(user);
+
+			const task = taskFactory.buildWithId();
+			const status: CopyStatus = {
+				type: CopyElementType.LESSON,
+				status: CopyStatusEnum.SUCCESS,
+				copyEntity: task,
+			};
+			lessonCopyService.copyLesson.mockResolvedValue(status);
+
+			const payload: ShareTokenPayload = { parentType: ShareTokenParentType.Task, parentId: task._id.toString() };
+			const shareToken = shareTokenFactory.build({ payload });
+			service.lookupToken.mockResolvedValue(shareToken);
+
+			return { user, school, shareToken, status };
+		};
+
+		it('should throw if the feature is not enabled for course', async () => {
 			const { user, shareToken } = setup();
 			Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
 
-			await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError();
+			await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
+				InternalServerErrorException
+			);
 		});
 
-		it('should load the share token', async () => {
+		it('should throw if the feature is not enabled for lesson', async () => {
+			const { user, shareToken, course } = setupLesson();
+			Configuration.set('FEATURE_LESSON_SHARE_NEW', false);
+
+			await expect(
+				uc.importShareToken(user.id, shareToken.token, 'NewName', course._id.toString())
+			).rejects.toThrowError(InternalServerErrorException);
+		});
+
+		it('should throw if the feature is not implemented for task', async () => {
+			const { user, shareToken } = setupTask();
+			await expect(uc.importShareToken(user.id, shareToken.token, 'NewName', '')).rejects.toThrowError(
+				NotImplementedException
+			);
+		});
+
+		it('should throw if the destinationCourseId is not passed for lesson', async () => {
+			const { user, shareToken } = setupLesson();
+
+			await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(BadRequestException);
+		});
+
+		it('should load the share token for course', async () => {
 			const { user, shareToken } = setup();
 
 			await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
 			expect(service.lookupToken).toBeCalledWith(shareToken.token);
+		});
+
+		it('should load the share token for lesson', async () => {
+			const { user, shareToken, course } = setupLesson();
+
+			await uc.importShareToken(user.id, shareToken.token, 'NewName', course._id.toString());
+
+			expect(service.lookupToken).toBeCalledWith(shareToken.token);
+		});
+
+		it('should throw if importing is not implemented for task', async () => {
+			const { user, shareToken } = setupTask();
+
+			await expect(uc.importShareToken(user.id, shareToken.token, 'NewName', '')).rejects.toThrowError(
+				NotImplementedException
+			);
 		});
 
 		it('should check the permission to create the course', async () => {
@@ -414,6 +510,36 @@ describe('ShareTokenUC', () => {
 			await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
 			expect(authorization.checkAllPermissions).toBeCalledWith(user, [Permission.COURSE_CREATE]);
+		});
+
+		it('should check the permission to create the lesson', async () => {
+			const { user, shareToken } = setupLesson();
+
+			await uc.importShareToken(user.id, shareToken.token, 'NewName', '');
+
+			expect(authorization.checkAllPermissions).toBeCalledWith(user, [Permission.TOPIC_CREATE]);
+		});
+
+		it('should throw if checking permission is not implemented for task', async () => {
+			const { user, shareToken } = setupTask();
+
+			jest.spyOn(uc, 'checkFeatureEnabled').mockImplementation(() => {});
+
+			await expect(uc.importShareToken(user.id, shareToken.token, 'NewName', '')).rejects.toThrowError(
+				NotImplementedException
+			);
+		});
+
+		it('should throw if copy task is not implemented', async () => {
+			const { user, shareToken } = setupTask();
+
+			jest.spyOn(uc, 'checkFeatureEnabled').mockImplementation(() => {});
+			jest.spyOn(uc, 'checkCreatePermission').mockImplementation(async (_userId, _parentType) => {});
+
+			await expect(uc.importShareToken(user.id, shareToken.token, 'NewName', '')).rejects.toThrowError(
+				NotImplementedException
+			);
+			jest.clearAllMocks();
 		});
 
 		it('should use the service to copy the course', async () => {
