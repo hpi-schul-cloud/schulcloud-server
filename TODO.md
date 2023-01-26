@@ -21,7 +21,7 @@
 - enable log only for failed tests: https://stackoverflow.com/a/61909588
 - remove mongoose history (keep one)
 - remove custom npm packages (ldap, ...)
-- e2e default tests to extend: auth required, fails without/succeeds with  
+- API default tests to extend: auth required, fails without/succeeds with  
 
 ## ACCEPTED
 

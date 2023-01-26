@@ -4,9 +4,9 @@ import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { NotFoundException } from '@nestjs/common';
-import { MigrationResponse } from '../controller/dto';
 import { AuthorizationService } from '../../authorization';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
+import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 describe('SchoolUc', () => {
 	let module: TestingModule;
@@ -37,35 +37,43 @@ describe('SchoolUc', () => {
 		await module.close();
 	});
 
-	describe('setMigration', () => {
-		let migrationResponse: MigrationResponse;
+	describe('setMigration is called', () => {
+		let migrationResponse: OauthMigrationDto;
 		const mockId = 'someId';
 		beforeAll(() => {
-			migrationResponse = new MigrationResponse({
-				oauthMigrationPossible: true,
-				oauthMigrationMandatory: true,
+			migrationResponse = new OauthMigrationDto({
+				oauthMigrationPossible: new Date(),
+				oauthMigrationMandatory: new Date(),
+				oauthMigrationFinished: new Date(),
+				enableMigrationStart: true,
 			});
 			schoolService.setMigration.mockResolvedValue(migrationResponse);
 			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
 		});
-		it('should call the service', async () => {
-			await schoolUc.setMigration(mockId, true, true, mockId);
 
-			expect(schoolService.setMigration).toHaveBeenCalledWith(mockId, true, true);
+		describe('when migrationflags and schoolId and userId are given', () => {
+			it('should call the service', async () => {
+				await schoolUc.setMigration(mockId, true, true, true, mockId);
+
+				expect(schoolService.setMigration).toHaveBeenCalledWith(mockId, true, true, true);
+			});
 		});
 	});
 
-	describe('getMigration', () => {
-		let migrationResponse: MigrationResponse;
+	describe('getMigration is called', () => {
+		let migrationResponse: OauthMigrationDto;
 		const mockId = 'someId';
 		beforeAll(() => {
 			schoolService.getMigration.mockResolvedValue(migrationResponse);
 			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
 		});
-		it('should call the service', async () => {
-			await schoolUc.getMigration(mockId, mockId);
 
-			expect(schoolService.getMigration).toHaveBeenCalledWith(mockId);
+		describe('when schoolId and UserId are given', () => {
+			it('should call the service', async () => {
+				await schoolUc.getMigration(mockId, mockId);
+
+				expect(schoolService.getMigration).toHaveBeenCalledWith(mockId);
+			});
 		});
 	});
 

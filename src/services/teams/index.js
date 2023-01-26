@@ -319,7 +319,7 @@ class Add {
 		Add._throwErrorIfUserExistByEmail(team, email);
 
 		const invalidTeacherInvitation =
-			userRoleName === 'teamadministrator' && !['administrator', 'teacher'].includes(user.roles[0].name);
+			['teamadministrator', 'teammember'].includes(userRoleName) && !['administrator', 'teacher'].includes(user.roles[0].name);
 
 		const invalidExpertInvitation =
 			userRoleName === 'teamexpert' && !['expert'].includes(user.roles[0].name) && !(isUserCreated === true);
@@ -367,7 +367,7 @@ class Add {
 	 */
 	patch(teamId, data, params) {
 		try {
-			if (isDefined(data.role) && ['teamexpert', 'teamadministrator'].includes(data.role) === false) {
+			if (isDefined(data.role) && ['teamexpert', 'teamadministrator', 'teammember'].includes(data.role) === false) {
 				throw new BadRequest('Wrong role is set.');
 			}
 			let out;
