@@ -9,7 +9,8 @@ export class CourseMetadataResponse {
 		shortTitle: string,
 		displayColor: string,
 		startDate?: Date,
-		untilDate?: Date
+		untilDate?: Date,
+		copyingSince?: Date
 	) {
 		this.id = id;
 		this.title = title;
@@ -17,6 +18,7 @@ export class CourseMetadataResponse {
 		this.displayColor = displayColor;
 		this.startDate = startDate;
 		this.untilDate = untilDate;
+		this.copyingSince = copyingSince;
 	}
 
 	@ApiProperty({
@@ -49,6 +51,11 @@ export class CourseMetadataResponse {
 		description: 'End date of the course. After this the course counts as archived',
 	})
 	untilDate?: Date;
+
+	@ApiProperty({
+		description: 'Start of the copying process if it is still ongoing - otherwise property is not set.',
+	})
+	copyingSince?: Date;
 }
 
 export class CourseMetadataListResponse extends PaginationResponse<CourseMetadataResponse[]> {

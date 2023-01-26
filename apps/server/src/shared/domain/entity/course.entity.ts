@@ -140,6 +140,7 @@ export class Course
 			displayColor: this.color,
 			untilDate: this.untilDate,
 			startDate: this.startDate,
+			copyingSince: this.copyingSince,
 		};
 	}
 

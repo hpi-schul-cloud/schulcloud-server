@@ -485,4 +485,63 @@ describe('course copy service', () => {
 			expect(coursegroupsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 		});
 	});
+
+	describe('when course is copied', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const allCourses = courseFactory.buildList(3, { teachers: [user] });
+			const course = allCourses[0];
+			const originalBoard = boardFactory.build({ course });
+			9;
+			const courseCopy = courseFactory.buildWithId({ teachers: [user] });
+			const boardCopy = boardFactory.build({ course: courseCopy });
+
+			authorization.getUserWithPermissions.mockResolvedValue(user);
+			courseRepo.findById.mockResolvedValue(course);
+			courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
+			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
+			authorization.checkPermission.mockReturnValue();
+			roomsService.updateBoard.mockResolvedValue(originalBoard);
+
+			const courseCopyName = 'Copy';
+			copyHelperService.deriveCopyName.mockReturnValue(courseCopyName);
+			copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
+
+			const boardCopyStatus = {
+				title: 'boardCopy',
+				type: CopyElementType.BOARD,
+				status: CopyStatusEnum.SUCCESS,
+				copyEntity: boardFactory.build(),
+				elements: [],
+			};
+			boardCopyService.copyBoard.mockResolvedValue(boardCopyStatus);
+
+			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(boardCopyStatus);
+
+			return {
+				user,
+				course,
+				originalBoard,
+				courseCopy,
+				boardCopy,
+				courseCopyName,
+				allCourses,
+				boardCopyStatus,
+			};
+		};
+
+		it('should set copyingSince property to current Date when copy', async () => {
+			const { course, user, courseCopyName } = setup();
+			const result = await service.copyCourse({ userId: user.id, courseId: course.id });
+
+			expect(result).toEqual(
+				expect.objectContaining({
+					title: courseCopyName,
+					type: CopyElementType.COURSE,
+					status: CopyStatusEnum.SUCCESS,
+				})
+			);
+			expect();
+		});
+	});
 });
