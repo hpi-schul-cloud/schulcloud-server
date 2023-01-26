@@ -28,10 +28,10 @@ export class FileRecordMapper {
 			scanResult.status = ScanStatus.BLOCKED;
 			scanResult.reason = scanResultParams.virus_signature ?? 'Virus detected';
 		} else if (scanResultParams.error) {
-			scanResult.status = ScanStatus.WONT_CHECK;
+			scanResult.status = ScanStatus.ERROR;
 			scanResult.reason = scanResultParams.error;
 		} else if (scanResultParams.virus_detected === undefined) {
-			scanResult.status = ScanStatus.WONT_CHECK;
+			scanResult.status = ScanStatus.ERROR;
 			scanResult.reason = 'No scan result';
 		}
 

@@ -9,7 +9,7 @@ export enum ScanStatus {
 	PENDING = 'pending',
 	VERIFIED = 'verified',
 	BLOCKED = 'blocked',
-	WONT_CHECK = 'wont-check',
+	ERROR = 'error',
 }
 
 export enum FileRecordParentType {

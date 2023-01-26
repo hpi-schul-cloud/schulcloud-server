@@ -121,7 +121,7 @@ describe('FilesStorageMapper', () => {
 				const result = FileRecordMapper.mapScanResultParamsToDto(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
-					status: ScanStatus.WONT_CHECK,
+					status: ScanStatus.ERROR,
 					reason: error,
 				});
 				expect(result).toEqual(expectedResult);
@@ -157,7 +157,7 @@ describe('FilesStorageMapper', () => {
 				const result = FileRecordMapper.mapScanResultParamsToDto(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
-					status: ScanStatus.WONT_CHECK,
+					status: ScanStatus.ERROR,
 					reason: 'No scan result',
 				});
 				expect(result).toEqual(expectedResult);
