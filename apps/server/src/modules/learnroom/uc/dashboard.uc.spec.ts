@@ -2,19 +2,18 @@ import { BadRequestException, NotFoundException } from '@nestjs/common/';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MikroORM } from '@mikro-orm/core';
 import {
-	Counted,
 	Course,
 	DashboardEntity,
 	EntityId,
 	GridElement,
-	IFindOptions,
 	LearnroomMetadata,
 	LearnroomTypes,
 	SortOrder,
 } from '@shared/domain';
 import { createMock } from '@golevelup/ts-jest';
 import { courseFactory, setupEntities } from '@shared/testing';
-import { CourseRepo, IDashboardRepo } from '@shared/repo';
+import { CourseRepo, IDashboardRepo, UserRepo } from '@shared/repo';
+import { AuthorisationUtils } from '@shared/domain/rules/authorisation.utils';
 import { DashboardUc } from './dashboard.uc';
 
 const learnroomMock = (id: string, name: string) => {
@@ -56,6 +55,14 @@ describe('dashboard uc', () => {
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
 				},
+				{
+					provide: AuthorisationUtils,
+					useValue: createMock<AuthorisationUtils>(),
+				},
+				{
+					provide: UserRepo,
+					useValue: createMock<UserRepo>(),
+				},
 			],
 		}).compile();
 
@@ -70,18 +77,6 @@ describe('dashboard uc', () => {
 	});
 
 	describe('getUsersDashboard', () => {
-		it('should return a dashboard', async () => {
-			const spy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((userId: EntityId) => {
-				const dashboard = new DashboardEntity('someid', { grid: [], userId });
-				return Promise.resolve(dashboard);
-			});
-			jest.spyOn(courseRepo, 'findAllByUserId').mockImplementation(() => Promise.resolve([[], 0]));
-			const dashboard = await service.getUsersDashboard('userId', true);
-
-			expect(dashboard instanceof DashboardEntity).toEqual(true);
-			expect(spy).toHaveBeenCalledWith('userId');
-		});
-
 		it('should return a dashboard for teacher only courses', async () => {
 			const spy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((userId: EntityId) => {
 				const dashboard = new DashboardEntity('someid', { grid: [], userId });
@@ -89,6 +84,17 @@ describe('dashboard uc', () => {
 			});
 			jest.spyOn(courseRepo, 'findAllForTeacher').mockImplementation(() => Promise.resolve([[], 0]));
 			const dashboard = await service.getUsersDashboard('userId', false);
+
+			expect(dashboard instanceof DashboardEntity).toEqual(true);
+			expect(spy).toHaveBeenCalledWith('userId');
+		});
+		it('should return a dashboard', async () => {
+			const spy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((userId: EntityId) => {
+				const dashboard = new DashboardEntity('someid', { grid: [], userId });
+				return Promise.resolve(dashboard);
+			});
+			jest.spyOn(courseRepo, 'findAllByUserId').mockImplementation(() => Promise.resolve([[], 0]));
+			const dashboard = await service.getUsersDashboard('userId', true);
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
 			expect(spy).toHaveBeenCalledWith('userId');
