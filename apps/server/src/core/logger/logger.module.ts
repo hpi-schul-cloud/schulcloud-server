@@ -5,26 +5,20 @@ import winston from 'winston';
 import { ILoggerConfig } from './interfaces';
 import { Logger } from './logger.service';
 
-const availableLevels = {
-	emerg: 0,
-	alert: 1,
-	crit: 2,
-	error: 3,
-	warning: 4,
-	notice: 5,
-	info: 6,
-	debug: 7,
-};
-
 @Module({
 	imports: [
 		WinstonModule.forRootAsync({
 			useFactory: (configService: ConfigService<ILoggerConfig, true>) => {
+				const level = configService.get<string>('NEST_LOG_LEVEL');
 				return {
-					levels: availableLevels,
+					levels: winston.config.syslog.levels,
+					level,
+					exitOnError: false,
 					transports: [
 						new winston.transports.Console({
-							level: configService.get<string>('NEST_LOG_LEVEL'),
+							handleExceptions: true,
+							handleRejections: true,
+							level,
 							format: winston.format.combine(
 								winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
 								winston.format.ms(),
