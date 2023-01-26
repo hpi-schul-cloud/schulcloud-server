@@ -223,12 +223,11 @@ export class DashboardEntity {
 		substituteCourses: ILearnroom[]
 	): GridElementWithPosition {
 		const elementToMove = this.getReferencesFromPosition(from);
-		this.checkIfMovedToSubstitute(elementToMove, substituteCourses);
-		try {
-			this.checkIfMovedToSubstitute(this.getReferencesFromPosition(to), substituteCourses);
-		} catch (error: unknown) {
-			if (!(error instanceof NotFoundException)) {
-				throw error;
+		if (substituteCourses.length > 0) {
+			this.checkIfMovedToSubstitute(elementToMove, substituteCourses);
+			const toPosition = this.grid.get(this.gridIndexFromPosition(to));
+			if (toPosition) {
+				this.checkIfMovedToSubstitute(toPosition, substituteCourses);
 			}
 		}
 
