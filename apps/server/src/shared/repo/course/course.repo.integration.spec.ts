@@ -354,7 +354,7 @@ describe('course repo', () => {
 			await em.persistAndFlush([course]);
 
 			delete course.copyingSince;
-			await em.persistAndFlush([course]);
+			await repo.save(course);
 
 			const result = await repo.findOne(course.id);
 
