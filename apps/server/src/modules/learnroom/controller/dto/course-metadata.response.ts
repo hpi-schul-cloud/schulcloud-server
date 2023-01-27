@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
 import { EntityId } from '@shared/domain';
 
@@ -42,17 +42,17 @@ export class CourseMetadataResponse {
 	})
 	displayColor: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Start date of the course',
 	})
 	startDate?: Date;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'End date of the course. After this the course counts as archived',
 	})
 	untilDate?: Date;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Start of the copying process if it is still ongoing - otherwise property is not set.',
 	})
 	copyingSince?: Date;
