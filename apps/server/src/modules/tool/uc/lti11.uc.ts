@@ -5,7 +5,7 @@ import { EntityId, LtiPrivacyPermission, RoleName } from '@shared/domain';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
-import { Lti11Service } from '../service/lti11.service';
+import { Lti11Service } from '../service';
 import { Lti11PayloadDto } from './dto';
 import { LtiRole } from '../interface';
 import { LtiRoleMapper } from './mapper';
