@@ -12,7 +12,7 @@ export class ExternalToolConfigurationTemplateResponse {
 	@ApiPropertyOptional()
 	logoUrl?: string;
 
-	@ApiProperty()
+	@ApiProperty({ type: [CustomParameterResponse] })
 	parameters: CustomParameterResponse[];
 
 	@ApiProperty()
