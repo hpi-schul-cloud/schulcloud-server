@@ -1,3 +1,4 @@
+export * from './common-cartridge.config';
 export * from './common-cartridge-element.interface';
 export * from './common-cartridge-file-builder';
 export * from './common-cartridge-metadata-element';

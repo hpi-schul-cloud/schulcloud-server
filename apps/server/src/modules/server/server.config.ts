@@ -2,6 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import type { ICoreModuleConfig } from '@src/core';
 import type { IAccountConfig, IFilesStorageClientConfig, IUserConfig } from '@src/modules/';
 import type { IIdentityManagementConfig } from '@shared/infra/identity-management';
+import type { ICommonCartridgeConfig } from '@src/modules/learnroom/common-cartridge';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -15,7 +16,8 @@ export interface IServerConfig
 		IUserConfig,
 		IFilesStorageClientConfig,
 		IAccountConfig,
-		IIdentityManagementConfig {
+		IIdentityManagementConfig,
+		ICommonCartridgeConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
