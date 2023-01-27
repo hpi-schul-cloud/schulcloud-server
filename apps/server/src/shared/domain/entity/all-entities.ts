@@ -20,9 +20,11 @@ import { StorageProvider } from './storageprovider.entity';
 import { Submission } from './submission.entity';
 import { System } from './system.entity';
 import { Task } from './task.entity';
+import { TaskCard } from './task-card.entity';
 import { Team, TeamUser } from './team.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
+import { CardElement, TitleCardElement, RichTextCardElement } from './cardElement.entity';
 
 export const ALL_ENTITIES = [
 	Account,
@@ -56,6 +58,10 @@ export const ALL_ENTITIES = [
 	System,
 	Task,
 	TaskBoardElement,
+	TaskCard,
+	CardElement,
+	TitleCardElement,
+	RichTextCardElement,
 	Team,
 	TeamNews,
 	TeamUser,

@@ -2,10 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, CopyElementType, CopyStatusEnum, Permission } from '@shared/domain';
+import { Actions, Permission } from '@shared/domain';
 import { boardFactory, courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '../service';
 import { CourseCopyUC } from './course-copy.uc';
 

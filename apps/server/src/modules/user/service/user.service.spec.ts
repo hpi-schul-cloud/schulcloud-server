@@ -3,13 +3,16 @@ import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, PermissionService, Role, RoleName, School, User } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleRepo, UserRepo } from '@shared/repo';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { SchoolService } from '../../school';
+import { SchoolMapper } from '../../school/mapper/school.mapper';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -17,6 +20,7 @@ describe('UserService', () => {
 	let module: TestingModule;
 
 	let userRepo: DeepMocked<UserRepo>;
+	let userDORepo: DeepMocked<UserDORepo>;
 	let roleRepo: DeepMocked<RoleRepo>;
 	let permissionService: DeepMocked<PermissionService>;
 	let config: DeepMocked<ConfigService>;
@@ -27,6 +31,7 @@ describe('UserService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				UserService,
+				SchoolMapper,
 				{
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
@@ -34,6 +39,10 @@ describe('UserService', () => {
 				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
+				},
+				{
+					provide: UserDORepo,
+					useValue: createMock<UserDORepo>(),
 				},
 				{
 					provide: RoleRepo,
@@ -56,6 +65,7 @@ describe('UserService', () => {
 		service = module.get(UserService);
 
 		userRepo = module.get(UserRepo);
+		userDORepo = module.get(UserDORepo);
 		schoolService = module.get(SchoolService);
 		roleRepo = module.get(RoleRepo);
 		permissionService = module.get(PermissionService);
@@ -198,7 +208,7 @@ describe('UserService', () => {
 		});
 	});
 
-	describe('save', () => {
+	describe('createOrUpdate', () => {
 		let user: User;
 		let roles: Role[];
 		let school: School;
@@ -267,6 +277,87 @@ describe('UserService', () => {
 			expect(capturedUser.roles.getItems().map((role: Role) => role.id)).toEqual(
 				user.roles.getItems().map((role: Role) => role.id)
 			);
+		});
+	});
+
+	describe('save is called', () => {
+		describe('when saving a new user', () => {
+			const setup = () => {
+				const user: UserDO = new UserDO({
+					firstName: 'firstName',
+					lastName: 'lastName',
+					schoolId: 'schoolId',
+					email: 'email',
+					roleIds: ['roleId'],
+				});
+
+				userDORepo.save.mockResolvedValue(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should call the userDORepo.save', async () => {
+				const { user } = setup();
+
+				await service.save(user);
+
+				expect(userDORepo.save).toHaveBeenCalledWith(user);
+			});
+
+			it('should return the saved user', async () => {
+				const { user } = setup();
+
+				const result: UserDO = await service.save(user);
+
+				expect(result).toEqual(user);
+			});
+		});
+	});
+
+	describe('findByExternalId is called', () => {
+		describe('when a user with this external id exists', () => {
+			it('should return the user', async () => {
+				const user: UserDO = new UserDO({
+					firstName: 'firstName',
+					lastName: 'lastName',
+					schoolId: 'schoolId',
+					email: 'email',
+					roleIds: ['roleId'],
+					externalId: 'externalId',
+				});
+
+				userDORepo.findByExternalId.mockResolvedValue(user);
+
+				const result: UserDO | null = await service.findByExternalId('externalId', 'systemId');
+
+				expect(result).toEqual(user);
+			});
+		});
+
+		describe('when a user with this external id does not exist', () => {
+			it('should return null', async () => {
+				userDORepo.findByExternalId.mockResolvedValue(null);
+
+				const result: UserDO | null = await service.findByExternalId('externalId', 'systemId');
+
+				expect(result).toEqual(null);
+			});
+		});
+	});
+
+	describe('findByEmail is called', () => {
+		describe('when a user with this email exists', () => {
+			it('should return the user', async () => {
+				const user: User = userFactory.buildWithId();
+
+				userRepo.findByEmail.mockResolvedValue([user]);
+
+				const result: User[] = await service.findByEmail(user.email);
+
+				expect(result).toEqual([user]);
+			});
 		});
 	});
 });

@@ -2,23 +2,16 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Actions,
-	CopyElementType,
-	CopyStatus,
-	CopyStatusEnum,
-	LearnroomMetadata,
-	LearnroomTypes,
-	Permission,
-} from '@shared/domain';
+import { Actions, LearnroomMetadata, LearnroomTypes, Permission } from '@shared/domain';
 
 import { courseFactory, schoolFactory, setupEntities, shareTokenFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
 import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
-import { ShareTokenContextType, ShareTokenDO, ShareTokenParentType } from '../domainobject/share-token.do';
+import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
 

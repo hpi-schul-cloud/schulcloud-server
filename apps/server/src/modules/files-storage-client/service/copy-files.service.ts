@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum, EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CopyFileDto } from '../dto';
 import { EntityWithEmbeddedFiles } from '../interfaces';
-import { FileParamBuilder, CopyFilesOfParentParamBuilder } from '../mapper';
+import { CopyFilesOfParentParamBuilder, FileParamBuilder } from '../mapper';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
-// TODO  missing FileCopyParams  ...passing user instead of userId
+const FILE_COULD_NOT_BE_COPIED_HINT = 'fileCouldNotBeCopied';
 
 export type FileUrlReplacement = {
 	regex: RegExp;
@@ -39,22 +40,29 @@ export class CopyFilesService {
 	}
 
 	private createFileUrlReplacements(fileDtos: CopyFileDto[]): FileUrlReplacement[] {
-		return fileDtos.map((fileDto) => {
+		return fileDtos.map((fileDto): FileUrlReplacement => {
 			const { sourceId, id, name } = fileDto;
-			return {
+
+			// use hint as id replacement, if file could not be copied
+			const newId = id ?? FILE_COULD_NOT_BE_COPIED_HINT;
+
+			const fileUrlReplacement: FileUrlReplacement = {
 				regex: new RegExp(`${sourceId}.+?"`, 'g'),
-				replacement: `${id ?? 'fileCouldNotBeCopied'}/${name}"`,
+				replacement: `${newId}/${name}"`,
 			};
+
+			return fileUrlReplacement;
 		});
 	}
 
 	private deriveCopyStatus(fileDtos: CopyFileDto[]): CopyStatus {
 		const fileStatuses: CopyStatus[] = fileDtos.map(({ sourceId, id, name }) => {
-			return {
+			const result = {
 				type: CopyElementType.FILE,
 				status: id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
 				title: name ?? `(old fileid: ${sourceId})`,
 			};
+			return result;
 		});
 
 		const fileGroupStatus = {
