@@ -313,7 +313,7 @@ describe('Lesson Entity', () => {
 
 	describe('should return metadata when getMetadata is called', () => {
 		it('should return the userIds of the students', () => {
-			const lesson = lessonFactory.buildWithId({ name: 'name'});
+			const lesson = lessonFactory.buildWithId({ name: 'name' });
 
 			const result = lesson.getMetadata();
 
