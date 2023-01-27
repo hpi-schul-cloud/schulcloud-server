@@ -145,7 +145,8 @@ describe('BaseDORepo', () => {
 			const testDO1 = new TestDO({ name: 'test1' });
 			const testDO2 = new TestDO({ name: 'test2' });
 
-			await repo.saveAll([testDO1, testDO2]);
+			await repo.saveAllWithoutFlush([testDO1, testDO2]);
+			await em.flush();
 			em.clear();
 
 			const result = await em.find(TestEntity, {});

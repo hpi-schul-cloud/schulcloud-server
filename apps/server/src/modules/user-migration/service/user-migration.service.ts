@@ -4,12 +4,10 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolService } from '@src/modules/school';
 import { EntityNotFoundError } from '@shared/common';
 import { SystemDto, SystemService } from '@src/modules/system/service';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
 import { UserService } from '../../user';
 import { UserMigrationDto } from '../../oauth/controller/dto/userMigrationDto';
-import { OAuthSSOError } from '../../oauth/error/oauth-sso.error';
 
 @Injectable()
 export class UserMigrationService {
@@ -96,14 +94,19 @@ export class UserMigrationService {
 		}
 	}
 
-	async migrateUser(currentUserId: string, idToken: string, targetSystemId: string): Promise<UserMigrationDto> {
-		const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
-		if (!decodedToken || !decodedToken.uuid) {
-			return Promise.reject(new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem'));
-		}
-		const externalUserId: string = decodedToken.uuid as string;
+	async migrateUser(currentUserId: string, externalUserId: string, targetSystemId: string): Promise<UserMigrationDto> {
+		const HOST = Configuration.get('HOST') as string;
 
-		await this.userService.migrateUser(currentUserId, externalUserId, targetSystemId);
+		const userMigrationDto = new UserMigrationDto({});
+
+		try {
+			await this.userService.migrateUser(currentUserId, externalUserId, targetSystemId);
+			userMigrationDto.redirect = `${HOST}/migration/succeed`;
+			return userMigrationDto;
+		} catch (e) {
+			userMigrationDto.redirect = `${HOST}/dashboard`;
+			return userMigrationDto;
+		}
 	}
 
 	private getOauthLoginUrl(system: SystemDto, postLoginUri?: string): URL {

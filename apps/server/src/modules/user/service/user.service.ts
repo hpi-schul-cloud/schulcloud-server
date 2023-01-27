@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
+import { Account, EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleRepo, UserRepo } from '@shared/repo';
@@ -9,21 +9,26 @@ import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
+import { TransactionUtil } from '@shared/common/utils/transaction.util';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
+import { AccountRepo } from '../../account/repo/account.repo';
 
 @Injectable()
 export class UserService {
 	constructor(
 		private readonly userRepo: UserRepo,
+		private readonly accountRepo: AccountRepo,
 		private readonly userDORepo: UserDORepo,
 		private readonly roleRepo: RoleRepo,
 		private readonly schoolMapper: SchoolMapper,
 		private readonly schoolService: SchoolService,
 		private readonly permissionService: PermissionService,
 		private readonly configService: ConfigService<IUserConfig, true>,
-		private readonly roleService: RoleService
+		private readonly roleService: RoleService,
+		private readonly transactionUtil: TransactionUtil
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
@@ -98,7 +103,17 @@ export class UserService {
 		return promise;
 	}
 
-	async migrateUser(currentUserId: string, externalId: string, targetSystemId: string) {
-		await this.userDORepo.migrate(currentUserId, externalId, targetSystemId);
+	async migrateUser(currentUserId: string, externalId: string, targetSystemId: string): Promise<void> {
+		await this.transactionUtil.doInTransaction(async () => {
+			const currentUser: UserDO = await this.userDORepo.findById(currentUserId);
+			currentUser.legacyExternalId = currentUser.externalId;
+			currentUser.externalId = externalId;
+			currentUser.lastLoginSystemChange = new Date();
+			await this.userDORepo.saveWithoutFlush(currentUser);
+
+			const account: Account = await this.accountRepo.findByUserIdOrFail(currentUserId);
+			account.systemId = new ObjectId(targetSystemId);
+			this.accountRepo.saveWithoutFlush(account);
+		});
 	}
 }

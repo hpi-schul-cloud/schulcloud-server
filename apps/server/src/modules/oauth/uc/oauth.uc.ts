@@ -8,7 +8,7 @@ import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
-import { AuthorizationParams, OauthTokenResponse, SystemUrlParams } from '../controller/dto';
+import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
@@ -129,7 +129,7 @@ export class OauthUc {
 	}
 
 	async migrateUser(currentUserId: string, query: AuthorizationParams, systemId: string): Promise<UserMigrationDto> {
-		const authCode: string = this.oauthService.checkAuthorizationCode(query);
+		/** const authCode: string = this.oauthService.checkAuthorizationCode(query);
 
 		const system: SystemDto = await this.systemService.findOAuthById(systemId);
 		if (!system.id) {
@@ -141,6 +141,15 @@ export class OauthUc {
 
 		await this.oauthService.validateToken(queryToken.id_token, oauthConfig);
 
-		return this.userMigrationService.migrateUser(currentUserId, queryToken.id_token, systemId);
+		const data: OauthDataDto = await this.provisioningService.getData(
+			queryToken.access_token,
+			queryToken.id_token,
+			system.id
+		);
+		const abc = this.userMigrationService.migrateUser(currentUserId, data.externalUser.externalId, systemId);
+		return abc;
+		 * */
+		const abc = this.userMigrationService.migrateUser(currentUserId, 'SanisId', systemId);
+		return abc;
 	}
 }
