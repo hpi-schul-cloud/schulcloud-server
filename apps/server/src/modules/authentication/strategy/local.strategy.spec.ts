@@ -6,7 +6,7 @@ import { RoleName, User } from '@shared/domain';
 import { setupEntities, accountFactory, userFactory } from '@shared/testing';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
-import { IdentityManagementOathService } from '@shared/infra/identity-management';
+import { IdentityManagementOauthService } from '@shared/infra/identity-management';
 import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '@src/modules/server';
 import { MikroORM } from '@mikro-orm/core';
@@ -20,7 +20,7 @@ describe('LocalStrategy', () => {
 	let mockAccount: AccountDto;
 	let userRepoMock: DeepMocked<UserRepo>;
 	let authenticationServiceMock: DeepMocked<AuthenticationService>;
-	let idmOauthServiceMock: DeepMocked<IdentityManagementOathService>;
+	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
 	let configServiceMock: DeepMocked<ConfigService>;
 
 	const mockPassword = 'mockPassword123&';
@@ -29,7 +29,7 @@ describe('LocalStrategy', () => {
 	beforeAll(async () => {
 		orm = await setupEntities();
 		authenticationServiceMock = createMock<AuthenticationService>();
-		idmOauthServiceMock = createMock<IdentityManagementOathService>();
+		idmOauthServiceMock = createMock<IdentityManagementOauthService>();
 		configServiceMock = createMock<ConfigService<IServerConfig, true>>();
 		userRepoMock = createMock<UserRepo>();
 		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userRepoMock);

@@ -1,4 +1,4 @@
-export abstract class IdentityManagementOathService {
+export abstract class IdentityManagementOauthService {
 	/**
 	 * Checks the given credentials with the IDM and returns an JWT on success.
 	 * @param username the username of the account to check.

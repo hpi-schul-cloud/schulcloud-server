@@ -8,14 +8,14 @@ import { ICurrentUser } from '@shared/domain';
 import { CurrentUserMapper } from '@shared/domain/mapper/current-user.mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { GuardAgainst } from '@shared/common/utils/guard-against';
-import { IdentityManagementOathService } from '@shared/infra/identity-management';
+import { IdentityManagementOauthService } from '@shared/infra/identity-management';
 import { AuthenticationService } from '../services/authentication.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
 	constructor(
 		private readonly authenticationService: AuthenticationService,
-		private readonly idmOauthService: IdentityManagementOathService,
+		private readonly idmOauthService: IdentityManagementOauthService,
 		private readonly configService: ConfigService,
 		private readonly userRepo: UserRepo
 	) {

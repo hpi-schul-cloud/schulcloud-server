@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import qs from 'qs';
-import { IdentityManagementOathService } from '../../identity-management-oath.service';
+import { IdentityManagementOauthService } from '../../identity-management-oauth.service';
 import { KeycloakSystemService } from './keycloak-system.service';
 
 @Injectable()
-export class KeycloakIdentityManagementOauthService extends IdentityManagementOathService {
+export class KeycloakIdentityManagementOauthService extends IdentityManagementOauthService {
 	constructor(private readonly kcSystemService: KeycloakSystemService, private readonly httpService: HttpService) {
 		super();
 	}
