@@ -7,8 +7,8 @@ import {
 	customParameterDOFactory,
 	externalToolDOFactory,
 } from '@shared/testing/factory/domainobject/external-tool.factory';
-import { UnprocessableEntityException } from '@nestjs/common';
 import { CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
@@ -71,7 +71,7 @@ describe('SchoolExternalToolValidationService', () => {
 				const func = () => service.validateCreate(schoolExternalToolDO);
 
 				await expect(func()).rejects.toThrowError(
-					new UnprocessableEntityException(
+					new ValidationError(
 						`The version ${schoolExternalToolDO.toolVersion} of given schoolExternalTool does not match the externalTool version ${externalToolDO.version}.`
 					)
 				);
@@ -79,7 +79,7 @@ describe('SchoolExternalToolValidationService', () => {
 		});
 
 		describe('when checking parameters for duplicates', () => {
-			const expectedException: UnprocessableEntityException = new UnprocessableEntityException(
+			const expectedException: ValidationError = new ValidationError(
 				'The given schoolExternalTool has one or more duplicates in its parameters.'
 			);
 

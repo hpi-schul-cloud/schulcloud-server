@@ -2,6 +2,7 @@ import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
+	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
@@ -10,7 +11,8 @@ import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/commo
 import { ICurrentUser } from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { Logger } from '@src/core/logger';
-import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ValidationError } from '@shared/common';
 import {
 	ExternalToolSearchListResponse,
 	SchoolExternalToolIdParams,
@@ -70,6 +72,7 @@ export class ToolSchoolController {
 	@ApiForbiddenResponse()
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
+	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	async createSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: SchoolExternalToolPostParams

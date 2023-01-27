@@ -2,7 +2,7 @@ import { externalToolDOFactory } from '@shared/testing/factory/domainobject/exte
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { UnprocessableEntityException } from '@nestjs/common';
+import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
 import { ExternalToolValidationService } from './external-tool-validation.service';
 import { CommonToolValidationService } from './common-tool-validation.service';
@@ -84,7 +84,7 @@ describe('ExternalToolValidation', () => {
 				const result: Promise<void> = service.validateCreate(externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name} is already used.`)
+					new ValidationError(`The Client Id of the tool ${externalToolDO.name} is already used.`)
 				);
 			});
 		});
@@ -113,7 +113,7 @@ describe('ExternalToolValidation', () => {
 				const func = () => service.validateUpdate('notMatchToolId', externalToolDO);
 
 				await expect(func).rejects.toThrow(
-					new UnprocessableEntityException(`The tool has no id or it does not match the path parameter.`)
+					new ValidationError(`The tool has no id or it does not match the path parameter.`)
 				);
 			});
 
@@ -141,7 +141,7 @@ describe('ExternalToolValidation', () => {
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The Config Type of the tool ${externalToolDO.name} is immutable.`)
+					new ValidationError(`The Config Type of the tool ${externalToolDO.name} is immutable.`)
 				);
 			});
 
@@ -168,7 +168,7 @@ describe('ExternalToolValidation', () => {
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name} is immutable.`)
+					new ValidationError(`The Client Id of the tool ${externalToolDO.name} is immutable.`)
 				);
 			});
 		});

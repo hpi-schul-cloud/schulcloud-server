@@ -1,8 +1,9 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { CustomParameterDO, CustomParameterEntryDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { CustomParameterScope, CustomParameterType } from '@shared/domain';
 import { isNaN } from 'lodash';
+import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
 
 const typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } = {
@@ -31,15 +32,13 @@ export class SchoolExternalToolValidationService {
 		const caseInsensitiveNames = parameters.map(({ name }: CustomParameterEntryDO) => name.toLowerCase());
 		const uniqueNames = new Set(caseInsensitiveNames);
 		if (!(uniqueNames.size === parameters.length)) {
-			throw new UnprocessableEntityException(
-				'The given schoolExternalTool has one or more duplicates in its parameters.'
-			);
+			throw new ValidationError('The given schoolExternalTool has one or more duplicates in its parameters.');
 		}
 	}
 
 	private checkVersionMatch(schoolExternalToolVersion: number, externalToolVersion: number): void {
 		if (!(schoolExternalToolVersion === externalToolVersion)) {
-			throw new UnprocessableEntityException(
+			throw new ValidationError(
 				`The version ${schoolExternalToolVersion} of given schoolExternalTool does not match the externalTool version ${externalToolVersion}.`
 			);
 		}
@@ -66,7 +65,7 @@ export class SchoolExternalToolValidationService {
 
 	private checkOptionalParameter(param: CustomParameterDO, foundEntry: CustomParameterEntryDO | undefined): void {
 		if (!foundEntry && !param.isOptional) {
-			throw new UnprocessableEntityException(
+			throw new ValidationError(
 				`The parameter with name ${param.name} is required but not found in the schoolExternalTool.`
 			);
 		}
@@ -74,16 +73,14 @@ export class SchoolExternalToolValidationService {
 
 	private checkParameterType(foundEntry: CustomParameterEntryDO, param: CustomParameterDO): void {
 		if (foundEntry.value && !typeCheckers[param.type](foundEntry.value)) {
-			throw new UnprocessableEntityException(
-				`The value of parameter with name ${foundEntry.name} should be of type ${param.type}.`
-			);
+			throw new ValidationError(`The value of parameter with name ${foundEntry.name} should be of type ${param.type}.`);
 		}
 	}
 
 	private checkParameterRegex(foundEntry: CustomParameterEntryDO, param: CustomParameterDO): void {
 		if (!param.regex) return;
 		if (!new RegExp(param.regex).test(foundEntry.value ?? ''))
-			throw new UnprocessableEntityException(
+			throw new ValidationError(
 				`The given entry for the parameter with name ${foundEntry.name} does not fit the regex.`
 			);
 	}

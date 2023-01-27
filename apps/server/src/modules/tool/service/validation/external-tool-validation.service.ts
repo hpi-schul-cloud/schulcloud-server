@@ -1,5 +1,6 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
 import { CommonToolValidationService } from './common-tool-validation.service';
 
@@ -17,7 +18,7 @@ export class ExternalToolValidationService {
 			this.externalToolService.isOauth2Config(externalToolDO.config) &&
 			!(await this.isClientIdUnique(externalToolDO))
 		) {
-			throw new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name} is already used.`);
+			throw new ValidationError(`The Client Id of the tool ${externalToolDO.name} is already used.`);
 		}
 	}
 
@@ -31,7 +32,7 @@ export class ExternalToolValidationService {
 
 	async validateUpdate(toolId: string, externalToolDO: Partial<ExternalToolDO>): Promise<void> {
 		if (toolId !== externalToolDO.id) {
-			throw new UnprocessableEntityException(`The tool has no id or it does not match the path parameter.`);
+			throw new ValidationError(`The tool has no id or it does not match the path parameter.`);
 		}
 
 		await this.commonToolValidationService.validateCommon(externalToolDO);
@@ -42,7 +43,7 @@ export class ExternalToolValidationService {
 			externalToolDO.config &&
 			externalToolDO.config.type !== loadedTool.config.type
 		) {
-			throw new UnprocessableEntityException(`The Config Type of the tool ${externalToolDO.name || ''} is immutable.`);
+			throw new ValidationError(`The Config Type of the tool ${externalToolDO.name || ''} is immutable.`);
 		}
 
 		if (
@@ -51,7 +52,7 @@ export class ExternalToolValidationService {
 			this.externalToolService.isOauth2Config(loadedTool.config) &&
 			externalToolDO.config.clientId !== loadedTool.config.clientId
 		) {
-			throw new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name || ''} is immutable.`);
+			throw new ValidationError(`The Client Id of the tool ${externalToolDO.name || ''} is immutable.`);
 		}
 	}
 }

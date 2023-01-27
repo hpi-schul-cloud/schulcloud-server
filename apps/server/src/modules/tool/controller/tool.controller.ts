@@ -6,6 +6,7 @@ import {
 	ApiForbiddenResponse,
 	ApiFoundResponse,
 	ApiOkResponse,
+	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
@@ -14,6 +15,7 @@ import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Logger } from '@src/core/logger';
+import { ValidationError } from '@shared/common';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ExternalToolUc } from '../uc/external-tool.uc';
@@ -64,6 +66,7 @@ export class ToolController {
 	@ApiForbiddenResponse()
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
+	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	async createExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolParams: ExternalToolPostParams
@@ -117,6 +120,7 @@ export class ToolController {
 	@ApiOkResponse({ description: 'The Tool has been successfully updated.', type: ExternalToolResponse })
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	async updateExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams,
