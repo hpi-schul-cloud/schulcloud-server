@@ -54,7 +54,7 @@ export class SchoolExternalToolValidationService {
 					this.checkOptionalParameter(param, foundEntry);
 					if (foundEntry) {
 						this.checkParameterType(foundEntry, param);
-						if (CustomParameterType.STRING === param.type && param.regex) {
+						if (CustomParameterType.STRING === param.type) {
 							this.checkParameterRegex(foundEntry, param);
 						}
 					}
