@@ -1,5 +1,5 @@
 const { missingParameters } = require('../../../errors/assertionErrorHelper');
-const { teamsModel } = require('../../../services/user-group/model');
+const { teamsModel } = require('../../../services/teams/model');
 const { AssertionError } = require('../../../errors');
 const { isValid: isValidObjectId, toString: idToString } = require('../../../helper/compare').ObjectId;
 const { updateManyResult } = require('../../helper/repo.helper');
@@ -8,13 +8,7 @@ const validateRemoveUserFromClassesParams = (userId) => {
 	if (!isValidObjectId(userId)) throw new AssertionError(missingParameters({ userId }));
 };
 
-const filterTeamsMember = (userId) => ({
-	$or: [
-		{
-			userIds: userId,
-		},
-	],
-});
+const filterTeamsMember = (userId) => ({"userIds.userId": {$in: [userId]}});
 
 const classIdWithUserProjection2BO = ({ _id, user }) => ({
 	_id,

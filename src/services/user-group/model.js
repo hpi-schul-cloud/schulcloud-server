@@ -141,46 +141,14 @@ classSchema.virtual('displayName').get(function displayName() {
 classSchema.set('toObject', { virtuals: true });
 classSchema.set('toJSON', { virtuals: true }); // virtuals could not call with autopopulate for toJSON
 
-const teamsSchema = getUserGroupSchema({
-	description: { type: String },
-	schoolIds: [{ type: Schema.Types.ObjectId, required: true, index: true }],
-	classIds: [{ type: Schema.Types.ObjectId, ref: 'class', required: true }],
-	color: { type: String },
-	features: [{ type: String }],
-	filePermission: [{
-		write: { type: Boolean, required: true},
-		read: { type: Boolean, required: true},
-		create: { type: Boolean, required: true},
-		delete: { type: Boolean, required: true},
-		refPermModel: { type: String, required: true},
-		refId: { type: Schema.Types.ObjectId, index: true },
-	}],
-	invitedUserIds: [{
-		email: { type: String, required: true},
-		role: { type: String, required: true},
-		createdAt: { type: Date, default: Date.now },
-		updatedAt: { type: Date, default: Date.now },
-	}],
-});
-
-teamsSchema.index({ schoolId: 1 });
-teamsSchema.index({ "userIds.userId": 1 });
-
-teamsSchema.plugin(mongooseLeanVirtuals);
-
-classSchema.set('toObject', { virtuals: true });
-classSchema.set('toJSON', { virtuals: true }); // virtuals could not call with autopopulate for toJSON
-
 enableAuditLog(courseSchema);
 enableAuditLog(courseGroupSchema);
 enableAuditLog(classSchema);
-enableAuditLog(teamsSchema);
 
 const courseModel = mongoose.model('course', courseSchema);
 // represents a sub-group of students inside a course, e.g. for projects etc.
 const courseGroupModel = mongoose.model('courseGroup', courseGroupSchema);
 const classModel = mongoose.model('class', classSchema);
-const teamsModel = mongoose.model('teams', teamsSchema);
 
 module.exports = {
 	COURSE_FEATURES,
@@ -188,6 +156,5 @@ module.exports = {
 	courseSchema,
 	courseGroupModel,
 	classModel,
-	teamsModel,
 	getClassDisplayName,
 };
