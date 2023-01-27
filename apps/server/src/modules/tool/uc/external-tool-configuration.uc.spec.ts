@@ -13,9 +13,8 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
 import { Page } from '@shared/domain/interface/page';
 import { ConfigurationScope } from '../interface';
-import { ExternalToolService } from '../service/external-tool.service';
+import { ExternalToolService, SchoolExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
-import { SchoolExternalToolService } from '../service/school-external-tool.service';
 
 describe('ExternalToolConfigurationUc', () => {
 	let module: TestingModule;
