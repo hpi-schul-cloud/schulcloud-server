@@ -1,6 +1,7 @@
 const { getUsername } = require('./TSP');
 const { FileModel } = require('../../../fileStorage/model.js');
 const { info: logInfo, error: logError } = require('../../../../logger');
+const { deleteUserDataFromTeams } = require('../../../../components/user-group/uc/deleteUserData.uc')
 
 const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;
 const getInvalidatedEmail = (email) => `${email}.invalid`;
@@ -81,6 +82,7 @@ const switchSchool = async (app, currentUser, createUserMethod) => {
 			grantAccessToPrivateFiles(app, currentUser, newUser),
 			grantAccessToSharedFiles(app, currentUser, newUser),
 		]);
+		await deleteUserDataFromTeams(currentUser._id);
 		await deleteUser(app, currentUser);
 		return newUser;
 	} catch (err) {

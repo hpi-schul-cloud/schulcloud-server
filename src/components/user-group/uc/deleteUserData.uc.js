@@ -1,5 +1,5 @@
 const { AssertionError } = require('../../../errors');
-const { classesRepo } = require('../repo/index');
+const { classesRepo, teamsRepo } = require('../repo/index');
 const { trashBinResult } = require('../../helper/uc.helper');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { debug } = require('../../../logger');
@@ -32,7 +32,27 @@ const deleteUserDataFromClasses = async (userId) => {
 	return trashBinResult({ scope: 'classes', data, complete });
 };
 
-// public
-const deleteUserData = [deleteUserDataFromClasses];
+const addTeamsToTrashbinData = (teams = [], data) => {
+	const student = teams.filter((team) => team.student).map((team) => team._id);
+	const teacher = teams.filter((classItem) => classItem.teacher).map((classItem) => classItem._id);
+	Object.assign(data, { classIds: { student, teacher } });
+};
 
-module.exports = { deleteUserData };
+const deleteUserDataFromTeams = async (userId) => {
+	validateParams(userId);
+	debug(`deleting user mentions in teams started`, { userId });
+	let complete = true;
+	const teams = await teamsRepo.getTeamsForUser(userId);
+	debug(`found ${teams.length} teams with user to be removed from`, { userId });
+	const data = {};
+	if (teams.length !== 0) {
+		addTeamsToTrashbinData(classes, data);
+		const result = await teamsRepo.removeUserFromTeams(userId);
+		complete = result.success;
+		debug(`removed user from ${result.modifiedDocuments} classes`, { userId });
+	}
+	debug(`deleting user mentions in teams contents finished`, { userId });
+	return trashBinResult({ scope: 'teams', data, complete });
+};
+
+module.exports = { deleteUserDataFromClasses, deleteUserDataFromTeams };
