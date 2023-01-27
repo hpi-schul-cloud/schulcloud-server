@@ -60,6 +60,7 @@ describe('course repo', () => {
 				'_id',
 				'color',
 				'createdAt',
+				'copyingSince',
 				'courseGroups',
 				'description',
 				'name',
