@@ -33,9 +33,8 @@ const deleteUserDataFromClasses = async (userId) => {
 };
 
 const addTeamsToTrashbinData = (teams = [], data) => {
-	const student = teams.filter((team) => team.student).map((team) => team._id);
-	const teacher = teams.filter((classItem) => classItem.teacher).map((classItem) => classItem._id);
-	Object.assign(data, { classIds: { student, teacher } });
+	const userTeams = teams.map((team) => team._id);
+	Object.assign(data, { teamIds: { userTeams } });
 };
 
 const deleteUserDataFromTeams = async (userId) => {
@@ -46,10 +45,10 @@ const deleteUserDataFromTeams = async (userId) => {
 	debug(`found ${teams.length} teams with user to be removed from`, { userId });
 	const data = {};
 	if (teams.length !== 0) {
-		addTeamsToTrashbinData(classes, data);
+		addTeamsToTrashbinData(teams, data);
 		const result = await teamsRepo.removeUserFromTeams(userId);
 		complete = result.success;
-		debug(`removed user from ${result.modifiedDocuments} classes`, { userId });
+		debug(`removed user from ${result.modifiedDocuments} teams`, { userId });
 	}
 	debug(`deleting user mentions in teams contents finished`, { userId });
 	return trashBinResult({ scope: 'teams', data, complete });

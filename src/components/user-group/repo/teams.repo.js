@@ -10,10 +10,9 @@ const validateRemoveUserFromClassesParams = (userId) => {
 
 const filterTeamsMember = (userId) => ({"userIds.userId": {$in: [userId]}});
 
-const classIdWithUserProjection2BO = ({ _id, user }) => ({
+const classIdWithUserProjection2BO = ({ _id }) => ({
 	_id,
 	id: idToString(_id),
-	user: user === true,
 });
 
 /**
@@ -27,9 +26,7 @@ const getTeamsForUser = async (userId) => {
 			{ $match: filterTeamsMember(userId) },
 			{
 				$project: {
-					user: {
-						$in: [userId, '$userIds'],
-					}
+					_id: true
 				},
 			},
 		])
