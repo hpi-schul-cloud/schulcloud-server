@@ -1,4 +1,4 @@
-import { ISystemProperties, OauthConfig, System } from '@shared/domain';
+import { ISystemProperties, LdapConfig, OauthConfig, System } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
@@ -19,6 +19,16 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 				logoutEndpoint: 'mock_logoutEndpoint',
 				issuer: 'mock_issuer',
 				jwksEndpoint: 'mock_jwksEndpoint',
+			}),
+		};
+		return this.params(params);
+	}
+
+	withLdapConfig(): this {
+		const params: DeepPartial<ISystemProperties> = {
+			ldapConfig: new LdapConfig({
+				url: 'ldaps:mock.de:389',
+				active: true,
 			}),
 		};
 		return this.params(params);

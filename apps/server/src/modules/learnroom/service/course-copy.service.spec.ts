@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CopyElementType, CopyHelperService, CopyStatusEnum, Course } from '@shared/domain';
+import { Course } from '@shared/domain';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import {
 	boardFactory,
@@ -11,9 +11,10 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
+import { LessonCopyService } from '@src/modules/lesson/service';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
-import { LessonCopyService } from './lesson-copy.service';
 import { RoomsService } from './rooms.service';
 
 describe('course copy service', () => {

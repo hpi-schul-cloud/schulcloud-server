@@ -10,16 +10,19 @@ import {
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
+	SchoolExternalToolRepo,
 } from '@shared/repo';
+import { ToolModule } from '@src/modules/tool';
+import { SchoolModule } from '@src/modules/school';
+import { LoggerModule } from '@src/core/logger';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 import { FeathersAuthorizationService } from './feathers-authorization.service';
 import { FeathersJwtProvider } from './feathers-jwt.provider';
 import { ReferenceLoader } from './reference.loader';
-import { LoggerModule } from '../../core/logger';
 
 @Module({
-	imports: [FeathersModule, LoggerModule],
+	imports: [FeathersModule, LoggerModule, SchoolModule, ToolModule],
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
@@ -35,6 +38,7 @@ import { LoggerModule } from '../../core/logger';
 		LessonRepo,
 		TeamsRepo,
 		SubmissionRepo,
+		SchoolExternalToolRepo,
 	],
 	exports: [FeathersAuthorizationService, FeathersJwtProvider, AuthorizationService],
 })

@@ -4,11 +4,11 @@ import { schoolFactory, setupEntities, systemFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { EntityProperties } from '@shared/repo';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 
 describe('SchoolMapper', () => {
 	let orm: MikroORM;
+	const mapper: SchoolMapper = new SchoolMapper();
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -23,7 +23,7 @@ describe('SchoolMapper', () => {
 		const system: System = systemFactory.buildWithId();
 		schoolEntity.systems.add(system);
 
-		const schoolDO = SchoolMapper.mapEntityToDO(schoolEntity);
+		const schoolDO = mapper.mapEntityToDO(schoolEntity);
 
 		expect(schoolDO.id).toEqual(schoolEntity.id);
 		expect(schoolDO.name).toEqual(schoolEntity.name);
@@ -52,16 +52,16 @@ describe('SchoolMapper', () => {
 			features: [SchoolFeatures.NEXTCLOUD],
 			inMaintenanceSince: new Date(),
 			inUserMigration: false,
-			oauthMigrationMandatory: true,
-			oauthMigrationPossible: true,
+			oauthMigrationMandatory: new Date(),
+			oauthMigrationPossible: new Date(),
+			oauthMigrationFinished: new Date(),
 			officialSchoolNumber: 'School1',
 			schoolYear,
 			systems: [system.id],
 		});
 
-		const entity: EntityProperties<ISchoolProperties> = SchoolMapper.mapDOToEntityProperties(schoolDO);
+		const entity: ISchoolProperties = mapper.mapDOToEntityProperties(schoolDO);
 
-		expect(entity.id).toEqual(schoolDO.id);
 		expect(entity.name).toEqual(schoolDO.name);
 		expect(entity.externalId).toEqual(schoolDO.externalId);
 		expect(entity.features).toEqual(schoolDO.features);

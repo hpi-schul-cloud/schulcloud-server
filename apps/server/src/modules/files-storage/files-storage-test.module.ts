@@ -5,7 +5,7 @@ import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-
 import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { AuthModule } from '@src/modules/authentication';
+import { AuthenticationModule } from '@src/modules/authentication';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { FileRecord } from './entity';
 import { FilesStorageApiModule } from './files-storage-api.module';
@@ -15,7 +15,7 @@ const imports = [
 	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES, FileRecord] }),
 	RabbitMQWrapperTestModule,
 	AuthorizationModule,
-	AuthModule,
+	AuthenticationModule,
 	CoreModule,
 	LoggerModule,
 ];
