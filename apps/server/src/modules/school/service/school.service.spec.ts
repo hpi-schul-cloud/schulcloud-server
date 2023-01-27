@@ -251,7 +251,6 @@ describe('SchoolService', () => {
 				expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
 				expect(resp.enableMigrationStart).toBeTruthy();
 			});
-
 			it('should call findById with the given id', async () => {
 				await schoolService.setMigration(testId, true, true, true);
 				expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
@@ -259,6 +258,33 @@ describe('SchoolService', () => {
 			it('should save the DO', async () => {
 				await schoolService.setMigration(testId, true, true, true);
 				expect(schoolRepo.save).toHaveBeenCalledWith(testDO);
+			});
+		});
+		describe('when oauthMigrationPossible is undefined', () => {
+			it('should set the migrationflags', async () => {
+				const resp: MigrationResponse = await schoolService.setMigration(testId, undefined, true, true);
+				expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
+				expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
+				expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
+				expect(resp.enableMigrationStart).toBeTruthy();
+			});
+		});
+		describe('when oauthMigrationMandatory is undefined', () => {
+			it('should set the migrationflags', async () => {
+				const resp: MigrationResponse = await schoolService.setMigration(testId, true, undefined, true);
+				expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
+				expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
+				expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
+				expect(resp.enableMigrationStart).toBeTruthy();
+			});
+		});
+		describe('when oauthMigrationFinished is undefined', () => {
+			it('should set the migrationflags', async () => {
+				const resp: MigrationResponse = await schoolService.setMigration(testId, true, true, undefined);
+				expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
+				expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
+				expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
+				expect(resp.enableMigrationStart).toBeTruthy();
 			});
 		});
 		describe('when migrationflags are falsly', () => {
