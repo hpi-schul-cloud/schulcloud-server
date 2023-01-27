@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { Actions, BaseMetadata, EntityId, LearnroomMetadata, Permission } from '@shared/domain';
+import { Actions, BaseMetadata, EntityId, Permission } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -111,14 +111,12 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Course:
 				result = await this.copyCourse(userId, shareToken.payload.parentId, newName);
 				break;
-			case ShareTokenParentType.Lesson:
+			default:
 				if (destinationCourseId === undefined) {
 					throw new BadRequestException('Destination course id is required to copy lesson');
 				}
 				result = await this.copyLesson(userId, shareToken.payload.parentId, destinationCourseId, newName);
 				break;
-			default:
-				throw new NotImplementedException();
 		}
 
 		return result;
@@ -160,25 +158,21 @@ export class ShareTokenUC {
 		});
 	}
 
-	// TODO change function to private when share task is implemented
-	async checkCreatePermission(userId: EntityId, parentType: ShareTokenParentType) {
+	private async checkCreatePermission(userId: EntityId, parentType: ShareTokenParentType) {
 		// checks if parent type is supported
 		ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(parentType);
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		let requiredPermissions: string[];
+		let requiredPermissions: string[] = [];
 		switch (parentType) {
 			case ShareTokenParentType.Course:
 				requiredPermissions = [Permission.COURSE_CREATE];
 				break;
-			case ShareTokenParentType.Lesson:
+			default:
 				requiredPermissions = [Permission.TOPIC_CREATE];
 				break;
-			default:
-				throw new NotImplementedException();
 		}
-
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
 
@@ -198,8 +192,7 @@ export class ShareTokenUC {
 		return date;
 	}
 
-	// TODO change function to private when share task is implemented
-	checkFeatureEnabled(parentType: ShareTokenParentType) {
+	private checkFeatureEnabled(parentType: ShareTokenParentType) {
 		switch (parentType) {
 			case ShareTokenParentType.Course:
 				if (!(Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean)) {

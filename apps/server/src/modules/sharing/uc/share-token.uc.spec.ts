@@ -520,28 +520,6 @@ describe('ShareTokenUC', () => {
 			expect(authorization.checkAllPermissions).toBeCalledWith(user, [Permission.TOPIC_CREATE]);
 		});
 
-		it('should throw if checking permission is not implemented for task', async () => {
-			const { user, shareToken } = setupTask();
-
-			jest.spyOn(uc, 'checkFeatureEnabled').mockImplementation(() => {});
-
-			await expect(uc.importShareToken(user.id, shareToken.token, 'NewName', '')).rejects.toThrowError(
-				NotImplementedException
-			);
-		});
-
-		it('should throw if copy task is not implemented', async () => {
-			const { user, shareToken } = setupTask();
-
-			jest.spyOn(uc, 'checkFeatureEnabled').mockImplementation(() => {});
-			jest.spyOn(uc, 'checkCreatePermission').mockImplementation(async (_userId, _parentType) => {});
-
-			await expect(uc.importShareToken(user.id, shareToken.token, 'NewName', '')).rejects.toThrowError(
-				NotImplementedException
-			);
-			jest.clearAllMocks();
-		});
-
 		it('should use the service to copy the course', async () => {
 			const { user, shareToken } = setup();
 			const newName = 'NewName';

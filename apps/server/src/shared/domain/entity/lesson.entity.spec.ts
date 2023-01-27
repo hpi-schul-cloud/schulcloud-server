@@ -8,6 +8,7 @@ import {
 	setupEntities,
 	taskFactory,
 } from '../../testing';
+import { BaseMetadata, LearnroomTypes } from '../types/learnroom.types';
 import { ComponentType } from './lesson.entity';
 import { Material } from './materials.entity';
 import { Task } from './task.entity';
@@ -307,6 +308,17 @@ describe('Lesson Entity', () => {
 				expect(result).toContain(studentIds[1]);
 				expect(result).toContain(studentIds[2]);
 			});
+		});
+	});
+
+	describe('should return metadata when getMetadata is called', () => {
+		it('should return the userIds of the students', () => {
+			const lesson = lessonFactory.buildWithId({ name: 'name'});
+
+			const result = lesson.getMetadata();
+
+			expect(result.title).toEqual('name');
+			expect(result.type).toContain(LearnroomTypes.Lesson);
 		});
 	});
 });
