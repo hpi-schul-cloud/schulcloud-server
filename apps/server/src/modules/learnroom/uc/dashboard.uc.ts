@@ -54,7 +54,7 @@ export class DashboardUc {
 		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
 		this.validateUsersMatch(dashboard, userId);
 
-		const [substituteCourses] = await this.courseRepo.findAllForSubstituteTeacher(userId); // in the future this will be removed because it is used as a temporory solution just to stop arrrnagement and grouping of substitute courses
+		const [substituteCourses] = await this.courseRepo.findAllForSubstituteTeacher(userId); // TODO in the future this will be removed because it is used as a temporory solution just to stop arrrnagement and grouping of substitute courses
 		dashboard.moveElement(from, to, substituteCourses);
 
 		await this.dashboardRepo.persistAndFlush(dashboard);
