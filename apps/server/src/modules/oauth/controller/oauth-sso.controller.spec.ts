@@ -183,4 +183,17 @@ describe('OAuthController', () => {
 			await expect(controller.requestAuthToken(currentUser, request, '')).rejects.toThrow(UnauthorizedException);
 		});
 	});
+
+	describe('migrateUser', () => {
+		it('should call the OAuthUC ', () => {
+			it('when systemId is given', async () => {
+				const { res } = getMockRes();
+				oauthUc.migrateUser.mockResolvedValue({ redirect: `${mockHost}/migration/succeed` });
+
+				await controller.migrateUser({ systemId: 'systemId' });
+
+				expect(res.redirect).toHaveBeenCalledWith(`${mockHost}/migration/succeed`);
+			});
+		});
+	});
 });
