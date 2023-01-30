@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
+import { Logger } from '@src/core/logger';
 import { KeycloakManagementUc } from '../../uc/Keycloak-management.uc';
 import { KeycloakConsole } from './keycloak-management.console';
-import { Logger } from '../../../../../../core/logger';
 
 describe('KeycloakConsole', () => {
 	let module: TestingModule;
@@ -62,11 +62,11 @@ describe('KeycloakConsole', () => {
 			await expect(console.clean({ retryCount: 2, retryDelay: 0 })).resolves.not.toThrow();
 		});
 		it('should throw on error', async () => {
-			jest.spyOn(uc, 'clean').mockRejectedValue('');
+			jest.spyOn(uc, 'clean').mockRejectedValue(new Error());
 			await expect(console.clean({ retryCount: 1, retryDelay: 0 })).rejects.toThrow();
 		});
 		it('should retry but throw error after last attempt', async () => {
-			jest.spyOn(uc, 'clean').mockRejectedValue('');
+			jest.spyOn(uc, 'clean').mockRejectedValue(new Error());
 			await expect(console.clean({ retryCount: 2, retryDelay: 0 })).rejects.toThrow();
 		});
 	});
@@ -77,7 +77,7 @@ describe('KeycloakConsole', () => {
 			await expect(console.seed({ retryCount: 1, retryDelay: 10 })).resolves.not.toThrow();
 		});
 		it('should throw on error', async () => {
-			jest.spyOn(uc, 'seed').mockRejectedValue('');
+			jest.spyOn(uc, 'seed').mockRejectedValue(new Error());
 			await expect(console.seed({ retryCount: 1, retryDelay: 10 })).rejects.toThrow();
 		});
 	});
