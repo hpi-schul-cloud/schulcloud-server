@@ -5,8 +5,8 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { UnprocessableEntityException } from '@nestjs/common';
 import { CustomParameterScope } from '@shared/domain';
+import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
 import { CommonToolValidationService } from './common-tool-validation.service';
 
@@ -62,7 +62,7 @@ describe('CommonToolValidationService', () => {
 				const result: Promise<void> = service.validateCommon(externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used.`)
+					new ValidationError(`The tool name "${externalToolDO.name}" is already used.`)
 				);
 			});
 
@@ -94,9 +94,7 @@ describe('CommonToolValidationService', () => {
 				const func = () => service.validateCommon(externalToolDO);
 
 				await expect(func()).rejects.toThrow(
-					new UnprocessableEntityException(
-						`The tool ${externalToolDO.name} contains multiple of the same custom parameters.`
-					)
+					new ValidationError(`The tool ${externalToolDO.name} contains multiple of the same custom parameters.`)
 				);
 			});
 
@@ -112,9 +110,7 @@ describe('CommonToolValidationService', () => {
 				const result: Promise<void> = service.validateCommon(externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(
-						`The tool ${externalToolDO.name} contains multiple of the same custom parameters.`
-					)
+					new ValidationError(`The tool ${externalToolDO.name} contains multiple of the same custom parameters.`)
 				);
 			});
 		});
@@ -127,9 +123,7 @@ describe('CommonToolValidationService', () => {
 				const func = () => service.validateCommon(externalToolDO);
 
 				await expect(func()).rejects.toThrow(
-					new UnprocessableEntityException(
-						`A custom Parameter of the tool ${externalToolDO.name} has wrong regex attribute.`
-					)
+					new ValidationError(`A custom Parameter of the tool ${externalToolDO.name} has wrong regex attribute.`)
 				);
 			});
 		});
@@ -155,7 +149,7 @@ describe('CommonToolValidationService', () => {
 				const result: Promise<void> = service.validateCommon(externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(
+					new ValidationError(
 						`The "${(externalToolDO.parameters as CustomParameterDO[])[0].name}" parameter is missing a regex comment.`
 					)
 				);
@@ -187,7 +181,7 @@ describe('CommonToolValidationService', () => {
 				const result: Promise<void> = service.validateCommon(externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(
+					new ValidationError(
 						`The "${
 							(externalToolDO.parameters as CustomParameterDO[])[0].name
 						}" is a global parameter and requires a default value.`
@@ -206,7 +200,7 @@ describe('CommonToolValidationService', () => {
 				const result: Promise<void> = service.validateCommon(externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(
+					new ValidationError(
 						`The "${
 							(externalToolDO.parameters as CustomParameterDO[])[0].name
 						}" is a global parameter and requires a default value.`
