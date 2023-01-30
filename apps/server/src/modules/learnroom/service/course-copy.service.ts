@@ -47,7 +47,9 @@ export class CourseCopyService {
 		// copy course and board
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
 		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
-		const courseStatus = this.deriveCourseStatus(originalCourse, courseCopy, boardStatus);
+		const finishedCourseCopy = await this.finishCourseCopying(courseCopy);
+
+		const courseStatus = this.deriveCourseStatus(originalCourse, finishedCourseCopy, boardStatus);
 
 		return courseStatus;
 	}
@@ -61,8 +63,16 @@ export class CourseCopyService {
 			teachers: [user],
 			startDate: user.school.schoolYear?.startDate,
 			untilDate: user.school.schoolYear?.endDate,
+			copyingSince: new Date(),
 		});
+
 		await this.courseRepo.createCourse(courseCopy);
+		return courseCopy;
+	}
+
+	private async finishCourseCopying(courseCopy: Course) {
+		delete courseCopy.copyingSince;
+		await this.courseRepo.save(courseCopy);
 		return courseCopy;
 	}
 
