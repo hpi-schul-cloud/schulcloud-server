@@ -6,6 +6,7 @@ import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/d
 import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/interface/page';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
+import { Logger } from '@src/core/logger';
 import { ToolController } from './tool.controller';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { ExternalToolUc } from '../uc/external-tool.uc';
@@ -72,6 +73,10 @@ describe('ToolController', () => {
 				{
 					provide: ExternalToolResponseMapper,
 					useValue: createMock<ExternalToolResponseMapper>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

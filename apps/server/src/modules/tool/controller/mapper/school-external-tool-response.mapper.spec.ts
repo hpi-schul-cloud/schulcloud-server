@@ -1,9 +1,11 @@
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { SchoolExternalToolResponseMapper } from './school-external-tool-response.mapper';
-import { SchoolExternalToolSearchListResponse } from '../dto/response/school-external-tool-search-list.response';
-import { SchoolExternalToolResponse } from '../dto/response/school-external-tool.response';
-import { SchoolExternalToolStatusResponse } from '../dto/response/school-external-tool-status.response';
+import {
+	SchoolExternalToolResponse,
+	SchoolExternalToolSearchListResponse,
+	SchoolExternalToolStatusResponse,
+} from '../dto';
 
 describe('SchoolExternalToolResponseMapper', () => {
 	let mapper: SchoolExternalToolResponseMapper;
@@ -13,8 +15,8 @@ describe('SchoolExternalToolResponseMapper', () => {
 	});
 
 	const setup = () => {
-		const do1 = schoolExternalToolDOFactory.buildWithId();
-		const do2 = schoolExternalToolDOFactory.buildWithId();
+		const do1: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+		const do2: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
 
 		const dos: SchoolExternalToolDO[] = [do1, do2];
 
@@ -70,6 +72,25 @@ describe('SchoolExternalToolResponseMapper', () => {
 							status: SchoolExternalToolStatusResponse.UNKNOWN,
 						},
 					])
+				);
+			});
+		});
+
+		describe('when optional parameter are missing', () => {
+			it('should set defaults', () => {
+				const { dos, do1 } = setup();
+				do1.id = undefined;
+				do1.name = undefined;
+				do1.status = undefined;
+
+				const response: SchoolExternalToolSearchListResponse = mapper.mapToSearchListResponse(dos);
+
+				expect(response.data[0]).toEqual(
+					expect.objectContaining({
+						id: '',
+						name: '',
+						status: SchoolExternalToolStatusResponse.UNKNOWN,
+					})
 				);
 			});
 		});
