@@ -37,7 +37,8 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<AccountDto | null> {
-		return this.accountDb.findByUsernameAndSystemId(username.toLowerCase(), systemId);
+		const sanitizedUsername = this.sanitizeUserName(username);
+		return this.accountDb.findByUsernameAndSystemId(sanitizedUsername, systemId);
 	}
 
 	async searchByUsernamePartialMatch(
@@ -45,15 +46,17 @@ export class AccountService extends AbstractAccountService {
 		skip: number,
 		limit: number
 	): Promise<{ accounts: AccountDto[]; total: number }> {
-		return this.accountDb.searchByUsernamePartialMatch(userName.toLowerCase(), skip, limit);
+		const sanitizedUsername = this.sanitizeUserName(userName);
+		return this.accountDb.searchByUsernamePartialMatch(sanitizedUsername, skip, limit);
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountDto[]; total: number }> {
-		return this.accountDb.searchByUsernameExactMatch(userName.toLowerCase());
+		const sanitizedUsername = this.sanitizeUserName(userName);
+		return this.accountDb.searchByUsernameExactMatch(sanitizedUsername);
 	}
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
-		accountDto.username = accountDto.username.toLowerCase();
+		accountDto.username = this.sanitizeUserName(accountDto.username);
 		const ret = await this.accountDb.save(accountDto);
 		const newAccount: AccountSaveDto = {
 			...accountDto,
@@ -66,7 +69,7 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	async updateUsername(accountId: string, username: string): Promise<AccountDto> {
-		username = username.toLowerCase();
+		username = this.sanitizeUserName(username);
 		const ret = await this.accountDb.updateUsername(accountId, username);
 		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.updateUsername(accountId, username));
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
@@ -106,5 +109,9 @@ export class AccountService extends AbstractAccountService {
 			}
 		}
 		return null;
+	}
+
+	private sanitizeUserName(username: string): string {
+		return username.toLowerCase();
 	}
 }

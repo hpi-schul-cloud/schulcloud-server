@@ -73,6 +73,10 @@ describe('AccountService', () => {
 			await expect(accountService.findByUsernameAndSystemId('username', 'systemId')).resolves.not.toThrow();
 			expect(accountServiceDb.findByUsernameAndSystemId).toHaveBeenCalledTimes(1);
 		});
+		it('should sanitize username before searching', async () => {
+			await expect(accountService.findByUsernameAndSystemId('USERNAME', 'systemId')).resolves.not.toThrow();
+			expect(accountServiceDb.findByUsernameAndSystemId).toHaveBeenCalledWith('username', expect.anything());
+		});
 	});
 
 	describe('findMultipleByUserId', () => {
@@ -94,6 +98,10 @@ describe('AccountService', () => {
 			await expect(accountService.save({ username: 'mockUserName' } as AccountSaveDto)).resolves.not.toThrow();
 			expect(accountServiceDb.save).toHaveBeenCalledTimes(1);
 		});
+		it('should sanitize username before saving', async () => {
+			await expect(accountService.save({ username: 'USERNAME' } as AccountSaveDto)).resolves.not.toThrow();
+			expect(accountServiceDb.save).toHaveBeenCalledWith(expect.objectContaining({ username: 'username' }));
+		});
 		it('should call save in accountServiceIdm if feature is enabled', async () => {
 			const spy = jest.spyOn(configService, 'get');
 			spy.mockReturnValueOnce(true);
@@ -114,6 +122,10 @@ describe('AccountService', () => {
 		it('should call updateUsername in accountServiceDb', async () => {
 			await expect(accountService.updateUsername('accountId', 'username')).resolves.not.toThrow();
 			expect(accountServiceDb.updateUsername).toHaveBeenCalledTimes(1);
+		});
+		it('should sanitize username before update', async () => {
+			await expect(accountService.updateUsername('accountId', 'USERNAME')).resolves.not.toThrow();
+			expect(accountServiceDb.updateUsername).toHaveBeenCalledWith(expect.anything(), 'username');
 		});
 		it('should call updateUsername in accountServiceIdm if feature is enabled', async () => {
 			const spy = jest.spyOn(configService, 'get');
@@ -206,12 +218,28 @@ describe('AccountService', () => {
 			await expect(accountService.searchByUsernamePartialMatch('username', 1, 1)).resolves.not.toThrow();
 			expect(accountServiceDb.searchByUsernamePartialMatch).toHaveBeenCalledTimes(1);
 		});
+		it('should call searchByUsernamePartialMatch in accountServiceDb', async () => {
+			await expect(accountService.searchByUsernamePartialMatch('username', 1, 1)).resolves.not.toThrow();
+			expect(accountServiceDb.searchByUsernamePartialMatch).toHaveBeenCalledTimes(1);
+		});
+		it('should sanitize username before searching', async () => {
+			await expect(accountService.searchByUsernamePartialMatch('USERNAME', 1, 1)).resolves.not.toThrow();
+			expect(accountServiceDb.searchByUsernamePartialMatch).toHaveBeenCalledWith(
+				'username',
+				expect.anything(),
+				expect.anything()
+			);
+		});
 	});
 
 	describe('searchByUsernameExactMatch', () => {
 		it('should call searchByUsernameExactMatch in accountServiceDb', async () => {
 			await expect(accountService.searchByUsernameExactMatch('username')).resolves.not.toThrow();
 			expect(accountServiceDb.searchByUsernameExactMatch).toHaveBeenCalledTimes(1);
+		});
+		it('should sanitize username before searching', async () => {
+			await expect(accountService.searchByUsernameExactMatch('USERNAME')).resolves.not.toThrow();
+			expect(accountServiceDb.searchByUsernameExactMatch).toHaveBeenCalledWith('username');
 		});
 	});
 
