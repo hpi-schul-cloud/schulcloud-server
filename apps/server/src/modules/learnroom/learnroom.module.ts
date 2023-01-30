@@ -16,6 +16,7 @@ import { CopyHelperModule } from '@src/modules/copy-helper';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { LessonModule } from '@src/modules/lesson';
 import { TaskModule } from '@src/modules/task';
+import { AuthorisationUtils } from '@shared/domain/rules/authorisation.utils';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
@@ -67,6 +68,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		CourseService,
 		CommonCartridgeExportService,
 		CourseExportUc,
+		AuthorisationUtils,
 	],
 	exports: [CourseCopyService, MetadataLoader],
 })

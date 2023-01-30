@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement, ICurrentUser, Permission } from '@shared/domain';
+import { DashboardEntity, GridElement, ICurrentUser, Permission, User, RoleName } from '@shared/domain';
 import { IDashboardRepo } from '@shared/repo';
 import { courseFactory, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -41,35 +41,113 @@ describe('Dashboard Controller (API)', () => {
 	});
 
 	const setup = () => {
-		const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3] });
+		const roles = roleFactory.buildList(1, {
+			permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3],
+		});
 		const user = userFactory.build({ roles });
 
 		return user;
 	};
 
+	const setupWithRole = (roleName: RoleName) => {
+		const roles = roleFactory.buildList(1, {
+			permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3],
+			name: roleName,
+		});
+		const user = userFactory.build({ roles });
+
+		return user;
+	};
+
+	const courseBuild = (student: User, teacher: User, time: number) => [
+		courseFactory.build({ name: 'should appear', students: [student] }),
+		courseFactory.build({ name: 'should appear', substitutionTeachers: [teacher], students: [student] }),
+		courseFactory.build({
+			name: 'should appear',
+			teachers: [teacher],
+			students: [student],
+			untilDate: new Date(Date.now() + time),
+		}),
+		courseFactory.build({ name: 'should appear', teachers: [teacher], students: [student] }),
+		courseFactory.build({ name: 'should not appear, not users course' }),
+		courseFactory.build({
+			name: 'should not appear, enddate is in the past',
+			students: [student],
+			untilDate: new Date(Date.now() - time),
+		}),
+	];
+
 	describe('[GET] dashboard', () => {
 		it('should return dashboard with users active courses', async () => {
 			const user = setup();
 			const twoDaysInMilliSeconds = 172800000;
-			const courses = [
-				courseFactory.build({ name: 'should appear', students: [user] }),
-				courseFactory.build({ name: 'should appear', substitutionTeachers: [user] }),
-				courseFactory.build({
-					name: 'should appear',
-					teachers: [user],
-					untilDate: new Date(Date.now() + twoDaysInMilliSeconds),
-				}),
-				courseFactory.build({ name: 'should appear', teachers: [user] }),
-				courseFactory.build({ name: 'should not appear, not users course' }),
-				courseFactory.build({
-					name: 'should not appear, enddate is in the past',
-					students: [user],
-					untilDate: new Date(Date.now() - twoDaysInMilliSeconds),
-				}),
-			];
+			const courses = courseBuild(user, user, twoDaysInMilliSeconds);
 			await em.persistAndFlush([user, ...courses]);
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
 			currentUser = mapUserToCurrentUser(user);
+
+			const response = await request(app.getHttpServer()).get('/dashboard');
+
+			expect(response.status).toEqual(200);
+			const body = response.body as DashboardResponse;
+			expect(body.id).toEqual(dashboardId);
+			expect(body.gridElements.length).toEqual(4);
+			const elementNames = [...body.gridElements].map((gridElement) => gridElement.title);
+			elementNames.forEach((name) => {
+				expect(name).toEqual('should appear');
+			});
+		});
+
+		it('should return dashboard with teacher and substitute teacher active courses', async () => {
+			const teacher = setupWithRole(RoleName.TEACHER);
+			const student = setupWithRole(RoleName.STUDENT);
+			const twoDaysInMilliSeconds = 172800000;
+			const courses = courseBuild(student, teacher, twoDaysInMilliSeconds);
+			await em.persistAndFlush([teacher, ...courses]);
+			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(teacher.id);
+			currentUser = mapUserToCurrentUser(teacher);
+
+			const response = await request(app.getHttpServer()).get('/dashboard?showSubstitute=true');
+
+			expect(response.status).toEqual(200);
+			const body = response.body as DashboardResponse;
+			expect(body.id).toEqual(dashboardId);
+			expect(body.gridElements.length).toEqual(3);
+			const elementNames = [...body.gridElements].map((gridElement) => gridElement.title);
+			elementNames.forEach((name) => {
+				expect(name).toEqual('should appear');
+			});
+		});
+
+		it('should return dashboard with teacher active courses', async () => {
+			const teacher = setupWithRole(RoleName.TEACHER);
+			const student = setupWithRole(RoleName.STUDENT);
+			const twoDaysInMilliSeconds = 172800000;
+			const courses = courseBuild(student, teacher, twoDaysInMilliSeconds);
+			await em.persistAndFlush([teacher, ...courses]);
+			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(teacher.id);
+			currentUser = mapUserToCurrentUser(teacher);
+
+			const response = await request(app.getHttpServer()).get('/dashboard');
+
+			expect(response.status).toEqual(200);
+			const body = response.body as DashboardResponse;
+			expect(body.id).toEqual(dashboardId);
+			expect(body.gridElements.length).toEqual(2);
+			const elementNames = [...body.gridElements].map((gridElement) => gridElement.title);
+			elementNames.forEach((name) => {
+				expect(name).toEqual('should appear');
+			});
+		});
+
+		it('should return dashboard with student active courses', async () => {
+			const student = setupWithRole(RoleName.STUDENT);
+			const teacher = setupWithRole(RoleName.TEACHER);
+			const twoDaysInMilliSeconds = 172800000;
+			const courses = courseBuild(student, teacher, twoDaysInMilliSeconds);
+			await em.persistAndFlush([student, ...courses]);
+			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(student.id);
+			currentUser = mapUserToCurrentUser(student);
 
 			const response = await request(app.getHttpServer()).get('/dashboard');
 
