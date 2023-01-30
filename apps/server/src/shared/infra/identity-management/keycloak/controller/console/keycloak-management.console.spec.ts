@@ -95,9 +95,27 @@ describe('KeycloakConsole', () => {
 
 			uc.configure.mockRestore();
 		});
-		it('should throw an error', async () => {
+		it('should throw an instance of error object', async () => {
 			const expectedError = new Error('test error');
 			uc.configure.mockRejectedValue(expectedError);
+
+			await expect(
+				console.configure({
+					retryCount: 1,
+					retryDelay: 10,
+				})
+			).rejects.toThrow(expectedError);
+
+			uc.configure.mockRestore();
+		});
+
+		it('should not throw an instance of error object', async () => {
+			const mockedError = {
+				name: 'test error',
+			};
+
+			const expectedError = JSON.stringify(mockedError);
+			uc.configure.mockRejectedValue(mockedError);
 
 			await expect(
 				console.configure({

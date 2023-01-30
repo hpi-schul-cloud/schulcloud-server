@@ -129,13 +129,12 @@ export class KeycloakConsole {
 				if (err instanceof Error) {
 					error = err;
 				} else {
-					error = <Error>err;
-					this.logger.error(err);
+					error = new Error(JSON.stringify(err));
 				}
 
 				if (repetitions < count) {
 					this.console.info(
-						`Command '${commandName}' failed, retry in ${delay} seconds. Execution ${repetitions} / ${count}`
+						`Command '${commandName}' failed, error: ${error.message}. retry in ${delay} seconds. Execution ${repetitions} / ${count}`
 					);
 					// eslint-disable-next-line no-await-in-loop
 					await this.delay(delay * 1000);
