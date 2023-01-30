@@ -104,7 +104,7 @@ describe('KeycloakConsole', () => {
 					retryCount: 1,
 					retryDelay: 10,
 				})
-			).rejects.toBe(expectedError);
+			).rejects.toThrow(expectedError);
 
 			uc.configure.mockRestore();
 		});
