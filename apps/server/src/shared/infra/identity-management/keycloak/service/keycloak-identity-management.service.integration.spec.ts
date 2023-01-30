@@ -4,10 +4,11 @@ import { KeycloakAdministrationService } from '@shared/infra/identity-management
 import { IAccount, IAccountUpdate } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
-import { KeycloakSettings } from '../interface/keycloak-settings.interface';
+import { HttpModule } from '@nestjs/axios';
+import { ServerModule } from '@src/modules/server';
+import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { IdentityManagementService } from '../../identity-management.service';
-import KeycloakConfiguration from '../keycloak-config';
+import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
 
 describe('KeycloakIdentityManagementService Integration', () => {
 	let module: TestingModule;
@@ -42,18 +43,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [
-				KeycloakAdministrationService,
-				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
-				{
-					provide: KeycloakAdminClient,
-					useValue: new KeycloakAdminClient(),
-				},
-				{
-					provide: KeycloakSettings,
-					useValue: KeycloakConfiguration.keycloakSettings,
-				},
-			],
+			imports: [KeycloakModule, ServerModule, HttpModule],
 		}).compile();
 		idmService = module.get(IdentityManagementService);
 		keycloakAdminService = module.get(KeycloakAdministrationService);
