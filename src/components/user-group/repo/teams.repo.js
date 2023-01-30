@@ -20,7 +20,7 @@ const classIdWithUserProjection2BO = ({ _id }) => ({
  * @param {String|ObjectId} userId - the user's to check
  * @returns: {Array} An array of result objects
  */
-const getTeamsForUser = async (userId) => {
+const getTeamsIdsForUser = async (userId) => {
 	const result = await teamsModel
 		.aggregate([
 			{ $match: filterTeamsMember(userId) },
@@ -49,6 +49,6 @@ const removeUserFromTeams = async (userId) => {
 };
 
 module.exports = {
-	getTeamsForUser,
+	getTeamsIdsForUser,
 	removeUserFromTeams,
 };

@@ -40,18 +40,15 @@ const addTeamsToTrashbinData = (teams = [], data) => {
 const deleteUserDataFromTeams = async (userId) => {
 	validateParams(userId);
 	debug(`deleting user mentions in teams started`, { userId });
-	let complete = true;
-	const teams = await teamsRepo.getTeamsForUser(userId);
+	const teams = await teamsRepo.getTeamsIdsForUser(userId);
 	debug(`found ${teams.length} teams with user to be removed from`, { userId });
 	const data = {};
 	if (teams.length !== 0) {
 		addTeamsToTrashbinData(teams, data);
 		const result = await teamsRepo.removeUserFromTeams(userId);
-		complete = result.success;
 		debug(`removed user from ${result.modifiedDocuments} teams`, { userId });
 	}
 	debug(`deleting user mentions in teams contents finished`, { userId });
-	return trashBinResult({ scope: 'teams', data, complete });
 };
 
 module.exports = { deleteUserDataFromClasses, deleteUserDataFromTeams };
