@@ -1,13 +1,12 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { BaseRepo } from '../../repo';
-import { UserDORepo } from '../../repo/user/user-do.repo';
+import { Logger } from '@src/core/logger';
 
 @Injectable()
 export class TransactionUtil {
-	constructor(private readonly _em: EntityManager) {}
+	constructor(private readonly _em: EntityManager, private readonly logger: Logger) {}
 
 	async doInTransaction(fn: () => Promise<void>): Promise<void> {
-		return this._em.transactional(fn);
+		return this._em.transactional(fn).catch((reason) => this.logger.debug(reason));
 	}
 }
