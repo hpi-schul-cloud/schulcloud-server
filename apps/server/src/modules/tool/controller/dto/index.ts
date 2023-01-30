@@ -14,6 +14,8 @@ export * from './request/scope.query';
 export * from './request/school-external-tool-search.params';
 export * from './request/school-external-tool-id.params';
 export * from './request/external-tool-update.params';
+export * from './request/school-external-tool-post.params';
+export * from './request/custom-parameter-entry.params';
 
 export * from './response/basic-tool-config.response';
 export * from './response/custom-parameter.response';

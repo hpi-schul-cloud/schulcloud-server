@@ -65,63 +65,63 @@ describe('SchoolExternalToolService', () => {
 				expect(Array.isArray(result)).toBe(true);
 			});
 		});
+	});
 
-		describe('enrich data from externalTool', () => {
-			it('should call the externalToolService', async () => {
-				const { schoolExternalTool } = setup();
-				schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
+	describe('enrichDataFromExternalTool is called', () => {
+		it('should call the externalToolService', async () => {
+			const { schoolExternalTool } = setup();
+			schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
 
-				await service.findSchoolExternalTools(schoolExternalTool);
+			await service.findSchoolExternalTools(schoolExternalTool);
 
-				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(schoolExternalTool.toolId);
+			expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(schoolExternalTool.toolId);
+		});
+
+		describe('when determine status', () => {
+			describe('when external tool version is greater', () => {
+				it('should return status outdated', async () => {
+					const { schoolExternalTool, externalTool } = setup();
+					externalTool.version = 1337;
+					schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
+					externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+
+					const schoolExternalToolDOs: SchoolExternalToolDO[] = await service.findSchoolExternalTools(
+						schoolExternalTool
+					);
+
+					expect(schoolExternalToolDOs[0].status).toEqual(SchoolExternalToolStatus.OUTDATED);
+				});
 			});
 
-			describe('when determine status', () => {
-				describe('when external tool version is greater', () => {
-					it('should return status outdated', async () => {
-						const { schoolExternalTool, externalTool } = setup();
-						externalTool.version = 1337;
-						schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
-						externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+			describe('when external tool version is lower', () => {
+				it('should return status latest', async () => {
+					const { schoolExternalTool, externalTool } = setup();
+					schoolExternalTool.toolVersion = 1;
+					externalTool.version = 0;
+					schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
+					externalToolService.findExternalToolById.mockResolvedValue(externalTool);
 
-						const schoolExternalToolDOs: SchoolExternalToolDO[] = await service.findSchoolExternalTools(
-							schoolExternalTool
-						);
+					const schoolExternalToolDOs: SchoolExternalToolDO[] = await service.findSchoolExternalTools(
+						schoolExternalTool
+					);
 
-						expect(schoolExternalToolDOs[0].status).toEqual(SchoolExternalToolStatus.OUTDATED);
-					});
+					expect(schoolExternalToolDOs[0].status).toEqual(SchoolExternalToolStatus.LATEST);
 				});
+			});
 
-				describe('when external tool version is lower', () => {
-					it('should return status latest', async () => {
-						const { schoolExternalTool, externalTool } = setup();
-						schoolExternalTool.toolVersion = 1;
-						externalTool.version = 0;
-						schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
-						externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+			describe('when external tool version is equal', () => {
+				it('should return status latest', async () => {
+					const { schoolExternalTool, externalTool } = setup();
+					schoolExternalTool.toolVersion = 1;
+					externalTool.version = 1;
+					schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
+					externalToolService.findExternalToolById.mockResolvedValue(externalTool);
 
-						const schoolExternalToolDOs: SchoolExternalToolDO[] = await service.findSchoolExternalTools(
-							schoolExternalTool
-						);
+					const schoolExternalToolDOs: SchoolExternalToolDO[] = await service.findSchoolExternalTools(
+						schoolExternalTool
+					);
 
-						expect(schoolExternalToolDOs[0].status).toEqual(SchoolExternalToolStatus.LATEST);
-					});
-				});
-
-				describe('when external tool version is equal', () => {
-					it('should return status latest', async () => {
-						const { schoolExternalTool, externalTool } = setup();
-						schoolExternalTool.toolVersion = 1;
-						externalTool.version = 1;
-						schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
-						externalToolService.findExternalToolById.mockResolvedValue(externalTool);
-
-						const schoolExternalToolDOs: SchoolExternalToolDO[] = await service.findSchoolExternalTools(
-							schoolExternalTool
-						);
-
-						expect(schoolExternalToolDOs[0].status).toEqual(SchoolExternalToolStatus.LATEST);
-					});
+					expect(schoolExternalToolDOs[0].status).toEqual(SchoolExternalToolStatus.LATEST);
 				});
 			});
 		});
@@ -147,6 +147,27 @@ describe('SchoolExternalToolService', () => {
 				await service.getSchoolExternalToolById(schoolExternalToolId);
 
 				expect(schoolExternalToolRepo.findById).toHaveBeenCalledWith(schoolExternalToolId);
+			});
+		});
+	});
+
+	describe('createSchoolExternalTool is called', () => {
+		describe('when schoolExternalTool is given', () => {
+			it('should call schoolExternalToolRepo.save', async () => {
+				const { schoolExternalTool } = setup();
+
+				await service.createSchoolExternalTool(schoolExternalTool);
+
+				expect(schoolExternalToolRepo.save).toHaveBeenCalledWith(schoolExternalTool);
+			});
+
+			it('should enrich data from externalTool', async () => {
+				const { schoolExternalTool } = setup();
+				schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
+
+				await service.createSchoolExternalTool(schoolExternalTool);
+
+				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(schoolExternalTool.toolId);
 			});
 		});
 	});

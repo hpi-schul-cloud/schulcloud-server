@@ -3,16 +3,19 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@shared/domain';
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { Logger } from '@src/core/logger';
 import { ToolSchoolController } from './tool-school.controller';
 import { SchoolExternalToolUc } from '../uc/school-external-tool.uc';
 import { SchoolExternalToolResponseMapper } from './mapper/school-external-tool-response.mapper';
 import {
 	SchoolExternalToolIdParams,
+	SchoolExternalToolPostParams,
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 	SchoolExternalToolStatusResponse,
 } from './dto';
+import { SchoolExternalToolRequestMapper } from './mapper/school-external-tool-request.mapper';
 
 describe('ToolSchoolController', () => {
 	let module: TestingModule;
@@ -20,6 +23,7 @@ describe('ToolSchoolController', () => {
 
 	let schoolExternalToolUc: DeepMocked<SchoolExternalToolUc>;
 	let schoolExternalToolResponseMapper: DeepMocked<SchoolExternalToolResponseMapper>;
+	let schoolExternalToolRequestMapper: DeepMocked<SchoolExternalToolRequestMapper>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -33,12 +37,21 @@ describe('ToolSchoolController', () => {
 					provide: SchoolExternalToolResponseMapper,
 					useValue: createMock<SchoolExternalToolResponseMapper>(),
 				},
+				{
+					provide: SchoolExternalToolRequestMapper,
+					useValue: createMock<SchoolExternalToolRequestMapper>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
 		controller = module.get(ToolSchoolController);
 		schoolExternalToolUc = module.get(SchoolExternalToolUc);
 		schoolExternalToolResponseMapper = module.get(SchoolExternalToolResponseMapper);
+		schoolExternalToolRequestMapper = module.get(SchoolExternalToolRequestMapper);
 	});
 
 	afterAll(async () => {
@@ -53,10 +66,26 @@ describe('ToolSchoolController', () => {
 		const idParams: SchoolExternalToolIdParams = new SchoolExternalToolIdParams();
 		idParams.schoolExternalToolId = 'schoolExternalToolId';
 
+		const createParams: SchoolExternalToolPostParams = {
+			toolId: 'toolId',
+			version: 1,
+			schoolId: 'schoolId',
+			parameters: [
+				{
+					name: 'name',
+					value: 'value',
+				},
+			],
+		};
+
+		const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+
 		return {
 			currentUser,
 			searchParams,
 			idParams,
+			createParams,
+			schoolExternalToolDO,
 		};
 	};
 
@@ -121,6 +150,60 @@ describe('ToolSchoolController', () => {
 					currentUser.userId,
 					idParams.schoolExternalToolId
 				);
+			});
+		});
+	});
+
+	describe('createSchoolExternalTool is called', () => {
+		describe('when params are given', () => {
+			it('should call the schoolExternalToolRequestMapper', async () => {
+				const { currentUser, createParams } = setup();
+
+				await controller.createSchoolExternalTool(currentUser, createParams);
+
+				expect(schoolExternalToolRequestMapper.mapSchoolExternalToolRequest).toHaveBeenCalledWith(createParams);
+			});
+
+			it('should call the uc', async () => {
+				const { currentUser, createParams, schoolExternalToolDO } = setup();
+				schoolExternalToolRequestMapper.mapSchoolExternalToolRequest.mockReturnValue(schoolExternalToolDO);
+
+				await controller.createSchoolExternalTool(currentUser, createParams);
+
+				expect(schoolExternalToolUc.createSchoolExternalTool).toHaveBeenCalledWith(
+					currentUser.userId,
+					schoolExternalToolDO
+				);
+			});
+
+			it('should call the schoolExternalToolRequestMapper', async () => {
+				const { currentUser, createParams, schoolExternalToolDO } = setup();
+				schoolExternalToolUc.createSchoolExternalTool.mockResolvedValue(schoolExternalToolDO);
+
+				await controller.createSchoolExternalTool(currentUser, createParams);
+
+				expect(schoolExternalToolResponseMapper.mapToSchoolExternalToolResponse).toHaveBeenCalledWith(
+					schoolExternalToolDO
+				);
+			});
+
+			it('should return a schoolExternalToolResponse', async () => {
+				const { currentUser, createParams, schoolExternalToolDO } = setup();
+				schoolExternalToolRequestMapper.mapSchoolExternalToolRequest.mockReturnValue(schoolExternalToolDO);
+				schoolExternalToolUc.createSchoolExternalTool.mockResolvedValue(schoolExternalToolDO);
+				schoolExternalToolResponseMapper.mapToSchoolExternalToolResponse.mockReturnValue({
+					name: 'name',
+					parameters: [],
+					schoolId: 'schoolId',
+					status: SchoolExternalToolStatusResponse.LATEST,
+					toolId: 'toolId',
+					toolVersion: 0,
+					id: 'id',
+				});
+
+				const schoolExternalToolResponse = await controller.createSchoolExternalTool(currentUser, createParams);
+
+				expect(schoolExternalToolResponse).toBeDefined();
 			});
 		});
 	});

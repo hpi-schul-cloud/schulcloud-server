@@ -12,8 +12,7 @@ import {
 	oauth2ToolConfigDOFactory,
 } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ExternalToolUc } from './external-tool.uc';
-import { ExternalToolService } from '../service/external-tool.service';
-import { ToolValidationService } from '../service/validation/tool-validation.service';
+import { ExternalToolService, ExternalToolValidationService } from '../service';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;
@@ -22,7 +21,7 @@ describe('ExternalToolUc', () => {
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let toolValidationService: DeepMocked<ToolValidationService>;
+	let toolValidationService: DeepMocked<ExternalToolValidationService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -39,8 +38,8 @@ describe('ExternalToolUc', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: ToolValidationService,
-					useValue: createMock<ToolValidationService>(),
+					provide: ExternalToolValidationService,
+					useValue: createMock<ExternalToolValidationService>(),
 				},
 			],
 		}).compile();
@@ -48,7 +47,7 @@ describe('ExternalToolUc', () => {
 		uc = module.get(ExternalToolUc);
 		externalToolService = module.get(ExternalToolService);
 		authorizationService = module.get(AuthorizationService);
-		toolValidationService = module.get(ToolValidationService);
+		toolValidationService = module.get(ExternalToolValidationService);
 	});
 
 	afterAll(async () => {
