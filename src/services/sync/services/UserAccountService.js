@@ -33,7 +33,7 @@ class UserAccountService {
 		return RequestContext.createAsync(this.app.service('nest-orm').em, async () => {
 			const newAccountData = {
 				userId: account.userId,
-				username: account.username.toLowerCase(),
+				username: account.username,
 				systemId: account.systemId,
 				activated: true,
 			};

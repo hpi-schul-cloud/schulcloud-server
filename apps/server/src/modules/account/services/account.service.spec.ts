@@ -91,21 +91,21 @@ describe('AccountService', () => {
 
 	describe('save', () => {
 		it('should call save in accountServiceDb', async () => {
-			await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
+			await expect(accountService.save({ username: 'mockUserName' } as AccountSaveDto)).resolves.not.toThrow();
 			expect(accountServiceDb.save).toHaveBeenCalledTimes(1);
 		});
 		it('should call save in accountServiceIdm if feature is enabled', async () => {
 			const spy = jest.spyOn(configService, 'get');
 			spy.mockReturnValueOnce(true);
 
-			await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
+			await expect(accountService.save({ username: 'mockUserName' } as AccountSaveDto)).resolves.not.toThrow();
 			expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 		});
 		it('should not call save in accountServiceIdm if feature is disabled', async () => {
 			const spy = jest.spyOn(configService, 'get');
 			spy.mockReturnValueOnce(false);
 
-			await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
+			await expect(accountService.save({ username: 'mockUserName' } as AccountSaveDto)).resolves.not.toThrow();
 			expect(accountServiceIdm.save).not.toHaveBeenCalled();
 		});
 	});
