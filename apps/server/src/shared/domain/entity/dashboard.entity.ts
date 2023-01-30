@@ -31,6 +31,7 @@ export type GridElementContent = {
 	displayColor: string;
 	group?: LearnroomMetadata[];
 	groupId?: string;
+	copyingSince?: Date;
 };
 
 export class GridElement implements IGridElement {

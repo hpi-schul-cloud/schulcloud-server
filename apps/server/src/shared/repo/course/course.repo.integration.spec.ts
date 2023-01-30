@@ -60,6 +60,7 @@ describe('course repo', () => {
 				'_id',
 				'color',
 				'createdAt',
+				'copyingSince',
 				'courseGroups',
 				'description',
 				'name',
@@ -344,6 +345,22 @@ describe('course repo', () => {
 			const foundCourse = await repo.findById(course.id);
 			expect(foundCourse.courseGroups.isInitialized()).toEqual(true);
 			expect(foundCourse.courseGroups[0].id).toEqual(courseGroup.id);
+		});
+	});
+
+	describe('unset optional property', () => {
+		it('should remove a property that was set to undefined', async () => {
+			const course = courseFactory.build({ students: [] });
+			course.copyingSince = new Date();
+			await em.persistAndFlush([course]);
+
+			delete course.copyingSince;
+			await repo.save(course);
+
+			const result = await repo.findOne(course.id);
+
+			expect(result.copyingSince).toBeUndefined();
+			expect(Object.keys(result)).not.toContain('copyingSince');
 		});
 	});
 });
