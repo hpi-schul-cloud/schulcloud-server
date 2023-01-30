@@ -14,4 +14,5 @@ export type LearnroomMetadata = BaseMetadata & {
 	displayColor: string;
 	startDate?: Date;
 	untilDate?: Date;
+	copyingSince?: Date;
 };
