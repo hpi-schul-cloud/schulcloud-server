@@ -286,6 +286,8 @@ export class NewsRule extends BasePermission<News> {
          super();
    }
 
+   // Is used to select the matching rule in the permission manager. Therefore we keep the condition to which case the rule
+   // applies in the rule itself. In future we expect more complex conditions that could apply here.
    public isApplicable(user: User, entity: News): boolean {
       const isMatched = entity instanceof News;
 
