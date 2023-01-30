@@ -18,13 +18,13 @@ export class CustomParameterResponse {
 	@ApiPropertyOptional()
 	regexComment?: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: CustomParameterScopeParams })
 	scope: CustomParameterScopeParams;
 
-	@ApiProperty()
+	@ApiProperty({ enum: CustomParameterLocationParams })
 	location: CustomParameterLocationParams;
 
-	@ApiProperty()
+	@ApiProperty({ enum: CustomParameterTypeParams })
 	type: CustomParameterTypeParams;
 
 	@ApiProperty()

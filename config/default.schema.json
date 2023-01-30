@@ -325,6 +325,11 @@
 			"default": false,
 			"description": "Enables the Identity Management (ErWIn IDM) as account storage."
 		},
+		"FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the login via OIDC with the Identity Management (ErWIn IDM) for users managed by dBildungscloud."
+		},
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
 			"description": "Identity management server properties.",

@@ -6,8 +6,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { Page } from '@shared/domain/interface/page';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { ExternalToolService } from '../service/external-tool.service';
-import { SchoolExternalToolService } from '../service/school-external-tool.service';
+import { ExternalToolService, SchoolExternalToolService } from '../service';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
