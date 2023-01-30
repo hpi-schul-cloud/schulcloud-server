@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
+import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { AccountModule } from '../account';
 import { AuthenticationService } from './services/authentication.service';
 import { jwtConstants } from './constants';
@@ -49,7 +50,13 @@ const jwtModuleOptions: JwtModuleOptions = {
 	verifyOptions: signOptions,
 };
 @Module({
-	imports: [LoggerModule, PassportModule, JwtModule.register(jwtModuleOptions), AccountModule],
+	imports: [
+		LoggerModule,
+		PassportModule,
+		JwtModule.register(jwtModuleOptions),
+		AccountModule,
+		IdentityManagementModule,
+	],
 	providers: [
 		JwtStrategy,
 		JwtValidationAdapter,
