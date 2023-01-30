@@ -95,7 +95,7 @@ describe('KeycloakConsole', () => {
 
 			uc.configure.mockRestore();
 		});
-		it('should throw on error', async () => {
+		it('should throw an error', async () => {
 			const expectedError = new Error('test error');
 			uc.configure.mockRejectedValue(expectedError);
 
