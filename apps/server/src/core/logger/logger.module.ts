@@ -9,16 +9,14 @@ import { Logger } from './logger.service';
 	imports: [
 		WinstonModule.forRootAsync({
 			useFactory: (configService: ConfigService<ILoggerConfig, true>) => {
-				const level = configService.get<string>('NEST_LOG_LEVEL');
 				return {
 					levels: winston.config.syslog.levels,
-					level,
+					level: configService.get<string>('NEST_LOG_LEVEL'),
 					exitOnError: false,
 					transports: [
 						new winston.transports.Console({
 							handleExceptions: true,
 							handleRejections: true,
-							level,
 							format: winston.format.combine(
 								winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
 								winston.format.ms(),
