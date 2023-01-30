@@ -44,7 +44,7 @@ describe('delete class user data usecase', () => {
 		it('should return a function', async () => {
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData;
 			expect(deleteUserDataFromClasses).to.be.an('Array');
-			expect(deleteUserDataFromClasses.length).to.be.equal(1);
+			expect(deleteUserDataFromClasses.length).to.be.equal(2);
 			expect(deleteUserDataFromClasses[0]).to.be.a('function');
 		});
 

@@ -51,4 +51,7 @@ const deleteUserDataFromTeams = async (userId) => {
 	debug(`deleting user mentions in teams contents finished`, { userId });
 };
 
-module.exports = { deleteUserDataFromClasses, deleteUserDataFromTeams };
+// public
+const deleteUserData = [deleteUserDataFromClasses, deleteUserDataFromTeams];
+
+module.exports = { deleteUserData };
