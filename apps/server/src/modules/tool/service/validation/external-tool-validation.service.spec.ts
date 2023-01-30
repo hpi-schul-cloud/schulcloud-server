@@ -2,14 +2,14 @@ import { externalToolDOFactory } from '@shared/testing/factory/domainobject/exte
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { UnprocessableEntityException } from '@nestjs/common';
+import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
-import { ToolValidationService } from './tool-validation.service';
+import { ExternalToolValidationService } from './external-tool-validation.service';
 import { CommonToolValidationService } from './common-tool-validation.service';
 
-describe('ToolValidation', () => {
+describe('ExternalToolValidation', () => {
 	let module: TestingModule;
-	let service: ToolValidationService;
+	let service: ExternalToolValidationService;
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
@@ -17,7 +17,7 @@ describe('ToolValidation', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				ToolValidationService,
+				ExternalToolValidationService,
 				{
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
@@ -29,7 +29,7 @@ describe('ToolValidation', () => {
 			],
 		}).compile();
 
-		service = module.get(ToolValidationService);
+		service = module.get(ExternalToolValidationService);
 		externalToolService = module.get(ExternalToolService);
 		commonToolValidationService = module.get(CommonToolValidationService);
 	});
@@ -45,6 +45,7 @@ describe('ToolValidation', () => {
 	describe('validateCreate is called', () => {
 		it('should call the common validation service', async () => {
 			const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
+			externalToolService.isOauth2Config.mockReturnValue(false);
 
 			await service.validateCreate(externalToolDO);
 
@@ -77,12 +78,13 @@ describe('ToolValidation', () => {
 				const existingExternalToolDO: ExternalToolDO = externalToolDOFactory
 					.withOauth2Config({ clientId: 'sameClientId' })
 					.buildWithId();
+				externalToolService.isOauth2Config.mockReturnValue(true);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(existingExternalToolDO);
 
 				const result: Promise<void> = service.validateCreate(externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name} is already used.`)
+					new ValidationError(`The Client Id of the tool ${externalToolDO.name} is already used.`)
 				);
 			});
 		});
@@ -111,7 +113,7 @@ describe('ToolValidation', () => {
 				const func = () => service.validateUpdate('notMatchToolId', externalToolDO);
 
 				await expect(func).rejects.toThrow(
-					new UnprocessableEntityException(`The tool has no id or it does not match the path parameter.`)
+					new ValidationError(`The tool has no id or it does not match the path parameter.`)
 				);
 			});
 
@@ -139,7 +141,7 @@ describe('ToolValidation', () => {
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The Config Type of the tool ${externalToolDO.name} is immutable.`)
+					new ValidationError(`The Config Type of the tool ${externalToolDO.name} is immutable.`)
 				);
 			});
 
@@ -166,7 +168,7 @@ describe('ToolValidation', () => {
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The Client Id of the tool ${externalToolDO.name} is immutable.`)
+					new ValidationError(`The Client Id of the tool ${externalToolDO.name} is immutable.`)
 				);
 			});
 		});
