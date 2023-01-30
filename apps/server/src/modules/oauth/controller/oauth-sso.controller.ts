@@ -70,7 +70,7 @@ export class OauthSSOController {
 	}
 
 	@Get('oauth/:systemId/migration')
-	// @Authenticate('jwt')
+	@Authenticate('jwt')
 	@ApiOkResponse({ description: 'The User has been succesfully migrated.' })
 	async migrateUser(
 		@CurrentUser() currentUser,
