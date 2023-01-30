@@ -129,7 +129,7 @@ export class OauthUc {
 	}
 
 	async migrateUser(currentUserId: string, query: AuthorizationParams, systemId: string): Promise<UserMigrationDto> {
-		/** const authCode: string = this.oauthService.checkAuthorizationCode(query);
+		const authCode: string = this.oauthService.checkAuthorizationCode(query);
 
 		const system: SystemDto = await this.systemService.findOAuthById(systemId);
 		if (!system.id) {
@@ -146,10 +146,7 @@ export class OauthUc {
 			queryToken.id_token,
 			system.id
 		);
-		const abc = this.userMigrationService.migrateUser(currentUserId, data.externalUser.externalId, systemId);
-		return abc;
-		 * */
-		const abc = this.userMigrationService.migrateUser(currentUserId, 'SanisId', systemId);
-		return abc;
+		const migrationDto = this.userMigrationService.migrateUser(currentUserId, data.externalUser.externalId, systemId);
+		return migrationDto;
 	}
 }

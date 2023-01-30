@@ -7,10 +7,8 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { CookieOptions, Request, Response } from 'express';
-import { logger } from '@mikro-orm/nestjs';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
-import { ExternalToolResponse } from '../../tool/controller/dto';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -75,16 +73,14 @@ export class OauthSSOController {
 	// @Authenticate('jwt')
 	@ApiOkResponse({ description: 'The User has been succesfully migrated.' })
 	async migrateUser(
-		// @CurrentUser() currentUser,
-		// @Query() query: AuthorizationParams,
-		// @Res() res: Response,
+		@CurrentUser() currentUser,
+		@Query() query: AuthorizationParams,
+		@Res() res: Response,
 		@Param() urlParams: SystemUrlParams
 	): Promise<void> {
-		// const migration = await this.oauthUc.migrateUser(currentUser.userId, query, urlParams.systemId);
-		const migration = await this.oauthUc.migrateUser('636ad4e2120c65e2d537cb7f', { code: 'code' }, urlParams.systemId);
+		const migration = await this.oauthUc.migrateUser(currentUser.userId, query, urlParams.systemId);
 		if (migration.redirect) {
-			// res.redirect(migration.redirect);
-			logger.log(`################ Redirect ${migration.redirect}`);
+			res.redirect(migration.redirect);
 		}
 	}
 }

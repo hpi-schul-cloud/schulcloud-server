@@ -185,15 +185,18 @@ describe('OAuthController', () => {
 	});
 
 	describe('migrateUser', () => {
-		it('should call the OAuthUC ', () => {
-			it('when systemId is given', async () => {
-				const { res } = getMockRes();
-				oauthUc.migrateUser.mockResolvedValue({ redirect: `${mockHost}/migration/succeed` });
+		it('should call the OAuthUC ', async () => {
+			const { res } = getMockRes();
+			const query: AuthorizationParams = new AuthorizationParams();
+			query.code = 'defaultAuthCode';
+			const systemParams: SystemUrlParams = new SystemUrlParams();
+			systemParams.systemId = 'systemId';
 
-				await controller.migrateUser({ systemId: 'systemId' });
+			oauthUc.migrateUser.mockResolvedValue({ redirect: `${mockHost}/migration/succeed` });
 
-				expect(res.redirect).toHaveBeenCalledWith(`${mockHost}/migration/succeed`);
-			});
+			await controller.migrateUser({ systemId: 'systemId' }, query, res, systemParams);
+
+			expect(res.redirect).toHaveBeenCalledWith(`${mockHost}/migration/succeed`);
 		});
 	});
 });
