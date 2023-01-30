@@ -57,17 +57,25 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 
 	describe('when sanitizing richtext ck5 formatting', () => {
 		it('should remove all html but richtext ck5 tags', () => {
-			const plainString = { contentCk5: '<h1><b>html text</b></h1><scriPT>alert("foobar");</sCript><stYle></style>' };
+			const plainString = {
+				contentCk5:
+					'<h1></h1><h2><b><mark>html text</mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+			};
 			const instance = plainToClass(WithHtmlDto, plainString);
-			expect(instance.contentCk5).toEqual('<h1><b>html text</b></h1>');
+			expect(instance.contentCk5).toEqual(
+				'<h2><b><mark>html text</mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span>'
+			);
 		});
 	});
 
-	describe('when sanitizing richtext ck5 inline formatting', () => {
-		it('should remove all html but richtext ck5 inline tags', () => {
-			const plainString = { contentCk5Simple: '<b>html text</b>' };
+	describe('when sanitizing richtext ck5 simple formatting', () => {
+		it('should remove all html but richtext ck5 simple tags', () => {
+			const plainString = {
+				contentCk5Simple:
+					'<p><b>strong</b><br />text</p><h2></h2><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+			};
 			const instance = plainToClass(WithHtmlDto, plainString);
-			expect(instance.contentCk5Simple).toEqual('<b>html text</b>');
+			expect(instance.contentCk5Simple).toEqual('<p><b>strong</b><br />text</p>');
 		});
 	});
 
