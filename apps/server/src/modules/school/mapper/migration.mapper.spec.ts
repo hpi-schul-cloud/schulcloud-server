@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MigrationMapper } from './migration.mapper';
-import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { MigrationResponse } from '../controller/dto';
+import { OauthMigrationDto } from '../dto/oauth-migration.dto';
+import { MigrationMapper } from './migration.mapper';
 
 describe('MigrationMapper', () => {
 	let mapper: MigrationMapper;
@@ -18,25 +18,32 @@ describe('MigrationMapper', () => {
 		await module.close();
 	});
 	describe('when it maps migration data', () => {
-		let dtoRef: OauthMigrationDto;
-		let responseRef: MigrationResponse;
-		beforeAll(() => {
-			dtoRef = new OauthMigrationDto({
-				oauthMigrationPossible: new Date(),
-				oauthMigrationMandatory: new Date(),
-				oauthMigrationFinished: new Date(),
+		const setup = () => {
+			const dto: OauthMigrationDto = new OauthMigrationDto({
+				oauthMigrationPossible: new Date('2023-01-23T09:34:54.854Z'),
+				oauthMigrationMandatory: new Date('2023-02-23T09:34:54.854Z'),
+				oauthMigrationFinished: new Date('2023-03-23T09:34:54.854Z'),
 				enableMigrationStart: true,
 			});
-			responseRef = new MigrationResponse({
-				oauthMigrationPossible: new Date(),
-				oauthMigrationMandatory: new Date(),
-				oauthMigrationFinished: new Date(),
+			const response: MigrationResponse = new MigrationResponse({
+				oauthMigrationPossible: new Date('2023-01-23T09:34:54.854Z'),
+				oauthMigrationMandatory: new Date('2023-02-23T09:34:54.854Z'),
+				oauthMigrationFinished: new Date('2023-03-23T09:34:54.854Z'),
 				enableMigrationStart: true,
 			});
-		});
+
+			return {
+				dto,
+				response,
+			};
+		};
+
 		it('mapToDO', () => {
-			const response = mapper.mapDtoToResponse(dtoRef);
-			expect(response).toEqual(responseRef);
+			const { dto, response } = setup();
+
+			const result: MigrationResponse = mapper.mapDtoToResponse(dto);
+
+			expect(result).toEqual(response);
 		});
 	});
 });

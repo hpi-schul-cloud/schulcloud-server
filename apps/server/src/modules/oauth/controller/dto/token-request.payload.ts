@@ -1,33 +1,22 @@
-import { IsDefined, IsNotEmpty, IsString } from 'class-validator';
-
 export class TokenRequestPayload {
-	@IsDefined()
-	@IsString()
-	@IsNotEmpty()
-	tokenEndpoint!: string;
+	tokenEndpoint: string;
 
-	@IsDefined()
-	@IsString()
-	@IsNotEmpty()
-	client_id!: string;
+	client_id: string;
 
-	@IsDefined()
-	@IsString()
-	@IsNotEmpty()
-	client_secret!: string;
+	client_secret: string;
 
-	@IsDefined()
-	@IsString()
-	@IsNotEmpty()
-	redirect_uri!: string;
+	redirect_uri: string;
 
-	@IsDefined()
-	@IsString()
-	@IsNotEmpty()
-	grant_type!: string;
+	grant_type: string;
 
-	@IsDefined()
-	@IsString()
-	@IsNotEmpty()
-	code!: string;
+	code: string;
+
+	constructor(props: TokenRequestPayload) {
+		this.tokenEndpoint = props.tokenEndpoint;
+		this.client_id = props.client_id;
+		this.client_secret = props.client_secret;
+		this.redirect_uri = props.redirect_uri;
+		this.grant_type = props.grant_type;
+		this.code = props.code;
+	}
 }
