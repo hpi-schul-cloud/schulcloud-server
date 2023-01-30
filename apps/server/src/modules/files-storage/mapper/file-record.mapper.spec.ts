@@ -63,7 +63,7 @@ describe('FilesStorageMapper', () => {
 	});
 
 	describe('mapScanResultParamsToDto()', () => {
-		const buildParams = (virus_detected: boolean, virus_signature?: string, error?: string): ScanResultParams => {
+		const buildParams = (virus_detected?: boolean, virus_signature?: string, error?: string): ScanResultParams => {
 			const params = {
 				virus_detected,
 				virus_signature,
@@ -110,7 +110,7 @@ describe('FilesStorageMapper', () => {
 		describe('When scan result has error', () => {
 			const setup = () => {
 				const error = 'error-reason';
-				const params = buildParams(false, undefined, error);
+				const params = buildParams(undefined, undefined, error);
 
 				return { params, error };
 			};
@@ -149,11 +149,24 @@ describe('FilesStorageMapper', () => {
 			});
 		});
 
+		describe('WHEN error property contains empty string', () => {
+			it('returns correct dto', () => {
+				const params = buildParams(undefined, undefined, '');
+
+				const result = FileRecordMapper.mapScanResultParamsToDto(params);
+
+				const expectedResult: ScanResultDto = new ScanResultDto({
+					status: ScanStatus.ERROR,
+					reason: 'No scan result',
+				});
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
 		describe('WHEN empty scanResult is passed', () => {
 			it('returns correct dto', () => {
 				const params = {};
 
-				// @ts-expect-error type do not match
 				const result = FileRecordMapper.mapScanResultParamsToDto(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({

@@ -30,7 +30,7 @@ export class FileRecordMapper {
 		} else if (scanResultParams.error) {
 			scanResult.status = ScanStatus.ERROR;
 			scanResult.reason = scanResultParams.error;
-		} else if (scanResultParams.virus_detected === undefined) {
+		} else if (scanResultParams.virus_detected === undefined || scanResultParams.error === '') {
 			scanResult.status = ScanStatus.ERROR;
 			scanResult.reason = 'No scan result';
 		}
