@@ -42,6 +42,7 @@ export class DashboardGridElementResponse {
 		yPosition,
 		groupId,
 		groupElements,
+		copyingSince = undefined,
 	}: DashboardGridElementResponse) {
 		this.id = id;
 		this.title = title;
@@ -51,6 +52,7 @@ export class DashboardGridElementResponse {
 		this.yPosition = yPosition;
 		this.groupId = groupId;
 		this.groupElements = groupElements;
+		this.copyingSince = copyingSince;
 	}
 
 	@ApiProperty({
@@ -96,6 +98,11 @@ export class DashboardGridElementResponse {
 		description: 'List of all subelements in the group',
 	})
 	groupElements?: DashboardGridSubElementResponse[];
+
+	@ApiProperty({
+		description: 'Start of the copying process if it is still ongoing - otherwise property is not set.',
+	})
+	copyingSince?: Date;
 }
 
 export class DashboardResponse {
