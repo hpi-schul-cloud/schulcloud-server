@@ -6,6 +6,7 @@ import {
 	ApiForbiddenResponse,
 	ApiFoundResponse,
 	ApiOkResponse,
+	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
@@ -13,6 +14,8 @@ import {
 import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { Logger } from '@src/core/logger';
+import { ValidationError } from '@shared/common';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ExternalToolUc } from '../uc/external-tool.uc';
@@ -38,7 +41,8 @@ export class ToolController {
 		private readonly lti11ResponseMapper: Lti11ResponseMapper,
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
-		private readonly externalResponseMapper: ExternalToolResponseMapper
+		private readonly externalResponseMapper: ExternalToolResponseMapper,
+		private readonly logger: Logger
 	) {}
 
 	@Get('lti11/:toolId/launch')
@@ -62,6 +66,7 @@ export class ToolController {
 	@ApiForbiddenResponse()
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
+	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	async createExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolParams: ExternalToolPostParams
@@ -69,6 +74,7 @@ export class ToolController {
 		const externalToolDO: CreateExternalTool = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
+		this.logger.debug(`ExternaTool with id ${mapped.id} was created by user with id ${currentUser.userId}`);
 		return mapped;
 	}
 
@@ -114,6 +120,7 @@ export class ToolController {
 	@ApiOkResponse({ description: 'The Tool has been successfully updated.', type: ExternalToolResponse })
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	async updateExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams,
@@ -126,12 +133,14 @@ export class ToolController {
 			externalTool
 		);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(updated);
+		this.logger.debug(`ExternaTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);
 		return mapped;
 	}
 
 	@Delete(':toolId')
 	async deleteExternalTool(@CurrentUser() currentUser: ICurrentUser, @Param() params: ToolIdParams): Promise<void> {
 		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.toolId);
+		this.logger.debug(`ExternaTool with id ${params.toolId} was deleted by user with id ${currentUser.userId}`);
 		return promise;
 	}
 }
