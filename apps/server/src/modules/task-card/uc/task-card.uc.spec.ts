@@ -15,8 +15,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { ITaskCardCreate, ITaskCardUpdate } from '@src/modules/task-card/controller/mapper/task-card.mapper';
 import { TaskService } from '@src/modules/task/service';
+import { ITaskCardCRUD } from '../interface';
 import { TaskCardUc } from './task-card.uc';
 
 describe('TaskCardUc', () => {
@@ -170,7 +170,7 @@ describe('TaskCardUc', () => {
 	});
 
 	describe('create', () => {
-		let taskCardCreateParams: ITaskCardCreate;
+		let taskCardCreateParams: ITaskCardCRUD;
 		const title = 'text title';
 		const richText = ['test richtext 1', 'test richtext 2'];
 		const tomorrow = new Date(Date.now() + 86400000);
@@ -284,7 +284,7 @@ describe('TaskCardUc', () => {
 	});
 
 	describe('update', () => {
-		let taskCardUpdateParams: ITaskCardUpdate;
+		let taskCardUpdateParams: ITaskCardCRUD;
 		const title = 'changed text title';
 		const richText = ['changed richtext 1', 'changed richtext 2'];
 		const tomorrow = new Date(Date.now() + 86400000);
