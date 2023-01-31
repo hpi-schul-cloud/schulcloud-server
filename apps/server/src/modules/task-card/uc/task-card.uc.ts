@@ -6,7 +6,7 @@ import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, TaskCardRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '@src/modules/task/service';
-import { ITaskCardCreate, ITaskCardUpdate } from '../controller/mapper/task-card.mapper';
+import { ITaskCardCRUD } from '../interface';
 
 @Injectable()
 export class TaskCardUc {
@@ -17,7 +17,7 @@ export class TaskCardUc {
 		private readonly taskService: TaskService
 	) {}
 
-	async create(userId: EntityId, params: ITaskCardCreate) {
+	async create(userId: EntityId, params: ITaskCardCRUD) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_CARD_EDIT])) {
@@ -67,7 +67,7 @@ export class TaskCardUc {
 		return { card, taskWithStatusVo };
 	}
 
-	private async createTask(userId: EntityId, params: ITaskCardCreate) {
+	private async createTask(userId: EntityId, params: ITaskCardCRUD) {
 		const taskParams = {
 			name: params.title,
 		};
@@ -115,7 +115,7 @@ export class TaskCardUc {
 		return true;
 	}
 
-	async update(userId: EntityId, id: EntityId, params: ITaskCardUpdate) {
+	async update(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.taskCardRepo.findById(id);
 
@@ -154,7 +154,7 @@ export class TaskCardUc {
 		return { card, taskWithStatusVo };
 	}
 
-	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardUpdate) {
+	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
 		const taskParams = {
 			name: params.title,
 		};

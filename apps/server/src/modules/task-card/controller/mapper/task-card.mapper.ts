@@ -4,7 +4,6 @@ import {
 	CardElementResponse,
 	CardRichTextElementResponse,
 	CardTitleElementResponse,
-	InputFormat,
 	RichText,
 	TaskCard,
 	TaskWithStatusVo,
@@ -12,28 +11,8 @@ import {
 import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
-import {
-	CreateTaskCardParams,
-	RichTextCardElementParam,
-	TaskCardResponse,
-	TitleCardElementParam,
-	UpdateTaskCardParams,
-} from '../dto';
-
-export interface ITaskCardUpdate {
-	id?: string;
-	title: string;
-	text?: RichText[];
-	visibleAtDate?: Date;
-	dueDate?: Date;
-}
-
-export interface ITaskCardCreate {
-	title: string;
-	text?: RichText[];
-	visibleAtDate?: Date;
-	dueDate?: Date;
-}
+import { ITaskCardCRUD } from '../../interface';
+import { RichTextCardElementParam, TaskCardParams, TaskCardResponse, TitleCardElementParam } from '../dto';
 
 export class TaskCardMapper {
 	mapToResponse(card: TaskCard, taskWithStatusVo: TaskWithStatusVo): TaskCardResponse {
@@ -71,40 +50,14 @@ export class TaskCardMapper {
 		return cardElementsResponse;
 	}
 
-	static mapCreateToDomain(params: CreateTaskCardParams): ITaskCardCreate {
-		const dto: ITaskCardCreate = {
-			title: params.title,
-		};
-
-		if (params.text) {
-			dto.text = params.text.map(
-				(content) =>
-					new RichText({
-						content,
-						type: InputFormat.RICH_TEXT_CK5,
-					})
-			);
-		}
-
-		if (params.visibleAtDate) {
-			dto.visibleAtDate = params.visibleAtDate;
-		}
-
-		if (params.dueDate) {
-			dto.dueDate = params.dueDate;
-		}
-
-		return dto;
-	}
-
-	static mapUpdateToDomain(params: UpdateTaskCardParams): ITaskCardUpdate {
+	static mapToDomain(params: TaskCardParams): ITaskCardCRUD {
 		const title = params.cardElements.filter((element) => element.content instanceof TitleCardElementParam);
 		if (title.length !== 1) {
 			throw new ValidationError('The Task Card must have one title');
 		}
 
 		const titleValue = title[0].content as TitleCardElementParam;
-		const dto: ITaskCardUpdate = {
+		const dto: ITaskCardCRUD = {
 			title: titleValue.value,
 		};
 
