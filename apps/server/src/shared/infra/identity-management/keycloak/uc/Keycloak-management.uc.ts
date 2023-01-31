@@ -15,11 +15,11 @@ export class KeycloakManagementUc {
 		return this.kcAdmin.testKcConnection();
 	}
 
-	public clean(): Promise<number> {
+	public async clean(): Promise<number> {
 		return this.keycloakSeedService.clean();
 	}
 
-	public seed(): Promise<number> {
+	public async seed(): Promise<number> {
 		return this.keycloakSeedService.seed();
 	}
 
