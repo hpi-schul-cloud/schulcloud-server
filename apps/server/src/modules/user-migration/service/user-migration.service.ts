@@ -1,5 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { SchoolService } from '@src/modules/school';
 import { EntityNotFoundError } from '@shared/common';
 import { SystemDto, SystemService } from '@src/modules/system/service';
 import { PageTypes } from '../interface/page-types.enum';
@@ -15,8 +17,38 @@ export class UserMigrationService {
 
 	private readonly loginUrl: string = '/login';
 
-	constructor(private readonly systemService: SystemService) {
+	constructor(private readonly schoolService: SchoolService, private readonly systemService: SystemService) {
 		this.hostUrl = Configuration.get('HOST') as string;
+	}
+
+	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {
+		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+		const isInMigration: boolean = !!school?.oauthMigrationPossible || !!school?.oauthMigrationMandatory;
+		return isInMigration;
+	}
+
+	async getMigrationRedirect(officialSchoolNumber: string, originSystemId: string): Promise<string> {
+		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+		const oauthSystems: SystemDto[] = await this.systemService.findOAuth();
+		const sanisSystem: SystemDto | undefined = oauthSystems.find(
+			(system: SystemDto): boolean => system.alias === 'SANIS'
+		);
+		const iservSystem: SystemDto | undefined = oauthSystems.find(
+			(system: SystemDto): boolean => system.alias === 'Schulserver'
+		);
+
+		if (!iservSystem?.id || !sanisSystem?.id) {
+			throw new InternalServerErrorException(
+				'Unable to generate migration redirect url. Iserv or Sanis system information is invalid.'
+			);
+		}
+
+		const url = new URL('/migration', this.hostUrl);
+		url.searchParams.append('sourceSystem', iservSystem.id);
+		url.searchParams.append('targetSystem', sanisSystem.id);
+		url.searchParams.append('origin', originSystemId);
+		url.searchParams.append('mandatory', (!!school?.oauthMigrationMandatory).toString());
+		return url.toString();
 	}
 
 	async getPageContent(pageType: PageTypes, sourceId: string, targetId: string): Promise<PageContentDto> {

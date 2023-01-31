@@ -125,6 +125,23 @@
 	},
 	{
 		"_id": {
+			"$oid": "63ce4fe60cb0b4b48ec8d793"
+		},
+		"username": "vertretungslehrer@schul-cloud.org",
+		"password": "$2a$10$5lt5MoHbXc5ScbT0gTk/C.0.PIGnJuKzC6zWhqwRhHh9jOgXMCwwC",
+		"updatedAt": {
+			"$date": "2023-01-23T10:14:14.729+01:00"
+		},
+		"createdAt": {
+			"$date": "2023-01-23T10:14:40.693+01:00"
+		},
+		"userId": {
+			"$oid": "63ce4f5610087350c4a8fbb2"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
 			"$oid": "58b40279dac20e0645353e3b"
 		},
 		"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",

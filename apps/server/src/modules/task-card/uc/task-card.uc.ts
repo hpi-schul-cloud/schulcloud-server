@@ -1,11 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard } from '@shared/domain';
+import { ValidationError } from '@shared/common/error';
+import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
 import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, TaskCardRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '@src/modules/task/service';
-import { ITaskCardCreate, ITaskCardUpdate } from '../controller/mapper/task-card.mapper';
+import { ITaskCardCRUD } from '../interface';
 
 @Injectable()
 export class TaskCardUc {
@@ -16,12 +17,14 @@ export class TaskCardUc {
 		private readonly taskService: TaskService
 	) {}
 
-	async create(userId: EntityId, params: ITaskCardCreate) {
+	async create(userId: EntityId, params: ITaskCardCRUD) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_CARD_EDIT])) {
 			throw new UnauthorizedException();
 		}
+
+		const defaultDueDate = this.getDefaultDueDate(user);
 
 		const taskWithStatusVo = await this.createTask(userId, params);
 
@@ -41,21 +44,45 @@ export class TaskCardUc {
 			creator: user,
 			draggable: true,
 			task: taskWithStatusVo.task,
+			visibleAtDate: new Date(),
+			dueDate: defaultDueDate,
 		};
+
+		if (params.visibleAtDate) {
+			cardParams.visibleAtDate = params.visibleAtDate;
+		}
+
+		if (params.dueDate) {
+			cardParams.dueDate = params.dueDate;
+		}
+
 		const card = new TaskCard(cardParams);
+
+		if (!card.isVisibleBeforeDueDate()) {
+			throw new ValidationError('Invalid date combination');
+		}
 
 		await this.taskCardRepo.save(card);
 
 		return { card, taskWithStatusVo };
 	}
 
-	private async createTask(userId: EntityId, params: ITaskCardCreate) {
+	private async createTask(userId: EntityId, params: ITaskCardCRUD) {
 		const taskParams = {
 			name: params.title,
 		};
 		const taskWithStatusVo = await this.taskService.create(userId, taskParams);
 
 		return taskWithStatusVo;
+	}
+
+	private getDefaultDueDate(user: User) {
+		const currentSchoolYear = user.school.schoolYear;
+		if (currentSchoolYear) {
+			return currentSchoolYear.endDate;
+		}
+		const lastDayOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31);
+		return lastDayOfNextYear;
 	}
 
 	async findOne(userId: EntityId, id: EntityId) {
@@ -88,7 +115,7 @@ export class TaskCardUc {
 		return true;
 	}
 
-	async update(userId: EntityId, id: EntityId, params: ITaskCardUpdate) {
+	async update(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.taskCardRepo.findById(id);
 
@@ -109,13 +136,25 @@ export class TaskCardUc {
 			cardElements.push(...texts);
 		}
 
+		if (params.visibleAtDate) {
+			card.visibleAtDate = params.visibleAtDate;
+		}
+
+		if (params.dueDate) {
+			card.dueDate = params.dueDate;
+		}
+
+		if (!card.isVisibleBeforeDueDate()) {
+			throw new ValidationError('Invalid date combination');
+		}
+
 		await this.replaceCardElements(card, cardElements);
 		await this.taskCardRepo.save(card);
 
 		return { card, taskWithStatusVo };
 	}
 
-	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardUpdate) {
+	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
 		const taskParams = {
 			name: params.title,
 		};

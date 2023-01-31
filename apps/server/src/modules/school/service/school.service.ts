@@ -2,17 +2,12 @@ import { SchoolRepo } from '@shared/repo';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
-import { ProvisioningSchoolOutputDto } from '../../provisioning/dto/provisioning-school-output.dto';
-import { SchoolUcMapper } from '../mapper/school.uc.mapper';
+import { isDefined } from 'class-validator';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 @Injectable()
 export class SchoolService {
 	constructor(readonly schoolRepo: SchoolRepo) {}
-
-	async saveProvisioningSchoolOutputDto(schoolDto: ProvisioningSchoolOutputDto): Promise<SchoolDO> {
-		return this.createOrUpdateSchool(SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDO(schoolDto));
-	}
 
 	async createOrUpdateSchool(school: SchoolDO): Promise<SchoolDO> {
 		let createdSchool: SchoolDO;
@@ -40,14 +35,20 @@ export class SchoolService {
 
 	async setMigration(
 		schoolId: EntityId,
-		oauthMigrationPossible: boolean,
-		oauthMigrationMandatory: boolean,
-		oauthMigrationFinished: boolean
+		oauthMigrationPossible?: boolean,
+		oauthMigrationMandatory?: boolean,
+		oauthMigrationFinished?: boolean
 	): Promise<OauthMigrationDto> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
-		schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
-		schoolDo.oauthMigrationMandatory = oauthMigrationMandatory ? new Date() : undefined;
-		schoolDo.oauthMigrationFinished = oauthMigrationFinished ? new Date() : undefined;
+		if (isDefined(oauthMigrationPossible)) {
+			schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
+		}
+		if (isDefined(oauthMigrationMandatory)) {
+			schoolDo.oauthMigrationMandatory = oauthMigrationMandatory ? new Date() : undefined;
+		}
+		if (isDefined(oauthMigrationFinished)) {
+			schoolDo.oauthMigrationFinished = oauthMigrationFinished ? new Date() : undefined;
+		}
 
 		await this.schoolRepo.save(schoolDo);
 

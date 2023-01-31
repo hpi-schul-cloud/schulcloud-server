@@ -44,6 +44,8 @@ describe('UserMapper', () => {
 		expect(resultDto.language).toEqual(userEntity.language);
 		expect(resultDto.forcePasswordChange).toEqual(userEntity.forcePasswordChange);
 		expect(resultDto.preferences).toEqual(userEntity.preferences);
+		expect(resultDto.lastLoginSystemChange).toEqual(userEntity.lastLoginSystemChange);
+		expect(resultDto.outdatedSince).toEqual(userEntity.outdatedSince);
 	});
 
 	it('mapFromDtoToEntity', () => {
@@ -64,6 +66,8 @@ describe('UserMapper', () => {
 		expect(resultEntity.language).toEqual(userDto.language);
 		expect(resultEntity.forcePasswordChange).toEqual(userDto.forcePasswordChange);
 		expect(resultEntity.preferences).toEqual(userDto.preferences);
+		expect(resultEntity.lastLoginSystemChange).toEqual(userDto.lastLoginSystemChange);
+		expect(resultEntity.outdatedSince).toEqual(userDto.outdatedSince);
 	});
 
 	describe('mapFromEntityToEntity', () => {
@@ -91,6 +95,8 @@ describe('UserMapper', () => {
 			expect(resultEntity.language).toEqual(userEntity.language);
 			expect(resultEntity.forcePasswordChange).toEqual(userEntity.forcePasswordChange);
 			expect(resultEntity.preferences).toEqual(userEntity.preferences);
+			expect(resultEntity.lastLoginSystemChange).toEqual(userEntity.lastLoginSystemChange);
+			expect(resultEntity.outdatedSince).toEqual(userEntity.outdatedSince);
 		});
 
 		it('map all fields', () => {
@@ -109,6 +115,8 @@ describe('UserMapper', () => {
 			patch.language = LanguageType.DE;
 			patch.forcePasswordChange = true;
 			patch.preferences = { key: 'value' };
+			patch.lastLoginSystemChange = new Date();
+			patch.outdatedSince = new Date();
 
 			const resultEntity = UserMapper.mapFromEntityToEntity(userEntity, patch);
 
@@ -123,6 +131,8 @@ describe('UserMapper', () => {
 			expect(resultEntity.language).toEqual(patch.language);
 			expect(resultEntity.forcePasswordChange).toEqual(patch.forcePasswordChange);
 			expect(resultEntity.preferences).toEqual(patch.preferences);
+			expect(resultEntity.lastLoginSystemChange).toEqual(patch.lastLoginSystemChange);
+			expect(resultEntity.outdatedSince).toEqual(patch.outdatedSince);
 		});
 	});
 });

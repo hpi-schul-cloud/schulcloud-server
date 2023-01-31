@@ -1,25 +1,32 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { EntityId, OauthConfig } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
-import { OauthConfig, User } from '@shared/domain';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto';
-import { SystemService } from '@src/modules/system/service/system.service';
+import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
+import { OauthDataDto } from '@src/modules/provisioning/dto/oauth-data.dto';
+import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { UserService } from '@src/modules/user';
+import { UserMigrationService } from '@src/modules/user-migration';
+import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
+import { OAuthSSOError } from '../error/oauth-sso.error';
+import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
-import { OAuthResponse } from '../service/dto/oauth.response';
-import { AuthorizationParams } from '../controller/dto/authorization.params';
 
 @Injectable()
 export class OauthUc {
 	constructor(
 		private readonly oauthService: OAuthService,
 		private readonly systemService: SystemService,
-		private logger: Logger
+		private readonly provisioningService: ProvisioningService,
+		private readonly userService: UserService,
+		private readonly userMigrationService: UserMigrationService,
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(OauthUc.name);
 	}
 
-	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
+	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthProcessDto> {
 		try {
 			const oAuthResponsePromise = this.process(query, systemId);
 			return await oAuthResponsePromise;
@@ -28,12 +35,12 @@ export class OauthUc {
 		}
 	}
 
-	private async process(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
+	private async process(query: AuthorizationParams, systemId: string): Promise<OAuthProcessDto> {
 		this.logger.debug(`Oauth process started for systemId ${systemId}`);
 
 		const authCode: string = this.oauthService.checkAuthorizationCode(query);
 
-		const system = await this.systemService.findOAuthById(systemId);
+		const system: SystemDto = await this.systemService.findOAuthById(systemId);
 		if (!system.id) {
 			throw new NotFoundException(`System with id "${systemId}" does not exist.`);
 		}
@@ -43,15 +50,63 @@ export class OauthUc {
 
 		await this.oauthService.validateToken(queryToken.id_token, oauthConfig);
 
-		const user: User = await this.oauthService.findUser(queryToken.access_token, queryToken.id_token, system.id);
+		const data: OauthDataDto = await this.provisioningService.getData(
+			queryToken.access_token,
+			queryToken.id_token,
+			system.id
+		);
 
-		const jwtResponse: string = await this.oauthService.getJwtForUser(user);
+		if (data.externalSchool?.officialSchoolNumber) {
+			const shouldMigrate: boolean = await this.shouldUserMigrate(
+				data.externalUser.externalId,
+				data.externalSchool.officialSchoolNumber,
+				system.id
+			);
+			if (shouldMigrate) {
+				const redirect: string = await this.userMigrationService.getMigrationRedirect(
+					data.externalSchool.officialSchoolNumber,
+					system.id
+				);
+				const response: OAuthProcessDto = new OAuthProcessDto({
+					provider: oauthConfig.provider,
+					redirect,
+				});
+				return response;
+			}
+		}
+
+		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
+
+		const user: UserDO = await this.oauthService.findUser(
+			queryToken.id_token,
+			provisioningDto.externalUserId,
+			system.id
+		);
+
+		const jwtResponse: string = await this.oauthService.getJwtForUser(user.id as string);
 
 		// TODO: N21-305 Build response in oauth controller
-		const response: OAuthResponse = this.oauthService.buildResponse(oauthConfig, queryToken);
-		response.redirect = this.oauthService.getRedirectUrl(response.provider, response.idToken, response.logoutEndpoint);
-		response.jwt = jwtResponse;
+		const redirect: string = this.oauthService.getRedirectUrl(
+			oauthConfig.provider,
+			queryToken.id_token,
+			oauthConfig.logoutEndpoint
+		);
+		const response: OAuthProcessDto = new OAuthProcessDto({
+			jwt: jwtResponse,
+			idToken: queryToken.id_token,
+			logoutEndpoint: oauthConfig.logoutEndpoint,
+			provider: oauthConfig.provider,
+			redirect,
+		});
 		return response;
+	}
+
+	private async shouldUserMigrate(externalUserId: string, officialSchoolNumber: string, systemId: EntityId) {
+		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+		const isSchoolInMigration: boolean = await this.userMigrationService.isSchoolInMigration(officialSchoolNumber);
+
+		const shouldMigrate = !existingUser && isSchoolInMigration;
+		return shouldMigrate;
 	}
 
 	private extractOauthConfigFromSystem(system: SystemDto): OauthConfig {
@@ -65,10 +120,10 @@ export class OauthUc {
 		return oauthConfig;
 	}
 
-	private async getOauthErrorResponse(error, systemId: string): Promise<OAuthResponse> {
-		const system = await this.systemService.findOAuthById(systemId);
-		const provider = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
-		const oAuthError = this.oauthService.getOAuthErrorResponse(error, provider);
+	private async getOauthErrorResponse(error, systemId: string): Promise<OAuthProcessDto> {
+		const system: SystemDto = await this.systemService.findOAuthById(systemId);
+		const provider: string = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
+		const oAuthError: OAuthProcessDto = this.oauthService.getOAuthErrorResponse(error, provider);
 		return oAuthError;
 	}
 }

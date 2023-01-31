@@ -35,7 +35,10 @@ describe('task-card mapper', () => {
 	describe('mapToResponse', () => {
 		it('should map task-card to response', () => {
 			const user = userFactory.buildWithId();
-			const taskCard = taskCardFactory.buildWithId({ creator: user });
+			const tomorrow = new Date(Date.now() + 86400000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+
+			const taskCard = taskCardFactory.buildWithId({ creator: user, visibleAtDate: tomorrow, dueDate: inTwoDays });
 			const status = taskCard.task.createTeacherStatusForUser(user);
 
 			const taskWithStatusVo = new TaskWithStatusVo(taskCard.task, status);
@@ -49,6 +52,8 @@ describe('task-card mapper', () => {
 				draggable: true,
 				cardElements: [],
 				task: taskResponse,
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
 			});
 		});
 		it('should map card elements to response', () => {
@@ -76,25 +81,7 @@ describe('task-card mapper', () => {
 		});
 	});
 
-	describe('mapCreateToDomain', () => {
-		it('should map create to domain', () => {
-			const params = {
-				title: 'test title',
-				text: ['rich text 1', 'rich text 2'],
-			};
-			const result = TaskCardMapper.mapCreateToDomain(params);
-			const expectedDto = {
-				title: params.title,
-				text: [
-					new RichText({ content: 'rich text 1', type: InputFormat.RICH_TEXT_CK5 }),
-					new RichText({ content: 'rich text 2', type: InputFormat.RICH_TEXT_CK5 }),
-				],
-			};
-			expect(result).toEqual(expectedDto);
-		});
-	});
-
-	describe('mapUpdateToDomain', () => {
+	describe('mapToDomain', () => {
 		it('should throw if title is not given', () => {
 			const cardElementRichText = new RichTextCardElementParam();
 			cardElementRichText.type = CardElementType.RichText;
@@ -108,7 +95,7 @@ describe('task-card mapper', () => {
 					},
 				],
 			};
-			expect(() => TaskCardMapper.mapUpdateToDomain(params)).toThrowError(ValidationError);
+			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError(ValidationError);
 		});
 		it('should throw if more than one title given', () => {
 			const cardElementTitle1 = new TitleCardElementParam();
@@ -128,9 +115,12 @@ describe('task-card mapper', () => {
 					},
 				],
 			};
-			expect(() => TaskCardMapper.mapUpdateToDomain(params)).toThrowError(ValidationError);
+			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError(ValidationError);
 		});
 		it('should map update params to domain', () => {
+			const tomorrow = new Date(Date.now() + 86400000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+
 			const cardElementTitle = new TitleCardElementParam();
 			cardElementTitle.type = CardElementType.Title;
 			cardElementTitle.value = 'update title';
@@ -157,8 +147,10 @@ describe('task-card mapper', () => {
 						content: cardElementRichText2,
 					},
 				],
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
 			};
-			const result = TaskCardMapper.mapUpdateToDomain(params);
+			const result = TaskCardMapper.mapToDomain(params);
 
 			const expectedDto = {
 				title: 'update title',
@@ -166,6 +158,8 @@ describe('task-card mapper', () => {
 					new RichText({ content: 'update richtext 1', type: InputFormat.RICH_TEXT_CK5 }),
 					new RichText({ content: 'update richtext 2', type: InputFormat.RICH_TEXT_CK5 }),
 				],
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
 			};
 			expect(result).toEqual(expectedDto);
 		});
