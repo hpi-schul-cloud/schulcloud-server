@@ -10,6 +10,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { API_VERSION_PATH, FilesStorageApiModule } from '@src/modules/files-storage';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -19,6 +20,9 @@ async function bootstrap() {
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(FilesStorageApiModule, nestExpressAdapter);
+
+	// WinstonLogger
+	nestApp.useLogger(nestApp.get(WINSTON_MODULE_NEST_PROVIDER));
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });

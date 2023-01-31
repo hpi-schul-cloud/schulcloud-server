@@ -10,7 +10,8 @@ export class CourseMapper {
 			courseMetadata.shortTitle,
 			courseMetadata.displayColor,
 			courseMetadata.startDate,
-			courseMetadata.untilDate
+			courseMetadata.untilDate,
+			courseMetadata.copyingSince
 		);
 		return dto;
 	}
