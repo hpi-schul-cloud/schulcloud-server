@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain';
-import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { Allow, IsEnum, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { FileRecordParentType } from '../../entity';
 
 export class FileRecordParams {
@@ -52,7 +52,6 @@ export class DownloadFileParams {
 export class ScanResultParams {
 	@ApiProperty()
 	@Allow()
-	@IsBoolean()
 	virus_detected?: boolean;
 
 	@ApiProperty()
