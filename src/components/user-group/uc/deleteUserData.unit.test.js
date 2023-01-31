@@ -1,8 +1,11 @@
+const appPromise = require('../../../app');
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const deleteUserData = require('./deleteUserData.uc');
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 
 const { classesRepo, teamsRepo } = require('../repo/index');
 const { AssertionError } = require('../../../errors');
@@ -64,6 +67,26 @@ const initTeamsStubs = ({ teamsId }) => {
 };
 
 describe('delete class and teams user data usecase', () => {
+	let app;
+	let server;
+	let nestServices;
+
+	before(async () => {
+		app = await appPromise();
+		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
+	});
+
+	afterEach(async () => {
+		await testObjects.cleanup();
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+		await closeNestServices(nestServices);
+	});
+
 	describe('delete class user data usecase', () => {
 		it('should return a function', async () => {
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData;
@@ -122,12 +145,16 @@ describe('delete class and teams user data usecase', () => {
 		});
 
 		it('should return a valid result (trashbin) object', async () => {
-			const { getTeamsStub, removeTeamsStub } = initTeamsStubs({ teamsId: TEAMS_ID });
+			let team;
+			let owner;
+			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			({ team, user: owner } = await testObjects.createTestTeamWithOwner({ roles: ['student'], schoolId: school._id }));
+			// const { getTeamsStub, removeTeamsStub } = initTeamsStubs({ teamsId: TEAMS_ID });
 
 			const deleteUserDataFromTeams = deleteUserData.deleteUserData[1];
-			const result = await deleteUserDataFromTeams(USER_ID);
-			getTeamsStub.restore();
-			removeTeamsStub.restore();
+			const result = await deleteUserDataFromTeams(owner._id);
+			// getTeamsStub.restore();
+			// removeTeamsStub.restore();
 
 			expect(result.complete).to.be.true;
 			expect(result.trashBinData.data).to.be.an('object');
@@ -137,11 +164,11 @@ describe('delete class and teams user data usecase', () => {
 		});
 
 		it('should return an empty result (trashbin) object, for user with no teams assigned', async () => {
-			const { getClassesStub, removeTeamsStub } = initTeamsStubs({});
+			const { getTeamsStub, removeTeamsStub } = initTeamsStubs({teamsId: TEAMS_ID});
 
 			const deleteUserDataFromTeams = deleteUserData.deleteUserData[1];
 			const result = await deleteUserDataFromTeams(USER_ID_WITH_NO_CLASS_AND_TEAMS);
-			getClassesStub.restore();
+			getTeamsStub.restore();
 			removeTeamsStub.restore();
 
 			expect(result.complete).to.be.true;
