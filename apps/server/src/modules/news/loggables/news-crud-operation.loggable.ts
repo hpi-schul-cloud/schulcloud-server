@@ -1,5 +1,5 @@
 import { EntityId, News } from '@shared/domain';
-import { ILoggable, LogMessage } from '@src/core/logger/interfaces/loggable';
+import { ILoggable, LogMessage } from '@src/core/logger/interfaces/loggable.interface';
 import { NewsMapper } from '../mapper/news.mapper';
 
 export enum CrudOperation {

@@ -1,5 +1,5 @@
 import { ICreateNews, INewsScope, IUpdateNews, News, NewsTargetModel } from '@shared/domain';
-import { LogMessageData } from '@src/core/logger/interfaces/loggable';
+import { LogMessageData } from '@src/core/logger/interfaces/loggable.interface';
 import { CreateNewsParams, FilterNewsParams, NewsResponse, UpdateNewsParams } from '../controller/dto';
 import { SchoolInfoMapper } from './school-info.mapper';
 import { TargetInfoMapper } from './target-info.mapper';

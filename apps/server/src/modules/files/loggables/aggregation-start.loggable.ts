@@ -1,4 +1,4 @@
-import { ILoggable } from '@src/core/logger/interfaces/loggable';
+import { ILoggable } from '@src/core/logger/interfaces/loggable.interface';
 import { FileSyncOptions } from '../types';
 
 export class AggregationStartLoggable implements ILoggable {

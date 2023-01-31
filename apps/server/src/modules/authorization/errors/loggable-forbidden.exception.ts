@@ -1,6 +1,6 @@
 import { ForbiddenException } from '@nestjs/common';
 import { EntityId, IPermissionContext } from '@shared/domain';
-import { ErrorLogMessage, ILoggable } from '@src/core/logger/interfaces/loggable';
+import { ErrorLogMessage, ILoggable } from '@src/core/logger/interfaces/loggable.interface';
 
 // This and the ForbiddenError are alternative implementations.
 // There are two decisions to make here:

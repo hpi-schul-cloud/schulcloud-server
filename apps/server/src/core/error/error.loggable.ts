@@ -1,5 +1,5 @@
 import { ApiValidationError } from '@shared/common';
-import { ErrorLogMessage, ILoggable, ValidationErrorLogMessage } from '../logger/interfaces/loggable';
+import { ErrorLogMessage, ILoggable, ValidationErrorLogMessage } from '../logger/interfaces/loggable.interface';
 import { ErrorUtils } from './utils/error.utils';
 
 export class ErrorLoggable implements ILoggable {

@@ -1,4 +1,4 @@
-import { ILoggable } from './loggable';
+import { ILoggable } from './loggable.interface';
 
 export type RequestLoggingBody = {
 	userId?: string;

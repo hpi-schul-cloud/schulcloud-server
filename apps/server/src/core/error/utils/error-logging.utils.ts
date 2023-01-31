@@ -1,4 +1,4 @@
-import { ILoggable } from '@src/core/logger/interfaces/loggable';
+import { ILoggable } from '@src/core/logger/interfaces/loggable.interface';
 import { LoggingUtils } from '@src/core/logger/logging.utils';
 import util from 'util';
 import { ErrorLoggable } from '../error.loggable';

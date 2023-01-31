@@ -1,7 +1,7 @@
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger as WinstonLogger } from 'winston';
-import { ILoggable } from './interfaces/loggable';
+import { ILoggable } from './interfaces/loggable.interface';
 import { IErrorLogger, ILogger } from './interfaces/logger.interface';
 import { LoggingUtils } from './logging.utils';
 

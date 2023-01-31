@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { EntityId, IPermissionContext } from '@shared/domain';
-import { ErrorLogMessage, ILoggable } from '@src/core/logger/interfaces/loggable';
+import { ErrorLogMessage, ILoggable } from '@src/core/logger/interfaces/loggable.interface';
 
 // This and the LoggableForbiddenException are alternative implementations.
 // See LoggableForbiddenException for pros and cons.

@@ -1,4 +1,4 @@
-import { ILoggable, LogMessage } from '@src/core/logger/interfaces/loggable';
+import { ILoggable, LogMessage } from '@src/core/logger/interfaces/loggable.interface';
 import { SyncFileItem } from '../types';
 
 export class FileSyncFailLoggable implements ILoggable {
