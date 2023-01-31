@@ -13,7 +13,7 @@ export class GlobalErrorFilter<T extends IError | undefined> implements Exceptio
 	catch(error: T, host: ArgumentsHost): void | RpcMessage<unknown> {
 		const contextType = host.getType<'http' | 'rmq'>();
 
-		const loggable = ErrorLoggingUtils.getLoggable(error);
+		const loggable = ErrorLoggingUtils.createErrorLoggable(error);
 		this.logger.error(loggable);
 
 		if (contextType === 'http') {

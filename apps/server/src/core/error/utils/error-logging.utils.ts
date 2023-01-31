@@ -4,7 +4,7 @@ import util from 'util';
 import { ErrorLoggable } from '../error.loggable';
 
 export class ErrorLoggingUtils {
-	static getLoggable(error: unknown): ILoggable {
+	static createErrorLoggable(error: unknown): ILoggable {
 		let loggable: ILoggable;
 
 		if (LoggingUtils.isInstanceOfLoggable(error)) {
