@@ -10,13 +10,13 @@ const validateRemoveUserFromClassesParams = (userId) => {
 
 const filterTeamsMember = (userId) => ({"userIds.userId": {$in: [userId]}});
 
-const classIdWithUserProjection2BO = ({ _id }) => ({
+const teamsIdWithUserProjection2BO = ({ _id }) => ({
 	_id,
 	id: idToString(_id),
 });
 
 /**
- * Returns a list of class Id with the user role plays in it
+ * Returns a list of teams Ids with the user role plays in it
  * @param {String|ObjectId} userId - the user's to check
  * @returns: {Array} An array of result objects
  */
@@ -32,7 +32,7 @@ const getTeamsIdsForUser = async (userId) => {
 		])
 		.exec();
 
-	return result.map(classIdWithUserProjection2BO);
+	return result.map(teamsIdWithUserProjection2BO);
 };
 
 /**

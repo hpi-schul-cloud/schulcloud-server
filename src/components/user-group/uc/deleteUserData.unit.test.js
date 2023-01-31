@@ -4,7 +4,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const deleteUserData = require('./deleteUserData.uc');
 
-const { classesRepo } = require('../repo/index');
+const { classesRepo, teamsRepo } = require('../repo/index');
 const { AssertionError } = require('../../../errors');
 const { toString: idToString } = require('../../../helper/compare').ObjectId;
 
@@ -12,8 +12,9 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const USER_ID = new ObjectId();
-const USER_ID_WITH_NO_CLASS = new ObjectId();
+const USER_ID_WITH_NO_CLASS_AND_TEAMS = new ObjectId();
 const CLASS_ID = new ObjectId();
+const TEAMS_ID = new ObjectId();
 const createTestGetClassForUserResult = (classId, student, teacher) => {
 	if (!classId) {
 		return [];
@@ -28,7 +29,19 @@ const createTestGetClassForUserResult = (classId, student, teacher) => {
 	];
 };
 
-const initStubs = ({ classId, isStudent, isTeacher }) => {
+const createTestGetTeamsForUserResult = (teamId) => {
+	if (!teamId) {
+		return [];
+	}
+
+	return [
+		{
+			_id: teamId,
+		},
+	];
+};
+
+const initClassStubs = ({ classId, isStudent, isTeacher }) => {
 	const getClassesStub = sinon.stub(classesRepo, 'getClassesForUser');
 	getClassesStub.callsFake(() => []);
 	getClassesStub.withArgs(USER_ID).returns(createTestGetClassForUserResult(classId, isStudent, isTeacher));
@@ -39,8 +52,19 @@ const initStubs = ({ classId, isStudent, isTeacher }) => {
 	return { getClassesStub, removeClassesStub };
 };
 
-describe('delete class user data usecase', () => {
-	describe('delete class user data uc', () => {
+const initTeamsStubs = ({ teamsId }) => {
+	const getTeamsIdsStub = sinon.stub(teamsRepo, 'getTeamsIdsForUser');
+	getTeamsIdsStub.callsFake(() => []);
+	getTeamsIdsStub.withArgs(USER_ID).returns(createTestGetTeamsForUserResult(teamsId));
+
+	const removeTeamsStub = sinon.stub(teamsRepo, 'removeUserFromTeams');
+	removeTeamsStub.withArgs(USER_ID).returns({ success: true, modifiedDocuments: 1 });
+
+	return { getTeamsIdsStub, removeTeamsStub };
+};
+
+describe('delete class and teams user data usecase', () => {
+	describe('delete class user data usecase', () => {
 		it('should return a function', async () => {
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData;
 			expect(deleteUserDataFromClasses).to.be.an('Array');
@@ -49,7 +73,7 @@ describe('delete class user data usecase', () => {
 		});
 
 		it('should return a valid result (trashbin) object', async () => {
-			const { getClassesStub, removeClassesStub } = initStubs({ classId: CLASS_ID, isStudent: true, isTeacher: true });
+			const { getClassesStub, removeClassesStub } = initClassStubs({ classId: CLASS_ID, isStudent: true, isTeacher: true });
 
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData[0];
 			const result = await deleteUserDataFromClasses(USER_ID);
@@ -70,10 +94,10 @@ describe('delete class user data usecase', () => {
 		});
 
 		it('should return an empty result (trashbin) object, for user with no class assigned', async () => {
-			const { getClassesStub, removeClassesStub } = initStubs({});
+			const { getClassesStub, removeClassesStub } = initClassStubs({});
 
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData[0];
-			const result = await deleteUserDataFromClasses(USER_ID_WITH_NO_CLASS);
+			const result = await deleteUserDataFromClasses(USER_ID_WITH_NO_CLASS_AND_TEAMS);
 			getClassesStub.restore();
 			removeClassesStub.restore();
 
@@ -86,6 +110,49 @@ describe('delete class user data usecase', () => {
 		it('should throw an error if called with an invalid ObjectId', async () => {
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData[0];
 			await expect(deleteUserDataFromClasses('NOT_AN_ID')).to.be.rejectedWith(AssertionError);
+		});
+	});
+
+	describe('delete teams user data usecase', () => {
+		it('should return a function', async () => {
+			const deleteUserDataFromClasses = deleteUserData.deleteUserData;
+			expect(deleteUserDataFromClasses).to.be.an('Array');
+			expect(deleteUserDataFromClasses.length).to.be.equal(2);
+			expect(deleteUserDataFromClasses[1]).to.be.a('function');
+		});
+
+		it('should return a valid result (trashbin) object', async () => {
+			const { getTeamsStub, removeTeamsStub } = initTeamsStubs({ teamsId: TEAMS_ID });
+
+			const deleteUserDataFromTeams = deleteUserData.deleteUserData[1];
+			const result = await deleteUserDataFromTeams(USER_ID);
+			getTeamsStub.restore();
+			removeTeamsStub.restore();
+
+			expect(result.complete).to.be.true;
+			expect(result.trashBinData.data).to.be.an('object');
+			expect(result.trashBinData.scope).to.be.equal('teams');
+			const { data } = result.trashBinData;
+			expect(data.classIds).to.be.an('object');
+		});
+
+		it('should return an empty result (trashbin) object, for user with no teams assigned', async () => {
+			const { getClassesStub, removeTeamsStub } = initTeamsStubs({});
+
+			const deleteUserDataFromTeams = deleteUserData.deleteUserData[1];
+			const result = await deleteUserDataFromTeams(USER_ID_WITH_NO_CLASS_AND_TEAMS);
+			getClassesStub.restore();
+			removeTeamsStub.restore();
+
+			expect(result.complete).to.be.true;
+			expect(result.trashBinData.data).to.be.an('object');
+			expect(result.trashBinData.scope).to.be.equal('teams');
+			expect(result.trashBinData.data).to.deep.equal({});
+		});
+
+		it('should throw an error if called with an invalid ObjectId', async () => {
+			const deleteUserDataFromTeams = deleteUserData.deleteUserData[1];
+			await expect(deleteUserDataFromTeams('NOT_AN_ID')).to.be.rejectedWith(AssertionError);
 		});
 	});
 });
