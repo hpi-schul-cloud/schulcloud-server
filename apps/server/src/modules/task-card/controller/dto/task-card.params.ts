@@ -56,7 +56,7 @@ export class RichTextCardElementParam extends CardElementBase {
 }
 
 @ApiExtraModels(TitleCardElementParam, RichTextCardElementParam)
-export class CardElementUpdateParams {
+export class CardElementParams {
 	@ApiPropertyOptional()
 	@IsOptional()
 	@IsString()
@@ -81,7 +81,7 @@ export class CardElementUpdateParams {
 	content!: RichTextCardElementParam | TitleCardElementParam;
 }
 
-export class UpdateTaskCardParams {
+export class TaskCardParams {
 	@IsOptional()
 	@IsDate()
 	@MinDate(new Date())
@@ -96,10 +96,10 @@ export class UpdateTaskCardParams {
 
 	@IsArray()
 	@ValidateNested({ each: true })
-	@Type(() => CardElementUpdateParams)
+	@Type(() => CardElementParams)
 	@ApiProperty({
 		description: 'Card elements array',
-		type: [CardElementUpdateParams],
+		type: [CardElementParams],
 	})
-	cardElements!: CardElementUpdateParams[];
+	cardElements!: CardElementParams[];
 }
