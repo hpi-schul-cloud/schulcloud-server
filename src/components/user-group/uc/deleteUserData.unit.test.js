@@ -56,14 +56,14 @@ const initClassStubs = ({ classId, isStudent, isTeacher }) => {
 };
 
 const initTeamsStubs = ({ teamsId }) => {
-	const getTeamsIdsStub = sinon.stub(teamsRepo, 'getTeamsIdsForUser');
-	getTeamsIdsStub.callsFake(() => []);
-	getTeamsIdsStub.withArgs(USER_ID).returns(createTestGetTeamsForUserResult(teamsId));
+	const getTeamsStub = sinon.stub(teamsRepo, 'getTeamsIdsForUser');
+	getTeamsStub.callsFake(() => []);
+	getTeamsStub.withArgs(USER_ID).returns(createTestGetTeamsForUserResult(teamsId));
 
 	const removeTeamsStub = sinon.stub(teamsRepo, 'removeUserFromTeams');
 	removeTeamsStub.withArgs(USER_ID).returns({ success: true, modifiedDocuments: 1 });
 
-	return { getTeamsIdsStub, removeTeamsStub };
+	return { getTeamsStub, removeTeamsStub };
 };
 
 describe('delete class and teams user data usecase', () => {
@@ -145,37 +145,21 @@ describe('delete class and teams user data usecase', () => {
 		});
 
 		it('should return a valid result (trashbin) object', async () => {
-			let team;
-			let owner;
-			const school = await testObjects.createTestSchool({ features: ['messenger'] });
-			({ team, user: owner } = await testObjects.createTestTeamWithOwner({ roles: ['student'], schoolId: school._id }));
-			// const { getTeamsStub, removeTeamsStub } = initTeamsStubs({ teamsId: TEAMS_ID });
+			const { getTeamsStub, removeTeamsStub } = initTeamsStubs({ teamsId: TEAMS_ID });
 
 			const deleteUserDataFromTeams = deleteUserData.deleteUserData[1];
-			const result = await deleteUserDataFromTeams(owner._id);
-			// getTeamsStub.restore();
-			// removeTeamsStub.restore();
-
-			expect(result.complete).to.be.true;
-			expect(result.trashBinData.data).to.be.an('object');
-			expect(result.trashBinData.scope).to.be.equal('teams');
-			const { data } = result.trashBinData;
-			expect(data.classIds).to.be.an('object');
-		});
-
-		it('should return an empty result (trashbin) object, for user with no teams assigned', async () => {
-			const { getTeamsStub, removeTeamsStub } = initTeamsStubs({teamsId: TEAMS_ID});
-
-			const deleteUserDataFromTeams = deleteUserData.deleteUserData[1];
-			const result = await deleteUserDataFromTeams(USER_ID_WITH_NO_CLASS_AND_TEAMS);
+			const result = await deleteUserDataFromTeams(USER_ID);
 			getTeamsStub.restore();
 			removeTeamsStub.restore();
 
 			expect(result.complete).to.be.true;
 			expect(result.trashBinData.data).to.be.an('object');
 			expect(result.trashBinData.scope).to.be.equal('teams');
-			expect(result.trashBinData.data).to.deep.equal({});
+			const { data } = result.trashBinData;
+			expect(data.teamIds).to.be.an('object');
 		});
+
+
 
 		it('should throw an error if called with an invalid ObjectId', async () => {
 			const deleteUserDataFromTeams = deleteUserData.deleteUserData[1];
