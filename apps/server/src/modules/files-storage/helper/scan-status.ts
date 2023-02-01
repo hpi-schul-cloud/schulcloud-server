@@ -1,15 +1,9 @@
-import { FileRecord, FileSecurityCheck, ScanStatus } from '../entity';
+import { FileRecord, FileSecurityCheck } from '../entity';
 
 export function deriveStatusFromSource(sourceFile: FileRecord, targetFile: FileRecord): FileSecurityCheck {
-	if (sourceFile.securityCheck.status === ScanStatus.VERIFIED) {
+	if (sourceFile.isVerified()) {
 		return sourceFile.securityCheck;
 	}
 
 	return targetFile.securityCheck;
-}
-
-export function isStatusBlocked(fileRecord: FileRecord): boolean {
-	const isBlocked = fileRecord.securityCheck.status === ScanStatus.BLOCKED;
-
-	return isBlocked;
 }

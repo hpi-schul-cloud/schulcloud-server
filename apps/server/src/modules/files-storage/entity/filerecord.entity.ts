@@ -158,26 +158,70 @@ export class FileRecord extends BaseEntity {
 		this.deletedSince = props.deletedSince;
 	}
 
-	updateSecurityCheckStatus(status: ScanStatus, reason: string): void {
+	public updateSecurityCheckStatus(status: ScanStatus, reason: string): void {
 		this.securityCheck.status = status;
 		this.securityCheck.reason = reason;
 		this.securityCheck.updatedAt = new Date();
 		this.securityCheck.requestToken = undefined;
 	}
 
-	markForDelete(): void {
+	public markForDelete(): void {
 		this.deletedSince = new Date();
 	}
 
-	unmarkForDelete(): void {
+	public unmarkForDelete(): void {
 		this.deletedSince = undefined;
 	}
 
-	setName(name: string): void {
+	public setName(name: string): void {
 		if (name.length === 0) {
 			throw new BadRequestException(ErrorType.FILE_NAME_EMPTY);
 		}
 
 		this.name = name;
+	}
+
+	public hasSameName(name: string): boolean {
+		const hasSameName = this.name === name;
+
+		return hasSameName;
+	}
+
+	public getName(): string {
+		return this.name;
+	}
+
+	public isBlocked(): boolean {
+		const isBlocked = this.securityCheck.status === ScanStatus.BLOCKED;
+
+		return isBlocked;
+	}
+
+	public isPending(): boolean {
+		const isPending = this.securityCheck.status === ScanStatus.PENDING;
+
+		return isPending;
+	}
+
+	public isVerified(): boolean {
+		const isVerified = this.securityCheck.status === ScanStatus.VERIFIED;
+
+		return isVerified;
+	}
+
+	public getParent(): { parentType: FileRecordParentType; parentId: EntityId } {
+		const { parentId, parentType } = this;
+
+		return { parentId, parentType };
+	}
+
+	public getDescriptions(): { size: number; name: string; mimeType: string } {
+		const { size, name, mimeType } = this;
+
+		return { size, name, mimeType };
+	}
+
+	public getSchoolId(): EntityId {
+		return this.schoolId;
 	}
 }

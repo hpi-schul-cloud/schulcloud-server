@@ -158,4 +158,174 @@ describe('FileRecord Entity', () => {
 			});
 		});
 	});
+
+	describe('hasSameName is called', () => {
+		describe('WHEN name is equal', () => {
+			const setup = () => {
+				const name = 'name123';
+				const fileRecord = fileRecordFactory.build({ name });
+
+				return { fileRecord, name };
+			};
+
+			it('should be true', () => {
+				const { fileRecord, name } = setup();
+
+				const result = fileRecord.hasSameName(name);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('WHEN name is not equal', () => {
+			const setup = () => {
+				const name = 'name123';
+				const fileRecord = fileRecordFactory.build({ name: 'name' });
+
+				return { fileRecord, name };
+			};
+
+			it('should be false', () => {
+				const { fileRecord, name } = setup();
+
+				const result = fileRecord.hasSameName(name);
+
+				expect(result).toBe(false);
+			});
+		});
+	});
+
+	// getName
+
+	// getParent
+
+	// getDescriptions
+
+	// getSchoolId
+
+	describe('isBlocked is called', () => {
+		describe('WHEN file record security status is BLOCKED', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
+
+				return {
+					fileRecord,
+				};
+			};
+
+			it('should return true', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isBlocked();
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('WHEN file record security status is not BLOCKED', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
+
+				return {
+					fileRecord,
+				};
+			};
+
+			it('should return true', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isBlocked();
+
+				expect(result).toEqual(false);
+			});
+		});
+	});
+
+	describe('isPending is called', () => {
+		describe('WHEN file record security status is PENDING', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.PENDING;
+
+				return {
+					fileRecord,
+				};
+			};
+
+			it('should return true', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isPending();
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('WHEN file record security status is not PENDING', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
+
+				return {
+					fileRecord,
+				};
+			};
+
+			it('should return true', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isPending();
+
+				expect(result).toEqual(false);
+			});
+		});
+	});
+
+	describe('isVerified is called', () => {
+		describe('WHEN file record security status is VERIFIED', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
+
+				return {
+					fileRecord,
+				};
+			};
+
+			it('should return true', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isVerified();
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('WHEN file record security status is not VERIFIED', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
+
+				return {
+					fileRecord,
+				};
+			};
+
+			it('should return true', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isVerified();
+
+				expect(result).toEqual(false);
+			});
+		});
+	});
 });

@@ -1,5 +1,5 @@
 import { fileRecordFactory } from '@shared/testing';
-import { deriveStatusFromSource, isStatusBlocked } from '.';
+import { deriveStatusFromSource } from '.';
 import { ScanStatus } from '../entity';
 
 describe('Scan Status Helper', () => {
@@ -71,48 +71,6 @@ describe('Scan Status Helper', () => {
 				const result = deriveStatusFromSource(sourceFile, targetFile);
 
 				expect(result).toEqual(targetFile.securityCheck);
-			});
-		});
-	});
-
-	describe('isStatusBlocked is called', () => {
-		describe('WHEN file records security status is BLOCKED', () => {
-			const setup = () => {
-				const { sourceFile } = getFileRecords();
-
-				sourceFile.securityCheck.status = ScanStatus.BLOCKED;
-
-				return {
-					sourceFile,
-				};
-			};
-
-			it('should return true', () => {
-				const { sourceFile } = setup();
-
-				const result = isStatusBlocked(sourceFile);
-
-				expect(result).toEqual(true);
-			});
-		});
-
-		describe('WHEN file records security status is VERIFIED', () => {
-			const setup = () => {
-				const { sourceFile } = getFileRecords();
-
-				sourceFile.securityCheck.status = ScanStatus.VERIFIED;
-
-				return {
-					sourceFile,
-				};
-			};
-
-			it('should return true', () => {
-				const { sourceFile } = setup();
-
-				const result = isStatusBlocked(sourceFile);
-
-				expect(result).toEqual(false);
 			});
 		});
 	});
