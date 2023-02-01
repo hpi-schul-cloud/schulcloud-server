@@ -1507,7 +1507,7 @@
 		"updatedAt": {
 			"$date": "2023-02-01T09:28:22.434Z"
 		},
-		"name": "Example task card title",
+		"name": "Editor functionalities",
 		"description": "",
 		"descriptionInputFormat": "richtext_ck4",
 		"private": true,
