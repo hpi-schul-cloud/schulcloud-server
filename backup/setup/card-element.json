@@ -1,0 +1,56 @@
+[
+	{
+		"_id": {
+			"$oid": "63da30b6c62b523bb1f501c2"
+		},
+        "cardElementType": "title",
+        "createdAt": {
+			"$date": "2023-02-01T09:28:22.450Z"
+		},
+        "updatedAt": {
+			"$date": "2023-02-01T09:28:22.450Z"
+		},
+        "value": "Example task card title"
+	},
+    {
+		"_id": {
+			"$oid": "63da30b6c62b523bb1f501c3"
+		},
+        "cardElementType": "richText",
+        "createdAt": {
+			"$date": "2023-02-01T09:28:22.450Z"
+		},
+        "updatedAt": {
+			"$date": "2023-02-01T09:28:22.450Z"
+		},
+        "value": "<p>This is an example description for a card element in the task card.</p>",
+        "inputFormat": "richtext_ck5"
+	},
+    {
+		"_id": {
+			"$oid": "63da32bcc62b523bb1f501c6"
+		},
+        "cardElementType": "title",
+        "createdAt": {
+			"$date": "2023-02-01T09:37:00.103Z"
+		},
+        "updatedAt": {
+			"$date": "2023-02-01T09:37:00.103Z"
+		},
+        "value": "Hausaufgabe Mathe 10-5"
+	},
+    {
+		"_id": {
+			"$oid": "63da32bcc62b523bb1f501c7"
+		},
+        "cardElementType": "richText",
+        "createdAt": {
+			"$date": "2023-02-01T09:37:00.103Z"
+		},
+        "updatedAt": {
+			"$date": "2023-02-01T09:37:00.103Z"
+		},
+        "value": "<p>Berechne den folgenden Logarithmus:</p><span class=\"math-tex\">\\[log_{0,5}\\frac{1}{4}\\]</span>",
+        "inputFormat": "richtext_ck5"
+	}
+]

@@ -1496,5 +1496,51 @@
 			"$date": "2020-11-05T08:37:37.270Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "63da30b6c62b523bb1f501c1"
+		},
+		"createdAt": {
+			"$date": "2023-02-01T09:28:22.434Z"
+		},
+		"updatedAt": {
+			"$date": "2023-02-01T09:28:22.434Z"
+		},
+		"name": "Example task card title",
+		"description": "",
+		"descriptionInputFormat": "richtext_ck4",
+		"private": true,
+		"publicSubmissions": false,
+		"teacherId": {
+			"$oid": "0000d231816abba584714c9e"
+		},
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"archived": []
+	},
+	{
+		"_id": {
+			"$oid": "63da32bcc62b523bb1f501c5"
+		},
+		"createdAt": {
+			"$date": "2023-02-01T09:37:00.098Z"
+		},
+		"updatedAt": {
+			"$date": "2023-02-01T09:37:00.098Z"
+		},
+		"name": "Hausaufgabe Mathe 10-5",
+		"description": "",
+		"descriptionInputFormat": "richtext_ck4",
+		"private": true,
+		"publicSubmissions": false,
+		"teacherId": {
+			"$oid": "0000d231816abba584714c9e"
+		},
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"archived": []
 	}
 ]
