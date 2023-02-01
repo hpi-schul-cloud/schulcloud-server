@@ -254,7 +254,7 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
-	describe('getParent is called', () => {
+	describe('getParentDescriptions is called', () => {
 		describe('WHEN parentId and parentType and mimeType exists', () => {
 			const setup = () => {
 				const parentType = FileRecordParentType.School;
@@ -267,7 +267,7 @@ describe('FileRecord Entity', () => {
 			it('should return a object that include parentId and parentType', () => {
 				const { fileRecord, parentId, parentType } = setup();
 
-				const result = fileRecord.getParent();
+				const result = fileRecord.getParentDescriptions();
 
 				expect(result).toEqual({ parentId, parentType });
 			});

@@ -209,7 +209,7 @@ export class FileRecord extends BaseEntity {
 		return isVerified;
 	}
 
-	public getParent(): { parentType: FileRecordParentType; parentId: EntityId } {
+	public getParentDescriptions(): { parentType: FileRecordParentType; parentId: EntityId } {
 		const { parentId, parentType } = this;
 
 		return { parentId, parentType };

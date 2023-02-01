@@ -130,7 +130,7 @@ export class FilesStorageUC {
 	public async download(userId: EntityId, params: DownloadFileParams, bytesRange?: string) {
 		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
 		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
-		const { parentType, parentId } = fileRecord.getParent();
+		const { parentType, parentId } = fileRecord.getParentDescriptions();
 
 		await this.checkPermission(userId, parentType, parentId, PermissionContexts.read);
 
@@ -154,7 +154,7 @@ export class FilesStorageUC {
 
 	public async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.filesStorageService.getFileRecord(params);
-		const { parentType, parentId } = fileRecord.getParent();
+		const { parentType, parentId } = fileRecord.getParentDescriptions();
 
 		await this.checkPermission(userId, parentType, parentId, PermissionContexts.delete);
 		await this.filesStorageService.delete([fileRecord]);
@@ -172,7 +172,7 @@ export class FilesStorageUC {
 
 	public async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.filesStorageService.getFileRecordMarkedForDelete(params);
-		const { parentType, parentId } = fileRecord.getParent();
+		const { parentType, parentId } = fileRecord.getParentDescriptions();
 
 		await this.checkPermission(userId, parentType, parentId, PermissionContexts.create);
 		await this.filesStorageService.restore([fileRecord]);
@@ -207,7 +207,7 @@ export class FilesStorageUC {
 		copyFileParams: CopyFileParams
 	): Promise<CopyFileResponse> {
 		const fileRecord = await this.filesStorageService.getFileRecord(params);
-		const { parentType, parentId } = fileRecord.getParent();
+		const { parentType, parentId } = fileRecord.getParentDescriptions();
 
 		await Promise.all([
 			this.checkPermission(userId, parentType, parentId, PermissionContexts.create),
@@ -227,7 +227,7 @@ export class FilesStorageUC {
 	// update
 	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
 		const fileRecord = await this.filesStorageService.getFileRecord(params);
-		const { parentType, parentId } = fileRecord.getParent();
+		const { parentType, parentId } = fileRecord.getParentDescriptions();
 
 		await this.checkPermission(userId, parentType, parentId, PermissionContexts.update);
 
