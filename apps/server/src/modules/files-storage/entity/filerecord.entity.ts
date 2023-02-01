@@ -187,10 +187,10 @@ export class FileRecord extends BaseEntity {
 		this.name = name;
 	}
 
-	public hasSameName(name: string): boolean {
-		const hasSameName = this.name === name;
+	public hasName(name: string): boolean {
+		const hasName = this.name === name;
 
-		return hasSameName;
+		return hasName;
 	}
 
 	public getName(): string {

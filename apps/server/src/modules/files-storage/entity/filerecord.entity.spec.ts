@@ -159,7 +159,7 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
-	describe('hasSameName is called', () => {
+	describe('hasName is called', () => {
 		describe('WHEN name is equal', () => {
 			const setup = () => {
 				const name = 'name123';
@@ -171,7 +171,7 @@ describe('FileRecord Entity', () => {
 			it('should be true', () => {
 				const { fileRecord, name } = setup();
 
-				const result = fileRecord.hasSameName(name);
+				const result = fileRecord.hasName(name);
 
 				expect(result).toBe(true);
 			});
@@ -188,7 +188,7 @@ describe('FileRecord Entity', () => {
 			it('should be false', () => {
 				const { fileRecord, name } = setup();
 
-				const result = fileRecord.hasSameName(name);
+				const result = fileRecord.hasName(name);
 
 				expect(result).toBe(false);
 			});

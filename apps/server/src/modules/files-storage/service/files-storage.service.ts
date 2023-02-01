@@ -102,7 +102,7 @@ export class FilesStorageService {
 
 	// update
 	private checkDuplicatedNames(fileRecords: FileRecord[], newFileName: string): void {
-		if (fileRecords.find((item) => item.hasSameName(newFileName))) {
+		if (fileRecords.find((item) => item.hasName(newFileName))) {
 			throw new ConflictException(ErrorType.FILE_NAME_EXISTS);
 		}
 	}
@@ -129,7 +129,7 @@ export class FilesStorageService {
 
 	// download
 	private checkFileName(fileRecord: FileRecord, params: DownloadFileParams): void | NotFoundException {
-		if (!fileRecord.hasSameName(params.fileName)) {
+		if (!fileRecord.hasName(params.fileName)) {
 			this.logger.debug(`could not find file with id: ${fileRecord.id} by filename`);
 			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
