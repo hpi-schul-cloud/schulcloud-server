@@ -1,15 +1,10 @@
 /* istanbul ignore file */
-/* eslint-disable no-console */
-import { NestFactory } from '@nestjs/core';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
-
-// register source-map-support for debugging
-import { install as sourceMapInstall } from 'source-map-support';
-
 // application imports
 import { MikroORM } from '@mikro-orm/core';
 import { Logger } from '@nestjs/common';
+/* eslint-disable no-console */
+import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -18,8 +13,13 @@ import { AccountUc } from '@src/modules/account/uc/account.uc';
 import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
 import { RocketChatService } from '@src/modules/rocketchat';
 import { ServerModule } from '@src/modules/server';
+import express from 'express';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { join } from 'path';
+
+// register source-map-support for debugging
+import { install as sourceMapInstall } from 'source-map-support';
+import session = require('express-session');
 import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap() {
@@ -49,6 +49,19 @@ async function bootstrap() {
 	nestApp.enableCors();
 	enableOpenApiDocs(nestApp, 'docs');
 
+	nestApp.use(
+		session({
+			secret: 'my-secret', // TODO get session secret
+			resave: false,
+			saveUninitialized: false,
+			cookie: {
+				secure: true, // TODO NODE.ENV === 'prod'
+				sameSite: true,
+				httpOnly: true,
+				maxAge: 60000, // TODO get from config
+			},
+		})
+	);
 	await nestApp.init();
 
 	// provide NestJS mail service to feathers app

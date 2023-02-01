@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId } from 'class-validator';
+import { IsMongoId, IsOptional, IsString } from 'class-validator';
 
-export class SystemUrlParams {
+export class LoginParams {
 	@IsMongoId()
 	@ApiProperty({
 		description: 'The id of the system.',
@@ -9,4 +9,9 @@ export class SystemUrlParams {
 		nullable: false,
 	})
 	systemId!: string;
+
+	@IsOptional()
+	@IsString()
+	@ApiProperty()
+	postLoginRedirect?: string;
 }

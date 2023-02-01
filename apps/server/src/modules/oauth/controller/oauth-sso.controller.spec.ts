@@ -9,7 +9,7 @@ import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { Request } from 'express';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
-import { AuthorizationParams, SystemUrlParams } from './dto';
+import { AuthorizationParams, LoginParams } from './dto';
 import { OauthSSOController } from './oauth-sso.controller';
 
 describe('OAuthController', () => {
@@ -83,7 +83,7 @@ describe('OAuthController', () => {
 	describe('startOauthAuthorizationCodeFlow is called', () => {
 		const query: AuthorizationParams = new AuthorizationParams();
 		query.code = 'defaultAuthCode';
-		const systemParams: SystemUrlParams = new SystemUrlParams();
+		const systemParams: LoginParams = new LoginParams();
 		systemParams.systemId = 'systemId';
 
 		describe('when a redirect url is defined', () => {
