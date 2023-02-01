@@ -388,5 +388,32 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
-	// setSecurityCheck
+	describe('setSecurityCheck is called', () => {
+		describe('WHEN file record with already created default pending status exists', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build({});
+				fileRecord.securityCheck.status = ScanStatus.PENDING;
+
+				return { fileRecord };
+			};
+
+			it('should be update the securityCheck in fileRecord by set a new on.', () => {
+				const { fileRecord } = setup();
+				const securityCheck = new FileSecurityCheck({ status: ScanStatus.BLOCKED });
+
+				fileRecord.setSecurityCheck(securityCheck);
+
+				expect(fileRecord.securityCheck).toEqual(securityCheck);
+			});
+
+			it('should not be do nothing if passing element is not valid instance', () => {
+				const { fileRecord } = setup();
+
+				// @ts-expect-error Testcase
+				fileRecord.setSecurityCheck({});
+
+				expect(fileRecord.securityCheck).toBeInstanceOf(FileSecurityCheck);
+			});
+		});
+	});
 });

@@ -166,7 +166,9 @@ export class FileRecord extends BaseEntity {
 	}
 
 	public setSecurityCheck(securityCheck: FileSecurityCheck): void {
-		this.securityCheck = securityCheck;
+		if (securityCheck instanceof FileSecurityCheck) {
+			this.securityCheck = securityCheck;
+		}
 	}
 
 	public markForDelete(): void {

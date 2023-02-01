@@ -262,13 +262,14 @@ export class FilesStorageService {
 		userId: EntityId
 	): Promise<FileRecord> {
 		const { name, size, mimeType } = sourceFile.getDescription();
-		const entity = createFileRecord(name, size, mimeType, targetParams, userId);
+		const fileRecord = createFileRecord(name, size, mimeType, targetParams, userId);
 
-		entity.securityCheck = deriveStatusFromSource(sourceFile, entity);
+		const securityCheck = deriveStatusFromSource(sourceFile, fileRecord);
+		fileRecord.setSecurityCheck(securityCheck);
 
-		await this.fileRecordRepo.save(entity);
+		await this.fileRecordRepo.save(fileRecord);
 
-		return entity;
+		return fileRecord;
 	}
 
 	private sendToAntiVirusService(sourceFile: FileRecord) {
