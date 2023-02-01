@@ -261,7 +261,7 @@ export class FilesStorageService {
 		targetParams: FileRecordParams,
 		userId: EntityId
 	): Promise<FileRecord> {
-		const { name, size, mimeType } = sourceFile.getDescriptions();
+		const { name, size, mimeType } = sourceFile.getDescription();
 		const entity = createFileRecord(name, size, mimeType, targetParams, userId);
 
 		entity.securityCheck = deriveStatusFromSource(sourceFile, entity);

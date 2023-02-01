@@ -165,6 +165,10 @@ export class FileRecord extends BaseEntity {
 		this.securityCheck.requestToken = undefined;
 	}
 
+	public setSecurityCheck(securityCheck: FileSecurityCheck): void {
+		this.securityCheck = securityCheck;
+	}
+
 	public markForDelete(): void {
 		this.deletedSince = new Date();
 	}
@@ -209,13 +213,13 @@ export class FileRecord extends BaseEntity {
 		return isVerified;
 	}
 
-	public getParentDescriptions(): { parentType: FileRecordParentType; parentId: EntityId } {
+	public getParentDescription(): { parentType: FileRecordParentType; parentId: EntityId } {
 		const { parentId, parentType } = this;
 
 		return { parentId, parentType };
 	}
 
-	public getDescriptions(): { size: number; name: string; mimeType: string } {
+	public getDescription(): { size: number; name: string; mimeType: string } {
 		const { size, name, mimeType } = this;
 
 		return { size, name, mimeType };

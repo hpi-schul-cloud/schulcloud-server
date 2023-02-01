@@ -233,7 +233,7 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
-	describe('getDescriptions is called', () => {
+	describe('getDescription is called', () => {
 		describe('WHEN name, size and mimeType exists', () => {
 			const setup = () => {
 				const name = 'name123';
@@ -244,17 +244,17 @@ describe('FileRecord Entity', () => {
 				return { fileRecord, name, size, mimeType };
 			};
 
-			it('should return a object that include name, size and mimeType', () => {
+			it('should return an object that include name, size and mimeType', () => {
 				const { fileRecord, name, size, mimeType } = setup();
 
-				const result = fileRecord.getDescriptions();
+				const result = fileRecord.getDescription();
 
 				expect(result).toEqual({ name, size, mimeType });
 			});
 		});
 	});
 
-	describe('getParentDescriptions is called', () => {
+	describe('getParentDescription is called', () => {
 		describe('WHEN parentId and parentType and mimeType exists', () => {
 			const setup = () => {
 				const parentType = FileRecordParentType.School;
@@ -264,10 +264,10 @@ describe('FileRecord Entity', () => {
 				return { fileRecord, parentId, parentType };
 			};
 
-			it('should return a object that include parentId and parentType', () => {
+			it('should return an object that include parentId and parentType', () => {
 				const { fileRecord, parentId, parentType } = setup();
 
-				const result = fileRecord.getParentDescriptions();
+				const result = fileRecord.getParentDescription();
 
 				expect(result).toEqual({ parentId, parentType });
 			});
@@ -281,9 +281,7 @@ describe('FileRecord Entity', () => {
 
 				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
 
-				return {
-					fileRecord,
-				};
+				return { fileRecord };
 			};
 
 			it('should return true', () => {
@@ -291,7 +289,7 @@ describe('FileRecord Entity', () => {
 
 				const result = fileRecord.isBlocked();
 
-				expect(result).toEqual(true);
+				expect(result).toBe(true);
 			});
 		});
 
@@ -301,17 +299,15 @@ describe('FileRecord Entity', () => {
 
 				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
 
-				return {
-					fileRecord,
-				};
+				return { fileRecord };
 			};
 
-			it('should return true', () => {
+			it('should return false', () => {
 				const { fileRecord } = setup();
 
 				const result = fileRecord.isBlocked();
 
-				expect(result).toEqual(false);
+				expect(result).toBe(false);
 			});
 		});
 	});
@@ -323,9 +319,7 @@ describe('FileRecord Entity', () => {
 
 				fileRecord.securityCheck.status = ScanStatus.PENDING;
 
-				return {
-					fileRecord,
-				};
+				return { fileRecord };
 			};
 
 			it('should return true', () => {
@@ -333,7 +327,7 @@ describe('FileRecord Entity', () => {
 
 				const result = fileRecord.isPending();
 
-				expect(result).toEqual(true);
+				expect(result).toBe(true);
 			});
 		});
 
@@ -343,17 +337,15 @@ describe('FileRecord Entity', () => {
 
 				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
 
-				return {
-					fileRecord,
-				};
+				return { fileRecord };
 			};
 
-			it('should return true', () => {
+			it('should return false', () => {
 				const { fileRecord } = setup();
 
 				const result = fileRecord.isPending();
 
-				expect(result).toEqual(false);
+				expect(result).toBe(false);
 			});
 		});
 	});
@@ -365,9 +357,7 @@ describe('FileRecord Entity', () => {
 
 				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
 
-				return {
-					fileRecord,
-				};
+				return { fileRecord };
 			};
 
 			it('should return true', () => {
@@ -375,7 +365,7 @@ describe('FileRecord Entity', () => {
 
 				const result = fileRecord.isVerified();
 
-				expect(result).toEqual(true);
+				expect(result).toBe(true);
 			});
 		});
 
@@ -385,18 +375,18 @@ describe('FileRecord Entity', () => {
 
 				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
 
-				return {
-					fileRecord,
-				};
+				return { fileRecord };
 			};
 
-			it('should return true', () => {
+			it('should return false', () => {
 				const { fileRecord } = setup();
 
 				const result = fileRecord.isVerified();
 
-				expect(result).toEqual(false);
+				expect(result).toBe(false);
 			});
 		});
 	});
+
+	// setSecurityCheck
 });
