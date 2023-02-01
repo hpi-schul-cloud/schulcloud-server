@@ -1,9 +1,7 @@
 import { FileRecord, FileSecurityCheck } from '../entity';
 
 export function deriveStatusFromSource(sourceFile: FileRecord, targetFile: FileRecord): FileSecurityCheck {
-	if (sourceFile.isVerified()) {
-		return sourceFile.securityCheck;
-	}
+	const securityCheck = sourceFile.isVerified() ? sourceFile.securityCheck : targetFile.securityCheck;
 
-	return targetFile.securityCheck;
+	return securityCheck;
 }
