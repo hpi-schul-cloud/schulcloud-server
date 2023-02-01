@@ -195,13 +195,84 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
-	// getName
+	describe('getName is called', () => {
+		describe('WHEN name exists', () => {
+			const setup = () => {
+				const name = 'name123';
+				const fileRecord = fileRecordFactory.build({ name });
 
-	// getParent
+				return { fileRecord, name };
+			};
 
-	// getDescriptions
+			it('should return the correct name', () => {
+				const { fileRecord, name } = setup();
 
-	// getSchoolId
+				const result = fileRecord.getName();
+
+				expect(result).toEqual(name);
+			});
+		});
+	});
+
+	describe('getSchoolId is called', () => {
+		describe('WHEN schoolId exists', () => {
+			const setup = () => {
+				const schoolId = new ObjectId().toHexString();
+				const fileRecord = fileRecordFactory.build({ schoolId });
+
+				return { fileRecord, schoolId };
+			};
+
+			it('should return the correct schoolId', () => {
+				const { fileRecord, schoolId } = setup();
+
+				const result = fileRecord.getSchoolId();
+
+				expect(result).toEqual(schoolId);
+			});
+		});
+	});
+
+	describe('getDescriptions is called', () => {
+		describe('WHEN name, size and mimeType exists', () => {
+			const setup = () => {
+				const name = 'name123';
+				const size = 123;
+				const mimeType = 'mimeType123';
+				const fileRecord = fileRecordFactory.build({ name, size, mimeType });
+
+				return { fileRecord, name, size, mimeType };
+			};
+
+			it('should return a object that include name, size and mimeType', () => {
+				const { fileRecord, name, size, mimeType } = setup();
+
+				const result = fileRecord.getDescriptions();
+
+				expect(result).toEqual({ name, size, mimeType });
+			});
+		});
+	});
+
+	describe('getParent is called', () => {
+		describe('WHEN parentId and parentType and mimeType exists', () => {
+			const setup = () => {
+				const parentType = FileRecordParentType.School;
+				const parentId = new ObjectId().toHexString();
+				const fileRecord = fileRecordFactory.build({ parentType, parentId });
+
+				return { fileRecord, parentId, parentType };
+			};
+
+			it('should return a object that include parentId and parentType', () => {
+				const { fileRecord, parentId, parentType } = setup();
+
+				const result = fileRecord.getParent();
+
+				expect(result).toEqual({ parentId, parentType });
+			});
+		});
+	});
 
 	describe('isBlocked is called', () => {
 		describe('WHEN file record security status is BLOCKED', () => {
