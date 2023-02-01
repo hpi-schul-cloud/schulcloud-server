@@ -52,12 +52,15 @@ export class DownloadFileParams {
 export class ScanResultParams {
 	@ApiProperty()
 	@Allow()
-	// @IsBoolean() ?
-	virus_detected!: boolean;
+	virus_detected?: boolean;
 
 	@ApiProperty()
 	@Allow()
 	virus_signature?: string;
+
+	@ApiProperty()
+	@Allow()
+	error?: string;
 }
 
 export class SingleFileParams {
