@@ -1014,33 +1014,6 @@ describe('AccountUc', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-
-		it('should sanitize username for local user', async () => {
-			const spy = jest.spyOn(accountService, 'save');
-			const params: AccountSaveDto = {
-				username: ' John.Doe@domain.tld ',
-				password: defaultPassword,
-			};
-			await accountUc.saveAccount(params);
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					username: 'john.doe@domain.tld',
-				})
-			);
-		});
-		it('should not sanitize username for external user', async () => {
-			const spy = jest.spyOn(accountService, 'save');
-			const params: AccountSaveDto = {
-				username: ' John.Doe@domain.tld ',
-				systemId: 'ABC123',
-			};
-			await accountUc.saveAccount(params);
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					username: ' John.Doe@domain.tld ',
-				})
-			);
-		});
 		it('should throw if username for a local user is not an email', async () => {
 			const params: AccountSaveDto = {
 				username: 'John Doe',

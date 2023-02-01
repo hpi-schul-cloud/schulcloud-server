@@ -111,10 +111,6 @@ export class AccountUc {
 
 	async saveAccount(dto: AccountSaveDto): Promise<void> {
 		await validateOrReject(dto);
-		// sanatizeUsername ✔
-		if (!dto.systemId) {
-			dto.username = dto.username.trim().toLowerCase();
-		}
 		if (!dto.systemId && !dto.password) {
 			throw new ValidationError('No password provided');
 		}
