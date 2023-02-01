@@ -304,15 +304,23 @@ Since a [usecase](./architecture.md#domain-layer) only contains orchestration, i
 
 to be documented
 
-## API Tests
-
-Unlike unit testing, which focuses on individual modules, API testing covers the interaction between classes and
-modules at a more aggregate level. Automated API tests help us to ensure that the overall behavior of the system is correct.
-API tests should be located in the folder _controller/api-test_ of each module.
-
 ### Controller Tests
 
-to be documented
+Controllers do not contain any logic, but exclusively information to map and validate between dataformats used on the network, and those used internally, as well as documentation of the api.
+
+Most of these things can not be covered by unit tests. Therefore we do not write specific unittests for them, and only cover them with [api tests](#api-tests).
+
+### API Tests
+
+The API tests are plumbing or integration tests. Their job is to make sure all components that interact to fulfill a specific api endpoint are wired up correctly, and fulfil the expectation set up in the documentation.
+
+API tests should be located in the folder _controller/api-test_ of each module.
+
+They should call the endpoint like a external entity would, treating it like a blackbox. It should try all parameters available on the API, users with different roles, as well as relevant error cases.
+
+During the API test, all components that are part of the server, or controlled by the server, should be available. This includes an in-memory database.
+
+Any external services or servers that are outside our control should be mocked away via their respective adapters.
 
 ## References
 
