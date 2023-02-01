@@ -22,7 +22,7 @@ import {
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
-import { FilesStorageMapper, FileDtoBuilder } from '../mapper';
+import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 
 @Injectable()
