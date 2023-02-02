@@ -19,7 +19,7 @@ import {
 	SingleFileParams,
 } from '../controller/dto';
 import { FileDto } from '../dto';
-import { FileRecord, ScanStatus } from '../entity';
+import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 import {
 	createFileRecord,

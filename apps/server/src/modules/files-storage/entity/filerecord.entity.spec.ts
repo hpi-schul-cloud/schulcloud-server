@@ -405,15 +405,6 @@ describe('FileRecord Entity', () => {
 
 				expect(fileRecord.securityCheck).toEqual(securityCheck);
 			});
-
-			it('should do nothing if argument is not an instance of FileSecurityCheck', () => {
-				const { fileRecord } = setup();
-
-				// @ts-expect-error Testcase
-				fileRecord.setSecurityCheck({});
-
-				expect(fileRecord.securityCheck).toBeInstanceOf(FileSecurityCheck);
-			});
 		});
 	});
 });
