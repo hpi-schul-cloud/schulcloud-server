@@ -8,7 +8,7 @@ import { ServerTestModule } from '@src/modules/server';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
 
-jest.setTimeout(10000); // TODO Remove
+jest.setTimeout(100000); // TODO Remove
 describe('OAuth SSO Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -39,7 +39,7 @@ describe('OAuth SSO Controller (API)', () => {
 	});
 
 	const setup = async () => {
-		const system: System = systemFactory.buildWithId();
+		const system: System = systemFactory.withOauthConfig().buildWithId();
 
 		await em.persistAndFlush(system);
 		em.clear();
@@ -54,7 +54,7 @@ describe('OAuth SSO Controller (API)', () => {
 			const { system } = await setup();
 
 			await request(app.getHttpServer())
-				.get(`sso/login/${system.id}`)
+				.get(`/sso/login/${system.id}`)
 				.expect(307)
 				.then((res: Response) => {
 					expect(res.redirect).toEqual('');

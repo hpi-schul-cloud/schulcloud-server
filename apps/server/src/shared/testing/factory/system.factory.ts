@@ -14,11 +14,11 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 				redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
 				scope: 'openid uuid',
 				responseType: 'code',
-				authEndpoint: 'mock_authEndpoint',
+				authEndpoint: 'http://mock.de/auth',
 				provider: 'mock_type',
-				logoutEndpoint: 'mock_logoutEndpoint',
+				logoutEndpoint: 'http://mock.de/logout',
 				issuer: 'mock_issuer',
-				jwksEndpoint: 'mock_jwksEndpoint',
+				jwksEndpoint: 'http://mock.de/jwks',
 			}),
 		};
 		return this.params(params);

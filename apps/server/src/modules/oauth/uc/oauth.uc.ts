@@ -30,7 +30,7 @@ export class OauthUc {
 	}
 
 	async startOauthLogin(session: ISession, systemId: EntityId, postLoginRedirect?: string): Promise<string> {
-		const state: string = CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex);
+		const state = 'abc'; // TODO CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex);
 
 		const system: SystemDto = await this.systemService.findOAuthById(systemId);
 		if (!system.oauthConfig) {

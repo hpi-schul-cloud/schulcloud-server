@@ -11,7 +11,6 @@ import { schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
 import { FeathersJwtProvider } from '@src/modules/authorization';
-import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { UserService } from '@src/modules/user';
 import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
@@ -20,7 +19,6 @@ import { of, throwError } from 'rxjs';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
-import { OAuthProcessDto } from './dto/oauth-process.dto';
 import { OAuthService } from './oauth.service';
 
 const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
@@ -117,33 +115,6 @@ describe('OAuthService', () => {
 	beforeEach(() => {
 		testSystem = systemFactory.withOauthConfig().buildWithId();
 		testOauthConfig = testSystem.oauthConfig as OauthConfig;
-	});
-
-	describe('checkAuthorizationCode', () => {
-		it('should extract code from query', () => {
-			const code = '43534543jnj543342jn2';
-			const query: AuthorizationParams = { code };
-
-			const extract: string = service.checkAuthorizationCode(query);
-
-			expect(extract).toBe(code);
-		});
-
-		it('should throw an error from a query that contains an error', () => {
-			const query: AuthorizationParams = { error: 'error' };
-
-			expect(() => service.checkAuthorizationCode(query)).toThrow(
-				new OAuthSSOError('Authorization Query Object has no authorization code or error', 'error')
-			);
-		});
-
-		it('should throw an error from a falsy query', () => {
-			const query: AuthorizationParams = {};
-
-			expect(() => service.checkAuthorizationCode(query)).toThrow(
-				new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step')
-			);
-		});
 	});
 
 	describe('requestToken', () => {
@@ -313,39 +284,56 @@ describe('OAuthService', () => {
 		});
 	});
 
-	describe('getRedirect', () => {
-		it('should return a login url string', () => {
-			const url: string = service.getRedirectUrl('provider');
+	describe('getRedirectUrl is called', () => {
+		describe('when the provider is iserv', () => {
+			it('should return an iserv logout url', () => {
+				const url = service.getRedirectUrl('iserv', 'idToken', 'logoutEndpoint');
 
-			expect(url).toStrictEqual(`${hostUri}/dashboard`);
+				expect(url).toStrictEqual(`logoutEndpoint?id_token_hint=idToken&post_logout_redirect_uri=${hostUri}/dashboard`);
+			});
 		});
 
-		it('should return an iserv login url string', () => {
-			const url = service.getRedirectUrl('iserv', 'idToken', 'logoutEndpoint');
+		describe('when a normal provider and a postLoginRedirect are provided', () => {
+			it('should return a login url string', () => {
+				const url: string = service.getRedirectUrl('provider', '', '', 'specialPostLoginRedirectUrl');
 
-			expect(url).toStrictEqual(`logoutEndpoint?id_token_hint=idToken&post_logout_redirect_uri=${hostUri}/dashboard`);
+				expect(url).toStrictEqual('specialPostLoginRedirectUrl');
+			});
+		});
+
+		describe('when a normal provider is provided and no postLoginRedirect', () => {
+			it('should return a login url string', () => {
+				const url: string = service.getRedirectUrl('provider');
+
+				expect(url).toStrictEqual(`${hostUri}/dashboard`);
+			});
 		});
 	});
 
-	describe('getOAuthError', () => {
-		it('should return a login url string within an error', () => {
-			const generalError: Error = new Error('foo');
+	describe('getAuthenticationUrl is called', () => {
+		describe('when', () => {
+			it('should return a authentication url', () => {
+				const oauthConfig: OauthConfig = new OauthConfig({
+					clientId: '12345',
+					clientSecret: 'mocksecret',
+					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+					grantType: 'authorization_code',
+					redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
+					scope: 'openid uuid',
+					responseType: 'code',
+					authEndpoint: 'http://mock.de/auth',
+					provider: 'mock_type',
+					logoutEndpoint: 'http://mock.de/logout',
+					issuer: 'mock_issuer',
+					jwksEndpoint: 'http://mock.de/jwks',
+				});
 
-			const response: OAuthProcessDto = service.getOAuthErrorResponse(generalError, 'provider');
+				const result: string = service.getAuthenticationUrl(oauthConfig, 'state');
 
-			expect(response.provider).toStrictEqual('provider');
-			expect(response.errorCode).toStrictEqual('oauth_login_failed');
-			expect(response.redirect).toStrictEqual(`${hostUri}/login?error=oauth_login_failed&provider=provider`);
-		});
-
-		it('should return a login url string within an error', () => {
-			const specialError: OAuthSSOError = new OAuthSSOError('foo', 'special_error_code');
-
-			const response = service.getOAuthErrorResponse(specialError, 'provider');
-
-			expect(response.provider).toStrictEqual('provider');
-			expect(response.errorCode).toStrictEqual('special_error_code');
-			expect(response.redirect).toStrictEqual(`${hostUri}/login?error=special_error_code&provider=provider`);
+				expect(result).toEqual(
+					'http://mock.de/auth?client_id=12345&redirect_uri=http%3A%2F%2Fmockhost%3A3030%2Fapi%2Fv3%2Fsso%2Foauth%2FtestsystemId&response_type=code&scope=openid+uuid&state=state'
+				);
+			});
 		});
 	});
 });
