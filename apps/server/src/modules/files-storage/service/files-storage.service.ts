@@ -27,14 +27,13 @@ import {
 	createPath,
 	deriveStatusFromSource,
 	getPaths,
-	getStatusFromScanResult,
 	isStatusBlocked,
 	markForDelete,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
 import { IGetFileResponse } from '../interface';
-import { FilesStorageMapper, CopyFileResponseBuilder } from '../mapper';
+import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
 @Injectable()
@@ -120,11 +119,11 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
+	public async updateSecurityStatus(token: string, scanResultParams: ScanResultParams) {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 
-		const status = getStatusFromScanResult(scanResultDto);
-		fileRecord.updateSecurityCheckStatus(status, scanResultDto.virus_signature);
+		const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResultParams);
+		fileRecord.updateSecurityCheckStatus(status, reason);
 
 		await this.fileRecordRepo.save(fileRecord);
 	}

@@ -1,6 +1,5 @@
 import { fileRecordFactory } from '@shared/testing';
-import { deriveStatusFromSource, getStatusFromScanResult, isStatusBlocked } from '.';
-import { ScanResultParams } from '../controller/dto';
+import { deriveStatusFromSource, isStatusBlocked } from '.';
 import { ScanStatus } from '../entity';
 
 describe('Scan Status Helper', () => {
@@ -10,69 +9,6 @@ describe('Scan Status Helper', () => {
 
 		return { sourceFile, targetFile };
 	};
-
-	describe('getStatusFromScanResult is called', () => {
-		describe('WHEN virus is detected', () => {
-			const setup = () => {
-				const scanResultParams: ScanResultParams = {
-					virus_signature: 'bla',
-					virus_detected: true,
-				};
-
-				return {
-					scanResultParams,
-				};
-			};
-
-			it('should return blocked scan status', () => {
-				const { scanResultParams } = setup();
-
-				const result = getStatusFromScanResult(scanResultParams);
-
-				expect(result).toEqual(ScanStatus.BLOCKED);
-			});
-		});
-
-		describe('WHEN no virus is detected', () => {
-			const setup = () => {
-				const scanResultParams: ScanResultParams = {
-					virus_detected: false,
-				};
-
-				return {
-					scanResultParams,
-				};
-			};
-
-			it('should return blocked scan status', () => {
-				const { scanResultParams } = setup();
-
-				const result = getStatusFromScanResult(scanResultParams);
-
-				expect(result).toEqual(ScanStatus.VERIFIED);
-			});
-		});
-
-		describe('WHEN empty scanResult is passed', () => {
-			const setup = () => {
-				const scanResultParams = {};
-
-				return {
-					scanResultParams,
-				};
-			};
-
-			it('should return verified scan status', () => {
-				const { scanResultParams } = setup();
-
-				// @ts-expect-error type do not match
-				const result = getStatusFromScanResult(scanResultParams);
-
-				// Otherwise large files can not be processed
-				expect(result).toEqual(ScanStatus.VERIFIED);
-			});
-		});
-	});
 
 	describe('deriveStatusFromSource is called', () => {
 		describe('WHEN source files scan status is VERIFIED', () => {
