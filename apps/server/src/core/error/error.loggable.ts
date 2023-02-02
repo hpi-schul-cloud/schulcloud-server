@@ -3,27 +3,20 @@ import { ErrorLogMessage, ILoggable, ValidationErrorLogMessage } from '../logger
 import { ErrorUtils } from './utils/error.utils';
 
 export class ErrorLoggable implements ILoggable {
-	error: Error;
-
-	constructor(error: Error) {
-		this.error = error;
-	}
+	constructor(private readonly error: Error) {}
 
 	getLogMessage() {
 		let logMessage: ErrorLogMessage | ValidationErrorLogMessage = {
 			error: this.error,
 			stack: this.error.stack,
-			type: 'Unhandled or Unknown Error',
+			type: '',
 		};
 
 		if (this.error instanceof ApiValidationError) {
 			logMessage = this.createLogMessageForValidationErrors(this.error);
 		} else if (ErrorUtils.isFeathersError(this.error)) {
 			logMessage.type = 'Feathers Error';
-		} else if (
-			ErrorUtils.isBusinessError(this.error) ||
-			(ErrorUtils.isNestHttpException(this.error) && this.error.getStatus() < 500)
-		) {
+		} else if (ErrorUtils.isBusinessError(this.error)) {
 			logMessage.type = 'Business Error';
 		} else if (ErrorUtils.isNestHttpException(this.error)) {
 			// IMO it is incorrect to classify all Nest HttpExceptions as technical errors, because they are often used as business errors,
@@ -31,6 +24,8 @@ export class ErrorLoggable implements ILoggable {
 			// As I understand the term "Technical Error" it would correspond to a 5xx status code. There are a few cases where we explicitly throw these.
 			// We could filter for the status like above. Or we could get rid of the classification altogether. Is it really needed?
 			logMessage.type = 'Technical Error';
+		} else {
+			logMessage.type = 'Unhandled or Unknown Error';
 		}
 
 		return logMessage;
