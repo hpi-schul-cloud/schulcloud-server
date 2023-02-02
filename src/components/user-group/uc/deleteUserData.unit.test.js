@@ -5,6 +5,7 @@ const { ObjectId } = require('mongoose').Types;
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const deleteUserData = require('./deleteUserData.uc');
+const deleteUserTeamsData = require('./deleteUserTeamsData.uc');
 const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 
 const { classesRepo, teamsRepo } = require('../repo/index');
@@ -91,7 +92,7 @@ describe('delete class and teams user data usecase', () => {
 		it('should return a function', async () => {
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData;
 			expect(deleteUserDataFromClasses).to.be.an('Array');
-			expect(deleteUserDataFromClasses.length).to.be.equal(2);
+			expect(deleteUserDataFromClasses.length).to.be.equal(1);
 			expect(deleteUserDataFromClasses[0]).to.be.a('function');
 		});
 
@@ -138,16 +139,16 @@ describe('delete class and teams user data usecase', () => {
 
 	describe('delete teams user data usecase', () => {
 		it('should return a function', async () => {
-			const deleteUserDataFromClasses = deleteUserData.deleteUserData;
+			const deleteUserDataFromClasses = deleteUserTeamsData.deleteUserTeamsData;
 			expect(deleteUserDataFromClasses).to.be.an('Array');
-			expect(deleteUserDataFromClasses.length).to.be.equal(2);
-			expect(deleteUserDataFromClasses[1]).to.be.a('function');
+			expect(deleteUserDataFromClasses.length).to.be.equal(1);
+			expect(deleteUserDataFromClasses[0]).to.be.a('function');
 		});
 
 		it('should return a valid result (trashbin) object', async () => {
 			const { getTeamsStub, removeTeamsStub } = initTeamsStubs({ teamsId: TEAMS_ID });
 
-			const deleteUserDataFromTeams = deleteUserData.deleteUserData[1];
+			const deleteUserDataFromTeams = deleteUserTeamsData.deleteUserTeamsData[0];
 			const result = await deleteUserDataFromTeams(USER_ID);
 			getTeamsStub.restore();
 			removeTeamsStub.restore();
@@ -162,7 +163,7 @@ describe('delete class and teams user data usecase', () => {
 
 
 		it('should throw an error if called with an invalid ObjectId', async () => {
-			const deleteUserDataFromTeams = deleteUserData.deleteUserData[1];
+			const deleteUserDataFromTeams = deleteUserTeamsData.deleteUserTeamsData[0];
 			await expect(deleteUserDataFromTeams('NOT_AN_ID')).to.be.rejectedWith(AssertionError);
 		});
 	});

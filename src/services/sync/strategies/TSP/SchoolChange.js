@@ -1,7 +1,7 @@
 const { getUsername } = require('./TSP');
 const { FileModel } = require('../../../fileStorage/model');
 const { info: logInfo, error: logError } = require('../../../../logger');
-const { deleteUserData } = require('../../../../components/user-group/uc/deleteUserData.uc')
+const { deleteUser } = require('../../../../components/user/uc/users.uc')
 
 const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;
 const getInvalidatedEmail = (email) => `${email}.invalid`;
@@ -21,12 +21,6 @@ const invalidateUser = async (app, user) => {
 
 	const account = await accountService.findByUserId(user._id);
 	await accountService.updateUsername(account.id, getUsername(userChanges));
-};
-
-const deleteUser = (app, user) => {
-	const userService = app.service('usersModel');
-	const accountService = app.service('nest-account-service');
-	return Promise.all([userService.remove({ _id: user._id }), accountService.deleteByUserId(user._id.toString())]);
 };
 
 const grantAccessToPrivateFiles = async (app, oldUser, newUser) => {
@@ -69,17 +63,15 @@ const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
 	}
 };
 
-const switchSchool = async (app, currentUser, createUserMethod) => {
+const switchSchool = async (app, user, createUserMethod) => {
 	try {
-		await invalidateUser(app, currentUser);
+		await invalidateUser(app, user);
 		const newUser = await createUserMethod();
 		await Promise.all([
-			grantAccessToPrivateFiles(app, currentUser, newUser),
-			grantAccessToSharedFiles(app, currentUser, newUser),
+			grantAccessToPrivateFiles(app, user, newUser),
+			grantAccessToSharedFiles(app, user, newUser),
 		]);
-		const deleteUserDataFromTeams = deleteUserData[1];
-		await deleteUserDataFromTeams(currentUser._id);
-		await deleteUser(app, currentUser);
+		await deleteUser(user._id, { user });
 		return newUser;
 	} catch (err) {
 		logError(`Something went wrong during switching school for user: ${err}`);
@@ -90,7 +82,6 @@ const switchSchool = async (app, currentUser, createUserMethod) => {
 module.exports = {
 	getInvalidatedUuid,
 	invalidateUser,
-	deleteUser,
 	grantAccessToPrivateFiles,
 	grantAccessToSharedFiles,
 	switchSchool,
