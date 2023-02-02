@@ -1,15 +1,12 @@
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Inject } from '@nestjs/common';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { IIdentityProviderConfig } from '../interface/identity-provider-config.interface';
+import { SystemDto } from '@src/modules/system/service';
 
 export class OidcIdentityProviderMapper {
 	constructor(@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService) {}
 
-	public mapToKeycloakIdentityProvider(
-		system: IIdentityProviderConfig,
-		flowAlias: string
-	): IdentityProviderRepresentation {
+	public mapToKeycloakIdentityProvider(system: SystemDto, flowAlias: string): IdentityProviderRepresentation {
 		return {
 			providerId: system.type,
 			alias: system.alias,
@@ -21,7 +18,7 @@ export class OidcIdentityProviderMapper {
 					? this.defaultEncryptionService.decrypt(system.oidcConfig.clientId)
 					: undefined,
 				clientSecret: system.oidcConfig?.clientSecret
-					? this.defaultEncryptionService.decrypt(system.oidcConfig?.clientSecret)
+					? this.defaultEncryptionService.decrypt(system.oidcConfig.clientSecret)
 					: undefined,
 				authorizationUrl: system.oidcConfig?.authorizationUrl,
 				tokenUrl: system.oidcConfig?.tokenUrl,

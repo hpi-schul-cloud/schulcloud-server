@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '@src/modules/server/server.config';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
-import { IIdentityProviderConfig, IKeycloakSettings, KeycloakSettings } from '../interface';
+import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
@@ -151,7 +151,7 @@ export class KeycloakConfigurationService {
 		let count = 0;
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const oldConfigs = await kc.identityProviders.find();
-		const newConfigs = (await this.systemService.findOidc()) as IIdentityProviderConfig[];
+		const newConfigs = await this.systemService.findOidc();
 		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const configureAction of configureActions) {
@@ -223,16 +223,16 @@ export class KeycloakConfigurationService {
 	 */
 	private selectConfigureAction(newConfigs: SystemDto[], oldConfigs: IdentityProviderRepresentation[]) {
 		const result = [] as (
-			| { action: ConfigureAction.CREATE; config: IIdentityProviderConfig }
-			| { action: ConfigureAction.UPDATE; config: IIdentityProviderConfig }
+			| { action: ConfigureAction.CREATE; config: SystemDto }
+			| { action: ConfigureAction.UPDATE; config: SystemDto }
 			| { action: ConfigureAction.DELETE; alias: string }
 		)[];
 		// updating or creating configs
 		newConfigs.forEach((newConfig) => {
 			if (oldConfigs.some((oldConfig) => oldConfig.alias === newConfig.alias)) {
-				result.push({ action: ConfigureAction.UPDATE, config: newConfig as IIdentityProviderConfig });
+				result.push({ action: ConfigureAction.UPDATE, config: newConfig });
 			} else {
-				result.push({ action: ConfigureAction.CREATE, config: newConfig as IIdentityProviderConfig });
+				result.push({ action: ConfigureAction.CREATE, config: newConfig });
 			}
 		});
 		// deleting configs
@@ -244,9 +244,9 @@ export class KeycloakConfigurationService {
 		return result;
 	}
 
-	private async createIdentityProvider(system: IIdentityProviderConfig): Promise<void> {
+	private async createIdentityProvider(system: SystemDto): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		if (system.oidcConfig) {
+		if (system.oidcConfig && system.alias) {
 			await kc.identityProviders.create(
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
 			);
@@ -254,9 +254,9 @@ export class KeycloakConfigurationService {
 		}
 	}
 
-	private async updateIdentityProvider(system: IIdentityProviderConfig): Promise<void> {
+	private async updateIdentityProvider(system: SystemDto): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		if (system.oidcConfig) {
+		if (system.oidcConfig && system.alias) {
 			await kc.identityProviders.update(
 				{ alias: system.alias },
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
