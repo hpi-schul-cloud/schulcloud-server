@@ -111,12 +111,14 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Course:
 				result = await this.copyCourse(userId, shareToken.payload.parentId, newName);
 				break;
-			default:
+			case ShareTokenParentType.Lesson:
 				if (destinationCourseId === undefined) {
 					throw new BadRequestException('Destination course id is required to copy lesson');
 				}
 				result = await this.copyLesson(userId, shareToken.payload.parentId, destinationCourseId, newName);
 				break;
+			default:
+				throw new NotImplementedException('Copy not implemented');
 		}
 
 		return result;
@@ -144,9 +146,20 @@ export class ShareTokenUC {
 
 	private async checkParentWritePermission(userId: EntityId, payload: ShareTokenPayload) {
 		const allowedParentType = ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(payload.parentType);
+
+		let requiredPermissions: Permission[] = [];
+		switch (payload.parentType) {
+			case ShareTokenParentType.Course:
+				requiredPermissions = [Permission.COURSE_CREATE];
+				break;
+			default:
+				requiredPermissions = [Permission.TOPIC_CREATE];
+				break;
+		}
+
 		await this.authorizationService.checkPermissionByReferences(userId, allowedParentType, payload.parentId, {
 			action: Actions.write,
-			requiredPermissions: [Permission.COURSE_CREATE],
+			requiredPermissions,
 		});
 	}
 
@@ -164,7 +177,7 @@ export class ShareTokenUC {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		let requiredPermissions: string[] = [];
+		let requiredPermissions: Permission[] = [];
 		switch (parentType) {
 			case ShareTokenParentType.Course:
 				requiredPermissions = [Permission.COURSE_CREATE];
