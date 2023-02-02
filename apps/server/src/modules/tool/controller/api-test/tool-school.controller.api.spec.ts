@@ -252,10 +252,10 @@ describe('ToolSchoolController (API)', () => {
 					expect(res.body).toEqual(
 						expect.objectContaining(<SchoolExternalToolResponse>{
 							id: schoolExternalTool.id,
-							name: externalTool2.name,
+							name: '',
 							schoolId: school.id,
 							toolId: externalTool2.id,
-							status: SchoolExternalToolStatusResponse.LATEST,
+							status: SchoolExternalToolStatusResponse.UNKNOWN,
 							toolVersion: schoolExternalTool.toolVersion,
 							parameters: [
 								{
