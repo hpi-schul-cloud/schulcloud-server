@@ -30,11 +30,17 @@ export class OidcProvisioningService {
 			school = existingSchool;
 			school.name = externalSchool.name;
 			school.officialSchoolNumber = externalSchool.officialSchoolNumber ?? existingSchool.officialSchoolNumber;
+			if (!school.systems) {
+				school.systems = [systemId];
+			} else if (!school.systems.includes(systemId)) {
+				school.systems.push(systemId);
+			}
 		} else {
 			school = new SchoolDO({
 				externalId: externalSchool.externalId,
 				name: externalSchool.name,
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
+				systems: [systemId],
 			});
 		}
 
