@@ -25,7 +25,6 @@ import {
 	createFileRecord,
 	createICopyFiles,
 	createPath,
-	deriveStatusFromSource,
 	getPaths,
 	markForDelete,
 	resolveFileNameDuplicates,
@@ -264,8 +263,7 @@ export class FilesStorageService {
 		const { name, size, mimeType } = sourceFile.getDescription();
 		const fileRecord = createFileRecord(name, size, mimeType, targetParams, userId);
 
-		const securityCheck = deriveStatusFromSource(sourceFile, fileRecord);
-		fileRecord.setSecurityCheck(securityCheck);
+		fileRecord.copySecurityCheck(sourceFile);
 
 		await this.fileRecordRepo.save(fileRecord);
 

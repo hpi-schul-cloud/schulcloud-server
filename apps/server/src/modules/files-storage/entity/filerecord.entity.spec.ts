@@ -2,6 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { notContains } from 'class-validator';
 import { ErrorType } from '../error';
 import {
 	FileRecordParentType,
@@ -388,22 +389,95 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
-	describe('setSecurityCheck is called', () => {
-		describe('WHEN file record with already created default pending status exists', () => {
-			const setup = () => {
-				const fileRecord = fileRecordFactory.build({});
-				fileRecord.securityCheck.status = ScanStatus.PENDING;
+	describe('copySecurityCheckIfVerified is called', () => {
+		const getFileRecords = () => {
+			const sourceFile = fileRecordFactory.build();
+			const targetFile = fileRecordFactory.build();
 
-				return { fileRecord };
+			return { sourceFile, targetFile };
+		};
+
+		describe('WHEN source files scan status is VERIFIED', () => {
+			const setup = () => {
+				const { sourceFile, targetFile } = getFileRecords();
+
+				sourceFile.securityCheck.status = ScanStatus.VERIFIED;
+
+				return {
+					sourceFile,
+					targetFile,
+				};
 			};
 
-			it('should be update the securityCheck in fileRecord by set a new on.', () => {
-				const { fileRecord } = setup();
-				const securityCheck = new FileSecurityCheck({ status: ScanStatus.BLOCKED });
+			it('should set targets securitycheck by source', () => {
+				const { sourceFile, targetFile } = setup();
 
-				fileRecord.setSecurityCheck(securityCheck);
+				targetFile.copySecurityCheckIfVerified(sourceFile);
 
-				expect(fileRecord.securityCheck).toEqual(securityCheck);
+				expect(targetFile.securityCheck).toStrictEqual(sourceFile.securityCheck);
+			});
+		});
+
+		describe('WHEN source files scan status is BLOCKED', () => {
+			const setup = () => {
+				const { sourceFile, targetFile } = getFileRecords();
+
+				sourceFile.securityCheck.status = ScanStatus.BLOCKED;
+
+				return {
+					sourceFile,
+					targetFile,
+				};
+			};
+
+			it('should keep targets securitycheck', () => {
+				const { sourceFile, targetFile } = setup();
+
+				targetFile.copySecurityCheckIfVerified(sourceFile);
+
+				expect(targetFile.securityCheck).toStrictEqual(targetFile.securityCheck);
+			});
+		});
+
+		describe('WHEN source files scan status is PENDING', () => {
+			const setup = () => {
+				const { sourceFile, targetFile } = getFileRecords();
+
+				sourceFile.securityCheck.status = ScanStatus.PENDING;
+
+				return {
+					sourceFile,
+					targetFile,
+				};
+			};
+
+			it('should keep targets securitycheck', () => {
+				const { sourceFile, targetFile } = setup();
+
+				targetFile.copySecurityCheckIfVerified(sourceFile);
+
+				expect(targetFile.securityCheck).toStrictEqual(targetFile.securityCheck);
+			});
+		});
+
+		describe('WHEN source files scan status is ERROR', () => {
+			const setup = () => {
+				const { sourceFile, targetFile } = getFileRecords();
+
+				sourceFile.securityCheck.status = ScanStatus.ERROR;
+
+				return {
+					sourceFile,
+					targetFile,
+				};
+			};
+
+			it('should keep targets securitycheck', () => {
+				const { sourceFile, targetFile } = setup();
+
+				targetFile.copySecurityCheckIfVerified(sourceFile);
+
+				expect(targetFile.securityCheck).toStrictEqual(targetFile.securityCheck);
 			});
 		});
 	});

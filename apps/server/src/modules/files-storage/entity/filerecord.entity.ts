@@ -165,8 +165,10 @@ export class FileRecord extends BaseEntity {
 		this.securityCheck.requestToken = undefined;
 	}
 
-	public setSecurityCheck(securityCheck: FileSecurityCheck): void {
-		this.securityCheck = securityCheck;
+	public copySecurityCheckIfVerified(sourceFileRecord: FileRecord): void {
+		if (!this.isVerified()) {
+			this.securityCheck = sourceFileRecord.securityCheck;
+		}
 	}
 
 	public markForDelete(): void {
