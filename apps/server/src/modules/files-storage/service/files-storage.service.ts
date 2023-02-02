@@ -263,7 +263,7 @@ export class FilesStorageService {
 		const { name, size, mimeType } = sourceFile.getDescription();
 		const fileRecord = createFileRecord(name, size, mimeType, targetParams, userId);
 
-		fileRecord.copySecurityCheck(sourceFile);
+		fileRecord.copySecurityCheckIfVerified(sourceFile);
 
 		await this.fileRecordRepo.save(fileRecord);
 
