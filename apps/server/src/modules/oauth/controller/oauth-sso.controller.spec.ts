@@ -4,12 +4,13 @@ import { getMockRes } from '@jest-mock/express';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@shared/domain';
+import { ISession } from '@shared/domain/types/session';
 import { Logger } from '@src/core/logger';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { Request } from 'express';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
-import { AuthorizationParams, LoginParams } from './dto';
+import { AuthorizationParams } from './dto';
 import { OauthSSOController } from './oauth-sso.controller';
 
 describe('OAuthController', () => {
@@ -81,21 +82,29 @@ describe('OAuthController', () => {
 	});
 
 	describe('startOauthAuthorizationCodeFlow is called', () => {
-		const query: AuthorizationParams = new AuthorizationParams();
-		query.code = 'defaultAuthCode';
-		const systemParams: LoginParams = new LoginParams();
-		systemParams.systemId = 'systemId';
+		const setup = () => {
+			const { res } = getMockRes();
+			const session: ISession = {};
+			const query: AuthorizationParams = new AuthorizationParams();
+			query.code = 'defaultAuthCode';
+			query.state = 'mockState';
+
+			return {
+				res,
+				query,
+			};
+		};
 
 		describe('when a redirect url is defined', () => {
 			it('should redirect to the redirect url', async () => {
 				const { res } = getMockRes();
+				const session: ISession = {};
 				const response: OAuthProcessDto = new OAuthProcessDto({
-					provider: 'iserv',
 					redirect: 'postLoginRedirect',
 				});
-				oauthUc.processOAuth.mockResolvedValue(response);
+				oauthUc.processOAuthLogin.mockResolvedValue(response);
 
-				await controller.startOauthAuthorizationCodeFlow(query, res, systemParams);
+				await controller.startOauthAuthorizationCodeFlow(session, query, res);
 
 				expect(res.redirect).toHaveBeenCalledWith('postLoginRedirect');
 			});

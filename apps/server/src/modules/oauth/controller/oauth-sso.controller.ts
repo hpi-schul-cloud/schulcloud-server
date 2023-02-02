@@ -12,7 +12,7 @@ import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
 import { OauthLoginStateDto } from '../uc/dto/oauth-login-state.dto';
-import { AuthorizationParams, LoginParams } from './dto';
+import { AuthorizationParams, SSOLoginQuery, SystemIdParams } from './dto';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -22,8 +22,13 @@ export class OauthSSOController {
 	}
 
 	@Get('login/:systemId')
-	async login(@Session() session: ISession, @Res() res: Response, @Param() params: LoginParams): Promise<void> {
-		const redirect: string = await this.oauthUc.startOauthLogin(session, params.systemId, params.postLoginRedirect);
+	async getAuthenticationUrl(
+		@Session() session: ISession,
+		@Res() res: Response,
+		@Param() params: SystemIdParams,
+		@Query() query: SSOLoginQuery
+	): Promise<void> {
+		const redirect: string = await this.oauthUc.startOauthLogin(session, params.systemId, query.postLoginRedirect);
 
 		res.redirect(redirect);
 	}
@@ -55,7 +60,7 @@ export class OauthSSOController {
 		}
 
 		try {
-			const oauthProcessDto: OAuthProcessDto = await this.oauthUc.processOAuth(
+			const oauthProcessDto: OAuthProcessDto = await this.oauthUc.processOAuthLogin(
 				oauthLoginState,
 				query.code,
 				query.error
@@ -90,7 +95,7 @@ export class OauthSSOController {
 		@Query() query: AuthorizationParams,
 		@Param('oauthClientId') oauthClientId: string
 	): Promise<OauthTokenResponse> {
-		const oauthToken = this.hydraUc.getOauthToken(query, oauthClientId);
+		const oauthToken = this.hydraUc.getOauthToken(oauthClientId, query.code, query.error);
 		return oauthToken;
 	}
 

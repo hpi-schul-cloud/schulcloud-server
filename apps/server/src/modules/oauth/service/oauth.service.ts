@@ -143,4 +143,15 @@ export class OAuthService {
 
 		return redirect;
 	}
+
+	getAuthenticationUrl(oauthConfig: OauthConfig, state: string): string {
+		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
+		authenticationUrl.searchParams.append('client_id', oauthConfig.clientId);
+		authenticationUrl.searchParams.append('redirect_uri', oauthConfig.redirectUri);
+		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
+		authenticationUrl.searchParams.append('scope', oauthConfig.scope);
+		authenticationUrl.searchParams.append('state', state);
+
+		return authenticationUrl.toString();
+	}
 }

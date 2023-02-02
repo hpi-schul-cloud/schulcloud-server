@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, OauthConfig } from '@shared/domain';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ISession } from '@shared/domain/types/session';
 import { Logger } from '@src/core/logger';
@@ -33,6 +33,11 @@ export class OauthUc {
 		const state: string = CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex);
 
 		const system: SystemDto = await this.systemService.findOAuthById(systemId);
+		if (!system.oauthConfig) {
+			throw new BadRequestException(`Requested system ${systemId} has no oauth configured`);
+		}
+
+		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(system.oauthConfig, state);
 
 		session.oauthLoginState = new OauthLoginStateDto({
 			state,
@@ -41,12 +46,10 @@ export class OauthUc {
 			errorRedirect: system.oauthConfig?.provider === 'iserv' ? system.oauthConfig.logoutEndpoint : undefined, // TODO post logout redirect
 		});
 
-		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(systemId);
-
 		return authenticationUrl;
 	}
 
-	async processOAuth(cachedState: OauthLoginStateDto, code?: string, error?: string): Promise<OAuthProcessDto> {
+	async processOAuthLogin(cachedState: OauthLoginStateDto, code?: string, error?: string): Promise<OAuthProcessDto> {
 		if (!code) {
 			throw new OAuthSSOError('Authorization in external system failed', error || SSOErrorCode.SSO_AUTH_CODE_STEP);
 		}
@@ -56,10 +59,10 @@ export class OauthUc {
 		this.logger.debug(`Oauth login process started. [state: ${state}, system: ${systemId}]`);
 
 		const system: SystemDto = await this.systemService.findOAuthById(systemId);
-		if (!system.id) {
-			throw new OAuthSSOError(`System with id "${systemId}" does not exist.`, SSOErrorCode.SSO_INTERNAL_ERROR);
+		if (!system.oauthConfig) {
+			throw new OAuthSSOError(`Requested system ${systemId} has no oauth configured`, SSOErrorCode.SSO_INTERNAL_ERROR);
 		}
-		const oauthConfig: OauthConfig = this.extractOauthConfigFromSystem(system);
+		const { oauthConfig } = system;
 
 		this.logger.debug(`Requesting token from external system. [state: ${state}, system: ${systemId}]`);
 		const queryToken: OauthTokenResponse = await this.oauthService.requestToken(code, oauthConfig);
@@ -70,14 +73,14 @@ export class OauthUc {
 		const data: OauthDataDto = await this.provisioningService.getData(
 			queryToken.access_token,
 			queryToken.id_token,
-			system.id
+			systemId
 		);
 
 		if (data.externalSchool?.officialSchoolNumber) {
 			const shouldMigrate: boolean = await this.shouldUserMigrate(
 				data.externalUser.externalId,
 				data.externalSchool.officialSchoolNumber,
-				system.id
+				systemId
 			);
 			if (shouldMigrate) {
 				this.logger.debug(
@@ -85,7 +88,7 @@ export class OauthUc {
 				);
 				const redirect: string = await this.userMigrationService.getMigrationRedirect(
 					data.externalSchool.officialSchoolNumber,
-					system.id
+					systemId
 				);
 				const response: OAuthProcessDto = new OAuthProcessDto({
 					redirect,
@@ -100,7 +103,7 @@ export class OauthUc {
 		const user: UserDO = await this.oauthService.findUser(
 			queryToken.id_token,
 			provisioningDto.externalUserId,
-			system.id
+			systemId
 		);
 
 		this.logger.debug(`Generating jwt for user. [state: ${state}, system: ${systemId}]`);
@@ -126,16 +129,5 @@ export class OauthUc {
 
 		const shouldMigrate = !existingUser && isSchoolInMigration;
 		return shouldMigrate;
-	}
-
-	private extractOauthConfigFromSystem(system: SystemDto): OauthConfig {
-		const { oauthConfig } = system;
-		if (oauthConfig == null) {
-			this.logger.warn(
-				`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id ?? 'undefined'}`
-			);
-			throw new OAuthSSOError('Requested system has no oauth configured', SSOErrorCode.SSO_INTERNAL_ERROR);
-		}
-		return oauthConfig;
 	}
 }
