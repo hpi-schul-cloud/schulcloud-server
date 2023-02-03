@@ -173,9 +173,9 @@ export class FileRecord extends BaseEntity {
 		this.securityCheck.requestToken = undefined;
 	}
 
-	public copy(userId: EntityId, parentInfo: IParentInfo): FileRecord {
+	public copy(userId: EntityId, targetParentInfo: IParentInfo): FileRecord {
 		const { size, name, mimeType } = this;
-		const { parentType, parentId, schoolId } = parentInfo;
+		const { parentType, parentId, schoolId } = targetParentInfo;
 
 		const fileRecordCopy = new FileRecord({
 			size,
