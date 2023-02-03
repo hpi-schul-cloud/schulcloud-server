@@ -348,4 +348,88 @@ describe('OAuthUc', () => {
 			});
 		});
 	});
+
+	describe('migrateUser', () => {
+		const setup = () => {
+			const code = '43534543jnj543342jn2';
+			const query: AuthorizationParams = { code };
+
+			const oauthConfig: OauthConfigDto = new OauthConfigDto({
+				clientId: '12345',
+				clientSecret: 'mocksecret',
+				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+				grantType: 'authorization_code',
+				scope: 'openid uuid',
+				responseType: 'code',
+				authEndpoint: 'mock_authEndpoint',
+				provider: 'mock_provider',
+				logoutEndpoint: 'mock_logoutEndpoint',
+				issuer: 'mock_issuer',
+				jwksEndpoint: 'mock_jwksEndpoint',
+				redirectUri: 'mock_codeRedirectUri',
+			});
+			const system: SystemDto = new SystemDto({
+				id: 'systemId',
+				type: 'oauth',
+				oauthConfig,
+			});
+
+			const oauthTokenResponse: OauthTokenResponse = {
+				access_token: 'accessToken',
+				refresh_token: 'refreshToken',
+				id_token: 'idToken',
+			};
+
+			const externalUserId = 'externalUserId';
+			const user: UserDO = new UserDO({
+				firstName: 'firstName',
+				lastName: 'lastName',
+				email: 'email',
+				schoolId: 'schoolId',
+				roleIds: ['roleId'],
+				externalId: externalUserId,
+			});
+			const oauthData: OauthDataDto = new OauthDataDto({
+				system: new ProvisioningSystemDto({
+					systemId: 'systemId',
+					provisioningStrategy: SystemProvisioningStrategy.OIDC,
+				}),
+				externalUser: new ExternalUserDto({
+					externalId: externalUserId,
+				}),
+			});
+			const provisioningDto: ProvisioningDto = new ProvisioningDto({
+				externalUserId,
+			});
+
+			const postLoginRedirect = 'postLoginRedirect';
+			const successResponse: OAuthProcessDto = new OAuthProcessDto({
+				idToken: 'idToken',
+				logoutEndpoint: oauthConfig.logoutEndpoint,
+				provider: oauthConfig.provider,
+				redirect: postLoginRedirect,
+			});
+
+			const userJwt = 'schulcloudJwt';
+
+			oauthService.checkAuthorizationCode.mockReturnValue(code);
+			systemService.findOAuthById.mockResolvedValue(system);
+			oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
+			provisioningService.getData.mockResolvedValue(oauthData);
+
+			return {
+				query,
+				system,
+				externalUserId,
+				user,
+				oauthData,
+				provisioningDto,
+				userJwt,
+				oauthConfig,
+				postLoginRedirect,
+				successResponse,
+			};
+		};
+		it('should call UserMigrationService ', () => {});
+	});
 });

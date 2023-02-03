@@ -46,20 +46,35 @@ export class OAuthService {
 		);
 	}
 
-	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
-		const payload = this.buildTokenRequestPayload(code, oauthConfig);
+	async requestToken(code: string, oauthConfig: OauthConfig, migrationRedirect?: string): Promise<OauthTokenResponse> {
+		let payload: TokenRequestPayload;
+		if (migrationRedirect) {
+			payload = this.buildTokenRequestPayload(code, oauthConfig, migrationRedirect);
+		} else {
+			payload = this.buildTokenRequestPayload(code, oauthConfig);
+		}
 		const responseTokenObservable = this.sendTokenRequest(payload);
 		const responseToken = this.resolveTokenRequest(responseTokenObservable);
 		return responseToken;
 	}
 
-	private buildTokenRequestPayload(code: string, oauthConfig: OauthConfig): TokenRequestPayload {
+	private buildTokenRequestPayload(
+		code: string,
+		oauthConfig: OauthConfig,
+		migrationRedirect?: string
+	): TokenRequestPayload {
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
-		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
-			oauthConfig,
-			decryptedClientSecret,
-			code
-		);
+		let tokenRequestPayload: TokenRequestPayload;
+		if (migrationRedirect) {
+			tokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
+				oauthConfig,
+				decryptedClientSecret,
+				code,
+				migrationRedirect
+			);
+		} else {
+			tokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(oauthConfig, decryptedClientSecret, code);
+		}
 		return tokenRequestPayload;
 	}
 
