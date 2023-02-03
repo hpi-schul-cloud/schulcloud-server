@@ -6,7 +6,6 @@ export class MetadataTypeMapper {
 	static mapToAlloweMetadataType(type: ShareTokenParentType): LearnroomTypes {
 		const types: Map<ShareTokenParentType, LearnroomTypes> = new Map();
 		types.set(ShareTokenParentType.Course, LearnroomTypes.Course);
-		types.set(ShareTokenParentType.Lesson, LearnroomTypes.Lesson);
 
 		const res = types.get(type);
 

@@ -1,15 +1,11 @@
 export enum LearnroomTypes {
 	'Course' = 'course',
-	'Lesson' = 'lesson',
 }
 
-export type BaseMetadata = {
+export type LearnroomMetadata = {
 	id: string;
 	type: LearnroomTypes;
 	title: string;
-};
-
-export type LearnroomMetadata = BaseMetadata & {
 	shortTitle: string;
 	displayColor: string;
 	startDate?: Date;

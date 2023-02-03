@@ -1,12 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { Actions, BaseMetadata, EntityId, Permission } from '@shared/domain';
-import { CourseRepo, LessonRepo } from '@shared/repo';
+import { Actions, EntityId, Permission } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { CopyStatus } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
-import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
 import { LessonCopyService } from '@src/modules/lesson/service';
 import {
 	ShareTokenContext,
@@ -16,7 +14,6 @@ import {
 	ShareTokenPayload,
 } from '../domainobject/share-token.do';
 import { ShareTokenContextTypeMapper, ShareTokenParentTypeMapper } from '../mapper';
-import { MetadataTypeMapper } from '../mapper/metadata-type.mapper';
 import { ShareTokenService } from '../service';
 import { ShareTokenInfoDto } from './dto';
 
@@ -25,11 +22,8 @@ export class ShareTokenUC {
 	constructor(
 		private readonly shareTokenService: ShareTokenService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly metadataLoader: MetadataLoader,
 		private readonly courseCopyService: CourseCopyService,
 		private readonly lessonCopyService: LessonCopyService,
-		private readonly lessonRepo: LessonRepo,
-		private readonly courseRepo: CourseRepo,
 
 		private readonly logger: Logger
 	) {
@@ -67,7 +61,7 @@ export class ShareTokenUC {
 	async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfoDto> {
 		this.logger.debug({ action: 'lookupShareToken', userId, token });
 
-		const shareToken = await this.shareTokenService.lookupToken(token);
+		const { shareToken, parentName } = await this.shareTokenService.lookupTokenWithParentName(token);
 
 		this.checkFeatureEnabled(shareToken.payload.parentType);
 
@@ -77,12 +71,10 @@ export class ShareTokenUC {
 			await this.checkContextReadPermission(userId, shareToken.context);
 		}
 
-		const metadata: BaseMetadata = await this.loadMetadata(shareToken.payload);
-
 		const shareTokenInfo: ShareTokenInfoDto = {
 			token,
 			parentType: shareToken.payload.parentType,
-			parentName: metadata.title,
+			parentName,
 		};
 
 		return shareTokenInfo;
@@ -134,12 +126,10 @@ export class ShareTokenUC {
 
 	private async copyLesson(userId: string, lessonId: string, courseId: string, copyName?: string): Promise<CopyStatus> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const originalLesson = await this.lessonRepo.findById(lessonId);
-		const destinationCourse = await this.courseRepo.findById(courseId);
 		return this.lessonCopyService.copyLesson({
 			user,
-			originalLesson,
-			destinationCourse,
+			originalLessonId: lessonId,
+			destinationCourseId: courseId,
 			copyName,
 		});
 	}
@@ -187,16 +177,6 @@ export class ShareTokenUC {
 				break;
 		}
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);
-	}
-
-	private async loadMetadata(payload: ShareTokenPayload): Promise<BaseMetadata> {
-		const learnroomType = MetadataTypeMapper.mapToAlloweMetadataType(payload.parentType);
-		const metadata = await this.metadataLoader.loadMetadata({
-			type: learnroomType,
-			id: payload.parentId,
-		});
-
-		return metadata;
 	}
 
 	private nowPlusDays(days: number) {

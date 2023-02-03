@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, BaseMetadata, LearnroomMetadata, LearnroomTypes, Permission } from '@shared/domain';
+import { Actions, LearnroomMetadata, LearnroomTypes, Permission } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 
 import {

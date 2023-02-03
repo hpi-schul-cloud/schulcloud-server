@@ -1,18 +1,5 @@
-import { Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import {
-	Board,
-	BoardElement,
-	BoardElementReference,
-	BoardElementType,
-	Course,
-	InputFormat,
-	isLesson,
-	isTask,
-	Lesson,
-	Task,
-	User,
-} from '@shared/domain';
+import { Board, BoardElement, BoardElementType, Course, isLesson, isTask, Lesson, Task, User } from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
@@ -95,9 +82,9 @@ export class BoardCopyService {
 
 	private async copyLesson(originalLesson: Lesson, user: User, destinationCourse: Course): Promise<CopyStatus> {
 		return this.lessonCopyService.copyLesson({
-			originalLesson,
+			originalLessonId: originalLesson.id,
 			user,
-			destinationCourse,
+			destinationCourseId: destinationCourse.id,
 		});
 	}
 

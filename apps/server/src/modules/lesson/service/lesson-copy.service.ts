@@ -36,27 +36,29 @@ export class LessonCopyService {
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
-		const { copiedContent, contentStatus } = await this.copyLessonContent(params.originalLesson.contents, params);
-		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(params.originalLesson);
+		const lesson: Lesson = await this.lessonRepo.findById(params.originalLessonId);
+		const { copiedContent, contentStatus } = await this.copyLessonContent(lesson.contents, params);
+		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(lesson);
+
 		const lessonCopy = new Lesson({
-			course: params.destinationCourse,
+			course: lesson.course,
 			hidden: true,
-			name: params.copyName ?? params.originalLesson.name,
-			position: params.originalLesson.position,
+			name: params.copyName ?? lesson.name,
+			position: lesson.position,
 			contents: copiedContent,
 			materials: copiedMaterials,
 		});
 
 		await this.lessonRepo.createLesson(lessonCopy);
 
-		const copiedTasksStatus: CopyStatus[] = await this.copyLinkedTasks(lessonCopy, params);
+		const copiedTasksStatus: CopyStatus[] = await this.copyLinkedTasks(lessonCopy, lesson, params);
 
 		const { status, elements } = this.deriveCopyStatus(
 			contentStatus,
 			materialsStatus,
 			copiedTasksStatus,
 			lessonCopy,
-			params.originalLesson
+			lesson
 		);
 
 		await this.lessonRepo.save(lessonCopy);
@@ -64,7 +66,7 @@ export class LessonCopyService {
 		const updatedStatus = this.updateCopiedEmbeddedTasks(status, copyDict);
 
 		const { fileUrlReplacements, fileCopyStatus } = await this.copyFilesService.copyFilesOfEntity(
-			params.originalLesson,
+			lesson,
 			lessonCopy,
 			params.user.id
 		);
@@ -308,7 +310,7 @@ export class LessonCopyService {
 
 		const etherpadPadId = await this.etherpadService.createEtherpad(
 			params.user.id,
-			params.destinationCourse.id,
+			params.destinationCourseId,
 			content.title
 		);
 		if (etherpadPadId) {
@@ -338,14 +340,14 @@ export class LessonCopyService {
 		return false;
 	}
 
-	private async copyLinkedTasks(destinationLesson: Lesson, params: LessonCopyParams) {
-		const linkedTasks = params.originalLesson.getLessonLinkedTasks();
+	private async copyLinkedTasks(destinationLesson: Lesson, lesson: Lesson, params: LessonCopyParams) {
+		const linkedTasks = lesson.getLessonLinkedTasks();
 		if (linkedTasks.length > 0) {
 			const copiedTasksStatus = await Promise.all(
 				linkedTasks.map((element) =>
 					this.taskCopyService.copyTask({
 						originalTask: element,
-						destinationCourse: params.destinationCourse,
+						destinationCourse: lesson.course,
 						destinationLesson,
 						user: params.user,
 					})
