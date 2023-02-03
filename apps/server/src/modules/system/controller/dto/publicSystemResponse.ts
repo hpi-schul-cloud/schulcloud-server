@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OauthConfigResponse } from '@src/modules/system/controller/dto/oauth-config.response';
 
-export class SystemResponse {
+export class PublicSystemResponse {
 	@ApiProperty({
 		description: 'Id of the system.',
 		required: true,
@@ -45,7 +45,7 @@ export class SystemResponse {
 	})
 	oauthConfig?: OauthConfigResponse;
 
-	constructor(system: SystemResponse) {
+	constructor(system: PublicSystemResponse) {
 		this.id = system.id;
 		this.type = system.type;
 		this.url = system.url;

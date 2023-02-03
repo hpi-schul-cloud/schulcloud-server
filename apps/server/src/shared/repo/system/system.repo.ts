@@ -9,7 +9,7 @@ export class SystemRepo extends BaseRepo<System> {
 		return System;
 	}
 
-	async findByFilter(type: string | SystemType = '', onlyOauth = false): Promise<System[]> {
+	async findByFilter(type?: SystemType, onlyOauth = false): Promise<System[]> {
 		const scope = new SystemScope();
 		if (type) {
 			scope.byType(type);

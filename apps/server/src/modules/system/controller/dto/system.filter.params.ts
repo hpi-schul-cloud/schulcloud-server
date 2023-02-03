@@ -1,6 +1,7 @@
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { StringToBoolean } from '@shared/controller';
+import { SystemTypeEnum } from '@shared/domain';
+import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 export class SystemFilterParams {
 	@ApiProperty({
@@ -9,8 +10,8 @@ export class SystemFilterParams {
 		nullable: true,
 	})
 	@IsOptional()
-	@IsString()
-	type?: string;
+	@IsEnum(SystemTypeEnum)
+	type?: SystemTypeEnum;
 
 	@ApiProperty({
 		description: 'Flag to request only systems with oauth-config.',

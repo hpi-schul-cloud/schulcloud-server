@@ -1,27 +1,27 @@
 import { OauthConfigResponse } from '@src/modules/system/controller/dto/oauth-config.response';
-import { SystemOauthResponse } from '@src/modules/system/controller/dto/system-oauth.response';
-import { SystemResponse } from '@src/modules/system/controller/dto/system.response';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { PublicSystemListResponse } from '../dto/public-system-list.response';
+import { PublicSystemResponse } from '../dto/publicSystemResponse';
 
-export class SystemOauthResponseMapper {
-	static mapFromDtoToResponse(systems: SystemDto[]): SystemOauthResponse {
-		const systemResponses: SystemResponse[] = [];
+export class SystemResponseMapper {
+	static mapFromDtoToResponse(systems: SystemDto[]): PublicSystemListResponse {
+		const systemResponses: PublicSystemResponse[] = [];
 		systems.forEach((system) =>
 			systemResponses.push(
-				new SystemResponse({
+				new PublicSystemResponse({
 					id: system.id || '',
 					type: system.type,
 					url: system.url,
 					alias: system.alias,
 					displayName: system.displayName,
 					oauthConfig: system.oauthConfig
-						? SystemOauthResponseMapper.mapFromOauthConfigDtoToResponse(system.oauthConfig)
+						? SystemResponseMapper.mapFromOauthConfigDtoToResponse(system.oauthConfig)
 						: undefined,
 				})
 			)
 		);
-		return new SystemOauthResponse(systemResponses);
+		return new PublicSystemListResponse(systemResponses);
 	}
 
 	static mapFromOauthConfigDtoToResponse(oauthConfigDto: OauthConfigDto): OauthConfigResponse {
