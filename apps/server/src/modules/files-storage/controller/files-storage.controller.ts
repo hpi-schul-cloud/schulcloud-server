@@ -6,6 +6,7 @@ import {
 	Delete,
 	ForbiddenException,
 	Get,
+	HttpStatus,
 	InternalServerErrorException,
 	NotAcceptableException,
 	NotFoundException,
@@ -15,7 +16,6 @@ import {
 	Query,
 	Req,
 	Res,
-	HttpStatus,
 	StreamableFile,
 	UseInterceptors,
 } from '@nestjs/common';
@@ -25,7 +25,7 @@ import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
-import { FilesStorageMapper } from '../mapper/file-record.mapper';
+import { FileRecordMapper } from '../mapper/file-record.mapper';
 import { FilesStorageUC } from '../uc';
 import {
 	CopyFileListResponse,
@@ -62,7 +62,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.uploadFromUrl(currentUser.userId, { ...body, ...params });
 
-		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
@@ -83,7 +83,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.upload(currentUser.userId, params, req);
 
-		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
@@ -148,7 +148,7 @@ export class FilesStorageController {
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.getFileRecordsOfParent(currentUser.userId, params);
 		const { skip, limit } = pagination;
-		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total, skip, limit);
+		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total, skip, limit);
 
 		return response;
 	}
@@ -172,7 +172,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.patchFilename(currentUser.userId, params, renameFileParam);
 
-		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
@@ -192,7 +192,7 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent(currentUser.userId, params);
-		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
+		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return response;
 	}
@@ -210,7 +210,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.deleteOneFile(currentUser.userId, params);
 
-		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
@@ -226,7 +226,7 @@ export class FilesStorageController {
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.restoreFilesOfParent(currentUser.userId, params);
 
-		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
+		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return response;
 	}
@@ -242,7 +242,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.restoreOneFile(currentUser.userId, params);
 
-		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
