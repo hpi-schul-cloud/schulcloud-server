@@ -365,6 +365,66 @@
 	},
 	{
 		"_id": {
+			"$oid": "0000d231816abba584714c2f"
+		},
+		"__v": 0,
+		"firstName": "Lorenz",
+		"lastName": "Ldap",
+		"email": "lorenz.ldap@schul-cloud.org",
+		"ldapDn": "uid=lorenz.ldap.123,ou=users,o=school0,dc=de,dc=example,dc=org",
+		"ldapId": "MGEwM2UyZjMtNTNjMS00NTlhLWEzNmEtNjNhOWYwZjFiZWM3",
+		"updatedAt": {
+			"$date": "2020-10-21T15:47:29.456Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"birthday": {
+			"$date": "1977-01-01T11:25:43.556Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		},
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd600"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c99"
+			}
+		],
+		"consent": {
+			"userConsent": {
+				"form": "digital",
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
+				"dateOfPrivacyConsent": {
+					"$date": "2017-01-01T00:06:37.148Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2017-01-01T00:06:37.148Z"
+				}
+			},
+			"parentConsents": [
+				{
+					"_id": {
+						"$oid": "5ece7de4a194604c6e31f435"
+					},
+					"form": "digital",
+					"privacyConsent": true,
+					"termsOfUseConsent": true,
+					"dateOfPrivacyConsent": {
+						"$date": "2017-01-01T00:06:37.148Z"
+					},
+					"dateOfTermsOfUseConsent": {
+						"$date": "2017-01-01T00:06:37.148Z"
+					}
+				}
+			]
+		}
+	},
+	{
+		"_id": {
 			"$oid": "0000d213816abba584710000"
 		},
 		"__v": 0,
