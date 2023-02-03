@@ -21,6 +21,7 @@ export class DashboardMapper {
 			displayColor: elementData.displayColor,
 			xPosition: position.x,
 			yPosition: position.y,
+			copyingSince: elementData.copyingSince ?? undefined,
 		});
 		if (elementData.referencedId) {
 			dto.id = elementData.referencedId;
