@@ -8,7 +8,6 @@ import {
 	externalToolDOFactory,
 } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { CustomParameterScope, CustomParameterType } from '@shared/domain';
-import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
@@ -71,6 +70,29 @@ describe('SchoolExternalToolValidationService', () => {
 				const func = () => service.validateCreate(schoolExternalToolDO);
 
 				await expect(func()).rejects.toThrowError('tool_version_mismatch:');
+			});
+		});
+
+		describe('when checking parameter is required', () => {
+			it('should throw error when given parameter is not optional and parameter value is empty', async () => {
+				const requiredParam: CustomParameterDO = customParameterDOFactory.build({
+					name: 'requiredParam',
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.STRING,
+					isOptional: false,
+				});
+				const { schoolExternalToolDO } = setup(
+					{
+						parameters: [requiredParam],
+					},
+					{
+						parameters: [{ name: 'requiredParam', value: '' }],
+					}
+				);
+
+				const func = () => service.validateCreate(schoolExternalToolDO);
+
+				await expect(func()).rejects.toThrowError('tool_param_required:');
 			});
 		});
 
@@ -371,9 +393,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 				const func = () => service.validateCreate(schoolExternalToolDO);
 
-				await expect(func()).resolves.not.toThrowError(
-					`The given entry for the parameter with name ${undefinedRegex.name} does not fit the regex.`
-				);
+				await expect(func()).resolves.not.toThrowError(`tool_param_value_regex`);
 			});
 
 			it('should return without error when param value is valid', async () => {

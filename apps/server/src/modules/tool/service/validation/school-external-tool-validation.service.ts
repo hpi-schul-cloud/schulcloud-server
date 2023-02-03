@@ -70,7 +70,7 @@ export class SchoolExternalToolValidationService {
 	}
 
 	private checkOptionalParameter(param: CustomParameterDO, foundEntry: CustomParameterEntryDO | undefined): void {
-		if (!foundEntry && !param.isOptional) {
+		if (!foundEntry?.value && !param.isOptional) {
 			throw new ValidationError(
 				`tool_param_required: The parameter with name ${param.name} is required but not found in the schoolExternalTool.`
 			);
