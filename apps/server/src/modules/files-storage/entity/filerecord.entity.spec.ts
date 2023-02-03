@@ -2,7 +2,6 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { notContains } from 'class-validator';
 import { ErrorType } from '../error';
 import {
 	FileRecordParentType,
@@ -234,43 +233,23 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
-	describe('getDescription is called', () => {
-		describe('WHEN name, size and mimeType exists', () => {
-			const setup = () => {
-				const name = 'name123';
-				const size = 123;
-				const mimeType = 'mimeType123';
-				const fileRecord = fileRecordFactory.build({ name, size, mimeType });
-
-				return { fileRecord, name, size, mimeType };
-			};
-
-			it('should return an object that include name, size and mimeType', () => {
-				const { fileRecord, name, size, mimeType } = setup();
-
-				const result = fileRecord.getDescription();
-
-				expect(result).toEqual({ name, size, mimeType });
-			});
-		});
-	});
-
-	describe('getParentDescription is called', () => {
+	describe('getParentInfo is called', () => {
 		describe('WHEN parentId and parentType and mimeType exists', () => {
 			const setup = () => {
 				const parentType = FileRecordParentType.School;
 				const parentId = new ObjectId().toHexString();
-				const fileRecord = fileRecordFactory.build({ parentType, parentId });
+				const schoolId = new ObjectId().toHexString();
+				const fileRecord = fileRecordFactory.build({ parentType, parentId, schoolId });
 
-				return { fileRecord, parentId, parentType };
+				return { fileRecord, parentId, parentType, schoolId };
 			};
 
 			it('should return an object that include parentId and parentType', () => {
-				const { fileRecord, parentId, parentType } = setup();
+				const { fileRecord, parentId, parentType, schoolId } = setup();
 
-				const result = fileRecord.getParentDescription();
+				const result = fileRecord.getParentInfo();
 
-				expect(result).toEqual({ parentId, parentType });
+				expect(result).toEqual({ parentId, parentType, schoolId });
 			});
 		});
 	});
@@ -389,95 +368,154 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
-	describe('copySecurityCheckIfVerified is called', () => {
-		const getFileRecords = () => {
-			const sourceFile = fileRecordFactory.build();
-			const targetFile = fileRecordFactory.build();
+	describe('copy is called', () => {
+		const getCopyData = () => {
+			const fileRecord = fileRecordFactory.build();
+			const userId = new ObjectId().toHexString();
+			const parentId = new ObjectId().toHexString();
+			const schoolId = new ObjectId().toHexString();
+			const parentType = FileRecordParentType.School;
+			const parentInfo = { parentId, schoolId, parentType };
 
-			return { sourceFile, targetFile };
+			return {
+				fileRecord,
+				parentInfo,
+				userId,
+			};
 		};
 
-		describe('WHEN source files scan status is VERIFIED', () => {
+		describe('when valid input is passed', () => {
 			const setup = () => {
-				const { sourceFile, targetFile } = getFileRecords();
-
-				sourceFile.securityCheck.status = ScanStatus.VERIFIED;
+				const { fileRecord, parentInfo, userId } = getCopyData();
 
 				return {
-					sourceFile,
-					targetFile,
+					fileRecord,
+					parentInfo,
+					userId,
 				};
 			};
 
-			it('should set targets securitycheck by source', () => {
-				const { sourceFile, targetFile } = setup();
+			it('should return a instance of fileRecord', () => {
+				const { fileRecord, parentInfo, userId } = setup();
 
-				targetFile.copySecurityCheckIfVerified(sourceFile);
+				const result = fileRecord.copy(userId, parentInfo);
 
-				expect(targetFile.securityCheck).toStrictEqual(sourceFile.securityCheck);
+				expect(result).toBeInstanceOf(FileRecord);
+			});
+
+			it('should create a new instance', () => {
+				const { fileRecord, parentInfo, userId } = setup();
+
+				const result = fileRecord.copy(userId, parentInfo);
+
+				expect(result).not.toEqual(fileRecord);
+			});
+
+			it('should copy the file meta data from source file', () => {
+				const { fileRecord, parentInfo, userId } = setup();
+
+				const result = fileRecord.copy(userId, parentInfo);
+
+				expect(result.mimeType).toEqual(fileRecord.mimeType);
+				expect(result.name).toEqual(fileRecord.name);
+				expect(result.size).toEqual(fileRecord.size);
+			});
+
+			it('should override the creator and parentInfo data in target file from passed params', () => {
+				const { fileRecord, parentInfo, userId } = setup();
+
+				const result = fileRecord.copy(userId, parentInfo);
+
+				expect(result.creatorId).toEqual(userId);
+				expect(result.parentType).toEqual(parentInfo.parentType);
+				expect(result.parentId).toEqual(parentInfo.parentId);
+				expect(result.schoolId).toEqual(parentInfo.schoolId);
 			});
 		});
 
-		describe('WHEN source files scan status is BLOCKED', () => {
-			const setup = () => {
-				const { sourceFile, targetFile } = getFileRecords();
+		describe('given a scan status exists', () => {
+			describe('WHEN source files scan status is VERIFIED', () => {
+				const setup = () => {
+					const { fileRecord, parentInfo, userId } = getCopyData();
+					fileRecord.securityCheck.status = ScanStatus.VERIFIED;
 
-				sourceFile.securityCheck.status = ScanStatus.BLOCKED;
-
-				return {
-					sourceFile,
-					targetFile,
+					return {
+						fileRecord,
+						parentInfo,
+						userId,
+					};
 				};
-			};
 
-			it('should keep targets securitycheck', () => {
-				const { sourceFile, targetFile } = setup();
+				it('should copy the securityCheck from source file', () => {
+					const { fileRecord, parentInfo, userId } = setup();
 
-				targetFile.copySecurityCheckIfVerified(sourceFile);
+					const result = fileRecord.copy(userId, parentInfo);
 
-				expect(targetFile.securityCheck).toStrictEqual(targetFile.securityCheck);
+					expect(result.securityCheck).toStrictEqual(fileRecord.securityCheck);
+				});
 			});
-		});
 
-		describe('WHEN source files scan status is PENDING', () => {
-			const setup = () => {
-				const { sourceFile, targetFile } = getFileRecords();
+			describe('WHEN source files scan status is BLOCKED', () => {
+				const setup = () => {
+					const { fileRecord, parentInfo, userId } = getCopyData();
+					fileRecord.securityCheck.status = ScanStatus.BLOCKED;
 
-				sourceFile.securityCheck.status = ScanStatus.PENDING;
-
-				return {
-					sourceFile,
-					targetFile,
+					return {
+						fileRecord,
+						parentInfo,
+						userId,
+					};
 				};
-			};
 
-			it('should keep targets securitycheck', () => {
-				const { sourceFile, targetFile } = setup();
+				it('should create a new securitycheck for copy', () => {
+					const { fileRecord, parentInfo, userId } = setup();
 
-				targetFile.copySecurityCheckIfVerified(sourceFile);
+					const result = fileRecord.copy(userId, parentInfo);
 
-				expect(targetFile.securityCheck).toStrictEqual(targetFile.securityCheck);
+					expect(result.securityCheck).not.toStrictEqual(fileRecord.securityCheck);
+				});
 			});
-		});
 
-		describe('WHEN source files scan status is ERROR', () => {
-			const setup = () => {
-				const { sourceFile, targetFile } = getFileRecords();
+			describe('WHEN source files scan status is PENDING', () => {
+				const setup = () => {
+					const { fileRecord, parentInfo, userId } = getCopyData();
+					fileRecord.securityCheck.status = ScanStatus.PENDING;
 
-				sourceFile.securityCheck.status = ScanStatus.ERROR;
-
-				return {
-					sourceFile,
-					targetFile,
+					return {
+						fileRecord,
+						parentInfo,
+						userId,
+					};
 				};
-			};
 
-			it('should keep targets securitycheck', () => {
-				const { sourceFile, targetFile } = setup();
+				it('should create a new securitycheck for copy', () => {
+					const { fileRecord, parentInfo, userId } = setup();
 
-				targetFile.copySecurityCheckIfVerified(sourceFile);
+					const result = fileRecord.copy(userId, parentInfo);
 
-				expect(targetFile.securityCheck).toStrictEqual(targetFile.securityCheck);
+					expect(result.securityCheck).not.toStrictEqual(fileRecord.securityCheck);
+				});
+			});
+
+			describe('WHEN source files scan status is ERROR', () => {
+				const setup = () => {
+					const { fileRecord, parentInfo, userId } = getCopyData();
+					fileRecord.securityCheck.status = ScanStatus.ERROR;
+
+					return {
+						fileRecord,
+						parentInfo,
+						userId,
+					};
+				};
+
+				it('should create a new securitycheck for copy', () => {
+					const { fileRecord, parentInfo, userId } = setup();
+
+					const result = fileRecord.copy(userId, parentInfo);
+
+					expect(result.securityCheck).not.toStrictEqual(fileRecord.securityCheck);
+				});
 			});
 		});
 	});

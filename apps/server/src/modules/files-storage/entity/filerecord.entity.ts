@@ -67,6 +67,12 @@ export interface IFileRecordProperties {
 	deletedSince?: Date;
 }
 
+interface IParentInfo {
+	schoolId: EntityId;
+	parentId: EntityId;
+	parentType: FileRecordParentType;
+}
+
 // TODO: IEntityWithSchool
 
 /**
@@ -167,10 +173,25 @@ export class FileRecord extends BaseEntity {
 		this.securityCheck.requestToken = undefined;
 	}
 
-	public copySecurityCheckIfVerified(sourceFileRecord: FileRecord): void {
-		if (!this.isVerified()) {
-			this.securityCheck = sourceFileRecord.securityCheck;
+	public copy(userId: EntityId, parentInfo: IParentInfo): FileRecord {
+		const { size, name, mimeType } = this;
+		const { parentType, parentId, schoolId } = parentInfo;
+
+		const fileRecordCopy = new FileRecord({
+			size,
+			name,
+			mimeType,
+			parentType,
+			parentId,
+			creatorId: userId,
+			schoolId,
+		});
+
+		if (this.isVerified()) {
+			fileRecordCopy.securityCheck = this.securityCheck;
 		}
+
+		return fileRecordCopy;
 	}
 
 	public markForDelete(): void {
@@ -217,16 +238,10 @@ export class FileRecord extends BaseEntity {
 		return isVerified;
 	}
 
-	public getParentDescription(): { parentType: FileRecordParentType; parentId: EntityId } {
-		const { parentId, parentType } = this;
+	public getParentInfo(): IParentInfo {
+		const { parentId, parentType, schoolId } = this;
 
-		return { parentId, parentType };
-	}
-
-	public getDescription(): { size: number; name: string; mimeType: string } {
-		const { size, name, mimeType } = this;
-
-		return { size, name, mimeType };
+		return { parentId, parentType, schoolId };
 	}
 
 	public getSchoolId(): EntityId {

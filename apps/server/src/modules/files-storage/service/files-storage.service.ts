@@ -260,11 +260,7 @@ export class FilesStorageService {
 		targetParams: FileRecordParams,
 		userId: EntityId
 	): Promise<FileRecord> {
-		const { name, size, mimeType } = sourceFile.getDescription();
-		const fileRecord = createFileRecord(name, size, mimeType, targetParams, userId);
-
-		fileRecord.copySecurityCheckIfVerified(sourceFile);
-
+		const fileRecord = sourceFile.copy(userId, targetParams);
 		await this.fileRecordRepo.save(fileRecord);
 
 		return fileRecord;
