@@ -19,7 +19,6 @@ import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-import session = require('express-session');
 import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap() {
@@ -49,19 +48,6 @@ async function bootstrap() {
 	nestApp.enableCors();
 	enableOpenApiDocs(nestApp, 'docs');
 
-	nestApp.use(
-		session({
-			secret: 'my-secret', // TODO get session secret
-			resave: false,
-			saveUninitialized: false,
-			cookie: {
-				secure: true, // TODO NODE.ENV === 'prod'
-				sameSite: true,
-				httpOnly: true,
-				maxAge: 60000, // TODO get from config
-			},
-		})
-	);
 	await nestApp.init();
 
 	// provide NestJS mail service to feathers app

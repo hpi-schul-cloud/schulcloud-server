@@ -9,6 +9,7 @@ import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
+import { nanoid } from 'nanoid';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { SSOErrorCode } from '../error/sso-error-code.enum';
@@ -30,7 +31,7 @@ export class OauthUc {
 	}
 
 	async startOauthLogin(session: ISession, systemId: EntityId, postLoginRedirect?: string): Promise<string> {
-		const state = 'abc'; // TODO CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex);
+		const state = nanoid(16);
 
 		const system: SystemDto = await this.systemService.findOAuthById(systemId);
 		if (!system.oauthConfig) {
@@ -45,6 +46,7 @@ export class OauthUc {
 			postLoginRedirect,
 			errorRedirect: system.oauthConfig?.provider === 'iserv' ? system.oauthConfig.logoutEndpoint : undefined, // TODO post logout redirect
 		});
+		session.save();
 
 		return authenticationUrl;
 	}

@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
+import { DynamicModule, MiddlewareConsumer, Module, NestModule, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -30,6 +30,7 @@ import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { UserMigrationApiModule } from '@src/modules/user-migration';
 import { VideoConferenceModule } from '@src/modules/video-conference';
+import session from 'express-session';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -100,7 +101,25 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	],
 	controllers: [ServerController],
 })
-export class ServerModule {}
+export class ServerModule implements NestModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer
+			.apply(
+				session({
+					secret: 'sup3rs3cr3t',
+					resave: false,
+					saveUninitialized: false,
+					cookie: {
+						secure: false, // TODO NODE.ENV === 'prod'
+						sameSite: true,
+						httpOnly: true,
+						maxAge: 60000, // TODO get from config
+					},
+				})
+			)
+			.forRoutes('*');
+	}
+}
 
 /**
  * Server module used for testing.
@@ -118,7 +137,25 @@ export class ServerModule {}
 	],
 	controllers: [ServerController],
 })
-export class ServerTestModule {
+export class ServerTestModule implements NestModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer
+			.apply(
+				session({
+					secret: 'sup3rs3cr3t',
+					resave: false,
+					saveUninitialized: false,
+					cookie: {
+						secure: false, // TODO NODE.ENV === 'prod'
+						sameSite: true,
+						httpOnly: true,
+						maxAge: 60000, // TODO get from config
+					},
+				})
+			)
+			.forRoutes('*');
+	}
+
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: ServerTestModule,

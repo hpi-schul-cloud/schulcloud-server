@@ -40,13 +40,6 @@ export class OauthSSOController {
 		@Res() res: Response,
 		@Query() query: AuthorizationParams
 	): Promise<void> {
-		const cookieDefaultOptions: CookieOptions = {
-			httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
-			sameSite: Configuration.get('COOKIE__SAME_SITE') as 'lax' | 'strict' | 'none',
-			secure: Configuration.get('COOKIE__SECURE') as boolean,
-			expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
-		};
-
 		const oauthLoginState: OauthLoginStateDto | undefined = session.oauthLoginState
 			? new OauthLoginStateDto(session.oauthLoginState as OauthLoginStateDto)
 			: undefined;
@@ -67,6 +60,13 @@ export class OauthSSOController {
 			);
 
 			if (oauthProcessDto.jwt) {
+				const cookieDefaultOptions: CookieOptions = {
+					httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
+					sameSite: Configuration.get('COOKIE__SAME_SITE') as 'lax' | 'strict' | 'none',
+					secure: Configuration.get('COOKIE__SECURE') as boolean,
+					expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
+				};
+
 				res.cookie('jwt', oauthProcessDto.jwt, cookieDefaultOptions);
 			}
 
