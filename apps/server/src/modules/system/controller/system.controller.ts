@@ -5,12 +5,12 @@ import { SystemFilterParams } from '@src/modules/system/controller/dto/system.fi
 import { SystemOauthResponseMapper } from '@src/modules/system/controller/mapper/system-oauth-response.mapper';
 import { SystemUc } from '../uc/system.uc';
 
-@ApiTags('System')
-@Controller('system')
+@ApiTags('Systems')
+@Controller('systems')
 export class SystemController {
 	constructor(private readonly systemUc: SystemUc) {}
 
-	@Get()
+	@Get('public')
 	@ApiOperation({ summary: 'Finds all systems.' })
 	@ApiResponse({ status: 200, type: SystemOauthResponse, description: 'Returns an SystemOauthResponse.' })
 	async find(@Query() filterParams: SystemFilterParams): Promise<SystemOauthResponse> {
