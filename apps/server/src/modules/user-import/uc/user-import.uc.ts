@@ -23,6 +23,11 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolService } from '../../school';
+import {
+	LdapAlreadyPersistedException,
+	MigrationAlreadyActivatedException,
+	MissingSchoolNumberException,
+} from './ldap-user-migration.error';
 
 export type UserImportPermissions =
 	| Permission.SCHOOL_IMPORT_USERS_MIGRATE
@@ -186,14 +191,11 @@ export class UserImportUc {
 	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+
 		this.checkFeatureEnabled(school);
-		// official school number is used to find the correct school in the central LDAP
-		if (
-			(useCentralLdap && !school.officialSchoolNumber) ||
-			(school.inUserMigration !== undefined && school.inUserMigration !== null)
-		) {
-			throw new BadRequestException('School cannot be set in user migration');
-		}
+		this.checkSchoolNumber(school, useCentralLdap);
+		this.checkSchoolNotInMigration(school);
+		await this.checkNoExistingLdapBeforeStart(school);
 
 		school.inUserMigration = true;
 		school.inMaintenanceSince = new Date();
@@ -248,5 +250,30 @@ export class UserImportUc {
 		const systemId = Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string;
 		const system = await this.systemRepo.findById(systemId);
 		return system;
+	}
+
+	private async checkNoExistingLdapBeforeStart(school: SchoolDO) {
+		if (school.systems && school.systems?.length > 0) {
+			for (const systemId of school.systems) {
+				// very unusual to have more than 1 system
+				// eslint-disable-next-line no-await-in-loop
+				const system: System = await this.systemRepo.findById(systemId);
+				if (system.ldapConfig) {
+					throw new LdapAlreadyPersistedException();
+				}
+			}
+		}
+	}
+
+	private checkSchoolNumber(school: SchoolDO, useCentralLdap: boolean) {
+		if (useCentralLdap && !school.officialSchoolNumber) {
+			throw new MissingSchoolNumberException();
+		}
+	}
+
+	private checkSchoolNotInMigration(school: SchoolDO) {
+		if (school.inUserMigration !== undefined && school.inUserMigration !== null) {
+			throw new MigrationAlreadyActivatedException();
+		}
 	}
 }
