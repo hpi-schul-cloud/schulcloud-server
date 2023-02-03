@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemTypeEnum } from '@shared/domain';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { IOidcIdentityProviderConfig } from '../interface';
+import { SystemDto } from '@src/modules/system/service';
 import { OidcIdentityProviderMapper } from './identity-provider.mapper';
 
 describe('OidcIdentityProviderMapper', () => {
@@ -33,7 +33,7 @@ describe('OidcIdentityProviderMapper', () => {
 
 	describe('mapToKeycloakIdentityProvider', () => {
 		const brokerFlowAlias = 'flow';
-		const internalRepresentation: IOidcIdentityProviderConfig = {
+		const internalRepresentation: SystemDto = {
 			id: new ObjectId(0).toString(),
 			type: SystemTypeEnum.OIDC,
 			alias: 'alias',

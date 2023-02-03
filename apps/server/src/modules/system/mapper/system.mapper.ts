@@ -1,4 +1,4 @@
-import { OauthConfig, System } from '@shared/domain';
+import {OauthConfig, OidcConfig, System} from '@shared/domain';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { OidcConfigDto } from '@src/modules/system/service/dto/oidc-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -14,20 +14,20 @@ export class SystemMapper {
 			provisioningStrategy: entity.provisioningStrategy,
 			provisioningUrl: entity.provisioningUrl,
 			oauthConfig: SystemMapper.mapFromOauthConfigEntityToDto(entity.oauthConfig),
-			oidcConfig: SystemMapper.mapFromOidcConfigEntityToDto(entity.config),
+			oidcConfig: SystemMapper.mapFromOidcConfigEntityToDto(entity.oidcConfig),
 		});
 	}
 
-	static mapFromOidcConfigEntityToDto(config: Record<string, unknown> | undefined): OidcConfigDto | undefined {
-		if (config != null && config.authorizationUrl && config.clientId && config.clientSecret && config.defaultScopes) {
+	static mapFromOidcConfigEntityToDto(oidcConfig: OidcConfig | undefined): OidcConfigDto | undefined {
+		if (oidcConfig != null && oidcConfig.authorizationUrl && oidcConfig.clientId && oidcConfig.clientSecret && oidcConfig.defaultScopes) {
 			return new OidcConfigDto({
-				authorizationUrl: config.authorizationUrl as string,
-				clientId: config.clientId as string,
-				clientSecret: config.clientSecret as string,
-				defaultScopes: config.defaultScopes as string,
-				logoutUrl: (config.logoutUrl as string) ?? '',
-				tokenUrl: (config.tokenUrl as string) ?? '',
-				userinfoUrl: (config.userinfoUrl as string) ?? '',
+				authorizationUrl: oidcConfig.authorizationUrl as string,
+				clientId: oidcConfig.clientId as string,
+				clientSecret: oidcConfig.clientSecret as string,
+				defaultScopes: oidcConfig.defaultScopes as string,
+				logoutUrl: (oidcConfig.logoutUrl as string) ?? '',
+				tokenUrl: (oidcConfig.tokenUrl as string) ?? '',
+				userinfoUrl: (oidcConfig.userinfoUrl as string) ?? '',
 			});
 		}
 		return undefined;
