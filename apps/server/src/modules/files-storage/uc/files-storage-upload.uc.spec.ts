@@ -277,8 +277,7 @@ describe('FilesStorageUC upload methods', () => {
 			it('should pass error', async () => {
 				const { uploadFromUrlParams, userId } = setup();
 
-				const expectedError = new NotFoundException(ErrorType.FILE_NOT_FOUND);
-				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow(expectedError);
+				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow();
 			});
 		});
 	});
@@ -330,7 +329,7 @@ describe('FilesStorageUC upload methods', () => {
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId, params, fileDescription);
 			});
 
-			it('should call uploadFile with correct params', async () => {
+			it('should return fileRecord', async () => {
 				const { params, userId, request, fileRecord } = setup();
 
 				const result = await filesStorageUC.upload(userId, params, request);

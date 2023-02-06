@@ -93,29 +93,17 @@ export class FilesStorageUC {
 			responseType: 'stream',
 		};
 
-		const responseStream = this.httpService.get<internal.Readable>(encodeURI(params.url), config);
-
-		const response = await firstValueFrom(responseStream);
-
-		/* istanbul ignore next */
-		response.data.on('error', (error) => {
-			throw error;
-		});
-
-		return response;
-	}
-
-	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
-		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
-
 		try {
-			const response = await this.getResponse(params);
+			const responseStream = this.httpService.get<internal.Readable>(encodeURI(params.url), config);
 
-			const fileDto = FileDtoBuilder.buildFromAxiosResponse(params.fileName, response);
+			const response = await firstValueFrom(responseStream);
 
-			const result = await this.filesStorageService.uploadFile(userId, params, fileDto);
+			/* istanbul ignore next */
+			response.data.on('error', (error) => {
+				throw error;
+			});
 
-			return result;
+			return response;
 		} catch (error) {
 			this.logger.warn({
 				message: 'could not find file by url',
@@ -124,6 +112,18 @@ export class FilesStorageUC {
 			});
 			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
+	}
+
+	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
+		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
+
+		const response = await this.getResponse(params);
+
+		const fileDto = FileDtoBuilder.buildFromAxiosResponse(params.fileName, response);
+
+		const result = await this.filesStorageService.uploadFile(userId, params, fileDto);
+
+		return result;
 	}
 
 	// download
