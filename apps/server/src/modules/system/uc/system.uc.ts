@@ -11,7 +11,7 @@ export class SystemUc {
 		if (onlyOauth) {
 			return this.systemService.findOAuth();
 		}
-		return this.systemService.find(type);
+		return this.systemService.findAll(type);
 	}
 
 	async findById(id: EntityId): Promise<SystemDto> {

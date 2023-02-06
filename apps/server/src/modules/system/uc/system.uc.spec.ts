@@ -40,7 +40,7 @@ describe('SystemUc', () => {
 
 		mockSystems = [system1, system2].map((element) => SystemMapper.mapFromEntityToDto(element));
 
-		systemService.find.mockImplementation((type: string | undefined) => {
+		systemService.findAll.mockImplementation((type: string | undefined) => {
 			if (type === SystemTypeEnum.OAUTH) {
 				return Promise.resolve([system1]);
 			}
@@ -76,7 +76,7 @@ describe('SystemUc', () => {
 		});
 
 		it('should return empty system list, because none exist', async () => {
-			systemService.find.mockResolvedValue([]);
+			systemService.findAll.mockResolvedValue([]);
 			const resultResponse = await systemUc.findByFilter();
 			expect(resultResponse).toHaveLength(0);
 		});

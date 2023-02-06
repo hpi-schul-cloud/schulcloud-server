@@ -2,7 +2,7 @@ import { OauthConfigResponse } from '@src/modules/system/controller/dto/oauth-co
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { PublicSystemListResponse } from '../dto/public-system-list.response';
-import { PublicSystemResponse } from '../dto/publicSystemResponse';
+import { PublicSystemResponse } from '../dto/public-system-response';
 
 export class SystemResponseMapper {
 	static mapFromDtoToResponse(systems: SystemDto[]): PublicSystemListResponse {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PublicSystemResponse } from './publicSystemResponse';
+import { PublicSystemResponse } from './public-system-response';
 
 export class PublicSystemListResponse {
 	@ApiProperty({ type: [PublicSystemResponse] })

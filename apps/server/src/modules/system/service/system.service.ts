@@ -8,7 +8,7 @@ import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 export class SystemService {
 	constructor(private readonly systemRepo: SystemRepo) {}
 
-	async find(type: SystemType | undefined): Promise<SystemDto[]> {
+	async findAll(type: SystemType | undefined): Promise<SystemDto[]> {
 		let systemEntities: System[];
 		if (!type) {
 			systemEntities = await this.systemRepo.findAll();
