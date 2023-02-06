@@ -3,7 +3,9 @@ import { FileRecord, ScanStatus } from '../entity';
 
 export class FileRecordMapper {
 	static mapToFileRecordResponse(fileRecord: FileRecord): FileRecordResponse {
-		return new FileRecordResponse(fileRecord);
+		const fileRecordResponse = new FileRecordResponse(fileRecord);
+
+		return fileRecordResponse;
 	}
 
 	static mapToFileRecordListResponse(
@@ -13,8 +15,8 @@ export class FileRecordMapper {
 		limit?: number
 	): FileRecordListResponse {
 		const responseFileRecords = fileRecords.map((fileRecord) => FileRecordMapper.mapToFileRecordResponse(fileRecord));
-
 		const response = new FileRecordListResponse(responseFileRecords, total, skip, limit);
+
 		return response;
 	}
 
