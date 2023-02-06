@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId, IPermissionContext } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -21,6 +22,7 @@ import {
 } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
+import { IFileStorageConfig } from '../files-storage.config';
 import { PermissionContexts } from '../files-storage.const';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -31,7 +33,8 @@ export class FilesStorageUC {
 		private logger: Logger,
 		private readonly authorizationService: AuthorizationService,
 		private readonly httpService: HttpService,
-		private readonly filesStorageService: FilesStorageService
+		private readonly filesStorageService: FilesStorageService,
+		private readonly configService: ConfigService<IFileStorageConfig>
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -120,6 +123,10 @@ export class FilesStorageUC {
 		const response = await this.getResponse(params);
 
 		const fileDto = FileDtoBuilder.buildFromAxiosResponse(params.fileName, response);
+
+		if (fileDto.size > this.configService.get('MAX_FILE_SIZE')) {
+			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
+		}
 
 		const result = await this.filesStorageService.uploadFile(userId, params, fileDto);
 

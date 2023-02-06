@@ -281,6 +281,12 @@
 					"default": 600000,
 					"description": "Timeout for incoming requests to the Files-Storage in milliseconds."
 				},
+				"MAX_FILE_SIZE": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 2560000000,
+					"description": "Maximum file size for incoming requests in Byte"
+				},
 				"S3_ENDPOINT": {
 					"type": "string",
 					"format": "uri",

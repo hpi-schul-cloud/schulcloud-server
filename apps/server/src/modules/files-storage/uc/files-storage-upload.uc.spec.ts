@@ -3,6 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
@@ -87,6 +88,7 @@ describe('FilesStorageUC upload methods', () => {
 	let filesStorageService: DeepMocked<FilesStorageService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let httpService: DeepMocked<HttpService>;
+	let configService: DeepMocked<ConfigService>;
 	let orm: MikroORM;
 
 	beforeAll(async () => {
@@ -119,6 +121,10 @@ describe('FilesStorageUC upload methods', () => {
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
 			],
 		}).compile();
 
@@ -126,6 +132,7 @@ describe('FilesStorageUC upload methods', () => {
 		authorizationService = module.get(AuthorizationService);
 		httpService = module.get(HttpService);
 		filesStorageService = module.get(FilesStorageService);
+		configService = module.get(ConfigService);
 	});
 
 	beforeEach(() => {
@@ -171,6 +178,8 @@ describe('FilesStorageUC upload methods', () => {
 				const { fileRecord, userId, uploadFromUrlParams, response } = createUploadFromUrlParams();
 
 				httpService.get.mockReturnValueOnce(of(response));
+
+				configService.get.mockReturnValue(2560000000);
 
 				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord);
 
@@ -260,6 +269,24 @@ describe('FilesStorageUC upload methods', () => {
 				const error = new NotFoundException(ErrorType.FILE_NOT_FOUND);
 
 				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrowError(error);
+			});
+		});
+
+		describe('WHEN file size is too big', () => {
+			const setup = () => {
+				const { userId, uploadFromUrlParams, response } = createUploadFromUrlParams();
+				httpService.get.mockReturnValueOnce(of(response));
+
+				configService.get.mockReturnValueOnce(1);
+
+				return { uploadFromUrlParams, userId };
+			};
+
+			it('should throw dedicated error', async () => {
+				const { uploadFromUrlParams, userId } = setup();
+
+				const expectedError = new BadRequestException(ErrorType.FILE_TOO_BIG);
+				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow(expectedError);
 			});
 		});
 
