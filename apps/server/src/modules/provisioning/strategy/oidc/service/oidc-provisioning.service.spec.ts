@@ -75,12 +75,14 @@ describe('OidcProvisioningService', () => {
 			externalId: 'externalId',
 			name: 'name',
 			officialSchoolNumber: 'officialSchoolNumber',
+			systems: [systemId],
 		});
 		const existingSchoolDO = new SchoolDO({
 			id: 'schoolId',
 			externalId: 'externalId',
 			name: 'existingName',
 			officialSchoolNumber: 'existingOfficialSchoolNumber',
+			systems: [systemId],
 		});
 
 		schoolService.createOrUpdateSchool.mockResolvedValue(savedSchoolDO);
@@ -107,7 +109,7 @@ describe('OidcProvisioningService', () => {
 		});
 
 		describe('when external school already exist', () => {
-			it('should update existing school', async () => {
+			it('should update the existing school', async () => {
 				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setupData();
 
 				schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
@@ -115,6 +117,32 @@ describe('OidcProvisioningService', () => {
 				const result: SchoolDO = await service.provisionExternalSchool(externalSchoolDto, systemId);
 
 				expect(result).toEqual(savedSchoolDO);
+			});
+
+			it('should append the new system', async () => {
+				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setupData();
+				const otherSystemId = 'otherSystemId';
+				existingSchoolDO.systems = [otherSystemId];
+
+				schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
+
+				await service.provisionExternalSchool(externalSchoolDto, systemId);
+
+				expect(schoolService.createOrUpdateSchool).toHaveBeenCalledWith({
+					...savedSchoolDO,
+					systems: [otherSystemId, systemId],
+				});
+			});
+
+			it('should create a new system list', async () => {
+				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setupData();
+				existingSchoolDO.systems = undefined;
+
+				schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
+
+				await service.provisionExternalSchool(externalSchoolDto, systemId);
+
+				expect(schoolService.createOrUpdateSchool).toHaveBeenCalledWith(savedSchoolDO);
 			});
 		});
 	});
