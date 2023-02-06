@@ -69,7 +69,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 	private async loadAccount(username: string, systemId: string, school: SchoolDO): Promise<AccountDto> {
 		const externalSchoolId = this.checkValue(school.externalId);
 		const userNameWithSchool = `${externalSchoolId}/${username}`;
-		const account = await this.authenticationService.loadAccount(userNameWithSchool.trim().toLowerCase(), systemId);
+		const account = await this.authenticationService.loadAccount(userNameWithSchool.toLowerCase(), systemId);
 		return account;
 	}
 }
