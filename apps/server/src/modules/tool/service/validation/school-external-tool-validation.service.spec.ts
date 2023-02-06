@@ -65,7 +65,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when version of externalTool and schoolExternalTool are different', () => {
 			it('should throw error', async () => {
-				const { schoolExternalToolDO, externalToolDO } = setup({ version: 8383 }, { toolVersion: 1337 });
+				const { schoolExternalToolDO } = setup({ version: 8383 }, { toolVersion: 1337 });
 
 				const func = () => service.validateCreate(schoolExternalToolDO);
 
