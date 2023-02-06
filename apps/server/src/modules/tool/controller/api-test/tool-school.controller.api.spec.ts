@@ -241,6 +241,7 @@ describe('ToolSchoolController (API)', () => {
 
 			await request(app.getHttpServer()).get(`${basePath}/${schoolExternalTool.id}`).expect(403);
 		});
+
 		it('should return found schoolExternalTool for given school', async () => {
 			const { adminUser, schoolExternalTool, externalTool2, school } = await setup();
 			currentUser = mapUserToCurrentUser(adminUser);

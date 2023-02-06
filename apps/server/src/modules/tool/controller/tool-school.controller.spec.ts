@@ -139,57 +139,6 @@ describe('ToolSchoolController', () => {
 		});
 	});
 
-	describe('getSchoolExternalTool is called', () => {
-		describe('when endpoint is called', () => {
-			it('should call the uc', async () => {
-				const { currentUser, idParams } = setup();
-
-				await controller.getSchoolExternalTool(currentUser, idParams);
-
-				expect(schoolExternalToolUc.getSchoolExternalTool).toHaveBeenCalledWith(
-					currentUser.userId,
-					idParams.schoolExternalToolId
-				);
-			});
-
-			it('should call the response mapper', async () => {
-				const { currentUser, idParams } = setup();
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				schoolExternalToolUc.getSchoolExternalTool.mockResolvedValue(schoolExternalToolDO);
-
-				await controller.getSchoolExternalTool(currentUser, idParams);
-
-				expect(schoolExternalToolResponseMapper.mapToSchoolExternalToolResponse).toHaveBeenCalledWith(
-					schoolExternalToolDO
-				);
-			});
-
-			it('should return a schoolExternalToolResponse', async () => {
-				const { currentUser, idParams } = setup();
-				const expectedResponse: SchoolExternalToolResponse = new SchoolExternalToolResponse({
-					id: 'id',
-					name: 'name',
-					schoolId: 'schoolId',
-					toolId: 'toolId',
-					toolVersion: 2,
-					parameters: [
-						{
-							name: 'name',
-							value: 'value',
-						},
-					],
-					status: SchoolExternalToolStatusResponse.LATEST,
-				});
-
-				schoolExternalToolResponseMapper.mapToSchoolExternalToolResponse.mockReturnValue(expectedResponse);
-
-				const response = await controller.getSchoolExternalTool(currentUser, idParams);
-
-				expect(response).toEqual(expectedResponse);
-			});
-		});
-	});
-
 	describe('deleteSchoolExternalTool is called', () => {
 		describe('when params are given', () => {
 			it('should call the uc', async () => {
