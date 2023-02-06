@@ -1,7 +1,6 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { API_VERSION_PATH, FilesStorageInternalActions } from '@src/modules/files-storage/files-storage.const';
-import { FileRecord } from '@src/modules/files-storage/domain';
 
 interface AntivirusServiceOptions {
 	enabled: boolean;
@@ -17,18 +16,11 @@ export class AntivirusService {
 		@Inject('ANTIVIRUS_SERVICE_OPTIONS') private readonly options: AntivirusServiceOptions
 	) {}
 
-	public send(fileRecord: FileRecord) {
+	public send(requestToken: string | undefined) {
 		try {
-			const requestToken = fileRecord.getSecurityCheckToken();
 			if (this.options.enabled && requestToken) {
-				const downloadUri = this.getUrl(
-					FilesStorageInternalActions.downloadBySecurityToken,
-					requestToken
-				);
-				const callbackUri = this.getUrl(
-					FilesStorageInternalActions.updateSecurityStatus,
-					requestToken
-				);
+				const downloadUri = this.getUrl(FilesStorageInternalActions.downloadBySecurityToken, requestToken);
+				const callbackUri = this.getUrl(FilesStorageInternalActions.updateSecurityStatus, requestToken);
 
 				this.amqpConnection.publish(
 					this.options.exchange,

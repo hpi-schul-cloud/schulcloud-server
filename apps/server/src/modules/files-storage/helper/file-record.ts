@@ -1,7 +1,7 @@
-import { FileRecordParams } from '../controller/dto';
-import { FileRecordEntity } from '../entity';
+import { FileRecord } from '../domain';
 
-export function markForDelete(fileRecords: FileRecordEntity[]): FileRecordEntity[] {
+// TODO: look like collection functions execute bash for array of fileRecords
+export function markForDelete(fileRecords: FileRecord[]): FileRecord[] {
 	const markedFileRecords = fileRecords.map((fileRecord) => {
 		fileRecord.markForDelete();
 		return fileRecord;
@@ -10,31 +10,12 @@ export function markForDelete(fileRecords: FileRecordEntity[]): FileRecordEntity
 	return markedFileRecords;
 }
 
-export function unmarkForDelete(fileRecords: FileRecordEntity[]): FileRecordEntity[] {
+// TODO: look like collection functions execute bash for array of fileRecords
+export function unmarkForDelete(fileRecords: FileRecord[]): FileRecord[] {
 	const unmarkedFileRecords = fileRecords.map((fileRecord) => {
 		fileRecord.unmarkForDelete();
 		return fileRecord;
 	});
 
 	return unmarkedFileRecords;
-}
-
-export function createFileRecord(
-	name: string,
-	size: number,
-	mimeType: string,
-	params: FileRecordParams,
-	userId: string
-) {
-	const entity = new FileRecordEntity({
-		size,
-		name,
-		mimeType,
-		parentType: params.parentType,
-		parentId: params.parentId,
-		creatorId: userId,
-		schoolId: params.schoolId,
-	});
-
-	return entity;
 }

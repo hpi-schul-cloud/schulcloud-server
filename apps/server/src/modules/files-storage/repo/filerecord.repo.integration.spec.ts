@@ -1,10 +1,11 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections, fileRecordFactory } from '@shared/testing';
+import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { FileRecordRepo } from './filerecord.repo';
 import { FileRecordEntity } from './filerecord.entity';
 import { FileRecordParentType } from '../domain';
+import { fileRecordEntityFactory } from './filerecord.factory';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
@@ -28,13 +29,9 @@ describe('FileRecordRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(FileRecordEntity);
-	});
-
 	describe('findOneById', () => {
 		it('should find an entity by its id and deletedSince is NOT defined', async () => {
-			const fileRecord = fileRecordFactory.build();
+			const fileRecord = fileRecordEntityFactory.build();
 
 			await em.persistAndFlush(fileRecord);
 			em.clear();
@@ -48,7 +45,7 @@ describe('FileRecordRepo', () => {
 
 	describe('findOneByIdMarkedForDelete', () => {
 		it('should find an entity by its id and deletedSince is defined', async () => {
-			const fileRecord = fileRecordFactory.markedForDelete().build();
+			const fileRecord = fileRecordEntityFactory.markedForDelete().build();
 
 			await em.persistAndFlush(fileRecord);
 			em.clear();
@@ -66,7 +63,7 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should ingnore if deletedSince is undefined', async () => {
-			const fileRecord = fileRecordFactory.build();
+			const fileRecord = fileRecordEntityFactory.build();
 
 			await em.persistAndFlush(fileRecord);
 			em.clear();
@@ -82,7 +79,7 @@ describe('FileRecordRepo', () => {
 	// TODO: Adjust when BC-1496 is done!
 	describe.skip('save', () => {
 		it('should update the updatedAt property', async () => {
-			const fileRecord = fileRecordFactory.build();
+			const fileRecord = fileRecordEntityFactory.build();
 			await em.persistAndFlush(fileRecord);
 			const origUpdatedAt = fileRecord.updatedAt;
 
@@ -104,7 +101,7 @@ describe('FileRecordRepo', () => {
 		let fileRecords1: FileRecordEntity[];
 
 		beforeEach(() => {
-			fileRecords1 = fileRecordFactory.buildList(3, {
+			fileRecords1 = fileRecordEntityFactory.buildList(3, {
 				schoolId: schoolId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
@@ -136,7 +133,7 @@ describe('FileRecordRepo', () => {
 
 		it('should only find searched parent', async () => {
 			const parentId2 = new ObjectId().toHexString();
-			const fileRecords2 = fileRecordFactory.buildList(3, {
+			const fileRecords2 = fileRecordEntityFactory.buildList(3, {
 				schoolId: schoolId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId2,
@@ -154,7 +151,7 @@ describe('FileRecordRepo', () => {
 
 		it('should only find searched school', async () => {
 			const schoolId2 = new ObjectId().toHexString();
-			const fileRecords2 = fileRecordFactory.buildList(3, {
+			const fileRecords2 = fileRecordEntityFactory.buildList(3, {
 				schoolId: schoolId2,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
@@ -171,7 +168,7 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should ingnore deletedSince', async () => {
-			const fileRecordsExpired = fileRecordFactory.markedForDelete().buildList(3, {
+			const fileRecordsExpired = fileRecordEntityFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
@@ -196,7 +193,7 @@ describe('FileRecordRepo', () => {
 		let fileRecords1: FileRecordEntity[];
 
 		beforeEach(() => {
-			fileRecords1 = fileRecordFactory.markedForDelete().buildList(3, {
+			fileRecords1 = fileRecordEntityFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
@@ -206,7 +203,7 @@ describe('FileRecordRepo', () => {
 		it('should only find searched parent', async () => {
 			const parentId2 = new ObjectId().toHexString();
 
-			const fileRecords2 = fileRecordFactory.markedForDelete().buildList(3, {
+			const fileRecords2 = fileRecordEntityFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId2,
@@ -225,7 +222,7 @@ describe('FileRecordRepo', () => {
 		it('should only find searched school', async () => {
 			const schoolId2 = new ObjectId().toHexString();
 
-			const fileRecords2 = fileRecordFactory.markedForDelete().buildList(3, {
+			const fileRecords2 = fileRecordEntityFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId2,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
@@ -242,7 +239,7 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should ingnore if deletedSince is undefined', async () => {
-			const fileRecordsExpired = fileRecordFactory.buildList(3, {
+			const fileRecordsExpired = fileRecordEntityFactory.buildList(3, {
 				schoolId: schoolId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
@@ -268,7 +265,7 @@ describe('FileRecordRepo', () => {
 			const schoolId = new ObjectId().toHexString();
 			const parentId = new ObjectId().toHexString();
 
-			fileRecord = fileRecordFactory.build({
+			fileRecord = fileRecordEntityFactory.build({
 				schoolId,
 				parentType: FileRecordParentType.Task,
 				parentId,

@@ -1,4 +1,4 @@
-import { ScanStatus } from '../../entity';
+import { ScanStatus } from '../../domain';
 
 export class ScanResultDto {
 	status: ScanStatus;

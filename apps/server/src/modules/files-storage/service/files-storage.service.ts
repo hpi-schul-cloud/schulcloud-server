@@ -21,7 +21,6 @@ import {
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
 import {
-	createFileRecord,
 	createICopyFiles,
 	createPath,
 	getPaths,
@@ -32,7 +31,8 @@ import {
 import { IGetFileResponse } from '../interface';
 import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
-import { FileRecord } from '../domain';
+import { FileRecord, IFileRecordParams } from '../domain';
+import { FileSecurityCheck } from '../repo/filerecord.entity';
 
 // TODO: Ticket for rename EntityId to more generic Name
 
@@ -107,7 +107,7 @@ export class FilesStorageService {
 		try {
 			const filePath = createPath(params.schoolId, fileRecord.id);
 			await this.storageClient.create(filePath, fileDescription);
-			this.antivirusService.send(fileRecord);
+			this.antivirusService.send(fileRecord.getSecurityCheckToken());
 
 			return fileRecord;
 		} catch (error) {
@@ -118,10 +118,21 @@ export class FilesStorageService {
 
 	public async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: FileDto): Promise<FileRecord> {
 		const [fileRecords] = await this.getFileRecordsOfParent(params);
-		const fileName = resolveFileNameDuplicates(fileDescription.name, fileRecords);
-		const fileRecord = createFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
+		const name = resolveFileNameDuplicates(fileDescription.name, fileRecords);
 
-		await this.fileRecordRepo.save(fileRecord);
+		// TODO: move this
+		const fileRecordParams: IFileRecordParams = {
+			name,
+			size: fileDescription.size,
+			mimeType: fileDescription.mimeType,
+			parentType: params.parentType,
+			parentId: params.parentId,
+			creatorId: userId,
+			schoolId: params.schoolId,
+			securityCheck: new FileSecurityCheck(), // move this to builder in domain
+		};
+
+		const [fileRecord] = await this.fileRecordRepo.save([fileRecordParams]);
 		await this.createFileInStorageAndRollbackOnError(fileRecord, params, fileDescription);
 
 		return fileRecord;
@@ -148,8 +159,8 @@ export class FilesStorageService {
 	public async updateSecurityStatus(token: string, scanResultParams: ScanResultParams) {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 
-		const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResultParams);
-		fileRecord.updateSecurityCheckStatus(status, reason);
+		const scanResult = FileRecordMapper.mapScanResultParamsToDto(scanResultParams);
+		fileRecord.updateSecurityCheckStatus(scanResult);
 
 		await this.fileRecordRepo.update([fileRecord]);
 	}
@@ -213,7 +224,7 @@ export class FilesStorageService {
 		this.logger.debug({ action: 'delete', fileRecords });
 
 		const markedFileRecords = markForDelete(fileRecords);
-		await this.fileRecordRepo.save(markedFileRecords);
+		await this.fileRecordRepo.update(markedFileRecords);
 
 		await this.deleteWithRollbackByError(fileRecords);
 	}
@@ -261,7 +272,7 @@ export class FilesStorageService {
 		this.logger.debug({ action: 'restore', fileRecords });
 
 		const unmarkFileRecords = unmarkForDelete(fileRecords);
-		await this.fileRecordRepo.save(unmarkFileRecords);
+		await this.fileRecordRepo.update(unmarkFileRecords);
 
 		await this.restoreWithRollbackByError(fileRecords);
 	}
@@ -296,7 +307,7 @@ export class FilesStorageService {
 
 	private sendToAntiVirusService(sourceFile: FileRecord) {
 		if (sourceFile.isPending()) {
-			this.antivirusService.send(sourceFile);
+			this.antivirusService.send(sourceFile.getSecurityCheckToken());
 		}
 	}
 

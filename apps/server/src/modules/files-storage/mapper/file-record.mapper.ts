@@ -1,15 +1,16 @@
 import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../controller/dto';
-import { FileRecordEntity, ScanStatus } from '../entity';
+import { FileRecord, IUpdateSecurityCheckStatus, ScanStatus } from '../domain';
 
+// TODO: put files-storage.mapper.ts into this file
 export class FileRecordMapper {
-	static mapToFileRecordResponse(fileRecord: FileRecordEntity): FileRecordResponse {
+	static mapToFileRecordResponse(fileRecord: FileRecord): FileRecordResponse {
 		const fileRecordResponse = new FileRecordResponse(fileRecord);
 
 		return fileRecordResponse;
 	}
 
 	static mapToFileRecordListResponse(
-		fileRecords: FileRecordEntity[],
+		fileRecords: FileRecord[],
 		total: number,
 		skip?: number,
 		limit?: number
@@ -20,7 +21,8 @@ export class FileRecordMapper {
 		return response;
 	}
 
-	static mapScanResultParamsToDto(scanResultParams: ScanResultParams): ScanResultDto {
+	// TODO: think about it IUpdateSecurityCheckStatus
+	static mapScanResultParamsToDto(scanResultParams: ScanResultParams): IUpdateSecurityCheckStatus {
 		const scanResult = new ScanResultDto({
 			status: ScanStatus.VERIFIED,
 			reason: 'Clean',

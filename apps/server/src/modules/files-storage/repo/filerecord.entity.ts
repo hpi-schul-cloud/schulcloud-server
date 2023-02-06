@@ -28,7 +28,7 @@ export class FileSecurityCheck {
 	@Property()
 	updatedAt = new Date();
 
-	constructor(props: IFileSecurityCheckProperties) {
+	constructor(props: IFileSecurityCheckProperties = {}) {
 		if (props.status !== undefined) {
 			this.status = props.status;
 		}

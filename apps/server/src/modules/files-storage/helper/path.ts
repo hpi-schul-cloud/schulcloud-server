@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain';
-import { FileRecordEntity } from '../entity';
+import { FileRecord } from '../domain';
 import { ErrorType } from '../error';
 import { ICopyFiles } from '../interface';
 
@@ -13,13 +13,13 @@ export function createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 	return path;
 }
 
-export function getPaths(fileRecords: FileRecordEntity[]): string[] {
+export function getPaths(fileRecords: FileRecord[]): string[] {
 	const paths = fileRecords.map((fileRecord) => createPath(fileRecord.getSchoolId(), fileRecord.id));
 
 	return paths;
 }
 
-export function createICopyFiles(sourceFile: FileRecordEntity, targetFile: FileRecordEntity): ICopyFiles {
+export function createICopyFiles(sourceFile: FileRecord, targetFile: FileRecord): ICopyFiles {
 	const iCopyFiles = {
 		sourcePath: createPath(sourceFile.getSchoolId(), sourceFile.id),
 		targetPath: createPath(targetFile.getSchoolId(), targetFile.id),

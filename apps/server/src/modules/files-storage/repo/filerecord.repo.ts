@@ -20,16 +20,16 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 
 	public async findOneById(id: EntityId): Promise<FileRecord> {
 		const scope = new FileRecordScope().byFileRecordId(id).byMarkedForDelete(false);
-		const fileRecordDO = await this.findOneOrFail(scope);
+		const fileRecord = await this.findOneOrFail(scope);
 
-		return fileRecordDO;
+		return fileRecord;
 	}
 
 	public async findOneByIdMarkedForDelete(id: EntityId): Promise<FileRecord> {
 		const scope = new FileRecordScope().byFileRecordId(id).byMarkedForDelete(true);
-		const fileRecordDO = await this.findOneOrFail(scope);
+		const fileRecord = await this.findOneOrFail(scope);
 
-		return fileRecordDO;
+		return fileRecord;
 	}
 
 	public async findBySchoolIdAndParentId(
@@ -57,39 +57,41 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 	public async findBySecurityCheckRequestToken(token: string): Promise<FileRecord> {
 		// Must also find expires in future. Please do not add .byExpires().
 		const scope = new FileRecordScope().bySecurityCheckRequestToken(token);
-
 		const fileRecord = await this.findOneOrFail(scope);
 
 		return fileRecord;
 	}
 
-	public async delete(fileRecordDOs: FileRecord[]): Promise<void> {
-		const entities = this.getEntitiesReferenceFromDOs(fileRecordDOs);
+	public async delete(fileRecords: FileRecord[]): Promise<void> {
+		const entities = this.getEntitiesReferenceFromDOs(fileRecords);
 		await this.em.removeAndFlush(entities);
 	}
 
-	public async update(fileRecordDOs: FileRecord[]): Promise<void> {
+	public async update(fileRecords: FileRecord[]): Promise<void> {
 		// param = DO
 		// map to entity
 		// load entities
 		// override keys?
 		// persistAndFlush
 		// return DO ?? -> no
-		const entities = this.getEntitiesReferenceFromDOs(fileRecordDOs);
+		const entities = this.getEntitiesReferenceFromDOs(fileRecords);
 
 		// TODO implement!
 
 		await Promise.resolve();
 	}
 
+	// TODO: move to utils
 	private getEntitiesReferenceFromDOs(fileRecords: FileRecord[]): FileRecordEntity[] {
 		const entities = fileRecords.map((item) => this.getEntityReferenceFromDO(item));
 
 		return entities;
 	}
 
-	// TODO: check type error
 	private getEntityReferenceFromDO(fileRecord: FileRecord): FileRecordEntity {
+		// TODO: check why this method is only in changlog and not documentated, it include also a bug that it is fixed later
+		// https://gist.github.com/B4nan/3fb771464e4c4499c26c9f4e684692a4#file-create-reference-ts-L8
+		// https://mikro-orm.io/api/core/changelog#563-2022-12-28
 		const fileRecordEntity = Reference.createFromPK(FileRecordEntity, fileRecord.id);
 
 		return fileRecordEntity;
@@ -123,15 +125,15 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 			orderBy: order,
 		});
 
-		const fileRecordDOs = FileRecordDOMapper.entitiesToDOs(fileRecordEntities);
+		const fileRecords = FileRecordDOMapper.entitiesToDOs(fileRecordEntities);
 
-		return [fileRecordDOs, count];
+		return [fileRecords, count];
 	}
 
 	private async findOneOrFail(scope: FileRecordScope): Promise<FileRecord> {
 		const filesRecordEntity = await this.em.findOneOrFail(FileRecordEntity, scope.query);
-		const fileRecordDO = FileRecordDOMapper.entityToDO(filesRecordEntity);
+		const fileRecord = FileRecordDOMapper.entityToDO(filesRecordEntity);
 
-		return fileRecordDO;
+		return fileRecord;
 	}
 }

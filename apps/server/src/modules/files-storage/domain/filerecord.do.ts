@@ -39,7 +39,7 @@ export interface IFileRecordParams {
 	securityCheck: IFileSecurityCheckParams;
 	creatorId: EntityId;
 	deletedSince?: Date;
-};
+}
 
 interface IParentInfo {
 	schoolId: EntityId;
@@ -47,10 +47,15 @@ interface IParentInfo {
 	parentType: FileRecordParentType;
 }
 
+export interface IUpdateSecurityCheckStatus {
+	status: ScanStatus;
+	reason: string;
+}
+
 export class FileRecord extends BaseDO2<IFileRecordParams> {
-	public updateSecurityCheckStatus(status: ScanStatus, reason: string): void {
-		this.props.securityCheck.status = status;
-		this.props.securityCheck.reason = reason;
+	public updateSecurityCheckStatus(scanStatus: IUpdateSecurityCheckStatus): void {
+		this.props.securityCheck.status = scanStatus.status;
+		this.props.securityCheck.reason = scanStatus.reason;
 		this.props.securityCheck.updatedAt = new Date();
 		this.props.securityCheck.requestToken = undefined;
 	}
