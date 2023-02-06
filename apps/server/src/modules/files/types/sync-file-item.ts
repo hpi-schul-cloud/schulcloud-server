@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { EntityId } from '@shared/domain';
-import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordEntity, FileRecordParentType } from '@src/modules/files-storage/repo/filerecord.entity';
 import { SyncSourceFile } from './sync-source-file';
 import { SyncTargetFile } from './sync-target-file';
 
@@ -20,7 +20,7 @@ export class SyncFileItem {
 
 	target?: SyncTargetFile;
 
-	fileRecord: FileRecord;
+	fileRecord: FileRecordEntity;
 
 	created = false;
 

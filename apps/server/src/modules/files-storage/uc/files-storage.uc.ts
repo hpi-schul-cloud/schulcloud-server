@@ -19,7 +19,7 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecordEntity, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { IGetFileResponse } from '../interface';
@@ -52,7 +52,7 @@ export class FilesStorageUC {
 		userId: EntityId,
 		params: FileRecordParams,
 		req: Request
-	): Promise<FileRecord> {
+	): Promise<FileRecordEntity> {
 		const result = await new Promise((resolve, reject) => {
 			const requestStream = busboy({ headers: req.headers, defParamCharset: 'utf8' });
 
@@ -75,10 +75,10 @@ export class FilesStorageUC {
 			req.pipe(requestStream);
 		});
 
-		return result as FileRecord;
+		return result as FileRecordEntity;
 	}
 
-	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
+	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecordEntity> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 
 		const fileRecord = await this.addRequestStreamToRequestPipe(userId, params, req);
@@ -106,7 +106,7 @@ export class FilesStorageUC {
 		return response;
 	}
 
-	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams): Promise<FileRecord> {
+	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams): Promise<FileRecordEntity> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 
 		try {
@@ -146,14 +146,14 @@ export class FilesStorageUC {
 	}
 
 	// delete
-	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecordEntity[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.delete);
 		const [fileRecords, count] = await this.filesStorageService.deleteFilesOfParent(params);
 
 		return [fileRecords, count];
 	}
 
-	public async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
+	public async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecordEntity> {
 		const fileRecord = await this.filesStorageService.getFileRecord(params);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
@@ -164,14 +164,14 @@ export class FilesStorageUC {
 	}
 
 	// restore
-	public async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecordEntity[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 		const [fileRecords, count] = await this.filesStorageService.restoreFilesOfParent(params);
 
 		return [fileRecords, count];
 	}
 
-	public async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
+	public async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecordEntity> {
 		const fileRecord = await this.filesStorageService.getFileRecordMarkedForDelete(params);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
@@ -226,7 +226,7 @@ export class FilesStorageUC {
 	}
 
 	// update
-	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams): Promise<FileRecord> {
+	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams): Promise<FileRecordEntity> {
 		const fileRecord = await this.filesStorageService.getFileRecord(params);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
@@ -243,7 +243,7 @@ export class FilesStorageUC {
 	}
 
 	// get
-	public async getFileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async getFileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecordEntity[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.read);
 
 		const countedFileRecords = await this.filesStorageService.getFileRecordsOfParent(params);

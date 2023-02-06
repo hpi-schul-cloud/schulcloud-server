@@ -3,7 +3,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, Submission } from '@shared/domain';
-import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordEntity, FileRecordParentType } from '@src/modules/files-storage/repo/filerecord.entity';
 import { SyncFileItemMapper } from '../mapper';
 import { SyncFileItem, SyncFileItemData } from '../types';
 
@@ -119,11 +119,11 @@ export class SyncFilesRepo {
 			.insertOne('files_filerecords', { fileId: new ObjectId(sourceId), filerecordId, error });
 	}
 
-	async insertFileRecord(entity: FileRecord): Promise<void> {
+	async insertFileRecord(entity: FileRecordEntity): Promise<void> {
 		await this._em.nativeInsert(entity);
 	}
 
-	async updateFileRecord(entity: FileRecord): Promise<void> {
-		await this._em.nativeUpdate(FileRecord, { _id: entity._id }, entity);
+	async updateFileRecord(entity: FileRecordEntity): Promise<void> {
+		await this._em.nativeUpdate(FileRecordEntity, { _id: entity._id }, entity);
 	}
 }

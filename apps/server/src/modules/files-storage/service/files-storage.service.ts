@@ -5,7 +5,7 @@ import {
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
-import { Counted, EntityId } from '@shared/domain';
+import { Counted, EntityId, IFindOptions } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
@@ -19,7 +19,6 @@ import {
 	SingleFileParams,
 } from '../controller/dto';
 import { FileDto } from '../dto';
-import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 import {
 	createFileRecord,
@@ -33,6 +32,35 @@ import {
 import { IGetFileResponse } from '../interface';
 import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
+import { FileRecord } from '../domain';
+
+// TODO: Ticket for rename EntityId to more generic Name
+
+export interface IFilesStorageRepo {
+	findOneById(id: EntityId): Promise<FileRecord>;
+
+	findOneByIdMarkedForDelete(id: EntityId): Promise<FileRecord>;
+
+	findBySchoolIdAndParentId(
+		schoolId: EntityId,
+		parentId: EntityId,
+		options?: IFindOptions<FileRecord>
+	): Promise<Counted<FileRecord[]>>;
+
+	findBySchoolIdAndParentIdAndMarkedForDelete(
+		schoolId: EntityId,
+		parentId: EntityId,
+		options?: IFindOptions<FileRecord>
+	): Promise<Counted<FileRecord[]>>;
+
+	findBySecurityCheckRequestToken(token: string): Promise<FileRecord>;
+
+	delete(FileRecord: FileRecord[]): Promise<void>;
+
+	save(FileRecord: FileRecordParams[]): Promise<FileRecord[]>;
+
+	update(FileRecords: FileRecord[]): Promise<void>;
+}
 
 @Injectable()
 export class FilesStorageService {
@@ -83,7 +111,7 @@ export class FilesStorageService {
 
 			return fileRecord;
 		} catch (error) {
-			await this.fileRecordRepo.delete(fileRecord);
+			await this.fileRecordRepo.delete([fileRecord]);
 			throw error;
 		}
 	}
@@ -112,7 +140,7 @@ export class FilesStorageService {
 
 		this.checkDuplicatedNames(fileRecords, data.fileName);
 		fileRecord.setName(data.fileName);
-		await this.fileRecordRepo.save(fileRecord);
+		await this.fileRecordRepo.update([fileRecord]);
 
 		return fileRecord;
 	}
@@ -123,7 +151,7 @@ export class FilesStorageService {
 		const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResultParams);
 		fileRecord.updateSecurityCheckStatus(status, reason);
 
-		await this.fileRecordRepo.save(fileRecord);
+		await this.fileRecordRepo.update([fileRecord]);
 	}
 
 	// download
@@ -176,7 +204,7 @@ export class FilesStorageService {
 		try {
 			await this.deleteFilesInFilesStorageClient(fileRecords);
 		} catch (error) {
-			await this.fileRecordRepo.save(fileRecords);
+			await this.fileRecordRepo.update(fileRecords);
 			throw new InternalServerErrorException(error, `${FilesStorageService.name}:delete`);
 		}
 	}
@@ -212,7 +240,7 @@ export class FilesStorageService {
 			await this.restoreFilesInFileStorageClient(fileRecords);
 		} catch (err) {
 			markForDelete(fileRecords);
-			await this.fileRecordRepo.save(fileRecords);
+			await this.fileRecordRepo.update(fileRecords);
 			throw new InternalServerErrorException(err, `${FilesStorageService.name}:restore`);
 		}
 	}
@@ -260,8 +288,8 @@ export class FilesStorageService {
 		targetParams: FileRecordParams,
 		userId: EntityId
 	): Promise<FileRecord> {
-		const fileRecord = sourceFile.copy(userId, targetParams);
-		await this.fileRecordRepo.save(fileRecord);
+		const fileRecordProps = sourceFile.copy(userId, targetParams);
+		const [fileRecord] = await this.fileRecordRepo.save([fileRecordProps]);
 
 		return fileRecord;
 	}

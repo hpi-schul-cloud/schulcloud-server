@@ -16,7 +16,7 @@ import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordListResponse, ScanResultParams } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecord, FileRecordParentType } from '../../entity';
+import { FileRecordEntity, FileRecordParentType } from '../../entity';
 
 const baseRouteName = '/file-security';
 const scanResult: ScanResultParams = { virus_detected: false };
@@ -116,7 +116,7 @@ describe(`${baseRouteName} (api)`, () => {
 			em.clear();
 
 			const response = await api.put(`/update-status/${token}`, scanResult);
-			const changedFileRecord = await em.findOneOrFail(FileRecord, fileRecord.id);
+			const changedFileRecord = await em.findOneOrFail(FileRecordEntity, fileRecord.id);
 
 			expect(changedFileRecord.securityCheck.status).toStrictEqual('verified');
 			expect(response.status).toEqual(200);

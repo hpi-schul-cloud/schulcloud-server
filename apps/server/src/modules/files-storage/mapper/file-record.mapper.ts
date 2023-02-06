@@ -1,15 +1,15 @@
 import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../controller/dto';
-import { FileRecord, ScanStatus } from '../entity';
+import { FileRecordEntity, ScanStatus } from '../entity';
 
 export class FileRecordMapper {
-	static mapToFileRecordResponse(fileRecord: FileRecord): FileRecordResponse {
+	static mapToFileRecordResponse(fileRecord: FileRecordEntity): FileRecordResponse {
 		const fileRecordResponse = new FileRecordResponse(fileRecord);
 
 		return fileRecordResponse;
 	}
 
 	static mapToFileRecordListResponse(
-		fileRecords: FileRecord[],
+		fileRecords: FileRecordEntity[],
 		total: number,
 		skip?: number,
 		limit?: number

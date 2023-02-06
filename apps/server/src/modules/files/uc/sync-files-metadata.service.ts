@@ -3,7 +3,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { FileRecord } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordEntity } from '@src/modules/files-storage/repo/filerecord.entity';
 import { FileRecordRepo } from '@src/modules/files-storage/repo/filerecord.repo';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
 import { SyncFileItem, SyncTargetFile } from '../types';
@@ -51,7 +51,7 @@ export class SyncFilesMetadataService {
 
 	private createFileRecord(item: SyncFileItem): SyncFileItem {
 		const { source } = item;
-		const fileRecord = new FileRecord({
+		const fileRecord = new FileRecordEntity({
 			size: source.size,
 			name: source.name,
 			mimeType: source.type,

@@ -5,7 +5,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordEntity, FileRecordParentType } from '@src/modules/files-storage/repo/filerecord.entity';
 import { FileRecordMapper } from '../mapper/filerecord-mapper';
 
 const orphanedFilesQuery = (collectionName: string) => [
@@ -23,7 +23,7 @@ export class OrphanedFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
 	async findDuplicatedFileRecords(parentType: FileRecordParentType) {
-		const fileRecords: FileRecord[] = [];
+		const fileRecords: FileRecordEntity[] = [];
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let results: any[] = [];
 		if (parentType === FileRecordParentType.Lesson) {
@@ -68,7 +68,7 @@ export class OrphanedFilesRepo {
 		return a.length !== 0;
 	}
 
-	async findOrphanedFileRecords(parentType: FileRecordParentType): Promise<FileRecord[]> {
+	async findOrphanedFileRecords(parentType: FileRecordParentType): Promise<FileRecordEntity[]> {
 		let query;
 
 		if (parentType === FileRecordParentType.Task) {
@@ -86,11 +86,11 @@ export class OrphanedFilesRepo {
 		return fileRecords;
 	}
 
-	async deleteFileRecord(fileRecord: FileRecord) {
-		await this._em.nativeDelete(FileRecord, fileRecord._id);
+	async deleteFileRecord(fileRecord: FileRecordEntity) {
+		await this._em.nativeDelete(FileRecordEntity, fileRecord._id);
 	}
 
-	async deleteFileFileRecord(fileRecord: FileRecord) {
+	async deleteFileFileRecord(fileRecord: FileRecordEntity) {
 		await this._em.getConnection().deleteMany('files_filerecords', { filerecordId: fileRecord._id });
 	}
 }

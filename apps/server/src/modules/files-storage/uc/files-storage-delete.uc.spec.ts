@@ -11,7 +11,7 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecordEntity, FileRecordParentType } from '../entity';
 import { PermissionContexts } from '../files-storage.const';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -60,7 +60,7 @@ describe('FilesStorageUC delete methods', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecord]);
+		orm = await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -116,7 +116,7 @@ describe('FilesStorageUC delete methods', () => {
 				const { params, userId, fileRecords } = buildFileRecordsWithParams();
 				const { requestParams } = createParams();
 				const fileRecord = fileRecords[0];
-				const mockedResult = [[fileRecord], 0] as Counted<FileRecord[]>;
+				const mockedResult = [[fileRecord], 0] as Counted<FileRecordEntity[]>;
 
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 				filesStorageService.deleteFilesOfParent.mockResolvedValueOnce(mockedResult);

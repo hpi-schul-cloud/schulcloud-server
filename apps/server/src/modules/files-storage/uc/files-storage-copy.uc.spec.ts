@@ -11,7 +11,7 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecordEntity, FileRecordParentType } from '../entity';
 import { CopyFileResponseBuilder } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
@@ -76,7 +76,7 @@ describe('FilesStorageUC', () => {
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecord]);
+		orm = await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -15,7 +15,7 @@ import { of } from 'rxjs';
 import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecordEntity, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { PermissionContexts } from '../files-storage.const';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
@@ -90,7 +90,7 @@ describe('FilesStorageUC upload methods', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecord]);
+		orm = await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

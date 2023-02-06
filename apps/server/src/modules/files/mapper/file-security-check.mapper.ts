@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { ScanStatus } from '@src/modules/files-storage/entity/filerecord.entity';
+import { ScanStatus } from '@src/modules/files-storage/repo/filerecord.entity';
 import { FileSecurityCheckData, SyncSourceFileSecurityCheck } from '../types';
 
 // Temporary functionality for migration to new fileservice

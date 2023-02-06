@@ -1,3 +1,4 @@
+// TODO: rename to BaseDOLegacy
 export abstract class BaseDO {
 	id?: string;
 

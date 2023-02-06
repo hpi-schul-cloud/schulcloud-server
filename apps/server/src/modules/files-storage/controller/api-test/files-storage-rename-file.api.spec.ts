@@ -16,7 +16,7 @@ import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordResponse, RenameFileParams } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecord, FileRecordParentType } from '../../entity';
+import { FileRecordEntity, FileRecordParentType } from '../../entity';
 
 const baseRouteName = '/file/rename/';
 
@@ -46,8 +46,8 @@ describe(`${baseRouteName} (api)`, () => {
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let api: API;
-	let fileRecord: FileRecord;
-	let fileRecords: FileRecord[];
+	let fileRecord: FileRecordEntity;
+	let fileRecords: FileRecordEntity[];
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({

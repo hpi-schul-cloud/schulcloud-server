@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { Logger } from '@src/core/logger/logger.service';
-import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordParentType } from '@src/modules/files-storage/repo/filerecord.entity';
 import { Command, Console } from 'nestjs-console';
 import { AvailableSyncParentType } from '../types';
 import { SyncEmbeddedFilesUc } from '../uc/sync-embedded-files.uc';

@@ -8,7 +8,7 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecordEntity, FileRecordParentType } from '../entity';
 import { getPaths } from '../helper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
@@ -40,7 +40,7 @@ describe('FilesStorageService delete methods', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecord]);
+		orm = await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

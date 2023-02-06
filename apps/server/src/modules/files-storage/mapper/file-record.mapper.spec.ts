@@ -1,23 +1,11 @@
-import { MikroORM } from '@mikro-orm/core';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../controller/dto';
-import { FileRecord, ScanStatus } from '../entity';
+import { ScanStatus, FileRecordTestFactory } from '../domain';
 import { FileRecordMapper } from './file-record.mapper';
 
 describe('FilesStorageMapper', () => {
-	let orm: MikroORM;
-
-	beforeAll(async () => {
-		orm = await setupEntities([FileRecord]);
-	});
-
-	afterAll(async () => {
-		await orm.close();
-	});
-
 	describe('mapToFileRecordResponse()', () => {
 		it('should return FileRecordResponse DO', () => {
-			const fileRecord = fileRecordFactory.buildWithId();
+			const fileRecord = FileRecordTestFactory.build();
 			const result = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 			expect(result).toEqual(
 				expect.objectContaining({
@@ -37,12 +25,12 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapToFileRecordListResponse()', () => {
 		it('should return instance of FileRecordListResponse', () => {
-			const fileRecords = fileRecordFactory.buildList(3);
+			const fileRecords = FileRecordTestFactory.buildList(3);
 			const result = FileRecordMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 			expect(result).toBeInstanceOf(FileRecordListResponse);
 		});
 		it('should contains props [data, total, skip, limit]', () => {
-			const fileRecords = fileRecordFactory.buildList(3);
+			const fileRecords = FileRecordTestFactory.buildList(3);
 			const result = FileRecordMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length, 0, 5);
 			expect(result).toEqual(
 				expect.objectContaining({
@@ -54,7 +42,7 @@ describe('FilesStorageMapper', () => {
 			);
 		});
 		it('should contains instances of FileRecordResponse', () => {
-			const fileRecords = fileRecordFactory.buildList(3);
+			const fileRecords = FileRecordTestFactory.buildList(3);
 			const result = FileRecordMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 
 			expect(result.data).toBeInstanceOf(Array);

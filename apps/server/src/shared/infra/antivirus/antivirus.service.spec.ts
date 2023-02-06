@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory } from '@shared/testing';
-import { FileRecord } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordEntity } from '@src/modules/files-storage/repo/filerecord.entity';
 import { AntivirusService } from './antivirus.service';
 
 describe('AntivirusService', () => {
@@ -40,7 +40,7 @@ describe('AntivirusService', () => {
 	});
 
 	describe('send()', () => {
-		let fileRecord: FileRecord;
+		let fileRecord: FileRecordEntity;
 
 		beforeEach(() => {
 			fileRecord = fileRecordFactory.build();

@@ -2,7 +2,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
-import { FileRecord, FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordEntity, FileRecordParentType } from '@src/modules/files-storage/repo/filerecord.entity';
 import { OrphanedFilesRepo } from '../repo/orphaned-files.repo';
 import { SyncFilesStorageService } from './sync-files-storage.service';
 
@@ -31,7 +31,7 @@ export class DeleteOrphanedFilesUc {
 
 		const orphanedFileRecords = await this.orphanedFilesRepo.findDuplicatedFileRecords(parentType);
 		const chunkSize = 100;
-		const chunks: FileRecord[][] = [];
+		const chunks: FileRecordEntity[][] = [];
 		for (let i = 0; i < orphanedFileRecords.length; i += chunkSize) {
 			const chunk = orphanedFileRecords.slice(i, i + chunkSize);
 			chunks.push(chunk);
@@ -50,9 +50,9 @@ export class DeleteOrphanedFilesUc {
 		}
 	}
 
-	private async deleteOrphans(fileRecords: FileRecord[]) {
+	private async deleteOrphans(fileRecords: FileRecordEntity[]) {
 		const chunkSize = 50;
-		const chunks: FileRecord[][] = [];
+		const chunks: FileRecordEntity[][] = [];
 		for (let i = 0; i < fileRecords.length; i += chunkSize) {
 			const chunk = fileRecords.slice(i, i + chunkSize);
 			chunks.push(chunk);
@@ -66,7 +66,7 @@ export class DeleteOrphanedFilesUc {
 		}
 	}
 
-	private async deleteOrphan(fileRecord: FileRecord) {
+	private async deleteOrphan(fileRecord: FileRecordEntity) {
 		try {
 			const path = [fileRecord.schoolId, fileRecord.id].join('/');
 			await this.syncFilesStorageService.removeFile(path);
@@ -82,7 +82,7 @@ export class DeleteOrphanedFilesUc {
 		}
 	}
 
-	private async deleteMetaData(fileRecord: FileRecord) {
+	private async deleteMetaData(fileRecord: FileRecordEntity) {
 		await Promise.all([
 			this.orphanedFilesRepo.deleteFileRecord(fileRecord),
 			this.orphanedFilesRepo.deleteFileFileRecord(fileRecord),

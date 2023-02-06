@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
-import { FileRecord, FileRecordParentType, ScanStatus } from '../../entity';
+import { FileRecordEntity, FileRecordParentType, ScanStatus } from '../../entity';
 
 export class FileRecordResponse {
-	constructor(fileRecord: FileRecord) {
+	constructor(fileRecord: FileRecordEntity) {
 		this.id = fileRecord.id;
 		this.name = fileRecord.name;
 		this.size = fileRecord.size;

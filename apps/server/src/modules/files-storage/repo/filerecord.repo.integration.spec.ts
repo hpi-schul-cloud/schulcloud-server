@@ -1,11 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, fileRecordFactory } from '@shared/testing';
-
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-
-import { FileRecord, FileRecordParentType } from '../entity';
 import { FileRecordRepo } from './filerecord.repo';
+import { FileRecordEntity } from './filerecord.entity';
+import { FileRecordParentType } from '../domain';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
@@ -14,7 +13,7 @@ describe('FileRecordRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [FileRecord] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [FileRecordEntity] })],
 			providers: [FileRecordRepo],
 		}).compile();
 		repo = module.get(FileRecordRepo);
@@ -30,7 +29,7 @@ describe('FileRecordRepo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(FileRecord);
+		expect(repo.entityName).toBe(FileRecordEntity);
 	});
 
 	describe('findOneById', () => {
@@ -102,7 +101,7 @@ describe('FileRecordRepo', () => {
 	describe('findBySchoolIdAndParentId', () => {
 		const parentId1 = new ObjectId().toHexString();
 		const schoolId1 = new ObjectId().toHexString();
-		let fileRecords1: FileRecord[];
+		let fileRecords1: FileRecordEntity[];
 
 		beforeEach(() => {
 			fileRecords1 = fileRecordFactory.buildList(3, {
@@ -194,7 +193,7 @@ describe('FileRecordRepo', () => {
 	describe('findBySchoolIdAndParentIdAndMarkedForDelete', () => {
 		const parentId1 = new ObjectId().toHexString();
 		const schoolId1 = new ObjectId().toHexString();
-		let fileRecords1: FileRecord[];
+		let fileRecords1: FileRecordEntity[];
 
 		beforeEach(() => {
 			fileRecords1 = fileRecordFactory.markedForDelete().buildList(3, {
@@ -263,7 +262,7 @@ describe('FileRecordRepo', () => {
 	});
 
 	describe('findBySecurityCheckRequestToken', () => {
-		let fileRecord: FileRecord;
+		let fileRecord: FileRecordEntity;
 
 		beforeEach(() => {
 			const schoolId = new ObjectId().toHexString();
@@ -284,7 +283,7 @@ describe('FileRecordRepo', () => {
 
 			const result = await repo.findBySecurityCheckRequestToken(token);
 
-			expect(result).toBeInstanceOf(FileRecord);
+			expect(result).toBeInstanceOf(FileRecordEntity);
 			expect(result.securityCheck.requestToken).toEqual(token);
 		});
 

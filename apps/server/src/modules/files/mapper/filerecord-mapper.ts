@@ -3,15 +3,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FileRecord } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordEntity } from '@src/modules/files-storage/repo/filerecord.entity';
 
 export class FileRecordMapper {
-	static mapToFileRecord(aggregationResult: Record<string, never>): FileRecord {
+	static mapToFileRecord(aggregationResult: Record<string, never>): FileRecordEntity {
 		const parentId = new ObjectId(aggregationResult.parent);
 		const creatorId = new ObjectId(aggregationResult.creator);
 		const schoolId = new ObjectId(aggregationResult.school);
 
-		const fileRecord = new FileRecord({
+		const fileRecord = new FileRecordEntity({
 			size: aggregationResult.size,
 			name: aggregationResult.name,
 			mimeType: aggregationResult.mimeType,

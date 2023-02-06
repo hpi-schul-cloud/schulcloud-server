@@ -4,7 +4,7 @@ import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Counted, File, Lesson, Submission, Task } from '@shared/domain';
-import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordParentType } from '@src/modules/files-storage/repo/filerecord.entity';
 import { SyncFileItemMapper } from '../mapper';
 import { AvailableSyncEntityType, AvailableSyncParentType, SyncFileItem } from '../types';
 

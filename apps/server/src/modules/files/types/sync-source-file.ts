@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { EntityId } from '@shared/domain';
-import { ScanStatus } from '@src/modules/files-storage/entity/filerecord.entity';
+import { ScanStatus } from '@src/modules/files-storage/repo/filerecord.entity';
 
 // Temporary functionality for migration to new fileservice
 // TODO: Remove when BC-1496 is done!

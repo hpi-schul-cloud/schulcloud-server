@@ -13,7 +13,7 @@ import { ErrorType } from '@src/modules/files-storage/error';
 import { Request } from 'express';
 import S3rver from 's3rver';
 import request from 'supertest';
-import { FileRecord } from '../../entity';
+import { FileRecordEntity } from '../../entity';
 
 class API {
 	app: INestApplication;
@@ -379,7 +379,7 @@ describe('files-storage controller (API)', () => {
 			it('should return status 200 for successful download', async () => {
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 
-				const newRecord = await em.findOneOrFail(FileRecord, result.id);
+				const newRecord = await em.findOneOrFail(FileRecordEntity, result.id);
 				const response = await api.getDownloadFile(
 					`/file-security/download/${newRecord.securityCheck.requestToken || ''}`
 				);

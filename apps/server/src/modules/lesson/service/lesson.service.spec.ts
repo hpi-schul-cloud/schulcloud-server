@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LessonRepo } from '@shared/repo';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
+import { FileRecordParentType } from '@src/modules/files-storage/repo/filerecord.entity';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
