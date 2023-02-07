@@ -21,5 +21,28 @@
 				"Value": "emil.extern@not.amail"
 			}
 		]
+	},
+	{
+		"SubjectId": "MGEwM2UyZjMtNTNjMS00NTlhLWEzNmEtNjNhOWYwZjFiZWM3",
+		"Username": "lorenz.ldap",
+		"Password": "DummyPwd!",
+		"Claims": [
+			{
+				"Type": "name",
+				"Value": "Lorenz Ldap"
+			},
+			{
+				"Type": "given_name",
+				"Value": "Lorenz"
+			},
+			{
+				"Type": "family_name",
+				"Value": "Ldap"
+			},
+			{
+				"Type": "email",
+				"Value": "lorenz.ldap@not.amail"
+			}
+		]
 	}
 ]
