@@ -127,7 +127,7 @@ describe('Login Controller (api)', () => {
 
 			account = accountFactory.buildWithId({
 				userId: user.id,
-				username: `${schoolExternalId}/${ldapAccountUserName.trim().toLowerCase()}`,
+				username: `${schoolExternalId}/${ldapAccountUserName}`.toLowerCase(),
 				systemId: system.id,
 			});
 
