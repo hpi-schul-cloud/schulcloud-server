@@ -1,25 +1,27 @@
-import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
 import { Injectable } from '@nestjs/common';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-
-export type OidcStrategyData = {
-	idToken: string;
-};
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { OauthDataDto, ProvisioningDto } from '../../dto';
+import { ProvisioningStrategy } from '../base.strategy';
+import { OidcProvisioningService } from './service/oidc-provisioning.service';
 
 @Injectable()
-export class OidcProvisioningStrategy extends ProvisioningStrategy<OidcStrategyData> {
-	override async apply(params: OidcStrategyData): Promise<ProvisioningDto> {
-		const idToken: JwtPayload | null = jwt.decode(params.idToken, { json: true });
-		if (!idToken || !idToken.preferred_username) {
-			throw new OAuthSSOError('Failed to extract preferred_username', 'sso_jwt_problem');
-		}
-		return Promise.resolve(new ProvisioningDto({ externalUserId: idToken.preferred_username as string }));
+export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
+	constructor(protected readonly oidcProvisioningService: OidcProvisioningService) {
+		super();
 	}
 
-	getType(): SystemProvisioningStrategy {
-		return SystemProvisioningStrategy.OIDC;
+	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
+		let school: SchoolDO | undefined;
+		if (data.externalSchool) {
+			school = await this.oidcProvisioningService.provisionExternalSchool(data.externalSchool, data.system.systemId);
+		}
+
+		const user: UserDO = await this.oidcProvisioningService.provisionExternalUser(
+			data.externalUser,
+			data.system.systemId,
+			school?.id
+		);
+		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
 	}
 }

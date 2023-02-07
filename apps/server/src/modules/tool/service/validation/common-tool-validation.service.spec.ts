@@ -5,7 +5,8 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { UnprocessableEntityException } from '@nestjs/common';
+import { CustomParameterScope } from '@shared/domain';
+import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
 import { CommonToolValidationService } from './common-tool-validation.service';
 
@@ -41,7 +42,9 @@ describe('CommonToolValidationService', () => {
 	describe('validateCommon is called', () => {
 		describe('when tool is valid', () => {
 			it('should return without exception', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, { default: 'test', regex: '[t]', regexComment: 'testComment' })
+					.buildWithId();
 				externalToolService.findExternalToolByName.mockResolvedValue(externalToolDO);
 
 				const result: Promise<void> = service.validateCommon(externalToolDO);
@@ -59,7 +62,7 @@ describe('CommonToolValidationService', () => {
 				const result: Promise<void> = service.validateCommon(externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used.`)
+					new ValidationError(`The tool name "${externalToolDO.name}" is already used.`)
 				);
 			});
 
@@ -67,8 +70,8 @@ describe('CommonToolValidationService', () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					name: undefined,
 					parameters: [
-						customParameterDOFactory.build({ name: 'sameKey' }),
-						customParameterDOFactory.build({ name: 'notSameKey' }),
+						customParameterDOFactory.build({ name: 'sameKey', scope: CustomParameterScope.SCHOOL }),
+						customParameterDOFactory.build({ name: 'notSameKey', scope: CustomParameterScope.SCHOOL }),
 					],
 				});
 
@@ -91,9 +94,7 @@ describe('CommonToolValidationService', () => {
 				const func = () => service.validateCommon(externalToolDO);
 
 				await expect(func()).rejects.toThrow(
-					new UnprocessableEntityException(
-						`The tool ${externalToolDO.name} contains multiple of the same custom parameters.`
-					)
+					new ValidationError(`The tool ${externalToolDO.name} contains multiple of the same custom parameters.`)
 				);
 			});
 
@@ -109,9 +110,7 @@ describe('CommonToolValidationService', () => {
 				const result: Promise<void> = service.validateCommon(externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(
-						`The tool ${externalToolDO.name} contains multiple of the same custom parameters.`
-					)
+					new ValidationError(`The tool ${externalToolDO.name} contains multiple of the same custom parameters.`)
 				);
 			});
 		});
@@ -124,21 +123,87 @@ describe('CommonToolValidationService', () => {
 				const func = () => service.validateCommon(externalToolDO);
 
 				await expect(func()).rejects.toThrow(
-					new UnprocessableEntityException(
-						`A custom Parameter of the tool ${externalToolDO.name} has wrong regex attribute.`
-					)
+					new ValidationError(`A custom Parameter of the tool ${externalToolDO.name} has wrong regex attribute.`)
 				);
+			});
+		});
+
+		describe('when default value does not match regex', () => {
+			it('should throw', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
+					.buildWithId();
+				externalToolService.findExternalToolByName.mockResolvedValue(null);
+
+				const func = () => service.validateCommon(externalToolDO);
+
+				await expect(func()).rejects.toThrow('The default value');
 			});
 		});
 
 		describe('when regex is set but regex comment is missing', () => {
 			it('should throw exception', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1, { regex: '.' }).build();
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, { regex: '.', scope: CustomParameterScope.SCHOOL })
+					.build();
 				const result: Promise<void> = service.validateCommon(externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new UnprocessableEntityException(
+					new ValidationError(
 						`The "${(externalToolDO.parameters as CustomParameterDO[])[0].name}" parameter is missing a regex comment.`
+					)
+				);
+			});
+		});
+
+		describe('when parameters has a parameter with scope global', () => {
+			it('should pass when parameter has a default value', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, {
+						scope: CustomParameterScope.GLOBAL,
+						default: 'defaultValue',
+					})
+					.build();
+
+				const result: Promise<void> = service.validateCommon(externalToolDO);
+
+				await expect(result).resolves.not.toThrow();
+			});
+
+			it('should throw an exception when defaultValue is empty', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, {
+						scope: CustomParameterScope.GLOBAL,
+						default: undefined,
+					})
+					.build();
+
+				const result: Promise<void> = service.validateCommon(externalToolDO);
+
+				await expect(result).rejects.toThrow(
+					new ValidationError(
+						`The "${
+							(externalToolDO.parameters as CustomParameterDO[])[0].name
+						}" is a global parameter and requires a default value.`
+					)
+				);
+			});
+
+			it('should throw an exception when the defaultValue is undefined', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withCustomParameters(1, {
+						scope: CustomParameterScope.GLOBAL,
+						default: '',
+					})
+					.build();
+
+				const result: Promise<void> = service.validateCommon(externalToolDO);
+
+				await expect(result).rejects.toThrow(
+					new ValidationError(
+						`The "${
+							(externalToolDO.parameters as CustomParameterDO[])[0].name
+						}" is a global parameter and requires a default value.`
 					)
 				);
 			});

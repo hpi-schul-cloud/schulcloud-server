@@ -6,9 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, PermissionService, RoleName, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { RoleUc } from '@src/modules/role/uc/role.uc';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { UserUc } from './user.uc';
@@ -21,7 +19,6 @@ describe('UserUc', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let permissionService: DeepMocked<PermissionService>;
 	let config: DeepMocked<ConfigService>;
-	let roleUc: DeepMocked<RoleUc>;
 
 	afterAll(async () => {
 		await orm.close();
@@ -35,10 +32,6 @@ describe('UserUc', () => {
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
-				},
-				{
-					provide: RoleUc,
-					useValue: createMock<RoleUc>(),
 				},
 				{
 					provide: UserRepo,
@@ -57,7 +50,6 @@ describe('UserUc', () => {
 
 		userUc = module.get(UserUc);
 		userService = module.get(UserService);
-		roleUc = module.get(RoleUc);
 		userRepo = module.get(UserRepo);
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
@@ -136,24 +128,6 @@ describe('UserUc', () => {
 
 		it('should call the save method of userService', async () => {
 			await userUc.save(userDto);
-
-			expect(userService.createOrUpdate).toHaveBeenCalledWith(userDto);
-		});
-
-		it('should call the saveProvisioningUserOutputDto method of userService', async () => {
-			roleUc.findByNames.mockResolvedValue(Promise.resolve([roleDto]));
-
-			await userUc.saveProvisioningUserOutputDto(
-				new ProvisioningUserOutputDto({
-					id: userDto.id,
-					email: userDto.email,
-					firstName: userDto.firstName,
-					lastName: userDto.lastName,
-					roleNames: [RoleName.DEMO],
-					schoolId: userDto.schoolId,
-					externalId: userDto.externalId as string,
-				})
-			);
 
 			expect(userService.createOrUpdate).toHaveBeenCalledWith(userDto);
 		});

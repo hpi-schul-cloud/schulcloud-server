@@ -1,5 +1,7 @@
 import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { CustomParameterScope } from '@shared/domain';
+import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
 
 @Injectable()
@@ -8,22 +10,30 @@ export class CommonToolValidationService {
 
 	async validateCommon(externalToolDO: ExternalToolDO | Partial<ExternalToolDO>): Promise<void> {
 		if (!(await this.isNameUnique(externalToolDO))) {
-			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name || ''}" is already used.`);
+			throw new ValidationError(`The tool name "${externalToolDO.name || ''}" is already used.`);
 		}
 		if (externalToolDO.parameters) {
 			if (this.hasDuplicateAttributes(externalToolDO.parameters)) {
-				throw new UnprocessableEntityException(
+				throw new ValidationError(
 					`The tool ${externalToolDO.name || ''} contains multiple of the same custom parameters.`
 				);
 			}
 			if (!this.validateByRegex(externalToolDO.parameters)) {
-				throw new UnprocessableEntityException(
+				throw new ValidationError(
 					`A custom Parameter of the tool ${externalToolDO.name || ''} has wrong regex attribute.`
 				);
 			}
+			if (!this.validateDefaultValue(externalToolDO.parameters)) {
+				throw new ValidationError(
+					`The default value of a custom parameter of the tool: ${externalToolDO.name || ''} does not match its regex`
+				);
+			}
 			externalToolDO.parameters.forEach((param: CustomParameterDO) => {
+				if (!this.isGlobalParameterValid(param)) {
+					throw new ValidationError(`The "${param.name}" is a global parameter and requires a default value.`);
+				}
 				if (!this.isRegexCommentMandatoryAndFilled(param)) {
-					throw new UnprocessableEntityException(`The "${param.name}" parameter is missing a regex comment.`);
+					throw new ValidationError(`The "${param.name}" parameter is missing a regex comment.`);
 				}
 			});
 		}
@@ -60,8 +70,27 @@ export class CommonToolValidationService {
 		});
 	}
 
+	private validateDefaultValue(customParameter: CustomParameterDO[]): boolean {
+		const isValid: boolean = customParameter.every((param: CustomParameterDO) => {
+			if (param.regex && param.default) {
+				const reg = new RegExp(param.regex);
+				const match: boolean = reg.test(param.default);
+				return match;
+			}
+			return true;
+		});
+		return isValid;
+	}
+
 	private isRegexCommentMandatoryAndFilled(customParameter: CustomParameterDO): boolean {
 		if (customParameter.regex && !customParameter.regexComment) {
+			return false;
+		}
+		return true;
+	}
+
+	private isGlobalParameterValid(customParameter: CustomParameterDO): boolean {
+		if (CustomParameterScope.GLOBAL === customParameter.scope && !customParameter.default) {
 			return false;
 		}
 		return true;

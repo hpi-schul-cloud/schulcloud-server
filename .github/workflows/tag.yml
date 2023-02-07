@@ -43,3 +43,22 @@ jobs:
           push: true
           tags: ${{ steps.docker_meta_img_hub.outputs.tags }}
           labels: ${{ steps.docker_meta_img.outputs.labels }}
+
+  create-release:
+    needs:
+      - build_and_push
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: create sbom
+        uses: aquasecurity/trivy-action@9ab158e8597f3b310480b9a69402b419bc03dbd5
+        with:
+          image-ref: 'docker.io/schulcloud/schulcloud-server:${{ github.ref_name }}'
+          output: 'dependency-results.sbom.json'
+      - name: create release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: 'refer to the schulcloud-client release notes https://github.com/hpi-schul-cloud/schulcloud-client/releases/'
+          files: dependency-results.sbom.json

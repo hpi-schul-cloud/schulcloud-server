@@ -1,15 +1,14 @@
-import { SchoolFeatures } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolRepo } from '@shared/repo';
-import { MikroORM } from '@mikro-orm/core';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
+import { MikroORM } from '@mikro-orm/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { SchoolRepo } from '@shared/repo';
+import { setupEntities } from '@shared/testing';
+import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { EntityNotFoundError } from '@shared/common';
-import { SchoolService } from './school.service';
 import { MigrationResponse } from '../controller/dto';
-import { ProvisioningSchoolOutputDto } from '../../provisioning/dto/provisioning-school-output.dto';
+import { SchoolService } from './school.service';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 describe('SchoolService', () => {
@@ -72,32 +71,6 @@ describe('SchoolService', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
-	});
-
-	describe('saveProvisioningSchoolOutputDto is called', () => {
-		let schoolServiceSpy: jest.SpyInstance;
-		let provisioningDto: ProvisioningSchoolOutputDto;
-		let returnDO: SchoolDO;
-		beforeAll(() => {
-			provisioningDto = new ProvisioningSchoolOutputDto({
-				name: 'test',
-				externalId: 'externalTest',
-				systemIds: [],
-			});
-			returnDO = new SchoolDO({
-				name: 'test',
-			});
-			schoolServiceSpy = jest.spyOn(schoolService, 'createOrUpdateSchool').mockResolvedValue(returnDO);
-		});
-		afterAll(() => {
-			schoolServiceSpy.mockRestore();
-		});
-
-		it('should call the createOrUpdateService', async () => {
-			const ret = await schoolService.saveProvisioningSchoolOutputDto(provisioningDto);
-			expect(ret).toBe(returnDO);
-			expect(schoolServiceSpy).toHaveBeenCalled();
-		});
 	});
 
 	describe('createOrUpdate is called', () => {

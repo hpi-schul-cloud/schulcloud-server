@@ -1,11 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemService } from '@src/modules/system';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { FeathersJwtProvider } from '@src/modules/authorization';
+import { AuthorizationParams } from '../controller/dto';
+import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
-import { OAuthResponse } from '../service/dto/oauth.response';
-import { AuthorizationParams } from '../controller/dto/authorization.params';
 
 /**
  * @deprecated remove after login via oauth moved to authentication module
@@ -14,14 +14,13 @@ import { AuthorizationParams } from '../controller/dto/authorization.params';
 export class OauthUc {
 	constructor(
 		private readonly oauthService: OAuthService,
-		private readonly feathersJwtProvider: FeathersJwtProvider,
 		private readonly systemService: SystemService,
-		private logger: Logger
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(OauthUc.name);
 	}
 
-	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
+	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthProcessDto> {
 		try {
 			const oAuthResponsePromise = this.process(query, systemId);
 			return await oAuthResponsePromise;
@@ -30,32 +29,33 @@ export class OauthUc {
 		}
 	}
 
-	private async process(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
+	private async process(query: AuthorizationParams, systemId: string): Promise<OAuthProcessDto> {
 		this.logger.debug(`Oauth process started for systemId ${systemId}`);
 
 		const authCode: string = this.oauthService.checkAuthorizationCode(query);
 
-		const { user, redirect }: { user: UserDO; redirect: string } = await this.oauthService.authenticateUser(
+		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.authenticateUser(
 			authCode,
 			systemId
 		);
 
-		if (!user.id) {
-			// unreachable. Users from DB have an ID
-			throw new UnauthorizedException();
+		let jwtResponse;
+		if (user && user.id) {
+			jwtResponse = await this.oauthService.getJwtForUser(user.id);
 		}
-		const jwtResponse: string = await this.feathersJwtProvider.generateJwt(user.id);
 
-		const response: OAuthResponse = new OAuthResponse();
-		response.jwt = jwtResponse;
-		response.redirect = redirect;
+		const response: OAuthProcessDto = new OAuthProcessDto({
+			jwt: jwtResponse ?? undefined,
+			redirect,
+		});
+
 		return response;
 	}
 
-	private async getOauthErrorResponse(error, systemId: string): Promise<OAuthResponse> {
-		const system = await this.systemService.findOAuthById(systemId);
-		const provider = system?.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
-		const oAuthError = this.oauthService.getOAuthErrorResponse(error, provider);
+	private async getOauthErrorResponse(error, systemId: string): Promise<OAuthProcessDto> {
+		const system: SystemDto = await this.systemService.findOAuthById(systemId);
+		const provider: string = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
+		const oAuthError: OAuthProcessDto = this.oauthService.getOAuthErrorResponse(error, provider);
 		return oAuthError;
 	}
 }

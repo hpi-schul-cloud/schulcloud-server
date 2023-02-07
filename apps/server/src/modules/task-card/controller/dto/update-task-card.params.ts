@@ -2,7 +2,17 @@ import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from 
 import { SanitizeHtml } from '@shared/controller';
 import { CardElementType, InputFormat } from '@shared/domain';
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsMongoId, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
+import {
+	IsArray,
+	IsDate,
+	IsEnum,
+	IsMongoId,
+	IsOptional,
+	IsString,
+	MinDate,
+	MinLength,
+	ValidateNested,
+} from 'class-validator';
 
 export abstract class CardElementBase {}
 
@@ -72,6 +82,18 @@ export class CardElementUpdateParams {
 }
 
 export class UpdateTaskCardParams {
+	@IsOptional()
+	@IsDate()
+	@MinDate(new Date())
+	@ApiPropertyOptional({ description: 'Visible at date of the card' })
+	visibleAtDate?: Date;
+
+	@IsOptional()
+	@IsDate()
+	@MinDate(new Date())
+	@ApiPropertyOptional({ description: 'Due date of the card' })
+	dueDate?: Date;
+
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => CardElementUpdateParams)
