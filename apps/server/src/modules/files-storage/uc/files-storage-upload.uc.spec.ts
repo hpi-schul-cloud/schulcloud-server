@@ -133,6 +133,9 @@ describe('FilesStorageUC upload methods', () => {
 		httpService = module.get(HttpService);
 		filesStorageService = module.get(FilesStorageService);
 		configService = module.get(ConfigService);
+
+		// TODO: Find another way to tell that configService returns a number.
+		configService.get.mockReturnValue(1);
 	});
 
 	beforeEach(() => {
@@ -178,8 +181,6 @@ describe('FilesStorageUC upload methods', () => {
 				const { fileRecord, userId, uploadFromUrlParams, response } = createUploadFromUrlParams();
 
 				httpService.get.mockReturnValueOnce(of(response));
-
-				configService.get.mockReturnValue(2560000000);
 
 				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord);
 
@@ -422,6 +423,38 @@ describe('FilesStorageUC upload methods', () => {
 				const { params, userId, request, error } = setup();
 
 				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrowError(error);
+			});
+		});
+
+		describe('WHEN file size is too big', () => {
+			const setup = () => {
+				const { params, userId, fileRecords } = buildFileRecordsWithParams();
+				const fileRecord = fileRecords[0];
+				const request = createRequest();
+				const buffer = Buffer.from('abc');
+
+				const size = request.headers['content-length'];
+
+				configService.get.mockReturnValueOnce(1);
+
+				request.get.mockReturnValue(size);
+				request.pipe.mockImplementation((requestStream) => {
+					requestStream.emit('file', 'file', buffer, {
+						filename: fileRecord.name,
+						encoding: '7-bit',
+						mimeType: fileRecord.mimeType,
+					});
+
+					return requestStream;
+				});
+
+				return { params, userId, request };
+			};
+
+			it('should pass dedicated error', async () => {
+				const { params, userId, request } = setup();
+
+				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrowError(ErrorType.FILE_TOO_BIG);
 			});
 		});
 

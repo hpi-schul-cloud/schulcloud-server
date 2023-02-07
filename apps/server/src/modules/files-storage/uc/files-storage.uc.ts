@@ -62,6 +62,11 @@ export class FilesStorageUC {
 			requestStream.on('file', async (_name, file, info): Promise<void> => {
 				const fileDto = FileDtoBuilder.buildFromRequest(info, req, file);
 
+				if (fileDto.size > this.configService.get('MAX_FILE_SIZE')) {
+					requestStream.emit('error', ErrorType.FILE_TOO_BIG);
+					return;
+				}
+
 				try {
 					const record = await this.filesStorageService.uploadFile(userId, params, fileDto);
 					resolve(record);
