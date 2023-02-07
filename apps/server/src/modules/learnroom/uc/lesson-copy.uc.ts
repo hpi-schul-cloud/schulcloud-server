@@ -26,7 +26,7 @@ export class LessonCopyUC {
 			throw new ForbiddenException('could not find lesson to copy');
 		}
 
-		const destinationCourseId = parentParams.courseId || originalLesson.course._id.toHexString();
+		const destinationCourseId = parentParams.courseId ?? originalLesson.course.id;
 		await this.authorisation.checkPermissionByReferences(
 			userId,
 			AllowedAuthorizationEntityType.Course,
