@@ -4,18 +4,18 @@ import { MikroORM } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfig, System } from '@shared/domain';
+import { ICurrentUser, OauthConfig, System } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
-import { FeathersJwtProvider } from '@src/modules/authorization';
 import { UserService } from '@src/modules/user';
 import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { of, throwError } from 'rxjs';
+import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
@@ -53,7 +53,7 @@ describe('OAuthService', () => {
 
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let userService: DeepMocked<UserService>;
-	let feathersJwtProvider: DeepMocked<FeathersJwtProvider>;
+	let authenticationService: DeepMocked<AuthenticationService>;
 	let httpService: DeepMocked<HttpService>;
 
 	let testSystem: System;
@@ -81,8 +81,8 @@ describe('OAuthService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: FeathersJwtProvider,
-					useValue: createMock<FeathersJwtProvider>(),
+					provide: AuthenticationService,
+					useValue: createMock<AuthenticationService>(),
 				},
 				{
 					provide: HttpService,
@@ -102,7 +102,7 @@ describe('OAuthService', () => {
 
 		oAuthEncryptionService = module.get(DefaultEncryptionService);
 		userService = module.get(UserService);
-		feathersJwtProvider = module.get(FeathersJwtProvider);
+		authenticationService = module.get(AuthenticationService);
 		httpService = module.get(HttpService);
 	});
 
@@ -271,16 +271,20 @@ describe('OAuthService', () => {
 		});
 	});
 
-	describe('getJwtForUser', () => {
-		it('should return a JWT for a user', async () => {
-			const jwtToken = 'schulcloudJwt';
+	describe('getJwtForUser is called', () => {
+		describe('when a jwt is requested', () => {
+			it('should return a JWT for a user', async () => {
+				const jwtToken = 'schulcloudJwt';
+				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 
-			feathersJwtProvider.generateJwt.mockResolvedValue(jwtToken);
+				userService.getResolvedUser.mockResolvedValue(currentUser);
+				authenticationService.generateJwt.mockResolvedValue({ accessToken: jwtToken });
 
-			const jwtResult = await service.getJwtForUser('userId');
+				const jwtResult = await service.getJwtForUser('userId');
 
-			expect(feathersJwtProvider.generateJwt).toHaveBeenCalled();
-			expect(jwtResult).toStrictEqual(jwtToken);
+				expect(authenticationService.generateJwt).toHaveBeenCalled();
+				expect(jwtResult).toStrictEqual(jwtToken);
+			});
 		});
 	});
 

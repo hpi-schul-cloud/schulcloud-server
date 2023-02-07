@@ -114,6 +114,10 @@
 			"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
 			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
 		},
+		"SESSION_SECRET": {
+			"type": "string",
+			"description": "Secret to encrypt sessions."
+		},
 		"PIN_MAX_AGE_SECONDS": {
 			"type": "integer",
 			"default": 86400,

@@ -1,12 +1,13 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { DynamicModule, MiddlewareConsumer, Module, NestModule, NotFoundException } from '@nestjs/common';
+import { DynamicModule, Inject, MiddlewareConsumer, Module, NestModule, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
+import { REDIS_CLIENT, RedisModule } from '@shared/infra/redis';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
@@ -30,7 +31,9 @@ import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { UserMigrationApiModule } from '@src/modules/user-migration';
 import { VideoConferenceModule } from '@src/modules/video-conference';
+import connectRedis from 'connect-redis';
 import session from 'express-session';
+import { RedisClient } from 'redis';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -86,6 +89,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
+		RedisModule,
 		...serverModules,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
@@ -102,18 +106,26 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	controllers: [ServerController],
 })
 export class ServerModule implements NestModule {
+	constructor(@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient) {}
+
 	configure(consumer: MiddlewareConsumer) {
+		const RedisStore = connectRedis(session);
+		const store = new RedisStore({
+			client: this.redisClient,
+		});
+
 		consumer
 			.apply(
 				session({
-					secret: 'sup3rs3cr3t',
+					store,
+					secret: Configuration.get('SESSION_SECRET') as string,
 					resave: false,
 					saveUninitialized: false,
 					cookie: {
-						secure: false, // TODO NODE.ENV === 'prod'
+						secure: Configuration.get('NODE_ENV') === 'production',
 						sameSite: true,
 						httpOnly: true,
-						maxAge: 60000, // TODO get from config
+						maxAge: Number(Configuration.get('COOKIE__EXPIRES_SECONDS')),
 					},
 				})
 			)
@@ -142,14 +154,14 @@ export class ServerTestModule implements NestModule {
 		consumer
 			.apply(
 				session({
-					secret: 'sup3rs3cr3t',
+					secret: 'testSecret',
 					resave: false,
 					saveUninitialized: false,
 					cookie: {
-						secure: false, // TODO NODE.ENV === 'prod'
+						secure: false,
 						sameSite: true,
 						httpOnly: true,
-						maxAge: 60000, // TODO get from config
+						maxAge: 60000,
 					},
 				})
 			)
