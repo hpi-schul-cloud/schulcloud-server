@@ -45,7 +45,7 @@ class UserAccountService {
 		return RequestContext.createAsync(this.app.service('nest-orm').em, async () => {
 			const nestAccountService = this.app.service('nest-account-service');
 			const createdAccount = await nestAccountService.findByUserId(userId);
-			createdAccount.username = account.username;
+			createdAccount.username = account.username.toLowerCase();
 			createdAccount.activated = true;
 			return this.app.service('nest-account-service').save(createdAccount);
 		});
