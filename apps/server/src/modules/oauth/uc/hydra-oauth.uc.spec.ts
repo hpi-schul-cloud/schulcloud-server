@@ -1,18 +1,20 @@
-import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpModule } from '@nestjs/axios';
-import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { HttpModule } from '@nestjs/axios';
+import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig } from '@shared/domain';
+import { Logger } from '@src/core/logger';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { IJwt } from '@src/modules/oauth/interface/jwt.base.interface';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { InternalServerErrorException } from '@nestjs/common';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
+import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
+import { OAuthService } from '@src/modules/oauth/service/oauth.service';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { HydraOauthUc } from '.';
+import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
+import { OAuthSSOError } from '../error/oauth-sso.error';
 
 class HydraOauthUcSpec extends HydraOauthUc {
 	public validateStatusSpec = (status: number) => this.validateStatus(status);
@@ -98,22 +100,37 @@ describe('HydraOauthUc', () => {
 	});
 
 	describe('getOauthToken', () => {
-		it('should return the oauth token response', async () => {
-			const code = 'kdjiqwjdjnq';
+		describe('when a code was provided', () => {
+			it('should return the oauth token response', async () => {
+				const code = 'kdjiqwjdjnq';
 
-			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
-			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
-			oauthService.validateToken.mockResolvedValue(defaultDecodedJWT);
+				hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
+				oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
+				oauthService.validateToken.mockResolvedValue(defaultDecodedJWT);
 
-			const oauthToken = await uc.getOauthToken({ code }, '4566456');
+				const oauthToken = await uc.getOauthToken('oauthClientId', code);
 
-			expect(oauthToken).toEqual(oauthTokenResponse);
+				expect(oauthToken).toEqual(oauthTokenResponse);
+			});
+		});
+
+		describe('when an error was provided', () => {
+			it('should throw OAuthSSOError', async () => {
+				const error = 'error';
+
+				hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
+				oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
+				oauthService.validateToken.mockResolvedValue(defaultDecodedJWT);
+
+				const func = async () => uc.getOauthToken('oauthClientId', undefined, error);
+
+				await expect(func).rejects.toThrow(new OAuthSSOError('Authorization in external system failed', error));
+			});
 		});
 	});
 
 	describe('requestAuthCode', () => {
-		let expectedAuthParams: AuthorizationParams;
+		let expectedAuthParams: StatelessAuthorizationParams;
 		let axiosConfig: AxiosRequestConfig;
 		let axiosResponse1: AxiosResponse;
 		let axiosResponse2: AxiosResponse;

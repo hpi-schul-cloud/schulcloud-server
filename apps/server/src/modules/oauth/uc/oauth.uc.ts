@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ISession } from '@shared/domain/types/session';
@@ -35,7 +35,7 @@ export class OauthUc {
 
 		const system: SystemDto = await this.systemService.findOAuthById(systemId);
 		if (!system.oauthConfig) {
-			throw new BadRequestException(`Requested system ${systemId} has no oauth configured`);
+			throw new UnprocessableEntityException(`Requested system ${systemId} has no oauth configured`);
 		}
 
 		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(system.oauthConfig, state);
@@ -44,9 +44,7 @@ export class OauthUc {
 			state,
 			systemId,
 			postLoginRedirect,
-			errorRedirect: system.oauthConfig?.provider === 'iserv' ? system.oauthConfig.logoutEndpoint : undefined, // TODO post logout redirect
 		});
-		session.save();
 
 		return authenticationUrl;
 	}

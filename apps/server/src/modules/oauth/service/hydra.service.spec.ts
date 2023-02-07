@@ -1,20 +1,20 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
-import { LtiToolRepo } from '@shared/repo';
-import { HttpService } from '@nestjs/axios';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { LtiPrivacyPermission, LtiRoleType, OauthConfig } from '@shared/domain';
-import { of } from 'rxjs';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
-import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
-import { AuthorizationParams } from '@src/modules/oauth/controller/dto';
-import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LtiPrivacyPermission, LtiRoleType, OauthConfig } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { LtiToolRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
+import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
+import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { of } from 'rxjs';
+import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
 
 class HydraOauthSsoSpec extends HydraSsoService {
 	public processCookiesSpec(setCookies: string[], cookie: CookiesDto): CookiesDto {
@@ -130,7 +130,7 @@ describe('HydraService', () => {
 	});
 
 	describe('processRedirect', () => {
-		const expectedAuthParams: AuthorizationParams = {
+		const expectedAuthParams: StatelessAuthorizationParams = {
 			code: 'defaultAuthCode',
 		};
 		const axiosConfig: AxiosRequestConfig = {

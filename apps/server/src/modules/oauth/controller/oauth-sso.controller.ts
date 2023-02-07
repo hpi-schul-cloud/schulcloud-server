@@ -13,6 +13,7 @@ import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
 import { OauthLoginStateDto } from '../uc/dto/oauth-login-state.dto';
 import { AuthorizationParams, SSOLoginQuery, SystemIdParams } from './dto';
+import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -33,7 +34,6 @@ export class OauthSSOController {
 		res.redirect(redirect);
 	}
 
-	// TODO The system lookup must not be part of the path but of the token instead (EW-325)
 	@Get('oauth/:systemId')
 	async startOauthAuthorizationCodeFlow(
 		@Session() session: ISession,
@@ -74,25 +74,21 @@ export class OauthSSOController {
 		} catch (error) {
 			this.logger.error(error);
 			const ssoError: OAuthSSOError = error instanceof OAuthSSOError ? error : new OAuthSSOError();
+			const errorRedirect = new URL('/login', Configuration.get('HOST') as string);
 
-			if (oauthLoginState.errorRedirect) {
-				res.redirect(oauthLoginState.errorRedirect);
-			} else {
-				const errorRedirect = new URL('/login', Configuration.get('HOST') as string);
-				errorRedirect.searchParams.append('error', ssoError.errorcode);
-				if (ssoError.provider) {
-					errorRedirect.searchParams.append('provider', ssoError.provider);
-				}
-
-				res.redirect(errorRedirect.toString());
+			errorRedirect.searchParams.append('error', ssoError.errorcode);
+			if (ssoError.provider) {
+				errorRedirect.searchParams.append('provider', ssoError.provider);
 			}
+
+			res.redirect(errorRedirect.toString());
 		}
 	}
 
 	@Get('hydra/:oauthClientId')
 	@Authenticate('jwt')
 	async getHydraOauthToken(
-		@Query() query: AuthorizationParams,
+		@Query() query: StatelessAuthorizationParams,
 		@Param('oauthClientId') oauthClientId: string
 	): Promise<OauthTokenResponse> {
 		const oauthToken = this.hydraUc.getOauthToken(oauthClientId, query.code, query.error);

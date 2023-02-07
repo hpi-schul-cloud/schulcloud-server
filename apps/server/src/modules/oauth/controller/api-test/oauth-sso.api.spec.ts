@@ -1,34 +1,45 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, ICurrentUser, System } from '@shared/domain';
-import { cleanupCollections, systemFactory } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { Account, EntityId, School, System, User } from '@shared/domain';
+import { accountFactory, cleanupCollections, schoolFactory, systemFactory, userFactory } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
-import { Request } from 'express';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import crypto, { KeyPairKeyObjectResult } from 'crypto';
+import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { AuthorizationParams } from '../dto';
+import { AuthorizationParams, OauthTokenResponse } from '../dto';
 
-jest.setTimeout(100000); // TODO Remove
+const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
+const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
+const privateKey: string | Buffer = keyPair.privateKey.export({ type: 'pkcs1', format: 'pem' });
+
+jest.mock('jwks-rsa', () => () => {
+	return {
+		getKeys: jest.fn(),
+		getSigningKey: jest.fn().mockResolvedValue({
+			kid: 'kid',
+			alg: 'RS256',
+			getPublicKey: jest.fn().mockReturnValue(publicKey),
+			rsaPublicKey: publicKey,
+		}),
+		getSigningKeys: jest.fn(),
+	};
+});
+
 describe('OAuth SSO Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
+	let axiosMock: MockAdapter;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
+		axiosMock = new MockAdapter(axios);
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
@@ -40,13 +51,19 @@ describe('OAuth SSO Controller (API)', () => {
 	});
 
 	const setup = async () => {
+		const externalUserId = 'externalUserId';
 		const system: System = systemFactory.withOauthConfig().buildWithId();
+		const school: School = schoolFactory.buildWithId({ systems: [system] });
+		const user: User = userFactory.buildWithId({ externalId: externalUserId, school });
+		const account: Account = accountFactory.buildWithId({ systemId: system.id, userId: user.id });
 
-		await em.persistAndFlush(system);
+		await em.persistAndFlush([system, user, school, account]);
 		em.clear();
 
 		return {
 			system,
+			user,
+			externalUserId,
 		};
 	};
 
@@ -108,18 +125,43 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when code and state are valid', () => {
 			it('should set a jwt and redirect', async () => {
-				const { system } = await setup();
+				const { system, externalUserId } = await setup();
 				const { state, cookies } = await setupSessionState(system.id);
+				const baseUrl: string = Configuration.get('HOST') as string;
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'code';
 				query.state = state;
+
+				const idToken: string = jwt.sign(
+					{
+						sub: 'testUser',
+						iss: system.oauthConfig?.issuer,
+						aud: system.oauthConfig?.clientId,
+						iat: Date.now(),
+						exp: Date.now() + 100000,
+						preferred_username: externalUserId,
+					},
+					privateKey,
+					{
+						algorithm: 'RS256',
+					}
+				);
+
+				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
+					id_token: idToken,
+					refresh_token: 'refreshToken',
+					access_token: 'accessToken',
+				});
 
 				await request(app.getHttpServer())
 					.get(`/sso/oauth/${system.id}`)
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect('Location', 'http://localhost:3100/dashboard'); // TODO correct url
+					.expect('Location', `${baseUrl}/dashboard`)
+					.expect(
+						(res: Response) => res.get('Set-Cookie').filter((value: string) => value.startsWith('jwt')).length === 1
+					);
 			});
 		});
 
@@ -127,6 +169,7 @@ describe('OAuth SSO Controller (API)', () => {
 			it('should set a jwt and redirect', async () => {
 				const { system } = await setup();
 				const { state, cookies } = await setupSessionState(system.id);
+				const baseUrl: string = Configuration.get('HOST') as string;
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'code';
 				query.state = state;
@@ -136,7 +179,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect('Location', 'http://localhost:3100/login?error=123&provider=mock_type'); // TODO correct url
+					.expect('Location', `${baseUrl}/login?error=123&provider=mock_type`);
 			});
 		});
 	});

@@ -41,7 +41,7 @@ export const systemFactory = SystemFactory.define(System, ({ sequence }) => {
 		url: 'http://mock.de',
 		alias: `system #${sequence}`,
 		displayName: `system #${sequence}DisplayName`,
-		provisioningStrategy: SystemProvisioningStrategy.UNDEFINED,
+		provisioningStrategy: SystemProvisioningStrategy.OIDC,
 		provisioningUrl: 'provisioningUrl',
 	};
 });

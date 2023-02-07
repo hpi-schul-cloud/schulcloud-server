@@ -1,10 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
+import { EntityId, ICurrentUser, IRole, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountDto } from '@src/modules/account/services/dto';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { SchoolService } from '@src/modules/school';
@@ -23,7 +25,8 @@ export class UserService {
 		private readonly schoolService: SchoolService,
 		private readonly permissionService: PermissionService,
 		private readonly configService: ConfigService<IUserConfig, true>,
-		private readonly roleService: RoleService
+		private readonly roleService: RoleService,
+		private readonly accountService: AccountService
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
@@ -37,6 +40,42 @@ export class UserService {
 		const userEntity = await this.userRepo.findById(id, true);
 		const userDto = UserMapper.mapFromEntityToDto(userEntity);
 		return userDto;
+	}
+
+	async getResolvedUser(userId: EntityId): Promise<ICurrentUser> {
+		const user: User = await this.userRepo.findById(userId, true);
+		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
+
+		const permissions = new Set<string>();
+		if (user.roles) {
+			user.roles.getItems().forEach((role) => {
+				if (role.permissions) {
+					role.permissions.forEach((permission) => {
+						permissions.add(permission.toString());
+					});
+				}
+			});
+		}
+
+		return {
+			accountId: account.id,
+			systemId: account.systemId,
+			roles: user.roles.getItems().map((role: Role): EntityId => role.id),
+			schoolId: user.school.id,
+			userId: user.id,
+			user: {
+				id: user.id,
+				createdAt: user.createdAt,
+				updatedAt: user.updatedAt,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				roles: user.roles.getItems().map((role: Role): IRole => {
+					return { id: role.id, name: role.name };
+				}),
+				schoolId: user.school.id,
+				permissions: Array.from(permissions),
+			},
+		};
 	}
 
 	async save(user: UserDO): Promise<UserDO> {

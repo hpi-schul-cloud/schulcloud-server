@@ -1,28 +1,36 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM, NotFoundError } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { ISession } from '@shared/domain/types/session';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
+import { SystemDto, SystemService } from '@src/modules/system/service';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
-import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
-import { SystemDto } from '../../system/service/dto/system.dto';
-import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
+import { OauthTokenResponse } from '../controller/dto';
+import { SSOErrorCode } from '../error/sso-error-code.enum';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
+import { OauthLoginStateDto } from './dto/oauth-login-state.dto';
 import resetAllMocks = jest.resetAllMocks;
+
+jest.mock('nanoid', () => {
+	return {
+		nanoid: () => 'mockNanoId',
+	};
+});
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
-	let service: OauthUc;
+	let uc: OauthUc;
 
 	let oauthService: DeepMocked<OAuthService>;
 	let systemService: DeepMocked<SystemService>;
@@ -63,7 +71,7 @@ describe('OAuthUc', () => {
 			],
 		}).compile();
 
-		service = module.get(OauthUc);
+		uc = module.get(OauthUc);
 		systemService = module.get(SystemService);
 		oauthService = module.get(OAuthService);
 		provisioningService = module.get(ProvisioningService);
@@ -80,10 +88,95 @@ describe('OAuthUc', () => {
 		resetAllMocks();
 	});
 
-	describe('processOAuth is called', () => {
+	describe('startOauthLogin is called', () => {
 		const setup = () => {
-			const code = '43534543jnj543342jn2';
-			const query: AuthorizationParams = { code };
+			const systemId = 'systemId';
+			const oauthConfig: OauthConfigDto = new OauthConfigDto({
+				clientId: '12345',
+				clientSecret: 'mocksecret',
+				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+				grantType: 'authorization_code',
+				scope: 'openid uuid',
+				responseType: 'code',
+				authEndpoint: 'mock_authEndpoint',
+				provider: 'mock_provider',
+				logoutEndpoint: 'mock_logoutEndpoint',
+				issuer: 'mock_issuer',
+				jwksEndpoint: 'mock_jwksEndpoint',
+				redirectUri: 'mock_codeRedirectUri',
+			});
+			const system: SystemDto = new SystemDto({
+				id: systemId,
+				type: 'oauth',
+				oauthConfig,
+			});
+
+			return {
+				systemId,
+				system,
+				oauthConfig,
+			};
+		};
+
+		describe('when starting an oauth login', () => {
+			it('should return the authentication url for the system', async () => {
+				const { systemId, system } = setup();
+				const session: DeepMocked<ISession> = createMock<ISession>();
+				const authenticationUrl = 'authenticationUrl';
+
+				systemService.findOAuthById.mockResolvedValue(system);
+				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
+
+				const result: string = await uc.startOauthLogin(session, systemId);
+
+				expect(result).toEqual(authenticationUrl);
+			});
+
+			it('should save data to the session', async () => {
+				const { systemId, system } = setup();
+				const session: DeepMocked<ISession> = createMock<ISession>();
+				const authenticationUrl = 'authenticationUrl';
+				const postLoginRedirect = 'postLoginRedirect';
+
+				systemService.findOAuthById.mockResolvedValue(system);
+				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
+
+				await uc.startOauthLogin(session, systemId, postLoginRedirect);
+
+				expect(session.oauthLoginState).toEqual<OauthLoginStateDto>({
+					systemId,
+					state: 'mockNanoId',
+					postLoginRedirect,
+				});
+			});
+		});
+
+		describe('when the system cannot be found', () => {
+			it('should throw UnprocessableEntityException', async () => {
+				const { systemId, system } = setup();
+				const session: DeepMocked<ISession> = createMock<ISession>();
+				const authenticationUrl = 'authenticationUrl';
+
+				systemService.findOAuthById.mockResolvedValue(system);
+				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
+
+				const result: string = await uc.startOauthLogin(session, systemId);
+
+				expect(result).toEqual(authenticationUrl);
+			});
+		});
+	});
+
+	describe('processOAuthLogin is called', () => {
+		const setup = () => {
+			const postLoginRedirect = 'postLoginRedirect';
+			const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
+				state: 'state',
+				systemId: 'systemId',
+				postLoginRedirect,
+			});
+			const code = 'code';
+			const error = 'error';
 
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
@@ -133,17 +226,8 @@ describe('OAuthUc', () => {
 				externalUserId,
 			});
 
-			const postLoginRedirect = 'postLoginRedirect';
-			const successResponse: OAuthProcessDto = new OAuthProcessDto({
-				idToken: 'idToken',
-				logoutEndpoint: oauthConfig.logoutEndpoint,
-				provider: oauthConfig.provider,
-				redirect: postLoginRedirect,
-			});
-
 			const userJwt = 'schulcloudJwt';
 
-			oauthService.checkAuthorizationCode.mockReturnValue(code);
 			systemService.findOAuthById.mockResolvedValue(system);
 			oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
 			provisioningService.getData.mockResolvedValue(oauthData);
@@ -153,7 +237,9 @@ describe('OAuthUc', () => {
 			oauthService.getRedirectUrl.mockReturnValue(postLoginRedirect);
 
 			return {
-				query,
+				cachedState,
+				code,
+				error,
 				system,
 				externalUserId,
 				user,
@@ -162,120 +248,42 @@ describe('OAuthUc', () => {
 				userJwt,
 				oauthConfig,
 				postLoginRedirect,
-				successResponse,
 			};
 		};
 
 		describe('when the process runs successfully', () => {
 			it('should return a valid jwt', async () => {
-				const { query, userJwt, successResponse } = setup();
+				const { cachedState, code, userJwt, postLoginRedirect } = setup();
 
-				const response: OAuthProcessDto = await service.processOAuth(query, 'systemId');
+				const response: OAuthProcessDto = await uc.processOAuthLogin(cachedState, code);
 
 				expect(response).toEqual<OAuthProcessDto>({
-					...successResponse,
+					redirect: postLoginRedirect,
 					jwt: userJwt,
 				});
 			});
 		});
 
 		describe('when oauth config is missing', () => {
-			it('should build an oauthResponse with error', async () => {
-				const { query, system } = setup();
+			it('should throw OAuthSSOError', async () => {
+				const { cachedState, code, system } = setup();
 				system.oauthConfig = undefined;
 
-				const errorResponse: OAuthProcessDto = new OAuthProcessDto({
-					provider: 'unknown-provider',
-					errorCode: 'sso_internal_error',
-					redirect: 'errorRedirect',
-				});
+				const func = async () => uc.processOAuthLogin(cachedState, code);
 
-				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
-
-				const response: OAuthProcessDto = await service.processOAuth(query, 'systemId');
-
-				expect(oauthService.getOAuthErrorResponse).toHaveBeenCalledWith(expect.any(Error), 'unknown-provider');
-				expect(response).toEqual(errorResponse);
+				await expect(func).rejects.toThrow(
+					new OAuthSSOError(`Requested system systemId has no oauth configured`, SSOErrorCode.SSO_INTERNAL_ERROR)
+				);
 			});
 		});
 
-		describe('when an internal error occurs', () => {
-			it('should return an error response that contains the provider', async () => {
-				const { query } = setup();
+		describe('when authentication in external system failed', () => {
+			it('should throw OAuthSSOError', async () => {
+				const { cachedState, error } = setup();
 
-				const errorResponse: OAuthProcessDto = new OAuthProcessDto({
-					provider: 'mock_provider',
-					errorCode: 'sso_internal_error',
-					redirect: 'errorRedirect',
-				});
+				const func = async () => uc.processOAuthLogin(cachedState, undefined, error);
 
-				oauthService.requestToken.mockRejectedValue(new OAuthSSOError());
-				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
-
-				const response: OAuthProcessDto = await service.processOAuth(query, 'systemId');
-
-				expect(oauthService.getOAuthErrorResponse).toHaveBeenCalledWith(expect.any(Error), 'mock_provider');
-				expect(response).toEqual(errorResponse);
-			});
-		});
-
-		describe('when processOAuth failed and the provider cannot be fetched from the system', () => {
-			it('should return an OAuthResponse with error', async () => {
-				const { query, system } = setup();
-				system.oauthConfig = undefined;
-
-				const errorResponse: OAuthProcessDto = new OAuthProcessDto({
-					provider: 'unknown-provider',
-					errorCode: 'sso_internal_error',
-					redirect: 'errorRedirect',
-				});
-
-				oauthService.checkAuthorizationCode.mockImplementation(() => {
-					throw new OAuthSSOError(
-						'Authorization Query Object has no authorization code or error',
-						'sso_auth_code_step'
-					);
-				});
-				systemService.findOAuthById.mockResolvedValue(system);
-				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
-
-				const response: OAuthProcessDto = await service.processOAuth(query, 'systemId');
-
-				expect(response).toEqual(errorResponse);
-			});
-		});
-
-		describe('when no system was found', () => {
-			it('should throw a NotFoundError', async () => {
-				const { query } = setup();
-
-				oauthService.checkAuthorizationCode.mockImplementation(() => {
-					throw new OAuthSSOError(
-						'Authorization Query Object has no authorization code or error',
-						'sso_auth_code_step'
-					);
-				});
-				systemService.findOAuthById.mockRejectedValue(new NotFoundError('Not Found'));
-
-				await expect(service.processOAuth(query, 'unknown id')).rejects.toThrow(NotFoundError);
-			});
-		});
-
-		describe('when no system.id exist', () => {
-			it('should return an OAuthResponse with error', async () => {
-				const { query } = setup();
-				const errorResponse: OAuthProcessDto = new OAuthProcessDto({
-					provider: 'unknown-provider',
-					errorCode: 'sso_internal_error',
-					redirect: 'errorRedirect',
-				});
-
-				systemService.findOAuthById.mockResolvedValue({ id: undefined, type: 'ignore' });
-				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
-
-				const response: OAuthProcessDto = await service.processOAuth(query, 'brokenId');
-
-				expect(response).toEqual(errorResponse);
+				await expect(func).rejects.toThrow(new OAuthSSOError('Authorization in external system failed', error));
 			});
 		});
 
@@ -284,7 +292,6 @@ describe('OAuthUc', () => {
 				const setupData = setup();
 				const migrationRedirect = 'migrationRedirectUrl';
 				const migrationResponse: OAuthProcessDto = new OAuthProcessDto({
-					provider: setupData.oauthConfig.provider,
 					redirect: migrationRedirect,
 				});
 
@@ -302,14 +309,15 @@ describe('OAuthUc', () => {
 					migrationResponse,
 				};
 			};
+
 			describe('when the school is currently migrating to another system and the user does not exist', () => {
 				it('should return an OAuthResponse with a migration redirect url', async () => {
-					const { query, migrationResponse } = setupMigration();
+					const { cachedState, code, migrationResponse } = setupMigration();
 
 					userService.findByExternalId.mockResolvedValue(null);
 					userMigrationService.isSchoolInMigration.mockResolvedValue(true);
 
-					const response: OAuthProcessDto = await service.processOAuth(query, 'brokenId');
+					const response: OAuthProcessDto = await uc.processOAuthLogin(cachedState, code);
 
 					expect(response).toEqual(migrationResponse);
 				});
@@ -317,15 +325,15 @@ describe('OAuthUc', () => {
 
 			describe('when the school is currently migrating to another system and the user exists', () => {
 				it('should should finish the process normally and return a valid jwt', async () => {
-					const { query, user, userJwt, successResponse } = setupMigration();
+					const { cachedState, code, user, userJwt, postLoginRedirect } = setupMigration();
 
 					userService.findByExternalId.mockResolvedValue(user);
 					userMigrationService.isSchoolInMigration.mockResolvedValue(true);
 
-					const response: OAuthProcessDto = await service.processOAuth(query, 'brokenId');
+					const response: OAuthProcessDto = await uc.processOAuthLogin(cachedState, code);
 
 					expect(response).toEqual<OAuthProcessDto>({
-						...successResponse,
+						redirect: postLoginRedirect,
 						jwt: userJwt,
 					});
 				});
@@ -333,15 +341,15 @@ describe('OAuthUc', () => {
 
 			describe('when the school is not in a migration to another system', () => {
 				it('should should finish the process normally and return a valid jwt', async () => {
-					const { query, userJwt, successResponse } = setupMigration();
+					const { cachedState, code, userJwt, postLoginRedirect } = setupMigration();
 
 					userService.findByExternalId.mockResolvedValue(null);
 					userMigrationService.isSchoolInMigration.mockResolvedValue(false);
 
-					const response: OAuthProcessDto = await service.processOAuth(query, 'brokenId');
+					const response: OAuthProcessDto = await uc.processOAuthLogin(cachedState, code);
 
 					expect(response).toEqual<OAuthProcessDto>({
-						...successResponse,
+						redirect: postLoginRedirect,
 						jwt: userJwt,
 					});
 				});

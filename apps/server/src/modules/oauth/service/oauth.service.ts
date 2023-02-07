@@ -2,11 +2,11 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, OauthConfig, User } from '@shared/domain';
+import { EntityId, ICurrentUser, OauthConfig, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { Logger } from '@src/core/logger';
-import { FeathersJwtProvider } from '@src/modules/authorization';
+import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { UserService } from '@src/modules/user';
 import { AxiosResponse } from 'axios';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -23,7 +23,7 @@ import { TokenRequestMapper } from '../mapper/token-request.mapper';
 export class OAuthService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly jwtService: FeathersJwtProvider,
+		private readonly authenticationService: AuthenticationService,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
 		private readonly logger: Logger
@@ -125,8 +125,9 @@ export class OAuthService {
 	}
 
 	async getJwtForUser(userId: EntityId): Promise<string> {
-		const stringPromise: Promise<string> = this.jwtService.generateJwt(userId);
-		return stringPromise;
+		const currentUser: ICurrentUser = await this.userService.getResolvedUser(userId);
+		const { accessToken } = await this.authenticationService.generateJwt(currentUser);
+		return accessToken;
 	}
 
 	getRedirectUrl(provider: string, idToken = '', logoutEndpoint = '', postLoginRedirect?: string): string {
