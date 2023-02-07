@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, LearnroomMetadata, LearnroomTypes, Permission } from '@shared/domain';
+import { Actions, LearnroomMetadata, LearnroomTypes, Lesson, Permission } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 
 import {
@@ -20,7 +20,6 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
-import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
 import { LessonCopyService } from '@src/modules/lesson/service';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
@@ -31,7 +30,6 @@ describe('ShareTokenUC', () => {
 	let orm: MikroORM;
 	let uc: ShareTokenUC;
 	let service: DeepMocked<ShareTokenService>;
-	let metadataLoader: DeepMocked<MetadataLoader>;
 	let courseCopyService: DeepMocked<CourseCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let authorization: DeepMocked<AuthorizationService>;
@@ -49,10 +47,6 @@ describe('ShareTokenUC', () => {
 				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
-				},
-				{
-					provide: MetadataLoader,
-					useValue: createMock<MetadataLoader>(),
 				},
 				{
 					provide: CourseCopyService,
@@ -79,7 +73,6 @@ describe('ShareTokenUC', () => {
 
 		uc = module.get(ShareTokenUC);
 		service = module.get(ShareTokenService);
-		metadataLoader = module.get(MetadataLoader);
 		courseCopyService = module.get(CourseCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		authorization = module.get(AuthorizationService);
@@ -364,19 +357,15 @@ describe('ShareTokenUC', () => {
 				const user = userFactory.buildWithId({ school });
 				authorization.getUserWithPermissions.mockResolvedValue(user);
 
-				const shareToken = shareTokenFactory.build();
-				service.lookupToken.mockResolvedValue(shareToken);
-
-				const metadata: LearnroomMetadata = {
-					id: '634d78fc28c2e527f9255119',
-					type: LearnroomTypes.Course,
-					title: 'course #1',
-					shortTitle: 'c1',
-					displayColor: '#ffffff',
+				const course = courseFactory.buildWithId();
+				const payload: ShareTokenPayload = {
+					parentType: ShareTokenParentType.Course,
+					parentId: course.id,
 				};
-				metadataLoader.loadMetadata.mockResolvedValue(metadata);
+				const shareToken = shareTokenFactory.build({ payload });
+				service.lookupTokenWithParentName.mockResolvedValue({ shareToken, parentName: course.name });
 
-				return { user, school, shareToken, metadata };
+				return { user, school, shareToken, course };
 			};
 
 			it('should throw if the feature is not enabled', async () => {
@@ -391,29 +380,18 @@ describe('ShareTokenUC', () => {
 
 				await uc.lookupShareToken(user.id, shareToken.token);
 
-				expect(service.lookupToken).toBeCalledWith(shareToken.token);
-			});
-
-			it('should load payload metadata', async () => {
-				const { user, shareToken } = setup();
-
-				await uc.lookupShareToken(user.id, shareToken.token);
-
-				expect(metadataLoader.loadMetadata).toBeCalledWith({
-					type: LearnroomTypes.Course,
-					id: shareToken.payload.parentId,
-				});
+				expect(service.lookupTokenWithParentName).toBeCalledWith(shareToken.token);
 			});
 
 			it('should return the result', async () => {
-				const { user, shareToken, metadata } = setup();
+				const { user, shareToken, course } = setup();
 
 				const result = await uc.lookupShareToken(user.id, shareToken.token);
 
 				expect(result).toEqual({
 					token: shareToken.token,
 					parentType: ShareTokenParentType.Course,
-					parentName: metadata.title,
+					parentName: course.name,
 				});
 			});
 
@@ -423,7 +401,8 @@ describe('ShareTokenUC', () => {
 					const shareToken = shareTokenFactory.build({
 						context: { contextType: ShareTokenContextType.School, contextId: school.id },
 					});
-					service.lookupToken.mockResolvedValue(shareToken);
+					const parentName = 'name';
+					service.lookupTokenWithParentName.mockResolvedValue({ shareToken, parentName });
 
 					await uc.lookupShareToken(user.id, shareToken.token);
 
@@ -459,22 +438,16 @@ describe('ShareTokenUC', () => {
 				const user = userFactory.buildWithId({ school });
 				authorization.getUserWithPermissions.mockResolvedValue(user);
 
-				const lesson = lessonFactory.buildWithId();
+				const course = courseFactory.buildWithId();
+				const lesson = lessonFactory.buildWithId({ course });
 				const payload: ShareTokenPayload = {
 					parentType: ShareTokenParentType.Lesson,
-					parentId: lesson._id.toHexString(),
+					parentId: lesson.id,
 				};
 				const shareToken = shareTokenFactory.build({ payload });
-				service.lookupToken.mockResolvedValue(shareToken);
+				service.lookupTokenWithParentName.mockResolvedValue({ shareToken, parentName: lesson.name });
 
-				const metadata: BaseMetadata = {
-					id: lesson._id.toHexString(),
-					type: LearnroomTypes.Lesson,
-					title: 'Lesson #1',
-				};
-				metadataLoader.loadMetadata.mockResolvedValue(metadata);
-
-				return { user, school, shareToken, metadata };
+				return { user, school, shareToken, lesson, course };
 			};
 
 			it('should throw if the feature is not enabled', async () => {
@@ -489,29 +462,18 @@ describe('ShareTokenUC', () => {
 
 				await uc.lookupShareToken(user.id, shareToken.token);
 
-				expect(service.lookupToken).toBeCalledWith(shareToken.token);
-			});
-
-			it('should load payload metadata', async () => {
-				const { user, shareToken } = setup();
-
-				await uc.lookupShareToken(user.id, shareToken.token);
-
-				expect(metadataLoader.loadMetadata).toBeCalledWith({
-					type: LearnroomTypes.Lesson,
-					id: shareToken.payload.parentId,
-				});
+				expect(service.lookupTokenWithParentName).toBeCalledWith(shareToken.token);
 			});
 
 			it('should return the result', async () => {
-				const { user, shareToken, metadata } = setup();
+				const { user, shareToken, lesson } = setup();
 
 				const result = await uc.lookupShareToken(user.id, shareToken.token);
 
 				expect(result).toEqual({
 					token: shareToken.token,
 					parentType: ShareTokenParentType.Lesson,
-					parentName: metadata.title,
+					parentName: lesson.name,
 				});
 			});
 
@@ -521,7 +483,8 @@ describe('ShareTokenUC', () => {
 					const shareToken = shareTokenFactory.build({
 						context: { contextType: ShareTokenContextType.School, contextId: school.id },
 					});
-					service.lookupToken.mockResolvedValue(shareToken);
+					const parentName = 'name';
+					service.lookupTokenWithParentName.mockResolvedValue({ shareToken, parentName });
 
 					await uc.lookupShareToken(user.id, shareToken.token);
 
@@ -723,8 +686,8 @@ describe('ShareTokenUC', () => {
 
 				expect(lessonCopyService.copyLesson).toBeCalledWith({
 					copyName,
-					destinationCourse: course,
-					originalLesson: lesson,
+					destinationCourseId: course.id,
+					originalLessonId: lesson.id,
 					user,
 				});
 			});

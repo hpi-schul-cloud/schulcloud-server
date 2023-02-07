@@ -1,9 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	BaseEntity,
 	ComponentType,
+	Course,
 	EntityId,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
@@ -25,6 +27,7 @@ import {
 } from '@shared/testing';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CopyFilesService } from '@src/modules/files-storage-client';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { TaskCopyService } from '@src/modules/task';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
@@ -38,6 +41,8 @@ describe('lesson copy service', () => {
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let etherpadService: DeepMocked<EtherpadService>;
 	let nexboardService: DeepMocked<NexboardService>;
+	let lessonRepo: DeepMocked<LessonRepo>;
+	let courseService: DeepMocked<CourseService>;
 	let configurationSpy: jest.SpyInstance;
 
 	afterAll(async () => {
@@ -73,6 +78,10 @@ describe('lesson copy service', () => {
 					provide: LessonRepo,
 					useValue: createMock<LessonRepo>(),
 				},
+				{
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
+				},
 			],
 		}).compile();
 
@@ -88,7 +97,25 @@ describe('lesson copy service', () => {
 		copyHelperService.buildCopyEntityDict.mockReturnValue(map);
 		etherpadService = module.get(EtherpadService);
 		nexboardService = module.get(NexboardService);
+		lessonRepo = module.get(LessonRepo);
+		courseService = module.get(CourseService);
 	});
+
+	const findByIdSetup = (originalLesson: Lesson, destinationCourse: Course) => {
+		lessonRepo.findById.mockImplementation((id: EntityId) => {
+			if (id !== originalLesson.id) {
+				throw new NotFoundException();
+			}
+			return Promise.resolve(originalLesson);
+		});
+
+		courseService.findById.mockImplementation((id: EntityId) => {
+			if (id !== destinationCourse.id) {
+				throw new NotFoundException();
+			}
+			return Promise.resolve(destinationCourse);
+		});
+	};
 
 	describe('handleCopyLesson', () => {
 		describe('when copying a lesson within original course', () => {
@@ -99,6 +126,8 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
+
+				findByIdSetup(originalLesson, destinationCourse);
 
 				const copyName = 'Copy';
 				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
@@ -242,9 +271,11 @@ describe('lesson copy service', () => {
 		describe('when copying into a different course', () => {
 			it('should set destination course as course of the copy', async () => {
 				const originalCourse = courseFactory.build({});
-				const destinationCourse = courseFactory.build({});
+				const destinationCourse = courseFactory.buildWithId();
 				const user = userFactory.build({});
 				const originalLesson = lessonFactory.build({ course: originalCourse });
+
+				findByIdSetup(originalLesson, destinationCourse);
 
 				const status = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
@@ -265,6 +296,8 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
+
+				findByIdSetup(originalLesson, destinationCourse);
 
 				return { user, originalCourse, destinationCourse, originalLesson };
 			};
@@ -330,6 +363,7 @@ describe('lesson copy service', () => {
 					contents: [contentOne, contentTwo],
 				});
 				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
+				findByIdSetup(originalLesson, destinationCourse);
 				return { user, originalCourse, destinationCourse, originalLesson };
 			};
 
@@ -414,6 +448,7 @@ describe('lesson copy service', () => {
 				contents: [textContent],
 			});
 
+			findByIdSetup(originalLesson, destinationCourse);
 			return { user, originalCourse, destinationCourse, originalLesson, textContent };
 		};
 
@@ -489,6 +524,7 @@ describe('lesson copy service', () => {
 				contents: [lernStoreContent],
 			});
 
+			findByIdSetup(originalLesson, destinationCourse);
 			return { user, originalCourse, destinationCourse, originalLesson, lernStoreContent };
 		};
 
@@ -540,6 +576,7 @@ describe('lesson copy service', () => {
 				contents: [geoGebraContent],
 			});
 
+			findByIdSetup(originalLesson, destinationCourse);
 			return { user, originalCourse, destinationCourse, originalLesson };
 		};
 
@@ -658,7 +695,7 @@ describe('lesson copy service', () => {
 					elements: [mockedTaskStatus],
 				};
 				taskCopyService.copyTask.mockResolvedValue(mockedTaskStatus);
-
+				findByIdSetup(originalLesson, destinationCourse);
 				return {
 					user,
 					destinationCourse,
@@ -728,6 +765,7 @@ describe('lesson copy service', () => {
 				};
 				taskCopyService.copyTask.mockResolvedValueOnce(mockedTaskStatusOne).mockResolvedValueOnce(mockedTaskStatusTwo);
 
+				findByIdSetup(originalLesson, destinationCourse);
 				return {
 					user,
 					destinationCourse,
@@ -784,6 +822,7 @@ describe('lesson copy service', () => {
 				return null;
 			});
 
+			findByIdSetup(originalLesson, destinationCourse);
 			return { user, originalCourse, destinationCourse, originalLesson };
 		};
 
@@ -890,6 +929,7 @@ describe('lesson copy service', () => {
 				contents: [embeddedTaskContent],
 			});
 
+			findByIdSetup(originalLesson, destinationCourse);
 			return {
 				user,
 				destinationCourse,
@@ -973,6 +1013,7 @@ describe('lesson copy service', () => {
 				return null;
 			});
 
+			findByIdSetup(originalLesson, destinationCourse);
 			return { user, originalCourse, destinationCourse, originalLesson };
 		};
 
@@ -1072,6 +1113,7 @@ describe('lesson copy service', () => {
 					course: originalCourse,
 				});
 
+				findByIdSetup(originalLesson, destinationCourse);
 				return {
 					user,
 					destinationCourse,
@@ -1117,6 +1159,7 @@ describe('lesson copy service', () => {
 					elements: [mockedMaterialStatus],
 				};
 
+				findByIdSetup(originalLesson, destinationCourse);
 				return {
 					user,
 					destinationCourse,
@@ -1204,6 +1247,7 @@ describe('lesson copy service', () => {
 					copyEntity: materialCopyTwo,
 				};
 
+				findByIdSetup(originalLesson, destinationCourse);
 				return {
 					user,
 					destinationCourse,

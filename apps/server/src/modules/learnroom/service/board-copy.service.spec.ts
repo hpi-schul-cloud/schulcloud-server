@@ -193,8 +193,14 @@ describe('board copy service', () => {
 			it('should call lessonCopyService with original lesson', async () => {
 				const { destinationCourse, originalBoard, user, originalLesson } = setup();
 
+				const expected = {
+					originalLessonId: originalLesson.id,
+					destinationCourseId: destinationCourse.id,
+					user,
+				};
+
 				await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				expect(lessonCopyService.copyLesson).toHaveBeenCalledWith({ originalLesson, destinationCourse, user });
+				expect(lessonCopyService.copyLesson).toHaveBeenCalledWith(expected);
 			});
 
 			it('should add lessonCopy to board copy', async () => {

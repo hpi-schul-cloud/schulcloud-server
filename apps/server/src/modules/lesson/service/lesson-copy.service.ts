@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
 	BaseEntity,
 	ComponentType,
+	Course,
 	EntityId,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
@@ -18,6 +19,7 @@ import { LessonRepo } from '@shared/repo';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CopyFilesService } from '@src/modules/files-storage-client';
 import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { TaskCopyService } from '@src/modules/task';
 import { randomBytes } from 'crypto';
 import { LessonCopyParams } from '../types/lesson-copy.params';
@@ -32,16 +34,18 @@ export class LessonCopyService {
 		private readonly etherpadService: EtherpadService,
 		private readonly nexboardService: NexboardService,
 		private readonly lessonRepo: LessonRepo,
+		private readonly courseService: CourseService,
 		private readonly copyFilesService: CopyFilesService
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
 		const lesson: Lesson = await this.lessonRepo.findById(params.originalLessonId);
+		const destinationCourse: Course = await this.courseService.findById(params.destinationCourseId);
 		const { copiedContent, contentStatus } = await this.copyLessonContent(lesson.contents, params);
 		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(lesson);
 
 		const lessonCopy = new Lesson({
-			course: lesson.course,
+			course: destinationCourse,
 			hidden: true,
 			name: params.copyName ?? lesson.name,
 			position: lesson.position,
@@ -51,7 +55,7 @@ export class LessonCopyService {
 
 		await this.lessonRepo.createLesson(lessonCopy);
 
-		const copiedTasksStatus: CopyStatus[] = await this.copyLinkedTasks(lessonCopy, lesson, params);
+		const copiedTasksStatus: CopyStatus[] = await this.copyLinkedTasks(lessonCopy, lesson, destinationCourse, params);
 
 		const { status, elements } = this.deriveCopyStatus(
 			contentStatus,
@@ -340,14 +344,19 @@ export class LessonCopyService {
 		return false;
 	}
 
-	private async copyLinkedTasks(destinationLesson: Lesson, lesson: Lesson, params: LessonCopyParams) {
+	private async copyLinkedTasks(
+		destinationLesson: Lesson,
+		lesson: Lesson,
+		destinationCourse: Course,
+		params: LessonCopyParams
+	) {
 		const linkedTasks = lesson.getLessonLinkedTasks();
 		if (linkedTasks.length > 0) {
 			const copiedTasksStatus = await Promise.all(
 				linkedTasks.map((element) =>
 					this.taskCopyService.copyTask({
 						originalTask: element,
-						destinationCourse: lesson.course,
+						destinationCourse,
 						destinationLesson,
 						user: params.user,
 					})

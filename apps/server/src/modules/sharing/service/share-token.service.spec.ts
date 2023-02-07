@@ -4,6 +4,8 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, shareTokenFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { LessonService } from '@src/modules/lesson/service';
 import { TokenGenerator } from './token-generator.service';
 import { ShareTokenService } from './share-token.service';
 import { ShareTokenRepo } from '../repo/share-token.repo';
@@ -29,6 +31,14 @@ describe('ShareTokenService', () => {
 				{
 					provide: ShareTokenRepo,
 					useValue: createMock<ShareTokenRepo>(),
+				},
+				{
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
+				},
+				{
+					provide: LessonService,
+					useValue: createMock<LessonService>(),
 				},
 			],
 		}).compile();

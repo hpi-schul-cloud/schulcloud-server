@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LessonService } from '@src/modules/lesson/service';
-import { ShareTokenContext, ShareTokenDO, ShareTokenParentType, ShareTokenPayload, ShareTokenString } from '../domainobject/share-token.do';
+import {
+	ShareTokenContext,
+	ShareTokenDO,
+	ShareTokenParentType,
+	ShareTokenPayload,
+	ShareTokenString,
+} from '../domainobject/share-token.do';
 import { ShareTokenRepo } from '../repo/share-token.repo';
 import { TokenGenerator } from './token-generator.service';
 
