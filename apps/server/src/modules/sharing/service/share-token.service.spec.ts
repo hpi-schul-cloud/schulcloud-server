@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, shareTokenFactory } from '@shared/testing';
+import { courseFactory, lessonFactory, setupEntities, shareTokenFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LessonService } from '@src/modules/lesson/service';
@@ -19,6 +19,8 @@ describe('ShareTokenService', () => {
 	let service: ShareTokenService;
 	let generator: DeepMocked<TokenGenerator>;
 	let repo: DeepMocked<ShareTokenRepo>;
+	let courseService: DeepMocked<CourseService>;
+	let lessonService: DeepMocked<LessonService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -46,6 +48,8 @@ describe('ShareTokenService', () => {
 		service = await module.get(ShareTokenService);
 		generator = await module.get(TokenGenerator);
 		repo = await module.get(ShareTokenRepo);
+		courseService = await module.get(CourseService);
+		lessonService = await module.get(LessonService);
 		orm = await setupEntities();
 	});
 
@@ -130,6 +134,34 @@ describe('ShareTokenService', () => {
 			const lookupToken = async () => service.lookupToken(shareToken.token);
 
 			await expect(lookupToken).rejects.toThrowError();
+		});
+	});
+
+	describe('lookup with parent name', () => {
+		it('when parent is course', async () => {
+			const course = courseFactory.buildWithId();
+			courseService.findById.mockResolvedValue(course);
+
+			const payload = { parentId: course.id, parentType: ShareTokenParentType.Course };
+			const shareToken = shareTokenFactory.build({ payload });
+			repo.findOneByToken.mockResolvedValue(shareToken);
+
+			const result = await service.lookupTokenWithParentName(shareToken.token);
+
+			expect(result).toEqual({ shareToken, parentName: course.name });
+		});
+
+		it('when parent is lesson', async () => {
+			const lesson = lessonFactory.buildWithId();
+			lessonService.findById.mockResolvedValue(lesson);
+
+			const payload = { parentId: lesson.id, parentType: ShareTokenParentType.Lesson };
+			const shareToken = shareTokenFactory.build({ payload });
+			repo.findOneByToken.mockResolvedValue(shareToken);
+
+			const result = await service.lookupTokenWithParentName(shareToken.token);
+
+			expect(result).toEqual({ shareToken, parentName: lesson.name });
 		});
 	});
 });

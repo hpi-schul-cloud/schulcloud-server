@@ -46,9 +46,7 @@ export class ShareTokenService {
 	}
 
 	async lookupTokenWithParentName(token: ShareTokenString): Promise<{ shareToken: ShareTokenDO; parentName: string }> {
-		const shareToken = await this.shareTokenRepo.findOneByToken(token);
-
-		this.checkExpired(shareToken);
+		const shareToken = await this.lookupToken(token);
 
 		let parentName = '';
 		switch (shareToken.payload.parentType) {
