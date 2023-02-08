@@ -421,7 +421,7 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
 		},
-		"BACKEND_HOST": {
+		"PUBLIC_BACKEND_URL": {
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",

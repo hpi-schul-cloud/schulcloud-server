@@ -151,15 +151,15 @@ export class OAuthService {
 	}
 
 	getAuthenticationUrl(oauthConfig: OauthConfig, state: string, migration: boolean): string {
-		const apiUrl: string = Configuration.get('BACKEND_HOST') as string;
+		const apiUrl: string = Configuration.get('PUBLIC_BACKEND_URL') as string;
 		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
 
 		authenticationUrl.searchParams.append('client_id', oauthConfig.clientId);
 		if (migration) {
-			const migrationRedirectUri: URL = new URL(`/api/v3/sso/oauth/migration`, apiUrl);
+			const migrationRedirectUri: URL = new URL(`/v3/sso/oauth/migration`, apiUrl);
 			authenticationUrl.searchParams.append('redirect_uri', migrationRedirectUri.toString());
 		} else {
-			const redirectUri: URL = new URL(`/api/v3/sso/oauth`, apiUrl);
+			const redirectUri: URL = new URL(`/v3/sso/oauth`, apiUrl);
 			authenticationUrl.searchParams.append('redirect_uri', redirectUri.toString());
 		}
 		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
