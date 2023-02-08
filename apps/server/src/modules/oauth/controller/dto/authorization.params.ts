@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { AuthenticationError } from '../../interface/authentication-error.enum';
+import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 
 export class AuthorizationParams {
 	@IsOptional()
@@ -8,8 +8,8 @@ export class AuthorizationParams {
 	code?: string;
 
 	@IsOptional()
-	@IsEnum(AuthenticationError)
-	error?: AuthenticationError;
+	@IsEnum(SSOAuthenticationError)
+	error?: SSOAuthenticationError;
 
 	@IsOptional()
 	@IsString()

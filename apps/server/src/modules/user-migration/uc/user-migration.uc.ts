@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { UserMigrationService } from '../service/user-migration.service';
-import { PageContentDto } from '../service/dto/page-content.dto';
 import { PageTypes } from '../interface/page-types.enum';
+import { UserMigrationService } from '../service';
+import { PageContentDto } from '../service/dto/page-content.dto';
 
 @Injectable()
 export class UserMigrationUc {

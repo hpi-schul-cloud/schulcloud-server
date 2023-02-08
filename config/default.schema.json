@@ -421,6 +421,12 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
 		},
+		"BACKEND_HOST": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"description": "The server api url that is accessible from the web (should end without a slash)."
+		},
 		"API_HOST": {
 			"type": "string",
 			"format": "uri",

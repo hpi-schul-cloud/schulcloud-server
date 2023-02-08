@@ -5,16 +5,13 @@ export class OAuthSSOError extends Error {
 
 	readonly errorcode: string;
 
-	readonly provider?: string;
-
 	readonly DEFAULT_MESSAGE: string = 'Error in SSO Oauth Process.';
 
 	readonly DEFAULT_ERRORCODE: string = SSOErrorCode.SSO_OAUTH_LOGIN_FAILED;
 
-	constructor(message?: string, errorcode?: string, provider = 'unknown-provider') {
+	constructor(message?: string, errorcode?: string) {
 		super(message);
 		this.message = message || this.DEFAULT_MESSAGE;
 		this.errorcode = errorcode || this.DEFAULT_ERRORCODE;
-		this.provider = provider;
 	}
 }

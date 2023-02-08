@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, EntityId, School, System, User } from '@shared/domain';
@@ -10,6 +10,7 @@ import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
+import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { AuthorizationParams, OauthTokenResponse } from '../dto';
 
 const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
@@ -35,6 +36,8 @@ describe('OAuth SSO Controller (API)', () => {
 	let axiosMock: MockAdapter;
 
 	beforeAll(async () => {
+		Configuration.set('BACKEND_HOST', 'http://localhost:3030');
+
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();
@@ -68,21 +71,35 @@ describe('OAuth SSO Controller (API)', () => {
 	};
 
 	describe('[GET] sso/login/:systemId', () => {
-		it('should redirect to the authentication url and set a session cookie', async () => {
-			const { system } = await setup();
+		describe('when no error occurs', () => {
+			it('should redirect to the authentication url and set a session cookie', async () => {
+				const { system } = await setup();
 
-			await request(app.getHttpServer())
-				.get(`/sso/login/${system.id}`)
-				.expect(302)
-				.expect('set-cookie', /connect.sid/)
-				.expect(
-					'Location',
-					/^http:\/\/mock.de\/auth\?client_id=12345&redirect_uri=http%3A%2F%2Fmockhost%3A3030%2Fapi%2Fv3%2Fsso%2Foauth%2FtestsystemId&response_type=code&scope=openid\+uuid&state=\w*/
-				);
+				await request(app.getHttpServer())
+					.get(`/sso/login/${system.id}`)
+					.expect(302)
+					.expect('set-cookie', /connect.sid/)
+					.expect(
+						'Location',
+						/^http:\/\/mock.de\/auth\?client_id=12345&redirect_uri=http%3A%2F%2Flocalhost%3A3030%2Fapi%2Fv3%2Fsso%2Foauth&response_type=code&scope=openid\+uuid&state=\w*/
+					);
+			});
+		});
+
+		describe('when an error occurs', () => {
+			it('should redirect to the login page', async () => {
+				const unknownSystemId: string = new ObjectId().toHexString();
+				const clientUrl: string = Configuration.get('HOST') as string;
+
+				await request(app.getHttpServer())
+					.get(`/sso/login/${unknownSystemId}`)
+					.expect(302)
+					.expect('Location', `${clientUrl}/login?error=sso_login_failed`);
+			});
 		});
 	});
 
-	describe('[GET] sso/oauth/:systemId', () => {
+	describe('[GET] sso/oauth', () => {
 		const setupSessionState = async (systemId: EntityId) => {
 			const response: Response = await request(app.getHttpServer())
 				.get(`/sso/login/${systemId}`)
@@ -102,12 +119,12 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when the session has no oauthLoginState', () => {
 			it('should return 401 Unauthorized', async () => {
-				const { system } = await setup();
+				await setup();
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'code';
 				query.state = 'state';
 
-				await request(app.getHttpServer()).get(`/sso/oauth/${system.id}`).query(query).expect(401);
+				await request(app.getHttpServer()).get(`/sso/oauth`).query(query).expect(401);
 			});
 		});
 
@@ -119,7 +136,7 @@ describe('OAuth SSO Controller (API)', () => {
 				query.state = 'wrongState';
 
 				await request(app.getHttpServer()).get(`/sso/login/${system.id}`).expect(302);
-				await request(app.getHttpServer()).get(`/sso/oauth/${system.id}`).query(query).expect(401);
+				await request(app.getHttpServer()).get(`/sso/oauth`).query(query).expect(401);
 			});
 		});
 
@@ -154,7 +171,7 @@ describe('OAuth SSO Controller (API)', () => {
 				});
 
 				await request(app.getHttpServer())
-					.get(`/sso/oauth/${system.id}`)
+					.get(`/sso/oauth`)
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
@@ -165,21 +182,21 @@ describe('OAuth SSO Controller (API)', () => {
 			});
 		});
 
-		describe('when code and state are valid', () => {
-			it('should set a jwt and redirect', async () => {
+		describe('when an error occurs during the login process', () => {
+			it('should redirect to the login page', async () => {
 				const { system } = await setup();
 				const { state, cookies } = await setupSessionState(system.id);
-				const baseUrl: string = Configuration.get('HOST') as string;
+				const clientUrl: string = Configuration.get('HOST') as string;
 				const query: AuthorizationParams = new AuthorizationParams();
-				query.code = 'code';
+				query.error = SSOAuthenticationError.ACCESS_DENIED;
 				query.state = state;
 
 				await request(app.getHttpServer())
-					.get(`/sso/oauth/${system.id}`)
+					.get(`/sso/oauth`)
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect('Location', `${baseUrl}/login?error=123&provider=mock_type`);
+					.expect('Location', `${clientUrl}/login?error=access_denied&provider=mock_type`);
 			});
 		});
 	});

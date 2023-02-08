@@ -54,7 +54,7 @@ describe('OAuthController', () => {
 
 			await controller.getHydraOauthToken(authParams, oauthClientId);
 
-			expect(hydraOauthUc.getOauthToken).toBeCalledWith(authParams, oauthClientId);
+			expect(hydraOauthUc.getOauthToken).toBeCalledWith(oauthClientId, authParams.code, authParams.error);
 		});
 	});
 

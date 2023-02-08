@@ -127,7 +127,7 @@ describe('OAuthUc', () => {
 				systemService.findOAuthById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
 
-				const result: string = await uc.startOauthLogin(session, systemId);
+				const result: string = await uc.startOauthLogin(session, systemId, false);
 
 				expect(result).toEqual(authenticationUrl);
 			});
@@ -141,12 +141,13 @@ describe('OAuthUc', () => {
 				systemService.findOAuthById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
 
-				await uc.startOauthLogin(session, systemId, postLoginRedirect);
+				await uc.startOauthLogin(session, systemId, false, postLoginRedirect);
 
 				expect(session.oauthLoginState).toEqual<OauthLoginStateDto>({
 					systemId,
 					state: 'mockNanoId',
 					postLoginRedirect,
+					provider: system.oauthConfig?.provider as string,
 				});
 			});
 		});
@@ -160,7 +161,7 @@ describe('OAuthUc', () => {
 				systemService.findOAuthById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
 
-				const result: string = await uc.startOauthLogin(session, systemId);
+				const result: string = await uc.startOauthLogin(session, systemId, false);
 
 				expect(result).toEqual(authenticationUrl);
 			});
@@ -174,6 +175,7 @@ describe('OAuthUc', () => {
 				state: 'state',
 				systemId: 'systemId',
 				postLoginRedirect,
+				provider: 'mock_provider',
 			});
 			const code = 'code';
 			const error = 'error';

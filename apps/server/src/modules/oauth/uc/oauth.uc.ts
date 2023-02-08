@@ -30,19 +30,25 @@ export class OauthUc {
 		this.logger.setContext(OauthUc.name);
 	}
 
-	async startOauthLogin(session: ISession, systemId: EntityId, postLoginRedirect?: string): Promise<string> {
+	async startOauthLogin(
+		session: ISession,
+		systemId: EntityId,
+		migration: boolean,
+		postLoginRedirect?: string
+	): Promise<string> {
 		const state = nanoid(16);
 
 		const system: SystemDto = await this.systemService.findOAuthById(systemId);
 		if (!system.oauthConfig) {
-			throw new UnprocessableEntityException(`Requested system ${systemId} has no oauth configured`);
+			throw new UnprocessableEntityException(`Requested system ${systemId} has no oauth configured`); // TODO Test
 		}
 
-		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(system.oauthConfig, state);
+		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(system.oauthConfig, state, migration);
 
 		session.oauthLoginState = new OauthLoginStateDto({
 			state,
 			systemId,
+			provider: system.oauthConfig.provider,
 			postLoginRedirect,
 		});
 

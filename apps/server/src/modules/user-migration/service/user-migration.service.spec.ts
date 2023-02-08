@@ -1,9 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
-import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { setupEntities } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
@@ -22,8 +21,10 @@ describe('UserMigrationService', () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let systemService: DeepMocked<SystemService>;
 
+	const urlMock = 'http://this.de';
+
 	beforeAll(async () => {
-		jest.spyOn(Configuration, 'get').mockReturnValue('http://this.de');
+		jest.spyOn(Configuration, 'get').mockReturnValue(urlMock);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -190,16 +191,11 @@ describe('UserMigrationService', () => {
 
 		describe('when coming from the target system', () => {
 			it('should return the url to the source system and a frontpage url', async () => {
-				const { sourceSystem, targetSystem, sourceOauthConfig, migrationRedirect } = setupPageContent();
-				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
-					migrationRedirect
-				)}&response_type=code&scope=openid+uuid`;
-				const redirectUrl = `${sourceOauthConfig.redirectUri}?postLoginRedirect=${encodeURIComponent(
-					targetSystemLoginUrl
-				)}`;
-				const sourceSystemLoginUrl = `http://source.de/auth?client_id=sourceClientId&redirect_uri=${encodeURIComponent(
-					redirectUrl
-				)}&response_type=code&scope=openid+uuid`;
+				const { sourceSystem, targetSystem } = setupPageContent();
+				const targetSystemLoginUrl = encodeURIComponent(`${urlMock}/api/v3/sso/login/${targetSystem.id as string}`);
+				const sourceSystemLoginUrl = `${urlMock}/api/v3/sso/login/${
+					sourceSystem.id as string
+				}?postLoginRedirect=${targetSystemLoginUrl}`;
 
 				systemService.findById.mockResolvedValueOnce(sourceSystem);
 				systemService.findById.mockResolvedValueOnce(targetSystem);
@@ -219,10 +215,8 @@ describe('UserMigrationService', () => {
 
 		describe('when coming from the source system', () => {
 			it('should return the url to the target system and a dashboard url', async () => {
-				const { sourceSystem, targetSystem, migrationRedirect } = setupPageContent();
-				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
-					migrationRedirect
-				)}&response_type=code&scope=openid+uuid`;
+				const { sourceSystem, targetSystem } = setupPageContent();
+				const targetSystemLoginUrl = `${urlMock}/api/v3/sso/login/${targetSystem.id as string}`;
 
 				systemService.findById.mockResolvedValueOnce(sourceSystem);
 				systemService.findById.mockResolvedValueOnce(targetSystem);
@@ -242,10 +236,8 @@ describe('UserMigrationService', () => {
 
 		describe('when coming from the source system and the migration is mandatory', () => {
 			it('should return the url to the target system and a logout url', async () => {
-				const { sourceSystem, targetSystem, migrationRedirect } = setupPageContent();
-				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
-					migrationRedirect
-				)}&response_type=code&scope=openid+uuid`;
+				const { sourceSystem, targetSystem } = setupPageContent();
+				const targetSystemLoginUrl = `${urlMock}/api/v3/sso/login/${targetSystem.id as string}`;
 
 				systemService.findById.mockResolvedValueOnce(sourceSystem);
 				systemService.findById.mockResolvedValueOnce(targetSystem);
@@ -288,7 +280,7 @@ describe('UserMigrationService', () => {
 					'invalid'
 				);
 
-				await expect(promise).rejects.toThrow(EntityNotFoundError);
+				await expect(promise).rejects.toThrow(UnprocessableEntityException);
 			});
 		});
 	});

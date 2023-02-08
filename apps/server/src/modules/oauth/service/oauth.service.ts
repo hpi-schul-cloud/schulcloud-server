@@ -131,24 +131,37 @@ export class OAuthService {
 	}
 
 	getRedirectUrl(provider: string, idToken = '', logoutEndpoint = '', postLoginRedirect?: string): string {
-		const HOST = Configuration.get('HOST') as string;
+		const clientUrl: string = Configuration.get('HOST') as string;
+		const dashboardUrl: URL = new URL('/dashboard', clientUrl);
 
 		let redirect: string;
 		if (provider === 'iserv') {
-			redirect = `${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`;
+			const iservLogoutUrl: URL = new URL(logoutEndpoint);
+			iservLogoutUrl.searchParams.append('id_token_hint', idToken);
+			iservLogoutUrl.searchParams.append('post_logout_redirect_uri', dashboardUrl.toString());
+
+			redirect = iservLogoutUrl.toString();
 		} else if (postLoginRedirect) {
 			redirect = postLoginRedirect;
 		} else {
-			redirect = `${HOST}/dashboard`;
+			redirect = dashboardUrl.toString();
 		}
 
 		return redirect;
 	}
 
-	getAuthenticationUrl(oauthConfig: OauthConfig, state: string): string {
+	getAuthenticationUrl(oauthConfig: OauthConfig, state: string, migration: boolean): string {
+		const apiUrl: string = Configuration.get('BACKEND_HOST') as string;
 		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
+
 		authenticationUrl.searchParams.append('client_id', oauthConfig.clientId);
-		authenticationUrl.searchParams.append('redirect_uri', oauthConfig.redirectUri);
+		if (migration) {
+			const migrationRedirectUri: URL = new URL(`/api/v3/sso/oauth/migration`, apiUrl);
+			authenticationUrl.searchParams.append('redirect_uri', migrationRedirectUri.toString());
+		} else {
+			const redirectUri: URL = new URL(`/api/v3/sso/oauth`, apiUrl);
+			authenticationUrl.searchParams.append('redirect_uri', redirectUri.toString());
+		}
 		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
 		authenticationUrl.searchParams.append('scope', oauthConfig.scope);
 		authenticationUrl.searchParams.append('state', state);

@@ -1,4 +1,4 @@
-export enum AuthenticationError {
+export enum SSOAuthenticationError {
 	INVALID_REQUEST = 'invalid_request',
 	UNAUTHORIZED_CLIENT = 'unauthorized_client',
 	ACCESS_DENIED = 'access_denied',

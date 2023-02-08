@@ -18,8 +18,32 @@ import { StatelessAuthorizationParams } from './dto/stateless-authorization.para
 @ApiTags('SSO')
 @Controller('sso')
 export class OauthSSOController {
-	constructor(private readonly oauthUc: OauthUc, private readonly hydraUc: HydraOauthUc, private logger: Logger) {
+	private readonly clientUrl: string;
+
+	constructor(
+		private readonly oauthUc: OauthUc,
+		private readonly hydraUc: HydraOauthUc,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(OauthSSOController.name);
+		this.clientUrl = Configuration.get('HOST') as string;
+	}
+
+	private errorHandler(error: unknown, session: ISession, res: Response) {
+		this.logger.error(error);
+		const ssoError: OAuthSSOError = error instanceof OAuthSSOError ? error : new OAuthSSOError();
+		const provider: string | undefined = (session.oauthLoginState as OauthLoginStateDto | undefined)?.provider;
+
+		session.destroy((err) => {
+			this.logger.log(err);
+		});
+
+		const errorRedirect: URL = new URL('/login', this.clientUrl);
+		errorRedirect.searchParams.append('error', ssoError.errorcode);
+		if (provider) {
+			errorRedirect.searchParams.append('provider', provider);
+		}
+		res.redirect(errorRedirect.toString());
 	}
 
 	@Get('login/:systemId')
@@ -29,12 +53,21 @@ export class OauthSSOController {
 		@Param() params: SystemIdParams,
 		@Query() query: SSOLoginQuery
 	): Promise<void> {
-		const redirect: string = await this.oauthUc.startOauthLogin(session, params.systemId, query.postLoginRedirect);
+		try {
+			const redirect: string = await this.oauthUc.startOauthLogin(
+				session,
+				params.systemId,
+				query.migration || false,
+				query.postLoginRedirect
+			);
 
-		res.redirect(redirect);
+			res.redirect(redirect);
+		} catch (error) {
+			this.errorHandler(error, session, res);
+		}
 	}
 
-	@Get('oauth/:systemId')
+	@Get('oauth')
 	async startOauthAuthorizationCodeFlow(
 		@Session() session: ISession,
 		@Res() res: Response,
@@ -49,7 +82,7 @@ export class OauthSSOController {
 		}
 
 		if (oauthLoginState.state !== query.state) {
-			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${oauthLoginState.state}`);
+			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${oauthLoginState.state}`); // TODO Test
 		}
 
 		try {
@@ -72,16 +105,7 @@ export class OauthSSOController {
 
 			res.redirect(oauthProcessDto.redirect);
 		} catch (error) {
-			this.logger.error(error);
-			const ssoError: OAuthSSOError = error instanceof OAuthSSOError ? error : new OAuthSSOError();
-			const errorRedirect = new URL('/login', Configuration.get('HOST') as string);
-
-			errorRedirect.searchParams.append('error', ssoError.errorcode);
-			if (ssoError.provider) {
-				errorRedirect.searchParams.append('provider', ssoError.provider);
-			}
-
-			res.redirect(errorRedirect.toString());
+			this.errorHandler(error, session, res);
 		}
 	}
 

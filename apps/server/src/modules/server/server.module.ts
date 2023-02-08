@@ -109,11 +109,15 @@ export class ServerModule implements NestModule {
 	constructor(@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient) {}
 
 	configure(consumer: MiddlewareConsumer) {
-		const RedisStore = connectRedis(session);
-		const store = new RedisStore({
-			client: this.redisClient,
-		});
+		let store: connectRedis.RedisStore | undefined;
+		if (this.redisClient) {
+			const RedisStore: connectRedis.RedisStore = connectRedis(session);
+			store = new RedisStore({
+				client: this.redisClient,
+			});
+		}
 
+		const isProduction: boolean = (Configuration.get('NODE_ENV') as string) === 'production';
 		consumer
 			.apply(
 				session({
@@ -122,8 +126,8 @@ export class ServerModule implements NestModule {
 					resave: false,
 					saveUninitialized: false,
 					cookie: {
-						secure: Configuration.get('NODE_ENV') === 'production',
-						sameSite: true,
+						secure: isProduction,
+						sameSite: isProduction,
 						httpOnly: true,
 						maxAge: Number(Configuration.get('COOKIE__EXPIRES_SECONDS')),
 					},
