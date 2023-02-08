@@ -38,12 +38,12 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 			);
 		}
 
-		const { user, redirect }: { user: UserDO; redirect: string } = await this.oauthService.authenticateUser(
+		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.authenticateUser(
 			query.code,
 			systemId
 		);
 		request.query = { ...request.params, redirect };
-		if (!user.id) {
+		if (!user || !user.id) {
 			throw new UnauthorizedException();
 		}
 		const account = await this.accountService.findByUserId(user.id);

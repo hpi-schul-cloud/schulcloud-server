@@ -17,15 +17,18 @@ import { ObjectId } from 'bson';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { of, throwError } from 'rxjs';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { ProvisioningService } from '@src/modules/provisioning';
+import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthProcessDto } from './dto/oauth-process.dto';
 import { OAuthService } from './oauth.service';
 import { UserMigrationService } from '../../user-migration';
+import { OauthConfigDto } from '../../system/service';
+import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../../provisioning/dto';
 
 const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
 	return {
@@ -405,45 +408,115 @@ describe('OAuthService', () => {
 		});
 	});
 	describe('authenticateUser', () => {
-		const tokenResponse: OauthTokenResponse = {
-			access_token: 'accessToken',
-			refresh_token: 'refreshToken',
-			id_token: 'idToken',
-		};
-		const decodedJwtMock = { sub: new ObjectId().toHexString(), email: 'peter.tester@example.com' };
+		const setup = () => {
+			const code = '43534543jnj543342jn2';
+			const query: AuthorizationParams = { code };
 
-		beforeEach(() => {
+			const oauthConfig: OauthConfigDto = new OauthConfigDto({
+				clientId: '12345',
+				clientSecret: 'mocksecret',
+				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+				grantType: 'authorization_code',
+				scope: 'openid uuid',
+				responseType: 'code',
+				authEndpoint: 'mock_authEndpoint',
+				provider: 'mock_provider',
+				logoutEndpoint: 'mock_logoutEndpoint',
+				issuer: 'mock_issuer',
+				jwksEndpoint: 'mock_jwksEndpoint',
+				redirectUri: 'mock_codeRedirectUri',
+			});
+			const system: SystemDto = new SystemDto({
+				id: 'systemId',
+				type: 'oauth',
+				oauthConfig,
+			});
+
+			const oauthTokenResponse: OauthTokenResponse = {
+				access_token: 'accessToken',
+				refresh_token: 'refreshToken',
+				id_token: 'idToken',
+			};
+
+			const externalUserId = 'externalUserId';
+			const mockUser: UserDO = new UserDO({
+				firstName: 'firstName',
+				lastName: 'lastName',
+				email: 'email',
+				schoolId: 'schoolId',
+				roleIds: ['roleId'],
+				externalId: externalUserId,
+			});
+			const oauthData: OauthDataDto = new OauthDataDto({
+				system: new ProvisioningSystemDto({
+					systemId: 'systemId',
+					provisioningStrategy: SystemProvisioningStrategy.OIDC,
+				}),
+				externalUser: new ExternalUserDto({
+					externalId: externalUserId,
+				}),
+			});
+			const provisioningDto: ProvisioningDto = new ProvisioningDto({
+				externalUserId,
+			});
+
+			const postLoginRedirect = 'postLoginRedirect';
+			const successResponse: OAuthProcessDto = new OAuthProcessDto({
+				idToken: 'idToken',
+				logoutEndpoint: oauthConfig.logoutEndpoint,
+				provider: oauthConfig.provider,
+				redirect: postLoginRedirect,
+			});
+
+			const userJwt = 'schulcloudJwt';
+
+			const decodedJwtMock = { sub: new ObjectId().toHexString(), email: 'peter.tester@example.com' };
+
+			systemService.findOAuthById.mockResolvedValue(system);
+			provisioningService.getData.mockResolvedValue(oauthData);
+			provisioningService.provisionData.mockResolvedValue(provisioningDto);
 			jest.spyOn(jwt, 'decode').mockImplementation((): JwtPayload => decodedJwtMock);
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
-			httpService.post.mockReturnValue(of(createAxiosResponse<OauthTokenResponse>(tokenResponse)));
-		});
+			httpService.post.mockReturnValue(of(createAxiosResponse<OauthTokenResponse>(oauthTokenResponse)));
+
+			return {
+				query,
+				system,
+				externalUserId,
+				mockUser,
+				oauthData,
+				oauthTokenResponse,
+				provisioningDto,
+				userJwt,
+				oauthConfig,
+				postLoginRedirect,
+				successResponse,
+			};
+		};
+
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
 		// const mockSystemDto: SystemDto = {};
 
 		it('should authenticate a user', async () => {
-			const authCode = 'mockAuthCode';
-			const externalId = new ObjectId().toHexString();
-			const mockUser: UserDO = userDoFactory.buildWithId({ externalId });
+			const { query, system, mockUser } = setup();
 			systemService.findOAuthById.mockResolvedValueOnce(testSystem);
 			userService.findByExternalId.mockResolvedValueOnce(mockUser);
 
-			const { user, redirect } = await service.authenticateUser(authCode, testSystem.id);
+			const { user, redirect } = await service.authenticateUser(query.code!, system.id!);
 			expect(redirect).toStrictEqual(`${hostUri}/dashboard`);
 			expect(user).toStrictEqual(mockUser);
 		});
 
 		describe('when system id does not exist (impossible case)', () => {
 			it('the authentication should fail', async () => {
-				const authCode = 'mockAuthCode';
-				const externalId = new ObjectId().toHexString();
-				const mockUser: UserDO = userDoFactory.buildWithId({ externalId });
+				const { query, mockUser } = setup();
 
 				systemService.findOAuthById.mockResolvedValueOnce({} as SystemDto);
 				userService.findByExternalId.mockResolvedValueOnce(mockUser);
 
-				await expect(service.authenticateUser(authCode, testSystem.id)).rejects.toThrow(UnauthorizedException);
+				await expect(service.authenticateUser(query.code!, '')).rejects.toThrow(UnauthorizedException);
 			});
 		});
 
@@ -463,7 +536,7 @@ describe('OAuthService', () => {
 		describe('when the provisioning returns a school with an officialSchoolNumber', () => {
 			const setupMigration = () => {
 				const setupData = setup();
-				const migrationRedirect = 'migrationRedirectUrl';
+				const migrationRedirect = 'https://mock.de/dashboard';
 				const migrationResponse: OAuthProcessDto = new OAuthProcessDto({
 					provider: setupData.oauthConfig.provider,
 					redirect: migrationRedirect,
@@ -485,46 +558,42 @@ describe('OAuthService', () => {
 			};
 			describe('when the school is currently migrating to another system and the user does not exist', () => {
 				it('should return an OAuthProcessDto with a migration redirect url', async () => {
-					const { query, migrationResponse } = setupMigration();
+					const { query, migrationRedirect } = setupMigration();
 
 					userService.findByExternalId.mockResolvedValue(null);
 					userMigrationService.isSchoolInMigration.mockResolvedValue(true);
 
-					const response: OAuthProcessDto = await uc.processOAuth(query, 'brokenId');
+					const { redirect } = await service.authenticateUser(query.code!, 'brokenId');
 
-					expect(response).toEqual(migrationResponse);
+					expect(redirect).toEqual(migrationRedirect);
 				});
 			});
 
 			describe('when the school is currently migrating to another system and the user exists', () => {
 				it('should should finish the process normally and return a valid jwt', async () => {
-					const { query, user, userJwt, successResponse } = setupMigration();
+					const { query, mockUser, migrationRedirect } = setupMigration();
 
-					userService.findByExternalId.mockResolvedValue(user);
+					userService.findByExternalId.mockResolvedValue(mockUser);
 					userMigrationService.isSchoolInMigration.mockResolvedValue(true);
 
-					const response: OAuthProcessDto = await uc.processOAuth(query, 'brokenId');
+					const { user, redirect } = await service.authenticateUser(query.code!, 'brokenId');
 
-					expect(response).toEqual<OAuthProcessDto>({
-						...successResponse,
-						jwt: userJwt,
-					});
+					expect(redirect).toEqual(migrationRedirect);
+					expect(user).toEqual(mockUser);
 				});
 			});
 
 			describe('when the school is not in a migration to another system', () => {
 				it('should should finish the process normally and return a valid jwt', async () => {
-					const { query, userJwt, successResponse } = setupMigration();
+					const { query, mockUser, migrationRedirect } = setupMigration();
 
-					userService.findByExternalId.mockResolvedValue(null);
+					userService.findByExternalId.mockResolvedValue(mockUser);
 					userMigrationService.isSchoolInMigration.mockResolvedValue(false);
 
-					const response: { user?: UserDO; redirect: string } = await service.authenticateUser(query.code, 'brokenId');
+					const { user, redirect } = await service.authenticateUser(query.code!, 'brokenId');
 
-					expect(response).toEqual<{ user?: UserDO; redirect: string }>({
-						...successResponse,
-						jwt: userJwt,
-					});
+					expect(redirect).toEqual(migrationRedirect);
+					expect(user).toEqual(mockUser);
 				});
 			});
 		});

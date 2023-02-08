@@ -7,9 +7,21 @@ import { AuthorizationModule } from '@src/modules/authorization';
 import { UserModule } from '@src/modules/user';
 import { HydraSsoService } from './service/hydra.service';
 import { OAuthService } from './service/oauth.service';
+import { ProvisioningModule } from '../provisioning';
+import { SystemModule } from '../system';
+import { UserMigrationModule } from '../user-migration';
 
 @Module({
-	imports: [LoggerModule, AuthorizationModule, HttpModule, EncryptionModule, UserModule],
+	imports: [
+		LoggerModule,
+		AuthorizationModule,
+		HttpModule,
+		EncryptionModule,
+		UserModule,
+		ProvisioningModule,
+		SystemModule,
+		UserMigrationModule,
+	],
 	providers: [OAuthService, HydraSsoService, LtiToolRepo],
 	exports: [OAuthService, HydraSsoService],
 })
