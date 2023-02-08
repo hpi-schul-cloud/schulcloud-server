@@ -117,13 +117,16 @@ class ScopeResolver {
 		const isUserId = equalId(userId);
 
 		scopes.forEach((scope) => {
-			const authorities = ['can-read'];
+			let authorities = ['can-read'];
 
 			const isTeacher = (scope.teacherIds || []).some(isUserId);
 			const isSubstitutionTeacher = (scope.substitutionIds || []).some(isUserId);
+			const isAdminEditAccess = scope.attributes.scopeType === 'courseAdmin';
 
 			if (isTeacher || isSubstitutionTeacher) {
 				authorities.push('can-write', 'can-send-notifications');
+			} else if (isAdminEditAccess) {
+				authorities = ['can-write'];
 			}
 
 			response.data.push(
