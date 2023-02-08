@@ -131,12 +131,12 @@ describe('OAuth SSO Controller (API)', () => {
 		describe('when the session and the request have a different state', () => {
 			it('should return 401 Unauthorized', async () => {
 				const { system } = await setup();
+				const { cookies } = await setupSessionState(system.id);
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'code';
 				query.state = 'wrongState';
 
-				await request(app.getHttpServer()).get(`/sso/login/${system.id}`).expect(302);
-				await request(app.getHttpServer()).get(`/sso/oauth`).query(query).expect(401);
+				await request(app.getHttpServer()).get(`/sso/oauth`).set('Cookie', cookies).query(query).expect(401);
 			});
 		});
 

@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -155,15 +156,16 @@ describe('OAuthUc', () => {
 		describe('when the system cannot be found', () => {
 			it('should throw UnprocessableEntityException', async () => {
 				const { systemId, system } = setup();
+				system.oauthConfig = undefined;
 				const session: DeepMocked<ISession> = createMock<ISession>();
 				const authenticationUrl = 'authenticationUrl';
 
 				systemService.findOAuthById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
 
-				const result: string = await uc.startOauthLogin(session, systemId, false);
+				const func = async () => uc.startOauthLogin(session, systemId, false);
 
-				expect(result).toEqual(authenticationUrl);
+				await expect(func).rejects.toThrow(UnprocessableEntityException);
 			});
 		});
 	});

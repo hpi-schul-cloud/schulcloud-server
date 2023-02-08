@@ -40,7 +40,7 @@ export class OauthUc {
 
 		const system: SystemDto = await this.systemService.findOAuthById(systemId);
 		if (!system.oauthConfig) {
-			throw new UnprocessableEntityException(`Requested system ${systemId} has no oauth configured`); // TODO Test
+			throw new UnprocessableEntityException(`Requested system ${systemId} has no oauth configured`);
 		}
 
 		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(system.oauthConfig, state, migration);

@@ -165,7 +165,7 @@ export class OAuthService {
 		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
 		authenticationUrl.searchParams.append('scope', oauthConfig.scope);
 		authenticationUrl.searchParams.append('state', state);
-
+		// kc_idp_hint=alias?
 		return authenticationUrl.toString();
 	}
 }

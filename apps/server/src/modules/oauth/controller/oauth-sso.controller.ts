@@ -82,7 +82,7 @@ export class OauthSSOController {
 		}
 
 		if (oauthLoginState.state !== query.state) {
-			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${oauthLoginState.state}`); // TODO Test
+			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${oauthLoginState.state}`);
 		}
 
 		try {
