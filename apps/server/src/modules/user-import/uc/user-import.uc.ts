@@ -45,7 +45,7 @@ export class UserImportUc {
 		private readonly userRepo: UserRepo
 	) {}
 
-	private checkFeatureEnabled(school: SchoolDO) {
+	private checkFeatureEnabled(school: SchoolDO): void | never {
 		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
@@ -80,7 +80,7 @@ export class UserImportUc {
 	 * @param userMatchId
 	 * @returns importuser and matched user
 	 */
-	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId) {
+	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId): Promise<ImportUser> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
@@ -102,7 +102,7 @@ export class UserImportUc {
 		return importUser;
 	}
 
-	async removeMatch(currentUserId: EntityId, importUserId: EntityId) {
+	async removeMatch(currentUserId: EntityId, importUserId: EntityId): Promise<ImportUser> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
@@ -118,7 +118,7 @@ export class UserImportUc {
 		return importUser;
 	}
 
-	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean) {
+	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean): Promise<ImportUser> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
@@ -252,7 +252,7 @@ export class UserImportUc {
 		return system;
 	}
 
-	private async checkNoExistingLdapBeforeStart(school: SchoolDO) {
+	private async checkNoExistingLdapBeforeStart(school: SchoolDO): Promise<void> {
 		if (school.systems && school.systems?.length > 0) {
 			for (const systemId of school.systems) {
 				// very unusual to have more than 1 system
@@ -265,13 +265,13 @@ export class UserImportUc {
 		}
 	}
 
-	private checkSchoolNumber(school: SchoolDO, useCentralLdap: boolean) {
+	private checkSchoolNumber(school: SchoolDO, useCentralLdap: boolean): void | never {
 		if (useCentralLdap && !school.officialSchoolNumber) {
 			throw new MissingSchoolNumberException();
 		}
 	}
 
-	private checkSchoolNotInMigration(school: SchoolDO) {
+	private checkSchoolNotInMigration(school: SchoolDO): void | never {
 		if (school.inUserMigration !== undefined && school.inUserMigration !== null) {
 			throw new MigrationAlreadyActivatedException();
 		}
