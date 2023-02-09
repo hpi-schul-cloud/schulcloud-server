@@ -81,7 +81,7 @@ export class CardElementParams {
 	content!: RichTextCardElementParam | TitleCardElementParam;
 }
 
-export class UpdateTaskCardParams {
+export class TaskCardParams {
 	@IsOptional()
 	@IsDate()
 	@MinDate(new Date())
