@@ -19,15 +19,13 @@ import {
 	SingleFileParams,
 } from '../controller/dto';
 import { FileDto } from '../dto';
-import { FileRecord, ScanStatus } from '../entity';
+import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 import {
 	createFileRecord,
 	createICopyFiles,
 	createPath,
-	deriveStatusFromSource,
 	getPaths,
-	isStatusBlocked,
 	markForDelete,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
@@ -103,7 +101,7 @@ export class FilesStorageService {
 
 	// update
 	private checkDuplicatedNames(fileRecords: FileRecord[], newFileName: string): void {
-		if (fileRecords.find((item) => item.name === newFileName)) {
+		if (fileRecords.find((item) => item.hasName(newFileName))) {
 			throw new ConflictException(ErrorType.FILE_NAME_EXISTS);
 		}
 	}
@@ -129,16 +127,16 @@ export class FilesStorageService {
 	}
 
 	// download
-	private checkFileName(entity: FileRecord, params: DownloadFileParams): void | NotFoundException {
-		if (entity.name !== params.fileName) {
-			this.logger.debug(`could not find file with id: ${entity.id} by filename`);
+	private checkFileName(fileRecord: FileRecord, params: DownloadFileParams): void | NotFoundException {
+		if (!fileRecord.hasName(params.fileName)) {
+			this.logger.debug(`could not find file with id: ${fileRecord.id} by filename`);
 			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
 	}
 
-	private checkScanStatus(entity: FileRecord): void | NotAcceptableException {
-		if (isStatusBlocked(entity)) {
-			this.logger.warn(`file is blocked with id: ${entity.id}`);
+	private checkScanStatus(fileRecord: FileRecord): void | NotAcceptableException {
+		if (fileRecord.isBlocked()) {
+			this.logger.warn(`file is blocked with id: ${fileRecord.id}`);
 			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED);
 		}
 	}
@@ -162,7 +160,7 @@ export class FilesStorageService {
 		this.checkFileName(fileRecord, params);
 		this.checkScanStatus(fileRecord);
 
-		const response = await this.downloadFile(fileRecord.schoolId, fileRecord.id, bytesRange);
+		const response = await this.downloadFile(fileRecord.getSchoolId(), fileRecord.id, bytesRange);
 
 		return response;
 	}
@@ -262,17 +260,14 @@ export class FilesStorageService {
 		targetParams: FileRecordParams,
 		userId: EntityId
 	): Promise<FileRecord> {
-		const entity = createFileRecord(sourceFile.name, sourceFile.size, sourceFile.mimeType, targetParams, userId);
+		const fileRecord = sourceFile.copy(userId, targetParams);
+		await this.fileRecordRepo.save(fileRecord);
 
-		entity.securityCheck = deriveStatusFromSource(sourceFile, entity);
-
-		await this.fileRecordRepo.save(entity);
-
-		return entity;
+		return fileRecord;
 	}
 
 	private sendToAntiVirusService(sourceFile: FileRecord) {
-		if (sourceFile.securityCheck.status === ScanStatus.PENDING) {
+		if (sourceFile.isPending()) {
 			this.antivirusService.send(sourceFile);
 		}
 	}
@@ -283,7 +278,7 @@ export class FilesStorageService {
 
 			await this.storageClient.copy([paths]);
 			this.sendToAntiVirusService(sourceFile);
-			const copyFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
+			const copyFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.getName());
 
 			return copyFileResponse;
 		} catch (error) {
@@ -310,8 +305,8 @@ export class FilesStorageService {
 			} catch (error) {
 				this.logger.error(`copy file failed for source fileRecordId ${sourceFile.id}`, error);
 				return {
-					sourceId: sourceFile._id.toString(),
-					name: sourceFile.name,
+					sourceId: sourceFile.id,
+					name: sourceFile.getName(),
 				};
 			}
 		});
