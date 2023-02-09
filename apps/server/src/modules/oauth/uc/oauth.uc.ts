@@ -39,13 +39,13 @@ export class OauthUc {
 			systemId
 		);
 
-		let jwtResponse;
+		let jwtResponse = '';
 		if (user && user.id) {
 			jwtResponse = await this.oauthService.getJwtForUser(user.id);
 		}
 
-		const response: OAuthProcessDto = new OAuthProcessDto({
-			jwt: jwtResponse ?? undefined,
+		const response = new OAuthProcessDto({
+			jwt: jwtResponse !== '' ? jwtResponse : undefined,
 			redirect,
 		});
 
