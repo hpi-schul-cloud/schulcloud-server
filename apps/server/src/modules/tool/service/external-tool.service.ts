@@ -62,6 +62,12 @@ export class ExternalToolService {
 				toUpdate.name,
 				toUpdate.config
 			);
+			if (!toUpdate.config.clientSecret) {
+				const toUpdateOauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClientWithoutSecret(
+					toUpdate.name,
+					toUpdate.config
+				);
+			}
 			const loadedOauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
 				toUpdate.config.clientId
 			);
