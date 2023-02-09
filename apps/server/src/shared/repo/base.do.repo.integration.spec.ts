@@ -140,6 +140,44 @@ describe('BaseDORepo', () => {
 		});
 	});
 
+	describe('saveWithoutFlush', () => {
+		it('should persist a single new entity', async () => {
+			const testDO = new TestDO({ name: 'test' });
+
+			await repo.saveWithoutFlush(testDO);
+			em.clear();
+
+			const result = await em.find(TestEntity, {});
+			expect(result).toHaveLength(0);
+		});
+
+		it('should persist a single updated entity', async () => {
+			const testEntity = em.create(TestEntity, new TestEntity());
+			em.persist(testEntity);
+
+			const testDO = new TestDO({ id: testEntity.id, name: 'test123' });
+
+			await repo.saveWithoutFlush(testDO);
+			em.clear();
+
+			const result: TestEntity[] = await em.find(TestEntity, {});
+			expect(result).toHaveLength(0);
+		});
+	});
+
+	describe('saveAllWithoutFlush', () => {
+		it('should save an entity array', async () => {
+			const testDO1 = new TestDO({ name: 'test1' });
+			const testDO2 = new TestDO({ name: 'test2' });
+
+			await repo.saveAllWithoutFlush([testDO1, testDO2]);
+			em.clear();
+
+			const result = await em.find(TestEntity, {});
+			expect(result).toHaveLength(0);
+		});
+	});
+
 	describe('saveAll', () => {
 		it('should save an entity array', async () => {
 			const testDO1 = new TestDO({ name: 'test1' });
