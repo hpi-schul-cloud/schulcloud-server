@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, ICurrentUser, IRole, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
+import { EntityId, ICurrentUser, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { CurrentUserMapper } from '@shared/domain/mapper/current-user.mapper';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -46,36 +47,8 @@ export class UserService {
 		const user: User = await this.userRepo.findById(userId, true);
 		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
 
-		const permissions = new Set<string>();
-		if (user.roles) {
-			user.roles.getItems().forEach((role) => {
-				if (role.permissions) {
-					role.permissions.forEach((permission) => {
-						permissions.add(permission.toString());
-					});
-				}
-			});
-		}
-
-		return {
-			accountId: account.id,
-			systemId: account.systemId,
-			roles: user.roles.getItems().map((role: Role): EntityId => role.id),
-			schoolId: user.school.id,
-			userId: user.id,
-			user: {
-				id: user.id,
-				createdAt: user.createdAt,
-				updatedAt: user.updatedAt,
-				firstName: user.firstName,
-				lastName: user.lastName,
-				roles: user.roles.getItems().map((role: Role): IRole => {
-					return { id: role.id, name: role.name };
-				}),
-				schoolId: user.school.id,
-				permissions: Array.from(permissions),
-			},
-		};
+		const resolvedUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, account.systemId);
+		return resolvedUser;
 	}
 
 	async save(user: UserDO): Promise<UserDO> {

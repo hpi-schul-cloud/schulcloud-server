@@ -1,5 +1,6 @@
 import { Role, User } from '../entity';
 import { ICurrentUser } from '../interface';
+import { EntityId } from '../types';
 
 export class CurrentUserMapper {
 	static userToICurrentUser(accountId: string, user: User, systemId?: string): ICurrentUser {
@@ -16,7 +17,7 @@ export class CurrentUserMapper {
 		return {
 			accountId,
 			systemId,
-			roles: user.roles.getItems().map((role: Role) => role.name),
+			roles: user.roles.getItems().map((role: Role): EntityId => role.id),
 			schoolId: user.school.id,
 			userId: user.id,
 			user: {
