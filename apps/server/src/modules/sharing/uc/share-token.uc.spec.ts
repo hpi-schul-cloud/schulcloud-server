@@ -4,7 +4,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, Permission } from '@shared/domain';
-import { CourseRepo, LessonRepo } from '@shared/repo';
+import { LessonRepo } from '@shared/repo';
 
 import {
 	courseFactory,
@@ -20,6 +20,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LessonCopyService } from '@src/modules/lesson/service';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
@@ -33,7 +34,7 @@ describe('ShareTokenUC', () => {
 	let courseCopyService: DeepMocked<CourseCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let authorization: DeepMocked<AuthorizationService>;
-	let courseRepo: DeepMocked<CourseRepo>;
+	let courseService: DeepMocked<CourseService>;
 	let lessonRepo: DeepMocked<LessonRepo>;
 
 	beforeAll(async () => {
@@ -61,8 +62,8 @@ describe('ShareTokenUC', () => {
 					useValue: createMock<LessonRepo>(),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: Logger,
@@ -76,7 +77,7 @@ describe('ShareTokenUC', () => {
 		courseCopyService = module.get(CourseCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		authorization = module.get(AuthorizationService);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 		lessonRepo = module.get(LessonRepo);
 		orm = await setupEntities();
 	});
@@ -626,7 +627,7 @@ describe('ShareTokenUC', () => {
 				const user = userFactory.buildWithId({ school });
 				authorization.getUserWithPermissions.mockResolvedValue(user);
 				const course = courseFactory.buildWithId();
-				courseRepo.findById.mockResolvedValue(course);
+				courseService.findById.mockResolvedValue(course);
 				const lesson = lessonFactory.buildWithId({ course });
 				lessonRepo.findById.mockResolvedValue(lesson);
 
@@ -686,7 +687,7 @@ describe('ShareTokenUC', () => {
 
 				expect(lessonCopyService.copyLesson).toBeCalledWith({
 					copyName,
-					destinationCourseId: course.id,
+					destinationCourse: course,
 					originalLessonId: lesson.id,
 					user,
 				});

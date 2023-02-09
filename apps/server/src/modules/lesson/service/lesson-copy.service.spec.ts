@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	BaseEntity,
 	ComponentType,
-	Course,
 	EntityId,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
@@ -27,7 +26,6 @@ import {
 } from '@shared/testing';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CopyFilesService } from '@src/modules/files-storage-client';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { TaskCopyService } from '@src/modules/task';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
@@ -42,7 +40,6 @@ describe('lesson copy service', () => {
 	let etherpadService: DeepMocked<EtherpadService>;
 	let nexboardService: DeepMocked<NexboardService>;
 	let lessonRepo: DeepMocked<LessonRepo>;
-	let courseService: DeepMocked<CourseService>;
 	let configurationSpy: jest.SpyInstance;
 
 	afterAll(async () => {
@@ -78,10 +75,6 @@ describe('lesson copy service', () => {
 					provide: LessonRepo,
 					useValue: createMock<LessonRepo>(),
 				},
-				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
-				},
 			],
 		}).compile();
 
@@ -98,24 +91,7 @@ describe('lesson copy service', () => {
 		etherpadService = module.get(EtherpadService);
 		nexboardService = module.get(NexboardService);
 		lessonRepo = module.get(LessonRepo);
-		courseService = module.get(CourseService);
 	});
-
-	const findByIdSetup = (originalLesson: Lesson, destinationCourse: Course) => {
-		lessonRepo.findById.mockImplementation((id: EntityId) => {
-			if (id !== originalLesson.id) {
-				throw new NotFoundException();
-			}
-			return Promise.resolve(originalLesson);
-		});
-
-		courseService.findById.mockImplementation((id: EntityId) => {
-			if (id !== destinationCourse.id) {
-				throw new NotFoundException();
-			}
-			return Promise.resolve(destinationCourse);
-		});
-	};
 
 	describe('handleCopyLesson', () => {
 		describe('when copying a lesson within original course', () => {
@@ -126,8 +102,7 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
-
-				findByIdSetup(originalLesson, destinationCourse);
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 				const copyName = 'Copy';
 				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
@@ -141,7 +116,7 @@ describe('lesson copy service', () => {
 
 					const response = await copyService.copyLesson({
 						originalLessonId: originalLesson.id,
-						destinationCourseId: destinationCourse.id,
+						destinationCourse,
 						user,
 						copyName,
 					});
@@ -155,7 +130,7 @@ describe('lesson copy service', () => {
 
 					const response = await copyService.copyLesson({
 						originalLessonId: originalLesson.id,
-						destinationCourseId: destinationCourse.id,
+						destinationCourse,
 						user,
 					});
 					const lesson = response.copyEntity as Lesson;
@@ -167,7 +142,7 @@ describe('lesson copy service', () => {
 
 					const response = await copyService.copyLesson({
 						originalLessonId: originalLesson.id,
-						destinationCourseId: destinationCourse.id,
+						destinationCourse,
 						user,
 					});
 					const lesson = response.copyEntity as Lesson;
@@ -180,7 +155,7 @@ describe('lesson copy service', () => {
 
 					const response = await copyService.copyLesson({
 						originalLessonId: originalLesson.id,
-						destinationCourseId: destinationCourse.id,
+						destinationCourse,
 						user,
 					});
 					const lesson = response.copyEntity as Lesson;
@@ -193,7 +168,7 @@ describe('lesson copy service', () => {
 
 					const response = await copyService.copyLesson({
 						originalLessonId: originalLesson.id,
-						destinationCourseId: destinationCourse.id,
+						destinationCourse,
 						user,
 					});
 					const lesson = response.copyEntity as Lesson;
@@ -208,7 +183,7 @@ describe('lesson copy service', () => {
 
 					const status = await copyService.copyLesson({
 						originalLessonId: originalLesson.id,
-						destinationCourseId: destinationCourse.id,
+						destinationCourse,
 						user,
 						copyName,
 					});
@@ -221,7 +196,7 @@ describe('lesson copy service', () => {
 
 					const status = await copyService.copyLesson({
 						originalLessonId: originalLesson.id,
-						destinationCourseId: destinationCourse.id,
+						destinationCourse,
 						user,
 					});
 
@@ -233,7 +208,7 @@ describe('lesson copy service', () => {
 
 					const status = await copyService.copyLesson({
 						originalLessonId: originalLesson.id,
-						destinationCourseId: destinationCourse.id,
+						destinationCourse,
 						user,
 					});
 
@@ -245,7 +220,7 @@ describe('lesson copy service', () => {
 
 					const status = await copyService.copyLesson({
 						originalLessonId: originalLesson.id,
-						destinationCourseId: destinationCourse.id,
+						destinationCourse,
 						user,
 					});
 
@@ -257,7 +232,7 @@ describe('lesson copy service', () => {
 
 					const status = await copyService.copyLesson({
 						originalLessonId: originalLesson.id,
-						destinationCourseId: destinationCourse.id,
+						destinationCourse,
 						user,
 					});
 
@@ -274,12 +249,11 @@ describe('lesson copy service', () => {
 				const destinationCourse = courseFactory.buildWithId();
 				const user = userFactory.build({});
 				const originalLesson = lessonFactory.build({ course: originalCourse });
-
-				findByIdSetup(originalLesson, destinationCourse);
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 				const status = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const lesson = status.copyEntity as Lesson;
@@ -296,8 +270,7 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
-
-				findByIdSetup(originalLesson, destinationCourse);
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 				return { user, originalCourse, destinationCourse, originalLesson };
 			};
@@ -307,7 +280,7 @@ describe('lesson copy service', () => {
 
 				const status = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 
@@ -321,7 +294,7 @@ describe('lesson copy service', () => {
 
 				const status = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
@@ -362,8 +335,8 @@ describe('lesson copy service', () => {
 					course: originalCourse,
 					contents: [contentOne, contentTwo],
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
-				findByIdSetup(originalLesson, destinationCourse);
 				return { user, originalCourse, destinationCourse, originalLesson };
 			};
 
@@ -372,7 +345,7 @@ describe('lesson copy service', () => {
 
 				const status = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 
@@ -389,7 +362,7 @@ describe('lesson copy service', () => {
 
 				const status = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 
@@ -404,7 +377,7 @@ describe('lesson copy service', () => {
 
 				const status = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
@@ -420,7 +393,7 @@ describe('lesson copy service', () => {
 
 				const status = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
@@ -447,8 +420,8 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				contents: [textContent],
 			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
-			findByIdSetup(originalLesson, destinationCourse);
 			return { user, originalCourse, destinationCourse, originalLesson, textContent };
 		};
 
@@ -457,7 +430,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
@@ -487,7 +460,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 
@@ -523,8 +496,8 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				contents: [lernStoreContent],
 			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
-			findByIdSetup(originalLesson, destinationCourse);
 			return { user, originalCourse, destinationCourse, originalLesson, lernStoreContent };
 		};
 
@@ -533,7 +506,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 
@@ -546,7 +519,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
@@ -575,8 +548,8 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				contents: [geoGebraContent],
 			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
-			findByIdSetup(originalLesson, destinationCourse);
 			return { user, originalCourse, destinationCourse, originalLesson };
 		};
 
@@ -585,7 +558,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 
@@ -600,7 +573,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 
@@ -613,7 +586,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 
@@ -629,7 +602,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
@@ -662,7 +635,7 @@ describe('lesson copy service', () => {
 
 				const copyStatus = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const tasksGroupStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.TASK_GROUP);
@@ -678,6 +651,7 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 				const originalTask = taskFactory.build({
 					course: originalCourse,
 					lesson: originalLesson,
@@ -695,7 +669,7 @@ describe('lesson copy service', () => {
 					elements: [mockedTaskStatus],
 				};
 				taskCopyService.copyTask.mockResolvedValue(mockedTaskStatus);
-				findByIdSetup(originalLesson, destinationCourse);
+
 				return {
 					user,
 					destinationCourse,
@@ -711,7 +685,7 @@ describe('lesson copy service', () => {
 
 				const copyStatus = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const tasksGroupStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.TASK_GROUP);
@@ -724,7 +698,7 @@ describe('lesson copy service', () => {
 
 				const copyStatus = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const tasksGroupStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.TASK_GROUP);
@@ -745,6 +719,7 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 				const originalTasks = taskFactory.buildList(2, {
 					course: originalCourse,
 					lesson: originalLesson,
@@ -765,7 +740,6 @@ describe('lesson copy service', () => {
 				};
 				taskCopyService.copyTask.mockResolvedValueOnce(mockedTaskStatusOne).mockResolvedValueOnce(mockedTaskStatusTwo);
 
-				findByIdSetup(originalLesson, destinationCourse);
 				return {
 					user,
 					destinationCourse,
@@ -780,7 +754,7 @@ describe('lesson copy service', () => {
 
 				const copyStatus = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const tasksGroupStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.TASK_GROUP);
@@ -809,6 +783,7 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				contents: [etherpadContent],
 			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 			etherpadService.createEtherpad.mockResolvedValue('abc');
 
@@ -822,7 +797,6 @@ describe('lesson copy service', () => {
 				return null;
 			});
 
-			findByIdSetup(originalLesson, destinationCourse);
 			return { user, originalCourse, destinationCourse, originalLesson };
 		};
 
@@ -832,7 +806,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 
@@ -849,7 +823,7 @@ describe('lesson copy service', () => {
 
 			await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 
@@ -863,7 +837,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 
@@ -885,7 +859,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 			const copiedLessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
@@ -900,7 +874,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
@@ -928,8 +902,8 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				contents: [embeddedTaskContent],
 			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
-			findByIdSetup(originalLesson, destinationCourse);
 			return {
 				user,
 				destinationCourse,
@@ -942,7 +916,7 @@ describe('lesson copy service', () => {
 			const { originalLesson, destinationCourse, user } = setup();
 			const copyStatus = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 
@@ -959,7 +933,7 @@ describe('lesson copy service', () => {
 			const { originalLesson, destinationCourse, user, embeddedTaskContent } = setup();
 			const copyStatus = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 			const lesson = copyStatus.copyEntity as Lesson;
@@ -972,7 +946,7 @@ describe('lesson copy service', () => {
 			const { user, destinationCourse, originalLesson } = setup();
 			const copyStatus = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 			const contentsStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
@@ -1003,6 +977,7 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				contents: [nexboardContent],
 			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 			nexboardService.createNexboard.mockResolvedValue({ board: '123', url: 'abc' });
 
@@ -1013,7 +988,6 @@ describe('lesson copy service', () => {
 				return null;
 			});
 
-			findByIdSetup(originalLesson, destinationCourse);
 			return { user, originalCourse, destinationCourse, originalLesson };
 		};
 
@@ -1023,7 +997,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 
@@ -1040,7 +1014,7 @@ describe('lesson copy service', () => {
 
 			await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 
@@ -1054,7 +1028,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 
@@ -1076,7 +1050,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 			const copiedLessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
@@ -1092,7 +1066,7 @@ describe('lesson copy service', () => {
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
-				destinationCourseId: destinationCourse.id,
+				destinationCourse,
 				user,
 			});
 			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
@@ -1112,8 +1086,8 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
-				findByIdSetup(originalLesson, destinationCourse);
 				return {
 					user,
 					destinationCourse,
@@ -1126,7 +1100,7 @@ describe('lesson copy service', () => {
 
 				const copyStatus = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const materialsGroupStatus = copyStatus.elements?.find(
@@ -1146,6 +1120,7 @@ describe('lesson copy service', () => {
 					course: originalCourse,
 					materials: [originalMaterial],
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 				const materialCopy = materialFactory.build({ title: originalMaterial.title });
 				const mockedMaterialStatus = {
 					title: materialCopy.title,
@@ -1159,7 +1134,6 @@ describe('lesson copy service', () => {
 					elements: [mockedMaterialStatus],
 				};
 
-				findByIdSetup(originalLesson, destinationCourse);
 				return {
 					user,
 					destinationCourse,
@@ -1174,7 +1148,7 @@ describe('lesson copy service', () => {
 				const { originalLesson, destinationCourse, user, originalMaterial } = setup();
 				const copyStatus = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const copiedLesson = copyStatus.copyEntity as Lesson;
@@ -1189,7 +1163,7 @@ describe('lesson copy service', () => {
 
 				const copyStatus = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const materialsGroupStatus = copyStatus.elements?.find(
@@ -1204,7 +1178,7 @@ describe('lesson copy service', () => {
 
 				const copyStatus = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const materialsGroupStatus = copyStatus.elements?.find(
@@ -1232,6 +1206,7 @@ describe('lesson copy service', () => {
 					course: originalCourse,
 					materials: originalMaterial,
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 				const materialCopyOne = materialFactory.build({ title: originalMaterial[0].title });
 				const materialCopyTwo = materialFactory.build({ title: originalMaterial[1].title });
 				const mockedMaterialStatusOne = {
@@ -1247,7 +1222,6 @@ describe('lesson copy service', () => {
 					copyEntity: materialCopyTwo,
 				};
 
-				findByIdSetup(originalLesson, destinationCourse);
 				return {
 					user,
 					destinationCourse,
@@ -1262,7 +1236,7 @@ describe('lesson copy service', () => {
 
 				const copyStatus = await copyService.copyLesson({
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				});
 				const materialsGroupStatus = copyStatus.elements?.find(

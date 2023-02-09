@@ -134,6 +134,12 @@ describe('lesson copy uc', () => {
 			expect(lessonRepo.findById).toBeCalledWith(lesson.id);
 		});
 
+		it('should fetch destination course', async () => {
+			const { course, user, lesson, userId } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
+			expect(courseRepo.findById).toBeCalledWith(course.id);
+		});
+
 		it('should pass without destination course', async () => {
 			const { user, lesson, userId } = setup();
 			await uc.copyLesson(user.id, lesson.id, { userId });
@@ -177,7 +183,7 @@ describe('lesson copy uc', () => {
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(lessonCopyService.copyLesson).toBeCalledWith({
 				originalLessonId: lesson.id,
-				destinationCourseId: course.id,
+				destinationCourse: course,
 				user,
 				copyName: lessonCopyName,
 			});

@@ -84,7 +84,7 @@ export class BoardCopyService {
 		return this.lessonCopyService.copyLesson({
 			originalLessonId: originalLesson.id,
 			user,
-			destinationCourseId: destinationCourse.id,
+			destinationCourse,
 		});
 	}
 

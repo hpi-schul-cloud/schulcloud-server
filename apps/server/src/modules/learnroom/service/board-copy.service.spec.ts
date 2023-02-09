@@ -195,7 +195,7 @@ describe('board copy service', () => {
 
 				const expected = {
 					originalLessonId: originalLesson.id,
-					destinationCourseId: destinationCourse.id,
+					destinationCourse,
 					user,
 				};
 

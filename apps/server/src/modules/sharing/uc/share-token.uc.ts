@@ -5,6 +5,7 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { CopyStatus } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LessonCopyService } from '@src/modules/lesson/service';
 import {
 	ShareTokenContext,
@@ -24,6 +25,7 @@ export class ShareTokenUC {
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseCopyService: CourseCopyService,
 		private readonly lessonCopyService: LessonCopyService,
+		private readonly courseService: CourseService,
 
 		private readonly logger: Logger
 	) {
@@ -126,10 +128,11 @@ export class ShareTokenUC {
 
 	private async copyLesson(userId: string, lessonId: string, courseId: string, copyName?: string): Promise<CopyStatus> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const destinationCourse = await this.courseService.findById(courseId);
 		return this.lessonCopyService.copyLesson({
 			user,
 			originalLessonId: lessonId,
-			destinationCourseId: courseId,
+			destinationCourse,
 			copyName,
 		});
 	}

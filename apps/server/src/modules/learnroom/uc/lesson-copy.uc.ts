@@ -1,8 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Actions, EntityId, PermissionContextBuilder } from '@shared/domain';
+import { Actions, EntityId, PermissionContextBuilder, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
-import { LessonRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo } from '@shared/repo';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { LessonCopyParentParams } from '@src/modules/lesson';
@@ -14,6 +14,7 @@ export class LessonCopyUC {
 		private readonly authorisation: AuthorizationService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly lessonRepo: LessonRepo,
+		private readonly courseRepo: CourseRepo,
 		private readonly copyHelperService: CopyHelperService
 	) {}
 
@@ -26,11 +27,13 @@ export class LessonCopyUC {
 			throw new ForbiddenException('could not find lesson to copy');
 		}
 
-		const destinationCourseId = parentParams.courseId ?? originalLesson.course.id;
+		const destinationCourse = parentParams.courseId
+			? await this.courseRepo.findById(parentParams.courseId)
+			: originalLesson.course;
 		await this.authorisation.checkPermissionByReferences(
 			userId,
 			AllowedAuthorizationEntityType.Course,
-			destinationCourseId,
+			destinationCourse.id,
 			{
 				action: Actions.write,
 				requiredPermissions: [],
@@ -43,7 +46,7 @@ export class LessonCopyUC {
 
 		const copyStatus = await this.lessonCopyService.copyLesson({
 			originalLessonId: originalLesson.id,
-			destinationCourseId,
+			destinationCourse,
 			user,
 			copyName,
 		});
