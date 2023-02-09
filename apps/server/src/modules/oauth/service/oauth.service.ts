@@ -1,17 +1,11 @@
-import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Inject, UnauthorizedException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityId, OauthConfig, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { Logger } from '@src/core/logger';
-import { FeathersJwtProvider } from '@src/modules/authorization';
 import { UserService } from '@src/modules/user';
-import { AxiosResponse } from 'axios';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import JwksRsa from 'jwks-rsa';
-import QueryString from 'qs';
-import { lastValueFrom, Observable } from 'rxjs';
 
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -28,13 +22,13 @@ import { OAuthProcessDto } from './dto/oauth-process.dto';
 import { SystemService } from '../../system';
 import { OauthDataDto } from '../../provisioning/dto';
 import { UserMigrationService } from '../../user-migration';
+import { OauthAdapterService } from './oauth-adapter.service';
 
 @Injectable()
 export class OAuthService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly jwtService: FeathersJwtProvider,
-		private readonly httpService: HttpService,
+		private readonly oauthAdapterService: OauthAdapterService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
 		private readonly logger: Logger,
 		private readonly provisioningService: ProvisioningService,
@@ -115,8 +109,7 @@ export class OAuthService {
 
 	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
 		const payload = this.buildTokenRequestPayload(code, oauthConfig);
-		const responseTokenObservable = this.sendTokenRequest(payload);
-		const responseToken = this.resolveTokenRequest(responseTokenObservable);
+		const responseToken = this.oauthAdapterService.sendTokenRequest(payload);
 		return responseToken;
 	}
 
@@ -141,41 +134,8 @@ export class OAuthService {
 		return tokenRequestPayload;
 	}
 
-	private sendTokenRequest(payload: TokenRequestPayload): Observable<AxiosResponse<OauthTokenResponse, unknown>> {
-		const query = QueryString.stringify(payload);
-		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(`${payload.tokenEndpoint}`, query, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
-		});
-		return responseTokenObservable;
-	}
-
-	private async resolveTokenRequest(
-		observable: Observable<AxiosResponse<OauthTokenResponse, unknown>>
-	): Promise<OauthTokenResponse> {
-		let responseToken: AxiosResponse<OauthTokenResponse>;
-		try {
-			responseToken = await lastValueFrom(observable);
-		} catch (error) {
-			throw new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step');
-		}
-
-		return responseToken.data;
-	}
-
-	async _getPublicKey(oauthConfig: OauthConfig): Promise<string> {
-		const client: JwksRsa.JwksClient = JwksRsa({
-			cache: true,
-			jwksUri: oauthConfig.jwksEndpoint,
-		});
-		const key: JwksRsa.SigningKey = await client.getSigningKey();
-		return key.getPublicKey();
-	}
-
 	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<IJwt> {
-		const publicKey = await this._getPublicKey(oauthConfig);
+		const publicKey = await this.oauthAdapterService.getPublicKey(oauthConfig);
 		const verifiedJWT: string | jwt.JwtPayload = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
 			issuer: oauthConfig.issuer,
@@ -213,11 +173,6 @@ export class OAuthService {
 			return ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
 		}
 		return '';
-	}
-
-	async getJwtForUser(userId: EntityId): Promise<string> {
-		const stringPromise: Promise<string> = this.jwtService.generateJwt(userId);
-		return stringPromise;
 	}
 
 	/**

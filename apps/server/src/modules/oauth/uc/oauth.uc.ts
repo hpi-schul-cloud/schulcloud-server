@@ -3,6 +3,7 @@ import { Logger } from '@src/core/logger';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
@@ -15,6 +16,7 @@ export class OauthUc {
 	constructor(
 		private readonly oauthService: OAuthService,
 		private readonly systemService: SystemService,
+		private readonly jwtService: FeathersJwtProvider,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(OauthUc.name);
@@ -41,7 +43,7 @@ export class OauthUc {
 
 		let jwtResponse = '';
 		if (user && user.id) {
-			jwtResponse = await this.oauthService.getJwtForUser(user.id);
+			jwtResponse = await this.jwtService.generateJwt(user.id);
 		}
 
 		const response = new OAuthProcessDto({

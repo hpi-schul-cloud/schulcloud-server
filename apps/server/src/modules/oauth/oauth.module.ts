@@ -10,6 +10,7 @@ import { OAuthService } from './service/oauth.service';
 import { ProvisioningModule } from '../provisioning';
 import { SystemModule } from '../system';
 import { UserMigrationModule } from '../user-migration';
+import { OauthAdapterService } from './service/oauth-adapter.service';
 
 @Module({
 	imports: [
@@ -22,7 +23,7 @@ import { UserMigrationModule } from '../user-migration';
 		SystemModule,
 		UserMigrationModule,
 	],
-	providers: [OAuthService, HydraSsoService, LtiToolRepo],
+	providers: [OAuthService, OauthAdapterService, HydraSsoService, LtiToolRepo],
 	exports: [OAuthService, HydraSsoService],
 })
 export class OauthModule {}
