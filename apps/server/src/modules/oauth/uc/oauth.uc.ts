@@ -43,7 +43,13 @@ export class OauthUc {
 			throw new UnprocessableEntityException(`Requested system ${systemId} has no oauth configured`);
 		}
 
-		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(system.oauthConfig, state, migration);
+		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(
+			system.type,
+			system.oauthConfig,
+			state,
+			migration,
+			system.alias
+		);
 
 		session.oauthLoginState = new OauthLoginStateDto({
 			state,
@@ -115,7 +121,7 @@ export class OauthUc {
 		this.logger.debug(`Generating jwt for user. [state: ${state}, system: ${systemId}]`);
 		const jwtResponse: string = await this.oauthService.getJwtForUser(user.id as string);
 
-		const redirect: string = this.oauthService.getRedirectUrl(
+		const redirect: string = this.oauthService.getPostLoginRedirectUrl(
 			oauthConfig.provider,
 			queryToken.id_token,
 			oauthConfig.logoutEndpoint,

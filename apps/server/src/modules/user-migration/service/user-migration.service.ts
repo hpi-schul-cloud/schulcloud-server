@@ -99,7 +99,7 @@ export class UserMigrationService {
 			throw new UnprocessableEntityException(`System ${system?.id || 'unknown'} has no oauth config`);
 		}
 
-		const loginUrl: URL = new URL(`/v3/sso/login/${system.id}`, this.apiUrl);
+		const loginUrl: URL = new URL(`api/v3/sso/login/${system.id}`, this.apiUrl);
 		if (postLoginRedirect) {
 			loginUrl.searchParams.append('postLoginRedirect', postLoginRedirect);
 		}

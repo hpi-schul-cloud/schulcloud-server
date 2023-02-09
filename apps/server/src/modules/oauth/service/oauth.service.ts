@@ -130,7 +130,7 @@ export class OAuthService {
 		return accessToken;
 	}
 
-	getRedirectUrl(provider: string, idToken = '', logoutEndpoint = '', postLoginRedirect?: string): string {
+	getPostLoginRedirectUrl(provider: string, idToken = '', logoutEndpoint = '', postLoginRedirect?: string): string {
 		const clientUrl: string = Configuration.get('HOST') as string;
 		const dashboardUrl: URL = new URL('/dashboard', clientUrl);
 
@@ -138,7 +138,7 @@ export class OAuthService {
 		if (provider === 'iserv') {
 			const iservLogoutUrl: URL = new URL(logoutEndpoint);
 			iservLogoutUrl.searchParams.append('id_token_hint', idToken);
-			iservLogoutUrl.searchParams.append('post_logout_redirect_uri', dashboardUrl.toString());
+			iservLogoutUrl.searchParams.append('post_logout_redirect_uri', postLoginRedirect || dashboardUrl.toString());
 
 			redirect = iservLogoutUrl.toString();
 		} else if (postLoginRedirect) {
@@ -150,22 +150,31 @@ export class OAuthService {
 		return redirect;
 	}
 
-	getAuthenticationUrl(oauthConfig: OauthConfig, state: string, migration: boolean): string {
+	getAuthenticationUrl(
+		type: string,
+		oauthConfig: OauthConfig,
+		state: string,
+		migration: boolean,
+		alias?: string
+	): string {
 		const apiUrl: string = Configuration.get('PUBLIC_BACKEND_URL') as string;
 		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
 
 		authenticationUrl.searchParams.append('client_id', oauthConfig.clientId);
 		if (migration) {
-			const migrationRedirectUri: URL = new URL(`/v3/sso/oauth/migration`, apiUrl);
+			const migrationRedirectUri: URL = new URL(`api/v3/sso/oauth/migration`, apiUrl);
 			authenticationUrl.searchParams.append('redirect_uri', migrationRedirectUri.toString());
 		} else {
-			const redirectUri: URL = new URL(`/v3/sso/oauth`, apiUrl);
+			const redirectUri: URL = new URL(`api/v3/sso/oauth`, apiUrl);
 			authenticationUrl.searchParams.append('redirect_uri', redirectUri.toString());
 		}
 		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
 		authenticationUrl.searchParams.append('scope', oauthConfig.scope);
 		authenticationUrl.searchParams.append('state', state);
-		// kc_idp_hint=alias?
+		if (alias && type === 'oidc') {
+			authenticationUrl.searchParams.append('kc_idp_hint', alias);
+		}
+
 		return authenticationUrl.toString();
 	}
 }

@@ -289,10 +289,10 @@ describe('OAuthService', () => {
 		});
 	});
 
-	describe('getRedirectUrl is called', () => {
-		describe('when the provider is iserv', () => {
+	describe('getPostLoginRedirectUrl is called', () => {
+		describe('when the provider is iserv and no postLoginRedirect', () => {
 			it('should return an iserv logout url', () => {
-				const url = service.getRedirectUrl('iserv', 'idToken', 'http://iserv.logout');
+				const url = service.getPostLoginRedirectUrl('iserv', 'idToken', 'http://iserv.logout');
 
 				expect(url).toStrictEqual(
 					`http://iserv.logout/?id_token_hint=idToken&post_logout_redirect_uri=http%3A%2F%2Fmockhost.de%2Fdashboard`
@@ -300,19 +300,34 @@ describe('OAuthService', () => {
 			});
 		});
 
-		describe('when a normal provider and a postLoginRedirect are provided', () => {
-			it('should return a login url string', () => {
-				const url: string = service.getRedirectUrl('provider', '', '', 'specialPostLoginRedirectUrl');
+		describe('when the provider is iserv and a postLoginRedirect is provided', () => {
+			it('should return an iserv logout url', () => {
+				const url = service.getPostLoginRedirectUrl(
+					'iserv',
+					'idToken',
+					'http://iserv.logout',
+					'specialPostLoginRedirectUrl'
+				);
 
-				expect(url).toStrictEqual('specialPostLoginRedirectUrl');
+				expect(url).toStrictEqual(
+					`http://iserv.logout/?id_token_hint=idToken&post_logout_redirect_uri=specialPostLoginRedirectUrl`
+				);
 			});
 		});
 
 		describe('when a normal provider is provided and no postLoginRedirect', () => {
 			it('should return a login url string', () => {
-				const url: string = service.getRedirectUrl('provider');
+				const url: string = service.getPostLoginRedirectUrl('provider');
 
 				expect(url).toStrictEqual(`${hostUri}/dashboard`);
+			});
+		});
+
+		describe('when a normal provider and a postLoginRedirect is provided', () => {
+			it('should return a login url string', () => {
+				const url: string = service.getPostLoginRedirectUrl('provider', '', '', 'specialPostLoginRedirectUrl');
+
+				expect(url).toStrictEqual('specialPostLoginRedirectUrl');
 			});
 		});
 	});
@@ -335,10 +350,10 @@ describe('OAuthService', () => {
 					jwksEndpoint: 'http://mock.de/jwks',
 				});
 
-				const result: string = service.getAuthenticationUrl(oauthConfig, 'state', false);
+				const result: string = service.getAuthenticationUrl('oidc', oauthConfig, 'state', false, 'alias');
 
 				expect(result).toEqual(
-					'http://mock.de/auth?client_id=12345&redirect_uri=http%3A%2F%2Fmockhost.de%2Fapi%2Fv3%2Fsso%2Foauth&response_type=code&scope=openid+uuid&state=state'
+					'http://mock.de/auth?client_id=12345&redirect_uri=http%3A%2F%2Fmockhost.de%2Fapi%2Fv3%2Fsso%2Foauth&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=alias'
 				);
 			});
 		});
@@ -360,10 +375,10 @@ describe('OAuthService', () => {
 					jwksEndpoint: 'http://mock.de/jwks',
 				});
 
-				const result: string = service.getAuthenticationUrl(oauthConfig, 'state', true);
+				const result: string = service.getAuthenticationUrl('oidc', oauthConfig, 'state', true, 'alias');
 
 				expect(result).toEqual(
-					'http://mock.de/auth?client_id=12345&redirect_uri=http%3A%2F%2Fmockhost.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state'
+					'http://mock.de/auth?client_id=12345&redirect_uri=http%3A%2F%2Fmockhost.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=alias'
 				);
 			});
 		});

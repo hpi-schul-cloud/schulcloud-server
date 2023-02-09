@@ -238,7 +238,7 @@ describe('OAuthUc', () => {
 			provisioningService.provisionData.mockResolvedValue(provisioningDto);
 			oauthService.findUser.mockResolvedValue(user);
 			oauthService.getJwtForUser.mockResolvedValue(userJwt);
-			oauthService.getRedirectUrl.mockReturnValue(postLoginRedirect);
+			oauthService.getPostLoginRedirectUrl.mockReturnValue(postLoginRedirect);
 
 			return {
 				cachedState,
