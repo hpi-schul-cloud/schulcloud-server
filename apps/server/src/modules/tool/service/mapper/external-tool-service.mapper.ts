@@ -16,16 +16,4 @@ export class ExternalToolServiceMapper {
 			subject_type: 'pairwise',
 		};
 	}
-
-	mapDoToProviderOauthClientWithoutSecret(name: string, oauth2Config: Oauth2ToolConfigDO): ProviderOauthClient {
-		return {
-			client_name: name,
-			client_id: oauth2Config.clientId,
-			scope: oauth2Config.scope,
-			token_endpoint_auth_method: oauth2Config.tokenEndpointAuthMethod,
-			redirect_uris: oauth2Config.redirectUris,
-			frontchannel_logout_uri: oauth2Config.frontchannelLogoutUri,
-			subject_type: 'pairwise',
-		};
-	}
 }
