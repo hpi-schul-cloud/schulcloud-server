@@ -5,15 +5,13 @@ import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
-import { OauthStrategy } from './oauth.strategy';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { userDoFactory } from '@shared/testing';
+import { OauthStrategy } from './oauth.strategy';
 
 describe('OauthStrategy', () => {
 	let module: TestingModule;
 	let strategy: OauthStrategy;
-	// let mockUser: User;
-	let mockAccount: AccountDto;
 	const systemId = 'mockSystemId';
 	let accountService: DeepMocked<AccountService>;
 	let oauthService: DeepMocked<OAuthService>;

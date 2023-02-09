@@ -3,8 +3,8 @@ import { Controller, Post, UseGuards, HttpCode, HttpStatus, Query, Res, Get } fr
 import { AuthGuard } from '@nestjs/passport';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser } from '@shared/domain';
-import { CurrentUser } from '../decorator/auth.decorator';
 import { ApiTags } from '@nestjs/swagger';
+import { CurrentUser } from '../decorator/auth.decorator';
 import { AuthenticationService } from '../services/authentication.service';
 
 @ApiTags('Authentication')
