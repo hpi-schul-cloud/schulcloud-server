@@ -42,6 +42,19 @@ describe('ExternalToolValidation', () => {
 		jest.clearAllMocks();
 	});
 
+	const setup = () => {
+		const externalOauthToolDO: ExternalToolDO = externalToolDOFactory
+			.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
+			.buildWithId();
+		const existingExternalOauthToolDO: ExternalToolDO = externalToolDOFactory
+			.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
+			.buildWithId();
+		const externalOauthToolDOWithoutSecret: ExternalToolDO = externalToolDOFactory
+			.withOauth2Config({ clientId: 'ClientId' })
+			.buildWithId();
+		return { externalOauthToolDO, externalOauthToolDOWithoutSecret, existingExternalOauthToolDO };
+	};
+
 	describe('validateCreate is called', () => {
 		it('should call the common validation service', async () => {
 			const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
@@ -54,52 +67,46 @@ describe('ExternalToolValidation', () => {
 
 		describe('when external tool config has oauth config', () => {
 			it('should not find a tool with this unique client id', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().build();
+				const { externalOauthToolDO } = setup();
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
 
-				const result: Promise<void> = service.validateCreate(externalToolDO);
+				const result: Promise<void> = service.validateCreate(externalOauthToolDO);
 
 				await expect(result).resolves.not.toThrow();
 			});
 
 			it('should return when clientId is unique', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
-				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalToolDO);
+				const { externalOauthToolDO } = setup();
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalOauthToolDO);
 
-				const result: Promise<void> = service.validateCreate(externalToolDO);
+				const result: Promise<void> = service.validateCreate(externalOauthToolDO);
 
 				await expect(result).resolves.not.toThrow();
 			});
 
 			it('should find a tool with this duplicate client id', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
-					.withOauth2Config({ clientId: 'sameClientId', clientSecret: 'someSecret' })
-					.build();
-				const existingExternalToolDO: ExternalToolDO = externalToolDOFactory
-					.withOauth2Config({ clientId: 'sameClientId' })
-					.buildWithId();
+				const { externalOauthToolDO } = setup();
+				const { existingExternalOauthToolDO } = setup();
 				externalToolService.isOauth2Config.mockReturnValue(true);
-				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(existingExternalToolDO);
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(existingExternalOauthToolDO);
 
-				const result: Promise<void> = service.validateCreate(externalToolDO);
+				const result: Promise<void> = service.validateCreate(externalOauthToolDO);
 
 				await expect(result).rejects.toThrow(
-					new ValidationError(`The Client Id of the tool ${externalToolDO.name} is already used.`)
+					new ValidationError(`The Client Id of the tool ${externalOauthToolDO.name} is already used.`)
 				);
 			});
 		});
 
 		describe('when there is no client secret', () => {
 			it('should throw validation error', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
-					.withOauth2Config({ clientId: 'sameClientId' })
-					.build();
+				const { externalOauthToolDOWithoutSecret } = setup();
 				externalToolService.isOauth2Config.mockReturnValue(true);
 
-				const result: Promise<void> = service.validateCreate(externalToolDO);
+				const result: Promise<void> = service.validateCreate(externalOauthToolDOWithoutSecret);
 
 				await expect(result).rejects.toThrow(
-					new ValidationError(`The Client Secret of the tool ${externalToolDO.name} is missing.`)
+					new ValidationError(`The Client Secret of the tool ${externalOauthToolDOWithoutSecret.name} is missing.`)
 				);
 			});
 		});
