@@ -4,11 +4,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
 import { TransactionUtil } from './transaction.util';
 
-class TransactionUtilSpec extends TransactionUtil {
-	async doTransaction(fn: () => Promise<void>): Promise<void> {
-		await fn();
-	}
-}
 describe('TransactionUtil', () => {
 	let module: TestingModule;
 	let service: TransactionUtil;
@@ -34,10 +29,12 @@ describe('TransactionUtil', () => {
 
 	describe('doTransaction', () => {
 		it('should do transaction successfully', async () => {
-			entityManager.transactional.mockResolvedValue(Promise.resolve());
-			await service.doTransaction(() => Promise.resolve());
+			const test = () => Promise.resolve();
+			entityManager.transactional.mockImplementation(() => Promise.resolve());
+			await service.doTransaction(test);
 
 			expect(entityManager.transactional).toHaveBeenCalledTimes(1);
+			expect(entityManager.transactional).toHaveBeenCalledWith(test);
 		});
 	});
 });
