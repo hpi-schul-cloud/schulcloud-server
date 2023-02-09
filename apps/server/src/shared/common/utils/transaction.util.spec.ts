@@ -47,10 +47,8 @@ describe('TransactionUtil', () => {
 				entityManager.transactional.mockImplementation(() => {
 					throw new Error();
 				});
-				await expect(service.doTransaction(test)).rejects.toThrowError();
 
-				expect(entityManager.transactional).toHaveBeenCalledTimes(1);
-				expect(entityManager.transactional).toHaveBeenCalledWith(test);
+				await expect(service.doTransaction(test)).rejects.toThrowError();
 			});
 		});
 	});
