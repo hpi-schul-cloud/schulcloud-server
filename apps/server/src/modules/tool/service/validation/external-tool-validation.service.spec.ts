@@ -53,7 +53,7 @@ describe('ExternalToolValidation', () => {
 		});
 
 		describe('when external tool config has oauth config', () => {
-			it('should not find a tool with this client id', async () => {
+			it('should not find a tool with this unique client id', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().build();
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
 
@@ -71,9 +71,9 @@ describe('ExternalToolValidation', () => {
 				await expect(result).resolves.not.toThrow();
 			});
 
-			it('should find a tool with this client id', async () => {
+			it('should find a tool with this duplicate client id', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory
-					.withOauth2Config({ clientId: 'sameClientId' })
+					.withOauth2Config({ clientId: 'sameClientId', clientSecret: 'someSecret' })
 					.build();
 				const existingExternalToolDO: ExternalToolDO = externalToolDOFactory
 					.withOauth2Config({ clientId: 'sameClientId' })
@@ -85,6 +85,21 @@ describe('ExternalToolValidation', () => {
 
 				await expect(result).rejects.toThrow(
 					new ValidationError(`The Client Id of the tool ${externalToolDO.name} is already used.`)
+				);
+			});
+		});
+
+		describe('when there is no client secret', () => {
+			it('should throw validation error', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory
+					.withOauth2Config({ clientId: 'sameClientId' })
+					.build();
+				externalToolService.isOauth2Config.mockReturnValue(true);
+
+				const result: Promise<void> = service.validateCreate(externalToolDO);
+
+				await expect(result).rejects.toThrow(
+					new ValidationError(`The Client Secret of the tool ${externalToolDO.name} is missing.`)
 				);
 			});
 		});
