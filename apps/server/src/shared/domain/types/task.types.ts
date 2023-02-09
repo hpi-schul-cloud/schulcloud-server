@@ -27,6 +27,7 @@ export interface ITaskProperties extends ITask {
 	private?: boolean;
 	submissions?: Submission[];
 	publicSubmissions?: boolean;
+	teamSubmissions?: boolean;
 }
 
 export interface ITaskStatus {

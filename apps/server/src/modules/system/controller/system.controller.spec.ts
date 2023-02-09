@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemOauthResponse } from '@src/modules/system/controller/dto/system-oauth.response';
 import { SystemFilterParams } from '@src/modules/system/controller/dto/system.filter.params';
 import { SystemController } from '@src/modules/system/controller/system.controller';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemUc } from '@src/modules/system/uc/system.uc';
+import { PublicSystemListResponse } from './dto/public-system-list.response';
 
 describe('SystemController', () => {
 	let module: TestingModule;
@@ -44,7 +44,7 @@ describe('SystemController', () => {
 			const resultConfigs = await controller.find(new SystemFilterParams());
 
 			// Assert
-			expect(resultConfigs).toStrictEqual(new SystemOauthResponse([]));
+			expect(resultConfigs).toStrictEqual(new PublicSystemListResponse([]));
 		});
 	});
 });
