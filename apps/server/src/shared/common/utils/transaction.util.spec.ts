@@ -7,6 +7,7 @@ import { TransactionUtil } from './transaction.util';
 describe('TransactionUtil', () => {
 	let module: TestingModule;
 	let service: TransactionUtil;
+	let logger: Logger;
 	let entityManager: DeepMocked<EntityManager>;
 
 	beforeAll(async () => {
@@ -24,17 +25,33 @@ describe('TransactionUtil', () => {
 			],
 		}).compile();
 		service = module.get(TransactionUtil);
+		logger = module.get(Logger);
 		entityManager = module.get(EntityManager);
 	});
 
 	describe('doTransaction', () => {
-		it('should do transaction successfully', async () => {
-			const test = () => Promise.resolve();
-			entityManager.transactional.mockImplementation(() => Promise.resolve());
-			await service.doTransaction(test);
+		describe('when function is given', () => {
+			it('should call entitymanager', async () => {
+				const test = () => Promise.resolve();
+				entityManager.transactional.mockImplementation(() => Promise.resolve());
+				await service.doTransaction(test);
 
-			expect(entityManager.transactional).toHaveBeenCalledTimes(1);
-			expect(entityManager.transactional).toHaveBeenCalledWith(test);
+				expect(entityManager.transactional).toHaveBeenCalledTimes(1);
+				expect(entityManager.transactional).toHaveBeenCalledWith(test);
+			});
+		});
+
+		describe('when function is given but execution failed ', () => {
+			it('should call the logger', async () => {
+				const test = () => Promise.reject();
+				entityManager.transactional.mockImplementation(() => {
+					throw new Error();
+				});
+				await expect(service.doTransaction(test)).rejects.toThrowError();
+
+				expect(entityManager.transactional).toHaveBeenCalledTimes(1);
+				expect(entityManager.transactional).toHaveBeenCalledWith(test);
+			});
 		});
 	});
 });
