@@ -52,7 +52,7 @@ export class UserMigrationService {
 			);
 		}
 
-		const url = new URL('/migration', this.scDomain);
+		const url = new URL('/migration', this.hostUrl);
 		url.searchParams.append('sourceSystem', iservSystem.id);
 		url.searchParams.append('targetSystem', sanisSystem.id);
 		url.searchParams.append('origin', originSystemId);
@@ -97,21 +97,6 @@ export class UserMigrationService {
 		}
 	}
 
-	async migrateUser(currentUserId: string, externalUserId: string, targetSystemId: string): Promise<UserMigrationDto> {
-		const HOST = Configuration.get('HOST') as string;
-
-		const userMigrationDto = new UserMigrationDto({});
-
-		try {
-			await this.userService.migrateUser(currentUserId, externalUserId, targetSystemId);
-			userMigrationDto.redirect = `${HOST}/migration/succeed`;
-			return userMigrationDto;
-		} catch (e) {
-			userMigrationDto.redirect = `${HOST}/dashboard`;
-			return userMigrationDto;
-		}
-	}
-
 	private getOauthLoginUrl(system: SystemDto, postLoginUri?: string): URL {
 		if (!system.oauthConfig) {
 			throw new EntityNotFoundError(`System ${system?.id || 'unknown'} has no oauth config`);
@@ -141,5 +126,18 @@ export class UserMigrationService {
 		const combinedUri = new URL(this.scDomain);
 		combinedUri.pathname = `/api/v3/sso/oauth/${systemId}/migration`;
 		return combinedUri.toString();
+	}
+
+	async migrateUser(currentUserId: string, externalUserId: string, targetSystemId: string): Promise<UserMigrationDto> {
+		const userMigrationDto = new UserMigrationDto({});
+
+		try {
+			await this.userService.migrateUser(currentUserId, externalUserId, targetSystemId);
+			userMigrationDto.redirect = `${this.hostUrl}/migration/succeed`;
+			return userMigrationDto;
+		} catch (e) {
+			userMigrationDto.redirect = `${this.hostUrl}/dashboard`;
+			return userMigrationDto;
+		}
 	}
 }

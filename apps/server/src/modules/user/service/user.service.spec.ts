@@ -1,18 +1,29 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
+import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, PermissionService, Role, RoleName, School, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { accountFactory, roleFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
+import { TransactionUtil } from '@shared/common/utils/transaction.util';
+import { Logger } from '@src/core/logger';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolService } from '../../school';
 import { SchoolMapper } from '../../school/mapper/school.mapper';
+import { OauthConfigDto, SystemDto } from '../../system/service';
+import { AccountRepo } from '../../account/repo/account.repo';
+
+class TransactionUtilSpec extends TransactionUtil {
+	async doTransaction(fn: () => Promise<void>): Promise<void> {
+		await fn();
+	}
+}
 
 describe('UserService', () => {
 	let service: UserService;
@@ -26,12 +37,22 @@ describe('UserService', () => {
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
 	let schoolService: DeepMocked<SchoolService>;
+	let transactionUtil: DeepMocked<TransactionUtil>;
+	let accountRepo: DeepMocked<AccountRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				UserService,
 				SchoolMapper,
+				{
+					provide: EntityManager,
+					useValue: createMock<EntityManager>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 				{
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
@@ -60,6 +81,14 @@ describe('UserService', () => {
 					provide: RoleService,
 					useValue: createMock<RoleService>(),
 				},
+				{
+					provide: AccountRepo,
+					useValue: createMock<AccountRepo>(),
+				},
+				{
+					provide: TransactionUtil,
+					useClass: TransactionUtilSpec,
+				},
 			],
 		}).compile();
 		service = module.get(UserService);
@@ -71,6 +100,8 @@ describe('UserService', () => {
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
+		accountRepo = module.get(AccountRepo);
+		transactionUtil = module.get(TransactionUtil);
 
 		orm = await setupEntities();
 	});
@@ -357,6 +388,92 @@ describe('UserService', () => {
 				const result: User[] = await service.findByEmail(user.email);
 
 				expect(result).toEqual([user]);
+			});
+		});
+	});
+
+	describe('migrateUser is called', () => {
+		const setupMigrationData = () => {
+			const userDO: UserDO = new UserDO({
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				email: 'emailMock',
+				firstName: 'firstNameMock',
+				lastName: 'lastNameMock',
+				roleIds: ['roleIdMock'],
+				schoolId: 'schoolMock',
+				externalId: 'currentUserExternalIdMock',
+			});
+
+			const migratedUserDO: UserDO = new UserDO({
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				email: 'emailMock',
+				firstName: 'firstNameMock',
+				lastName: 'lastNameMock',
+				roleIds: ['roleIdMock'],
+				schoolId: 'schoolMock',
+				externalId: 'externalUserTargetId',
+				legacyExternalId: 'currentUserExternalIdMock',
+				lastLoginSystemChange: new Date(),
+			});
+
+			const account = accountFactory.buildWithId({
+				userId: userFactory.buildWithId().id,
+				username: '',
+				systemId: systemFactory.buildWithId().id,
+			});
+
+			const migratedAccount = accountFactory.buildWithId({
+				userId: userFactory.buildWithId().id,
+				username: '',
+				systemId: 'targetSystemId',
+			});
+
+			const targetOauthConfig: OauthConfigDto = new OauthConfigDto({
+				clientId: 'targetClientId',
+				clientSecret: 'targetSecret',
+				tokenEndpoint: 'http://target.de/auth/public/mockToken',
+				grantType: 'authorization_code',
+				scope: 'openid uuid',
+				responseType: 'code',
+				authEndpoint: 'http://target.de/auth',
+				provider: 'target_provider',
+				logoutEndpoint: 'target_logoutEndpoint',
+				issuer: 'target_issuer',
+				jwksEndpoint: 'target_jwksEndpoint',
+				redirectUri: 'http://mock.de/api/v3/sso/oauth/targetSystemId',
+			});
+
+			const targetSystem: SystemDto = new SystemDto({
+				id: 'targetSystemId',
+				type: 'oauth',
+				alias: 'Sanis',
+				oauthConfig: targetOauthConfig,
+			});
+
+			return {
+				account,
+				migratedUserDO,
+				migratedAccount,
+			};
+		};
+		describe('when currentUser, externalUserId, and targetsystem is given', () => {
+			it('should call transaction for migration ', async () => {
+				const { migratedUserDO, migratedAccount } = setupMigrationData();
+
+				const targetSystemId = new ObjectId().toHexString();
+
+				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
+
+				expect(userDORepo.findById).toHaveBeenCalledTimes(1);
+				expect(userDORepo.findById).toHaveBeenCalledWith('userId', true);
+				expect(userDORepo.saveWithoutFlush).toHaveBeenCalledTimes(1);
+				expect(userDORepo.saveWithoutFlush).toHaveBeenCalledWith(migratedUserDO);
+				expect(accountRepo.findByUserIdOrFail).toHaveBeenCalledTimes(1);
+				expect(accountRepo.findByUserIdOrFail).toHaveBeenCalledWith('userId');
+				expect(accountRepo.saveWithoutFlush).toHaveBeenCalledTimes(1);
+				expect(accountRepo.saveWithoutFlush).toHaveBeenCalledWith(migratedAccount);
 			});
 		});
 	});

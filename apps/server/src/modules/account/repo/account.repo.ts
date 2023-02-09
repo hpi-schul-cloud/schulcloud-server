@@ -67,13 +67,6 @@ export class AccountRepo extends BaseRepo<Account> {
 		}
 	}
 
-	async migrate(userId: EntityId, targetSystemId): Promise<void> {
-		const account: Account | null = await this.findByUserId(userId);
-		if (account?.systemId) {
-			account.systemId = targetSystemId;
-		}
-	}
-
 	private async searchByUsername(
 		username: string,
 		offset: number,

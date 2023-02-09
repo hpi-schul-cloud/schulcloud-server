@@ -10,9 +10,12 @@ import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { ICurrentUser } from '@shared/domain';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
 import { UserMigrationService } from './user-migration.service';
+import { UserService } from '../../user';
+import { UserMigrationDto } from '../../oauth/controller/dto/userMigrationDto';
 
 describe('UserMigrationService', () => {
 	let module: TestingModule;
@@ -21,9 +24,23 @@ describe('UserMigrationService', () => {
 
 	let schoolService: DeepMocked<SchoolService>;
 	let systemService: DeepMocked<SystemService>;
+	let userService: DeepMocked<UserService>;
 
+	const hostUri = 'http://this.de';
+	const scDomain = 'https://mock.de';
 	beforeAll(async () => {
-		jest.spyOn(Configuration, 'get').mockReturnValue('http://this.de');
+		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
+			switch (key) {
+				case 'HOST':
+					return hostUri;
+				case 'SC_DOMAIN':
+					return scDomain;
+				case 'S3_KEY':
+					return 's3Key';
+				default:
+					throw new Error(`No mock for key '${key}'`);
+			}
+		});
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -36,12 +53,17 @@ describe('UserMigrationService', () => {
 					provide: SystemService,
 					useValue: createMock<SystemService>(),
 				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(UserMigrationService);
 		schoolService = module.get(SchoolService);
 		systemService = module.get(SystemService);
+		userService = module.get(UserService);
 
 		orm = await setupEntities();
 	});
@@ -183,16 +205,16 @@ describe('UserMigrationService', () => {
 				oauthConfig: targetOauthConfig,
 			});
 
-			const migrationRedirect = 'http://this.de/api/v3/sso/oauth/targetSystemId/migration';
+			const migrationRedirectUri = 'https://mock.de/api/v3/sso/oauth/targetSystemId/migration';
 
-			return { sourceSystem, targetSystem, sourceOauthConfig, targetOauthConfig, migrationRedirect };
+			return { sourceSystem, targetSystem, sourceOauthConfig, targetOauthConfig, migrationRedirectUri };
 		};
 
 		describe('when coming from the target system', () => {
 			it('should return the url to the source system and a frontpage url', async () => {
-				const { sourceSystem, targetSystem, sourceOauthConfig, migrationRedirect } = setupPageContent();
+				const { sourceSystem, targetSystem, sourceOauthConfig, migrationRedirectUri } = setupPageContent();
 				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
-					migrationRedirect
+					migrationRedirectUri
 				)}&response_type=code&scope=openid+uuid`;
 				const redirectUrl = `${sourceOauthConfig.redirectUri}?postLoginRedirect=${encodeURIComponent(
 					targetSystemLoginUrl
@@ -219,9 +241,9 @@ describe('UserMigrationService', () => {
 
 		describe('when coming from the source system', () => {
 			it('should return the url to the target system and a dashboard url', async () => {
-				const { sourceSystem, targetSystem, migrationRedirect } = setupPageContent();
+				const { sourceSystem, targetSystem, migrationRedirectUri } = setupPageContent();
 				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
-					migrationRedirect
+					migrationRedirectUri
 				)}&response_type=code&scope=openid+uuid`;
 
 				systemService.findById.mockResolvedValueOnce(sourceSystem);
@@ -242,9 +264,9 @@ describe('UserMigrationService', () => {
 
 		describe('when coming from the source system and the migration is mandatory', () => {
 			it('should return the url to the target system and a logout url', async () => {
-				const { sourceSystem, targetSystem, migrationRedirect } = setupPageContent();
+				const { sourceSystem, targetSystem, migrationRedirectUri } = setupPageContent();
 				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
-					migrationRedirect
+					migrationRedirectUri
 				)}&response_type=code&scope=openid+uuid`;
 
 				systemService.findById.mockResolvedValueOnce(sourceSystem);
@@ -289,6 +311,72 @@ describe('UserMigrationService', () => {
 				);
 
 				await expect(promise).rejects.toThrow(EntityNotFoundError);
+			});
+		});
+	});
+
+	describe('migrateUser is called', () => {
+		const setupMigrationData = () => {
+			const currentUserMock: ICurrentUser = {
+				user: {},
+				accountId: 'accountId',
+				userId: 'mockUserId',
+				roles: ['userRole'],
+				schoolId: 'mockSchool',
+				systemId: 'iservMockId',
+			} as ICurrentUser;
+
+			const externalUserIdMock = 'externalUserIdMock';
+
+			const targetOauthConfig: OauthConfigDto = new OauthConfigDto({
+				clientId: 'targetClientId',
+				clientSecret: 'targetSecret',
+				tokenEndpoint: 'http://target.de/auth/public/mockToken',
+				grantType: 'authorization_code',
+				scope: 'openid uuid',
+				responseType: 'code',
+				authEndpoint: 'http://target.de/auth',
+				provider: 'target_provider',
+				logoutEndpoint: 'target_logoutEndpoint',
+				issuer: 'target_issuer',
+				jwksEndpoint: 'target_jwksEndpoint',
+				redirectUri: 'http://mock.de/api/v3/sso/oauth/targetSystemId',
+			});
+
+			const targetSystem: SystemDto = new SystemDto({
+				id: 'targetSystemId',
+				type: 'oauth',
+				alias: 'Sanis',
+				oauthConfig: targetOauthConfig,
+			});
+
+			const migratedUser: UserMigrationDto = {
+				redirect: `${hostUri}/migration/succeed`,
+			};
+
+			return {
+				targetSystem,
+				currentUserMock,
+				externalUserIdMock,
+				migratedUser,
+			};
+		};
+		describe('when migrate user in transaction was successful', () => {
+			it('should return to migration succeed page', async () => {
+				const { targetSystem, externalUserIdMock, currentUserMock } = setupMigrationData();
+				userService.migrateUser.mockResolvedValue(Promise.resolve());
+				const result = await service.migrateUser(currentUserMock.userId, externalUserIdMock, targetSystem.id as string);
+
+				expect(result.redirect).toStrictEqual(`${hostUri}/migration/succeed`);
+			});
+		});
+		describe('when user migration failed', () => {
+			it('should return to dashboard', async () => {
+				const { targetSystem, externalUserIdMock, currentUserMock } = setupMigrationData();
+				userService.migrateUser.mockResolvedValue(Promise.reject());
+				const result = await service.migrateUser(currentUserMock.userId, externalUserIdMock, targetSystem.id as string);
+
+				expect(result.redirect).toStrictEqual(`${hostUri}/dashboard`);
 			});
 		});
 	});

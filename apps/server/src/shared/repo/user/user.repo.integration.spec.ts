@@ -69,6 +69,7 @@ describe('user repo', () => {
 					'deletedAt',
 					'lastLoginSystemChange',
 					'outdatedSince',
+					'legacyExternalId',
 				].sort()
 			);
 		});
@@ -156,6 +157,7 @@ describe('user repo', () => {
 					'deletedAt',
 					'lastLoginSystemChange',
 					'outdatedSince',
+					'legacyExternalId',
 				].sort()
 			);
 		});
