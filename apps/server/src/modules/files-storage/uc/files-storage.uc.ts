@@ -34,7 +34,7 @@ export class FilesStorageUC {
 		private readonly authorizationService: AuthorizationService,
 		private readonly httpService: HttpService,
 		private readonly filesStorageService: FilesStorageService,
-		private readonly configService: ConfigService<IFileStorageConfig>
+		private readonly configService: ConfigService<IFileStorageConfig, true>
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -62,7 +62,7 @@ export class FilesStorageUC {
 			requestStream.on('file', async (_name, file, info): Promise<void> => {
 				const fileDto = FileDtoBuilder.buildFromRequest(info, req, file);
 
-				if (fileDto.size > this.configService.get('MAX_FILE_SIZE')) {
+				if (fileDto.size > this.configService.get<number>('MAX_FILE_SIZE')) {
 					requestStream.emit('error', ErrorType.FILE_TOO_BIG);
 					return;
 				}
@@ -129,7 +129,7 @@ export class FilesStorageUC {
 
 		const fileDto = FileDtoBuilder.buildFromAxiosResponse(params.fileName, response);
 
-		if (fileDto.size > this.configService.get('MAX_FILE_SIZE')) {
+		if (fileDto.size > this.configService.get<number>('MAX_FILE_SIZE')) {
 			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
 		}
 

@@ -134,8 +134,8 @@ describe('FilesStorageUC upload methods', () => {
 		filesStorageService = module.get(FilesStorageService);
 		configService = module.get(ConfigService);
 
-		// TODO: Find another way to tell that configService returns a number.
-		configService.get.mockReturnValue(1);
+		// TODO: Why is this necessary?
+		configService.get.mockImplementation();
 	});
 
 	beforeEach(() => {
