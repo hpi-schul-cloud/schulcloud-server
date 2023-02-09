@@ -3,7 +3,7 @@ import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { setupEntities } from '@shared/testing';
+import { setupEntities, systemFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
@@ -18,6 +18,8 @@ import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import resetAllMocks = jest.resetAllMocks;
+import { UserMigrationDto } from '../controller/dto/userMigrationDto';
+import { NotFoundException } from '@nestjs/common';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -350,7 +352,7 @@ describe('OAuthUc', () => {
 	});
 
 	describe('migrateUser', () => {
-		const setup = () => {
+		const setupMigration = () => {
 			const code = '43534543jnj543342jn2';
 			const query: AuthorizationParams = { code };
 
@@ -392,44 +394,59 @@ describe('OAuthUc', () => {
 			const oauthData: OauthDataDto = new OauthDataDto({
 				system: new ProvisioningSystemDto({
 					systemId: 'systemId',
-					provisioningStrategy: SystemProvisioningStrategy.OIDC,
+					provisioningStrategy: SystemProvisioningStrategy.SANIS,
 				}),
 				externalUser: new ExternalUserDto({
 					externalId: externalUserId,
 				}),
 			});
-			const provisioningDto: ProvisioningDto = new ProvisioningDto({
-				externalUserId,
+			const userMigrationDto: UserMigrationDto = new UserMigrationDto({
+				redirect: 'https://mock.de/migration/succeed',
 			});
 
-			const postLoginRedirect = 'postLoginRedirect';
-			const successResponse: OAuthProcessDto = new OAuthProcessDto({
-				idToken: 'idToken',
-				logoutEndpoint: oauthConfig.logoutEndpoint,
-				provider: oauthConfig.provider,
-				redirect: postLoginRedirect,
+			const userMigrationFailedDto: UserMigrationDto = new UserMigrationDto({
+				redirect: 'https://mock.de/dashboard',
 			});
-
-			const userJwt = 'schulcloudJwt';
-
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			systemService.findOAuthById.mockResolvedValue(system);
+
 			oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
 			provisioningService.getData.mockResolvedValue(oauthData);
 
 			return {
 				query,
 				system,
-				externalUserId,
-				user,
-				oauthData,
-				provisioningDto,
-				userJwt,
-				oauthConfig,
-				postLoginRedirect,
-				successResponse,
+				userMigrationDto,
+				userMigrationFailedDto,
 			};
 		};
-		it('should call UserMigrationService ', () => {});
+		describe('when authorize user and migration was successful', () => {
+			it('should return redirect to migration succeed page', async () => {
+				const { query, system, userMigrationDto } = setupMigration();
+				systemService.findOAuthById.mockResolvedValue(system);
+				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+				const result: UserMigrationDto = await service.migrateUser('currentUserId', query, system.id as string);
+
+				expect(result.redirect).toStrictEqual('https://mock.de/migration/succeed');
+			});
+		});
+		describe('when migration failed', () => {
+			it('should return redirect to dashboard ', async () => {
+				const { query, system, userMigrationFailedDto } = setupMigration();
+				systemService.findOAuthById.mockResolvedValue(system);
+				userMigrationService.migrateUser.mockResolvedValue(userMigrationFailedDto);
+				const result: UserMigrationDto = await service.migrateUser('currentUserId', query, 'systemdId');
+
+				expect(result.redirect).toStrictEqual('https://mock.de/dashboard');
+			});
+		});
+		describe('when system id is not given', () => {
+			it('should throw NotFoundException ', async () => {
+				const { query } = setupMigration();
+				systemService.findOAuthById.mockResolvedValue(systemFactory.build());
+
+				await expect(service.migrateUser('currentUserId', query, 'systemdId')).rejects.toThrow(NotFoundException);
+			});
+		});
 	});
 });

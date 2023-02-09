@@ -159,10 +159,22 @@ describe('OAuthService', () => {
 			httpService.post.mockReturnValue(of(createAxiosResponse<OauthTokenResponse>(tokenResponse)));
 		});
 
-		it('should get token from the external server', async () => {
-			const responseToken: OauthTokenResponse = await service.requestToken(code, testOauthConfig);
+		describe('when authorization code and oauthConfig is given', () => {
+			it('should get token from the external server', async () => {
+				const responseToken: OauthTokenResponse = await service.requestToken(code, testOauthConfig);
 
-			expect(responseToken).toStrictEqual(tokenResponse);
+				expect(responseToken).toStrictEqual(tokenResponse);
+			});
+		});
+
+		describe('when authorization code, oauthConfig and migrationRedirect is given is given', () => {
+			it('should get token from the external server', async () => {
+				const systemId = 'systemId';
+				const migrationRedirect = `/api/v3/sso/oauth/${systemId}/migration`;
+				const responseToken: OauthTokenResponse = await service.requestToken(code, testOauthConfig, migrationRedirect);
+
+				expect(responseToken).toStrictEqual(tokenResponse);
+			});
 		});
 
 		it('should throw error if no token got returned', async () => {
