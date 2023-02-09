@@ -1,14 +1,15 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
+import { BaseEntity, type EntityId } from '@shared/domain';
 import { v4 as uuid } from 'uuid';
-import { type EntityId, BaseEntity } from '@shared/domain';
 import { ErrorType } from '../error';
 
 export enum ScanStatus {
 	PENDING = 'pending',
 	VERIFIED = 'verified',
 	BLOCKED = 'blocked',
+	ERROR = 'error',
 }
 
 export enum FileRecordParentType {
@@ -66,6 +67,12 @@ export interface IFileRecordProperties {
 	deletedSince?: Date;
 }
 
+interface IParentInfo {
+	schoolId: EntityId;
+	parentId: EntityId;
+	parentType: FileRecordParentType;
+}
+
 // TODO: IEntityWithSchool
 
 /**
@@ -99,9 +106,11 @@ export class FileRecord extends BaseEntity {
 	@Embedded(() => FileSecurityCheck, { object: true, nullable: false })
 	securityCheck: FileSecurityCheck;
 
+	@Index()
 	@Enum()
 	parentType: FileRecordParentType;
 
+	@Index()
 	@Property({ fieldName: 'parent' })
 	_parentId: ObjectId;
 
@@ -157,26 +166,85 @@ export class FileRecord extends BaseEntity {
 		this.deletedSince = props.deletedSince;
 	}
 
-	updateSecurityCheckStatus(status: ScanStatus, reason = 'Clean'): void {
+	public updateSecurityCheckStatus(status: ScanStatus, reason: string): void {
 		this.securityCheck.status = status;
 		this.securityCheck.reason = reason;
 		this.securityCheck.updatedAt = new Date();
 		this.securityCheck.requestToken = undefined;
 	}
 
-	markForDelete(): void {
+	public copy(userId: EntityId, targetParentInfo: IParentInfo): FileRecord {
+		const { size, name, mimeType } = this;
+		const { parentType, parentId, schoolId } = targetParentInfo;
+
+		const fileRecordCopy = new FileRecord({
+			size,
+			name,
+			mimeType,
+			parentType,
+			parentId,
+			creatorId: userId,
+			schoolId,
+		});
+
+		if (this.isVerified()) {
+			fileRecordCopy.securityCheck = this.securityCheck;
+		}
+
+		return fileRecordCopy;
+	}
+
+	public markForDelete(): void {
 		this.deletedSince = new Date();
 	}
 
-	unmarkForDelete(): void {
+	public unmarkForDelete(): void {
 		this.deletedSince = undefined;
 	}
 
-	setName(name: string): void {
+	public setName(name: string): void {
 		if (name.length === 0) {
 			throw new BadRequestException(ErrorType.FILE_NAME_EMPTY);
 		}
 
 		this.name = name;
+	}
+
+	public hasName(name: string): boolean {
+		const hasName = this.name === name;
+
+		return hasName;
+	}
+
+	public getName(): string {
+		return this.name;
+	}
+
+	public isBlocked(): boolean {
+		const isBlocked = this.securityCheck.status === ScanStatus.BLOCKED;
+
+		return isBlocked;
+	}
+
+	public isPending(): boolean {
+		const isPending = this.securityCheck.status === ScanStatus.PENDING;
+
+		return isPending;
+	}
+
+	public isVerified(): boolean {
+		const isVerified = this.securityCheck.status === ScanStatus.VERIFIED;
+
+		return isVerified;
+	}
+
+	public getParentInfo(): IParentInfo {
+		const { parentId, parentType, schoolId } = this;
+
+		return { parentId, parentType, schoolId };
+	}
+
+	public getSchoolId(): EntityId {
+		return this.schoolId;
 	}
 }

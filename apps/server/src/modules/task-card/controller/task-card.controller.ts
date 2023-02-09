@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { TaskCardUc } from '../uc';
-import { CreateTaskCardParams, TaskCardResponse, TaskCardUrlParams, UpdateTaskCardParams } from './dto';
+import { TaskCardResponse, TaskCardUrlParams, TaskCardParams } from './dto';
 import { TaskCardMapper } from './mapper/task-card.mapper';
 
 @ApiTags('Cards')
@@ -15,16 +15,13 @@ export class TaskCardController {
 	constructor(private readonly taskCardUc: TaskCardUc) {}
 
 	@Post()
-	async create(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Body() params: CreateTaskCardParams
-	): Promise<TaskCardResponse> {
+	async create(@CurrentUser() currentUser: ICurrentUser, @Body() params: TaskCardParams): Promise<TaskCardResponse> {
 		this.featureEnabled();
 
 		const mapper = new TaskCardMapper();
 		const { card, taskWithStatusVo } = await this.taskCardUc.create(
 			currentUser.userId,
-			TaskCardMapper.mapCreateToDomain(params)
+			TaskCardMapper.mapToDomain(params)
 		);
 		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
 
@@ -57,14 +54,14 @@ export class TaskCardController {
 	async update(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: TaskCardUrlParams,
-		@Body() params: UpdateTaskCardParams
+		@Body() params: TaskCardParams
 	): Promise<TaskCardResponse> {
 		this.featureEnabled();
 
 		const { card, taskWithStatusVo } = await this.taskCardUc.update(
 			currentUser.userId,
 			urlParams.id,
-			TaskCardMapper.mapUpdateToDomain(params)
+			TaskCardMapper.mapToDomain(params)
 		);
 		const mapper = new TaskCardMapper();
 		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);

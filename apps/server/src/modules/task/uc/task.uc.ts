@@ -172,7 +172,7 @@ export class TaskUC {
 		let permittedCourses: Course[] = [];
 
 		if (neededPermission === Actions.write) {
-			[permittedCourses] = await this.courseRepo.findAllForTeacher(user.id);
+			[permittedCourses] = await this.courseRepo.findAllForTeacherOrSubstituteTeacher(user.id);
 		} else if (neededPermission === Actions.read) {
 			[permittedCourses] = await this.courseRepo.findAllByUserId(user.id);
 		}

@@ -367,7 +367,7 @@ class Add {
 	 */
 	patch(teamId, data, params) {
 		try {
-			if (isDefined(data.role) && ['teamexpert', 'teamadministrator', 'teammember'].includes(data.role) === false) {
+			if (isDefined(data.role) && ['teamexpert', 'teamadministrator'].includes(data.role) === false) {
 				throw new BadRequest('Wrong role is set.');
 			}
 			let out;

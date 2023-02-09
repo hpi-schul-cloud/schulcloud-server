@@ -4,8 +4,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser } from '@shared/domain';
 import { CurrentUser } from '../decorator/auth.decorator';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthenticationService } from '../services/authentication.service';
 
+@ApiTags('Authentication')
 @Controller('authentication')
 export class LoginController {
 	constructor(private authService: AuthenticationService) {}
