@@ -158,4 +158,365 @@ describe('FileRecord Entity', () => {
 			});
 		});
 	});
+
+	describe('hasName is called', () => {
+		describe('WHEN name is equal', () => {
+			const setup = () => {
+				const name = 'name123';
+				const fileRecord = fileRecordFactory.build({ name });
+
+				return { fileRecord, name };
+			};
+
+			it('should be true', () => {
+				const { fileRecord, name } = setup();
+
+				const result = fileRecord.hasName(name);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('WHEN name is not equal', () => {
+			const setup = () => {
+				const name = 'name123';
+				const fileRecord = fileRecordFactory.build({ name: 'name' });
+
+				return { fileRecord, name };
+			};
+
+			it('should be false', () => {
+				const { fileRecord, name } = setup();
+
+				const result = fileRecord.hasName(name);
+
+				expect(result).toBe(false);
+			});
+		});
+	});
+
+	describe('getName is called', () => {
+		describe('WHEN name exists', () => {
+			const setup = () => {
+				const name = 'name123';
+				const fileRecord = fileRecordFactory.build({ name });
+
+				return { fileRecord, name };
+			};
+
+			it('should return the correct name', () => {
+				const { fileRecord, name } = setup();
+
+				const result = fileRecord.getName();
+
+				expect(result).toEqual(name);
+			});
+		});
+	});
+
+	describe('getSchoolId is called', () => {
+		describe('WHEN schoolId exists', () => {
+			const setup = () => {
+				const schoolId = new ObjectId().toHexString();
+				const fileRecord = fileRecordFactory.build({ schoolId });
+
+				return { fileRecord, schoolId };
+			};
+
+			it('should return the correct schoolId', () => {
+				const { fileRecord, schoolId } = setup();
+
+				const result = fileRecord.getSchoolId();
+
+				expect(result).toEqual(schoolId);
+			});
+		});
+	});
+
+	describe('getParentInfo is called', () => {
+		describe('WHEN parentId and parentType and mimeType exists', () => {
+			const setup = () => {
+				const parentType = FileRecordParentType.School;
+				const parentId = new ObjectId().toHexString();
+				const schoolId = new ObjectId().toHexString();
+				const fileRecord = fileRecordFactory.build({ parentType, parentId, schoolId });
+
+				return { fileRecord, parentId, parentType, schoolId };
+			};
+
+			it('should return an object that include parentId and parentType', () => {
+				const { fileRecord, parentId, parentType, schoolId } = setup();
+
+				const result = fileRecord.getParentInfo();
+
+				expect(result).toEqual({ parentId, parentType, schoolId });
+			});
+		});
+	});
+
+	describe('isBlocked is called', () => {
+		describe('WHEN file record security status is BLOCKED', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
+
+				return { fileRecord };
+			};
+
+			it('should return true', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isBlocked();
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('WHEN file record security status is not BLOCKED', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
+
+				return { fileRecord };
+			};
+
+			it('should return false', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isBlocked();
+
+				expect(result).toBe(false);
+			});
+		});
+	});
+
+	describe('isPending is called', () => {
+		describe('WHEN file record security status is PENDING', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.PENDING;
+
+				return { fileRecord };
+			};
+
+			it('should return true', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isPending();
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('WHEN file record security status is not PENDING', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
+
+				return { fileRecord };
+			};
+
+			it('should return false', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isPending();
+
+				expect(result).toBe(false);
+			});
+		});
+	});
+
+	describe('isVerified is called', () => {
+		describe('WHEN file record security status is VERIFIED', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
+
+				return { fileRecord };
+			};
+
+			it('should return true', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isVerified();
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('WHEN file record security status is not VERIFIED', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
+
+				return { fileRecord };
+			};
+
+			it('should return false', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isVerified();
+
+				expect(result).toBe(false);
+			});
+		});
+	});
+
+	describe('copy is called', () => {
+		const getCopyData = () => {
+			const fileRecord = fileRecordFactory.build();
+			const userId = new ObjectId().toHexString();
+			const parentId = new ObjectId().toHexString();
+			const schoolId = new ObjectId().toHexString();
+			const parentType = FileRecordParentType.School;
+			const targetParentInfo = { parentId, schoolId, parentType };
+
+			return {
+				fileRecord,
+				targetParentInfo,
+				userId,
+			};
+		};
+
+		describe('when valid input is passed', () => {
+			const setup = () => {
+				const { fileRecord, targetParentInfo, userId } = getCopyData();
+
+				return {
+					fileRecord,
+					targetParentInfo,
+					userId,
+				};
+			};
+
+			it('should return a instance of fileRecord', () => {
+				const { fileRecord, targetParentInfo, userId } = setup();
+
+				const result = fileRecord.copy(userId, targetParentInfo);
+
+				expect(result).toBeInstanceOf(FileRecord);
+			});
+
+			it('should create a new instance', () => {
+				const { fileRecord, targetParentInfo, userId } = setup();
+
+				const result = fileRecord.copy(userId, targetParentInfo);
+
+				expect(result).not.toBe(fileRecord);
+			});
+
+			it('should copy the file meta data from source file', () => {
+				const { fileRecord, targetParentInfo, userId } = setup();
+
+				const result = fileRecord.copy(userId, targetParentInfo);
+
+				expect(result.mimeType).toEqual(fileRecord.mimeType);
+				expect(result.name).toEqual(fileRecord.name);
+				expect(result.size).toEqual(fileRecord.size);
+			});
+
+			it('should override the creator and targetParentInfo data in target file from passed params', () => {
+				const { fileRecord, targetParentInfo, userId } = setup();
+
+				const result = fileRecord.copy(userId, targetParentInfo);
+
+				expect(result.creatorId).toEqual(userId);
+				expect(result.parentType).toEqual(targetParentInfo.parentType);
+				expect(result.parentId).toEqual(targetParentInfo.parentId);
+				expect(result.schoolId).toEqual(targetParentInfo.schoolId);
+			});
+		});
+
+		describe('given a scan status exists', () => {
+			describe('WHEN source files scan status is VERIFIED', () => {
+				const setup = () => {
+					const { fileRecord, targetParentInfo, userId } = getCopyData();
+					fileRecord.securityCheck.status = ScanStatus.VERIFIED;
+
+					return {
+						fileRecord,
+						targetParentInfo,
+						userId,
+					};
+				};
+
+				it('should copy the securityCheck from source file', () => {
+					const { fileRecord, targetParentInfo, userId } = setup();
+
+					const result = fileRecord.copy(userId, targetParentInfo);
+
+					expect(result.securityCheck).toStrictEqual(fileRecord.securityCheck);
+				});
+			});
+
+			describe('WHEN source files scan status is BLOCKED', () => {
+				const setup = () => {
+					const { fileRecord, targetParentInfo, userId } = getCopyData();
+					fileRecord.securityCheck.status = ScanStatus.BLOCKED;
+
+					return {
+						fileRecord,
+						targetParentInfo,
+						userId,
+					};
+				};
+
+				it('should create a new securitycheck for copy', () => {
+					const { fileRecord, targetParentInfo, userId } = setup();
+
+					const result = fileRecord.copy(userId, targetParentInfo);
+
+					expect(result.securityCheck).not.toStrictEqual(fileRecord.securityCheck);
+				});
+			});
+
+			describe('WHEN source files scan status is PENDING', () => {
+				const setup = () => {
+					const { fileRecord, targetParentInfo, userId } = getCopyData();
+					fileRecord.securityCheck.status = ScanStatus.PENDING;
+
+					return {
+						fileRecord,
+						targetParentInfo,
+						userId,
+					};
+				};
+
+				it('should create a new securitycheck for copy', () => {
+					const { fileRecord, targetParentInfo, userId } = setup();
+
+					const result = fileRecord.copy(userId, targetParentInfo);
+
+					expect(result.securityCheck).not.toStrictEqual(fileRecord.securityCheck);
+				});
+			});
+
+			describe('WHEN source files scan status is ERROR', () => {
+				const setup = () => {
+					const { fileRecord, targetParentInfo, userId } = getCopyData();
+					fileRecord.securityCheck.status = ScanStatus.ERROR;
+
+					return {
+						fileRecord,
+						targetParentInfo,
+						userId,
+					};
+				};
+
+				it('should create a new securitycheck for copy', () => {
+					const { fileRecord, targetParentInfo, userId } = setup();
+
+					const result = fileRecord.copy(userId, targetParentInfo);
+
+					expect(result.securityCheck).not.toStrictEqual(fileRecord.securityCheck);
+				});
+			});
+		});
+	});
 });

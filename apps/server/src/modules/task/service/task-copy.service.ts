@@ -52,6 +52,7 @@ export class TaskCopyService {
 			creator: user,
 			course: destinationCourse,
 			lesson: destinationLesson,
+			teamSubmissions: originalTask.teamSubmissions,
 		});
 		await this.taskRepo.createTask(taskCopy);
 		return taskCopy;
