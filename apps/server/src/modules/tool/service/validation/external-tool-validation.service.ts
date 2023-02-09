@@ -14,17 +14,20 @@ export class ExternalToolValidationService {
 	async validateCreate(externalToolDO: ExternalToolDO): Promise<void> {
 		await this.commonToolValidationService.validateCommon(externalToolDO);
 
-		if (
-			this.externalToolService.isOauth2Config(externalToolDO.config) &&
-			!(await this.isClientIdUnique(externalToolDO))
-		) {
-			throw new ValidationError(`The Client Id of the tool ${externalToolDO.name} is already used.`);
+		if (this.externalToolService.isOauth2Config(externalToolDO.config)) {
+			if (!externalToolDO.config.clientSecret) {
+				throw new ValidationError(`The Client Secret of the tool ${externalToolDO.name} is missing.`);
+			}
+
+			if (!(await this.isClientIdUnique(externalToolDO))) {
+				throw new ValidationError(`The Client Id of the tool ${externalToolDO.name} is already used.`);
+			}
 		}
 	}
 
 	private async isClientIdUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
 		let duplicate: ExternalToolDO | null = null;
-		if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
+		if (this.externalToolService.isOauth2Config(externalToolDO.config)) {
 			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalToolDO.config.clientId);
 		}
 		return duplicate == null || duplicate.id === externalToolDO.id;
