@@ -280,7 +280,7 @@ describe('OAuthService', () => {
 					setupJwt();
 					const { externalUserId, user } = setupUser();
 
-					userService.findByExternalId.mockResolvedValue(user);
+					userService.findByExternalId.mockResolvedValueOnce(user);
 
 					const result: UserDO = await service.findUser('idToken', externalUserId, testSystem.id);
 
@@ -314,7 +314,7 @@ describe('OAuthService', () => {
 					setupJwt();
 					const { externalUserId } = setupUser();
 					const schoolId = new ObjectId().toHexString();
-					userService.findByExternalId.mockResolvedValue(null);
+					userService.findByExternalId.mockResolvedValueOnce(null);
 					userService.findByEmail.mockResolvedValue([
 						userFactory.buildWithId({
 							school: schoolFactory.buildWithId(undefined, schoolId),
@@ -333,7 +333,7 @@ describe('OAuthService', () => {
 					const { decodedJwt } = setupJwt();
 					jest.spyOn(jwt, 'decode').mockReturnValue({ ...decodedJwt, email: undefined });
 					const externalUserId = '321-my-current-ldap-id';
-					userService.findByExternalId.mockResolvedValue(null);
+					userService.findByExternalId.mockResolvedValueOnce(null);
 
 					const promise: Promise<UserDO> = service.findUser('idToken', externalUserId, testSystem.id);
 
@@ -495,14 +495,14 @@ describe('OAuthService', () => {
 		};
 
 		afterEach(() => {
-			jest.clearAllMocks();
+			userService.findByExternalId.mockReset();
 		});
 		// const mockSystemDto: SystemDto = {};
 
 		it('should authenticate a user', async () => {
 			const { query, system, mockUser } = setup();
 			systemService.findOAuthById.mockResolvedValueOnce(testSystem);
-			userService.findByExternalId.mockResolvedValueOnce(mockUser);
+			userService.findByExternalId.mockResolvedValue(mockUser);
 
 			const { user, redirect } = await service.authenticateUser(query.code!, system.id!);
 			expect(redirect).toStrictEqual(`${hostUri}/dashboard`);
@@ -514,7 +514,7 @@ describe('OAuthService', () => {
 				const { query, mockUser } = setup();
 
 				systemService.findOAuthById.mockResolvedValueOnce({} as SystemDto);
-				userService.findByExternalId.mockResolvedValueOnce(mockUser);
+				userService.findByExternalId.mockResolvedValue(mockUser);
 
 				await expect(service.authenticateUser(query.code!, '')).rejects.toThrow(UnauthorizedException);
 			});
@@ -527,7 +527,7 @@ describe('OAuthService', () => {
 				const mockUser: UserDO = userDoFactory.buildWithId({ externalId });
 				const testSystemWithoutConfig = systemFactory.buildWithId();
 				systemService.findOAuthById.mockResolvedValueOnce(testSystemWithoutConfig);
-				userService.findByExternalId.mockResolvedValueOnce(mockUser);
+				userService.findByExternalId.mockResolvedValue(mockUser);
 
 				await expect(service.authenticateUser(authCode, testSystem.id)).rejects.toThrow(UnauthorizedException);
 			});
@@ -548,7 +548,7 @@ describe('OAuthService', () => {
 					officialSchoolNumber: 'officialSchoolNumber',
 				});
 
-				userMigrationService.getMigrationRedirect.mockResolvedValue(migrationRedirect);
+				userMigrationService.getMigrationRedirect.mockResolvedValueOnce(migrationRedirect);
 
 				return {
 					...setupData,
@@ -557,15 +557,16 @@ describe('OAuthService', () => {
 				};
 			};
 			describe('when the school is currently migrating to another system and the user does not exist', () => {
-				it('should return an OAuthProcessDto with a migration redirect url', async () => {
+				it('should return a migration redirect url', async () => {
 					const { query, migrationRedirect } = setupMigration();
 
 					userService.findByExternalId.mockResolvedValue(null);
-					userMigrationService.isSchoolInMigration.mockResolvedValue(true);
+					userMigrationService.isSchoolInMigration.mockResolvedValueOnce(true);
 
-					const { redirect } = await service.authenticateUser(query.code!, 'brokenId');
+					const { user, redirect } = await service.authenticateUser(query.code!, 'brokenId');
 
 					expect(redirect).toEqual(migrationRedirect);
+					expect(user).toBeUndefined();
 				});
 			});
 
@@ -574,21 +575,7 @@ describe('OAuthService', () => {
 					const { query, mockUser, migrationRedirect } = setupMigration();
 
 					userService.findByExternalId.mockResolvedValue(mockUser);
-					userMigrationService.isSchoolInMigration.mockResolvedValue(true);
-
-					const { user, redirect } = await service.authenticateUser(query.code!, 'brokenId');
-
-					expect(redirect).toEqual(migrationRedirect);
-					expect(user).toEqual(mockUser);
-				});
-			});
-
-			describe('when the school is not in a migration to another system', () => {
-				it('should should finish the process normally and return a valid jwt', async () => {
-					const { query, mockUser, migrationRedirect } = setupMigration();
-
-					userService.findByExternalId.mockResolvedValue(mockUser);
-					userMigrationService.isSchoolInMigration.mockResolvedValue(false);
+					userMigrationService.isSchoolInMigration.mockResolvedValueOnce(false);
 
 					const { user, redirect } = await service.authenticateUser(query.code!, 'brokenId');
 
