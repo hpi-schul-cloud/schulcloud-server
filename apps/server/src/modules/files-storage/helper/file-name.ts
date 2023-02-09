@@ -2,7 +2,7 @@ import path from 'path';
 import { FileRecord } from '../entity';
 
 export function hasDuplicateName(fileRecords: FileRecord[], name: string): FileRecord | undefined {
-	const foundFileRecord = fileRecords.find((item: FileRecord) => item.name === name);
+	const foundFileRecord = fileRecords.find((item: FileRecord) => item.hasName(name));
 
 	return foundFileRecord;
 }
