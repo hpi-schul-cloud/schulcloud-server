@@ -13,13 +13,13 @@ import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto
 import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
+import { NotFoundException } from '@nestjs/common';
 import { SystemDto } from '../../system/service/dto/system.dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import resetAllMocks = jest.resetAllMocks;
 import { UserMigrationDto } from '../controller/dto/userMigrationDto';
-import { NotFoundException } from '@nestjs/common';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -354,6 +354,7 @@ describe('OAuthUc', () => {
 	describe('migrateUser', () => {
 		const setupMigration = () => {
 			const code = '43534543jnj543342jn2';
+
 			const query: AuthorizationParams = { code };
 
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
@@ -383,14 +384,7 @@ describe('OAuthUc', () => {
 			};
 
 			const externalUserId = 'externalUserId';
-			const user: UserDO = new UserDO({
-				firstName: 'firstName',
-				lastName: 'lastName',
-				email: 'email',
-				schoolId: 'schoolId',
-				roleIds: ['roleId'],
-				externalId: externalUserId,
-			});
+
 			const oauthData: OauthDataDto = new OauthDataDto({
 				system: new ProvisioningSystemDto({
 					systemId: 'systemId',
@@ -419,6 +413,7 @@ describe('OAuthUc', () => {
 				userMigrationFailedDto,
 			};
 		};
+
 		describe('when authorize user and migration was successful', () => {
 			it('should return redirect to migration succeed page', async () => {
 				const { query, system, userMigrationDto } = setupMigration();
@@ -430,6 +425,7 @@ describe('OAuthUc', () => {
 				expect(result.redirect).toStrictEqual('https://mock.de/migration/succeed');
 			});
 		});
+
 		describe('when migration failed', () => {
 			it('should return redirect to dashboard ', async () => {
 				const { query, system, userMigrationFailedDto } = setupMigration();
@@ -440,6 +436,7 @@ describe('OAuthUc', () => {
 				expect(result.redirect).toStrictEqual('https://mock.de/dashboard');
 			});
 		});
+
 		describe('when system id is not given', () => {
 			it('should throw NotFoundException ', async () => {
 				const { query } = setupMigration();

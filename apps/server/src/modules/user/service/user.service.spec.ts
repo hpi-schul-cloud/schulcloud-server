@@ -16,7 +16,6 @@ import { Logger } from '@src/core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolService } from '../../school';
 import { SchoolMapper } from '../../school/mapper/school.mapper';
-import { OauthConfigDto, SystemDto } from '../../system/service';
 import { AccountRepo } from '../../account/repo/account.repo';
 
 class TransactionUtilSpec extends TransactionUtil {
@@ -394,17 +393,6 @@ describe('UserService', () => {
 
 	describe('migrateUser is called', () => {
 		const setupMigrationData = () => {
-			const userDO: UserDO = new UserDO({
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				email: 'emailMock',
-				firstName: 'firstNameMock',
-				lastName: 'lastNameMock',
-				roleIds: ['roleIdMock'],
-				schoolId: 'schoolMock',
-				externalId: 'currentUserExternalIdMock',
-			});
-
 			const migratedUserDO: UserDO = new UserDO({
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -428,28 +416,6 @@ describe('UserService', () => {
 				userId: userFactory.buildWithId().id,
 				username: '',
 				systemId: 'targetSystemId',
-			});
-
-			const targetOauthConfig: OauthConfigDto = new OauthConfigDto({
-				clientId: 'targetClientId',
-				clientSecret: 'targetSecret',
-				tokenEndpoint: 'http://target.de/auth/public/mockToken',
-				grantType: 'authorization_code',
-				scope: 'openid uuid',
-				responseType: 'code',
-				authEndpoint: 'http://target.de/auth',
-				provider: 'target_provider',
-				logoutEndpoint: 'target_logoutEndpoint',
-				issuer: 'target_issuer',
-				jwksEndpoint: 'target_jwksEndpoint',
-				redirectUri: 'http://mock.de/api/v3/sso/oauth/targetSystemId',
-			});
-
-			const targetSystem: SystemDto = new SystemDto({
-				id: 'targetSystemId',
-				type: 'oauth',
-				alias: 'Sanis',
-				oauthConfig: targetOauthConfig,
 			});
 
 			return {

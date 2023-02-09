@@ -73,7 +73,7 @@ export class OauthSSOController {
 	@Authenticate('jwt')
 	@ApiOkResponse({ description: 'The User has been succesfully migrated.' })
 	async migrateUser(
-		@CurrentUser() currentUser,
+		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AuthorizationParams,
 		@Res() res: Response,
 		@Param() urlParams: SystemUrlParams
