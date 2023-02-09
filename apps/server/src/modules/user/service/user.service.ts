@@ -104,12 +104,12 @@ export class UserService {
 	}
 
 	async migrateUser(currentUserId: string, externalId: string, targetSystemId: string): Promise<void> {
-		await this.transactionUtil.doInTransaction(async () => {
-			const currentUser: UserDO = await this.userDORepo.findById(currentUserId);
-			currentUser.legacyExternalId = currentUser.externalId;
-			currentUser.externalId = externalId;
-			currentUser.lastLoginSystemChange = new Date();
-			await this.userDORepo.saveWithoutFlush(currentUser);
+		await this.transactionUtil.doTransaction(async () => {
+			const userDO: UserDO = await this.userDORepo.findById(currentUserId, true);
+			userDO.legacyExternalId = userDO.externalId;
+			userDO.externalId = externalId;
+			userDO.lastLoginSystemChange = new Date();
+			await this.userDORepo.saveWithoutFlush(userDO);
 
 			const account: Account = await this.accountRepo.findByUserIdOrFail(currentUserId);
 			account.systemId = new ObjectId(targetSystemId);
