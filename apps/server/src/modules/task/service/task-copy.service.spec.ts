@@ -188,6 +188,21 @@ describe('task copy service', () => {
 				expect(task.description).toEqual(originalTask.description);
 			});
 
+			it('should set teamSubmissions of copy', async () => {
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
+				originalTask.teamSubmissions = true;
+
+				const status = await copyService.copyTask({
+					originalTask,
+					destinationCourse,
+					destinationLesson,
+					user,
+				});
+
+				const task = status.copyEntity as Task;
+				expect(task.teamSubmissions).toEqual(originalTask.teamSubmissions);
+			});
+
 			it('should set status title to title of the copy', async () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
