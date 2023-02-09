@@ -187,6 +187,7 @@ describe('OAuthController', () => {
 	describe('migrateUser', () => {
 		describe('when migration was successful ', () => {
 			it('should redirect to migration succeed page ', async () => {
+				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 				const { res } = getMockRes();
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'defaultAuthCode';
@@ -195,7 +196,7 @@ describe('OAuthController', () => {
 
 				oauthUc.migrateUser.mockResolvedValue({ redirect: `${mockHost}/migration/succeed` });
 
-				await controller.migrateUser({ systemId: 'systemId' }, query, res, systemParams);
+				await controller.migrateUser(currentUser, query, res, systemParams);
 
 				expect(res.redirect).toHaveBeenCalledWith(`${mockHost}/migration/succeed`);
 			});
@@ -203,6 +204,7 @@ describe('OAuthController', () => {
 
 		describe('when migration failed ', () => {
 			it('should redirect to dashboard ', async () => {
+				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 				const { res } = getMockRes();
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'defaultAuthCode';
@@ -211,7 +213,7 @@ describe('OAuthController', () => {
 
 				oauthUc.migrateUser.mockResolvedValue({ redirect: `${mockHost}/dashboard` });
 
-				await controller.migrateUser({ systemId: 'systemId' }, query, res, systemParams);
+				await controller.migrateUser(currentUser, query, res, systemParams);
 
 				expect(res.redirect).toHaveBeenCalledWith(`${mockHost}/dashboard`);
 			});
