@@ -51,6 +51,22 @@ export class ToolSchoolController {
 		return response;
 	}
 
+	@Get(':schoolExternalToolId')
+	@ApiForbiddenResponse()
+	@ApiUnauthorizedResponse()
+	async getSchoolExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: SchoolExternalToolIdParams
+	): Promise<SchoolExternalToolResponse> {
+		const schoolExternalToolDO: SchoolExternalToolDO = await this.schoolExternalToolUc.getSchoolExternalTool(
+			currentUser.userId,
+			params.schoolExternalToolId
+		);
+		const mapped: SchoolExternalToolResponse =
+			this.responseMapper.mapToSchoolExternalToolResponse(schoolExternalToolDO);
+		return mapped;
+	}
+
 	@Delete(':schoolExternalToolId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()

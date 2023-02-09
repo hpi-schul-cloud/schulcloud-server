@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemOauthResponse } from '@src/modules/system/controller/dto/system-oauth.response';
-import { SystemOauthResponseMapper } from '@src/modules/system/controller/mapper/system-oauth-response.mapper';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { OauthConfigResponse } from '../dto/oauth-config.response';
+import { PublicSystemListResponse } from '../dto/public-system-list.response';
+import { SystemResponseMapper } from './system-response.mapper';
 
 function assertOauthConfig(expected: OauthConfigDto | undefined, actual: OauthConfigResponse | undefined): boolean {
 	if (expected != null && actual != null) {
@@ -53,7 +53,7 @@ describe('oauth-response mapper', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [],
-			providers: [SystemOauthResponseMapper],
+			providers: [SystemResponseMapper],
 		}).compile();
 	});
 
@@ -71,7 +71,7 @@ describe('oauth-response mapper', () => {
 			const systems: SystemDto[] = [...oauthSystems, systemDtoLdap];
 
 			// Act
-			const result: SystemOauthResponse = SystemOauthResponseMapper.mapFromDtoToResponse(systems);
+			const result: PublicSystemListResponse = SystemResponseMapper.mapFromDtoToResponse(systems);
 
 			// Assert
 			expect(result.data.length).toEqual(systems.length);
@@ -88,8 +88,7 @@ describe('oauth-response mapper', () => {
 	describe('mapFromOauthConfigDtoToResponse', () => {
 		it('should map all given dtos', () => {
 			// Act
-			const result: OauthConfigResponse =
-				SystemOauthResponseMapper.mapFromOauthConfigDtoToResponse(defaultOauthConfigDto);
+			const result: OauthConfigResponse = SystemResponseMapper.mapFromOauthConfigDtoToResponse(defaultOauthConfigDto);
 
 			// Assert
 			assertOauthConfig(defaultOauthConfigDto, result);
