@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SystemService } from '@src/modules/system/service/system.service';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { SystemTypeEnum } from '@shared/domain';
 import { GuardAgainst } from '@shared/common';
+import { SystemTypeEnum } from '@shared/domain';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemService } from '@src/modules/system/service/system.service';
 
 @Injectable()
 export class KeycloakSystemService {
@@ -41,7 +41,7 @@ export class KeycloakSystemService {
 
 	private async getKeycloak(): Promise<SystemDto> {
 		if (!this._keycloak) {
-			const systems = await this.systemService.find(SystemTypeEnum.KEYCLOAK);
+			const systems = await this.systemService.findAll(SystemTypeEnum.KEYCLOAK);
 			this._keycloak = GuardAgainst.nullOrUndefined(systems.at(0), new Error('No Keycloak system found'));
 		}
 		return this._keycloak;
