@@ -8,7 +8,7 @@ import { ICurrentUser } from '@shared/domain';
 import { CurrentUserMapper } from '@shared/domain/mapper/current-user.mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { GuardAgainst } from '@shared/common/utils/guard-against';
-import { IdentityManagementOauthService } from '@shared/infra/identity-management';
+import { IdentityManagementOauthService, IIdentityManagementConfig } from '@shared/infra/identity-management';
 import { AuthenticationService } from '../services/authentication.service';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 	constructor(
 		private readonly authenticationService: AuthenticationService,
 		private readonly idmOauthService: IdentityManagementOauthService,
-		private readonly configService: ConfigService,
+		private readonly configService: ConfigService<IIdentityManagementConfig, true>,
 		private readonly userRepo: UserRepo
 	) {
 		super();
@@ -27,7 +27,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		const account = await this.authenticationService.loadAccount(username);
 		const accountPassword = GuardAgainst.nullOrUndefined(account.password, new UnauthorizedException());
 
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED')) {
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED')) {
 			const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(username, password);
 			GuardAgainst.nullOrUndefined(jwt, new UnauthorizedException());
 		} else {

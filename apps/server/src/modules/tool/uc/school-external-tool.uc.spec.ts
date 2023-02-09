@@ -209,4 +209,34 @@ describe('SchoolExternalToolUc', () => {
 			});
 		});
 	});
+
+	describe('getExternalTool is called', () => {
+		describe('when checks permission', () => {
+			it('should check the permissions of the user', async () => {
+				const { user, schoolExternalToolId } = setup();
+
+				await uc.getSchoolExternalTool(user.id, schoolExternalToolId);
+
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+					user.id,
+					AllowedAuthorizationEntityType.SchoolExternalTool,
+					schoolExternalToolId,
+					{
+						action: Actions.read,
+						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+					}
+				);
+			});
+		});
+		describe('when userId and schoolExternalTool are given', () => {
+			it('should return a schoolExternalToolDO', async () => {
+				const { user, schoolExternalToolId, tool } = setup();
+				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(tool);
+
+				const result: SchoolExternalToolDO = await uc.getSchoolExternalTool(user.id, schoolExternalToolId);
+
+				expect(result).toEqual(tool);
+			});
+		});
+	});
 });

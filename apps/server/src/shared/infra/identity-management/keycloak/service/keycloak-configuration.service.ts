@@ -3,14 +3,14 @@ import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/li
 import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clientRepresentation';
 import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
+import { HttpService } from '@nestjs/axios';
 import { Inject } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { SystemTypeEnum } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { SystemService } from '@src/modules/system/service/system.service';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '@src/modules/server/server.config';
-import { HttpService } from '@nestjs/axios';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemService } from '@src/modules/system/service/system.service';
 import { lastValueFrom } from 'rxjs';
 import { IdentityProviderConfig, IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
@@ -132,7 +132,7 @@ export class KeycloakConfigurationService {
 		const generatedClientSecret = await kc.clients.generateNewClientSecret({ id: defaultClientInternalId });
 
 		let keycloakSystem: SystemDto;
-		const systems = await this.systemService.find(SystemTypeEnum.KEYCLOAK);
+		const systems = await this.systemService.findAll(SystemTypeEnum.KEYCLOAK);
 		if (systems.length === 0) {
 			keycloakSystem = new SystemDto({ type: SystemTypeEnum.KEYCLOAK });
 		} else {
