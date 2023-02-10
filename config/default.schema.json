@@ -966,6 +966,11 @@
 			"default": false,
 			"description": "Toggle for lesson sharing feature."
 		},
+		"FEATURE_LESSON_SHARE_NEW": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the new lesson sharing feature."
+		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
