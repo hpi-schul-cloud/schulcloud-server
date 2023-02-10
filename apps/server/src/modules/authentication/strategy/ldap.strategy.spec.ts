@@ -1,18 +1,18 @@
-import bcrypt from 'bcryptjs';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
+import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnauthorizedException } from '@nestjs/common';
-import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { RoleName, System, User } from '@shared/domain';
+import { Role, System, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { MikroORM } from '@mikro-orm/core';
-import { setupEntities, accountFactory, userFactory } from '@shared/testing';
+import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { accountFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
+import { AccountDto } from '@src/modules/account/services/dto';
+import bcrypt from 'bcryptjs';
 import { AuthenticationService } from '../services/authentication.service';
-import { LdapStrategy, RequestBody } from './ldap.strategy';
 import { LdapService } from '../services/ldap.service';
+import { LdapStrategy, RequestBody } from './ldap.strategy';
 
 describe('LdapStrategy', () => {
 	let orm: MikroORM;
@@ -23,6 +23,7 @@ describe('LdapStrategy', () => {
 	let authenticationServiceMock: DeepMocked<AuthenticationService>;
 	let ldapServiceMock: DeepMocked<LdapService>;
 	let mockUser: User;
+	let mockRole: Role;
 	let mockAccount: AccountDto;
 
 	const mockPassword = 'mockPassword123&';
@@ -77,8 +78,8 @@ describe('LdapStrategy', () => {
 		schoolRepoMock = module.get(SchoolRepo);
 		userRepoMock = module.get(UserRepo);
 		ldapServiceMock = module.get(LdapService);
-
-		mockUser = userFactory.withRole(RoleName.STUDENT).buildWithId();
+		mockRole = roleFactory.buildWithId();
+		mockUser = userFactory.buildWithId({ roles: [mockRole] });
 		mockAccount = AccountEntityToDtoMapper.mapToDto(
 			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
 		);
@@ -249,7 +250,7 @@ describe('LdapStrategy', () => {
 				const user = await strategy.validate(request);
 				expect(user).toMatchObject({
 					userId: mockUser.id,
-					roles: ['student'],
+					roles: [mockRole.id],
 					schoolId: mockUser.school.id,
 					accountId: mockAccount.id,
 				});

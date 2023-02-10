@@ -1,5 +1,4 @@
-import { EntityName, FilterQuery, Reference } from '@mikro-orm/core';
-import { IdentifiedReference } from '@mikro-orm/core/entity/Reference';
+import { EntityName, FilterQuery, IdentifiedReference, Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { EntityId, IUserProperties, Role, School, System, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';

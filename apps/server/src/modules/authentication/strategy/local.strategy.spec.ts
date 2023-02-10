@@ -1,22 +1,23 @@
-import bcrypt from 'bcryptjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnauthorizedException } from '@nestjs/common';
-import { UserRepo } from '@shared/repo';
-import { RoleName, User } from '@shared/domain';
-import { setupEntities, accountFactory, userFactory } from '@shared/testing';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
-import { IdentityManagementOauthService } from '@shared/infra/identity-management';
-import { ConfigService } from '@nestjs/config';
-import { IServerConfig } from '@src/modules/server';
 import { MikroORM } from '@mikro-orm/core';
-import { LocalStrategy } from './local.strategy';
+import { UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Role, User } from '@shared/domain';
+import { IdentityManagementOauthService } from '@shared/infra/identity-management';
+import { UserRepo } from '@shared/repo';
+import { accountFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
+import { AccountDto } from '@src/modules/account/services/dto';
+import { IServerConfig } from '@src/modules/server';
+import bcrypt from 'bcryptjs';
 import { AuthenticationService } from '../services/authentication.service';
+import { LocalStrategy } from './local.strategy';
 
 describe('LocalStrategy', () => {
 	let orm: MikroORM;
 	let strategy: LocalStrategy;
 	let mockUser: User;
+	let mockRole: Role;
 	let mockAccount: AccountDto;
 	let userRepoMock: DeepMocked<UserRepo>;
 	let authenticationServiceMock: DeepMocked<AuthenticationService>;
@@ -33,7 +34,8 @@ describe('LocalStrategy', () => {
 		configServiceMock = createMock<ConfigService<IServerConfig, true>>();
 		userRepoMock = createMock<UserRepo>();
 		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userRepoMock);
-		mockUser = userFactory.withRole(RoleName.STUDENT).buildWithId();
+		mockRole = roleFactory.buildWithId();
+		mockUser = userFactory.buildWithId({ roles: [mockRole] });
 		mockAccount = AccountEntityToDtoMapper.mapToDto(
 			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
 		);
@@ -76,7 +78,7 @@ describe('LocalStrategy', () => {
 				const user = await strategy.validate('mockUsername', mockPassword);
 				expect(user).toMatchObject({
 					userId: mockUser.id,
-					roles: ['student'],
+					roles: [mockRole.id],
 					schoolId: mockUser.school.id,
 					accountId: mockAccount.id,
 				});
