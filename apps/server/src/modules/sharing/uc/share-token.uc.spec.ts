@@ -948,12 +948,24 @@ describe('ShareTokenUC', () => {
 			});
 		});
 
-		it('should throw if the feature is not implemented', async () => {
+		it('should throw if the checkFeatureEnabled is not implemented', async () => {
 			const payload: any = { parentType: 'none', parentId: 'id' };
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const shareToken = shareTokenFactory.build({ payload });
 			service.lookupToken.mockResolvedValue(shareToken);
 
+			await expect(uc.importShareToken('userId', shareToken.token, 'NewName')).rejects.toThrowError(
+				NotImplementedException
+			);
+		});
+
+		it('should throw if the importShareToken is not implemented', async () => {
+			const payload: any = { parentType: 'none', parentId: 'id' };
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const shareToken = shareTokenFactory.build({ payload });
+			service.lookupToken.mockResolvedValue(shareToken);
+			jest.spyOn(ShareTokenUC.prototype as any, 'checkFeatureEnabled').mockReturnValue(undefined);
+			jest.spyOn(ShareTokenUC.prototype as any, 'checkCreatePermission').mockReturnValue(undefined);
 			await expect(uc.importShareToken('userId', shareToken.token, 'NewName')).rejects.toThrowError(
 				NotImplementedException
 			);

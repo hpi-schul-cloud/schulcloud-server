@@ -103,7 +103,6 @@ export class ShareTokenUC {
 		await this.checkCreatePermission(userId, shareToken.payload.parentType);
 
 		let result: CopyStatus;
-		// eslint-disable-next-line default-case
 		switch (shareToken.payload.parentType) {
 			case ShareTokenParentType.Course:
 				result = await this.copyCourse(userId, shareToken.payload.parentId, newName);
@@ -120,6 +119,8 @@ export class ShareTokenUC {
 				}
 				result = await this.copyTask(userId, shareToken.payload.parentId, destinationCourseId, newName);
 				break;
+			default:
+				throw new NotImplementedException('Copy not implemented');
 		}
 
 		return result;
