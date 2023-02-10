@@ -8,18 +8,18 @@ import { Clients } from '@keycloak/keycloak-admin-client/lib/resources/clients';
 import { IdentityProviders } from '@keycloak/keycloak-admin-client/lib/resources/identityProviders';
 import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemTypeEnum } from '@shared/domain';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { systemFactory } from '@shared/testing';
+import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
-import { v1 } from 'uuid';
-import { HttpService } from '@nestjs/axios';
-import { of } from 'rxjs';
 import { AxiosResponse } from 'axios';
-import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
+import { of } from 'rxjs';
+import { v1 } from 'uuid';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -237,7 +237,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.find.mockResolvedValue([]);
 			kcApiClientMock.create.mockResolvedValue({ id: 'new_client_id' });
 			kcApiClientMock.generateNewClientSecret.mockResolvedValue({ type: 'secret', value: 'generated_client_secret' });
-			systemService.find.mockResolvedValue([]);
+			systemService.findAll.mockResolvedValue([]);
 			const response = {
 				data: {
 					token_endpoint: 'tokenEndpoint',
@@ -255,7 +255,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.findOne.mockRestore();
 			kcApiClientMock.create.mockRestore();
 			kcApiClientMock.generateNewClientSecret.mockRestore();
-			systemService.find.mockRestore();
+			systemService.findAll.mockRestore();
 		});
 
 		beforeEach(() => {
@@ -264,7 +264,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.findOne.mockClear();
 			kcApiClientMock.create.mockClear();
 			kcApiClientMock.generateNewClientSecret.mockClear();
-			systemService.find.mockClear();
+			systemService.findAll.mockClear();
 			systemService.save.mockClear();
 		});
 
@@ -363,7 +363,7 @@ describe('KeycloakConfigurationService Unit', () => {
 
 		it('should not create Keycloak system if already exists', async () => {
 			const mockedSystem = systemFactory.buildWithId();
-			systemService.find.mockResolvedValueOnce([mockedSystem]);
+			systemService.findAll.mockResolvedValueOnce([mockedSystem]);
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(systemService.save).toHaveBeenCalledWith(expect.objectContaining({ _id: mockedSystem._id }));
 		});
