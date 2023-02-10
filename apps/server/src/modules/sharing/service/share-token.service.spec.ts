@@ -148,50 +148,39 @@ describe('ShareTokenService', () => {
 	describe('lookup with parent name', () => {
 		it('when parent is course', async () => {
 			const course = courseFactory.buildWithId();
-			const userId = 'userId';
 			courseService.findById.mockResolvedValue(course);
 
 			const payload = { parentId: course.id, parentType: ShareTokenParentType.Course };
 			const shareToken = shareTokenFactory.build({ payload });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
-			const result = await service.lookupTokenWithParentName(shareToken.token, userId);
+			const result = await service.lookupTokenWithParentName(shareToken.token);
 
 			expect(result).toEqual({ shareToken, parentName: course.name });
 		});
 
 		it('when parent is lesson', async () => {
 			const lesson = lessonFactory.buildWithId();
-			const userId = 'userId';
 			lessonService.findById.mockResolvedValue(lesson);
 
 			const payload = { parentId: lesson.id, parentType: ShareTokenParentType.Lesson };
 			const shareToken = shareTokenFactory.build({ payload });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
-			const result = await service.lookupTokenWithParentName(shareToken.token, userId);
+			const result = await service.lookupTokenWithParentName(shareToken.token);
 
 			expect(result).toEqual({ shareToken, parentName: lesson.name });
 		});
 
 		it('when parent is task', async () => {
 			const task = taskFactory.buildWithId();
-			const userId = 'userId';
-			const status: ITaskStatus = {
-				submitted: 1,
-				maxSubmissions: 1,
-				graded: 1,
-				isDraft: true,
-				isSubstitutionTeacher: true,
-				isFinished: true,
-			};
-			taskService.find.mockResolvedValue({ task, status });
+			taskService.findById.mockResolvedValue(task);
 
 			const payload = { parentId: task.id, parentType: ShareTokenParentType.Task };
 			const shareToken = shareTokenFactory.build({ payload });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
-			const result = await service.lookupTokenWithParentName(shareToken.token, userId);
+			const result = await service.lookupTokenWithParentName(shareToken.token);
 
 			expect(result).toEqual({ shareToken, parentName: task.name });
 		});

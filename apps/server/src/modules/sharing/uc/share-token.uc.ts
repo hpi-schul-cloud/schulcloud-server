@@ -164,6 +164,7 @@ export class ShareTokenUC {
 		const allowedParentType = ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(payload.parentType);
 
 		let requiredPermissions: Permission[] = [];
+		// eslint-disable-next-line default-case
 		switch (payload.parentType) {
 			case ShareTokenParentType.Course:
 				requiredPermissions = [Permission.COURSE_CREATE];
@@ -171,7 +172,7 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Lesson:
 				requiredPermissions = [Permission.TOPIC_CREATE];
 				break;
-			default:
+			case ShareTokenParentType.Task:
 				requiredPermissions = [Permission.HOMEWORK_CREATE];
 		}
 
@@ -196,6 +197,7 @@ export class ShareTokenUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		let requiredPermissions: Permission[] = [];
+		// eslint-disable-next-line default-case
 		switch (parentType) {
 			case ShareTokenParentType.Course:
 				requiredPermissions = [Permission.COURSE_CREATE];
@@ -203,7 +205,7 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Lesson:
 				requiredPermissions = [Permission.TOPIC_CREATE];
 				break;
-			default:
+			case ShareTokenParentType.Task:
 				requiredPermissions = [Permission.HOMEWORK_CREATE];
 		}
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);

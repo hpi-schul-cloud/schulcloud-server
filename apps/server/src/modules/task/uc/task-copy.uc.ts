@@ -26,7 +26,7 @@ export class TaskCopyUC {
 			throw new NotFoundException('could not find task to copy');
 		}
 
-		const destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
+		const destinationCourse = await this.getDestinationCourse(parentParams.courseId);
 		if (parentParams.courseId) {
 			await this.authorisation.checkPermissionByReferences(
 				userId,
@@ -62,15 +62,13 @@ export class TaskCopyUC {
 		return this.copyHelperService.deriveCopyName(originalTaskName, existingNames);
 	}
 
-	private async getDestinationCourse(courseId: string | undefined, user: User): Promise<Course | undefined> {
+	private async getDestinationCourse(courseId: string | undefined): Promise<Course | undefined> {
 		if (courseId === undefined) {
 			return undefined;
 		}
 
 		const destinationCourse = await this.courseRepo.findById(courseId);
-		if (!this.authorisation.hasPermission(user, destinationCourse, PermissionContextBuilder.write([]))) {
-			throw new ForbiddenException('you dont have permission to add to this course');
-		}
+
 		return destinationCourse;
 	}
 

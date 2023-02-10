@@ -325,7 +325,6 @@ describe('task copy service', () => {
 				const destinationLesson = lessonFactory.build({ course: destinationCourse });
 				const user = userFactory.build({});
 				const originalTask = taskFactory.buildWithId({ course: originalCourse, lesson: originalLesson });
-				courseService.findById.mockResolvedValueOnce(destinationCourse);
 				taskRepo.findById.mockResolvedValueOnce(originalTask);
 				return { user, destinationCourse, destinationLesson, originalTask };
 			};
