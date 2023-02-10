@@ -77,7 +77,7 @@ export class OAuthService {
 
 		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
 
-		const user: UserDO = await this.findUser(queryToken.access_token, provisioningDto.externalUserId, system.id);
+		const user: UserDO = await this.findUser(queryToken.id_token, provisioningDto.externalUserId, system.id);
 
 		return { user, redirect };
 	}
