@@ -168,7 +168,7 @@ describe('UserService', () => {
 					systemId,
 					schoolId: user.school.id,
 					accountId: account.id,
-					roles: [role.id],
+					roles: [role.name],
 					user: {
 						id: user.id,
 						roles: [{ id: role.id, name: role.name }],

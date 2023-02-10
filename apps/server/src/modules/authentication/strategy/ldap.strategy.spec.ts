@@ -3,10 +3,10 @@ import { MikroORM } from '@mikro-orm/core';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, System, User } from '@shared/domain';
+import { RoleName, System, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { accountFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { accountFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
 import bcrypt from 'bcryptjs';
@@ -23,7 +23,6 @@ describe('LdapStrategy', () => {
 	let authenticationServiceMock: DeepMocked<AuthenticationService>;
 	let ldapServiceMock: DeepMocked<LdapService>;
 	let mockUser: User;
-	let mockRole: Role;
 	let mockAccount: AccountDto;
 
 	const mockPassword = 'mockPassword123&';
@@ -78,8 +77,8 @@ describe('LdapStrategy', () => {
 		schoolRepoMock = module.get(SchoolRepo);
 		userRepoMock = module.get(UserRepo);
 		ldapServiceMock = module.get(LdapService);
-		mockRole = roleFactory.buildWithId();
-		mockUser = userFactory.buildWithId({ roles: [mockRole] });
+
+		mockUser = userFactory.withRole(RoleName.STUDENT).buildWithId();
 		mockAccount = AccountEntityToDtoMapper.mapToDto(
 			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
 		);
@@ -250,7 +249,7 @@ describe('LdapStrategy', () => {
 				const user = await strategy.validate(request);
 				expect(user).toMatchObject({
 					userId: mockUser.id,
-					roles: [mockRole.id],
+					roles: ['student'],
 					schoolId: mockUser.school.id,
 					accountId: mockAccount.id,
 				});
