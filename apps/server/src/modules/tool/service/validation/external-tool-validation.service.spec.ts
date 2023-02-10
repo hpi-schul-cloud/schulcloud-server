@@ -103,7 +103,9 @@ describe('ExternalToolValidation', () => {
 				const result: Promise<void> = service.validateCreate(externalOauthToolDO);
 
 				await expect(result).rejects.toThrow(
-					new ValidationError(`The Client Id of the tool ${externalOauthToolDO.name} is already used.`)
+					new ValidationError(
+						`tool_clientId_duplicate: The Client Id of the tool ${externalOauthToolDO.name} is already used.`
+					)
 				);
 			});
 		});
@@ -116,7 +118,9 @@ describe('ExternalToolValidation', () => {
 				const result: Promise<void> = service.validateCreate(externalOauthToolDOWithoutSecret);
 
 				await expect(result).rejects.toThrow(
-					new ValidationError(`tool_clientSecret_missing: The Client Secret of the tool ${externalOauthToolDOWithoutSecret.name} is missing.`)
+					new ValidationError(
+						`tool_clientSecret_missing: The Client Secret of the tool ${externalOauthToolDOWithoutSecret.name} is missing.`
+					)
 				);
 			});
 		});
@@ -194,7 +198,9 @@ describe('ExternalToolValidation', () => {
 				const result: Promise<void> = service.validateUpdate(externalOauthToolDO.id as string, externalOauthToolDO);
 
 				await expect(result).rejects.toThrow(
-					new ValidationError(`tool_clientId_immutable: The Client Id of the tool ${externalToolDO.name} is immutable.`)
+					new ValidationError(
+						`tool_clientId_immutable: The Client Id of the tool ${externalOauthToolDO.name} is immutable.`
+					)
 				);
 			});
 		});
