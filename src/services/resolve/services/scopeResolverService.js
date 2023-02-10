@@ -127,7 +127,7 @@ class ScopeResolver {
 				authorities.push('can-write', 'can-send-notifications');
 			} else if (hasAdminEditAccess) {
 				// Admin can edit all courses but don't want to see all events in calendar
-				authorities = ['can-write'];
+				authorities = ['can-write', 'admin-access'];
 			}
 
 			response.data.push(
