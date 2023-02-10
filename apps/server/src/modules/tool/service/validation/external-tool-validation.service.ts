@@ -16,11 +16,15 @@ export class ExternalToolValidationService {
 
 		if (this.externalToolService.isOauth2Config(externalToolDO.config)) {
 			if (!externalToolDO.config.clientSecret) {
-				throw new ValidationError(`tool_clientSecret_missing: The Client Secret of the tool ${externalToolDO.name} is missing.`);
+				throw new ValidationError(
+					`tool_clientSecret_missing: The Client Secret of the tool ${externalToolDO.name} is missing.`
+				);
 			}
 
 			if (!(await this.isClientIdUnique(externalToolDO))) {
-				throw new ValidationError(`tool_clientId_duplicate: The Client Id of the tool ${externalToolDO.name} is already used.`);
+				throw new ValidationError(
+					`tool_clientId_duplicate: The Client Id of the tool ${externalToolDO.name} is already used.`
+				);
 			}
 		}
 	}
