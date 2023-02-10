@@ -50,6 +50,19 @@ export class FilesStorageUC {
 	}
 
 	// upload
+	public async upload(
+		userId: EntityId,
+		params: FileRecordParams,
+		req: Request,
+		next: NextFunction
+	): Promise<FileRecord> {
+		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
+
+		const result = await this.addRequestStreamToRequestPipe(userId, params, req, next);
+
+		return result;
+	}
+
 	private async addRequestStreamToRequestPipe(
 		userId: EntityId,
 		params: FileRecordParams,
@@ -77,15 +90,18 @@ export class FilesStorageUC {
 		return result as FileRecord;
 	}
 
-	public async upload(
-		userId: EntityId,
-		params: FileRecordParams,
-		req: Request,
-		next: NextFunction
-	): Promise<FileRecord> {
+	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 
-		const result = await this.addRequestStreamToRequestPipe(userId, params, req, next);
+		const response = await this.getResponse(params);
+
+		const fileDto = FileDtoBuilder.buildFromAxiosResponse(params.fileName, response);
+
+		if (fileDto.size > this.configService.get<number>('MAX_FILE_SIZE')) {
+			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
+		}
+
+		const result = await this.filesStorageService.uploadFile(userId, params, fileDto);
 
 		return result;
 	}
@@ -117,22 +133,6 @@ export class FilesStorageUC {
 			});
 			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
-	}
-
-	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
-		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
-
-		const response = await this.getResponse(params);
-
-		const fileDto = FileDtoBuilder.buildFromAxiosResponse(params.fileName, response);
-
-		if (fileDto.size > this.configService.get<number>('MAX_FILE_SIZE')) {
-			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
-		}
-
-		const result = await this.filesStorageService.uploadFile(userId, params, fileDto);
-
-		return result;
 	}
 
 	// download
