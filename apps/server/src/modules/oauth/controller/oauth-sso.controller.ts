@@ -1,5 +1,14 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Controller, Get, Param, Query, Req, Res, UnauthorizedException } from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	InternalServerErrorException,
+	Param,
+	Query,
+	Req,
+	Res,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Logger } from '@src/core/logger';
@@ -82,5 +91,8 @@ export class OauthSSOController {
 		if (migration.redirect) {
 			res.redirect(migration.redirect);
 		}
+		throw new InternalServerErrorException(
+			`Migration of ${currentUser.userId} to system ${urlParams.systemId} failed.`
+		);
 	}
 }

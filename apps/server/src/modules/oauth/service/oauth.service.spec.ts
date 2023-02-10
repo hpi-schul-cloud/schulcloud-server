@@ -17,7 +17,8 @@ import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { of, throwError } from 'rxjs';
-import { OauthTokenResponse } from '../controller/dto';
+import QueryString from 'qs';
+import { OauthTokenResponse, TokenRequestPayload } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthProcessDto } from './dto/oauth-process.dto';
@@ -148,6 +149,7 @@ describe('OAuthService', () => {
 
 	describe('requestToken', () => {
 		const code = '43534543jnj543342jn2';
+		const query: AuthorizationParams = { code };
 		const tokenResponse: OauthTokenResponse = {
 			access_token: 'accessToken',
 			refresh_token: 'refreshToken',
@@ -167,13 +169,28 @@ describe('OAuthService', () => {
 			});
 		});
 
-		describe('when authorization code, oauthConfig and migrationRedirect is given is given', () => {
-			it('should get token from the external server', async () => {
+		describe('when authorization code, oauthConfig and migrationRedirect is given', () => {
+			it('should get token with specific redirect from the external server', async () => {
 				const systemId = 'systemId';
 				const migrationRedirect = `/api/v3/sso/oauth/${systemId}/migration`;
+				const payload: TokenRequestPayload = new TokenRequestPayload({
+					tokenEndpoint: testOauthConfig.tokenEndpoint,
+					client_id: testOauthConfig.clientId,
+					client_secret: 'decryptedSecret',
+					redirect_uri: migrationRedirect,
+					grant_type: testOauthConfig.grantType,
+					code,
+				});
+
 				const responseToken: OauthTokenResponse = await service.requestToken(code, testOauthConfig, migrationRedirect);
 
 				expect(responseToken).toStrictEqual(tokenResponse);
+				expect(httpService.post).toHaveBeenCalledWith(`${payload.tokenEndpoint}`, QueryString.stringify(payload), {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+				});
 			});
 		});
 

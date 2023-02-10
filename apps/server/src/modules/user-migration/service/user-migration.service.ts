@@ -4,9 +4,9 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolService } from '@src/modules/school';
 import { EntityNotFoundError } from '@shared/common';
 import { SystemDto, SystemService } from '@src/modules/system/service';
+import { UserService } from '@src/modules/user';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
-import { UserService } from '../../user';
 import { UserMigrationDto } from '../../oauth/controller/dto/userMigrationDto';
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { getMockRes } from '@jest-mock/express';
-import { UnauthorizedException } from '@nestjs/common';
+import { InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@shared/domain';
 import { Logger } from '@src/core/logger';
@@ -11,6 +11,7 @@ import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
 import { OauthSSOController } from './oauth-sso.controller';
+import { UserMigrationDto } from './dto/userMigrationDto';
 
 describe('OAuthController', () => {
 	let module: TestingModule;
@@ -216,6 +217,23 @@ describe('OAuthController', () => {
 				await controller.migrateUser(currentUser, query, res, systemParams);
 
 				expect(res.redirect).toHaveBeenCalledWith(`${mockHost}/dashboard`);
+			});
+		});
+
+		describe('when migration redirect is not given ', () => {
+			it('should throw InternalServerErrorException ', async () => {
+				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+				const { res } = getMockRes();
+				const query: AuthorizationParams = new AuthorizationParams();
+				query.code = 'defaultAuthCode';
+				const systemParams: SystemUrlParams = new SystemUrlParams();
+				systemParams.systemId = 'systemId';
+
+				oauthUc.migrateUser.mockResolvedValue(new UserMigrationDto({}));
+
+				await expect(controller.migrateUser(currentUser, query, res, systemParams)).rejects.toThrow(
+					InternalServerErrorException
+				);
 			});
 		});
 	});

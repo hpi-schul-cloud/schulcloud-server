@@ -11,10 +11,10 @@ import { SystemService } from '@src/modules/system';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { ICurrentUser } from '@shared/domain';
+import { UserService } from '@src/modules/user';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
 import { UserMigrationService } from './user-migration.service';
-import { UserService } from '../../user';
 import { UserMigrationDto } from '../../oauth/controller/dto/userMigrationDto';
 
 describe('UserMigrationService', () => {
@@ -361,19 +361,23 @@ describe('UserMigrationService', () => {
 				migratedUser,
 			};
 		};
+
 		describe('when migrate user in transaction was successful', () => {
 			it('should return to migration succeed page', async () => {
 				const { targetSystem, externalUserIdMock, currentUserMock } = setupMigrationData();
 				userService.migrateUser.mockResolvedValue(Promise.resolve());
+
 				const result = await service.migrateUser(currentUserMock.userId, externalUserIdMock, targetSystem.id as string);
 
 				expect(result.redirect).toStrictEqual(`${hostUri}/migration/succeed`);
 			});
 		});
+
 		describe('when user migration failed', () => {
 			it('should return to dashboard', async () => {
 				const { targetSystem, externalUserIdMock, currentUserMock } = setupMigrationData();
 				userService.migrateUser.mockResolvedValue(Promise.reject());
+
 				const result = await service.migrateUser(currentUserMock.userId, externalUserIdMock, targetSystem.id as string);
 
 				expect(result.redirect).toStrictEqual(`${hostUri}/dashboard`);

@@ -14,9 +14,9 @@ import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { TransactionUtil } from '@shared/common/utils/transaction.util';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { SchoolService } from '../../school';
-import { SchoolMapper } from '../../school/mapper/school.mapper';
-import { AccountRepo } from '../../account/repo/account.repo';
+import { SchoolService } from '@src/modules/school';
+import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
+import { AccountRepo } from '@src/modules/account/repo/account.repo';
 
 class TransactionUtilSpec extends TransactionUtil {
 	async doTransaction(fn: () => Promise<void>): Promise<void> {
@@ -424,6 +424,7 @@ describe('UserService', () => {
 				migratedAccount,
 			};
 		};
+
 		describe('when currentUser, externalUserId, and targetsystem is given', () => {
 			it('should call transaction for migration ', async () => {
 				const { migratedUserDO, migratedAccount } = setupMigrationData();
