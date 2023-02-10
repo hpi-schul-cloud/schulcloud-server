@@ -23,10 +23,10 @@ export class TaskCopyService {
 	) {}
 
 	async copyTask(params: TaskCopyParams): Promise<CopyStatus> {
-		const { user, destinationLesson } = params;
+		const { user, destinationLesson, destinationCourse } = params;
 		const originalTask = await this.taskRepo.findById(params.originalTaskId);
 
-		const taskCopy = await this.copyTaskEntity(params, originalTask, user, params.destinationCourse, destinationLesson);
+		const taskCopy = await this.copyTaskEntity(params, originalTask, user, destinationCourse, destinationLesson);
 
 		const { fileUrlReplacements, fileCopyStatus } = await this.copyFilesService.copyFilesOfEntity(
 			originalTask,
