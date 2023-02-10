@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	BaseEntity,
@@ -38,6 +39,7 @@ describe('lesson copy service', () => {
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let etherpadService: DeepMocked<EtherpadService>;
 	let nexboardService: DeepMocked<NexboardService>;
+	let lessonRepo: DeepMocked<LessonRepo>;
 	let configurationSpy: jest.SpyInstance;
 
 	afterAll(async () => {
@@ -88,6 +90,7 @@ describe('lesson copy service', () => {
 		copyHelperService.buildCopyEntityDict.mockReturnValue(map);
 		etherpadService = module.get(EtherpadService);
 		nexboardService = module.get(NexboardService);
+		lessonRepo = module.get(LessonRepo);
 	});
 
 	describe('handleCopyLesson', () => {
@@ -99,6 +102,7 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 				const copyName = 'Copy';
 				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
@@ -111,7 +115,7 @@ describe('lesson copy service', () => {
 					const { user, destinationCourse, originalLesson, copyName } = setup();
 
 					const response = await copyService.copyLesson({
-						originalLesson,
+						originalLessonId: originalLesson.id,
 						destinationCourse,
 						user,
 						copyName,
@@ -125,7 +129,7 @@ describe('lesson copy service', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					const response = await copyService.copyLesson({
-						originalLesson,
+						originalLessonId: originalLesson.id,
 						destinationCourse,
 						user,
 					});
@@ -137,7 +141,7 @@ describe('lesson copy service', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					const response = await copyService.copyLesson({
-						originalLesson,
+						originalLessonId: originalLesson.id,
 						destinationCourse,
 						user,
 					});
@@ -150,7 +154,7 @@ describe('lesson copy service', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					const response = await copyService.copyLesson({
-						originalLesson,
+						originalLessonId: originalLesson.id,
 						destinationCourse,
 						user,
 					});
@@ -163,7 +167,7 @@ describe('lesson copy service', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					const response = await copyService.copyLesson({
-						originalLesson,
+						originalLessonId: originalLesson.id,
 						destinationCourse,
 						user,
 					});
@@ -177,7 +181,12 @@ describe('lesson copy service', () => {
 				it('should set status title to the name of the lesson', async () => {
 					const { destinationCourse, originalLesson, user, copyName } = setup();
 
-					const status = await copyService.copyLesson({ originalLesson, destinationCourse, user, copyName });
+					const status = await copyService.copyLesson({
+						originalLessonId: originalLesson.id,
+						destinationCourse,
+						user,
+						copyName,
+					});
 
 					expect(status.title).toEqual(copyName);
 				});
@@ -186,7 +195,7 @@ describe('lesson copy service', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					const status = await copyService.copyLesson({
-						originalLesson,
+						originalLessonId: originalLesson.id,
 						destinationCourse,
 						user,
 					});
@@ -198,7 +207,7 @@ describe('lesson copy service', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					const status = await copyService.copyLesson({
-						originalLesson,
+						originalLessonId: originalLesson.id,
 						destinationCourse,
 						user,
 					});
@@ -210,7 +219,7 @@ describe('lesson copy service', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					const status = await copyService.copyLesson({
-						originalLesson,
+						originalLessonId: originalLesson.id,
 						destinationCourse,
 						user,
 					});
@@ -222,7 +231,7 @@ describe('lesson copy service', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					const status = await copyService.copyLesson({
-						originalLesson,
+						originalLessonId: originalLesson.id,
 						destinationCourse,
 						user,
 					});
@@ -237,12 +246,13 @@ describe('lesson copy service', () => {
 		describe('when copying into a different course', () => {
 			it('should set destination course as course of the copy', async () => {
 				const originalCourse = courseFactory.build({});
-				const destinationCourse = courseFactory.build({});
+				const destinationCourse = courseFactory.buildWithId();
 				const user = userFactory.build({});
 				const originalLesson = lessonFactory.build({ course: originalCourse });
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 				const status = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -260,6 +270,7 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 				return { user, originalCourse, destinationCourse, originalLesson };
 			};
@@ -268,7 +279,7 @@ describe('lesson copy service', () => {
 				const { user, destinationCourse, originalLesson } = setup();
 
 				const status = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -282,7 +293,7 @@ describe('lesson copy service', () => {
 				const { user, destinationCourse, originalLesson } = setup();
 
 				const status = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -324,6 +335,7 @@ describe('lesson copy service', () => {
 					course: originalCourse,
 					contents: [contentOne, contentTwo],
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
 				return { user, originalCourse, destinationCourse, originalLesson };
 			};
@@ -332,7 +344,7 @@ describe('lesson copy service', () => {
 				const { user, destinationCourse, originalLesson } = setup();
 
 				const status = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -349,7 +361,7 @@ describe('lesson copy service', () => {
 				originalLesson.contents[1].hidden = false;
 
 				const status = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -364,7 +376,7 @@ describe('lesson copy service', () => {
 				const { user, destinationCourse, originalLesson } = setup();
 
 				const status = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -380,7 +392,7 @@ describe('lesson copy service', () => {
 				const { user, destinationCourse, originalLesson } = setup();
 
 				const status = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -408,6 +420,7 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				contents: [textContent],
 			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 			return { user, originalCourse, destinationCourse, originalLesson, textContent };
 		};
@@ -416,7 +429,7 @@ describe('lesson copy service', () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -446,7 +459,7 @@ describe('lesson copy service', () => {
 			});
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -483,6 +496,7 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				contents: [lernStoreContent],
 			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 			return { user, originalCourse, destinationCourse, originalLesson, lernStoreContent };
 		};
@@ -491,7 +505,7 @@ describe('lesson copy service', () => {
 			const { user, destinationCourse, originalLesson, lernStoreContent } = setup();
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -504,7 +518,7 @@ describe('lesson copy service', () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -534,6 +548,7 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				contents: [geoGebraContent],
 			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 			return { user, originalCourse, destinationCourse, originalLesson };
 		};
@@ -542,7 +557,7 @@ describe('lesson copy service', () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -557,7 +572,7 @@ describe('lesson copy service', () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -570,7 +585,7 @@ describe('lesson copy service', () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -586,7 +601,7 @@ describe('lesson copy service', () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -619,7 +634,7 @@ describe('lesson copy service', () => {
 				const { originalLesson, destinationCourse, user } = setup();
 
 				const copyStatus = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -636,6 +651,7 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 				const originalTask = taskFactory.build({
 					course: originalCourse,
 					lesson: originalLesson,
@@ -668,7 +684,7 @@ describe('lesson copy service', () => {
 				const { originalLesson, destinationCourse, user, mockedTaskGroupStatus } = setup();
 
 				const copyStatus = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -681,7 +697,7 @@ describe('lesson copy service', () => {
 				const { originalLesson, originalTask, destinationCourse, user, mockedTaskStatus } = setup();
 
 				const copyStatus = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -703,6 +719,7 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 				const originalTasks = taskFactory.buildList(2, {
 					course: originalCourse,
 					lesson: originalLesson,
@@ -736,7 +753,7 @@ describe('lesson copy service', () => {
 				const { originalLesson, destinationCourse, user, mockedTaskStatusOne, mockedTaskStatusTwo } = setup();
 
 				const copyStatus = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -766,6 +783,7 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				contents: [etherpadContent],
 			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 			etherpadService.createEtherpad.mockResolvedValue('abc');
 
@@ -787,7 +805,7 @@ describe('lesson copy service', () => {
 			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(false);
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -804,7 +822,7 @@ describe('lesson copy service', () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
 			await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -818,7 +836,7 @@ describe('lesson copy service', () => {
 			etherpadService.createEtherpad.mockResolvedValue(false);
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -840,7 +858,7 @@ describe('lesson copy service', () => {
 			etherpadService.createEtherpad.mockResolvedValue('abc');
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -855,7 +873,7 @@ describe('lesson copy service', () => {
 			etherpadService.createEtherpad.mockResolvedValue('abc');
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -884,6 +902,7 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				contents: [embeddedTaskContent],
 			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 			return {
 				user,
@@ -896,7 +915,7 @@ describe('lesson copy service', () => {
 		it('should add status for embedded task as SUCCESS', async () => {
 			const { originalLesson, destinationCourse, user } = setup();
 			const copyStatus = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -913,7 +932,7 @@ describe('lesson copy service', () => {
 		it('should add embedded task to copy', async () => {
 			const { originalLesson, destinationCourse, user, embeddedTaskContent } = setup();
 			const copyStatus = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -926,7 +945,7 @@ describe('lesson copy service', () => {
 		it('should set content type to LESSON_CONTENT_TASK', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
 			const copyStatus = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -958,6 +977,7 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				contents: [nexboardContent],
 			});
+			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 			nexboardService.createNexboard.mockResolvedValue({ board: '123', url: 'abc' });
 
@@ -976,7 +996,7 @@ describe('lesson copy service', () => {
 			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(false);
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -993,7 +1013,7 @@ describe('lesson copy service', () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
 			await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -1007,7 +1027,7 @@ describe('lesson copy service', () => {
 			nexboardService.createNexboard.mockResolvedValue(false);
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -1029,7 +1049,7 @@ describe('lesson copy service', () => {
 			nexboardService.createNexboard.mockResolvedValue({ board: '123', url: 'abc' });
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -1045,7 +1065,7 @@ describe('lesson copy service', () => {
 			nexboardService.createNexboard.mockResolvedValue({ board: '123', url: 'abc' });
 
 			const status = await copyService.copyLesson({
-				originalLesson,
+				originalLessonId: originalLesson.id,
 				destinationCourse,
 				user,
 			});
@@ -1066,6 +1086,7 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 				return {
 					user,
@@ -1078,7 +1099,7 @@ describe('lesson copy service', () => {
 				const { originalLesson, destinationCourse, user } = setup();
 
 				const copyStatus = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -1099,6 +1120,7 @@ describe('lesson copy service', () => {
 					course: originalCourse,
 					materials: [originalMaterial],
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 				const materialCopy = materialFactory.build({ title: originalMaterial.title });
 				const mockedMaterialStatus = {
 					title: materialCopy.title,
@@ -1125,7 +1147,7 @@ describe('lesson copy service', () => {
 			it('should copy the material correctly', async () => {
 				const { originalLesson, destinationCourse, user, originalMaterial } = setup();
 				const copyStatus = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -1140,7 +1162,7 @@ describe('lesson copy service', () => {
 				const { originalLesson, destinationCourse, user, mockedMaterialGroupStatus } = setup();
 
 				const copyStatus = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -1155,7 +1177,7 @@ describe('lesson copy service', () => {
 				const { originalLesson, originalMaterial, destinationCourse, user, mockedMaterialStatus } = setup();
 
 				const copyStatus = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
@@ -1184,6 +1206,7 @@ describe('lesson copy service', () => {
 					course: originalCourse,
 					materials: originalMaterial,
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 				const materialCopyOne = materialFactory.build({ title: originalMaterial[0].title });
 				const materialCopyTwo = materialFactory.build({ title: originalMaterial[1].title });
 				const mockedMaterialStatusOne = {
@@ -1212,7 +1235,7 @@ describe('lesson copy service', () => {
 				const { originalLesson, destinationCourse, user, mockedMaterialStatusOne, mockedMaterialStatusTwo } = setup();
 
 				const copyStatus = await copyService.copyLesson({
-					originalLesson,
+					originalLessonId: originalLesson.id,
 					destinationCourse,
 					user,
 				});
