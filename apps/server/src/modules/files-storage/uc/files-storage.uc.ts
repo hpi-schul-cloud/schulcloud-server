@@ -69,7 +69,7 @@ export class FilesStorageUC {
 		req: Request,
 		next: NextFunction
 	): Promise<FileRecord> {
-		const result = await new Promise((resolve) => {
+		const result = await new Promise<FileRecord>((resolve) => {
 			const bb = busboy({ headers: req.headers, defParamCharset: 'utf8' });
 
 			bb.on('file', (_name, file, info) => {
@@ -87,7 +87,7 @@ export class FilesStorageUC {
 			req.pipe(bb);
 		});
 
-		return result as FileRecord;
+		return result;
 	}
 
 	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
@@ -96,10 +96,6 @@ export class FilesStorageUC {
 		const response = await this.getResponse(params);
 
 		const fileDto = FileDtoBuilder.buildFromAxiosResponse(params.fileName, response);
-
-		if (fileDto.size > this.configService.get<number>('MAX_FILE_SIZE')) {
-			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
-		}
 
 		const result = await this.filesStorageService.uploadFile(userId, params, fileDto);
 
