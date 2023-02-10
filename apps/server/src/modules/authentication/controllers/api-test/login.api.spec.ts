@@ -181,44 +181,46 @@ describe('Login Controller (api)', () => {
 		let school: School;
 		let system: System;
 
-		const privateRsaKey = `-----BEGIN PRIVATE KEY-----
-		MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQC7VJTUt9Us8cKj
-		MzEfYyjiWA4R4/M2bS1GB4t7NXp98C3SC6dVMvDuictGeurT8jNbvJZHtCSuYEvu
-		NMoSfm76oqFvAp8Gy0iz5sxjZmSnXyCdPEovGhLa0VzMaQ8s+CLOyS56YyCFGeJZ
-		qgtzJ6GR3eqoYSW9b9UMvkBpZODSctWSNGj3P7jRFDO5VoTwCQAWbFnOjDfH5Ulg
-		p2PKSQnSJP3AJLQNFNe7br1XbrhV//eO+t51mIpGSDCUv3E0DDFcWDTH9cXDTTlR
-		ZVEiR2BwpZOOkE/Z0/BVnhZYL71oZV34bKfWjQIt6V/isSMahdsAASACp4ZTGtwi
-		VuNd9tybAgMBAAECggEBAKTmjaS6tkK8BlPXClTQ2vpz/N6uxDeS35mXpqasqskV
-		laAidgg/sWqpjXDbXr93otIMLlWsM+X0CqMDgSXKejLS2jx4GDjI1ZTXg++0AMJ8
-		sJ74pWzVDOfmCEQ/7wXs3+cbnXhKriO8Z036q92Qc1+N87SI38nkGa0ABH9CN83H
-		mQqt4fB7UdHzuIRe/me2PGhIq5ZBzj6h3BpoPGzEP+x3l9YmK8t/1cN0pqI+dQwY
-		dgfGjackLu/2qH80MCF7IyQaseZUOJyKrCLtSD/Iixv/hzDEUPfOCjFDgTpzf3cw
-		ta8+oE4wHCo1iI1/4TlPkwmXx4qSXtmw4aQPz7IDQvECgYEA8KNThCO2gsC2I9PQ
-		DM/8Cw0O983WCDY+oi+7JPiNAJwv5DYBqEZB1QYdj06YD16XlC/HAZMsMku1na2T
-		N0driwenQQWzoev3g2S7gRDoS/FCJSI3jJ+kjgtaA7Qmzlgk1TxODN+G1H91HW7t
-		0l7VnL27IWyYo2qRRK3jzxqUiPUCgYEAx0oQs2reBQGMVZnApD1jeq7n4MvNLcPv
-		t8b/eU9iUv6Y4Mj0Suo/AU8lYZXm8ubbqAlwz2VSVunD2tOplHyMUrtCtObAfVDU
-		AhCndKaA9gApgfb3xw1IKbuQ1u4IF1FJl3VtumfQn//LiH1B3rXhcdyo3/vIttEk
-		48RakUKClU8CgYEAzV7W3COOlDDcQd935DdtKBFRAPRPAlspQUnzMi5eSHMD/ISL
-		DY5IiQHbIH83D4bvXq0X7qQoSBSNP7Dvv3HYuqMhf0DaegrlBuJllFVVq9qPVRnK
-		xt1Il2HgxOBvbhOT+9in1BzA+YJ99UzC85O0Qz06A+CmtHEy4aZ2kj5hHjECgYEA
-		mNS4+A8Fkss8Js1RieK2LniBxMgmYml3pfVLKGnzmng7H2+cwPLhPIzIuwytXywh
-		2bzbsYEfYx3EoEVgMEpPhoarQnYPukrJO4gwE2o5Te6T5mJSZGlQJQj9q4ZB2Dfz
-		et6INsK0oG8XVGXSpQvQh3RUYekCZQkBBFcpqWpbIEsCgYAnM3DQf3FJoSnXaMhr
-		VBIovic5l0xFkEHskAjFTevO86Fsz1C2aSeRKSqGFoOQ0tmJzBEs1R6KqnHInicD
-		TQrKhArgLXX4v3CddjfTRJkFWDbE/CkvKZNOrcf1nhaGCPspRJj2KUkj1Fhl9Cnc
-		dn/RsYEONbwQSjIfMPkvxF+8HQ==
-		-----END PRIVATE KEY-----`;
+		const privateRsaKey = `-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: AES-256-CBC,39910E13D7A314ED523436FC5B91315D
+
+L1TqC+DIF6s39aDWf77TRfHzjhTjGEYMglKx8ZTHKhLeflc2X1gPy4cpxa8Saonm
+G9pyadU7dMYXmhmVtdf5+OPTQ0SUOuuIvH/wMYvGWFfb0AuXZo8iBWZIrzMMBmdq
+l+hOPHhP8ZnPD05TrQ6NQByEg9nITdPX8OWILo7WDFnUVegI4OfweJ+59Tj6zXb1
+aqcUbGmX1Q6VsAZFsJIMqX3bYVxgviCrofwB9ZMTTeITgybHcoYmu9o6ndx9XkwA
+yhntoiKsZ/t8QxFndxIU5oUnwFhKLU3lYCym+scgSPCuhmW5PCgmcNAfjMNnVZTj
+PU86bhDhFF/nWClD6s6T1w69lYDLSgIWEiNe3VknOanU/baV+KPQBMYqX6IImPuC
+EpmyfqRdzNOIzivjDBzHlyb3x3jR7ltmV0z7dfupY965wfFxqi4D3X62/4BMxu0M
+3qwY6uTTsObJekjRT9YCWTOd3ynqLi0Gg7AAzXeGkqfsxb9/OOtMNjAz402rNCpg
+bPkTlkKfozYtZfflcKnHBoW535WmwCBm83wPN+20gnWy9gQlWSc+BZu2US13/wfv
+Bp77EHVk3yL3IctBawqB+YKdWlTIipBFgcwOyRhdTsILrWsOeeoK2ZYdQbGanwoM
+d5UdTNn6VT4uPdTvXyVRIeeK+lopvyoTRCQyyTjTsImbD0pp/BDMh5cdoLzvcWLo
+TJL/dESig/93OQmvcf5GGPfYKmwwlcUs82iK1G0O/Ur8h+10mx7K/ZLql00rO+NK
+VW/ierAI4ZBIKfu+7Eh8ioWT4AMInRye9IumAwOLbDyigZ/wyhPoffesn8S2Wk75
+pN6gODA3um0Ws+o1aLwA7GdqKG8ThWS3esIgH9vrjfb+MozbMqNUxSj28ItZ9w2K
+w2Z0nbgAWZjYf4/uBqeCHzl3PQBCdrDLIEp2A8oWUEMc0ZKMvhHa7OFv/a4X2JFj
+nFQ/GxbQlH1A8NZK+oFLJbOB8vwP/p4P5xtzN+kRpP9H84dqtR5L4zP1eUBc1+nY
+MpsirAZkmEvqt2dKYM+AmhsNHTm6IE7J4hfds6NfFZ8rnIUSRm8JQJlQoZaU3Wra
+pj/7yqnnmpKDWjOdC1EM/niTjAs0xuZJtmoEcbCbaRIS+6Kbga5aI/O8ftxTz7YA
+eL9oV9CQJZyLJODcRSK54q0PSt6TP6c8lt6YMnH/I4cnuu7K62/usJ3VhX7LhUVy
++EIlA2Wj1KUyDqk0LjMh1KPM5WYroVqvRvrtKW4AbLYfAmCwDkTF4TmS9PF0+9Eq
+C6WnPmlEN8XAaQ9ZMJLaa/8MMdHSlK6wE/h5XEXIIfpwGFwOnVICvfpVGDMJ+YK3
+mt3C04B8LYqBlIeHft5Rkm8vRgySeMdiFrDQVrXVUVviVDBa0H03SRe3XHRveNgt
+DRP1tRsF8Teu3NXNA1LeAUijar9BabEjhlqMl4Vq3JMljxaUORhaM5cTvRHx6Up0
+R/8oddAwMIh2OaF2gEKoq82RLokCHJoX7DzoZ1tBZKP3qRwb1YzD7+zdK82lqzwG
+Ci2Q/MNdQptCJm76mx6zmJ5wXWaUhQmjUKuvJMhKPAmfDtW4YkFDH8nQnxFAw77M
+-----END RSA PRIVATE KEY-----`.replace(/\\n/g, '\n');
 
 		const publicRsaKey = `-----BEGIN PUBLIC KEY-----
-		MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu1SU1LfVLPHCozMxH2Mo
-		4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0/IzW7yWR7QkrmBL7jTKEn5u
-		+qKhbwKfBstIs+bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyeh
-		kd3qqGElvW/VDL5AaWTg0nLVkjRo9z+40RQzuVaE8AkAFmxZzow3x+VJYKdjykkJ
-		0iT9wCS0DRTXu269V264Vf/3jvredZiKRkgwlL9xNAwxXFg0x/XFw005UWVRIkdg
-		cKWTjpBP2dPwVZ4WWC+9aGVd+Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbc
-		mwIDAQAB
-		-----END PUBLIC KEY-----`;
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzks9cMQgU0X9SbhNcgzc
+qYOvL500UzEDOU5/lI3haiq+bpmkfp4OOpdu2xEavPzHp65RahFI07sRsbnm1bpT
+wPpi44H96NnZR5LnSUJz4v4Lm/ehkCgMy48JDUvIiA3otLxCAhRBZ6g6rCO9/osK
+LGKCrknf6B5Ianyi0LOeNHfuaAqXTmeSvG8bs6qdS54BPNSHMLnk5k/0t2KQpDcI
+dsFau1pS1y6v7kthpX0ksh4+0k8hrqWtZwCLBlukWEQ6CBaPq7iizK4u2sSQUDPB
+hV3nfnA7fVswvTWFfdAVMJDEbhpOfPWsnJmkYwYExldqpTo6PhtsvC1/bHbNxSBt
+jwIDAQAB
+-----END PUBLIC KEY-----`.replace(/\\n/g, '\n');
 
 		beforeAll(async () => {
 			system = systemFactory.withOauthConfig().buildWithId({});
@@ -243,7 +245,7 @@ describe('Login Controller (api)', () => {
 
 		describe('when user login succeeds', () => {
 			it('should return jwt', () => {
-				const signed = jwt.sign('dummyAccessToken', privateRsaKey);
+				const signed = jwt.sign('dummyAccessToken', { key: privateRsaKey, passphrase: '0000' }, { algorithm: 'RS256' });
 				jwt.verify(signed, publicRsaKey, {
 					algorithms: ['RS256'],
 					// issuer: oauthConfig.issuer,
@@ -256,9 +258,17 @@ describe('Login Controller (api)', () => {
 					code: 'someCode',
 				};
 				const tokenResponse: OauthTokenResponse = {
-					access_token: jwt.sign('dummyAccessToken', privateRsaKey),
-					refresh_token: jwt.sign('dummyRefreshToken', privateRsaKey),
-					id_token: jwt.sign('dummyIdToken', privateRsaKey),
+					access_token: jwt.sign(
+						'dummyAccessToken',
+						{ key: privateRsaKey, passphrase: '0000' },
+						{ algorithm: 'RS256' }
+					),
+					refresh_token: jwt.sign(
+						'dummyRefreshToken',
+						{ key: privateRsaKey, passphrase: '0000' },
+						{ algorithm: 'RS256' }
+					),
+					id_token: jwt.sign('dummyIdToken', { key: privateRsaKey, passphrase: '0000' }, { algorithm: 'RS256' }),
 				};
 				oauthAdapterServiceMock.getPublicKey.mockResolvedValueOnce(publicRsaKey);
 				oauthAdapterServiceMock.sendTokenRequest.mockResolvedValueOnce(tokenResponse);
