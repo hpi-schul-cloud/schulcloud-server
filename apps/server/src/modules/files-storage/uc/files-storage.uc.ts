@@ -6,7 +6,7 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
-import { Request } from 'express';
+import { NextFunction, Request } from 'express';
 import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
 import {
@@ -53,42 +53,39 @@ export class FilesStorageUC {
 	private async addRequestStreamToRequestPipe(
 		userId: EntityId,
 		params: FileRecordParams,
-		req: Request
+		req: Request,
+		next: NextFunction
 	): Promise<FileRecord> {
-		const result = await new Promise((resolve, reject) => {
-			const requestStream = busboy({ headers: req.headers, defParamCharset: 'utf8' });
+		const result = await new Promise((resolve) => {
+			const bb = busboy({ headers: req.headers, defParamCharset: 'utf8' });
 
-			// eslint-disable-next-line @typescript-eslint/no-misused-promises
-			requestStream.on('file', async (_name, file, info): Promise<void> => {
+			bb.on('file', (_name, file, info) => {
 				const fileDto = FileDtoBuilder.buildFromRequest(info, req, file);
 
-				if (fileDto.size > this.configService.get<number>('MAX_FILE_SIZE')) {
-					requestStream.emit('error', ErrorType.FILE_TOO_BIG);
-					return;
-				}
-
 				try {
-					const record = await this.filesStorageService.uploadFile(userId, params, fileDto);
+					const record = this.filesStorageService.uploadFile(userId, params, fileDto);
 					resolve(record);
 				} catch (error) {
-					requestStream.emit('error', error);
+					req.unpipe(bb);
+					next(error);
 				}
 			});
 
-			requestStream.on('error', (e) => {
-				reject(new BadRequestException(e, `${FilesStorageUC.name}:upload requestStream`));
-			});
-
-			req.pipe(requestStream);
+			req.pipe(bb);
 		});
 
 		return result as FileRecord;
 	}
 
-	public async upload(userId: EntityId, params: FileRecordParams, req: Request) {
+	public async upload(
+		userId: EntityId,
+		params: FileRecordParams,
+		req: Request,
+		next: NextFunction
+	): Promise<FileRecord> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 
-		const result = await this.addRequestStreamToRequestPipe(userId, params, req);
+		const result = await this.addRequestStreamToRequestPipe(userId, params, req, next);
 
 		return result;
 	}
