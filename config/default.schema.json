@@ -428,10 +428,10 @@
 			"default": null,
 			"description": "The url of status message provider (should end without a slash)."
 		},
-		"DISPLAY_INCIDENTS_IN_MS": {
+		"DISPLAY_INCIDENTS_IN_MIN": {
 			"type": "integer",
-			"default": 172800000,
-			"description": "The default value is a MS calculation of 48 hours."
+			"default": 2880,
+			"description": "This is the result of the calculation of 2880 minutes which corresponds to 48 hours."
 		},
 		"NEXBOARD_URL": {
 			"type": "string",
