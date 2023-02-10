@@ -4,7 +4,6 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { CourseGroup } from './coursegroup.entity';
-import type { File } from './file.entity';
 import { School } from './school.entity';
 import type { Task } from './task.entity';
 import type { User } from './user.entity';
@@ -20,7 +19,6 @@ export interface ISubmissionProperties {
 	graded?: boolean;
 	grade?: number;
 	gradeComment?: string;
-	gradeFiles?: File[];
 }
 
 @Entity({ tableName: 'submissions' })
@@ -59,10 +57,6 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	gradeComment?: string;
 
-	@ManyToMany('File', undefined, { fieldName: 'gradeFileIds' })
-	@Index()
-	gradeFiles = new Collection<File>(this);
-
 	constructor(props: ISubmissionProperties) {
 		super();
 		this.school = props.school;
@@ -77,10 +71,6 @@ export class Submission extends BaseEntityWithTimestamps {
 
 		if (props.teamMembers !== undefined) {
 			this.teamMembers.set(props.teamMembers);
-		}
-
-		if (props.gradeFiles !== undefined) {
-			this.gradeFiles.set(props.gradeFiles);
 		}
 	}
 
