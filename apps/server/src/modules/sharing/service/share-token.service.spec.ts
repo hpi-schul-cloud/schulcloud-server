@@ -7,7 +7,6 @@ import { ObjectId } from 'bson';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task';
-import { ITaskStatus } from '@shared/domain';
 import { TokenGenerator } from './token-generator.service';
 import { ShareTokenService } from './share-token.service';
 import { ShareTokenRepo } from '../repo/share-token.repo';
