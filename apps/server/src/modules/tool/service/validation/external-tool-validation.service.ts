@@ -15,17 +15,21 @@ export class ExternalToolValidationService {
 		await this.commonToolValidationService.validateCommon(externalToolDO);
 
 		if (this.externalToolService.isOauth2Config(externalToolDO.config)) {
-			if (!externalToolDO.config.clientSecret) {
-				throw new ValidationError(
-					`tool_clientSecret_missing: The Client Secret of the tool ${externalToolDO.name} is missing.`
-				);
-			}
+			await this.validateOauth2Config(externalToolDO);
+		}
+	}
 
-			if (!(await this.isClientIdUnique(externalToolDO))) {
-				throw new ValidationError(
-					`tool_clientId_duplicate: The Client Id of the tool ${externalToolDO.name} is already used.`
-				);
-			}
+	private async validateOauth2Config(externalToolDO) {
+		if (!externalToolDO.config.clientSecret) {
+			throw new ValidationError(
+				`tool_clientSecret_missing: The Client Secret of the tool ${externalToolDO.name} is missing.`
+			);
+		}
+
+		if (!(await this.isClientIdUnique(externalToolDO))) {
+			throw new ValidationError(
+				`tool_clientId_duplicate: The Client Id of the tool ${externalToolDO.name} is already used.`
+			);
 		}
 	}
 
