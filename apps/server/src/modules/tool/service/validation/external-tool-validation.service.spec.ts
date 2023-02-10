@@ -116,7 +116,7 @@ describe('ExternalToolValidation', () => {
 				const result: Promise<void> = service.validateCreate(externalOauthToolDOWithoutSecret);
 
 				await expect(result).rejects.toThrow(
-					new ValidationError(`The Client Secret of the tool ${externalOauthToolDOWithoutSecret.name} is missing.`)
+					new ValidationError(`tool_clientSecret_missing: The Client Secret of the tool ${externalOauthToolDOWithoutSecret.name} is missing.`)
 				);
 			});
 		});
@@ -145,7 +145,7 @@ describe('ExternalToolValidation', () => {
 				const func = () => service.validateUpdate('notMatchToolId', externalToolDO);
 
 				await expect(func).rejects.toThrow(
-					new ValidationError(`The tool has no id or it does not match the path parameter.`)
+					new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`)
 				);
 			});
 
@@ -171,7 +171,7 @@ describe('ExternalToolValidation', () => {
 				const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new ValidationError(`The Config Type of the tool ${externalToolDO.name} is immutable.`)
+					new ValidationError(`tool_type_immutable: The Config Type of the tool ${externalToolDO.name} is immutable.`)
 				);
 			});
 
@@ -194,7 +194,7 @@ describe('ExternalToolValidation', () => {
 				const result: Promise<void> = service.validateUpdate(externalOauthToolDO.id as string, externalOauthToolDO);
 
 				await expect(result).rejects.toThrow(
-					new ValidationError(`The Client Id of the tool ${externalOauthToolDO.name} is immutable.`)
+					new ValidationError(`tool_clientId_immutable: The Client Id of the tool ${externalToolDO.name} is immutable.`)
 				);
 			});
 		});

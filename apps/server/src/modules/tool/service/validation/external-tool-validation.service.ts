@@ -16,11 +16,11 @@ export class ExternalToolValidationService {
 
 		if (this.externalToolService.isOauth2Config(externalToolDO.config)) {
 			if (!externalToolDO.config.clientSecret) {
-				throw new ValidationError(`The Client Secret of the tool ${externalToolDO.name} is missing.`);
+				throw new ValidationError(`tool_clientSecret_missing: The Client Secret of the tool ${externalToolDO.name} is missing.`);
 			}
 
 			if (!(await this.isClientIdUnique(externalToolDO))) {
-				throw new ValidationError(`The Client Id of the tool ${externalToolDO.name} is already used.`);
+				throw new ValidationError(`tool_clientId_duplicate: The Client Id of the tool ${externalToolDO.name} is already used.`);
 			}
 		}
 	}
@@ -35,7 +35,7 @@ export class ExternalToolValidationService {
 
 	async validateUpdate(toolId: string, externalToolDO: Partial<ExternalToolDO>): Promise<void> {
 		if (toolId !== externalToolDO.id) {
-			throw new ValidationError(`The tool has no id or it does not match the path parameter.`);
+			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
 		}
 
 		await this.commonToolValidationService.validateCommon(externalToolDO);
@@ -46,7 +46,9 @@ export class ExternalToolValidationService {
 			externalToolDO.config &&
 			externalToolDO.config.type !== loadedTool.config.type
 		) {
-			throw new ValidationError(`The Config Type of the tool ${externalToolDO.name || ''} is immutable.`);
+			throw new ValidationError(
+				`tool_type_immutable: The Config Type of the tool ${externalToolDO.name || ''} is immutable.`
+			);
 		}
 
 		if (
@@ -55,7 +57,9 @@ export class ExternalToolValidationService {
 			this.externalToolService.isOauth2Config(loadedTool.config) &&
 			externalToolDO.config.clientId !== loadedTool.config.clientId
 		) {
-			throw new ValidationError(`The Client Id of the tool ${externalToolDO.name || ''} is immutable.`);
+			throw new ValidationError(
+				`tool_clientId_immutable: The Client Id of the tool ${externalToolDO.name || ''} is immutable.`
+			);
 		}
 	}
 }
