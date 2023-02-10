@@ -90,9 +90,10 @@ export class OauthSSOController {
 		const migration = await this.oauthUc.migrateUser(currentUser.userId, query, urlParams.systemId);
 		if (migration.redirect) {
 			res.redirect(migration.redirect);
+		} else {
+			throw new InternalServerErrorException(
+				`Migration of ${currentUser.userId} to system ${urlParams.systemId} failed.`
+			);
 		}
-		throw new InternalServerErrorException(
-			`Migration of ${currentUser.userId} to system ${urlParams.systemId} failed.`
-		);
 	}
 }
