@@ -58,12 +58,12 @@ export class FilesStorageUC {
 	): Promise<FileRecord> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 
-		const result = await this.addRequestStreamToRequestPipe(userId, params, req, next);
+		const fileRecord = await this.uploadFileWithBusboy(userId, params, req, next);
 
-		return result;
+		return fileRecord;
 	}
 
-	private async addRequestStreamToRequestPipe(
+	private async uploadFileWithBusboy(
 		userId: EntityId,
 		params: FileRecordParams,
 		req: Request,
