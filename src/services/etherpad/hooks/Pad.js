@@ -58,7 +58,7 @@ const before = {
 	find: [disallow()],
 	get: [disallow()],
 	create: [
-		globalHooks.hasPermission('TOOL_CREATE'),
+		globalHooks.hasPermission('TOOL_CREATE_ETHERPAD'),
 		injectCourseId,
 		globalHooks.restrictToUsersOwnCourses,
 		getGroupData,

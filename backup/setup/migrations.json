@@ -122,12 +122,23 @@
 	},
 	{
 		"_id": {
-			"$oid": "63e39c6567305f4774cb0d7f"
+			"$oid": "63e63d2b288f61481055d16c"
 		},
 		"state": "up",
-		"name": "AddCreateToolPermissionForUser",
+		"name": "AddCreateToolEtherpadPermissionForStudents",
 		"createdAt": {
-			"$date": "2023-02-08T12:44:11.087Z"
+			"$date": "2023-02-10T12:46:05.118Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "63e63eeec266bf7dc40e4056"
+		},
+		"state": "up",
+		"name": "AddCreateToolEtherpadPermissionForTeachers",
+		"createdAt": {
+			"$date": "2023-02-10T12:51:50.482Z"
 		},
 		"__v": 0
 	}

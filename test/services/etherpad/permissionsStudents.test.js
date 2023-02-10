@@ -106,7 +106,7 @@ describe('Etherpad Permission Check: Students', () => {
 		expect(body.code).to.equal(403);
 	});
 
-	it.only('should be able to create a pad', async () => {
+	it('should be able to create a pad', async () => {
 		const {
 			requestParams: {
 				authentication: { accessToken },
@@ -114,7 +114,9 @@ describe('Etherpad Permission Check: Students', () => {
 		} = await testObjects.setupUser({ roles: ['student'] });
 
 		const jwt = decode(accessToken);
-		const course = await testObjects.createTestCourse({ userIds: [jwt.userId] });
+		const course = await testObjects.createTestCourse({
+			userIds: [jwt.userId],
+		});
 
 		const data = {
 			courseId: course.id,
@@ -130,6 +132,6 @@ describe('Etherpad Permission Check: Students', () => {
 			accessToken,
 		});
 
-		expect(body.code).to.equal(0);
+		expect(!!body.data.padID).to.equal(true);
 	});
 });

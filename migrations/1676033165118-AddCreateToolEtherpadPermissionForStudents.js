@@ -29,7 +29,7 @@ module.exports = {
 			{
 				$addToSet: {
 					permissions: {
-						$each: ['TOOL_CREATE'],
+						$each: ['TOOL_CREATE_ETHERPAD'],
 					},
 				},
 			}
@@ -46,7 +46,7 @@ module.exports = {
 			{
 				$pull: {
 					permissions: {
-						$in: ['TOOL_CREATE'],
+						$in: ['TOOL_CREATE_ETHERPAD'],
 					},
 				},
 			}
