@@ -29,27 +29,21 @@ describe('TransactionUtil', () => {
 		entityManager = module.get(EntityManager);
 	});
 
-	describe('doTransaction', () => {
-		describe('when function is given', () => {
-			it('should call entitymanager', async () => {
-				const test = () => Promise.resolve();
-				entityManager.transactional.mockImplementation(() => Promise.resolve());
-				await service.doTransaction(test);
+	it('should call transactional method of EntityManager', async () => {
+		const transactionalFn = jest.fn().mockResolvedValue(undefined);
+		entityManager.transactional.mockResolvedValue(undefined);
 
-				expect(entityManager.transactional).toHaveBeenCalledTimes(1);
-				expect(entityManager.transactional).toHaveBeenCalledWith(test);
-			});
-		});
+		await service.doTransaction(transactionalFn);
 
-		describe('when function is given but execution failed ', () => {
-			it('should call the logger', async () => {
-				const test = () => Promise.reject();
-				entityManager.transactional.mockImplementation(() => {
-					throw new Error();
-				});
+		expect(entityManager.transactional).toHaveBeenCalledWith(transactionalFn);
+	});
 
-				await expect(service.doTransaction(test)).rejects.toThrowError();
-			});
-		});
+	it('should log error if transactional method throws an error', async () => {
+		const error = new Error('Test Error');
+		entityManager.transactional.mockRejectedValue(error);
+
+		await service.doTransaction(jest.fn());
+
+		expect(logger.debug).toHaveBeenCalledWith(error);
 	});
 });
