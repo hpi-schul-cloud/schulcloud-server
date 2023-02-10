@@ -1,8 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Course, EntityId, Lesson, PermissionContextBuilder, User } from '@shared/domain';
+import { Actions, Course, EntityId, Lesson, PermissionContextBuilder, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { TaskCopyService } from '../service';
 import { TaskCopyParentParams } from '../types';
@@ -27,11 +27,23 @@ export class TaskCopyUC {
 		}
 
 		const destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
+		if (parentParams.courseId) {
+			await this.authorisation.checkPermissionByReferences(
+				userId,
+				AllowedAuthorizationEntityType.Course,
+				parentParams.courseId,
+				{
+					action: Actions.write,
+					requiredPermissions: [],
+				}
+			);
+		}
+
 		const destinationLesson = await this.getDestinationLesson(parentParams.lessonId, user);
 		const copyName = await this.getCopyName(originalTask.name, parentParams.courseId);
 
 		const status = await this.taskCopyService.copyTask({
-			originalTask,
+			originalTaskId: originalTask.id,
 			destinationCourse,
 			destinationLesson,
 			user,
