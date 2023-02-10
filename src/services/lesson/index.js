@@ -5,8 +5,7 @@ const path = require('path');
 const { LessonModel } = require('./model');
 const { lessonContentService, lessonContentServiceHooks } = require('./services/lessonContentService');
 const hooks = require('./hooks/index');
-const copyHooks = require('./hooks/copy');
-const { LessonCopyService, LessonFilesService, AddMaterialService } = require('./services');
+const { LessonFilesService, AddMaterialService } = require('./services');
 
 module.exports = function setup() {
 	const app = this;
@@ -24,7 +23,6 @@ module.exports = function setup() {
 
 	app.use('/lessons', service(options));
 	app.use('/lessons/:lessonId/files', new LessonFilesService());
-	app.use('/lessons/copy', new LessonCopyService(app));
 
 	app.use('/lessons/:lessonId/material', new AddMaterialService());
 
@@ -33,7 +31,6 @@ module.exports = function setup() {
 
 	const systemService = app.service('/lessons');
 	const lessonFilesService = app.service('/lessons/:lessonId/files/');
-	const lessonCopyService = app.service('/lessons/copy');
 
 	const hooksWrapper = {
 		before: hooks.before(),
@@ -43,7 +40,4 @@ module.exports = function setup() {
 	app.service('/lessons/contents/:type/').hooks(lessonContentServiceHooks);
 	systemService.hooks(hooksWrapper);
 	lessonFilesService.hooks(hooksWrapper);
-	lessonCopyService.hooks({
-		before: copyHooks.before(),
-	}); // no after
 };
