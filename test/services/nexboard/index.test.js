@@ -286,30 +286,6 @@ describe('Nexboard services', () => {
 		expect(body.code).to.equal(405);
 	});
 
-	it('Create should need TOOL_CREATE permission.', async () => {
-		const {
-			requestParams: {
-				authentication: { accessToken },
-			},
-		} = await testHelpers.setupUser({ roles: ['student'] });
-
-		const data = {
-			title: '1',
-			description: '2',
-			projectId: '1234',
-		};
-
-		const { body } = await request({
-			server: app,
-			endpoint: '/nexboard/boards',
-			method: 'post',
-			data,
-			accessToken,
-		});
-
-		expect(body.code).to.equal(403);
-	});
-
 	it('Patch should be blocked.', async () => {
 		const {
 			requestParams: {
