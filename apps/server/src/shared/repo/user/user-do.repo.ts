@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { BaseDORepo } from '@shared/repo';
-import { EntityId, IUserProperties, Role, School, System, User } from '@shared/domain';
 import { EntityName, FilterQuery, Reference } from '@mikro-orm/core';
+import { IdentifiedReference } from '@mikro-orm/core/entity/Reference';
+import { Injectable } from '@nestjs/common';
+import { EntityId, IUserProperties, Role, School, System, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { BaseDORepo } from '@shared/repo';
 
 @Injectable()
 export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
@@ -71,8 +72,8 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			outdatedSince: entity.outdatedSince,
 		});
 
-		if (entity.roles.isInitialized(true)) {
-			user.roleIds = entity.roles.getItems().map((role: Role) => role.id);
+		if (entity.roles.isInitialized()) {
+			user.roleIds = entity.roles.getItems().map((role: Role): EntityId => role.id);
 		}
 
 		return user;
@@ -84,7 +85,9 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			firstName: entityDO.firstName,
 			lastName: entityDO.lastName,
 			school: Reference.createFromPK(School, entityDO.schoolId),
-			roles: entityDO.roleIds.map((roleId) => Reference.createFromPK(Role, roleId)),
+			roles: entityDO.roleIds.map(
+				(roleId: EntityId): IdentifiedReference<Role> => Reference.createFromPK(Role, roleId)
+			),
 			ldapDn: entityDO.ldapDn,
 			externalId: entityDO.externalId,
 			language: entityDO.language,

@@ -1,4 +1,4 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Reference } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { IEntityWithSchool } from '../interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
@@ -16,7 +16,7 @@ export interface IUserProperties {
 	firstName: string;
 	lastName: string;
 	school: School;
-	roles: (Role | Reference<Role>)[];
+	roles: Role[];
 	ldapDn?: string;
 	externalId?: string;
 	language?: LanguageType;
