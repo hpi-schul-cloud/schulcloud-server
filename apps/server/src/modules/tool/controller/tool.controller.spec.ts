@@ -98,7 +98,7 @@ describe('ToolController', () => {
 
 		const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
 			name: 'mockName',
-			default: 'mockDefault',
+			defaultValue: 'mockDefault',
 			location: CustomParameterLocationParams.PATH,
 			scope: CustomParameterScopeParams.SCHOOL,
 			type: CustomParameterTypeParams.STRING,
@@ -174,7 +174,7 @@ describe('ToolController', () => {
 		const setupCreate = () => {
 			const customParameterCreateParams = new CustomParameterPostParams();
 			customParameterCreateParams.name = 'mockName';
-			customParameterCreateParams.default = 'mockDefault';
+			customParameterCreateParams.defaultValue = 'mockDefault';
 			customParameterCreateParams.location = CustomParameterLocationParams.PATH;
 			customParameterCreateParams.scope = CustomParameterScopeParams.SCHOOL;
 			customParameterCreateParams.type = CustomParameterTypeParams.STRING;
@@ -460,7 +460,7 @@ describe('ToolController', () => {
 
 			const customParameterPostParams = new CustomParameterPostParams();
 			customParameterPostParams.name = 'mockName';
-			customParameterPostParams.default = 'mockDefault';
+			customParameterPostParams.defaultValue = 'mockDefault';
 			customParameterPostParams.location = CustomParameterLocationParams.PATH;
 			customParameterPostParams.scope = CustomParameterScopeParams.SCHOOL;
 			customParameterPostParams.type = CustomParameterTypeParams.STRING;
