@@ -3,7 +3,6 @@ const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
 const RoleModel = require('../../role/model');
 const { sortRoles } = require('../../role/utils/rolesHelper');
-const { submissionModel: Submission, homeworkModel: Homework } = require('../../homework/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const getFile = (id) => FileModel.findOne({ _id: id }).populate('owner').lean().exec();
@@ -83,29 +82,11 @@ const checkPermissions = (permission) => async (user, file) => {
 		return Promise.resolve(true);
 	}
 
-	const submissionPromise = Submission.findOne({
-		$or: [{ fileIds: fileObject._id }, { gradeFileIds: fileObject._id }],
-	})
-		.lean()
-		.exec();
-	const homeworkPromise = Homework.findOne({ fileIds: fileObject._id }).populate('courseId').lean().exec();
-
-	const [submission, homework] = await Promise.all([submissionPromise, homeworkPromise]);
-
-	if (refOwnerModel === 'course' || submission) {
+	if (refOwnerModel === 'course') {
 		const userObject = await userModel.findOne({ _id: user }).populate('roles').lean().exec();
 		const isStudent = userObject.roles.find((role) => role.name === 'student');
-		let courseFile = fileObject;
-		let submissionHomework;
-		if (submission) {
-			submissionHomework = await Homework.findOne({ _id: submission.homeworkId }).populate('courseId').lean().exec();
-			courseFile = { ...fileObject, owner: submissionHomework.courseId || {} };
-		}
-		const isMember = checkMemberStatus({ file: courseFile, user });
+		const isMember = checkMemberStatus({ file: fileObject, user });
 		if (isMember) {
-			if (submissionHomework && submissionHomework.publicSubmissions) {
-				return Promise.resolve(true);
-			}
 			if (isStudent) {
 				const rolePermissions = permissions.find((perm) => perm.refId && equalIds(perm.refId, isStudent._id));
 				return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
@@ -113,16 +94,6 @@ const checkPermissions = (permission) => async (user, file) => {
 			return Promise.resolve(true);
 		}
 		return Promise.reject();
-	}
-
-	if (homework) {
-		if (!homework.private) {
-			const courseFile = { ...fileObject, owner: homework.courseId || {} };
-			const isMember = checkMemberStatus({ file: courseFile, user });
-			if (isMember) return Promise.resolve(true);
-		} else {
-			return Promise.reject();
-		}
 	}
 
 	const isMember = checkMemberStatus({ file: fileObject, user });
