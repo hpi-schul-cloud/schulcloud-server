@@ -14,7 +14,7 @@ export class CustomParameterPostParams {
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional()
-	default?: string;
+	defaultValue?: string;
 
 	@IsString()
 	@IsOptional()

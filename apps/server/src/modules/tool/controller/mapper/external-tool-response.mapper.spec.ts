@@ -48,7 +48,7 @@ describe('ExternalToolResponseMapper', () => {
 	const setup = () => {
 		const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
 			name: 'mockName',
-			default: 'mockDefault',
+			defaultValue: 'mockDefault',
 			location: CustomParameterLocationParams.PATH,
 			scope: CustomParameterScopeParams.SCHOOL,
 			type: CustomParameterTypeParams.STRING,
@@ -230,6 +230,7 @@ describe('ExternalToolResponseMapper', () => {
 						location: CustomParameterLocation.PATH,
 						name: 'customParameter',
 						isOptional: false,
+						default: 'defaultValue',
 					})
 					.buildWithId(
 						{
@@ -250,6 +251,7 @@ describe('ExternalToolResponseMapper', () => {
 							location: CustomParameterLocationParams.PATH,
 							name: 'customParameter',
 							isOptional: false,
+							defaultValue: 'defaultValue',
 						}),
 					],
 					version: 1,
