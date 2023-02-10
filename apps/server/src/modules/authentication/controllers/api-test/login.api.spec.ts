@@ -244,31 +244,40 @@ jwIDAQAB
 		});
 
 		describe('when user login succeeds', () => {
-			it('should return jwt', () => {
-				const signed = jwt.sign('dummyAccessToken', { key: privateRsaKey, passphrase: '0000' }, { algorithm: 'RS256' });
-				jwt.verify(signed, publicRsaKey, {
-					algorithms: ['RS256'],
-					// issuer: oauthConfig.issuer,
-					// audience: oauthConfig.clientId,
-				});
+			it('should sign and verify', () => {
+				if (system?.oauthConfig) {
+					const signed = jwt.sign(
+						{},
+						{ key: privateRsaKey, passphrase: '0000' },
+						{ algorithm: 'RS256', audience: system.oauthConfig.clientId, issuer: system.oauthConfig.issuer }
+					);
+					jwt.verify(signed, publicRsaKey, {
+						algorithms: ['RS256'],
+						issuer: system.oauthConfig.issuer,
+						audience: system.oauthConfig.clientId,
+					});
+				} else {
+					fail();
+				}
 			});
 
 			it('should return jwt', async () => {
 				const params: AuthorizationParams = {
 					code: 'someCode',
 				};
+				if (!system.oauthConfig) {
+					fail('oauth system not properly initialized');
+					return;
+				}
+				const signOptions: jwt.SignOptions = {
+					algorithm: 'RS256',
+					audience: system.oauthConfig.clientId,
+					issuer: system.oauthConfig.issuer,
+				};
 				const tokenResponse: OauthTokenResponse = {
-					access_token: jwt.sign(
-						'dummyAccessToken',
-						{ key: privateRsaKey, passphrase: '0000' },
-						{ algorithm: 'RS256' }
-					),
-					refresh_token: jwt.sign(
-						'dummyRefreshToken',
-						{ key: privateRsaKey, passphrase: '0000' },
-						{ algorithm: 'RS256' }
-					),
-					id_token: jwt.sign('dummyIdToken', { key: privateRsaKey, passphrase: '0000' }, { algorithm: 'RS256' }),
+					access_token: jwt.sign({}, { key: privateRsaKey, passphrase: '0000' }, signOptions),
+					refresh_token: jwt.sign({}, { key: privateRsaKey, passphrase: '0000' }, signOptions),
+					id_token: jwt.sign({}, { key: privateRsaKey, passphrase: '0000' }, signOptions),
 				};
 				oauthAdapterServiceMock.getPublicKey.mockResolvedValueOnce(publicRsaKey);
 				oauthAdapterServiceMock.sendTokenRequest.mockResolvedValueOnce(tokenResponse);
