@@ -1,36 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { BoardElementResponse } from './board-element.response';
+import { BoardColumnResponse } from './board-column.response';
+import { TimestampsResponse } from './timestamps.response';
 
-// TODO: this and DashboardResponse should be combined
 export class BoardResponse {
-	constructor({ roomId, title, displayColor, elements }: BoardResponse) {
-		this.roomId = roomId;
+	constructor({ id, title, columns, timestamps }: BoardResponse) {
+		this.id = id;
 		this.title = title;
-		this.displayColor = displayColor;
-		this.elements = elements;
+		this.columns = columns;
+		this.timestamps = timestamps;
 	}
 
 	@ApiProperty({
-		description: 'The id of the room this board belongs to',
 		pattern: '[a-f0-9]{24}',
 	})
-	roomId: string;
+	id: string;
 
+	@ApiProperty()
 	@DecodeHtmlEntities()
-	@ApiProperty({
-		description: 'Title of the Board',
-	})
 	title: string;
 
 	@ApiProperty({
-		description: 'Color of the Board',
+		type: [BoardColumnResponse],
 	})
-	displayColor: string;
+	columns: BoardColumnResponse[];
 
-	@ApiProperty({
-		type: [BoardElementResponse],
-		description: 'Array of board specific tasks or lessons with matching type property',
-	})
-	elements: BoardElementResponse[];
+	@ApiProperty()
+	timestamps: TimestampsResponse;
 }

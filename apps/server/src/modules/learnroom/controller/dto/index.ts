@@ -9,3 +9,4 @@ export * from './patch-order.params';
 export * from './patch-visibility.params';
 export * from './room-element.url.params';
 export * from './room.url.params';
+export * from './single-column-board';
