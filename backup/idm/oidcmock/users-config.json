@@ -23,25 +23,25 @@
 		]
 	},
 	{
-		"SubjectId": "MGEwM2UyZjMtNTNjMS00NTlhLWEzNmEtNjNhOWYwZjFiZWM3",
-		"Username": "lorenz.ldap",
+		"SubjectId": "N2FkN2EyYWEtOTA3Yi00YTljLTkxYWItNWM4ZjA4MDkwMjc3",
+		"Username": "laura.ldapkowski.123456",
 		"Password": "DummyPwd!",
 		"Claims": [
 			{
 				"Type": "name",
-				"Value": "Lorenz Ldap"
+				"Value": "Laura Ldapkowski"
 			},
 			{
 				"Type": "given_name",
-				"Value": "Lorenz"
+				"Value": "Laura"
 			},
 			{
 				"Type": "family_name",
-				"Value": "Ldap"
+				"Value": "Ldapkowski"
 			},
 			{
 				"Type": "email",
-				"Value": "lorenz.ldap@not.amail"
+				"Value": "laura.ldapkowski.123456@example.org"
 			}
 		]
 	}

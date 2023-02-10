@@ -42,6 +42,8 @@ data:
     {
       "type" : "ldap",
       "alias" : "schoolOne0",
+      "provisioningStrategy": "oidc",
+      "displayName": "SSO LDAP School One 0",
       "ldapConfig" : {
         "active" : true,
         "federalState": ObjectId("0000b186816abba584714c56"),
@@ -78,9 +80,6 @@ data:
         }
       },
       "oidcConfig": {
-        "provisioningStrategy": "oidc",
-        "alias": "oidcmock",
-        "displayName": "SSO LDAP School One 0",
         "clientId": "'${OIDCMOCK__CLIENT_ID}'",
 			  "clientSecret": "'${OIDCMOCK__CLIENT_SECRET}'",
 			  "authorizationUrl": "'${OIDCMOCK__BASE_URL}'/connect/authorize",
@@ -139,6 +138,7 @@ data:
                                        "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
                                      } );'
     # env specific things
+    LDAP_OIDC_SYSTEM_ID=
     ISERV_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $ISERV_CLIENT_SECRET)
     ISERV_SYSTEM_ID=0000d186816abba584714c92
     SANIS_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $SANIS_CLIENT_SECRET)
@@ -307,7 +307,25 @@ data:
             "roles": [
                 ObjectId("0000d186816abba584714c96")
             ]
-          }
+          },
+          {
+            "_id": {
+              "$oid": "0000d231816abba584714c2f"
+            },
+            "username": "o=school0,dc=de,dc=example,dc=org/laura.ldapkowski.123456",
+            "password": "",
+            "systemId": "62c7f233f35a554ba3ed42f1",
+            "updatedAt": {
+              "$date": "2017-01-01T00:06:37.148Z"
+            },
+            "createdAt": {
+              "$date": "2017-01-01T00:06:37.148Z"
+            },
+            "userId": {
+              "$oid": "0000d231816abba584714c9f"
+            },
+            "__v": 0
+          },
       ]);'
     fi
     # this is crucial, until we have all entities in nest!
