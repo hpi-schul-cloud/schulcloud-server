@@ -152,9 +152,7 @@ export class RocketChatService {
 	}
 
 	private async getGroupData(groupName: string): Promise<RocketChatGroupModel> {
-		return this.getAsAdmin(
-			`/api/v1/groups.info?roomName=${groupName}`
-		) as Promise<unknown> as Promise<RocketChatGroupModel>;
+		return this.getAsAdmin<RocketChatGroupModel>(`/api/v1/groups.info?roomName=${groupName}`);
 	}
 
 	public async createGroup(name: string, members: string[]): Promise<GenericData> {
@@ -193,12 +191,12 @@ export class RocketChatService {
 		return this.post(path, adminIdAndToken.token, adminIdAndToken.id, body);
 	}
 
-	private async getAsAdmin(path: string): Promise<GenericData> {
+	private async getAsAdmin<Type = GenericData>(path: string): Promise<Type> {
 		const adminIdAndToken = await this.getAdminIdAndToken();
-		return this.get(path, adminIdAndToken.token, adminIdAndToken.id);
+		return this.get<Type>(path, adminIdAndToken.token, adminIdAndToken.id);
 	}
 
-	private async get(path: string, authToken: string, userId: string): Promise<GenericData> {
+	private async get<Type = GenericData>(path: string, authToken: string, userId: string): Promise<Type> {
 		const response = await lastValueFrom(
 			this.httpService
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -214,7 +212,7 @@ export class RocketChatService {
 					})
 				)
 		);
-		return response?.data as GenericData;
+		return response?.data as Type;
 	}
 
 	private async post(path: string, authToken: string, userId: string, body: GenericData): Promise<GenericData> {
