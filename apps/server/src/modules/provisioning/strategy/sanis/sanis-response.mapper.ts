@@ -16,6 +16,7 @@ export class SanisResponseMapper {
 		return new ExternalSchoolDto({
 			name: source.personenkontexte[0].organisation.name,
 			externalId: source.personenkontexte[0].organisation.id.toString(),
+			officialSchoolNumber: source.personenkontexte[0].organisation.kennung,
 		});
 	}
 
