@@ -13,6 +13,7 @@ import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import { UserMigrationDto } from '../controller/dto/userMigrationDto';
+import { SchoolService } from '../../school';
 
 @Injectable()
 export class OauthUc {
@@ -20,6 +21,7 @@ export class OauthUc {
 		private readonly oauthService: OAuthService,
 		private readonly systemService: SystemService,
 		private readonly provisioningService: ProvisioningService,
+		private readonly schoolService: SchoolService,
 		private readonly userService: UserService,
 		private readonly userMigrationService: UserMigrationService,
 		private readonly logger: Logger
@@ -151,6 +153,15 @@ export class OauthUc {
 			queryToken.id_token,
 			system.id
 		);
+
+		if (data.externalSchool) {
+			await this.schoolService.migrateSchool(
+				currentUserId,
+				data.externalSchool?.externalId,
+				data.externalSchool?.officialSchoolNumber as string,
+				systemId
+			);
+		}
 		const migrationDto = this.userMigrationService.migrateUser(currentUserId, data.externalUser.externalId, systemId);
 		return migrationDto;
 	}
