@@ -12,6 +12,30 @@ export interface RocketChatOptions {
 	adminToken?: string;
 }
 
+export interface RocketChatGroupModel {
+	group: {
+		_id: string;
+		name: string;
+		fname: string;
+		t: string;
+		msgs: number;
+		usersCount: number;
+		u: {
+			_id: string;
+			username: string;
+		};
+		customfields: object;
+		broadcast: boolean;
+		encrypted: boolean;
+		ts: Date;
+		ro: boolean;
+		defaults: boolean;
+		sysmes: boolean;
+		_updatedAt: Date;
+	};
+	success: boolean;
+}
+
 type GenericData = Record<string, unknown>;
 
 export class RocketChatError extends Error {
@@ -90,8 +114,10 @@ export class RocketChatService {
 	}
 
 	public async kickUserFromGroup(groupName: string, userId: string): Promise<GenericData> {
+		const groupInfo: RocketChatGroupModel = await this.getGroupData(groupName);
+
 		return this.postAsAdmin('/api/v1/groups.kick', {
-			roomName: groupName,
+			roomId: groupInfo.group._id,
 			userId,
 		});
 	}
@@ -123,6 +149,12 @@ export class RocketChatService {
 
 	public async getGroupMembers(groupName: string): Promise<GenericData> {
 		return this.getAsAdmin(`/api/v1/groups.members?roomName=${groupName}`);
+	}
+
+	private async getGroupData(groupName: string): Promise<RocketChatGroupModel> {
+		return this.getAsAdmin(
+			`/api/v1/groups.info?roomName=${groupName}`
+		) as Promise<unknown> as Promise<RocketChatGroupModel>;
 	}
 
 	public async createGroup(name: string, members: string[]): Promise<GenericData> {
