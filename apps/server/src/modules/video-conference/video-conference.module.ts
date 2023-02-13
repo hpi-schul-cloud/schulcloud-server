@@ -12,8 +12,6 @@ import { VideoConferenceResponseMapper } from '@src/modules/video-conference/map
 import { LoggerModule } from '@src/core/logger';
 import { ConverterUtil } from '@shared/common';
 import { SchoolService } from '../school';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { TransactionUtil } from '@shared/common/utils/transaction.util';
 
 @Module({
 	imports: [AuthorizationModule, CalendarModule, HttpModule, SchoolModule, LoggerModule],
@@ -26,8 +24,6 @@ import { TransactionUtil } from '@shared/common/utils/transaction.util';
 		TeamsRepo,
 		CourseRepo,
 		UserRepo,
-		UserDORepo,
-		TransactionUtil,
 		SchoolService,
 		VideoConferenceResponseMapper,
 		ConverterUtil,

@@ -156,7 +156,6 @@ export class OauthUc {
 
 		if (data.externalSchool) {
 			await this.schoolService.migrateSchool(
-				currentUserId,
 				data.externalSchool?.externalId,
 				data.externalSchool?.officialSchoolNumber as string,
 				systemId

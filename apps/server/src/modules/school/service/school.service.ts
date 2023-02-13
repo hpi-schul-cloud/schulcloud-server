@@ -4,17 +4,10 @@ import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
 import { isDefined } from 'class-validator';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
-import { TransactionUtil } from '@shared/common/utils/transaction.util';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
 
 @Injectable()
 export class SchoolService {
-	constructor(
-		readonly schoolRepo: SchoolRepo,
-		private readonly userDORepo: UserDORepo,
-		private readonly transactionUtil: TransactionUtil
-	) {}
+	constructor(readonly schoolRepo: SchoolRepo) {}
 
 	async createOrUpdateSchool(school: SchoolDO): Promise<SchoolDO> {
 		let createdSchool: SchoolDO;
@@ -82,30 +75,21 @@ export class SchoolService {
 		return response;
 	}
 
-	async migrateSchool(
-		currentUserId: string,
-		externalId: string,
-		schoolNumber: string,
-		systemId: string
-	): Promise<void> {
-		const userDO: UserDO = await this.userDORepo.findById(currentUserId, true);
-		const sourceSchool: SchoolDO = await this.schoolRepo.findById(userDO.schoolId);
-		const systems: string[] = sourceSchool.systems as string[];
+	async migrateSchool(externalId: string, schoolNumber: string, systemId: string): Promise<void> {
 		let isSchoolMigrated: boolean = false;
 
-		for (let system of systems) {
-			if (await this.getSchoolByExternalId(externalId, system)) {
-				isSchoolMigrated = true;
-			}
+		if (await this.getSchoolByExternalId(externalId, systemId)) {
+			isSchoolMigrated = true;
 		}
 		if (!isSchoolMigrated) {
-			await this.transactionUtil.doTransaction(async () => {
-				const schoolDO: SchoolDO = (await this.schoolRepo.findBySchoolNumber(schoolNumber)) as SchoolDO;
-				schoolDO.systems!.push(systemId);
+			const schoolDO: SchoolDO | null = await this.schoolRepo.findBySchoolNumber(schoolNumber);
+			if (schoolDO) {
+				if (schoolDO.systems) {
+					schoolDO.systems.push(systemId);
+				} else schoolDO.systems = [systemId];
 				schoolDO.legacyExternalId = schoolDO.externalId;
 				schoolDO.externalId = externalId;
-				await this.schoolRepo.saveWithoutFlush(schoolDO);
-			});
+			} else throw new Error('official school number not set');
 		}
 	}
 
