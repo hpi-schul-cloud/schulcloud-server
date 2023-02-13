@@ -76,7 +76,6 @@ describe('OauthAdapterServive', () => {
 	});
 
 	describe('sendRequestToken', () => {
-		const code = '43534543jnj543342jn2';
 		const tokenResponse: OauthTokenResponse = {
 			access_token: 'accessToken',
 			refresh_token: 'refreshToken',

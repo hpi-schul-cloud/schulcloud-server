@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
-import { HttpService } from '@nestjs/axios';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, System } from '@shared/domain';
@@ -9,7 +8,6 @@ import { SystemService } from '@src/modules/system/service/system.service';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
@@ -51,8 +49,6 @@ describe('OAuthService', () => {
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userService: DeepMocked<UserService>;
-	let feathersJwtProvider: DeepMocked<FeathersJwtProvider>;
-	let httpService: DeepMocked<HttpService>;
 	let systemService: DeepMocked<SystemService>;
 	let userMigrationService: DeepMocked<UserMigrationService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
@@ -80,14 +76,6 @@ describe('OAuthService', () => {
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
-				},
-				{
-					provide: FeathersJwtProvider,
-					useValue: createMock<FeathersJwtProvider>(),
-				},
-				{
-					provide: HttpService,
-					useValue: createMock<HttpService>(),
 				},
 				{
 					provide: DefaultEncryptionService,
@@ -120,8 +108,6 @@ describe('OAuthService', () => {
 		oAuthEncryptionService = module.get(DefaultEncryptionService);
 		provisioningService = module.get(ProvisioningService);
 		userService = module.get(UserService);
-		feathersJwtProvider = module.get(FeathersJwtProvider);
-		httpService = module.get(HttpService);
 		systemService = module.get(SystemService);
 		userMigrationService = module.get(UserMigrationService);
 		oauthAdapterService = module.get(OauthAdapterService);
