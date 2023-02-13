@@ -58,10 +58,10 @@ module.exports = {
 			const rawData = await statusApi.getIncidents();
 			const instanceSpecific = [];
 			const noneSpecific = [];
-			const displayIncidentsInMin = Configuration.get('DISPLAY_INCIDENTS_IN_MIN');
+			const statusEnum = { fixed: 4, danger: 2 };
 
 			const promises = rawData.data.map(async (element) => {
-				if (element.status !== 4 || Date.parse(element.updated_at) + displayIncidentsInMin >= Date.now()) {
+				if (element.status !== statusEnum.fixed) {
 					// only mind messages for own instance (including none instance specific messages)
 					const isinstance = await getInstance(instance, element.component_id);
 					if (isinstance !== importance.ALL_INSTANCES && isinstance !== importance.INGORE) {

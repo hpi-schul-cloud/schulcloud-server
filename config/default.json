@@ -36,6 +36,5 @@
 		"HOST_ONLY": true,
 		"SECURE": true,
 		"EXPIRES_SECONDS": 2592000000
-	},
-	"DISPLAY_INCIDENTS_IN_MIN": 2880
+	}
 }
