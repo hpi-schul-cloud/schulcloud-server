@@ -130,6 +130,7 @@ export class ServerModule implements NestModule {
 					secret: Configuration.get('SESSION_SECRET') as string,
 					resave: false,
 					saveUninitialized: false,
+					name: 'nest.sid',
 					cookie: {
 						secure: isProduction,
 						sameSite: isProduction,
