@@ -45,7 +45,7 @@ backup/*
 !backup/idm
 
 # IDEs and editors
-/.idea
+.idea
 .project
 .classpath
 .c9/
