@@ -8,7 +8,7 @@ import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { Strategy } from 'passport-custom';
-import { AuthorizationParams } from '../controllers/authorization.params';
+import { OauthAuthorizationParams } from './dtos/oauth-authorization.params';
 
 export type PathParams = { systemId?: string };
 
@@ -23,7 +23,7 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 		this.logger.setContext(OauthStrategy.name);
 	}
 
-	async validate(request: { params: PathParams; query: AuthorizationParams }): Promise<ICurrentUser> {
+	async validate(request: { params: PathParams; query: OauthAuthorizationParams }): Promise<ICurrentUser> {
 		const { systemId } = request.params;
 		const { query } = request;
 

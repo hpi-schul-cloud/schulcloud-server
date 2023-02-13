@@ -6,6 +6,7 @@ import { ICurrentUser } from '@shared/domain';
 import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../decorator/auth.decorator';
 import { AuthenticationService } from '../services/authentication.service';
+import { OauthAuthorizationQueryParams } from './oauth-authorization.params';
 
 @ApiTags('Authentication')
 @Controller('authentication')
@@ -31,7 +32,7 @@ export class LoginController {
 	@Get('oauth/:systemId')
 	async loginOauth(
 		@CurrentUser() user: ICurrentUser,
-		@Query() queryParams: { redirect: string },
+		@Query() queryParams: OauthAuthorizationQueryParams,
 		@Res() res: Response
 	) {
 		const jwt = await this.authService.generateJwt(user);
@@ -42,6 +43,8 @@ export class LoginController {
 			expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
 		};
 		res.cookie('jwt', jwt.accessToken, cookieDefaultOptions);
-		res.redirect(queryParams.redirect);
+		if (queryParams.redirect) {
+			res.redirect(queryParams.redirect);
+		}
 	}
 }

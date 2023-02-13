@@ -10,7 +10,7 @@ import { OauthTokenResponse } from '@src/modules/oauth/controller/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import request from 'supertest';
 import axios from 'axios';
-import { AuthorizationParams } from '../authorization.params';
+import { OauthAuthorizationQueryParams } from '../oauth-authorization.params';
 
 const schoolExternalId = 'mockSchoolExternalId';
 const ldapAccountUserName = 'ldapAccountUserName';
@@ -293,9 +293,9 @@ describe('Login Controller (api)', () => {
 			});
 
 			it('should return jwt', async () => {
-				const params: AuthorizationParams = {
-					code: 'someCode',
-				};
+				const params: OauthAuthorizationQueryParams = new OauthAuthorizationQueryParams();
+				params.code = 'someCode';
+
 				if (!system.oauthConfig) {
 					fail('oauth system not properly initialized');
 					return;
