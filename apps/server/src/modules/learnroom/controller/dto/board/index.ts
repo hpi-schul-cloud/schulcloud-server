@@ -1,3 +1,4 @@
+export * from './board-card.url.params';
 export * from './board-column.url.params';
 export * from './board.response';
 export * from './board.url.params';

@@ -7,13 +7,6 @@ export class MoveCardBodyParams {
 		required: true,
 		nullable: false,
 	})
-	cardId!: string;
-
-	@IsMongoId()
-	@ApiProperty({
-		required: true,
-		nullable: false,
-	})
 	toColumnId!: string;
 
 	@IsNumber()

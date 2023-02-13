@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotImplementedException, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, NotImplementedException, Param, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -23,7 +23,7 @@ export class BoardController {
 		throw new NotImplementedException();
 	}
 
-	@Patch('/:boardId/movecard')
+	@Put('/:boardId/cards/:cardId/position')
 	moveCard(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: MoveCardBodyParams,
@@ -32,16 +32,16 @@ export class BoardController {
 		throw new NotImplementedException();
 	}
 
-	@Patch('/:boardId/movecolumn')
+	@Put('/:boardId/columns/:columnId/position')
 	moveColumn(
-		@Param() urlParams: BoardUrlParams,
+		@Param() urlParams: BoardColumnUrlParams,
 		@Body() bodyParams: MoveColumnBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		throw new NotImplementedException();
 	}
 
-	@Patch('/:boardId/renameboard')
+	@Put('/:boardId/title')
 	renameBoard(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: RenameBodyParams,
@@ -50,7 +50,7 @@ export class BoardController {
 		throw new NotImplementedException();
 	}
 
-	@Patch(':boardId/column/:columnId/rename')
+	@Put(':boardId/columns/:columnId/title')
 	renameColumn(
 		@Param() urlParams: BoardColumnUrlParams,
 		@Body() bodyParams: RenameBodyParams,
