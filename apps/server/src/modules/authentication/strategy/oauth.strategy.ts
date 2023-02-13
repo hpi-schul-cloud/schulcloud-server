@@ -23,14 +23,40 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 		this.logger.setContext(OauthStrategy.name);
 	}
 
-	async validate(request: { params: PathParams; query: OauthAuthorizationParams }): Promise<ICurrentUser> {
+	async validate(request: { params: PathParams; query: OauthAuthorizationParams }): Promise<ICurrentUser | null> {
+		const { systemId, code } = this.extractParamsFromRequest(request);
+
+		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.authenticateUser(
+			code,
+			systemId
+		);
+		request.query = { ...request.params, redirect };
+
+		return this.loadICurrentUser(systemId, user);
+	}
+
+	private async loadICurrentUser(systemId: string, user?: UserDO): Promise<ICurrentUser | null> {
+		if (!user || !user.id) {
+			return null;
+		}
+		const account = await this.accountService.findByUserId(user.id);
+		if (!account) {
+			throw new UnauthorizedException('no account found');
+		}
+		const currentUser: ICurrentUser = CurrentUserMapper.userDoToICurrentUser(account.id, user, systemId);
+		return currentUser;
+	}
+
+	private extractParamsFromRequest(request: { params: PathParams; query: OauthAuthorizationParams }): {
+		systemId: string;
+		code: string;
+	} {
 		const { systemId } = request.params;
 		const { query } = request;
 
 		if (!systemId || !query.code) {
 			throw new UnauthorizedException();
 		}
-		this.logger.debug(`Oauth process started for systemId ${systemId}`);
 		if (query.error) {
 			throw new UnauthorizedException(
 				'Authorization Query Object has no authorization code or error',
@@ -38,20 +64,6 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 			);
 		}
 
-		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.authenticateUser(
-			query.code,
-			systemId
-		);
-		request.query = { ...request.params, redirect };
-		if (!user || !user.id) {
-			throw new UnauthorizedException();
-		}
-		const account = await this.accountService.findByUserId(user.id);
-		if (!account) {
-			throw new UnauthorizedException();
-		}
-
-		const currentUser: ICurrentUser = CurrentUserMapper.userDoToICurrentUser(account.id, user, systemId);
-		return currentUser;
+		return { systemId, code: query.code };
 	}
 }

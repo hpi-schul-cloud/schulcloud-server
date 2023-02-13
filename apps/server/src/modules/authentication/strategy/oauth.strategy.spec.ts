@@ -39,14 +39,14 @@ describe('OauthStrategy', () => {
 		strategy = module.get(OauthStrategy);
 		accountService = module.get(AccountService);
 		oauthService = module.get(OAuthService);
-		// mockUser = userFactory.withRole(RoleName.STUDENT).buildWithId();
-		// mockAccount = AccountEntityToDtoMapper.mapToDto(
-		// 	accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
-		// );
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	beforeEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('when no systemId is passed as path param', () => {
@@ -67,15 +67,6 @@ describe('OauthStrategy', () => {
 		});
 	});
 
-	describe('when user DO has no ID (unreachable in prod)', () => {
-		it('should throw Unauthorized', async () => {
-			oauthService.authenticateUser.mockResolvedValueOnce({ user: {} as UserDO, redirect: '/mock-redirect' });
-			await expect(strategy.validate({ params: { systemId }, query: { code: 'some Code' } })).rejects.toThrow(
-				UnauthorizedException
-			);
-		});
-	});
-
 	describe('when no account is found for user ID', () => {
 		it('should throw Unauthorized', async () => {
 			oauthService.authenticateUser.mockResolvedValueOnce({
@@ -89,7 +80,17 @@ describe('OauthStrategy', () => {
 		});
 	});
 
-	describe('whenlogin data is valid', () => {
+	describe('when no user is returned for auth code (in case school is currently migrated to oauth)', () => {
+		it('should throw Unauthorized', async () => {
+			oauthService.authenticateUser.mockResolvedValueOnce({
+				redirect: '/mock-redirect',
+			});
+			accountService.findByUserId.mockResolvedValueOnce(null);
+			await expect(strategy.validate({ params: { systemId }, query: { code: 'some Code' } })).resolves.toBeNull();
+		});
+	});
+
+	describe('when login data is valid', () => {
 		it('should return current user object', async () => {
 			const mockUser: UserDO = userDoFactory.withDates().buildWithId();
 			const accountId = 'mockAccountId';

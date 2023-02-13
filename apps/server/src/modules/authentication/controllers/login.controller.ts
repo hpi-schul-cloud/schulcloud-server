@@ -35,14 +35,17 @@ export class LoginController {
 		@Query() queryParams: OauthAuthorizationQueryParams,
 		@Res() res: Response
 	) {
-		const jwt = await this.authService.generateJwt(user);
-		const cookieDefaultOptions: CookieOptions = {
-			httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
-			sameSite: Configuration.get('COOKIE__SAME_SITE') as 'lax' | 'strict' | 'none',
-			secure: Configuration.get('COOKIE__SECURE') as boolean,
-			expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
-		};
-		res.cookie('jwt', jwt.accessToken, cookieDefaultOptions);
+		// the user can be null if the school is in migration from another login strategy to OAuth
+		if (user) {
+			const jwt = await this.authService.generateJwt(user);
+			const cookieDefaultOptions: CookieOptions = {
+				httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
+				sameSite: Configuration.get('COOKIE__SAME_SITE') as 'lax' | 'strict' | 'none',
+				secure: Configuration.get('COOKIE__SECURE') as boolean,
+				expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
+			};
+			res.cookie('jwt', jwt.accessToken, cookieDefaultOptions);
+		}
 		if (queryParams.redirect) {
 			res.redirect(queryParams.redirect);
 		}
