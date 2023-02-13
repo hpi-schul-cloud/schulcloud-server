@@ -12,6 +12,7 @@ import { IServerConfig } from '@src/modules/server/server.config';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { lastValueFrom } from 'rxjs';
+import ProtocolMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -126,6 +127,10 @@ export class KeycloakConfigurationService {
 		let defaultClientInternalId = (await kc.clients.find({ clientId }))[0]?.id;
 		if (!defaultClientInternalId) {
 			({ id: defaultClientInternalId } = await kc.clients.create(cr));
+			await kc.clients.addProtocolMapper(
+				{ id: defaultClientInternalId },
+				this.getExternalSubClientMapperConfiguration()
+			);
 		} else {
 			await kc.clients.update({ id: defaultClientInternalId }, cr);
 		}
@@ -265,6 +270,11 @@ export class KeycloakConfigurationService {
 		}
 	}
 
+	private async deleteIdentityProvider(alias: string): Promise<void> {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		await kc.identityProviders.del({ alias });
+	}
+
 	private async updateOrCreateIdpDefaultMapper(idpAlias: string) {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const allMappers = await kc.identityProviders.findMappers({ alias: idpAlias });
@@ -290,16 +300,32 @@ export class KeycloakConfigurationService {
 	private getIdpMapperConfiguration(idpAlias: string, id?: string): IdentityProviderMapperRepresentation {
 		return {
 			id,
+			name: 'OIDC User Attribute Mapper',
 			identityProviderAlias: idpAlias,
-			name: defaultIdpMapperName,
-			identityProviderMapper: defaultIdpMapperName,
-			// eslint-disable-next-line no-template-curly-in-string
-			config: { syncMode: 'FORCE', target: 'LOCAL', template: '${CLAIM.sub}' },
+			identityProviderMapper: 'oidc-user-attribute-idp-mapper',
+			config: {
+				syncMode: 'FORCE',
+				'are.claim.values.regex': false,
+				claim: 'sub',
+				'user.attribute': 'external_sub',
+			},
 		};
 	}
 
-	private async deleteIdentityProvider(alias: string): Promise<void> {
-		const kc = await this.kcAdmin.callKcAdminClient();
-		await kc.identityProviders.del({ alias });
+	private getExternalSubClientMapperConfiguration(): ProtocolMapperRepresentation {
+		return {
+			name: 'External Sub Mapper',
+			protocol: 'openid-connect',
+			protocolMapper: 'oidc-usermodel-attribute-mapper',
+			config: {
+				'aggregate.attrs': false,
+				'userinfo.token.claim': true,
+				multivalued: false,
+				'user.attribute': 'external_sub',
+				'id.token.claim': true,
+				'access.token.claim': true,
+				'claim.name': 'external_sub',
+			},
+		};
 	}
 }

@@ -112,17 +112,22 @@ export class OAuthService {
 	}
 
 	async findUser(idToken: string, externalUserId: EntityId, systemId: EntityId): Promise<UserDO> {
-		const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
+		const decodedToken = jwt.decode(idToken, { json: true }) as (JwtPayload & { external_sub?: string }) | null;
 
-		if (!decodedToken?.sub) {
+		if (!decodedToken?.external_sub) {
 			throw new BadRequestException(`Provided idToken: ${idToken} has no sub.`);
 		}
 
-		this.logger.debug(`provisioning is running for user with sub: ${decodedToken.sub} and system with id: ${systemId}`);
-		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+		this.logger.debug(
+			`provisioning is running for user with sub: ${decodedToken.external_sub} and system with id: ${systemId}`
+		);
+		const user = await this.userService.findByExternalId(decodedToken.external_sub, systemId);
 		if (!user) {
 			const additionalInfo: string = await this.getAdditionalErrorInfo(decodedToken?.email as string | undefined);
-			throw new OAuthSSOError(`Failed to find user with Id ${externalUserId} ${additionalInfo}`, 'sso_user_notfound');
+			throw new OAuthSSOError(
+				`Failed to find user with Id ${decodedToken.external_sub} ${additionalInfo}`,
+				'sso_user_notfound'
+			);
 		}
 		return user;
 	}
