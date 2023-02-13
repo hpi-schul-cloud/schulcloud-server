@@ -119,5 +119,27 @@
 			"$date": "2023-01-12T18:24:50.878Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "63e9fda013cbe697a42f9b3a"
+		},
+		"state": "up",
+		"name": "AddCreateToolEtherpadPermissionForTeachers",
+		"createdAt": {
+			"$date": "2023-02-13T09:05:10.537Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "63e9fe6e5e68f970f86babfd"
+		},
+		"state": "up",
+		"name": "AddCreateToolEtherpadPermissionForStudents",
+		"createdAt": {
+			"$date": "2023-02-13T09:08:55.613Z"
+		},
+		"__v": 0
 	}
 ]

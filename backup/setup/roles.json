@@ -201,7 +201,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2023-02-13T09:06:41.021Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -247,7 +247,8 @@
 			"TASK_CARD_EDIT",
 			"TEAM_CREATE",
 			"TEAM_EDIT",
-			"START_MEETING"
+			"START_MEETING",
+			"TOOL_CREATE_ETHERPAD"
 		],
 		"__v": 2
 	},
@@ -257,7 +258,7 @@
 		},
 		"name": "student",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2023-02-13T09:10:06.370Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -271,7 +272,8 @@
 			"TASK_DASHBOARD_VIEW_V3",
 			"JOIN_MEETING",
 			"TEAM_CREATE",
-			"TEAM_EDIT"
+			"TEAM_EDIT",
+			"TOOL_CREATE_ETHERPAD"
 		],
 		"__v": 0
 	},
