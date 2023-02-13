@@ -90,13 +90,13 @@ export class FilesStorageService {
 		}
 	}
 
-	public async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: FileDto): Promise<FileRecord> {
+	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecord> {
 		const [fileRecords] = await this.getFileRecordsOfParent(params);
-		const fileName = resolveFileNameDuplicates(fileDescription.name, fileRecords);
-		const fileRecord = createFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
+		const fileName = resolveFileNameDuplicates(file.name, fileRecords);
+		const fileRecord = createFileRecord(fileName, file.size, file.mimeType, params, userId);
 
 		await this.fileRecordRepo.save(fileRecord);
-		await this.createFileInStorageAndRollbackOnError(fileRecord, params, fileDescription);
+		await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
 
 		return fileRecord;
 	}
