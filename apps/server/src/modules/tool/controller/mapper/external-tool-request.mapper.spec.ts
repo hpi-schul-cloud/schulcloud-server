@@ -58,7 +58,7 @@ describe('ExternalToolRequestMapper', () => {
 
 		const customParameterPostParams = new CustomParameterPostParams();
 		customParameterPostParams.name = 'mockName';
-		customParameterPostParams.default = 'mockDefault';
+		customParameterPostParams.defaultValue = 'mockDefault';
 		customParameterPostParams.location = CustomParameterLocationParams.PATH;
 		customParameterPostParams.scope = CustomParameterScopeParams.SCHOOL;
 		customParameterPostParams.type = CustomParameterTypeParams.STRING;

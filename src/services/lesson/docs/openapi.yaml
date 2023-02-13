@@ -351,40 +351,6 @@ paths:
         - lessons
       security:
         - jwtBearer: []
-  /lessons/copy:
-    post:
-      parameters: []
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/lessons'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - lessons
-      security:
-        - jwtBearer: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                lessonId:
-                  type: string
-                  format: '^[0-9a-f]{24}$'
-                shareToken:
-                  type: string
-              required:
-                - lessonId
   '/lessons/{lessonId}/material':
     post:
       parameters:

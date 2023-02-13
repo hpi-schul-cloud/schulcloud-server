@@ -14,15 +14,15 @@ export function createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 }
 
 export function getPaths(fileRecords: FileRecord[]): string[] {
-	const paths = fileRecords.map((fileRecord) => createPath(fileRecord.schoolId, fileRecord.id));
+	const paths = fileRecords.map((fileRecord) => createPath(fileRecord.getSchoolId(), fileRecord.id));
 
 	return paths;
 }
 
 export function createICopyFiles(sourceFile: FileRecord, targetFile: FileRecord): ICopyFiles {
 	const iCopyFiles = {
-		sourcePath: createPath(sourceFile.schoolId, sourceFile.id),
-		targetPath: createPath(targetFile.schoolId, targetFile.id),
+		sourcePath: createPath(sourceFile.getSchoolId(), sourceFile.id),
+		targetPath: createPath(targetFile.getSchoolId(), targetFile.id),
 	};
 
 	return iCopyFiles;
