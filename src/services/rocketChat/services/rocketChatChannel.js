@@ -1,5 +1,4 @@
 const request = require('request-promise-native');
-// tu
 const { BadRequest } = require('../../../errors');
 const { makeStringRCConform } = require('../helpers');
 const { TEAM_FEATURES } = require('../../teams/model');
