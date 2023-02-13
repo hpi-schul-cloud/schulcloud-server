@@ -1,6 +1,5 @@
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const courseCopyService = require('./services/course-copy-service');
 const courseScopelistService = require('./services/courseScopeLists');
 const ClassSuccessorService = require('./services/classSuccessor');
 const { setup: coursePermissionService } = require('./services/coursePermission');
@@ -44,7 +43,6 @@ module.exports = function () {
 	const classSuccessorService = app.service('/classes/successor');
 	classSuccessorService.hooks(classSuccessorHooks);
 
-	app.configure(courseCopyService);
 	app.configure(courseScopelistService);
 	app.configure(coursePermissionService);
 	app.configure(courseMembersService);
