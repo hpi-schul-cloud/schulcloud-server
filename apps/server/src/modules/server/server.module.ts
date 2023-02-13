@@ -10,6 +10,7 @@ import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/
 import { REDIS_CLIENT, RedisModule } from '@shared/infra/redis';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
+import { Logger } from '@src/core/logger';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
@@ -111,7 +112,9 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	controllers: [ServerController],
 })
 export class ServerModule implements NestModule {
-	constructor(@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient) {}
+	constructor(@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient, private readonly logger: Logger) {
+		logger.setContext(ServerModule.name);
+	}
 
 	configure(consumer: MiddlewareConsumer) {
 		let store: connectRedis.RedisStore | undefined;
@@ -120,6 +123,10 @@ export class ServerModule implements NestModule {
 			store = new RedisStore({
 				client: this.redisClient,
 			});
+		} else {
+			this.logger.warn(
+				'The RedisStore for sessions is not setup, since the environment variable REDIS_URI is not defined. Sessions are using the build-in MemoryStore. This should not be used in production!'
+			);
 		}
 
 		const isProduction: boolean = (Configuration.get('NODE_ENV') as string) === 'production';
