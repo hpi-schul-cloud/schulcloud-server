@@ -7,11 +7,13 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { SystemService } from '@src/modules/system/service/system.service';
+import { JwtService } from '@nestjs/jwt';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import resetAllMocks = jest.resetAllMocks;
 import { OauthConfigDto, SystemDto } from '../../system/service';
+import { FeathersJwtProvider } from '../../authorization';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -20,6 +22,7 @@ describe('OAuthUc', () => {
 
 	let oauthService: DeepMocked<OAuthService>;
 	let systemService: DeepMocked<SystemService>;
+	let jwtService: DeepMocked<FeathersJwtProvider>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -39,11 +42,16 @@ describe('OAuthUc', () => {
 					provide: OAuthService,
 					useValue: createMock<OAuthService>(),
 				},
+				{
+					provide: FeathersJwtProvider,
+					useValue: createMock<FeathersJwtProvider>(),
+				},
 			],
 		}).compile();
 		uc = module.get(OauthUc);
 		systemService = module.get(SystemService);
 		oauthService = module.get(OAuthService);
+		jwtService = module.get(FeathersJwtProvider);
 	});
 
 	afterAll(async () => {
@@ -85,7 +93,7 @@ describe('OAuthUc', () => {
 				const { code, query, jwt, redirect, baseResponse, user, testSystem } = setup();
 				oauthService.checkAuthorizationCode.mockReturnValue(code);
 				oauthService.authenticateUser.mockResolvedValue({ user, redirect });
-				oauthService.getJwtForUser.mockResolvedValue(jwt);
+				jwtService.generateJwt.mockResolvedValue(jwt);
 
 				const response: OAuthProcessDto = await uc.processOAuth(query, testSystem.id!);
 				expect(response).toEqual(

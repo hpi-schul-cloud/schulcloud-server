@@ -12,10 +12,8 @@ import { Logger } from '@src/core/logger';
 import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { UserService } from '@src/modules/user';
-import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { of, throwError } from 'rxjs';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { UserDO } from '@shared/domain/domainobject/user.do';
@@ -29,16 +27,7 @@ import { OAuthService } from './oauth.service';
 import { UserMigrationService } from '../../user-migration';
 import { OauthConfigDto } from '../../system/service';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../../provisioning/dto';
-
-const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
-	return {
-		data,
-		status: 0,
-		statusText: '',
-		headers: {},
-		config: {},
-	};
-};
+import { OauthAdapterService } from './oauth-adapter.service';
 
 jest.mock('jwks-rsa', () => () => {
 	return {
@@ -66,6 +55,7 @@ describe('OAuthService', () => {
 	let httpService: DeepMocked<HttpService>;
 	let systemService: DeepMocked<SystemService>;
 	let userMigrationService: DeepMocked<UserMigrationService>;
+	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 
 	let testSystem: System;
 	let testOauthConfig: OauthConfig;
@@ -119,6 +109,10 @@ describe('OAuthService', () => {
 					provide: UserMigrationService,
 					useValue: createMock<UserMigrationService>(),
 				},
+				{
+					provide: OauthAdapterService,
+					useValue: createMock<OauthAdapterService>(),
+				},
 			],
 		}).compile();
 		service = module.get(OAuthService);
@@ -130,6 +124,7 @@ describe('OAuthService', () => {
 		httpService = module.get(HttpService);
 		systemService = module.get(SystemService);
 		userMigrationService = module.get(UserMigrationService);
+		oauthAdapterService = module.get(OauthAdapterService);
 	});
 
 	afterAll(async () => {
@@ -184,7 +179,7 @@ describe('OAuthService', () => {
 
 		beforeEach(() => {
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
-			httpService.post.mockReturnValue(of(createAxiosResponse<OauthTokenResponse>(tokenResponse)));
+			oauthAdapterService.sendTokenRequest.mockResolvedValue(tokenResponse);
 		});
 		describe('when it requests a token', () => {
 			it('should get token from the external server', async () => {
@@ -193,27 +188,8 @@ describe('OAuthService', () => {
 				expect(responseToken).toStrictEqual(tokenResponse);
 			});
 		});
-
-		describe('when no token got returned', () => {
-			it('should throw an error', async () => {
-				httpService.post.mockReturnValueOnce(throwError(() => 'error'));
-
-				await expect(service.requestToken(code, testOauthConfig)).rejects.toEqual(
-					new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step')
-				);
-			});
-		});
 	});
 
-	describe('_getPublicKey', () => {
-		describe('when it requests a public key', () => {
-			it('should get public key', async () => {
-				const publicKey: string = await service._getPublicKey(testOauthConfig);
-
-				expect(publicKey).toStrictEqual('publicKey');
-			});
-		});
-	});
 	describe('validateToken', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
@@ -351,21 +327,6 @@ describe('OAuthService', () => {
 		});
 	});
 
-	describe('getJwtForUser', () => {
-		describe('when it is called', () => {
-			it('should return a JWT for a user', async () => {
-				const jwtToken = 'schulcloudJwt';
-
-				feathersJwtProvider.generateJwt.mockResolvedValue(jwtToken);
-
-				const jwtResult = await service.getJwtForUser('userId');
-
-				expect(feathersJwtProvider.generateJwt).toHaveBeenCalled();
-				expect(jwtResult).toStrictEqual(jwtToken);
-			});
-		});
-	});
-
 	describe('getRedirectUrl', () => {
 		describe('when it is called with an iserv-provider', () => {
 			it('should return an iserv login url string', () => {
@@ -477,7 +438,7 @@ describe('OAuthService', () => {
 			provisioningService.provisionData.mockResolvedValue(provisioningDto);
 			jest.spyOn(jwt, 'decode').mockImplementation((): JwtPayload => decodedJwtMock);
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
-			httpService.post.mockReturnValue(of(createAxiosResponse<OauthTokenResponse>(oauthTokenResponse)));
+			oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthTokenResponse);
 
 			return {
 				query,
