@@ -38,6 +38,7 @@ class ScopeResolver {
 		const { schoolId } = user;
 
 		const hasAdminViewPermission = user.permissions.some((p) => p === 'ADMIN_VIEW');
+		const isViewCalendarAccess = (params.query || {}).view;
 
 		response.data.push(
 			getDataEntry({
@@ -55,7 +56,7 @@ class ScopeResolver {
 					$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
 				},
 			}),
-			hasAdminViewPermission
+			hasAdminViewPermission && !isViewCalendarAccess
 				? courseService.find({
 						query: {
 							$limit: false,
@@ -117,7 +118,7 @@ class ScopeResolver {
 		const isUserId = equalId(userId);
 
 		scopes.forEach((scope) => {
-			let authorities = ['can-read'];
+			const authorities = ['can-read'];
 
 			const isTeacher = (scope.teacherIds || []).some(isUserId);
 			const isSubstitutionTeacher = (scope.substitutionIds || []).some(isUserId);
@@ -126,8 +127,8 @@ class ScopeResolver {
 			if (isTeacher || isSubstitutionTeacher) {
 				authorities.push('can-write', 'can-send-notifications');
 			} else if (hasAdminEditAccess) {
-				// Admin can edit all courses but don't want to see all events in calendar
-				authorities = ['can-write', 'admin-access'];
+				// Admin can edit all courses
+				authorities.push('can-write');
 			}
 
 			response.data.push(
