@@ -7,7 +7,7 @@ const { connect, close } = require('../src/utils/database');
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
 const Roles = mongoose.model(
-	'role_202304011543',
+	'role_202304011544',
 	new mongoose.Schema(
 		{
 			name: { type: String, required: true },
@@ -24,8 +24,8 @@ module.exports = {
 	up: async function up() {
 		await connect();
 
-		await Roles.updateOne(
-			{ name: 'student' },
+		await Roles.updateMany(
+			{ name: { $in: ['teacher', 'student'] } },
 			{
 				$addToSet: {
 					permissions: {
@@ -41,8 +41,8 @@ module.exports = {
 	down: async function down() {
 		await connect();
 
-		await Roles.updateOne(
-			{ name: 'student' },
+		await Roles.updateMany(
+			{ name: { $in: ['teacher', 'student'] } },
 			{
 				$pull: {
 					permissions: {
