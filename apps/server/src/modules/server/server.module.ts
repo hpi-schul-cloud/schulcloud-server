@@ -139,9 +139,9 @@ export class ServerModule implements NestModule {
 					saveUninitialized: false,
 					name: 'nest.sid',
 					cookie: {
-						secure: isProduction,
-						sameSite: isProduction,
-						httpOnly: true,
+						secure: false,
+						sameSite: false,
+						httpOnly: false,
 						maxAge: Number(Configuration.get('COOKIE__EXPIRES_SECONDS')),
 					},
 				})
