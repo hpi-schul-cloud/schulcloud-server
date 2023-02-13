@@ -25,7 +25,6 @@ import { BoardCopyService } from './service/board-copy.service';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CourseCopyService } from './service/course-copy.service';
 import { CourseService } from './service/course.service';
-import { MetadataLoader } from './service/metadata-loader.service';
 import { RoomsService } from './service/rooms.service';
 import { CourseCopyUC } from './uc/course-copy.uc';
 import { CourseExportUc } from './uc/course-export.uc';
@@ -64,12 +63,11 @@ import { RoomsUc } from './uc/rooms.uc';
 		FileLegacyService,
 		FeathersServiceProvider,
 		Logger,
-		MetadataLoader,
 		CourseService,
 		CommonCartridgeExportService,
 		CourseExportUc,
 		AuthorisationUtils,
 	],
-	exports: [CourseCopyService, MetadataLoader],
+	exports: [CourseCopyService, CourseService],
 })
 export class LearnroomModule {}
