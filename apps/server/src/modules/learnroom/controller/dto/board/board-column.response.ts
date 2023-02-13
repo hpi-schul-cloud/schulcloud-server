@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { BoardSkeletonCardReposinse } from './board-skeleton-card.response';
+import { BoardSkeletonCardReponse } from './board-skeleton-card.response';
 
 export class BoardColumnResponse {
 	constructor({ id, title, cards }: BoardColumnResponse) {
@@ -21,5 +21,5 @@ export class BoardColumnResponse {
 	@ApiProperty({
 		type: [BoardColumnResponse],
 	})
-	cards: BoardSkeletonCardReposinse;
+	cards: BoardSkeletonCardReponse;
 }

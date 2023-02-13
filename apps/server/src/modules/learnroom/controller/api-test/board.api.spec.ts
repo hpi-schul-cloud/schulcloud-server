@@ -38,22 +38,28 @@ describe('Boards Controller (API)', () => {
 	});
 
 	describe('[GET] board', () => {
-		it('should not be implemented', async () => {
+		const setup = async () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const user = userFactory.build({ roles });
 			await em.persistAndFlush([user]);
 			em.clear();
 			currentUser = mapUserToCurrentUser(user);
-			const id = new ObjectId();
+			const boardId = new ObjectId();
 
-			const response = await request(app.getHttpServer()).get(`/boards/${id.toString()}`);
+			return { boardId };
+		};
+
+		it('should not be implemented', async () => {
+			const { boardId } = await setup();
+
+			const response = await request(app.getHttpServer()).get(`/boards/${boardId.toString()}`);
 
 			expect(response.status).toEqual(501);
 		});
 	});
 
 	describe('[PATCH] move card', () => {
-		it('should not be implemented', async () => {
+		const setup = async () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const user = userFactory.build({ roles });
 			await em.persistAndFlush([user]);
@@ -62,10 +68,16 @@ describe('Boards Controller (API)', () => {
 			const boardId = new ObjectId().toString();
 			const cardId = new ObjectId().toString();
 
+			return { boardId, cardId };
+		};
+
+		it('should not be implemented', async () => {
+			const { boardId, cardId } = await setup();
 			const body = {
 				toColumnId: new ObjectId(),
 				toIndex: 0,
 			};
+
 			const response = await request(app.getHttpServer()).put(`/boards/${boardId}/cards/${cardId}/position`).send(body);
 
 			expect(response.status).toEqual(501);
@@ -73,7 +85,7 @@ describe('Boards Controller (API)', () => {
 	});
 
 	describe('[PATCH] move column', () => {
-		it('should not be implemented', async () => {
+		const setup = async () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const user = userFactory.build({ roles });
 			await em.persistAndFlush([user]);
@@ -82,9 +94,15 @@ describe('Boards Controller (API)', () => {
 			const boardId = new ObjectId().toString();
 			const columnId = new ObjectId().toString();
 
+			return { boardId, columnId };
+		};
+
+		it('should not be implemented', async () => {
+			const { boardId, columnId } = await setup();
 			const body = {
 				toIndex: 0,
 			};
+
 			const response = await request(app.getHttpServer())
 				.put(`/boards/${boardId}/columns/${columnId}/position`)
 				.send(body);
@@ -94,7 +112,7 @@ describe('Boards Controller (API)', () => {
 	});
 
 	describe('[PATCH] rename board', () => {
-		it('should not be implemented', async () => {
+		const setup = async () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const user = userFactory.build({ roles });
 			await em.persistAndFlush([user]);
@@ -102,9 +120,15 @@ describe('Boards Controller (API)', () => {
 			currentUser = mapUserToCurrentUser(user);
 			const boardId = new ObjectId().toString();
 
+			return { boardId };
+		};
+
+		it('should not be implemented', async () => {
+			const { boardId } = await setup();
 			const body = {
 				title: 'this is a new title',
 			};
+
 			const response = await request(app.getHttpServer()).put(`/boards/${boardId}/title`).send(body);
 
 			expect(response.status).toEqual(501);
@@ -112,7 +136,7 @@ describe('Boards Controller (API)', () => {
 	});
 
 	describe('[PATCH] rename column', () => {
-		it('should not be implemented', async () => {
+		const setup = async () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const user = userFactory.build({ roles });
 			await em.persistAndFlush([user]);
@@ -121,9 +145,15 @@ describe('Boards Controller (API)', () => {
 			const boardId = new ObjectId().toString();
 			const columnId = new ObjectId().toString();
 
+			return { boardId, columnId };
+		};
+
+		it('should not be implemented', async () => {
+			const { boardId, columnId } = await setup();
 			const body = {
 				title: 'this is a new title',
 			};
+
 			const response = await request(app.getHttpServer())
 				.put(`/boards/${boardId.toString()}/columns/${columnId}/title`)
 				.send(body);

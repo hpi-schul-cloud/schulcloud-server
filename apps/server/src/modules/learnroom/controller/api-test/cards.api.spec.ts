@@ -38,7 +38,7 @@ describe('Rooms Controller (API)', () => {
 	});
 
 	describe('[GET] cards', () => {
-		it('should fail when no ids are passed', async () => {
+		const setup = async () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const user = userFactory.build({ roles });
 
@@ -46,6 +46,14 @@ describe('Rooms Controller (API)', () => {
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
+
+			const cardIds = [new ObjectId(), new ObjectId()];
+
+			return { cardIds };
+		};
+
+		it('should fail when no ids are passed', async () => {
+			await setup();
 
 			const response = await request(app.getHttpServer()).get(`/cards`);
 
@@ -53,33 +61,19 @@ describe('Rooms Controller (API)', () => {
 		});
 
 		it('should not be implemented for single id', async () => {
-			const roles = roleFactory.buildList(1, { permissions: [] });
-			const user = userFactory.build({ roles });
+			const { cardIds } = await setup();
 
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			const id = new ObjectId();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const response = await request(app.getHttpServer()).get(`/cards?ids=${id.toString()}`);
+			const response = await request(app.getHttpServer()).get(`/cards?ids=${cardIds[0].toString()}`);
 
 			expect(response.status).toEqual(501);
 		});
 
 		it('should not be implemented for multiple ids', async () => {
-			const roles = roleFactory.buildList(1, { permissions: [] });
-			const user = userFactory.build({ roles });
+			const { cardIds } = await setup();
 
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			const id = new ObjectId();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const response = await request(app.getHttpServer()).get(`/cards?ids=${id.toString()}&ids=${id.toString()}`);
+			const response = await request(app.getHttpServer()).get(
+				`/cards?ids=${cardIds[0].toString()}&ids=${cardIds[1].toString()}`
+			);
 
 			expect(response.status).toEqual(501);
 		});
