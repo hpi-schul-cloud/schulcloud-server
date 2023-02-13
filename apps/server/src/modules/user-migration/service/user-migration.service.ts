@@ -13,7 +13,7 @@ import { UserMigrationDto } from '../../oauth/controller/dto/userMigrationDto';
 export class UserMigrationService {
 	private readonly hostUrl: string;
 
-	private readonly scDomain: string;
+	private readonly apiUrl: string;
 
 	private readonly dashboardUrl: string = '/dashboard';
 
@@ -27,7 +27,7 @@ export class UserMigrationService {
 		private readonly userService: UserService
 	) {
 		this.hostUrl = Configuration.get('HOST') as string;
-		this.scDomain = Configuration.get('SC_DOMAIN') as string;
+		this.apiUrl = Configuration.get('API_URL') as string;
 	}
 
 	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {
@@ -123,8 +123,8 @@ export class UserMigrationService {
 	}
 
 	getMigrationRedirectUri(systemId: string): string {
-		const combinedUri = new URL(this.scDomain);
-		combinedUri.pathname = `/api/v3/sso/oauth/${systemId}/migration`;
+		const combinedUri = new URL(this.apiUrl);
+		combinedUri.pathname = `/v3/sso/oauth/${systemId}/migration`;
 		return combinedUri.toString();
 	}
 
