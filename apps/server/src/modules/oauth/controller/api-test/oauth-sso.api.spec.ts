@@ -36,7 +36,7 @@ describe('OAuth SSO Controller (API)', () => {
 	let axiosMock: MockAdapter;
 
 	beforeAll(async () => {
-		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
+		Configuration.set('API_URL', 'http://localhost:3030/api');
 
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],

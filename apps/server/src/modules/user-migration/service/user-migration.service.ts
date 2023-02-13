@@ -25,7 +25,7 @@ export class UserMigrationService {
 
 	constructor(private readonly schoolService: SchoolService, private readonly systemService: SystemService) {
 		this.clientUrl = Configuration.get('HOST') as string;
-		this.apiUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+		this.apiUrl = Configuration.get('API_URL') as string;
 	}
 
 	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {

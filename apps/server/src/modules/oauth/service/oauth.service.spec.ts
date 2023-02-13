@@ -67,7 +67,7 @@ describe('OAuthService', () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
 			switch (key) {
 				case 'HOST':
-				case 'PUBLIC_BACKEND_URL':
+				case 'API_URL':
 					return hostUri;
 				default:
 					throw new Error(`No mock for key '${key}'`);

@@ -157,7 +157,7 @@ export class OAuthService {
 		migration: boolean,
 		alias?: string
 	): string {
-		const apiUrl: string = Configuration.get('PUBLIC_BACKEND_URL') as string;
+		const apiUrl: string = Configuration.get('API_URL') as string;
 		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
 
 		authenticationUrl.searchParams.append('client_id', oauthConfig.clientId);

@@ -421,7 +421,7 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
 		},
-		"PUBLIC_BACKEND_URL": {
+		"API_URL": {
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
