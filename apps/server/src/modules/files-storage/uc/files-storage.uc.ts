@@ -1,6 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId, IPermissionContext } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -22,7 +21,6 @@ import {
 } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
-import { IFileStorageConfig } from '../files-storage.config';
 import { PermissionContexts } from '../files-storage.const';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -33,8 +31,7 @@ export class FilesStorageUC {
 		private logger: Logger,
 		private readonly authorizationService: AuthorizationService,
 		private readonly httpService: HttpService,
-		private readonly filesStorageService: FilesStorageService,
-		private readonly configService: ConfigService<IFileStorageConfig, true>
+		private readonly filesStorageService: FilesStorageService
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}

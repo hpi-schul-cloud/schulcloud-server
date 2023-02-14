@@ -3,7 +3,6 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
@@ -88,7 +87,6 @@ describe('FilesStorageUC upload methods', () => {
 	let filesStorageService: DeepMocked<FilesStorageService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let httpService: DeepMocked<HttpService>;
-	let configService: DeepMocked<ConfigService>;
 	let orm: MikroORM;
 
 	beforeAll(async () => {
@@ -121,10 +119,6 @@ describe('FilesStorageUC upload methods', () => {
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
-				},
 			],
 		}).compile();
 
@@ -132,10 +126,6 @@ describe('FilesStorageUC upload methods', () => {
 		authorizationService = module.get(AuthorizationService);
 		httpService = module.get(HttpService);
 		filesStorageService = module.get(FilesStorageService);
-		configService = module.get(ConfigService);
-
-		// TODO: Why is this necessary?
-		configService.get.mockImplementation();
 	});
 
 	beforeEach(() => {
@@ -277,8 +267,6 @@ describe('FilesStorageUC upload methods', () => {
 			const setup = () => {
 				const { userId, uploadFromUrlParams, response } = createUploadFromUrlParams();
 				httpService.get.mockReturnValueOnce(of(response));
-
-				configService.get.mockReturnValueOnce(1);
 
 				return { uploadFromUrlParams, userId };
 			};
@@ -434,8 +422,6 @@ describe('FilesStorageUC upload methods', () => {
 				const buffer = Buffer.from('abc');
 
 				const size = request.headers['content-length'];
-
-				configService.get.mockReturnValueOnce(1);
 
 				request.get.mockReturnValue(size);
 				request.pipe.mockImplementation((requestStream) => {
