@@ -112,7 +112,7 @@ export class SystemService {
 			type: SystemTypeEnum.OAUTH,
 			alias: systemEntity.alias,
 			displayName: systemEntity.displayName ? systemEntity.displayName : systemEntity.alias,
-			oauthConfig: identityManagement.oauthConfig,
+			oauthConfig: identityManagement.oauthConfig ? { ...identityManagement.oauthConfig } : undefined,
 		});
 		if (generatedSystem.oauthConfig) {
 			generatedSystem.oauthConfig.redirectUri += systemEntity.id;
