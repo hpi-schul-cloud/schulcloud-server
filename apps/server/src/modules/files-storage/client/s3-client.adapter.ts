@@ -77,17 +77,17 @@ export class S3ClientAdapter implements IStorageClient {
 			this.logger.log({ action: 'create', params: { path, bucket: this.config.bucket } });
 
 			const req = {
-				Body: file.buffer,
+				Body: file.data,
 				Bucket: this.config.bucket,
 				Key: path,
 				ContentType: file.mimeType,
 			};
-			const res = new Upload({
+			const upload = new Upload({
 				client: this.client,
 				params: req,
 			});
 
-			const a = await res.done();
+			const a = await upload.done();
 			return a;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

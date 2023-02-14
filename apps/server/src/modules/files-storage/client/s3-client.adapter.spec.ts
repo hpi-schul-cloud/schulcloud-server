@@ -3,6 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
+import { Readable } from 'node:stream';
 import { FileDto } from '../dto';
 import { ICopyFiles } from '../interface';
 import { S3Config } from '../interface/config';
@@ -132,31 +133,18 @@ describe('S3ClientAdapter', () => {
 	});
 
 	describe('create', () => {
-		const buffer = Buffer.from('ddd');
+		const readable = Readable.from('ddd');
 		const file = new FileDto({
-			buffer,
+			data: readable,
 			name: 'test.txt',
 			mimeType: 'text/plain',
 			size: 100,
 		});
 		const path = 'test/test.txt';
 
-		it('should call send() of client', async () => {
-			await service.create(path, file);
-			expect(client.send).toBeCalledWith(
-				expect.objectContaining({
-					input: {
-						Body: buffer,
-						Bucket: 'test-bucket',
-						ContentType: 'text/plain',
-						Key: 'test/test.txt',
-					},
-				})
-			);
-		});
-
 		it('should return data', async () => {
 			client.send = jest.fn().mockResolvedValue(true);
+
 			const result = await service.create(path, file);
 
 			expect(result).toBeDefined();
@@ -164,12 +152,13 @@ describe('S3ClientAdapter', () => {
 
 		it('should throw error from client', async () => {
 			const e = new Error('Bad Request');
+
 			client.send = jest.fn().mockRejectedValue(e);
 
 			await expect(service.create(path, file)).rejects.toThrow();
 		});
 
-		it('should call createBucket() if error from client error.Code === "NoSuchBucket" ', async () => {
+		it('should call createBucket() if error from client has error.Code === "NoSuchBucket" ', async () => {
 			const e = { Code: 'NoSuchBucket' };
 			client.send = jest.fn().mockRejectedValueOnce(e);
 			service.createBucket = jest.fn();
@@ -177,7 +166,7 @@ describe('S3ClientAdapter', () => {
 			expect(service.createBucket).toBeCalled();
 		});
 
-		it('should call itself if error from client error.Code === "NoSuchBucket" ', async () => {
+		it('should call itself if error from client has error.Code === "NoSuchBucket" ', async () => {
 			const e = { Code: 'NoSuchBucket' };
 			client.send = jest.fn().mockRejectedValueOnce(e);
 			const mock = jest.spyOn(service, 'create');

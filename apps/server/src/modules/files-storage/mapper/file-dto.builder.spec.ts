@@ -16,11 +16,11 @@ describe('File Builder', () => {
 				get: () => `${size}`,
 			});
 
-			const buffer = Buffer.from('abc');
+			const readable = Readable.from('abc');
 
 			const expectedFile = new FileDto({
 				name: fileRecord.name,
-				buffer,
+				data: readable,
 				size,
 				mimeType: fileRecord.mimeType,
 			});
@@ -31,13 +31,13 @@ describe('File Builder', () => {
 				mimeType: fileRecord.mimeType,
 			};
 
-			return { fileRecord, request, buffer, expectedFile, fileInfo };
+			return { fileRecord, request, readable, expectedFile, fileInfo };
 		};
 
 		it('should return file from request', () => {
-			const { fileInfo, request, buffer, expectedFile } = setup();
+			const { fileInfo, request, readable, expectedFile } = setup();
 
-			const result = FileDtoBuilder.buildFromRequest(fileInfo, request, buffer);
+			const result = FileDtoBuilder.buildFromRequest(fileInfo, request, readable);
 
 			expect(result).toEqual(expectedFile);
 		});
@@ -56,7 +56,7 @@ describe('File Builder', () => {
 
 			const expectedFile = new FileDto({
 				name: fileRecord.name,
-				buffer: readable,
+				data: readable,
 				size,
 				mimeType: fileRecord.mimeType,
 			});
