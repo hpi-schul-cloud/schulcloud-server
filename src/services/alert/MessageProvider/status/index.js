@@ -1,4 +1,3 @@
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../../logger');
 const { statusApi } = require('../../../../externalServices');
 
