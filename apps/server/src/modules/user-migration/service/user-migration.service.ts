@@ -102,6 +102,8 @@ export class UserMigrationService {
 		const loginUrl: URL = new URL(`api/v3/sso/login/${system.id}`, this.apiUrl);
 		if (postLoginRedirect) {
 			loginUrl.searchParams.append('postLoginRedirect', postLoginRedirect);
+		} else {
+			loginUrl.searchParams.append('migration', 'true');
 		}
 
 		return loginUrl.toString();
