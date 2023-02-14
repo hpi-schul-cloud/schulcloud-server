@@ -10,7 +10,7 @@ export class FwuUc {
         this.logger.setContext(FwuUc.name);
     }
 
-    async get(path: String): Promise<string> {
+    async get(path: String): Promise<Uint8Array> {
         const client = new S3Client({
             endpoint: Configuration.get('FWU_CONTENT__S3_ENDPOINT'),
             credentials: {
@@ -31,11 +31,11 @@ export class FwuUc {
             return Promise.reject(response.$metadata.httpStatusCode);
         }
         var readableStream = response.Body as NodeJS.ReadableStream;
-        return new Promise<string>(async (resolve, reject) => {
+        return new Promise<Uint8Array>(async (resolve, reject) => {
             const chunks = [new Uint8Array];
             readableStream.on('data', (chunk: Uint8Array) => chunks.push(chunk));
             readableStream.on('error', reject);
-            readableStream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+            readableStream.on('end', () => resolve(Buffer.concat(chunks)));
         })
         
         // TODO: handle other types of responses such as Blob
