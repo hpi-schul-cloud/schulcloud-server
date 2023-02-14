@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { disallow } = require('feathers-hooks-common');
+const { iffElse } = require('feathers-hooks-common');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { Forbidden } = require('../../../errors');
@@ -58,12 +59,17 @@ const before = {
 	find: [disallow()],
 	get: [disallow()],
 	create: [
-		globalHooks.hasPermission('TOOL_CREATE_ETHERPAD'),
-		injectCourseId,
-		globalHooks.restrictToUsersOwnCourses,
-		getGroupData,
-		restrictOldPadsToCourse,
-	],
+		iffElse(
+		  globalHooks.hasPermission(['TOOL_CREATE', 'TOOL_CREATE_ETHERPAD']),
+		  [
+			injectCourseId,
+			globalHooks.restrictToUsersOwnCourses,
+			getGroupData,
+			restrictOldPadsToCourse,
+		  ],
+		  []
+		),
+	  ],
 	update: [disallow()],
 	patch: [disallow()],
 	remove: [disallow()],

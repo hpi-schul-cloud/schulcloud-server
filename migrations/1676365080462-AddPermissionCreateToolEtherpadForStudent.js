@@ -24,8 +24,8 @@ module.exports = {
 	up: async function up() {
 		await connect();
 
-		await Roles.updateMany(
-			{ name: { $in: ['teacher', 'student'] } },
+		await Roles.updateOne(
+			{ name: 'student' },
 			{
 				$addToSet: {
 					permissions: {
@@ -41,8 +41,8 @@ module.exports = {
 	down: async function down() {
 		await connect();
 
-		await Roles.updateMany(
-			{ name: { $in: ['teacher', 'student'] } },
+		await Roles.updateOne(
+			{ name: 'student' },
 			{
 				$pull: {
 					permissions: {
