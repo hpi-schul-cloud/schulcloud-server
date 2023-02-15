@@ -365,6 +365,7 @@ describe('FilesStorageService upload methods', () => {
 			const setup = () => {
 				const { params, file, userId, fileRecord, fileRecords } = createUploadFileParams();
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
+				// TODO: The _id needs to be set here explicitly because it is otherwise not set. Maybe one should mock fileRecordRepo.save to set the _id, which is not trivial though.
 				fileRecord._id = new ObjectId();
 				trySpy = jest.spyOn(service, 'createFileInStorageAndRollbackOnError').mockResolvedValueOnce(fileRecord);
 

@@ -102,6 +102,7 @@ export class FilesStorageService {
 		let fileRecord = createFileRecord(fileName, file.size, file.mimeType, params, userId);
 
 		await this.fileRecordRepo.save(fileRecord);
+		// TODO: This overwrite of fileRecord is only to make a test work. The _id is otherwise not set. I don't like it. Maybe we can find a better solution.
 		fileRecord = await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
 
 		// The actual file size is set here because it is known only after the whole file is streamed.
