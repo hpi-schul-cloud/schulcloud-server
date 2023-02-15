@@ -48,7 +48,7 @@
 		"EXPIRES_SECONDS": 2592000000
 	},
 	"SESSION": {
-		"SAME_SITE": "strict",
+		"SAME_SITE": "lax",
 		"SECURE": false,
 		"HTTP_ONLY": true,
 		"EXPIRES_SECONDS": 2592000000,
