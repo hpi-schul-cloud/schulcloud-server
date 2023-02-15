@@ -1,14 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BadRequestException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileDto } from '../dto';
 import { FileRecord, FileRecordParentType } from '../entity';
+import { ErrorType } from '../error';
 import { createFileRecord, createPath, resolveFileNameDuplicates } from '../helper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
@@ -38,6 +42,7 @@ describe('FilesStorageService upload methods', () => {
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
 	let antivirusService: DeepMocked<AntivirusService>;
+	let configService: DeepMocked<ConfigService>;
 	let orm: MikroORM;
 
 	beforeAll(async () => {
@@ -62,6 +67,10 @@ describe('FilesStorageService upload methods', () => {
 					provide: AntivirusService,
 					useValue: createMock<AntivirusService>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
 			],
 		}).compile();
 
@@ -69,6 +78,7 @@ describe('FilesStorageService upload methods', () => {
 		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
 		antivirusService = module.get(AntivirusService);
+		configService = module.get(ConfigService);
 	});
 
 	beforeEach(() => {
@@ -194,6 +204,10 @@ describe('FilesStorageService upload methods', () => {
 		let getSpy: jest.SpyInstance;
 		let trySpy: jest.SpyInstance;
 
+		beforeEach(() => {
+			configService.get.mockReturnValue(2560000000);
+		});
+
 		afterEach(() => {
 			getSpy.mockRestore();
 			trySpy.mockRestore();
@@ -202,40 +216,34 @@ describe('FilesStorageService upload methods', () => {
 		const createUploadFileParams = () => {
 			const { params, fileRecords, parentId: userId } = buildFileRecordsWithParams();
 
-			const fileDescription = createMock<FileDto>();
-			fileDescription.name = fileRecords[0].name;
-			fileDescription.size = 122;
-			fileDescription.mimeType = 'mimeType';
+			const file = createMock<FileDto>();
+			file.data = Readable.from('abc');
+			file.name = fileRecords[0].name;
+			file.size = 122;
+			file.mimeType = 'mimeType';
 
-			const fileRecord = createFileRecord(
-				fileDescription.name,
-				fileDescription.size,
-				fileDescription.mimeType,
-				params,
-				userId
-			);
+			const fileRecord = createFileRecord(file.name, file.size, file.mimeType, params, userId);
 
 			const { securityCheck, ...expectedFileRecord } = fileRecord;
 			expectedFileRecord.name = resolveFileNameDuplicates(fileRecord.name, fileRecords);
 
-			return { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords };
+			return { params, file, userId, fileRecord, expectedFileRecord, fileRecords };
 		};
 
 		describe('WHEN storage client creates file successfully', () => {
 			const setup = () => {
-				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } =
-					createUploadFileParams();
+				const { params, file, userId, fileRecord, expectedFileRecord, fileRecords } = createUploadFileParams();
 
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
 				trySpy = jest.spyOn(service, 'createFileInStorageAndRollbackOnError').mockResolvedValueOnce(fileRecord);
 
-				return { params, fileDescription, userId, fileRecord, expectedFileRecord };
+				return { params, file, userId, fileRecord, expectedFileRecord };
 			};
 
 			it('should call getFileRecordsOfParent with correct params', async () => {
-				const { params, fileDescription, userId } = setup();
+				const { params, file, userId } = setup();
 
-				await service.uploadFile(userId, params, fileDescription);
+				await service.uploadFile(userId, params, file);
 
 				expect(service.getFileRecordsOfParent).toHaveBeenCalledWith(params);
 			});
@@ -243,19 +251,19 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN storage client throws error', () => {
 			const setup = () => {
-				const { params, fileDescription, userId, fileRecord, expectedFileRecord } = createUploadFileParams();
+				const { params, file, userId, fileRecord, expectedFileRecord } = createUploadFileParams();
 				const error = new Error('test');
 
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockRejectedValueOnce(error);
 				trySpy = jest.spyOn(service, 'createFileInStorageAndRollbackOnError').mockResolvedValueOnce(fileRecord);
 
-				return { params, fileDescription, userId, fileRecord, expectedFileRecord, error };
+				return { params, file, userId, fileRecord, expectedFileRecord, error };
 			};
 
 			it('should pass error and not call save and createFileInStorageAndRollbackOnError', async () => {
-				const { params, fileDescription, userId, error } = setup();
+				const { params, file, userId, error } = setup();
 
-				await expect(service.uploadFile(userId, params, fileDescription)).rejects.toThrow(error);
+				await expect(service.uploadFile(userId, params, file)).rejects.toThrow(error);
 
 				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
 				expect(service.createFileInStorageAndRollbackOnError).toHaveBeenCalledTimes(0);
@@ -264,19 +272,18 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN file record repo saves successfully', () => {
 			const setup = () => {
-				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } =
-					createUploadFileParams();
+				const { params, file, userId, fileRecord, expectedFileRecord, fileRecords } = createUploadFileParams();
 
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
 				trySpy = jest.spyOn(service, 'createFileInStorageAndRollbackOnError').mockResolvedValueOnce(fileRecord);
 
-				return { params, fileDescription, userId, fileRecord, expectedFileRecord };
+				return { params, file, userId, fileRecord, expectedFileRecord };
 			};
 
 			it('should call fileRecordRepo save with correct params', async () => {
-				const { params, fileDescription, userId, expectedFileRecord } = setup();
+				const { params, file, userId, expectedFileRecord } = setup();
 
-				await service.uploadFile(userId, params, fileDescription);
+				await service.uploadFile(userId, params, file);
 
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({
@@ -290,21 +297,20 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN file record repo throws error', () => {
 			const setup = () => {
-				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } =
-					createUploadFileParams();
+				const { params, file, userId, fileRecord, expectedFileRecord, fileRecords } = createUploadFileParams();
 				const error = new Error('test');
 
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
 				fileRecordRepo.save.mockRejectedValueOnce(error);
 				trySpy = jest.spyOn(service, 'createFileInStorageAndRollbackOnError').mockResolvedValueOnce(fileRecord);
 
-				return { params, fileDescription, userId, fileRecord, expectedFileRecord, error };
+				return { params, file, userId, fileRecord, expectedFileRecord, error };
 			};
 
 			it('should pass error and not call createFileInStorageAndRollbackOnError', async () => {
-				const { params, fileDescription, userId, error } = setup();
+				const { params, file, userId, error } = setup();
 
-				await expect(service.uploadFile(userId, params, fileDescription)).rejects.toThrow(error);
+				await expect(service.uploadFile(userId, params, file)).rejects.toThrow(error);
 
 				expect(service.createFileInStorageAndRollbackOnError).toHaveBeenCalledTimes(0);
 			});
@@ -312,19 +318,18 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN file is successfully created in storage', () => {
 			const setup = () => {
-				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } =
-					createUploadFileParams();
+				const { params, file, userId, fileRecord, expectedFileRecord, fileRecords } = createUploadFileParams();
 
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
 				trySpy = jest.spyOn(service, 'createFileInStorageAndRollbackOnError').mockResolvedValueOnce(fileRecord);
 
-				return { params, fileDescription, userId, fileRecord, expectedFileRecord };
+				return { params, file, userId, fileRecord, expectedFileRecord };
 			};
 
 			it('should call createFileInStorageAndRollbackOnError with correct params', async () => {
-				const { params, fileDescription, userId, expectedFileRecord } = setup();
+				const { params, file, userId, expectedFileRecord } = setup();
 
-				await service.uploadFile(userId, params, fileDescription);
+				await service.uploadFile(userId, params, file);
 
 				expect(service.createFileInStorageAndRollbackOnError).toHaveBeenCalledWith(
 					expect.objectContaining({
@@ -333,27 +338,46 @@ describe('FilesStorageService upload methods', () => {
 						updatedAt: expect.any(Date),
 					}),
 					params,
-					fileDescription
+					file
 				);
 			});
 		});
 
-		describe('WHEN tryToCreateFileInStorage throws error', () => {
+		describe('WHEN createFileInStorageAndRollbackOnError throws error', () => {
 			const setup = () => {
-				const { params, fileDescription, userId, fileRecord, expectedFileRecord, fileRecords } =
-					createUploadFileParams();
+				const { params, file, userId, fileRecord, expectedFileRecord, fileRecords } = createUploadFileParams();
 				const error = new Error('test');
 
 				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
 				trySpy = jest.spyOn(service, 'createFileInStorageAndRollbackOnError').mockRejectedValueOnce(error);
 
-				return { params, fileDescription, userId, fileRecord, expectedFileRecord, error };
+				return { params, file, userId, fileRecord, expectedFileRecord, error };
 			};
 
 			it('should pass error', async () => {
-				const { params, fileDescription, userId, error } = setup();
+				const { params, file, userId, error } = setup();
 
-				await expect(service.uploadFile(userId, params, fileDescription)).rejects.toThrow(error);
+				await expect(service.uploadFile(userId, params, file)).rejects.toThrow(error);
+			});
+		});
+
+		describe('WHEN file is too big', () => {
+			const setup = () => {
+				const { params, file, userId, fileRecord, fileRecords } = createUploadFileParams();
+				getSpy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
+				fileRecord._id = new ObjectId();
+				trySpy = jest.spyOn(service, 'createFileInStorageAndRollbackOnError').mockResolvedValueOnce(fileRecord);
+
+				configService.get.mockReturnValueOnce(1);
+				const error = new BadRequestException(ErrorType.FILE_TOO_BIG);
+
+				return { params, file, userId, error };
+			};
+
+			it('should throw dedicated error', async () => {
+				const { params, file, userId, error } = setup();
+
+				await expect(service.uploadFile(userId, params, file)).rejects.toThrow(error);
 			});
 		});
 	});

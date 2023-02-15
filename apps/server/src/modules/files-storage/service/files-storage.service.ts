@@ -1,10 +1,12 @@
 import {
+	BadRequestException,
 	ConflictException,
 	Injectable,
 	InternalServerErrorException,
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { Logger } from '@src/core/logger';
@@ -21,6 +23,7 @@ import {
 import { FileDto } from '../dto';
 import { FileRecord, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
+import { IFileStorageConfig } from '../files-storage.config';
 import {
 	createFileRecord,
 	createICopyFiles,
@@ -42,6 +45,7 @@ export class FilesStorageService {
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly storageClient: S3ClientAdapter,
 		private readonly antivirusService: AntivirusService,
+		private readonly configService: ConfigService<IFileStorageConfig, true>,
 		private logger: Logger
 	) {
 		this.logger.setContext(FilesStorageService.name);
@@ -91,14 +95,45 @@ export class FilesStorageService {
 	}
 
 	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecord> {
-		const [fileRecords] = await this.getFileRecordsOfParent(params);
-		const fileName = resolveFileNameDuplicates(file.name, fileRecords);
-		const fileRecord = createFileRecord(fileName, file.size, file.mimeType, params, userId);
+		const fileSizePromise = this.countFileSize(file);
+
+		const [fileRecordsOfParent] = await this.getFileRecordsOfParent(params);
+		const fileName = resolveFileNameDuplicates(file.name, fileRecordsOfParent);
+		let fileRecord = createFileRecord(fileName, file.size, file.mimeType, params, userId);
 
 		await this.fileRecordRepo.save(fileRecord);
-		await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
+		fileRecord = await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
+
+		// The actual file size is set here because it is known only after the whole file is streamed.
+		fileRecord.size = await fileSizePromise;
+		await this.abortAndRollbackIfFileIsTooBig(fileRecord);
+		await this.fileRecordRepo.save(fileRecord);
 
 		return fileRecord;
+	}
+
+	private countFileSize(file: FileDto): Promise<number> {
+		const promise = new Promise<number>((resolve) => {
+			let fileSize = 0;
+
+			file.data.on('data', (chunk: Buffer) => {
+				fileSize += chunk.length;
+			});
+
+			file.data.on('end', () => resolve(fileSize));
+		});
+
+		return promise;
+	}
+
+	private async abortAndRollbackIfFileIsTooBig(fileRecord: FileRecord): Promise<void> {
+		if (fileRecord.size > this.configService.get<number>('MAX_FILE_SIZE')) {
+			const filePath = createPath(fileRecord.schoolId, fileRecord.id);
+			await this.storageClient.delete([filePath]);
+			await this.fileRecordRepo.delete(fileRecord);
+
+			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
+		}
 	}
 
 	// update
