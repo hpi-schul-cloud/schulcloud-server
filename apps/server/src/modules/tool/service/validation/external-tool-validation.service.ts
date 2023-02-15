@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
 import { CommonToolValidationService } from './common-tool-validation.service';
@@ -14,13 +14,22 @@ export class ExternalToolValidationService {
 	async validateCreate(externalToolDO: ExternalToolDO): Promise<void> {
 		await this.commonToolValidationService.validateCommon(externalToolDO);
 
-		if (
-			this.externalToolService.isOauth2Config(externalToolDO.config) &&
-			!(await this.isClientIdUnique(externalToolDO))
-		) {
-			throw new ValidationError(
-				`tool_clientId_duplicate: The Client Id of the tool ${externalToolDO.name} is already used.`
-			);
+		await this.validateOauth2Config(externalToolDO);
+	}
+
+	private async validateOauth2Config(externalToolDO: ExternalToolDO) {
+		if (this.externalToolService.isOauth2Config(externalToolDO.config)) {
+			if (!externalToolDO.config.clientSecret) {
+				throw new ValidationError(
+					`tool_clientSecret_missing: The Client Secret of the tool ${externalToolDO.name || ''} is missing.`
+				);
+			}
+
+			if (!(await this.isClientIdUnique(externalToolDO))) {
+				throw new ValidationError(
+					`tool_clientId_duplicate: The Client Id of the tool ${externalToolDO.name || ''} is already used.`
+				);
+			}
 		}
 	}
 
