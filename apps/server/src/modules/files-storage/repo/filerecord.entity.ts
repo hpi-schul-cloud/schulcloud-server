@@ -41,6 +41,7 @@ export class FileSecurityCheck {
 	}
 }
 
+// connection to the props from DO
 export interface IFileRecordProperties {
 	size: number;
 	name: string;

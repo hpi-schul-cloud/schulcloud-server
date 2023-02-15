@@ -1,18 +1,19 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
-import { FileRecordEntity, FileRecordParentType, ScanStatus } from '../../entity';
+import { FileRecord, FileRecordParentType, ScanStatus } from '../../domain';
 
 export class FileRecordResponse {
-	constructor(fileRecord: FileRecordEntity) {
+	constructor(fileRecord: FileRecord) {
+		const props = fileRecord.getProps();
 		this.id = fileRecord.id;
-		this.name = fileRecord.name;
-		this.size = fileRecord.size;
-		this.securityCheckStatus = fileRecord.securityCheck.status;
-		this.parentId = fileRecord.parentId;
-		this.creatorId = fileRecord.creatorId;
-		this.type = fileRecord.mimeType;
-		this.parentType = fileRecord.parentType;
-		this.deletedSince = fileRecord.deletedSince;
+		this.name = props.name;
+		this.size = props.size;
+		this.securityCheckStatus = props.securityCheck.status;
+		this.parentId = props.parentId;
+		this.creatorId = props.creatorId;
+		this.type = props.mimeType;
+		this.parentType = props.parentType;
+		this.deletedSince = props.deletedSince;
 	}
 
 	@ApiProperty()

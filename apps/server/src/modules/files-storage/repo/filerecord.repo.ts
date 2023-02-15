@@ -1,6 +1,6 @@
 import { Reference } from '@mikro-orm/core';
 import { BaseRepo2, Counted, EntityId, IFindOptions, SortOrder } from '@shared/domain';
-import { MongoEntityManager } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { FileRecord, IFileRecordParams } from '../domain';
 import type { IFilesStorageRepo } from '../service';
 import { FileRecordDOMapper } from './fileRecordDO.mapper';
@@ -12,10 +12,34 @@ function getArray<T>(input: T | T[]): T[] {
 
 	return result;
 }
+/*
+class EntityManager<> {
+	constructor(private readonly em: MongoEntityManager) {}
 
-export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStorageRepo {
-	constructor(private readonly em: MongoEntityManager) {
-		super();
+	// TODO: move to utils
+	public getEntitiesReferenceFromDOs(fileRecords: T[]): T[] {
+		const entities = fileRecords.map((item) => this.getEntityReferenceFromDO(item));
+
+		return entities;
+	}
+
+	public getEntityReferenceFromDO(fileRecord: T): T {
+		// TODO: check why this method is only in changlog and not documentated, it include also a bug that it is fixed later
+		// https://gist.github.com/B4nan/3fb771464e4c4499c26c9f4e684692a4#file-create-reference-ts-L8
+		// https://mikro-orm.io/api/core/changelog#563-2022-12-28
+		const fileRecordEntity = Reference.createFromPK(T, fileRecord.id);
+
+		return fileRecordEntity;
+	}
+}
+*/
+
+// TODO: Paginated results?
+// TODO: Isolate MongoEntityManager in additional class
+// TODO: extends BaseRepo2<FileRecord> implements IFilesStorageRep
+export class FileRecordRepo {
+	constructor(private readonly em: EntityManager) {
+		// super();
 	}
 
 	public async findOneById(id: EntityId): Promise<FileRecord> {
@@ -74,21 +98,29 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 		// override keys?
 		// persistAndFlush
 		// return DO ?? -> no
-		const entities = this.getEntitiesReferenceFromDOs(fileRecords);
+		// const entities = this.getEntitiesReferenceFromDOs(fileRecords);
+		/* const [tasks, count] = await this._em.findAndCount(Task, query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order,
+		}); */
 
 		// TODO implement!
+
+		// new FileRecordEntity(fileRecord.getProps());
 
 		await Promise.resolve();
 	}
 
-	// TODO: move to utils
+	// TODO: move to utils make private
 	private getEntitiesReferenceFromDOs(fileRecords: FileRecord[]): FileRecordEntity[] {
 		const entities = fileRecords.map((item) => this.getEntityReferenceFromDO(item));
 
 		return entities;
 	}
 
-	private getEntityReferenceFromDO(fileRecord: FileRecord): FileRecordEntity {
+	// TODO private
+	public getEntityReferenceFromDO(fileRecord: FileRecord): FileRecordEntity {
 		// TODO: check why this method is only in changlog and not documentated, it include also a bug that it is fixed later
 		// https://gist.github.com/B4nan/3fb771464e4c4499c26c9f4e684692a4#file-create-reference-ts-L8
 		// https://mikro-orm.io/api/core/changelog#563-2022-12-28
@@ -98,6 +130,7 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 	}
 
 	public async save(fileRecordParams: IFileRecordParams[]): Promise<FileRecord[]> {
+		// params to entity
 		const params = getArray(fileRecordParams);
 		const entities = params.map((param) => this.entityFactory(param));
 

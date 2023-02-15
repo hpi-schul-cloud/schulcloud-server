@@ -2,7 +2,7 @@ import { ObjectId } from 'bson';
 import { v4 as uuid } from 'uuid';
 import {
 	FileRecord,
-	FileRecordParams,
+	IFileRecordParams,
 	FileRecordParentType,
 	IFileSecurityCheckParams,
 	ScanStatus,
@@ -25,7 +25,7 @@ export class FileRecordTestFactory {
 		return props;
 	}
 
-	public static build(partialProps: Partial<FileRecordParams> = {}): FileRecord {
+	public static build(partialProps: Partial<IFileRecordParams> = {}): FileRecord {
 		const securityCheck = FileRecordTestFactory.buildSecurityCheckProps();
 		const defaultProps = {
 			id: new ObjectId().toHexString(),
@@ -45,7 +45,7 @@ export class FileRecordTestFactory {
 		return fileRecord;
 	}
 
-	public static buildList(number = 1, partialProps: Partial<FileRecordParams> = {}): FileRecord[] {
+	public static buildList(number = 1, partialProps: Partial<IFileRecordParams> = {}): FileRecord[] {
 		// TODO: check if Array(number).map work like expected
 		const fileRecords = Array(number).map(() => FileRecordTestFactory.build(partialProps));
 
