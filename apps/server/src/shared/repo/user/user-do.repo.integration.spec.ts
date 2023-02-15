@@ -240,7 +240,7 @@ describe('UserRepo', () => {
 				preferences: { firstLogin: true },
 				outdatedSince: new Date(),
 				lastLoginSystemChange: new Date(),
-				legacyExternalId = 'someId',
+				legacyExternalId: 'someId',
 			});
 
 			const result: IUserProperties = repo.mapDOToEntityPropertiesSpec(testDO);
