@@ -10,7 +10,7 @@ import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/
 import { REDIS_CLIENT, RedisModule } from '@shared/infra/redis';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
-import { Logger } from '@src/core/logger';
+import { Logger, LoggerModule } from '@src/core/logger';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
@@ -89,13 +89,45 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
 };
 
+const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | undefined, logger: Logger) => {
+	let store: connectRedis.RedisStore | undefined;
+	if (redisClient) {
+		const RedisStore: connectRedis.RedisStore = connectRedis(session);
+		store = new RedisStore({
+			client: redisClient,
+		});
+	} else {
+		logger.warn(
+			'The RedisStore for sessions is not setup, since the environment variable REDIS_URI is not defined. Sessions are using the build-in MemoryStore. This should not be used in production!'
+		);
+	}
+
+	consumer
+		.apply(
+			session({
+				store,
+				secret: Configuration.get('SESSION__SECRET') as string,
+				resave: false,
+				saveUninitialized: false,
+				name: Configuration.has('SESSION__NAME') ? (Configuration.get('SESSION__NAME') as string) : undefined,
+				proxy: Configuration.has('SESSION__PROXY') ? (Configuration.get('SESSION__PROXY') as boolean) : undefined,
+				cookie: {
+					secure: Configuration.get('SESSION__SECURE') as boolean,
+					sameSite: Configuration.get('SESSION__SAME_SITE') as boolean,
+					httpOnly: Configuration.get('SESSION__HTTP_ONLY') as boolean,
+					maxAge: Configuration.get('SESSION__EXPIRES_SECONDS') as number,
+				},
+			})
+		)
+		.forRoutes('*');
+};
+
 /**
  * Server Module used for production
  */
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
-		RedisModule,
 		...serverModules,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
@@ -108,45 +140,21 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 			// debug: true, // use it for locally debugging of queries
 		}),
+		LoggerModule,
+		RedisModule,
 	],
 	controllers: [ServerController],
 })
 export class ServerModule implements NestModule {
-	constructor(@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient, private readonly logger: Logger) {
+	constructor(
+		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
+		private readonly logger: Logger
+	) {
 		logger.setContext(ServerModule.name);
 	}
 
 	configure(consumer: MiddlewareConsumer) {
-		let store: connectRedis.RedisStore | undefined;
-		if (this.redisClient) {
-			const RedisStore: connectRedis.RedisStore = connectRedis(session);
-			store = new RedisStore({
-				client: this.redisClient,
-			});
-		} else {
-			this.logger.warn(
-				'The RedisStore for sessions is not setup, since the environment variable REDIS_URI is not defined. Sessions are using the build-in MemoryStore. This should not be used in production!'
-			);
-		}
-
-		consumer
-			.apply(
-				session({
-					store,
-					secret: Configuration.get('SESSION__SECRET') as string,
-					resave: false,
-					saveUninitialized: false,
-					name: Configuration.has('SESSION__NAME') ? (Configuration.get('SESSION__NAME') as string) : undefined,
-					proxy: Configuration.has('SESSION__PROXY') ? (Configuration.get('SESSION__PROXY') as boolean) : undefined,
-					cookie: {
-						secure: Configuration.get('SESSION__SECURE') as boolean,
-						sameSite: Configuration.get('SESSION__SAME_SITE') as boolean,
-						httpOnly: Configuration.get('SESSION__HTTP_ONLY') as boolean,
-						maxAge: Configuration.get('SESSION__EXPIRES_SECONDS') as number,
-					},
-				})
-			)
-			.forRoutes('*');
+		setupSessions(consumer, this.redisClient, this.logger);
 	}
 }
 
@@ -163,28 +171,21 @@ export class ServerModule implements NestModule {
 		...serverModules,
 		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
 		RabbitMQWrapperTestModule,
+		LoggerModule,
+		RedisModule,
 	],
 	controllers: [ServerController],
 })
 export class ServerTestModule implements NestModule {
+	constructor(
+		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
+		private readonly logger: Logger
+	) {
+		logger.setContext(ServerTestModule.name);
+	}
+
 	configure(consumer: MiddlewareConsumer) {
-		consumer
-			.apply(
-				session({
-					secret: Configuration.get('SESSION__SECRET') as string,
-					resave: false,
-					saveUninitialized: false,
-					name: Configuration.has('SESSION__NAME') ? (Configuration.get('SESSION__NAME') as string) : undefined,
-					proxy: Configuration.has('SESSION__PROXY') ? (Configuration.get('SESSION__PROXY') as boolean) : undefined,
-					cookie: {
-						secure: Configuration.get('SESSION__SECURE') as boolean,
-						sameSite: Configuration.get('SESSION__SAME_SITE') as boolean,
-						httpOnly: Configuration.get('SESSION__HTTP_ONLY') as boolean,
-						maxAge: Configuration.get('SESSION__EXPIRES_SECONDS') as number,
-					},
-				})
-			)
-			.forRoutes('*');
+		setupSessions(consumer, undefined, this.logger);
 	}
 
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
