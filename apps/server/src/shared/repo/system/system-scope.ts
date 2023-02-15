@@ -2,17 +2,17 @@ import { System } from '@shared/domain';
 import { Scope } from '../scope';
 
 export class SystemScope extends Scope<System> {
-	byType(type: string): SystemScope {
-		this.addQuery({ type: { $eq: type } });
+	withLdapConfig(): SystemScope {
+		this.addQuery({ ldapConfig: { $ne: null } });
 		return this;
 	}
 
-	withOauthConfigOnly(): SystemScope {
+	withOauthConfig(): SystemScope {
 		this.addQuery({ oauthConfig: { $ne: null } });
 		return this;
 	}
 
-	withOidcConfigOnly(): SystemScope {
+	withOidcConfig(): SystemScope {
 		this.addQuery({ oidcConfig: { $ne: null } });
 		return this;
 	}

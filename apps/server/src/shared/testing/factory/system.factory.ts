@@ -1,4 +1,4 @@
-import { ISystemProperties, LdapConfig, OauthConfig, System } from '@shared/domain';
+import { ISystemProperties, LdapConfig, OauthConfig, OidcConfig, System } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
@@ -29,6 +29,21 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 			ldapConfig: new LdapConfig({
 				url: 'ldaps:mock.de:389',
 				active: true,
+			}),
+		};
+		return this.params(params);
+	}
+
+	withOidcConfig(): this {
+		const params = {
+			oidcConfig: new OidcConfig({
+				clientId: 'mock-client-id',
+				clientSecret: 'mock-client-secret',
+				defaultScopes: 'openid email userinfo',
+				authorizationUrl: 'http://mock.tld/auth',
+				tokenUrl: 'http://mock.tld/token',
+				userinfoUrl: 'http://mock.tld/userinfo',
+				logoutUrl: 'http://mock.tld/logout',
 			}),
 		};
 		return this.params(params);
