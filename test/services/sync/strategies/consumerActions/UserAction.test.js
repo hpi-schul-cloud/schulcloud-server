@@ -116,10 +116,40 @@ describe('User Actions', () => {
 			await expect(userAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(NotFound);
 		});
 
+		describe('When user has oauth migrated', () => {
+			it('should neither create nor update user and account', async () => {
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				findSchoolByLdapIdAndSystemStub.returns({ name: 'Test Schhool' });
+
+				const createUserSpy = sinon.spy(userAccountService, 'createUserAndAccount');
+				const updateUserSpy = sinon.spy(userAccountService, 'updateUserAndAccount');
+
+				sinon.stub(UserRepo, 'findByLdapIdAndSchool').returns(null);
+
+				const testUserInput = {
+					_id: 1,
+					firstName: 'New fname',
+					lastName: 'New lname',
+					email: 'New email',
+					ldapDn: 'new ldapdn',
+					roles: [new ObjectId()],
+					legacyExternalId: 'new id',
+				};
+
+				sinon.stub(UserRepo, 'findByLegacyExternalIdAndSchool').returns(testUserInput);
+
+				const testAccountInput = { _id: 2 };
+				await userAction.action({ user: testUserInput, account: testAccountInput });
+
+				expect(createUserSpy.notCalled).to.be.true;
+				expect(updateUserSpy.notCalled).to.be.true;
+			});
+		});
+
 		describe('When school is in maintenance mode', () => {
 			it('should not create user and account', async () => {
 				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
-				findSchoolByLdapIdAndSystemStub.returns({ name: 'Test Schhol', inMaintenance: true });
+				findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', inMaintenance: true });
 
 				const createUserSpy = sinon.spy(userAccountService, 'createUserAndAccount');
 
