@@ -193,6 +193,7 @@ describe('UserRepo', () => {
 			testEntity.importHash = 'importHash';
 			testEntity.outdatedSince = new Date();
 			testEntity.lastLoginSystemChange = new Date();
+			testEntity.legacyExternalId = 'someId';
 
 			const userDO: UserDO = repo.mapEntityToDOSpec(testEntity);
 
@@ -217,6 +218,7 @@ describe('UserRepo', () => {
 					preferences: testEntity.preferences,
 					outdatedSince: testEntity.outdatedSince,
 					lastLoginSystemChange: testEntity.lastLoginSystemChange,
+					legacyExternalId: testEntity.legacyExternalId,
 				})
 			);
 		});
@@ -238,6 +240,7 @@ describe('UserRepo', () => {
 				preferences: { firstLogin: true },
 				outdatedSince: new Date(),
 				lastLoginSystemChange: new Date(),
+				legacyExternalId = 'someId',
 			});
 
 			const result: IUserProperties = repo.mapDOToEntityPropertiesSpec(testDO);
@@ -256,6 +259,7 @@ describe('UserRepo', () => {
 					preferences: testDO.preferences,
 					outdatedSince: testDO.outdatedSince,
 					lastLoginSystemChange: testDO.lastLoginSystemChange,
+					legacyExternalId: testDO.legacyExternalId,
 				})
 			);
 		});
