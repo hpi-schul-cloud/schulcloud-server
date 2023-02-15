@@ -65,6 +65,7 @@ export interface IFileRecordProperties {
 	lockedForUserId?: EntityId | ObjectId;
 	schoolId: EntityId | ObjectId;
 	deletedSince?: Date;
+	isCopyFrom?: ObjectId;
 }
 
 interface IParentInfo {
@@ -137,6 +138,13 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this._schoolId.toHexString();
 	}
 
+	@Property({ nullable: true })
+	_isCopyFrom?: ObjectId;
+
+	get isCopyFrom(): EntityId | undefined {
+		return this._isCopyFrom?.toHexString();
+	}
+
 	constructor(props: IFileRecordProperties) {
 		super();
 		this.size = props.size;
@@ -149,6 +157,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			this._lockedForUserId = new ObjectId(props.lockedForUserId);
 		}
 		this._schoolId = new ObjectId(props.schoolId);
+		this._isCopyFrom = props.isCopyFrom;
 		this.securityCheck = new FileSecurityCheck({});
 		this.deletedSince = props.deletedSince;
 	}
@@ -161,7 +170,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	}
 
 	public copy(userId: EntityId, targetParentInfo: IParentInfo): FileRecord {
-		const { size, name, mimeType } = this;
+		const { size, name, mimeType, id } = this;
 		const { parentType, parentId, schoolId } = targetParentInfo;
 
 		const fileRecordCopy = new FileRecord({
@@ -172,6 +181,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			parentId,
 			creatorId: userId,
 			schoolId,
+			isCopyFrom: new ObjectId(id),
 		});
 
 		if (this.isVerified()) {
