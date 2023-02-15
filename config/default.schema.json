@@ -1109,7 +1109,7 @@
 				}
 			},
 			"default": {
-				"SAME_SITE": "strict",
+				"SAME_SITE": "lax",
 				"SECURE": true,
 				"HTTP_ONLY": true,
 				"EXPIRES_SECONDS": 2592000000,
