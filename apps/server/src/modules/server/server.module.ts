@@ -129,21 +129,20 @@ export class ServerModule implements NestModule {
 			);
 		}
 
-		const isProduction: boolean = (Configuration.get('NODE_ENV') as string) === 'production';
 		consumer
 			.apply(
 				session({
 					store,
-					secret: Configuration.get('SESSION_SECRET') as string,
+					secret: Configuration.get('SESSION__SECRET') as string,
 					resave: false,
 					saveUninitialized: false,
-					name: 'nest.sid',
-					proxy: true,
+					name: Configuration.has('SESSION__NAME') ? (Configuration.get('SESSION__NAME') as string) : undefined,
+					proxy: Configuration.has('SESSION__PROXY') ? (Configuration.get('SESSION__PROXY') as boolean) : undefined,
 					cookie: {
-						secure: isProduction,
-						sameSite: isProduction,
-						httpOnly: true,
-						maxAge: Number(Configuration.get('COOKIE__EXPIRES_SECONDS')),
+						secure: Configuration.get('SESSION__SECURE') as boolean,
+						sameSite: Configuration.get('SESSION__SAME_SITE') as boolean,
+						httpOnly: Configuration.get('SESSION__HTTP_ONLY') as boolean,
+						maxAge: Configuration.get('SESSION__EXPIRES_SECONDS') as number,
 					},
 				})
 			)
@@ -172,14 +171,16 @@ export class ServerTestModule implements NestModule {
 		consumer
 			.apply(
 				session({
-					secret: 'testSecret',
+					secret: Configuration.get('SESSION__SECRET') as string,
 					resave: false,
 					saveUninitialized: false,
+					name: Configuration.has('SESSION__NAME') ? (Configuration.get('SESSION__NAME') as string) : undefined,
+					proxy: Configuration.has('SESSION__PROXY') ? (Configuration.get('SESSION__PROXY') as boolean) : undefined,
 					cookie: {
-						secure: false,
-						sameSite: true,
-						httpOnly: true,
-						maxAge: 60000,
+						secure: Configuration.get('SESSION__SECURE') as boolean,
+						sameSite: Configuration.get('SESSION__SAME_SITE') as boolean,
+						httpOnly: Configuration.get('SESSION__HTTP_ONLY') as boolean,
+						maxAge: Configuration.get('SESSION__EXPIRES_SECONDS') as number,
 					},
 				})
 			)

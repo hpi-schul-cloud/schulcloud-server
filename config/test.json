@@ -46,5 +46,12 @@
 	"NEST_LOG_LEVEL": "error",
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
-	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": false
+	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": false,
+	"SESSION": {
+		"SAME_SITE": "strict",
+		"SECURE": false,
+		"HTTP_ONLY": true,
+		"EXPIRES_SECONDS": 2592000000,
+		"SECRET": "testSecret"
+	}
 }

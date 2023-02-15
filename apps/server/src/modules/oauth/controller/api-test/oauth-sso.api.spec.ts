@@ -35,6 +35,8 @@ describe('OAuth SSO Controller (API)', () => {
 	let em: EntityManager;
 	let axiosMock: MockAdapter;
 
+	const sessionCookieName: string = Configuration.get('SESSION__NAME') as string;
+
 	beforeAll(async () => {
 		Configuration.set('API_URL', 'http://localhost:3030/api');
 
@@ -78,7 +80,7 @@ describe('OAuth SSO Controller (API)', () => {
 				await request(app.getHttpServer())
 					.get(`/sso/login/${system.id}`)
 					.expect(302)
-					.expect('set-cookie', /connect.sid/)
+					.expect('set-cookie', new RegExp(`^${sessionCookieName}`))
 					.expect(
 						'Location',
 						/^http:\/\/mock.de\/auth\?client_id=12345&redirect_uri=http%3A%2F%2Flocalhost%3A3030%2Fapi%2Fv3%2Fsso%2Foauth&response_type=code&scope=openid\+uuid&state=\w*/
@@ -104,7 +106,7 @@ describe('OAuth SSO Controller (API)', () => {
 			const response: Response = await request(app.getHttpServer())
 				.get(`/sso/login/${systemId}`)
 				.expect(302)
-				.expect('set-cookie', /connect.sid/);
+				.expect('set-cookie', new RegExp(`^${sessionCookieName}`));
 
 			const cookies: string[] = response.get('Set-Cookie');
 			const redirect: string = response.get('Location');

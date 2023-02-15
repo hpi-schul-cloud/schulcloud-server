@@ -47,6 +47,13 @@
 		"SECURE": false,
 		"EXPIRES_SECONDS": 2592000000
 	},
+	"SESSION": {
+		"SAME_SITE": "strict",
+		"SECURE": false,
+		"HTTP_ONLY": true,
+		"EXPIRES_SECONDS": 2592000000,
+		"SECRET": "devSecret"
+	},
 	"HYDRA_URI": "http://localhost:9001",
 	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": true,
 	"NEST_LOG_LEVEL": "debug",
