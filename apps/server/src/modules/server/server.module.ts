@@ -113,7 +113,7 @@ const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | 
 				proxy: Configuration.has('SESSION__PROXY') ? (Configuration.get('SESSION__PROXY') as boolean) : undefined,
 				cookie: {
 					secure: Configuration.get('SESSION__SECURE') as boolean,
-					sameSite: Configuration.get('SESSION__SAME_SITE') as boolean,
+					sameSite: Configuration.get('SESSION__SAME_SITE') as boolean | 'lax' | 'strict' | 'none',
 					httpOnly: Configuration.get('SESSION__HTTP_ONLY') as boolean,
 					maxAge: Configuration.get('SESSION__EXPIRES_SECONDS') as number,
 				},

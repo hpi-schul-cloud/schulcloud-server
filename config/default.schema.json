@@ -1075,7 +1075,7 @@
 			"properties": {
 				"SAME_SITE": {
 					"type": "string",
-					"default": "strict",
+					"default": "lax",
 					"enum": ["none", "lax", "strict"],
 					"description": "Value for session cookies sameSite property. When SECURE flag is false, 'None' is not allowed in SAME_SITE and Lax should be used as default instead"
 				},
@@ -1101,19 +1101,13 @@
 				},
 				"PROXY": {
 					"type": "boolean",
-					"description": "Trust the reverse proxy when setting secure cookies (via the X-Forwarded-Proto header). The default value is undefined."
+					"default": true,
+					"description": "Trust the reverse proxy when setting secure cookies (via the X-Forwarded-Proto header)"
 				},
 				"SECRET": {
 					"type": "string",
 					"description": "This is the secret used to sign the session cookie."
 				}
-			},
-			"default": {
-				"SAME_SITE": "lax",
-				"SECURE": true,
-				"HTTP_ONLY": true,
-				"EXPIRES_SECONDS": 2592000000,
-				"PROXY": true
 			},
 			"required": ["SAME_SITE", "HTTP_ONLY", "SECURE", "EXPIRES_SECONDS"],
 			"allOf": [
