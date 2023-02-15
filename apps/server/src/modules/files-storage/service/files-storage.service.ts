@@ -207,7 +207,7 @@ export class FilesStorageService {
 	private async deleteFilesInFilesStorageClient(fileRecords: FileRecord[]) {
 		const paths = getPaths(fileRecords);
 
-		await this.storageClient.delete(paths);
+		await this.storageClient.moveToTrash(paths);
 	}
 
 	private async deleteWithRollbackByError(fileRecords: FileRecord[]): Promise<void> {

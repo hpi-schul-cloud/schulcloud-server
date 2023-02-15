@@ -175,9 +175,9 @@ describe('S3ClientAdapter', () => {
 		});
 	});
 
-	describe('delete', () => {
+	describe('moveToTrash', () => {
 		it('should call send() of client with copy objects', async () => {
-			await service.delete([pathToFile]);
+			await service.moveToTrash([pathToFile]);
 
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
@@ -187,7 +187,7 @@ describe('S3ClientAdapter', () => {
 		});
 
 		it('should call send() of client with delete objects', async () => {
-			await service.delete([pathToFile]);
+			await service.moveToTrash([pathToFile]);
 
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
@@ -196,17 +196,29 @@ describe('S3ClientAdapter', () => {
 			);
 		});
 
-		it('should throw an InternalServerErrorException by error', async () => {
+		it('should return empty array on error with Code "NoSuchKey"', async () => {
 			// @ts-expect-error should run into error
 			client.send.mockRejectedValue({ Code: 'NoSuchKey' });
-			const res = await service.delete([pathToFile]);
+			const res = await service.moveToTrash([pathToFile]);
 			expect(res).toEqual([]);
 			client.send.mockRestore();
 		});
 
-		it('should throw an InternalServerErrorException by error', async () => {
+		it('should throw an InternalServerErrorException on error', async () => {
 			// @ts-expect-error should run into error
-			await expect(service.delete(undefined)).rejects.toThrowError(InternalServerErrorException);
+			await expect(service.moveToTrash(undefined)).rejects.toThrowError(InternalServerErrorException);
+		});
+	});
+
+	describe('delete', () => {
+		it('should call send() of client with delete objects', async () => {
+			await service.delete([pathToFile]);
+
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: { Bucket: 'test-bucket', Delete: { Objects: [{ Key: 'test/text.txt' }] } },
+				})
+			);
 		});
 	});
 
