@@ -232,7 +232,9 @@ describe('OAuthController', () => {
 				oauthUc.migrateUser.mockResolvedValue(new UserMigrationDto({}));
 
 				await expect(controller.migrateUser(currentUser, query, res, systemParams)).rejects.toThrow(
-					InternalServerErrorException
+					new InternalServerErrorException(
+						`Migration of ${currentUser.userId} to system ${systemParams.systemId} failed.`
+					)
 				);
 			});
 		});

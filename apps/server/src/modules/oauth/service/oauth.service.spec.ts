@@ -149,7 +149,6 @@ describe('OAuthService', () => {
 
 	describe('requestToken', () => {
 		const code = '43534543jnj543342jn2';
-		const query: AuthorizationParams = { code };
 		const tokenResponse: OauthTokenResponse = {
 			access_token: 'accessToken',
 			refresh_token: 'refreshToken',

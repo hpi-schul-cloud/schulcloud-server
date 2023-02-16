@@ -10,17 +10,16 @@ import { RoleService } from '@src/modules/role/service/role.service';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { TransactionUtil } from '@shared/common/utils/transaction.util';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountService } from '@src/modules/account/services/account.service';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
-import { AccountRepo } from '../../account/repo/account.repo';
+import { AccountDto } from '../../account/services/dto';
 
 @Injectable()
 export class UserService {
 	constructor(
 		private readonly userRepo: UserRepo,
-		private readonly accountRepo: AccountRepo,
 		private readonly userDORepo: UserDORepo,
 		private readonly roleRepo: RoleRepo,
 		private readonly schoolMapper: SchoolMapper,
@@ -28,7 +27,8 @@ export class UserService {
 		private readonly permissionService: PermissionService,
 		private readonly configService: ConfigService<IUserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly transactionUtil: TransactionUtil
+		private readonly transactionUtil: TransactionUtil,
+		private readonly accountService: AccountService
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
@@ -111,9 +111,9 @@ export class UserService {
 			userDO.lastLoginSystemChange = new Date();
 			await this.userDORepo.saveWithoutFlush(userDO);
 
-			const account: Account = await this.accountRepo.findByUserIdOrFail(currentUserId);
-			account.systemId = new ObjectId(targetSystemId);
-			this.accountRepo.saveWithoutFlush(account);
+			const account: AccountDto = await this.accountService.findByUserIdOrFail(currentUserId);
+			account.systemId = targetSystemId;
+			await this.accountService.saveWithoutFlush(account);
 		});
 	}
 }

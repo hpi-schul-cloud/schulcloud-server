@@ -9,10 +9,10 @@ import { RoleUc } from '@src/modules/role/uc/role.uc';
 import { SchoolModule } from '@src/modules/school/school.module';
 import { TransactionUtil } from '@shared/common/utils/transaction.util';
 import { AccountModule } from '@src/modules/account';
-import { AccountRepo } from '@src/modules/account/repo/account.repo';
 import { UserController } from './controller';
 import { UserService } from './service/user.service';
 import { UserUc } from './uc';
+import { AccountService } from '../account/services/account.service';
 
 @Module({
 	imports: [SchoolModule, RoleModule, AccountModule, LoggerModule],
@@ -27,7 +27,7 @@ import { UserUc } from './uc';
 		RoleUc,
 		SchoolRepo,
 		RoleService,
-		AccountRepo,
+		AccountService,
 		TransactionUtil,
 	],
 	exports: [UserUc, UserService],

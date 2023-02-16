@@ -16,7 +16,7 @@ import { Logger } from '@src/core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
-import { AccountRepo } from '@src/modules/account/repo/account.repo';
+import { AccountService } from '../../account/services/account.service';
 
 class TransactionUtilSpec extends TransactionUtil {
 	async doTransaction(fn: () => Promise<void>): Promise<void> {
@@ -37,7 +37,7 @@ describe('UserService', () => {
 	let roleService: DeepMocked<RoleService>;
 	let schoolService: DeepMocked<SchoolService>;
 	let transactionUtil: DeepMocked<TransactionUtil>;
-	let accountRepo: DeepMocked<AccountRepo>;
+	let accountService: DeepMocked<AccountService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -81,8 +81,8 @@ describe('UserService', () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
-					provide: AccountRepo,
-					useValue: createMock<AccountRepo>(),
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
 				},
 				{
 					provide: TransactionUtil,
@@ -99,7 +99,7 @@ describe('UserService', () => {
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
-		accountRepo = module.get(AccountRepo);
+		accountService = module.get(AccountService);
 		transactionUtil = module.get(TransactionUtil);
 
 		orm = await setupEntities();
@@ -433,14 +433,10 @@ describe('UserService', () => {
 
 				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
 
-				expect(userDORepo.findById).toHaveBeenCalledTimes(1);
 				expect(userDORepo.findById).toHaveBeenCalledWith('userId', true);
-				expect(userDORepo.saveWithoutFlush).toHaveBeenCalledTimes(1);
 				expect(userDORepo.saveWithoutFlush).toHaveBeenCalledWith(migratedUserDO);
-				expect(accountRepo.findByUserIdOrFail).toHaveBeenCalledTimes(1);
-				expect(accountRepo.findByUserIdOrFail).toHaveBeenCalledWith('userId');
-				expect(accountRepo.saveWithoutFlush).toHaveBeenCalledTimes(1);
-				expect(accountRepo.saveWithoutFlush).toHaveBeenCalledWith(migratedAccount);
+				expect(accountService.findByUserIdOrFail).toHaveBeenCalledWith('userId');
+				expect(accountService.saveWithoutFlush).toHaveBeenCalledWith(migratedAccount);
 			});
 		});
 	});

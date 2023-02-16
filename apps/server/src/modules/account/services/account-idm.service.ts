@@ -110,4 +110,8 @@ export class AccountServiceIdm extends AbstractAccountService {
 		const idmAccount = await this.identityManager.findAccountByTecRefId(schoolCloudId);
 		return idmAccount.id;
 	}
+
+	saveWithoutFlush(accountDto: AccountSaveDto): Promise<void> {
+		throw new NotImplementedException();
+	}
 }
