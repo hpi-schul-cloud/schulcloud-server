@@ -206,6 +206,7 @@ describe('User Actions', () => {
 					.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem')
 					.resolves({ _id: schoolId, name: 'Test School', inUserMigration: true });
 				sinon.stub(UserRepo, 'findByLdapIdAndSchool').resolves(null);
+				sinon.stub(UserRepo, 'findByLegacyExternalIdAndSchool').resolves(null);
 				const createUserAndAccountStub = sinon.stub(userAccountService, 'createUserAndAccount');
 				const updateUserAndAccountStub = sinon.stub(userAccountService, 'updateUserAndAccount');
 				const createOrUpdateImportUserStub = sinon.stub(UserRepo, 'createOrUpdateImportUser');
