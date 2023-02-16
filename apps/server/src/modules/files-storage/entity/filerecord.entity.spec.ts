@@ -4,11 +4,11 @@ import { BadRequestException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ErrorType } from '../error';
 import {
-	FileRecordParentType,
-	ScanStatus,
 	FileRecord,
+	FileRecordParentType,
 	FileSecurityCheck,
 	IFileRecordProperties,
+	ScanStatus,
 } from './filerecord.entity';
 
 describe('FileRecord Entity', () => {
@@ -62,15 +62,6 @@ describe('FileRecord Entity', () => {
 				schoolId,
 			});
 			expect(fileRecord.schoolId).toEqual(schoolId.toHexString());
-		});
-
-		it('should provide the lockedFor user id as entity id', () => {
-			const lockedForUserId = new ObjectId();
-			const fileRecord = new FileRecord({
-				...props,
-				lockedForUserId,
-			});
-			expect(fileRecord.lockedForUserId).toEqual(lockedForUserId.toHexString());
 		});
 	});
 
