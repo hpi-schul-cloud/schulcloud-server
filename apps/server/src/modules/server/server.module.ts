@@ -90,11 +90,14 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 };
 
 const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | undefined, logger: Logger) => {
+	const sessionDuration: number = Configuration.get('SESSION__EXPIRES_SECONDS') as number;
+
 	let store: connectRedis.RedisStore | undefined;
 	if (redisClient) {
 		const RedisStore: connectRedis.RedisStore = connectRedis(session);
 		store = new RedisStore({
 			client: redisClient,
+			ttl: sessionDuration,
 		});
 	} else {
 		logger.warn(
@@ -115,7 +118,7 @@ const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | 
 					secure: Configuration.get('SESSION__SECURE') as boolean,
 					sameSite: Configuration.get('SESSION__SAME_SITE') as boolean | 'lax' | 'strict' | 'none',
 					httpOnly: Configuration.get('SESSION__HTTP_ONLY') as boolean,
-					maxAge: Configuration.get('SESSION__EXPIRES_SECONDS') as number,
+					maxAge: sessionDuration,
 				},
 			})
 		)
