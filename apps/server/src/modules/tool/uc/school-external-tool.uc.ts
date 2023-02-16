@@ -71,6 +71,26 @@ export class SchoolExternalToolUc {
 		return schoolExternalTool;
 	}
 
+	async updateSchoolExternalTool(
+		userId: EntityId,
+		schoolExternalToolId: string,
+		schoolExternalTool: SchoolExternalTool
+	): Promise<SchoolExternalToolDO> {
+		await this.ensureSchoolExternalToolPermission(userId, schoolExternalToolId);
+		await this.schoolExternalToolValidationService.validateUpdate(schoolExternalToolId, schoolExternalTool);
+
+		const loaded: SchoolExternalToolDO = await this.schoolExternalToolService.getSchoolExternalToolById(
+			schoolExternalToolId
+		);
+		const updated: SchoolExternalToolDO = new SchoolExternalToolDO({
+			...loaded,
+			...schoolExternalTool,
+		});
+
+		const saved = await this.schoolExternalToolService.updateSchoolExternalTool(updated);
+		return saved;
+	}
+
 	private async ensureSchoolExternalToolPermission(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
 		return this.authorizationService.checkPermissionByReferences(
 			userId,
