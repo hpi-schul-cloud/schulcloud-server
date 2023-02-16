@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { CustomParameterDO, CustomParameterEntryDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { CustomParameterScope, CustomParameterType, EntityId } from '@shared/domain';
 import { isNaN } from 'lodash';
 import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
@@ -26,6 +26,23 @@ export class SchoolExternalToolValidationService {
 		);
 		this.checkVersionMatch(schoolExternalToolDO.toolVersion, loadedExternalTool.version);
 		this.checkCustomParameterEntries(loadedExternalTool, schoolExternalToolDO);
+	}
+
+	async validateUpdate(schoolExternalToolId: EntityId, schoolExternalToolDO: SchoolExternalToolDO): Promise<void> {
+		this.checkIdMatch(schoolExternalToolId, schoolExternalToolDO.id);
+		this.checkForDuplicateParameters(schoolExternalToolDO);
+		this.checkForEmptyParameter(schoolExternalToolDO);
+		const loadedExternalTool: ExternalToolDO = await this.externalToolService.findExternalToolById(
+			schoolExternalToolDO.toolId
+		);
+		this.checkVersionMatch(schoolExternalToolDO.toolVersion, loadedExternalTool.version);
+		this.checkCustomParameterEntries(loadedExternalTool, schoolExternalToolDO);
+	}
+
+	private checkIdMatch(schoolExternalToolId: EntityId, schoolExternalToolDOId: string | undefined): void {
+		if (schoolExternalToolId !== schoolExternalToolDOId) {
+			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
+		}
 	}
 
 	private checkForDuplicateParameters(schoolExternalToolDO: SchoolExternalToolDO): void {
@@ -64,6 +81,18 @@ export class SchoolExternalToolValidationService {
 							this.checkParameterRegex(foundEntry, param);
 						}
 					}
+				}
+			}
+		}
+	}
+
+	private checkForEmptyParameter(schoolExternalToolDO: SchoolExternalToolDO): void {
+		if (schoolExternalToolDO.parameters) {
+			for (const param of schoolExternalToolDO.parameters) {
+				if (!param.value) {
+					throw new ValidationError(
+						`tool_param_value_empty: The parameter with name ${param.name} should not be empty.`
+					);
 				}
 			}
 		}
