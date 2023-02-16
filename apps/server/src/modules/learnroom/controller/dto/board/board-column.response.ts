@@ -19,7 +19,7 @@ export class BoardColumnResponse {
 	title: string;
 
 	@ApiProperty({
-		type: [BoardColumnResponse],
+		type: [BoardSkeletonCardReponse],
 	})
-	cards: BoardSkeletonCardReponse;
+	cards: BoardSkeletonCardReponse[];
 }

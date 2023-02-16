@@ -12,7 +12,7 @@ export class BoardCardUrlParams {
 
 	@IsMongoId()
 	@ApiProperty({
-		description: 'The id of the column.',
+		description: 'The id of the card.',
 		required: true,
 		nullable: false,
 	})
