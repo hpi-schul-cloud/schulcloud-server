@@ -305,7 +305,7 @@ data:
 
     # ========== Start of the Bettermarks tool configuration section.
 
-    # Currently performed only for the following 4 namespaces:
+    # This is currently performed only for the following 4 namespaces:
     #   - 'nbc-bettermarks-test',
     #   - 'nbc-main',
     #   - 'brb-bettermarks-test',
@@ -313,11 +313,9 @@ data:
     # the first two being the testing environments for the nbc instances
     # and the last two being the testing environments for the brb instances.
 
-    # There is a different Bettermarks URL (an entrypoint as the Bettermarks call it I think) used for every testing
-    # environment, but the same client secrets are used for the same instances types (nbc/brb) and that's why:
-    #   - 'nbc-bettermarks-test' & 'nbc-main' namespaces pair share the same client secret
-    # and
-    #   - 'brb-bettermarks-test' & 'brb-main' namespaces pair also share the same client secret.
+    # The Bettermarks URL (entrypoint) and client secret pairs can sometimes be shared among
+    # some of the environments, but to not complicate the configuration logic because
+    # of this fact, they can be configured with different values for each environment.
 
     # Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
     NS=$K8S_NAMESPACE
@@ -325,16 +323,16 @@ data:
     if [ -n "$NS" ]; then
         # Set the BETTERMARKS_CLIENT_SECRET and BETTERMARKS_URL variables values according to the k8s namespace.
         if [ "$NS" = "nbc-bettermarks-test" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_CLIENT_SECRET
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_BETTERMARKS_TEST_CLIENT_SECRET
             BETTERMARKS_URL=$BETTERMARKS_NBC_BETTERMARKS_TEST_ENTRYPOINT
         elif [ "$NS" = "nbc-main" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_CLIENT_SECRET
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_MAIN_CLIENT_SECRET
             BETTERMARKS_URL=$BETTERMARKS_NBC_MAIN_ENTRYPOINT
         elif [ "$NS" = "brb-bettermarks-test" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_CLIENT_SECRET
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_BETTERMARKS_TEST_CLIENT_SECRET
             BETTERMARKS_URL=$BETTERMARKS_BRB_BETTERMARKS_TEST_ENTRYPOINT
         elif [ "$NS" = "brb-main" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_CLIENT_SECRET
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_MAIN_CLIENT_SECRET
             BETTERMARKS_URL=$BETTERMARKS_BRB_MAIN_ENTRYPOINT
         else
             # Print some friendly message for any other namespace that's not supported.
