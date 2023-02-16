@@ -119,10 +119,10 @@ export class OAuthService {
 		}
 
 		this.logger.debug(`provisioning is running for user with sub: ${decodedToken.sub} and system with id: ${systemId}`);
-		const user = await this.userService.findByExternalId(decodedToken.sub, systemId);
+		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 		if (!user) {
 			const additionalInfo: string = await this.getAdditionalErrorInfo(decodedToken?.email as string | undefined);
-			throw new OAuthSSOError(`Failed to find user with Id ${decodedToken.sub} ${additionalInfo}`, 'sso_user_notfound');
+			throw new OAuthSSOError(`Failed to find user with Id ${externalUserId} ${additionalInfo}`, 'sso_user_notfound');
 		}
 		return user;
 	}
