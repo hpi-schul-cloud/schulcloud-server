@@ -59,4 +59,9 @@ export class SchoolExternalToolService {
 		createdSchoolExternalTool = await this.enrichDataFromExternalTool(createdSchoolExternalTool);
 		return createdSchoolExternalTool;
 	}
+
+	async updateSchoolExternalTool(schoolExternalTool: SchoolExternalToolDO): Promise<SchoolExternalToolDO> {
+		const updatedSchoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolRepo.save(schoolExternalTool);
+		return updatedSchoolExternalTool;
+	}
 }
