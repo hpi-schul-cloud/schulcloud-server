@@ -119,8 +119,6 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this._creatorId.toHexString();
 	}
 
-	// todo: permissions
-
 	@Property({ fieldName: 'school' })
 	_schoolId: ObjectId;
 
