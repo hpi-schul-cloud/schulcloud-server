@@ -62,7 +62,6 @@ export interface IFileRecordProperties {
 	parentType: FileRecordParentType;
 	parentId: EntityId | ObjectId;
 	creatorId: EntityId | ObjectId;
-	lockedForUserId?: EntityId | ObjectId;
 	schoolId: EntityId | ObjectId;
 	deletedSince?: Date;
 	isCopyFrom?: ObjectId;
@@ -121,16 +120,6 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this._creatorId.toHexString();
 	}
 
-	// todo: permissions
-
-	// for wopi, is this still needed?
-	@Property({ fieldName: 'lockedForUser', nullable: true })
-	_lockedForUserId?: ObjectId;
-
-	get lockedForUserId(): EntityId | undefined {
-		return this._lockedForUserId?.toHexString();
-	}
-
 	@Property({ fieldName: 'school' })
 	_schoolId: ObjectId;
 
@@ -153,9 +142,6 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.parentType = props.parentType;
 		this._parentId = new ObjectId(props.parentId);
 		this._creatorId = new ObjectId(props.creatorId);
-		if (props.lockedForUserId !== undefined) {
-			this._lockedForUserId = new ObjectId(props.lockedForUserId);
-		}
 		this._schoolId = new ObjectId(props.schoolId);
 		this._isCopyFrom = props.isCopyFrom;
 		this.securityCheck = new FileSecurityCheck({});

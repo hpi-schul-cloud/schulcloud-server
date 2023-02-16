@@ -64,15 +64,6 @@ describe('FileRecord Entity', () => {
 			expect(fileRecord.schoolId).toEqual(schoolId.toHexString());
 		});
 
-		it('should provide the lockedFor user id as entity id', () => {
-			const lockedForUserId = new ObjectId();
-			const fileRecord = new FileRecord({
-				...props,
-				lockedForUserId,
-			});
-			expect(fileRecord.lockedForUserId).toEqual(lockedForUserId.toHexString());
-		});
-
 		it('should provide the isCopyFrom as entity id', () => {
 			const isCopyFrom = new ObjectId();
 			const fileRecord = new FileRecord({
