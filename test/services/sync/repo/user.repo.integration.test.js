@@ -179,10 +179,10 @@ describe('user repo', () => {
 		});
 
 		it('should find user by legacyExternalId and school', async () => {
-			const externalId = new ObjectId();
+			const legacyExternalId = new ObjectId();
 			const school = await testObjects.createTestSchool();
-			const testUser = await testObjects.createTestUser({ externalId, schoolId: school._id });
-			const res = await UserRepo.findByLegacyExternalIdAndSchool(externalId, school._id);
+			const testUser = await testObjects.createTestUser({ legacyExternalId, schoolId: school._id });
+			const res = await UserRepo.findByLegacyExternalIdAndSchool(legacyExternalId, school._id);
 			expect(res._id.toString()).to.be.equal(testUser._id.toString());
 		});
 	});
