@@ -3,6 +3,7 @@ import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/li
 import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clientRepresentation';
 import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
+import ProtocolMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation';
 import { HttpService } from '@nestjs/axios';
 import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -12,7 +13,6 @@ import { IServerConfig } from '@src/modules/server/server.config';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { lastValueFrom } from 'rxjs';
-import ProtocolMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -137,7 +137,7 @@ export class KeycloakConfigurationService {
 		const generatedClientSecret = await kc.clients.generateNewClientSecret({ id: defaultClientInternalId });
 
 		let keycloakSystem: SystemDto;
-		const systems = await this.systemService.findAll(SystemTypeEnum.KEYCLOAK);
+		const systems = await this.systemService.findByType(SystemTypeEnum.KEYCLOAK);
 		if (systems.length === 0) {
 			keycloakSystem = new SystemDto({ type: SystemTypeEnum.KEYCLOAK });
 		} else {
@@ -156,7 +156,7 @@ export class KeycloakConfigurationService {
 		let count = 0;
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const oldConfigs = await kc.identityProviders.find();
-		const newConfigs = await this.systemService.findOidc();
+		const newConfigs = await this.systemService.findByType(SystemTypeEnum.OIDC);
 		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const configureAction of configureActions) {

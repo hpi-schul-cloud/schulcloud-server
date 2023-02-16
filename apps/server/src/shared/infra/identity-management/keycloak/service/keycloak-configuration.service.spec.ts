@@ -237,7 +237,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.find.mockResolvedValue([]);
 			kcApiClientMock.create.mockResolvedValue({ id: 'new_client_id' });
 			kcApiClientMock.generateNewClientSecret.mockResolvedValue({ type: 'secret', value: 'generated_client_secret' });
-			systemService.findAll.mockResolvedValue([]);
+			systemService.findByType.mockResolvedValue([]);
 			const response = {
 				data: {
 					token_endpoint: 'tokenEndpoint',
@@ -255,7 +255,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.findOne.mockRestore();
 			kcApiClientMock.create.mockRestore();
 			kcApiClientMock.generateNewClientSecret.mockRestore();
-			systemService.findAll.mockRestore();
+			systemService.findByType.mockRestore();
 		});
 
 		beforeEach(() => {
@@ -264,7 +264,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.findOne.mockClear();
 			kcApiClientMock.create.mockClear();
 			kcApiClientMock.generateNewClientSecret.mockClear();
-			systemService.findAll.mockClear();
+			systemService.findByType.mockClear();
 			systemService.save.mockClear();
 		});
 
@@ -363,7 +363,7 @@ describe('KeycloakConfigurationService Unit', () => {
 
 		it('should not create Keycloak system if already exists', async () => {
 			const mockedSystem = systemFactory.buildWithId();
-			systemService.findAll.mockResolvedValueOnce([mockedSystem]);
+			systemService.findByType.mockResolvedValueOnce([mockedSystem]);
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(systemService.save).toHaveBeenCalledWith(expect.objectContaining({ _id: mockedSystem._id }));
 		});
