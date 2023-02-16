@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
+import { Account, EntityId } from '@shared/domain';
 import bcrypt from 'bcryptjs';
 import { AccountDto, AccountSaveDto } from './dto';
 
@@ -40,4 +40,6 @@ export abstract class AbstractAccountService {
 	protected encryptPassword(password: string): Promise<string> {
 		return bcrypt.hash(password, 10);
 	}
+
+	abstract saveWithoutFlush(accountDto: AccountSaveDto): Promise<Account | void>;
 }
