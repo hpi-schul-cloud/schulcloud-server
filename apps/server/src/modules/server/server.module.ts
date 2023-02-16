@@ -118,7 +118,7 @@ const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | 
 					secure: Configuration.get('SESSION__SECURE') as boolean,
 					sameSite: Configuration.get('SESSION__SAME_SITE') as boolean | 'lax' | 'strict' | 'none',
 					httpOnly: Configuration.get('SESSION__HTTP_ONLY') as boolean,
-					maxAge: sessionDuration,
+					maxAge: sessionDuration * 1000,
 				},
 			})
 		)
