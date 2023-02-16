@@ -171,4 +171,16 @@ describe('SchoolExternalToolService', () => {
 			});
 		});
 	});
+
+	describe('updateSchoolExternalTool is called', () => {
+		describe('when schoolExternalTool is given', () => {
+			it('should save schoolExternalTool', async () => {
+				const { schoolExternalTool } = setup();
+
+				await service.updateSchoolExternalTool(schoolExternalTool);
+
+				expect(schoolExternalToolRepo.save).toHaveBeenCalledWith(schoolExternalTool);
+			});
+		});
+	});
 });
