@@ -64,10 +64,6 @@ export class AccountService extends AbstractAccountService {
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
-	async saveWithoutFlush(accountDto: AccountSaveDto): Promise<void> {
-		await this.accountDb.saveWithoutFlush(accountDto);
-	}
-
 	async updateUsername(accountId: string, username: string): Promise<AccountDto> {
 		const ret = await this.accountDb.updateUsername(accountId, username);
 		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.updateUsername(accountId, username));

@@ -41,7 +41,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
 	}
 
-	async saveWithoutFlush(accountDto: AccountSaveDto): Promise<Account> {
+	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		let account: Account;
 		if (accountDto.id) {
 			account = await this.accountRepo.findById(accountDto.id);
@@ -57,7 +57,7 @@ export class AccountServiceDb extends AbstractAccountService {
 			account.credentialHash = accountDto.credentialHash;
 			account.token = accountDto.token;
 
-			this.accountRepo.saveWithoutFlush(account);
+			await this.accountRepo.save(account);
 		} else {
 			account = new Account({
 				userId: new ObjectId(accountDto.userId),
@@ -71,14 +71,8 @@ export class AccountServiceDb extends AbstractAccountService {
 				credentialHash: accountDto.credentialHash,
 			});
 
-			this.accountRepo.saveWithoutFlush(account);
+			await this.accountRepo.save(account);
 		}
-		return account;
-	}
-
-	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
-		const account: Account = await this.saveWithoutFlush(accountDto);
-		await this.accountRepo.save(account);
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 

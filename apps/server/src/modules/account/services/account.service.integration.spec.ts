@@ -10,7 +10,7 @@ import { KeycloakIdentityManagementService } from '@shared/infra/identity-manage
 import { ObjectId } from 'bson';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-jest';
 import KeycloakConfiguration from '@shared/infra/identity-management/keycloak/keycloak-config';
 import { Logger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
@@ -29,7 +29,6 @@ describe('AccountService Integration', () => {
 	let accountRepo: AccountRepo;
 	let em: EntityManager;
 	let isIdmReachable = true;
-	let accountServiceDB: DeepMocked<AccountServiceDb>;
 
 	const testRealm = 'test-realm';
 	const testAccount = new AccountSaveDto({
@@ -78,6 +77,7 @@ describe('AccountService Integration', () => {
 			providers: [
 				AccountService,
 				AccountServiceIdm,
+				AccountServiceDb,
 				AccountRepo,
 				KeycloakAdministrationService,
 				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
@@ -93,15 +93,10 @@ describe('AccountService Integration', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
-				{
-					provide: AccountServiceDb,
-					useValue: createMock<AccountServiceDb>(),
-				},
 			],
 		}).compile();
 		accountService = module.get(AccountService);
 		identityManagementService = module.get(IdentityManagementService);
-		accountServiceDB = module.get(AccountServiceDb);
 		accountRepo = module.get(AccountRepo);
 		em = module.get(EntityManager);
 		keycloakAdminService = module.get(KeycloakAdministrationService);
@@ -230,19 +225,5 @@ describe('AccountService Integration', () => {
 		await accountService.deleteByUserId(testAccount.userId ?? '');
 		await expect(identityManagementService.findAccountById(idmId)).rejects.toThrow();
 		await expect(accountRepo.findById(dbId)).rejects.toThrow();
-	});
-
-	describe('saveWithoutFlush', () => {
-		describe('when create or update Account', () => {
-			it('should call account repo', async () => {
-				const account = accountFactory.buildWithId({}, '474546543334');
-				const accountSaveDto = account as AccountSaveDto;
-				accountServiceDB.saveWithoutFlush.mockResolvedValue(account);
-
-				await accountService.saveWithoutFlush(accountSaveDto);
-
-				expect(accountServiceDB.saveWithoutFlush).toHaveBeenCalledTimes(1);
-			});
-		});
 	});
 });

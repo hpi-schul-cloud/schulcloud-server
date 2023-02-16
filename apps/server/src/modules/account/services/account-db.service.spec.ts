@@ -5,7 +5,7 @@ import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Permission, Role, RoleName, School, User } from '@shared/domain';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
-import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
+import { AccountDto } from '@src/modules/account/services/dto';
 import bcrypt from 'bcryptjs';
 import { createMock } from '@golevelup/ts-jest';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
@@ -59,7 +59,6 @@ describe('AccountService', () => {
 
 							return Promise.resolve();
 						}),
-						saveWithoutFlush: jest.fn().mockImplementation(() => {}),
 						deleteById: jest.fn().mockImplementation((): Promise<void> => Promise.resolve()),
 						findMultipleByUserId: (userIds: EntityId[]): Promise<Account[]> => {
 							const accounts = mockAccounts.filter((tempAccount) =>
@@ -454,19 +453,6 @@ describe('AccountService', () => {
 			expect(accountRepo.searchByUsernameExactMatch).toHaveBeenCalledWith(partialUserName);
 			expect(foundAccounts.total).toBe(1);
 			expect(foundAccounts.accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
-		});
-	});
-
-	describe('saveWithoutFlush', () => {
-		describe('when accountSaveDto is given', () => {
-			it('should call the accountRepo ', () => {
-				const account = accountFactory.buildWithId({}, '11112222');
-				const accountSaveDto = account as AccountSaveDto;
-
-				void accountService.saveWithoutFlush(accountSaveDto);
-
-				expect(accountRepo.saveWithoutFlush).toHaveBeenCalledTimes(1);
-			});
 		});
 	});
 });

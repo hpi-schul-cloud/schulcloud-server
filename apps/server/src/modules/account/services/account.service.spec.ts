@@ -110,13 +110,6 @@ describe('AccountService', () => {
 		});
 	});
 
-	describe('saveWithoutFlush', () => {
-		it('should call saveWithoutFlush in accountServiceDb', async () => {
-			await expect(accountService.saveWithoutFlush({} as AccountSaveDto)).resolves.not.toThrow();
-			expect(accountServiceDb.saveWithoutFlush).toHaveBeenCalledTimes(1);
-		});
-	});
-
 	describe('updateUsername', () => {
 		it('should call updateUsername in accountServiceDb', async () => {
 			await expect(accountService.updateUsername('accountId', 'username')).resolves.not.toThrow();
