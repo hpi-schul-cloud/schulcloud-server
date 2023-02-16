@@ -20,6 +20,10 @@
 				"file": "cross-cutting-concerns.md"
 			},
 			{
+				"title": "Domain Object Validation",
+				"file": "domain-object-validation.md"
+			},
+			{
 				"title": "Testing",
 				"file": "testing.md"
 			},
@@ -46,6 +50,10 @@
 			{
 				"title": "Authorisation",
 				"file": "../src/modules/authorization/README.md"
+			},
+			{
+				"title": "Code Style",
+				"file": "code-style.md"
 			}
 		]
 	}

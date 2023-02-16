@@ -1,3 +1,6 @@
+import { EntityName, QueryOrderMap } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import {
 	ExternalTool,
 	IExternalToolProperties,
@@ -6,14 +9,10 @@ import {
 	SortOrder,
 	ToolConfigType,
 } from '@shared/domain';
-import { BaseDORepo, EntityProperties, Scope } from '@shared/repo';
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityName } from '@mikro-orm/core';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { Logger } from '@src/core/logger';
-import { QueryOrderMap } from '@mikro-orm/core/enums';
 import { Page } from '@shared/domain/interface/page';
+import { BaseDORepo, Scope } from '@shared/repo';
+import { Logger } from '@src/core/logger';
 import { ExternalToolSortingMapper } from './external-tool-sorting.mapper';
 import { ExternalToolRepoMapper } from './external-tool.repo.mapper';
 import { ExternalToolScope } from './external-tool.scope';
@@ -64,14 +63,6 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 		return null;
 	}
 
-	mapEntityToDO(entity: ExternalTool): ExternalToolDO {
-		return this.externalToolRepoMapper.mapEntityToDO(entity);
-	}
-
-	mapDOToEntityProperties(entityDO: ExternalToolDO): EntityProperties<IExternalToolProperties> {
-		return this.externalToolRepoMapper.mapDOToEntityProperties(entityDO);
-	}
-
 	async find(query: Partial<ExternalTool>, options?: IFindOptions<ExternalToolDO>): Promise<Page<ExternalToolDO>> {
 		const pagination: IPagination = options?.pagination || {};
 		const order: QueryOrderMap<ExternalTool> = this.sortingMapper.mapDOSortOrderToQueryOrder(options?.order || {});
@@ -93,5 +84,13 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 		const entityDos: ExternalToolDO[] = entities.map((entity) => this.mapEntityToDO(entity));
 		const page: Page<ExternalToolDO> = new Page<ExternalToolDO>(entityDos, total);
 		return page;
+	}
+
+	mapEntityToDO(entity: ExternalTool): ExternalToolDO {
+		return this.externalToolRepoMapper.mapEntityToDO(entity);
+	}
+
+	mapDOToEntityProperties(entityDO: ExternalToolDO): IExternalToolProperties {
+		return this.externalToolRepoMapper.mapDOToEntityProperties(entityDO);
 	}
 }

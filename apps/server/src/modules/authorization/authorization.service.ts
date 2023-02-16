@@ -8,8 +8,10 @@ import {
 	SchoolRule,
 	SubmissionRule,
 	TaskRule,
+	TaskCardRule,
 	User,
 	UserRule,
+	SchoolExternalToolRule,
 } from '@shared/domain';
 import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
@@ -24,10 +26,12 @@ export class AuthorizationService extends BasePermissionManager {
 		private readonly lessonRule: LessonRule,
 		private readonly schoolRule: SchoolRule,
 		private readonly taskRule: TaskRule,
+		private readonly taskCardRule: TaskCardRule,
 		private readonly userRule: UserRule,
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
-		private readonly loader: ReferenceLoader
+		private readonly loader: ReferenceLoader,
+		private readonly schoolExternalToolRule: SchoolExternalToolRule
 	) {
 		super();
 		this.registerPermissions([
@@ -35,10 +39,12 @@ export class AuthorizationService extends BasePermissionManager {
 			this.courseGroupRule,
 			this.lessonRule,
 			this.taskRule,
+			this.taskCardRule,
 			this.teamRule,
 			this.userRule,
 			this.schoolRule,
 			this.submissionRule,
+			this.schoolExternalToolRule,
 		]);
 	}
 

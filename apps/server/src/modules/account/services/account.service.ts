@@ -1,108 +1,43 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common';
-import bcrypt from 'bcryptjs';
-import { Account, EntityId } from '@shared/domain';
-import { AccountRepo } from '@shared/repo';
-import { AccountEntityToDtoMapper } from '../mapper';
+import { AccountServiceDb } from './account-db.service';
+import { AccountServiceIdm } from './account-idm.service';
+import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
+import { IServerConfig } from '../../server/server.config';
+import { Logger } from '../../../core/logger';
 
 @Injectable()
-export class AccountService {
-	constructor(private accountRepo: AccountRepo) {}
-
-	async findById(id: EntityId): Promise<AccountDto> {
-		const accountEntity = await this.accountRepo.findById(id);
-		return AccountEntityToDtoMapper.mapToDto(accountEntity);
+export class AccountService extends AbstractAccountService {
+	constructor(
+		private readonly accountDb: AccountServiceDb,
+		private readonly accountIdm: AccountServiceIdm,
+		private readonly configService: ConfigService<IServerConfig, true>,
+		private readonly logger: Logger
+	) {
+		super();
+		this.logger.setContext(AccountService.name);
 	}
 
-	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
-		const accountEntities = await this.accountRepo.findMultipleByUserId(userIds);
-		return AccountEntityToDtoMapper.mapAccountsToDto(accountEntities);
+	async findById(id: string): Promise<AccountDto> {
+		return this.accountDb.findById(id);
 	}
 
-	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
-		const accountEntity = await this.accountRepo.findByUserId(userId);
-		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
+	async findMultipleByUserId(userIds: string[]): Promise<AccountDto[]> {
+		return this.accountDb.findMultipleByUserId(userIds);
 	}
 
-	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
-		const accountEntity = await this.accountRepo.findByUserId(userId);
-		if (!accountEntity) {
-			throw new EntityNotFoundError('Account');
-		}
-		return AccountEntityToDtoMapper.mapToDto(accountEntity);
+	async findByUserId(userId: string): Promise<AccountDto | null> {
+		return this.accountDb.findByUserId(userId);
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {
-		const accountEntity = await this.accountRepo.findByUsernameAndSystemId(username, systemId);
-		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
+	async findByUserIdOrFail(userId: string): Promise<AccountDto> {
+		return this.accountDb.findByUserIdOrFail(userId);
 	}
 
-	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
-		// Check if the ID is correct?
-		// const user = await this.userRepo.findById(accountDto.userId);
-		// const system = accountDto.systemId ? await this.systemRepo.findById(accountDto.systemId) : undefined;
-		let account: Account;
-		if (accountDto.id) {
-			account = await this.accountRepo.findById(accountDto.id);
-			account.userId = new ObjectId(accountDto.userId);
-			account.systemId = accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined;
-			account.username = accountDto.username;
-			account.activated = accountDto.activated;
-			account.expiresAt = accountDto.expiresAt;
-			account.lasttriedFailedLogin = accountDto.lasttriedFailedLogin;
-			if (accountDto.password) {
-				account.password = await this.encryptPassword(accountDto.password);
-			}
-			account.credentialHash = accountDto.credentialHash;
-			account.token = accountDto.token;
-		} else {
-			account = new Account({
-				userId: new ObjectId(accountDto.userId),
-				systemId: accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined,
-				username: accountDto.username,
-				activated: accountDto.activated,
-				expiresAt: accountDto.expiresAt,
-				lasttriedFailedLogin: accountDto.lasttriedFailedLogin,
-				password: accountDto.password ? await this.encryptPassword(accountDto.password) : undefined,
-				token: accountDto.token,
-				credentialHash: accountDto.credentialHash,
-			});
-		}
-		await this.accountRepo.save(account);
-		return AccountEntityToDtoMapper.mapToDto(account);
-	}
-
-	async updateUsername(accountId: EntityId, username: string): Promise<AccountDto> {
-		const account = await this.accountRepo.findById(accountId);
-		account.username = username;
-		account.updatedAt = new Date();
-		await this.accountRepo.save(account);
-		return AccountEntityToDtoMapper.mapToDto(account);
-	}
-
-	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
-		const account = await this.accountRepo.findById(accountId);
-		account.lasttriedFailedLogin = lastTriedFailedLogin;
-		await this.accountRepo.save(account);
-		return AccountEntityToDtoMapper.mapToDto(account);
-	}
-
-	async updatePassword(accountId: EntityId, password: string): Promise<AccountDto> {
-		const account = await this.accountRepo.findById(accountId);
-		account.password = await this.encryptPassword(password);
-		account.updatedAt = new Date();
-		await this.accountRepo.save(account);
-		return AccountEntityToDtoMapper.mapToDto(account);
-	}
-
-	delete(id: EntityId): Promise<void> {
-		return this.accountRepo.deleteById(id);
-	}
-
-	deleteByUserId(userId: EntityId): Promise<void> {
-		return this.accountRepo.deleteByUserId(userId);
+	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<AccountDto | null> {
+		return this.accountDb.findByUsernameAndSystemId(username, systemId);
 	}
 
 	async searchByUsernamePartialMatch(
@@ -110,16 +45,64 @@ export class AccountService {
 		skip: number,
 		limit: number
 	): Promise<{ accounts: AccountDto[]; total: number }> {
-		const accountEntities = await this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
-		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
+		return this.accountDb.searchByUsernamePartialMatch(userName, skip, limit);
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountDto[]; total: number }> {
-		const accountEntities = await this.accountRepo.searchByUsernameExactMatch(userName);
-		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
+		return this.accountDb.searchByUsernameExactMatch(userName);
 	}
 
-	private encryptPassword(password: string): Promise<string> {
-		return bcrypt.hash(password, 10);
+	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
+		const ret = await this.accountDb.save(accountDto);
+		const newAccount: AccountSaveDto = {
+			...accountDto,
+			id: accountDto.id,
+			idmReferenceId: ret.id,
+			password: accountDto.password,
+		};
+		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.save(newAccount));
+		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+	}
+
+	async updateUsername(accountId: string, username: string): Promise<AccountDto> {
+		const ret = await this.accountDb.updateUsername(accountId, username);
+		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.updateUsername(accountId, username));
+		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+	}
+
+	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<AccountDto> {
+		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
+		return ret;
+	}
+
+	async updatePassword(accountId: string, password: string): Promise<AccountDto> {
+		const ret = await this.accountDb.updatePassword(accountId, password);
+		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.updatePassword(accountId, password));
+		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+	}
+
+	async delete(accountId: string): Promise<void> {
+		await this.accountDb.delete(accountId);
+		await this.executeIdmMethod(async () => this.accountIdm.delete(accountId));
+	}
+
+	async deleteByUserId(userId: string): Promise<void> {
+		await this.accountDb.deleteByUserId(userId);
+		await this.executeIdmMethod(async () => this.accountIdm.deleteByUserId(userId));
+	}
+
+	private async executeIdmMethod<T>(idmCallback: () => Promise<T>) {
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED')) {
+			try {
+				return await idmCallback();
+			} catch (error) {
+				if (error instanceof Error) {
+					this.logger.error(error, error.stack);
+				} else {
+					this.logger.error(error);
+				}
+			}
+		}
+		return null;
 	}
 }

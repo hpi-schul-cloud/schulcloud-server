@@ -31,6 +31,7 @@ export type GridElementContent = {
 	displayColor: string;
 	group?: LearnroomMetadata[];
 	groupId?: string;
+	copyingSince?: Date;
 };
 
 export class GridElement implements IGridElement {
@@ -217,14 +218,37 @@ export class DashboardEntity {
 		return element;
 	}
 
-	moveElement(from: GridPositionWithGroupIndex, to: GridPositionWithGroupIndex): GridElementWithPosition {
+	moveElement(
+		from: GridPositionWithGroupIndex,
+		to: GridPositionWithGroupIndex,
+		substituteCourses: ILearnroom[]
+	): GridElementWithPosition {
 		const elementToMove = this.getReferencesFromPosition(from);
+		if (substituteCourses.length > 0) {
+			this.checkIfMovedToSubstitute(elementToMove, substituteCourses);
+			const toPosition = this.grid.get(this.gridIndexFromPosition(to));
+			if (toPosition) {
+				this.checkIfMovedToSubstitute(toPosition, substituteCourses);
+			}
+		}
+
 		const resultElement = this.mergeElementIntoPosition(elementToMove, to);
 		this.removeFromPosition(from);
 		return {
 			pos: to,
 			gridElement: resultElement,
 		};
+	}
+
+	private checkIfMovedToSubstitute(element: IGridElement, substituteCourses: ILearnroom[]) {
+		element.getReferences().forEach((course) => {
+			const { id } = course.getMetadata();
+			substituteCourses.forEach((substitute) => {
+				if (substitute.getMetadata().id === id) {
+					throw new BadRequestException('substitute courses cannot be arranged');
+				}
+			});
+		});
 	}
 
 	setLearnRooms(rooms: ILearnroom[]): void {
@@ -264,11 +288,7 @@ export class DashboardEntity {
 
 	private allRooms(): ILearnroom[] {
 		const elements = [...this.grid.values()];
-		const references = elements
-			.map((el) => {
-				return el.getReferences();
-			})
-			.flat();
+		const references = elements.map((el) => el.getReferences()).flat();
 		return references;
 	}
 

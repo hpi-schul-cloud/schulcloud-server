@@ -1,12 +1,14 @@
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
-import { School, System } from '@shared/domain';
+import { ISchoolProperties, School, SchoolFeatures, SchoolYear, System } from '@shared/domain';
 import { schoolFactory, setupEntities, systemFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 
 describe('SchoolMapper', () => {
 	let orm: MikroORM;
+	const mapper: SchoolMapper = new SchoolMapper();
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -16,48 +18,60 @@ describe('SchoolMapper', () => {
 		await orm.close();
 	});
 
-	it('mapToDto', () => {
+	it('mapToDO', () => {
 		const schoolEntity: School = schoolFactory.buildWithId();
 		const system: System = systemFactory.buildWithId();
 		schoolEntity.systems.add(system);
 
-		const schoolDto = SchoolMapper.mapToDto(schoolEntity);
+		const schoolDO = mapper.mapEntityToDO(schoolEntity);
 
-		expect(schoolDto.id).toEqual(schoolEntity.id);
-		expect(schoolDto.name).toEqual(schoolEntity.name);
-		expect(schoolDto.externalId).toEqual(schoolEntity.externalId);
-		expect(schoolDto.systemIds[0]).toEqual(schoolEntity.systems.getItems()[0].id);
+		expect(schoolDO.id).toEqual(schoolEntity.id);
+		expect(schoolDO.name).toEqual(schoolEntity.name);
+		expect(schoolDO.externalId).toEqual(schoolEntity.externalId);
+		expect(schoolDO.features).toEqual(schoolEntity.features);
+		expect(schoolDO.systems ? schoolDO.systems[0] : '').toEqual(schoolEntity.systems ? schoolEntity.systems[0].id : '');
+		expect(schoolDO.officialSchoolNumber).toEqual(schoolEntity.officialSchoolNumber);
+		expect(schoolDO.oauthMigrationPossible).toEqual(schoolEntity.oauthMigrationPossible);
+		expect(schoolDO.inUserMigration).toEqual(schoolEntity.inUserMigration);
+		expect(schoolDO.inMaintenanceSince).toEqual(schoolEntity.inMaintenanceSince);
+		expect(schoolDO.schoolYear).toEqual(schoolEntity.schoolYear);
 	});
 
 	it('mapToEntity', () => {
 		const system: System = systemFactory.buildWithId();
-
-		const schoolDto: SchoolDto = new SchoolDto({
+		jest.mock('@mikro-orm/core/', () =>
+			jest.fn().mockImplementation(() => {
+				return { createFromPK: jest.fn().mockReturnValue(system) };
+			})
+		);
+		const schoolYear: SchoolYear = schoolYearFactory.build();
+		const schoolDO: SchoolDO = new SchoolDO({
 			id: new ObjectId().toHexString(),
 			name: 'schoolName',
 			externalId: 'externalId',
-			systemIds: [system.id],
+			features: [SchoolFeatures.NEXTCLOUD],
+			inMaintenanceSince: new Date(),
+			inUserMigration: false,
+			oauthMigrationMandatory: new Date(),
+			oauthMigrationPossible: new Date(),
+			oauthMigrationFinished: new Date(),
+			officialSchoolNumber: 'School1',
+			schoolYear,
+			systems: [system.id],
 		});
 
-		const entity: School = SchoolMapper.mapToEntity(schoolDto);
+		const entity: ISchoolProperties = mapper.mapDOToEntityProperties(schoolDO);
 
-		expect(entity.id).toEqual(schoolDto.id);
-		expect(entity.name).toEqual(schoolDto.name);
-		expect(entity.externalId).toEqual(schoolDto.externalId);
-		expect(entity.systems.getItems()[0].id).toEqual(schoolDto.systemIds[0]);
-	});
+		expect(entity.name).toEqual(schoolDO.name);
+		expect(entity.externalId).toEqual(schoolDO.externalId);
+		expect(entity.features).toEqual(schoolDO.features);
+		expect(entity.systems ? entity.systems[0].id : '').toEqual(schoolDO.systems ? schoolDO.systems[0] : '');
+		expect(entity.officialSchoolNumber).toEqual(schoolDO.officialSchoolNumber);
+		expect(entity.oauthMigrationPossible).toEqual(schoolDO.oauthMigrationPossible);
+		expect(entity.inUserMigration).toEqual(schoolDO.inUserMigration);
+		expect(entity.inMaintenanceSince).toEqual(schoolDO.inMaintenanceSince);
+		expect(entity.schoolYear).toEqual(schoolDO.schoolYear);
 
-	it('mapEntityToEntity', () => {
-		const targetEntity: School = new School({ name: 'oldName' });
-		const sourceEntity: School = schoolFactory.buildWithId();
-		const system: System = systemFactory.buildWithId();
-		sourceEntity.systems.add(system);
-
-		const entity = SchoolMapper.mapEntityToEntity(targetEntity, sourceEntity);
-
-		expect(entity.id).toEqual(targetEntity.id);
-		expect(entity.name).toEqual(sourceEntity.name);
-		expect(entity.externalId).toEqual(sourceEntity.externalId);
-		expect(entity.systems).toEqual(sourceEntity.systems);
+		jest.clearAllMocks();
 	});
 });

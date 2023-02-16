@@ -52,6 +52,8 @@ const submissionSchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 	comment: { type: String },
+	submitted: { type: Boolean, default: false },
+	graded: { type: Boolean, default: false },
 	grade: { type: Number, min: 0, max: 100 },
 	gradeComment: { type: String },
 	homeworkId: {
@@ -70,7 +72,9 @@ const submissionSchema = new Schema({
 query list with bigges impact of database load
 schulcloud.submissions         find         {"$and": [{"teamMembers": 1}, {"studentId": {"$ne": 1}}] -> 1
 */
-submissionSchema.index({ schoolId: 1 }); // ? school exist not in submission entity
+submissionSchema.index({ schoolId: 1 });
+submissionSchema.index({ fileIds: 1 });
+submissionSchema.index({ gradeFileIds: 1 });
 
 enableAuditLog(homeworkSchema);
 enableAuditLog(submissionSchema);

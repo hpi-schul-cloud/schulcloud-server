@@ -1,30 +1,41 @@
 import { Module } from '@nestjs/common';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
-import { EncryptionModule } from '@shared/infra/encryption';
 import { LtiToolRepo } from '@shared/repo';
-import { Lti11Uc } from './uc/lti11.uc';
-import { LtiRoleMapper } from './mapper/lti-role.mapper';
-import { UserModule } from '../user';
+import { LoggerModule } from '@src/core/logger';
+import { AuthorizationModule } from '@src/modules/authorization';
+import { UserModule } from '@src/modules/user';
+import { SchoolModule } from '@src/modules/school';
+import {
+	ExternalToolRequestMapper,
+	ExternalToolResponseMapper,
+	Lti11ResponseMapper,
+	SchoolExternalToolRequestMapper,
+	SchoolExternalToolResponseMapper,
+} from './controller/mapper';
+import { ToolConfigurationController } from './controller/tool-configuration.controller';
 import { ToolController } from './controller/tool.controller';
-import { Lti11ResponseMapper } from './mapper/lti11-response.mapper';
-import { ExternalToolUc } from './uc/external-tool.uc';
-import { ExternalToolRequestMapper } from './mapper/external-tool-request.mapper';
-import { ExternalToolResponseMapper } from './mapper/external-tool-response.mapper';
 import { ToolModule } from './tool.module';
-import { LoggerModule } from '../../core/logger';
+import { ExternalToolUc } from './uc/external-tool.uc';
+import { Lti11Uc } from './uc/lti11.uc';
+import { LtiRoleMapper } from './uc/mapper';
+import { ExternalToolConfigurationUc } from './uc/external-tool-configuration.uc';
+import { ToolSchoolController } from './controller/tool-school.controller';
+import { SchoolExternalToolUc } from './uc/school-external-tool.uc';
 
 @Module({
-	imports: [ToolModule, UserModule, AuthorizationModule, OauthProviderServiceModule, EncryptionModule, LoggerModule],
-	controllers: [ToolController],
+	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule, SchoolModule],
+	controllers: [ToolConfigurationController, ToolSchoolController, ToolController],
 	providers: [
 		Lti11Uc,
 		LtiRoleMapper,
 		Lti11ResponseMapper,
 		LtiToolRepo,
 		ExternalToolUc,
+		ExternalToolConfigurationUc,
 		ExternalToolRequestMapper,
 		ExternalToolResponseMapper,
+		SchoolExternalToolUc,
+		SchoolExternalToolResponseMapper,
+		SchoolExternalToolRequestMapper,
 	],
 })
 export class ToolApiModule {}

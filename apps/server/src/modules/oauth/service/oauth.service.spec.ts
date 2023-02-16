@@ -1,27 +1,27 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM, NotFoundError } from '@mikro-orm/core';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { MikroORM } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfig, System, User } from '@shared/domain';
-import { UserRepo } from '@shared/repo/user/user.repo';
+import { OauthConfig, System } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
 import { FeathersJwtProvider } from '@src/modules/authorization';
+import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
+import { UserService } from '@src/modules/user';
 import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { of, throwError } from 'rxjs';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { setupEntities, userFactory } from '@shared/testing';
-import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { BadRequestException } from '@nestjs/common';
-import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { OAuthService } from './oauth.service';
-import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
-import { OAuthResponse } from './dto/oauth.response';
-import { IJwt } from '../interface/jwt.base.interface';
+import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
+import { IJwt } from '../interface/jwt.base.interface';
+import { OAuthProcessDto } from './dto/oauth-process.dto';
+import { OAuthService } from './oauth.service';
 
 const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
 	return {
@@ -33,8 +33,8 @@ const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
 	};
 };
 
-jest.mock('jwks-rsa', () => {
-	return () => ({
+jest.mock('jwks-rsa', () => () => {
+	return {
 		getKeys: jest.fn(),
 		getSigningKey: jest.fn().mockResolvedValue({
 			kid: 'kid',
@@ -43,8 +43,10 @@ jest.mock('jwks-rsa', () => {
 			rsaPublicKey: 'publicKey',
 		}),
 		getSigningKeys: jest.fn(),
-	});
+	};
 });
+
+jest.mock('jsonwebtoken');
 
 describe('OAuthService', () => {
 	let module: TestingModule;
@@ -52,9 +54,8 @@ describe('OAuthService', () => {
 	let service: OAuthService;
 
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
-	let userRepo: DeepMocked<UserRepo>;
+	let userService: DeepMocked<UserService>;
 	let feathersJwtProvider: DeepMocked<FeathersJwtProvider>;
-	let provisioningService: DeepMocked<ProvisioningService>;
 	let httpService: DeepMocked<HttpService>;
 
 	let testSystem: System;
@@ -78,8 +79,8 @@ describe('OAuthService', () => {
 			providers: [
 				OAuthService,
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 				{
 					provide: FeathersJwtProvider,
@@ -97,18 +98,13 @@ describe('OAuthService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
-				{
-					provide: ProvisioningService,
-					useValue: createMock<ProvisioningService>(),
-				},
 			],
 		}).compile();
 		service = module.get(OAuthService);
 
 		oAuthEncryptionService = module.get(DefaultEncryptionService);
-		userRepo = module.get(UserRepo);
+		userService = module.get(UserService);
 		feathersJwtProvider = module.get(FeathersJwtProvider);
-		provisioningService = module.get(ProvisioningService);
 		httpService = module.get(HttpService);
 	});
 
@@ -202,9 +198,7 @@ describe('OAuthService', () => {
 		});
 
 		it('should throw if no payload was returned', async () => {
-			jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => {
-				return 'string';
-			});
+			jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => 'string');
 
 			await expect(service.validateToken('idToken', testOauthConfig)).rejects.toEqual(
 				new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
@@ -212,99 +206,110 @@ describe('OAuthService', () => {
 		});
 	});
 
-	describe('findUser', () => {
-		beforeEach(() => {
-			jest.spyOn(jwt, 'decode').mockImplementation((): JwtPayload => {
-				return { sub: new ObjectId().toHexString(), email: 'peter.tester@example.com' };
-			});
-		});
+	describe('findUser is called', () => {
+		const setupJwt = () => {
+			const decodedJwt: JwtPayload = {
+				sub: new ObjectId().toHexString(),
+				email: 'peter.tester@example.com',
+			};
+
+			jest.spyOn(jwt, 'decode').mockReturnValue(decodedJwt);
+
+			return {
+				decodedJwt,
+			};
+		};
 
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
 
-		it('should return the user according to the externalId', async () => {
-			const externalId = new ObjectId().toHexString();
-			const user: User = userFactory.buildWithId({ externalId });
+		describe('when an external id is given', () => {
+			it('should return the user according to the externalId', async () => {
+				setupJwt();
+				const externalUserId = 'externalUserId';
+				const user: UserDO = new UserDO({
+					firstName: 'firstName',
+					lastName: 'lastName',
+					email: 'email',
+					schoolId: 'schoolId',
+					roleIds: ['roleId'],
+					externalId: externalUserId,
+				});
 
-			provisioningService.process.mockResolvedValue({ externalUserId: externalId });
-			userRepo.findByExternalIdOrFail.mockResolvedValue(user);
+				userService.findByExternalId.mockResolvedValue(user);
 
-			const result: User = await service.findUser('accessToken', 'idToken', testSystem.id);
+				const result: UserDO = await service.findUser('idToken', externalUserId, testSystem.id);
 
-			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
-			expect(result).toBe(user);
-		});
-
-		it('should throw if no user is found with this id and give helpful context', async () => {
-			const schoolId = '123';
-			const userLdapId = '321-my-current-ldap-id';
-			userRepo.findByExternalIdOrFail.mockRejectedValue(new NotFoundError('User not found'));
-			userRepo.findByEmail.mockResolvedValue([
-				{ school: { id: schoolId, name: 'testschool' }, externalId: userLdapId },
-			] as User[]);
-
-			try {
-				await service.findUser('accessToken', 'idToken', testSystem.id);
-			} catch (error) {
-				expect(error).toBeInstanceOf(OAuthSSOError);
-				expect((error as OAuthSSOError).message).toContain(schoolId);
-				expect((error as OAuthSSOError).message).toContain(userLdapId);
-			}
-		});
-
-		it('should return the user according to the id', async () => {
-			const externalId: string = new ObjectId().toHexString();
-			const user: User = userFactory.buildWithId({ externalId });
-			const provisioning: ProvisioningDto = new ProvisioningDto({ externalUserId: externalId });
-
-			provisioningService.process.mockResolvedValue(provisioning);
-			userRepo.findByExternalIdOrFail.mockResolvedValue(user);
-
-			const result: User = await service.findUser('accessToken', 'idToken', testSystem.id);
-
-			expect(userRepo.findByExternalIdOrFail).toHaveBeenCalled();
-			expect(result).toBe(user);
-		});
-
-		it('should throw if idToken is invalid and has no sub', async () => {
-			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
-				return null;
+				expect(result).toEqual(user);
 			});
+		});
 
-			await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(BadRequestException);
+		describe('when no user is found with this id', () => {
+			it('should throw OAuthSSOError and give helpful context', async () => {
+				setupJwt();
+				const schoolId = new ObjectId().toHexString();
+				const externalUserId = '321-my-current-ldap-id';
+				userService.findByExternalId.mockResolvedValue(null);
+				userService.findByEmail.mockResolvedValue([
+					userFactory.buildWithId({
+						school: schoolFactory.buildWithId(undefined, schoolId),
+						externalId: externalUserId,
+					}),
+				]);
+
+				const promise: Promise<UserDO> = service.findUser('idToken', externalUserId, testSystem.id);
+
+				await expect(promise).rejects.toThrow(OAuthSSOError);
+				await expect(promise).rejects.toThrow(
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+					expect.objectContaining<Partial<OAuthSSOError>>({
+						// eslint-disable-next-line ,@typescript-eslint/no-unsafe-assignment
+						message: expect.stringContaining(schoolId),
+					})
+				);
+				await expect(promise).rejects.toThrow(
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+					expect.objectContaining<Partial<OAuthSSOError>>({
+						// eslint-disable-next-line ,@typescript-eslint/no-unsafe-assignment
+						message: expect.stringContaining(externalUserId),
+					})
+				);
+			});
+		});
+
+		describe('when the token has no email information', () => {
+			it('should throw without additional information', async () => {
+				const { decodedJwt } = setupJwt();
+				jest.spyOn(jwt, 'decode').mockReturnValue({ ...decodedJwt, email: undefined });
+				const externalUserId = '321-my-current-ldap-id';
+				userService.findByExternalId.mockResolvedValue(null);
+
+				const promise: Promise<UserDO> = service.findUser('idToken', externalUserId, testSystem.id);
+
+				await expect(promise).rejects.toThrow(OAuthSSOError);
+			});
+		});
+
+		describe('when the id token has no sub', () => {
+			it('should throw BadRequestException', async () => {
+				jest.spyOn(jwt, 'decode').mockReturnValue(null);
+
+				await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(BadRequestException);
+			});
 		});
 	});
 
 	describe('getJwtForUser', () => {
 		it('should return a JWT for a user', async () => {
 			const jwtToken = 'schulcloudJwt';
-			const user: User = userFactory.buildWithId();
 
 			feathersJwtProvider.generateJwt.mockResolvedValue(jwtToken);
 
-			const jwtResult = await service.getJwtForUser(user);
+			const jwtResult = await service.getJwtForUser('userId');
 
 			expect(feathersJwtProvider.generateJwt).toHaveBeenCalled();
 			expect(jwtResult).toStrictEqual(jwtToken);
-		});
-	});
-
-	describe('buildResponse', () => {
-		it('should build the Response successfully', () => {
-			const tokenResponse: OauthTokenResponse = {
-				access_token: 'accessToken',
-				refresh_token: 'refreshToken',
-				id_token: 'idToken',
-			};
-
-			const response: OAuthResponse = service.buildResponse(testOauthConfig, tokenResponse);
-
-			expect(response).toEqual({
-				idToken: tokenResponse.id_token,
-				logoutEndpoint: testOauthConfig.logoutEndpoint,
-				provider: testOauthConfig.provider,
-			});
 		});
 	});
 
@@ -326,10 +331,10 @@ describe('OAuthService', () => {
 		it('should return a login url string within an error', () => {
 			const generalError: Error = new Error('foo');
 
-			const response: OAuthResponse = service.getOAuthErrorResponse(generalError, 'provider');
+			const response: OAuthProcessDto = service.getOAuthErrorResponse(generalError, 'provider');
 
 			expect(response.provider).toStrictEqual('provider');
-			expect(response.errorcode).toStrictEqual('oauth_login_failed');
+			expect(response.errorCode).toStrictEqual('oauth_login_failed');
 			expect(response.redirect).toStrictEqual(`${hostUri}/login?error=oauth_login_failed&provider=provider`);
 		});
 
@@ -339,7 +344,7 @@ describe('OAuthService', () => {
 			const response = service.getOAuthErrorResponse(specialError, 'provider');
 
 			expect(response.provider).toStrictEqual('provider');
-			expect(response.errorcode).toStrictEqual('special_error_code');
+			expect(response.errorCode).toStrictEqual('special_error_code');
 			expect(response.redirect).toStrictEqual(`${hostUri}/login?error=special_error_code&provider=provider`);
 		});
 	});

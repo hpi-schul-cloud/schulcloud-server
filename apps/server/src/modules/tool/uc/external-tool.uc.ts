@@ -1,99 +1,69 @@
-import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { IFindOptions, Permission, User } from '@shared/domain';
-import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { Injectable } from '@nestjs/common';
+import { EntityId, IFindOptions, Permission, User } from '@shared/domain';
+import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { AuthorizationService } from '@src/modules/authorization';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { Page } from '@shared/domain/interface/page';
-import { ExternalToolService } from '../service/external-tool.service';
-import { ExternalToolRequestMapper } from '../mapper/external-tool-request.mapper';
+import { ExternalToolService, ExternalToolValidationService } from '../service';
+import { CreateExternalTool, UpdateExternalTool } from './dto';
 
 @Injectable()
 export class ExternalToolUc {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly externalToolMapper: ExternalToolRequestMapper,
 		private readonly authorizationService: AuthorizationService,
-		private readonly oauthProviderService: OauthProviderService,
-		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
+		private readonly toolValidationService: ExternalToolValidationService
 	) {}
 
-	async createExternalTool(externalToolDO: ExternalToolDO, userId: string): Promise<ExternalToolDO> {
+	async createExternalTool(userId: EntityId, externalToolDO: CreateExternalTool): Promise<ExternalToolDO> {
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		await this.toolValidationService.validateCreate(externalToolDO);
+
+		const tool: Promise<ExternalToolDO> = this.externalToolService.createExternalTool(externalToolDO);
+		return tool;
+	}
+
+	private async ensurePermission(userId: EntityId, permission: Permission) {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+		this.authorizationService.checkAllPermissions(user, [permission]);
+	}
 
-		await this.checkValidation(externalToolDO);
+	async updateExternalTool(
+		userId: EntityId,
+		toolId: string,
+		externalTool: UpdateExternalTool
+	): Promise<ExternalToolDO> {
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
-		if (externalToolDO.config instanceof Lti11ToolConfigDO) {
-			externalToolDO.config.secret = this.oAuthEncryptionService.encrypt(externalToolDO.config.secret);
-		}
+		const loaded: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
+		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalTool, version: loaded.version });
 
-		let created: ExternalToolDO;
-		if (externalToolDO.config instanceof Oauth2ToolConfigDO) {
-			const oauthClient: ProviderOauthClient = this.externalToolMapper.mapDoToProviderOauthClient(
-				externalToolDO.name,
-				externalToolDO.config
-			);
-			const createdOauthClient = await this.oauthProviderService.createOAuth2Client(oauthClient);
-
-			created = await this.externalToolService.createExternalTool(externalToolDO);
-
-			created.config = this.externalToolMapper.applyProviderOauthClientToDO(
-				created.config as Oauth2ToolConfigDO,
-				createdOauthClient
-			);
-		} else {
-			created = await this.externalToolService.createExternalTool(externalToolDO);
-		}
-
-		return created;
+		const saved = await this.externalToolService.updateExternalTool(toUpdate, loaded);
+		return saved;
 	}
 
 	async findExternalTool(
-		userId: string,
+		userId: EntityId,
 		query: Partial<ExternalToolDO>,
 		options: IFindOptions<ExternalToolDO>
 	): Promise<Page<ExternalToolDO>> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
 		const tools: Page<ExternalToolDO> = await this.externalToolService.findExternalTools(query, options);
-		tools.data = await Promise.all(
-			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO> => {
-				if (tool.config instanceof Oauth2ToolConfigDO) {
-					const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
-						tool.config.clientId
-					);
-					tool.config = this.externalToolMapper.applyProviderOauthClientToDO(tool.config, oauthClient);
-				}
-				return tool;
-			})
-		);
-
 		return tools;
 	}
 
-	private async checkValidation(externalToolDO: ExternalToolDO) {
-		if (!(await this.externalToolService.isNameUnique(externalToolDO))) {
-			throw new UnprocessableEntityException(`The tool name "${externalToolDO.name}" is already used`);
-		}
-		if (externalToolDO.parameters && this.externalToolService.hasDuplicateAttributes(externalToolDO.parameters)) {
-			throw new UnprocessableEntityException(
-				`The tool: ${externalToolDO.name} contains multiple of the same custom parameters`
-			);
-		}
-		if (externalToolDO.parameters && !this.externalToolService.validateByRegex(externalToolDO.parameters)) {
-			throw new UnprocessableEntityException(
-				`A custom Parameter of the tool: ${externalToolDO.name} has wrong regex attribute.`
-			);
-		}
+	async getExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolDO> {
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		if (
-			externalToolDO.config instanceof Oauth2ToolConfigDO &&
-			!(await this.externalToolService.isClientIdUnique(externalToolDO.config))
-		) {
-			throw new UnprocessableEntityException(`The Client Id of the tool: ${externalToolDO.name} is already used`);
-		}
+		const tool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
+		return tool;
+	}
+
+	async deleteExternalTool(userId: EntityId, toolId: EntityId): Promise<void> {
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);
+		return promise;
 	}
 }

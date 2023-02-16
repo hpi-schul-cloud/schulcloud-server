@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { System } from '@shared/domain';
+import { System, SystemTypeEnum } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { SystemRepo } from '@shared/repo';
 import { systemFactory } from '@shared/testing/factory/system.factory';
@@ -51,6 +51,7 @@ describe('system repo', () => {
 					'alias',
 					'displayName',
 					'oauthConfig',
+					'ldapConfig',
 					'_id',
 					'provisioningStrategy',
 					'provisioningUrl',
@@ -108,21 +109,21 @@ describe('system repo', () => {
 		});
 
 		it('should return all systems with type oauth', async () => {
-			const result = await repo.findByFilter('oauth');
+			const result = await repo.findByFilter(SystemTypeEnum.OAUTH);
 
 			expect(result.length).toEqual(systems.length);
 			expect(result).toEqual(systems);
 		});
 
 		it('should return all systems with type oauth and oauthConfig', async () => {
-			const result = await repo.findByFilter('oauth', true);
+			const result = await repo.findByFilter(SystemTypeEnum.OAUTH, true);
 
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(systems[0].id);
 		});
 
 		it('should return all systems with oauthConfig', async () => {
-			const result = await repo.findByFilter('', true);
+			const result = await repo.findByFilter(undefined, true);
 
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(systems[0].id);

@@ -75,9 +75,7 @@ const createRequest = () => {
 			'content-length': '10699',
 			'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20',
 		},
-		get: () => {
-			return `10699`;
-		},
+		get: () => `10699`,
 	});
 
 	return request;

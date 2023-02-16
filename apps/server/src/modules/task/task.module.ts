@@ -1,20 +1,18 @@
 import { Module } from '@nestjs/common';
-import { CopyHelperService } from '@shared/domain';
-import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
-import { TaskCopyService } from '@shared/domain/service/task-copy.service';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, SubmissionRepo, TaskRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { AuthorizationModule } from '../authorization';
-import { FilesStorageClientModule } from '../files-storage-client';
-import { TaskController } from './controller';
-import { TaskCopyUC, TaskUC } from './uc';
-import { TaskService } from './service/task.service';
+import { AuthorizationModule } from '@src/modules/authorization';
+import { CopyHelperModule } from '@src/modules/copy-helper/copy-helper.module';
+import { FilesStorageClientModule } from '@src/modules/files-storage-client';
+import { SubmissionController, TaskController } from './controller';
+import { SubmissionService, TaskCopyService, TaskService } from './service';
+import { SubmissionUc, TaskCopyUC, TaskUC } from './uc';
 
 @Module({
-	imports: [AuthorizationModule, FilesStorageClientModule],
-	controllers: [TaskController],
+	imports: [AuthorizationModule, FilesStorageClientModule, CopyHelperModule],
+	controllers: [TaskController, SubmissionController],
 	providers: [
 		TaskUC,
 		TaskRepo,
@@ -23,12 +21,13 @@ import { TaskService } from './service/task.service';
 		CourseRepo,
 		TaskCopyUC,
 		TaskCopyService,
-		CopyHelperService,
-		FileCopyAppendService,
 		FeathersServiceProvider,
 		FileLegacyService,
 		Logger,
+		SubmissionUc,
+		SubmissionService,
+		SubmissionRepo,
 	],
-	exports: [TaskService],
+	exports: [TaskService, TaskCopyService],
 })
 export class TaskModule {}

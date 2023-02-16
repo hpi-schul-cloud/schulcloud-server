@@ -15,21 +15,25 @@ export class UserMapper {
 			language: entity.language,
 			forcePasswordChange: entity.forcePasswordChange,
 			preferences: entity.preferences,
+			lastLoginSystemChange: entity.lastLoginSystemChange,
+			outdatedSince: entity.outdatedSince,
 		});
 	}
 
-	static mapFromDtoToEntity(dto: UserDto, rolesEntity: Role[], schoolEntity: School): User {
+	static mapFromDtoToEntity(dto: UserDto, rolesEntity: Role[], school: School): User {
 		const user = new User({
 			email: dto.email,
 			firstName: dto.firstName,
 			lastName: dto.lastName,
-			school: schoolEntity,
+			school,
 			roles: rolesEntity,
 			ldapDn: dto.ldapDn,
 			externalId: dto.externalId,
 			language: dto.language,
 			forcePasswordChange: dto.forcePasswordChange,
 			preferences: dto.preferences,
+			lastLoginSystemChange: dto.lastLoginSystemChange,
+			outdatedSince: dto.outdatedSince,
 		});
 		if (dto.id) {
 			user.id = dto.id;
@@ -47,6 +51,8 @@ export class UserMapper {
 		target.externalId = source.externalId ?? target.externalId;
 		target.forcePasswordChange = source.forcePasswordChange ?? target.forcePasswordChange;
 		target.language = source.language ?? target.language;
+		target.lastLoginSystemChange = source.lastLoginSystemChange ?? target.lastLoginSystemChange;
+		target.outdatedSince = source.outdatedSince ?? target.outdatedSince;
 		// Cannot patch preferences with empty object, because preferences is optional, but is always set in the constructor of the entity,
 		// so we can't check if the field is undefined. it is always initialized with an empty object.
 		target.preferences =

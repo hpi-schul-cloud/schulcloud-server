@@ -1,23 +1,20 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { Actions, EntityId, Permission } from '@shared/domain';
+import { Logger } from '@src/core/logger';
+import { AuthorizationService } from '@src/modules/authorization';
+import { CopyStatus } from '@src/modules/copy-helper';
+import { CourseCopyService } from '@src/modules/learnroom';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { LessonCopyService } from '@src/modules/lesson/service';
 import {
-	Actions,
-	CopyStatus,
-	EntityId,
-	LearnroomMetadata,
-	Permission,
 	ShareTokenContext,
 	ShareTokenContextType,
 	ShareTokenDO,
 	ShareTokenParentType,
 	ShareTokenPayload,
-} from '@shared/domain';
-import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
-import { CourseCopyService } from '@src/modules/learnroom';
-import { MetadataLoader } from '@src/modules/learnroom/service/metadata-loader.service';
+} from '../domainobject/share-token.do';
 import { ShareTokenContextTypeMapper, ShareTokenParentTypeMapper } from '../mapper';
-import { MetadataTypeMapper } from '../mapper/metadata-type.mapper';
 import { ShareTokenService } from '../service';
 import { ShareTokenInfoDto } from './dto';
 
@@ -26,8 +23,9 @@ export class ShareTokenUC {
 	constructor(
 		private readonly shareTokenService: ShareTokenService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly metadataLoader: MetadataLoader,
 		private readonly courseCopyService: CourseCopyService,
+		private readonly lessonCopyService: LessonCopyService,
+		private readonly courseService: CourseService,
 
 		private readonly logger: Logger
 	) {
@@ -39,7 +37,7 @@ export class ShareTokenUC {
 		payload: ShareTokenPayload,
 		options?: { schoolExclusive?: boolean; expiresInDays?: number }
 	): Promise<ShareTokenDO> {
-		this.checkFeatureEnabled();
+		this.checkFeatureEnabled(payload.parentType);
 
 		this.logger.debug({ action: 'createShareToken', userId, payload, options });
 
@@ -55,7 +53,7 @@ export class ShareTokenUC {
 			await this.checkContextReadPermission(userId, serviceOptions.context);
 		}
 		if (options?.expiresInDays) {
-			serviceOptions.expiresAt = this.nowPlusDays(options?.expiresInDays);
+			serviceOptions.expiresAt = this.nowPlusDays(options.expiresInDays);
 		}
 
 		const shareToken = await this.shareTokenService.createToken(payload, serviceOptions);
@@ -63,33 +61,38 @@ export class ShareTokenUC {
 	}
 
 	async lookupShareToken(userId: EntityId, token: string): Promise<ShareTokenInfoDto> {
-		this.checkFeatureEnabled();
-
 		this.logger.debug({ action: 'lookupShareToken', userId, token });
 
-		const shareToken = await this.shareTokenService.lookupToken(token);
+		const { shareToken, parentName } = await this.shareTokenService.lookupTokenWithParentName(token);
+
+		this.checkFeatureEnabled(shareToken.payload.parentType);
+
+		await this.checkCreatePermission(userId, shareToken.payload.parentType);
 
 		if (shareToken.context) {
 			await this.checkContextReadPermission(userId, shareToken.context);
 		}
 
-		const metadata: LearnroomMetadata = await this.loadMetadata(shareToken.payload);
-
 		const shareTokenInfo: ShareTokenInfoDto = {
 			token,
 			parentType: shareToken.payload.parentType,
-			parentName: metadata.title,
+			parentName,
 		};
 
 		return shareTokenInfo;
 	}
 
-	async importShareToken(userId: EntityId, token: string, newName: string): Promise<CopyStatus> {
-		this.checkFeatureEnabled();
-
+	async importShareToken(
+		userId: EntityId,
+		token: string,
+		newName: string,
+		destinationCourseId?: string
+	): Promise<CopyStatus> {
 		this.logger.debug({ action: 'importShareToken', userId, token, newName });
 
 		const shareToken = await this.shareTokenService.lookupToken(token);
+
+		this.checkFeatureEnabled(shareToken.payload.parentType);
 
 		if (shareToken.context) {
 			await this.checkContextReadPermission(userId, shareToken.context);
@@ -97,20 +100,59 @@ export class ShareTokenUC {
 
 		await this.checkCreatePermission(userId, shareToken.payload.parentType);
 
-		const result = await this.courseCopyService.copyCourse({
-			userId,
-			courseId: shareToken.payload.parentId,
-			newName,
-		});
+		let result: CopyStatus;
+		switch (shareToken.payload.parentType) {
+			case ShareTokenParentType.Course:
+				result = await this.copyCourse(userId, shareToken.payload.parentId, newName);
+				break;
+			case ShareTokenParentType.Lesson:
+				if (destinationCourseId === undefined) {
+					throw new BadRequestException('Destination course id is required to copy lesson');
+				}
+				result = await this.copyLesson(userId, shareToken.payload.parentId, destinationCourseId, newName);
+				break;
+			default:
+				throw new NotImplementedException('Copy not implemented');
+		}
 
 		return result;
 	}
 
+	private async copyCourse(userId: EntityId, courseId: string, newName: string): Promise<CopyStatus> {
+		return this.courseCopyService.copyCourse({
+			userId,
+			courseId,
+			newName,
+		});
+	}
+
+	private async copyLesson(userId: string, lessonId: string, courseId: string, copyName?: string): Promise<CopyStatus> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const destinationCourse = await this.courseService.findById(courseId);
+		return this.lessonCopyService.copyLesson({
+			user,
+			originalLessonId: lessonId,
+			destinationCourse,
+			copyName,
+		});
+	}
+
 	private async checkParentWritePermission(userId: EntityId, payload: ShareTokenPayload) {
 		const allowedParentType = ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(payload.parentType);
+
+		let requiredPermissions: Permission[] = [];
+		switch (payload.parentType) {
+			case ShareTokenParentType.Course:
+				requiredPermissions = [Permission.COURSE_CREATE];
+				break;
+			default:
+				requiredPermissions = [Permission.TOPIC_CREATE];
+				break;
+		}
+
 		await this.authorizationService.checkPermissionByReferences(userId, allowedParentType, payload.parentId, {
 			action: Actions.write,
-			requiredPermissions: [Permission.COURSE_CREATE],
+			requiredPermissions,
 		});
 	}
 
@@ -128,17 +170,16 @@ export class ShareTokenUC {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		this.authorizationService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
-	}
-
-	private async loadMetadata(payload: ShareTokenPayload): Promise<LearnroomMetadata> {
-		const learnroomType = MetadataTypeMapper.mapToAlloweMetadataType(payload.parentType);
-		const metadata = await this.metadataLoader.loadMetadata({
-			type: learnroomType,
-			id: payload.parentId,
-		});
-
-		return metadata;
+		let requiredPermissions: Permission[] = [];
+		switch (parentType) {
+			case ShareTokenParentType.Course:
+				requiredPermissions = [Permission.COURSE_CREATE];
+				break;
+			default:
+				requiredPermissions = [Permission.TOPIC_CREATE];
+				break;
+		}
+		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
 
 	private nowPlusDays(days: number) {
@@ -147,10 +188,20 @@ export class ShareTokenUC {
 		return date;
 	}
 
-	private checkFeatureEnabled() {
-		const enabled = Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean;
-		if (!enabled) {
-			throw new InternalServerErrorException('Import Feature not enabled');
+	private checkFeatureEnabled(parentType: ShareTokenParentType) {
+		switch (parentType) {
+			case ShareTokenParentType.Course:
+				if (!(Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean)) {
+					throw new InternalServerErrorException('Import Course Feature not enabled');
+				}
+				break;
+			case ShareTokenParentType.Lesson:
+				if (!(Configuration.get('FEATURE_LESSON_SHARE_NEW') as boolean)) {
+					throw new InternalServerErrorException('Import Lesson Feature not enabled');
+				}
+				break;
+			default:
+				throw new NotImplementedException('Import Feature not implemented');
 		}
 	}
 }

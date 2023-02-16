@@ -20,29 +20,33 @@ export class SanisResponseName {
 
 export class SanisResponsePersonenkontext {
 	constructor(sanisResponsePersonenkontext: SanisResponsePersonenkontext) {
-		this.ktid = sanisResponsePersonenkontext.ktid;
+		this.id = sanisResponsePersonenkontext.id;
 		this.rolle = sanisResponsePersonenkontext.rolle;
 		this.organisation = sanisResponsePersonenkontext.organisation;
 		this.personenstatus = sanisResponsePersonenkontext.personenstatus;
+		this.email = sanisResponsePersonenkontext.email;
 	}
 
-	ktid: UUID;
+	id: UUID;
 
 	rolle: SanisRole;
 
 	organisation: SanisResponseOrganisation;
 
 	personenstatus: string;
+
+	// TODO change if neccessary once we have the proper specification
+	email: string;
 }
 
 export class SanisResponseOrganisation {
 	constructor(sanisResponseOrganisation: SanisResponseOrganisation) {
-		this.orgid = sanisResponseOrganisation.orgid;
+		this.id = sanisResponseOrganisation.id;
 		this.name = sanisResponseOrganisation.name;
 		this.typ = sanisResponseOrganisation.typ;
 	}
 
-	orgid: UUID;
+	id: UUID;
 
 	name: string;
 

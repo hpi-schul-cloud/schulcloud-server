@@ -11,8 +11,6 @@ export class RoleMapper {
 	}
 
 	static mapFromEntitiesToDtos(enities: Role[]): RoleDto[] {
-		return enities.map((entity) => {
-			return this.mapFromEntityToDto(entity);
-		});
+		return enities.map((entity) => this.mapFromEntityToDto(entity));
 	}
 }

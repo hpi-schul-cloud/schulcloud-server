@@ -1,13 +1,14 @@
 const { getUsername } = require('./TSP');
-const { FileModel } = require('../../../fileStorage/model.js');
+const { FileModel } = require('../../../fileStorage/model');
 const { info: logInfo, error: logError } = require('../../../../logger');
+const { deleteUser } = require('../../../../components/user/uc/users.uc')
 
 const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;
 const getInvalidatedEmail = (email) => `${email}.invalid`;
 
 const invalidateUser = async (app, user) => {
 	const userService = app.service('usersModel');
-	const accountService = app.service('accountModel');
+	const accountService = app.service('nest-account-service');
 
 	const invalidatedUuid = getInvalidatedUuid(user.sourceOptions.tspUid);
 	const userChanges = {
@@ -18,19 +19,8 @@ const invalidateUser = async (app, user) => {
 	};
 	await userService.patch(user._id, userChanges);
 
-	const accountChanges = {
-		username: getUsername(userChanges),
-	};
-	await accountService.patch(null, accountChanges, { query: { userId: user._id } });
-};
-
-const deleteUser = (app, user) => {
-	const userService = app.service('usersModel');
-	const accountService = app.service('nest-account-service');
-	return Promise.all([
-		userService.remove({ _id: user._id }),
-		accountService.deleteByUserId(user._id.toString()),
-	]);
+	const account = await accountService.findByUserId(user._id);
+	await accountService.updateUsername(account.id, getUsername(userChanges));
 };
 
 const grantAccessToPrivateFiles = async (app, oldUser, newUser) => {
@@ -73,15 +63,15 @@ const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
 	}
 };
 
-const switchSchool = async (app, currentUser, createUserMethod) => {
+const switchSchool = async (app, user, createUserMethod) => {
 	try {
-		await invalidateUser(app, currentUser);
+		await invalidateUser(app, user);
 		const newUser = await createUserMethod();
 		await Promise.all([
-			grantAccessToPrivateFiles(app, currentUser, newUser),
-			grantAccessToSharedFiles(app, currentUser, newUser),
+			grantAccessToPrivateFiles(app, user, newUser),
+			grantAccessToSharedFiles(app, user, newUser),
 		]);
-		await deleteUser(app, currentUser);
+		await deleteUser(user._id, { user });
 		return newUser;
 	} catch (err) {
 		logError(`Something went wrong during switching school for user: ${err}`);
@@ -92,7 +82,6 @@ const switchSchool = async (app, currentUser, createUserMethod) => {
 module.exports = {
 	getInvalidatedUuid,
 	invalidateUser,
-	deleteUser,
 	grantAccessToPrivateFiles,
 	grantAccessToSharedFiles,
 	switchSchool,

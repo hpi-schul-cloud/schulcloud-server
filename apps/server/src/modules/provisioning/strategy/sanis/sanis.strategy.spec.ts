@@ -1,46 +1,47 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SanisProvisioningStrategy, SanisStrategyData } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
+import { MikroORM } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
+import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { setupEntities } from '@shared/testing';
 import { AxiosResponse } from 'axios';
+import { UUID } from 'bson';
+import { of } from 'rxjs';
+import {
+	ExternalSchoolDto,
+	ExternalUserDto,
+	OauthDataDto,
+	OauthDataStrategyInputDto,
+	ProvisioningSystemDto,
+} from '../../dto';
+import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
+import { SanisResponseMapper } from './sanis-response.mapper';
 import {
 	SanisResponse,
 	SanisResponseName,
 	SanisResponseOrganisation,
 	SanisResponsePersonenkontext,
 	SanisRole,
-} from '@src/modules/provisioning/strategy/sanis/sanis.response';
-import { of } from 'rxjs';
-import { UUID } from 'bson';
-import { InternalServerErrorException } from '@nestjs/common';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Role, RoleName, School, System } from '@shared/domain';
-import { roleFactory, schoolFactory, setupEntities, systemFactory } from '@shared/testing';
-import { MikroORM } from '@mikro-orm/core';
-import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
-import { SanisSchoolService } from '@src/modules/provisioning/strategy/sanis/service/sanis-school.service';
-import { SanisUserService } from '@src/modules/provisioning/strategy/sanis/service/sanis-user.service';
-import { SchoolDto } from '../../../school/uc/dto/school.dto';
-import { SanisResponseMapper } from './sanis-response.mapper';
+} from './sanis.response';
+import { SanisProvisioningStrategy } from './sanis.strategy';
 
-const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> => ({
-	data: data ?? {},
-	status: 0,
-	statusText: '',
-	headers: {},
-	config: {},
-});
+const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> => {
+	return {
+		data: data ?? {},
+		status: 0,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
+};
 
 describe('SanisStrategy', () => {
 	let module: TestingModule;
-	let sanisStrategy: SanisProvisioningStrategy;
+	let strategy: SanisProvisioningStrategy;
 	let orm: MikroORM;
 
 	let mapper: DeepMocked<SanisResponseMapper>;
-	let sanisSchoolService: DeepMocked<SanisSchoolService>;
-	let sanisUserService: DeepMocked<SanisUserService>;
 	let httpService: DeepMocked<HttpService>;
 
 	beforeAll(async () => {
@@ -54,92 +55,20 @@ describe('SanisStrategy', () => {
 					useValue: createMock<SanisResponseMapper>(),
 				},
 				{
-					provide: SanisSchoolService,
-					useValue: createMock<SanisSchoolService>(),
-				},
-				{
-					provide: SanisUserService,
-					useValue: createMock<SanisUserService>(),
-				},
-				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: OidcProvisioningService,
+					useValue: createMock<OidcProvisioningService>(),
 				},
 			],
 		}).compile();
 
-		sanisStrategy = module.get(SanisProvisioningStrategy);
+		strategy = module.get(SanisProvisioningStrategy);
 		mapper = module.get(SanisResponseMapper);
-		sanisSchoolService = module.get(SanisSchoolService);
-		sanisUserService = module.get(SanisUserService);
 		httpService = module.get(HttpService);
 	});
-
-	const setup = () => {
-		const externalId = 'testExternalId';
-		const schoolUUID: UUID = new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e');
-		const userUUID: UUID = new UUID('aef1f4fd-c323-466e-962b-a84354c0e713');
-		const userRole: Role = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR });
-		const system: System = systemFactory.buildWithId({ alias: 'SANIS' });
-		const school: School = schoolFactory.buildWithId({ externalId });
-		school.systems.add(system);
-		const sanisResponse: SanisResponse = new SanisResponse({
-			pid: userUUID.toHexString(),
-			person: {
-				name: new SanisResponseName({
-					vorname: 'Hans',
-					familienname: 'Peter',
-				}),
-				geschlecht: 'any',
-				lokalisierung: 'sn_ZW',
-				vertrauensstufe: '0',
-			},
-			personenkontexte: [
-				new SanisResponsePersonenkontext({
-					ktid: new UUID(),
-					rolle: SanisRole.LEIT,
-					organisation: new SanisResponseOrganisation({
-						orgid: schoolUUID,
-						name: 'schoolName',
-						typ: 'SCHULE',
-					}),
-					personenstatus: 'dead',
-				}),
-			],
-		});
-		const userDO: UserDO = new UserDO({
-			firstName: 'firstName',
-			lastName: 'lastame',
-			email: '',
-			roleIds: [userRole.id],
-			schoolId: school.id,
-			externalId: userUUID.toHexString(),
-		});
-		const schoolDto: SchoolDto = new SchoolDto({
-			id: school.id,
-			name: school.name,
-			externalId,
-			systemIds: [system.id],
-		});
-		const schoolProvisioningDto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({
-			name: school.name,
-			externalId,
-			systemIds: [system.id],
-		});
-
-		httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
-		mapper.mapSanisRoleToRoleName.mockReturnValue(RoleName.ADMINISTRATOR);
-		mapper.mapToUserDO.mockReturnValue(userDO);
-		mapper.mapToSchoolDto.mockReturnValue(schoolProvisioningDto);
-		sanisSchoolService.provisionSchool.mockResolvedValue(schoolDto);
-		sanisUserService.provisionUser.mockResolvedValue(userDO);
-
-		return {
-			userUUID,
-			schoolDto,
-			sanisResponse,
-		};
-	};
 
 	afterEach(() => {
 		jest.resetAllMocks();
@@ -149,36 +78,110 @@ describe('SanisStrategy', () => {
 		await orm.close();
 	});
 
-	describe('apply', () => {
-		const sanisParams: SanisStrategyData = {
-			provisioningUrl: 'sanisProvisioningUrl',
-			accessToken: 'sanisAccessToken',
-			systemId: 'sanisSystemId',
-		};
+	describe('getType is called', () => {
+		describe('when it is called', () => {
+			it('should return type SANIS', () => {
+				const result: SystemProvisioningStrategy = strategy.getType();
 
-		it('should return users UUID', async () => {
-			const { userUUID } = setup();
-
-			const result: ProvisioningDto = await sanisStrategy.apply(sanisParams);
-
-			expect(result.externalUserId).toEqual(userUUID.toHexString());
-		});
-
-		it('should throw error when there is no school saved', async () => {
-			const { schoolDto } = setup();
-			schoolDto.id = undefined;
-
-			const apply = () => sanisStrategy.apply(sanisParams);
-
-			await expect(apply()).rejects.toThrow(InternalServerErrorException);
+				expect(result).toEqual(SystemProvisioningStrategy.SANIS);
+			});
 		});
 	});
 
-	describe('getType', () => {
-		it('should return type SANIS', () => {
-			const retType: SystemProvisioningStrategy = sanisStrategy.getType();
+	describe('getData is called', () => {
+		const setup = () => {
+			const provisioningUrl = 'sanisProvisioningUrl';
+			const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+				system: new ProvisioningSystemDto({
+					systemId: 'systemId',
+					provisioningStrategy: SystemProvisioningStrategy.SANIS,
+					provisioningUrl,
+				}),
+				idToken: 'sanisIdToken',
+				accessToken: 'sanisAccessToken',
+			});
+			const sanisResponse: SanisResponse = new SanisResponse({
+				pid: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+				person: {
+					name: new SanisResponseName({
+						vorname: 'Hans',
+						familienname: 'Peter',
+					}),
+					geschlecht: 'any',
+					lokalisierung: 'sn_ZW',
+					vertrauensstufe: '0',
+				},
+				personenkontexte: [
+					new SanisResponsePersonenkontext({
+						id: new UUID(),
+						rolle: SanisRole.LEIT,
+						organisation: new SanisResponseOrganisation({
+							id: new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e'),
+							name: 'schoolName',
+							typ: 'SCHULE',
+						}),
+						personenstatus: 'dead',
+						email: 'test@te.st',
+					}),
+				],
+			});
+			const user: ExternalUserDto = new ExternalUserDto({
+				externalId: 'externalUserId',
+			});
+			const school: ExternalSchoolDto = new ExternalSchoolDto({
+				externalId: 'externalSchoolId',
+				name: 'schoolName',
+			});
 
-			expect(retType).toEqual(SystemProvisioningStrategy.SANIS);
+			httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
+			mapper.mapToExternalUserDto.mockReturnValue(user);
+			mapper.mapToExternalSchoolDto.mockReturnValue(school);
+
+			return {
+				input,
+				provisioningUrl,
+				user,
+				school,
+			};
+		};
+
+		describe('when fetching data from sanis', () => {
+			it('should make a Http-GET-Request to the provisioning url of sanis with an access token', async () => {
+				const { input, provisioningUrl } = setup();
+
+				await strategy.getData(input);
+
+				expect(httpService.get).toHaveBeenCalledWith(
+					provisioningUrl,
+					expect.objectContaining({
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						headers: expect.objectContaining({ Authorization: 'Bearer sanisAccessToken' }),
+					})
+				);
+			});
+
+			it('should return the oauth data', async () => {
+				const { input, user, school } = setup();
+
+				const result: OauthDataDto = await strategy.getData(input);
+
+				expect(result).toEqual<OauthDataDto>({
+					system: input.system,
+					externalUser: user,
+					externalSchool: school,
+				});
+			});
+		});
+
+		describe('when the provided system has no provisioning url', () => {
+			it('should throw an InternalServerErrorException', async () => {
+				const { input } = setup();
+				input.system.provisioningUrl = undefined;
+
+				const promise: Promise<OauthDataDto> = strategy.getData(input);
+
+				await expect(promise).rejects.toThrow(InternalServerErrorException);
+			});
 		});
 	});
 });

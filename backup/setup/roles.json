@@ -71,7 +71,7 @@
 		},
 		"name": "administrator",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2023-01-04T14:46:48.817Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -132,7 +132,8 @@
 			"TEAM_CREATE",
 			"TEAM_EDIT",
 			"SCHOOL_PERMISSION_VIEW",
-			"SCHOOL_PERMISSION_CHANGE"
+			"SCHOOL_PERMISSION_CHANGE",
+			"SCHOOL_TOOL_ADMIN"
 		],
 		"__v": 2
 	},
@@ -200,7 +201,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2023-02-13T22:33:26.733Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -242,6 +243,8 @@
 			"USERGROUP_EDIT",
 			"USER_CREATE",
 			"TASK_DASHBOARD_TEACHER_VIEW_V3",
+			"TASK_CARD_VIEW",
+			"TASK_CARD_EDIT",
 			"TEAM_CREATE",
 			"TEAM_EDIT",
 			"START_MEETING"
@@ -254,7 +257,7 @@
 		},
 		"name": "student",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2023-02-14T08:59:35.396Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -268,7 +271,8 @@
 			"TASK_DASHBOARD_VIEW_V3",
 			"JOIN_MEETING",
 			"TEAM_CREATE",
-			"TEAM_EDIT"
+			"TEAM_EDIT",
+			"TOOL_CREATE_ETHERPAD"
 		],
 		"__v": 0
 	},

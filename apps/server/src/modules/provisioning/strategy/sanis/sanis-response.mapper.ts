@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
-import { EntityId, RoleName } from '@shared/domain';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/sanis.response';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { RoleName } from '@shared/domain';
+import { ExternalSchoolDto, ExternalUserDto } from '../../dto';
+import { SanisResponse, SanisRole } from './sanis.response';
 
 const RoleMapping = {
 	[SanisRole.LEHR]: RoleName.TEACHER,
@@ -13,26 +12,24 @@ const RoleMapping = {
 
 @Injectable()
 export class SanisResponseMapper {
-	mapToSchoolDto(source: SanisResponse, systemId: string): ProvisioningSchoolOutputDto {
-		return new ProvisioningSchoolOutputDto({
+	mapToExternalSchoolDto(source: SanisResponse): ExternalSchoolDto {
+		return new ExternalSchoolDto({
 			name: source.personenkontexte[0].organisation.name,
-			externalId: source.personenkontexte[0].organisation.orgid.toString(),
-			systemIds: [systemId],
+			externalId: source.personenkontexte[0].organisation.id.toString(),
 		});
 	}
 
-	mapToUserDO(source: SanisResponse, schoolId: EntityId, roleId: EntityId): UserDO {
-		return new UserDO({
+	mapToExternalUserDto(source: SanisResponse): ExternalUserDto {
+		return new ExternalUserDto({
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
-			email: '',
-			roleIds: [roleId],
-			schoolId,
+			email: source.personenkontexte[0].email,
+			roles: [this.mapSanisRoleToRoleName(source)],
 			externalId: source.pid,
 		});
 	}
 
-	mapSanisRoleToRoleName(source: SanisResponse): RoleName {
+	private mapSanisRoleToRoleName(source: SanisResponse): RoleName {
 		return RoleMapping[source.personenkontexte[0].rolle];
 	}
 }

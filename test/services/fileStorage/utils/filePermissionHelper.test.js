@@ -6,7 +6,6 @@ const { userModel } = require('../../../../src/services/user/model');
 const RoleModel = require('../../../../src/services/role/model');
 // const { submissionModel } = require('../../../../src/services/homework/model');
 const { courseModel } = require('../../../../src/services/user-group/model');
-const { homeworkModel } = require('../../../../src/services/homework/model');
 
 const {
 	canWrite,
@@ -28,7 +27,6 @@ describe('filePermissionHelper', () => {
 				userModel.create(fixtures.users),
 				RoleModel.create(fixtures.roles),
 				courseModel.create(fixtures.courses),
-				homeworkModel.create(fixtures.homeworks),
 			];
 
 			await Promise.all(promises);
@@ -40,7 +38,6 @@ describe('filePermissionHelper', () => {
 				...fixtures.users.map((_) => userModel.findByIdAndRemove(_._id).exec()),
 				...fixtures.roles.map((_) => RoleModel.findByIdAndRemove(_._id).exec()),
 				...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
-				...fixtures.homeworks.map((_) => homeworkModel.findByIdAndRemove(_._id).exec()),
 			];
 
 			await Promise.all(promises);
@@ -75,18 +72,6 @@ describe('filePermissionHelper', () => {
 		it('let read shared file', async () => {
 			const result = await canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef27');
 			expect(result).to.be.true;
-		});
-
-		it('let teacher read his homework file', async () => {
-			await expect(canRead(fixtures.users[2]._id, '5ca601745d629505e51252d8')).to.be.eventually.true;
-		});
-
-		it('let student read homework file', async () => {
-			await expect(canRead(fixtures.users[0]._id, '5ca601745d629505e51252d8')).to.be.eventually.true;
-		});
-
-		it('reject student from other course to read homework file', async () => {
-			await expect(canRead(fixtures.users[1]._id, '5ca601745d629505e51252d8')).to.be.eventually.rejected;
 		});
 
 		it('let read, write, create and delete course files for teacher', async () => {

@@ -9,9 +9,9 @@ import { Logger } from '@src/core/logger';
 import _ from 'lodash';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
+import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
-import { FilesStorageMapper } from '../mapper';
+import { FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
@@ -235,7 +235,8 @@ describe('FilesStorageService update methods', () => {
 
 				await service.updateSecurityStatus(token, scanResult);
 
-				expect(spy).toHaveBeenCalledWith(ScanStatus.VERIFIED, undefined);
+				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResult);
+				expect(spy).toHaveBeenCalledWith(status, reason);
 			});
 
 			it('should call repo method save() to persist the result', async () => {
@@ -271,7 +272,45 @@ describe('FilesStorageService update methods', () => {
 
 				await service.updateSecurityStatus(token, scanResult);
 
-				expect(spy).toHaveBeenCalledWith(ScanStatus.BLOCKED, 'Win.Test.EICAR_HDB-1');
+				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResult);
+				expect(spy).toHaveBeenCalledWith(status, reason);
+			});
+
+			it('should call repo method save() to persist the result', async () => {
+				const { scanResult, token, fileRecord } = setup();
+
+				await service.updateSecurityStatus(token, scanResult);
+
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecord);
+			});
+		});
+
+		describe('WHEN file exists and a error is found', () => {
+			let spy: jest.SpyInstance;
+
+			afterEach(() => {
+				spy.mockRestore();
+			});
+
+			const setup = () => {
+				const { fileRecord } = buildFileRecordWithParams();
+				const scanResult: ScanResultParams = { virus_detected: false, error: 'file to large' };
+				const token = fileRecord.securityCheck.requestToken || '';
+
+				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
+				fileRecordRepo.save.mockResolvedValue();
+				spy = jest.spyOn(fileRecord, 'updateSecurityCheckStatus');
+
+				return { scanResult, token, fileRecord };
+			};
+
+			it('should call repo method updateSecurityCheckStatus with virus detected parameters', async () => {
+				const { scanResult, token } = setup();
+
+				await service.updateSecurityStatus(token, scanResult);
+
+				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResult);
+				expect(spy).toHaveBeenCalledWith(status, reason);
 			});
 
 			it('should call repo method save() to persist the result', async () => {

@@ -13,7 +13,6 @@ const { setupNestServices, closeNestServices } = require('../../utils/setup.nest
 describe('homework service', () => {
 	let app;
 	let homeworkService;
-	let homeworkCopyService;
 	let server;
 	let nestServices;
 	// let lessonService;
@@ -68,7 +67,6 @@ describe('homework service', () => {
 	before(async () => {
 		app = await appPromise();
 		homeworkService = app.service('homework');
-		homeworkCopyService = app.service('homework/copy');
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 	});
@@ -81,7 +79,6 @@ describe('homework service', () => {
 
 	it('registered the homework service', () => {
 		assert.ok(homeworkService);
-		assert.ok(homeworkCopyService);
 	});
 
 	describe('CREATE', () => {
@@ -317,6 +314,8 @@ describe('homework service', () => {
 				studentId: studentOne._id,
 				comment: 'hello teacher, my dog has eaten this database entry...',
 				grade: 67,
+				submitted: true,
+				graded: true,
 			});
 			return {
 				teacher,
@@ -435,6 +434,8 @@ describe('homework service', () => {
 				studentId: students[1]._id,
 				comment: 'hello teacher, his dog has eaten this database entry also...',
 				grade: 67,
+				submitted: true,
+				graded: true,
 			});
 
 			const params = await testObjects.generateRequestParamsFromUser(students[0]);
@@ -473,6 +474,8 @@ describe('homework service', () => {
 						homeworkId,
 						studentId,
 						comment: 'I dont know the answer',
+						submitted: true,
+						graded: true,
 					})
 				);
 			});

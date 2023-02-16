@@ -1,21 +1,23 @@
-import { SchoolUcMapper } from '@src/modules/school/mapper/school.uc.mapper';
-import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { PublicSchoolResponse } from '../controller/dto/public.school.response';
+import { SchoolUcMapper } from './school.uc.mapper';
 
 describe('SchoolUcMapper', () => {
-	describe('mapFromProvisioningSchoolOutputDtoToSchoolDto', () => {
+	describe('when it maps from a SchoolDO to a PublicSchoolResponse', () => {
 		it('should map all fields', () => {
-			const dto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({
-				name: '123',
-				externalId: 'external1234',
-				systemIds: ['systemId'],
+			const schoolDO: SchoolDO = new SchoolDO({
+				name: 'Testschool',
+				officialSchoolNumber: '1234',
+				oauthMigrationPossible: new Date(),
+				oauthMigrationMandatory: new Date(),
 			});
 
-			const result = SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDto(dto);
+			const result: PublicSchoolResponse = SchoolUcMapper.mapDOToPublicResponse(schoolDO);
 
-			expect(result.id).toEqual(dto.id);
-			expect(result.name).toEqual(dto.name);
-			expect(result.externalId).toEqual(dto.externalId);
-			expect(result.systemIds).toEqual(dto.systemIds);
+			expect(result.schoolName).toEqual(schoolDO.name);
+			expect(result.schoolNumber).toEqual(schoolDO.officialSchoolNumber);
+			expect(result.oauthMigrationPossible).toBeTruthy();
+			expect(result.oauthMigrationMandatory).toBeTruthy();
 		});
 	});
 });

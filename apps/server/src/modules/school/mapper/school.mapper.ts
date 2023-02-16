@@ -1,41 +1,42 @@
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
-import { EntityId, School, System } from '@shared/domain';
-import { IdentifiedReference, Reference } from '@mikro-orm/core';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { ISchoolProperties, School, System } from '@shared/domain';
+import { Reference } from '@mikro-orm/core';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class SchoolMapper {
-	static mapToEntity(schoolDto: SchoolDto): School {
-		const school = new School({
-			name: schoolDto.name,
-			externalId: schoolDto.externalId,
-		});
-
-		if (schoolDto.id) {
-			school.id = schoolDto.id;
-		}
-
-		const refs: IdentifiedReference<System, EntityId>[] = schoolDto.systemIds.map(
-			(systemId: EntityId): IdentifiedReference<System, EntityId> => {
-				return Reference.createFromPK(System, systemId);
-			}
-		);
-		school.systems.add(...refs);
-
-		return school;
+	mapDOToEntityProperties(entityDO: SchoolDO): ISchoolProperties {
+		return {
+			externalId: entityDO.externalId,
+			features: entityDO.features,
+			inMaintenanceSince: entityDO.inMaintenanceSince,
+			inUserMigration: entityDO.inUserMigration,
+			name: entityDO.name,
+			oauthMigrationMandatory: entityDO.oauthMigrationMandatory,
+			oauthMigrationPossible: entityDO.oauthMigrationPossible,
+			oauthMigrationFinished: entityDO.oauthMigrationFinished,
+			officialSchoolNumber: entityDO.officialSchoolNumber,
+			schoolYear: entityDO.schoolYear,
+			systems: entityDO.systems
+				? entityDO.systems.map((systemId: string) => Reference.createFromPK(System, systemId))
+				: [],
+		};
 	}
 
-	static mapEntityToEntity(target: School, source: School): School {
-		target.name = source.name;
-		target.externalId = source.externalId;
-		target.systems = source.systems;
-		return target;
-	}
-
-	static mapToDto(entity: School) {
-		return new SchoolDto({
-			name: entity.name,
+	mapEntityToDO(entity: School): SchoolDO {
+		return new SchoolDO({
 			id: entity.id,
 			externalId: entity.externalId,
-			systemIds: entity.systems.getItems().map((system: System): EntityId => system.id),
+			features: entity.features,
+			inMaintenanceSince: entity.inMaintenanceSince,
+			inUserMigration: entity.inUserMigration,
+			name: entity.name,
+			oauthMigrationMandatory: entity.oauthMigrationMandatory,
+			oauthMigrationPossible: entity.oauthMigrationPossible,
+			oauthMigrationFinished: entity.oauthMigrationFinished,
+			officialSchoolNumber: entity.officialSchoolNumber,
+			schoolYear: entity.schoolYear,
+			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: System) => system.id) : [],
 		});
 	}
 }

@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
-import { BadRequestException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
 import { Actions, Course, ITaskStatus, Lesson, Permission, SortOrder, Task, User } from '@shared/domain';
@@ -16,7 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
 
 const mockStatus: ITaskStatus = {
@@ -36,7 +35,7 @@ describe('TaskUC', () => {
 	let courseRepo: DeepMocked<CourseRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let fileStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
+	let taskService: DeepMocked<TaskService>;
 	let orm: MikroORM;
 	let user!: User;
 
@@ -80,8 +79,12 @@ describe('TaskUC', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: FilesStorageClientAdapterService,
-					useValue: createMock<FilesStorageClientAdapterService>(),
+					provide: TaskService,
+					useValue: createMock<TaskService>(),
+				},
+				{
+					provide: TaskService,
+					useValue: createMock<TaskService>(),
 				},
 			],
 		}).compile();
@@ -92,7 +95,7 @@ describe('TaskUC', () => {
 		courseRepo = module.get(CourseRepo);
 		lessonRepo = module.get(LessonRepo);
 		authorizationService = module.get(AuthorizationService);
-		fileStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
+		taskService = module.get(TaskService);
 	});
 
 	afterEach(async () => {
@@ -129,6 +132,10 @@ describe('TaskUC', () => {
 			const spy = courseRepo.findAllForTeacher.mockResolvedValue([courses, courses.length]);
 			return spy;
 		},
+		findAllForTeacherOrSubstituteTeacher: (courses: Course[] = []) => {
+			const spy = courseRepo.findAllForTeacherOrSubstituteTeacher.mockResolvedValue([courses, courses.length]);
+			return spy;
+		},
 		findAllByUserId: (courses: Course[] = []) => {
 			const spy = courseRepo.findAllByUserId.mockResolvedValue([courses, courses.length]);
 			return spy;
@@ -152,17 +159,19 @@ describe('TaskUC', () => {
 		hasWritePermission?: boolean;
 	}) => {
 		const spy1 = setTaskRepoMock.findAllFinishedByParentIds(data?.tasks);
-		const spy2 = setCourseRepoMock.findAllForTeacher(data?.courses);
+		const spy2 = setCourseRepoMock.findAllForTeacherOrSubstituteTeacher(data?.courses);
 		const spy3 = setCourseRepoMock.findAllByUserId(data?.courses);
-		const spy4 = setLessonRepoMock.findAllForTeacher(data?.lessons);
-		const spy5 = setAuthorizationServiceMock.getUserWithPermissions();
-		const spy6 = setUserRepoMock.findById();
-		const spy7 = setTaskRepoMock.findAllByParentIds(data?.tasks);
+		const spy4 = setCourseRepoMock.findAllForTeacher(data?.courses);
+		const spy5 = setLessonRepoMock.findAllForTeacher(data?.lessons);
+		const spy6 = setAuthorizationServiceMock.getUserWithPermissions();
+		const spy7 = setUserRepoMock.findById();
+		setTaskRepoMock.findAllByParentIds(data?.tasks);
 
 		const mockRestore = () => {
 			spy1.mockRestore();
 			spy2.mockRestore();
 			spy3.mockRestore();
+			spy4.mockRestore();
 			spy5.mockRestore();
 			spy4.mockRestore();
 			spy6.mockRestore();
@@ -561,7 +570,7 @@ describe('TaskUC', () => {
 				const student = user;
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				task.submissions.add(submissionFactory.build({ task, student }));
+				task.submissions.add(submissionFactory.submitted().build({ task, student }));
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
@@ -586,8 +595,8 @@ describe('TaskUC', () => {
 				const student2 = userFactory.build();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				task.submissions.add(submissionFactory.build({ task, student: student1 }));
-				task.submissions.add(submissionFactory.build({ task, student: student2 }));
+				task.submissions.add(submissionFactory.submitted().build({ task, student: student1 }));
+				task.submissions.add(submissionFactory.submitted().build({ task, student: student2 }));
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
@@ -611,7 +620,7 @@ describe('TaskUC', () => {
 				const student = user;
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission = submissionFactory.build({ task, student });
+				const submission = submissionFactory.submitted().build({ task, student });
 				task.submissions.add(submission);
 
 				const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
@@ -640,8 +649,8 @@ describe('TaskUC', () => {
 				const student2 = userFactory.build();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.build({ task, student: student1 });
-				const submission2 = submissionFactory.build({ task, student: student2 });
+				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
+				const submission2 = submissionFactory.submitted().build({ task, student: student2 });
 				task.submissions.add(submission1, submission2);
 
 				jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
@@ -772,7 +781,7 @@ describe('TaskUC', () => {
 				const student = user;
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				task.submissions.add(submissionFactory.build({ task, student }));
+				task.submissions.add(submissionFactory.submitted().build({ task, student }));
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
@@ -797,8 +806,8 @@ describe('TaskUC', () => {
 				const student2 = userFactory.buildWithId();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.build({ task, student: student1 });
-				const submission2 = submissionFactory.build({ task, student: student2 });
+				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
+				const submission2 = submissionFactory.submitted().build({ task, student: student2 });
 				task.submissions.add(submission1, submission2);
 
 				const mockRestore = findAllMock({ tasks: [task] });
@@ -823,7 +832,7 @@ describe('TaskUC', () => {
 				const student = userFactory.build();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission = submissionFactory.build({ task, student });
+				const submission = submissionFactory.submitted().build({ task, student });
 				task.submissions.add(submission);
 
 				const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
@@ -852,8 +861,8 @@ describe('TaskUC', () => {
 				const student2 = userFactory.build();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.build({ task, student: student1 });
-				const submission2 = submissionFactory.build({ task, student: student2 });
+				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
+				const submission2 = submissionFactory.submitted().build({ task, student: student2 });
 				task.submissions.add(submission1, submission2);
 
 				jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
@@ -881,9 +890,9 @@ describe('TaskUC', () => {
 				const student2 = userFactory.build();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.build({ task, student: student1 });
-				const submission2 = submissionFactory.build({ task, student: student2 });
-				const submission3 = submissionFactory.build({ task, student: student2 });
+				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
+				const submission2 = submissionFactory.submitted().build({ task, student: student2 });
+				const submission3 = submissionFactory.submitted().build({ task, student: student2 });
 
 				task.submissions.add(submission1, submission2, submission3);
 
@@ -913,9 +922,9 @@ describe('TaskUC', () => {
 				const student2 = userFactory.buildWithId();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.build({ task, student: student1 });
-				const submission2 = submissionFactory.build({ task, student: student1 });
-				const submission3 = submissionFactory.build({ task, student: student2 });
+				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
+				const submission2 = submissionFactory.submitted().build({ task, student: student1 });
+				const submission3 = submissionFactory.submitted().build({ task, student: student2 });
 
 				task.submissions.add(submission1, submission2, submission3);
 
@@ -1045,250 +1054,46 @@ describe('TaskUC', () => {
 			task = taskFactory.buildWithId({ creator: user });
 			userRepo.findById.mockResolvedValue(user);
 			taskRepo.findById.mockResolvedValue(task);
-			taskRepo.delete.mockResolvedValue();
 		});
 
-		it('should throw UnauthorizedException when not permitted', async () => {
+		it('should throw ForbiddenException when not permitted', async () => {
 			task = taskFactory.buildWithId();
 			taskRepo.findById.mockResolvedValue(task);
 			authorizationService.checkPermission.mockImplementation(() => {
 				throw new ForbiddenException();
 			});
+
 			await expect(async () => {
 				await service.delete(user.id, task.id);
 			}).rejects.toThrow(new ForbiddenException());
 		});
 
-		it('should call TaskRepo.delete() with Task', async () => {
-			await service.delete(user.id, task.id);
-			expect(taskRepo.delete).toBeCalledWith(task);
-		});
-
 		it('should call authorizationService.hasPermission() with User Task Aktion.write', async () => {
 			await service.delete(user.id, task.id);
+
 			expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 				action: Actions.write,
 				requiredPermissions: [],
 			});
 		});
 
-		it('should call fileStorageClientAdapterService.deleteFilesOfParent', async () => {
+		it('should call taskService.delete', async () => {
 			await service.delete(user.id, task.id);
-			const params = FileParamBuilder.build(task.school.id, task);
-			expect(fileStorageClientAdapterService.deleteFilesOfParent).toBeCalledWith(params);
-		});
-	});
 
-	describe('Single task', () => {
-		beforeEach(() => {
-			jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
-				if (config === 'FEATURE_NEW_TASK_ENABLED') {
-					return true;
-				}
-				return null;
-			});
+			expect(taskService.delete).toBeCalledWith(task);
 		});
 
-		describe('create task', () => {
-			let course: Course;
-			beforeEach(() => {
-				user = userFactory.buildWithId();
-				course = courseFactory.buildWithId({ teachers: [user] });
-				userRepo.findById.mockResolvedValue(user);
-				courseRepo.findById.mockResolvedValue(course);
-				taskRepo.save.mockResolvedValue();
-			});
-			afterEach(() => {
-				userRepo.findById.mockRestore();
-				courseRepo.findById.mockRestore();
-				taskRepo.save.mockRestore();
-			});
+		it('should pass error when taskService.delete rejects', async () => {
+			const error = new Error('test message');
+			taskService.delete.mockRejectedValue(error);
 
-			it('should check for permission to create the task', async () => {
-				await service.create(user.id, { name: 'test' });
-				expect(authorizationService.hasAllPermissions).toBeCalledWith(user, [Permission.HOMEWORK_CREATE]);
-			});
-			it('should throw if the user has no permission', async () => {
-				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
-				await expect(async () => {
-					await service.create(user.id, { name: 'test' });
-				}).rejects.toThrow(UnauthorizedException);
-				authorizationService.hasAllPermissions.mockRestore();
-			});
-			it('should check for course permission to create the task in a course', async () => {
-				await service.create(user.id, { name: 'test', courseId: course.id });
-				expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
-					action: Actions.write,
-					requiredPermissions: [],
-				});
-			});
-			it('should check for lesson permission to create the task in a lesson', async () => {
-				const lesson = lessonFactory.buildWithId({ course });
-				lessonRepo.findById.mockResolvedValue(lesson);
-				await service.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
-				expect(authorizationService.checkPermission).toBeCalledWith(user, lesson, {
-					action: Actions.write,
-					requiredPermissions: [],
-				});
-			});
-			it('should throw if lesson does not belong to course', async () => {
-				const lesson = lessonFactory.buildWithId();
-				lessonRepo.findById.mockResolvedValue(lesson);
-				await expect(async () => {
-					await service.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
-				}).rejects.toThrow(BadRequestException);
-
-				lessonRepo.findById.mockRestore();
-			});
-			it('should save the task', async () => {
-				const taskMock = {
-					name: 'test',
-					creator: user,
-				};
-				await service.create(user.id, { name: 'test' });
-				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
-			});
-			it('should save the task with course', async () => {
-				const taskMock = {
-					name: 'test',
-					course,
-				};
-				await service.create(user.id, { name: 'test', courseId: course.id });
-				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
-			});
-			it('should save the task with course and lesson', async () => {
-				const lesson = lessonFactory.buildWithId({ course });
-				lessonRepo.findById.mockResolvedValue(lesson);
-				const taskMock = {
-					name: 'test',
-					course,
-					lesson,
-				};
-				await service.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
-				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
-
-				lessonRepo.findById.mockRestore();
-			});
-			it('should return the task and its status', async () => {
-				const taskMock = {
-					name: 'test',
-					creator: user,
-					course,
-				};
-				authorizationService.hasPermission.mockReturnValue(true);
-				const result = await service.create(user.id, { name: 'test', courseId: course.id });
-				expect(result.task).toEqual(expect.objectContaining(taskMock));
-				expect(result.status.isDraft).toEqual(true);
-			});
+			await expect(() => service.delete(user.id, task.id)).rejects.toThrow(error);
 		});
-		describe('update task', () => {
-			let course: Course;
-			let task: Task;
-			beforeEach(() => {
-				user = userFactory.buildWithId();
-				course = courseFactory.buildWithId({ teachers: [user] });
 
-				task = taskFactory.build({ course });
-				userRepo.findById.mockResolvedValue(user);
-				courseRepo.findById.mockResolvedValue(course);
+		it('should return true when there is no exception', async () => {
+			const result = await service.delete(user.id, task.id);
 
-				taskRepo.findById.mockResolvedValue(task);
-				taskRepo.save.mockResolvedValue();
-			});
-
-			afterEach(() => {
-				userRepo.findById.mockRestore();
-				courseRepo.findById.mockRestore();
-				taskRepo.save.mockRestore();
-				taskRepo.findById.mockRestore();
-			});
-
-			it('should check for permission to update the task', async () => {
-				const params = {
-					name: 'test',
-				};
-				await service.update(user.id, task.id, params);
-				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-					action: Actions.write,
-					requiredPermissions: [Permission.HOMEWORK_EDIT],
-				});
-			});
-			it('should check authorization for course', async () => {
-				const params = {
-					name: 'test',
-					courseId: course.id,
-				};
-				await service.update(user.id, task.id, params);
-				expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
-					action: Actions.write,
-					requiredPermissions: [],
-				});
-			});
-			it('should save the task with course', async () => {
-				const params = {
-					name: 'test',
-					courseId: course.id,
-				};
-				await service.update(user.id, task.id, params);
-				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name });
-			});
-			it('should save the task with course and lesson', async () => {
-				const lesson = lessonFactory.buildWithId({ course });
-				lessonRepo.findById.mockResolvedValue(lesson);
-				const params = {
-					name: 'test',
-					courseId: course.id,
-					lessonId: lesson.id,
-				};
-				await service.update(user.id, task.id, params);
-				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name, lessonId: lesson.id });
-
-				lessonRepo.findById.mockRestore();
-			});
-			it('should throw if lesson does not belong to course', async () => {
-				const lesson = lessonFactory.buildWithId();
-				lessonRepo.findById.mockResolvedValue(lesson);
-				const params = {
-					name: 'test',
-					courseId: course.id,
-					lessonId: lesson.id,
-				};
-				await expect(async () => {
-					await service.update(user.id, task.id, params);
-				}).rejects.toThrow(BadRequestException);
-
-				lessonRepo.findById.mockRestore();
-			});
-			it('should return the updated task', async () => {
-				const params = {
-					name: 'test',
-					courseId: course.id,
-				};
-				const result = await service.update(user.id, task.id, params);
-				expect(result.task).toEqual({ ...task, name: params.name });
-				expect(result.status).toBeDefined();
-			});
-		});
-		describe('find task', () => {
-			let task: Task;
-			beforeEach(() => {
-				user = userFactory.buildWithId();
-				task = taskFactory.build();
-				userRepo.findById.mockResolvedValue(user);
-				taskRepo.findById.mockResolvedValue(task);
-			});
-			it('should check for permission to view the task', async () => {
-				await service.find(user.id, task.id);
-				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-					action: Actions.read,
-					requiredPermissions: [Permission.HOMEWORK_VIEW],
-				});
-			});
-			it('should return the task with its status', async () => {
-				const result = await service.find(user.id, task.id);
-				expect(result.task).toEqual(task);
-				expect(result.status).toBeDefined();
-			});
+			expect(result).toBe(true);
 		});
 	});
 });

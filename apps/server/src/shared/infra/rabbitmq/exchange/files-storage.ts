@@ -13,6 +13,7 @@ export enum ScanStatus {
 	PENDING = 'pending',
 	VERIFIED = 'verified',
 	BLOCKED = 'blocked',
+	ERROR = 'error',
 }
 
 export enum FileRecordParentType {
@@ -37,7 +38,7 @@ export interface IFileRecordParams {
 }
 
 export interface ICopyFileDO {
-	id: EntityId;
+	id?: EntityId;
 	sourceId: EntityId;
 	name: string;
 }

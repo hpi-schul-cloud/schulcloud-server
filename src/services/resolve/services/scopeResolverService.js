@@ -35,6 +35,9 @@ class ScopeResolver {
 
 		const user = await userService.get(id);
 		const userId = user._id;
+		const { schoolId } = user;
+
+		const hasAdminViewPermission = user.permissions.some((p) => p === 'ADMIN_VIEW');
 
 		response.data.push(
 			getDataEntry({
@@ -45,13 +48,21 @@ class ScopeResolver {
 			})
 		);
 
-		const [courses, classes, teams] = await Promise.all([
+		const [courses, coursesAdmin, classes, teams] = await Promise.all([
 			courseService.find({
 				query: {
 					$limit: false,
 					$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
 				},
 			}),
+			hasAdminViewPermission
+				? courseService.find({
+						query: {
+							$limit: false,
+							$or: [{ schoolId }],
+						},
+				  })
+				: { data: [] },
 			classService.find({
 				query: {
 					$limit: false,
@@ -69,6 +80,13 @@ class ScopeResolver {
 		courses.data = courses.data.map((c) => {
 			c.attributes = {
 				scopeType: 'course',
+			};
+			return c;
+		});
+
+		coursesAdmin.data = coursesAdmin.data.map((c) => {
+			c.attributes = {
+				scopeType: 'courseAdmin',
 			};
 			return c;
 		});
@@ -95,7 +113,7 @@ class ScopeResolver {
 			);
 		});
 
-		const scopes = [].concat(courses.data, classes.data);
+		const scopes = [].concat(courses.data, coursesAdmin.data, classes.data);
 		const isUserId = equalId(userId);
 
 		scopes.forEach((scope) => {

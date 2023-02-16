@@ -15,9 +15,13 @@ export enum SchoolFeatures {
 }
 
 export interface ISchoolProperties {
+	_id?: string;
 	externalId?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
+	oauthMigrationPossible?: Date;
+	oauthMigrationMandatory?: Date;
+	oauthMigrationFinished?: Date;
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: System[];
@@ -46,18 +50,6 @@ export class SchoolRoles {
 @Entity({ tableName: 'schools' })
 @Index({ properties: ['externalId', 'systems'] })
 export class School extends BaseEntity {
-	constructor(props: ISchoolProperties) {
-		super();
-		if (props.externalId) this.externalId = props.externalId;
-		if (props.inMaintenanceSince) this.inMaintenanceSince = props.inMaintenanceSince;
-		if (props.inUserMigration !== null) this.inUserMigration = props.inUserMigration;
-		this.name = props.name;
-		if (props.officialSchoolNumber) this.officialSchoolNumber = props.officialSchoolNumber;
-		if (props.systems) this.systems.set(props.systems);
-		if (props.features) this.features = props.features;
-		if (props.schoolYear) this.schoolYear = props.schoolYear;
-	}
-
 	@Property({ nullable: true })
 	features?: SchoolFeatures[];
 
@@ -66,6 +58,15 @@ export class School extends BaseEntity {
 
 	@Property({ nullable: true })
 	inUserMigration?: boolean;
+
+	@Property({ nullable: true })
+	oauthMigrationPossible?: Date;
+
+	@Property({ nullable: true })
+	oauthMigrationMandatory?: Date;
+
+	@Property({ nullable: true })
+	oauthMigrationFinished?: Date;
 
 	@Property({ nullable: true, fieldName: 'ldapSchoolIdentifier' })
 	externalId?: string;
@@ -84,4 +85,33 @@ export class School extends BaseEntity {
 
 	@ManyToOne('SchoolYear', { fieldName: 'currentYear', nullable: true })
 	schoolYear?: SchoolYear;
+
+	constructor(props: ISchoolProperties) {
+		super();
+		if (props.externalId) {
+			this.externalId = props.externalId;
+		}
+		if (props.inMaintenanceSince) {
+			this.inMaintenanceSince = props.inMaintenanceSince;
+		}
+		if (props.inUserMigration !== null) {
+			this.inUserMigration = props.inUserMigration;
+		}
+		this.oauthMigrationPossible = props.oauthMigrationPossible;
+		this.oauthMigrationMandatory = props.oauthMigrationMandatory;
+		this.oauthMigrationFinished = props.oauthMigrationFinished;
+		this.name = props.name;
+		if (props.officialSchoolNumber) {
+			this.officialSchoolNumber = props.officialSchoolNumber;
+		}
+		if (props.systems) {
+			this.systems.set(props.systems);
+		}
+		if (props.features) {
+			this.features = props.features;
+		}
+		if (props.schoolYear) {
+			this.schoolYear = props.schoolYear;
+		}
+	}
 }

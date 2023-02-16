@@ -51,6 +51,9 @@ export class AccountSaveDto {
 	@IsBoolean()
 	activated?: boolean;
 
+	@IsOptional()
+	idmReferenceId?: string;
+
 	constructor(props: AccountSaveDto) {
 		this.id = props.id;
 		this.createdAt = props.createdAt;
@@ -64,5 +67,6 @@ export class AccountSaveDto {
 		this.lasttriedFailedLogin = props.lasttriedFailedLogin;
 		this.expiresAt = props.expiresAt;
 		this.activated = props.activated;
+		this.idmReferenceId = props.idmReferenceId;
 	}
 }

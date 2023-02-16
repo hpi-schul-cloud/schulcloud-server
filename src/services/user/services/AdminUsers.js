@@ -94,6 +94,8 @@ class AdminUsers {
 					'importHash',
 					'birthday',
 					'preferences.registrationMailSend',
+					'lastLoginSystemChange',
+					'outdatedSince',
 				],
 				skip: clientQuery.$skip || clientQuery.skip,
 				limit: clientQuery.$limit || clientQuery.limit,
@@ -182,17 +184,29 @@ class AdminUsers {
 		const params = await this.prepareParams(_id, _params);
 		await this.checkIfExternallyManaged(params.query.schoolId);
 
-		const { email } = _data;
+		const { email, password, createAccount } = _data;
 		await this.checkMail(email, _id);
-		await this.updateAccount(email, _id);
+		if (!createAccount) {
+			await this.updateAccount(email, _id);
+		}
+
 		// _id is part of params and will be combined with the schoolId
-		const users = await this.prepareRoleback(email, _id, () =>
+		const createdUsers = await this.prepareRoleback(email, _id, () =>
 			this.app.service('usersModel').patch(null, _data, params)
 		);
 
-		if (users.length === 0) throw new BadRequest('user could not be edit');
+		if (createdUsers.length === 0) throw new BadRequest('user could not be edit');
 
-		return users[0];
+		const createdUser = createdUsers[0];
+		if (createAccount) {
+			await this.createAccount({
+				username: createdUser.email,
+				password,
+				userId: createdUser._id.toString(),
+				activated: true,
+			});
+		}
+		return createdUser;
 	}
 
 	/**
@@ -254,6 +268,12 @@ class AdminUsers {
 			if (account) {
 				await this.app.service('nest-account-service').updateUsername(account.id, email);
 			}
+		}
+	}
+
+	async createAccount(account) {
+		if (account.username) {
+			await this.app.service('nest-account-uc').saveAccount(account);
 		}
 	}
 

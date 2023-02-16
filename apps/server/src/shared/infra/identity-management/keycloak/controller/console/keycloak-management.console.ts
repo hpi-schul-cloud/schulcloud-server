@@ -1,5 +1,6 @@
-import { Command, CommandOption, Console } from 'nestjs-console';
 import { ConsoleWriterService } from '@shared/infra/console';
+import { Command, CommandOption, Console } from 'nestjs-console';
+import { Logger } from '@src/core/logger';
 import { KeycloakManagementUc } from '../../uc/Keycloak-management.uc';
 
 const defaultError = new Error('IDM is not reachable or authentication failed.');
@@ -12,8 +13,11 @@ interface IRetryOptions {
 export class KeycloakConsole {
 	constructor(
 		private readonly console: ConsoleWriterService,
-		private readonly keycloakManagementUc: KeycloakManagementUc
-	) {}
+		private readonly keycloakManagementUc: KeycloakManagementUc,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(KeycloakConsole.name);
+	}
 
 	static retryFlags: CommandOption[] = [
 		{
@@ -115,16 +119,22 @@ export class KeycloakConsole {
 		delay: number
 	): Promise<T> {
 		let repetitions = 0;
+		let error = new Error('error could be thrown if count is < 1');
 		while (repetitions < count) {
 			repetitions += 1;
 			try {
 				// eslint-disable-next-line no-await-in-loop
 				return await command();
 			} catch (err) {
-				this.console.info(JSON.stringify(err));
+				if (err instanceof Error) {
+					error = err;
+				} else {
+					error = new Error(JSON.stringify(err));
+				}
+
 				if (repetitions < count) {
 					this.console.info(
-						`Command '${commandName}' failed, retry in ${delay} seconds. Execution ${repetitions} / ${count}`
+						`Command '${commandName}' failed, error: ${error.message}. retry in ${delay} seconds. Execution ${repetitions} / ${count}`
 					);
 					// eslint-disable-next-line no-await-in-loop
 					await this.delay(delay * 1000);
@@ -133,10 +143,12 @@ export class KeycloakConsole {
 				}
 			}
 		}
-		throw defaultError;
+		throw error;
 	}
 
 	private delay(ms: number) {
-		return new Promise((resolve) => setTimeout(resolve, ms));
+		return new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
 	}
 }

@@ -18,7 +18,7 @@ class CourseScope extends Scope<Course> {
 		return this;
 	}
 
-	forTeacher(userId: EntityId): CourseScope {
+	forTeacherOrSubstituteTeacher(userId: EntityId): CourseScope {
 		const isTeacher = { teachers: userId };
 		const isSubstitutionTeacher = { substitutionTeachers: userId };
 
@@ -26,6 +26,16 @@ class CourseScope extends Scope<Course> {
 			this.addQuery({ $or: [isTeacher, isSubstitutionTeacher] });
 		}
 
+		return this;
+	}
+
+	forTeacher(userId: EntityId): CourseScope {
+		this.addQuery({ teachers: userId });
+		return this;
+	}
+
+	forSubstituteTeacher(userId: EntityId): CourseScope {
+		this.addQuery({ substitutionTeachers: userId });
 		return this;
 	}
 
@@ -49,6 +59,10 @@ class CourseScope extends Scope<Course> {
 export class CourseRepo extends BaseRepo<Course> {
 	get entityName() {
 		return Course;
+	}
+
+	async createCourse(course: Course): Promise<void> {
+		return this.save(this.create(course));
 	}
 
 	async findById(id: EntityId): Promise<Course> {
@@ -81,10 +95,43 @@ export class CourseRepo extends BaseRepo<Course> {
 		return [courses, count];
 	}
 
-	// not tested in repo.integration.spec
-	async findAllForTeacher(userId: EntityId): Promise<Counted<Course[]>> {
+	async findAllForTeacher(
+		userId: EntityId,
+		filters?: { onlyActiveCourses?: boolean },
+		options?: IFindOptions<Course>
+	): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
 		scope.forTeacher(userId);
+
+		if (filters?.onlyActiveCourses) {
+			scope.forActiveCourses();
+		}
+
+		const { pagination, order } = options || {};
+		const queryOptions = {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order as QueryOrderMap<Course>,
+		};
+
+		const [courses, count] = await this._em.findAndCount(Course, scope.query, queryOptions);
+
+		return [courses, count];
+	}
+
+	// not tested in repo.integration.spec
+	async findAllForTeacherOrSubstituteTeacher(userId: EntityId): Promise<Counted<Course[]>> {
+		const scope = new CourseScope();
+		scope.forTeacherOrSubstituteTeacher(userId);
+
+		const [courses, count] = await this._em.findAndCount(Course, scope.query);
+
+		return [courses, count];
+	}
+
+	async findAllForSubstituteTeacher(userId: EntityId): Promise<Counted<Course[]>> {
+		const scope = new CourseScope();
+		scope.forSubstituteTeacher(userId);
 
 		const [courses, count] = await this._em.findAndCount(Course, scope.query);
 

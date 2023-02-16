@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { ICurrentUser, IFindOptions } from '@shared/domain';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { ICurrentUser, IFindOptions, RoleName } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
+	ApiOkResponse,
+	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
@@ -12,20 +14,23 @@ import {
 import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/interface/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { Lti11LaunchQuery } from './dto/lti11-launch.query';
-import { Lti11LaunchResponse } from './dto/lti11-launch.response';
-import { Lti11ResponseMapper } from '../mapper/lti11-response.mapper';
-import { Lti11LaunchParams } from './dto/lti11-launch.params';
+import { Logger } from '@src/core/logger';
+import { ValidationError } from '@shared/common';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { ExternalToolRequestMapper } from '../mapper/external-tool-request.mapper';
-import { ExternalToolResponseMapper } from '../mapper/external-tool-response.mapper';
-import { ExternalToolResponse } from './dto/response/external-tool.response';
-import { ExternalToolParams } from './dto/request/external-tool-create.params';
 import { ExternalToolUc } from '../uc/external-tool.uc';
-import { ExternalToolSearchListResponse } from './dto/response/external-tool-search-list.response';
-import { ExternalToolSearchParams } from './dto/request/external-tool-search.params';
-import { SortExternalToolParams } from './dto/request/external-tool-sort.params';
+import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './mapper';
+import {
+	ExternalToolPostParams,
+	ExternalToolResponse,
+	ExternalToolSearchListResponse,
+	ExternalToolSearchParams,
+	Lti11LaunchQuery,
+	Lti11LaunchResponse,
+	SortExternalToolParams,
+	ToolIdParams,
+} from './dto';
+import { CreateExternalTool, UpdateExternalTool } from '../uc/dto';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -34,19 +39,21 @@ export class ToolController {
 	constructor(
 		private readonly lti11Uc: Lti11Uc,
 		private readonly lti11ResponseMapper: Lti11ResponseMapper,
-		private externalToolUc: ExternalToolUc,
+		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
-		private readonly externalResponseMapper: ExternalToolResponseMapper
+		private readonly externalResponseMapper: ExternalToolResponseMapper,
+		private readonly logger: Logger
 	) {}
 
 	@Get('lti11/:toolId/launch')
 	async getLti11LaunchParameters(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: Lti11LaunchParams,
+		@Param() params: ToolIdParams,
 		@Query() query: Lti11LaunchQuery
 	): Promise<Lti11LaunchResponse> {
 		const authorization: Authorization = await this.lti11Uc.getLaunchParameters(
-			currentUser,
+			currentUser.userId,
+			currentUser.roles[0] as RoleName,
 			params.toolId,
 			query.courseId
 		);
@@ -59,13 +66,15 @@ export class ToolController {
 	@ApiForbiddenResponse()
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
+	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	async createExternalTool(
-		@Body() externalToolParams: ExternalToolParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() externalToolParams: ExternalToolPostParams
 	): Promise<ExternalToolResponse> {
-		const externalToolDO: ExternalToolDO = this.externalToolDOMapper.mapRequestToExternalToolDO(externalToolParams);
-		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(externalToolDO, currentUser.userId);
+		const externalToolDO: CreateExternalTool = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
+		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
+		this.logger.debug(`ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}`);
 		return mapped;
 	}
 
@@ -95,5 +104,43 @@ export class ToolController {
 			pagination.limit
 		);
 		return response;
+	}
+
+	@Get(':toolId')
+	async getExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ToolIdParams
+	): Promise<ExternalToolResponse> {
+		const externalToolDO: ExternalToolDO = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(externalToolDO);
+		return mapped;
+	}
+
+	@Post('/:toolId')
+	@ApiOkResponse({ description: 'The Tool has been successfully updated.', type: ExternalToolResponse })
+	@ApiForbiddenResponse()
+	@ApiUnauthorizedResponse()
+	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	async updateExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ToolIdParams,
+		@Body() externalToolParams: ExternalToolPostParams
+	): Promise<ExternalToolResponse> {
+		const externalTool: UpdateExternalTool = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
+		const updated: ExternalToolDO = await this.externalToolUc.updateExternalTool(
+			currentUser.userId,
+			params.toolId,
+			externalTool
+		);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(updated);
+		this.logger.debug(`ExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);
+		return mapped;
+	}
+
+	@Delete(':toolId')
+	async deleteExternalTool(@CurrentUser() currentUser: ICurrentUser, @Param() params: ToolIdParams): Promise<void> {
+		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.toolId);
+		this.logger.debug(`ExternalTool with id ${params.toolId} was deleted by user with id ${currentUser.userId}`);
+		return promise;
 	}
 }

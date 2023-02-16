@@ -15,11 +15,11 @@ export class KeycloakManagementUc {
 		return this.kcAdmin.testKcConnection();
 	}
 
-	public clean(): Promise<number> {
+	public async clean(): Promise<number> {
 		return this.keycloakSeedService.clean();
 	}
 
-	public seed(): Promise<number> {
+	public async seed(): Promise<number> {
 		return this.keycloakSeedService.seed();
 	}
 
@@ -27,7 +27,7 @@ export class KeycloakManagementUc {
 		await this.kcAdmin.setPasswordPolicy();
 		await this.keycloakConfigService.configureClient();
 		await this.keycloakConfigService.configureBrokerFlows();
-		const result = this.keycloakConfigService.configureIdentityProviders();
-		return result;
+		await this.keycloakConfigService.configureRealm();
+		return this.keycloakConfigService.configureIdentityProviders();
 	}
 }

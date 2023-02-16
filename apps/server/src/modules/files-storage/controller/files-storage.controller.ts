@@ -6,6 +6,7 @@ import {
 	Delete,
 	ForbiddenException,
 	Get,
+	HttpStatus,
 	InternalServerErrorException,
 	NotAcceptableException,
 	NotFoundException,
@@ -14,6 +15,7 @@ import {
 	Post,
 	Query,
 	Req,
+	Res,
 	StreamableFile,
 	UseInterceptors,
 } from '@nestjs/common';
@@ -22,8 +24,8 @@ import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { Request } from 'express';
-import { FilesStorageMapper } from '../mapper/file-record.mapper';
+import { Request, Response } from 'express';
+import { FileRecordMapper } from '../mapper/file-record.mapper';
 import { FilesStorageUC } from '../uc';
 import {
 	CopyFileListResponse,
@@ -60,7 +62,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.uploadFromUrl(currentUser.userId, { ...body, ...params });
 
-		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
@@ -81,13 +83,14 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.upload(currentUser.userId, params, req);
 
-		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
 
 	@ApiOperation({ summary: 'Streamable download of a binary file.' })
 	@ApiResponse({ status: 200, type: StreamableFile })
+	@ApiResponse({ status: 206, type: StreamableFile })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
@@ -97,16 +100,39 @@ export class FilesStorageController {
 	async download(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Req() req: Request
+		@Req() req: Request,
+		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
-		const res = await this.filesStorageUC.download(currentUser.userId, params);
-		req.on('close', () => {
-			res.data.destroy();
-		});
+		// Get Range HTTP header value to check if caller
+		// requested either partial or full data stream.
+		const bytesRange = req.header('Range');
 
+		// Call download method with either defined or undefined bytes range.
+		const res = await this.filesStorageUC.download(currentUser.userId, params, bytesRange);
+
+		// Destroy the stream after it has been closed.
+		req.on('close', () => res.data.destroy());
+
+		// If bytes range has been defined, set Accept-Ranges and Content-Range HTTP headers
+		// in a response and also set 206 Partial Content HTTP status code to inform the caller
+		// about the partial data stream. Otherwise, just set a 200 OK HTTP status code.
+		if (bytesRange) {
+			response.set({
+				'Accept-Ranges': 'bytes',
+				'Content-Range': res.contentRange,
+			});
+
+			response.status(HttpStatus.PARTIAL_CONTENT);
+		} else {
+			response.status(HttpStatus.OK);
+		}
+
+		// Return StreamableFile with stream data and options that will additionally set
+		// Content-Type, Content-Disposition and Content-Length headers in a response.
 		return new StreamableFile(res.data, {
 			type: res.contentType,
 			disposition: `inline; filename="${encodeURI(params.fileName)}"`,
+			length: res.contentLength,
 		});
 	}
 
@@ -122,7 +148,7 @@ export class FilesStorageController {
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.getFileRecordsOfParent(currentUser.userId, params);
 		const { skip, limit } = pagination;
-		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total, skip, limit);
+		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total, skip, limit);
 
 		return response;
 	}
@@ -146,7 +172,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.patchFilename(currentUser.userId, params, renameFileParam);
 
-		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
@@ -166,7 +192,7 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent(currentUser.userId, params);
-		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
+		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return response;
 	}
@@ -184,7 +210,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.deleteOneFile(currentUser.userId, params);
 
-		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}
@@ -200,7 +226,7 @@ export class FilesStorageController {
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.restoreFilesOfParent(currentUser.userId, params);
 
-		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
+		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return response;
 	}
@@ -216,7 +242,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.restoreOneFile(currentUser.userId, params);
 
-		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}

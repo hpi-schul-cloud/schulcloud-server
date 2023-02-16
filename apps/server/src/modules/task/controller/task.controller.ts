@@ -4,14 +4,12 @@ import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-// todo  @src/modules/learnroom/* must be replaced
-import { CopyApiResponse } from '@src/modules/learnroom/controller/dto/copy.response';
-import { CopyMapper } from '@src/modules/learnroom/mapper/copy.mapper';
+import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
 import { serverConfig } from '@src/modules/server/server.config';
-import { TaskMapper } from '../mapper/task.mapper';
+import { TaskMapper } from '../mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
-import { TaskListResponse, TaskResponse, TaskUrlParams, TaskCreateParams, TaskUpdateParams } from './dto';
+import { TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
 import { TaskCopyApiParams } from './dto/task-copy.params';
 
 @ApiTags('Task')
@@ -45,9 +43,7 @@ export class TaskController {
 			? await this.taskUc.findAllFinished(currentUser.userId, pagination)
 			: await this.taskUc.findAll(currentUser.userId, pagination);
 
-		const taskResponses = tasksWithStatus.map((task) => {
-			return TaskMapper.mapToResponse(task);
-		});
+		const taskResponses = tasksWithStatus.map((task) => TaskMapper.mapToResponse(task));
 
 		const { skip, limit } = pagination;
 		const result = new TaskListResponse(taskResponses, total, skip, limit);
@@ -86,39 +82,6 @@ export class TaskController {
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
-	}
-
-	@Get(':taskId')
-	async findTask(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
-		const taskWithSatusVo = await this.taskUc.find(currentUser.userId, urlParams.taskId);
-
-		const response = TaskMapper.mapToResponse(taskWithSatusVo);
-		return response;
-	}
-
-	@Post()
-	async create(@Body() params: TaskCreateParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
-		const taskWithSatusVo = await this.taskUc.create(currentUser.userId, TaskMapper.mapTaskCreateToDomain(params));
-
-		const response = TaskMapper.mapToResponse(taskWithSatusVo);
-		return response;
-	}
-
-	@Patch(':taskId')
-	async update(
-		@Param() urlParams: TaskUrlParams,
-		@Body() params: TaskUpdateParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<TaskResponse> {
-		const taskWithSatusVo = await this.taskUc.update(
-			currentUser.userId,
-			urlParams.taskId,
-			TaskMapper.mapTaskUpdateToDomain(params)
-		);
-
-		const response = TaskMapper.mapToResponse(taskWithSatusVo);
-
-		return response;
 	}
 
 	@Delete(':taskId')

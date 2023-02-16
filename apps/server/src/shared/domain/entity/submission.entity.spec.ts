@@ -2,13 +2,15 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import {
-	userFactory,
-	taskFactory,
-	submissionFactory,
-	fileFactory,
-	setupEntities,
 	courseGroupFactory,
+	fileFactory,
+	schoolFactory,
+	setupEntities,
+	submissionFactory,
+	taskFactory,
+	userFactory,
 } from '@shared/testing';
+import { Submission } from './submission.entity';
 
 describe('Submission entity', () => {
 	let orm: MikroORM;
@@ -26,13 +28,85 @@ describe('Submission entity', () => {
 	});
 
 	describe('constructor is called', () => {
-		describe('when files are passed', () => {
-			it('create with studentFiles should be possible', () => {
-				const task = taskFactory.buildWithId();
-				const file = fileFactory.buildWithId();
-				const submission = submissionFactory.buildWithId({ task, studentFiles: [file] });
+		const setup = () => {
+			const school = schoolFactory.build();
+			const student = userFactory.build();
+			const task = taskFactory.buildWithId();
+			const file = fileFactory.buildWithId();
+			const teamMember = userFactory.build();
 
-				expect(submission.studentFiles.contains(file)).toBe(true);
+			return { school, student, task, file, teamMember };
+		};
+
+		describe('when required pros are set', () => {
+			it('should contains default props', () => {
+				const { school, student, task } = setup();
+
+				const submission = new Submission({
+					school,
+					student,
+					task,
+					comment: 'test',
+				});
+
+				expect(submission).toStrictEqual(
+					expect.objectContaining({
+						school,
+						student,
+						task,
+						comment: 'test',
+						graded: false,
+						submitted: false,
+					})
+				);
+			});
+		});
+
+		describe('when teamMembers are passed', () => {
+			it('should contains teamMember', () => {
+				const { school, student, task, teamMember } = setup();
+
+				const submission = new Submission({
+					school,
+					student,
+					task,
+					comment: 'test',
+					teamMembers: [teamMember],
+				});
+
+				expect(submission.teamMembers.contains(teamMember)).toBe(true);
+			});
+		});
+
+		describe('when submitted is passed', () => {
+			it('should return true', () => {
+				const { school, student, task } = setup();
+
+				const submission = new Submission({
+					school,
+					student,
+					task,
+					comment: 'test',
+					submitted: true,
+				});
+
+				expect(submission.submitted).toBe(true);
+			});
+		});
+
+		describe('when graded is passed', () => {
+			it('should return true', () => {
+				const { school, student, task } = setup();
+
+				const submission = new Submission({
+					school,
+					student,
+					task,
+					comment: 'test',
+					graded: true,
+				});
+
+				expect(submission.graded).toBe(true);
 			});
 		});
 	});
@@ -222,42 +296,7 @@ describe('Submission entity', () => {
 				const student = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
 				const grade = 50;
-				const submission = submissionFactory.buildWithId({ task, student, grade });
-
-				return submission;
-			};
-
-			it('should return true.', () => {
-				const submission = setup();
-
-				expect(submission.isGraded()).toEqual(true);
-			});
-		});
-
-		describe('when gradeComment exists', () => {
-			const setup = () => {
-				const student = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				const gradeComment = 'Very good!';
-				const submission = submissionFactory.buildWithId({ task, student, gradeComment });
-
-				return submission;
-			};
-
-			it('should return true.', () => {
-				const submission = setup();
-
-				expect(submission.isGraded()).toEqual(true);
-			});
-		});
-
-		describe('when gradeFiles exist', () => {
-			const setup = () => {
-				const student = userFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				const file = fileFactory.buildWithId();
-				const gradeFiles = [file];
-				const submission = submissionFactory.buildWithId({ task, student, gradeFiles });
+				const submission = submissionFactory.graded().buildWithId({ task, student, grade });
 
 				return submission;
 			};

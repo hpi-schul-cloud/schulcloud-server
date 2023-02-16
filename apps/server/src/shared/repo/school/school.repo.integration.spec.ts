@@ -5,10 +5,13 @@ import { School, SchoolRolePermission, SchoolRoles, SchoolYear, System } from '@
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { schoolFactory, systemFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
+import { createMock } from '@golevelup/ts-jest';
 import { SchoolRepo } from '..';
-import { SchoolYearRepo } from '../schoolyear';
+import { SchoolDO } from '../../domain/domainobject/school.do';
+import { Logger } from '../../../core/logger';
+import { SchoolMapper } from '../../../modules/school/mapper/school.mapper';
 
-describe('school repo', () => {
+describe('SchoolRepo', () => {
 	let module: TestingModule;
 	let repo: SchoolRepo;
 	let em: EntityManager;
@@ -16,7 +19,14 @@ describe('school repo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [SchoolRepo, SchoolYearRepo],
+			providers: [
+				SchoolRepo,
+				SchoolMapper,
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+			],
 		}).compile();
 		repo = module.get(SchoolRepo);
 		em = module.get(EntityManager);
@@ -55,17 +65,6 @@ describe('school repo', () => {
 		expect(storedSchool.permissions?.teacher?.STUDENT_LIST).toBe(true);
 	});
 
-	it('createAndSave', async () => {
-		const schoolEntity: School = schoolFactory.build();
-
-		const createdSchool: School = repo.create(schoolEntity);
-		await repo.save(createdSchool);
-
-		const savedSchoolEntity = await em.find(School, {});
-		expect(savedSchoolEntity[0].id).toBeDefined();
-		expect(createdSchool.id).toBeDefined();
-	});
-
 	describe('findByExternalId', () => {
 		it('should find school by external ID', async () => {
 			const system: System = systemFactory.buildWithId();
@@ -74,19 +73,37 @@ describe('school repo', () => {
 
 			await em.persistAndFlush(schoolEntity);
 
-			const result: School | null = await repo.findByExternalId(
+			const result: SchoolDO | null = await repo.findByExternalId(
 				schoolEntity.externalId as string,
 				schoolEntity.systems[0].id
 			);
 
-			expect(result).toEqual(schoolEntity);
+			expect(result?.externalId).toEqual(schoolEntity.externalId);
 		});
 
 		it('should return null when no school is found', async () => {
-			const result: School | null = await repo.findByExternalId(
+			const result: SchoolDO | null = await repo.findByExternalId(
 				new ObjectId().toHexString(),
 				new ObjectId().toHexString()
 			);
+
+			expect(result).toBeNull();
+		});
+	});
+
+	describe('findBySchoolNumber', () => {
+		it('should find school by schoolnumber', async () => {
+			const schoolEntity: School = schoolFactory.build({ officialSchoolNumber: '12345' });
+
+			await em.persistAndFlush(schoolEntity);
+
+			const result: SchoolDO | null = await repo.findBySchoolNumber(schoolEntity.officialSchoolNumber as string);
+
+			expect(result?.officialSchoolNumber).toEqual(schoolEntity.officialSchoolNumber);
+		});
+
+		it('should return null when no school is found', async () => {
+			const result: SchoolDO | null = await repo.findBySchoolNumber('fail');
 
 			expect(result).toBeNull();
 		});

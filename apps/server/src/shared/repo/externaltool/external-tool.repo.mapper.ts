@@ -4,28 +4,37 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
+	CustomParameterEntryDO,
 } from '@shared/domain/domainobject/external-tool';
-import { EntityProperties } from '@shared/repo';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	BasicToolConfig,
 	CustomParameter,
+	CustomParameterEntry,
 	ExternalTool,
 	IExternalToolProperties,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
+	ToolConfigType,
 } from '../../domain';
 
 @Injectable()
 export class ExternalToolRepoMapper {
 	mapEntityToDO(entity: ExternalTool): ExternalToolDO {
 		let config: BasicToolConfigDO | Oauth2ToolConfigDO | Lti11ToolConfigDO;
-		if (entity.config instanceof BasicToolConfig) {
-			config = this.mapBasicToolConfigToDO(entity.config);
-		} else if (entity.config instanceof Oauth2ToolConfig) {
-			config = this.mapOauth2ConfigToDO(entity.config);
-		} else {
-			config = this.mapLti11ToolConfigToDO(entity.config);
+		switch (entity.config.type) {
+			case ToolConfigType.BASIC:
+				config = this.mapBasicToolConfigToDO(entity.config as BasicToolConfigDO);
+				break;
+			case ToolConfigType.OAUTH2:
+				config = this.mapOauth2ConfigToDO(entity.config as Oauth2ToolConfigDO);
+				break;
+			case ToolConfigType.LTI11:
+				config = this.mapLti11ToolConfigToDO(entity.config as Lti11ToolConfigDO);
+				break;
+			default:
+				/* istanbul ignore next */
+				throw new UnprocessableEntityException(`Unknown config type.`);
 		}
 
 		return new ExternalToolDO({
@@ -71,27 +80,21 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	mapCustomParametersToDOs(customParameters: CustomParameter[]): CustomParameterDO[] {
-		return customParameters.map((param: CustomParameter) => {
-			return new CustomParameterDO({
-				name: param.name,
-				default: param.default,
-				regex: param.regex,
-				scope: param.scope,
-				location: param.location,
-				type: param.type,
-			});
-		});
-	}
-
-	mapDOToEntityProperties(entityDO: ExternalToolDO): EntityProperties<IExternalToolProperties> {
+	mapDOToEntityProperties(entityDO: ExternalToolDO): IExternalToolProperties {
 		let config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
-		if (entityDO.config instanceof BasicToolConfigDO) {
-			config = this.mapBasicToolConfigDOToEntity(entityDO.config);
-		} else if (entityDO.config instanceof Oauth2ToolConfigDO) {
-			config = this.mapOauth2ConfigDOToEntity(entityDO.config);
-		} else {
-			config = this.mapLti11ToolConfigDOToEntity(entityDO.config);
+		switch (entityDO.config.type) {
+			case ToolConfigType.BASIC:
+				config = this.mapBasicToolConfigDOToEntity(entityDO.config as BasicToolConfigDO);
+				break;
+			case ToolConfigType.OAUTH2:
+				config = this.mapOauth2ConfigDOToEntity(entityDO.config as Oauth2ToolConfigDO);
+				break;
+			case ToolConfigType.LTI11:
+				config = this.mapLti11ToolConfigDOToEntity(entityDO.config as Lti11ToolConfigDO);
+				break;
+			default:
+				/* istanbul ignore next */
+				throw new UnprocessableEntityException(`Unknown config type.`);
 		}
 
 		return {
@@ -134,16 +137,55 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
+	mapCustomParametersToDOs(customParameters: CustomParameter[]): CustomParameterDO[] {
+		return customParameters.map(
+			(param: CustomParameter) =>
+				new CustomParameterDO({
+					name: param.name,
+					default: param.default,
+					regex: param.regex,
+					regexComment: param.regexComment,
+					scope: param.scope,
+					location: param.location,
+					type: param.type,
+					isOptional: param.isOptional,
+				})
+		);
+	}
+
 	mapCustomParameterDOsToEntities(customParameters: CustomParameterDO[]): CustomParameter[] {
-		return customParameters.map((param: CustomParameterDO) => {
-			return new CustomParameter({
-				name: param.name,
-				default: param.default,
-				regex: param.regex,
-				scope: param.scope,
-				location: param.location,
-				type: param.type,
-			});
-		});
+		return customParameters.map(
+			(param: CustomParameterDO) =>
+				new CustomParameter({
+					name: param.name,
+					default: param.default,
+					regex: param.regex,
+					regexComment: param.regexComment,
+					scope: param.scope,
+					location: param.location,
+					type: param.type,
+					isOptional: param.isOptional,
+				})
+		);
+	}
+
+	mapCustomParameterEntryEntitiesToDOs(entries: CustomParameterEntry[]): CustomParameterEntryDO[] {
+		return entries.map(
+			(entry: CustomParameterEntry): CustomParameterEntryDO =>
+				new CustomParameterEntryDO({
+					name: entry.name,
+					value: entry.value,
+				})
+		);
+	}
+
+	mapCustomParameterEntryDOsToEntities(entries: CustomParameterEntryDO[]): CustomParameterEntry[] {
+		return entries.map(
+			(entry: CustomParameterEntry): CustomParameterEntryDO =>
+				new CustomParameterEntry({
+					name: entry.name,
+					value: entry.value,
+				})
+		);
 	}
 }

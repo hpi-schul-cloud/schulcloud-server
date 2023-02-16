@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Board, CopyHelperService, CopyStatus, Course, EntityId } from '@shared/domain';
-import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
+import { Course, EntityId, User } from '@shared/domain';
 import { BoardRepo, CourseRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { BoardCopyService } from './board-copy.service';
-import { CourseEntityCopyService } from './course-entity-copy.service';
-import { LessonCopyService } from './lesson-copy.service';
 import { RoomsService } from './rooms.service';
+
+type CourseCopyParams = {
+	originalCourse: Course;
+	user: User;
+	copyName?: string;
+};
 
 @Injectable()
 export class CourseCopyService {
@@ -14,10 +18,7 @@ export class CourseCopyService {
 		private readonly courseRepo: CourseRepo,
 		private readonly boardRepo: BoardRepo,
 		private readonly roomsService: RoomsService,
-		private readonly courseEntityCopyService: CourseEntityCopyService,
 		private readonly boardCopyService: BoardCopyService,
-		private readonly lessonCopyService: LessonCopyService,
-		private readonly fileCopyAppendService: FileCopyAppendService,
 		private readonly copyHelperService: CopyHelperService,
 		private readonly authorizationService: AuthorizationService
 	) {}
@@ -33,7 +34,7 @@ export class CourseCopyService {
 	}): Promise<CopyStatus> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		// fetch original course, board
+		// fetch original course and board
 		const originalCourse = await this.courseRepo.findById(courseId);
 		let originalBoard = await this.boardRepo.findByCourseId(courseId);
 		originalBoard = await this.roomsService.updateBoard(originalBoard, courseId, userId);
@@ -41,28 +42,74 @@ export class CourseCopyService {
 		// handle potential name conflict
 		const [existingCourses] = await this.courseRepo.findAllByUserId(userId);
 		const existingNames = existingCourses.map((course: Course) => course.name);
-
 		const copyName = this.copyHelperService.deriveCopyName(newName || originalCourse.name, existingNames);
 
-		const courseStatus = this.courseEntityCopyService.copyCourse({ user, originalCourse, copyName });
-		const courseCopy = courseStatus.copyEntity as Course;
-		await this.courseRepo.save(courseCopy);
+		// copy course and board
+		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
+		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
+		const finishedCourseCopy = await this.finishCourseCopying(courseCopy);
 
-		let boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
-
-		if (boardStatus && boardStatus.copyEntity) {
-			const boardCopy = boardStatus.copyEntity as Board;
-			await this.boardRepo.save(boardCopy);
-			boardStatus = this.lessonCopyService.updateCopiedEmbeddedTasks(boardStatus);
-			boardStatus = await this.fileCopyAppendService.copyFiles(boardStatus, courseCopy.id, userId);
-			const updatedBoardCopy = boardStatus.copyEntity as Board;
-			await this.boardRepo.save(updatedBoardCopy);
-		}
-
-		courseStatus.elements ||= [];
-		courseStatus.elements.push(boardStatus);
-		courseStatus.status = this.copyHelperService.deriveStatusFromElements(courseStatus.elements);
+		const courseStatus = this.deriveCourseStatus(originalCourse, finishedCourseCopy, boardStatus);
 
 		return courseStatus;
+	}
+
+	private async copyCourseEntity(params: CourseCopyParams): Promise<Course> {
+		const { originalCourse, user, copyName } = params;
+		const courseCopy = new Course({
+			school: user.school,
+			name: copyName,
+			color: originalCourse.color,
+			teachers: [user],
+			startDate: user.school.schoolYear?.startDate,
+			untilDate: user.school.schoolYear?.endDate,
+			copyingSince: new Date(),
+		});
+
+		await this.courseRepo.createCourse(courseCopy);
+		return courseCopy;
+	}
+
+	private async finishCourseCopying(courseCopy: Course) {
+		delete courseCopy.copyingSince;
+		await this.courseRepo.save(courseCopy);
+		return courseCopy;
+	}
+
+	private deriveCourseStatus(originalCourse: Course, courseCopy: Course, boardStatus: CopyStatus): CopyStatus {
+		const elements = [
+			{
+				type: CopyElementType.METADATA,
+				status: CopyStatusEnum.SUCCESS,
+			},
+			{
+				type: CopyElementType.USER_GROUP,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+			{
+				type: CopyElementType.LTITOOL_GROUP,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+			{
+				type: CopyElementType.TIME_GROUP,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+			boardStatus,
+		];
+
+		const courseGroupsExist = originalCourse.getCourseGroupItems().length > 0;
+		if (courseGroupsExist) {
+			elements.push({ type: CopyElementType.COURSEGROUP_GROUP, status: CopyStatusEnum.NOT_IMPLEMENTED });
+		}
+
+		const status = {
+			title: courseCopy.name,
+			type: CopyElementType.COURSE,
+			status: this.copyHelperService.deriveStatusFromElements(elements),
+			copyEntity: courseCopy,
+			originalEntity: originalCourse,
+			elements,
+		};
+		return status;
 	}
 }

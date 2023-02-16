@@ -69,6 +69,8 @@ async function bootstrap() {
 	feathersExpress.services['nest-account-uc'] = nestApp.get(AccountUc);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-collaborative-storage-uc'] = nestApp.get(CollaborativeStorageUc);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	feathersExpress.services['nest-orm'] = orm;
 
 	// mount instances
 	const rootExpress = express();

@@ -1,6 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { ICoreModuleConfig } from '@src/core';
 import type { IAccountConfig, IFilesStorageClientConfig, IUserConfig } from '@src/modules/';
+import type { IIdentityManagementConfig } from '@shared/infra/identity-management';
+import type { ICommonCartridgeConfig } from '@src/modules/learnroom/common-cartridge';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -9,16 +11,13 @@ export enum NodeEnvType {
 	MIGRATION = 'migration',
 }
 
-interface IFeatureConfig {
-	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: boolean;
-}
-
 export interface IServerConfig
 	extends ICoreModuleConfig,
-		IFeatureConfig,
 		IUserConfig,
 		IFilesStorageClientConfig,
-		IAccountConfig {
+		IAccountConfig,
+		IIdentityManagementConfig,
+		ICommonCartridgeConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
@@ -35,6 +34,8 @@ const config: IServerConfig = {
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,
 	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED') as boolean,
+	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
+	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;

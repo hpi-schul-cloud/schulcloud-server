@@ -1,38 +1,25 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { PermissionService } from '@shared/domain/service/permission.service';
-import { RoleRepo, SchoolRepo } from '@shared/repo';
-import { Logger, LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@src/core/logger';
+import { AccountModule } from '@src/modules/account/account.module';
+import { RoleModule } from '@src/modules/role';
 import { SchoolModule } from '@src/modules/school/school.module';
 import { SystemModule } from '@src/modules/system/system.module';
-import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
-import { SanisResponseMapper } from '@src/modules/provisioning/strategy/sanis/sanis-response.mapper';
-import { HttpModule } from '@nestjs/axios';
-import { IservProvisioningStrategy } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { AccountModule } from '@src/modules/account/account.module';
-import { SanisSchoolService } from '@src/modules/provisioning/strategy/sanis/service/sanis-school.service';
-import { SanisUserService } from '@src/modules/provisioning/strategy/sanis/service/sanis-user.service';
-import { ProvisioningService } from '@src/modules/provisioning/service/provisioning.service';
 import { UserModule } from '@src/modules/user';
-import { RoleModule } from '@src/modules/role';
-import { OidcProvisioningStrategy } from './strategy/oidc/oidc.strategy';
+import { ProvisioningService } from './service/provisioning.service';
+import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from './strategy';
+import { OidcProvisioningService } from './strategy/oidc/service/oidc-provisioning.service';
+import { SanisResponseMapper } from './strategy/sanis/sanis-response.mapper';
 
 @Module({
 	imports: [AccountModule, SchoolModule, UserModule, RoleModule, SystemModule, HttpModule, LoggerModule],
-	controllers: [],
 	providers: [
 		ProvisioningService,
-		SanisProvisioningStrategy,
-		SanisSchoolService,
-		SanisUserService,
-		IservProvisioningStrategy,
-		OidcProvisioningStrategy,
-		Logger,
 		SanisResponseMapper,
-		SchoolRepo,
-		UserDORepo,
-		RoleRepo,
-		PermissionService,
+		OidcProvisioningService,
+		SanisProvisioningStrategy,
+		IservProvisioningStrategy,
+		OidcMockProvisioningStrategy,
 	],
 	exports: [ProvisioningService],
 })

@@ -1,6 +1,12 @@
-import { BaseWithTimestampsDO, EntityId, LanguageType } from '@shared/domain/index';
+import { EntityId } from '@shared/domain/types';
+import { LanguageType } from '@shared/domain/entity';
+import { BaseDO } from './base.do';
 
-export class UserDO extends BaseWithTimestampsDO {
+export class UserDO extends BaseDO {
+	createdAt?: Date;
+
+	updatedAt?: Date;
+
 	email: string;
 
 	firstName: string;
@@ -29,8 +35,15 @@ export class UserDO extends BaseWithTimestampsDO {
 
 	preferences?: Record<string, unknown>;
 
+	lastLoginSystemChange?: Date;
+
+	outdatedSince?: Date;
+
 	constructor(domainObject: UserDO) {
-		super(domainObject);
+		super(domainObject.id);
+
+		this.createdAt = domainObject.createdAt;
+		this.updatedAt = domainObject.updatedAt;
 		this.email = domainObject.email;
 		this.firstName = domainObject.firstName;
 		this.lastName = domainObject.lastName;
@@ -45,5 +58,7 @@ export class UserDO extends BaseWithTimestampsDO {
 		this.language = domainObject.language;
 		this.forcePasswordChange = domainObject.forcePasswordChange;
 		this.preferences = domainObject.preferences;
+		this.lastLoginSystemChange = domainObject.lastLoginSystemChange;
+		this.outdatedSince = domainObject.outdatedSince;
 	}
 }

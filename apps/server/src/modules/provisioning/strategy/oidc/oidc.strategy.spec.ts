@@ -1,59 +1,130 @@
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { OidcProvisioningStrategy } from '@src/modules/provisioning/strategy/oidc/oidc.strategy';
-import { IservStrategyData } from '@src/modules/provisioning/strategy/iserv/iserv.strategy';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import jwt from 'jsonwebtoken';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import {
+	ExternalSchoolDto,
+	ExternalUserDto,
+	OauthDataDto,
+	OauthDataStrategyInputDto,
+	ProvisioningDto,
+	ProvisioningSystemDto,
+} from '../../dto';
+import { OidcProvisioningStrategy } from './oidc.strategy';
+import { OidcProvisioningService } from './service/oidc-provisioning.service';
 
-const params: IservStrategyData = {
-	idToken: 'oidcIdToken',
-};
+class TestOidcStrategy extends OidcProvisioningStrategy {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
+		throw new NotImplementedException();
+	}
+
+	getType(): SystemProvisioningStrategy {
+		throw new NotImplementedException();
+	}
+}
 
 describe('OidcStrategy', () => {
 	let module: TestingModule;
-	let oidcStrategy: OidcProvisioningStrategy;
+	let strategy: TestOidcStrategy;
+
+	let oidcProvisioningService: DeepMocked<OidcProvisioningService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [OidcProvisioningStrategy],
+			providers: [
+				TestOidcStrategy,
+				{
+					provide: OidcProvisioningService,
+					useValue: createMock<OidcProvisioningService>(),
+				},
+			],
 		}).compile();
-		oidcStrategy = module.get(OidcProvisioningStrategy);
+
+		strategy = module.get(TestOidcStrategy);
+		oidcProvisioningService = module.get(OidcProvisioningService);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	describe('apply', () => {
-		const preferredUsername = 'testid';
-
-		it('should apply strategy', async () => {
-			jest.spyOn(jwt, 'decode').mockImplementation(() => {
-				return { preferred_username: preferredUsername };
+	describe('apply is called', () => {
+		const setup = () => {
+			const externalUserId = 'externalUserId';
+			const externalSchoolId = 'externalSchoolId';
+			const schoolId = 'schoolId';
+			const oauthData: OauthDataDto = new OauthDataDto({
+				system: new ProvisioningSystemDto({
+					systemId: 'systemId',
+					provisioningStrategy: SystemProvisioningStrategy.OIDC,
+				}),
+				externalSchool: new ExternalSchoolDto({
+					externalId: externalSchoolId,
+					name: 'schoolName',
+				}),
+				externalUser: new ExternalUserDto({
+					externalId: externalUserId,
+				}),
 			});
-			const result = await oidcStrategy.apply(params);
-			expect(result.externalUserId).toEqual(preferredUsername);
+			const user: UserDO = new UserDO({
+				firstName: 'firstName',
+				lastName: 'lastName',
+				email: 'email',
+				schoolId: 'schoolId',
+				roleIds: ['roleId'],
+				externalId: externalUserId,
+			});
+			const school: SchoolDO = new SchoolDO({
+				id: schoolId,
+				name: 'schoolName',
+				externalId: externalSchoolId,
+			});
+
+			oidcProvisioningService.provisionExternalSchool.mockResolvedValue(school);
+			oidcProvisioningService.provisionExternalUser.mockResolvedValue(user);
+
+			return {
+				oauthData,
+				schoolId,
+			};
+		};
+
+		describe('when school data is provided', () => {
+			it('should call the OidcProvisioningService.provisionExternalSchool', async () => {
+				const { oauthData } = setup();
+
+				await strategy.apply(oauthData);
+
+				expect(oidcProvisioningService.provisionExternalSchool).toHaveBeenCalledWith(
+					oauthData.externalSchool,
+					oauthData.system.systemId
+				);
+			});
 		});
 
-		it('should throw error when there is no uuid in the idToken', async () => {
-			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
-				return {};
-			});
-			await expect(oidcStrategy.apply(params)).rejects.toThrow(OAuthSSOError);
-		});
+		describe('when user data is provided', () => {
+			it('should call the OidcProvisioningService.provisionExternalUser', async () => {
+				const { oauthData, schoolId } = setup();
 
-		it('should throw error when there is no idToken', async () => {
-			jest.spyOn(jwt, 'decode').mockImplementationOnce(() => {
-				return null;
-			});
-			await expect(oidcStrategy.apply(params)).rejects.toThrow(OAuthSSOError);
-		});
-	});
+				await strategy.apply(oauthData);
 
-	describe('getType', () => {
-		it('should return type OIDC', () => {
-			const retType: SystemProvisioningStrategy = oidcStrategy.getType();
-			expect(retType).toEqual(SystemProvisioningStrategy.OIDC);
+				expect(oidcProvisioningService.provisionExternalUser).toHaveBeenCalledWith(
+					oauthData.externalUser,
+					oauthData.system.systemId,
+					schoolId
+				);
+			});
+
+			it('should return the users external id', async () => {
+				const { oauthData } = setup();
+
+				const result: ProvisioningDto = await strategy.apply(oauthData);
+
+				expect(result).toEqual(new ProvisioningDto({ externalUserId: oauthData.externalUser.externalId }));
+			});
 		});
 	});
 });

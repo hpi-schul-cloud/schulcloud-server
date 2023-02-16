@@ -15,14 +15,13 @@ import {
 	User,
 	VideoConferenceDO,
 } from '@shared/domain';
-import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { CalendarService } from '@shared/infra/calendar';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { CourseRepo, TeamsRepo, UserRepo, VideoConferenceRepo } from '@shared/repo';
 import { roleFactory, setupEntities } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
-import { AuthorizationService } from '@src/modules';
-import { SchoolUc } from '@src/modules/school/uc/school.uc';
+import { AuthorizationService, SchoolService } from '@src/modules';
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
 import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
 import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
@@ -75,7 +74,7 @@ describe('VideoConferenceUc', () => {
 	let courseRepo: DeepMocked<CourseRepo>;
 	let userRepo: DeepMocked<UserRepo>;
 	let calendarService: DeepMocked<CalendarService>;
-	let schoolUc: DeepMocked<SchoolUc>;
+	let schoolService: DeepMocked<SchoolService>;
 
 	const hostUrl = 'http://localhost:4000';
 	const course: Course = { id: 'courseId', name: 'courseName' } as Course;
@@ -148,13 +147,13 @@ describe('VideoConferenceUc', () => {
 					useValue: createMock<CalendarService>(),
 				},
 				{
-					provide: SchoolUc,
-					useValue: createMock<SchoolUc>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 			],
 		}).compile();
 		useCase = module.get(VideoConferenceUcSpec);
-		schoolUc = module.get(SchoolUc);
+		schoolService = module.get(SchoolService);
 		authorizationService = module.get(AuthorizationService);
 		courseRepo = module.get(CourseRepo);
 		calendarService = module.get(CalendarService);
@@ -197,7 +196,7 @@ describe('VideoConferenceUc', () => {
 		userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
 
 		teamsRepo.findById.mockResolvedValue(team);
-		schoolUc.hasFeature.mockResolvedValue(true);
+		schoolService.hasFeature.mockResolvedValue(true);
 		courseRepo.findById.mockResolvedValue(course);
 		calendarService.findEvent.mockResolvedValue(event);
 	});
@@ -277,7 +276,7 @@ describe('VideoConferenceUc', () => {
 
 		it('should throw on school feature disabled', async () => {
 			// Arrange
-			schoolUc.hasFeature.mockResolvedValue(false);
+			schoolService.hasFeature.mockResolvedValue(false);
 
 			// Act & Assert
 			await expect(useCase.throwOnFeaturesDisabledSpec('schoolId')).rejects.toThrow(

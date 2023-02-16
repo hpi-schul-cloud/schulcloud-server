@@ -110,7 +110,7 @@ describe('FilesStorageService download methods', () => {
 
 				await service.download(fileRecord, params);
 
-				expect(service.downloadFile).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.id);
+				expect(service.downloadFile).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.id, undefined);
 			});
 
 			it('returns correct response', async () => {
@@ -214,7 +214,7 @@ describe('FilesStorageService download methods', () => {
 
 				await service.downloadFile(fileRecord.schoolId, fileRecord.id);
 
-				expect(storageClient.get).toHaveBeenCalledWith(path);
+				expect(storageClient.get).toHaveBeenCalledWith(path, undefined);
 			});
 
 			it('returns correct response', async () => {

@@ -1,11 +1,12 @@
 import { NotImplementedException } from '@nestjs/common';
-import { ShareTokenParentType } from '@shared/domain';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { ShareTokenParentType } from '../domainobject/share-token.do';
 
 export class ShareTokenParentTypeMapper {
 	static mapToAllowedAuthorizationEntityType(type: ShareTokenParentType): AllowedAuthorizationEntityType {
 		const types: Map<ShareTokenParentType, AllowedAuthorizationEntityType> = new Map();
 		types.set(ShareTokenParentType.Course, AllowedAuthorizationEntityType.Course);
+		types.set(ShareTokenParentType.Lesson, AllowedAuthorizationEntityType.Lesson);
 
 		const res = types.get(type);
 

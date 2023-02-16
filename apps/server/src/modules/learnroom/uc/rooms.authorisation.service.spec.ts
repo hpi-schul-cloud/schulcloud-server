@@ -162,7 +162,7 @@ describe('rooms authorisation service', () => {
 				it('should be true for creator', () => {
 					const user = userFactory.buildWithId();
 					const course = courseFactory.buildWithId({ teachers: [user] });
-					const futureDate = Date.now() + 10000;
+					const futureDate = new Date(Date.now() + 10000);
 					const task = taskFactory.buildWithId({ creator: user, course, availableDate: futureDate });
 
 					const result = service.hasTaskReadPermission(user, task);
@@ -172,7 +172,7 @@ describe('rooms authorisation service', () => {
 				it('should be true for other teacher', () => {
 					const user = userFactory.buildWithId();
 					const course = courseFactory.buildWithId({ teachers: [user] });
-					const futureDate = Date.now() + 10000;
+					const futureDate = new Date(Date.now() + 10000);
 					const task = taskFactory.buildWithId({ course, availableDate: futureDate });
 
 					const result = service.hasTaskReadPermission(user, task);
@@ -182,7 +182,7 @@ describe('rooms authorisation service', () => {
 				it('should be true for other substitutionTeacher', () => {
 					const user = userFactory.buildWithId();
 					const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
-					const futureDate = Date.now() + 10000;
+					const futureDate = new Date(Date.now() + 10000);
 					const task = taskFactory.buildWithId({ course, availableDate: futureDate });
 
 					const result = service.hasTaskReadPermission(user, task);
@@ -192,7 +192,7 @@ describe('rooms authorisation service', () => {
 				it('should be false for other student', () => {
 					const user = userFactory.buildWithId();
 					const course = courseFactory.buildWithId({ students: [user] });
-					const futureDate = Date.now() + 10000;
+					const futureDate = new Date(Date.now() + 10000);
 					const task = taskFactory.buildWithId({ course, availableDate: futureDate });
 
 					const result = service.hasTaskReadPermission(user, task);
@@ -204,7 +204,7 @@ describe('rooms authorisation service', () => {
 				it('should be true for creator', () => {
 					const user = userFactory.buildWithId();
 					const course = courseFactory.buildWithId({ teachers: [user] });
-					const futureDate = Date.now() - 10000;
+					const futureDate = new Date(Date.now() - 10000);
 					const task = taskFactory.buildWithId({ creator: user, course, availableDate: futureDate });
 
 					const result = service.hasTaskReadPermission(user, task);
@@ -214,7 +214,7 @@ describe('rooms authorisation service', () => {
 				it('should be true for other teacher', () => {
 					const user = userFactory.buildWithId();
 					const course = courseFactory.buildWithId({ teachers: [user] });
-					const futureDate = Date.now() - 10000;
+					const futureDate = new Date(Date.now() - 10000);
 					const task = taskFactory.buildWithId({ course, availableDate: futureDate });
 
 					const result = service.hasTaskReadPermission(user, task);
@@ -224,7 +224,7 @@ describe('rooms authorisation service', () => {
 				it('should be true for other substitutionTeacher', () => {
 					const user = userFactory.buildWithId();
 					const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
-					const futureDate = Date.now() - 10000;
+					const futureDate = new Date(Date.now() - 10000);
 					const task = taskFactory.buildWithId({ course, availableDate: futureDate });
 
 					const result = service.hasTaskReadPermission(user, task);
@@ -234,7 +234,7 @@ describe('rooms authorisation service', () => {
 				it('should be true for other student', () => {
 					const user = userFactory.buildWithId();
 					const course = courseFactory.buildWithId({ students: [user] });
-					const pastDate = Date.now() - 10000;
+					const pastDate = new Date(Date.now() - 10000);
 					const task = taskFactory.buildWithId({ course, availableDate: pastDate });
 
 					const result = service.hasTaskReadPermission(user, task);

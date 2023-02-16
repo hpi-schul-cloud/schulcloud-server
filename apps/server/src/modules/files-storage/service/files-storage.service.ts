@@ -19,23 +19,19 @@ import {
 	SingleFileParams,
 } from '../controller/dto';
 import { FileDto } from '../dto';
-import { FileRecord, ScanStatus } from '../entity';
+import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 import {
 	createFileRecord,
 	createICopyFiles,
 	createPath,
-	deriveStatusFromSource,
 	getPaths,
-	getResolvedValues,
-	getStatusFromScanResult,
-	isStatusBlocked,
 	markForDelete,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
 import { IGetFileResponse } from '../interface';
-import { FilesStorageMapper, CopyFileResponseBuilder } from '../mapper';
+import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
 @Injectable()
@@ -105,7 +101,7 @@ export class FilesStorageService {
 
 	// update
 	private checkDuplicatedNames(fileRecords: FileRecord[], newFileName: string): void {
-		if (fileRecords.find((item) => item.name === newFileName)) {
+		if (fileRecords.find((item) => item.hasName(newFileName))) {
 			throw new ConflictException(ErrorType.FILE_NAME_EXISTS);
 		}
 	}
@@ -121,42 +117,50 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
+	public async updateSecurityStatus(token: string, scanResultParams: ScanResultParams) {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 
-		const status = getStatusFromScanResult(scanResultDto);
-		fileRecord.updateSecurityCheckStatus(status, scanResultDto.virus_signature);
+		const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResultParams);
+		fileRecord.updateSecurityCheckStatus(status, reason);
 
 		await this.fileRecordRepo.save(fileRecord);
 	}
 
 	// download
-	private checkFileName(entity: FileRecord, params: DownloadFileParams): void | NotFoundException {
-		if (entity.name !== params.fileName) {
-			this.logger.debug(`could not find file with id: ${entity.id} by filename`);
+	private checkFileName(fileRecord: FileRecord, params: DownloadFileParams): void | NotFoundException {
+		if (!fileRecord.hasName(params.fileName)) {
+			this.logger.debug(`could not find file with id: ${fileRecord.id} by filename`);
 			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
 	}
 
-	private checkScanStatus(entity: FileRecord): void | NotAcceptableException {
-		if (isStatusBlocked(entity)) {
-			this.logger.warn(`file is blocked with id: ${entity.id}`);
+	private checkScanStatus(fileRecord: FileRecord): void | NotAcceptableException {
+		if (fileRecord.isBlocked()) {
+			this.logger.warn(`file is blocked with id: ${fileRecord.id}`);
 			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED);
 		}
 	}
 
-	public async downloadFile(schoolId: EntityId, fileRecordId: EntityId): Promise<IGetFileResponse> {
+	public async downloadFile(
+		schoolId: EntityId,
+		fileRecordId: EntityId,
+		bytesRange?: string
+	): Promise<IGetFileResponse> {
 		const pathToFile = createPath(schoolId, fileRecordId);
-		const res = await this.storageClient.get(pathToFile);
+		const response = await this.storageClient.get(pathToFile, bytesRange);
 
-		return res;
+		return response;
 	}
 
-	public async download(fileRecord: FileRecord, params: DownloadFileParams): Promise<IGetFileResponse> {
+	public async download(
+		fileRecord: FileRecord,
+		params: DownloadFileParams,
+		bytesRange?: string
+	): Promise<IGetFileResponse> {
 		this.checkFileName(fileRecord, params);
 		this.checkScanStatus(fileRecord);
 
-		const response = await this.downloadFile(fileRecord.schoolId, fileRecord.id);
+		const response = await this.downloadFile(fileRecord.getSchoolId(), fileRecord.id, bytesRange);
 
 		return response;
 	}
@@ -256,17 +260,14 @@ export class FilesStorageService {
 		targetParams: FileRecordParams,
 		userId: EntityId
 	): Promise<FileRecord> {
-		const entity = createFileRecord(sourceFile.name, sourceFile.size, sourceFile.mimeType, targetParams, userId);
+		const fileRecord = sourceFile.copy(userId, targetParams);
+		await this.fileRecordRepo.save(fileRecord);
 
-		entity.securityCheck = deriveStatusFromSource(sourceFile, entity);
-
-		await this.fileRecordRepo.save(entity);
-
-		return entity;
+		return fileRecord;
 	}
 
 	private sendToAntiVirusService(sourceFile: FileRecord) {
-		if (sourceFile.securityCheck.status === ScanStatus.PENDING) {
+		if (sourceFile.isPending()) {
 			this.antivirusService.send(sourceFile);
 		}
 	}
@@ -277,7 +278,7 @@ export class FilesStorageService {
 
 			await this.storageClient.copy([paths]);
 			this.sendToAntiVirusService(sourceFile);
-			const copyFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
+			const copyFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.getName());
 
 			return copyFileResponse;
 		} catch (error) {
@@ -293,18 +294,25 @@ export class FilesStorageService {
 	): Promise<CopyFileResponse[]> {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
 
-		const promises = sourceFileRecords.map(async (sourceFile) => {
-			this.checkScanStatus(sourceFile);
+		const promises: Promise<CopyFileResponse>[] = sourceFileRecords.map(async (sourceFile) => {
+			try {
+				this.checkScanStatus(sourceFile);
 
-			const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
-			const fileResponse = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
+				const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
+				const fileResponse = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
-			return fileResponse;
+				return fileResponse;
+			} catch (error) {
+				this.logger.error(`copy file failed for source fileRecordId ${sourceFile.id}`, error);
+				return {
+					sourceId: sourceFile.id,
+					name: sourceFile.getName(),
+				};
+			}
 		});
 
-		const settledPromises = await Promise.allSettled(promises);
-		const resolvedResponses = getResolvedValues(settledPromises);
+		const settledPromises = await Promise.all(promises);
 
-		return resolvedResponses;
+		return settledPromises;
 	}
 }
