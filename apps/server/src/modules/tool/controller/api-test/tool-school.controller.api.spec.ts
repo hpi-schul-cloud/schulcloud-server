@@ -270,4 +270,20 @@ describe('ToolSchoolController (API)', () => {
 				});
 		});
 	});
+
+	describe('[PUT] tools/school/:schoolExternalToolId', () => {
+		it('should return forbidden when user is not authorized', async () => {
+			const { userWithMissingPermission, schoolExternalTool } = await setup();
+			currentUser = mapUserToCurrentUser(userWithMissingPermission);
+			const paramEntry = { name: 'name', value: 'Updatedvalue' };
+			const postParams: SchoolExternalToolPostParams = {
+				toolId: 'irgendeineId',
+				schoolId: 'irgendeineId',
+				version: 1,
+				parameters: [paramEntry],
+			};
+
+			await request(app.getHttpServer()).put(`${basePath}/${schoolExternalTool.id}`).send(postParams).expect(403);
+		});
+	});
 });
