@@ -106,15 +106,20 @@ describe('Etherpad Permission Check: Students', () => {
 		expect(body.code).to.equal(403);
 	});
 
-	it('should not be able to create a pad', async () => {
+	it('should be able to create a pad', async () => {
 		const {
 			requestParams: {
 				authentication: { accessToken },
 			},
 		} = await testObjects.setupUser({ roles: ['student'] });
 
+		const jwt = decode(accessToken);
+		const course = await testObjects.createTestCourse({
+			userIds: [jwt.userId],
+		});
+
 		const data = {
-			courseId: globalStorage.couseId,
+			courseId: course.id,
 			padName: 'testStudent',
 			text: 'Grande Mucho Access Student',
 		};
@@ -127,6 +132,6 @@ describe('Etherpad Permission Check: Students', () => {
 			accessToken,
 		});
 
-		expect(body.code).to.equal(403);
+		expect(!!body.data.padID).to.equal(true);
 	});
 });
