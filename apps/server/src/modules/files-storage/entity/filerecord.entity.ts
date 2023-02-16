@@ -127,7 +127,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this._schoolId.toHexString();
 	}
 
-	@Property({ nullable: true })
+	@Property({ fieldName: 'isCopyFrom', nullable: true })
 	_isCopyFrom?: ObjectId;
 
 	get isCopyFrom(): EntityId | undefined {
