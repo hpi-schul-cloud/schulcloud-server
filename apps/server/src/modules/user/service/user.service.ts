@@ -9,8 +9,8 @@ import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
-import { TransactionUtil } from '@shared/common/utils/transaction.util';
 import { AccountService } from '@src/modules/account/services/account.service';
+import { Logger } from '@src/core/logger';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -27,8 +27,8 @@ export class UserService {
 		private readonly permissionService: PermissionService,
 		private readonly configService: ConfigService<IUserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly transactionUtil: TransactionUtil,
-		private readonly accountService: AccountService
+		private readonly accountService: AccountService,
+		private readonly logger: Logger
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
@@ -104,16 +104,23 @@ export class UserService {
 	}
 
 	async migrateUser(currentUserId: string, externalId: string, targetSystemId: string): Promise<void> {
-		await this.transactionUtil.doTransaction(async () => {
-			const userDO: UserDO = await this.userDORepo.findById(currentUserId, true);
+		const userDO: UserDO = await this.userDORepo.findById(currentUserId, true);
+		const account: AccountDto = await this.accountService.findByUserIdOrFail(currentUserId);
+		const userDOCopy: UserDO = { ...userDO };
+		const accountCopy: AccountDto = { ...account };
+
+		try {
 			userDO.legacyExternalId = userDO.externalId;
 			userDO.externalId = externalId;
 			userDO.lastLoginSystemChange = new Date();
-			await this.userDORepo.saveWithoutFlush(userDO);
-
-			const account: AccountDto = await this.accountService.findByUserIdOrFail(currentUserId);
+			await this.userDORepo.save(userDO);
 			account.systemId = targetSystemId;
-			await this.accountService.saveWithoutFlush(account);
-		});
+			await this.accountService.save(account);
+		} catch (e) {
+			await this.userDORepo.save(userDOCopy);
+			await this.accountService.save(accountCopy);
+			this.logger.log(`This error occurred during migration of User: ${currentUserId} `);
+			this.logger.log(e);
+		}
 	}
 }

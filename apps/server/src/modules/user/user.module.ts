@@ -7,7 +7,6 @@ import { RoleModule } from '@src/modules/role/role.module';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { RoleUc } from '@src/modules/role/uc/role.uc';
 import { SchoolModule } from '@src/modules/school/school.module';
-import { TransactionUtil } from '@shared/common/utils/transaction.util';
 import { AccountModule } from '@src/modules/account';
 import { UserController } from './controller';
 import { UserService } from './service/user.service';
@@ -28,7 +27,6 @@ import { AccountService } from '../account/services/account.service';
 		SchoolRepo,
 		RoleService,
 		AccountService,
-		TransactionUtil,
 	],
 	exports: [UserUc, UserService],
 })

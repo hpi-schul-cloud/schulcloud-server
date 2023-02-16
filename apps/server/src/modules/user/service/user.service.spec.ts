@@ -6,23 +6,18 @@ import { LanguageType, PermissionService, Role, RoleName, School, User } from '@
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { accountFactory, roleFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { accountFactory, roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { TransactionUtil } from '@shared/common/utils/transaction.util';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
-import { AccountService } from '../../account/services/account.service';
-
-class TransactionUtilSpec extends TransactionUtil {
-	async doTransaction(fn: () => Promise<void>): Promise<void> {
-		await fn();
-	}
-}
+import { NotFoundException } from '@nestjs/common';
+import { AccountDto } from '@src/modules/account/services/dto';
+import { AccountService } from '@src/modules/account/services/account.service';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -36,8 +31,8 @@ describe('UserService', () => {
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
 	let schoolService: DeepMocked<SchoolService>;
-	let transactionUtil: DeepMocked<TransactionUtil>;
 	let accountService: DeepMocked<AccountService>;
+	let logger: Logger;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -84,10 +79,6 @@ describe('UserService', () => {
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
 				},
-				{
-					provide: TransactionUtil,
-					useClass: TransactionUtilSpec,
-				},
 			],
 		}).compile();
 		service = module.get(UserService);
@@ -100,7 +91,7 @@ describe('UserService', () => {
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
-		transactionUtil = module.get(TransactionUtil);
+		logger = module.get(Logger);
 
 		orm = await setupEntities();
 	});
@@ -392,7 +383,23 @@ describe('UserService', () => {
 	});
 
 	describe('migrateUser is called', () => {
+		beforeEach(() => {
+			jest.useFakeTimers();
+			jest.setSystemTime(new Date(2020, 1, 1));
+		});
 		const setupMigrationData = () => {
+			const targetSystemId = new ObjectId().toHexString();
+
+			const notMigratedUser: UserDO = new UserDO({
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				email: 'emailMock',
+				firstName: 'firstNameMock',
+				lastName: 'lastNameMock',
+				roleIds: ['roleIdMock'],
+				schoolId: 'schoolMock',
+				externalId: 'currentUserExternalIdMock',
+			});
 			const migratedUserDO: UserDO = new UserDO({
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -405,38 +412,102 @@ describe('UserService', () => {
 				legacyExternalId: 'currentUserExternalIdMock',
 				lastLoginSystemChange: new Date(),
 			});
+			const id = new ObjectId().toHexString();
+			const userId = new ObjectId().toHexString();
+			const systemId = new ObjectId().toHexString();
+			const accountDto = accountFactory.buildWithId(
+				{
+					userId,
+					username: '',
+					systemId,
+				},
+				id
+			) as AccountDto;
 
-			const account = accountFactory.buildWithId({
-				userId: userFactory.buildWithId().id,
-				username: '',
-				systemId: systemFactory.buildWithId().id,
-			});
-
-			const migratedAccount = accountFactory.buildWithId({
-				userId: userFactory.buildWithId().id,
-				username: '',
-				systemId: 'targetSystemId',
-			});
+			const migratedAccount = accountFactory.buildWithId(
+				{
+					userId,
+					username: '',
+					systemId: targetSystemId,
+				},
+				id
+			);
 
 			return {
-				account,
+				accountDto,
 				migratedUserDO,
+				notMigratedUser,
 				migratedAccount,
+				targetSystemId,
 			};
 		};
 
 		describe('when currentUser, externalUserId, and targetsystem is given', () => {
-			it('should call transaction for migration ', async () => {
-				const { migratedUserDO, migratedAccount } = setupMigrationData();
-
-				const targetSystemId = new ObjectId().toHexString();
+			it('should call methods for migration ', async () => {
+				const { migratedUserDO, migratedAccount, targetSystemId } = setupMigrationData();
 
 				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
 
 				expect(userDORepo.findById).toHaveBeenCalledWith('userId', true);
-				expect(userDORepo.saveWithoutFlush).toHaveBeenCalledWith(migratedUserDO);
+				expect(userDORepo.save).toHaveBeenCalledWith(migratedUserDO);
 				expect(accountService.findByUserIdOrFail).toHaveBeenCalledWith('userId');
-				expect(accountService.saveWithoutFlush).toHaveBeenCalledWith(migratedAccount);
+				expect(accountService.save).toHaveBeenCalledWith(migratedAccount);
+			});
+			it('should do migration of user', async () => {
+				const { migratedUserDO, notMigratedUser, accountDto, targetSystemId } = setupMigrationData();
+				userDORepo.findById.mockResolvedValue(notMigratedUser);
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
+
+				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
+
+				expect(userDORepo.save).toHaveBeenCalledWith(migratedUserDO);
+			});
+			it('should do migration of account', async () => {
+				const { notMigratedUser, accountDto, migratedAccount, targetSystemId } = setupMigrationData();
+				userDORepo.findById.mockResolvedValue(notMigratedUser);
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
+
+				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
+
+				expect(accountService.save).toHaveBeenCalledWith(migratedAccount);
+			});
+		});
+
+		describe('when migration step failed', () => {
+			it('should throw internalServerErrorException', async () => {
+				const targetSystemId = new ObjectId().toHexString();
+				userDORepo.findById.mockRejectedValue(new NotFoundException('Could not find User'));
+
+				await expect(service.migrateUser('userId', 'externalUserTargetId', targetSystemId)).rejects.toThrow(
+					new NotFoundException('Could not find User')
+				);
+			});
+
+			it('should log error and message', async () => {
+				const { migratedUserDO, accountDto, targetSystemId } = setupMigrationData();
+				const error = new NotFoundException('Test Error');
+				userDORepo.findById.mockResolvedValue(migratedUserDO);
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
+				accountService.save.mockRejectedValueOnce(error);
+
+				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
+
+				expect(logger.log).toHaveBeenCalledWith(error);
+				expect(logger.log).toHaveBeenCalledTimes(2);
+			});
+
+			it('should do a rollback of migration', async () => {
+				const { migratedUserDO, notMigratedUser, accountDto, migratedAccount, targetSystemId } = setupMigrationData();
+
+				const error = new NotFoundException('Test Error');
+				userDORepo.findById.mockResolvedValue(notMigratedUser);
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
+				accountService.save.mockRejectedValueOnce(error);
+
+				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
+
+				expect(userDORepo.save).toHaveBeenCalledWith(notMigratedUser);
+				expect(accountService.save).toHaveBeenCalledWith(accountDto);
 			});
 		});
 	});

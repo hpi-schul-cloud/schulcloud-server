@@ -27,14 +27,15 @@ describe('UserMigrationService', () => {
 	let userService: DeepMocked<UserService>;
 
 	const hostUri = 'http://this.de';
-	const scDomain = 'https://mock.de';
+	const apiUrl = 'http://mock.de';
+
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
 			switch (key) {
 				case 'HOST':
 					return hostUri;
-				case 'SC_DOMAIN':
-					return scDomain;
+				case 'API_URL':
+					return apiUrl;
 				case 'S3_KEY':
 					return 's3Key';
 				default:
@@ -205,7 +206,7 @@ describe('UserMigrationService', () => {
 				oauthConfig: targetOauthConfig,
 			});
 
-			const migrationRedirectUri = 'https://mock.de/api/v3/sso/oauth/targetSystemId/migration';
+			const migrationRedirectUri = 'http://mock.de/api/v3/sso/oauth/targetSystemId/migration';
 
 			return { sourceSystem, targetSystem, sourceOauthConfig, targetOauthConfig, migrationRedirectUri };
 		};
@@ -362,7 +363,7 @@ describe('UserMigrationService', () => {
 			};
 		};
 
-		describe('when migrate user in transaction was successful', () => {
+		describe('when migrate user was successful', () => {
 			it('should return to migration succeed page', async () => {
 				const { targetSystem, externalUserIdMock, currentUserMock } = setupMigrationData();
 				userService.migrateUser.mockResolvedValue(Promise.resolve());

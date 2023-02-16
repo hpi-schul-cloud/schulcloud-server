@@ -124,7 +124,7 @@ export class UserMigrationService {
 
 	getMigrationRedirectUri(systemId: string): string {
 		const combinedUri = new URL(this.apiUrl);
-		combinedUri.pathname = `/v3/sso/oauth/${systemId}/migration`;
+		combinedUri.pathname = `api/v3/sso/oauth/${systemId}/migration`;
 		return combinedUri.toString();
 	}
 
