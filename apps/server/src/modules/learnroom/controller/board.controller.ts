@@ -50,7 +50,7 @@ export class BoardController {
 			timestamps: new TimestampsResponse({ lastUpdatedAt: new Date().toString(), createdAt: new Date().toString() }),
 		});
 
-		throw new NotImplementedException();
+		return Promise.resolve(result);
 	}
 
 	@Put('/:boardId/cards/:cardId/position')
