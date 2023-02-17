@@ -77,40 +77,56 @@ export class FilesStorageService {
 	}
 
 	// upload
-	public async createFileInStorageAndRollbackOnError(
+	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecord> {
+		const fileRecord = await this.createFileRecord(file, params, userId);
+
+		await this.fileRecordRepo.save(fileRecord);
+		await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
+
+		return fileRecord;
+	}
+
+	private async createFileRecord(file: FileDto, params: FileRecordParams, userId: EntityId): Promise<FileRecord> {
+		const fileName = await this.setFileName(file, params);
+		const fileRecord = createFileRecord(fileName, 0, file.mimeType, params, userId);
+
+		return fileRecord;
+	}
+
+	private async setFileName(file: FileDto, params: FileRecordParams): Promise<string> {
+		let fileName = file.name;
+
+		const [fileRecordsOfParent, count] = await this.getFileRecordsOfParent(params);
+		if (count > 0) {
+			fileName = resolveFileNameDuplicates(file.name, fileRecordsOfParent);
+		}
+
+		return fileName;
+	}
+
+	private async createFileInStorageAndRollbackOnError(
 		fileRecord: FileRecord,
 		params: FileRecordParams,
-		fileDescription: FileDto
-	): Promise<FileRecord> {
-		try {
-			const filePath = createPath(params.schoolId, fileRecord.id);
-			await this.storageClient.create(filePath, fileDescription);
-			this.antivirusService.send(fileRecord);
+		file: FileDto
+	): Promise<void> {
+		const filePath = createPath(params.schoolId, fileRecord.id);
 
-			return fileRecord;
+		try {
+			const fileSizePromise = this.countFileSize(file);
+
+			await this.storageClient.create(filePath, file);
+
+			// The actual file size is set here because it is known only after the whole file is streamed.
+			fileRecord.size = await fileSizePromise;
+			this.throwErrorIfFileIsTooBig(fileRecord.size);
+			await this.fileRecordRepo.save(fileRecord);
+
+			this.antivirusService.send(fileRecord);
 		} catch (error) {
+			await this.storageClient.delete([filePath]);
 			await this.fileRecordRepo.delete(fileRecord);
 			throw error;
 		}
-	}
-
-	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecord> {
-		const fileSizePromise = this.countFileSize(file);
-
-		const [fileRecordsOfParent] = await this.getFileRecordsOfParent(params);
-		const fileName = resolveFileNameDuplicates(file.name, fileRecordsOfParent);
-		let fileRecord = createFileRecord(fileName, file.size, file.mimeType, params, userId);
-
-		await this.fileRecordRepo.save(fileRecord);
-		// TODO: This overwrite of fileRecord is only to make a test work. The _id is otherwise not set. I don't like it. Maybe we can find a better solution.
-		fileRecord = await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
-
-		// The actual file size is set here because it is known only after the whole file is streamed.
-		fileRecord.size = await fileSizePromise;
-		await this.abortAndRollbackIfFileIsTooBig(fileRecord);
-		await this.fileRecordRepo.save(fileRecord);
-
-		return fileRecord;
 	}
 
 	private countFileSize(file: FileDto): Promise<number> {
@@ -127,12 +143,8 @@ export class FilesStorageService {
 		return promise;
 	}
 
-	private async abortAndRollbackIfFileIsTooBig(fileRecord: FileRecord): Promise<void> {
-		if (fileRecord.size > this.configService.get<number>('MAX_FILE_SIZE')) {
-			const filePath = createPath(fileRecord.schoolId, fileRecord.id);
-			await this.storageClient.delete([filePath]);
-			await this.fileRecordRepo.delete(fileRecord);
-
+	private throwErrorIfFileIsTooBig(fileSize: number): void {
+		if (fileSize > this.configService.get<number>('MAX_FILE_SIZE')) {
 			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
 		}
 	}

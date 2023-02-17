@@ -87,8 +87,8 @@ export class S3ClientAdapter implements IStorageClient {
 				params: req,
 			});
 
-			const a = await upload.done();
-			return a;
+			const commandOutput = await upload.done();
+			return commandOutput;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (err.Code && err.Code === 'NoSuchBucket') {
