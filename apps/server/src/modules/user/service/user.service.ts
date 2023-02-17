@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Account, EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
+import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleRepo, UserRepo } from '@shared/repo';
@@ -11,10 +11,10 @@ import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { Logger } from '@src/core/logger';
+import { AccountDto } from '@src/modules/account/services/dto';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
-import { AccountDto } from '../../account/services/dto';
 
 @Injectable()
 export class UserService {
@@ -110,7 +110,7 @@ export class UserService {
 		const accountCopy: AccountDto = { ...account };
 
 		try {
-			userDO.legacyExternalId = userDO.externalId;
+			userDO.previousExternalId = userDO.externalId;
 			userDO.externalId = externalId;
 			userDO.lastLoginSystemChange = new Date();
 			await this.userDORepo.save(userDO);

@@ -128,16 +128,20 @@ export class OauthUc {
 		return oAuthError;
 	}
 
-	async migrateUser(currentUserId: string, query: AuthorizationParams, systemId: string): Promise<UserMigrationDto> {
+	async migrateUser(
+		currentUserId: string,
+		query: AuthorizationParams,
+		targetSystemId: string
+	): Promise<UserMigrationDto> {
 		const authCode: string = this.oauthService.checkAuthorizationCode(query);
 
-		const system: SystemDto = await this.systemService.findOAuthById(systemId);
+		const system: SystemDto = await this.systemService.findOAuthById(targetSystemId);
 		if (!system.id) {
-			throw new NotFoundException(`System with id "${systemId}" does not exist.`);
+			throw new NotFoundException(`System with id "${targetSystemId}" does not exist.`);
 		}
 		const oauthConfig: OauthConfig = this.extractOauthConfigFromSystem(system);
 
-		const migrationRedirect: string = this.userMigrationService.getMigrationRedirectUri(systemId);
+		const migrationRedirect: string = this.userMigrationService.getMigrationRedirectUri(targetSystemId);
 		const queryToken: OauthTokenResponse = await this.oauthService.requestToken(
 			authCode,
 			oauthConfig,
@@ -151,7 +155,11 @@ export class OauthUc {
 			queryToken.id_token,
 			system.id
 		);
-		const migrationDto = this.userMigrationService.migrateUser(currentUserId, data.externalUser.externalId, systemId);
+		const migrationDto = this.userMigrationService.migrateUser(
+			currentUserId,
+			data.externalUser.externalId,
+			targetSystemId
+		);
 		return migrationDto;
 	}
 }

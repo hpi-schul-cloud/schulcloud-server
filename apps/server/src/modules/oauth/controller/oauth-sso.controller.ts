@@ -9,13 +9,14 @@ import {
 	Res,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { CookieOptions, Request, Response } from 'express';
+import { ValidationError } from '@shared/common';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
 
@@ -81,6 +82,7 @@ export class OauthSSOController {
 	@Get('oauth/:systemId/migration')
 	@Authenticate('jwt')
 	@ApiOkResponse({ description: 'The User has been succesfully migrated.' })
+	@ApiResponse({ type: InternalServerErrorException, description: 'The migration of the User was not possible. ' })
 	async migrateUser(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AuthorizationParams,

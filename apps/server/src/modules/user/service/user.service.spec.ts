@@ -387,6 +387,7 @@ describe('UserService', () => {
 			jest.useFakeTimers();
 			jest.setSystemTime(new Date(2020, 1, 1));
 		});
+
 		const setupMigrationData = () => {
 			const targetSystemId = new ObjectId().toHexString();
 
@@ -400,6 +401,7 @@ describe('UserService', () => {
 				schoolId: 'schoolMock',
 				externalId: 'currentUserExternalIdMock',
 			});
+
 			const migratedUserDO: UserDO = new UserDO({
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -409,12 +411,14 @@ describe('UserService', () => {
 				roleIds: ['roleIdMock'],
 				schoolId: 'schoolMock',
 				externalId: 'externalUserTargetId',
-				legacyExternalId: 'currentUserExternalIdMock',
+				previousExternalId: 'currentUserExternalIdMock',
 				lastLoginSystemChange: new Date(),
 			});
+
 			const id = new ObjectId().toHexString();
 			const userId = new ObjectId().toHexString();
 			const systemId = new ObjectId().toHexString();
+
 			const accountDto = accountFactory.buildWithId(
 				{
 					userId,
@@ -443,7 +447,7 @@ describe('UserService', () => {
 		};
 
 		describe('when currentUser, externalUserId, and targetsystem is given', () => {
-			it('should call methods for migration ', async () => {
+			it('should call methods of migration ', async () => {
 				const { migratedUserDO, migratedAccount, targetSystemId } = setupMigrationData();
 
 				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
@@ -453,6 +457,7 @@ describe('UserService', () => {
 				expect(accountService.findByUserIdOrFail).toHaveBeenCalledWith('userId');
 				expect(accountService.save).toHaveBeenCalledWith(migratedAccount);
 			});
+
 			it('should do migration of user', async () => {
 				const { migratedUserDO, notMigratedUser, accountDto, targetSystemId } = setupMigrationData();
 				userDORepo.findById.mockResolvedValue(notMigratedUser);
@@ -462,6 +467,7 @@ describe('UserService', () => {
 
 				expect(userDORepo.save).toHaveBeenCalledWith(migratedUserDO);
 			});
+
 			it('should do migration of account', async () => {
 				const { notMigratedUser, accountDto, migratedAccount, targetSystemId } = setupMigrationData();
 				userDORepo.findById.mockResolvedValue(notMigratedUser);
@@ -497,8 +503,7 @@ describe('UserService', () => {
 			});
 
 			it('should do a rollback of migration', async () => {
-				const { migratedUserDO, notMigratedUser, accountDto, migratedAccount, targetSystemId } = setupMigrationData();
-
+				const { notMigratedUser, accountDto, targetSystemId } = setupMigrationData();
 				const error = new NotFoundException('Test Error');
 				userDORepo.findById.mockResolvedValue(notMigratedUser);
 				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);

@@ -148,20 +148,29 @@ describe('OAuthService', () => {
 	});
 
 	describe('requestToken', () => {
-		const code = '43534543jnj543342jn2';
-		const tokenResponse: OauthTokenResponse = {
-			access_token: 'accessToken',
-			refresh_token: 'refreshToken',
-			id_token: 'idToken',
+		const setupRequest = () => {
+			const code = '43534543jnj543342jn2';
+			const tokenResponse: OauthTokenResponse = {
+				access_token: 'accessToken',
+				refresh_token: 'refreshToken',
+				id_token: 'idToken',
+			};
+
+			return {
+				code,
+				tokenResponse,
+			};
 		};
 
 		beforeEach(() => {
+			const { tokenResponse } = setupRequest();
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
 			httpService.post.mockReturnValue(of(createAxiosResponse<OauthTokenResponse>(tokenResponse)));
 		});
 
 		describe('when authorization code and oauthConfig is given', () => {
 			it('should get token from the external server', async () => {
+				const { tokenResponse, code } = setupRequest();
 				const responseToken: OauthTokenResponse = await service.requestToken(code, testOauthConfig);
 
 				expect(responseToken).toStrictEqual(tokenResponse);
@@ -170,6 +179,7 @@ describe('OAuthService', () => {
 
 		describe('when authorization code, oauthConfig and migrationRedirect is given', () => {
 			it('should get token with specific redirect from the external server', async () => {
+				const { tokenResponse, code } = setupRequest();
 				const systemId = 'systemId';
 				const migrationRedirect = `/api/v3/sso/oauth/${systemId}/migration`;
 				const payload: TokenRequestPayload = new TokenRequestPayload({
@@ -194,6 +204,7 @@ describe('OAuthService', () => {
 		});
 
 		it('should throw error if no token got returned', async () => {
+			const { code } = setupRequest();
 			httpService.post.mockReturnValueOnce(throwError(() => 'error'));
 
 			await expect(service.requestToken(code, testOauthConfig)).rejects.toEqual(
