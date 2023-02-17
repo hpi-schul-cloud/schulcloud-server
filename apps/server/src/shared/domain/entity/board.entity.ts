@@ -14,12 +14,21 @@ export enum BoardType {
 }
 
 @Entity({
-	discriminatorColumn: 'boardElementType',
+	discriminatorColumn: 'boardType',
 	abstract: true,
+	tableName: 'board',
 })
 export class MetaBoard extends BaseEntityWithTimestamps {
 	@Enum()
 	boardType!: BoardType;
+}
+
+@Entity({ tableName: 'board', discriminatorValue: BoardType.ColumnBoard })
+export class ColumnBoard extends MetaBoard {
+	constructor() {
+		super();
+		this.boardType = BoardType.ColumnBoard;
+	}
 }
 
 export type SingleColumnBoardProps = {
