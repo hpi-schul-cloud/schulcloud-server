@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
-import { BoardElementResponse, BoardResponse } from '../controller/dto';
+import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
 import { RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
 
@@ -38,7 +38,7 @@ describe('room board response mapper', () => {
 
 			const result = mapper.mapToResponse(board);
 
-			expect(result instanceof BoardResponse).toEqual(true);
+			expect(result instanceof SingleColumnBoardResponse).toEqual(true);
 		});
 
 		it('should map tasks with status on board to response', () => {
