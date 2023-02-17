@@ -19,7 +19,7 @@ import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import resetAllMocks = jest.resetAllMocks;
-import { UserMigrationDto } from '../controller/dto/userMigrationDto';
+import { UserMigrationDto } from '../../user-migration/service/dto/userMigration.dto';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;

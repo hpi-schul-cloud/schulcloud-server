@@ -12,7 +12,7 @@ import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
-import { UserMigrationDto } from '../controller/dto/userMigrationDto';
+import { UserMigrationDto } from '../../user-migration/service/dto/userMigration.dto';
 
 @Injectable()
 export class OauthUc {

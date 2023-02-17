@@ -11,7 +11,7 @@ import { AccountDto } from '@src/modules/account/services/dto';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
-import { UserMigrationDto } from '../../oauth/controller/dto/userMigrationDto';
+import { UserMigrationDto } from './dto/userMigration.dto';
 
 @Injectable()
 export class UserMigrationService {

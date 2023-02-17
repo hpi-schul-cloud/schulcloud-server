@@ -11,7 +11,7 @@ import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
 import { OauthSSOController } from './oauth-sso.controller';
-import { UserMigrationDto } from './dto/userMigrationDto';
+import { UserMigrationDto } from '../../user-migration/service/dto/userMigration.dto';
 
 describe('OAuthController', () => {
 	let module: TestingModule;
