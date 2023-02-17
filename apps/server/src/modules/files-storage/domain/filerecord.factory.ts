@@ -9,7 +9,9 @@ import {
 } from './filerecord.do';
 // TODO: check bson vs uuid
 
+// TODO: rename file to ...TestFactory
 // TODO: check factory package, or add BaseTestFactory or Interface.
+// TODO: chain like .XXX().YYY().build() is needed
 export class FileRecordTestFactory {
 	public static buildSecurityCheckProps(
 		partialProps: Partial<IFileSecurityCheckParams> = {}

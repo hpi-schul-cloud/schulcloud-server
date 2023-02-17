@@ -8,6 +8,12 @@ export abstract class BaseEntity implements IEntity {
 
 	@SerializedPrimaryKey()
 	id!: string;
+
+	constructor(id?: string) {
+		if (id) {
+			this._id = new ObjectId(id);
+		}
+	}
 }
 
 /**

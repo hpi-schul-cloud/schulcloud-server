@@ -42,7 +42,9 @@ export class FileSecurityCheck {
 }
 
 // connection to the props from DO
+// important to allow id optional
 export interface IFileRecordProperties {
+	id?: EntityId;
 	size: number;
 	name: string;
 	mimeType: string;
@@ -131,7 +133,8 @@ export class FileRecordEntity extends BaseEntity {
 	updatedAt = new Date();
 
 	constructor(props: IFileRecordProperties) {
-		super();
+		// important when we go over constructor to also allow entity creating with ID
+		super(props.id);
 		this.size = props.size;
 		this.name = props.name;
 		this.mimeType = props.mimeType;

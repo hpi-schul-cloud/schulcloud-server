@@ -1,45 +1,19 @@
 import { Reference } from '@mikro-orm/core';
 import { BaseRepo2, Counted, EntityId, IFindOptions, SortOrder } from '@shared/domain';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
+import { EntityManager as MongoEntityManager } from '@mikro-orm/mongodb';
 import { FileRecord, IFileRecordParams } from '../domain';
 import type { IFilesStorageRepo } from '../service';
 import { FileRecordDOMapper } from './fileRecordDO.mapper';
 import { FileRecordScope } from './filerecord-scope';
 import { FileRecordEntity } from './filerecord.entity';
 
-function getArray<T>(input: T | T[]): T[] {
-	const result = Array.isArray(input) ? input : [input];
-
-	return result;
-}
-/*
-class EntityManager<> {
-	constructor(private readonly em: MongoEntityManager) {}
-
-	// TODO: move to utils
-	public getEntitiesReferenceFromDOs(fileRecords: T[]): T[] {
-		const entities = fileRecords.map((item) => this.getEntityReferenceFromDO(item));
-
-		return entities;
-	}
-
-	public getEntityReferenceFromDO(fileRecord: T): T {
-		// TODO: check why this method is only in changlog and not documentated, it include also a bug that it is fixed later
-		// https://gist.github.com/B4nan/3fb771464e4c4499c26c9f4e684692a4#file-create-reference-ts-L8
-		// https://mikro-orm.io/api/core/changelog#563-2022-12-28
-		const fileRecordEntity = Reference.createFromPK(T, fileRecord.id);
-
-		return fileRecordEntity;
-	}
-}
-*/
-
 // TODO: Paginated results?
 // TODO: Isolate MongoEntityManager in additional class
-// TODO: extends BaseRepo2<FileRecord> implements IFilesStorageRep
-export class FileRecordRepo {
-	constructor(private readonly em: EntityManager) {
-		// super();
+@Injectable()
+export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStorageRepo {
+	constructor(private readonly em: MongoEntityManager) {
+		super();
 	}
 
 	public async findOneById(id: EntityId): Promise<FileRecord> {
@@ -86,30 +60,10 @@ export class FileRecordRepo {
 		return fileRecord;
 	}
 
+	/* solution for delete over PK
 	public async delete(fileRecords: FileRecord[]): Promise<void> {
 		const entities = this.getEntitiesReferenceFromDOs(fileRecords);
 		await this.em.removeAndFlush(entities);
-	}
-
-	public async update(fileRecords: FileRecord[]): Promise<void> {
-		// param = DO
-		// map to entity
-		// load entities
-		// override keys?
-		// persistAndFlush
-		// return DO ?? -> no
-		// const entities = this.getEntitiesReferenceFromDOs(fileRecords);
-		/* const [tasks, count] = await this._em.findAndCount(Task, query, {
-			offset: pagination?.skip,
-			limit: pagination?.limit,
-			orderBy: order,
-		}); */
-
-		// TODO implement!
-
-		// new FileRecordEntity(fileRecord.getProps());
-
-		await Promise.resolve();
 	}
 
 	// TODO: move to utils make private
@@ -128,21 +82,33 @@ export class FileRecordRepo {
 
 		return fileRecordEntity;
 	}
+*/
+	public async delete(fileRecords: FileRecord[]): Promise<void> {
+		const entities = FileRecordDOMapper.getEntitiesFromDOs(fileRecords);
+		await this.em.removeAndFlush(entities);
+	}
 
-	public async save(fileRecordParams: IFileRecordParams[]): Promise<FileRecord[]> {
-		// params to entity
-		const params = getArray(fileRecordParams);
-		const entities = params.map((param) => this.entityFactory(param));
+	// include some double mapping
+	public async update(fileRecords: FileRecord[]): Promise<FileRecord[]> {
+		const entities = FileRecordDOMapper.getEntitiesFromDOs(fileRecords);
+		const updatedFileRecords = await this.persistAndFlush(entities);
 
-		await this.em.persistAndFlush(entities);
+		return updatedFileRecords;
+	}
 
-		const fileRecords = FileRecordDOMapper.entitiesToDOs(entities);
+	public async save(props: IFileRecordParams[]): Promise<FileRecord[]> {
+		const entities = FileRecordDOMapper.createNewEntities(props);
+		const fileRecords = await this.persistAndFlush(entities);
 
 		return fileRecords;
 	}
 
-	private entityFactory(props: IFileRecordParams): FileRecordEntity {
-		return new FileRecordEntity(props);
+	// ----------------------------------------------------------------
+	private async persistAndFlush(entities: FileRecordEntity[]): Promise<FileRecord[]> {
+		await this.em.persistAndFlush(entities);
+		const fileRecords = FileRecordDOMapper.entitiesToDOs(entities);
+
+		return fileRecords;
 	}
 
 	private async findAndCount(

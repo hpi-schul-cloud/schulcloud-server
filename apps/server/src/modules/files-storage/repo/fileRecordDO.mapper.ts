@@ -10,6 +10,7 @@ function getArray<T>(input: T | T[]): T[] {
 
 // TODO: change naming Entity to Datarecord, or without entity
 // TODO: BaseClass
+// TODO: include factory methods..
 export class FileRecordDOMapper {
 	static entityToDO(fileRecordEntity: FileRecordEntity): FileRecord {
 		const props: IFileRecordParams & BaseDOProps = {
@@ -36,7 +37,13 @@ export class FileRecordDOMapper {
 		return fileRecordDOs;
 	}
 
-	// TODO: factory
+	static getEntitiesFromDOs(fileRecords: FileRecord[]): FileRecordEntity[] {
+		const props = fileRecords.map((fileRecord) => fileRecord.getProps());
+		const entities = FileRecordDOMapper.createNewEntities(props);
+
+		return entities;
+	}
+
 	static createNewEntities(props: IFileRecordParams[]): FileRecordEntity[] {
 		const propsArray = getArray(props);
 		const entities = propsArray.map((p) => FileRecordDOMapper.createNewEntity(p));

@@ -59,7 +59,7 @@ export interface IFilesStorageRepo {
 
 	save(FileRecord: FileRecordParams[]): Promise<FileRecord[]>;
 
-	update(FileRecords: FileRecord[]): Promise<void>;
+	update(FileRecords: FileRecord[]): Promise<FileRecord[]>;
 }
 
 @Injectable()

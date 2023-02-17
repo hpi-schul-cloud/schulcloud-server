@@ -1,18 +1,17 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager as MongoEntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { FileRecordRepo } from './filerecord.repo';
 import { FileRecordEntity } from './filerecord.entity';
-import { FileRecordParentType, FileRecordTestFactory } from '../domain';
+import { FileRecord, FileRecordParentType } from '../domain';
 import { fileRecordEntityFactory } from './filerecord-entity.factory';
 import { FileRecordDOMapper } from './fileRecordDO.mapper';
-import { FilesStorageService } from '../service';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
 	let repo: FileRecordRepo;
-	let em: EntityManager;
+	let em: MongoEntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -21,7 +20,7 @@ describe('FileRecordRepo', () => {
 		}).compile();
 
 		repo = module.get(FileRecordRepo);
-		em = module.get(EntityManager);
+		em = module.get(MongoEntityManager);
 	});
 
 	afterAll(async () => {
@@ -31,7 +30,7 @@ describe('FileRecordRepo', () => {
 	afterEach(async () => {
 		await cleanupCollections(em);
 	});
-
+	/*
 	describe('getEntityReferenceFromDO', () => {
 		describe('when no DB record exists', () => {
 			it('result should be a entity reference with id', () => {
@@ -75,23 +74,37 @@ describe('FileRecordRepo', () => {
 			});
 		});
 	});
-
+*/
 	// TODO: buildWithID is bad
 	describe('delete', () => {
 		describe('when no DB record exists', () => {
-			it('result throw an error', async () => {
+			it('result is undefined', async () => {
+				const fileRecordEntity = fileRecordEntityFactory.buildWithId();
+				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
+
+				const result = await repo.delete([fileRecord]);
+
+				expect(result).toBe(undefined);
+			});
+		});
+
+		describe('when DB record exists and loaded', () => {
+			it('should delete the data record', async () => {
 				const fileRecordEntity = fileRecordEntityFactory.buildWithId();
 				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
 
 				await em.persistAndFlush(fileRecordEntity);
-				em.clear();
 
-				await expect(() => repo.delete([fileRecord])).rejects.toThrowError();
+				await repo.delete([fileRecord]);
+
+				const result = await em.findOne(FileRecordEntity, { id: fileRecordEntity.id });
+
+				expect(result).toBe(null);
 			});
 		});
 
-		describe('when DB record exists but not loaded', () => {
-			it('should delete the data record', async () => {
+		describe('when DB record exists and not loaded', () => {
+			it('result should be a entity reference with id', async () => {
 				const fileRecordEntity = fileRecordEntityFactory.buildWithId();
 				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
 
@@ -99,21 +112,10 @@ describe('FileRecordRepo', () => {
 				em.clear();
 
 				await repo.delete([fileRecord]);
-			});
-		});
 
-		describe('when DB record exists and not loaded', () => {
-			it('result should be a entity reference with id', async () => {
-				const fileRecordEntity = fileRecordEntityFactory.buildWithId();
+				const result = await em.findOne(FileRecordEntity, { id: fileRecordEntity.id });
 
-				await em.persistAndFlush(fileRecordEntity);
-
-				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
-
-				const result = repo.getEntityReferenceFromDO(fileRecord);
-
-				expect(result.id).toBe(fileRecord.id);
-				expect(result.size).toBe(undefined);
+				expect(result).toBe(null);
 			});
 		});
 	});
@@ -237,7 +239,7 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			// expect(results.map((o) => o.parentId)).toEqual([parentId1, parentId1, parentId1]);
+			expect(results.map((o) => o.getProps().parentId)).toEqual([parentId1, parentId1, parentId1]);
 		});
 
 		it('should only find searched school', async () => {
@@ -255,7 +257,7 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			// expect(results.map((o) => o.schoolId)).toEqual([schoolId1, schoolId1, schoolId1]);
+			expect(results.map((o) => o.getProps().schoolId)).toEqual([schoolId1, schoolId1, schoolId1]);
 		});
 
 		it('should ingnore deletedSince', async () => {
@@ -307,7 +309,7 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			// expect(results.map((o) => o.parentId)).toEqual([parentId1, parentId1, parentId1]);
+			expect(results.map((o) => o.getProps().parentId)).toEqual([parentId1, parentId1, parentId1]);
 		});
 
 		it('should only find searched school', async () => {
@@ -326,7 +328,7 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			// expect(results.map((o) => o.schoolId)).toEqual([schoolId1, schoolId1, schoolId1]);
+			expect(results.map((o) => o.getProps().schoolId)).toEqual([schoolId1, schoolId1, schoolId1]);
 		});
 
 		it('should ingnore if deletedSince is undefined', async () => {
@@ -371,8 +373,8 @@ describe('FileRecordRepo', () => {
 
 			const result = await repo.findBySecurityCheckRequestToken(token);
 
-			expect(result).toBeInstanceOf(FileRecordEntity);
-			// expect(result.securityCheck.requestToken).toEqual(token);
+			expect(result).toBeInstanceOf(FileRecord);
+			expect(result.getProps().securityCheck.requestToken).toEqual(token);
 		});
 
 		it('should throw error by wrong requestToken', async () => {
