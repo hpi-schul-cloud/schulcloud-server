@@ -12,7 +12,6 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { IServerConfig } from '@src/modules/server/server.config';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
-import { lastValueFrom } from 'rxjs';
 import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -116,7 +115,6 @@ export class KeycloakConfigurationService {
 		const scDomain = this.configService.get<string>('SC_DOMAIN');
 		const redirectUri =
 			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
-		const kcRealmBaseUrl = `${this.kcSettings.baseUrl}/realms/${kc.realmName}`;
 		const cr: ClientRepresentation = {
 			clientId,
 			enabled: true,
@@ -134,22 +132,6 @@ export class KeycloakConfigurationService {
 		} else {
 			await kc.clients.update({ id: defaultClientInternalId }, cr);
 		}
-		const generatedClientSecret = await kc.clients.generateNewClientSecret({ id: defaultClientInternalId });
-
-		let keycloakSystem: SystemDto;
-		const systems = await this.systemService.findByType(SystemTypeEnum.KEYCLOAK);
-		if (systems.length === 0) {
-			keycloakSystem = new SystemDto({ type: SystemTypeEnum.KEYCLOAK });
-		} else {
-			[keycloakSystem] = systems;
-		}
-		keycloakSystem = await this.setKeycloakSystemInformation(
-			keycloakSystem,
-			kcRealmBaseUrl,
-			redirectUri,
-			generatedClientSecret.value ?? ''
-		);
-		await this.systemService.save(keycloakSystem);
 	}
 
 	public async configureIdentityProviders(): Promise<number> {
@@ -191,34 +173,6 @@ export class KeycloakConfigurationService {
 		);
 	}
 
-	private async setKeycloakSystemInformation(
-		keycloakSystem: SystemDto,
-		kcRealmBaseUrl: string,
-		redirectUri: string,
-		generatedClientSecret: string
-	) {
-		const wellKnownUrl = `${kcRealmBaseUrl}/.well-known/openid-configuration`;
-		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
-
-		keycloakSystem.type = SystemTypeEnum.KEYCLOAK;
-		keycloakSystem.alias = 'Keycloak';
-		keycloakSystem.oauthConfig = {
-			clientId,
-			clientSecret: this.defaultEncryptionService.encrypt(generatedClientSecret),
-			grantType: 'authorization_code',
-			scope: 'openid profile email',
-			responseType: 'code',
-			provider: 'oauth',
-			redirectUri,
-			tokenEndpoint: response.token_endpoint as string,
-			authEndpoint: response.authorization_endpoint as string,
-			logoutEndpoint: response.end_session_endpoint as string,
-			jwksEndpoint: response.jwks_uri as string,
-			issuer: response.issuer as string,
-		};
-		return keycloakSystem;
-	}
-
 	/**
 	 * decides for each system if it needs to be added, updated or deleted in keycloak
 	 *
@@ -251,11 +205,11 @@ export class KeycloakConfigurationService {
 
 	private async createIdentityProvider(system: SystemDto): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		if (system.oidcConfig && system.alias) {
+		if (system.oidcConfig && system.oidcConfig?.alias) {
 			await kc.identityProviders.create(
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
 			);
-			await this.createIdpDefaultMapper(system.alias);
+			await this.createIdpDefaultMapper(system.oidcConfig.alias);
 		}
 	}
 
