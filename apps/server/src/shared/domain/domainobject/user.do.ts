@@ -39,6 +39,8 @@ export class UserDO extends BaseDO {
 
 	outdatedSince?: Date;
 
+	previousExternalId?: string;
+
 	constructor(domainObject: UserDO) {
 		super(domainObject.id);
 
@@ -60,5 +62,6 @@ export class UserDO extends BaseDO {
 		this.preferences = domainObject.preferences;
 		this.lastLoginSystemChange = domainObject.lastLoginSystemChange;
 		this.outdatedSince = domainObject.outdatedSince;
+		this.previousExternalId = domainObject.previousExternalId;
 	}
 }

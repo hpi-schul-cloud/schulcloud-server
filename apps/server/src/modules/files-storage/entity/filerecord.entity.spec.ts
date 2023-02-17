@@ -4,11 +4,11 @@ import { BadRequestException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ErrorType } from '../error';
 import {
-	FileRecordParentType,
-	ScanStatus,
 	FileRecord,
+	FileRecordParentType,
 	FileSecurityCheck,
 	IFileRecordProperties,
+	ScanStatus,
 } from './filerecord.entity';
 
 describe('FileRecord Entity', () => {
@@ -64,13 +64,13 @@ describe('FileRecord Entity', () => {
 			expect(fileRecord.schoolId).toEqual(schoolId.toHexString());
 		});
 
-		it('should provide the lockedFor user id as entity id', () => {
-			const lockedForUserId = new ObjectId();
+		it('should provide the isCopyFrom as entity id', () => {
+			const isCopyFrom = new ObjectId();
 			const fileRecord = new FileRecord({
 				...props,
-				lockedForUserId,
+				isCopyFrom,
 			});
-			expect(fileRecord.lockedForUserId).toEqual(lockedForUserId.toHexString());
+			expect(fileRecord.isCopyFrom).toEqual(isCopyFrom.toHexString());
 		});
 	});
 
@@ -370,7 +370,7 @@ describe('FileRecord Entity', () => {
 
 	describe('copy is called', () => {
 		const getCopyData = () => {
-			const fileRecord = fileRecordFactory.build();
+			const fileRecord = fileRecordFactory.buildWithId();
 			const userId = new ObjectId().toHexString();
 			const parentId = new ObjectId().toHexString();
 			const schoolId = new ObjectId().toHexString();
@@ -419,6 +419,7 @@ describe('FileRecord Entity', () => {
 				expect(result.mimeType).toEqual(fileRecord.mimeType);
 				expect(result.name).toEqual(fileRecord.name);
 				expect(result.size).toEqual(fileRecord.size);
+				expect(result.isCopyFrom).toEqual(fileRecord.id);
 			});
 
 			it('should override the creator and targetParentInfo data in target file from passed params', () => {
