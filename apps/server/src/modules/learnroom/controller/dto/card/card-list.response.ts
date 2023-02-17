@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CardResponse } from './card.response';
 
 export class CardListResponse {
-	constructor(data: CardResponse[]) {
+	constructor({ data }: CardListResponse) {
 		this.data = data;
 	}
 

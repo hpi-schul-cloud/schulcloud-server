@@ -60,22 +60,22 @@ describe('Rooms Controller (API)', () => {
 			expect(response.status).toEqual(400);
 		});
 
-		it('should not be implemented for single id', async () => {
+		it('should return mock for single id', async () => {
 			const { cardIds } = await setup();
 
 			const response = await request(app.getHttpServer()).get(`/cards?ids=${cardIds[0].toString()}`);
 
-			expect(response.status).toEqual(501);
+			expect(response.status).toEqual(200);
 		});
 
-		it('should not be implemented for multiple ids', async () => {
+		it('should return mock for multiple ids', async () => {
 			const { cardIds } = await setup();
 
 			const response = await request(app.getHttpServer()).get(
 				`/cards?ids=${cardIds[0].toString()}&ids=${cardIds[1].toString()}`
 			);
 
-			expect(response.status).toEqual(501);
+			expect(response.status).toEqual(200);
 		});
 	});
 });

@@ -49,12 +49,12 @@ describe('Boards Controller (API)', () => {
 			return { boardId };
 		};
 
-		it('should not be implemented', async () => {
+		it('should return mock', async () => {
 			const { boardId } = await setup();
 
 			const response = await request(app.getHttpServer()).get(`/boards/${boardId.toString()}`);
 
-			expect(response.status).toEqual(501);
+			expect(response.status).toEqual(200);
 		});
 	});
 
