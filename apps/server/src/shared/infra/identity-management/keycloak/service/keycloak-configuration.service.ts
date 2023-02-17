@@ -215,12 +215,12 @@ export class KeycloakConfigurationService {
 
 	private async updateIdentityProvider(system: SystemDto): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		if (system.oidcConfig && system.alias) {
+		if (system.oidcConfig && system.oidcConfig?.alias) {
 			await kc.identityProviders.update(
-				{ alias: system.alias },
+				{ alias: system.oidcConfig.alias },
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
 			);
-			await this.updateOrCreateIdpDefaultMapper(system.alias);
+			await this.updateOrCreateIdpDefaultMapper(system.oidcConfig.alias);
 		}
 	}
 
