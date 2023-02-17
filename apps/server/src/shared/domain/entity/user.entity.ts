@@ -79,6 +79,9 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 	externalId?: string;
 
 	@Property({ nullable: true })
+	previousExternalId?: string;
+
+	@Property({ nullable: true })
 	@Index()
 	importHash?: string;
 
@@ -109,9 +112,6 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 
 	@Property({ nullable: true })
 	outdatedSince?: Date;
-
-	@Property({ nullable: true })
-	previousExternalId?: string;
 
 	constructor(props: IUserProperties) {
 		super();
