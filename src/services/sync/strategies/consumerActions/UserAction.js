@@ -32,6 +32,14 @@ class UserAction extends BaseConsumerAction {
 
 		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
 
+		if (!foundUser) {
+			const oauthMigratedUser = await UserRepo.findByPreviousExternalIdAndSchool(user.ldapId, school._id);
+			if (oauthMigratedUser) {
+				// skip creating or updating users when user has migrated
+				return;
+			}
+		}
+
 		// create migration user when the ldapId is not existing on a real user
 		if (school.inUserMigration === true && !foundUser) {
 			await this.createImportUser(user, school);
