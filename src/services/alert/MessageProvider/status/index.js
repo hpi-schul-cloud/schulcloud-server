@@ -59,15 +59,13 @@ module.exports = {
 			const noneSpecific = [];
 			const statusEnum = { fixed: 4, danger: 2 };
 
-			const promises = rawData.data.map(async (element) => {
-				if (element.status !== statusEnum.fixed) {
-					// only mind messages for own instance (including none instance specific messages)
-					const isinstance = await getInstance(instance, element.component_id);
-					if (isinstance !== importance.ALL_INSTANCES && isinstance !== importance.INGORE) {
-						instanceSpecific.push(element);
-					} else if (isinstance !== importance.INGORE) {
-						noneSpecific.push(element);
-					}
+			const filteredData = rawData.data.filter((element) => element.status !== statusEnum.fixed);
+			const promises = filteredData.map(async (element) => {
+				const isinstance = await getInstance(instance, element.component_id);
+				if (isinstance !== importance.ALL_INSTANCES && isinstance !== importance.INGORE) {
+					instanceSpecific.push(element);
+				} else if (isinstance !== importance.INGORE) {
+					noneSpecific.push(element);
 				}
 			});
 
