@@ -1,7 +1,14 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Course, Lesson, Task, TaskWithStatusVo, User } from '@shared/domain';
-import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { Course, Lesson, SingleColumnBoard, Task, TaskWithStatusVo, User } from '@shared/domain';
+import {
+	courseFactory,
+	lessonFactory,
+	setupEntities,
+	singleColumnBoardFactory,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { LessonMetaData } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
@@ -47,7 +54,7 @@ describe('RoomBoardDTOMapper', () => {
 		it('should set roomid', () => {
 			const user = userFactory.buildWithId();
 			const room = courseFactory.buildWithId({ teachers: [user] });
-			const board = boardFactory.buildWithId({ course: room });
+			const board = singleColumnBoardFactory.buildWithId({ course: room });
 
 			const result = mapper.createDTO({ room, board, user });
 			expect(result.roomId).toEqual(room.id);
@@ -56,7 +63,7 @@ describe('RoomBoardDTOMapper', () => {
 		it('should set displayColor', () => {
 			const user = userFactory.buildWithId();
 			const room = courseFactory.buildWithId({ teachers: [user] });
-			const board = boardFactory.buildWithId({ course: room });
+			const board = singleColumnBoardFactory.buildWithId({ course: room });
 
 			const result = mapper.createDTO({ room, board, user });
 			expect(result.displayColor).toEqual(room.color);
@@ -65,7 +72,7 @@ describe('RoomBoardDTOMapper', () => {
 		it('should set title', () => {
 			const user = userFactory.buildWithId();
 			const room = courseFactory.buildWithId({ teachers: [user] });
-			const board = boardFactory.buildWithId({ course: room });
+			const board = singleColumnBoardFactory.buildWithId({ course: room });
 
 			const result = mapper.createDTO({ room, board, user });
 			expect(result.title).toEqual(room.name);
@@ -75,7 +82,7 @@ describe('RoomBoardDTOMapper', () => {
 			let teacher: User;
 			let student: User;
 			let substitutionTeacher: User;
-			let board: Board;
+			let board: SingleColumnBoard;
 			let room: Course;
 			let tasks: Task[];
 
@@ -88,7 +95,7 @@ describe('RoomBoardDTOMapper', () => {
 					students: [student],
 					substitutionTeachers: [substitutionTeacher],
 				});
-				board = boardFactory.buildWithId({ course: room });
+				board = singleColumnBoardFactory.buildWithId({ course: room });
 				tasks = taskFactory.buildList(3, { course: room });
 				board.syncTasksFromList(tasks);
 				jest.spyOn(authorisationService, 'hasTaskReadPermission').mockImplementation(() => true);
@@ -147,7 +154,7 @@ describe('RoomBoardDTOMapper', () => {
 			let teacher: User;
 			let student: User;
 			let substitutionTeacher: User;
-			let board: Board;
+			let board: SingleColumnBoard;
 			let room: Course;
 			let tasks: Task[];
 
@@ -160,7 +167,7 @@ describe('RoomBoardDTOMapper', () => {
 					students: [student],
 					substitutionTeachers: [substitutionTeacher],
 				});
-				board = boardFactory.buildWithId({ course: room });
+				board = singleColumnBoardFactory.buildWithId({ course: room });
 				tasks = taskFactory.buildList(3, { course: room });
 				board.syncTasksFromList(tasks);
 				jest.spyOn(authorisationService, 'hasTaskReadPermission').mockImplementation(() => false);
@@ -186,7 +193,7 @@ describe('RoomBoardDTOMapper', () => {
 			let teacher: User;
 			let student: User;
 			let substitutionTeacher: User;
-			let board: Board;
+			let board: SingleColumnBoard;
 			let room: Course;
 			let lessons: Lesson[];
 
@@ -199,7 +206,7 @@ describe('RoomBoardDTOMapper', () => {
 					students: [student],
 					substitutionTeachers: [substitutionTeacher],
 				});
-				board = boardFactory.buildWithId({ course: room });
+				board = singleColumnBoardFactory.buildWithId({ course: room });
 				lessons = lessonFactory.buildList(3, { course: room });
 				board.syncLessonsFromList(lessons);
 				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
@@ -225,7 +232,7 @@ describe('RoomBoardDTOMapper', () => {
 			let teacher: User;
 			let student: User;
 			let substitutionTeacher: User;
-			let board: Board;
+			let board: SingleColumnBoard;
 			let room: Course;
 			let lesson: Lesson;
 			const inOneDay = new Date(Date.now() + 8.64e7);
@@ -239,7 +246,7 @@ describe('RoomBoardDTOMapper', () => {
 					students: [student],
 					substitutionTeachers: [substitutionTeacher],
 				});
-				board = boardFactory.buildWithId({ course: room });
+				board = singleColumnBoardFactory.buildWithId({ course: room });
 				lesson = lessonFactory.build({ course: room });
 				taskFactory.buildList(1, { course: room, lesson });
 				taskFactory.buildList(3, { course: room, lesson, availableDate: inOneDay });
@@ -307,7 +314,7 @@ describe('RoomBoardDTOMapper', () => {
 			let teacher: User;
 			let student: User;
 			let substitutionTeacher: User;
-			let board: Board;
+			let board: SingleColumnBoard;
 			let room: Course;
 			let lessons: Lesson[];
 
@@ -320,7 +327,7 @@ describe('RoomBoardDTOMapper', () => {
 					students: [student],
 					substitutionTeachers: [substitutionTeacher],
 				});
-				board = boardFactory.buildWithId({ course: room });
+				board = singleColumnBoardFactory.buildWithId({ course: room });
 				lessons = lessonFactory.buildList(3, { course: room });
 				board.syncLessonsFromList(lessons);
 				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => false);

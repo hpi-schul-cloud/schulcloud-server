@@ -2,7 +2,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import {
+	courseFactory,
+	lessonFactory,
+	setupEntities,
+	singleColumnBoardFactory,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { RoomsService } from './rooms.service';
 
 describe('rooms service', () => {
@@ -50,7 +57,7 @@ describe('rooms service', () => {
 			const room = courseFactory.buildWithId({ students: [user] });
 			const tasks = taskFactory.buildList(3, { course: room });
 			const lessons = lessonFactory.buildList(3, { course: room });
-			const board = boardFactory.buildWithId({ course: room });
+			const board = singleColumnBoardFactory.buildWithId({ course: room });
 
 			board.syncLessonsFromList(lessons);
 			board.syncTasksFromList(tasks);

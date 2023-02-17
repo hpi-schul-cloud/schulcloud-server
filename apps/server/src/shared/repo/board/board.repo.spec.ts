@@ -1,13 +1,13 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Lesson, Task } from '@shared/domain';
+import { Lesson, SingleColumnBoard, Task } from '@shared/domain';
 import {
+	cleanupCollections,
 	courseFactory,
-	boardFactory,
 	lessonBoardElementFactory,
 	lessonFactory,
+	singleColumnBoardFactory,
 	taskBoardElementFactory,
-	cleanupCollections,
 } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -34,11 +34,11 @@ describe('BoardRepo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		await em.nativeDelete(Board, {});
+		await em.nativeDelete(SingleColumnBoard, {});
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(Board);
+		expect(repo.entityName).toBe(SingleColumnBoard);
 	});
 
 	describe('findByCourseId', () => {
@@ -46,7 +46,7 @@ describe('BoardRepo', () => {
 			const course = courseFactory.build();
 			const taskElement = taskBoardElementFactory.build({ target: { course } });
 			const lessonElement = lessonBoardElementFactory.build({ target: { course } });
-			const board = boardFactory.build({ course, references: [taskElement, lessonElement] });
+			const board = singleColumnBoardFactory.build({ course, references: [taskElement, lessonElement] });
 			await em.persistAndFlush(board);
 
 			em.clear();
@@ -72,19 +72,19 @@ describe('BoardRepo', () => {
 	it('should persist board with content', async () => {
 		const taskElement = taskBoardElementFactory.build();
 		const lessonElement = lessonBoardElementFactory.build();
-		const board = boardFactory.build({ references: [taskElement, lessonElement] });
+		const board = singleColumnBoardFactory.build({ references: [taskElement, lessonElement] });
 		await repo.save(board);
 
 		em.clear();
 
-		const result = await em.findOneOrFail(Board, { id: board.id });
+		const result = await em.findOneOrFail(SingleColumnBoard, { id: board.id });
 		expect(result.id).toEqual(board.id);
 	});
 
 	it('should load board with content', async () => {
 		const taskElement = taskBoardElementFactory.build();
 		const lessonElement = lessonBoardElementFactory.build();
-		const board = boardFactory.build({ references: [taskElement, lessonElement] });
+		const board = singleColumnBoardFactory.build({ references: [taskElement, lessonElement] });
 		await em.persistAndFlush(board);
 
 		em.clear();
@@ -96,7 +96,7 @@ describe('BoardRepo', () => {
 	it('should initialize reference collection', async () => {
 		const taskElement = taskBoardElementFactory.build();
 		const lessonElement = lessonBoardElementFactory.build();
-		const board = boardFactory.build({ references: [taskElement, lessonElement] });
+		const board = singleColumnBoardFactory.build({ references: [taskElement, lessonElement] });
 		await repo.save(board);
 
 		em.clear();
@@ -109,7 +109,7 @@ describe('BoardRepo', () => {
 		const lesson = lessonFactory.build();
 		await em.persistAndFlush(lesson);
 		const lessonElement = lessonBoardElementFactory.build({ target: lesson });
-		const board = boardFactory.build({ references: [lessonElement] });
+		const board = singleColumnBoardFactory.build({ references: [lessonElement] });
 		await repo.save(board);
 
 		em.clear();
@@ -121,7 +121,7 @@ describe('BoardRepo', () => {
 
 	it('should populate task in element', async () => {
 		const taskElement = taskBoardElementFactory.build();
-		const board = boardFactory.build({ references: [taskElement] });
+		const board = singleColumnBoardFactory.build({ references: [taskElement] });
 		await repo.save(board);
 
 		em.clear();

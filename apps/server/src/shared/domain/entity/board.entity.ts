@@ -1,4 +1,4 @@
-import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
+import { Collection, Entity, Enum, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ILearnroomElement } from '../interface';
 import { EntityId } from '../types';
@@ -8,17 +8,32 @@ import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
 import type { Task } from './task.entity';
 
-export type BoardProps = {
+export enum BoardType {
+	'ColumnBoard' = 'columnboard',
+	'SingleColumnBoard' = 'singlecolumnboard',
+}
+
+@Entity({
+	discriminatorColumn: 'boardElementType',
+	abstract: true,
+})
+export class MetaBoard extends BaseEntityWithTimestamps {
+	@Enum()
+	boardType!: BoardType;
+}
+
+export type SingleColumnBoardProps = {
 	references: BoardElement[];
 	course: Course;
 };
 
-@Entity({ tableName: 'board' })
-export class Board extends BaseEntityWithTimestamps {
-	constructor(props: BoardProps) {
+@Entity({ tableName: 'board', discriminatorValue: BoardType.SingleColumnBoard })
+export class SingleColumnBoard extends MetaBoard {
+	constructor(props: SingleColumnBoardProps) {
 		super();
 		this.references.set(props.references);
 		this.course = wrap(props.course).toReference();
+		this.boardType = BoardType.SingleColumnBoard;
 	}
 
 	@OneToOne({ type: 'Course', fieldName: 'courseId', wrappedReference: true, unique: true })

@@ -3,14 +3,14 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Course, ICurrentUser, Permission, Task } from '@shared/domain';
+import { Course, ICurrentUser, Permission, SingleColumnBoard, Task } from '@shared/domain';
 import {
-	boardFactory,
 	cleanupCollections,
 	courseFactory,
 	lessonFactory,
 	mapUserToCurrentUser,
 	roleFactory,
+	singleColumnBoardFactory,
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
@@ -83,7 +83,7 @@ describe('Rooms Controller (API)', () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const teacher = userFactory.build({ roles });
 			const course = courseFactory.build({ teachers: [teacher] });
-			const board = boardFactory.buildWithId({ course });
+			const board = singleColumnBoardFactory.buildWithId({ course });
 			const task = taskFactory.draft().build({ course });
 			board.syncTasksFromList([task]);
 
@@ -104,7 +104,7 @@ describe('Rooms Controller (API)', () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const teacher = userFactory.build({ roles });
 			const course = courseFactory.build({ teachers: [teacher] });
-			const board = boardFactory.buildWithId({ course });
+			const board = singleColumnBoardFactory.buildWithId({ course });
 			const task = taskFactory.draft().build({ course });
 			board.syncTasksFromList([task]);
 
@@ -124,7 +124,7 @@ describe('Rooms Controller (API)', () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const teacher = userFactory.build({ roles });
 			const course = courseFactory.build({ teachers: [teacher] });
-			const board = boardFactory.buildWithId({ course });
+			const board = singleColumnBoardFactory.buildWithId({ course });
 			const task = taskFactory.build({ course });
 			board.syncTasksFromList([task]);
 
@@ -146,7 +146,7 @@ describe('Rooms Controller (API)', () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const teacher = userFactory.build({ roles });
 			const course = courseFactory.build({ teachers: [teacher] });
-			const board = boardFactory.buildWithId({ course });
+			const board = singleColumnBoardFactory.buildWithId({ course });
 			const tasks = taskFactory.buildList(3, { course });
 			const lessons = lessonFactory.buildList(3, { course });
 			board.syncTasksFromList(tasks);
@@ -212,7 +212,7 @@ describe('Rooms Controller (API)', () => {
 			const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_CREATE] });
 			const teacher = userFactory.build({ roles });
 			const course = courseFactory.build({ teachers: [teacher] });
-			const board = boardFactory.build({ course });
+			const board = singleColumnBoardFactory.build({ course });
 
 			await em.persistAndFlush([course, board]);
 			em.clear();
@@ -226,7 +226,7 @@ describe('Rooms Controller (API)', () => {
 			const body = response.body as CopyApiResponse;
 			expect(body.id).toBeDefined();
 
-			expect(() => em.findOneOrFail(Board, { course: body.id as string })).not.toThrow();
+			expect(() => em.findOneOrFail(SingleColumnBoard, { course: body.id as string })).not.toThrow();
 		});
 
 		it('complete example', async () => {
@@ -234,7 +234,7 @@ describe('Rooms Controller (API)', () => {
 			const teacher = userFactory.build({ roles });
 			const course = courseFactory.build({ teachers: [teacher] });
 
-			const board = boardFactory.buildWithId({ course });
+			const board = singleColumnBoardFactory.buildWithId({ course });
 			const tasks = taskFactory.buildList(3, { course });
 			const lessons = lessonFactory.buildList(3, { course });
 			board.syncTasksFromList(tasks);

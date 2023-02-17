@@ -3,11 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import {
-	boardFactory,
 	courseFactory,
 	courseGroupFactory,
 	schoolFactory,
 	setupEntities,
+	singleColumnBoardFactory,
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
@@ -91,9 +91,9 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const allCourses = courseFactory.buildList(3, { teachers: [user] });
 			const course = allCourses[0];
-			const originalBoard = boardFactory.build({ course });
+			const originalBoard = singleColumnBoardFactory.build({ course });
 			const courseCopy = courseFactory.buildWithId({ teachers: [user] });
-			const boardCopy = boardFactory.build({ course: courseCopy });
+			const boardCopy = singleColumnBoardFactory.build({ course: courseCopy });
 
 			authorization.getUserWithPermissions.mockResolvedValue(user);
 			courseRepo.findById.mockResolvedValue(course);
@@ -110,7 +110,7 @@ describe('course copy service', () => {
 				title: 'boardCopy',
 				type: CopyElementType.BOARD,
 				status: CopyStatusEnum.SUCCESS,
-				copyEntity: boardFactory.build(),
+				copyEntity: singleColumnBoardFactory.build(),
 				elements: [],
 			};
 			boardCopyService.copyBoard.mockResolvedValue(boardCopyStatus);
@@ -324,7 +324,7 @@ describe('course copy service', () => {
 			// boardRepo.findByCourseId.mockResolvedValue(originalBoard);
 			authorization.checkPermission.mockReturnValue();
 			// roomsService.updateBoard.mockResolvedValue(originalBoard);
-			const boardCopy = boardFactory.build();
+			const boardCopy = singleColumnBoardFactory.build();
 			const boardCopyStatus = {
 				title: 'board',
 				type: CopyElementType.BOARD,
@@ -406,7 +406,7 @@ describe('course copy service', () => {
 			const students = userFactory.buildList(1);
 
 			const originalCourse = courseFactory.build({ teachers: [user, ...teachers], substitutionTeachers, students });
-			const originalBoard = boardFactory.build({ course: originalCourse });
+			const originalBoard = singleColumnBoardFactory.build({ course: originalCourse });
 
 			courseRepo.findById.mockResolvedValue(originalCourse);
 			courseRepo.findAllByUserId.mockResolvedValue([[originalCourse], 1]);
@@ -452,7 +452,7 @@ describe('course copy service', () => {
 		const setupWithCourseGroups = () => {
 			const user = userFactory.build();
 			const originalCourse = courseFactory.build();
-			const originalBoard = boardFactory.build({ course: originalCourse });
+			const originalBoard = singleColumnBoardFactory.build({ course: originalCourse });
 			courseGroupFactory.build({ course: originalCourse });
 			courseRepo.findById.mockResolvedValue(originalCourse);
 			courseRepo.findAllByUserId.mockResolvedValue([[originalCourse], 1]);
@@ -462,7 +462,7 @@ describe('course copy service', () => {
 			authorization.checkPermission.mockReturnValue();
 			roomsService.updateBoard.mockResolvedValue(originalBoard);
 
-			const boardCopy = boardFactory.build();
+			const boardCopy = singleColumnBoardFactory.build();
 			const boardCopyStatus = {
 				title: 'board',
 				type: CopyElementType.BOARD,

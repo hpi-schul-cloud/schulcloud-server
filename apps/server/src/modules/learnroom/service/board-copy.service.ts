@@ -1,5 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Board, BoardElement, BoardElementType, Course, isLesson, isTask, Lesson, Task, User } from '@shared/domain';
+import {
+	BoardElement,
+	BoardElementType,
+	Course,
+	isLesson,
+	isTask,
+	Lesson,
+	SingleColumnBoard,
+	Task,
+	User,
+} from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
@@ -9,7 +19,7 @@ import { TaskCopyService } from '@src/modules/task';
 import { sortBy } from 'lodash';
 
 type BoardCopyParams = {
-	originalBoard: Board;
+	originalBoard: SingleColumnBoard;
 	destinationCourse: Course;
 	user: User;
 };
@@ -31,7 +41,7 @@ export class BoardCopyService {
 		const elements: CopyStatus[] = await this.copyBoardElements(boardElements, user, destinationCourse);
 		const references: BoardElement[] = this.extractReferences(elements);
 
-		let boardCopy: Board = new Board({ references, course: destinationCourse });
+		let boardCopy: SingleColumnBoard = new SingleColumnBoard({ references, course: destinationCourse });
 		let status: CopyStatus = {
 			title: 'board',
 			type: CopyElementType.BOARD,
@@ -43,7 +53,7 @@ export class BoardCopyService {
 
 		status = this.updateCopiedEmbeddedTasksOfLessons(status);
 		if (status.copyEntity) {
-			boardCopy = status.copyEntity as Board;
+			boardCopy = status.copyEntity as SingleColumnBoard;
 		}
 		await this.boardRepo.save(boardCopy);
 

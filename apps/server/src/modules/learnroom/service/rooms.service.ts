@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Board, EntityId } from '@shared/domain';
+import { EntityId, SingleColumnBoard } from '@shared/domain';
 import { BoardRepo, LessonRepo, TaskRepo } from '@shared/repo';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class RoomsService {
 		private readonly boardRepo: BoardRepo
 	) {}
 
-	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise<Board> {
+	async updateBoard(board: SingleColumnBoard, roomId: EntityId, userId: EntityId): Promise<SingleColumnBoard> {
 		const [courseLessons] = await this.lessonRepo.findAllByCourseIds([roomId]);
 		const [courseTasks] = await this.taskRepo.findBySingleParent(userId, roomId);
 		board.syncTasksFromList(courseTasks);

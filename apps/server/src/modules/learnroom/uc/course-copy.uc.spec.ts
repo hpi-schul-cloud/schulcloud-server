@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, Permission } from '@shared/domain';
-import { boardFactory, courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory, setupEntities, singleColumnBoardFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
@@ -50,9 +50,9 @@ describe('course copy uc', () => {
 			const user = userFactory.buildWithId();
 			const allCourses = courseFactory.buildList(3, { teachers: [user] });
 			const course = allCourses[0];
-			const originalBoard = boardFactory.build({ course });
+			const originalBoard = singleColumnBoardFactory.build({ course });
 			const courseCopy = courseFactory.buildWithId({ teachers: [user] });
-			const boardCopy = boardFactory.build({ course: courseCopy });
+			const boardCopy = singleColumnBoardFactory.build({ course: courseCopy });
 
 			authorization.getUserWithPermissions.mockResolvedValue(user);
 			const status = {

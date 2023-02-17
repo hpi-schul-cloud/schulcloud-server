@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import {
-	Board,
 	BoardElement,
 	BoardElementType,
 	Course,
 	ITaskStatus,
 	Lesson,
+	SingleColumnBoard,
 	Task,
 	TaskWithStatusVo,
 	User,
@@ -16,7 +16,7 @@ import { RoomsAuthorisationService } from './rooms.authorisation.service';
 class DtoCreator {
 	room: Course;
 
-	board: Board;
+	board: SingleColumnBoard;
 
 	user: User;
 
@@ -29,7 +29,7 @@ class DtoCreator {
 		authorisationService,
 	}: {
 		room: Course;
-		board: Board;
+		board: SingleColumnBoard;
 		user: User;
 		authorisationService: RoomsAuthorisationService;
 	}) {
@@ -135,7 +135,7 @@ class DtoCreator {
 export class RoomBoardDTOFactory {
 	constructor(private readonly authorisationService: RoomsAuthorisationService) {}
 
-	createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
+	createDTO({ room, board, user }: { room: Course; board: SingleColumnBoard; user: User }): RoomBoardDTO {
 		const worker = new DtoCreator({ room, board, user, authorisationService: this.authorisationService });
 		const result = worker.manufacture();
 		return result;

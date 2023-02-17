@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board } from '@shared/domain';
+import { SingleColumnBoard } from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import {
-	boardFactory,
 	courseFactory,
 	lessonBoardElementFactory,
 	lessonFactory,
 	setupEntities,
+	singleColumnBoardFactory,
 	taskBoardElementFactory,
 	taskFactory,
 	userFactory,
@@ -74,7 +74,7 @@ describe('board copy service', () => {
 		describe('when the board is empty', () => {
 			const setup = () => {
 				const destinationCourse = courseFactory.buildWithId();
-				const originalBoard = boardFactory.buildWithId({ references: [], course: destinationCourse });
+				const originalBoard = singleColumnBoardFactory.buildWithId({ references: [], course: destinationCourse });
 				const user = userFactory.build();
 
 				return { destinationCourse, originalBoard, user };
@@ -105,7 +105,7 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const board = status.copyEntity as Board;
+				const board = status.copyEntity as SingleColumnBoard;
 				expect(board.id).not.toEqual(originalBoard.id);
 			});
 
@@ -113,7 +113,7 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const board = status.copyEntity as Board;
+				const board = status.copyEntity as SingleColumnBoard;
 				expect(board.course.id).toEqual(destinationCourse.id);
 			});
 		});
@@ -123,7 +123,7 @@ describe('board copy service', () => {
 				const originalTask = taskFactory.build();
 				const taskElement = taskBoardElementFactory.build({ target: originalTask });
 				const destinationCourse = courseFactory.build();
-				const originalBoard = boardFactory.build({ references: [taskElement], course: destinationCourse });
+				const originalBoard = singleColumnBoardFactory.build({ references: [taskElement], course: destinationCourse });
 				const user = userFactory.build();
 				const taskCopy = taskFactory.build({ name: originalTask.name });
 
@@ -155,7 +155,7 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const board = status.copyEntity as Board;
+				const board = status.copyEntity as SingleColumnBoard;
 				expect(board.getElements().length).toEqual(1);
 			});
 
@@ -175,7 +175,10 @@ describe('board copy service', () => {
 				const originalLesson = lessonFactory.buildWithId();
 				const lessonElement = lessonBoardElementFactory.buildWithId({ target: originalLesson });
 				const destinationCourse = courseFactory.buildWithId();
-				const originalBoard = boardFactory.buildWithId({ references: [lessonElement], course: destinationCourse });
+				const originalBoard = singleColumnBoardFactory.buildWithId({
+					references: [lessonElement],
+					course: destinationCourse,
+				});
 				const user = userFactory.buildWithId();
 				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
 
@@ -206,7 +209,7 @@ describe('board copy service', () => {
 			it('should add lessonCopy to board copy', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const board = status.copyEntity as Board;
+				const board = status.copyEntity as SingleColumnBoard;
 
 				expect(board.getElements().length).toEqual(1);
 			});
@@ -231,7 +234,7 @@ describe('board copy service', () => {
 				const lessonCopy = lessonFactory.build({ name: originalLesson.name });
 
 				const destinationCourse = courseFactory.build();
-				const originalBoard = boardFactory.build({
+				const originalBoard = singleColumnBoardFactory.build({
 					references: [lessonElement, taskElement],
 					course: destinationCourse,
 				});
@@ -261,7 +264,10 @@ describe('board copy service', () => {
 				const originalLesson = lessonFactory.buildWithId();
 				const lessonElement = lessonBoardElementFactory.buildWithId({ target: originalLesson });
 				const destinationCourse = courseFactory.buildWithId();
-				const originalBoard = boardFactory.buildWithId({ references: [lessonElement], course: destinationCourse });
+				const originalBoard = singleColumnBoardFactory.buildWithId({
+					references: [lessonElement],
+					course: destinationCourse,
+				});
 				const user = userFactory.buildWithId();
 				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
 
@@ -284,7 +290,7 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const board = status.copyEntity as Board;
+				const board = status.copyEntity as SingleColumnBoard;
 
 				expect(board.references).toHaveLength(0);
 			});

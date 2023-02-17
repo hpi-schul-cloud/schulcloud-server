@@ -1,10 +1,13 @@
-import { Board, BoardProps } from '@shared/domain';
+import { SingleColumnBoard, SingleColumnBoardProps } from '@shared/domain';
 import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';
 
-export const boardFactory = BaseFactory.define<Board, BoardProps>(Board, () => {
-	return {
-		references: [],
-		course: courseFactory.build(),
-	};
-});
+export const singleColumnBoardFactory = BaseFactory.define<SingleColumnBoard, SingleColumnBoardProps>(
+	SingleColumnBoard,
+	() => {
+		return {
+			references: [],
+			course: courseFactory.build(),
+		};
+	}
+);

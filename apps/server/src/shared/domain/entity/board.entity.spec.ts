@@ -1,10 +1,10 @@
 import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException } from '@nestjs/common';
 import {
-	boardFactory,
 	lessonBoardElementFactory,
 	lessonFactory,
 	setupEntities,
+	singleColumnBoardFactory,
 	taskBoardElementFactory,
 	taskFactory,
 } from '@shared/testing';
@@ -24,14 +24,14 @@ describe('Board Entity', () => {
 		it('should return target', () => {
 			const task = taskFactory.buildWithId();
 			const taskElement = taskBoardElementFactory.buildWithId({ target: task });
-			const board = boardFactory.buildWithId({ references: [taskElement] });
+			const board = singleColumnBoardFactory.buildWithId({ references: [taskElement] });
 
 			const result = board.getByTargetId(task.id);
 			expect(result).toEqual(task);
 		});
 
 		it('should throw when target doesnt exist', () => {
-			const board = boardFactory.buildWithId({ references: [] });
+			const board = singleColumnBoardFactory.buildWithId({ references: [] });
 
 			const call = () => board.getByTargetId('this-does-not-exist');
 			expect(call).toThrow();
@@ -41,7 +41,7 @@ describe('Board Entity', () => {
 	describe('reorderElements', () => {
 		it('it should reorder exisiting elements', () => {
 			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
-			const board = boardFactory.buildWithId({});
+			const board = singleColumnBoardFactory.buildWithId({});
 			board.syncTasksFromList(tasks);
 			const newOrder = [tasks[1], tasks[0], tasks[2]].map((el) => el.id);
 
@@ -53,7 +53,7 @@ describe('Board Entity', () => {
 
 		it('should throw when element is missing in new order', () => {
 			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
-			const board = boardFactory.buildWithId({});
+			const board = singleColumnBoardFactory.buildWithId({});
 			board.syncTasksFromList(tasks);
 			const newOrder = [tasks[1], tasks[0]].map((el) => el.id);
 
@@ -65,7 +65,7 @@ describe('Board Entity', () => {
 		it('should throw when additional element in new order', () => {
 			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
 			const additional = taskFactory.buildWithId();
-			const board = boardFactory.buildWithId({});
+			const board = singleColumnBoardFactory.buildWithId({});
 			board.syncTasksFromList(tasks);
 			const newOrder = [tasks[1], tasks[0], additional].map((el) => el.id);
 
@@ -76,7 +76,7 @@ describe('Board Entity', () => {
 
 		it('should throw when element is passed twice', () => {
 			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
-			const board = boardFactory.buildWithId({});
+			const board = singleColumnBoardFactory.buildWithId({});
 			board.syncTasksFromList(tasks);
 			const newOrder = [tasks[1], tasks[0], tasks[2], tasks[1]].map((el) => el.id);
 
@@ -90,7 +90,7 @@ describe('Board Entity', () => {
 		it('should remove tasks from board that are not in list', () => {
 			const task = taskFactory.buildWithId();
 			const taskElement = taskBoardElementFactory.buildWithId({ target: task });
-			const board = boardFactory.buildWithId({ references: [taskElement] });
+			const board = singleColumnBoardFactory.buildWithId({ references: [taskElement] });
 
 			board.syncTasksFromList([]);
 
@@ -99,7 +99,7 @@ describe('Board Entity', () => {
 
 		it('should NOT remove other elements from board that are not in list', () => {
 			const lessonElement = lessonBoardElementFactory.buildWithId();
-			const board = boardFactory.buildWithId({ references: [lessonElement] });
+			const board = singleColumnBoardFactory.buildWithId({ references: [lessonElement] });
 
 			board.syncTasksFromList([]);
 
@@ -108,7 +108,7 @@ describe('Board Entity', () => {
 
 		it('should add tasks to board', () => {
 			const task = taskFactory.buildWithId();
-			const board = boardFactory.buildWithId({ references: [] });
+			const board = singleColumnBoardFactory.buildWithId({ references: [] });
 
 			board.syncTasksFromList([task]);
 
@@ -118,7 +118,7 @@ describe('Board Entity', () => {
 		it('should NOT add tasks to board that is already there', () => {
 			const task = taskFactory.buildWithId();
 			const taskElement = taskBoardElementFactory.buildWithId({ target: task });
-			const board = boardFactory.buildWithId({ references: [taskElement] });
+			const board = singleColumnBoardFactory.buildWithId({ references: [taskElement] });
 
 			board.syncTasksFromList([task]);
 
@@ -129,7 +129,7 @@ describe('Board Entity', () => {
 			const task = taskFactory.buildWithId();
 			const existingTask = taskFactory.buildWithId();
 			const taskElement = taskBoardElementFactory.buildWithId({ target: existingTask });
-			const board = boardFactory.buildWithId({ references: [taskElement] });
+			const board = singleColumnBoardFactory.buildWithId({ references: [taskElement] });
 
 			board.syncTasksFromList([existingTask, task]);
 
@@ -141,7 +141,7 @@ describe('Board Entity', () => {
 		it('should remove lessons from board that are not in list', () => {
 			const lesson = lessonFactory.buildWithId();
 			const lessonElement = lessonBoardElementFactory.buildWithId({ target: lesson });
-			const board = boardFactory.buildWithId({ references: [lessonElement] });
+			const board = singleColumnBoardFactory.buildWithId({ references: [lessonElement] });
 
 			board.syncLessonsFromList([]);
 
@@ -151,7 +151,7 @@ describe('Board Entity', () => {
 		it('should NOT remove other elements from board that are not in list', () => {
 			const task = taskFactory.buildWithId();
 			const taskElement = taskBoardElementFactory.buildWithId({ target: task });
-			const board = boardFactory.buildWithId({ references: [taskElement] });
+			const board = singleColumnBoardFactory.buildWithId({ references: [taskElement] });
 
 			board.syncLessonsFromList([]);
 
@@ -160,7 +160,7 @@ describe('Board Entity', () => {
 
 		it('should add lessons to board', () => {
 			const lesson = lessonFactory.buildWithId();
-			const board = boardFactory.buildWithId({ references: [] });
+			const board = singleColumnBoardFactory.buildWithId({ references: [] });
 
 			board.syncLessonsFromList([lesson]);
 
@@ -170,7 +170,7 @@ describe('Board Entity', () => {
 		it('should NOT add lessons to board that is already there', () => {
 			const lesson = lessonFactory.buildWithId();
 			const lessonElement = lessonBoardElementFactory.buildWithId({ target: lesson });
-			const board = boardFactory.buildWithId({ references: [lessonElement] });
+			const board = singleColumnBoardFactory.buildWithId({ references: [lessonElement] });
 
 			board.syncLessonsFromList([lesson]);
 
@@ -181,7 +181,7 @@ describe('Board Entity', () => {
 			const lesson = lessonFactory.buildWithId();
 			const existinglesson = lessonFactory.buildWithId();
 			const lessonElement = lessonBoardElementFactory.buildWithId({ target: existinglesson });
-			const board = boardFactory.buildWithId({ references: [lessonElement] });
+			const board = singleColumnBoardFactory.buildWithId({ references: [lessonElement] });
 
 			board.syncLessonsFromList([existinglesson, lesson]);
 
