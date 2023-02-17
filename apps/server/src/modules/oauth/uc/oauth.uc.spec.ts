@@ -351,7 +351,7 @@ describe('OAuthUc', () => {
 		});
 	});
 
-	describe('migrateUser', () => {
+	describe('migration', () => {
 		const setupMigration = () => {
 			const code = '43534543jnj543342jn2';
 
@@ -407,42 +407,47 @@ describe('OAuthUc', () => {
 			provisioningService.getData.mockResolvedValue(oauthData);
 
 			return {
+				code,
 				query,
 				system,
 				userMigrationDto,
 				userMigrationFailedDto,
+				oauthTokenResponse,
 			};
 		};
 
-		describe('when authorize user and migration was successful', () => {
-			it('should return redirect to migration succeed page', async () => {
-				const { query, system, userMigrationDto } = setupMigration();
-				systemService.findOAuthById.mockResolvedValue(system);
-				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+		describe('migrateUser', () => {
+			describe('when authorize user and migration was successful', () => {
+				it('should return redirect to migration succeed page', async () => {
+					const { query, system, userMigrationDto } = setupMigration();
+					systemService.findOAuthById.mockResolvedValue(system);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-				const result: UserMigrationDto = await service.migrateUser('currentUserId', query, system.id as string);
+					const result: UserMigrationDto = await service.migrateUser('currentUserId', query, system.id as string);
 
-				expect(result.redirect).toStrictEqual('https://mock.de/migration/succeed');
+					expect(result.redirect).toStrictEqual('https://mock.de/migration/succeed');
+				});
 			});
-		});
 
-		describe('when migration failed', () => {
-			it('should return redirect to dashboard ', async () => {
-				const { query, system, userMigrationFailedDto } = setupMigration();
-				systemService.findOAuthById.mockResolvedValue(system);
-				userMigrationService.migrateUser.mockResolvedValue(userMigrationFailedDto);
-				const result: UserMigrationDto = await service.migrateUser('currentUserId', query, 'systemdId');
+			describe('when migration failed', () => {
+				it('should return redirect to dashboard ', async () => {
+					const { query, system, userMigrationFailedDto } = setupMigration();
+					systemService.findOAuthById.mockResolvedValue(system);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationFailedDto);
 
-				expect(result.redirect).toStrictEqual('https://mock.de/dashboard');
+					const result: UserMigrationDto = await service.migrateUser('currentUserId', query, 'systemdId');
+
+					expect(result.redirect).toStrictEqual('https://mock.de/dashboard');
+				});
 			});
-		});
 
-		describe('when system id is not given', () => {
-			it('should throw NotFoundException ', async () => {
-				const { query } = setupMigration();
-				systemService.findOAuthById.mockResolvedValue(systemFactory.build());
+			describe('when system id is not given', () => {
+				it('should throw NotFoundException ', async () => {
+					const { query } = setupMigration();
+					systemService.findOAuthById.mockResolvedValue(systemFactory.build());
 
-				await expect(service.migrateUser('currentUserId', query, 'systemdId')).rejects.toThrow(NotFoundException);
+					await expect(service.migrateUser('currentUserId', query, 'systemdId')).rejects.toThrow(NotFoundException);
+				});
 			});
 		});
 	});

@@ -133,6 +133,21 @@ export class OauthUc {
 		query: AuthorizationParams,
 		targetSystemId: string
 	): Promise<UserMigrationDto> {
+		const queryToken: OauthTokenResponse = await this.authorizeForMigration(query, targetSystemId);
+		const data: OauthDataDto = await this.provisioningService.getData(
+			queryToken.access_token,
+			queryToken.id_token,
+			targetSystemId
+		);
+		const migrationDto = this.userMigrationService.migrateUser(
+			currentUserId,
+			data.externalUser.externalId,
+			targetSystemId
+		);
+		return migrationDto;
+	}
+
+	private async authorizeForMigration(query: AuthorizationParams, targetSystemId: string): Promise<OauthTokenResponse> {
 		const authCode: string = this.oauthService.checkAuthorizationCode(query);
 
 		const system: SystemDto = await this.systemService.findOAuthById(targetSystemId);
@@ -150,16 +165,6 @@ export class OauthUc {
 
 		await this.oauthService.validateToken(queryToken.id_token, oauthConfig);
 
-		const data: OauthDataDto = await this.provisioningService.getData(
-			queryToken.access_token,
-			queryToken.id_token,
-			system.id
-		);
-		const migrationDto = this.userMigrationService.migrateUser(
-			currentUserId,
-			data.externalUser.externalId,
-			targetSystemId
-		);
-		return migrationDto;
+		return queryToken;
 	}
 }

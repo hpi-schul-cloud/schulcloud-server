@@ -11,7 +11,6 @@ import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { Logger } from '@src/core/logger';
-import { AccountDto } from '@src/modules/account/services/dto';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -42,6 +41,11 @@ export class UserService {
 		const userEntity = await this.userRepo.findById(id, true);
 		const userDto = UserMapper.mapFromEntityToDto(userEntity);
 		return userDto;
+	}
+
+	async findById(id: string): Promise<UserDO> {
+		const userDO = await this.userDORepo.findById(id, true);
+		return userDO;
 	}
 
 	async save(user: UserDO): Promise<UserDO> {
@@ -101,26 +105,5 @@ export class UserService {
 
 		const promise: Promise<void> = this.userRepo.save(saveEntity);
 		return promise;
-	}
-
-	async migrateUser(currentUserId: string, externalId: string, targetSystemId: string): Promise<void> {
-		const userDO: UserDO = await this.userDORepo.findById(currentUserId, true);
-		const account: AccountDto = await this.accountService.findByUserIdOrFail(currentUserId);
-		const userDOCopy: UserDO = { ...userDO };
-		const accountCopy: AccountDto = { ...account };
-
-		try {
-			userDO.previousExternalId = userDO.externalId;
-			userDO.externalId = externalId;
-			userDO.lastLoginSystemChange = new Date();
-			await this.userDORepo.save(userDO);
-			account.systemId = targetSystemId;
-			await this.accountService.save(account);
-		} catch (e) {
-			await this.userDORepo.save(userDOCopy);
-			await this.accountService.save(accountCopy);
-			this.logger.log(`This error occurred during migration of User: ${currentUserId} `);
-			this.logger.log(e);
-		}
 	}
 }
