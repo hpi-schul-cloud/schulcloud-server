@@ -78,10 +78,7 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
-	// This test must be skipped until the migration to filerecords is finished because the automatic update of timestamps is disabled for this job.
-	// Temporary functionality for migration to new fileservice
-	// TODO: Adjust when BC-1496 is done!
-	describe.skip('save', () => {
+	describe('save', () => {
 		it('should update the updatedAt property', async () => {
 			const fileRecord = fileRecordFactory.build();
 			await em.persistAndFlush(fileRecord);

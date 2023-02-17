@@ -17,7 +17,7 @@ import {
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { CopyApiResponse } from '@src/modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { BoardResponse } from '@src/modules/learnroom/controller/dto';
+import { SingleColumnBoardResponse } from '@src/modules/learnroom/controller/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
@@ -74,7 +74,7 @@ describe('Rooms Controller (API)', () => {
 		const response = await request(app.getHttpServer()).get(`/rooms/${course.id}/board`);
 
 		expect(response.status).toEqual(200);
-		const body = response.body as BoardResponse;
+		const body = response.body as SingleColumnBoardResponse;
 		expect(body.roomId).toEqual(course.id);
 	});
 
