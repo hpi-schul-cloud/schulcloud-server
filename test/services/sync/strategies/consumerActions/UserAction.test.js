@@ -133,10 +133,10 @@ describe('User Actions', () => {
 					email: 'New email',
 					ldapDn: 'new ldapdn',
 					roles: [new ObjectId()],
-					legacyExternalId: 'new id',
+					previousExternalId: 'new id',
 				};
 
-				sinon.stub(UserRepo, 'findByLegacyExternalIdAndSchool').returns(testUserInput);
+				sinon.stub(UserRepo, 'findByPreviousExternalIdAndSchool').returns(testUserInput);
 
 				const testAccountInput = { _id: 2 };
 				await userAction.action({ user: testUserInput, account: testAccountInput });
@@ -206,7 +206,7 @@ describe('User Actions', () => {
 					.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem')
 					.resolves({ _id: schoolId, name: 'Test School', inUserMigration: true });
 				sinon.stub(UserRepo, 'findByLdapIdAndSchool').resolves(null);
-				sinon.stub(UserRepo, 'findByLegacyExternalIdAndSchool').resolves(null);
+				sinon.stub(UserRepo, 'findByPreviousExternalIdAndSchool').resolves(null);
 				const createUserAndAccountStub = sinon.stub(userAccountService, 'createUserAndAccount');
 				const updateUserAndAccountStub = sinon.stub(userAccountService, 'updateUserAndAccount');
 				const createOrUpdateImportUserStub = sinon.stub(UserRepo, 'createOrUpdateImportUser');

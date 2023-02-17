@@ -171,18 +171,18 @@ describe('user repo', () => {
 		});
 	});
 
-	describe('findByLegacyExternalIdAndSchool', () => {
+	describe('findByPreviousExternalIdAndSchool', () => {
 		it('should return null if not found', async () => {
 			const testSchool = await testObjects.createTestSchool();
-			const res = await UserRepo.findByLegacyExternalIdAndSchool('Not existing id', testSchool._id);
+			const res = await UserRepo.findByPreviousExternalIdAndSchool('Not existing id', testSchool._id);
 			expect(res).to.be.null;
 		});
 
-		it('should find user by legacyExternalId and school', async () => {
-			const legacyExternalId = new ObjectId();
+		it('should find user by previousExternalId and school', async () => {
+			const previousExternalId = new ObjectId();
 			const school = await testObjects.createTestSchool();
-			const testUser = await testObjects.createTestUser({ legacyExternalId, schoolId: school._id });
-			const res = await UserRepo.findByLegacyExternalIdAndSchool(legacyExternalId, school._id);
+			const testUser = await testObjects.createTestUser({ previousExternalId, schoolId: school._id });
+			const res = await UserRepo.findByPreviousExternalIdAndSchool(previousExternalId, school._id);
 			expect(res._id.toString()).to.be.equal(testUser._id.toString());
 		});
 	});

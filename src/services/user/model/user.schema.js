@@ -95,7 +95,7 @@ const userSchema = new Schema(
 		// optional attributes if user was created during LDAP sync:
 		ldapDn: { type: String }, // LDAP login username
 		ldapId: { type: String }, // UUID to identify during the sync
-		legacyExternalId: { type: String }, // the former ldapId after oauth migrated user
+		previousExternalId: { type: String }, // the former ldapId after oauth migrated user
 
 		...externalSourceSchema,
 

@@ -25,7 +25,7 @@ export interface IUserProperties {
 	deletedAt?: Date;
 	lastLoginSystemChange?: Date;
 	outdatedSince?: Date;
-	legacyExternalId?: string;
+	previousExternalId?: string;
 }
 
 @Entity({ tableName: 'users' })
@@ -79,7 +79,7 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 	externalId?: string;
 
 	@Property({ nullable: true })
-	legacyExternalId?: string;
+	previousExternalId?: string;
 
 	@Property({ nullable: true })
 	@Index()
@@ -128,6 +128,6 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 		this.deletedAt = props.deletedAt;
 		this.lastLoginSystemChange = props.lastLoginSystemChange;
 		this.outdatedSince = props.outdatedSince;
-		this.legacyExternalId = props.legacyExternalId;
+		this.previousExternalId = props.previousExternalId;
 	}
 }

@@ -126,10 +126,10 @@ const findByLdapIdAndSchool = async (ldapId, schoolId) =>
 		.lean()
 		.exec();
 
-const findByLegacyExternalIdAndSchool = async (legacyExternalId, schoolId) =>
+const findByPreviousExternalIdAndSchool = async (previousExternalId, schoolId) =>
 	userModel
 		.findOne({
-			legacyExternalId,
+			previousExternalId,
 			schoolId,
 		})
 		.lean()
@@ -151,7 +151,7 @@ const UserRepo = {
 	deleteUser,
 	findUserBySchoolAndName,
 	findByLdapIdAndSchool,
-	findByLegacyExternalIdAndSchool,
+	findByPreviousExternalIdAndSchool,
 	findByLdapDnsAndSchool,
 	// import user methods (used in LDAP)
 	addClassToImportUsers,
