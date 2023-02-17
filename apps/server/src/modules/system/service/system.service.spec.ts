@@ -4,8 +4,8 @@ import { EntityId, System, SystemTypeEnum } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemRepo } from '@shared/repo';
 import { setupEntities, systemFactory } from '@shared/testing';
-import { OauthConfigDto } from './dto/oauth-config.dto';
-import { SystemDto } from './dto/system.dto';
+import { OauthConfigDto, SystemDto } from './dto';
+
 import { SystemService } from './system.service';
 
 describe('SystemService', () => {
@@ -113,10 +113,10 @@ describe('SystemService', () => {
 			});
 	});
 
-	describe('find', () => {
+	describe('findAll', () => {
 		it('should return all systems by default', async () => {
 			// When
-			const resultSystems = await systemService.find(undefined);
+			const resultSystems = await systemService.findAll(undefined);
 
 			// Then
 			allSystems.forEach((system) => {
@@ -127,7 +127,7 @@ describe('SystemService', () => {
 		});
 		it('should limit the results for the specified type (by repo call)', async () => {
 			// When
-			const resultSystems = await systemService.find(SystemTypeEnum.OIDC);
+			const resultSystems = await systemService.findAll(SystemTypeEnum.OIDC);
 
 			// Then
 			expect(resultSystems).toContainEqual(

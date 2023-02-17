@@ -134,7 +134,7 @@ describe('ShareTokenController', () => {
 
 			await controller.importShareToken(currentUser, { token }, { newName });
 
-			expect(uc.importShareToken).toBeCalledWith(currentUser.userId, token, newName);
+			expect(uc.importShareToken).toBeCalledWith(currentUser.userId, token, newName, undefined);
 		});
 
 		it('should return the status response', async () => {

@@ -62,6 +62,15 @@ export class SchoolExternalToolUc {
 		]);
 	}
 
+	async getSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<SchoolExternalToolDO> {
+		await this.ensureSchoolExternalToolPermission(userId, schoolExternalToolId);
+
+		const schoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolService.getSchoolExternalToolById(
+			schoolExternalToolId
+		);
+		return schoolExternalTool;
+	}
+
 	private async ensureSchoolExternalToolPermission(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
 		return this.authorizationService.checkPermissionByReferences(
 			userId,

@@ -122,6 +122,17 @@
 	},
 	{
 		"_id": {
+			"$oid": "63eb4d77c9cc9d2ba45cdc7c"
+		},
+		"state": "up",
+		"name": "AddPermissionCreateToolEtherpadForStudent",
+		"createdAt": {
+			"$date": "2023-02-14T08:58:00.462Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
 			"$oid": "63e3917767cde06ae4f644f0"
 		},
 		"state": "up",

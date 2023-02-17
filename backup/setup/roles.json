@@ -201,7 +201,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2023-02-13T22:33:26.733Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -257,7 +257,7 @@
 		},
 		"name": "student",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2023-02-14T08:59:35.396Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -271,7 +271,8 @@
 			"TASK_DASHBOARD_VIEW_V3",
 			"JOIN_MEETING",
 			"TEAM_CREATE",
-			"TEAM_EDIT"
+			"TEAM_EDIT",
+			"TOOL_CREATE_ETHERPAD"
 		],
 		"__v": 0
 	},
