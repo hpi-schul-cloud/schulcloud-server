@@ -13,20 +13,21 @@ export class CardsController {
 	getCards(@CurrentUser() currentUser: ICurrentUser, @Query() cardIdParams: CardIdsParams): Promise<CardListResponse> {
 		const result = new CardListResponse({
 			data: [
+				// '[a-f0-9]{24}'
 				new CardResponse({
-					id: '1',
+					id: '0123456789abcdef00000001',
 					elements: [new ContentElementResponse()],
 					cardType: 'content',
 					visibilitySettings: new VisibilitySettingsResponse({}),
 				}),
 				new CardResponse({
-					id: '2',
+					id: '0123456789abcdef00000002',
 					elements: [new ContentElementResponse(), new ContentElementResponse()],
 					cardType: 'content',
 					visibilitySettings: new VisibilitySettingsResponse({}),
 				}),
 				new CardResponse({
-					id: '3',
+					id: '0123456789abcdef00000003',
 					elements: [new ContentElementResponse(), new ContentElementResponse(), new ContentElementResponse()],
 					cardType: 'content',
 					visibilitySettings: new VisibilitySettingsResponse({}),

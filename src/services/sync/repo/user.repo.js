@@ -33,8 +33,7 @@ const findUsersByEmail = async (email) => userModel.find({ email: email.toLowerC
 const findUserBySchoolAndName = async (schoolId, firstName, lastName) =>
 	userModel.find({ schoolId, firstName, lastName }).lean().exec();
 
-const findUsersSchoolById = async (schoolId) =>
-	schoolModel.find({_id: schoolId,}).lean().exec();
+const findUsersSchoolById = async (schoolId) => schoolModel.find({ _id: schoolId }).lean().exec();
 
 const checkCreate = async (inputUser, userSchool) => {
 	if (!inputUser?.email) {
@@ -45,10 +44,14 @@ const checkCreate = async (inputUser, userSchool) => {
 		const foundUser = users[0];
 		const userExistsInSchool = foundUser.schoolId;
 		const schools = await findUsersSchoolById(foundUser.schoolId);
-		throw new BadRequest(
-			"User cannot be created, because a user with the same email already exists.",
-			{ userId: foundUser._id, ldapId: foundUser.ldapId, existsInSchool: userExistsInSchool, userSchool: userSchool.name, userSchoolId: userSchool._id, existsInSchoolName: schools[0]?.name,}
-		);
+		throw new BadRequest('User cannot be created, because a user with the same email already exists.', {
+			userId: foundUser._id,
+			ldapId: foundUser.ldapId,
+			existsInSchool: userExistsInSchool,
+			userSchool: userSchool.name,
+			userSchoolId: userSchool._id,
+			existsInSchoolName: schools[0]?.name,
+		});
 	}
 };
 
@@ -123,6 +126,15 @@ const findByLdapIdAndSchool = async (ldapId, schoolId) =>
 		.lean()
 		.exec();
 
+const findByPreviousExternalIdAndSchool = async (previousExternalId, schoolId) =>
+	userModel
+		.findOne({
+			previousExternalId,
+			schoolId,
+		})
+		.lean()
+		.exec();
+
 const findByLdapDnsAndSchool = async (ldapDns, schoolId) =>
 	userModel
 		.find({
@@ -139,6 +151,7 @@ const UserRepo = {
 	deleteUser,
 	findUserBySchoolAndName,
 	findByLdapIdAndSchool,
+	findByPreviousExternalIdAndSchool,
 	findByLdapDnsAndSchool,
 	// import user methods (used in LDAP)
 	addClassToImportUsers,
