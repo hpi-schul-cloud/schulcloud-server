@@ -31,7 +31,7 @@ export class BoardController {
 					id: '0123456789abcdef00000010',
 					title: 'first column',
 					cards: [
-						new BoardSkeletonCardReponse({ cardId: '0123456789abcdef00000001', height: 36 }),
+						new BoardSkeletonCardReponse({ cardId: '0123456789abcdef00000001', height: 145 }),
 						new BoardSkeletonCardReponse({ cardId: '0123456789abcdef00000002', height: 108 }),
 					],
 				}),
