@@ -27,7 +27,9 @@ export class TaskCardUc {
 		}
 
 		if (params.courseId) {
-			course = await this.courseRepo.findById(params.courseId);
+			const fetchedCourse = await this.courseRepo.findById(params.courseId);
+			this.authorizationService.checkPermission(user, fetchedCourse, PermissionContextBuilder.write([]));
+			course = fetchedCourse;
 		}
 
 		const defaultDueDate = this.getDefaultDueDate(user);

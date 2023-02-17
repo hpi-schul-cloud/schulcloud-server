@@ -17,6 +17,7 @@ import {
 } from '@shared/domain';
 import {
 	cleanupCollections,
+	courseFactory,
 	mapUserToCurrentUser,
 	richTextCardElementFactory,
 	roleFactory,
@@ -184,8 +185,9 @@ describe('Task-Card Controller (api)', () => {
 		});
 		it('POST should return new task-card', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE]);
+			const course = courseFactory.buildWithId({ teachers: [user] });
 
-			await em.persistAndFlush([user]);
+			await em.persistAndFlush([user, course]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
@@ -213,6 +215,7 @@ describe('Task-Card Controller (api)', () => {
 						},
 					},
 				],
+				courseId: course.id,
 			};
 			const response = await request(app.getHttpServer())
 				.post(`/cards/task/`)
@@ -227,6 +230,8 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.task.name).toEqual('title test');
 			expect(responseTaskCard.visibleAtDate).toBeDefined();
 			expect(new Date(responseTaskCard.dueDate)).toEqual(expectedDueDate);
+			expect(responseTaskCard.courseId).toEqual(course.id);
+			expect(responseTaskCard.courseName).toEqual(course.name);
 		});
 		it('DELETE should remove task-card, its card-elements and associated task', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);

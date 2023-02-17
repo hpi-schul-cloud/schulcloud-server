@@ -232,6 +232,13 @@ describe('TaskCardUc', () => {
 			await uc.create(user.id, taskCardCreateParams);
 			expect(courseRepo.findById).toBeCalledWith(expectedCourseParams);
 		});
+		it('should check for course permission to create the task related to the task card in a course', async () => {
+			await uc.create(user.id, taskCardCreateParams);
+			expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
+				action: Actions.write,
+				requiredPermissions: [],
+			});
+		});
 		it('should call task create and with task name same like task-card title and courseId if given', async () => {
 			const taskParams = { name: taskCardCreateParams.title, courseId: taskCardCreateParams.courseId };
 			await uc.create(user.id, taskCardCreateParams);

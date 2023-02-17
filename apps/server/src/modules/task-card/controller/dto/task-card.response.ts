@@ -27,10 +27,10 @@ export class TaskCardResponse {
 
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
-	courseName?: string = '' as string;
+	courseName?: string;
 
 	@ApiPropertyOptional()
-	courseId?: string = '' as string;
+	courseId?: string;
 
 	@ApiProperty({
 		description: 'Are the card elements draggable?',
