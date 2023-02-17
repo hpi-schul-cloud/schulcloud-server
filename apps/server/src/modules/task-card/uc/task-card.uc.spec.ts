@@ -216,6 +216,7 @@ describe('TaskCardUc', () => {
 			courseRepo.findById.mockRestore();
 			taskCardRepo.findById.mockRestore();
 			authorizationService.hasAllPermissions.mockRestore();
+			taskService.update.mockRestore();
 		});
 		it('should check for permission to create (i.e. edit) the TaskCard', async () => {
 			await uc.create(user.id, taskCardCreateParams);
@@ -269,6 +270,11 @@ describe('TaskCardUc', () => {
 					creator: user,
 				})
 			);
+		});
+		it('should call task update to add id of task-card to task', async () => {
+			await uc.create(user.id, taskCardCreateParams);
+
+			expect(taskService.update).toBeCalled();
 		});
 		it('should return the task card and task', async () => {
 			const result = await uc.create(user.id, taskCardCreateParams);

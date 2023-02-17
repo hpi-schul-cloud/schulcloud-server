@@ -73,6 +73,8 @@ export class TaskCardUc {
 
 		await this.taskCardRepo.save(card);
 
+		await this.addTaskCardId(userId, card);
+
 		return { card, taskWithStatusVo };
 	}
 
@@ -138,7 +140,7 @@ export class TaskCardUc {
 			throw new UnauthorizedException();
 		}
 
-		const taskWithStatusVo = await this.updateTask(userId, card.task.id, params);
+		const taskWithStatusVo = await this.updateTaskName(userId, card.task.id, params);
 
 		const cardElements: CardElement[] = [];
 		const title = new TitleCardElement(params.title);
@@ -167,7 +169,7 @@ export class TaskCardUc {
 		return { card, taskWithStatusVo };
 	}
 
-	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
+	private async updateTaskName(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
 		const taskParams = {
 			name: params.title,
 		};
@@ -181,5 +183,15 @@ export class TaskCardUc {
 		taskCard.cardElements.set(newCardElements);
 
 		return taskCard;
+	}
+
+	private async addTaskCardId(userId: EntityId, taskCard: TaskCard) {
+		const taskParams = {
+			name: taskCard.task.name,
+			taskCard: taskCard.id,
+		};
+		const taskWithStatusVo = await this.taskService.update(userId, taskCard.task.id, taskParams);
+
+		return taskWithStatusVo;
 	}
 }
