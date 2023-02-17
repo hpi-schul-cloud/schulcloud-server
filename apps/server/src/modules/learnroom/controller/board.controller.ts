@@ -28,21 +28,21 @@ export class BoardController {
 			title: 'a mocked testboard, please do not use',
 			columns: [
 				new BoardColumnResponse({
-					id: '10',
+					id: '0123456789abcdef00000010',
 					title: 'first column',
 					cards: [
-						new BoardSkeletonCardReponse({ cardId: '1', height: 36 }),
-						new BoardSkeletonCardReponse({ cardId: '2', height: 42 }),
+						new BoardSkeletonCardReponse({ cardId: '0123456789abcdef00000001', height: 36 }),
+						new BoardSkeletonCardReponse({ cardId: '0123456789abcdef00000002', height: 108 }),
 					],
 				}),
 				new BoardColumnResponse({
-					id: '20',
+					id: '0123456789abcdef00000020',
 					title:
 						'second column, has a relatively long title that may or may not be a bit challenging to render... maybe do it partially?',
-					cards: [new BoardSkeletonCardReponse({ cardId: '3', height: 108 })],
+					cards: [new BoardSkeletonCardReponse({ cardId: '0123456789abcdef00000003', height: 846 })],
 				}),
 				new BoardColumnResponse({
-					id: '30',
+					id: '0123456789abcdef00000030',
 					title: 'third column is empty for now',
 					cards: [],
 				}),
