@@ -41,16 +41,6 @@ describe('BoardRepo', () => {
 		expect(repo.entityName).toBe(SingleColumnBoard);
 	});
 
-	/* describe('testing columnboard', () => {
-		it('should persist', async () => {
-			const columnboard = new ColumnBoard();
-			await em.persistAndFlush(columnboard);
-
-			const loaded = await em.findOne(SingleColumnBoard, { id: columnboard.id });
-			expect(loaded).toBeDefined();
-		});
-	}); */
-
 	describe('findByCourseId', () => {
 		it('should return existing board', async () => {
 			const course = courseFactory.build();

@@ -1,6 +1,6 @@
 import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { Account } from './account.entity';
-import { MetaBoard, SingleColumnBoard } from './board.entity';
+import { ColumnBoard, MetaBoard, SingleColumnBoard } from './board.entity';
 import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
 import { CardElement, RichTextCardElement, TitleCardElement } from './cardElement.entity';
 import { Course } from './course.entity';
@@ -30,7 +30,7 @@ export const ALL_ENTITIES = [
 	Account,
 	MetaBoard,
 	SingleColumnBoard,
-	/* ColumnBoard, */
+	ColumnBoard,
 	BoardElement,
 	Course,
 	CourseExternalTool,

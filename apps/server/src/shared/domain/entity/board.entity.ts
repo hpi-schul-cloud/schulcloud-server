@@ -23,7 +23,7 @@ export class MetaBoard extends BaseEntityWithTimestamps {
 	boardType!: BoardType;
 }
 
-@Entity({ tableName: 'board', discriminatorValue: BoardType.ColumnBoard })
+@Entity({ discriminatorValue: BoardType.ColumnBoard })
 export class ColumnBoard extends MetaBoard {
 	constructor() {
 		super();
@@ -36,7 +36,7 @@ export type SingleColumnBoardProps = {
 	course: Course;
 };
 
-@Entity({ tableName: 'board', discriminatorValue: BoardType.SingleColumnBoard })
+@Entity({ discriminatorValue: BoardType.SingleColumnBoard })
 export class SingleColumnBoard extends MetaBoard {
 	constructor(props: SingleColumnBoardProps) {
 		super();

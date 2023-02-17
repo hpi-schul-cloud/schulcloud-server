@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CardIdsParams, CardListResponse, CardResponse, ContentElementResponse } from './dto';
@@ -10,7 +10,6 @@ import { VisibilitySettingsResponse } from './dto/card/visibility-settings.respo
 @Controller('cards')
 export class CardsController {
 	@Get()
-	@ApiQuery({ name: 'cardIdParams', isArray: true, type: 'string' })
 	getCards(@CurrentUser() currentUser: ICurrentUser, @Query() cardIdParams: CardIdsParams): Promise<CardListResponse> {
 		const result = new CardListResponse({
 			data: [
