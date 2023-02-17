@@ -118,7 +118,7 @@ describe('UserMigrationService', () => {
 				});
 
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
-				systemService.findOAuth.mockResolvedValue([iservSystem, sanisSystem]);
+				systemService.findOauth.mockResolvedValue([iservSystem, sanisSystem]);
 
 				const result: string = await service.getMigrationRedirect(officialSchoolNumber, 'iservId');
 
@@ -131,7 +131,7 @@ describe('UserMigrationService', () => {
 		describe('when the migration systems have invalid data', () => {
 			it('should throw InternalServerErrorException', async () => {
 				const { officialSchoolNumber } = setup();
-				systemService.findOAuth.mockResolvedValue([]);
+				systemService.findOauth.mockResolvedValue([]);
 
 				const promise: Promise<string> = service.getMigrationRedirect(officialSchoolNumber, 'unknownSystemId');
 

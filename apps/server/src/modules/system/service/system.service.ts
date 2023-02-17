@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { EntityId, System, SystemTypeEnum } from '@shared/domain';
-import { KeycloakSystemService } from '@shared/infra/identity-management/keycloak/service/keycloak-system.service';
+import { IdentityManagementOauthService } from '@shared/infra/identity-management/identity-management-oauth.service';
 import { SystemRepo } from '@shared/repo';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 
 @Injectable()
 export class SystemService {
-	constructor(private readonly systemRepo: SystemRepo, private readonly keycloakService: KeycloakSystemService) {}
+	constructor(
+		private readonly systemRepo: SystemRepo,
+		private readonly idmOauthService: IdentityManagementOauthService
+	) {}
 
 	async findById(id: EntityId): Promise<SystemDto> {
 		let system = await this.systemRepo.findById(id);
@@ -62,10 +65,10 @@ export class SystemService {
 	}
 
 	private async generateBrokerSystems(systems: System[]): Promise<[] | System[]> {
-		if (!(await this.keycloakService.isAvailable())) {
+		if (!(await this.idmOauthService.isOauthConfigAvailable())) {
 			return systems.filter((system) => !(system.oidcConfig && !system.oauthConfig));
 		}
-		const brokerConfig = await this.keycloakService.getConfig();
+		const brokerConfig = await this.idmOauthService.getOauthConfig();
 		return systems.map((system) => {
 			if (system.oidcConfig && !system.oauthConfig) {
 				system.oauthConfig = brokerConfig;

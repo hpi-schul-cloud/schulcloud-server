@@ -1,19 +1,18 @@
-import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { EncryptionModule } from '@shared/infra/encryption';
 import { HttpModule } from '@nestjs/axios';
+import { Module } from '@nestjs/common';
+import { EncryptionModule } from '@shared/infra/encryption';
+import { LoggerModule } from '@src/core/logger';
 import { SystemModule } from '../../../../modules/system/system.module';
-import { KeycloakSettings } from './interface/keycloak-settings.interface';
-import { KeycloakManagementUc } from './uc/Keycloak-management.uc';
 import { KeycloakManagementInputFiles } from './interface';
+import { KeycloakSettings } from './interface/keycloak-settings.interface';
 import KeycloakConfiguration from './keycloak-config';
+import { OidcIdentityProviderMapper } from './mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './service/keycloak-administration.service';
 import { KeycloakConfigurationService } from './service/keycloak-configuration.service';
-import { KeycloakSeedService } from './service/keycloak-seed.service';
-import { OidcIdentityProviderMapper } from './mapper/identity-provider.mapper';
 import { KeycloakIdentityManagementOauthService } from './service/keycloak-identity-management-oauth.service';
-import { KeycloakSystemService } from './service/keycloak-system.service';
+import { KeycloakSeedService } from './service/keycloak-seed.service';
+import { KeycloakManagementUc } from './uc/Keycloak-management.uc';
 
 @Module({
 	imports: [LoggerModule, EncryptionModule, SystemModule, HttpModule],
@@ -33,14 +32,8 @@ import { KeycloakSystemService } from './service/keycloak-system.service';
 		OidcIdentityProviderMapper,
 		KeycloakConfigurationService,
 		KeycloakSeedService,
-		KeycloakSystemService,
 		KeycloakIdentityManagementOauthService,
 	],
-	exports: [
-		KeycloakAdministrationService,
-		KeycloakManagementUc,
-		KeycloakSystemService,
-		KeycloakIdentityManagementOauthService,
-	],
+	exports: [KeycloakAdministrationService, KeycloakManagementUc, KeycloakIdentityManagementOauthService],
 })
 export class KeycloakModule {}
