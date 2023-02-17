@@ -171,6 +171,22 @@ describe('user repo', () => {
 		});
 	});
 
+	describe('findByPreviousExternalIdAndSchool', () => {
+		it('should return null if not found', async () => {
+			const testSchool = await testObjects.createTestSchool();
+			const res = await UserRepo.findByPreviousExternalIdAndSchool('Not existing id', testSchool._id);
+			expect(res).to.be.null;
+		});
+
+		it('should find user by previousExternalId and school', async () => {
+			const previousExternalId = new ObjectId();
+			const school = await testObjects.createTestSchool();
+			const testUser = await testObjects.createTestUser({ previousExternalId, schoolId: school._id });
+			const res = await UserRepo.findByPreviousExternalIdAndSchool(previousExternalId, school._id);
+			expect(res._id.toString()).to.be.equal(testUser._id.toString());
+		});
+	});
+
 	describe('findByLdapDnsAndSchool', () => {
 		it('should return empty list if not found', async () => {
 			const testSchool = await testObjects.createTestSchool();
