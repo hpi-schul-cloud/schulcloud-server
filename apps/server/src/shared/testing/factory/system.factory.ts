@@ -7,18 +7,18 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 	withOauthConfig(): this {
 		const params: DeepPartial<ISystemProperties> = {
 			oauthConfig: new OauthConfig({
-				clientId: '12345',
-				clientSecret: 'mocksecret',
-				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-				grantType: 'authorization_code',
-				redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
-				scope: 'openid uuid',
+				clientId: 'mock-client-id',
+				clientSecret: 'mock-client-secret',
+				tokenEndpoint: 'http://mock.tld/token',
+				grantType: 'mock-grant-type',
+				redirectUri: 'http://mock-app.tld/redirect',
+				scope: 'openid uuid email',
 				responseType: 'code',
-				authEndpoint: 'mock_authEndpoint',
-				provider: 'mock_type',
-				logoutEndpoint: 'mock_logoutEndpoint',
-				issuer: 'mock_issuer',
-				jwksEndpoint: 'mock_jwksEndpoint',
+				authEndpoint: 'http://mock.tld/auth',
+				provider: 'mock-provider',
+				logoutEndpoint: 'http://mock.tld/logout',
+				issuer: 'mock-issuer',
+				jwksEndpoint: 'http://mock.tld/jwks',
 			}),
 		};
 		return this.params(params);
@@ -39,6 +39,7 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 			oidcConfig: new OidcConfig({
 				clientId: 'mock-client-id',
 				clientSecret: 'mock-client-secret',
+				alias: 'mock-alias',
 				defaultScopes: 'openid email userinfo',
 				authorizationUrl: 'http://mock.tld/auth',
 				tokenUrl: 'http://mock.tld/token',

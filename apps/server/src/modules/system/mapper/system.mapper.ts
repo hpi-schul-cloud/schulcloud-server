@@ -1,4 +1,4 @@
-import {OauthConfig, OidcConfig, System} from '@shared/domain';
+import { OauthConfig, OidcConfig, System } from '@shared/domain';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { OidcConfigDto } from '@src/modules/system/service/dto/oidc-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -19,24 +19,21 @@ export class SystemMapper {
 	}
 
 	static mapFromOidcConfigEntityToDto(oidcConfig: OidcConfig | undefined): OidcConfigDto | undefined {
-		if (oidcConfig != null && oidcConfig.authorizationUrl && oidcConfig.clientId && oidcConfig.clientSecret && oidcConfig.defaultScopes) {
-			return new OidcConfigDto({
-				authorizationUrl: oidcConfig.authorizationUrl as string,
-				clientId: oidcConfig.clientId as string,
-				clientSecret: oidcConfig.clientSecret as string,
-				defaultScopes: oidcConfig.defaultScopes as string,
-				logoutUrl: (oidcConfig.logoutUrl as string) ?? '',
-				tokenUrl: (oidcConfig.tokenUrl as string) ?? '',
-				userinfoUrl: (oidcConfig.userinfoUrl as string) ?? '',
-			});
-		}
-		return undefined;
+		if (!oidcConfig) return undefined;
+		return new OidcConfigDto({
+			clientId: oidcConfig.clientId,
+			clientSecret: oidcConfig.clientSecret,
+			alias: oidcConfig.alias,
+			authorizationUrl: oidcConfig.authorizationUrl,
+			tokenUrl: oidcConfig.tokenUrl,
+			userinfoUrl: oidcConfig.userinfoUrl,
+			logoutUrl: oidcConfig.logoutUrl,
+			defaultScopes: oidcConfig.defaultScopes,
+		});
 	}
 
 	static mapFromOauthConfigEntityToDto(oauthConfig: OauthConfig | undefined): OauthConfigDto | undefined {
-		if (oauthConfig == null) {
-			return undefined;
-		}
+		if (!oauthConfig) return undefined;
 		return new OauthConfigDto({
 			clientId: oauthConfig.clientId,
 			clientSecret: oauthConfig.clientSecret,
@@ -53,7 +50,7 @@ export class SystemMapper {
 		});
 	}
 
-	static mapFromEntitiesToDtos(enities: System[]): SystemDto[] {
-		return enities.map((entity) => this.mapFromEntityToDto(entity));
+	static mapFromEntitiesToDtos(entities: System[]): SystemDto[] {
+		return entities.map((entity) => this.mapFromEntityToDto(entity));
 	}
 }

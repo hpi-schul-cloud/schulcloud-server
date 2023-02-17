@@ -139,6 +139,7 @@ export class OidcConfig {
 	constructor(oidcConfig: OidcConfig) {
 		this.clientId = oidcConfig.clientId;
 		this.clientSecret = oidcConfig.clientSecret;
+		this.alias = oidcConfig.alias;
 		this.authorizationUrl = oidcConfig.authorizationUrl;
 		this.tokenUrl = oidcConfig.tokenUrl;
 		this.logoutUrl = oidcConfig.logoutUrl;
@@ -151,6 +152,9 @@ export class OidcConfig {
 
 	@Property()
 	clientSecret: string;
+
+	@Property()
+	alias: string;
 
 	@Property()
 	authorizationUrl: string;
@@ -204,9 +208,6 @@ export class System extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	oidcConfig?: OidcConfig;
-
-	@Property({ nullable: true })
-	config?: Record<string, unknown>;
 
 	@Embedded({ entity: () => LdapConfig, object: true, nullable: true })
 	ldapConfig?: LdapConfig;

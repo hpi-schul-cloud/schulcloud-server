@@ -42,7 +42,7 @@ export class SystemService {
 			system.alias = systemDto.alias;
 			system.displayName = systemDto.displayName;
 			system.oauthConfig = systemDto.oauthConfig;
-			system.config = { ...systemDto.oidcConfig };
+			system.oidcConfig = systemDto.oidcConfig;
 			system.provisioningStrategy = systemDto.provisioningStrategy;
 			system.provisioningUrl = systemDto.provisioningUrl;
 			system.url = systemDto.url;
