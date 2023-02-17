@@ -12,6 +12,30 @@ const getDataEntry = ({ type, id, name, authorities = ['can-read'], attributes =
 	},
 });
 
+const getPermissionsForScope = (
+	isTeacher,
+	isSubstitutionTeacher,
+	hasAdminEditAccess,
+	hasRemoveReadPermissionParam,
+	hasRemoveWritePermissionParam
+) => {
+	const authorities = [];
+
+	if (!hasRemoveReadPermissionParam) {
+		authorities.push('can-read');
+	}
+
+	if ((isTeacher || isSubstitutionTeacher) && !hasRemoveWritePermissionParam) {
+		authorities.push('can-write', 'can-send-notifications');
+	}
+
+	if (hasAdminEditAccess && !hasRemoveWritePermissionParam) {
+		authorities.push('can-write');
+	}
+
+	return authorities;
+};
+
 // get scopes from user object Id
 const equalId = (baseId) => (id) => equal(baseId, id);
 
@@ -38,7 +62,9 @@ class ScopeResolver {
 		const { schoolId } = user;
 
 		const hasAdminViewPermission = user.permissions.some((p) => p === 'ADMIN_VIEW');
-		const isViewCalendarAccess = (params.query || {}).view;
+		const hasRemoveReadPermissionParam = (params.query || {}).read === 'false';
+		const hasRemoveWritePermissionParam = (params.query || {}).write === 'false';
+		const hasHideAdminEventsParam = (params.query || {}).admin === 'false';
 
 		response.data.push(
 			getDataEntry({
@@ -56,7 +82,7 @@ class ScopeResolver {
 					$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
 				},
 			}),
-			hasAdminViewPermission && !isViewCalendarAccess
+			hasAdminViewPermission && !hasHideAdminEventsParam
 				? courseService.find({
 						query: {
 							$limit: false,
@@ -106,7 +132,13 @@ class ScopeResolver {
 					id: _team._id,
 					name: _team.name,
 					// todo: only leaders have notification and write permissions
-					authorities: ['can-read', 'can-write', 'can-send-notifications'],
+					authorities: getPermissionsForScope(
+						true,
+						true,
+						false,
+						hasRemoveReadPermissionParam,
+						hasRemoveWritePermissionParam
+					),
 					attributes: {
 						scopeType: 'team',
 					},
@@ -118,18 +150,17 @@ class ScopeResolver {
 		const isUserId = equalId(userId);
 
 		scopes.forEach((scope) => {
-			const authorities = ['can-read'];
-
 			const isTeacher = (scope.teacherIds || []).some(isUserId);
 			const isSubstitutionTeacher = (scope.substitutionIds || []).some(isUserId);
 			const hasAdminEditAccess = scope.attributes.scopeType === 'courseAdmin';
 
-			if (isTeacher || isSubstitutionTeacher) {
-				authorities.push('can-write', 'can-send-notifications');
-			} else if (hasAdminEditAccess) {
-				// Admin can edit all courses
-				authorities.push('can-write');
-			}
+			const authorities = getPermissionsForScope(
+				isTeacher,
+				isSubstitutionTeacher,
+				hasAdminEditAccess,
+				hasRemoveReadPermissionParam,
+				hasRemoveWritePermissionParam
+			);
 
 			response.data.push(
 				getDataEntry({
