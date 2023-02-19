@@ -17,8 +17,9 @@ export class Oauth2ToolConfigParams extends ExternalToolConfigCreateParams {
 	clientId!: string;
 
 	@IsString()
-	@ApiProperty()
-	clientSecret!: string;
+	@IsOptional()
+	@ApiPropertyOptional()
+	clientSecret?: string;
 
 	@IsBoolean()
 	@ApiProperty()
