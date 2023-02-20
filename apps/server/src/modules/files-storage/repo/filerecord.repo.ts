@@ -106,7 +106,7 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 		const { pagination } = options || {};
 		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
 
-		const [fileRecordEntities, count] = await this.dbm.findAndCount(FileRecordEntity, scope.query, {
+		const [fileRecordEntities, count] = await this.dbm.findAndCount<FileRecordEntity>(FileRecordEntity, scope.query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
 			orderBy: order,

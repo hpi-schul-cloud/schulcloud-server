@@ -20,6 +20,7 @@ export class FileRecordTestFactory {
 			status: ScanStatus.PENDING,
 			reason: 'not yet scanned',
 			requestToken: uuid(),
+			updatedAt: new Date(),
 		};
 
 		const props = Object.assign(defaultProps, partialProps);

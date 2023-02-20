@@ -1,7 +1,8 @@
-import { EntityManager as MongoEntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { DataBaseManager } from '@shared/infra/database/database-manager';
 import { FileRecordRepo } from './filerecord.repo';
 import { FileRecordEntity } from './filerecord.entity';
 import { FileRecord, FileRecordParentType } from '../domain';
@@ -11,16 +12,16 @@ import { FileRecordDOMapper } from './fileRecordDO.mapper';
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
 	let repo: FileRecordRepo;
-	let em: MongoEntityManager;
+	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [FileRecordEntity] })],
-			providers: [FileRecordRepo],
+			providers: [FileRecordRepo, DataBaseManager],
 		}).compile();
 
 		repo = module.get(FileRecordRepo);
-		em = module.get(MongoEntityManager);
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {
