@@ -16,6 +16,8 @@ import { CopyHelperModule } from '@src/modules/copy-helper';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { LessonModule } from '@src/modules/lesson';
 import { TaskModule } from '@src/modules/task';
+import { BoardController } from './controller/board.controller';
+import { CardsController } from './controller/cards.controller';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
@@ -36,7 +38,7 @@ import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
 	imports: [AuthorizationModule, FilesStorageClientModule, LessonModule, TaskModule, TaskModule, CopyHelperModule],
-	controllers: [DashboardController, CourseController, RoomsController],
+	controllers: [DashboardController, CourseController, RoomsController, BoardController, CardsController],
 	providers: [
 		DashboardUc,
 		{
