@@ -1077,10 +1077,16 @@ describe('TaskUC', () => {
 			}).rejects.toThrow(ForbiddenException);
 		});
 
-		it('should revert the task back to draft state for the user', async () => {
+		it('should call unpublish method in task entity', async () => {
 			task.unpublish = jest.fn();
 			await service.revertPublished(user.id, task.id);
 			expect(task.unpublish).toBeCalled();
+		});
+
+		it('should set the private property of unpublished task correctly', async () => {
+			expect(task.private).toEqual(false);
+			await service.revertPublished(user.id, task.id);
+			expect(task.private).toEqual(true);
 		});
 
 		it('should save the task', async () => {
