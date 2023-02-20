@@ -14,7 +14,7 @@ export class SchoolDO extends BaseDO {
 
 	oauthMigrationFinished?: Date;
 
-	legacyExternalId?: string;
+	previousExternalId?: string;
 
 	name: string;
 
@@ -37,7 +37,7 @@ export class SchoolDO extends BaseDO {
 		this.oauthMigrationMandatory = params.oauthMigrationMandatory;
 		this.oauthMigrationPossible = params.oauthMigrationPossible;
 		this.oauthMigrationFinished = params.oauthMigrationFinished;
-		this.legacyExternalId = params.legacyExternalId;
+		this.previousExternalId = params.previousExternalId;
 		this.officialSchoolNumber = params.officialSchoolNumber;
 		this.schoolYear = params.schoolYear;
 		this.systems = params.systems;

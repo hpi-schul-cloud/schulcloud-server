@@ -75,21 +75,21 @@ export class SchoolService {
 		return response;
 	}
 
-	async migrateSchool(externalId: string, schoolNumber: string, systemId: string): Promise<void> {
+	async migrateSchool(externalId: string, schoolNumber: string, targetSystemId: string): Promise<void> {
 		let isSchoolMigrated: boolean = false;
 
-		if (await this.getSchoolByExternalId(externalId, systemId)) {
+		if (await this.getSchoolByExternalId(externalId, targetSystemId)) {
 			isSchoolMigrated = true;
 		}
 		if (!isSchoolMigrated) {
-			const schoolDO: SchoolDO | null = await this.schoolRepo.findBySchoolNumber(schoolNumber);
+			const schoolDO: SchoolDO | null = await this.schoolRepo.findBySchoolNumber(schoolNumber); //TODO NI_ mismatch
 			if (schoolDO) {
 				if (schoolDO.systems) {
-					schoolDO.systems.push(systemId);
-				} else schoolDO.systems = [systemId];
-				schoolDO.legacyExternalId = schoolDO.externalId;
+					schoolDO.systems.push(targetSystemId);
+				} else schoolDO.systems = [targetSystemId];
+				schoolDO.previousExternalId = schoolDO.externalId;
 				schoolDO.externalId = externalId;
-			} else throw new Error('official school number not set');
+			} else throw new Error('official school number not set'); //TODO Errorhandling?
 		}
 	}
 

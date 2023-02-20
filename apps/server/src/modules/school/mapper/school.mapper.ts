@@ -15,7 +15,7 @@ export class SchoolMapper {
 			oauthMigrationMandatory: entityDO.oauthMigrationMandatory,
 			oauthMigrationPossible: entityDO.oauthMigrationPossible,
 			oauthMigrationFinished: entityDO.oauthMigrationFinished,
-			legacyExternalId: entityDO.legacyExternalId,
+			previousExternalId: entityDO.previousExternalId,
 			officialSchoolNumber: entityDO.officialSchoolNumber,
 			schoolYear: entityDO.schoolYear,
 			systems: entityDO.systems
@@ -35,7 +35,7 @@ export class SchoolMapper {
 			oauthMigrationMandatory: entity.oauthMigrationMandatory,
 			oauthMigrationPossible: entity.oauthMigrationPossible,
 			oauthMigrationFinished: entity.oauthMigrationFinished,
-			legacyExternalId: entity.legacyExternalId,
+			previousExternalId: entity.previousExternalId,
 			officialSchoolNumber: entity.officialSchoolNumber,
 			schoolYear: entity.schoolYear,
 			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: System) => system.id) : [],

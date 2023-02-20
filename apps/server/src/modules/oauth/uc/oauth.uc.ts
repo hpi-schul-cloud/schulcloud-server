@@ -141,6 +141,15 @@ export class OauthUc {
 			queryToken.id_token,
 			targetSystemId
 		);
+
+		if (data.externalSchool) {
+			await this.schoolService.migrateSchool(
+				data.externalSchool.externalId,
+				data.externalSchool.officialSchoolNumber as string, //TODO
+				targetSystemId
+			);
+		}
+
 		const migrationDto = this.userMigrationService.migrateUser(
 			currentUserId,
 			data.externalUser.externalId,

@@ -22,7 +22,7 @@ export interface ISchoolProperties {
 	oauthMigrationPossible?: Date;
 	oauthMigrationMandatory?: Date;
 	oauthMigrationFinished?: Date;
-	legacyExternalId?: string;
+	previousExternalId?: string;
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: System[];
@@ -73,7 +73,7 @@ export class School extends BaseEntity {
 	externalId?: string;
 
 	@Property({ nullable: true })
-	legacyExternalId?: string;
+	previousExternalId?: string;
 
 	@Property()
 	name: string;
@@ -95,8 +95,8 @@ export class School extends BaseEntity {
 		if (props.externalId) {
 			this.externalId = props.externalId;
 		}
-		if (props.legacyExternalId) {
-			this.legacyExternalId = props.legacyExternalId;
+		if (props.previousExternalId) {
+			this.previousExternalId = props.previousExternalId;
 		}
 		if (props.inMaintenanceSince) {
 			this.inMaintenanceSince = props.inMaintenanceSince;
