@@ -15,12 +15,13 @@ import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
 import { NotFoundException } from '@nestjs/common';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
+import { SchoolService } from '@src/modules/school';
+import { SchoolMigrationService } from '@src/modules/user-migration/service';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import resetAllMocks = jest.resetAllMocks;
-import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
-import { SchoolService } from '@src/modules/school';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -33,6 +34,7 @@ describe('OAuthUc', () => {
 	let userService: DeepMocked<UserService>;
 	let schoolService: DeepMocked<SchoolService>;
 	let userMigrationService: DeepMocked<UserMigrationService>;
+	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -68,6 +70,10 @@ describe('OAuthUc', () => {
 					provide: UserMigrationService,
 					useValue: createMock<UserMigrationService>(),
 				},
+				{
+					provide: SchoolMigrationService,
+					useValue: createMock<SchoolMigrationService>(),
+				},
 			],
 		}).compile();
 
@@ -78,6 +84,7 @@ describe('OAuthUc', () => {
 		userService = module.get(UserService);
 		schoolService = module.get(SchoolService);
 		userMigrationService = module.get(UserMigrationService);
+		schoolMigrationService = module.get(SchoolMigrationService);
 	});
 
 	afterAll(async () => {
@@ -471,7 +478,7 @@ describe('OAuthUc', () => {
 
 					await service.migrateUser('currentUserId', query, system.id as string);
 
-					expect(schoolService.migrateSchool).toHaveBeenCalledWith(
+					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
 						oauthData.externalSchool.externalId,
 						oauthData.externalSchool.officialSchoolNumber,
 						'systemId'
@@ -487,7 +494,7 @@ describe('OAuthUc', () => {
 
 					await service.migrateUser('currentUserId', query, system.id as string);
 
-					expect(schoolService.migrateSchool).not.toHaveBeenCalled();
+					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
 				});
 			});
 		});

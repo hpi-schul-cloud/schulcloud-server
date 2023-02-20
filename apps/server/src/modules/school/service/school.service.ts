@@ -4,11 +4,10 @@ import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
 import { isDefined } from 'class-validator';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
-import { Logger } from '../../../core/logger';
 
 @Injectable()
 export class SchoolService {
-	constructor(readonly schoolRepo: SchoolRepo, private readonly logger: Logger) {}
+	constructor(private readonly schoolRepo: SchoolRepo) {}
 
 	async createOrUpdateSchool(school: SchoolDO): Promise<SchoolDO> {
 		let createdSchool: SchoolDO;
@@ -18,15 +17,6 @@ export class SchoolService {
 			createdSchool = await this.schoolRepo.save(school);
 		}
 		return createdSchool;
-	}
-
-	private async patchSchool(school: SchoolDO) {
-		const entity: SchoolDO = await this.schoolRepo.findById(school.id as string);
-		const patchedEntity: SchoolDO = { ...entity, ...school };
-
-		await this.schoolRepo.save(patchedEntity);
-
-		return patchedEntity;
 	}
 
 	async hasFeature(schoolId: EntityId, feature: SchoolFeatures): Promise<boolean> {
@@ -76,43 +66,6 @@ export class SchoolService {
 		return response;
 	}
 
-	async migrateSchool(externalId: string, schoolNumber: string, targetSystemId: string): Promise<void> {
-		if (!(await this.getSchoolByExternalId(externalId, targetSystemId))) {
-			const schoolDO: SchoolDO | null = await this.schoolRepo.findBySchoolNumber(schoolNumber);
-
-			if (schoolDO) {
-				const schoolDOCopy: SchoolDO = { ...schoolDO };
-
-				try {
-					await this.doMigration(externalId, schoolDO, targetSystemId);
-				} catch (e) {
-					await this.rollbackMigration(schoolDOCopy);
-					this.logger.log(
-						`This error occurred during migration of School with official school number: ${schoolDO.officialSchoolNumber} `
-					);
-					this.logger.log(e);
-				}
-			} else throw new Error('official school number not set'); //TODO Errorhandling?
-		}
-	}
-
-	private async doMigration(externalId: string, schoolDO: SchoolDO, targetSystemId: string): Promise<void> {
-		if (schoolDO.systems) {
-			schoolDO.systems.push(targetSystemId);
-		} else {
-			schoolDO.systems = [targetSystemId];
-		}
-		schoolDO.previousExternalId = schoolDO.externalId;
-		schoolDO.externalId = externalId;
-		await this.save(schoolDO);
-	}
-
-	private async rollbackMigration(schoolDO: SchoolDO) {
-		if (schoolDO) {
-			await this.save(schoolDO);
-		}
-	}
-
 	async getSchoolById(id: string): Promise<SchoolDO> {
 		const schoolDO: SchoolDO = await this.schoolRepo.findById(id);
 		return schoolDO;
@@ -131,5 +84,14 @@ export class SchoolService {
 	async save(school: SchoolDO): Promise<SchoolDO> {
 		const ret: SchoolDO = await this.schoolRepo.save(school);
 		return ret;
+	}
+
+	private async patchSchool(school: SchoolDO) {
+		const entity: SchoolDO = await this.schoolRepo.findById(school.id as string);
+		const patchedEntity: SchoolDO = { ...entity, ...school };
+
+		await this.schoolRepo.save(patchedEntity);
+
+		return patchedEntity;
 	}
 }

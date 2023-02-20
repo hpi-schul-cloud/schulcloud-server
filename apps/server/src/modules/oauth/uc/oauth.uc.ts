@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId, OauthConfig } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
@@ -8,12 +8,13 @@ import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
+import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
+import { SchoolService } from '@src/modules/school';
+import { SchoolMigrationService } from '@src/modules/user-migration/service';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
-import { UserMigrationDto } from '../../user-migration/service/dto/userMigration.dto';
-import { SchoolService } from '../../school';
 
 @Injectable()
 export class OauthUc {
@@ -24,6 +25,7 @@ export class OauthUc {
 		private readonly schoolService: SchoolService,
 		private readonly userService: UserService,
 		private readonly userMigrationService: UserMigrationService,
+		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(OauthUc.name);
@@ -36,6 +38,37 @@ export class OauthUc {
 		} catch (error) {
 			return await this.getOauthErrorResponse(error, systemId);
 		}
+	}
+
+	// TODO: rename migrate
+	async migrateUser(
+		currentUserId: string,
+		query: AuthorizationParams,
+		targetSystemId: string
+	): Promise<UserMigrationDto> {
+		const queryToken: OauthTokenResponse = await this.authorizeForMigration(query, targetSystemId);
+		const data: OauthDataDto = await this.provisioningService.getData(
+			queryToken.access_token,
+			queryToken.id_token,
+			targetSystemId
+		);
+
+		if (data.externalSchool) {
+			// TODO validate data see schoolMigrationService await this.schoolMigrationService.validateData
+			await this.schoolMigrationService.migrateSchool(
+				currentUserId,
+				data.externalSchool.externalId,
+				data.externalSchool.officialSchoolNumber,
+				targetSystemId
+			);
+		}
+
+		const migrationDto: Promise<UserMigrationDto> = this.userMigrationService.migrateUser(
+			currentUserId,
+			data.externalUser.externalId,
+			targetSystemId
+		);
+		return migrationDto;
 	}
 
 	private async process(query: AuthorizationParams, systemId: string): Promise<OAuthProcessDto> {
@@ -132,48 +165,6 @@ export class OauthUc {
 		const provider: string = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
 		const oAuthError: OAuthProcessDto = this.oauthService.getOAuthErrorResponse(error, provider);
 		return oAuthError;
-	}
-
-	async migrateUser(
-		currentUserId: string,
-		query: AuthorizationParams,
-		targetSystemId: string
-	): Promise<UserMigrationDto> {
-		const queryToken: OauthTokenResponse = await this.authorizeForMigration(query, targetSystemId);
-		const data: OauthDataDto = await this.provisioningService.getData(
-			queryToken.access_token,
-			queryToken.id_token,
-			targetSystemId
-		);
-
-		if (data.externalSchool) {
-			try {
-				await this.migrateSchool(data, targetSystemId);
-				//TODO refactor after N21-504 merge
-			} catch (e) {
-				return new UserMigrationDto({ redirect: 'migrationError?code=official_school_number_mismatch' });
-			}
-		}
-
-		const migrationDto: Promise<UserMigrationDto> = this.userMigrationService.migrateUser(
-			currentUserId,
-			data.externalUser.externalId,
-			targetSystemId
-		);
-		return migrationDto;
-	}
-
-	private async migrateSchool(data: OauthDataDto, targetSystemId: string): Promise<void> {
-		if (!data.externalSchool || !data.externalSchool.officialSchoolNumber) {
-			throw new BadRequestException(
-				`Migration of school failed for user with externalId ${data.externalUser.externalId}. OauthDataDto does not contain officialSchoolNumber.`
-			);
-		}
-		await this.schoolService.migrateSchool(
-			data.externalSchool.externalId,
-			data.externalSchool.officialSchoolNumber,
-			targetSystemId
-		);
 	}
 
 	private async authorizeForMigration(query: AuthorizationParams, targetSystemId: string): Promise<OauthTokenResponse> {
