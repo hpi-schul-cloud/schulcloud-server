@@ -74,10 +74,12 @@ class EduSharingConnector {
 			json: true,
 		};
 
+		let statusCode;
 		try {
 			const result = await request.get(options);
 
-			if (result.statusCode !== 200 || result.body.isValidLogin !== true) {
+			statusCode = result.statusCode;
+			if (statusCode !== 200 || result.body.isValidLogin !== true) {
 				throw Error('authentication error with edu sharing');
 			}
 
@@ -88,7 +90,7 @@ class EduSharingConnector {
 			}
 			throw new GeneralError('Cookie not found in response headers');
 		} catch (err) {
-			logger.error(`Edu-Sharing failed to get session cookie: ${err.statusCode} ${err.message}`);
+			logger.error(`Edu-Sharing failed to get session cookie: ${statusCode} ${err.message}`);
 			throw new GeneralError('Edu-Sharing Request failed');
 		}
 	}
