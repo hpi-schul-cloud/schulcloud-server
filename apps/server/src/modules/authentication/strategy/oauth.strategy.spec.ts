@@ -50,20 +50,24 @@ describe('OauthStrategy', () => {
 	});
 
 	describe('when no systemId is passed as path param', () => {
-		it('should throw Unauthorized', async () => {
-			await expect(strategy.validate({ params: {}, query: {} })).rejects.toThrow(UnauthorizedException);
+		it('should return an empty object', async () => {
+			const result = await strategy.validate({ params: {}, query: {} });
+
+			expect(result).toEqual({});
 		});
 	});
 	describe('when no code is given in query', () => {
-		it('should throw Unauthorized', async () => {
-			await expect(strategy.validate({ params: { systemId }, query: {} })).rejects.toThrow(UnauthorizedException);
+		it('should return an empty object', async () => {
+			const result = await strategy.validate({ params: { systemId }, query: {} });
+
+			expect(result).toEqual({});
 		});
 	});
 	describe('when the error property is set in query', () => {
-		it('should throw Unauthorized', async () => {
-			await expect(
-				strategy.validate({ params: { systemId }, query: { code: 'some Code', error: 'an error' } })
-			).rejects.toThrow(UnauthorizedException);
+		it('should return an empty object', async () => {
+			const result = await strategy.validate({ params: { systemId }, query: { code: 'some Code', error: 'an error' } });
+
+			expect(result).toEqual({});
 		});
 	});
 
@@ -81,12 +85,15 @@ describe('OauthStrategy', () => {
 	});
 
 	describe('when no user is returned for auth code (in case school is currently migrated to oauth)', () => {
-		it('should throw Unauthorized', async () => {
+		it('should return an empty object', async () => {
 			oauthService.authenticateUser.mockResolvedValueOnce({
 				redirect: '/mock-redirect',
 			});
 			accountService.findByUserId.mockResolvedValueOnce(null);
-			await expect(strategy.validate({ params: { systemId }, query: { code: 'some Code' } })).resolves.toBeNull();
+
+			const result = await strategy.validate({ params: { systemId }, query: { code: 'some Code' } });
+
+			expect(result).toEqual({});
 		});
 	});
 

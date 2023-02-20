@@ -35,8 +35,8 @@ export class LoginController {
 		@Query() queryParams: OauthAuthorizationQueryParams,
 		@Res() res: Response
 	) {
-		// the user can be null if the school is in migration from another login strategy to OAuth
-		if (user) {
+		// the userId can be undefined if the school is in migration from another login strategy to OAuth
+		if (user.userId) {
 			const jwt = await this.authService.generateJwt(user);
 			const cookieDefaultOptions: CookieOptions = {
 				httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,

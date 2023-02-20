@@ -23,21 +23,20 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 		this.logger.setContext(OauthStrategy.name);
 	}
 
-	async validate(request: { params: PathParams; query: OauthAuthorizationParams }): Promise<ICurrentUser | null> {
-		const { systemId, code } = this.extractParamsFromRequest(request);
-
+	async validate(request: { params: PathParams; query: OauthAuthorizationParams }): Promise<ICurrentUser | unknown> {
 		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.authenticateUser(
-			code,
-			systemId
+			request.params.systemId!,
+			request.query.code,
+			request.query.error
 		);
 		request.query = { ...request.params, redirect };
 
-		return this.loadICurrentUser(systemId, user);
+		return this.loadICurrentUser(request.params.systemId!, user);
 	}
 
-	private async loadICurrentUser(systemId: string, user?: UserDO): Promise<ICurrentUser | null> {
+	private async loadICurrentUser(systemId: string, user?: UserDO): Promise<ICurrentUser | unknown> {
 		if (!user || !user.id) {
-			return null;
+			return {};
 		}
 		const account = await this.accountService.findByUserId(user.id);
 		if (!account) {
@@ -45,25 +44,5 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 		}
 		const currentUser: ICurrentUser = CurrentUserMapper.userDoToICurrentUser(account.id, user, systemId);
 		return currentUser;
-	}
-
-	private extractParamsFromRequest(request: { params: PathParams; query: OauthAuthorizationParams }): {
-		systemId: string;
-		code: string;
-	} {
-		const { systemId } = request.params;
-		const { query } = request;
-
-		if (!systemId || !query.code) {
-			throw new UnauthorizedException();
-		}
-		if (query.error) {
-			throw new UnauthorizedException(
-				'Authorization Query Object has no authorization code or error',
-				query.error || 'sso_auth_code_step'
-			);
-		}
-
-		return { systemId, code: query.code };
 	}
 }

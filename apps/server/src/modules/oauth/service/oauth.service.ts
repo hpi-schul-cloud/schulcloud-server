@@ -38,7 +38,23 @@ export class OAuthService {
 		this.logger.setContext(OAuthService.name);
 	}
 
-	async authenticateUser(authCode: string, systemId: string): Promise<{ user?: UserDO; redirect: string }> {
+	async authenticateUser(
+		systemId: string,
+		authCode?: string,
+		errorCode?: string
+	): Promise<{ user?: UserDO; redirect: string }> {
+		let redirect: string;
+		if (errorCode) {
+			redirect = this.createErrorRedirect(errorCode);
+			return { user: undefined, redirect };
+		}
+		if (!authCode) {
+			throw new OAuthSSOError(
+				'Authorization Query Object has no authorization code or error',
+				errorCode || 'sso_auth_code_step'
+			);
+		}
+
 		const system = await this.systemService.findOAuthById(systemId);
 		if (!system.id) {
 			// unreachable. System loaded from DB always has an ID
@@ -57,7 +73,7 @@ export class OAuthService {
 			system.id
 		);
 
-		let redirect = this.getRedirectUrl(oauthConfig.provider, queryToken.id_token, oauthConfig.logoutEndpoint);
+		redirect = this.getRedirectUrl(oauthConfig.provider, queryToken.id_token, oauthConfig.logoutEndpoint);
 
 		// TODO Move Migration Checks to other service
 		if (data.externalSchool?.officialSchoolNumber) {
@@ -208,15 +224,22 @@ export class OAuthService {
 			errorCode = 'oauth_login_failed';
 		}
 
-		const redirect = new URL('/login', Configuration.get('HOST') as string);
-		redirect.searchParams.append('error', errorCode);
-		redirect.searchParams.append('provider', provider);
+		const redirect = this.createErrorRedirect(errorCode, provider);
 
 		const oauthResponse = new OAuthProcessDto({
 			provider,
 			errorCode,
-			redirect: redirect.toString(),
+			redirect,
 		});
 		return oauthResponse;
+	}
+
+	private createErrorRedirect(errorCode: string, provider?: string): string {
+		const redirect = new URL('/login', Configuration.get('HOST') as string);
+		redirect.searchParams.append('error', errorCode);
+		if (provider) {
+			redirect.searchParams.append('provider', provider);
+		}
+		return redirect.toString();
 	}
 }
