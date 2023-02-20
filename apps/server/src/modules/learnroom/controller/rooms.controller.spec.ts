@@ -7,7 +7,7 @@ import { RoomBoardDTO } from '../types';
 import { CourseCopyUC } from '../uc/course-copy.uc';
 import { LessonCopyUC } from '../uc/lesson-copy.uc';
 import { RoomsUc } from '../uc/rooms.uc';
-import { BoardResponse } from './dto';
+import { SingleColumnBoardResponse } from './dto';
 import { RoomsController } from './rooms.controller';
 
 describe('rooms controller', () => {
@@ -55,7 +55,7 @@ describe('rooms controller', () => {
 					provide: RoomBoardResponseMapper,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						mapToResponse(board: RoomBoardDTO): BoardResponse {
+						mapToResponse(board: RoomBoardDTO): SingleColumnBoardResponse {
 							throw new Error('please write mock for Boardmapper.mapToResponse');
 						},
 					},
@@ -77,7 +77,12 @@ describe('rooms controller', () => {
 				const ucResult = { roomId: 'id', title: 'title', displayColor: '#FFFFFF', elements: [] } as RoomBoardDTO;
 				const ucSpy = jest.spyOn(uc, 'getBoard').mockImplementation(() => Promise.resolve(ucResult));
 
-				const mapperResult = new BoardResponse({ roomId: 'id', title: 'title', displayColor: '#FFFFFF', elements: [] });
+				const mapperResult = new SingleColumnBoardResponse({
+					roomId: 'id',
+					title: 'title',
+					displayColor: '#FFFFFF',
+					elements: [],
+				});
 				const mapperSpy = jest.spyOn(mapper, 'mapToResponse').mockImplementation(() => mapperResult);
 				return { currentUser, ucResult, ucSpy, mapperResult, mapperSpy };
 			};
