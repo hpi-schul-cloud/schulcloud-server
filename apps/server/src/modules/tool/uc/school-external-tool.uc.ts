@@ -35,8 +35,9 @@ export class SchoolExternalToolUc {
 
 		await this.schoolExternalToolValidationService.validateCreate(schoolExternalTool);
 
-		const createdSchoolExternalTool: SchoolExternalToolDO =
-			await this.schoolExternalToolService.createSchoolExternalTool(schoolExternalTool);
+		const createdSchoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolService.saveSchoolExternalTool(
+			schoolExternalTool
+		);
 
 		return createdSchoolExternalTool;
 	}
@@ -87,7 +88,7 @@ export class SchoolExternalToolUc {
 			...schoolExternalTool,
 		});
 
-		const saved = await this.schoolExternalToolService.updateSchoolExternalTool(updated);
+		const saved = await this.schoolExternalToolService.saveSchoolExternalTool(updated);
 		return saved;
 	}
 

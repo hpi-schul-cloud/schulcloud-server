@@ -68,7 +68,7 @@ export class ToolSchoolController {
 		return mapped;
 	}
 
-	@Put(':schoolExternalToolId')
+	@Put('/:schoolExternalToolId')
 	@ApiOkResponse({ description: 'The Tool has been successfully updated.', type: SchoolExternalToolResponse })
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
