@@ -63,6 +63,8 @@ export class OauthUc {
 			);
 		}
 
+		// TODO: compare officialSchoolNumbers (512)
+
 		const migrationDto: Promise<UserMigrationDto> = this.userMigrationService.migrateUser(
 			currentUserId,
 			data.externalUser.externalId,

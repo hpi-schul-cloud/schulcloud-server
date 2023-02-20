@@ -17,7 +17,7 @@ export class SchoolMigrationService {
 	async migrateSchool(
 		currentUserId: string,
 		externalId: string,
-		schoolNumber: string | undefined,
+		schoolNumber: string | undefined, // TODO remove undefined
 		targetSystemId: string
 	): Promise<void> {
 		// TODO move validations to function
