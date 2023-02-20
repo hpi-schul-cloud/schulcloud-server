@@ -7,7 +7,6 @@ import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/re
 import { Clients } from '@keycloak/keycloak-admin-client/lib/resources/clients';
 import { IdentityProviders } from '@keycloak/keycloak-admin-client/lib/resources/identityProviders';
 import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -78,20 +77,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			},
 		},
 	];
-	const systems: SystemDto[] = [
-		{
-			id: new ObjectId(0).toString(),
-			type: SystemTypeEnum.OIDC.toString(),
-			alias: 'alias',
-			oidcConfig: {
-				clientId: 'clientId',
-				clientSecret: 'clientSecret',
-				authorizationUrl: 'authorizationUrl',
-				tokenUrl: 'tokenUrl',
-				logoutUrl: 'logoutUrl',
-			},
-		},
-	];
+	const systems: SystemDto[] = systemFactory.withOidcConfig().buildListWithId(2, { type: SystemTypeEnum.OIDC });
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -167,7 +153,7 @@ describe('KeycloakConfigurationService Unit', () => {
 	});
 
 	beforeEach(() => {
-		systemService.findOidc.mockResolvedValue(systems);
+		systemService.findByType.mockResolvedValue(systems);
 		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
 		kcApiClientIdentityProvidersMock.create.mockResolvedValue({ id: '' });
 		kcApiClientIdentityProvidersMock.update.mockResolvedValue();
@@ -175,7 +161,7 @@ describe('KeycloakConfigurationService Unit', () => {
 	});
 
 	afterEach(() => {
-		systemService.findOidc.mockClear();
+		systemService.findByType.mockClear();
 		kcApiClientIdentityProvidersMock.find.mockClear();
 		kcApiClientIdentityProvidersMock.create.mockClear();
 		kcApiClientIdentityProvidersMock.update.mockClear();
@@ -189,7 +175,7 @@ describe('KeycloakConfigurationService Unit', () => {
 		it('should read configs from database successfully', async () => {
 			const result = await service.configureIdentityProviders();
 			expect(result).toBeGreaterThan(0);
-			expect(systemService.findOidc).toBeCalled();
+			expect(systemService.findByType).toBeCalled();
 		});
 
 		it('should create a configuration in Keycloak', async () => {
@@ -205,7 +191,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			expect(kcApiClientIdentityProvidersMock.update).toBeCalledTimes(1);
 		});
 		it('should delete a new configuration in Keycloak', async () => {
-			systemService.findOidc.mockResolvedValue([]);
+			systemService.findByType.mockResolvedValue([]);
 
 			const result = await service.configureIdentityProviders();
 			expect(result).toBe(1);

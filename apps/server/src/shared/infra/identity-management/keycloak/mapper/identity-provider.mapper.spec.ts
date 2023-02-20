@@ -41,6 +41,7 @@ describe('OidcIdentityProviderMapper', () => {
 			oidcConfig: {
 				clientId: 'clientId',
 				clientSecret: 'clientSecret',
+				alias: 'alias',
 				authorizationUrl: 'authorizationUrl',
 				tokenUrl: 'tokenUrl',
 				logoutUrl: 'logoutUrl',

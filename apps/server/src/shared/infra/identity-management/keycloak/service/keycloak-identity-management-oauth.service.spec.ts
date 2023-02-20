@@ -1,19 +1,26 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
-import { of } from 'rxjs';
+import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
-import { KeycloakSystemService } from './keycloak-system.service';
+import { of } from 'rxjs';
 import { KeycloakIdentityManagementOauthService } from './keycloak-identity-management-oauth.service';
 
 describe('KeycloakIdentityManagementService', () => {
+	let module: TestingModule;
 	let kcIdmOauthService: KeycloakIdentityManagementOauthService;
-	let kcSystemServiceMock: DeepMocked<KeycloakSystemService>;
 	let httpServiceMock: DeepMocked<HttpService>;
 
-	beforeAll(() => {
-		kcSystemServiceMock = createMock<KeycloakSystemService>();
-		httpServiceMock = createMock<HttpService>();
-		kcIdmOauthService = new KeycloakIdentityManagementOauthService(kcSystemServiceMock, httpServiceMock);
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			providers: [
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
+			],
+		}).compile();
+		kcIdmOauthService = module.get(KeycloakIdentityManagementOauthService);
+		httpServiceMock = module.get(HttpService);
 	});
 
 	afterEach(() => {

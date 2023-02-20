@@ -6,7 +6,7 @@ import { FileSystemAdapter } from '@shared/infra/file-system';
 import { DatabaseManagementService } from '@shared/infra/database';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
-import { StorageProvider, System, SystemTypeEnum } from '@shared/domain';
+import { StorageProvider, System } from '@shared/domain';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
 import { BsonConverter } from '../converter/bson.converter';

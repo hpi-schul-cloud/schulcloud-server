@@ -30,7 +30,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		const kc = await this.kcAdminService.callKcAdminClient();
 		const wellKnownUrl = `${kc.baseUrl}/realms/${kc.realmName}/.well-known/openid-configuration`;
 		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
-		const scDomain = this.configService.get<string>('SC_DOMAIN');
+		const scDomain = this.configService.get<string>('SC_DOMAIN') || '';
 		const redirectUri =
 			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
 		this._oauthConfigCache = new OauthConfigDto({

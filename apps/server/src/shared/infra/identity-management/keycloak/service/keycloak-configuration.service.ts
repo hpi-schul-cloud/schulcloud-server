@@ -4,15 +4,11 @@ import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clien
 import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import ProtocolMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation';
-import { HttpService } from '@nestjs/axios';
-import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SystemTypeEnum } from '@shared/domain';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { IServerConfig } from '@src/modules/server/server.config';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
-import { IKeycloakSettings, KeycloakSettings } from '../interface';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
@@ -28,12 +24,9 @@ const defaultIdpMapperName = 'oidc-username-idp-mapper';
 export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
-		private readonly httpService: HttpService,
 		private readonly systemService: SystemService,
 		private readonly configService: ConfigService<IServerConfig, true>,
-		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
-		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings,
-		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService
+		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper
 	) {}
 
 	public async configureBrokerFlows(): Promise<void> {

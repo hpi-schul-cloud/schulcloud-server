@@ -1,18 +1,5 @@
-import { Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import {
-	Board,
-	BoardElement,
-	BoardElementReference,
-	BoardElementType,
-	Course,
-	InputFormat,
-	isLesson,
-	isTask,
-	Lesson,
-	Task,
-	User,
-} from '@shared/domain';
+import { Board, BoardElement, BoardElementType, Course, isLesson, isTask, Lesson, Task, User } from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';

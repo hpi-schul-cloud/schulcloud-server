@@ -144,7 +144,7 @@ describe('OAuthUc', () => {
 			const userJwt = 'schulcloudJwt';
 
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			systemService.findOAuthById.mockResolvedValue(system);
+			systemService.findById.mockResolvedValue(system);
 			oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
 			provisioningService.getData.mockResolvedValue(oauthData);
 			provisioningService.provisionData.mockResolvedValue(provisioningDto);
@@ -236,7 +236,7 @@ describe('OAuthUc', () => {
 						'sso_auth_code_step'
 					);
 				});
-				systemService.findOAuthById.mockResolvedValue(system);
+				systemService.findById.mockResolvedValue(system);
 				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
 				const response: OAuthProcessDto = await service.processOAuth(query, 'systemId');
@@ -255,7 +255,7 @@ describe('OAuthUc', () => {
 						'sso_auth_code_step'
 					);
 				});
-				systemService.findOAuthById.mockRejectedValue(new NotFoundError('Not Found'));
+				systemService.findById.mockRejectedValue(new NotFoundError('Not Found'));
 
 				await expect(service.processOAuth(query, 'unknown id')).rejects.toThrow(NotFoundError);
 			});
@@ -270,7 +270,7 @@ describe('OAuthUc', () => {
 					redirect: 'errorRedirect',
 				});
 
-				systemService.findOAuthById.mockResolvedValue({ id: undefined, type: 'ignore' });
+				systemService.findById.mockResolvedValue({ id: undefined, type: 'ignore' });
 				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 
 				const response: OAuthProcessDto = await service.processOAuth(query, 'brokenId');
