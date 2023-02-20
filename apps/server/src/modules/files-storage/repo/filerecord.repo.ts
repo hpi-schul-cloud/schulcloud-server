@@ -68,7 +68,7 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 	public async update(fileRecords: FileRecord[]): Promise<FileRecord[]> {
 		const entities = await this.find(fileRecords);
 		FileRecordDOMapper.mergeDOsIntoEntities(fileRecords, entities);
-		const updatedFileRecords = await this.persistAndFlush(entities);
+		const updatedFileRecords = await this.persist(entities);
 
 		return updatedFileRecords;
 	}
@@ -76,12 +76,15 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 	// note: is renamed to create
 	public async create(props: IFileRecordParams[]): Promise<FileRecord[]> {
 		const entities = FileRecordDOMapper.createNewEntities(props);
-		const fileRecords = await this.persistAndFlush(entities);
+		const fileRecords = await this.persist(entities);
 
 		return fileRecords;
 	}
 
 	// ---------------------------------------------------------------
+	// findById and findByIds | findByDomainObject | findByDomainObjects can be possible to move to DataBaseManager
+	// delete can also be moved, also this do not need the mapper
+	// it is possible to add mapper to over params
 	private async find(fileRecords: FileRecord[]): Promise<FileRecordEntity[]> {
 		const scope = new FileRecordScope().byIds(fileRecords);
 		const entities = await this.dbm.find(FileRecordEntity, scope.query);
@@ -89,11 +92,11 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 		return entities;
 	}
 
-	private async persistAndFlush(entities: FileRecordEntity[]): Promise<FileRecord[]> {
-		await this.dbm.persist(entities);
-		const fileRecords = FileRecordDOMapper.entitiesToDOs(entities);
+	private async findOne(scope: FileRecordScope): Promise<FileRecord> {
+		const filesRecordEntity = await this.dbm.findOne(FileRecordEntity, scope.query);
+		const fileRecord = FileRecordDOMapper.entityToDO(filesRecordEntity);
 
-		return fileRecords;
+		return fileRecord;
 	}
 
 	private async findAndCount(
@@ -114,13 +117,12 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 		return [fileRecords, count];
 	}
 
-	private async findOne(scope: FileRecordScope): Promise<FileRecord> {
-		const filesRecordEntity = await this.dbm.findOne(FileRecordEntity, scope.query);
-		const fileRecord = FileRecordDOMapper.entityToDO(filesRecordEntity);
+	private async persist(entities: FileRecordEntity[]): Promise<FileRecord[]> {
+		await this.dbm.persist(entities);
+		const fileRecords = FileRecordDOMapper.entitiesToDOs(entities);
 
-		return fileRecord;
+		return fileRecords;
 	}
-
 	/* solution for delete over PK
 	public async delete(fileRecords: FileRecord[]): Promise<void> {
 		const entities = this.getEntitiesReferenceFromDOs(fileRecords);
