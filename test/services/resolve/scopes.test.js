@@ -64,47 +64,41 @@ describe('resolve/scopes service', () => {
 
 	it('return courseAdmin scope if admin is found and his school has a course', async () => {
 		const data = await service.get(testAdmin._id);
-		const courseAdmin = data.data.filter(
+		const adminScopes = data.data.filter(
 			(scope) => scope.attributes.scopeType === 'courseAdmin' && scope.id.equals(testCourse._id)
 		);
-		assert(courseAdmin.length > 0);
+		assert(adminScopes.length > 0);
 	});
 
 	it('return empty courseAdmin scope if user is not an admin', async () => {
 		const data = await service.get(testUser._id);
-		const courseAdmin = data.data.filter(
+		const adminScopes = data.data.filter(
 			(scope) => scope.attributes.scopeType === 'courseAdmin' && scope.id.equals(testCourse._id)
 		);
-		assert(courseAdmin.length === 0);
+		assert(adminScopes.length === 0);
 	});
 
 	it('return empty courseAdmin scope if admin and admin flag set to false', async () => {
-		const data = await service.get(testAdmin._id, { admin: 'false' });
-		const courseAdmin = data.data.filter(
-			(scope) => scope.attributes.scopeType === 'courseAdmin' && scope.id.equals(testCourse._id)
-		);
-		assert(courseAdmin.length === 0);
+		const data = await service.get(testAdmin._id, { query: { admin: 'false' } });
+		const adminScopes = data.data.filter((scope) => scope.attributes.scopeType === 'courseAdmin');
+		assert(adminScopes.length === 0);
 	});
 
 	it('return courseAdmin scope with only can-read permission if admin and write flag set to false', async () => {
-		const data = await service.get(testAdmin._id, { write: 'false' });
-		const courseAdmin = data.data.filter(
-			(scope) => scope.attributes.scopeType === 'courseAdmin' && scope.id.equals(testCourse._id)
-		);
-		assert(courseAdmin.length > 0);
-		courseAdmin.forEach((scope) => {
-			expect(scope.attributes.authorities).to.equal(['can-read']);
+		const data = await service.get(testAdmin._id, { query: { write: 'false' } });
+		const adminScopes = data.data.filter((scope) => scope.attributes.scopeType === 'courseAdmin');
+		assert(adminScopes.length > 0);
+		adminScopes.forEach((scope) => {
+			expect(scope.attributes.authorities).to.deep.equal(['can-read']);
 		});
 	});
 
 	it('return courseAdmin scope with only can-write permission if admin and read flag set to false', async () => {
-		const data = await service.get(testAdmin._id, { read: 'false' });
-		const courseAdmin = data.data.filter(
-			(scope) => scope.attributes.scopeType === 'courseAdmin' && scope.id.equals(testCourse._id)
-		);
-		assert(courseAdmin.length > 0);
-		courseAdmin.forEach((scope) => {
-			expect(scope.attributes.authorities).to.equal(['can-write']);
+		const data = await service.get(testAdmin._id, { query: { read: 'false' } });
+		const adminScopes = data.data.filter((scope) => scope.attributes.scopeType === 'courseAdmin');
+		assert(adminScopes.length > 0);
+		adminScopes.forEach((scope) => {
+			expect(scope.attributes.authorities).to.deep.equal(['can-write']);
 		});
 	});
 });
