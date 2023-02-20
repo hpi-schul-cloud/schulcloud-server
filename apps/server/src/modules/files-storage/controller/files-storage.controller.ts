@@ -8,7 +8,6 @@ import {
 	Get,
 	HttpStatus,
 	InternalServerErrorException,
-	Next,
 	NotAcceptableException,
 	NotFoundException,
 	Param,
@@ -25,7 +24,7 @@ import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { FileRecordMapper } from '../mapper/file-record.mapper';
 import { FilesStorageUC } from '../uc';
 import {
@@ -80,11 +79,9 @@ export class FilesStorageController {
 		@Body() _: FileParams,
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Req() req: Request,
-		@Res({ passthrough: true }) res: Response,
-		@Next() next: NextFunction
+		@Req() req: Request
 	): Promise<FileRecordResponse> {
-		const fileRecord = await this.filesStorageUC.upload(currentUser.userId, params, req, next);
+		const fileRecord = await this.filesStorageUC.upload(currentUser.userId, params, req);
 
 		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 

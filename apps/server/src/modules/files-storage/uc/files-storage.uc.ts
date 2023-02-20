@@ -5,7 +5,7 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
-import { NextFunction, Request } from 'express';
+import { Request } from 'express';
 import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
 import {
@@ -47,44 +47,35 @@ export class FilesStorageUC {
 	}
 
 	// upload
-	public async upload(
-		userId: EntityId,
-		params: FileRecordParams,
-		req: Request,
-		next: NextFunction
-	): Promise<FileRecord> {
+	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 
-		const fileRecord = await this.uploadFileWithBusboy(userId, params, req, next);
+		const fileRecord = await this.uploadFileWithBusboy(userId, params, req);
 
 		return fileRecord;
 	}
 
-	private async uploadFileWithBusboy(
-		userId: EntityId,
-		params: FileRecordParams,
-		req: Request,
-		next: NextFunction
-	): Promise<FileRecord> {
-		const result = await new Promise<FileRecord>((resolve) => {
+	private async uploadFileWithBusboy(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
+		const promise = new Promise<FileRecord>((resolve, reject) => {
 			const bb = busboy({ headers: req.headers, defParamCharset: 'utf8' });
 
-			bb.on('file', (_name, file, info) => {
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
+			bb.on('file', async (_name, file, info) => {
 				const fileDto = FileDtoBuilder.buildFromRequest(info, req, file);
 
 				try {
-					const record = this.filesStorageService.uploadFile(userId, params, fileDto);
+					const record = await this.filesStorageService.uploadFile(userId, params, fileDto);
 					resolve(record);
 				} catch (error) {
 					req.unpipe(bb);
-					next(error);
+					reject(error);
 				}
 			});
 
 			req.pipe(bb);
 		});
 
-		return result;
+		return promise;
 	}
 
 	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
