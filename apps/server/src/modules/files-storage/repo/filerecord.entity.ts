@@ -134,7 +134,7 @@ export class FileRecordEntity extends BaseEntity {
 
 	constructor(props: IFileRecordProperties) {
 		// important when we go over constructor to also allow entity creating with ID
-		super(props.id);
+		super();
 		this.size = props.size;
 		this.name = props.name;
 		this.mimeType = props.mimeType;

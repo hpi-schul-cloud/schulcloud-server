@@ -24,7 +24,7 @@ export interface IFileSecurityCheckParams {
 	status: ScanStatus;
 	reason: string;
 	requestToken?: string;
-	updatedAt?: Date;
+	updatedAt: Date;
 }
 
 // We need to check how we work with keys from other collections, lile task.submission.coursegroup.
@@ -69,12 +69,14 @@ export class FileRecord extends BaseDO2<IFileRecordParams> {
 		const { size, name, mimeType } = this.props;
 		const { parentType, parentId, schoolId } = targetParentInfo;
 		// TODO: wrong location for init, should be a constructor, builder, or factory
+		// updatedAt should not be required
 		const securityCheck: IFileSecurityCheckParams = this.isVerified()
 			? this.props.securityCheck
 			: {
 					status: ScanStatus.PENDING,
 					reason: 'not yet scanned',
 					requestToken: uuid(),
+					updatedAt: new Date(),
 			  };
 
 		const copyFileRecordParams = {

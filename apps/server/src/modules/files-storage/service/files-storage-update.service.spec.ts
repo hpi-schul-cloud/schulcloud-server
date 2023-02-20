@@ -133,7 +133,7 @@ describe('FilesStorageService update methods', () => {
 
 				await service.patchFilename(fileRecord, data);
 
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(expectedFileRecord);
+				expect(fileRecordRepo.create).toHaveBeenCalledWith(expectedFileRecord);
 			});
 
 			it('should return modified fileRecord', async () => {
@@ -153,7 +153,7 @@ describe('FilesStorageService update methods', () => {
 				const spyGetFilesOfParent = jest
 					.spyOn(service, 'getFileRecordsOfParent')
 					.mockResolvedValueOnce([[fileRecord], 1]);
-				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
+				fileRecordRepo.create.mockRejectedValueOnce(new Error('bla'));
 
 				return {
 					data,
@@ -197,7 +197,7 @@ describe('FilesStorageService update methods', () => {
 				const expectedError = new ConflictException(ErrorType.FILE_NAME_EXISTS);
 
 				await expect(service.patchFilename(fileRecord, data)).rejects.toThrowError(expectedError);
-				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
+				expect(fileRecordRepo.create).toHaveBeenCalledTimes(0);
 			});
 		});
 	});
@@ -216,7 +216,7 @@ describe('FilesStorageService update methods', () => {
 				const token = fileRecord.securityCheck.requestToken || '';
 
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
-				fileRecordRepo.save.mockResolvedValue();
+				fileRecordRepo.create.mockResolvedValue();
 				spy = jest.spyOn(fileRecord, 'updateSecurityCheckStatus');
 
 				return { scanResult, token, fileRecord };
@@ -244,7 +244,7 @@ describe('FilesStorageService update methods', () => {
 
 				await service.updateSecurityStatus(token, scanResult);
 
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecord);
+				expect(fileRecordRepo.create).toHaveBeenCalledWith(fileRecord);
 			});
 		});
 
@@ -261,7 +261,7 @@ describe('FilesStorageService update methods', () => {
 				const token = fileRecord.securityCheck.requestToken || '';
 
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
-				fileRecordRepo.save.mockResolvedValue();
+				fileRecordRepo.create.mockResolvedValue();
 				spy = jest.spyOn(fileRecord, 'updateSecurityCheckStatus');
 
 				return { scanResult, token, fileRecord };
@@ -281,7 +281,7 @@ describe('FilesStorageService update methods', () => {
 
 				await service.updateSecurityStatus(token, scanResult);
 
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecord);
+				expect(fileRecordRepo.create).toHaveBeenCalledWith(fileRecord);
 			});
 		});
 
@@ -298,7 +298,7 @@ describe('FilesStorageService update methods', () => {
 				const token = fileRecord.securityCheck.requestToken || '';
 
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
-				fileRecordRepo.save.mockResolvedValue();
+				fileRecordRepo.create.mockResolvedValue();
 				spy = jest.spyOn(fileRecord, 'updateSecurityCheckStatus');
 
 				return { scanResult, token, fileRecord };
@@ -318,7 +318,7 @@ describe('FilesStorageService update methods', () => {
 
 				await service.updateSecurityStatus(token, scanResult);
 
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecord);
+				expect(fileRecordRepo.create).toHaveBeenCalledWith(fileRecord);
 			});
 		});
 
@@ -349,7 +349,7 @@ describe('FilesStorageService update methods', () => {
 				const error = new Error('bla');
 
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
-				fileRecordRepo.save.mockRejectedValueOnce(error);
+				fileRecordRepo.create.mockRejectedValueOnce(error);
 
 				return { scanResult, token, error };
 			};

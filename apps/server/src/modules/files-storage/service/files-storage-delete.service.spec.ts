@@ -87,7 +87,7 @@ describe('FilesStorageService delete methods', () => {
 			const setup = () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 
-				fileRecordRepo.save.mockResolvedValueOnce();
+				fileRecordRepo.create.mockResolvedValueOnce();
 
 				return { fileRecords };
 			};
@@ -97,7 +97,7 @@ describe('FilesStorageService delete methods', () => {
 
 				await service.delete(fileRecords);
 
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(
+				expect(fileRecordRepo.create).toHaveBeenCalledWith(
 					expect.arrayContaining([
 						expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) }),
 						expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) }),
@@ -120,7 +120,7 @@ describe('FilesStorageService delete methods', () => {
 			const setup = () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 
-				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
+				fileRecordRepo.create.mockRejectedValueOnce(new Error('bla'));
 
 				return { fileRecords };
 			};
@@ -145,7 +145,7 @@ describe('FilesStorageService delete methods', () => {
 				const { fileRecords } = setup();
 
 				await expect(service.delete(fileRecords)).rejects.toThrow(new InternalServerErrorException('bla'));
-				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(2, fileRecords);
+				expect(fileRecordRepo.create).toHaveBeenNthCalledWith(2, fileRecords);
 			});
 		});
 	});

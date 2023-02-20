@@ -196,7 +196,7 @@ describe('FilesStorageService copy methods', () => {
 
 				await service.copyFileRecord(sourceFile, params, userId);
 
-				expect(fileRecordRepo.save).toBeCalledWith(expect.any(FileRecordEntity));
+				expect(fileRecordRepo.create).toBeCalledWith(expect.any(FileRecordEntity));
 			});
 		});
 
@@ -206,7 +206,7 @@ describe('FilesStorageService copy methods', () => {
 				const sourceFile = fileRecords[0];
 				const error = new Error('test');
 
-				fileRecordRepo.save.mockRejectedValueOnce(error);
+				fileRecordRepo.create.mockRejectedValueOnce(error);
 
 				return { sourceFile, userId, params, error };
 			};

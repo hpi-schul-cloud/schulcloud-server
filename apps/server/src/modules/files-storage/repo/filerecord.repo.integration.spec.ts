@@ -75,6 +75,10 @@ describe('FileRecordRepo', () => {
 		});
 	});
 */
+	describe('update', () => {
+		// TODO: test are missed
+	});
+
 	// TODO: buildWithID is bad
 	describe('delete', () => {
 		describe('when no DB record exists', () => {

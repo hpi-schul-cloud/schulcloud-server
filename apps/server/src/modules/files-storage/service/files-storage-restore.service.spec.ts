@@ -208,7 +208,7 @@ describe('FilesStorageService restore methods', () => {
 			const setup = () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 
-				fileRecordRepo.save.mockResolvedValueOnce();
+				fileRecordRepo.create.mockResolvedValueOnce();
 
 				return { fileRecords };
 			};
@@ -220,7 +220,7 @@ describe('FilesStorageService restore methods', () => {
 
 				await service.restore(fileRecords);
 
-				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(1, unmarkedFileRecords);
+				expect(fileRecordRepo.create).toHaveBeenNthCalledWith(1, unmarkedFileRecords);
 			});
 
 			it('should call storageClient.restore', async () => {
@@ -237,7 +237,7 @@ describe('FilesStorageService restore methods', () => {
 			const setup = () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 
-				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
+				fileRecordRepo.create.mockRejectedValueOnce(new Error('bla'));
 
 				return { fileRecords };
 			};
@@ -268,7 +268,7 @@ describe('FilesStorageService restore methods', () => {
 				const { fileRecords } = setup();
 
 				await expect(service.restore(fileRecords)).rejects.toThrow(new Error('bla'));
-				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(
+				expect(fileRecordRepo.create).toHaveBeenNthCalledWith(
 					2,
 					expect.arrayContaining([
 						expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) }),

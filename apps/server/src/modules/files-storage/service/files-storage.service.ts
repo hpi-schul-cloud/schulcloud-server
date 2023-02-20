@@ -57,7 +57,7 @@ export interface IFilesStorageRepo {
 
 	delete(FileRecord: FileRecord[]): Promise<void>;
 
-	save(FileRecord: FileRecordParams[]): Promise<FileRecord[]>;
+	create(FileRecord: FileRecordParams[]): Promise<FileRecord[]>;
 
 	update(FileRecords: FileRecord[]): Promise<FileRecord[]>;
 }
@@ -132,7 +132,7 @@ export class FilesStorageService {
 			securityCheck: new FileSecurityCheck(), // move this to builder in domain
 		};
 
-		const [fileRecord] = await this.fileRecordRepo.save([fileRecordParams]);
+		const [fileRecord] = await this.fileRecordRepo.create([fileRecordParams]);
 		await this.createFileInStorageAndRollbackOnError(fileRecord, params, fileDescription);
 
 		return fileRecord;
@@ -300,7 +300,7 @@ export class FilesStorageService {
 		userId: EntityId
 	): Promise<FileRecord> {
 		const fileRecordProps = sourceFile.copy(userId, targetParams);
-		const [fileRecord] = await this.fileRecordRepo.save([fileRecordProps]);
+		const [fileRecord] = await this.fileRecordRepo.create([fileRecordProps]);
 
 		return fileRecord;
 	}

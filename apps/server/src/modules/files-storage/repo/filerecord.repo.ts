@@ -84,19 +84,21 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 	}
 */
 	public async delete(fileRecords: FileRecord[]): Promise<void> {
-		const entities = FileRecordDOMapper.getEntitiesFromDOs(fileRecords);
-		await this.em.removeAndFlush(entities);
+		const entities = await this.find(fileRecords);
+		await this.removeAndFlush(entities);
 	}
 
-	// include some double mapping
+	// note: persist is split in update and create
 	public async update(fileRecords: FileRecord[]): Promise<FileRecord[]> {
-		const entities = FileRecordDOMapper.getEntitiesFromDOs(fileRecords);
+		const entities = await this.find(fileRecords);
+		FileRecordDOMapper.mergeDOsIntoEntities(fileRecords, entities);
 		const updatedFileRecords = await this.persistAndFlush(entities);
 
 		return updatedFileRecords;
 	}
 
-	public async save(props: IFileRecordParams[]): Promise<FileRecord[]> {
+	// note: is renamed to create
+	public async create(props: IFileRecordParams[]): Promise<FileRecord[]> {
 		const entities = FileRecordDOMapper.createNewEntities(props);
 		const fileRecords = await this.persistAndFlush(entities);
 
@@ -104,6 +106,17 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 	}
 
 	// ----------------------------------------------------------------
+	private async removeAndFlush(entities: FileRecordEntity[]): Promise<void> {
+		await this.em.removeAndFlush(entities);
+	}
+
+	private async find(fileRecords: FileRecord[]) {
+		const scope = new FileRecordScope().byIds(fileRecords);
+		const entities = await this.em.find(FileRecordEntity, scope.query);
+
+		return entities;
+	}
+
 	private async persistAndFlush(entities: FileRecordEntity[]): Promise<FileRecord[]> {
 		await this.em.persistAndFlush(entities);
 		const fileRecords = FileRecordDOMapper.entitiesToDOs(entities);
