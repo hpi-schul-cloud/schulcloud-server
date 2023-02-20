@@ -25,7 +25,7 @@ export class TaskMapper {
 			});
 		}
 		if (task.taskCard) {
-			dto.taskCardId = task.taskCard.id;
+			dto.taskCardId = task.taskCard;
 		}
 		dto.availableDate = task.availableDate;
 		dto.duedate = task.dueDate;

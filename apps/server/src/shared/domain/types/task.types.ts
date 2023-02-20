@@ -1,4 +1,4 @@
-import type { Course, InputFormat, Lesson, School, Submission, TaskCard, User } from '@shared/domain/';
+import type { Course, InputFormat, Lesson, School, Submission, User } from '@shared/domain/';
 
 interface ITask {
 	name: string;
@@ -6,6 +6,7 @@ interface ITask {
 	descriptionInputFormat?: InputFormat;
 	availableDate?: Date;
 	dueDate?: Date;
+	taskCard?: string;
 }
 
 export interface ITaskUpdate extends ITask {
@@ -21,7 +22,6 @@ export interface ITaskCreate extends ITask {
 export interface ITaskProperties extends ITask {
 	course?: Course;
 	lesson?: Lesson;
-	taskCard?: TaskCard;
 	creator: User;
 	school: School;
 	finished?: User[];

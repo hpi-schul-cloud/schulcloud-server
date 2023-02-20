@@ -10,7 +10,6 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
-import type { TaskCard } from './task-card.entity';
 import { User } from './user.entity';
 
 export class TaskWithStatusVo {
@@ -67,6 +66,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@Property({ nullable: true })
 	teamSubmissions?: boolean;
 
+	@Property({ nullable: true })
+	taskCard?: string;
+
 	@Index()
 	@ManyToOne('User', { fieldName: 'teacherId' })
 	creator: User;
@@ -85,10 +87,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);
-
-	@Index()
-	@ManyToOne('TaskCard', { fieldName: 'taskCardId', nullable: true })
-	taskCard?: TaskCard;
 
 	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
