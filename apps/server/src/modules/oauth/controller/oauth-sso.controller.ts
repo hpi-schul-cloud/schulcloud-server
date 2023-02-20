@@ -9,15 +9,21 @@ import {
 	Res,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { CookieOptions, Request, Response } from 'express';
+import { ValidationError } from '@shared/common';
+import { S3UserMetadata } from 'aws-sdk/clients/s3control';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
+import { MigrationResponse } from '../../school/controller/dto';
+import { UserMigrationResponse } from './dto/user-migration.response';
+import { UserMigrationDto } from '../../user-migration/service/dto/userMigration.dto';
+import { UserMigrationMapper } from '../../user-migration/mapper/user-migration.mapper';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -81,15 +87,17 @@ export class OauthSSOController {
 	@Get('oauth/:systemId/migration')
 	@Authenticate('jwt')
 	@ApiOkResponse({ description: 'The User has been succesfully migrated.' })
+	@ApiResponse({ type: InternalServerErrorException, description: 'The migration of the User was not possible. ' })
 	async migrateUser(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AuthorizationParams,
 		@Res() res: Response,
 		@Param() urlParams: SystemUrlParams
 	): Promise<void> {
-		const migration = await this.oauthUc.migrateUser(currentUser.userId, query, urlParams.systemId);
-		if (migration.redirect) {
-			res.redirect(migration.redirect);
+		const migration: UserMigrationDto = await this.oauthUc.migrateUser(currentUser.userId, query, urlParams.systemId);
+		const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
+		if (response.redirect) {
+			res.redirect(response.redirect);
 		} else {
 			throw new InternalServerErrorException(
 				`Migration of ${currentUser.userId} to system ${urlParams.systemId} failed.`

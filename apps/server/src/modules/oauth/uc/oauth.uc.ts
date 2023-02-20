@@ -12,7 +12,7 @@ import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
-import { UserMigrationDto } from '../controller/dto/userMigrationDto';
+import { UserMigrationDto } from '../../user-migration/service/dto/userMigration.dto';
 import { SchoolService } from '../../school';
 
 @Injectable()
@@ -130,16 +130,35 @@ export class OauthUc {
 		return oAuthError;
 	}
 
-	async migrateUser(currentUserId: string, query: AuthorizationParams, systemId: string): Promise<UserMigrationDto> {
+	async migrateUser(
+		currentUserId: string,
+		query: AuthorizationParams,
+		targetSystemId: string
+	): Promise<UserMigrationDto> {
+		const queryToken: OauthTokenResponse = await this.authorizeForMigration(query, targetSystemId);
+		const data: OauthDataDto = await this.provisioningService.getData(
+			queryToken.access_token,
+			queryToken.id_token,
+			targetSystemId
+		);
+		const migrationDto = this.userMigrationService.migrateUser(
+			currentUserId,
+			data.externalUser.externalId,
+			targetSystemId
+		);
+		return migrationDto;
+	}
+
+	private async authorizeForMigration(query: AuthorizationParams, targetSystemId: string): Promise<OauthTokenResponse> {
 		const authCode: string = this.oauthService.checkAuthorizationCode(query);
 
-		const system: SystemDto = await this.systemService.findOAuthById(systemId);
+		const system: SystemDto = await this.systemService.findOAuthById(targetSystemId);
 		if (!system.id) {
-			throw new NotFoundException(`System with id "${systemId}" does not exist.`);
+			throw new NotFoundException(`System with id "${targetSystemId}" does not exist.`);
 		}
 		const oauthConfig: OauthConfig = this.extractOauthConfigFromSystem(system);
 
-		const migrationRedirect: string = this.userMigrationService.getMigrationRedirectUri(systemId);
+		const migrationRedirect: string = this.userMigrationService.getMigrationRedirectUri(targetSystemId);
 		const queryToken: OauthTokenResponse = await this.oauthService.requestToken(
 			authCode,
 			oauthConfig,
@@ -148,20 +167,6 @@ export class OauthUc {
 
 		await this.oauthService.validateToken(queryToken.id_token, oauthConfig);
 
-		const data: OauthDataDto = await this.provisioningService.getData(
-			queryToken.access_token,
-			queryToken.id_token,
-			system.id
-		);
-
-		if (data.externalSchool) {
-			await this.schoolService.migrateSchool(
-				data.externalSchool?.externalId,
-				data.externalSchool?.officialSchoolNumber as string,
-				systemId
-			);
-		}
-		const migrationDto = this.userMigrationService.migrateUser(currentUserId, data.externalUser.externalId, systemId);
-		return migrationDto;
+		return queryToken;
 	}
 }

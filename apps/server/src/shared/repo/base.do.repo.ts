@@ -17,17 +17,11 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 	protected abstract mapDOToEntityProperties(entityDO: DO): P;
 
 	async save(entityDo: DO): Promise<DO> {
-		const savedDos: DO[] = await this.saveAllWithoutFlush([entityDo]);
-		await this._em.flush();
+		const savedDos: DO[] = await this.saveAll([entityDo]);
 		return savedDos[0];
 	}
 
-	async saveWithoutFlush(entityDo: DO): Promise<DO> {
-		const savedDos: DO[] = await this.saveAllWithoutFlush([entityDo]);
-		return savedDos[0];
-	}
-
-	async saveAllWithoutFlush(entityDos: DO[]): Promise<DO[]> {
+	async saveAll(entityDos: DO[]): Promise<DO[]> {
 		const promises: Promise<E>[] = entityDos.map(async (domainObject: DO): Promise<E> => {
 			let entity: E;
 			if (!domainObject.id) {
@@ -39,7 +33,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 		});
 
 		const entities: E[] = await Promise.all(promises);
-		this._em.persist(entities);
+		await this._em.persistAndFlush(entities);
 
 		const savedDos: DO[] = entities.map((entity) => this.mapEntityToDO(entity));
 		return savedDos;

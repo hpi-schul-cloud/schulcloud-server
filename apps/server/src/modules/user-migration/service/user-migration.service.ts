@@ -5,15 +5,19 @@ import { SchoolService } from '@src/modules/school';
 import { EntityNotFoundError } from '@shared/common';
 import { SystemDto, SystemService } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Logger } from '@src/core/logger';
+import { AccountDto } from '@src/modules/account/services/dto';
+import { AccountService } from '@src/modules/account/services/account.service';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
-import { UserMigrationDto } from '../../oauth/controller/dto/userMigrationDto';
+import { UserMigrationDto } from './dto/userMigration.dto';
 
 @Injectable()
 export class UserMigrationService {
 	private readonly hostUrl: string;
 
-	private readonly scDomain: string;
+	private readonly apiUrl: string;
 
 	private readonly dashboardUrl: string = '/dashboard';
 
@@ -24,10 +28,13 @@ export class UserMigrationService {
 	constructor(
 		private readonly schoolService: SchoolService,
 		private readonly systemService: SystemService,
-		private readonly userService: UserService
+		private readonly userService: UserService,
+
+		private readonly logger: Logger,
+		private readonly accountService: AccountService
 	) {
 		this.hostUrl = Configuration.get('HOST') as string;
-		this.scDomain = Configuration.get('SC_DOMAIN') as string;
+		this.apiUrl = Configuration.get('API_URL') as string;
 	}
 
 	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {
@@ -123,20 +130,39 @@ export class UserMigrationService {
 	}
 
 	getMigrationRedirectUri(systemId: string): string {
-		const combinedUri = new URL(this.scDomain);
-		combinedUri.pathname = `/api/v3/sso/oauth/${systemId}/migration`;
+		const combinedUri = new URL(this.apiUrl);
+		combinedUri.pathname = `api/v3/sso/oauth/${systemId}/migration`;
 		return combinedUri.toString();
 	}
 
 	async migrateUser(currentUserId: string, externalUserId: string, targetSystemId: string): Promise<UserMigrationDto> {
-		const userMigrationDto = new UserMigrationDto({});
+		const userDO: UserDO = await this.userService.findById(currentUserId);
+		const account: AccountDto = await this.accountService.findByUserIdOrFail(currentUserId);
+		const userDOCopy: UserDO = { ...userDO };
+		const accountCopy: AccountDto = { ...account };
 
 		try {
-			await this.userService.migrateUser(currentUserId, externalUserId, targetSystemId);
-			userMigrationDto.redirect = `${this.hostUrl}/migration/succeed`;
+			userDO.previousExternalId = userDO.externalId;
+			userDO.externalId = externalUserId;
+			userDO.lastLoginSystemChange = new Date();
+			await this.userService.save(userDO);
+			account.systemId = targetSystemId;
+			await this.accountService.save(account);
+
+			const userMigrationDto: UserMigrationDto = new UserMigrationDto({
+				redirect: `${this.hostUrl}/migration/succeed`,
+			});
 			return userMigrationDto;
 		} catch (e) {
-			userMigrationDto.redirect = `${this.hostUrl}/dashboard`;
+			await this.userService.save(userDOCopy);
+			await this.accountService.save(accountCopy);
+
+			this.logger.log(`This error occurred during migration of User: ${currentUserId} `);
+			this.logger.log(e);
+
+			const userMigrationDto: UserMigrationDto = new UserMigrationDto({
+				redirect: `${this.hostUrl}/dashboard`,
+			});
 			return userMigrationDto;
 		}
 	}

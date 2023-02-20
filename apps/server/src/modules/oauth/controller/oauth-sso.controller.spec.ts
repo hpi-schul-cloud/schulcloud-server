@@ -11,7 +11,7 @@ import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
 import { OauthSSOController } from './oauth-sso.controller';
-import { UserMigrationDto } from './dto/userMigrationDto';
+import { UserMigrationDto } from '../../user-migration/service/dto/userMigration.dto';
 
 describe('OAuthController', () => {
 	let module: TestingModule;
@@ -186,15 +186,28 @@ describe('OAuthController', () => {
 	});
 
 	describe('migrateUser', () => {
+		const migrationSetup = () => {
+			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+
+			const { res } = getMockRes();
+
+			const query: AuthorizationParams = new AuthorizationParams();
+			query.code = 'defaultAuthCode';
+
+			const systemParams: SystemUrlParams = new SystemUrlParams();
+			systemParams.systemId = 'systemId';
+
+			return {
+				currentUser,
+				res,
+				query,
+				systemParams,
+			};
+		};
+
 		describe('when migration was successful ', () => {
 			it('should redirect to migration succeed page ', async () => {
-				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-				const { res } = getMockRes();
-				const query: AuthorizationParams = new AuthorizationParams();
-				query.code = 'defaultAuthCode';
-				const systemParams: SystemUrlParams = new SystemUrlParams();
-				systemParams.systemId = 'systemId';
-
+				const { currentUser, res, query, systemParams } = migrationSetup();
 				oauthUc.migrateUser.mockResolvedValue({ redirect: `${mockHost}/migration/succeed` });
 
 				await controller.migrateUser(currentUser, query, res, systemParams);
@@ -205,13 +218,7 @@ describe('OAuthController', () => {
 
 		describe('when migration failed ', () => {
 			it('should redirect to dashboard ', async () => {
-				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-				const { res } = getMockRes();
-				const query: AuthorizationParams = new AuthorizationParams();
-				query.code = 'defaultAuthCode';
-				const systemParams: SystemUrlParams = new SystemUrlParams();
-				systemParams.systemId = 'systemId';
-
+				const { currentUser, res, query, systemParams } = migrationSetup();
 				oauthUc.migrateUser.mockResolvedValue({ redirect: `${mockHost}/dashboard` });
 
 				await controller.migrateUser(currentUser, query, res, systemParams);
@@ -222,17 +229,13 @@ describe('OAuthController', () => {
 
 		describe('when migration redirect is not given ', () => {
 			it('should throw InternalServerErrorException ', async () => {
-				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-				const { res } = getMockRes();
-				const query: AuthorizationParams = new AuthorizationParams();
-				query.code = 'defaultAuthCode';
-				const systemParams: SystemUrlParams = new SystemUrlParams();
-				systemParams.systemId = 'systemId';
-
+				const { currentUser, res, query, systemParams } = migrationSetup();
 				oauthUc.migrateUser.mockResolvedValue(new UserMigrationDto({}));
 
 				await expect(controller.migrateUser(currentUser, query, res, systemParams)).rejects.toThrow(
-					InternalServerErrorException
+					new InternalServerErrorException(
+						`Migration of ${currentUser.userId} to system ${systemParams.systemId} failed.`
+					)
 				);
 			});
 		});

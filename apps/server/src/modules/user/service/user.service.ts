@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Account, EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
+import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleRepo, UserRepo } from '@shared/repo';
@@ -9,18 +9,16 @@ import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
-import { TransactionUtil } from '@shared/common/utils/transaction.util';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { Logger } from '@src/core/logger';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
-import { AccountRepo } from '../../account/repo/account.repo';
 
 @Injectable()
 export class UserService {
 	constructor(
 		private readonly userRepo: UserRepo,
-		private readonly accountRepo: AccountRepo,
 		private readonly userDORepo: UserDORepo,
 		private readonly roleRepo: RoleRepo,
 		private readonly schoolMapper: SchoolMapper,
@@ -28,7 +26,8 @@ export class UserService {
 		private readonly permissionService: PermissionService,
 		private readonly configService: ConfigService<IUserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly transactionUtil: TransactionUtil
+		private readonly accountService: AccountService,
+		private readonly logger: Logger
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
@@ -42,6 +41,11 @@ export class UserService {
 		const userEntity = await this.userRepo.findById(id, true);
 		const userDto = UserMapper.mapFromEntityToDto(userEntity);
 		return userDto;
+	}
+
+	async findById(id: string): Promise<UserDO> {
+		const userDO = await this.userDORepo.findById(id, true);
+		return userDO;
 	}
 
 	async save(user: UserDO): Promise<UserDO> {
@@ -101,19 +105,5 @@ export class UserService {
 
 		const promise: Promise<void> = this.userRepo.save(saveEntity);
 		return promise;
-	}
-
-	async migrateUser(currentUserId: string, externalId: string, targetSystemId: string): Promise<void> {
-		await this.transactionUtil.doTransaction(async () => {
-			const userDO: UserDO = await this.userDORepo.findById(currentUserId, true);
-			userDO.legacyExternalId = userDO.externalId;
-			userDO.externalId = externalId;
-			userDO.lastLoginSystemChange = new Date();
-			await this.userDORepo.saveWithoutFlush(userDO);
-
-			const account: Account = await this.accountRepo.findByUserIdOrFail(currentUserId);
-			account.systemId = new ObjectId(targetSystemId);
-			this.accountRepo.saveWithoutFlush(account);
-		});
 	}
 }
