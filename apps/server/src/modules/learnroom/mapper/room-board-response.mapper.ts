@@ -1,15 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { Course, TaskWithStatusVo } from '@shared/domain';
-import { BoardElementResponse, BoardLessonResponse, BoardResponse, BoardTaskResponse } from '../controller/dto';
+import {
+	BoardElementResponse,
+	BoardLessonResponse,
+	BoardTaskResponse,
+	SingleColumnBoardResponse,
+} from '../controller/dto';
 import { LessonMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
 import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
 
 @Injectable()
 export class RoomBoardResponseMapper {
-	mapToResponse(board: RoomBoardDTO): BoardResponse {
+	mapToResponse(board: RoomBoardDTO): SingleColumnBoardResponse {
 		const elements = this.mapBoardElements(board);
 
-		const mapped = new BoardResponse({
+		const mapped = new SingleColumnBoardResponse({
 			roomId: board.roomId,
 			title: board.title,
 			displayColor: board.displayColor,
