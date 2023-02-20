@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardRepo, CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, SingleColumnBoardRepo, TaskRepo, UserRepo } from '@shared/repo';
 import {
 	courseFactory,
 	lessonFactory,
@@ -22,7 +22,7 @@ describe('rooms usecase', () => {
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let userRepo: DeepMocked<UserRepo>;
-	let boardRepo: DeepMocked<BoardRepo>;
+	let boardRepo: DeepMocked<SingleColumnBoardRepo>;
 	let factory: DeepMocked<RoomBoardDTOFactory>;
 	let authorisation: DeepMocked<RoomsAuthorisationService>;
 	let roomsService: DeepMocked<RoomsService>;
@@ -56,8 +56,8 @@ describe('rooms usecase', () => {
 					useValue: createMock<UserRepo>(),
 				},
 				{
-					provide: BoardRepo,
-					useValue: createMock<BoardRepo>(),
+					provide: SingleColumnBoardRepo,
+					useValue: createMock<SingleColumnBoardRepo>(),
 				},
 				{
 					provide: RoomBoardDTOFactory,
@@ -79,7 +79,7 @@ describe('rooms usecase', () => {
 		lessonRepo = module.get(LessonRepo);
 		taskRepo = module.get(TaskRepo);
 		userRepo = module.get(UserRepo);
-		boardRepo = module.get(BoardRepo);
+		boardRepo = module.get(SingleColumnBoardRepo);
 		factory = module.get(RoomBoardDTOFactory);
 		authorisation = module.get(RoomsAuthorisationService);
 		roomsService = module.get(RoomsService);

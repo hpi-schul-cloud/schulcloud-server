@@ -1,9 +1,22 @@
-import { Collection, Entity, Enum, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
+import {
+	Collection,
+	Embeddable,
+	Embedded,
+	Entity,
+	Enum,
+	IdentifiedReference,
+	ManyToMany,
+	ManyToOne,
+	OneToOne,
+	Property,
+	wrap,
+} from '@mikro-orm/core';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ILearnroomElement } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { BoardElement, BoardElementType } from './boardelement.entity';
+import { MetaCard } from './card.entity';
 import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
 import type { Task } from './task.entity';
@@ -11,6 +24,44 @@ import type { Task } from './task.entity';
 export enum BoardType {
 	'ColumnBoard' = 'columnboard',
 	'SingleColumnBoard' = 'singlecolumnboard',
+}
+
+export type CardSkeletonProps = {
+	height: number;
+	card: MetaCard;
+};
+
+@Embeddable()
+export class CardSkeleton {
+	constructor(props: CardSkeletonProps) {
+		this.height = props.height;
+		this.card = wrap(props.card).toReference();
+	}
+
+	@Property()
+	height: number;
+
+	@ManyToOne(() => 'MetaCard', { wrappedReference: true })
+	card: IdentifiedReference<MetaCard>;
+}
+
+export type ColumnProps = {
+	title: string;
+	cardSkeletons: CardSkeleton[];
+};
+
+@Embeddable()
+export class Column {
+	constructor(props: ColumnProps) {
+		this.title = props.title;
+		this.cardSkeletons = props.cardSkeletons;
+	}
+
+	@Property()
+	title: string;
+
+	@Embedded(() => CardSkeleton)
+	cardSkeletons: CardSkeleton[] = [];
 }
 
 @Entity({
@@ -23,12 +74,25 @@ export class MetaBoard extends BaseEntityWithTimestamps {
 	boardType!: BoardType;
 }
 
+export type ColumnBoardProps = {
+	title: string;
+	columns: Column[];
+};
+
 @Entity({ discriminatorValue: BoardType.ColumnBoard })
 export class ColumnBoard extends MetaBoard {
-	constructor() {
+	constructor(props: ColumnBoardProps) {
 		super();
 		this.boardType = BoardType.ColumnBoard;
+		this.title = props.title;
+		this.columns = props.columns;
 	}
+
+	@Property()
+	title: string;
+
+	@Embedded(() => Column)
+	columns: Column[] = [];
 }
 
 export type SingleColumnBoardProps = {

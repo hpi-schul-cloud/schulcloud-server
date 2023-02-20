@@ -5,11 +5,12 @@ import { CardElement } from './cardElement.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';
 
-export type ITaskCardProps = ICardCProps & { task: Task; dueDate: Date };
+export type ITaskCardProps = ICardCProps & { task: Task; dueDate: Date; visibleAtDate: Date };
 
 export interface ITaskCard extends ICard {
 	task: Task;
 	dueDate: Date;
+	visibleAtDate: Date;
 }
 @Entity({
 	tableName: 'card',
@@ -19,7 +20,6 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		super();
 
 		this.draggable = props.draggable || true;
-		this.cardType = props.cardType;
 		this.visibleAtDate = props.visibleAtDate;
 		this.dueDate = props.dueDate;
 
@@ -53,7 +53,7 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	}
 
 	public isVisibleBeforeDueDate() {
-		return this.visibleAtDate < this.dueDate;
+		return this.visibleAtDate && this.visibleAtDate < this.dueDate;
 	}
 
 	@OneToOne({ type: 'Task', fieldName: 'taskId', eager: true, unique: true, cascade: [Cascade.ALL] })

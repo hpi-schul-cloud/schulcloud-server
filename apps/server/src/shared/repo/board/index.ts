@@ -1,1 +1,2 @@
-export * from './board.repo';
+export * from './column-board.repo';
+export * from './single-column-board.repo';

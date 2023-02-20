@@ -10,7 +10,7 @@ import {
 	Task,
 	User,
 } from '@shared/domain';
-import { BoardRepo } from '@shared/repo';
+import { SingleColumnBoardRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { getResolvedValues } from '@src/modules/files-storage/helper';
@@ -28,7 +28,7 @@ type BoardCopyParams = {
 export class BoardCopyService {
 	constructor(
 		private readonly logger: Logger,
-		private readonly boardRepo: BoardRepo,
+		private readonly boardRepo: SingleColumnBoardRepo,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly copyHelperService: CopyHelperService

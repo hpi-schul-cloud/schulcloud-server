@@ -1,5 +1,4 @@
 export * from './account.factory';
-export * from './board.factory';
 export * from './boardelement.factory';
 export * from './card-element.factory';
 export * from './course-external-tool.factory';
@@ -16,6 +15,7 @@ export * from './role.factory';
 export * from './school-external-tool.factory';
 export * from './school.factory';
 export * from './share-token.do.factory';
+export * from './single-column-board.factory';
 export * from './storageprovider.factory';
 export * from './submission.factory';
 export * from './system.factory';

@@ -1,0 +1,81 @@
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ColumnBoard } from '@shared/domain';
+import { cleanupCollections } from '@shared/testing';
+
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+
+import { legacyTaskReferenceCardSkeletonFactory } from '@shared/testing/factory/board-card-skeleton.factory';
+import { columnFactory } from '@shared/testing/factory/board-column.factory';
+import { columnBoardFactory } from '@shared/testing/factory/column-board.factory';
+import { ColumnBoardRepo } from './column-board.repo';
+
+describe('SingleColumnBoardRepo', () => {
+	let module: TestingModule;
+	let repo: ColumnBoardRepo;
+	let em: EntityManager;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot()],
+			providers: [ColumnBoardRepo],
+		}).compile();
+		repo = module.get(ColumnBoardRepo);
+		em = module.get(EntityManager);
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	afterEach(async () => {
+		await cleanupCollections(em);
+		await em.nativeDelete(ColumnBoardRepo, {});
+	});
+
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(ColumnBoard);
+	});
+
+	describe('when there is a board with content', () => {
+		const setupBoard = () => {
+			const columns = [
+				columnFactory.build({ cardSkeletons: legacyTaskReferenceCardSkeletonFactory.buildList(3) }),
+				columnFactory.build({ cardSkeletons: legacyTaskReferenceCardSkeletonFactory.buildList(5) }),
+				columnFactory.build({ cardSkeletons: legacyTaskReferenceCardSkeletonFactory.buildList(2) }),
+			];
+			const board = columnBoardFactory.build({ columns });
+			return { board };
+		};
+
+		it('should persist board', async () => {
+			const { board } = setupBoard();
+			await repo.save(board);
+
+			em.clear();
+
+			const result = await em.findOneOrFail(ColumnBoard, { id: board.id });
+			expect(result.id).toEqual(board.id);
+		});
+
+		it('should load board with content', async () => {
+			const { board } = setupBoard();
+			await em.persistAndFlush(board);
+			em.clear();
+
+			const result = await repo.findById(board.id);
+			expect(result.id).toEqual(board.id);
+
+			// check embeddables
+		});
+	});
+
+	/* it('should not load columnboards', async () => {
+		const columnboard = columnBoardFactory.build();
+		await em.persistAndFlush(columnboard);
+		em.clear();
+
+		const call = () => repo.findById(columnboard.id);
+		await expect(call).rejects.toThrow();
+	}); */
+});

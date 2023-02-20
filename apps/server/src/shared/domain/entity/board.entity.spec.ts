@@ -9,7 +9,7 @@ import {
 	taskFactory,
 } from '@shared/testing';
 
-describe('Board Entity', () => {
+describe('SingleColumnBoard Entity', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {

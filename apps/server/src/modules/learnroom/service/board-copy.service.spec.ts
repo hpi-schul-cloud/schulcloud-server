@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SingleColumnBoard } from '@shared/domain';
-import { BoardRepo } from '@shared/repo';
+import { SingleColumnBoardRepo } from '@shared/repo';
 import {
 	courseFactory,
 	lessonBoardElementFactory,
@@ -24,7 +24,7 @@ describe('board copy service', () => {
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
-	let boardRepo: DeepMocked<BoardRepo>;
+	let boardRepo: DeepMocked<SingleColumnBoardRepo>;
 
 	afterAll(async () => {
 		await module.close();
@@ -48,8 +48,8 @@ describe('board copy service', () => {
 					useValue: createMock<CopyHelperService>(),
 				},
 				{
-					provide: BoardRepo,
-					useValue: createMock<BoardRepo>(),
+					provide: SingleColumnBoardRepo,
+					useValue: createMock<SingleColumnBoardRepo>(),
 				},
 				{
 					provide: Logger,
@@ -62,7 +62,7 @@ describe('board copy service', () => {
 		taskCopyService = module.get(TaskCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
-		boardRepo = module.get(BoardRepo);
+		boardRepo = module.get(SingleColumnBoardRepo);
 		boardRepo.save = jest.fn();
 	});
 

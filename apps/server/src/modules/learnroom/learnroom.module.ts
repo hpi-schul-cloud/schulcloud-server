@@ -3,11 +3,11 @@ import { AuthorisationUtils } from '@shared/domain/rules/authorisation.utils';
 import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import {
-	BoardRepo,
 	CourseRepo,
 	DashboardModelMapper,
 	DashboardRepo,
 	LessonRepo,
+	SingleColumnBoardRepo,
 	TaskRepo,
 	UserRepo,
 } from '@shared/repo';
@@ -53,7 +53,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		RoomsUc,
 		TaskRepo,
 		UserRepo,
-		BoardRepo,
+		SingleColumnBoardRepo,
 		RoomBoardResponseMapper,
 		RoomsAuthorisationService,
 		RoomBoardDTOFactory,

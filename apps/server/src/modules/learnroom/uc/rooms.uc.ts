@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, SingleColumnBoardRepo, UserRepo } from '@shared/repo';
 import { RoomsService } from '../service/rooms.service';
 import { RoomBoardDTO } from '../types/room-board.types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
@@ -11,7 +11,7 @@ export class RoomsUc {
 	constructor(
 		private readonly courseRepo: CourseRepo,
 		private readonly userRepo: UserRepo,
-		private readonly boardRepo: BoardRepo,
+		private readonly boardRepo: SingleColumnBoardRepo,
 		private readonly factory: RoomBoardDTOFactory,
 		private readonly authorisationService: RoomsAuthorisationService,
 		private readonly roomsService: RoomsService

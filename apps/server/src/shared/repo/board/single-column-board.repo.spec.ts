@@ -12,19 +12,20 @@ import {
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { BoardRepo } from './board.repo';
+import { columnBoardFactory } from '@shared/testing/factory/column-board.factory';
+import { SingleColumnBoardRepo } from './single-column-board.repo';
 
-describe('BoardRepo', () => {
+describe('SingleColumnBoardRepo', () => {
 	let module: TestingModule;
-	let repo: BoardRepo;
+	let repo: SingleColumnBoardRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [BoardRepo],
+			providers: [SingleColumnBoardRepo],
 		}).compile();
-		repo = module.get(BoardRepo);
+		repo = module.get(SingleColumnBoardRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -130,5 +131,14 @@ describe('BoardRepo', () => {
 		const result = await repo.findById(board.id);
 		const task = result.references.getItems()[0].target as Task;
 		expect(task.name).toBeDefined();
+	});
+
+	it('should not load columnboards', async () => {
+		const columnboard = columnBoardFactory.build();
+		await em.persistAndFlush(columnboard);
+		em.clear();
+
+		const call = () => repo.findById(columnboard.id);
+		await expect(call).rejects.toThrow();
 	});
 });

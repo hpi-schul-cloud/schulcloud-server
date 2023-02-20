@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Course, EntityId, User } from '@shared/domain';
-import { BoardRepo, CourseRepo } from '@shared/repo';
+import { CourseRepo, SingleColumnBoardRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { BoardCopyService } from './board-copy.service';
@@ -16,7 +16,7 @@ type CourseCopyParams = {
 export class CourseCopyService {
 	constructor(
 		private readonly courseRepo: CourseRepo,
-		private readonly boardRepo: BoardRepo,
+		private readonly boardRepo: SingleColumnBoardRepo,
 		private readonly roomsService: RoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,

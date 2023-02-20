@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardRepo, LessonRepo, TaskRepo } from '@shared/repo';
+import { LessonRepo, SingleColumnBoardRepo, TaskRepo } from '@shared/repo';
 import {
 	courseFactory,
 	lessonFactory,
@@ -17,7 +17,7 @@ describe('rooms service', () => {
 	let roomsService: RoomsService;
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
-	let boardRepo: DeepMocked<BoardRepo>;
+	let boardRepo: DeepMocked<SingleColumnBoardRepo>;
 	let orm: MikroORM;
 
 	afterAll(async () => {
@@ -40,15 +40,15 @@ describe('rooms service', () => {
 					useValue: createMock<TaskRepo>(),
 				},
 				{
-					provide: BoardRepo,
-					useValue: createMock<BoardRepo>(),
+					provide: SingleColumnBoardRepo,
+					useValue: createMock<SingleColumnBoardRepo>(),
 				},
 			],
 		}).compile();
 		roomsService = module.get(RoomsService);
 		lessonRepo = module.get(LessonRepo);
 		taskRepo = module.get(TaskRepo);
-		boardRepo = module.get(BoardRepo);
+		boardRepo = module.get(SingleColumnBoardRepo);
 	});
 
 	describe('updateBoard', () => {

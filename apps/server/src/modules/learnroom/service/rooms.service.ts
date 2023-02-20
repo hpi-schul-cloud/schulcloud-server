@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, SingleColumnBoard } from '@shared/domain';
-import { BoardRepo, LessonRepo, TaskRepo } from '@shared/repo';
+import { LessonRepo, SingleColumnBoardRepo, TaskRepo } from '@shared/repo';
 
 @Injectable()
 export class RoomsService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly lessonRepo: LessonRepo,
-		private readonly boardRepo: BoardRepo
+		private readonly boardRepo: SingleColumnBoardRepo
 	) {}
 
 	async updateBoard(board: SingleColumnBoard, roomId: EntityId, userId: EntityId): Promise<SingleColumnBoard> {

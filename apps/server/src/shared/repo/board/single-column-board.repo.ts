@@ -3,7 +3,7 @@ import { Course, EntityId, LessonBoardElement, SingleColumnBoard, TaskBoardEleme
 import { BaseRepo } from '../base.repo';
 
 @Injectable()
-export class BoardRepo extends BaseRepo<SingleColumnBoard> {
+export class SingleColumnBoardRepo extends BaseRepo<SingleColumnBoard> {
 	get entityName() {
 		return SingleColumnBoard;
 	}
