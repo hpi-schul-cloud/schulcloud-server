@@ -4,10 +4,11 @@ import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
 import { isDefined } from 'class-validator';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
+import { Logger } from '../../../core/logger';
 
 @Injectable()
 export class SchoolService {
-	constructor(readonly schoolRepo: SchoolRepo) {}
+	constructor(readonly schoolRepo: SchoolRepo, private readonly logger: Logger) {}
 
 	async createOrUpdateSchool(school: SchoolDO): Promise<SchoolDO> {
 		let createdSchool: SchoolDO;
@@ -76,20 +77,39 @@ export class SchoolService {
 	}
 
 	async migrateSchool(externalId: string, schoolNumber: string, targetSystemId: string): Promise<void> {
-		let isSchoolMigrated: boolean = false;
+		if (!(await this.getSchoolByExternalId(externalId, targetSystemId))) {
+			const schoolDO: SchoolDO | null = await this.schoolRepo.findBySchoolNumber(schoolNumber);
 
-		if (await this.getSchoolByExternalId(externalId, targetSystemId)) {
-			isSchoolMigrated = true;
-		}
-		if (!isSchoolMigrated) {
-			const schoolDO: SchoolDO | null = await this.schoolRepo.findBySchoolNumber(schoolNumber); //TODO NI_ mismatch
 			if (schoolDO) {
-				if (schoolDO.systems) {
-					schoolDO.systems.push(targetSystemId);
-				} else schoolDO.systems = [targetSystemId];
-				schoolDO.previousExternalId = schoolDO.externalId;
-				schoolDO.externalId = externalId;
+				const schoolDOCopy: SchoolDO = { ...schoolDO };
+
+				try {
+					await this.doMigration(externalId, schoolDO, targetSystemId);
+				} catch (e) {
+					await this.rollbackMigration(schoolDOCopy);
+					this.logger.log(
+						`This error occurred during migration of School with official school number: ${schoolDO.officialSchoolNumber} `
+					);
+					this.logger.log(e);
+				}
 			} else throw new Error('official school number not set'); //TODO Errorhandling?
+		}
+	}
+
+	private async doMigration(externalId: string, schoolDO: SchoolDO, targetSystemId: string): Promise<void> {
+		if (schoolDO.systems) {
+			schoolDO.systems.push(targetSystemId);
+		} else {
+			schoolDO.systems = [targetSystemId];
+		}
+		schoolDO.previousExternalId = schoolDO.externalId;
+		schoolDO.externalId = externalId;
+		await this.save(schoolDO);
+	}
+
+	private async rollbackMigration(schoolDO: SchoolDO) {
+		if (schoolDO) {
+			await this.save(schoolDO);
 		}
 	}
 

@@ -14,12 +14,13 @@ import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
 import { NotFoundException } from '@nestjs/common';
-import { SystemDto } from '../../system/service/dto/system.dto';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import resetAllMocks = jest.resetAllMocks;
-import { UserMigrationDto } from '../../user-migration/service/dto/userMigration.dto';
+import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
+import { SchoolService } from '@src/modules/school';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -30,6 +31,7 @@ describe('OAuthUc', () => {
 	let systemService: DeepMocked<SystemService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userService: DeepMocked<UserService>;
+	let schoolService: DeepMocked<SchoolService>;
 	let userMigrationService: DeepMocked<UserMigrationService>;
 
 	beforeAll(async () => {
@@ -59,6 +61,10 @@ describe('OAuthUc', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+				{
 					provide: UserMigrationService,
 					useValue: createMock<UserMigrationService>(),
 				},
@@ -70,6 +76,7 @@ describe('OAuthUc', () => {
 		oauthService = module.get(OAuthService);
 		provisioningService = module.get(ProvisioningService);
 		userService = module.get(UserService);
+		schoolService = module.get(SchoolService);
 		userMigrationService = module.get(UserMigrationService);
 	});
 
@@ -413,6 +420,7 @@ describe('OAuthUc', () => {
 				userMigrationDto,
 				userMigrationFailedDto,
 				oauthTokenResponse,
+				oauthData,
 			};
 		};
 
@@ -447,6 +455,39 @@ describe('OAuthUc', () => {
 					systemService.findOAuthById.mockResolvedValue(systemFactory.build());
 
 					await expect(service.migrateUser('currentUserId', query, 'systemdId')).rejects.toThrow(NotFoundException);
+				});
+			});
+
+			describe('when external school and official school number is defined', () => {
+				it('should call schoolService', async () => {
+					const { oauthData, query, system, userMigrationDto } = setupMigration();
+					oauthData.externalSchool = {
+						externalId: 'mockId',
+						officialSchoolNumber: 'mockNumber',
+						name: 'mockName',
+					};
+					systemService.findOAuthById.mockResolvedValue(system);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+					await service.migrateUser('currentUserId', query, system.id as string);
+
+					expect(schoolService.migrateSchool).toHaveBeenCalledWith(
+						oauthData.externalSchool.externalId,
+						oauthData.externalSchool.officialSchoolNumber,
+						'systemId'
+					);
+				});
+			});
+
+			describe('when external school is not defined', () => {
+				it('should not call schoolService', async () => {
+					const { query, system, userMigrationDto } = setupMigration();
+					systemService.findOAuthById.mockResolvedValue(system);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+					await service.migrateUser('currentUserId', query, system.id as string);
+
+					expect(schoolService.migrateSchool).not.toHaveBeenCalled();
 				});
 			});
 		});

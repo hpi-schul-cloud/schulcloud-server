@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId, OauthConfig } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
@@ -104,7 +104,11 @@ export class OauthUc {
 		return response;
 	}
 
-	private async shouldUserMigrate(externalUserId: string, officialSchoolNumber: string, systemId: EntityId) {
+	private async shouldUserMigrate(
+		externalUserId: string,
+		officialSchoolNumber: string,
+		systemId: EntityId
+	): Promise<boolean> {
 		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 		const isSchoolInMigration: boolean = await this.userMigrationService.isSchoolInMigration(officialSchoolNumber);
 
@@ -143,19 +147,33 @@ export class OauthUc {
 		);
 
 		if (data.externalSchool) {
-			await this.schoolService.migrateSchool(
-				data.externalSchool.externalId,
-				data.externalSchool.officialSchoolNumber as string, //TODO
-				targetSystemId
-			);
+			try {
+				await this.migrateSchool(data, targetSystemId);
+				//TODO refactor after N21-504 merge
+			} catch (e) {
+				return new UserMigrationDto({ redirect: 'migrationError?code=official_school_number_mismatch' });
+			}
 		}
 
-		const migrationDto = this.userMigrationService.migrateUser(
+		const migrationDto: Promise<UserMigrationDto> = this.userMigrationService.migrateUser(
 			currentUserId,
 			data.externalUser.externalId,
 			targetSystemId
 		);
 		return migrationDto;
+	}
+
+	private async migrateSchool(data: OauthDataDto, targetSystemId: string): Promise<void> {
+		if (!data.externalSchool || !data.externalSchool.officialSchoolNumber) {
+			throw new BadRequestException(
+				`Migration of school failed for user with externalId ${data.externalUser.externalId}. OauthDataDto does not contain officialSchoolNumber.`
+			);
+		}
+		await this.schoolService.migrateSchool(
+			data.externalSchool.externalId,
+			data.externalSchool.officialSchoolNumber,
+			targetSystemId
+		);
 	}
 
 	private async authorizeForMigration(query: AuthorizationParams, targetSystemId: string): Promise<OauthTokenResponse> {
