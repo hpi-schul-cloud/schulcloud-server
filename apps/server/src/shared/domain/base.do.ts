@@ -6,7 +6,7 @@ export type BaseDOProps = {
 
 // TODO: Rename
 export abstract class BaseDO2<T> {
-	props: T & BaseDOProps; // possible to make it protected
+	protected props: T & BaseDOProps; // possible to make it protected
 	// it is possible to hold the entity as reference on this place, but then we have implicit
 	// the orm in our domain
 

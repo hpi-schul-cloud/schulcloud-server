@@ -1,7 +1,6 @@
-import { Reference } from '@mikro-orm/core';
 import { BaseRepo2, Counted, EntityId, IFindOptions, SortOrder } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
-import { EntityManager as MongoEntityManager } from '@mikro-orm/mongodb';
+import { DataBaseManager } from '@shared/infra/database/database-manager';
 import { FileRecord, IFileRecordParams } from '../domain';
 import type { IFilesStorageRepo } from '../service';
 import { FileRecordDOMapper } from './fileRecordDO.mapper';
@@ -12,20 +11,20 @@ import { FileRecordEntity } from './filerecord.entity';
 // TODO: Isolate MongoEntityManager in additional class
 @Injectable()
 export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStorageRepo {
-	constructor(private readonly em: MongoEntityManager) {
+	constructor(private readonly dbm: DataBaseManager) {
 		super();
 	}
 
 	public async findOneById(id: EntityId): Promise<FileRecord> {
 		const scope = new FileRecordScope().byFileRecordId(id).byMarkedForDelete(false);
-		const fileRecord = await this.findOneOrFail(scope);
+		const fileRecord = await this.findOne(scope);
 
 		return fileRecord;
 	}
 
 	public async findOneByIdMarkedForDelete(id: EntityId): Promise<FileRecord> {
 		const scope = new FileRecordScope().byFileRecordId(id).byMarkedForDelete(true);
-		const fileRecord = await this.findOneOrFail(scope);
+		const fileRecord = await this.findOne(scope);
 
 		return fileRecord;
 	}
@@ -55,7 +54,69 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 	public async findBySecurityCheckRequestToken(token: string): Promise<FileRecord> {
 		// Must also find expires in future. Please do not add .byExpires().
 		const scope = new FileRecordScope().bySecurityCheckRequestToken(token);
-		const fileRecord = await this.findOneOrFail(scope);
+		const fileRecord = await this.findOne(scope);
+
+		return fileRecord;
+	}
+
+	public async delete(fileRecords: FileRecord[]): Promise<void> {
+		const entities = await this.find(fileRecords);
+		await this.dbm.remove(entities);
+	}
+
+	// note: persist is split in update and create
+	public async update(fileRecords: FileRecord[]): Promise<FileRecord[]> {
+		const entities = await this.find(fileRecords);
+		FileRecordDOMapper.mergeDOsIntoEntities(fileRecords, entities);
+		const updatedFileRecords = await this.persistAndFlush(entities);
+
+		return updatedFileRecords;
+	}
+
+	// note: is renamed to create
+	public async create(props: IFileRecordParams[]): Promise<FileRecord[]> {
+		const entities = FileRecordDOMapper.createNewEntities(props);
+		const fileRecords = await this.persistAndFlush(entities);
+
+		return fileRecords;
+	}
+
+	// ---------------------------------------------------------------
+	private async find(fileRecords: FileRecord[]): Promise<FileRecordEntity[]> {
+		const scope = new FileRecordScope().byIds(fileRecords);
+		const entities = await this.dbm.find(FileRecordEntity, scope.query);
+
+		return entities;
+	}
+
+	private async persistAndFlush(entities: FileRecordEntity[]): Promise<FileRecord[]> {
+		await this.dbm.persist(entities);
+		const fileRecords = FileRecordDOMapper.entitiesToDOs(entities);
+
+		return fileRecords;
+	}
+
+	private async findAndCount(
+		scope: FileRecordScope,
+		options?: IFindOptions<FileRecord>
+	): Promise<Counted<FileRecord[]>> {
+		const { pagination } = options || {};
+		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
+
+		const [fileRecordEntities, count] = await this.dbm.findAndCount(FileRecordEntity, scope.query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order,
+		});
+
+		const fileRecords = FileRecordDOMapper.entitiesToDOs(fileRecordEntities);
+
+		return [fileRecords, count];
+	}
+
+	private async findOne(scope: FileRecordScope): Promise<FileRecord> {
+		const filesRecordEntity = await this.dbm.findOne(FileRecordEntity, scope.query);
+		const fileRecord = FileRecordDOMapper.entityToDO(filesRecordEntity);
 
 		return fileRecord;
 	}
@@ -83,69 +144,4 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 		return fileRecordEntity;
 	}
 */
-	public async delete(fileRecords: FileRecord[]): Promise<void> {
-		const entities = await this.find(fileRecords);
-		await this.removeAndFlush(entities);
-	}
-
-	// note: persist is split in update and create
-	public async update(fileRecords: FileRecord[]): Promise<FileRecord[]> {
-		const entities = await this.find(fileRecords);
-		FileRecordDOMapper.mergeDOsIntoEntities(fileRecords, entities);
-		const updatedFileRecords = await this.persistAndFlush(entities);
-
-		return updatedFileRecords;
-	}
-
-	// note: is renamed to create
-	public async create(props: IFileRecordParams[]): Promise<FileRecord[]> {
-		const entities = FileRecordDOMapper.createNewEntities(props);
-		const fileRecords = await this.persistAndFlush(entities);
-
-		return fileRecords;
-	}
-
-	// ----------------------------------------------------------------
-	private async removeAndFlush(entities: FileRecordEntity[]): Promise<void> {
-		await this.em.removeAndFlush(entities);
-	}
-
-	private async find(fileRecords: FileRecord[]) {
-		const scope = new FileRecordScope().byIds(fileRecords);
-		const entities = await this.em.find(FileRecordEntity, scope.query);
-
-		return entities;
-	}
-
-	private async persistAndFlush(entities: FileRecordEntity[]): Promise<FileRecord[]> {
-		await this.em.persistAndFlush(entities);
-		const fileRecords = FileRecordDOMapper.entitiesToDOs(entities);
-
-		return fileRecords;
-	}
-
-	private async findAndCount(
-		scope: FileRecordScope,
-		options?: IFindOptions<FileRecord>
-	): Promise<Counted<FileRecord[]>> {
-		const { pagination } = options || {};
-		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
-
-		const [fileRecordEntities, count] = await this.em.findAndCount(FileRecordEntity, scope.query, {
-			offset: pagination?.skip,
-			limit: pagination?.limit,
-			orderBy: order,
-		});
-
-		const fileRecords = FileRecordDOMapper.entitiesToDOs(fileRecordEntities);
-
-		return [fileRecords, count];
-	}
-
-	private async findOneOrFail(scope: FileRecordScope): Promise<FileRecord> {
-		const filesRecordEntity = await this.em.findOneOrFail(FileRecordEntity, scope.query);
-		const fileRecord = FileRecordDOMapper.entityToDO(filesRecordEntity);
-
-		return fileRecord;
-	}
 }
