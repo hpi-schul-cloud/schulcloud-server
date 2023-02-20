@@ -45,7 +45,7 @@ export class SingleColumnBoard extends MetaBoard {
 		this.boardType = BoardType.SingleColumnBoard;
 	}
 
-	@OneToOne({ type: 'Course', fieldName: 'courseId', wrappedReference: true, unique: true })
+	@OneToOne({ type: 'Course', fieldName: 'courseId', wrappedReference: true, unique: true, nullable: true })
 	course: IdentifiedReference<Course>;
 
 	@ManyToMany('BoardElement', undefined, { fieldName: 'referenceIds' })
