@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { forwardRef, Module } from '@nestjs/common';
+import { IdentityManagementOauthService } from './identity-management-oauth.service';
 import { IdentityManagementService } from './identity-management.service';
 import { KeycloakModule } from './keycloak/keycloak.module';
-import { KeycloakIdentityManagementService } from './keycloak/service/keycloak-identity-management.service';
-import { IdentityManagementOauthService } from './identity-management-oauth.service';
 import { KeycloakIdentityManagementOauthService } from './keycloak/service/keycloak-identity-management-oauth.service';
+import { KeycloakIdentityManagementService } from './keycloak/service/keycloak-identity-management.service';
 
 @Module({
-	imports: [KeycloakModule, HttpModule],
+	imports: [forwardRef(() => KeycloakModule), HttpModule],
 	providers: [
 		{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
 		{ provide: IdentityManagementOauthService, useClass: KeycloakIdentityManagementOauthService },

@@ -1,6 +1,6 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { EncryptionModule } from '@shared/infra/encryption';
 import { LoggerModule } from '@src/core/logger';
 import { SystemModule } from '../../../../modules/system/system.module';
@@ -15,7 +15,7 @@ import { KeycloakSeedService } from './service/keycloak-seed.service';
 import { KeycloakManagementUc } from './uc/Keycloak-management.uc';
 
 @Module({
-	imports: [LoggerModule, EncryptionModule, SystemModule, HttpModule],
+	imports: [LoggerModule, EncryptionModule, forwardRef(() => SystemModule), HttpModule],
 	controllers: [],
 	providers: [
 		KeycloakAdminClient,
