@@ -1,4 +1,3 @@
-import { EntityProperties } from '@shared/repo';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -15,7 +14,7 @@ class UserRepoSpec extends UserDORepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntityPropertiesSpec(entityDO: UserDO): EntityProperties<IUserProperties> {
+	mapDOToEntityPropertiesSpec(entityDO: UserDO): IUserProperties {
 		return super.mapDOToEntityProperties(entityDO);
 	}
 }
@@ -192,6 +191,9 @@ describe('UserRepo', () => {
 			testEntity.lastNameSearchValues = ['em'];
 			testEntity.emailSearchValues = ['em'];
 			testEntity.importHash = 'importHash';
+			testEntity.outdatedSince = new Date();
+			testEntity.lastLoginSystemChange = new Date();
+			testEntity.previousExternalId = 'someId';
 
 			const userDO: UserDO = repo.mapEntityToDOSpec(testEntity);
 
@@ -214,6 +216,9 @@ describe('UserRepo', () => {
 					language: testEntity.language,
 					forcePasswordChange: testEntity.forcePasswordChange,
 					preferences: testEntity.preferences,
+					outdatedSince: testEntity.outdatedSince,
+					lastLoginSystemChange: testEntity.lastLoginSystemChange,
+					previousExternalId: testEntity.previousExternalId,
 				})
 			);
 		});
@@ -233,13 +238,15 @@ describe('UserRepo', () => {
 				language: LanguageType.DE,
 				forcePasswordChange: false,
 				preferences: { firstLogin: true },
+				outdatedSince: new Date(),
+				lastLoginSystemChange: new Date(),
+				previousExternalId: 'someId',
 			});
 
-			const result: EntityProperties<IUserProperties> = repo.mapDOToEntityPropertiesSpec(testDO);
+			const result: IUserProperties = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			expect(result).toEqual(
 				expect.objectContaining({
-					id: testDO.id,
 					email: testDO.email,
 					firstName: testDO.firstName,
 					lastName: testDO.lastName,
@@ -250,6 +257,9 @@ describe('UserRepo', () => {
 					language: testDO.language,
 					forcePasswordChange: testDO.forcePasswordChange,
 					preferences: testDO.preferences,
+					outdatedSince: testDO.outdatedSince,
+					lastLoginSystemChange: testDO.lastLoginSystemChange,
+					previousExternalId: testDO.previousExternalId,
 				})
 			);
 		});

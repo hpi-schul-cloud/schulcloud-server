@@ -10,7 +10,7 @@ export class CustomParameterResponse {
 	name: string;
 
 	@ApiPropertyOptional()
-	default?: string;
+	defaultValue?: string;
 
 	@ApiPropertyOptional()
 	regex?: string;
@@ -18,13 +18,13 @@ export class CustomParameterResponse {
 	@ApiPropertyOptional()
 	regexComment?: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: CustomParameterScopeParams })
 	scope: CustomParameterScopeParams;
 
-	@ApiProperty()
+	@ApiProperty({ enum: CustomParameterLocationParams })
 	location: CustomParameterLocationParams;
 
-	@ApiProperty()
+	@ApiProperty({ enum: CustomParameterTypeParams })
 	type: CustomParameterTypeParams;
 
 	@ApiProperty()
@@ -32,7 +32,7 @@ export class CustomParameterResponse {
 
 	constructor(props: CustomParameterResponse) {
 		this.name = props.name;
-		this.default = props.default;
+		this.defaultValue = props.defaultValue;
 		this.location = props.location;
 		this.scope = props.scope;
 		this.type = props.type;

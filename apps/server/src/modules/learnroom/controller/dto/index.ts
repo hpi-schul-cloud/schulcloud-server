@@ -1,5 +1,5 @@
 export * from './board';
-export * from './copy.response';
+export * from './card';
 export * from './course-metadata.response';
 export * from './dashboard.response';
 export * from './dashboard.url.params';
@@ -10,3 +10,4 @@ export * from './patch-order.params';
 export * from './patch-visibility.params';
 export * from './room-element.url.params';
 export * from './room.url.params';
+export * from './single-column-board';

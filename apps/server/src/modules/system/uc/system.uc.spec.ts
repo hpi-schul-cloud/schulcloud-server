@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { systemFactory } from '@shared/testing';
-import { SystemUc } from '@src/modules/system/uc/system.uc';
-import { SystemService } from '@src/modules/system/service/system.service';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EntityId, System, SystemTypeEnum } from '@shared/domain';
+import { systemFactory } from '@shared/testing';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
-import { EntityId, System } from '@shared/domain';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemUc } from '@src/modules/system/uc/system.uc';
 
 describe('SystemUc', () => {
 	let module: TestingModule;
@@ -40,18 +40,16 @@ describe('SystemUc', () => {
 
 		mockSystems = [system1, system2].map((element) => SystemMapper.mapFromEntityToDto(element));
 
-		systemService.find.mockImplementation((type: string | undefined) => {
-			if (type === 'type') {
+		systemService.findAll.mockImplementation((type: string | undefined) => {
+			if (type === SystemTypeEnum.OAUTH) {
 				return Promise.resolve([system1]);
 			}
 			return Promise.resolve(mockSystems);
 		});
-		systemService.findOAuth.mockImplementation(() => {
-			return Promise.resolve([system2]);
-		});
-		systemService.findById.mockImplementation((id: EntityId): Promise<SystemDto> => {
-			return id === system1.id ? Promise.resolve(system1) : Promise.reject();
-		});
+		systemService.findOAuth.mockImplementation(() => Promise.resolve([system2]));
+		systemService.findById.mockImplementation(
+			(id: EntityId): Promise<SystemDto> => (id === system1.id ? Promise.resolve(system1) : Promise.reject())
+		);
 	});
 
 	describe('findByFilter', () => {
@@ -64,7 +62,7 @@ describe('SystemUc', () => {
 		});
 
 		it('should return specified systems by type', async () => {
-			const systems: SystemDto[] = await systemUc.findByFilter('type');
+			const systems: SystemDto[] = await systemUc.findByFilter(SystemTypeEnum.OAUTH);
 
 			expect(systems.length).toEqual(1);
 			expect(systems[0].oauthConfig?.clientId).toEqual(system1.oauthConfig?.clientId);
@@ -78,7 +76,7 @@ describe('SystemUc', () => {
 		});
 
 		it('should return empty system list, because none exist', async () => {
-			systemService.find.mockResolvedValue([]);
+			systemService.findAll.mockResolvedValue([]);
 			const resultResponse = await systemUc.findByFilter();
 			expect(resultResponse).toHaveLength(0);
 		});

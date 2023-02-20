@@ -6,6 +6,7 @@ import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/d
 import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/interface/page';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
+import { Logger } from '@src/core/logger';
 import { ToolController } from './tool.controller';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { ExternalToolUc } from '../uc/external-tool.uc';
@@ -73,6 +74,10 @@ describe('ToolController', () => {
 					provide: ExternalToolResponseMapper,
 					useValue: createMock<ExternalToolResponseMapper>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
@@ -93,7 +98,7 @@ describe('ToolController', () => {
 
 		const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
 			name: 'mockName',
-			default: 'mockDefault',
+			defaultValue: 'mockDefault',
 			location: CustomParameterLocationParams.PATH,
 			scope: CustomParameterScopeParams.SCHOOL,
 			type: CustomParameterTypeParams.STRING,
@@ -169,7 +174,7 @@ describe('ToolController', () => {
 		const setupCreate = () => {
 			const customParameterCreateParams = new CustomParameterPostParams();
 			customParameterCreateParams.name = 'mockName';
-			customParameterCreateParams.default = 'mockDefault';
+			customParameterCreateParams.defaultValue = 'mockDefault';
 			customParameterCreateParams.location = CustomParameterLocationParams.PATH;
 			customParameterCreateParams.scope = CustomParameterScopeParams.SCHOOL;
 			customParameterCreateParams.type = CustomParameterTypeParams.STRING;
@@ -455,7 +460,7 @@ describe('ToolController', () => {
 
 			const customParameterPostParams = new CustomParameterPostParams();
 			customParameterPostParams.name = 'mockName';
-			customParameterPostParams.default = 'mockDefault';
+			customParameterPostParams.defaultValue = 'mockDefault';
 			customParameterPostParams.location = CustomParameterLocationParams.PATH;
 			customParameterPostParams.scope = CustomParameterScopeParams.SCHOOL;
 			customParameterPostParams.type = CustomParameterTypeParams.STRING;

@@ -1,7 +1,7 @@
 import { NotImplementedException } from '@nestjs/common';
 import { Transform, TransformFnParams } from 'class-transformer';
 import sanitize, { AllowedAttribute } from 'sanitize-html';
-import { InputFormat } from '@shared/domain';
+import { InputFormat } from '@shared/domain/types/input-format.types';
 
 export type IInputFormatsConfig = {
 	allowedTags: string[]; // Note: tag names are not case-sensitive
@@ -106,53 +106,48 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 		},
 	},
 
-	// TODO
 	RichTextCk5: {
 		allowedTags: [
-			'b',
-			'i',
-			'em',
-			'strong',
-			'small',
-			's',
-			'u',
-			'h1',
 			'h2',
 			'h3',
 			'h4',
-			'h5',
-			'h6',
-			'ul',
-			'li',
-			'ol',
-			'dl',
-			'dt',
-			'dd',
 			'p',
-			'pre',
+			'span',
 			'br',
+			'strong',
+			'b',
+			'i',
+			'em',
+			'u',
+			's',
+			'code',
+			'sup',
+			'sub',
+			'mark',
+			'blockquote',
+			'ul',
+			'ol',
+			'li',
 			'hr',
 			'table',
-			'tbody',
-			'td',
-			'tfoot',
-			'th',
 			'thead',
-			'tr',
+			'tbody',
 			'tr',
 			'td',
+			'th',
 			'a',
-			'img',
+			'figure',
 		],
 		allowedAttributes: {
-			a: ['href', 'name', 'target'],
-			img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
+			a: ['href', 'name', 'target', 'rel'],
+			figure: ['class'],
+			mark: ['class'],
+			span: ['class'],
 		},
 	},
 
-	// TODO
 	RichTextCk5Simple: {
-		allowedTags: ['b', 'i', 'em', 'strong', 'small', 's', 'u'],
+		allowedTags: ['p', 'br', 'b', 'strong', 'i', 'em', 'u'],
 		allowedAttributes: {},
 	},
 };
@@ -175,6 +170,14 @@ export const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IInputFormats
 	}
 };
 
+export const sanitizeRichText = (value: string, inputFormat?: InputFormat): string => {
+	const sanitizeHtmlOptions: sanitize.IOptions = getSanitizeHtmlOptions(inputFormat);
+
+	const sanitized = sanitize(value, sanitizeHtmlOptions);
+
+	return sanitized;
+};
+
 /**
  * Decorator to sanitize a string by removing unwanted HTML.
  * Place after IsString decorator.
@@ -187,11 +190,7 @@ export function SanitizeHtml(inputFormat?: InputFormat): PropertyDecorator {
 		const value = params.obj[params.key];
 
 		if (typeof value === 'string') {
-			const sanitizeHtmlOptions: sanitize.IOptions = getSanitizeHtmlOptions(inputFormat);
-
-			const sanitized = sanitize(value, sanitizeHtmlOptions);
-
-			return sanitized;
+			return sanitizeRichText(value, inputFormat);
 		}
 
 		throw new NotImplementedException('can only sanitize strings');

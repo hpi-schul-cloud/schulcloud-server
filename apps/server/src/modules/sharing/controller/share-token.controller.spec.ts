@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CopyElementType, CopyStatus, CopyStatusEnum, ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@shared/domain';
 import { courseFactory, setupEntities, shareTokenFactory } from '@shared/testing';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenUC } from '../uc';
 import { ShareTokenInfoDto } from '../uc/dto';
@@ -133,7 +134,7 @@ describe('ShareTokenController', () => {
 
 			await controller.importShareToken(currentUser, { token }, { newName });
 
-			expect(uc.importShareToken).toBeCalledWith(currentUser.userId, token, newName);
+			expect(uc.importShareToken).toBeCalledWith(currentUser.userId, token, newName, undefined);
 		});
 
 		it('should return the status response', async () => {

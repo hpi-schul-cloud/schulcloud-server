@@ -1,6 +1,6 @@
+import { QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { ExternalTool, SortOrderMap } from '@shared/domain';
-import { QueryOrderMap } from '@mikro-orm/core/enums';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 
 @Injectable()

@@ -20,31 +20,35 @@ import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
 
-const createBBBCreateResponse = (): BBBResponse<BBBCreateResponse> => ({
-	response: {
-		returncode: BBBStatus.SUCCESS,
-		messageKey: 'messageKey',
-		message: 'message',
-		meetingID: 'meetingId',
-		internalMeetingID: 'internalMeetingID',
-		parentMeetingID: 'parentMeetingID',
-		createTime: new Date().getTime(),
-		voiceBridge: 123,
-		dialNumber: '4910790393',
-		createDate: '2022-02-15',
-		hasUserJoined: false,
-		duration: 2333,
-		hasBeenForciblyEnded: false,
-	},
-});
+const createBBBCreateResponse = (): BBBResponse<BBBCreateResponse> => {
+	return {
+		response: {
+			returncode: BBBStatus.SUCCESS,
+			messageKey: 'messageKey',
+			message: 'message',
+			meetingID: 'meetingId',
+			internalMeetingID: 'internalMeetingID',
+			parentMeetingID: 'parentMeetingID',
+			createTime: new Date().getTime(),
+			voiceBridge: 123,
+			dialNumber: '4910790393',
+			createDate: '2022-02-15',
+			hasUserJoined: false,
+			duration: 2333,
+			hasBeenForciblyEnded: false,
+		},
+	};
+};
 
-const createBBBBaseResponse = (): BBBResponse<BBBBaseResponse> => ({
-	response: {
-		returncode: BBBStatus.SUCCESS,
-		messageKey: 'messageKey',
-		message: 'message',
-	},
-});
+const createBBBBaseResponse = (): BBBResponse<BBBBaseResponse> => {
+	return {
+		response: {
+			returncode: BBBStatus.SUCCESS,
+			messageKey: 'messageKey',
+			message: 'message',
+		},
+	};
+};
 
 const createBBBMeetingInfoResponse = (): BBBResponse<BBBMeetingInfoResponse> =>
 	({
@@ -56,35 +60,41 @@ const createBBBMeetingInfoResponse = (): BBBResponse<BBBMeetingInfoResponse> =>
 		},
 	} as unknown as BBBResponse<BBBMeetingInfoResponse>);
 
-const createBBBCreateConfig = (): BBBCreateConfig => ({
-	name: 'config.name',
-	meetingID: 'config.meetingID',
-	logoutURL: 'config.logoutURL',
-	welcome: 'config.welcome',
-	guestPolicy: GuestPolicy.ALWAYS_ACCEPT,
-	moderatorPW: 'config.moderatorPW',
-	attendeePW: 'config.attendeePW',
-	allowModsToUnmuteUsers: true,
-});
+const createBBBCreateConfig = (): BBBCreateConfig => {
+	return {
+		name: 'config.name',
+		meetingID: 'config.meetingID',
+		logoutURL: 'config.logoutURL',
+		welcome: 'config.welcome',
+		guestPolicy: GuestPolicy.ALWAYS_ACCEPT,
+		moderatorPW: 'config.moderatorPW',
+		attendeePW: 'config.attendeePW',
+		allowModsToUnmuteUsers: true,
+	};
+};
 
-const createBBBJoinConfig = (): BBBJoinConfig => ({
-	meetingID: 'config.meetingID',
-	fullName: 'fullName',
-	role: BBBRole.MODERATOR,
-	userID: 'userID',
-	guest: false,
-	redirect: 'redirect',
-});
+const createBBBJoinConfig = (): BBBJoinConfig => {
+	return {
+		meetingID: 'config.meetingID',
+		fullName: 'fullName',
+		role: BBBRole.MODERATOR,
+		userID: 'userID',
+		guest: false,
+		redirect: 'redirect',
+	};
+};
 
 const createAxiosResponse = (
 	data: BBBResponse<BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse>
-): AxiosResponse<BBBResponse<BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse>> => ({
-	data: data ?? {},
-	status: 0,
-	statusText: '',
-	headers: {},
-	config: {},
-});
+): AxiosResponse<BBBResponse<BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse>> => {
+	return {
+		data: data ?? {},
+		status: 0,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
+};
 
 class BBBServiceTest extends BBBService {
 	public superToParams(object: BBBCreateConfig | BBBBaseMeetingConfig): URLSearchParams {
@@ -327,9 +337,7 @@ describe('BBB Service', () => {
 				update: jest.fn().mockReturnThis(),
 				digest: jest.fn().mockReturnValue('encrypt 123'),
 			} as unknown as Hash;
-			const createHashMock = jest.spyOn(crypto, 'createHash').mockImplementation((): Hash => {
-				return hashMock;
-			});
+			const createHashMock = jest.spyOn(crypto, 'createHash').mockImplementation((): Hash => hashMock);
 			const createConfig: BBBCreateConfig = createBBBCreateConfig();
 			const callName = 'create';
 			const urlSearchParams: URLSearchParams = service.superToParams(createConfig);

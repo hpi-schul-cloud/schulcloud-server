@@ -7,6 +7,7 @@ import {
 	CustomParameterPostParams,
 	ExternalToolPostParams,
 	ExternalToolSearchParams,
+	ExternalToolUpdateParams,
 	Lti11ToolConfigParams,
 	Oauth2ToolConfigParams,
 	SortExternalToolParams,
@@ -20,7 +21,6 @@ import {
 	Oauth2ToolConfig,
 	UpdateExternalTool,
 } from '../../uc/dto';
-import { ExternalToolUpdateParams } from '../dto/request/external-tool-update.params';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.GLOBAL]: CustomParameterScope.GLOBAL,
@@ -99,7 +99,7 @@ export class ExternalToolRequestMapper {
 		return customParameterParams.map((customParameterParam: CustomParameterPostParams) => {
 			return {
 				name: customParameterParam.name,
-				default: customParameterParam.default,
+				default: customParameterParam.defaultValue,
 				regex: customParameterParam.regex,
 				regexComment: customParameterParam.regexComment,
 				scope: scopeMapping[customParameterParam.scope],

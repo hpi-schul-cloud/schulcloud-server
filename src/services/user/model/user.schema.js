@@ -83,7 +83,8 @@ const userSchema = new Schema(
 				enum: ['all', 'dateOfPrivacyConsent', 'dateOfTermsOfUseConsent'],
 			},
 		},
-
+		lastLoginSystemChange: { type: Date },
+		outdatedSince: { type: Date },
 		/**
 		 * depending on system settings,
 		 * a user may opt-in or -out,
@@ -94,6 +95,7 @@ const userSchema = new Schema(
 		// optional attributes if user was created during LDAP sync:
 		ldapDn: { type: String }, // LDAP login username
 		ldapId: { type: String }, // UUID to identify during the sync
+		previousExternalId: { type: String }, // the former ldapId after oauth migrated user
 
 		...externalSourceSchema,
 

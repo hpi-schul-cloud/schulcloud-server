@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CopyHelperService, CopyStatus, Course, User, EntityId } from '@shared/domain';
-import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
+import { Course, EntityId, User } from '@shared/domain';
 import { BoardRepo, CourseRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { BoardCopyService } from './board-copy.service';
 import { RoomsService } from './rooms.service';
 
@@ -47,7 +47,9 @@ export class CourseCopyService {
 		// copy course and board
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
 		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
-		const courseStatus = this.deriveCourseStatus(originalCourse, courseCopy, boardStatus);
+		const finishedCourseCopy = await this.finishCourseCopying(courseCopy);
+
+		const courseStatus = this.deriveCourseStatus(originalCourse, finishedCourseCopy, boardStatus);
 
 		return courseStatus;
 	}
@@ -61,8 +63,16 @@ export class CourseCopyService {
 			teachers: [user],
 			startDate: user.school.schoolYear?.startDate,
 			untilDate: user.school.schoolYear?.endDate,
+			copyingSince: new Date(),
 		});
+
 		await this.courseRepo.createCourse(courseCopy);
+		return courseCopy;
+	}
+
+	private async finishCourseCopying(courseCopy: Course) {
+		delete courseCopy.copyingSince;
+		await this.courseRepo.save(courseCopy);
 		return courseCopy;
 	}
 

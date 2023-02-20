@@ -1,14 +1,15 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
+import { BaseEntityWithTimestamps, type EntityId } from '@shared/domain';
 import { v4 as uuid } from 'uuid';
-import { type EntityId, BaseEntity } from '@shared/domain';
 import { ErrorType } from '../error';
 
 export enum ScanStatus {
 	PENDING = 'pending',
 	VERIFIED = 'verified',
 	BLOCKED = 'blocked',
+	ERROR = 'error',
 }
 
 export enum FileRecordParentType {
@@ -61,9 +62,15 @@ export interface IFileRecordProperties {
 	parentType: FileRecordParentType;
 	parentId: EntityId | ObjectId;
 	creatorId: EntityId | ObjectId;
-	lockedForUserId?: EntityId | ObjectId;
 	schoolId: EntityId | ObjectId;
 	deletedSince?: Date;
+	isCopyFrom?: ObjectId;
+}
+
+interface IParentInfo {
+	schoolId: EntityId;
+	parentId: EntityId;
+	parentType: FileRecordParentType;
 }
 
 // TODO: IEntityWithSchool
@@ -77,12 +84,7 @@ export interface IFileRecordProperties {
 @Index({ properties: ['_schoolId', '_parentId'], options: { background: true } })
 // https://github.com/mikro-orm/mikro-orm/issues/1230
 @Index({ options: { 'securityCheck.requestToken': 1 } })
-// Temporary functionality for migration to new fileservice
-// TODO: Adjust when BC-1496 is done!
-// FileRecord must inherit from BaseEntity and we have to take care of the timestamps manually.
-// This is necessary while the syncing of files and filerecords goes on,
-// because with BaseEntityWithTimestamps it is not possible to override the updatedAt hook.
-export class FileRecord extends BaseEntity {
+export class FileRecord extends BaseEntityWithTimestamps {
 	@Index({ options: { expireAfterSeconds: 7 * 24 * 60 * 60 } })
 	@Property({ nullable: true })
 	deletedSince?: Date;
@@ -99,9 +101,11 @@ export class FileRecord extends BaseEntity {
 	@Embedded(() => FileSecurityCheck, { object: true, nullable: false })
 	securityCheck: FileSecurityCheck;
 
+	@Index()
 	@Enum()
 	parentType: FileRecordParentType;
 
+	@Index()
 	@Property({ fieldName: 'parent' })
 	_parentId: ObjectId;
 
@@ -116,16 +120,6 @@ export class FileRecord extends BaseEntity {
 		return this._creatorId.toHexString();
 	}
 
-	// todo: permissions
-
-	// for wopi, is this still needed?
-	@Property({ fieldName: 'lockedForUser', nullable: true })
-	_lockedForUserId?: ObjectId;
-
-	get lockedForUserId(): EntityId | undefined {
-		return this._lockedForUserId?.toHexString();
-	}
-
 	@Property({ fieldName: 'school' })
 	_schoolId: ObjectId;
 
@@ -133,13 +127,12 @@ export class FileRecord extends BaseEntity {
 		return this._schoolId.toHexString();
 	}
 
-	// Temporary functionality for migration to new fileservice
-	// TODO: Remove when BC-1496 is done!
-	@Property()
-	createdAt = new Date();
+	@Property({ fieldName: 'isCopyFrom', nullable: true })
+	_isCopyFrom?: ObjectId;
 
-	@Property()
-	updatedAt = new Date();
+	get isCopyFrom(): EntityId | undefined {
+		return this._isCopyFrom?.toHexString();
+	}
 
 	constructor(props: IFileRecordProperties) {
 		super();
@@ -149,34 +142,92 @@ export class FileRecord extends BaseEntity {
 		this.parentType = props.parentType;
 		this._parentId = new ObjectId(props.parentId);
 		this._creatorId = new ObjectId(props.creatorId);
-		if (props.lockedForUserId !== undefined) {
-			this._lockedForUserId = new ObjectId(props.lockedForUserId);
-		}
 		this._schoolId = new ObjectId(props.schoolId);
+		this._isCopyFrom = props.isCopyFrom;
 		this.securityCheck = new FileSecurityCheck({});
 		this.deletedSince = props.deletedSince;
 	}
 
-	updateSecurityCheckStatus(status: ScanStatus, reason = 'Clean'): void {
+	public updateSecurityCheckStatus(status: ScanStatus, reason: string): void {
 		this.securityCheck.status = status;
 		this.securityCheck.reason = reason;
 		this.securityCheck.updatedAt = new Date();
 		this.securityCheck.requestToken = undefined;
 	}
 
-	markForDelete(): void {
+	public copy(userId: EntityId, targetParentInfo: IParentInfo): FileRecord {
+		const { size, name, mimeType, id } = this;
+		const { parentType, parentId, schoolId } = targetParentInfo;
+
+		const fileRecordCopy = new FileRecord({
+			size,
+			name,
+			mimeType,
+			parentType,
+			parentId,
+			creatorId: userId,
+			schoolId,
+			isCopyFrom: new ObjectId(id),
+		});
+
+		if (this.isVerified()) {
+			fileRecordCopy.securityCheck = this.securityCheck;
+		}
+
+		return fileRecordCopy;
+	}
+
+	public markForDelete(): void {
 		this.deletedSince = new Date();
 	}
 
-	unmarkForDelete(): void {
+	public unmarkForDelete(): void {
 		this.deletedSince = undefined;
 	}
 
-	setName(name: string): void {
+	public setName(name: string): void {
 		if (name.length === 0) {
 			throw new BadRequestException(ErrorType.FILE_NAME_EMPTY);
 		}
 
 		this.name = name;
+	}
+
+	public hasName(name: string): boolean {
+		const hasName = this.name === name;
+
+		return hasName;
+	}
+
+	public getName(): string {
+		return this.name;
+	}
+
+	public isBlocked(): boolean {
+		const isBlocked = this.securityCheck.status === ScanStatus.BLOCKED;
+
+		return isBlocked;
+	}
+
+	public isPending(): boolean {
+		const isPending = this.securityCheck.status === ScanStatus.PENDING;
+
+		return isPending;
+	}
+
+	public isVerified(): boolean {
+		const isVerified = this.securityCheck.status === ScanStatus.VERIFIED;
+
+		return isVerified;
+	}
+
+	public getParentInfo(): IParentInfo {
+		const { parentId, parentType, schoolId } = this;
+
+		return { parentId, parentType, schoolId };
+	}
+
+	public getSchoolId(): EntityId {
+		return this.schoolId;
 	}
 }

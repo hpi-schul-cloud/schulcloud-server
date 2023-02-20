@@ -1,23 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import {
-	Board,
-	BoardElement,
-	BoardElementReference,
-	BoardElementType,
-	CopyElementType,
-	CopyHelperService,
-	CopyStatus,
-	Course,
-	Lesson,
-	Task,
-	User,
-} from '@shared/domain';
+import { Board, BoardElement, BoardElementType, Course, isLesson, isTask, Lesson, Task, User } from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { getResolvedValues } from '@src/modules/files-storage/helper';
+import { LessonCopyService } from '@src/modules/lesson/service';
+import { TaskCopyService } from '@src/modules/task';
 import { sortBy } from 'lodash';
-import { LessonCopyService } from './lesson-copy.service';
-import { TaskCopyService } from './task-copy.service';
 
 type BoardCopyParams = {
 	originalBoard: Board;
@@ -71,11 +60,11 @@ export class BoardCopyService {
 				return Promise.reject(new Error('Broken boardelement - not pointing to any target entity'));
 			}
 
-			if (element.boardElementType === BoardElementType.Task) {
+			if (element.boardElementType === BoardElementType.Task && isTask(element.target)) {
 				return this.copyTask(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
-			if (element.boardElementType === BoardElementType.Lesson) {
+			if (element.boardElementType === BoardElementType.Lesson && isLesson(element.target)) {
 				return this.copyLesson(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
@@ -91,21 +80,15 @@ export class BoardCopyService {
 		return statuses;
 	}
 
-	private async copyLesson(
-		reference: BoardElementReference,
-		user: User,
-		destinationCourse: Course
-	): Promise<CopyStatus> {
-		const originalLesson = reference as Lesson;
+	private async copyLesson(originalLesson: Lesson, user: User, destinationCourse: Course): Promise<CopyStatus> {
 		return this.lessonCopyService.copyLesson({
-			originalLesson,
+			originalLessonId: originalLesson.id,
 			user,
 			destinationCourse,
 		});
 	}
 
-	private async copyTask(reference: BoardElementReference, user: User, destinationCourse: Course): Promise<CopyStatus> {
-		const originalTask = reference as Task;
+	private async copyTask(originalTask: Task, user: User, destinationCourse: Course): Promise<CopyStatus> {
 		return this.taskCopyService.copyTask({
 			originalTask,
 			user,

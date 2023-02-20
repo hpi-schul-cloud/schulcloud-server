@@ -1,18 +1,7 @@
-import { IsDefined, IsNotEmpty, IsString } from 'class-validator';
+export interface OauthTokenResponse {
+	access_token: string;
 
-export class OauthTokenResponse {
-	@IsDefined()
-	@IsString()
-	@IsNotEmpty()
-	access_token!: string;
+	refresh_token: string;
 
-	@IsDefined()
-	@IsString()
-	@IsNotEmpty()
-	refresh_token!: string;
-
-	@IsDefined()
-	@IsString()
-	@IsNotEmpty()
-	id_token!: string;
+	id_token: string;
 }

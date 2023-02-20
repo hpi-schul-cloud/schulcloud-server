@@ -9,39 +9,47 @@ import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
-import { AuthModule } from '@src/modules/authentication';
+import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { LessonApiModule } from '@src/modules/lesson';
 import { NewsModule } from '@src/modules/news';
-import { OauthModule } from '@src/modules/oauth';
 import { OauthProviderModule } from '@src/modules/oauth-provider';
+import { OauthApiModule } from '@src/modules/oauth/oauth-api.module';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { RoleModule } from '@src/modules/role/role.module';
+import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemModule } from '@src/modules/system';
 import { TaskModule } from '@src/modules/task';
+import { TaskCardModule } from '@src/modules/task-card';
+import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
+import { UserMigrationApiModule } from '@src/modules/user-migration';
 import { VideoConferenceModule } from '@src/modules/video-conference';
-import { ToolApiModule } from '@src/modules/tool';
-import { SchoolApiModule } from '@src/modules/school/school-api.module';
+import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
-import { ServerController } from './server.controller';
 
 const serverModules = [
 	ConfigModule.forRoot({
 		isGlobal: true,
 		validationOptions: { infer: true },
-		load: [serverConfig],
+		// hacky solution: the server config is loaded in the validate step.
+		// reasoning: nest's ConfigService has fixed priority of configs.
+		// 1. validated configs, 2. default passed in configService.get(key, default) 3. process.env 4. custom configs
+		// in process env everything is a string. So a feature flag will be the string 'false' and therefore truthy
+		// So we want custom configs to overwrite process.env. Thus we make them validated
+		validate: serverConfig,
 	}),
 	CoreModule,
-	AuthModule,
+	AuthenticationApiModule,
 	CollaborativeStorageModule,
-	OauthModule,
+	OauthApiModule,
 	TaskModule,
+	TaskCardModule,
 	LessonApiModule,
 	NewsModule,
 	UserModule,
@@ -67,13 +75,13 @@ const serverModules = [
 	OauthProviderModule,
 	SharingApiModule,
 	ToolApiModule,
+	UserMigrationApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
-	},
+		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
 };
 
 /**

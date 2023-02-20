@@ -4,8 +4,8 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
+	CustomParameterEntryDO,
 } from '@shared/domain/domainobject/external-tool';
-import { EntityProperties } from '@shared/repo';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	BasicToolConfig,
@@ -17,7 +17,6 @@ import {
 	Oauth2ToolConfig,
 	ToolConfigType,
 } from '../../domain';
-import { CustomParameterEntryDO } from '../../domain/domainobject/external-tool/custom-parameter-entry.do';
 
 @Injectable()
 export class ExternalToolRepoMapper {
@@ -81,7 +80,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: ExternalToolDO): EntityProperties<IExternalToolProperties> {
+	mapDOToEntityProperties(entityDO: ExternalToolDO): IExternalToolProperties {
 		let config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
 		switch (entityDO.config.type) {
 			case ToolConfigType.BASIC:
@@ -139,50 +138,54 @@ export class ExternalToolRepoMapper {
 	}
 
 	mapCustomParametersToDOs(customParameters: CustomParameter[]): CustomParameterDO[] {
-		return customParameters.map((param: CustomParameter) => {
-			return new CustomParameterDO({
-				name: param.name,
-				default: param.default,
-				regex: param.regex,
-				regexComment: param.regexComment,
-				scope: param.scope,
-				location: param.location,
-				type: param.type,
-				isOptional: param.isOptional,
-			});
-		});
+		return customParameters.map(
+			(param: CustomParameter) =>
+				new CustomParameterDO({
+					name: param.name,
+					default: param.default,
+					regex: param.regex,
+					regexComment: param.regexComment,
+					scope: param.scope,
+					location: param.location,
+					type: param.type,
+					isOptional: param.isOptional,
+				})
+		);
 	}
 
 	mapCustomParameterDOsToEntities(customParameters: CustomParameterDO[]): CustomParameter[] {
-		return customParameters.map((param: CustomParameterDO) => {
-			return new CustomParameter({
-				name: param.name,
-				default: param.default,
-				regex: param.regex,
-				regexComment: param.regexComment,
-				scope: param.scope,
-				location: param.location,
-				type: param.type,
-				isOptional: param.isOptional,
-			});
-		});
+		return customParameters.map(
+			(param: CustomParameterDO) =>
+				new CustomParameter({
+					name: param.name,
+					default: param.default,
+					regex: param.regex,
+					regexComment: param.regexComment,
+					scope: param.scope,
+					location: param.location,
+					type: param.type,
+					isOptional: param.isOptional,
+				})
+		);
 	}
 
 	mapCustomParameterEntryEntitiesToDOs(entries: CustomParameterEntry[]): CustomParameterEntryDO[] {
-		return entries.map((entry: CustomParameterEntry): CustomParameterEntryDO => {
-			return new CustomParameterEntryDO({
-				name: entry.name,
-				value: entry.value,
-			});
-		});
+		return entries.map(
+			(entry: CustomParameterEntry): CustomParameterEntryDO =>
+				new CustomParameterEntryDO({
+					name: entry.name,
+					value: entry.value,
+				})
+		);
 	}
 
 	mapCustomParameterEntryDOsToEntities(entries: CustomParameterEntryDO[]): CustomParameterEntry[] {
-		return entries.map((entry: CustomParameterEntry): CustomParameterEntryDO => {
-			return new CustomParameterEntry({
-				name: entry.name,
-				value: entry.value,
-			});
-		});
+		return entries.map(
+			(entry: CustomParameterEntry): CustomParameterEntryDO =>
+				new CustomParameterEntry({
+					name: entry.name,
+					value: entry.value,
+				})
+		);
 	}
 }

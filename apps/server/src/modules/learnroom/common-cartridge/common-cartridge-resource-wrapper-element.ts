@@ -5,9 +5,7 @@ export class CommonCartridgeResourceWrapperElement implements ICommonCartridgeEl
 
 	transform(): Record<string, unknown> {
 		return {
-			resource: this.resourceElements.map((resourceElement) => {
-				return resourceElement.transform();
-			}),
+			resource: this.resourceElements.map((resourceElement) => resourceElement.transform()),
 		};
 	}
 }

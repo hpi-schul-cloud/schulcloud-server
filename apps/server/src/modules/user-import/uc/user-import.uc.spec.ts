@@ -23,6 +23,11 @@ import { systemFactory } from '@shared/testing/factory/system.factory';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserImportUc } from './user-import.uc';
 import { SchoolService } from '../../school';
+import {
+	LdapAlreadyPersistedException,
+	MigrationAlreadyActivatedException,
+	MissingSchoolNumberException,
+} from './ldap-user-migration.error';
 
 describe('[ImportUserModule]', () => {
 	describe('UserUc', () => {
@@ -111,6 +116,8 @@ describe('[ImportUserModule]', () => {
 			const officialSchoolNumber = school ? school.officialSchoolNumber : undefined;
 			const inMaintenanceSince = school ? school.inMaintenanceSince : undefined;
 			const inUserMigration = school ? school.inUserMigration : undefined;
+			const systems =
+				school && school.systems.isInitialized() ? school.systems.getItems().map((system: System) => system.id) : [];
 
 			return new SchoolDO({
 				id,
@@ -120,7 +127,7 @@ describe('[ImportUserModule]', () => {
 				officialSchoolNumber,
 				inMaintenanceSince,
 				inUserMigration,
-				systems: [],
+				systems,
 			});
 		};
 
@@ -602,7 +609,7 @@ describe('[ImportUserModule]', () => {
 			const currentDate = new Date('2022-03-10T00:00:00.000Z');
 			let dateSpy: jest.SpyInstance;
 			beforeEach(() => {
-				system = systemFactory.buildWithId();
+				system = systemFactory.buildWithId({ ldapConfig: {} });
 				school = schoolFactory.buildWithId();
 				school.officialSchoolNumber = 'foo';
 				currentUser = userFactory.buildWithId({ school });
@@ -637,9 +644,7 @@ describe('[ImportUserModule]', () => {
 			});
 			it('Should save school params', async () => {
 				schoolServiceSaveSpy.mockRestore();
-				schoolServiceSaveSpy = schoolService.save.mockImplementation((schoolDo: SchoolDO) => {
-					return Promise.resolve(schoolDo);
-				});
+				schoolServiceSaveSpy = schoolService.save.mockImplementation((schoolDo: SchoolDO) => Promise.resolve(schoolDo));
 				await uc.startSchoolInUserMigration(currentUser.id);
 				const schoolParams: SchoolDO = { ...createMockSchoolDo(school) };
 				schoolParams.inUserMigration = true;
@@ -654,13 +659,20 @@ describe('[ImportUserModule]', () => {
 				school.inUserMigration = true;
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result = uc.startSchoolInUserMigration(currentUser.id);
-				await expect(result).rejects.toThrowError(BadRequestException);
+				await expect(result).rejects.toThrowError(MigrationAlreadyActivatedException);
 			});
 			it('should throw if school has no officialSchoolNumber ', async () => {
 				school.officialSchoolNumber = undefined;
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result = uc.startSchoolInUserMigration(currentUser.id);
-				await expect(result).rejects.toThrowError(BadRequestException);
+				await expect(result).rejects.toThrowError(MissingSchoolNumberException);
+			});
+			it('should throw if school already has a persisted LDAP ', async () => {
+				dateSpy.mockRestore();
+				school = schoolFactory.buildWithId({ systems: [system] });
+				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
+				const result = uc.startSchoolInUserMigration(currentUser.id, false);
+				await expect(result).rejects.toThrowError(LdapAlreadyPersistedException);
 			});
 			it('should not throw if school has no school number but its own LDAP', async () => {
 				school.officialSchoolNumber = undefined;
@@ -672,7 +684,6 @@ describe('[ImportUserModule]', () => {
 
 		describe('[endSchoolMaintenance]', () => {
 			let school: School;
-			let schoolDo: SchoolDO;
 			let currentUser: User;
 			let userRepoByIdSpy: jest.SpyInstance;
 			let permissionServiceSpy: jest.SpyInstance;
@@ -684,14 +695,6 @@ describe('[ImportUserModule]', () => {
 				school.inMaintenanceSince = new Date();
 				school.inUserMigration = false;
 				school.officialSchoolNumber = 'foo';
-				schoolDo = new SchoolDO({
-					name: 'foo',
-					externalId: 'foo',
-					features: [SchoolFeatures.LDAP_UNIVENTION_MIGRATION],
-					inMaintenanceSince: new Date(),
-					inUserMigration: false,
-					officialSchoolNumber: 'foo',
-				});
 				currentUser = userFactory.buildWithId({ school });
 
 				userRepoByIdSpy = userRepo.findById.mockResolvedValueOnce(currentUser);

@@ -1,3 +1,6 @@
+import { EntityName, QueryOrderMap } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import {
 	ExternalTool,
 	IExternalToolProperties,
@@ -6,14 +9,10 @@ import {
 	SortOrder,
 	ToolConfigType,
 } from '@shared/domain';
-import { BaseDORepo, EntityProperties, Scope } from '@shared/repo';
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityName } from '@mikro-orm/core';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { Logger } from '@src/core/logger';
-import { QueryOrderMap } from '@mikro-orm/core/enums';
 import { Page } from '@shared/domain/interface/page';
+import { BaseDORepo, Scope } from '@shared/repo';
+import { Logger } from '@src/core/logger';
 import { ExternalToolSortingMapper } from './external-tool-sorting.mapper';
 import { ExternalToolRepoMapper } from './external-tool.repo.mapper';
 import { ExternalToolScope } from './external-tool.scope';
@@ -91,7 +90,7 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 		return this.externalToolRepoMapper.mapEntityToDO(entity);
 	}
 
-	mapDOToEntityProperties(entityDO: ExternalToolDO): EntityProperties<IExternalToolProperties> {
+	mapDOToEntityProperties(entityDO: ExternalToolDO): IExternalToolProperties {
 		return this.externalToolRepoMapper.mapDOToEntityProperties(entityDO);
 	}
 }

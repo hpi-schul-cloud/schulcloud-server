@@ -4,7 +4,6 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { CourseGroup } from './coursegroup.entity';
-import type { File } from './file.entity';
 import { School } from './school.entity';
 import type { Task } from './task.entity';
 import type { User } from './user.entity';
@@ -16,12 +15,10 @@ export interface ISubmissionProperties {
 	courseGroup?: CourseGroup;
 	teamMembers?: User[];
 	comment: string;
-	studentFiles?: File[];
 	submitted?: boolean;
 	graded?: boolean;
 	grade?: number;
 	gradeComment?: string;
-	gradeFiles?: File[];
 }
 
 @Entity({ tableName: 'submissions' })
@@ -48,10 +45,6 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	comment?: string;
 
-	@ManyToMany('File', undefined, { fieldName: 'fileIds' })
-	@Index()
-	studentFiles = new Collection<File>(this);
-
 	@Property()
 	submitted: boolean;
 
@@ -63,10 +56,6 @@ export class Submission extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	gradeComment?: string;
-
-	@ManyToMany('File', undefined, { fieldName: 'gradeFileIds' })
-	@Index()
-	gradeFiles = new Collection<File>(this);
 
 	constructor(props: ISubmissionProperties) {
 		super();
@@ -82,12 +71,6 @@ export class Submission extends BaseEntityWithTimestamps {
 
 		if (props.teamMembers !== undefined) {
 			this.teamMembers.set(props.teamMembers);
-		}
-		if (props.studentFiles !== undefined) {
-			this.studentFiles.set(props.studentFiles);
-		}
-		if (props.gradeFiles !== undefined) {
-			this.gradeFiles.set(props.gradeFiles);
 		}
 	}
 

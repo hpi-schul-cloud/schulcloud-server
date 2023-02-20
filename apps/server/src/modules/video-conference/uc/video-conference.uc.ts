@@ -15,7 +15,7 @@ import {
 	VideoConferenceDO,
 	VideoConferenceOptionsDO,
 } from '@shared/domain';
-import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { CalendarService } from '@shared/infra/calendar';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
@@ -232,21 +232,23 @@ export class VideoConferenceUc {
 
 		const response: VideoConferenceInfoDTO = await this.bbbService
 			.getMeetingInfo(config)
-			.then((bbbResponse: BBBResponse<BBBMeetingInfoResponse>) => {
-				return new VideoConferenceInfoDTO({
-					state: VideoConferenceState.RUNNING,
-					permission: PermissionMapping[bbbRole],
-					bbbResponse,
-					options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
-				});
-			})
-			.catch(() => {
-				return new VideoConferenceInfoDTO({
-					state: VideoConferenceState.NOT_STARTED,
-					permission: PermissionMapping[bbbRole],
-					options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
-				});
-			});
+			.then(
+				(bbbResponse: BBBResponse<BBBMeetingInfoResponse>) =>
+					new VideoConferenceInfoDTO({
+						state: VideoConferenceState.RUNNING,
+						permission: PermissionMapping[bbbRole],
+						bbbResponse,
+						options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
+					})
+			)
+			.catch(
+				() =>
+					new VideoConferenceInfoDTO({
+						state: VideoConferenceState.NOT_STARTED,
+						permission: PermissionMapping[bbbRole],
+						options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
+					})
+			);
 
 		const isGuest: boolean = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
 

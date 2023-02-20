@@ -1,16 +1,16 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { InternalServerErrorException } from '@nestjs/common';
 import { School } from '@shared/domain/entity/school.entity';
 import { InputFormat } from '@shared/domain/types/input-format.types';
-import { InternalServerErrorException } from '@nestjs/common';
 import type { IEntityWithSchool } from '../interface';
 import type { ILearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
+import type { ITaskProperties, ITaskStatus } from '../types/task.types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
 import { User } from './user.entity';
-import type { ITaskProperties, ITaskStatus } from '../types/task.types';
 
 export class TaskWithStatusVo {
 	task!: Task;
@@ -63,6 +63,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@Property({ nullable: true })
 	publicSubmissions?: boolean;
 
+	@Property({ nullable: true })
+	teamSubmissions?: boolean;
+
 	@Index()
 	@ManyToOne('User', { fieldName: 'teacherId' })
 	creator: User;
@@ -79,7 +82,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
 	lesson?: Lesson; // In database exist also null, but it can not set.
 
-	@OneToMany('Submission', 'task', { orphanRemoval: true })
+	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);
 
 	@Index()
@@ -102,6 +105,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.submissions.set(props.submissions || []);
 		this.finished.set(props.finished || []);
 		this.publicSubmissions = props.publicSubmissions || false;
+		this.teamSubmissions = props.teamSubmissions || false;
 	}
 
 	private getSubmissionItems(): Submission[] {
@@ -317,4 +321,8 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	public unpublish(): void {
 		this.private = true;
 	}
+}
+
+export function isTask(reference: unknown): reference is Task {
+	return reference instanceof Task;
 }

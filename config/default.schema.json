@@ -58,7 +58,7 @@
 		"LOGIN_BLOCK_TIME": {
 			"type": "integer",
 			"default": 15,
-			"description": "Time difference for the brute force check"
+			"description": "Time difference for the brute force check in seconds"
 		},
 		"FORCE_SEND_EMAIL": {
 			"type": "boolean",
@@ -324,6 +324,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the Identity Management (ErWIn IDM) as account storage."
+		},
+		"FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the login via OIDC with the Identity Management (ErWIn IDM) for users managed by dBildungscloud."
 		},
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
@@ -961,6 +966,11 @@
 			"default": false,
 			"description": "Toggle for lesson sharing feature."
 		},
+		"FEATURE_LESSON_SHARE_NEW": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the new lesson sharing feature."
+		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1049,10 +1059,15 @@
 				}
 			}
 		},
-		"FEATURE_NEW_TASK_ENABLED": {
+		"FEATURE_TASK_CARD_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Enable the task assignment to individuals"
+			"description": "Enable task card feature"
+		},
+		"FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables feature that allows the insecure LDAP URL (with ldap:// protocol)."
 		}
 	},
 	"required": [

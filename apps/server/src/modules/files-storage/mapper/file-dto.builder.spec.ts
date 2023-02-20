@@ -13,9 +13,7 @@ describe('File Builder', () => {
 
 			const size = 10699;
 			const request = createMock<Request>({
-				get: () => {
-					return `${size}`;
-				},
+				get: () => `${size}`,
 			});
 
 			const buffer = Buffer.from('abc');

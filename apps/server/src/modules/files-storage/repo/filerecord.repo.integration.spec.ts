@@ -4,8 +4,8 @@ import { cleanupCollections, fileRecordFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { FileRecordRepo } from './filerecord.repo';
 import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecordRepo } from './filerecord.repo';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
@@ -78,16 +78,15 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
-	// This test must be skipped until the migration to filerecords is finished because the automatic update of timestamps is disabled for this job.
-	// Temporary functionality for migration to new fileservice
-	// TODO: Adjust when BC-1496 is done!
-	describe.skip('save', () => {
+	describe('save', () => {
 		it('should update the updatedAt property', async () => {
 			const fileRecord = fileRecordFactory.build();
 			await em.persistAndFlush(fileRecord);
 			const origUpdatedAt = fileRecord.updatedAt;
 
-			await new Promise((resolve) => setTimeout(resolve, 20));
+			await new Promise((resolve) => {
+				setTimeout(resolve, 20);
+			});
 			fileRecord.name = `updated-${fileRecord.name}`;
 
 			await repo.save(fileRecord);

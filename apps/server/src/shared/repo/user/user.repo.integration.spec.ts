@@ -61,12 +61,15 @@ describe('user repo', () => {
 					'school',
 					'_id',
 					'ldapDn',
+					'previousExternalId',
 					'externalId',
 					'forcePasswordChange',
 					'importHash',
 					'preferences',
 					'language',
 					'deletedAt',
+					'lastLoginSystemChange',
+					'outdatedSince',
 				].sort()
 			);
 		});
@@ -146,12 +149,15 @@ describe('user repo', () => {
 					'school',
 					'_id',
 					'ldapDn',
+					'previousExternalId',
 					'externalId',
 					'forcePasswordChange',
 					'importHash',
 					'preferences',
 					'language',
 					'deletedAt',
+					'lastLoginSystemChange',
+					'outdatedSince',
 				].sort()
 			);
 		});

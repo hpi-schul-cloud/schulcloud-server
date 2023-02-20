@@ -14,7 +14,10 @@ import {
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
+	ToolConfigurationEntryResponse,
+	ToolConfigurationListResponse,
 } from '../dto';
+import { ExternalToolConfigurationTemplateResponse } from '../dto/response/external-tool-configuration-template.response';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeParams.GLOBAL,
@@ -82,7 +85,7 @@ export class ExternalToolResponseMapper {
 		return customParameterDOS.map((customParameterDO: CustomParameterDO) => {
 			return {
 				name: customParameterDO.name,
-				default: customParameterDO.default,
+				defaultValue: customParameterDO.default,
 				regex: customParameterDO.regex,
 				regexComment: customParameterDO.regexComment,
 				scope: scopeMapping[customParameterDO.scope],
@@ -90,6 +93,37 @@ export class ExternalToolResponseMapper {
 				type: typeMapping[customParameterDO.type],
 				isOptional: customParameterDO.isOptional,
 			};
+		});
+	}
+
+	mapExternalToolDOsToToolConfigurationListResponse(externalTools: ExternalToolDO[]): ToolConfigurationListResponse {
+		return new ToolConfigurationListResponse(this.mapExternalToolDOsToToolConfigurationResponses(externalTools));
+	}
+
+	private mapExternalToolDOsToToolConfigurationResponses(
+		externalTools: ExternalToolDO[]
+	): ToolConfigurationEntryResponse[] {
+		return externalTools.map(
+			(tool: ExternalToolDO) =>
+				new ToolConfigurationEntryResponse({
+					id: tool.id || '',
+					name: tool.name,
+					logoUrl: tool.logoUrl,
+				})
+		);
+	}
+
+	mapToConfigurationTemplateResponse(externalToolDO: ExternalToolDO): ExternalToolConfigurationTemplateResponse {
+		const mappedCustomParameter: CustomParameterResponse[] = this.mapCustomParameterDOToResponse(
+			externalToolDO.parameters ?? []
+		);
+
+		return new ExternalToolConfigurationTemplateResponse({
+			id: externalToolDO.id || '',
+			name: externalToolDO.name,
+			logoUrl: externalToolDO.logoUrl,
+			parameters: mappedCustomParameter,
+			version: externalToolDO.version,
 		});
 	}
 }

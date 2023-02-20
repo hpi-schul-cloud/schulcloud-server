@@ -1,4 +1,4 @@
-import { EntityProperties, VideoConferenceRepo } from '@shared/repo';
+import { VideoConferenceRepo } from '@shared/repo';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -13,7 +13,7 @@ import {
 } from '@shared/domain';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 import { NotFoundError } from '@mikro-orm/core';
-import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { createMock } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
 
@@ -22,7 +22,7 @@ class VideoConferenceRepoSpec extends VideoConferenceRepo {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntityPropertiesSpec(entityDO: VideoConferenceDO): EntityProperties<IVideoConferenceProperties> {
+	mapDOToEntityPropertiesSpec(entityDO: VideoConferenceDO): IVideoConferenceProperties {
 		return super.mapDOToEntityProperties(entityDO);
 	}
 }
@@ -153,10 +153,9 @@ describe('Video Conference Repo', () => {
 			});
 
 			// Act
-			const result: EntityProperties<IVideoConferenceProperties> = repo.mapDOToEntityPropertiesSpec(testDO);
+			const result: IVideoConferenceProperties = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			// Assert
-			expect(result.id).toEqual(testDO.id);
 			expect(result.target).toEqual(testDO.target);
 			expect(result.targetModel).toEqual(TargetModels.COURSES);
 			expect(result.options.everyAttendeJoinsMuted).toEqual(testDO.options.everyAttendeeJoinsMuted);

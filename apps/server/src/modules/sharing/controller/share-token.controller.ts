@@ -13,8 +13,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestTimeout } from '@shared/common';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { CopyApiResponse } from '@src/modules/learnroom/controller/dto';
-import { CopyMapper } from '@src/modules/learnroom/mapper/copy.mapper';
+import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
 import { serverConfig } from '@src/modules/server/server.config';
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';
 import { ShareTokenUC } from '../uc';
@@ -89,7 +88,12 @@ export class ShareTokenController {
 		@Param() urlParams: ShareTokenUrlParams,
 		@Body() body: ShareTokenImportBodyParams
 	): Promise<CopyApiResponse> {
-		const copyStatus = await this.shareTokenUC.importShareToken(currentUser.userId, urlParams.token, body.newName);
+		const copyStatus = await this.shareTokenUC.importShareToken(
+			currentUser.userId,
+			urlParams.token,
+			body.newName,
+			body.destinationCourseId
+		);
 
 		const response = CopyMapper.mapToResponse(copyStatus);
 
