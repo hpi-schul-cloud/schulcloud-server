@@ -205,7 +205,7 @@ describe('SchoolExternalToolUc', () => {
 
 				await uc.createSchoolExternalTool(user.id, tool);
 
-				expect(schoolExternalToolService.createSchoolExternalTool).toHaveBeenCalledWith(tool);
+				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(tool);
 			});
 		});
 	});
@@ -246,7 +246,7 @@ describe('SchoolExternalToolUc', () => {
 			const updatedTool: SchoolExternalToolDO = { ...tool };
 			updatedTool.parameters[0].value = 'updatedValue';
 
-			schoolExternalToolService.updateSchoolExternalTool.mockResolvedValue(updatedTool);
+			schoolExternalToolService.saveSchoolExternalTool.mockResolvedValue(updatedTool);
 			return {
 				updatedTool,
 			};
@@ -288,7 +288,7 @@ describe('SchoolExternalToolUc', () => {
 
 				await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
 
-				expect(schoolExternalToolService.updateSchoolExternalTool).toHaveBeenCalledWith(updatedTool);
+				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(updatedTool);
 			});
 			it('should return a schoolExternalToolDO', async () => {
 				const { updatedTool } = setupUpdate();

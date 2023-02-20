@@ -151,12 +151,12 @@ describe('SchoolExternalToolService', () => {
 		});
 	});
 
-	describe('createSchoolExternalTool is called', () => {
+	describe('saveSchoolExternalTool is called', () => {
 		describe('when schoolExternalTool is given', () => {
 			it('should call schoolExternalToolRepo.save', async () => {
 				const { schoolExternalTool } = setup();
 
-				await service.createSchoolExternalTool(schoolExternalTool);
+				await service.saveSchoolExternalTool(schoolExternalTool);
 
 				expect(schoolExternalToolRepo.save).toHaveBeenCalledWith(schoolExternalTool);
 			});
@@ -165,21 +165,9 @@ describe('SchoolExternalToolService', () => {
 				const { schoolExternalTool } = setup();
 				schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
 
-				await service.createSchoolExternalTool(schoolExternalTool);
+				await service.saveSchoolExternalTool(schoolExternalTool);
 
 				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(schoolExternalTool.toolId);
-			});
-		});
-	});
-
-	describe('updateSchoolExternalTool is called', () => {
-		describe('when schoolExternalTool is given', () => {
-			it('should save schoolExternalTool', async () => {
-				const { schoolExternalTool } = setup();
-
-				await service.updateSchoolExternalTool(schoolExternalTool);
-
-				expect(schoolExternalToolRepo.save).toHaveBeenCalledWith(schoolExternalTool);
 			});
 		});
 	});
