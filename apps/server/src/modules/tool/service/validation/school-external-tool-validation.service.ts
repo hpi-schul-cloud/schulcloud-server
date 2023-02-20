@@ -28,10 +28,9 @@ export class SchoolExternalToolValidationService {
 		this.checkCustomParameterEntries(loadedExternalTool, schoolExternalToolDO);
 	}
 
-	async validateUpdate(schoolExternalToolId: EntityId, schoolExternalToolDO: SchoolExternalToolDO): Promise<void> {
+	async validateUpdate(schoolExternalToolId: string, schoolExternalToolDO: SchoolExternalToolDO): Promise<void> {
 		this.checkIdMatch(schoolExternalToolId, schoolExternalToolDO.id);
 		this.checkForDuplicateParameters(schoolExternalToolDO);
-		this.checkForEmptyParameter(schoolExternalToolDO);
 		const loadedExternalTool: ExternalToolDO = await this.externalToolService.findExternalToolById(
 			schoolExternalToolDO.toolId
 		);
@@ -81,18 +80,6 @@ export class SchoolExternalToolValidationService {
 							this.checkParameterRegex(foundEntry, param);
 						}
 					}
-				}
-			}
-		}
-	}
-
-	private checkForEmptyParameter(schoolExternalToolDO: SchoolExternalToolDO): void {
-		if (schoolExternalToolDO.parameters) {
-			for (const param of schoolExternalToolDO.parameters) {
-				if (!param.value) {
-					throw new ValidationError(
-						`tool_param_value_empty: The parameter with name ${param.name} should not be empty.`
-					);
 				}
 			}
 		}

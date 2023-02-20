@@ -40,7 +40,13 @@ export class SchoolExternalToolService {
 
 	private async enrichDataFromExternalTool(tool: SchoolExternalToolDO): Promise<SchoolExternalToolDO> {
 		const externalToolDO: ExternalToolDO = await this.externalToolService.findExternalToolById(tool.toolId);
-		return { ...tool, status: this.determineStatus(tool, externalToolDO), name: externalToolDO.name };
+		const status = this.determineStatus(tool, externalToolDO);
+		const schoolExternalTool = new SchoolExternalToolDO({
+			...tool,
+			status,
+			name: externalToolDO.name,
+		});
+		return schoolExternalTool;
 	}
 
 	private determineStatus(tool: SchoolExternalToolDO, externalToolDO: ExternalToolDO): SchoolExternalToolStatus {
@@ -54,14 +60,9 @@ export class SchoolExternalToolService {
 		await this.schoolExternalToolRepo.deleteById(schoolExternalToolId);
 	}
 
-	async createSchoolExternalTool(schoolExternalTool: SchoolExternalToolDO): Promise<SchoolExternalToolDO> {
+	async saveSchoolExternalTool(schoolExternalTool: SchoolExternalToolDO): Promise<SchoolExternalToolDO> {
 		let createdSchoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolRepo.save(schoolExternalTool);
 		createdSchoolExternalTool = await this.enrichDataFromExternalTool(createdSchoolExternalTool);
 		return createdSchoolExternalTool;
-	}
-
-	async updateSchoolExternalTool(schoolExternalTool: SchoolExternalToolDO): Promise<SchoolExternalToolDO> {
-		const updatedSchoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolRepo.save(schoolExternalTool);
-		return updatedSchoolExternalTool;
 	}
 }
