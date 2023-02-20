@@ -54,13 +54,20 @@ export class OauthUc {
 		);
 
 		if (data.externalSchool) {
-			// TODO validate data see schoolMigrationService await this.schoolMigrationService.validateData
-			await this.schoolMigrationService.migrateSchool(
-				currentUserId,
-				data.externalSchool.externalId,
-				data.externalSchool.officialSchoolNumber,
-				targetSystemId
-			);
+			if (
+				await this.schoolMigrationService.shouldSchoolMigrate(
+					currentUserId,
+					data.externalSchool.externalId,
+					data.externalSchool.officialSchoolNumber
+				)
+			) {
+				await this.schoolMigrationService.migrateSchool(
+					currentUserId,
+					data.externalSchool.externalId,
+					data.externalSchool.officialSchoolNumber!,
+					targetSystemId
+				);
+			}
 		}
 
 		// TODO: compare officialSchoolNumbers (512)

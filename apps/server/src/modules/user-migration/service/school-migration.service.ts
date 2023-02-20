@@ -17,27 +17,10 @@ export class SchoolMigrationService {
 	async migrateSchool(
 		currentUserId: string,
 		externalId: string,
-		schoolNumber: string | undefined, // TODO remove undefined
+		schoolNumber: string,
 		targetSystemId: string
 	): Promise<void> {
-		// TODO move validations to function
-		if (!schoolNumber) {
-			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_missing
-			return Promise.resolve();
-		}
-
-		const existingSchool: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(schoolNumber);
-		if (!existingSchool) {
-			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_mismatch
-			return Promise.resolve();
-		}
-
-		const isExternalUserInSchool = await this.isExternalUserInSchool(currentUserId, existingSchool);
-		if (!isExternalUserInSchool) {
-			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_mismatch
-			return Promise.resolve();
-		}
-
+		const existingSchool: SchoolDO = (await this.schoolService.getSchoolBySchoolNumber(schoolNumber)) as SchoolDO;
 		const schoolDOCopy: SchoolDO = new SchoolDO({ ...existingSchool });
 
 		try {
@@ -54,7 +37,32 @@ export class SchoolMigrationService {
 		return Promise.resolve();
 	}
 
-	async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {
+	async shouldSchoolMigrate(currentUserId: string, externalId: string, schoolNumber: string | undefined) {
+		if (!schoolNumber) {
+			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_missing
+			return Promise.resolve();
+		}
+
+		const existingSchool: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(schoolNumber);
+		if (!existingSchool) {
+			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_mismatch
+			return Promise.resolve();
+		}
+
+		const isExternalUserInSchool = await this.isExternalUserInSchool(currentUserId, existingSchool); // isCurrentUserInExternalSchool? why though? - just to validate the school number?
+		if (!isExternalUserInSchool) {
+			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_mismatch
+			return Promise.resolve();
+		}
+
+		if (externalId === existingSchool.externalId) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {
 		const currentUser: UserDO = await this.userService.findById(currentUserId);
 
 		if (!existingSchool || existingSchool?.id !== currentUser.schoolId) {

@@ -13,7 +13,7 @@ import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto
 import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
 import { SchoolService } from '@src/modules/school';
@@ -495,6 +495,24 @@ describe('OAuthUc', () => {
 					await service.migrateUser('currentUserId', query, system.id as string);
 
 					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('when official school number is not defined', () => {
+				it('should throw', async () => {
+					const { oauthData, query, system, userMigrationDto } = setupMigration();
+					oauthData.externalSchool = {
+						externalId: 'mockId',
+						name: 'mockName',
+					};
+					systemService.findOAuthById.mockResolvedValue(system);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+					await service.migrateUser('currentUserId', query, system.id as string);
+
+					await expect(service.migrateUser('currentUserId', query, system.id as string)).rejects.toThrow(
+						BadRequestException
+					);
 				});
 			});
 		});
