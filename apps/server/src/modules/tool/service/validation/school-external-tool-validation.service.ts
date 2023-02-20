@@ -20,7 +20,7 @@ export class SchoolExternalToolValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
 	async validateCreate(schoolExternalToolDO: SchoolExternalToolDO): Promise<void> {
-		this.checkForDuplicateParameters(schoolExternalToolDO.parameters);
+		this.checkForDuplicateParameters(schoolExternalToolDO);
 		const loadedExternalTool: ExternalToolDO = await this.externalToolService.findExternalToolById(
 			schoolExternalToolDO.toolId
 		);
@@ -28,18 +28,24 @@ export class SchoolExternalToolValidationService {
 		this.checkCustomParameterEntries(loadedExternalTool, schoolExternalToolDO);
 	}
 
-	private checkForDuplicateParameters(parameters: CustomParameterEntryDO[]): void {
-		const caseInsensitiveNames = parameters.map(({ name }: CustomParameterEntryDO) => name.toLowerCase());
+	private checkForDuplicateParameters(schoolExternalToolDO: SchoolExternalToolDO): void {
+		const caseInsensitiveNames = schoolExternalToolDO.parameters.map(({ name }: CustomParameterEntryDO) =>
+			name.toLowerCase()
+		);
 		const uniqueNames = new Set(caseInsensitiveNames);
-		if (!(uniqueNames.size === parameters.length)) {
-			throw new ValidationError('The given schoolExternalTool has one or more duplicates in its parameters.');
+		if (!(uniqueNames.size === schoolExternalToolDO.parameters.length)) {
+			throw new ValidationError(
+				`tool_param_duplicate: The tool ${
+					schoolExternalToolDO.name || ''
+				} contains multiple of the same custom parameters.`
+			);
 		}
 	}
 
 	private checkVersionMatch(schoolExternalToolVersion: number, externalToolVersion: number): void {
 		if (!(schoolExternalToolVersion === externalToolVersion)) {
 			throw new ValidationError(
-				`The version ${schoolExternalToolVersion} of given schoolExternalTool does not match the externalTool version ${externalToolVersion}.`
+				`tool_version_mismatch: The version ${schoolExternalToolVersion} of given schoolExternalTool does not match the externalTool version ${externalToolVersion}.`
 			);
 		}
 	}
@@ -64,16 +70,18 @@ export class SchoolExternalToolValidationService {
 	}
 
 	private checkOptionalParameter(param: CustomParameterDO, foundEntry: CustomParameterEntryDO | undefined): void {
-		if (!foundEntry && !param.isOptional) {
+		if (!foundEntry?.value && !param.isOptional) {
 			throw new ValidationError(
-				`The parameter with name ${param.name} is required but not found in the schoolExternalTool.`
+				`tool_param_required: The parameter with name ${param.name} is required but not found in the schoolExternalTool.`
 			);
 		}
 	}
 
 	private checkParameterType(foundEntry: CustomParameterEntryDO, param: CustomParameterDO): void {
 		if (foundEntry.value && !typeCheckers[param.type](foundEntry.value)) {
-			throw new ValidationError(`The value of parameter with name ${foundEntry.name} should be of type ${param.type}.`);
+			throw new ValidationError(
+				`tool_param_type_mismatch: The value of parameter with name ${foundEntry.name} should be of type ${param.type}.`
+			);
 		}
 	}
 
@@ -81,7 +89,7 @@ export class SchoolExternalToolValidationService {
 		if (!param.regex) return;
 		if (!new RegExp(param.regex).test(foundEntry.value ?? ''))
 			throw new ValidationError(
-				`The given entry for the parameter with name ${foundEntry.name} does not fit the regex.`
+				`tool_param_value_regex: The given entry for the parameter with name ${foundEntry.name} does not fit the regex.`
 			);
 	}
 }
