@@ -184,8 +184,12 @@ class EduSharingConnector {
 
 		const response = await this.searchEduSharing(criterias, 0, 1);
 
-		if (!response.data || response.data.length !== 1) {
+		if (!response.data) {
 			throw new NotFound(`Item not found, uuid: ${uuid}`);
+		}
+
+		if (response.data.length !== 1) {
+			throw new NotFound(`more items than one found for uuid: ${uuid}`);
 		}
 
 		if (Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
