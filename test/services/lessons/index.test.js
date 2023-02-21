@@ -14,14 +14,12 @@ const testLesson = {
 describe('lessons service', () => {
 	let app;
 	let lessonService;
-	let lessonCopyService;
 	let server;
 	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		lessonService = app.service('lessons');
-		lessonCopyService = app.service('lessons/copy');
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 	});
@@ -34,7 +32,6 @@ describe('lessons service', () => {
 
 	it('registered the lessons service', () => {
 		assert.ok(lessonService);
-		assert.ok(lessonCopyService);
 	});
 
 	it('creates a lesson', () =>

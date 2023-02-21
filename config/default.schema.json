@@ -988,6 +988,11 @@
 			"default": false,
 			"description": "Toggle for lesson sharing feature."
 		},
+		"FEATURE_LESSON_SHARE_NEW": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the new lesson sharing feature."
+		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1080,6 +1085,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enable task card feature"
+		},
+		"FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables feature that allows the insecure LDAP URL (with ldap:// protocol)."
 		}
 	},
 	"required": [
