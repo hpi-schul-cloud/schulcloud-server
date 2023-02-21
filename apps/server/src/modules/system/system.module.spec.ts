@@ -11,19 +11,15 @@ describe('SystemModule', () => {
 	let systemService: SystemService;
 
 	beforeAll(async () => {
-		try {
-			module = await Test.createTestingModule({
-				imports: [
-					SystemModule,
-					MongoMemoryDatabaseModule.forRoot(),
-					ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
-				],
-			}).compile();
-			systemService = module.get(SystemService);
-			systemUc = module.get(SystemUc);
-		} catch (e) {
-			console.log(e);
-		}
+		module = await Test.createTestingModule({
+			imports: [
+				SystemModule,
+				MongoMemoryDatabaseModule.forRoot(),
+				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
+			],
+		}).compile();
+		systemService = module.get(SystemService);
+		systemUc = module.get(SystemUc);
 	});
 
 	afterAll(async () => {
