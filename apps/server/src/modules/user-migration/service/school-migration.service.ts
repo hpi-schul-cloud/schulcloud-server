@@ -4,6 +4,8 @@ import { SchoolService } from '@src/modules/school';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserService } from '@src/modules/user';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { MigrationError } from '../error/migration.error';
+import { MigrationErrorCodeEnum } from '../error/migration-error-code.enum';
 
 // TODO: test
 @Injectable()
@@ -37,22 +39,23 @@ export class SchoolMigrationService {
 		return Promise.resolve();
 	}
 
-	async shouldSchoolMigrate(currentUserId: string, externalId: string, schoolNumber: string | undefined) {
+	async shouldSchoolMigrate(
+		currentUserId: string,
+		externalId: string,
+		schoolNumber: string | undefined
+	): Promise<boolean> {
 		if (!schoolNumber) {
-			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_missing
-			return Promise.resolve();
+			throw new MigrationError(MigrationErrorCodeEnum.OFFICIAL_SCHOOL_NUMBER_MISSING);
 		}
 
 		const existingSchool: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(schoolNumber);
 		if (!existingSchool) {
-			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_mismatch
-			return Promise.resolve();
+			throw new MigrationError(MigrationErrorCodeEnum.OFFICIAL_SCHOOL_NUMBER_MISMATCH);
 		}
 
 		const isExternalUserInSchool = await this.isCurrentUserInExternalSchool(currentUserId, existingSchool);
 		if (!isExternalUserInSchool) {
-			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_mismatch
-			return Promise.resolve();
+			throw new MigrationError();
 		}
 
 		if (externalId === existingSchool.externalId) {
