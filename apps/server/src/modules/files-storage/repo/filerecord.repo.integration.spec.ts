@@ -3,11 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { DataBaseManager } from '@shared/infra/database/database-manager';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { FileRecordRepo } from './filerecord.repo';
 import { FileRecordEntity } from './filerecord.entity';
-import { FileRecord, FileRecordParentType } from '../domain';
+import { FileRecord, FileRecordParentType, IUpdateSecurityCheckStatus, ScanStatus } from '../domain';
 import { fileRecordEntityFactory } from './filerecord-entity.factory';
 import { FileRecordDOMapper } from './fileRecordDO.mapper';
+import { NotFoundError } from '@mikro-orm/core';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
@@ -21,6 +23,7 @@ describe('FileRecordRepo', () => {
 		}).compile();
 
 		repo = module.get(FileRecordRepo);
+		// TODO: Note: maybe DataBaseManager should be used for create test data, to issolate em and prefent test to use it
 		em = module.get(EntityManager);
 	});
 
@@ -77,15 +80,143 @@ describe('FileRecordRepo', () => {
 	});
 */
 	describe('update', () => {
-		// TODO: test are missed
+		describe('when the element to be updated does not exist in the database', () => {
+			const setup = async () => {
+				const fileRecordEntityDB = fileRecordEntityFactory.build();
+				// must create with id, for testcase. Without persisting no id is added
+				const fileRecordEntity = fileRecordEntityFactory.buildWithId();
+				await em.persistAndFlush([fileRecordEntityDB]);
+				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
+				const fileRecordDB = FileRecordDOMapper.entityToDO(fileRecordEntityDB);
+
+				return { fileRecord, fileRecordDB };
+			};
+
+			it('should be throw an internal server error', async () => {
+				const { fileRecord } = await setup();
+
+				await expect(() => repo.update([fileRecord])).rejects.toThrowError(InternalServerErrorException);
+			});
+
+			it('should be throw an internal server error', async () => {
+				const { fileRecord, fileRecordDB } = await setup();
+
+				await expect(() => repo.update([fileRecord, fileRecordDB])).rejects.toThrowError(InternalServerErrorException);
+			});
+		});
+
+		describe('when update elements exists in database but not in the unit of work', () => {
+			const setup = async () => {
+				const fileRecordEntity = fileRecordEntityFactory.build();
+				await em.persistAndFlush(fileRecordEntity);
+				em.clear();
+				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
+
+				return { fileRecord };
+			};
+
+			it('should be return instance of FileRecord', async () => {
+				const { fileRecord } = await setup();
+
+				const result = await repo.update([fileRecord]);
+
+				expect(result[0]).toBeInstanceOf(FileRecord);
+			});
+
+			// note: normally the keys are only tested in the mapper it self but as show case and validation also added on this place
+			it('should be update the changed name', async () => {
+				const { fileRecord } = await setup();
+
+				const newName = 'updated name';
+				fileRecord.setName(newName);
+
+				const updatedFileRecords = await repo.update([fileRecord]);
+				const result = await em.findOne(FileRecordEntity, { id: fileRecord.id });
+
+				expect(updatedFileRecords[0].getName()).toEqual(newName);
+				expect(result?.name).toEqual(newName);
+			});
+
+			it('should be update the changed securityCheck', async () => {
+				const { fileRecord } = await setup();
+
+				// TODO: builder?
+				const scanStatus: IUpdateSecurityCheckStatus = {
+					reason: 'Text 123',
+					status: ScanStatus.BLOCKED,
+				};
+				fileRecord.updateSecurityCheckStatus(scanStatus);
+
+				const updatedFileRecords = await repo.update([fileRecord]);
+				const result = await em.findOne(FileRecordEntity, { id: fileRecord.id });
+
+				const { reason, status } = updatedFileRecords[0].getProps().securityCheck;
+
+				expect(reason).toEqual(scanStatus.reason);
+				expect(status).toEqual(scanStatus.status);
+				expect(result?.securityCheck.reason).toEqual(scanStatus.reason);
+				expect(result?.securityCheck.status).toEqual(scanStatus.status);
+			});
+		});
+
+		// Note: Only for show case without em.clear
+		describe('when update elements exists in database and in the unit of work', () => {
+			const setup = async () => {
+				const fileRecordEntity = fileRecordEntityFactory.build();
+				await em.persistAndFlush(fileRecordEntity);
+				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
+
+				return { fileRecord };
+			};
+
+			// note: normally the keys are only tested in the mapper it self but as show case and validation also added on this place
+			it('should be update the changed name', async () => {
+				const { fileRecord } = await setup();
+
+				const newName = 'updated name';
+				fileRecord.setName(newName);
+
+				const updatedFileRecords = await repo.update([fileRecord]);
+				const result = await em.findOne(FileRecordEntity, { id: fileRecord.id });
+
+				expect(updatedFileRecords[0].getName()).toEqual(newName);
+				expect(result?.name).toEqual(newName);
+			});
+
+			it('should be update the changed securityCheck', async () => {
+				const { fileRecord } = await setup();
+
+				// TODO: builder?
+				const scanStatus: IUpdateSecurityCheckStatus = {
+					reason: 'Text 123',
+					status: ScanStatus.BLOCKED,
+				};
+				fileRecord.updateSecurityCheckStatus(scanStatus);
+
+				const updatedFileRecords = await repo.update([fileRecord]);
+				const result = await em.findOne(FileRecordEntity, { id: fileRecord.id });
+
+				const { reason, status } = updatedFileRecords[0].getProps().securityCheck;
+
+				expect(reason).toEqual(scanStatus.reason);
+				expect(status).toEqual(scanStatus.status);
+				expect(result?.securityCheck.reason).toEqual(scanStatus.reason);
+				expect(result?.securityCheck.status).toEqual(scanStatus.status);
+			});
+		});
 	});
 
-	// TODO: buildWithID is bad
 	describe('delete', () => {
 		describe('when no DB record exists', () => {
-			it('result is undefined', async () => {
+			const setup = () => {
 				const fileRecordEntity = fileRecordEntityFactory.buildWithId();
 				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
+
+				return { fileRecord };
+			};
+
+			it('result is undefined', async () => {
+				const { fileRecord } = setup();
 
 				const result = await repo.delete([fileRecord]);
 
@@ -93,32 +224,51 @@ describe('FileRecordRepo', () => {
 			});
 		});
 
+		// Note: only show case
 		describe('when DB record exists and loaded', () => {
-			it('should delete the data record', async () => {
-				const fileRecordEntity = fileRecordEntityFactory.buildWithId();
+			const setup = async () => {
+				const fileRecordEntity = fileRecordEntityFactory.build();
+				await em.persistAndFlush(fileRecordEntity);
 				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
 
-				await em.persistAndFlush(fileRecordEntity);
+				return { fileRecord };
+			};
+
+			it('should delete the data record', async () => {
+				const { fileRecord } = await setup();
 
 				await repo.delete([fileRecord]);
 
-				const result = await em.findOne(FileRecordEntity, { id: fileRecordEntity.id });
+				const result = await em.findOne(FileRecordEntity, { id: fileRecord.id });
 
 				expect(result).toBe(null);
 			});
 		});
 
 		describe('when DB record exists and not loaded', () => {
-			it('result should be a entity reference with id', async () => {
-				const fileRecordEntity = fileRecordEntityFactory.buildWithId();
-				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
-
+			const setup = async () => {
+				const fileRecordEntity = fileRecordEntityFactory.build();
 				await em.persistAndFlush(fileRecordEntity);
 				em.clear();
+				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
+
+				return { fileRecord };
+			};
+
+			it('result should be return nothing', async () => {
+				const { fileRecord } = await setup();
+
+				const result = await repo.delete([fileRecord]);
+
+				expect(result).toBeUndefined();
+			});
+
+			it('result should be a entity reference with id', async () => {
+				const { fileRecord } = await setup();
 
 				await repo.delete([fileRecord]);
 
-				const result = await em.findOne(FileRecordEntity, { id: fileRecordEntity.id });
+				const result = await em.findOne(FileRecordEntity, { id: fileRecord.id });
 
 				expect(result).toBe(null);
 			});
@@ -126,47 +276,96 @@ describe('FileRecordRepo', () => {
 	});
 
 	describe('findOneById', () => {
-		it('should find an entity by its id and deletedSince is NOT defined', async () => {
-			const fileRecord = fileRecordEntityFactory.build();
+		describe('when deletedSince is not defined', () => {
+			const setup = async () => {
+				const fileRecord = fileRecordEntityFactory.build();
 
-			await em.persistAndFlush(fileRecord);
-			em.clear();
+				await em.persistAndFlush(fileRecord);
+				em.clear();
 
-			const result = await repo.findOneById(fileRecord.id);
+				return { id: fileRecord.id };
+			};
 
-			expect(result).toBeDefined();
-			expect(result.id).toEqual(fileRecord.id);
+			it('should be return a instanceof FileRecord', async () => {
+				const { id } = await setup();
+
+				const result = await repo.findOneById(id);
+
+				expect(result).toBeInstanceOf(FileRecord);
+			});
+
+			it('should find an entity by its id', async () => {
+				const { id } = await setup();
+
+				const result = await repo.findOneById(id);
+
+				expect(result).toBeDefined();
+				expect(result.id).toEqual(id);
+			});
+		});
+
+		describe('when deletedSince is defined', () => {
+			const setup = async () => {
+				const fileRecord = fileRecordEntityFactory.markedForDelete().build();
+
+				await em.persistAndFlush(fileRecord);
+				em.clear();
+
+				return { id: fileRecord.id };
+			};
+
+			it('should not find a element', async () => {
+				const { id } = await setup();
+
+				await expect(() => repo.findOneById(id)).rejects.toThrowError(NotFoundError);
+			});
 		});
 	});
 
 	describe('findOneByIdMarkedForDelete', () => {
-		it('should find an entity by its id and deletedSince is defined', async () => {
-			const fileRecord = fileRecordEntityFactory.markedForDelete().build();
+		describe('when deletedSince is defined', () => {
+			const setup = async () => {
+				const fileRecord = fileRecordEntityFactory.markedForDelete().build();
 
-			await em.persistAndFlush(fileRecord);
-			em.clear();
+				await em.persistAndFlush(fileRecord);
+				em.clear();
 
-			const result = await repo.findOneByIdMarkedForDelete(fileRecord.id);
+				return { id: fileRecord.id };
+			};
 
-			expect(result).toBeDefined();
-			expect(result.id).toEqual(fileRecord.id);
+			it('should be return a instanceof FileRecord', async () => {
+				const { id } = await setup();
+
+				const result = await repo.findOneByIdMarkedForDelete(id);
+
+				expect(result).toBeInstanceOf(FileRecord);
+			});
+
+			it('should find a element', async () => {
+				const { id } = await setup();
+
+				const result = await repo.findOneByIdMarkedForDelete(id);
+
+				expect(result).toBeDefined();
+				expect(result.id).toEqual(id);
+			});
 		});
 
-		it('should find an entity by its id', async () => {
-			const notExistingId = new ObjectId().toHexString();
+		describe('when deletedSince is not defined', () => {
+			const setup = async () => {
+				const fileRecord = fileRecordEntityFactory.build();
 
-			await expect(repo.findOneByIdMarkedForDelete(notExistingId)).rejects.toThrowError();
-		});
+				await em.persistAndFlush(fileRecord);
+				em.clear();
 
-		it('should ingnore if deletedSince is undefined', async () => {
-			const fileRecord = fileRecordEntityFactory.build();
+				return { id: fileRecord.id };
+			};
 
-			await em.persistAndFlush(fileRecord);
-			em.clear();
+			it('should not find an element', async () => {
+				const { id } = await setup();
 
-			const exec = async () => repo.findOneByIdMarkedForDelete(fileRecord.id);
-
-			await expect(exec).rejects.toThrowError();
+				await expect(() => repo.findOneByIdMarkedForDelete(id)).rejects.toThrowError(NotFoundError);
+			});
 		});
 	});
 

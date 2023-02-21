@@ -10,10 +10,10 @@ import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { S3ClientAdapter } from './client/s3-client.adapter';
-import { FileRecordEntity, FileSecurityCheck } from './entity';
 import { config, s3Config } from './files-storage.config';
 import { S3Config } from './interface/config';
 import { FileRecordRepo } from './repo';
+import { FileRecordEntity, FileSecurityCheck } from './repo/filerecord.entity';
 import { FilesStorageService } from './service/files-storage.service';
 
 const imports = [

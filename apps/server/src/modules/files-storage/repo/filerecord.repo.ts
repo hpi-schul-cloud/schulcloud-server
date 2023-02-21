@@ -87,9 +87,9 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 	// it is possible to add mapper to over params
 	private async find(fileRecords: FileRecord[]): Promise<FileRecordEntity[]> {
 		const scope = new FileRecordScope().byIds(fileRecords);
-		const entities = await this.dbm.find(FileRecordEntity, scope.query);
+		const fileRecordEntities = await this.dbm.find(FileRecordEntity, scope.query);
 
-		return entities;
+		return fileRecordEntities;
 	}
 
 	private async findOne(scope: FileRecordScope): Promise<FileRecord> {
@@ -106,7 +106,7 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStora
 		const { pagination } = options || {};
 		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
 
-		const [fileRecordEntities, count] = await this.dbm.findAndCount<FileRecordEntity>(FileRecordEntity, scope.query, {
+		const [fileRecordEntities, count] = await this.dbm.findAndCount(FileRecordEntity, scope.query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
 			orderBy: order,
