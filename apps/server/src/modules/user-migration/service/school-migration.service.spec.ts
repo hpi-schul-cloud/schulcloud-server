@@ -1,21 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MikroORM } from '@mikro-orm/core';
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { Logger } from '@src/core/logger';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserMigrationService } from './user-migration.service';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SchoolMigrationService } from './school-migration.service';
+import { OAuthMigrationError } from '../error/oauth-migration.error';
 
 describe('SchoolMigrationService', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
 	let service: SchoolMigrationService;
 
-	let userService: UserService;
-	let schoolService: SchoolService;
+	let userService: DeepMocked<UserService>;
+	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,7 +37,7 @@ describe('SchoolMigrationService', () => {
 			],
 		}).compile();
 
-		service = module.get(UserMigrationService);
+		service = module.get(SchoolMigrationService);
 		schoolService = module.get(SchoolService);
 		userService = module.get(UserService);
 
@@ -49,21 +50,138 @@ describe('SchoolMigrationService', () => {
 	});
 
 	const setup = () => {
-		const officialSchoolNumber = '3';
 		const school: SchoolDO = new SchoolDO({
+			id: 'schoolId',
 			name: 'schoolName',
-			officialSchoolNumber,
+			officialSchoolNumber: '3',
+			externalId: 'firstExternalId',
 		});
+		const userDO: UserDO = {
+			id: 'userId',
+			schoolId: school.id as string,
+		} as UserDO;
+		const targetSystemId = 'targetSystemId';
 
 		return {
-			officialSchoolNumber,
+			currentUserId: userDO.id as string,
+			officialSchoolNumber: school.officialSchoolNumber,
 			school,
+			externalId: school.externalId as string,
+			userDO,
+			targetSystemId,
+			firstExternalId: school.externalId,
 		};
 	};
 
-	describe('shouldSchoolMigrate is called', () => {
-		// TODO test
+	describe('schoolToMigrate is called', () => {
+		it('should throw an error when schoolNumber is missing', async () => {
+			const { currentUserId, externalId } = setup();
+
+			const func = () => service.schoolToMigrate(currentUserId, externalId, undefined);
+
+			await expect(func()).rejects.toThrow(
+				new OAuthMigrationError(
+					'Official school number from target migration system is missing',
+					'ext_official_school_number_missing'
+				)
+			);
+		});
+
+		it('should throw an error when school could not be found with official school number', async () => {
+			const { currentUserId, externalId, officialSchoolNumber } = setup();
+			schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
+
+			const func = () => service.schoolToMigrate(currentUserId, externalId, officialSchoolNumber);
+
+			await expect(func()).rejects.toThrow(
+				new OAuthMigrationError(
+					'Could not find school by official school number from target migration system',
+					'ext_official_school_number_mismatch'
+				)
+			);
+		});
+
+		it('should throw an error if the current user is not in the school to migrate to', async () => {
+			const { currentUserId, externalId, school, userDO } = setup();
+			schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
+			userDO.schoolId = 'anotherSchool';
+			userService.findById.mockResolvedValue(userDO);
+
+			const func = () => service.schoolToMigrate(currentUserId, externalId, school.officialSchoolNumber);
+
+			await expect(func()).rejects.toThrow(
+				new OAuthMigrationError(
+					'Current users school is not the same as school found by official school number from target migration system',
+					'ext_official_school_number_mismatch'
+				)
+			);
+		});
+
+		it('should return null when school was already migrated', async () => {
+			const { currentUserId, externalId, school, userDO } = setup();
+			schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
+			userService.findById.mockResolvedValue(userDO);
+
+			const result: SchoolDO | null = await service.schoolToMigrate(
+				currentUserId,
+				externalId,
+				school.officialSchoolNumber
+			);
+
+			expect(result).toBeNull();
+		});
+
+		it('should return migrated school when school was migrated', async () => {
+			const { currentUserId, school, userDO } = setup();
+			schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
+			userService.findById.mockResolvedValue(userDO);
+
+			const result: SchoolDO | null = await service.schoolToMigrate(
+				currentUserId,
+				'newExternalId',
+				school.officialSchoolNumber
+			);
+
+			expect(result).toEqual(school);
+		});
 	});
 
-	describe('migrateSchool is called', () => {});
+	describe('migrateSchool is called', () => {
+		it('should save the migrated school', async () => {
+			const { school, targetSystemId, firstExternalId } = setup();
+			const newExternalId = 'newExternalId';
+
+			await service.migrateSchool(newExternalId, school, targetSystemId);
+
+			expect(schoolService.save).toHaveBeenCalledWith(
+				expect.objectContaining<Partial<SchoolDO>>({
+					systems: [targetSystemId],
+					previousExternalId: firstExternalId,
+					externalId: newExternalId,
+				})
+			);
+		});
+
+		it('should add the system to migrated school when there are other systems before', async () => {
+			const { school, targetSystemId } = setup();
+			school.systems = ['existingSystem'];
+
+			await service.migrateSchool('newExternalId', school, targetSystemId);
+
+			expect(schoolService.save).toHaveBeenCalledWith(
+				expect.objectContaining<Partial<SchoolDO>>({
+					systems: ['existingSystem', targetSystemId],
+				})
+			);
+		});
+
+		it('should save the old schoolDo (rollback the migration) when an error occurred', async () => {
+			const { school, targetSystemId } = setup();
+			schoolService.save.mockRejectedValueOnce(new Error());
+
+			await service.migrateSchool('newExternalId', school, targetSystemId);
+
+			expect(schoolService.save).toHaveBeenCalledWith(school);
+		});
+	});
 });

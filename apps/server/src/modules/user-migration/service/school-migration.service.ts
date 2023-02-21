@@ -6,7 +6,6 @@ import { UserService } from '@src/modules/user';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
 
-// TODO: test
 @Injectable()
 export class SchoolMigrationService {
 	constructor(
@@ -20,14 +19,13 @@ export class SchoolMigrationService {
 
 		try {
 			await this.doMigration(externalId, existingSchool, targetSystemId);
-		} catch (e) {
+		} catch (e: unknown) {
 			await this.rollbackMigration(schoolDOCopy);
-			this.logger.log(
-				`This error occurred during migration of School with official school number: ${
-					existingSchool.officialSchoolNumber || ''
-				}`,
-				e
-			);
+			this.logger.log({
+				message: `This error occurred during migration of School with official school number`,
+				officialSchoolNumber: existingSchool.officialSchoolNumber,
+				error: e,
+			});
 		}
 	}
 
@@ -57,9 +55,8 @@ export class SchoolMigrationService {
 
 		if (externalId === existingSchool.externalId) {
 			return null;
-		} else {
-			return existingSchool;
 		}
+		return existingSchool;
 	}
 
 	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {

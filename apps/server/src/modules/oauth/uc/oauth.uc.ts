@@ -11,11 +11,11 @@ import { UserMigrationService } from '@src/modules/user-migration';
 import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMigrationService } from '@src/modules/user-migration/service';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 @Injectable()
 export class OauthUc {
