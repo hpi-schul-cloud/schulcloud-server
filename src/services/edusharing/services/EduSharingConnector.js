@@ -174,7 +174,7 @@ class EduSharingConnector {
 		}
 
 		const criterias = [];
-		// criterias.push({ property: 'ngsearchword', values: ['*'] });
+		criterias.push({ property: 'ngsearchword', values: [''] });
 		criterias.push({
 			property: 'ccm:replicationsourceuuid',
 			values: [uuid],
@@ -253,7 +253,7 @@ class EduSharingConnector {
 				values: ['1'],
 			});
 		} else if (collection) {
-			criterias.push({ property: 'ngsearchword', values: ['*'] });
+			criterias.push({ property: 'ngsearchword', values: [''] });
 			criterias.push({
 				property: 'ccm:hpi_lom_relation',
 				values: [`{'kind': 'ispartof', 'resource': {'identifier': ['${collection}']}}`],
