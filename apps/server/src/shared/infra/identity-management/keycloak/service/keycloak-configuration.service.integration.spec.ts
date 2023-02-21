@@ -16,10 +16,10 @@ describe('KeycloakConfigurationService Integration', () => {
 	let keycloakAdministrationService: KeycloakAdministrationService;
 	let keycloakConfigurationService: KeycloakConfigurationService;
 	let isKeycloakAvailable = false;
-	
+
 	const testRealm = 'test-realm';
 	const flowAlias = 'Direct Broker Flow';
-	
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
@@ -57,7 +57,6 @@ describe('KeycloakConfigurationService Integration', () => {
 			await keycloak.realms.del({ realm: testRealm });
 		}
 	});
-
 
 	// Execute this test for a test run against a running Keycloak instance
 	describe('configureBrokerFlows', () => {

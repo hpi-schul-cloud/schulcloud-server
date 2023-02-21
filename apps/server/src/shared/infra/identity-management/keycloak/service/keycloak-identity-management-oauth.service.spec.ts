@@ -6,6 +6,7 @@ import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { KeycloakIdentityManagementOauthService } from './keycloak-identity-management-oauth.service';
+
 describe('KeycloakIdentityManagementService', () => {
 	let module: TestingModule;
 	let kcIdmOauthService: KeycloakIdentityManagementOauthService;

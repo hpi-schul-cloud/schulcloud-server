@@ -12,7 +12,7 @@ export class OidcMockProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
-		const idToken = jwt.decode(input.idToken, { json: true }) as JwtPayload & { external_sub?: string } | null;
+		const idToken = jwt.decode(input.idToken, { json: true }) as (JwtPayload & { external_sub?: string }) | null;
 		if (!idToken || !idToken.external_sub) {
 			throw new OAuthSSOError('Failed to extract external_sub', 'sso_jwt_problem');
 		}
