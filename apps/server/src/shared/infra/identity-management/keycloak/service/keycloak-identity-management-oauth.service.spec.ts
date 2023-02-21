@@ -45,9 +45,6 @@ describe('KeycloakIdentityManagementService', () => {
 		describe('when entering valid credentials', () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
-				kcAdminServiceMock.callKcAdminClient.mockResolvedValue({
-					keycloak: { clientId: 'clientId', clientSecret: 'clientSecret' },
-				});
 				httpServiceMock.request.mockReturnValue(of({ data: { access_token: accessToken } } as AxiosResponse));
 				return accessToken;
 			};
@@ -58,13 +55,9 @@ describe('KeycloakIdentityManagementService', () => {
 				expect(result).toBe(accessToken);
 			});
 		});
-		/*
+
 		describe('when entering invalid credentials', () => {
 			const setup = () => {
-				const oauthConfig = SystemMapper.mapFromOauthConfigEntityToDto(
-					systemFactory.withOauthConfig().build().oauthConfig
-				);
-				kcIdmOauthService.getOauthConfig.mockResolvedValue(oauthConfig);
 				httpServiceMock.request.mockImplementation(() => {
 					throw new Error();
 				});
@@ -76,6 +69,5 @@ describe('KeycloakIdentityManagementService', () => {
 				expect(result).toBeUndefined();
 			});
 		});
-*/
 	});
 });
