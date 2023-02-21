@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser, Permission, User } from '@shared/domain';
@@ -43,7 +43,7 @@ describe('Lesson Controller (API)', () => {
 		const user = userFactory.build({ roles });
 		await em.persistAndFlush([user]);
 		em.clear();
-
+		currentUser = mapUserToCurrentUser(user);
 		return user;
 	};
 
@@ -76,13 +76,11 @@ describe('Lesson Controller (API)', () => {
 
 	describe('Bad requests', () => {
 		describe('when currentUser undefined', () => {
-			beforeEach(() => {
+			it('should return UNAUTHORIZED', async () => {
 				// @ts-expect-error: Test case
 				currentUser = undefined;
-			});
 
-			it('should return UNAUTHORIZED', async () => {
-				await api.delete(undefined as unknown as string).expect({
+				await api.delete(new ObjectId().toHexString()).expect({
 					type: 'UNAUTHORIZED',
 					title: 'Unauthorized',
 					message: 'CurrentUser missing in request context. This route requires jwt authentication guard enabled.',
@@ -114,7 +112,6 @@ describe('Lesson Controller (API)', () => {
 
 	describe('Authorization and permissions', () => {
 		describe('when lesson is in course', () => {
-			let user: User;
 			const setupLessonInCourse = async (
 				teachers: User[] = [],
 				substitutionTeachers: User[] = [],
@@ -129,42 +126,64 @@ describe('Lesson Controller (API)', () => {
 				return { lesson };
 			};
 
-			beforeEach(async () => {
-				user = await setupUser([Permission.TOPIC_VIEW]);
-				currentUser = mapUserToCurrentUser(user);
-			});
-
 			describe('when user is teacher', () => {
-				it('should return status 200', async () => {
+				const setup = async () => {
+					const user = await setupUser([Permission.TOPIC_VIEW]);
 					const { lesson } = await setupLessonInCourse([user]);
+					return lesson;
+				};
+
+				it('should return status 200', async () => {
+					const lesson = await setup();
+
 					await api.delete(lesson.id).expect(200);
 				});
 			});
 
 			describe('when user is substitution teacher', () => {
-				it('should return status 200', async () => {
+				const setup = async () => {
+					const user = await setupUser([Permission.TOPIC_VIEW]);
 					const { lesson } = await setupLessonInCourse([], [user]);
+					return lesson;
+				};
+
+				it('should return status 200', async () => {
+					const lesson = await setup();
+
 					await api.delete(lesson.id).expect(200);
 				});
 			});
 
 			describe('when user is student', () => {
-				it('should return status 403', async () => {
+				const setup = async () => {
+					const user = await setupUser([Permission.TOPIC_VIEW]);
 					const { lesson } = await setupLessonInCourse([], [], [user]);
+					return lesson;
+				};
+
+				it('should return status 403', async () => {
+					const lesson = await setup();
+
 					await api.delete(lesson.id).expect(403);
 				});
 			});
 
 			describe('when user is not user form course', () => {
-				it('should return status 403', async () => {
+				const setup = async () => {
+					await setupUser([Permission.TOPIC_VIEW]);
 					const { lesson } = await setupLessonInCourse();
+					return lesson;
+				};
+
+				it('should return status 403', async () => {
+					const lesson = await setup();
+
 					await api.delete(lesson.id).expect(403);
 				});
 			});
 		});
 
 		describe('when lesson is in courseGroup', () => {
-			let user: User;
 			const setupLessonInCourseGroup = async (
 				teachers: User[] = [],
 				substitutionTeachers: User[] = [],
@@ -180,35 +199,82 @@ describe('Lesson Controller (API)', () => {
 				return { lesson };
 			};
 
-			beforeEach(async () => {
-				user = await setupUser([Permission.TOPIC_VIEW]);
-				currentUser = mapUserToCurrentUser(user);
-			});
-
 			describe('when user is teacher', () => {
-				it('should return status 200', async () => {
+				const setup = async () => {
+					const user = await setupUser([Permission.TOPIC_VIEW]);
 					const { lesson } = await setupLessonInCourseGroup([user]);
+
+					return lesson;
+				};
+
+				it('should return status 200', async () => {
+					const lesson = await setup();
+
 					await api.delete(lesson.id).expect(200);
 				});
 			});
 
 			describe('when user is substitution teacher', () => {
-				it('should return status 200', async () => {
+				const setup = async () => {
+					const user = await setupUser([Permission.TOPIC_VIEW]);
 					const { lesson } = await setupLessonInCourseGroup([], [user]);
+
+					return lesson;
+				};
+
+				it('should return status 200', async () => {
+					const lesson = await setup();
+
 					await api.delete(lesson.id).expect(200);
 				});
 			});
 
 			describe('when user is student', () => {
-				it('should return status 403', async () => {
+				const setup = async () => {
+					const user = await setupUser([Permission.TOPIC_VIEW]);
 					const { lesson } = await setupLessonInCourseGroup([], [], [user]);
+
+					return lesson;
+				};
+
+				it('should return status 200', async () => {
+					const lesson = await setup();
+
 					await api.delete(lesson.id).expect(200);
 				});
 			});
 
-			describe('when user is not user form course', () => {
-				it('should return status 403', async () => {
+			describe('when user is not user form courseGroup', () => {
+				const setup = async () => {
+					await setupUser([Permission.TOPIC_VIEW]);
 					const { lesson } = await setupLessonInCourseGroup();
+
+					return lesson;
+				};
+
+				it('should return status 403', async () => {
+					const lesson = await setup();
+
+					await api.delete(lesson.id).expect(403);
+				});
+			});
+
+			describe('when user is student in course and not in courseGroup', () => {
+				const setup = async () => {
+					const user = await setupUser([Permission.TOPIC_VIEW]);
+					const course = courseFactory.buildWithId({ students: [user] });
+					const courseGroup = courseGroupFactory.buildWithId({ course });
+					const lesson = lessonFactory.buildWithId({ courseGroup });
+
+					await em.persistAndFlush([lesson, course, courseGroup]);
+					em.clear();
+
+					return lesson;
+				};
+
+				it('should return status 403', async () => {
+					const lesson = await setup();
+
 					await api.delete(lesson.id).expect(403);
 				});
 			});
