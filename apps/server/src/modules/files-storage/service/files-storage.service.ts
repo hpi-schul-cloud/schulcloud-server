@@ -79,7 +79,7 @@ export class FilesStorageService {
 		try {
 			const filePath = createPath(params.schoolId, fileRecord.id);
 			await this.storageClient.create(filePath, fileDescription);
-			this.antivirusService.send(fileRecord);
+			this.antivirusService.send(fileRecord.getSecurityRequestToken());
 
 			return fileRecord;
 		} catch (error) {
@@ -268,7 +268,7 @@ export class FilesStorageService {
 
 	private sendToAntiVirusService(sourceFile: FileRecord) {
 		if (sourceFile.isPending()) {
-			this.antivirusService.send(sourceFile);
+			this.antivirusService.send(sourceFile.getSecurityRequestToken());
 		}
 	}
 
