@@ -1,4 +1,3 @@
-import { Collection } from '@mikro-orm/core';
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import type { User } from '@shared/domain';
 import { CardElement, CardElementType, RichTextCardElement, TitleCardElement } from '../entity/cardElement.entity';
@@ -15,14 +14,6 @@ export type ICardCProps = {
 	draggable: boolean;
 	visibleAtDate: Date;
 };
-
-export interface ICard {
-	cardElements: Collection<CardElement>;
-	cardType: CardType;
-	creator: User;
-	draggable: boolean;
-	visibleAtDate: Date;
-}
 
 export class CardTitleElementResponse {
 	constructor(props: TitleCardElement) {
