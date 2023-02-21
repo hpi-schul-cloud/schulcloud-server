@@ -162,6 +162,19 @@ class RocketChatUser {
 			});
 	}
 
+	findUsersRocketChatId({ userIds }) {
+		if (!Array.isArray(userIds || {})) {
+			return Promise.reject(new Forbidden('requires an array of userIds'));
+		}
+		return Promise.all(userIds.map((userId) => this.getOrCreateRocketChatAccount(userId)))
+			.then((accounts) => {
+				const result = accounts.map((account) => account.rcId);
+				return result;
+			})
+			.catch((err) => {
+				throw new BadRequest(err);
+			});
+	}
 	/**
 	 * Register methods of the service to listen to events of other services
 	 * @listens users:removed
