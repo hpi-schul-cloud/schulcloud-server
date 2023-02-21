@@ -182,7 +182,7 @@ class EduSharingConnector {
 		}
 
 		const criterias = [];
-		criterias.push({ property: 'ngsearchword', values: ['*'] });
+		criterias.push({ property: 'ngsearchword', values: [''] });
 		criterias.push({
 			property: 'ccm:replicationsourceuuid',
 			values: [uuid],
@@ -264,7 +264,7 @@ class EduSharingConnector {
 		} else if (collection) {
 			sortProperties = 'cclom:title';
 			sortAscending = 'true';
-			criterias.push({ property: 'ngsearchword', values: ['*'] });
+			criterias.push({ property: 'ngsearchword', values: [''] });
 			criterias.push({
 				property: 'ccm:hpi_lom_relation',
 				values: [`{'kind': 'ispartof', 'resource': {'identifier': ['${collection}']}}`],
