@@ -60,11 +60,11 @@ export interface IFileRecordProperties {
 	name: string;
 	mimeType: string;
 	parentType: FileRecordParentType;
-	parentId: EntityId | ObjectId;
-	creatorId: EntityId | ObjectId;
-	schoolId: EntityId | ObjectId;
+	parentId: EntityId;
+	creatorId: EntityId;
+	schoolId: EntityId;
 	deletedSince?: Date;
-	isCopyFrom?: ObjectId;
+	isCopyFrom?: EntityId;
 }
 
 interface IParentInfo {
@@ -143,7 +143,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this._parentId = new ObjectId(props.parentId);
 		this._creatorId = new ObjectId(props.creatorId);
 		this._schoolId = new ObjectId(props.schoolId);
-		this._isCopyFrom = props.isCopyFrom;
+		this._isCopyFrom = new ObjectId(props.isCopyFrom);
 		this.securityCheck = new FileSecurityCheck({});
 		this.deletedSince = props.deletedSince;
 	}
@@ -153,6 +153,10 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.securityCheck.reason = reason;
 		this.securityCheck.updatedAt = new Date();
 		this.securityCheck.requestToken = undefined;
+	}
+
+	public getSecurityToken(): string | undefined {
+		return this.securityCheck.requestToken;
 	}
 
 	public copy(userId: EntityId, targetParentInfo: IParentInfo): FileRecord {
@@ -167,7 +171,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			parentId,
 			creatorId: userId,
 			schoolId,
-			isCopyFrom: new ObjectId(id),
+			isCopyFrom: id,
 		});
 
 		if (this.isVerified()) {
