@@ -263,22 +263,6 @@ describe('FilesStorageUC upload methods', () => {
 			});
 		});
 
-		describe('WHEN file size is too big', () => {
-			const setup = () => {
-				const { userId, uploadFromUrlParams, response } = createUploadFromUrlParams();
-				httpService.get.mockReturnValueOnce(of(response));
-
-				return { uploadFromUrlParams, userId };
-			};
-
-			it('should throw dedicated error', async () => {
-				const { uploadFromUrlParams, userId } = setup();
-
-				const expectedError = new BadRequestException(ErrorType.FILE_TOO_BIG);
-				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow(expectedError);
-			});
-		});
-
 		describe('WHEN uploadFile throws error', () => {
 			const setup = () => {
 				const { userId, uploadFromUrlParams, response } = createUploadFromUrlParams();
@@ -318,7 +302,7 @@ describe('FilesStorageUC upload methods', () => {
 
 				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord);
 
-				return { params, userId, request, fileRecord, buffer: readable, fileInfo };
+				return { params, userId, request, fileRecord, readable, fileInfo };
 			};
 
 			it('should call checkPermissionByReferences', async () => {
@@ -336,11 +320,11 @@ describe('FilesStorageUC upload methods', () => {
 			});
 
 			it('should call uploadFile with correct params', async () => {
-				const { params, userId, request, buffer, fileInfo } = setup();
+				const { params, userId, request, readable, fileInfo } = setup();
 
 				await filesStorageUC.upload(userId, params, request);
 
-				const fileDescription = FileDtoBuilder.buildFromRequest(fileInfo, request, buffer);
+				const fileDescription = FileDtoBuilder.buildFromRequest(fileInfo, request, readable);
 
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId, params, fileDescription);
 			});
@@ -354,45 +338,18 @@ describe('FilesStorageUC upload methods', () => {
 			});
 		});
 
-		describe('WHEN user is authorized and busboy emits error', () => {
-			const setup = () => {
-				const { params, userId } = buildFileRecordsWithParams();
-				const request = createRequest();
-				const error = new Error('test');
-
-				const size = request.headers['content-length'];
-
-				request.get.mockReturnValue(size);
-				request.pipe.mockImplementation((requestStream) => {
-					requestStream.emit('error', error);
-
-					return requestStream;
-				});
-
-				return { params, userId, request, error };
-			};
-
-			it('should pass error', async () => {
-				const { params, userId, request, error } = setup();
-
-				const expectedError = new BadRequestException(error, `${FilesStorageUC.name}:upload requestStream`);
-
-				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrow(expectedError);
-			});
-		});
-
-		describe('WHEN user is authorized, busboy emits event and storage client throws error', () => {
+		describe('WHEN user is authorized, busboy emits event and filesStorageService throws error', () => {
 			const setup = () => {
 				const { params, userId, fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const request = createRequest();
-				const buffer = Buffer.from('abc');
+				const readable = Readable.from('abc');
 
 				const size = request.headers['content-length'];
 
 				request.get.mockReturnValue(size);
 				request.pipe.mockImplementation((requestStream) => {
-					requestStream.emit('file', 'file', buffer, {
+					requestStream.emit('file', 'file', readable, {
 						filename: fileRecord.name,
 						encoding: '7-bit',
 						mimeType: fileRecord.mimeType,
@@ -411,36 +368,6 @@ describe('FilesStorageUC upload methods', () => {
 				const { params, userId, request, error } = setup();
 
 				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrowError(error);
-			});
-		});
-
-		describe('WHEN file size is too big', () => {
-			const setup = () => {
-				const { params, userId, fileRecords } = buildFileRecordsWithParams();
-				const fileRecord = fileRecords[0];
-				const request = createRequest();
-				const buffer = Buffer.from('abc');
-
-				const size = request.headers['content-length'];
-
-				request.get.mockReturnValue(size);
-				request.pipe.mockImplementation((requestStream) => {
-					requestStream.emit('file', 'file', buffer, {
-						filename: fileRecord.name,
-						encoding: '7-bit',
-						mimeType: fileRecord.mimeType,
-					});
-
-					return requestStream;
-				});
-
-				return { params, userId, request };
-			};
-
-			it('should pass dedicated error', async () => {
-				const { params, userId, request } = setup();
-
-				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrowError(ErrorType.FILE_TOO_BIG);
 			});
 		});
 
