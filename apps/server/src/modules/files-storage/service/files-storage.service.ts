@@ -31,7 +31,7 @@ import {
 import { IGetFileResponse } from '../interface';
 import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
-import { FileRecord, IFileRecordParams } from '../domain';
+import { FileRecord, FileRecordPropertiesFactory, IFileRecordParams } from '../domain';
 import { FileSecurityCheck } from '../repo/filerecord.entity';
 
 // TODO: Ticket for rename EntityId to more generic Name
@@ -62,6 +62,7 @@ export interface IFilesStorageRepo {
 	update(FileRecords: FileRecord[]): Promise<FileRecord[]>;
 }
 
+// TODO: FileRecordParams should be define in domain layer
 @Injectable()
 export class FilesStorageService {
 	constructor(
@@ -119,19 +120,7 @@ export class FilesStorageService {
 	public async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: FileDto): Promise<FileRecord> {
 		const [fileRecords] = await this.getFileRecordsOfParent(params);
 		const name = resolveFileNameDuplicates(fileDescription.name, fileRecords);
-
-		// TODO: move this
-		const fileRecordParams: IFileRecordParams = {
-			name,
-			size: fileDescription.size,
-			mimeType: fileDescription.mimeType,
-			parentType: params.parentType,
-			parentId: params.parentId,
-			creatorId: userId,
-			schoolId: params.schoolId,
-			securityCheck: new FileSecurityCheck(), // move this to builder in domain
-		};
-
+		const fileRecordParams = FileRecordPropertiesFactory.buildFromDtos(name, userId, params, fileDescription);
 		const [fileRecord] = await this.fileRecordRepo.create([fileRecordParams]);
 		await this.createFileInStorageAndRollbackOnError(fileRecord, params, fileDescription);
 

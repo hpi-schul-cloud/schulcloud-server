@@ -1,2 +1,3 @@
 export * from './filerecord.do';
-export * from './filerecord.factory';
+export * from './filerecord-test.factory';
+export * from './filerecord-properties.factory';

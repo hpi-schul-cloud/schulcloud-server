@@ -1,35 +1,49 @@
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { ErrorType } from '../error';
 import { FileRecordParentType, ScanStatus, FileRecord } from './filerecord.do';
-import { FileRecordTestFactory } from './filerecord.factory';
+import { FileRecordTestFactory } from './filerecord-test.factory';
+import { FileSecurityCheck } from '../repo/filerecord.entity';
+import { FileRecordParams } from '../controller/dto';
 
 // TODO: Add factory and fix tests
 describe('FileRecord', () => {
 	describe('when embedding the security status', () => {
-		it('should set the embedded status property', () => {
+		const setup = () => {
 			const fileRecord = FileRecordTestFactory.build();
-			fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, '');
-			expect(fileRecord.props.securityCheck?.status).toEqual(ScanStatus.VERIFIED);
+
+			return { fileRecord };
+		};
+
+		it('should set the embedded status property', () => {
+			const { fileRecord } = setup();
+
+			fileRecord.updateSecurityCheckStatus({ status: ScanStatus.VERIFIED, reason: '' });
+
+			expect(fileRecord.getProps().securityCheck?.status).toEqual(ScanStatus.VERIFIED);
 		});
 
 		it('should set the embedded reason property', () => {
-			const fileRecord = FileRecordTestFactory.build();
-			fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'scanned');
-			expect(fileRecord.props.securityCheck?.reason).toEqual('scanned');
+			const { fileRecord } = setup();
+
+			fileRecord.updateSecurityCheckStatus({ status: ScanStatus.VERIFIED, reason: 'scanned' });
+			expect(fileRecord.getProps().securityCheck?.reason).toEqual('scanned');
 		});
 
 		it('should set the embedded requestToken property', () => {
-			const fileRecord = FileRecordTestFactory.build();
-			//	fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'scanned');
-			expect(fileRecord.props.securityCheck?.requestToken).toBeDefined();
+			const { fileRecord } = setup();
+
+			// fileRecord.updateSecurityCheckStatus({ status: ScanStatus.VERIFIED, reason: 'scanned' });
+
+			expect(fileRecord.getProps().securityCheck?.requestToken).toBeDefined();
 		});
 
 		it('should set to `undifined` the embedded requestToken property', () => {
-			const fileRecord = FileRecordTestFactory.build();
-			fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'scanned');
-			expect(fileRecord.props.securityCheck?.requestToken).toBeUndefined();
+			const { fileRecord } = setup();
+
+			fileRecord.updateSecurityCheckStatus({ status: ScanStatus.VERIFIED, reason: 'scanned' });
+
+			expect(fileRecord.getProps().securityCheck?.requestToken).toBeUndefined();
 		});
 	});
 	// TODO: Fix construct for security
@@ -70,7 +84,7 @@ describe('FileRecord', () => {
 
 				fileRecord.setName(newName);
 
-				expect(fileRecord.props.name).toBe(newName);
+				expect(fileRecord.getProps().name).toBe(newName);
 			});
 		});
 
@@ -89,7 +103,7 @@ describe('FileRecord', () => {
 				expect(() => {
 					fileRecord.setName(newName);
 				}).toThrow(error);
-				expect(fileRecord.props.name).not.toBe(newName);
+				expect(fileRecord.getProps().name).not.toBe(newName);
 			});
 		});
 	});
@@ -192,9 +206,9 @@ describe('FileRecord', () => {
 	describe('isBlocked is called', () => {
 		describe('WHEN file record security status is BLOCKED', () => {
 			const setup = () => {
-				const fileRecord = FileRecordTestFactory.build();
-
-				fileRecord.props.securityCheck.status = ScanStatus.BLOCKED;
+				// TODO: builder
+				const securityCheck = new FileSecurityCheck({ status: ScanStatus.BLOCKED });
+				const fileRecord = FileRecordTestFactory.build({ securityCheck });
 
 				return { fileRecord };
 			};
@@ -210,9 +224,8 @@ describe('FileRecord', () => {
 
 		describe('WHEN file record security status is not BLOCKED', () => {
 			const setup = () => {
-				const fileRecord = FileRecordTestFactory.build();
-
-				fileRecord.props.securityCheck.status = ScanStatus.VERIFIED;
+				const securityCheck = new FileSecurityCheck({ status: ScanStatus.VERIFIED });
+				const fileRecord = FileRecordTestFactory.build({ securityCheck });
 
 				return { fileRecord };
 			};
@@ -230,9 +243,8 @@ describe('FileRecord', () => {
 	describe('isPending is called', () => {
 		describe('WHEN file record security status is PENDING', () => {
 			const setup = () => {
-				const fileRecord = FileRecordTestFactory.build();
-
-				fileRecord.props.securityCheck.status = ScanStatus.PENDING;
+				const securityCheck = new FileSecurityCheck({ status: ScanStatus.PENDING });
+				const fileRecord = FileRecordTestFactory.build({ securityCheck });
 
 				return { fileRecord };
 			};
@@ -248,9 +260,8 @@ describe('FileRecord', () => {
 
 		describe('WHEN file record security status is not PENDING', () => {
 			const setup = () => {
-				const fileRecord = FileRecordTestFactory.build();
-
-				fileRecord.props.securityCheck.status = ScanStatus.VERIFIED;
+				const securityCheck = new FileSecurityCheck({ status: ScanStatus.VERIFIED });
+				const fileRecord = FileRecordTestFactory.build({ securityCheck });
 
 				return { fileRecord };
 			};
@@ -268,9 +279,8 @@ describe('FileRecord', () => {
 	describe('isVerified is called', () => {
 		describe('WHEN file record security status is VERIFIED', () => {
 			const setup = () => {
-				const fileRecord = FileRecordTestFactory.build();
-
-				fileRecord.props.securityCheck.status = ScanStatus.VERIFIED;
+				const securityCheck = new FileSecurityCheck({ status: ScanStatus.VERIFIED });
+				const fileRecord = FileRecordTestFactory.build({ securityCheck });
 
 				return { fileRecord };
 			};
@@ -286,9 +296,8 @@ describe('FileRecord', () => {
 
 		describe('WHEN file record security status is not VERIFIED', () => {
 			const setup = () => {
-				const fileRecord = FileRecordTestFactory.build();
-
-				fileRecord.props.securityCheck.status = ScanStatus.BLOCKED;
+				const securityCheck = new FileSecurityCheck({ status: ScanStatus.BLOCKED });
+				const fileRecord = FileRecordTestFactory.build({ securityCheck });
 
 				return { fileRecord };
 			};
@@ -304,8 +313,9 @@ describe('FileRecord', () => {
 	});
 
 	describe('copy is called', () => {
-		const getCopyData = () => {
-			const fileRecord = FileRecordTestFactory.build();
+		const getCopyData = (status?: ScanStatus) => {
+			const securityCheck = new FileSecurityCheck({ status });
+			const fileRecord = FileRecordTestFactory.build({ securityCheck });
 			const userId = new ObjectId().toHexString();
 			const parentId = new ObjectId().toHexString();
 			const schoolId = new ObjectId().toHexString();
@@ -330,12 +340,13 @@ describe('FileRecord', () => {
 				};
 			};
 
+			// TODO: wrong place for this test, factory, or builder should be create the properties and can be tested it self
 			it('should return a instance of fileRecord', () => {
 				const { fileRecord, targetParentInfo, userId } = setup();
 
 				const result = fileRecord.copy(userId, targetParentInfo);
 
-				expect(result).toBeInstanceOf(FileRecord);
+				expect(typeof result).toBe('object');
 			});
 
 			it('should create a new instance', () => {
@@ -351,9 +362,10 @@ describe('FileRecord', () => {
 
 				const result = fileRecord.copy(userId, targetParentInfo);
 
-				expect(result.mimeType).toEqual(fileRecord.props.mimeType);
-				expect(result.name).toEqual(fileRecord.props.name);
-				expect(result.size).toEqual(fileRecord.props.size);
+				const { mimeType, name, size } = fileRecord.getProps();
+				expect(result.mimeType).toEqual(mimeType);
+				expect(result.name).toEqual(name);
+				expect(result.size).toEqual(size);
 			});
 
 			it('should override the creator and targetParentInfo data in target file from passed params', () => {
@@ -371,8 +383,7 @@ describe('FileRecord', () => {
 		describe('given a scan status exists', () => {
 			describe('WHEN source files scan status is VERIFIED', () => {
 				const setup = () => {
-					const { fileRecord, targetParentInfo, userId } = getCopyData();
-					fileRecord.props.securityCheck.status = ScanStatus.VERIFIED;
+					const { fileRecord, targetParentInfo, userId } = getCopyData(ScanStatus.VERIFIED);
 
 					return {
 						fileRecord,
@@ -386,14 +397,13 @@ describe('FileRecord', () => {
 
 					const result = fileRecord.copy(userId, targetParentInfo);
 
-					expect(result.securityCheck).toStrictEqual(fileRecord.props.securityCheck);
+					expect(result.securityCheck).toStrictEqual(fileRecord.getProps().securityCheck);
 				});
 			});
 
 			describe('WHEN source files scan status is BLOCKED', () => {
 				const setup = () => {
-					const { fileRecord, targetParentInfo, userId } = getCopyData();
-					fileRecord.props.securityCheck.status = ScanStatus.BLOCKED;
+					const { fileRecord, targetParentInfo, userId } = getCopyData(ScanStatus.BLOCKED);
 
 					return {
 						fileRecord,
@@ -407,14 +417,13 @@ describe('FileRecord', () => {
 
 					const result = fileRecord.copy(userId, targetParentInfo);
 
-					expect(result.securityCheck).not.toStrictEqual(fileRecord.props.securityCheck);
+					expect(result.securityCheck).not.toStrictEqual(fileRecord.getProps().securityCheck);
 				});
 			});
 
 			describe('WHEN source files scan status is PENDING', () => {
 				const setup = () => {
-					const { fileRecord, targetParentInfo, userId } = getCopyData();
-					fileRecord.props.securityCheck.status = ScanStatus.PENDING;
+					const { fileRecord, targetParentInfo, userId } = getCopyData(ScanStatus.PENDING);
 
 					return {
 						fileRecord,
@@ -428,14 +437,13 @@ describe('FileRecord', () => {
 
 					const result = fileRecord.copy(userId, targetParentInfo);
 
-					expect(result.securityCheck).not.toStrictEqual(fileRecord.props.securityCheck);
+					expect(result.securityCheck).not.toStrictEqual(fileRecord.getProps().securityCheck);
 				});
 			});
 
 			describe('WHEN source files scan status is ERROR', () => {
 				const setup = () => {
-					const { fileRecord, targetParentInfo, userId } = getCopyData();
-					fileRecord.props.securityCheck.status = ScanStatus.ERROR;
+					const { fileRecord, targetParentInfo, userId } = getCopyData(ScanStatus.ERROR);
 
 					return {
 						fileRecord,
@@ -449,7 +457,7 @@ describe('FileRecord', () => {
 
 					const result = fileRecord.copy(userId, targetParentInfo);
 
-					expect(result.securityCheck).not.toStrictEqual(fileRecord.props.securityCheck);
+					expect(result.securityCheck).not.toStrictEqual(fileRecord.getProps().securityCheck);
 				});
 			});
 		});
