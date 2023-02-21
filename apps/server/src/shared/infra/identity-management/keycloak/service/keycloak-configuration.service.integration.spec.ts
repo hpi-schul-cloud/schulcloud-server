@@ -1,20 +1,25 @@
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import AuthenticationExecutionExportRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionExportRepresentation';
+import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { SystemRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { ConfigModule } from '@nestjs/config';
-import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
-import AuthenticationExecutionExportRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionExportRepresentation';
 import { KeycloakModule } from '../keycloak.module';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { KeycloakConfigurationService } from './keycloak-configuration.service';
 
 describe('KeycloakConfigurationService Integration', () => {
-	const flowAlias = 'Direct Broker Flow';
 	let module: TestingModule;
+	let keycloak: KeycloakAdminClient;
 	let keycloakAdministrationService: KeycloakAdministrationService;
 	let keycloakConfigurationService: KeycloakConfigurationService;
-
+	let isKeycloakAvailable = false;
+	
+	const testRealm = 'test-realm';
+	const flowAlias = 'Direct Broker Flow';
+	
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
@@ -30,23 +35,34 @@ describe('KeycloakConfigurationService Integration', () => {
 		}).compile();
 		keycloakAdministrationService = module.get(KeycloakAdministrationService);
 		keycloakConfigurationService = module.get(KeycloakConfigurationService);
+		isKeycloakAvailable = await keycloakAdministrationService.testKcConnection();
+		if (isKeycloakAvailable) {
+			keycloak = await keycloakAdministrationService.callKcAdminClient();
+		}
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	it('should be defined', () => {
-		expect(keycloakAdministrationService).toBeDefined();
-		expect(keycloakConfigurationService).toBeDefined();
+	beforeEach(async () => {
+		if (isKeycloakAvailable) {
+			await keycloak.realms.create({ realm: testRealm, editUsernameAllowed: true });
+			keycloak.setConfig({ realmName: testRealm });
+		}
 	});
+
+	afterEach(async () => {
+		if (isKeycloakAvailable) {
+			await keycloak.realms.del({ realm: testRealm });
+		}
+	});
+
 
 	// Execute this test for a test run against a running Keycloak instance
 	describe('configureBrokerFlows', () => {
 		it('should configure broker flows', async () => {
-			if (!(await keycloakAdministrationService.testKcConnection())) {
-				return;
-			}
+			if (!isKeycloakAvailable) return;
 
 			const kc = await keycloakAdministrationService.callKcAdminClient();
 			const getFlowsRequest = kc.realms.makeRequest<{ realmName: string }, AuthenticationFlowRepresentation[]>({
@@ -84,6 +100,28 @@ describe('KeycloakConfigurationService Integration', () => {
 					]) as AuthenticationExecutionExportRepresentation[],
 				})
 			);
+		});
+	});
+
+	describe('configureClient', () => {});
+
+	describe('configureIdentityProvider', () => {});
+
+	describe('configureRealm', () => {
+		describe('when keycloak is available', () => {
+			it('should configure realm to allow edit user names', async () => {
+				if (!isKeycloakAvailable) return;
+
+				await keycloakConfigurationService.configureRealm();
+				const kc = await keycloakAdministrationService.callKcAdminClient();
+				const realm = await kc.realms.findOne({ realm: testRealm });
+				expect(realm).toEqual(
+					expect.objectContaining({
+						realm: testRealm,
+						editUsernameAllowed: true,
+					})
+				);
+			});
 		});
 	});
 });

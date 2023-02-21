@@ -4,6 +4,7 @@ import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clien
 import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import ProtocolMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SystemTypeEnum } from '@shared/domain';
 import { IServerConfig } from '@src/modules/server/server.config';
@@ -21,6 +22,8 @@ enum ConfigureAction {
 const flowAlias = 'Direct Broker Flow';
 const clientId = 'dbildungscloud-server';
 const defaultIdpMapperName = 'oidc-username-idp-mapper';
+
+@Injectable()
 export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
