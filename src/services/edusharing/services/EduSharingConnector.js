@@ -81,13 +81,13 @@ class EduSharingConnector {
 				throw Error('authentication error with edu sharing');
 			}
 
-			// return result.headers['set-cookie'][0];
-			for (const cookie of result.headers['set-cookie']) {
-				if (cookie.startsWith('JSESSIONID')) {
-					return cookie;
-				}
-			}
-			throw new GeneralError('Cookie not found in response headers');
+			return result.headers['set-cookie'][0];
+			// for (const cookie of result.headers['set-cookie']) {
+			// 	if (cookie.startsWith('JSESSIONID')) {
+			// 		return cookie;
+			// 	}
+			// }
+			// throw new GeneralError('Cookie not found in response headers');
 		} catch (err) {
 			logger.error(`Edu-Sharing failed to get session cookie: ${err.statusCode} ${err.message}`);
 			throw new GeneralError('Edu-Sharing Request failed');
