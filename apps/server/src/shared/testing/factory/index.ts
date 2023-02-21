@@ -7,7 +7,6 @@ export * from './course.factory';
 export * from './coursegroup.factory';
 export * from './external-tool.factory';
 export * from './file.factory';
-export * from '../../../modules/files-storage/repo/filerecord-entity.factory';
 export * from './import-user.factory';
 export * from './lesson.factory';
 export * from './material.factory';
