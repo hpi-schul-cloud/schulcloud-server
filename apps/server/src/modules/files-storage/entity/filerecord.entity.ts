@@ -1,5 +1,4 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { BaseEntityWithTimestamps, type EntityId } from '@shared/domain';
 import { v4 as uuid } from 'uuid';
@@ -60,11 +59,11 @@ export interface IFileRecordProperties {
 	name: string;
 	mimeType: string;
 	parentType: FileRecordParentType;
-	parentId: EntityId | ObjectId;
-	creatorId: EntityId | ObjectId;
-	schoolId: EntityId | ObjectId;
+	parentId: EntityId;
+	creatorId: EntityId;
+	schoolId: EntityId;
 	deletedSince?: Date;
-	isCopyFrom?: ObjectId;
+	isCopyFrom?: EntityId;
 }
 
 interface IParentInfo {
@@ -107,32 +106,16 @@ export class FileRecord extends BaseEntityWithTimestamps {
 
 	@Index()
 	@Property({ fieldName: 'parent' })
-	_parentId: ObjectId;
-
-	get parentId(): EntityId {
-		return this._parentId.toHexString();
-	}
+	parentId: EntityId;
 
 	@Property({ fieldName: 'creator' })
-	_creatorId: ObjectId;
-
-	get creatorId(): EntityId {
-		return this._creatorId.toHexString();
-	}
+	creatorId: EntityId;
 
 	@Property({ fieldName: 'school' })
-	_schoolId: ObjectId;
-
-	get schoolId(): EntityId {
-		return this._schoolId.toHexString();
-	}
+	schoolId: EntityId;
 
 	@Property({ fieldName: 'isCopyFrom', nullable: true })
-	_isCopyFrom?: ObjectId;
-
-	get isCopyFrom(): EntityId | undefined {
-		return this._isCopyFrom?.toHexString();
-	}
+	isCopyFrom?: EntityId;
 
 	constructor(props: IFileRecordProperties) {
 		super();
@@ -140,10 +123,10 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.name = props.name;
 		this.mimeType = props.mimeType;
 		this.parentType = props.parentType;
-		this._parentId = new ObjectId(props.parentId);
-		this._creatorId = new ObjectId(props.creatorId);
-		this._schoolId = new ObjectId(props.schoolId);
-		this._isCopyFrom = props.isCopyFrom;
+		this.parentId = props.parentId;
+		this.creatorId = props.creatorId;
+		this.schoolId = props.schoolId;
+		this.isCopyFrom = props.isCopyFrom;
 		this.securityCheck = new FileSecurityCheck({});
 		this.deletedSince = props.deletedSince;
 	}
@@ -153,6 +136,10 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.securityCheck.reason = reason;
 		this.securityCheck.updatedAt = new Date();
 		this.securityCheck.requestToken = undefined;
+	}
+
+	public getSecurityRequestToken(): string | undefined {
+		return this.securityCheck.requestToken;
 	}
 
 	public copy(userId: EntityId, targetParentInfo: IParentInfo): FileRecord {
@@ -167,7 +154,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			parentId,
 			creatorId: userId,
 			schoolId,
-			isCopyFrom: new ObjectId(id),
+			isCopyFrom: id,
 		});
 
 		if (this.isVerified()) {
