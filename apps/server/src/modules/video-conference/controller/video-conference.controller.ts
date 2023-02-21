@@ -1,5 +1,4 @@
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ICurrentUser } from '@shared/domain';
 import {
 	BadRequestException,
 	Body,
@@ -25,6 +24,7 @@ import { VideoConferenceState } from '@src/modules/video-conference/controller/d
 import { defaultVideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 import { VideoConferenceBaseResponse, VideoConferenceInfoResponse } from './dto/video-conference.response';
 import { VideoConferenceCreateParams } from './dto/video-conference.params';
+import { ICurrentUser } from '../../authentication';
 
 @ApiTags('VideoConference')
 @Authenticate('jwt')

@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtValidationAdapter } from '@src/modules/authentication/strategy/jwt-validation.adapter';
 import { randomUUID } from 'crypto';
-import { IServerConfig } from '../../server/server.config';
+import { IServerConfig } from '../../server';
 import { AccountService } from '../../account/services/account.service';
 import { AccountDto } from '../../account/services/dto';
 import { BruteForceError } from '../errors/brute-force.error';

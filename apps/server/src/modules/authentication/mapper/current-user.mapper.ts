@@ -1,4 +1,4 @@
-import { Role, User } from '../entity';
+import { Role, User } from '@shared/domain/entity';
 import { ICurrentUser } from '../interface';
 
 export class CurrentUserMapper {

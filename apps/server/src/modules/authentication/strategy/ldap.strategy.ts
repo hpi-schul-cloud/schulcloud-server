@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ICurrentUser, System } from '@shared/domain';
-import { CurrentUserMapper } from '@shared/domain/mapper/current-user.mapper';
+import { CurrentUserMapper } from '@shared/../mapper/current-user.mapper';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Strategy } from 'passport-custom';
 import { AccountDto } from '@src/modules/account/services/dto';
