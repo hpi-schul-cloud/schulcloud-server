@@ -116,7 +116,7 @@ class AdminUsers {
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 			setSearchParametesIfExist(clientQuery, query);
 
-			const dateQueries = ['createdAt'];
+			const dateQueries = ['createdAt', 'outdatedSince'];
 			for (const dateQuery of dateQueries) {
 				if (clientQuery[dateQuery]) {
 					if (typeof clientQuery[dateQuery] === 'object') {
@@ -301,22 +301,24 @@ const formatBirthdayOfUsers = ({ result: { data: users } }) => {
 	});
 };
 
-const adminHookGenerator = (kind) => ({
-	before: {
-		all: [authenticate('jwt')],
-		find: [hasSchoolPermission(`${kind}_LIST`)],
-		get: [hasSchoolPermission(`${kind}_LIST`)],
-		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
-		update: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
-		patch: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
-		remove: [hasSchoolPermission(`${kind}_DELETE`), parseRequestQuery, validateParams],
-	},
-	after: {
-		all: [transformToDataTransferObject],
-		find: [formatBirthdayOfUsers],
-		create: [sendRegistrationLink],
-	},
-});
+const adminHookGenerator = (kind) => {
+	return {
+		before: {
+			all: [authenticate('jwt')],
+			find: [hasSchoolPermission(`${kind}_LIST`)],
+			get: [hasSchoolPermission(`${kind}_LIST`)],
+			create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
+			update: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
+			patch: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
+			remove: [hasSchoolPermission(`${kind}_DELETE`), parseRequestQuery, validateParams],
+		},
+		after: {
+			all: [transformToDataTransferObject],
+			find: [formatBirthdayOfUsers],
+			create: [sendRegistrationLink],
+		},
+	};
+};
 
 module.exports = {
 	AdminUsers,
