@@ -96,6 +96,7 @@ class EduSharingConnector {
 		}
 	}
 
+
 	async authorize() {
 		const now = new Date();
 		// should relogin if cookie expired
