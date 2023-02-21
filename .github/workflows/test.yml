@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read
 
+permissions:
+  contents: read
+
 env:
   MONGODB_VERSION: 4.4
   NODE_VERSION: '16'

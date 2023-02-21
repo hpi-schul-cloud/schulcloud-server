@@ -104,6 +104,7 @@ class EduSharingConnector {
 				this.eduSharingCookie = await this.getCookie();
 				eduSharingCookieExpires = new Date(now.getTime() + eduSharingCookieValidity);
 			} catch (err) {
+				logger.error(`Edu-Sharing failed to authorise request`, err);
 				throw new GeneralError('Edu-Sharing Request failed');
 			}
 		}
@@ -179,14 +180,14 @@ class EduSharingConnector {
 			throw new NotFound('Invalid node id');
 		}
 
-		const criteria = [];
-		criteria.push({ property: 'ngsearchword', values: [''] });
-		criteria.push({
+		const criterias = [];
+		criterias.push({ property: 'ngsearchword', values: ['*'] });
+		criterias.push({
 			property: 'ccm:replicationsourceuuid',
 			values: [uuid],
 		});
 
-		const response = await this.searchEduSharing(criteria, 0, 1);
+		const response = await this.searchEduSharing(criterias, 0, 1);
 
 		if (!response.data || response.data.length !== 1) {
 			throw new NotFound('Item not found');
@@ -203,7 +204,7 @@ class EduSharingConnector {
 	}
 
 	async FIND({ searchQuery = '', $skip, $limit, sortProperties = 'score', collection = '' }, schoolId) {
-		let sortAscending = 'false';
+	    let sortAscending = 'false';
 		if (!schoolId) {
 			throw new Forbidden('Missing school');
 		}
@@ -239,39 +240,39 @@ class EduSharingConnector {
 			...instancePermissions.publicGroups,
 		];
 
-		const criteria = [];
+		const criterias = [];
 		if (groups.length) {
-			criteria.push({
+			criterias.push({
 				property: 'ccm:ph_invited',
 				values: groups,
 			});
 		}
 
 		if (Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED') && !collection) {
-			criteria.push({
+			criterias.push({
 				property: 'ccm:hpi_searchable',
 				values: ['1'],
 			});
 		}
 
 		if (Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') === false) {
-			criteria.push({
+			criterias.push({
 				property: 'ccm:hpi_lom_general_aggregationlevel',
 				values: ['1'],
 			});
 		} else if (collection) {
 			sortProperties = 'cclom:title';
 			sortAscending = 'true';
-			criteria.push({ property: 'ngsearchword', values: [''] });
-			criteria.push({
+			criterias.push({ property: 'ngsearchword', values: ['*'] });
+			criterias.push({
 				property: 'ccm:hpi_lom_relation',
 				values: [`{'kind': 'ispartof', 'resource': {'identifier': ['${collection}']}}`],
 			});
 		} else {
-			criteria.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
+			criterias.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
 		}
 
-		const response = await this.searchEduSharing(criteria, skipCount, maxItems, sortProperties, sortAscending);
+		const response = await this.searchEduSharing(criterias, skipCount, maxItems);
 		return response;
 	}
 
@@ -317,13 +318,13 @@ class EduSharingConnector {
 						node.properties['cclom:general_keyword'] &&
 						node.properties['cclom:general_keyword'][0]
 					) {
-						const cleanKeywords = [];
+						const keywords = [];
 						for (const dirtyKeyword of node.properties['cclom:general_keyword']) {
 							for (const keyword of dirtyKeyword.split(',')) {
-								cleanKeywords.push(keyword.trim());
+								keywords.push(keyword.trim());
 							}
 						}
-						node.properties['cclom:general_keyword'] = cleanKeywords;
+						node.properties['cclom:general_keyword'] = keywords;
 					}
 				});
 				await Promise.allSettled(promises);

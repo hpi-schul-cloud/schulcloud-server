@@ -9,6 +9,9 @@ on:
 permissions:
   contents: write
 
+permissions:
+  contents: write
+
 jobs:
   publish-nest-documentation:
     runs-on: ubuntu-latest
