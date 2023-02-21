@@ -23,7 +23,7 @@ import { ServerConsole } from './server.console';
 		ConfigModule.forRoot({
 			isGlobal: true,
 			validationOptions: { infer: true },
-			load: [serverConfig],
+			validate: serverConfig,
 		}),
 		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean) ? [KeycloakModule] : []),
 		MikroOrmModule.forRoot({

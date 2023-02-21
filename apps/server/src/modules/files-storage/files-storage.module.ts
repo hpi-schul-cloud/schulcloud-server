@@ -20,7 +20,8 @@ const imports = [
 	LoggerModule,
 	ConfigModule.forRoot({
 		isGlobal: true,
-		load: [config],
+		validationOptions: { infer: true },
+		validate: config,
 	}),
 	AntivirusModule.forRoot({
 		enabled: Configuration.get('ENABLE_FILE_SECURITY_CHECK') as boolean,

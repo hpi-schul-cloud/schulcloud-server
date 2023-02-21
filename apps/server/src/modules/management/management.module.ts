@@ -20,7 +20,7 @@ const baseImports = [
 	ConfigModule.forRoot({
 		isGlobal: true,
 		validationOptions: { infer: true },
-		load: [serverConfig],
+		validate: serverConfig,
 	}),
 	EncryptionModule,
 ];
