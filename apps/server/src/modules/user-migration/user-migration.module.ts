@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { SchoolModule } from '@src/modules/school';
 import { SystemModule } from '@src/modules/system';
-import { UserModule, UserService } from '@src/modules/user';
+import { UserModule } from '@src/modules/user';
 import { LoggerModule } from '@src/core/logger';
+import { AccountModule } from '@src/modules/account';
 import { UserMigrationService } from './service';
-import { AccountModule } from '../account';
 
 @Module({
 	imports: [SchoolModule, SystemModule, UserModule, LoggerModule, AccountModule],

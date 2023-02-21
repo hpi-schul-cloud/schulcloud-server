@@ -16,14 +16,11 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { CookieOptions, Request, Response } from 'express';
-import { ValidationError } from '@shared/common';
-import { S3UserMetadata } from 'aws-sdk/clients/s3control';
+import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
+import { UserMigrationMapper } from '@src/modules/user-migration/mapper/user-migration.mapper';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
-import { MigrationResponse } from '../../school/controller/dto';
 import { UserMigrationResponse } from './dto/user-migration.response';
-import { UserMigrationDto } from '../../user-migration/service/dto/userMigration.dto';
-import { UserMigrationMapper } from '../../user-migration/mapper/user-migration.mapper';
 
 @ApiTags('SSO')
 @Controller('sso')

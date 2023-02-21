@@ -25,7 +25,6 @@ describe('UserMigrationService', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
 	let service: UserMigrationService;
-	let logger: Logger;
 	let configBefore: IConfig;
 
 	let schoolService: DeepMocked<SchoolService>;
@@ -42,18 +41,6 @@ describe('UserMigrationService', () => {
 		Configuration.set('HOST', hostUri);
 		Configuration.set('API_URL', apiUrl);
 		Configuration.set('S3_KEY', s3);
-		/* jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
-			switch (key) {
-				case 'HOST':
-					return hostUri;
-				case 'API_URL':
-					return apiUrl;
-				case 'S3_KEY':
-					return 's3Key';
-				default:
-					throw new Error(`No mock for key '${key}'`);
-			}
-		}); */
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -86,7 +73,6 @@ describe('UserMigrationService', () => {
 		systemService = module.get(SystemService);
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
-		logger = module.get(Logger);
 
 		orm = await setupEntities();
 	});

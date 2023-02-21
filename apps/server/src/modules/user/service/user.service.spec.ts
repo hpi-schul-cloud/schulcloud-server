@@ -11,10 +11,8 @@ import { RoleService } from '@src/modules/role/service/role.service';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { Logger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
-import { AccountService } from '@src/modules/account/services/account.service';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -28,8 +26,6 @@ describe('UserService', () => {
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
 	let schoolService: DeepMocked<SchoolService>;
-	let accountService: DeepMocked<AccountService>;
-	let logger: Logger;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -39,10 +35,6 @@ describe('UserService', () => {
 				{
 					provide: EntityManager,
 					useValue: createMock<EntityManager>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
 				},
 				{
 					provide: SchoolService,
@@ -72,10 +64,6 @@ describe('UserService', () => {
 					provide: RoleService,
 					useValue: createMock<RoleService>(),
 				},
-				{
-					provide: AccountService,
-					useValue: createMock<AccountService>(),
-				},
 			],
 		}).compile();
 		service = module.get(UserService);
@@ -87,8 +75,6 @@ describe('UserService', () => {
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
-		accountService = module.get(AccountService);
-		logger = module.get(Logger);
 
 		orm = await setupEntities();
 	});

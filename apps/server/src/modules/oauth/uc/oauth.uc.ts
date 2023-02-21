@@ -8,11 +8,11 @@ import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
+import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
-import { UserMigrationDto } from '../../user-migration/service/dto/userMigration.dto';
 
 @Injectable()
 export class OauthUc {
@@ -34,6 +34,25 @@ export class OauthUc {
 		} catch (error) {
 			return await this.getOauthErrorResponse(error, systemId);
 		}
+	}
+
+	async migrateUser(
+		currentUserId: string,
+		query: AuthorizationParams,
+		targetSystemId: string
+	): Promise<UserMigrationDto> {
+		const queryToken: OauthTokenResponse = await this.authorizeForMigration(query, targetSystemId);
+		const data: OauthDataDto = await this.provisioningService.getData(
+			queryToken.access_token,
+			queryToken.id_token,
+			targetSystemId
+		);
+		const migrationDto = this.userMigrationService.migrateUser(
+			currentUserId,
+			data.externalUser.externalId,
+			targetSystemId
+		);
+		return migrationDto;
 	}
 
 	private async process(query: AuthorizationParams, systemId: string): Promise<OAuthProcessDto> {
@@ -126,25 +145,6 @@ export class OauthUc {
 		const provider: string = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
 		const oAuthError: OAuthProcessDto = this.oauthService.getOAuthErrorResponse(error, provider);
 		return oAuthError;
-	}
-
-	async migrateUser(
-		currentUserId: string,
-		query: AuthorizationParams,
-		targetSystemId: string
-	): Promise<UserMigrationDto> {
-		const queryToken: OauthTokenResponse = await this.authorizeForMigration(query, targetSystemId);
-		const data: OauthDataDto = await this.provisioningService.getData(
-			queryToken.access_token,
-			queryToken.id_token,
-			targetSystemId
-		);
-		const migrationDto = this.userMigrationService.migrateUser(
-			currentUserId,
-			data.externalUser.externalId,
-			targetSystemId
-		);
-		return migrationDto;
 	}
 
 	private async authorizeForMigration(query: AuthorizationParams, targetSystemId: string): Promise<OauthTokenResponse> {

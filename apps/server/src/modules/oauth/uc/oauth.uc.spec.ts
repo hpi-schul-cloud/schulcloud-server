@@ -14,12 +14,12 @@ import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
 import { NotFoundException } from '@nestjs/common';
-import { SystemDto } from '../../system/service/dto/system.dto';
+import { SystemDto } from '@src/modules/system/service';
+import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import resetAllMocks = jest.resetAllMocks;
-import { UserMigrationDto } from '../../user-migration/service/dto/userMigration.dto';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
