@@ -143,7 +143,9 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this._parentId = new ObjectId(props.parentId);
 		this._creatorId = new ObjectId(props.creatorId);
 		this._schoolId = new ObjectId(props.schoolId);
-		this._isCopyFrom = new ObjectId(props.isCopyFrom);
+		if (props.isCopyFrom) {
+			this._isCopyFrom = new ObjectId(props.isCopyFrom);
+		}
 		this.securityCheck = new FileSecurityCheck({});
 		this.deletedSince = props.deletedSince;
 	}
