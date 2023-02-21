@@ -49,7 +49,7 @@ export class SchoolMigrationService {
 			return Promise.resolve();
 		}
 
-		const isExternalUserInSchool = await this.isExternalUserInSchool(currentUserId, existingSchool); // isCurrentUserInExternalSchool? why though? - just to validate the school number?
+		const isExternalUserInSchool = await this.isCurrentUserInExternalSchool(currentUserId, existingSchool);
 		if (!isExternalUserInSchool) {
 			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_mismatch
 			return Promise.resolve();
@@ -57,12 +57,14 @@ export class SchoolMigrationService {
 
 		if (externalId === existingSchool.externalId) {
 			return false;
-		} else {
-			return true;
 		}
+		return true;
 	}
 
-	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {
+	private async isCurrentUserInExternalSchool(
+		currentUserId: string,
+		existingSchool: SchoolDO | null
+	): Promise<boolean> {
 		const currentUser: UserDO = await this.userService.findById(currentUserId);
 
 		if (!existingSchool || existingSchool?.id !== currentUser.schoolId) {
@@ -82,7 +84,7 @@ export class SchoolMigrationService {
 		await this.schoolService.save(schoolDO);
 	}
 
-	private async rollbackMigration(schoolDO: SchoolDO) {
+	private async rollbackMigration(schoolDO: SchoolDO | null) {
 		if (schoolDO) {
 			await this.schoolService.save(schoolDO);
 		}
