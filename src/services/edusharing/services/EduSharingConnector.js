@@ -197,7 +197,7 @@ class EduSharingConnector {
 		return response.data[0];
 	}
 
-	async FIND({ searchQuery = '', $skip, $limit, sortProperties = 'score', collection = '' }, schoolId) {
+	async FIND({ searchQuery = '', $skip, $limit, collection = '' }, schoolId) {
 		if (!schoolId) {
 			throw new Forbidden('Missing school');
 		}
