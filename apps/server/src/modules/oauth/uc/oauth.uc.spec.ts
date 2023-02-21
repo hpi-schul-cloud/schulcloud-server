@@ -528,20 +528,19 @@ describe('OAuthUc', () => {
 						externalId: 'mockId',
 						name: 'mockName',
 					};
+					const error = new OAuthMigrationError(
+						'Official school number from target migration system is missing',
+						'ext_official_school_number_missing'
+					);
 					systemService.findOAuthById.mockResolvedValue(system);
 					schoolMigrationService.schoolToMigrate.mockImplementation(() => {
-						throw new OAuthMigrationError(
-							'Official school number from target migration system is missing',
-							'ext_official_school_number_missing'
-						);
+						throw error;
 					});
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await expect(service.migrateUser('currentUserId', query, system.id as string)).rejects.toThrow(
-						OAuthMigrationError
-					);
+					await expect(service.migrateUser('currentUserId', query, system.id as string)).rejects.toThrow(error);
 				});
-			}); //TODO other errorcases from schoolToMigrate
+			});
 		});
 	});
 });
