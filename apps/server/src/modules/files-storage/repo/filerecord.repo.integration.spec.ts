@@ -3,13 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { DataBaseManager } from '@shared/infra/database/database-manager';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
+import { NotFoundError } from '@mikro-orm/core';
 import { FileRecordRepo } from './filerecord.repo';
 import { FileRecordEntity } from './filerecord.entity';
 import { FileRecord, FileRecordParentType, IUpdateSecurityCheckStatus, ScanStatus } from '../domain';
 import { fileRecordEntityFactory } from './filerecord-entity.factory';
 import { FileRecordDOMapper } from './fileRecordDO.mapper';
-import { NotFoundError } from '@mikro-orm/core';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
