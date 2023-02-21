@@ -21,7 +21,7 @@ export class DashboardUc {
 		private readonly userRepo: UserRepo
 	) {}
 
-	async getUsersDashboard(userId: EntityId, showSubstitute: boolean): Promise<DashboardEntity> {
+	async getUsersDashboard(userId: EntityId, showSubstitute?: boolean): Promise<DashboardEntity> {
 		let courses: Course[];
 		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
 		const user = await this.userRepo.findById(userId, true);
