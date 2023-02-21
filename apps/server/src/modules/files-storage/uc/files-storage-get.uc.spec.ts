@@ -1,15 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecordEntity, FileRecordParentType } from '../entity';
+import { FileRecordParentType, FileRecordTestFactory } from '../domain';
 import { PermissionContexts } from '../files-storage.const';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
@@ -19,9 +17,9 @@ const buildFileRecordsWithParams = () => {
 	const schoolId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		FileRecordTestFactory.build({ parentId: userId, schoolId, name: 'text.txt' }),
+		FileRecordTestFactory.build({ parentId: userId, schoolId, name: 'text-two.txt' }),
+		FileRecordTestFactory.build({ parentId: userId, schoolId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
@@ -38,11 +36,8 @@ describe('FilesStorageUC', () => {
 	let filesStorageUC: FilesStorageUC;
 	let filesStorageService: DeepMocked<FilesStorageService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
@@ -83,7 +78,6 @@ describe('FilesStorageUC', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
