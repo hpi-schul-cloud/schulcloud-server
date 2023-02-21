@@ -16,18 +16,7 @@ import { AccountService } from '../account/services/account.service';
 @Module({
 	imports: [SchoolModule, RoleModule, AccountModule, LoggerModule],
 	controllers: [UserController],
-	providers: [
-		UserRepo,
-		UserDORepo,
-		PermissionService,
-		UserUc,
-		UserService,
-		RoleRepo,
-		RoleUc,
-		SchoolRepo,
-		RoleService,
-		AccountService,
-	],
+	providers: [UserRepo, UserDORepo, PermissionService, UserUc, UserService, RoleRepo, RoleUc, SchoolRepo, RoleService],
 	exports: [UserUc, UserService],
 })
 export class UserModule {}

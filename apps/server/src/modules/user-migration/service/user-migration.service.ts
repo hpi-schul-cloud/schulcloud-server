@@ -157,8 +157,11 @@ export class UserMigrationService {
 			await this.userService.save(userDOCopy);
 			await this.accountService.save(accountCopy);
 
-			this.logger.log(`This error occurred during migration of User: ${currentUserId} `);
-			this.logger.log(e);
+			this.logger.log({
+				message: 'This error occurred during migration of User:',
+				affectedUserId: currentUserId,
+				error: e,
+			});
 
 			const userMigrationDto: UserMigrationDto = new UserMigrationDto({
 				redirect: `${this.hostUrl}/dashboard`,

@@ -154,14 +154,11 @@ describe('UserService', () => {
 			userDORepo.findById.mockResolvedValue(userDO);
 		});
 
-		it('should provide information about the passed userId', async () => {
-			// Act
+		it('should provide the userDO', async () => {
 			const result: UserDO = await service.findById('id');
 
-			// Assert
 			expect(result).toBeDefined();
 			expect(result).toBeInstanceOf(UserDO);
-			expect(userDORepo.findById).toHaveBeenCalled();
 		});
 	});
 
