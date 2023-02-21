@@ -15,6 +15,7 @@ import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 @Injectable()
 export class OauthUc {
@@ -54,23 +55,19 @@ export class OauthUc {
 		);
 
 		if (data.externalSchool) {
-			if (
-				await this.schoolMigrationService.shouldSchoolMigrate(
-					currentUserId,
-					data.externalSchool.externalId,
-					data.externalSchool.officialSchoolNumber
-				)
-			) {
+			const schoolToMigrate: SchoolDO | null = await this.schoolMigrationService.schoolToMigrate(
+				currentUserId,
+				data.externalSchool.externalId,
+				data.externalSchool.officialSchoolNumber
+			);
+			if (schoolToMigrate) {
 				await this.schoolMigrationService.migrateSchool(
-					currentUserId,
 					data.externalSchool.externalId,
-					data.externalSchool.officialSchoolNumber!,
+					schoolToMigrate,
 					targetSystemId
 				);
 			}
 		}
-
-		// TODO: compare officialSchoolNumbers (512)
 
 		const migrationDto: Promise<UserMigrationDto> = this.userMigrationService.migrateUser(
 			currentUserId,

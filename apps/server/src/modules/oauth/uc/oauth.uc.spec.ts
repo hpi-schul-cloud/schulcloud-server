@@ -13,7 +13,7 @@ import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto
 import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
 import { SchoolService } from '@src/modules/school';
@@ -22,6 +22,8 @@ import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import resetAllMocks = jest.resetAllMocks;
+import { OAuthMigrationError } from '../../user-migration/error/oauth-migration.error';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -408,6 +410,7 @@ describe('OAuthUc', () => {
 					externalId: externalUserId,
 				}),
 			});
+
 			const userMigrationDto: UserMigrationDto = new UserMigrationDto({
 				redirect: 'https://mock.de/migration/succeed',
 			});
@@ -465,8 +468,31 @@ describe('OAuthUc', () => {
 				});
 			});
 
-			describe('when external school and official school number is defined', () => {
-				it('should call schoolService', async () => {
+			describe('when external school and official school number is defined and school has to be migrated', () => {
+				it('should call migrateSchool', async () => {
+					const { oauthData, query, system, userMigrationDto } = setupMigration();
+					oauthData.externalSchool = {
+						externalId: 'mockId',
+						officialSchoolNumber: 'mockNumber',
+						name: 'mockName',
+					};
+					const schoolToMigrate: SchoolDO | void = new SchoolDO({ name: 'mockName' });
+					systemService.findOAuthById.mockResolvedValue(system);
+					schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolToMigrate);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+					await service.migrateUser('currentUserId', query, system.id as string);
+
+					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
+						oauthData.externalSchool.externalId,
+						schoolToMigrate,
+						'systemId'
+					);
+				});
+			});
+
+			describe('when external school and official school number is defined and school is already migrated', () => {
+				it('should not call migrateSchool', async () => {
 					const { oauthData, query, system, userMigrationDto } = setupMigration();
 					oauthData.externalSchool = {
 						externalId: 'mockId',
@@ -474,22 +500,7 @@ describe('OAuthUc', () => {
 						name: 'mockName',
 					};
 					systemService.findOAuthById.mockResolvedValue(system);
-					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
-
-					await service.migrateUser('currentUserId', query, system.id as string);
-
-					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
-						oauthData.externalSchool.externalId,
-						oauthData.externalSchool.officialSchoolNumber,
-						'systemId'
-					);
-				});
-			});
-
-			describe('when external school is not defined', () => {
-				it('should not call schoolService', async () => {
-					const { query, system, userMigrationDto } = setupMigration();
-					systemService.findOAuthById.mockResolvedValue(system);
+					schoolMigrationService.schoolToMigrate.mockResolvedValue(null);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
 					await service.migrateUser('currentUserId', query, system.id as string);
@@ -498,23 +509,39 @@ describe('OAuthUc', () => {
 				});
 			});
 
+			describe('when external school is not defined', () => {
+				it('should not call schoolToMigrate', async () => {
+					const { query, system, userMigrationDto } = setupMigration();
+					systemService.findOAuthById.mockResolvedValue(system);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+					await service.migrateUser('currentUserId', query, system.id as string);
+
+					expect(schoolMigrationService.schoolToMigrate).not.toHaveBeenCalled();
+				});
+			});
+
 			describe('when official school number is not defined', () => {
-				it('should throw', async () => {
+				it('should throw OAuthMigrationError', async () => {
 					const { oauthData, query, system, userMigrationDto } = setupMigration();
 					oauthData.externalSchool = {
 						externalId: 'mockId',
 						name: 'mockName',
 					};
 					systemService.findOAuthById.mockResolvedValue(system);
+					schoolMigrationService.schoolToMigrate.mockImplementation(() => {
+						throw new OAuthMigrationError(
+							'Official school number from target migration system is missing',
+							'ext_official_school_number_missing'
+						);
+					});
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await service.migrateUser('currentUserId', query, system.id as string);
-
 					await expect(service.migrateUser('currentUserId', query, system.id as string)).rejects.toThrow(
-						BadRequestException
+						OAuthMigrationError
 					);
 				});
-			});
+			}); //TODO other errorcases from schoolToMigrate
 		});
 	});
 });

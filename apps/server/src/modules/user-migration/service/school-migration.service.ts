@@ -4,6 +4,7 @@ import { SchoolService } from '@src/modules/school';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserService } from '@src/modules/user';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { OAuthMigrationError } from '../error/oauth-migration.error';
 
 // TODO: test
 @Injectable()
@@ -14,13 +15,7 @@ export class SchoolMigrationService {
 		private readonly userService: UserService
 	) {}
 
-	async migrateSchool(
-		currentUserId: string,
-		externalId: string,
-		schoolNumber: string,
-		targetSystemId: string
-	): Promise<void> {
-		const existingSchool: SchoolDO = (await this.schoolService.getSchoolBySchoolNumber(schoolNumber)) as SchoolDO;
+	async migrateSchool(externalId: string, existingSchool: SchoolDO, targetSystemId: string): Promise<void> {
 		const schoolDOCopy: SchoolDO = new SchoolDO({ ...existingSchool });
 
 		try {
@@ -30,41 +25,44 @@ export class SchoolMigrationService {
 			this.logger.log(
 				`This error occurred during migration of School with official school number: ${
 					existingSchool.officialSchoolNumber || ''
-				} `
+				}`,
+				e
 			);
-			this.logger.log(e);
 		}
-		return Promise.resolve();
 	}
 
-	async shouldSchoolMigrate(currentUserId: string, externalId: string, schoolNumber: string | undefined) {
+	async schoolToMigrate(currentUserId: string, externalId: string, schoolNumber: string | undefined) {
 		if (!schoolNumber) {
-			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_missing
-			return Promise.resolve();
+			throw new OAuthMigrationError(
+				'Official school number from target migration system is missing',
+				'ext_official_school_number_missing'
+			);
 		}
 
 		const existingSchool: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(schoolNumber);
 		if (!existingSchool) {
-			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_mismatch
-			return Promise.resolve();
+			throw new OAuthMigrationError(
+				'Could not find school by official school number from target migration system',
+				'ext_official_school_number_mismatch'
+			);
 		}
 
-		const isExternalUserInSchool = await this.isCurrentUserInExternalSchool(currentUserId, existingSchool);
+		const isExternalUserInSchool = await this.isExternalUserInSchool(currentUserId, existingSchool);
 		if (!isExternalUserInSchool) {
-			// TODO: create own like OauthError and throw new OauthMigrationError with code ext_official_school_number_mismatch
-			return Promise.resolve();
+			throw new OAuthMigrationError(
+				'Current users school is not the same as school found by official school number from target migration system',
+				'ext_official_school_number_mismatch'
+			);
 		}
 
 		if (externalId === existingSchool.externalId) {
-			return false;
+			return null;
+		} else {
+			return existingSchool;
 		}
-		return true;
 	}
 
-	private async isCurrentUserInExternalSchool(
-		currentUserId: string,
-		existingSchool: SchoolDO | null
-	): Promise<boolean> {
+	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {
 		const currentUser: UserDO = await this.userService.findById(currentUserId);
 
 		if (!existingSchool || existingSchool?.id !== currentUser.schoolId) {
@@ -84,7 +82,7 @@ export class SchoolMigrationService {
 		await this.schoolService.save(schoolDO);
 	}
 
-	private async rollbackMigration(schoolDO: SchoolDO | null) {
+	private async rollbackMigration(schoolDO: SchoolDO) {
 		if (schoolDO) {
 			await this.schoolService.save(schoolDO);
 		}
