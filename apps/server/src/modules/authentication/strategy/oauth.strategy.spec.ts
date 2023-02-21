@@ -58,6 +58,9 @@ describe('OauthStrategy', () => {
 	});
 	describe('when no code is given in query', () => {
 		it('should return an empty object', async () => {
+			oauthService.authenticateUser.mockResolvedValueOnce({
+				redirect: '/mock-redirect',
+			});
 			const result = await strategy.validate({ params: { systemId }, query: {} });
 
 			expect(result).toEqual({});
@@ -65,6 +68,9 @@ describe('OauthStrategy', () => {
 	});
 	describe('when the error property is set in query', () => {
 		it('should return an empty object', async () => {
+			oauthService.authenticateUser.mockResolvedValueOnce({
+				redirect: '/mock-redirect',
+			});
 			const result = await strategy.validate({ params: { systemId }, query: { code: 'some Code', error: 'an error' } });
 
 			expect(result).toEqual({});

@@ -310,11 +310,18 @@ describe('Login Controller (api)', () => {
 
 		describe('when user login fails', () => {
 			it('should return error response', async () => {
-				const params = {
-					username: 'nonExistentUser',
-					password: 'wrongPassword',
-				};
-				await request(app.getHttpServer()).get(`${basePath}/oauth/${system.id}`).send(params).expect(401);
+				const params: OauthAuthorizationQueryParams = new OauthAuthorizationQueryParams();
+				params.error = 'someCode';
+
+				if (!system.oauthConfig) {
+					fail('oauth system not properly initialized');
+					return;
+				}
+
+				const response = await request(app.getHttpServer()).get(`${basePath}/oauth/${system.id}`).query(params).send();
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect(response.status).toEqual(302);
 			});
 		});
 	});

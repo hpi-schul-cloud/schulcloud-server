@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, System } from '@shared/domain';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { UserService } from '@src/modules/user';
@@ -419,7 +419,6 @@ describe('OAuthService', () => {
 
 			const decodedJwtMock = { sub: new ObjectId().toHexString(), email: 'peter.tester@example.com' };
 
-			systemService.findOAuthById.mockResolvedValue(system);
 			provisioningService.getData.mockResolvedValue(oauthData);
 			provisioningService.provisionData.mockResolvedValue(provisioningDto);
 			jest.spyOn(jwt, 'decode').mockImplementation((): JwtPayload => decodedJwtMock);
@@ -443,6 +442,7 @@ describe('OAuthService', () => {
 
 		afterEach(() => {
 			userService.findByExternalId.mockReset();
+			systemService.findOAuthById.mockReset();
 		});
 		// const mockSystemDto: SystemDto = {};
 
@@ -451,7 +451,7 @@ describe('OAuthService', () => {
 			systemService.findOAuthById.mockResolvedValueOnce(testSystem);
 			userService.findByExternalId.mockResolvedValue(mockUser);
 
-			const { user, redirect } = await service.authenticateUser(query.code!, system.id!);
+			const { user, redirect } = await service.authenticateUser(system.id!, query.code);
 			expect(redirect).toStrictEqual(`${hostUri}/dashboard`);
 			expect(user).toStrictEqual(mockUser);
 		});
@@ -460,23 +460,30 @@ describe('OAuthService', () => {
 			it('the authentication should fail', async () => {
 				const { query, mockUser } = setup();
 
-				systemService.findOAuthById.mockResolvedValueOnce({} as SystemDto);
+				systemService.findOAuthById.mockResolvedValue({} as SystemDto);
 				userService.findByExternalId.mockResolvedValue(mockUser);
 
-				await expect(service.authenticateUser(query.code!, '')).rejects.toThrow(UnauthorizedException);
+				await expect(service.authenticateUser('', query.code)).rejects.toThrow(UnauthorizedException);
 			});
 		});
 
 		describe('when system does not have oauth config', () => {
 			it('the authentication should fail', async () => {
-				const authCode = 'mockAuthCode';
-				const externalId = new ObjectId().toHexString();
-				const mockUser: UserDO = userDoFactory.buildWithId({ externalId });
-				const testSystemWithoutConfig = systemFactory.buildWithId();
-				systemService.findOAuthById.mockResolvedValueOnce(testSystemWithoutConfig);
+				const { query, mockUser, system } = setup();
+				system.oauthConfig = undefined;
+
+				systemService.findOAuthById.mockResolvedValueOnce(system);
 				userService.findByExternalId.mockResolvedValue(mockUser);
 
-				await expect(service.authenticateUser(authCode, testSystem.id)).rejects.toThrow(UnauthorizedException);
+				await expect(service.authenticateUser(testSystem.id, query.code)).rejects.toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when query has no code or error', () => {
+			it('should throw an error', async () => {
+				const response = service.authenticateUser('');
+
+				await expect(response).rejects.toThrow(OAuthSSOError);
 			});
 		});
 
@@ -505,12 +512,13 @@ describe('OAuthService', () => {
 			};
 			describe('when the school is currently migrating to another system and the user does not exist', () => {
 				it('should return a migration redirect url', async () => {
-					const { query, migrationRedirect } = setupMigration();
+					const { query, migrationRedirect, system } = setupMigration();
 
+					systemService.findOAuthById.mockResolvedValueOnce(system);
 					userService.findByExternalId.mockResolvedValue(null);
 					userMigrationService.isSchoolInMigration.mockResolvedValueOnce(true);
 
-					const { user, redirect } = await service.authenticateUser(query.code!, 'brokenId');
+					const { user, redirect } = await service.authenticateUser('brokenId', query.code);
 
 					expect(redirect).toEqual(migrationRedirect);
 					expect(user).toBeUndefined();
@@ -519,12 +527,13 @@ describe('OAuthService', () => {
 
 			describe('when the school is currently migrating to another system and the user exists', () => {
 				it('should should finish the process normally and return a valid jwt', async () => {
-					const { query, mockUser, migrationRedirect } = setupMigration();
+					const { query, mockUser, migrationRedirect, system } = setupMigration();
 
+					systemService.findOAuthById.mockResolvedValueOnce(system);
 					userService.findByExternalId.mockResolvedValue(mockUser);
 					userMigrationService.isSchoolInMigration.mockResolvedValueOnce(false);
 
-					const { user, redirect } = await service.authenticateUser(query.code!, 'brokenId');
+					const { user, redirect } = await service.authenticateUser('brokenId', query.code);
 
 					expect(redirect).toEqual(migrationRedirect);
 					expect(user).toEqual(mockUser);

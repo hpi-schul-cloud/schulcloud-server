@@ -73,8 +73,6 @@ export class OAuthService {
 			system.id
 		);
 
-		redirect = this.getRedirectUrl(oauthConfig.provider, queryToken.id_token, oauthConfig.logoutEndpoint);
-
 		// TODO Move Migration Checks to other service
 		if (data.externalSchool?.officialSchoolNumber) {
 			const shouldMigrate: boolean = await this.shouldUserMigrate(
@@ -90,6 +88,8 @@ export class OAuthService {
 				return { user: undefined, redirect };
 			}
 		}
+
+		redirect = this.getRedirectUrl(oauthConfig.provider, queryToken.id_token, oauthConfig.logoutEndpoint);
 
 		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
 
