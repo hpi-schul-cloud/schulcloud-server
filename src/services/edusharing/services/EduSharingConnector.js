@@ -149,7 +149,7 @@ class EduSharingConnector {
 			headers: {
 				cookie: this.eduSharingCookie,
 			},
-			encoding: null, // necessary to get the image as binary value
+			encoding: null, // required to get the image as binary value
 			resolveWithFullResponse: true,
 			// edu-sharing returns 302 to an error page instead of 403,
 			// and the error page has wrong status codes
