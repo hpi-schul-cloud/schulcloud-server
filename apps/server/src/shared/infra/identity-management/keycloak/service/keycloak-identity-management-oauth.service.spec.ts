@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,6 +7,7 @@ import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { KeycloakIdentityManagementOauthService } from './keycloak-identity-management-oauth.service';
+
 describe('KeycloakIdentityManagementService', () => {
 	let module: TestingModule;
 	let kcIdmOauthService: KeycloakIdentityManagementOauthService;
@@ -44,6 +46,19 @@ describe('KeycloakIdentityManagementService', () => {
 	describe('resourceOwnerPasswordGrant', () => {
 		describe('when entering valid credentials', () => {
 			const setup = () => {
+				configServiceMock.get.mockReturnValue('');
+				kcAdminServiceMock.callKcAdminClient.mockResolvedValue({} as KeycloakAdminClient);
+				httpServiceMock.get.mockReturnValue(
+					of({
+						data: {
+							issuer: 'issuer',
+							tokenEndpoint: 'tokenEndpoint',
+							authEndpoint: 'authEndpoint',
+							logoutEndpoint: 'logoutEndpoint',
+							jwksEndpoint: 'jwksEndpoint',
+						},
+					} as AxiosResponse)
+				);
 				const accessToken = 'accessToken';
 				httpServiceMock.request.mockReturnValue(of({ data: { access_token: accessToken } } as AxiosResponse));
 				return accessToken;
