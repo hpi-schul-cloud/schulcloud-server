@@ -81,7 +81,7 @@ describe('CommonToolValidationService', () => {
 			});
 		});
 
-		describe('when there is no attribute name', () => {
+		describe('when there is an empty parameter name', () => {
 			it('should throw ValidationError', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					parameters: [customParameterDOFactory.build({ name: '' })],
