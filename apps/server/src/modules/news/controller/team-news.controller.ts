@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';;
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 
 import { PaginationParams } from '@shared/controller';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';

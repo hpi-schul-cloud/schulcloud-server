@@ -1,6 +1,6 @@
 import { Controller, Req, Post, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ICurrentUser } from '@src/modules/authentication';;
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthenticationService } from '../services/authentication.service';
 

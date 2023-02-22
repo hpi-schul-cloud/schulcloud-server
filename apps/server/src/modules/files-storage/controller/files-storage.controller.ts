@@ -22,7 +22,7 @@ import {
 import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { ICurrentUser } from '@src/modules/authentication';;
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
 import { FileRecordMapper } from '../mapper/file-record.mapper';

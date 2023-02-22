@@ -6,17 +6,7 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import {
-	Account,
-	EntityId,
-	ICurrentUser,
-	Permission,
-	PermissionService,
-	Role,
-	RoleName,
-	School,
-	User,
-} from '@shared/domain';
+import { Account, EntityId, Permission, PermissionService, Role, RoleName, School, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
@@ -25,6 +15,7 @@ import { isEmail, validateOrReject } from 'class-validator';
 
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { IAccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,
@@ -435,7 +426,7 @@ export class AccountUc {
 					break;
 				case 'DELETE':
 					permissionsToCheck.push('TEACHER_DELETE');
-					break; 
+					break;
  				*/
 			}
 		}

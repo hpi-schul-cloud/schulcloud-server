@@ -6,7 +6,6 @@ import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, Valid
 import {
 	Account,
 	EntityId,
-	ICurrentUser,
 	Permission,
 	PermissionService,
 	Role,
@@ -16,6 +15,7 @@ import {
 	SchoolRoles,
 	User,
 } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';

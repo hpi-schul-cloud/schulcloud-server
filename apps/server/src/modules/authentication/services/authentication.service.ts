@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 import { JwtValidationAdapter } from '@src/modules/authentication/strategy/jwt-validation.adapter';
 import { randomUUID } from 'crypto';
 import { IServerConfig } from '../../server';

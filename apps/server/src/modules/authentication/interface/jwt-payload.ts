@@ -1,5 +1,5 @@
 // TODO: should not get from this place over path
-import { ICurrentUser } from '@src/modules/authentication';;
+import { ICurrentUser } from '@src/modules/authentication/interface/user';
 
 export interface JwtPayload extends ICurrentUser {
 	/** audience */
