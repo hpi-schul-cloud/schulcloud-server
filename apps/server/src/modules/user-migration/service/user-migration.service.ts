@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolService } from '@src/modules/school';
 import { EntityNotFoundError } from '@shared/common';
@@ -29,7 +29,6 @@ export class UserMigrationService {
 		private readonly schoolService: SchoolService,
 		private readonly systemService: SystemService,
 		private readonly userService: UserService,
-
 		private readonly logger: Logger,
 		private readonly accountService: AccountService
 	) {
@@ -104,31 +103,6 @@ export class UserMigrationService {
 		}
 	}
 
-	private getOauthLoginUrl(system: SystemDto, postLoginUri?: string): URL {
-		if (!system.oauthConfig) {
-			throw new EntityNotFoundError(`System ${system?.id || 'unknown'} has no oauth config`);
-		}
-
-		const { oauthConfig } = system;
-
-		const loginUrl: URL = new URL(oauthConfig.authEndpoint);
-		loginUrl.searchParams.append('client_id', oauthConfig.clientId);
-		loginUrl.searchParams.append('redirect_uri', this.getRedirectUri(oauthConfig.redirectUri, postLoginUri).toString());
-		loginUrl.searchParams.append('response_type', oauthConfig.responseType);
-		loginUrl.searchParams.append('scope', oauthConfig.scope);
-
-		return loginUrl;
-	}
-
-	private getRedirectUri(redirectUri: string, postLoginUri?: string): URL {
-		const combinedUri = new URL(redirectUri);
-		if (postLoginUri) {
-			combinedUri.searchParams.append('postLoginRedirect', postLoginUri);
-		}
-
-		return combinedUri;
-	}
-
 	getMigrationRedirectUri(systemId: string): string {
 		const combinedUri = new URL(this.apiUrl);
 		combinedUri.pathname = `api/v3/sso/oauth/${systemId}/migration`;
@@ -153,7 +127,7 @@ export class UserMigrationService {
 				redirect: `${this.hostUrl}/migration/succeed`,
 			});
 			return userMigrationDto;
-		} catch (e) {
+		} catch (e: unknown) {
 			await this.userService.save(userDOCopy);
 			await this.accountService.save(accountCopy);
 
@@ -168,5 +142,30 @@ export class UserMigrationService {
 			});
 			return userMigrationDto;
 		}
+	}
+
+	private getOauthLoginUrl(system: SystemDto, postLoginUri?: string): URL {
+		if (!system.oauthConfig) {
+			throw new EntityNotFoundError(`System ${system?.id || 'unknown'} has no oauth config`);
+		}
+
+		const { oauthConfig } = system;
+
+		const loginUrl: URL = new URL(oauthConfig.authEndpoint);
+		loginUrl.searchParams.append('client_id', oauthConfig.clientId);
+		loginUrl.searchParams.append('redirect_uri', this.getRedirectUri(oauthConfig.redirectUri, postLoginUri).toString());
+		loginUrl.searchParams.append('response_type', oauthConfig.responseType);
+		loginUrl.searchParams.append('scope', oauthConfig.scope);
+
+		return loginUrl;
+	}
+
+	private getRedirectUri(redirectUri: string, postLoginUri?: string): URL {
+		const combinedUri = new URL(redirectUri);
+		if (postLoginUri) {
+			combinedUri.searchParams.append('postLoginRedirect', postLoginUri);
+		}
+
+		return combinedUri;
 	}
 }
