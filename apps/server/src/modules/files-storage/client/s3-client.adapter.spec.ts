@@ -138,7 +138,6 @@ describe('S3ClientAdapter', () => {
 			data: readable,
 			name: 'test.txt',
 			mimeType: 'text/plain',
-			size: 100,
 		});
 		const path = 'test/test.txt';
 
