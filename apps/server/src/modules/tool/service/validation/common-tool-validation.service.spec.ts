@@ -81,6 +81,21 @@ describe('CommonToolValidationService', () => {
 			});
 		});
 
+		describe('when there is no attribute name', () => {
+			it('should throw ValidationError', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+					parameters: [customParameterDOFactory.build({ name: '' })],
+				});
+				externalToolService.findExternalToolByName.mockResolvedValue(null);
+
+				const func = () => service.validateCommon(externalToolDO);
+
+				await expect(func()).rejects.toThrow(
+					new ValidationError(`tool_param_name: The tool ${externalToolDO.name} is missing a custom parameter name.`)
+				);
+			});
+		});
+
 		describe('when there are duplicate attributes', () => {
 			it('should fail for two equal parameters', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({

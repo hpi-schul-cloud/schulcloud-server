@@ -8,7 +8,6 @@ import {
 
 export class CustomParameterPostParams {
 	@IsString()
-	@IsNotEmpty()
 	@ApiProperty()
 	name!: string;
 
