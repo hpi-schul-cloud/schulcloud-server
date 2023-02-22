@@ -88,6 +88,8 @@ export class FilesStorageService {
 
 	private async createFileRecord(file: FileDto, params: FileRecordParams, userId: EntityId): Promise<FileRecord> {
 		const fileName = await this.setFileName(file, params);
+
+		// Create fileRecord with 0 as initial file size, because it is overwritten later anyway.
 		const fileRecord = createFileRecord(fileName, 0, file.mimeType, params, userId);
 
 		return fileRecord;

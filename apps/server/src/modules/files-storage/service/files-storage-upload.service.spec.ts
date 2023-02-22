@@ -102,10 +102,11 @@ describe('FilesStorageService upload methods', () => {
 			const file = createMock<FileDto>();
 			file.data = Readable.from('abc');
 			file.name = fileRecords[0].name;
-			file.size = 3;
 			file.mimeType = 'mimeType';
 
-			const fileRecord = createFileRecord(file.name, file.size, file.mimeType, params, userId);
+			const fileSize = 3;
+
+			const fileRecord = createFileRecord(file.name, 0, file.mimeType, params, userId);
 			const { securityCheck, ...expectedFileRecord } = fileRecord;
 			expectedFileRecord.name = resolveFileNameDuplicates(fileRecord.name, fileRecords);
 
@@ -121,7 +122,7 @@ describe('FilesStorageService upload methods', () => {
 				}
 			});
 
-			return { params, file, userId, fileRecord, expectedFileRecord, fileRecords, getFileRecordsOfParentSpy };
+			return { params, file, fileSize, userId, fileRecord, expectedFileRecord, fileRecords, getFileRecordsOfParentSpy };
 		};
 
 		it('should call getFileRecordsOfParent with correct params', async () => {
@@ -133,15 +134,25 @@ describe('FilesStorageService upload methods', () => {
 		});
 
 		it('should call fileRecordRepo.save twice with correct params', async () => {
-			const { params, file, userId, expectedFileRecord } = createUploadFileParams();
+			const { params, file, fileSize, userId, expectedFileRecord } = createUploadFileParams();
 
 			await service.uploadFile(userId, params, file);
 
 			expect(fileRecordRepo.save).toHaveBeenCalledTimes(2);
-			// TODO: Should it be toHaveBeenLastCalledWith here?
-			expect(fileRecordRepo.save).toHaveBeenCalledWith(
+			// TODO: Why are the params different from expectation?
+			expect(fileRecordRepo.save).toHaveBeenNthCalledWith(
+				1,
 				expect.objectContaining({
 					...expectedFileRecord,
+					createdAt: expect.any(Date),
+					updatedAt: expect.any(Date),
+				})
+			);
+			expect(fileRecordRepo.save).toHaveBeenNthCalledWith(
+				2,
+				expect.objectContaining({
+					...expectedFileRecord,
+					size: fileSize,
 					createdAt: expect.any(Date),
 					updatedAt: expect.any(Date),
 				})
@@ -219,12 +230,17 @@ describe('FilesStorageService upload methods', () => {
 		});
 
 		it('should call antivirusService.send with fileRecord', async () => {
-			const { params, file, userId, expectedFileRecord } = createUploadFileParams();
+			const { params, file, fileSize, userId, expectedFileRecord } = createUploadFileParams();
 
 			await service.uploadFile(userId, params, file);
 
 			expect(antivirusService.send).toHaveBeenCalledWith(
-				expect.objectContaining({ ...expectedFileRecord, createdAt: expect.any(Date), updatedAt: expect.any(Date) })
+				expect.objectContaining({
+					...expectedFileRecord,
+					size: fileSize,
+					createdAt: expect.any(Date),
+					updatedAt: expect.any(Date),
+				})
 			);
 		});
 

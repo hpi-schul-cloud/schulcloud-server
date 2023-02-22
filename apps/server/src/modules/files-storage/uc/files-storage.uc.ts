@@ -61,7 +61,7 @@ export class FilesStorageUC {
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			bb.on('file', async (_name, file, info) => {
-				const fileDto = FileDtoBuilder.buildFromRequest(info, req, file);
+				const fileDto = FileDtoBuilder.buildFromRequest(info, file);
 
 				try {
 					const record = await this.filesStorageService.uploadFile(userId, params, fileDto);

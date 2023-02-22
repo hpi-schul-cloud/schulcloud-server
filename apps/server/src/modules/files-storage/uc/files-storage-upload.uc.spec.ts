@@ -321,12 +321,11 @@ describe('FilesStorageUC upload methods', () => {
 
 			it('should call uploadFile with correct params', async () => {
 				const { params, userId, request, readable, fileInfo } = setup();
+				const file = FileDtoBuilder.buildFromRequest(fileInfo, readable);
 
 				await filesStorageUC.upload(userId, params, request);
 
-				const fileDescription = FileDtoBuilder.buildFromRequest(fileInfo, request, readable);
-
-				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId, params, fileDescription);
+				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId, params, file);
 			});
 
 			it('should return fileRecord', async () => {
