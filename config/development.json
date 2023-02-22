@@ -9,8 +9,14 @@
 	"SYNC_LOG_LEVEL": "debug",
 	"REQUEST_LOGGING_ENABLED": true,
 	"FEATURE_MONGOOSE_LOGGING_ENABLED": true,
-	"FEATURE_LERNSTORE_ENABLED": false,
+	"FEATURE_LERNSTORE_ENABLED": true,
 	"FEATURE_S3_BUCKET_CORS": false,
+	"FEATURE_ES_COLLECTIONS_ENABLED": true,
+	"FEATURE_ES_SEARCHABLE_ENABLED": true,
+	"FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED": true,
+	"ES_DOMAIN": "https://repository.edu-2.sc-dev-edusharing.dbildungscloud.dev",
+	"ES_USER": "BrandenburgUser",
+	"ES_PASSWORD": "BBpasswordSC!",
 	"S3_KEY": "abcdefghijklmnop",
 	"AES_KEY": "thisisnotsecure12",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "thisisnotsecure12",
@@ -49,4 +55,4 @@
 	"HYDRA_URI": "http://localhost:9001",
 	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": true,
 	"NEST_LOG_LEVEL": "debug"
-}
+	}
