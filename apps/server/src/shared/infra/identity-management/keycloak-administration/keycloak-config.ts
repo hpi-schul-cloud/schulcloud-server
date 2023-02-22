@@ -1,8 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { IKeycloakManagementInputFiles } from './interface/keycloak-management-input-files.interface';
 import { IKeycloakSettings } from './interface/keycloak-settings.interface';
 
-export default class KeycloakConfiguration {
+export default class KeycloakAdministration {
 	static keycloakSettings = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
 		? ({
 				baseUrl: Configuration.get('IDENTITY_MANAGEMENT__URI') as string,
@@ -16,9 +15,4 @@ export default class KeycloakConfiguration {
 				},
 		  } as IKeycloakSettings)
 		: ({} as IKeycloakSettings);
-
-	static keycloakInputFiles = {
-		accountsFile: './backup/setup/accounts.json',
-		usersFile: './backup/setup/users.json',
-	} as IKeycloakManagementInputFiles;
 }

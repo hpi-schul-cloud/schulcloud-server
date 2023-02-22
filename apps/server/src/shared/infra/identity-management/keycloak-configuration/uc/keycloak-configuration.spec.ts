@@ -2,12 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakAdministrationService } from '../service/keycloak-administration.service';
 import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
-import { KeycloakSeedService } from '../service/keycloak-seed.service';
-import { KeycloakManagementUc } from './Keycloak-management.uc';
+import { KeycloakSeedService } from '../../keycloak-configuration/service/keycloak-seed.service';
+import { KeycloakConfigurationUc } from './keycloak-configuration.uc';
 
 describe('KeycloakManagementUc', () => {
 	let module: TestingModule;
-	let uc: KeycloakManagementUc;
+	let uc: KeycloakConfigurationUc;
 	let keycloakAdminServiceMock: DeepMocked<KeycloakAdministrationService>;
 	let keycloakConfigServiceMock: DeepMocked<KeycloakConfigurationService>;
 	let keycloakSeedServiceMock: DeepMocked<KeycloakSeedService>;
@@ -15,7 +15,7 @@ describe('KeycloakManagementUc', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				KeycloakManagementUc,
+				KeycloakConfigurationUc,
 				{
 					provide: KeycloakAdministrationService,
 					useValue: createMock<KeycloakAdministrationService>(),
@@ -30,7 +30,7 @@ describe('KeycloakManagementUc', () => {
 				},
 			],
 		}).compile();
-		uc = module.get(KeycloakManagementUc);
+		uc = module.get(KeycloakConfigurationUc);
 		keycloakAdminServiceMock = module.get(KeycloakAdministrationService);
 		keycloakConfigServiceMock = module.get(KeycloakConfigurationService);
 		keycloakSeedServiceMock = module.get(KeycloakSeedService);

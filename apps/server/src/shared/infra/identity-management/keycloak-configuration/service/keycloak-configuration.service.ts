@@ -12,7 +12,7 @@ import { IServerConfig } from '@src/modules/server/server.config';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
-import { KeycloakAdministrationService } from './keycloak-administration.service';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 
 enum ConfigureAction {
 	CREATE = 'create',
@@ -25,19 +25,13 @@ const clientId = 'dbildungscloud-server';
 const defaultIdpMapperName = 'oidc-username-idp-mapper';
 
 @Injectable()
-export class KeycloakConfigurationService implements OnModuleInit {
-	private systemService?: SystemService;
-
+export class KeycloakConfigurationService {
 	constructor(
-		private readonly moduleRef: ModuleRef,
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly configService: ConfigService<IServerConfig, true>,
 		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
+		private readonly systemService: SystemService
 	) {}
-
-	onModuleInit(): void {
-		this.systemService = this.moduleRef.get(SystemService);
-	}
 
 	public async configureBrokerFlows(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();

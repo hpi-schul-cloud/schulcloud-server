@@ -1,7 +1,7 @@
 import { ConsoleWriterService } from '@shared/infra/console';
 import { Logger } from '@src/core/logger';
 import { Command, CommandOption, Console } from 'nestjs-console';
-import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
+import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 
 const defaultError = new Error('IDM is not reachable or authentication failed.');
 
@@ -13,7 +13,7 @@ interface IRetryOptions {
 export class KeycloakConsole {
 	constructor(
 		private readonly console: ConsoleWriterService,
-		private readonly keycloakManagementUc: KeycloakManagementUc,
+		private readonly keycloakConfigurationUc: KeycloakConfigurationUc,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(KeycloakConsole.name);
@@ -39,7 +39,7 @@ export class KeycloakConsole {
 	 */
 	@Command({ command: 'check', description: 'Test the connection to the IDM.' })
 	async check(): Promise<void> {
-		if (await this.keycloakManagementUc.check()) {
+		if (await this.keycloakConfigurationUc.check()) {
 			this.console.info('Connected to IDM');
 		} else {
 			throw defaultError;
@@ -60,7 +60,7 @@ export class KeycloakConsole {
 		await this.repeatCommand(
 			'clean',
 			async () => {
-				const count = await this.keycloakManagementUc.clean();
+				const count = await this.keycloakConfigurationUc.clean();
 				this.console.info(`Cleaned ${count} users into IDM`);
 				return count;
 			},
@@ -82,7 +82,7 @@ export class KeycloakConsole {
 		await this.repeatCommand(
 			'seed',
 			async () => {
-				const count = await this.keycloakManagementUc.seed();
+				const count = await this.keycloakConfigurationUc.seed();
 				this.console.info(`Seeded ${count} users into IDM`);
 				return count;
 			},
@@ -104,7 +104,7 @@ export class KeycloakConsole {
 		await this.repeatCommand(
 			'configure',
 			async () => {
-				const count = await this.keycloakManagementUc.configure();
+				const count = await this.keycloakConfigurationUc.configure();
 				this.console.info(`Configured ${count} identity provider(s).`);
 			},
 			options.retryCount,

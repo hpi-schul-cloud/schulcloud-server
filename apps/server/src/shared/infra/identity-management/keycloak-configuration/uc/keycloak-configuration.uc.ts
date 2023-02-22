@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { KeycloakAdministrationService } from '../service/keycloak-administration.service';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
 import { KeycloakSeedService } from '../service/keycloak-seed.service';
 
 @Injectable()
-export class KeycloakManagementUc {
+export class KeycloakConfigurationUc {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly keycloakConfigService: KeycloakConfigurationService,

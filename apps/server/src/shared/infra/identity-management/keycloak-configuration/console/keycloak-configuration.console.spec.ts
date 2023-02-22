@@ -2,14 +2,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
 import { Logger } from '@src/core/logger';
-import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
-import { KeycloakConsole } from './keycloak-management.console';
+import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
+import { KeycloakConsole } from './keycloak-configuration.console';
 
 describe('KeycloakConsole', () => {
 	let module: TestingModule;
 	let console: KeycloakConsole;
 	let writer: DeepMocked<ConsoleWriterService>;
-	let uc: DeepMocked<KeycloakManagementUc>;
+	let uc: DeepMocked<KeycloakConfigurationUc>;
 	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
@@ -20,8 +20,8 @@ describe('KeycloakConsole', () => {
 					useValue: createMock<ConsoleWriterService>(),
 				},
 				{
-					provide: KeycloakManagementUc,
-					useValue: createMock<KeycloakManagementUc>(),
+					provide: KeycloakConfigurationUc,
+					useValue: createMock<KeycloakConfigurationUc>(),
 				},
 				{
 					provide: Logger,
@@ -31,7 +31,7 @@ describe('KeycloakConsole', () => {
 		}).compile();
 
 		writer = module.get(ConsoleWriterService);
-		uc = module.get(KeycloakManagementUc);
+		uc = module.get(KeycloakConfigurationUc);
 		logger = module.get(Logger);
 		console = new KeycloakConsole(writer, uc, logger);
 	});

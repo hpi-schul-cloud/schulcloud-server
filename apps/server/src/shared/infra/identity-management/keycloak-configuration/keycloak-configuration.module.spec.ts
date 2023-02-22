@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { KeycloakManagementModule } from './keycloak-management.module';
-import { KeycloakAdministrationService } from './service/keycloak-administration.service';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { ConfigModule } from '@nestjs/config';
+import { KeycloakConfigurationModule } from './keycloak-configuration.module';
+import { KeycloakConsole } from './console/keycloak-configuration.console';
 import { KeycloakConfigurationService } from './service/keycloak-configuration.service';
 import { KeycloakSeedService } from './service/keycloak-seed.service';
 
@@ -8,7 +10,11 @@ describe('KeycloakManagementModule', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [KeycloakManagementModule],
+			imports: [
+				KeycloakConfigurationModule,
+				MongoMemoryDatabaseModule.forRoot(),
+				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
+			],
 		}).compile();
 	});
 
@@ -17,7 +23,7 @@ describe('KeycloakManagementModule', () => {
 	});
 
 	it('KeycloakAdministrationService should be defined', () => {
-		const service = module.get(KeycloakAdministrationService);
+		const service = module.get(KeycloakConsole);
 		expect(service).toBeDefined();
 	});
 

@@ -4,12 +4,12 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { NodeEnvType } from '@src/modules/server/server.config';
-import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
-import { KeycloakManagementController } from './keycloak-management.controller';
+import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
+import { KeycloakManagementController } from './keycloak-configuration.controller';
 
 describe('KeycloakManagementController', () => {
 	let module: TestingModule;
-	let uc: DeepMocked<KeycloakManagementUc>;
+	let uc: DeepMocked<KeycloakConfigurationUc>;
 	let controller: KeycloakManagementController;
 	let configServiceMock: DeepMocked<ConfigService>;
 
@@ -22,8 +22,8 @@ describe('KeycloakManagementController', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: KeycloakManagementUc,
-					useValue: createMock<KeycloakManagementUc>(),
+					provide: KeycloakConfigurationUc,
+					useValue: createMock<KeycloakConfigurationUc>(),
 				},
 				{
 					provide: ConfigService,
@@ -32,7 +32,7 @@ describe('KeycloakManagementController', () => {
 			],
 		}).compile();
 
-		uc = module.get(KeycloakManagementUc);
+		uc = module.get(KeycloakConfigurationUc);
 		controller = module.get(KeycloakManagementController);
 		configServiceMock = module.get(ConfigService);
 	});

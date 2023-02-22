@@ -3,16 +3,16 @@ import { Inject } from '@nestjs/common';
 import fs from 'node:fs/promises';
 import { IJsonAccount } from '../interface/json-account.interface';
 import { IJsonUser } from '../interface/json-user.interface';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import {
-	IKeycloakManagementInputFiles,
-	KeycloakManagementInputFiles,
-} from '../interface/keycloak-management-input-files.interface';
-import { KeycloakAdministrationService } from './keycloak-administration.service';
+	KeycloakConfigurationInputFiles,
+	IKeycloakConfigurationInputFiles,
+} from '../interface/keycloak-configuration-input-files.interface';
 
 export class KeycloakSeedService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
-		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles // @Inject(KeycloakManagementInputFiles) private readonly fs: IKeycloakManagementInputFiles
+		@Inject(KeycloakConfigurationInputFiles) private readonly inputFiles: IKeycloakConfigurationInputFiles
 	) {}
 
 	async seed(): Promise<number> {

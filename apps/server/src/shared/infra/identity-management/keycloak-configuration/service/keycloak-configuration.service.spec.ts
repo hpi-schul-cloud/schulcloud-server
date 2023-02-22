@@ -20,7 +20,7 @@ import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';
 import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
-import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
+import { OidcIdentityProviderMapper } from '../../keycloak-configuration/mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { KeycloakConfigurationService } from './keycloak-configuration.service';
 

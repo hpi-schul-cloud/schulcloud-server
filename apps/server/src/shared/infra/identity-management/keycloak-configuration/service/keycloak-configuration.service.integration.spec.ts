@@ -7,8 +7,8 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { SystemRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { KeycloakModule } from '../keycloak.module';
-import { KeycloakAdministrationService } from './keycloak-administration.service';
-import { KeycloakConfigurationService } from './keycloak-configuration.service';
+import { KeycloakAdministrationService } from '../../keycloak-management/service/keycloak-administration.service';
+import { KeycloakConfigurationService } from '../../keycloak-management/service./../keycloak-configuration/service/keycloak-configuration.service';
 
 describe('KeycloakConfigurationService Integration', () => {
 	let module: TestingModule;
