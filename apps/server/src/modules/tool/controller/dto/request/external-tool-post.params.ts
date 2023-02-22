@@ -54,6 +54,7 @@ export class ExternalToolPostParams {
 	@IsArray()
 	@IsOptional()
 	@ApiPropertyOptional()
+	@Type(/* istanbul ignore next */ () => CustomParameterPostParams)
 	parameters?: CustomParameterPostParams[];
 
 	@IsBoolean()
