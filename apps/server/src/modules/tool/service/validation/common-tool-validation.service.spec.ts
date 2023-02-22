@@ -91,7 +91,9 @@ describe('CommonToolValidationService', () => {
 				const func = () => service.validateCommon(externalToolDO);
 
 				await expect(func()).rejects.toThrow(
-					new ValidationError(`tool_param_name: The tool ${externalToolDO.name} is missing a custom parameter name.`)
+					new ValidationError(
+						`tool_param_name: The tool ${externalToolDO.name} is missing at least one custom parameter name.`
+					)
 				);
 			});
 		});

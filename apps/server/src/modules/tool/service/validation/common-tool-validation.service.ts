@@ -15,7 +15,7 @@ export class CommonToolValidationService {
 		if (externalToolDO.parameters) {
 			if (this.isCustomParameterNameEmpty(externalToolDO.parameters)) {
 				throw new ValidationError(
-					`tool_param_name: The tool ${externalToolDO.name || ''} is missing a custom parameter name.`
+					`tool_param_name: The tool ${externalToolDO.name || ''} is missing at least one custom parameter name.`
 				);
 			}
 
