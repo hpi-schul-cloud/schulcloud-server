@@ -33,7 +33,7 @@ export class UserMigrationService {
 		private readonly accountService: AccountService
 	) {
 		this.hostUrl = Configuration.get('HOST') as string;
-		this.apiUrl = Configuration.get('API_URL') as string;
+		this.apiUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 	}
 
 	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {
