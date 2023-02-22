@@ -1,11 +1,11 @@
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { LoggerModule } from '@src/core/logger';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ConfigModule } from '@nestjs/config';
-import { KeycloakAdministrationService } from './keycloak-administration.service';
+import { KeycloakAdministrationService } from '../../keycloak-management/service/keycloak-administration.service';
+import { KeycloakConfigurationService } from '../../keycloak-management/service/keycloak-configuration.service';
 import { KeycloakIdentityManagementOauthService } from './keycloak-identity-management-oauth.service';
-import { KeycloakConfigurationService } from './keycloak-configuration.service';
 
 describe('KeycloakIdentityManagementOauthService Integration', () => {
 	let module: TestingModule;

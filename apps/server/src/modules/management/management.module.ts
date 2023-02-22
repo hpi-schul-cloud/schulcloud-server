@@ -5,7 +5,7 @@ import { ConsoleWriterService } from '@shared/infra/console';
 import { DatabaseManagementModule, DatabaseManagementService } from '@shared/infra/database';
 import { EncryptionModule } from '@shared/infra/encryption';
 import { FileSystemModule } from '@shared/infra/file-system';
-import { KeycloakControllerModule } from '@shared/infra/identity-management/keycloak/controller/keycloak.controller.module';
+import { KeycloakManagementModule } from '@shared/infra/identity-management/keycloak-management/keycloak-management.module';
 import { LoggerModule } from '@src/core/logger';
 import { serverConfig } from '@src/modules/server';
 import { DatabaseManagementConsole } from './console/database-management.console';
@@ -26,7 +26,7 @@ const baseImports = [
 ];
 
 const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
-	? [...baseImports, KeycloakControllerModule]
+	? [...baseImports, KeycloakManagementModule]
 	: baseImports;
 
 const providers = [

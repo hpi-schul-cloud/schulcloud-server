@@ -4,8 +4,9 @@ import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clien
 import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import ProtocolMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ModuleRef } from '@nestjs/core';
 import { SystemTypeEnum } from '@shared/domain';
 import { IServerConfig } from '@src/modules/server/server.config';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -24,13 +25,19 @@ const clientId = 'dbildungscloud-server';
 const defaultIdpMapperName = 'oidc-username-idp-mapper';
 
 @Injectable()
-export class KeycloakConfigurationService {
+export class KeycloakConfigurationService implements OnModuleInit {
+	private systemService?: SystemService;
+
 	constructor(
+		private readonly moduleRef: ModuleRef,
 		private readonly kcAdmin: KeycloakAdministrationService,
-		private readonly systemService: SystemService,
 		private readonly configService: ConfigService<IServerConfig, true>,
-		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper
+		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
 	) {}
+
+	onModuleInit(): void {
+		this.systemService = this.moduleRef.get(SystemService);
+	}
 
 	public async configureBrokerFlows(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
@@ -134,7 +141,7 @@ export class KeycloakConfigurationService {
 		let count = 0;
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const oldConfigs = await kc.identityProviders.find();
-		const newConfigs = await this.systemService.findByType(SystemTypeEnum.OIDC);
+		const newConfigs = (await this.systemService?.findByType(SystemTypeEnum.OIDC)) || [];
 		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const configureAction of configureActions) {

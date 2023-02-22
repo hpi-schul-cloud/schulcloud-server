@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
@@ -6,14 +5,13 @@ import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/re
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v1 } from 'uuid';
+import { IJsonAccount } from '../interface/json-account.interface';
+import { IJsonUser } from '../interface/json-user.interface';
 import {
-	IJsonAccount,
-	IJsonUser,
 	IKeycloakManagementInputFiles,
-	IKeycloakSettings,
 	KeycloakManagementInputFiles,
-	KeycloakSettings,
-} from '../interface';
+} from '../interface/keycloak-management-input-files.interface';
+import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { KeycloakSeedService } from './keycloak-seed.service';
 

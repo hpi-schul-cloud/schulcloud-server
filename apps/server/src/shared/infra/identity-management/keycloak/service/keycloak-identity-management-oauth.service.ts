@@ -5,7 +5,7 @@ import { OauthConfigDto } from '@src/modules/system/service';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { IdentityManagementOauthService } from '../../identity-management-oauth.service';
-import { KeycloakAdministrationService } from './keycloak-administration.service';
+import { KeycloakAdministrationService } from '../../keycloak-management/service/keycloak-administration.service';
 
 @Injectable()
 export class KeycloakIdentityManagementOauthService extends IdentityManagementOauthService {

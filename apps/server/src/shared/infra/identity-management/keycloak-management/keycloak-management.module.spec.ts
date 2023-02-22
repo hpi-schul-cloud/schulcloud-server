@@ -7,7 +7,7 @@ import { KeycloakSeedService } from './service/keycloak-seed.service';
 describe('KeycloakManagementModule', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
-		const module = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			imports: [KeycloakManagementModule],
 		}).compile();
 	});

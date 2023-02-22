@@ -1,10 +1,8 @@
 import { IAccount, IAccountUpdate } from '@shared/domain';
-
-/* eslint-disable no-nested-ternary */
 import { Injectable } from '@nestjs/common';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { IdentityManagementService } from '../../identity-management.service';
-import { KeycloakAdministrationService } from './keycloak-administration.service';
+import { KeycloakAdministrationService } from '../../keycloak-management/service/keycloak-administration.service';
 
 @Injectable()
 export class KeycloakIdentityManagementService extends IdentityManagementService {

@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemTypeEnum } from '@shared/domain';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { SystemDto } from '@src/modules/system/service';
-import { OidcIdentityProviderMapper } from '../../keycloak/mapper/identity-provider.mapper';
+import { OidcIdentityProviderMapper } from './identity-provider.mapper';
 
 describe('OidcIdentityProviderMapper', () => {
 	let module: TestingModule;

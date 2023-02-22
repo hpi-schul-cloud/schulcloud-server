@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { IKeycloakManagementInputFiles } from './interface/keycloak-management-input-files.interface';
 import { IKeycloakSettings } from './interface/keycloak-settings.interface';
-import { IKeycloakManagementInputFiles } from './interface';
 
 export default class KeycloakConfiguration {
 	static keycloakSettings = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
