@@ -313,9 +313,8 @@ data:
     # the first two being the testing environments for the nbc instances
     # and the last two being the testing environments for the brb instances.
 
-    # The Bettermarks URL (entrypoint) and client secret pairs can sometimes be shared among
-    # some of the environments, but to not complicate the configuration logic because
-    # of this fact, they can be configured with different values for each environment.
+    # The Bettermarks URL (entrypoint) and client secret can be shared among the different environments,
+    # but to not complicate the current configuration, they are configured separately for each environment.
 
     # Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
     NS=$K8S_NAMESPACE
