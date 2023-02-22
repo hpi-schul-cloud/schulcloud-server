@@ -7,9 +7,6 @@ import { SystemUc } from './uc/system.uc';
 
 describe('SystemModule', () => {
 	let module: TestingModule;
-	let systemUc: SystemUc;
-	let systemService: SystemService;
-
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
@@ -18,8 +15,6 @@ describe('SystemModule', () => {
 				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			],
 		}).compile();
-		systemService = module.get(SystemService);
-		systemUc = module.get(SystemUc);
 	});
 
 	afterAll(async () => {
@@ -27,10 +22,12 @@ describe('SystemModule', () => {
 	});
 
 	it('should have the system UC defined', () => {
+		const systemUc = module.get(SystemUc);
 		expect(systemUc).toBeDefined();
 	});
 
 	it('should have the system service defined', () => {
+		const systemService = module.get(SystemService);
 		expect(systemService).toBeDefined();
 	});
 });

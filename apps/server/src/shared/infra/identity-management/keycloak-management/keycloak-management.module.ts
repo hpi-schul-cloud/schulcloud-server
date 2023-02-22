@@ -1,6 +1,7 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { Module } from '@nestjs/common';
 import { ConsoleWriterModule } from '@shared/infra/console';
+import { SystemModule } from '@src/modules';
 import { KeycloakConsole } from './console/keycloak-management.console';
 import { KeycloakManagementController } from './controller/keycloak-management.controller';
 import { KeycloakManagementInputFiles } from './interface/keycloak-management-input-files.interface';
@@ -12,7 +13,7 @@ import { KeycloakConfigurationService } from './service/keycloak-configuration.s
 import { KeycloakSeedService } from './service/keycloak-seed.service';
 
 @Module({
-	imports: [ConsoleWriterModule],
+	imports: [ConsoleWriterModule, SystemModule],
 	controllers: [KeycloakManagementController],
 	providers: [
 		KeycloakAdminClient,
