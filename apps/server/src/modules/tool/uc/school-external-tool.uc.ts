@@ -80,15 +80,7 @@ export class SchoolExternalToolUc {
 		await this.ensureSchoolExternalToolPermission(userId, schoolExternalToolId);
 		await this.schoolExternalToolValidationService.validateUpdate(schoolExternalToolId, schoolExternalTool);
 
-		const loaded: SchoolExternalToolDO = await this.schoolExternalToolService.getSchoolExternalToolById(
-			schoolExternalToolId
-		);
-		const updated: SchoolExternalToolDO = new SchoolExternalToolDO({
-			...loaded,
-			...schoolExternalTool,
-		});
-
-		const saved = await this.schoolExternalToolService.saveSchoolExternalTool(updated);
+		const saved = await this.schoolExternalToolService.saveSchoolExternalTool(schoolExternalTool);
 		return saved;
 	}
 
