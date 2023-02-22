@@ -79,8 +79,8 @@ export class FilesStorageService {
 	// upload
 	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecord> {
 		const fileRecord = await this.createFileRecord(file, params, userId);
-
 		await this.fileRecordRepo.save(fileRecord);
+
 		await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
 
 		return fileRecord;
