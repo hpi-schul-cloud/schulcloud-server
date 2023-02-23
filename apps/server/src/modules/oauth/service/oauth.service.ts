@@ -46,20 +46,28 @@ export class OAuthService {
 		);
 	}
 
-	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
-		const payload = this.buildTokenRequestPayload(code, oauthConfig);
+	async requestToken(code: string, oauthConfig: OauthConfig, migrationRedirect?: string): Promise<OauthTokenResponse> {
+		const payload: TokenRequestPayload = this.buildTokenRequestPayload(code, oauthConfig, migrationRedirect);
 		const responseTokenObservable = this.sendTokenRequest(payload);
 		const responseToken = this.resolveTokenRequest(responseTokenObservable);
+
 		return responseToken;
 	}
 
-	private buildTokenRequestPayload(code: string, oauthConfig: OauthConfig): TokenRequestPayload {
+	private buildTokenRequestPayload(
+		code: string,
+		oauthConfig: OauthConfig,
+		migrationRedirect?: string
+	): TokenRequestPayload {
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
+
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
 			oauthConfig,
 			decryptedClientSecret,
-			code
+			code,
+			migrationRedirect
 		);
+
 		return tokenRequestPayload;
 	}
 
