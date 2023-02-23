@@ -24,10 +24,8 @@ export class FileRecordScope extends Scope<FileRecordEntity> {
 	}
 
 	byIds(fileRecordEntities: FileRecord[]): FileRecordScope {
-		const $or = fileRecordEntities.map((fileRecord) => {
-			return { id: fileRecord.id };
-		});
-		this.addQuery({ $or });
+		const ids = fileRecordEntities.map((fileRecord) => fileRecord.id);
+		this.addQuery({ id: { $in: ids } });
 
 		return this;
 	}
