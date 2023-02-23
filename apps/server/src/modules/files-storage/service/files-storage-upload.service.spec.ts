@@ -13,7 +13,7 @@ import { FileRecordParams } from '../controller/dto';
 import { FileDto } from '../dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
-import { createFileRecord, createPath, resolveFileNameDuplicates } from '../helper';
+import { createFileRecord, resolveFileNameDuplicates } from '../helper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
@@ -171,10 +171,9 @@ describe('FilesStorageService upload methods', () => {
 		it('should call storageClient.create with correct params', async () => {
 			const { params, file, userId } = createUploadFileParams();
 
-			// TODO: Is it too hacky to take the return value here for createPath? Is there another way?
 			const fileRecord = await service.uploadFile(userId, params, file);
-			const filePath = createPath(params.schoolId, fileRecord.id);
 
+			const filePath = [fileRecord.schoolId, fileRecord.id].join('/');
 			expect(storageClient.create).toHaveBeenCalledWith(filePath, file);
 		});
 
@@ -265,13 +264,12 @@ describe('FilesStorageService upload methods', () => {
 			});
 		});
 
-		it.only('should return fileRecord', async () => {
-			// TODO: Why not working?
-			const { params, file, userId, expectedFileRecord } = createUploadFileParams();
+		it('should return an instance of FileRecord', async () => {
+			const { params, file, userId } = createUploadFileParams();
 
 			const result = await service.uploadFile(userId, params, file);
 
-			expect(result).toEqual({ a: 23 });
+			expect(result).toBeInstanceOf(FileRecord);
 		});
 	});
 });
