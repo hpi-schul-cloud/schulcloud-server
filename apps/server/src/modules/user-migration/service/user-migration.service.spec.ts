@@ -16,6 +16,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
 import { UserMigrationService } from './user-migration.service';
@@ -24,6 +25,7 @@ describe('UserMigrationService', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
 	let service: UserMigrationService;
+	let configBefore: IConfig;
 	let logger: Logger;
 
 	let schoolService: DeepMocked<SchoolService>;
@@ -33,20 +35,13 @@ describe('UserMigrationService', () => {
 
 	const hostUri = 'http://this.de';
 	const apiUrl = 'http://mock.de';
+	const s3 = 'sKey123456789123456789';
 
 	beforeAll(async () => {
-		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
-			switch (key) {
-				case 'HOST':
-					return hostUri;
-				case 'API_URL':
-					return apiUrl;
-				case 'S3_KEY':
-					return 's3Key';
-				default:
-					throw new Error(`No mock for key '${key}'`);
-			}
-		});
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		Configuration.set('HOST', hostUri);
+		Configuration.set('PUBLIC_BACKEND_URL', apiUrl);
+		Configuration.set('S3_KEY', s3);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -87,6 +82,8 @@ describe('UserMigrationService', () => {
 	afterAll(async () => {
 		await module.close();
 		await orm.close();
+
+		Configuration.reset(configBefore);
 	});
 
 	const setup = () => {

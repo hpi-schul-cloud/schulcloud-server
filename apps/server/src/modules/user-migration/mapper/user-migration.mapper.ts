@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { UserMigrationResponse } from '@src/modules/oauth/controller/dto/user-migration.response';
 import { UserMigrationDto } from '../service/dto/userMigration.dto';
-import { UserMigrationResponse } from '../../oauth/controller/dto/user-migration.response';
 
 @Injectable()
 export class UserMigrationMapper {
