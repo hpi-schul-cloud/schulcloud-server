@@ -18,7 +18,9 @@ export abstract class BaseDO2<T> {
 		return this.props.id.toString();
 	}
 
-	public getProps(): T {
-		return this.props;
+	public getProps(): T & BaseDOProps {
+		const copyProps = { ...this.props };
+
+		return copyProps;
 	}
 }
