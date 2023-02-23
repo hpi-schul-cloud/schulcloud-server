@@ -113,7 +113,7 @@ jobs:
     needs:
       - build_and_push
       - branch_name
-    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml@N21-505-migrate-user
+    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml
     with:
       ref: ${{ github.ref }}
 
