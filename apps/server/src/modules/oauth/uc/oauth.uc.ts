@@ -9,9 +9,6 @@ import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
 import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
-import { SchoolService } from '@src/modules/school';
-import { SchoolMigrationService } from '@src/modules/user-migration/service';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
@@ -23,10 +20,8 @@ export class OauthUc {
 		private readonly oauthService: OAuthService,
 		private readonly systemService: SystemService,
 		private readonly provisioningService: ProvisioningService,
-		private readonly schoolService: SchoolService,
 		private readonly userService: UserService,
 		private readonly userMigrationService: UserMigrationService,
-		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(OauthUc.name);
@@ -41,7 +36,6 @@ export class OauthUc {
 		}
 	}
 
-	// TODO: rename migrate
 	async migrateUser(
 		currentUserId: string,
 		query: AuthorizationParams,
@@ -53,23 +47,7 @@ export class OauthUc {
 			queryToken.id_token,
 			targetSystemId
 		);
-
-		if (data.externalSchool) {
-			const schoolToMigrate: SchoolDO | null = await this.schoolMigrationService.schoolToMigrate(
-				currentUserId,
-				data.externalSchool.externalId,
-				data.externalSchool.officialSchoolNumber
-			);
-			if (schoolToMigrate) {
-				await this.schoolMigrationService.migrateSchool(
-					data.externalSchool.externalId,
-					schoolToMigrate,
-					targetSystemId
-				);
-			}
-		}
-
-		const migrationDto: Promise<UserMigrationDto> = this.userMigrationService.migrateUser(
+		const migrationDto = this.userMigrationService.migrateUser(
 			currentUserId,
 			data.externalUser.externalId,
 			targetSystemId
@@ -143,11 +121,7 @@ export class OauthUc {
 		return response;
 	}
 
-	private async shouldUserMigrate(
-		externalUserId: string,
-		officialSchoolNumber: string,
-		systemId: EntityId
-	): Promise<boolean> {
+	private async shouldUserMigrate(externalUserId: string, officialSchoolNumber: string, systemId: EntityId) {
 		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 		const isSchoolInMigration: boolean = await this.userMigrationService.isSchoolInMigration(officialSchoolNumber);
 

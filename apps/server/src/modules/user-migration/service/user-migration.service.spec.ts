@@ -16,6 +16,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
 import { UserMigrationService } from './user-migration.service';
@@ -24,7 +25,7 @@ describe('UserMigrationService', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
 	let service: UserMigrationService;
-	let logger: Logger;
+	let configBefore: IConfig;
 
 	let schoolService: DeepMocked<SchoolService>;
 	let systemService: DeepMocked<SystemService>;
@@ -33,20 +34,13 @@ describe('UserMigrationService', () => {
 
 	const hostUri = 'http://this.de';
 	const apiUrl = 'http://mock.de';
+	const s3 = 'sKey123456789123456789';
 
 	beforeAll(async () => {
-		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
-			switch (key) {
-				case 'HOST':
-					return hostUri;
-				case 'API_URL':
-					return apiUrl;
-				case 'S3_KEY':
-					return 's3Key';
-				default:
-					throw new Error(`No mock for key '${key}'`);
-			}
-		});
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		Configuration.set('HOST', hostUri);
+		Configuration.set('PUBLIC_BACKEND_URL', apiUrl);
+		Configuration.set('S3_KEY', s3);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -79,7 +73,6 @@ describe('UserMigrationService', () => {
 		systemService = module.get(SystemService);
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
-		logger = module.get(Logger);
 
 		orm = await setupEntities();
 	});
@@ -87,6 +80,8 @@ describe('UserMigrationService', () => {
 	afterAll(async () => {
 		await module.close();
 		await orm.close();
+
+		Configuration.reset(configBefore);
 	});
 
 	const setup = () => {
@@ -444,19 +439,6 @@ describe('UserMigrationService', () => {
 				await expect(service.migrateUser('userId', 'externalUserTargetId', targetSystemId)).rejects.toThrow(
 					new NotFoundException('Could not find User')
 				);
-			});
-
-			it('should log error and message', async () => {
-				const { migratedUserDO, accountDto, targetSystemId } = setupMigrationData();
-				const error = new NotFoundException('Test Error');
-				userService.findById.mockResolvedValue(migratedUserDO);
-				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
-				accountService.save.mockRejectedValueOnce(error);
-
-				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
-
-				expect(logger.log).toHaveBeenCalledWith(error);
-				expect(logger.log).toHaveBeenCalledTimes(2);
 			});
 
 			it('should do a rollback of migration', async () => {

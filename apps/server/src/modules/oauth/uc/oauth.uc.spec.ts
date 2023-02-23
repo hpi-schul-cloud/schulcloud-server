@@ -14,6 +14,8 @@ import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-migration';
 import { NotFoundException } from '@nestjs/common';
+import { SystemDto } from '@src/modules/system/service';
+import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
 import { SchoolService } from '@src/modules/school';

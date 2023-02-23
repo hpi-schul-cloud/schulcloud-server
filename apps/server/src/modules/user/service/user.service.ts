@@ -9,8 +9,6 @@ import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { Logger } from '@src/core/logger';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -25,9 +23,7 @@ export class UserService {
 		private readonly schoolService: SchoolService,
 		private readonly permissionService: PermissionService,
 		private readonly configService: ConfigService<IUserConfig, true>,
-		private readonly roleService: RoleService,
-		private readonly accountService: AccountService,
-		private readonly logger: Logger
+		private readonly roleService: RoleService
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
@@ -74,12 +70,6 @@ export class UserService {
 		return userDto.lastName ? `${userDto.firstName} ${userDto.lastName}` : id;
 	}
 
-	private checkAvailableLanguages(language: LanguageType): void | BadRequestException {
-		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {
-			throw new BadRequestException('Language is not activated.');
-		}
-	}
-
 	async patchLanguage(userId: EntityId, newLanguage: LanguageType): Promise<boolean> {
 		this.checkAvailableLanguages(newLanguage);
 		const user = await this.userRepo.findById(userId);
@@ -105,5 +95,11 @@ export class UserService {
 
 		const promise: Promise<void> = this.userRepo.save(saveEntity);
 		return promise;
+	}
+
+	private checkAvailableLanguages(language: LanguageType): void | BadRequestException {
+		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {
+			throw new BadRequestException('Language is not activated.');
+		}
 	}
 }
