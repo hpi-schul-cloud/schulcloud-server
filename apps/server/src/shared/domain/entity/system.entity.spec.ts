@@ -40,7 +40,7 @@ describe('System Entity', () => {
 					url: 'SAMPLE_URL',
 					alias: 'SAMPLE_ALIAS',
 					displayName: 'SAMPLE_NAME',
-					provisioningStrategy: SystemProvisioningStrategy.UNDEFINED,
+					provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					provisioningUrl: 'provisioningUrl',
 					oauthConfig: {
 						clientId: '12345',
@@ -50,11 +50,11 @@ describe('System Entity', () => {
 						redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
 						scope: 'openid uuid',
 						responseType: 'code',
-						authEndpoint: 'mock_authEndpoint',
+						authEndpoint: 'http://mock.de/auth',
 						provider: 'mock_type',
-						logoutEndpoint: 'mock_logoutEndpoint',
+						logoutEndpoint: 'http://mock.de/logout',
 						issuer: 'mock_issuer',
-						jwksEndpoint: 'mock_jwksEndpoint',
+						jwksEndpoint: 'http://mock.de/jwks',
 					},
 				})
 			);
