@@ -8,6 +8,7 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountSaveDto } from './dto';
+import { AccountValidationService } from './account.validation.service';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -40,6 +41,12 @@ describe('AccountService', () => {
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService<IServerConfig, true>>(),
+				},
+				{
+					provide: AccountValidationService,
+					useValue: {
+						isUniqueEmail: jest.fn().mockResolvedValue(true),
+					},
 				},
 			],
 		}).compile();

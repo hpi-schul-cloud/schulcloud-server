@@ -11,7 +11,6 @@ import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import bcrypt from 'bcryptjs';
-import { isEmail, validateOrReject } from 'class-validator';
 
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
@@ -101,37 +100,7 @@ export class AccountUc {
 	}
 
 	async saveAccount(dto: AccountSaveDto): Promise<void> {
-		await validateOrReject(dto);
-		// sanatizeUsername ✔
-		if (!dto.systemId) {
-			dto.username = dto.username.trim().toLowerCase();
-		}
-		if (!dto.systemId && !dto.password) {
-			throw new ValidationError('No password provided');
-		}
-		// validateUserName ✔
-		// usernames must be an email address, if they are not from an external system
-		if (!dto.systemId && !isEmail(dto.username)) {
-			throw new ValidationError('Username is not an email');
-		}
-		// checkExistence ✔
-		if (dto.userId && (await this.accountService.findByUserId(dto.userId))) {
-			throw new ValidationError('Account already exists');
-		}
-		// validateCredentials hook will not be ported ✔
-		// trimPassword hook will be done by class-validator ✔
-		// local.hooks.hashPassword('password'), will be done by account service ✔
-		// checkUnique ✔
-		if (!(await this.accountValidationService.isUniqueEmail(dto.username, dto.userId, dto.id, dto.systemId))) {
-			throw new ValidationError('Username already exists');
-		}
-		// removePassword hook is not implemented
-		// const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
-		// if (dto.passwordStrategy && noPasswordStrategies.includes(dto.passwordStrategy)) {
-		// 	dto.password = undefined;
-		// }
-
-		await this.accountService.save(dto);
+		await this.accountService.saveWithValidation(dto);
 	}
 
 	/**

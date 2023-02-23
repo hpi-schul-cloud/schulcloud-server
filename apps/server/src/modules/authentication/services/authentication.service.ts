@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtValidationAdapter } from '@src/modules/authentication/strategy/jwt-validation.adapter';
 import { randomUUID } from 'crypto';
-import { IServerConfig } from '@src/modules/server';
+import type { IServerConfig } from '@src/modules/server';
 import { ICurrentUser } from '../interface';
 import { AccountService } from '../../account/services/account.service';
 import { AccountDto } from '../../account/services/dto';

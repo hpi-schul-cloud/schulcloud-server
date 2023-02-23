@@ -1,7 +1,7 @@
 import { Controller, Req, Post, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '../interface';
+import type { ICurrentUser } from '../interface';
 import { AuthenticationService } from '../services/authentication.service';
 
 @ApiTags('Authentication')
