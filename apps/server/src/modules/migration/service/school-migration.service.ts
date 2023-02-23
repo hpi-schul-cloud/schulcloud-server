@@ -29,7 +29,11 @@ export class SchoolMigrationService {
 		}
 	}
 
-	async schoolToMigrate(currentUserId: string, externalId: string, schoolNumber: string | undefined) {
+	async schoolToMigrate(
+		currentUserId: string,
+		externalId: string,
+		schoolNumber: string | undefined
+	): Promise<SchoolDO | null> {
 		if (!schoolNumber) {
 			throw new OAuthMigrationError(
 				'Official school number from target migration system is missing',
@@ -45,7 +49,7 @@ export class SchoolMigrationService {
 			);
 		}
 
-		const isExternalUserInSchool = await this.isExternalUserInSchool(currentUserId, existingSchool);
+		const isExternalUserInSchool: boolean = await this.isExternalUserInSchool(currentUserId, existingSchool);
 		if (!isExternalUserInSchool) {
 			throw new OAuthMigrationError(
 				'Current users school is not the same as school found by official school number from target migration system',
