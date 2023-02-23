@@ -66,6 +66,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@Property({ nullable: true })
 	teamSubmissions?: boolean;
 
+	@Property({ nullable: true })
+	taskCard?: string;
+
 	@Index()
 	@ManyToOne('User', { fieldName: 'teacherId' })
 	creator: User;
