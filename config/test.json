@@ -3,6 +3,7 @@
 	"host": "localhost",
 	"port": 3030,
 	"SC_DOMAIN": "localhost",
+	"PUBLIC_BACKEND_URL": "http://localhost:3030/api",
 	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud-test",
 	"public": "../public/",
 	"services": {
