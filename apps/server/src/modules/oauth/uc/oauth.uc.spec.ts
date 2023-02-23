@@ -2,20 +2,22 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { setupEntities, systemFactory } from '@shared/testing';
+import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemService } from '@src/modules/system/service/system.service';
-import { AuthorizationParams } from '../controller/dto';
-import { NotFoundException } from '@nestjs/common';
 import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
+import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import resetAllMocks = jest.resetAllMocks;
 import { OauthConfigDto, SystemDto } from '../../system/service';
 import { FeathersJwtProvider } from '../../authorization';
+import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../../provisioning/dto';
+import { ProvisioningService } from '../../provisioning';
+import { UserMigrationService } from '../../user-migration';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -25,6 +27,8 @@ describe('OAuthUc', () => {
 	let oauthService: DeepMocked<OAuthService>;
 	let systemService: DeepMocked<SystemService>;
 	let jwtService: DeepMocked<FeathersJwtProvider>;
+	let provisioningService: DeepMocked<ProvisioningService>;
+	let userMigrationService: DeepMocked<UserMigrationService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -45,6 +49,14 @@ describe('OAuthUc', () => {
 					useValue: createMock<OAuthService>(),
 				},
 				{
+					provide: ProvisioningService,
+					useValue: createMock<ProvisioningService>(),
+				},
+				{
+					provide: UserMigrationService,
+					useValue: createMock<UserMigrationService>(),
+				},
+				{
 					provide: FeathersJwtProvider,
 					useValue: createMock<FeathersJwtProvider>(),
 				},
@@ -54,6 +66,8 @@ describe('OAuthUc', () => {
 		systemService = module.get(SystemService);
 		oauthService = module.get(OAuthService);
 		jwtService = module.get(FeathersJwtProvider);
+		provisioningService = module.get(ProvisioningService);
+		userMigrationService = module.get(UserMigrationService);
 	});
 
 	afterAll(async () => {
@@ -211,11 +225,12 @@ describe('OAuthUc', () => {
 		describe('migrateUser', () => {
 			describe('when authorize user and migration was successful', () => {
 				it('should return redirect to migration succeed page', async () => {
-					const { query, system, userMigrationDto } = setupMigration();
+					const { query, system, userMigrationDto, oauthTokenResponse } = setupMigration();
 					systemService.findOAuthById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 
-					const result: UserMigrationDto = await service.migrateUser('currentUserId', query, system.id as string);
+					const result: UserMigrationDto = await uc.migrateUser('currentUserId', query, system.id as string);
 
 					expect(result.redirect).toStrictEqual('https://mock.de/migration/succeed');
 				});
@@ -223,22 +238,14 @@ describe('OAuthUc', () => {
 
 			describe('when migration failed', () => {
 				it('should return redirect to dashboard ', async () => {
-					const { query, system, userMigrationFailedDto } = setupMigration();
+					const { query, system, userMigrationFailedDto, oauthTokenResponse } = setupMigration();
 					systemService.findOAuthById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationFailedDto);
+					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 
-					const result: UserMigrationDto = await service.migrateUser('currentUserId', query, 'systemdId');
+					const result: UserMigrationDto = await uc.migrateUser('currentUserId', query, 'systemdId');
 
 					expect(result.redirect).toStrictEqual('https://mock.de/dashboard');
-				});
-			});
-
-			describe('when system id is not given', () => {
-				it('should throw NotFoundException ', async () => {
-					const { query } = setupMigration();
-					systemService.findOAuthById.mockResolvedValue(systemFactory.build());
-
-					await expect(service.migrateUser('currentUserId', query, 'systemdId')).rejects.toThrow(NotFoundException);
 				});
 			});
 		});

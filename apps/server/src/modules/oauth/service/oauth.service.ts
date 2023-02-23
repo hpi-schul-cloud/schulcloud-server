@@ -13,6 +13,7 @@ import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { OauthTokenResponse, AuthorizationParams, TokenRequestPayload } from '@src/modules/oauth/controller/dto';
 
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -106,6 +107,17 @@ export class OAuthService {
 		return shouldMigrate;
 	}
 
+	private extractOauthConfigFromSystem(system: SystemDto): OauthConfig {
+		const { oauthConfig } = system;
+		if (oauthConfig == null) {
+			this.logger.warn(
+				`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id ?? 'undefined'}`
+			);
+			throw new UnauthorizedException('Requested system has no oauth configured', 'sso_internal_error');
+		}
+		return oauthConfig;
+	}
+
 	/**
 	 * @deprecated not needed after change of oauth login to authentication module
 	 *
@@ -134,15 +146,16 @@ export class OAuthService {
 		oauthConfig: OauthConfig,
 		migrationRedirect?: string
 	): TokenRequestPayload {
-	private extractOauthConfigFromSystem(system: SystemDto): OauthConfig {
-		const { oauthConfig } = system;
-		if (oauthConfig == null) {
-			this.logger.warn(
-				`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id ?? 'undefined'}`
-			);
-			throw new UnauthorizedException('Requested system has no oauth configured', 'sso_internal_error');
-		}
-		return oauthConfig;
+		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
+
+		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
+			oauthConfig,
+			decryptedClientSecret,
+			code,
+			migrationRedirect
+		);
+
+		return tokenRequestPayload;
 	}
 
 	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<IJwt> {
@@ -177,13 +190,30 @@ export class OAuthService {
 		return user;
 	}
 
-	private async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
+	async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
 		if (email) {
 			const usersWithEmail: User[] = await this.userService.findByEmail(email);
 			const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
 			return ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
 		}
 		return '';
+	}
+
+	async authorizeForMigration(query: AuthorizationParams, targetSystemId: string): Promise<OauthTokenResponse> {
+		const authCode: string = this.checkAuthorizationCode(query);
+
+		const system: SystemDto = await this.systemService.findOAuthById(targetSystemId);
+		if (!system.id) {
+			throw new NotFoundException(`System with id "${targetSystemId}" does not exist.`);
+		}
+		const oauthConfig: OauthConfig = this.extractOauthConfigFromSystem(system);
+
+		const migrationRedirect: string = this.userMigrationService.getMigrationRedirectUri(targetSystemId);
+		const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig, migrationRedirect);
+
+		await this.validateToken(queryToken.id_token, oauthConfig);
+
+		return queryToken;
 	}
 
 	/**

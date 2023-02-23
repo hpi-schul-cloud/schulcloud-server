@@ -17,6 +17,7 @@ import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning'
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
@@ -175,8 +176,10 @@ describe('OAuthService', () => {
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
 			oauthAdapterService.sendTokenRequest.mockResolvedValue(tokenResponse);
 		});
+
 		describe('when it requests a token', () => {
 			it('should get token from the external server', async () => {
+				const { code, tokenResponse } = setupRequest();
 				const responseToken: OauthTokenResponse = await service.requestToken(code, testOauthConfig);
 
 				expect(responseToken).toStrictEqual(tokenResponse);
@@ -359,6 +362,79 @@ describe('OAuthService', () => {
 				expect(response.provider).toStrictEqual('provider');
 				expect(response.errorCode).toStrictEqual('oauth_login_failed');
 				expect(response.redirect).toStrictEqual(`${hostUri}/login?error=oauth_login_failed&provider=provider`);
+			});
+		});
+	});
+	describe('authorizeForMigration', () => {
+		const setupMigration = () => {
+			const query: AuthorizationParams = { code: '43534543jnj543342jn2' };
+
+			const oauthConfig: OauthConfigDto = new OauthConfigDto({
+				clientId: '12345',
+				clientSecret: 'mocksecret',
+				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+				grantType: 'authorization_code',
+				scope: 'openid uuid',
+				responseType: 'code',
+				authEndpoint: 'mock_authEndpoint',
+				provider: 'mock_provider',
+				logoutEndpoint: 'mock_logoutEndpoint',
+				issuer: 'mock_issuer',
+				jwksEndpoint: 'mock_jwksEndpoint',
+				redirectUri: 'mock_codeRedirectUri',
+			});
+			const system: SystemDto = new SystemDto({
+				id: 'systemId',
+				type: 'oauth',
+				oauthConfig,
+			});
+
+			const oauthTokenResponse: OauthTokenResponse = {
+				access_token: 'accessToken',
+				refresh_token: 'refreshToken',
+				id_token: 'idToken',
+			};
+
+			const oauthData: OauthDataDto = new OauthDataDto({
+				system: new ProvisioningSystemDto({
+					systemId: 'systemId',
+					provisioningStrategy: SystemProvisioningStrategy.SANIS,
+				}),
+				externalUser: new ExternalUserDto({
+					externalId: 'externalUserId',
+				}),
+			});
+
+			provisioningService.getData.mockResolvedValue(oauthData);
+
+			return {
+				query,
+				system,
+				oauthTokenResponse,
+			};
+		};
+
+		describe('when the function is called with a valid query', () => {
+			it('should return a query token', async () => {
+				const { query, system, oauthTokenResponse } = setupMigration();
+				systemService.findOAuthById.mockResolvedValue(system);
+				userMigrationService.getMigrationRedirectUri.mockReturnValue('mockRedirect');
+				oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthTokenResponse);
+
+				const response = await service.authorizeForMigration(query, 'systemId');
+
+				expect(response).toEqual(oauthTokenResponse);
+			});
+		});
+
+		describe('when no system is found', () => {
+			it('should throw an error', async () => {
+				const { query } = setupMigration();
+				systemService.findOAuthById.mockResolvedValue({} as SystemDto);
+
+				const response = service.authorizeForMigration(query, 'noSystemId');
+
+				await expect(response).rejects.toThrow(NotFoundException);
 			});
 		});
 	});
