@@ -25,6 +25,6 @@ import { AccountServiceIdm } from './services/account-idm.service';
 		AccountUc,
 	],
 	controllers: [AccountController],
-	exports: [AccountUc, AccountService, AccountValidationService, AccountServiceDb, AccountServiceIdm],
+	exports: [AccountUc, AccountService, AccountValidationService],
 })
 export class AccountModule {}

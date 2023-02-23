@@ -11,23 +11,11 @@ import { AccountModule } from '@src/modules/account';
 import { UserController } from './controller';
 import { UserService } from './service/user.service';
 import { UserUc } from './uc';
-import { AccountService } from '../account/services/account.service';
 
 @Module({
 	imports: [SchoolModule, RoleModule, AccountModule, LoggerModule],
 	controllers: [UserController],
-	providers: [
-		UserRepo,
-		UserDORepo,
-		PermissionService,
-		UserUc,
-		UserService,
-		RoleRepo,
-		RoleUc,
-		SchoolRepo,
-		RoleService,
-		AccountService,
-	],
+	providers: [UserRepo, UserDORepo, PermissionService, UserUc, UserService, RoleRepo, RoleUc, SchoolRepo, RoleService],
 	exports: [UserUc, UserService],
 })
 export class UserModule {}

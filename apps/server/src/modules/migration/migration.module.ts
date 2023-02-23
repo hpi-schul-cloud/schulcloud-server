@@ -11,4 +11,4 @@ import { SchoolMigrationService, UserMigrationService } from './service';
 	providers: [UserMigrationService, SchoolMigrationService],
 	exports: [UserMigrationService, SchoolMigrationService],
 })
-export class UserMigrationModule {}
+export class MigrationModule {}

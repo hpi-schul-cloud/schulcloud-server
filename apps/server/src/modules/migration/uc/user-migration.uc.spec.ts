@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UserMigrationService } from '@src/modules/user-migration/service/user-migration.service';
+import { UserMigrationService } from '@src/modules/migration/service/user-migration.service';
 import { UserMigrationUc } from './user-migration.uc';
 import { PageContentDto } from '../service/dto/page-content.dto';
 import { PageTypes } from '../interface/page-types.enum';

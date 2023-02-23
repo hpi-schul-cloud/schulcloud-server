@@ -12,18 +12,18 @@ import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
-import { UserMigrationService } from '@src/modules/user-migration';
+import { UserMigrationService } from '@src/modules/migration';
 import { NotFoundException } from '@nestjs/common';
 import { SystemDto } from '@src/modules/system/service';
-import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
 import { SchoolService } from '@src/modules/school';
-import { SchoolMigrationService } from '@src/modules/user-migration/service';
+import { SchoolMigrationService } from '@src/modules/migration/service';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { MigrationDto } from '../../migration/service/dto/migration.dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
+import { OAuthMigrationError } from '../../migration/error/oauth-migration.error';
 import resetAllMocks = jest.resetAllMocks;
-import { OAuthMigrationError } from '../../user-migration/error/oauth-migration.error';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -409,11 +409,11 @@ describe('OAuthUc', () => {
 				}),
 			});
 
-			const userMigrationDto: UserMigrationDto = new UserMigrationDto({
+			const userMigrationDto: MigrationDto = new MigrationDto({
 				redirect: 'https://mock.de/migration/succeed',
 			});
 
-			const userMigrationFailedDto: UserMigrationDto = new UserMigrationDto({
+			const userMigrationFailedDto: MigrationDto = new MigrationDto({
 				redirect: 'https://mock.de/dashboard',
 			});
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
@@ -439,7 +439,7 @@ describe('OAuthUc', () => {
 					systemService.findOAuthById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					const result: UserMigrationDto = await service.migrateUser('currentUserId', query, system.id as string);
+					const result: MigrationDto = await service.migrate('currentUserId', query, system.id as string);
 
 					expect(result.redirect).toStrictEqual('https://mock.de/migration/succeed');
 				});
@@ -451,7 +451,7 @@ describe('OAuthUc', () => {
 					systemService.findOAuthById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationFailedDto);
 
-					const result: UserMigrationDto = await service.migrateUser('currentUserId', query, 'systemdId');
+					const result: MigrationDto = await service.migrate('currentUserId', query, 'systemdId');
 
 					expect(result.redirect).toStrictEqual('https://mock.de/dashboard');
 				});
@@ -462,7 +462,7 @@ describe('OAuthUc', () => {
 					const { query } = setupMigration();
 					systemService.findOAuthById.mockResolvedValue(systemFactory.build());
 
-					await expect(service.migrateUser('currentUserId', query, 'systemdId')).rejects.toThrow(NotFoundException);
+					await expect(service.migrate('currentUserId', query, 'systemdId')).rejects.toThrow(NotFoundException);
 				});
 			});
 
@@ -479,7 +479,7 @@ describe('OAuthUc', () => {
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolToMigrate);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await service.migrateUser('currentUserId', query, system.id as string);
+					await service.migrate('currentUserId', query, system.id as string);
 
 					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
 						oauthData.externalSchool.externalId,
@@ -501,7 +501,7 @@ describe('OAuthUc', () => {
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(null);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await service.migrateUser('currentUserId', query, system.id as string);
+					await service.migrate('currentUserId', query, system.id as string);
 
 					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
 				});
@@ -513,7 +513,7 @@ describe('OAuthUc', () => {
 					systemService.findOAuthById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await service.migrateUser('currentUserId', query, system.id as string);
+					await service.migrate('currentUserId', query, system.id as string);
 
 					expect(schoolMigrationService.schoolToMigrate).not.toHaveBeenCalled();
 				});
@@ -536,7 +536,7 @@ describe('OAuthUc', () => {
 					});
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await expect(service.migrateUser('currentUserId', query, system.id as string)).rejects.toThrow(error);
+					await expect(service.migrate('currentUserId', query, system.id as string)).rejects.toThrow(error);
 				});
 			});
 		});

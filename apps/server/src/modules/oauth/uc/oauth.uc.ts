@@ -7,11 +7,11 @@ import { OauthDataDto } from '@src/modules/provisioning/dto/oauth-data.dto';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
-import { UserMigrationService } from '@src/modules/user-migration';
-import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
+import { UserMigrationService } from '@src/modules/migration';
 import { SchoolService } from '@src/modules/school';
-import { SchoolMigrationService } from '@src/modules/user-migration/service';
+import { SchoolMigrationService } from '@src/modules/migration/service';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { MigrationDto } from '../../migration/service/dto/migration.dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
@@ -41,12 +41,7 @@ export class OauthUc {
 		}
 	}
 
-	// TODO: rename migrate
-	async migrateUser(
-		currentUserId: string,
-		query: AuthorizationParams,
-		targetSystemId: string
-	): Promise<UserMigrationDto> {
+	async migrate(currentUserId: string, query: AuthorizationParams, targetSystemId: string): Promise<MigrationDto> {
 		const queryToken: OauthTokenResponse = await this.authorizeForMigration(query, targetSystemId);
 		const data: OauthDataDto = await this.provisioningService.getData(
 			queryToken.access_token,
@@ -69,7 +64,7 @@ export class OauthUc {
 			}
 		}
 
-		const migrationDto: Promise<UserMigrationDto> = this.userMigrationService.migrateUser(
+		const migrationDto: Promise<MigrationDto> = this.userMigrationService.migrateUser(
 			currentUserId,
 			data.externalUser.externalId,
 			targetSystemId
