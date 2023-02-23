@@ -28,7 +28,7 @@ import { TaskCardModule } from '@src/modules/task-card';
 import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
-import { UserMigrationApiModule } from '@src/modules/user-migration';
+import { MigrationApiModule } from '@src/modules/migration';
 import { VideoConferenceModule } from '@src/modules/video-conference';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
@@ -75,7 +75,7 @@ const serverModules = [
 	OauthProviderModule,
 	SharingApiModule,
 	ToolApiModule,
-	UserMigrationApiModule,
+	MigrationApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
