@@ -1,4 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ValidationError } from '@shared/common';
 import {
 	CardElementResponse,
@@ -11,6 +12,7 @@ import {
 	TitleCardElement,
 } from '@shared/domain';
 import {
+	courseFactory,
 	richTextCardElementFactory,
 	setupEntities,
 	taskCardFactory,
@@ -35,10 +37,16 @@ describe('task-card mapper', () => {
 	describe('mapToResponse', () => {
 		it('should map task-card to response', () => {
 			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
 
-			const taskCard = taskCardFactory.buildWithId({ creator: user, visibleAtDate: tomorrow, dueDate: inTwoDays });
+			const taskCard = taskCardFactory.buildWithId({
+				creator: user,
+				course,
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+			});
 			const status = taskCard.task.createTeacherStatusForUser(user);
 
 			const taskWithStatusVo = new TaskWithStatusVo(taskCard.task, status);
@@ -51,6 +59,8 @@ describe('task-card mapper', () => {
 				id: taskCard.id,
 				draggable: true,
 				cardElements: [],
+				courseId: taskCard.course?.id,
+				courseName: course.name,
 				task: taskResponse,
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
@@ -116,6 +126,43 @@ describe('task-card mapper', () => {
 				],
 			};
 			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError(ValidationError);
+		});
+		it('should map params to domain', () => {
+			const tomorrow = new Date(Date.now() + 86400000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+
+			const cardElementTitle = new TitleCardElementParam();
+			cardElementTitle.type = CardElementType.Title;
+			cardElementTitle.value = 'title';
+
+			const cardElementRichText = new RichTextCardElementParam();
+			cardElementRichText.type = CardElementType.RichText;
+			cardElementRichText.value = 'richtext';
+			cardElementRichText.inputFormat = InputFormat.RICH_TEXT_CK5;
+
+			const params = {
+				cardElements: [
+					{
+						content: cardElementTitle,
+					},
+					{
+						content: cardElementRichText,
+					},
+				],
+				courseId: new ObjectId().toHexString(),
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+			};
+			const result = TaskCardMapper.mapToDomain(params);
+
+			const expectedDto = {
+				title: 'title',
+				text: [new RichText({ content: 'richtext', type: InputFormat.RICH_TEXT_CK5 })],
+				courseId: params.courseId,
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+			};
+			expect(result).toEqual(expectedDto);
 		});
 		it('should map update params to domain', () => {
 			const tomorrow = new Date(Date.now() + 86400000);
