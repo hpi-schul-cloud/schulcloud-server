@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, Permission, RoleName, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ICurrentUser } from '@src/modules/authentication/';
 import { accountFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import {
 	AccountByIdBodyParams,

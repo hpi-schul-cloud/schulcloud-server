@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@src/modules';
 import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { IFindOptions, Permission, SortOrder, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ICurrentUser } from '@src/modules/authentication/';
 import { setupEntities, userFactory } from '@shared/testing';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';

@@ -15,7 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ICurrentUser } from '@src/modules/authentication/';
 import { FilesStorageTestModule, s3Config } from '@src/modules/files-storage';
 import {
 	CopyFileParams,

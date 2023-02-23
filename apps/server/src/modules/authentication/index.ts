@@ -1,3 +1,2 @@
 export * from './authentication.module';
-export * from './interface';
-export * from './mapper';
+export * from './authentication-api.module';

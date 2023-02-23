@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ICurrentUser } from '@src/modules/authentication/';
 import { ExtractJwt } from 'passport-jwt';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { JwtExtractor } from '../strategy/jwt-extractor';

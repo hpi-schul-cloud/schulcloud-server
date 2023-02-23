@@ -7,7 +7,7 @@ import {
 	LearnroomMetadata,
 	LearnroomTypes,
 } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ICurrentUser } from '@src/modules/authentication/';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';

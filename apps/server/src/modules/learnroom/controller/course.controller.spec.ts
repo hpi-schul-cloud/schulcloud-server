@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ICurrentUser } from '@src/modules/authentication/';
 import { NotFoundException } from '@nestjs/common';
 import { Response } from 'express';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';

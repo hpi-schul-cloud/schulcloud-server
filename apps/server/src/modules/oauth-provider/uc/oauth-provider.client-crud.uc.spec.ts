@@ -3,7 +3,7 @@ import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { Permission, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ICurrentUser } from '@src/modules/authentication/';
 import { AuthorizationService } from '@src/modules';
 import { setupEntities, userFactory } from '@shared/testing';
 import { UnauthorizedException } from '@nestjs/common';

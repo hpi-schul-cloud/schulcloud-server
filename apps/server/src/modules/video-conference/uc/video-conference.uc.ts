@@ -45,7 +45,7 @@ import {
 	VideoConferenceOptions,
 } from '@src/modules/video-conference/interface/vc-options.interface';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
-import { ICurrentUser } from '@src/modules/authentication/interface/user';
+import { ICurrentUser } from '@src/modules/authentication/';
 
 export interface IScopeInfo {
 	scopeId: EntityId;
