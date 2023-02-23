@@ -37,8 +37,8 @@ export class OauthUc {
 		const authCode: string = this.oauthService.checkAuthorizationCode(query);
 
 		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.authenticateUser(
-			authCode,
-			systemId
+			systemId,
+			authCode
 		);
 
 		let jwtResponse = '';

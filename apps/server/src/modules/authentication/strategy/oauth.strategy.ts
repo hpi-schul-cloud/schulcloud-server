@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ICurrentUser } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
@@ -24,14 +24,17 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 	}
 
 	async validate(request: { params: PathParams; query: OauthAuthorizationParams }): Promise<ICurrentUser | unknown> {
+		if (!request.params.systemId) {
+			throw new BadRequestException(request.params.systemId, 'No SystemId provided!');
+		}
 		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.authenticateUser(
-			request.params.systemId!,
+			request.params.systemId,
 			request.query.code,
 			request.query.error
 		);
 		request.query = { ...request.params, redirect };
 
-		return this.loadICurrentUser(request.params.systemId!, user);
+		return this.loadICurrentUser(request.params.systemId, user);
 	}
 
 	private async loadICurrentUser(systemId: string, user?: UserDO): Promise<ICurrentUser | unknown> {

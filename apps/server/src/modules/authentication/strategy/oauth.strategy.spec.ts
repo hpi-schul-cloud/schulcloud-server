@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { Logger } from '@src/core/logger';
@@ -51,9 +51,9 @@ describe('OauthStrategy', () => {
 
 	describe('when no systemId is passed as path param', () => {
 		it('should return an empty object', async () => {
-			const result = await strategy.validate({ params: {}, query: {} });
+			const result = strategy.validate({ params: {}, query: {} });
 
-			expect(result).toEqual({});
+			await expect(result).rejects.toThrow(BadRequestException);
 		});
 	});
 	describe('when no code is given in query', () => {
