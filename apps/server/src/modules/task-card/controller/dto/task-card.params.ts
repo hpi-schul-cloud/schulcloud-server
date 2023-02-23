@@ -82,6 +82,15 @@ export class CardElementParams {
 }
 
 export class TaskCardParams {
+	@IsString()
+	@IsMongoId()
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'The id of an course object.',
+		pattern: '[a-f0-9]{24}',
+	})
+	courseId?: string;
+
 	@IsOptional()
 	@IsDate()
 	@MinDate(new Date())
