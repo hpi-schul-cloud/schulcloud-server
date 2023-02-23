@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, System, SystemTypeEnum } from '@shared/domain';
+import { EntityId, System, SystemType, SystemTypeEnum } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -8,7 +8,7 @@ import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 export class SystemService {
 	constructor(private readonly systemRepo: SystemRepo) {}
 
-	async find(type: string | undefined): Promise<SystemDto[]> {
+	async findAll(type: SystemType | undefined): Promise<SystemDto[]> {
 		let systemEntities: System[];
 		if (!type) {
 			systemEntities = await this.systemRepo.findAll();
