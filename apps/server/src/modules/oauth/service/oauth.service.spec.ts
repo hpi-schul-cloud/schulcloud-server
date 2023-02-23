@@ -17,7 +17,8 @@ import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { of, throwError } from 'rxjs';
-import { OauthTokenResponse } from '../controller/dto';
+import QueryString from 'qs';
+import { OauthTokenResponse, TokenRequestPayload } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthProcessDto } from './dto/oauth-process.dto';
@@ -147,25 +148,63 @@ describe('OAuthService', () => {
 	});
 
 	describe('requestToken', () => {
-		const code = '43534543jnj543342jn2';
-		const tokenResponse: OauthTokenResponse = {
-			access_token: 'accessToken',
-			refresh_token: 'refreshToken',
-			id_token: 'idToken',
+		const setupRequest = () => {
+			const code = '43534543jnj543342jn2';
+			const tokenResponse: OauthTokenResponse = {
+				access_token: 'accessToken',
+				refresh_token: 'refreshToken',
+				id_token: 'idToken',
+			};
+
+			return {
+				code,
+				tokenResponse,
+			};
 		};
 
 		beforeEach(() => {
+			const { tokenResponse } = setupRequest();
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
 			httpService.post.mockReturnValue(of(createAxiosResponse<OauthTokenResponse>(tokenResponse)));
 		});
 
-		it('should get token from the external server', async () => {
-			const responseToken: OauthTokenResponse = await service.requestToken(code, testOauthConfig);
+		describe('when authorization code and oauthConfig is given', () => {
+			it('should get token from the external server', async () => {
+				const { tokenResponse, code } = setupRequest();
+				const responseToken: OauthTokenResponse = await service.requestToken(code, testOauthConfig);
 
-			expect(responseToken).toStrictEqual(tokenResponse);
+				expect(responseToken).toStrictEqual(tokenResponse);
+			});
+		});
+
+		describe('when authorization code, oauthConfig and migrationRedirect is given', () => {
+			it('should get token with specific redirect from the external server', async () => {
+				const { tokenResponse, code } = setupRequest();
+				const systemId = 'systemId';
+				const migrationRedirect = `/api/v3/sso/oauth/${systemId}/migration`;
+				const payload: TokenRequestPayload = new TokenRequestPayload({
+					tokenEndpoint: testOauthConfig.tokenEndpoint,
+					client_id: testOauthConfig.clientId,
+					client_secret: 'decryptedSecret',
+					redirect_uri: migrationRedirect,
+					grant_type: testOauthConfig.grantType,
+					code,
+				});
+
+				const responseToken: OauthTokenResponse = await service.requestToken(code, testOauthConfig, migrationRedirect);
+
+				expect(responseToken).toStrictEqual(tokenResponse);
+				expect(httpService.post).toHaveBeenCalledWith(`${payload.tokenEndpoint}`, QueryString.stringify(payload), {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+				});
+			});
 		});
 
 		it('should throw error if no token got returned', async () => {
+			const { code } = setupRequest();
 			httpService.post.mockReturnValueOnce(throwError(() => 'error'));
 
 			await expect(service.requestToken(code, testOauthConfig)).rejects.toEqual(
