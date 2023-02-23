@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { System } from './system.entity';
 
 describe('System Entity', () => {
@@ -43,18 +43,18 @@ describe('System Entity', () => {
 					provisioningStrategy: SystemProvisioningStrategy.UNDEFINED,
 					provisioningUrl: 'provisioningUrl',
 					oauthConfig: {
-						clientId: '12345',
-						clientSecret: 'mocksecret',
-						tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-						grantType: 'authorization_code',
-						redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
-						scope: 'openid uuid',
+						clientId: 'mock-client-id',
+						clientSecret: 'mock-client-secret',
+						tokenEndpoint: 'http://mock.tld/token',
+						grantType: 'mock-grant-type',
+						redirectUri: 'http://mock-app.tld/redirect',
+						scope: 'openid uuid email',
 						responseType: 'code',
-						authEndpoint: 'mock_authEndpoint',
-						provider: 'mock_type',
-						logoutEndpoint: 'mock_logoutEndpoint',
-						issuer: 'mock_issuer',
-						jwksEndpoint: 'mock_jwksEndpoint',
+						authEndpoint: 'http://mock.tld/auth',
+						provider: 'mock-provider',
+						logoutEndpoint: 'http://mock.tld/logout',
+						issuer: 'mock-issuer',
+						jwksEndpoint: 'http://mock.tld/jwks',
 					},
 				})
 			);

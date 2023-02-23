@@ -6,9 +6,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { SystemRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { KeycloakModule } from '../keycloak.module';
-import { KeycloakAdministrationService } from '../../keycloak-management/service/keycloak-administration.service';
-import { KeycloakConfigurationService } from '../../keycloak-management/service./../keycloak-configuration/service/keycloak-configuration.service';
+import { KeycloakAdministrationModule } from '../../keycloak-administration/keycloak-administration.module';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KeycloakConfigurationService } from './keycloak-configuration.service';
 
 describe('KeycloakConfigurationService Integration', () => {
 	let module: TestingModule;
@@ -23,7 +23,7 @@ describe('KeycloakConfigurationService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakModule,
+				KeycloakAdministrationModule,
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot(),
 				ConfigModule.forRoot({

@@ -19,9 +19,9 @@ import { SystemService } from '@src/modules/system/service/system.service';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';
-import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
-import { OidcIdentityProviderMapper } from '../../keycloak-configuration/mapper/identity-provider.mapper';
-import { KeycloakAdministrationService } from './keycloak-administration.service';
+import { IKeycloakSettings, KeycloakSettings } from '../../keycloak-administration/interface/keycloak-settings.interface';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakConfigurationService } from './keycloak-configuration.service';
 
 describe('KeycloakConfigurationService Unit', () => {
