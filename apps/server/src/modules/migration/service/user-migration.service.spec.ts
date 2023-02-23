@@ -452,8 +452,13 @@ describe('UserMigrationService', () => {
 
 				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
 
-				expect(logger.log).toHaveBeenCalledWith(error);
-				expect(logger.log).toHaveBeenCalledTimes(2);
+				expect(logger.log).toHaveBeenCalledWith(
+					expect.objectContaining({
+						message: 'This error occurred during migration of User:',
+						affectedUserId: 'userId',
+						error,
+					})
+				);
 			});
 
 			it('should do a rollback of migration', async () => {
