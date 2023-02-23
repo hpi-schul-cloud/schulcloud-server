@@ -12,7 +12,7 @@ const RoleMapping = {
 
 @Injectable()
 export class SanisResponseMapper {
-	SCHOOLNUMBER_PREFIX_REGEX: RegExp = new RegExp('^NI_');
+	SCHOOLNUMBER_PREFIX_REGEX = /^NI_/;
 
 	mapToExternalSchoolDto(source: SanisResponse): ExternalSchoolDto {
 		const officialSchoolNumber: string = source.personenkontexte[0].organisation.kennung.replace(

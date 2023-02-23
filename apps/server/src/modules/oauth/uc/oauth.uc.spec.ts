@@ -18,12 +18,12 @@ import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMigrationService } from '@src/modules/user-migration/service';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import resetAllMocks = jest.resetAllMocks;
 import { OAuthMigrationError } from '../../user-migration/error/oauth-migration.error';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -34,7 +34,6 @@ describe('OAuthUc', () => {
 	let systemService: DeepMocked<SystemService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userService: DeepMocked<UserService>;
-	let schoolService: DeepMocked<SchoolService>;
 	let userMigrationService: DeepMocked<UserMigrationService>;
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 
@@ -84,7 +83,6 @@ describe('OAuthUc', () => {
 		oauthService = module.get(OAuthService);
 		provisioningService = module.get(ProvisioningService);
 		userService = module.get(UserService);
-		schoolService = module.get(SchoolService);
 		userMigrationService = module.get(UserMigrationService);
 		schoolMigrationService = module.get(SchoolMigrationService);
 	});
