@@ -38,40 +38,6 @@ export class OAuthService {
 		return responseToken;
 	}
 
-	private buildTokenRequestPayload(code: string, oauthConfig: OauthConfig): TokenRequestPayload {
-		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
-		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
-			oauthConfig,
-			decryptedClientSecret,
-			code
-		);
-		return tokenRequestPayload;
-	}
-
-	private sendTokenRequest(payload: TokenRequestPayload): Observable<AxiosResponse<OauthTokenResponse, unknown>> {
-		const query = QueryString.stringify(payload);
-		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(`${payload.tokenEndpoint}`, query, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
-		});
-		return responseTokenObservable;
-	}
-
-	private async resolveTokenRequest(
-		observable: Observable<AxiosResponse<OauthTokenResponse, unknown>>
-	): Promise<OauthTokenResponse> {
-		let responseToken: AxiosResponse<OauthTokenResponse>;
-		try {
-			responseToken = await lastValueFrom(observable);
-		} catch (error) {
-			throw new OAuthSSOError('Requesting token failed.', SSOErrorCode.SSO_AUTH_CODE_STEP);
-		}
-
-		return responseToken.data;
-	}
-
 	async _getPublicKey(oauthConfig: OauthConfig): Promise<string> {
 		const client: JwksRsa.JwksClient = JwksRsa({
 			cache: true,
@@ -115,15 +81,6 @@ export class OAuthService {
 		return user;
 	}
 
-	private async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
-		if (email) {
-			const usersWithEmail: User[] = await this.userService.findByEmail(email);
-			const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
-			return ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
-		}
-		return '';
-	}
-
 	async getJwtForUser(userId: EntityId): Promise<string> {
 		const currentUser: ICurrentUser = await this.userService.getResolvedUser(userId);
 		const { accessToken } = await this.authenticationService.generateJwt(currentUser);
@@ -157,15 +114,15 @@ export class OAuthService {
 		migration: boolean,
 		alias?: string
 	): string {
-		const apiUrl: string = Configuration.get('API_URL') as string;
+		const publicBackendUrl: string = Configuration.get('PUBLIC_BACKEND_URL') as string;
 		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
 
 		authenticationUrl.searchParams.append('client_id', oauthConfig.clientId);
 		if (migration) {
-			const migrationRedirectUri: URL = new URL(`api/v3/sso/oauth/migration`, apiUrl);
+			const migrationRedirectUri: URL = new URL(`api/v3/sso/oauth/migration`, publicBackendUrl);
 			authenticationUrl.searchParams.append('redirect_uri', migrationRedirectUri.toString());
 		} else {
-			const redirectUri: URL = new URL(`api/v3/sso/oauth`, apiUrl);
+			const redirectUri: URL = new URL(`api/v3/sso/oauth`, publicBackendUrl);
 			authenticationUrl.searchParams.append('redirect_uri', redirectUri.toString());
 		}
 		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
@@ -176,5 +133,48 @@ export class OAuthService {
 		}
 
 		return authenticationUrl.toString();
+	}
+
+	private buildTokenRequestPayload(code: string, oauthConfig: OauthConfig): TokenRequestPayload {
+		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
+		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
+			oauthConfig,
+			decryptedClientSecret,
+			code
+		);
+		return tokenRequestPayload;
+	}
+
+	private sendTokenRequest(payload: TokenRequestPayload): Observable<AxiosResponse<OauthTokenResponse, unknown>> {
+		const query = QueryString.stringify(payload);
+		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(`${payload.tokenEndpoint}`, query, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+		});
+		return responseTokenObservable;
+	}
+
+	private async resolveTokenRequest(
+		observable: Observable<AxiosResponse<OauthTokenResponse, unknown>>
+	): Promise<OauthTokenResponse> {
+		let responseToken: AxiosResponse<OauthTokenResponse>;
+		try {
+			responseToken = await lastValueFrom(observable);
+		} catch (error) {
+			throw new OAuthSSOError('Requesting token failed.', SSOErrorCode.SSO_AUTH_CODE_STEP);
+		}
+
+		return responseToken.data;
+	}
+
+	private async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
+		if (email) {
+			const usersWithEmail: User[] = await this.userService.findByEmail(email);
+			const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
+			return ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
+		}
+		return '';
 	}
 }

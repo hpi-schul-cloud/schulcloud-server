@@ -15,7 +15,7 @@ import { PageContentDto } from './dto/page-content.dto';
 export class UserMigrationService {
 	private readonly clientUrl: string;
 
-	private readonly apiUrl: string;
+	private readonly publicBackendUrl: string;
 
 	private readonly dashboardUrl: string = '/dashboard';
 
@@ -25,7 +25,7 @@ export class UserMigrationService {
 
 	constructor(private readonly schoolService: SchoolService, private readonly systemService: SystemService) {
 		this.clientUrl = Configuration.get('HOST') as string;
-		this.apiUrl = Configuration.get('API_URL') as string;
+		this.publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 	}
 
 	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {
@@ -99,7 +99,7 @@ export class UserMigrationService {
 			throw new UnprocessableEntityException(`System ${system?.id || 'unknown'} has no oauth config`);
 		}
 
-		const loginUrl: URL = new URL(`api/v3/sso/login/${system.id}`, this.apiUrl);
+		const loginUrl: URL = new URL(`api/v3/sso/login/${system.id}`, this.publicBackendUrl);
 		if (postLoginRedirect) {
 			loginUrl.searchParams.append('postLoginRedirect', postLoginRedirect);
 		} else {
