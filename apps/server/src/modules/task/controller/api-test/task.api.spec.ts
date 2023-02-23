@@ -454,6 +454,146 @@ describe('Task Controller (API)', () => {
 			expect(foundTask?.finished.getIdentifiers()).toEqual([student.id]);
 		});
 
+		describe('revert published task', () => {
+			it('should revert published own task', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacher, course, private: false });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				await request(app.getHttpServer())
+					.patch(`/tasks/${task.id}/revertPublished`)
+					.set('Accept', 'application/json')
+					.set('Authorization', 'jwt')
+					.expect(200);
+
+				const foundTask = await em.findOne(Task, { id: task.id });
+				expect(foundTask?.isDraft()).toEqual(true);
+			});
+
+			it('should revert published task by another user in course', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: student, course, private: false });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				await request(app.getHttpServer())
+					.patch(`/tasks/${task.id}/revertPublished`)
+					.set('Accept', 'application/json')
+					.set('Authorization', 'jwt')
+					.expect(200);
+
+				const foundTask = await em.findOne(Task, { id: task.id });
+				expect(foundTask?.isDraft()).toEqual(true);
+			});
+
+			it('should throw 403 "Forbidden", if user(Student) has no permissions', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacher, course, private: false });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(student);
+
+				await request(app.getHttpServer())
+					.patch(`/tasks/${task.id}/revertPublished`)
+					.set('Accept', 'application/json')
+					.set('Authorization', 'jwt')
+					.expect(403);
+			});
+
+			it('should throw 403 "Forbidden" for teacher, if task is not from my course', async () => {
+				const teacherOne = setup();
+				const teacherTwo = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacherOne],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacherOne, course, private: false });
+
+				await em.persistAndFlush([teacherOne, teacherTwo, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacherTwo);
+
+				await request(app.getHttpServer())
+					.patch(`/tasks/${task.id}/revertPublished`)
+					.set('Accept', 'application/json')
+					.set('Authorization', 'jwt')
+					.expect(403);
+			});
+
+			it('should throw 404 if wrong task ID', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacher, course, private: false });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				await request(app.getHttpServer())
+					.patch(`/tasks/${new ObjectID().toHexString()}/revertPublished`)
+					.set('Accept', 'application/json')
+					.set('Authorization', 'jwt')
+					.expect(404);
+			});
+
+			it('should throw 400 if task ID is invalid', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacher, course, private: false });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const result = await request(app.getHttpServer())
+					.patch('/tasks/string/revertPublished')
+					.set('Accept', 'application/json')
+					.set('Authorization', 'jwt')
+					.expect(400);
+				expect(result.body).toMatchObject({
+					type: 'API_VALIDATION_ERROR',
+					title: 'API Validation Error',
+					code: 400,
+				});
+			});
+		});
+
 		describe('delete task', () => {
 			it('should delete task created by user', async () => {
 				const teacher = setup();
