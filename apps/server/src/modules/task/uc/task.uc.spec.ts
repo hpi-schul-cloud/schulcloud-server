@@ -1046,6 +1046,67 @@ describe('TaskUC', () => {
 		});
 	});
 
+	describe('revertPublished', () => {
+		let task: Task;
+
+		beforeEach(() => {
+			user = userFactory.buildWithId();
+			task = taskFactory.buildWithId({ creator: user });
+			userRepo.findById.mockResolvedValue(user);
+			taskRepo.findById.mockResolvedValue(task);
+			taskRepo.save.mockResolvedValue();
+		});
+
+		it('should check for permission to revert the task', async () => {
+			await service.revertPublished(user.id, task.id);
+			expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
+				action: Actions.write,
+				requiredPermissions: [],
+			});
+		});
+
+		it('should throw ForbiddenException when not permitted', async () => {
+			const user2 = userFactory.buildWithId();
+			task = taskFactory.buildWithId({ creator: user2 });
+			taskRepo.findById.mockResolvedValue(task);
+			authorizationService.checkPermission.mockImplementation(() => {
+				throw new ForbiddenException();
+			});
+			await expect(async () => {
+				await service.revertPublished(user.id, task.id);
+			}).rejects.toThrow(ForbiddenException);
+		});
+
+		it('should call unpublish method in task entity', async () => {
+			task.unpublish = jest.fn();
+			await service.revertPublished(user.id, task.id);
+			expect(task.unpublish).toBeCalled();
+		});
+
+		it('should set the private property of unpublished task correctly', async () => {
+			expect(task.private).toEqual(false);
+			await service.revertPublished(user.id, task.id);
+			expect(task.private).toEqual(true);
+		});
+
+		it('should save the task', async () => {
+			await service.revertPublished(user.id, task.id);
+			expect(taskRepo.save).toBeCalledWith(task);
+		});
+
+		it('should create teacher status', async () => {
+			task.createTeacherStatusForUser = jest.fn();
+			await service.revertPublished(user.id, task.id);
+			expect(task.createTeacherStatusForUser).toBeCalled();
+		});
+
+		it('should return the task and its status', async () => {
+			const result = await service.revertPublished(user.id, task.id);
+			expect(result.task).toEqual(task);
+			expect(result.status).toBeDefined();
+		});
+	});
+
 	describe('delete task', () => {
 		let task: Task;
 
