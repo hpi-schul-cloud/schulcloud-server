@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IAccount } from '@shared/domain/interface/account';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakSettings } from '../../keycloak-administration/interface/keycloak-settings.interface';
-import { KeycloakAdministrationService } from '../../keycloak-management/service/keycloak-administration.service';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
 
 describe('KeycloakIdentityManagement', () => {

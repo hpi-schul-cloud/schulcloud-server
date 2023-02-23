@@ -3,7 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { LoggerModule } from '@src/core/logger';
+import { KeycloakAdministrationModule } from '../../keycloak-administration/keycloak-administration.module';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KeycloakConfigurationModule } from '../../keycloak-configuration/keycloak-configuration.module';
 import { KeycloakConfigurationService } from '../../keycloak-configuration/service/keycloak-configuration.service';
 import { KeycloakIdentityManagementOauthService } from './keycloak-identity-management-oauth.service';
 
@@ -20,6 +22,8 @@ describe('KeycloakIdentityManagementOauthService Integration', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				KeycloakModule,
+				KeycloakConfigurationModule,
+				KeycloakAdministrationModule,
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot({ allowGlobalContext: true }),
 				ConfigModule.forRoot({ isGlobal: true }),

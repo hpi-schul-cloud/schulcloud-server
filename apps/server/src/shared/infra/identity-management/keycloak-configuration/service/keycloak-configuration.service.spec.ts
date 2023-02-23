@@ -69,7 +69,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			providerId: 'oidc',
 			alias: systems[0].alias,
 			enabled: true,
-			config: {
+			oidcConfig: {
 				clientId: 'clientId',
 				clientSecret: 'clientSecret',
 				authorizationUrl: 'authorizationUrl',
