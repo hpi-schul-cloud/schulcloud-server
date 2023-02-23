@@ -39,7 +39,7 @@ describe('UserMigrationService', () => {
 	beforeAll(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('HOST', hostUri);
-		Configuration.set('API_URL', apiUrl);
+		Configuration.set('PUBLIC_BACKEND_URL', apiUrl);
 		Configuration.set('S3_KEY', s3);
 
 		module = await Test.createTestingModule({
