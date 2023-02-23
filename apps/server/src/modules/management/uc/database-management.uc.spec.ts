@@ -67,7 +67,7 @@ describe('DatabaseManagementService', () => {
 		},
 		type: 'oidc',
 		alias: 'oidc',
-		config: {
+		oidcConfig: {
 			// eslint-disable-next-line no-template-curly-in-string
 			clientId: '${OIDC_CLIENT_ID}',
 			// eslint-disable-next-line no-template-curly-in-string
@@ -85,7 +85,7 @@ describe('DatabaseManagementService', () => {
 		},
 		type: 'oidc',
 		alias: 'oidc',
-		config: {
+		oidcConfig: {
 			clientId: 'encryptedClientId',
 			clientSecret: 'encryptedClientSecret',
 		},
@@ -394,8 +394,8 @@ describe('DatabaseManagementService', () => {
 					const fileContent: string = fileSystemAdapter.writeFile.mock.calls[0][1];
 					expect(fileName).toEqual(`${systemsCollectionName}.json`);
 					expect(fileContent.includes(oauthSystemWithSecrets.oauthConfig.clientSecret)).toBe(false);
-					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
-					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
+					expect(fileContent.includes(oidcSystemWithSecrets.oidcConfig.clientSecret)).toBe(false);
+					expect(fileContent.includes(oidcSystemWithSecrets.oidcConfig.clientSecret)).toBe(false);
 
 					expect(fileContent.includes(defaultSecretReplacementHintText)).toBe(true);
 				});
@@ -409,8 +409,8 @@ describe('DatabaseManagementService', () => {
 					const fileContent: string = fileSystemAdapter.writeFile.mock.calls[0][1];
 					expect(fileName).toEqual(`${storageprovidersCollectionName}.json`);
 					expect(fileContent.includes(oauthSystemWithSecrets.oauthConfig.clientSecret)).toBe(false);
-					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
-					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
+					expect(fileContent.includes(oidcSystemWithSecrets.oidcConfig.clientSecret)).toBe(false);
+					expect(fileContent.includes(oidcSystemWithSecrets.oidcConfig.clientSecret)).toBe(false);
 
 					expect(fileContent.includes(defaultSecretReplacementHintText)).toBe(true);
 				});
