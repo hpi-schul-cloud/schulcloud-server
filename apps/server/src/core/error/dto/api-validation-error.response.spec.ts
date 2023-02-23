@@ -8,11 +8,11 @@ describe('ApiValidationErrorResponse', () => {
 			const validationErrors: ValidationError[] = [
 				{
 					property: 'parentFieldName1',
-					constraints: { errorConstraint: 'errorText1' },
+					constraints: { errorConstraint1: 'errorText1', errorConstraint2: 'errorText2' },
 					children: [
 						{
 							property: 'childFieldName1',
-							constraints: { errorConstraint: 'errorText2' },
+							constraints: { errorConstraint: 'errorText3' },
 							children: [],
 						},
 					],
@@ -25,7 +25,7 @@ describe('ApiValidationErrorResponse', () => {
 							children: [
 								{
 									property: 'childArrayItem',
-									constraints: { errorConstraint: 'errorText3' },
+									constraints: { errorConstraint: 'errorText4' },
 								},
 							],
 						},
@@ -37,7 +37,7 @@ describe('ApiValidationErrorResponse', () => {
 						{
 							// property name can be undefined when using polymorphic types (discriminator)
 							property: undefined as unknown as string,
-							constraints: { errorConstraint: 'errorText4' },
+							constraints: { errorConstraint: 'errorText5' },
 						},
 					],
 				},
@@ -54,19 +54,19 @@ describe('ApiValidationErrorResponse', () => {
 				validationErrors: [
 					{
 						field: ['parentFieldName1'],
-						errors: ['errorText1'],
+						errors: ['errorText1', 'errorText2'],
 					},
 					{
 						field: ['parentFieldName1', 'childFieldName1'],
-						errors: ['errorText2'],
-					},
-					{
-						field: ['parentFieldName2', '0', 'childArrayItem'],
 						errors: ['errorText3'],
 					},
 					{
-						field: ['parentFieldName3'],
+						field: ['parentFieldName2', '0', 'childArrayItem'],
 						errors: ['errorText4'],
+					},
+					{
+						field: ['parentFieldName3'],
+						errors: ['errorText5'],
 					},
 				],
 			});

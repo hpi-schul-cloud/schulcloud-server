@@ -25,10 +25,7 @@ export class ApiValidationErrorResponse extends ErrorResponse {
 		}
 
 		if (validationError.constraints) {
-			if (Array.isArray(validationError.constraints)) {
-				this.validationErrors.push(new ValidationErrorDetailResponse(propertyPath, validationError.constraints));
-			}
-			const errors = Object.values(validationError.constraints);
+			const errors: string[] = Object.values(validationError.constraints);
 			this.validationErrors.push(new ValidationErrorDetailResponse(propertyPath, errors));
 		}
 
