@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IAccount, IAccountUpdate } from '@shared/domain';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-management/service/keycloak-administration.service';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { ServerModule } from '@src/modules/server';
 import { IdentityManagementService } from '../../identity-management.service';

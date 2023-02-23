@@ -3,8 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { LoggerModule } from '@src/core/logger';
-import { KeycloakAdministrationService } from '../../keycloak-management/service/keycloak-administration.service';
-import { KeycloakConfigurationService } from '../../keycloak-management/service/keycloak-configuration.service';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KeycloakConfigurationService } from '../../keycloak-configuration/service/keycloak-configuration.service';
 import { KeycloakIdentityManagementOauthService } from './keycloak-identity-management-oauth.service';
 
 describe('KeycloakIdentityManagementOauthService Integration', () => {

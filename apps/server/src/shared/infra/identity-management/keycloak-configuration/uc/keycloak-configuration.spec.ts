@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { KeycloakAdministrationService } from '../service/keycloak-administration.service';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
 import { KeycloakSeedService } from '../service/keycloak-seed.service';
 import { KeycloakConfigurationUc } from './keycloak-configuration.uc';
 
-describe('KeycloakManagementUc', () => {
+describe('KeycloakConfigurationUc', () => {
 	let module: TestingModule;
 	let uc: KeycloakConfigurationUc;
 	let keycloakAdminServiceMock: DeepMocked<KeycloakAdministrationService>;

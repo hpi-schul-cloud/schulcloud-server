@@ -4,15 +4,14 @@ import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clien
 import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import ProtocolMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation';
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ModuleRef } from '@nestjs/core';
 import { SystemTypeEnum } from '@shared/domain';
 import { IServerConfig } from '@src/modules/server/server.config';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
-import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 
 enum ConfigureAction {
 	CREATE = 'create',
@@ -201,12 +200,16 @@ export class KeycloakConfigurationService {
 	}
 
 	private async createIdentityProvider(system: SystemDto): Promise<void> {
-		const kc = await this.kcAdmin.callKcAdminClient();
-		if (system.oidcConfig && system.oidcConfig?.alias) {
-			await kc.identityProviders.create(
-				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
-			);
-			await this.createIdpDefaultMapper(system.oidcConfig.alias);
+		try {
+			const kc = await this.kcAdmin.callKcAdminClient();
+			if (system.oidcConfig && system.oidcConfig?.alias) {
+				await kc.identityProviders.create(
+					this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
+				);
+				await this.createIdpDefaultMapper(system.oidcConfig.alias);
+			}
+		} catch (e) {
+			console.error(e);
 		}
 	}
 

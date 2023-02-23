@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
@@ -11,9 +10,8 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemTypeEnum } from '@shared/domain';
-import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { systemFactory } from '@shared/testing';
-import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { AxiosResponse } from 'axios';
@@ -21,7 +19,7 @@ import { of } from 'rxjs';
 import { v1 } from 'uuid';
 import {
 	IKeycloakSettings,
-	KeycloakSettings,
+	KeycloakSettings
 } from '../../keycloak-administration/interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
@@ -34,7 +32,6 @@ describe('KeycloakConfigurationService Unit', () => {
 	let configService: DeepMocked<ConfigService>;
 	let systemService: DeepMocked<SystemService>;
 	let httpServiceMock: DeepMocked<HttpService>;
-	let defaultEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let settings: IKeycloakSettings;
 
 	const kcApiClientIdentityProvidersMock = createMock<IdentityProviders>();
@@ -66,10 +63,11 @@ describe('KeycloakConfigurationService Unit', () => {
 		};
 	};
 
+	const systems: SystemDto[] = systemFactory.withOidcConfig().buildListWithId(1, { type: SystemTypeEnum.OIDC });
 	const idps: IdentityProviderRepresentation[] = [
 		{
 			providerId: 'oidc',
-			alias: 'alias',
+			alias: systems[0].alias,
 			enabled: true,
 			config: {
 				clientId: 'clientId',
@@ -80,7 +78,6 @@ describe('KeycloakConfigurationService Unit', () => {
 			},
 		},
 	];
-	const systems: SystemDto[] = systemFactory.withOidcConfig().buildListWithId(2, { type: SystemTypeEnum.OIDC });
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -125,10 +122,6 @@ describe('KeycloakConfigurationService Unit', () => {
 					}),
 				},
 				{
-					provide: DefaultEncryptionService,
-					useValue: encryptionServiceMock,
-				},
-				{
 					provide: OidcIdentityProviderMapper,
 					useValue: createMock<OidcIdentityProviderMapper>(),
 				},
@@ -144,14 +137,11 @@ describe('KeycloakConfigurationService Unit', () => {
 		settings = module.get(KeycloakSettings);
 		systemService = module.get(SystemService);
 		httpServiceMock = module.get(HttpService);
-		defaultEncryptionService = module.get(DefaultEncryptionService);
-		defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_enc`);
-		defaultEncryptionService.decrypt.mockImplementation((data) => `${data}_dec`);
-		jest.spyOn(Configuration, 'get').mockReturnValue('localhost');
+
+		configService.get.mockImplementation((key: string) => `${key}-value`);
 	});
 
 	afterAll(async () => {
-		jest.resetAllMocks();
 		await module.close();
 	});
 
@@ -164,23 +154,10 @@ describe('KeycloakConfigurationService Unit', () => {
 	});
 
 	afterEach(() => {
-		systemService.findByType.mockClear();
-		kcApiClientIdentityProvidersMock.find.mockClear();
-		kcApiClientIdentityProvidersMock.create.mockClear();
-		kcApiClientIdentityProvidersMock.update.mockClear();
-		kcApiClientIdentityProvidersMock.del.mockClear();
-		kcApiClientIdentityProvidersMock.updateMapper.mockClear();
-		kcApiClientIdentityProvidersMock.createMapper.mockClear();
-		configService.get.mockClear();
+		jest.clearAllMocks();
 	});
 
 	describe('configureIdentityProviders', () => {
-		it('should read configs from database successfully', async () => {
-			const result = await service.configureIdentityProviders();
-			expect(result).toBeGreaterThan(0);
-			expect(systemService.findByType).toBeCalled();
-		});
-
 		it('should create a configuration in Keycloak', async () => {
 			kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
 
@@ -211,7 +188,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			await service.configureIdentityProviders();
 			expect(kcApiClientIdentityProvidersMock.createMapper).toBeCalledTimes(1);
 		});
-		it('should update a mapper for an updated  identity provider', async () => {
+		it('should update a mapper for an updated identity provider', async () => {
 			kcApiClientIdentityProvidersMock.findMappers.mockResolvedValue([
 				{ id: '1', identityProviderAlias: idps[0].alias, name: 'oidc-username-idp-mapper' },
 			]);
@@ -239,24 +216,6 @@ describe('KeycloakConfigurationService Unit', () => {
 			httpServiceMock.get.mockReturnValue(of(response));
 		});
 
-		afterAll(() => {
-			kcApiClientMock.find.mockRestore();
-			kcApiClientMock.findOne.mockRestore();
-			kcApiClientMock.create.mockRestore();
-			kcApiClientMock.generateNewClientSecret.mockRestore();
-			systemService.findByType.mockRestore();
-		});
-
-		beforeEach(() => {
-			encryptionServiceMock.encrypt.mockClear();
-			kcApiClientMock.find.mockClear();
-			kcApiClientMock.findOne.mockClear();
-			kcApiClientMock.create.mockClear();
-			kcApiClientMock.generateNewClientSecret.mockClear();
-			systemService.findByType.mockClear();
-			systemService.save.mockClear();
-		});
-
 		it('should create client if client not exists', async () => {
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(kcApiClientMock.create).toBeCalledTimes(1);
@@ -265,122 +224,6 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.find.mockResolvedValueOnce([{ id: 'old_client_id' }]);
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(kcApiClientMock.create).toBeCalledTimes(0);
-		});
-		it('should generate a new client secret', async () => {
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(kcApiClientMock.generateNewClientSecret).toBeCalledTimes(1);
-		});
-		it('should encrypt client secret', async () => {
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(encryptionServiceMock.encrypt).toBeCalledTimes(1);
-		});
-		it('should save client secret', async () => {
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(systemService.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					oauthConfig: expect.objectContaining({ clientSecret: expect.anything() }),
-				})
-			);
-		});
-		it('should create Keycloak system if not already exists', async () => {
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(systemService.save).toHaveBeenCalledWith(expect.objectContaining({ type: SystemTypeEnum.KEYCLOAK }));
-		});
-		it('should configure grantType for Keycloak system', async () => {
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(systemService.save).toHaveBeenCalledWith(
-				expect.objectContaining<Partial<SystemDto>>({
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({ grantType: 'authorization_code' }),
-				})
-			);
-		});
-		it('should configure scope for Keycloak system', async () => {
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(systemService.save).toHaveBeenCalledWith(
-				expect.objectContaining<Partial<SystemDto>>({
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({ scope: 'openid profile email' }),
-				})
-			);
-		});
-		it('should configure responseType for Keycloak system', async () => {
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(systemService.save).toHaveBeenCalledWith(
-				expect.objectContaining<Partial<SystemDto>>({
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({ responseType: 'code' }),
-				})
-			);
-		});
-		it('should configure provider for Keycloak system', async () => {
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(systemService.save).toHaveBeenCalledWith(
-				expect.objectContaining<Partial<SystemDto>>({
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({ provider: 'oauth' }),
-				})
-			);
-		});
-		it('should configure redirectUri for Keycloak system', async () => {
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(systemService.save).toHaveBeenCalledWith(
-				expect.objectContaining<Partial<SystemDto>>({
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({
-						redirectUri: 'https://SC_DOMAIN-value/api/v3/sso/oauth/',
-					}),
-				})
-			);
-		});
-		it('should configure well known information for Keycloak system', async () => {
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(systemService.save).toHaveBeenCalledWith(
-				expect.objectContaining<Partial<SystemDto>>({
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					oauthConfig: expect.objectContaining<Partial<OauthConfigDto>>({
-						tokenEndpoint: 'tokenEndpoint',
-						authEndpoint: 'authEndpoint',
-						logoutEndpoint: 'logoutEndpoint',
-						jwksEndpoint: 'jwksUrl',
-						issuer: 'issuer',
-					}),
-				})
-			);
-		});
-
-		it('should not create Keycloak system if already exists', async () => {
-			const mockedSystem = systemFactory.buildWithId();
-			systemService.findByType.mockResolvedValueOnce([mockedSystem]);
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(systemService.save).toHaveBeenCalledWith(expect.objectContaining({ _id: mockedSystem._id }));
-		});
-		it('should put the scdomain into the redirect', async () => {
-			const scDomain = 'test-sc-domain';
-			jest.spyOn(configService, 'get').mockReturnValue(scDomain);
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(systemService.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					oauthConfig: expect.objectContaining({ redirectUri: expect.stringContaining(scDomain) }),
-				})
-			);
-		});
-		it('should take special localhost as redirect if scdomain is localhost', async () => {
-			const scDomain = 'localhost';
-			jest.spyOn(configService, 'get').mockReturnValue(scDomain);
-			await expect(service.configureClient()).resolves.not.toThrow();
-			expect(systemService.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					oauthConfig: expect.objectContaining({ redirectUri: expect.stringContaining('http://localhost:3030') }),
-				})
-			);
-		});
-		it('should ignore missing client secret but put empty string', async () => {
-			kcApiClientMock.generateNewClientSecret.mockResolvedValue({ type: 'secret', value: undefined });
-			await expect(service.configureClient()).resolves.not.toThrow();
 		});
 	});
 

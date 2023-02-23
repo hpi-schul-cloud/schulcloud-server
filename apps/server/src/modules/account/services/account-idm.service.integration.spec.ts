@@ -3,9 +3,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IAccount } from '@shared/domain';
-import { KeycloakSettings } from '@shared/infra/identity-management/keycloak-management/interface/keycloak-settings.interface';
-import KeycloakConfiguration from '@shared/infra/identity-management/keycloak-management/keycloak-config';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-management/service/keycloak-administration.service';
+import { KeycloakSettings } from '@shared/infra/identity-management/keycloak-administration/interface/keycloak-settings.interface';
+import KeycloakAdministration from '@shared/infra/identity-management/keycloak-administration/keycloak-config';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
@@ -66,7 +66,7 @@ describe('AccountService IDM Integration', () => {
 				},
 				{
 					provide: KeycloakSettings,
-					useValue: KeycloakConfiguration.keycloakSettings,
+					useValue: KeycloakAdministration.keycloakSettings,
 				},
 			],
 		}).compile();

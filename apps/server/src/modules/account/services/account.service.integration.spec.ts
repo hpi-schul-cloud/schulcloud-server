@@ -6,9 +6,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Account, IAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
-import { KeycloakSettings } from '@shared/infra/identity-management/keycloak-management/interface/keycloak-settings.interface';
-import KeycloakConfiguration from '@shared/infra/identity-management/keycloak-management/keycloak-config';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-management/service/keycloak-administration.service';
+import { KeycloakSettings } from '@shared/infra/identity-management/keycloak-administration/interface/keycloak-settings.interface';
+import KeycloakAdministration from '@shared/infra/identity-management/keycloak-administration/keycloak-config';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { ObjectId } from 'bson';
@@ -87,7 +87,7 @@ describe('AccountService Integration', () => {
 				},
 				{
 					provide: KeycloakSettings,
-					useValue: KeycloakConfiguration.keycloakSettings,
+					useValue: KeycloakAdministration.keycloakSettings,
 				},
 				{
 					provide: Logger,

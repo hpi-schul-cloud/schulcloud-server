@@ -4,7 +4,7 @@ import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IAccount } from '@shared/domain/interface/account';
 import { IdentityManagementService } from '../../identity-management.service';
-import { KeycloakSettings } from '../../keycloak-management/interface/keycloak-settings.interface';
+import { KeycloakSettings } from '../../keycloak-administration/interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from '../../keycloak-management/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
 

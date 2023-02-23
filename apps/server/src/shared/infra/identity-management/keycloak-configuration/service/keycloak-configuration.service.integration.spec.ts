@@ -1,3 +1,4 @@
+import { createMock } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import AuthenticationExecutionExportRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionExportRepresentation';
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
@@ -5,9 +6,12 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { SystemRepo } from '@shared/repo';
+import { systemFactory } from '@shared/testing/factory';
 import { LoggerModule } from '@src/core/logger';
-import { KeycloakAdministrationModule } from '../../keycloak-administration/keycloak-administration.module';
+import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
+import { SystemService } from '@src/modules/system/service/system.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
 import { KeycloakConfigurationService } from './keycloak-configuration.service';
 
 describe('KeycloakConfigurationService Integration', () => {
@@ -19,11 +23,14 @@ describe('KeycloakConfigurationService Integration', () => {
 
 	const testRealm = 'test-realm';
 	const flowAlias = 'Direct Broker Flow';
+	const clientId = 'dbildungscloud-server';
+	const systemServiceMock = createMock<SystemService>();
+	const systems = SystemMapper.mapFromEntitiesToDtos(systemFactory.withOidcConfig().buildList(2));
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakAdministrationModule,
+				KeycloakConfigurationModule,
 				LoggerModule,
 				MongoMemoryDatabaseModule.forRoot(),
 				ConfigModule.forRoot({
@@ -32,7 +39,10 @@ describe('KeycloakConfigurationService Integration', () => {
 				}),
 			],
 			providers: [SystemRepo],
-		}).compile();
+		})
+			.overrideProvider(SystemService)
+			.useValue(systemServiceMock)
+			.compile();
 		keycloakAdministrationService = module.get(KeycloakAdministrationService);
 		keycloakConfigurationService = module.get(KeycloakConfigurationService);
 		isKeycloakAvailable = await keycloakAdministrationService.testKcConnection();
@@ -102,9 +112,38 @@ describe('KeycloakConfigurationService Integration', () => {
 		});
 	});
 
-	describe('configureClient', () => {});
+	describe('configureClient', () => {
+		describe('when keycloak is available', () => {
+			it('should add dbildungscloud-server client to keycloak', async () => {
+				if (!isKeycloakAvailable) return;
 
-	describe('configureIdentityProvider', () => {});
+				await keycloakConfigurationService.configureClient();
+				const kc = await keycloakAdministrationService.callKcAdminClient();
+				const clients = await kc.clients.find({ clientId });
+				expect(clients).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({
+							clientId,
+						}),
+					])
+				);
+			});
+		});
+	});
+
+	describe('configureIdentityProviders', () => {
+		describe('when keycloak is available', () => {
+			it('should sync identity providers to keycloak', async () => {
+				if (!isKeycloakAvailable) return;
+
+				systemServiceMock.findByType.mockResolvedValueOnce(systems);
+				await keycloakConfigurationService.configureIdentityProviders();
+				const kc = await keycloakAdministrationService.callKcAdminClient();
+				const identityProviders = await kc.identityProviders.find();
+				expect(identityProviders.length).toEqual(systems.length);
+			});
+		});
+	});
 
 	describe('configureRealm', () => {
 		describe('when keycloak is available', () => {

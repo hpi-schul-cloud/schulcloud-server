@@ -5,14 +5,17 @@ import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/re
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v1 } from 'uuid';
+import {
+	IKeycloakSettings,
+	KeycloakSettings,
+} from '../../keycloak-administration/interface/keycloak-settings.interface';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { IJsonAccount } from '../interface/json-account.interface';
 import { IJsonUser } from '../interface/json-user.interface';
 import {
-	IKeycloakManagementInputFiles,
-	KeycloakManagementInputFiles,
-} from '../interface/keycloak-management-input-files.interface';
-import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
-import { KeycloakAdministrationService } from './keycloak-administration.service';
+	IKeycloakConfigurationInputFiles,
+	KeycloakConfigurationInputFiles,
+} from '../interface/keycloak-configuration-input-files.interface';
 import { KeycloakSeedService } from './keycloak-seed.service';
 
 const accountsFile = 'accounts.json';
@@ -90,7 +93,7 @@ describe('KeycloakSeedService', () => {
 			username: 'notUnique',
 		},
 	];
-	const inputFiles: IKeycloakManagementInputFiles = {
+	const inputFiles: IKeycloakConfigurationInputFiles = {
 		accountsFile: 'accounts.json',
 		usersFile: 'users.json',
 		systemsFile: 'systems.json',
@@ -100,7 +103,7 @@ describe('KeycloakSeedService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
-					provide: KeycloakManagementInputFiles,
+					provide: KeycloakConfigurationInputFiles,
 					useValue: inputFiles,
 				},
 				KeycloakSeedService,
