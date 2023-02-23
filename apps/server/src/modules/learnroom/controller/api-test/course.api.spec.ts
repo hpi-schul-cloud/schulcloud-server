@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication/';
+import { ICurrentUser } from '@src/modules/authentication';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';

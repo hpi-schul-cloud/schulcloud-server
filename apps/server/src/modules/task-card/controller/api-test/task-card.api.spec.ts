@@ -14,7 +14,7 @@ import {
 	Task,
 	TaskCard,
 } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication/';
+import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	mapUserToCurrentUser,

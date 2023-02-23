@@ -15,7 +15,7 @@ import {
 	SchoolRoles,
 	User,
 } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication/';
+import { ICurrentUser } from '@src/modules/authentication';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';

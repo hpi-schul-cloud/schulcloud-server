@@ -7,7 +7,7 @@ import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/interface/page';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { Logger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication/';
+import { ICurrentUser } from '@src/modules/authentication';
 import { ToolController } from './tool.controller';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { ExternalToolUc } from '../uc/external-tool.uc';

@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities, userFactory } from '@shared/testing';
 import { Actions, Permission, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication/';
+import { ICurrentUser } from '@src/modules/authentication';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';

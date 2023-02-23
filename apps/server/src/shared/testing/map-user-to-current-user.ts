@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 
 import { Account, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication/';
+import { ICurrentUser } from '@src/modules/authentication';
 
 export const mapUserToCurrentUser = (user: User, account?: Account): ICurrentUser => {
 	const currentUser: Partial<ICurrentUser> = {

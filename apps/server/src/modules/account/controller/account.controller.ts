@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/comm
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication/';
+import { ICurrentUser } from '@src/modules/authentication';
 import { AccountUc } from '../uc/account.uc';
 import {
 	AccountByIdBodyParams,

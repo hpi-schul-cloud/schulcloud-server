@@ -15,7 +15,7 @@ import { isEmail, validateOrReject } from 'class-validator';
 
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
-import { ICurrentUser } from '@src/modules/authentication/';
+import { ICurrentUser } from '@src/modules/authentication';
 import { IAccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,
