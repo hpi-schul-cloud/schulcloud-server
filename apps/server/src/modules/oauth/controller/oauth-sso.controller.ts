@@ -1,14 +1,26 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Controller, Get, Param, Query, Req, Res, UnauthorizedException } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+	Controller,
+	Get,
+	InternalServerErrorException,
+	Param,
+	Query,
+	Req,
+	Res,
+	UnauthorizedException,
+} from '@nestjs/common';
+import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { CookieOptions, Request, Response } from 'express';
+import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
+import { UserMigrationMapper } from '@src/modules/user-migration/mapper/user-migration.mapper';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
+import { UserMigrationResponse } from './dto/user-migration.response';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -67,5 +79,26 @@ export class OauthSSOController {
 			);
 		}
 		return this.hydraUc.requestAuthCode(currentUser.userId, jwt, oauthClientId);
+	}
+
+	@Get('oauth/:systemId/migration')
+	@Authenticate('jwt')
+	@ApiOkResponse({ description: 'The User has been succesfully migrated.' })
+	@ApiResponse({ type: InternalServerErrorException, description: 'The migration of the User was not possible. ' })
+	async migrateUser(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() query: AuthorizationParams,
+		@Res() res: Response,
+		@Param() urlParams: SystemUrlParams
+	): Promise<void> {
+		const migration: UserMigrationDto = await this.oauthUc.migrateUser(currentUser.userId, query, urlParams.systemId);
+		const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
+		if (response.redirect) {
+			res.redirect(response.redirect);
+		} else {
+			throw new InternalServerErrorException(
+				`Migration of ${currentUser.userId} to system ${urlParams.systemId} failed.`
+			);
+		}
 	}
 }

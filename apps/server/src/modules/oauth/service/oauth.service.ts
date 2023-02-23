@@ -123,12 +123,17 @@ export class OAuthService {
 		);
 	}
 
-	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
-		const payload = this.buildTokenRequestPayload(code, oauthConfig);
+	async requestToken(code: string, oauthConfig: OauthConfig, migrationRedirect?: string): Promise<OauthTokenResponse> {
+		const payload: TokenRequestPayload = this.buildTokenRequestPayload(code, oauthConfig, migrationRedirect);
 		const responseToken = this.oauthAdapterService.sendTokenRequest(payload);
 		return responseToken;
 	}
 
+	private buildTokenRequestPayload(
+		code: string,
+		oauthConfig: OauthConfig,
+		migrationRedirect?: string
+	): TokenRequestPayload {
 	private extractOauthConfigFromSystem(system: SystemDto): OauthConfig {
 		const { oauthConfig } = system;
 		if (oauthConfig == null) {
@@ -138,16 +143,6 @@ export class OAuthService {
 			throw new UnauthorizedException('Requested system has no oauth configured', 'sso_internal_error');
 		}
 		return oauthConfig;
-	}
-
-	private buildTokenRequestPayload(code: string, oauthConfig: OauthConfig): TokenRequestPayload {
-		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
-		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
-			oauthConfig,
-			decryptedClientSecret,
-			code
-		);
-		return tokenRequestPayload;
 	}
 
 	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<IJwt> {

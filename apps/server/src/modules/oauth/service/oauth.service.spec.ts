@@ -156,14 +156,22 @@ describe('OAuthService', () => {
 		});
 	});
 	describe('requestToken', () => {
-		const code = '43534543jnj543342jn2';
-		const tokenResponse: OauthTokenResponse = {
-			access_token: 'accessToken',
-			refresh_token: 'refreshToken',
-			id_token: 'idToken',
+		const setupRequest = () => {
+			const code = '43534543jnj543342jn2';
+			const tokenResponse: OauthTokenResponse = {
+				access_token: 'accessToken',
+				refresh_token: 'refreshToken',
+				id_token: 'idToken',
+			};
+
+			return {
+				code,
+				tokenResponse,
+			};
 		};
 
 		beforeEach(() => {
+			const { tokenResponse } = setupRequest();
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
 			oauthAdapterService.sendTokenRequest.mockResolvedValue(tokenResponse);
 		});
