@@ -17,7 +17,7 @@ import { UserMigrationDto } from './dto/userMigration.dto';
 export class UserMigrationService {
 	private readonly hostUrl: string;
 
-	private readonly apiUrl: string;
+	private readonly publicBackendUrl: string;
 
 	private readonly dashboardUrl: string = '/dashboard';
 
@@ -33,7 +33,7 @@ export class UserMigrationService {
 		private readonly accountService: AccountService
 	) {
 		this.hostUrl = Configuration.get('HOST') as string;
-		this.apiUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+		this.publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 	}
 
 	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {
@@ -103,8 +103,9 @@ export class UserMigrationService {
 		}
 	}
 
+	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 	getMigrationRedirectUri(systemId: string): string {
-		const combinedUri = new URL(this.apiUrl);
+		const combinedUri = new URL(this.publicBackendUrl);
 		combinedUri.pathname = `api/v3/sso/oauth/${systemId}/migration`;
 		return combinedUri.toString();
 	}
@@ -123,6 +124,7 @@ export class UserMigrationService {
 			account.systemId = targetSystemId;
 			await this.accountService.save(account);
 
+			// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 			const userMigrationDto: UserMigrationDto = new UserMigrationDto({
 				redirect: `${this.hostUrl}/migration/succeed`,
 			});
@@ -137,6 +139,7 @@ export class UserMigrationService {
 				error: e,
 			});
 
+			// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 			const userMigrationDto: UserMigrationDto = new UserMigrationDto({
 				redirect: `${this.hostUrl}/dashboard`,
 			});
