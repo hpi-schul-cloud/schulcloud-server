@@ -2,11 +2,19 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
-import { Actions, CardType, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
+import { Actions, CardType, Course, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
 import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { RichText } from '@shared/domain/types/richtext.types';
-import { CardElementRepo, RichTextCardElementRepo, TaskCardRepo, TitleCardElementRepo, UserRepo } from '@shared/repo';
 import {
+	CardElementRepo,
+	CourseRepo,
+	RichTextCardElementRepo,
+	TaskCardRepo,
+	TitleCardElementRepo,
+	UserRepo,
+} from '@shared/repo';
+import {
+	courseFactory,
 	richTextCardElementFactory,
 	schoolFactory,
 	setupEntities,
@@ -23,12 +31,14 @@ describe('TaskCardUc', () => {
 	let module: TestingModule;
 	let uc: TaskCardUc;
 	let cardElementRepo: DeepMocked<CardElementRepo>;
+	let courseRepo: DeepMocked<CourseRepo>;
 	let taskCardRepo: DeepMocked<TaskCardRepo>;
 	let userRepo: DeepMocked<UserRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let taskService: DeepMocked<TaskService>;
 	let taskCard: TaskCard;
 	let user!: User;
+	let course: Course;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -60,6 +70,10 @@ describe('TaskCardUc', () => {
 					useValue: createMock<UserRepo>(),
 				},
 				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
+				},
+				{
 					provide: TaskService,
 					useValue: createMock<TaskService>(),
 				},
@@ -72,6 +86,7 @@ describe('TaskCardUc', () => {
 
 		uc = module.get(TaskCardUc);
 		cardElementRepo = module.get(CardElementRepo);
+		courseRepo = module.get(CourseRepo);
 		module.get(TitleCardElementRepo);
 		module.get(RichTextCardElementRepo);
 		taskCardRepo = module.get(TaskCardRepo);
@@ -179,24 +194,29 @@ describe('TaskCardUc', () => {
 		const dueDate = inTwoDays;
 		beforeEach(() => {
 			user = userFactory.buildWithId();
+			course = courseFactory.buildWithId();
 			taskCardCreateParams = {
 				title,
 				text: [
 					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
 					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
 				],
+				courseId: course.id,
 				visibleAtDate,
 				dueDate,
 			};
 
 			userRepo.findById.mockResolvedValue(user);
+			courseRepo.findById.mockResolvedValue(course);
 			taskCardRepo.findById.mockResolvedValue(taskCard);
 			authorizationService.hasAllPermissions.mockReturnValue(true);
 		});
 		afterEach(() => {
 			userRepo.findById.mockRestore();
+			courseRepo.findById.mockRestore();
 			taskCardRepo.findById.mockRestore();
 			authorizationService.hasAllPermissions.mockRestore();
+			taskService.update.mockRestore();
 		});
 		it('should check for permission to create (i.e. edit) the TaskCard', async () => {
 			await uc.create(user.id, taskCardCreateParams);
@@ -208,9 +228,22 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, taskCardCreateParams);
 			}).rejects.toThrow(UnauthorizedException);
 		});
-		it('should call task create and with task name same like task-card title', async () => {
-			const taskParams = { name: taskCardCreateParams.title };
+		it('should fetch course if courseId is given', async () => {
+			const expectedCourseParams = taskCardCreateParams.courseId;
 			await uc.create(user.id, taskCardCreateParams);
+			expect(courseRepo.findById).toBeCalledWith(expectedCourseParams);
+		});
+		it('should check for course permission to create the task related to the task card in a course', async () => {
+			await uc.create(user.id, taskCardCreateParams);
+			expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
+				action: Actions.write,
+				requiredPermissions: [],
+			});
+		});
+		it('should call task create and with task name same like task-card title and courseId if given', async () => {
+			const taskParams = { name: taskCardCreateParams.title, courseId: taskCardCreateParams.courseId };
+			await uc.create(user.id, taskCardCreateParams);
+
 			expect(taskService.create).toBeCalledWith(user.id, taskParams);
 		});
 		it('should throw if due date is before visible at date', async () => {
@@ -238,10 +271,16 @@ describe('TaskCardUc', () => {
 				})
 			);
 		});
+		it('should call task update to add id of task-card to task', async () => {
+			await uc.create(user.id, taskCardCreateParams);
+
+			expect(taskService.update).toBeCalled();
+		});
 		it('should return the task card and task', async () => {
 			const result = await uc.create(user.id, taskCardCreateParams);
 			expect(result.card.task).toEqual(result.taskWithStatusVo.task);
 			expect(result.card.cardType).toEqual(CardType.Task);
+			expect(result.card.course?.id).toEqual(taskCardCreateParams.courseId);
 			expect(result.card.visibleAtDate).toEqual(tomorrow);
 			expect(result.card.dueDate).toEqual(inTwoDays);
 
@@ -249,6 +288,20 @@ describe('TaskCardUc', () => {
 			expect((result.card.cardElements.getItems()[0] as TitleCardElement).value).toEqual(title);
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[2] as RichTextCardElement).value).toEqual(richText[1]);
+		});
+		it('should return the task card and task without course if no courseId is given', async () => {
+			const taskCardCreateParamsWithoutCourse = {
+				title,
+				text: [
+					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
+					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
+				],
+				visibleAtDate,
+				dueDate,
+			};
+			const result = await uc.create(user.id, taskCardCreateParamsWithoutCourse);
+			expect(result.card.task.course).not.toBeDefined();
+			expect(result.taskWithStatusVo.task.course).not.toBeDefined();
 		});
 		it('should return the task card with default visible at date and due date if params are not given and creator does NOT provide current school year', async () => {
 			const taskCardCreateDefaultParams = {
