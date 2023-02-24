@@ -1,11 +1,12 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Injectable, InternalServerErrorException, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolService } from '@src/modules/school';
 import { EntityNotFoundError } from '@shared/common';
 import { SystemDto, SystemService } from '@src/modules/system/service';
 import { SystemTypeEnum } from '@src/shared/domain/types';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { UserService } from '@src/modules/user/service/user.service';
