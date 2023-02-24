@@ -18,13 +18,13 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { UserMigrationService } from '@src/modules/user-login-migration';
+import { OauthConfigDto } from '@src/modules/system/service';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthProcessDto } from './dto/oauth-process.dto';
 import { OAuthService } from './oauth.service';
-import { UserMigrationService } from '../../user-migration';
-import { OauthConfigDto } from '../../system/service';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../../provisioning/dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 

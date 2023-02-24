@@ -7,7 +7,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { Request } from 'express';
-import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
@@ -208,7 +208,7 @@ describe('OAuthController', () => {
 		describe('when migration was successful ', () => {
 			it('should redirect to migration succeed page ', async () => {
 				const { currentUser, res, query, systemParams } = migrationSetup();
-				oauthUc.migrateUser.mockResolvedValue({ redirect: `${mockHost}/migration/succeed` });
+				oauthUc.migrate.mockResolvedValue({ redirect: `${mockHost}/migration/succeed` });
 
 				await controller.migrateUser(currentUser, query, res, systemParams);
 
@@ -219,7 +219,7 @@ describe('OAuthController', () => {
 		describe('when migration failed ', () => {
 			it('should redirect to dashboard ', async () => {
 				const { currentUser, res, query, systemParams } = migrationSetup();
-				oauthUc.migrateUser.mockResolvedValue({ redirect: `${mockHost}/dashboard` });
+				oauthUc.migrate.mockResolvedValue({ redirect: `${mockHost}/dashboard` });
 
 				await controller.migrateUser(currentUser, query, res, systemParams);
 
@@ -230,7 +230,7 @@ describe('OAuthController', () => {
 		describe('when migration redirect is not given ', () => {
 			it('should throw InternalServerErrorException ', async () => {
 				const { currentUser, res, query, systemParams } = migrationSetup();
-				oauthUc.migrateUser.mockResolvedValue(new UserMigrationDto({}));
+				oauthUc.migrate.mockResolvedValue(new MigrationDto({}));
 
 				await expect(controller.migrateUser(currentUser, query, res, systemParams)).rejects.toThrow(
 					new InternalServerErrorException(
