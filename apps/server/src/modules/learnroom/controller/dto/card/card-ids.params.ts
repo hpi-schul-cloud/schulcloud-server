@@ -1,4 +1,4 @@
-import { ApiProperty, ApiQuery } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsMongoId } from 'class-validator';
 
 export class CardIdsParams {
