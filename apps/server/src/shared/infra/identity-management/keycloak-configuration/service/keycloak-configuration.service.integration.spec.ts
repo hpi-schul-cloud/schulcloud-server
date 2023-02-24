@@ -57,7 +57,7 @@ describe('KeycloakConfigurationService Integration', () => {
 
 	beforeEach(async () => {
 		if (isKeycloakAvailable) {
-			await keycloak.realms.create({ realm: testRealm, editUsernameAllowed: true });
+			await keycloak.realms.create({ realm: testRealm, enabled: true });
 			keycloak.setConfig({ realmName: testRealm });
 		}
 	});

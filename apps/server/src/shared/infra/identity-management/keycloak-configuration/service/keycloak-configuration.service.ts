@@ -200,16 +200,12 @@ export class KeycloakConfigurationService {
 	}
 
 	private async createIdentityProvider(system: SystemDto): Promise<void> {
-		try {
-			const kc = await this.kcAdmin.callKcAdminClient();
-			if (system.oidcConfig && system.oidcConfig?.alias) {
-				await kc.identityProviders.create(
-					this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
-				);
-				await this.createIdpDefaultMapper(system.oidcConfig.alias);
-			}
-		} catch (e) {
-			console.error(e);
+		const kc = await this.kcAdmin.callKcAdminClient();
+		if (system.oidcConfig && system.oidcConfig?.alias) {
+			await kc.identityProviders.create(
+				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(system, flowAlias)
+			);
+			await this.createIdpDefaultMapper(system.oidcConfig.alias);
 		}
 	}
 
