@@ -2,7 +2,14 @@ import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { Account } from './account.entity';
 import { CardSkeleton, Column, ColumnBoard, MetaBoard, SingleColumnBoard } from './board.entity';
 import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
-import { LegacyTaskReferenceCard, MetaCard } from './card.entity';
+import {
+	ContentElement,
+	LegacyLessonContentElement,
+	LegacyLessonReferenceCard,
+	LegacyTaskContentElement,
+	LegacyTaskReferenceCard,
+	MetaCard,
+} from './card.entity';
 import { CardElement, RichTextCardElement, TitleCardElement } from './cardElement.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
@@ -35,6 +42,10 @@ export const ALL_ENTITIES = [
 	Column,
 	BoardElement,
 	MetaCard,
+	LegacyLessonReferenceCard,
+	LegacyTaskContentElement,
+	LegacyLessonContentElement,
+	ContentElement,
 	LegacyTaskReferenceCard,
 	CardSkeleton,
 	Course,

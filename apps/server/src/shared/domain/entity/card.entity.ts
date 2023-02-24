@@ -1,50 +1,105 @@
-import { Cascade, Collection, Entity, Enum, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { CardType, ICard, ICardCProps } from '../types';
+import { Embeddable, Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { CardElement } from './cardElement.entity';
+import { Lesson } from './lesson.entity';
+import { Task } from './task.entity';
 import { User } from './user.entity';
+
+export enum ContentElementType {
+	LEGACY_TASK = 'legacy-task',
+	LEGACY_LESSON = 'legacy-lesson',
+}
+
+@Embeddable({ abstract: true, discriminatorColumn: 'type' })
+export class ContentElement extends BaseEntityWithTimestamps {
+	constructor() {
+		super();
+		this._id = new ObjectId();
+	}
+
+	@Enum(() => ContentElementType)
+	type!: ContentElementType;
+}
+
+@Embeddable({ discriminatorValue: ContentElementType.LEGACY_LESSON })
+export class LegacyLessonContentElement extends ContentElement {
+	constructor(props: { lesson: Lesson }) {
+		super();
+		this._id = new ObjectId();
+		this.type = ContentElementType.LEGACY_LESSON;
+		this.lesson = props.lesson;
+	}
+
+	@ManyToOne('Lesson', { nullable: true, eager: true })
+	lesson!: Lesson;
+}
+
+@Embeddable({ discriminatorValue: ContentElementType.LEGACY_TASK })
+export class LegacyTaskContentElement extends ContentElement {
+	constructor(props: { task: Task }) {
+		super();
+		this._id = new ObjectId();
+		this.type = ContentElementType.LEGACY_TASK;
+
+		this.task = props.task;
+	}
+
+	@ManyToOne('Task', { nullable: true, eager: true })
+	task!: Task;
+}
+
+export interface MetaCardProps {
+	publishedAt: Date;
+	creator: User;
+	elements: ContentElement[];
+}
+
+export enum BoardCardType {
+	TASK = 'task',
+	CONTENT = 'content',
+	LEGACY_TASK = 'legacy-task',
+	LEGACY_LESSON = 'legacy-lesson',
+}
 
 @Entity({
 	tableName: 'cards',
 	abstract: true,
 	discriminatorColumn: 'cardType',
 })
-export class MetaCard extends BaseEntityWithTimestamps implements ICard {
-	constructor(props: ICardCProps) {
+export class MetaCard extends BaseEntityWithTimestamps {
+	constructor(props: MetaCardProps) {
 		super();
-
-		this.draggable = props.draggable || true;
-		this.visibleAtDate = props.visibleAtDate;
-
-		this.cardElements.set(props.cardElements);
+		this.publishedAt = props.publishedAt;
 		Object.assign(this, { creator: props.creator });
+		this.elements = props.elements;
 	}
 
-	@ManyToMany('CardElement', undefined, { fieldName: 'cardElementsIds', cascade: [Cascade.ALL] })
-	cardElements = new Collection<CardElement>(this);
-
 	@Enum()
-	cardType!: CardType;
+	cardType!: BoardCardType;
+
+	@Embedded(() => ContentElement, { array: true })
+	elements: ContentElement[] = [];
 
 	@Index()
 	@ManyToOne('User', { fieldName: 'userId' })
 	creator!: User;
 
-	@Property()
-	draggable = true;
-
 	@Property({ nullable: true })
-	visibleAtDate?: Date;
+	publishedAt?: Date;
+}
 
-	public getCardElements() {
-		return this.cardElements.getItems();
+@Entity({ discriminatorValue: BoardCardType.LEGACY_TASK })
+export class LegacyTaskReferenceCard extends MetaCard {
+	constructor(props: MetaCardProps) {
+		super(props);
+		this.cardType = BoardCardType.LEGACY_TASK;
 	}
 }
 
-@Entity({ discriminatorValue: CardType.LegacyTaskReference })
-export class LegacyTaskReferenceCard extends MetaCard {
-	constructor(props: ICardCProps) {
+@Entity({ discriminatorValue: BoardCardType.LEGACY_LESSON })
+export class LegacyLessonReferenceCard extends MetaCard {
+	constructor(props: MetaCardProps) {
 		super(props);
-		this.cardType = CardType.LegacyTaskReference;
+		this.cardType = BoardCardType.LEGACY_LESSON;
 	}
 }

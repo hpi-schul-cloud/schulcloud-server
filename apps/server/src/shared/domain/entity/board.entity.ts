@@ -6,7 +6,6 @@ import {
 	Enum,
 	IdentifiedReference,
 	ManyToMany,
-	ManyToOne,
 	OneToOne,
 	Property,
 	wrap,
@@ -33,10 +32,8 @@ export type CardSkeletonProps = {
 };
 
 @Embeddable()
-export class CardSkeleton extends BaseEntityWithTimestamps {
+export class CardSkeleton {
 	constructor(props: CardSkeletonProps) {
-		super();
-		this._id = new ObjectId();
 		this.height = props.height;
 		this.card = wrap(props.card).toReference();
 	}
@@ -44,7 +41,7 @@ export class CardSkeleton extends BaseEntityWithTimestamps {
 	@Property()
 	height: number;
 
-	@ManyToOne(() => 'MetaCard', { wrappedReference: true })
+	@OneToOne(() => 'MetaCard', undefined, { wrappedReference: true })
 	card: IdentifiedReference<MetaCard>;
 }
 

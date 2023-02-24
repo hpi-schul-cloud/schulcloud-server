@@ -1,15 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
+import { BoardCardType } from '@shared/domain/entity/card.entity';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 
 export class ContentElementResponse {}
-
-export enum BoardCardType {
-	TASK = 'task',
-	CONTENT = 'content',
-	LEGACY_TASK = 'legacy-task',
-	LEGACY_LESSON = 'legacy-lesson',
-}
 
 export class CardResponse {
 	constructor({ id, title, elements, cardType, visibilitySettings }: CardResponse) {
