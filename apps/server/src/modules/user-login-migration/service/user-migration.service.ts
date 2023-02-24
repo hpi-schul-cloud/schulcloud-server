@@ -11,7 +11,7 @@ import { AccountDto } from '@src/modules/account/services/dto';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
-import { UserMigrationDto } from './dto/userMigration.dto';
+import { MigrationDto } from './dto/migration.dto';
 
 @Injectable()
 export class UserMigrationService {
@@ -110,7 +110,7 @@ export class UserMigrationService {
 		return combinedUri.toString();
 	}
 
-	async migrateUser(currentUserId: string, externalUserId: string, targetSystemId: string): Promise<UserMigrationDto> {
+	async migrateUser(currentUserId: string, externalUserId: string, targetSystemId: string): Promise<MigrationDto> {
 		const userDO: UserDO = await this.userService.findById(currentUserId);
 		const account: AccountDto = await this.accountService.findByUserIdOrFail(currentUserId);
 		const userDOCopy: UserDO = { ...userDO };
@@ -125,7 +125,7 @@ export class UserMigrationService {
 			await this.accountService.save(account);
 
 			// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
-			const userMigrationDto: UserMigrationDto = new UserMigrationDto({
+			const userMigrationDto: MigrationDto = new MigrationDto({
 				redirect: `${this.hostUrl}/migration/succeed`,
 			});
 			return userMigrationDto;
@@ -140,7 +140,7 @@ export class UserMigrationService {
 			});
 
 			// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
-			const userMigrationDto: UserMigrationDto = new UserMigrationDto({
+			const userMigrationDto: MigrationDto = new MigrationDto({
 				redirect: `${this.hostUrl}/dashboard`,
 			});
 			return userMigrationDto;
