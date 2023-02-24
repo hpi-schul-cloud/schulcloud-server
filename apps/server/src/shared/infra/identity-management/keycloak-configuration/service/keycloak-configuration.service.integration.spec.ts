@@ -27,8 +27,6 @@ describe('KeycloakConfigurationService Integration', () => {
 	const systems = SystemMapper.mapFromEntitiesToDtos(systemFactory.withOidcConfig().buildList(2));
 
 	beforeAll(async () => {
-		jest.setTimeout(10 * 60 * 1000);
-
 		module = await Test.createTestingModule({
 			imports: [
 				KeycloakConfigurationModule,

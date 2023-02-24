@@ -133,7 +133,7 @@ export class KeycloakConfigurationService {
 		let count = 0;
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const oldConfigs = await kc.identityProviders.find();
-		const newConfigs = (await this.systemService?.findByType(SystemTypeEnum.OIDC)) || [];
+		const newConfigs = await this.systemService.findByType(SystemTypeEnum.OIDC);
 		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const configureAction of configureActions) {

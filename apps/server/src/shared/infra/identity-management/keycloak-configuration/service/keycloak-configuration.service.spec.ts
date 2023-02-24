@@ -222,6 +222,17 @@ describe('KeycloakConfigurationService Unit', () => {
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(kcApiClientMock.create).toBeCalledTimes(1);
 		});
+
+		it('should create a redirectUri with localhost', async () => {
+			configService.get.mockReturnValue('localhost');
+			await expect(service.configureClient()).resolves.not.toThrow();
+		});
+
+		it('should create a redirectUri with something other than localhost', async () => {
+			configService.get.mockReturnValue('anotherDomain');
+			await expect(service.configureClient()).resolves.not.toThrow();
+		});
+
 		it('should not create client if client already exists', async () => {
 			kcApiClientMock.find.mockResolvedValueOnce([{ id: 'old_client_id' }]);
 			await expect(service.configureClient()).resolves.not.toThrow();
