@@ -16,8 +16,8 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { CookieOptions, Request, Response } from 'express';
-import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
-import { UserMigrationMapper } from '@src/modules/user-migration/mapper/user-migration.mapper';
+import { UserMigrationMapper } from '@src/modules/user-login-migration/mapper/user-migration.mapper';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
 import { UserMigrationResponse } from './dto/user-migration.response';
@@ -91,7 +91,7 @@ export class OauthSSOController {
 		@Res() res: Response,
 		@Param() urlParams: SystemUrlParams
 	): Promise<void> {
-		const migration: UserMigrationDto = await this.oauthUc.migrateUser(currentUser.userId, query, urlParams.systemId);
+		const migration: MigrationDto = await this.oauthUc.migrate(currentUser.userId, query, urlParams.systemId);
 		const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
 		if (response.redirect) {
 			res.redirect(response.redirect);
