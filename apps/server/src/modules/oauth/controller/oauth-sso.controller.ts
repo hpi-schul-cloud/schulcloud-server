@@ -17,7 +17,7 @@ import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-toke
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { CookieOptions, Request, Response } from 'express';
 import { UserMigrationMapper } from '@src/modules/migration/mapper/user-migration.mapper';
-import { MigrationDto } from '../../migration/service/dto/migration.dto';
+import { MigrationDto } from '@src/modules/migration/service/dto/migration.dto';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
 import { UserMigrationResponse } from './dto/user-migration.response';

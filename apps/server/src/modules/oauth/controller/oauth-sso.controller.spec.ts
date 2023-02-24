@@ -7,7 +7,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { Request } from 'express';
-import { MigrationDto } from '../../migration/service/dto/migration.dto';
+import { MigrationDto } from '@src/modules/migration/service/dto/migration.dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
