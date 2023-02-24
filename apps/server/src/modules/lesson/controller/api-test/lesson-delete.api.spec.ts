@@ -104,7 +104,7 @@ describe('Lesson Controller (API)', () => {
 					title: 'API Validation Error',
 					message: 'API validation failed, see validationErrors for details',
 					code: 400,
-					validationErrors: [{ field: 'lessonId', errors: ['lessonId must be a mongodb id'] }],
+					validationErrors: [{ field: ['lessonId'], errors: ['lessonId must be a mongodb id'] }],
 				});
 			});
 		});
