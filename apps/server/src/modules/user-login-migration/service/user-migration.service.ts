@@ -36,12 +36,6 @@ export class UserMigrationService {
 		this.publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 	}
 
-	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {
-		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
-		const isInMigration: boolean = !!school?.oauthMigrationPossible || !!school?.oauthMigrationMandatory;
-		return isInMigration;
-	}
-
 	async getMigrationRedirect(officialSchoolNumber: string, originSystemId: string): Promise<string> {
 		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 		const oauthSystems: SystemDto[] = await this.systemService.findOAuth();

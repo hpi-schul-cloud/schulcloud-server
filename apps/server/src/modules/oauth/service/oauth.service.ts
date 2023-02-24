@@ -14,6 +14,7 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { SystemService } from '@src/modules/system';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { MigrationCheckService } from '@src/modules/user-login-migration/service/migration-check.service';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
@@ -29,7 +30,8 @@ export class OAuthService {
 		private readonly logger: Logger,
 		private readonly provisioningService: ProvisioningService,
 		private readonly systemService: SystemService,
-		private readonly userMigrationService: UserMigrationService
+		private readonly userMigrationService: UserMigrationService,
+		private readonly migrationCheckService: MigrationCheckService
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
@@ -69,23 +71,24 @@ export class OAuthService {
 			system.id
 		);
 
-		// TODO Move Migration Checks to other service
-		if (data.externalSchool?.officialSchoolNumber) {
-			const shouldMigrate: boolean = await this.shouldUserMigrate(
-				data.externalUser.externalId,
-				data.externalSchool.officialSchoolNumber,
-				system.id
-			);
-			if (shouldMigrate) {
-				redirect = await this.userMigrationService.getMigrationRedirect(
-					data.externalSchool.officialSchoolNumber,
-					system.id
-				);
-				return { user: undefined, redirect };
-			}
+		// TODO: rename?
+		const migrationRedirect: string | undefined = await this.migrationCheckService.checkMigration(
+			data.externalUser.externalId,
+			system.id,
+			data.externalSchool?.officialSchoolNumber
+		);
+		if (!migrationRedirect) {
+			return { user: undefined, redirect };
 		}
 
-		redirect = this.getRedirectUrl(oauthConfig.provider, queryToken.id_token, oauthConfig.logoutEndpoint);
+		// TODO if user !found then return
+
+		redirect = this.getPostLoginRedirectUrl(
+			oauthConfig.provider,
+			queryToken.id_token,
+			oauthConfig.logoutEndpoint,
+			migrationRedirect
+		);
 
 		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
 
@@ -175,24 +178,20 @@ export class OAuthService {
 		return queryToken;
 	}
 
-	/**
-	 * Builds the URL from the given parameters.
-	 *
-	 * @param provider
-	 * @param idToken
-	 * @param logoutEndpoint
-	 * @return built redirectUrl
-	 */
-	getRedirectUrl(provider: string, idToken = '', logoutEndpoint = ''): string {
-		const HOST = Configuration.get('HOST') as string;
+	getPostLoginRedirectUrl(provider: string, idToken = '', logoutEndpoint = '', postLoginRedirect?: string): string {
+		const clientUrl: string = Configuration.get('HOST') as string;
+		const dashboardUrl: URL = new URL('/dashboard', clientUrl);
 
-		// iserv strategy
-		// TODO: move to client in https://ticketsystem.dbildungscloud.de/browse/N21-381
 		let redirect: string;
 		if (provider === 'iserv') {
-			redirect = `${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`;
+			const iservLogoutUrl: URL = new URL(logoutEndpoint);
+			iservLogoutUrl.searchParams.append('id_token_hint', idToken);
+			iservLogoutUrl.searchParams.append('post_logout_redirect_uri', postLoginRedirect || dashboardUrl.toString());
+			redirect = iservLogoutUrl.toString();
+		} else if (postLoginRedirect) {
+			redirect = postLoginRedirect;
 		} else {
-			redirect = `${HOST}/dashboard`;
+			redirect = dashboardUrl.toString();
 		}
 
 		return redirect;
@@ -216,14 +215,6 @@ export class OAuthService {
 			redirect,
 		});
 		return oauthResponse;
-	}
-
-	private async shouldUserMigrate(externalUserId: string, officialSchoolNumber: string, systemId: EntityId) {
-		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
-		const isSchoolInMigration: boolean = await this.userMigrationService.isSchoolInMigration(officialSchoolNumber);
-
-		const shouldMigrate = !existingUser && isSchoolInMigration;
-		return shouldMigrate;
 	}
 
 	private extractOauthConfigFromSystem(system: SystemDto): OauthConfig {

@@ -5,6 +5,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserService } from '@src/modules/user';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
+import { SchoolMigrationFlags } from './dto/school-migration-flags';
 
 @Injectable()
 export class SchoolMigrationService {
@@ -61,6 +62,16 @@ export class SchoolMigrationService {
 			return null;
 		}
 		return existingSchool;
+	}
+
+	// TODO: maybe get name
+	async isSchoolInMigration(officialSchoolNumber: string): Promise<SchoolMigrationFlags> {
+		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+		const schoolMigrationFlags: SchoolMigrationFlags = {
+			isPossible: !!school?.oauthMigrationPossible,
+			isMandatory: !!school?.oauthMigrationMandatory,
+		};
+		return schoolMigrationFlags;
 	}
 
 	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {
