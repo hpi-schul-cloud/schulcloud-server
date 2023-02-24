@@ -147,7 +147,7 @@ describe('Submission Controller (API)', () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['taskId must be a mongodb id'],
-						field: 'taskId',
+						field: ['taskId'],
 					},
 				]);
 			});
@@ -265,7 +265,7 @@ describe('Submission Controller (API)', () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['submissionId must be a mongodb id'],
-						field: 'submissionId',
+						field: ['submissionId'],
 					},
 				]);
 			});

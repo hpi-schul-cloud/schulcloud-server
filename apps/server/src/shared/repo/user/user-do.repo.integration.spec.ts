@@ -8,6 +8,7 @@ import { Logger } from '@src/core/logger';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { IUserProperties, LanguageType, Role, School, System, User } from '@shared/domain';
+import { EntityNotFoundError } from '@shared/common';
 
 class UserRepoSpec extends UserDORepo {
 	mapEntityToDOSpec(entity: User): UserDO {
@@ -165,6 +166,42 @@ describe('UserRepo', () => {
 			const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
 
 			expect(result).toBeNull();
+		});
+	});
+	describe('findByExternalIdOrFail', () => {
+		const externalId = 'externalId';
+		let system: System;
+		let school: School;
+		let user: User;
+
+		beforeEach(async () => {
+			system = systemFactory.buildWithId();
+			school = schoolFactory.buildWithId();
+			school.systems.add(system);
+			user = userFactory.buildWithId({ externalId, school });
+
+			await em.persistAndFlush([user, system, school]);
+		});
+
+		it('should find a user by its external id', async () => {
+			const result: UserDO = await repo.findByExternalIdOrFail(user.externalId as string, system.id);
+
+			expect(result).toEqual(
+				expect.objectContaining({
+					id: user.id,
+					externalId: user.externalId,
+					schoolId: school.id,
+				})
+			);
+		});
+
+		describe('when no user with external id was found', () => {
+			it('should fail', async () => {
+				await em.nativeDelete(User, {});
+				await expect(repo.findByExternalIdOrFail(user.externalId as string, system.id)).rejects.toThrow(
+					EntityNotFoundError
+				);
+			});
 		});
 	});
 
