@@ -1,9 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId, PermissionContextBuilder, User } from '@shared/domain';
+import { Actions, EntityId, PermissionContextBuilder, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CourseRepo, LessonRepo } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { LessonCopyParentParams } from '@src/modules/lesson';
 import { LessonCopyService } from '@src/modules/lesson/service';
@@ -27,31 +27,31 @@ export class LessonCopyUC {
 			throw new ForbiddenException('could not find lesson to copy');
 		}
 
-		let destinationCourse = originalLesson.course;
-		if (parentParams.courseId) {
-			destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
-		}
+		const destinationCourse = parentParams.courseId
+			? await this.courseRepo.findById(parentParams.courseId)
+			: originalLesson.course;
+		await this.authorisation.checkPermissionByReferences(
+			userId,
+			AllowedAuthorizationEntityType.Course,
+			destinationCourse.id,
+			{
+				action: Actions.write,
+				requiredPermissions: [],
+			}
+		);
 
 		const [existingLessons] = await this.lessonRepo.findAllByCourseIds([originalLesson.course.id]);
 		const existingNames = existingLessons.map((l) => l.name);
 		const copyName = this.copyHelperService.deriveCopyName(originalLesson.name, existingNames);
 
 		const copyStatus = await this.lessonCopyService.copyLesson({
-			originalLesson,
+			originalLessonId: originalLesson.id,
 			destinationCourse,
 			user,
 			copyName,
 		});
 
 		return copyStatus;
-	}
-
-	private async getDestinationCourse(courseId: string, user: User) {
-		const destinationCourse = await this.courseRepo.findById(courseId);
-		if (!this.authorisation.hasPermission(user, destinationCourse, PermissionContextBuilder.write([]))) {
-			throw new ForbiddenException('you dont have permission to add to this course');
-		}
-		return destinationCourse;
 	}
 
 	private featureEnabled() {

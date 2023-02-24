@@ -8,6 +8,7 @@ import { Logger } from '@src/core/logger';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { IUserProperties, LanguageType, Role, School, System, User } from '@shared/domain';
+import { EntityNotFoundError } from '@shared/common';
 
 class UserRepoSpec extends UserDORepo {
 	mapEntityToDOSpec(entity: User): UserDO {
@@ -167,6 +168,42 @@ describe('UserRepo', () => {
 			expect(result).toBeNull();
 		});
 	});
+	describe('findByExternalIdOrFail', () => {
+		const externalId = 'externalId';
+		let system: System;
+		let school: School;
+		let user: User;
+
+		beforeEach(async () => {
+			system = systemFactory.buildWithId();
+			school = schoolFactory.buildWithId();
+			school.systems.add(system);
+			user = userFactory.buildWithId({ externalId, school });
+
+			await em.persistAndFlush([user, system, school]);
+		});
+
+		it('should find a user by its external id', async () => {
+			const result: UserDO = await repo.findByExternalIdOrFail(user.externalId as string, system.id);
+
+			expect(result).toEqual(
+				expect.objectContaining({
+					id: user.id,
+					externalId: user.externalId,
+					schoolId: school.id,
+				})
+			);
+		});
+
+		describe('when no user with external id was found', () => {
+			it('should fail', async () => {
+				await em.nativeDelete(User, {});
+				await expect(repo.findByExternalIdOrFail(user.externalId as string, system.id)).rejects.toThrow(
+					EntityNotFoundError
+				);
+			});
+		});
+	});
 
 	describe('mapEntityToDO', () => {
 		it('should return a domain object', () => {
@@ -193,6 +230,7 @@ describe('UserRepo', () => {
 			testEntity.importHash = 'importHash';
 			testEntity.outdatedSince = new Date();
 			testEntity.lastLoginSystemChange = new Date();
+			testEntity.previousExternalId = 'someId';
 
 			const userDO: UserDO = repo.mapEntityToDOSpec(testEntity);
 
@@ -217,6 +255,7 @@ describe('UserRepo', () => {
 					preferences: testEntity.preferences,
 					outdatedSince: testEntity.outdatedSince,
 					lastLoginSystemChange: testEntity.lastLoginSystemChange,
+					previousExternalId: testEntity.previousExternalId,
 				})
 			);
 		});
@@ -238,6 +277,7 @@ describe('UserRepo', () => {
 				preferences: { firstLogin: true },
 				outdatedSince: new Date(),
 				lastLoginSystemChange: new Date(),
+				previousExternalId: 'someId',
 			});
 
 			const result: IUserProperties = repo.mapDOToEntityPropertiesSpec(testDO);
@@ -256,6 +296,7 @@ describe('UserRepo', () => {
 					preferences: testDO.preferences,
 					outdatedSince: testDO.outdatedSince,
 					lastLoginSystemChange: testDO.lastLoginSystemChange,
+					previousExternalId: testDO.previousExternalId,
 				})
 			);
 		});

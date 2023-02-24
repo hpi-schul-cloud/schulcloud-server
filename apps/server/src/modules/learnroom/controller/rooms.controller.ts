@@ -10,13 +10,13 @@ import { CourseCopyUC } from '../uc/course-copy.uc';
 import { LessonCopyUC } from '../uc/lesson-copy.uc';
 import { RoomsUc } from '../uc/rooms.uc';
 import {
-	BoardResponse,
 	LessonCopyApiParams,
 	LessonUrlParams,
 	PatchOrderParams,
 	PatchVisibilityParams,
 	RoomElementUrlParams,
 	RoomUrlParams,
+	SingleColumnBoardResponse,
 } from './dto';
 
 @ApiTags('Rooms')
@@ -34,7 +34,7 @@ export class RoomsController {
 	async getRoomBoard(
 		@Param() urlParams: RoomUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<BoardResponse> {
+	): Promise<SingleColumnBoardResponse> {
 		const board = await this.roomsUc.getBoard(urlParams.roomId, currentUser.userId);
 		const mapped = this.mapper.mapToResponse(board);
 		return mapped;

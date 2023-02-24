@@ -82,7 +82,7 @@ export class BoardCopyService {
 
 	private async copyLesson(originalLesson: Lesson, user: User, destinationCourse: Course): Promise<CopyStatus> {
 		return this.lessonCopyService.copyLesson({
-			originalLesson,
+			originalLessonId: originalLesson.id,
 			user,
 			destinationCourse,
 		});

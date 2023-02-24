@@ -1,15 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
-import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { setupEntities } from '@shared/testing';
+import { accountFactory, setupEntities } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { UserService } from '@src/modules/user';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { AccountDto } from '@src/modules/account/services/dto';
+import { Logger } from '@src/core/logger';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
 import { UserMigrationService } from './user-migration.service';
@@ -18,12 +25,22 @@ describe('UserMigrationService', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
 	let service: UserMigrationService;
+	let configBefore: IConfig;
 
 	let schoolService: DeepMocked<SchoolService>;
 	let systemService: DeepMocked<SystemService>;
+	let userService: DeepMocked<UserService>;
+	let accountService: DeepMocked<AccountService>;
+
+	const hostUri = 'http://this.de';
+	const apiUrl = 'http://mock.de';
+	const s3 = 'sKey123456789123456789';
 
 	beforeAll(async () => {
-		jest.spyOn(Configuration, 'get').mockReturnValue('http://this.de');
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		Configuration.set('HOST', hostUri);
+		Configuration.set('PUBLIC_BACKEND_URL', apiUrl);
+		Configuration.set('S3_KEY', s3);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -36,12 +53,26 @@ describe('UserMigrationService', () => {
 					provide: SystemService,
 					useValue: createMock<SystemService>(),
 				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
+				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(UserMigrationService);
 		schoolService = module.get(SchoolService);
 		systemService = module.get(SystemService);
+		userService = module.get(UserService);
+		accountService = module.get(AccountService);
 
 		orm = await setupEntities();
 	});
@@ -49,6 +80,8 @@ describe('UserMigrationService', () => {
 	afterAll(async () => {
 		await module.close();
 		await orm.close();
+
+		Configuration.reset(configBefore);
 	});
 
 	const setup = () => {
@@ -183,16 +216,16 @@ describe('UserMigrationService', () => {
 				oauthConfig: targetOauthConfig,
 			});
 
-			const migrationRedirect = 'http://this.de/api/v3/sso/oauth/targetSystemId/migration';
+			const migrationRedirectUri = 'http://mock.de/api/v3/sso/oauth/targetSystemId/migration';
 
-			return { sourceSystem, targetSystem, sourceOauthConfig, targetOauthConfig, migrationRedirect };
+			return { sourceSystem, targetSystem, sourceOauthConfig, targetOauthConfig, migrationRedirectUri };
 		};
 
 		describe('when coming from the target system', () => {
 			it('should return the url to the source system and a frontpage url', async () => {
-				const { sourceSystem, targetSystem, sourceOauthConfig, migrationRedirect } = setupPageContent();
+				const { sourceSystem, targetSystem, sourceOauthConfig, migrationRedirectUri } = setupPageContent();
 				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
-					migrationRedirect
+					migrationRedirectUri
 				)}&response_type=code&scope=openid+uuid`;
 				const redirectUrl = `${sourceOauthConfig.redirectUri}?postLoginRedirect=${encodeURIComponent(
 					targetSystemLoginUrl
@@ -219,9 +252,9 @@ describe('UserMigrationService', () => {
 
 		describe('when coming from the source system', () => {
 			it('should return the url to the target system and a dashboard url', async () => {
-				const { sourceSystem, targetSystem, migrationRedirect } = setupPageContent();
+				const { sourceSystem, targetSystem, migrationRedirectUri } = setupPageContent();
 				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
-					migrationRedirect
+					migrationRedirectUri
 				)}&response_type=code&scope=openid+uuid`;
 
 				systemService.findById.mockResolvedValueOnce(sourceSystem);
@@ -242,9 +275,9 @@ describe('UserMigrationService', () => {
 
 		describe('when coming from the source system and the migration is mandatory', () => {
 			it('should return the url to the target system and a logout url', async () => {
-				const { sourceSystem, targetSystem, migrationRedirect } = setupPageContent();
+				const { sourceSystem, targetSystem, migrationRedirectUri } = setupPageContent();
 				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
-					migrationRedirect
+					migrationRedirectUri
 				)}&response_type=code&scope=openid+uuid`;
 
 				systemService.findById.mockResolvedValueOnce(sourceSystem);
@@ -289,6 +322,148 @@ describe('UserMigrationService', () => {
 				);
 
 				await expect(promise).rejects.toThrow(EntityNotFoundError);
+			});
+		});
+	});
+
+	describe('migrateUser is called', () => {
+		beforeEach(() => {
+			jest.useFakeTimers();
+			jest.setSystemTime(new Date(2020, 1, 1));
+		});
+
+		const setupMigrationData = () => {
+			const targetSystemId = new ObjectId().toHexString();
+
+			const notMigratedUser: UserDO = new UserDO({
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				email: 'emailMock',
+				firstName: 'firstNameMock',
+				lastName: 'lastNameMock',
+				roleIds: ['roleIdMock'],
+				schoolId: 'schoolMock',
+				externalId: 'currentUserExternalIdMock',
+			});
+
+			const migratedUserDO: UserDO = new UserDO({
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				email: 'emailMock',
+				firstName: 'firstNameMock',
+				lastName: 'lastNameMock',
+				roleIds: ['roleIdMock'],
+				schoolId: 'schoolMock',
+				externalId: 'externalUserTargetId',
+				previousExternalId: 'currentUserExternalIdMock',
+				lastLoginSystemChange: new Date(),
+			});
+
+			const id = new ObjectId().toHexString();
+			const userId = new ObjectId().toHexString();
+			const systemId = new ObjectId().toHexString();
+
+			const accountDto = accountFactory.buildWithId(
+				{
+					userId,
+					username: '',
+					systemId,
+				},
+				id
+			) as AccountDto;
+
+			const migratedAccount = accountFactory.buildWithId(
+				{
+					userId,
+					username: '',
+					systemId: targetSystemId,
+				},
+				id
+			);
+
+			return {
+				accountDto,
+				migratedUserDO,
+				notMigratedUser,
+				migratedAccount,
+				targetSystemId,
+			};
+		};
+
+		describe('when migrate user was successful', () => {
+			it('should return to migration succeed page', async () => {
+				const { targetSystemId } = setupMigrationData();
+
+				const result = await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
+
+				expect(result.redirect).toStrictEqual(`${hostUri}/migration/succeed`);
+			});
+
+			it('should call methods of migration ', async () => {
+				const { migratedUserDO, migratedAccount, targetSystemId } = setupMigrationData();
+
+				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
+
+				expect(userService.findById).toHaveBeenCalledWith('userId');
+				expect(userService.save).toHaveBeenCalledWith(migratedUserDO);
+				expect(accountService.findByUserIdOrFail).toHaveBeenCalledWith('userId');
+				expect(accountService.save).toHaveBeenCalledWith(migratedAccount);
+			});
+
+			it('should do migration of user', async () => {
+				const { migratedUserDO, notMigratedUser, accountDto, targetSystemId } = setupMigrationData();
+				userService.findById.mockResolvedValue(notMigratedUser);
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
+
+				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
+
+				expect(userService.save).toHaveBeenCalledWith(migratedUserDO);
+			});
+
+			it('should do migration of account', async () => {
+				const { notMigratedUser, accountDto, migratedAccount, targetSystemId } = setupMigrationData();
+				userService.findById.mockResolvedValue(notMigratedUser);
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
+
+				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
+
+				expect(accountService.save).toHaveBeenCalledWith(migratedAccount);
+			});
+		});
+
+		describe('when migration step failed', () => {
+			it('should throw Error', async () => {
+				const targetSystemId = new ObjectId().toHexString();
+				userService.findById.mockRejectedValue(new NotFoundException('Could not find User'));
+
+				await expect(service.migrateUser('userId', 'externalUserTargetId', targetSystemId)).rejects.toThrow(
+					new NotFoundException('Could not find User')
+				);
+			});
+
+			it('should do a rollback of migration', async () => {
+				const { notMigratedUser, accountDto, targetSystemId } = setupMigrationData();
+				const error = new NotFoundException('Test Error');
+				userService.findById.mockResolvedValue(notMigratedUser);
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
+				accountService.save.mockRejectedValueOnce(error);
+
+				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
+
+				expect(userService.save).toHaveBeenCalledWith(notMigratedUser);
+				expect(accountService.save).toHaveBeenCalledWith(accountDto);
+			});
+
+			it('should return to dashboard', async () => {
+				const { migratedUserDO, accountDto, targetSystemId } = setupMigrationData();
+				const error = new NotFoundException('Test Error');
+				userService.findById.mockResolvedValue(migratedUserDO);
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
+				accountService.save.mockRejectedValueOnce(error);
+
+				const result = await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
+
+				expect(result.redirect).toStrictEqual(`${hostUri}/dashboard`);
 			});
 		});
 	});
