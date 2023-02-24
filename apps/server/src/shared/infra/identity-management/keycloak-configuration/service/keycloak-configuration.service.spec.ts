@@ -19,7 +19,7 @@ import { of } from 'rxjs';
 import { v1 } from 'uuid';
 import {
 	IKeycloakSettings,
-	KeycloakSettings
+	KeycloakSettings,
 } from '../../keycloak-administration/interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
@@ -69,7 +69,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			providerId: 'oidc',
 			alias: systems[0].alias,
 			enabled: true,
-			oidcConfig: {
+			config: {
 				clientId: 'clientId',
 				clientSecret: 'clientSecret',
 				authorizationUrl: 'authorizationUrl',
@@ -91,6 +91,8 @@ describe('KeycloakConfigurationService Unit', () => {
 							.mockImplementation(async (): Promise<KeycloakAdminClient> => Promise.resolve(client)),
 						testKcConnection: jest.fn().mockResolvedValue(true),
 						getAdminUser: jest.fn().mockReturnValue(adminUser.username),
+						getClientId: jest.fn().mockResolvedValue(getSettings().clientId),
+						getClientSecret: jest.fn().mockResolvedValue('clientSecret'),
 					},
 				},
 				{
