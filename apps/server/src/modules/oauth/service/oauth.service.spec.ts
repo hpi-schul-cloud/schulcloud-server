@@ -18,7 +18,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { UserMigrationService } from '@src/modules/migration';
+import { UserMigrationService } from '@src/modules/user-login-migration';
 import { OauthConfigDto } from '@src/modules/system/service';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';

@@ -16,8 +16,8 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { CookieOptions, Request, Response } from 'express';
-import { UserMigrationMapper } from '@src/modules/migration/mapper/user-migration.mapper';
-import { MigrationDto } from '@src/modules/migration/service/dto/migration.dto';
+import { UserMigrationMapper } from '@src/modules/user-login-migration/mapper/user-migration.mapper';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
 import { UserMigrationResponse } from './dto/user-migration.response';

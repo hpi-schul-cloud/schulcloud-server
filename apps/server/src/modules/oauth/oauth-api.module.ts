@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { SystemModule } from '@src/modules/system';
 import { UserModule } from '@src/modules/user';
-import { MigrationModule } from '@src/modules/migration';
+import { UserLoginMigrationModule } from '@src/modules/user-login-migration';
 import { SchoolModule } from '@src/modules/school';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { AuthorizationModule } from '../authorization';
@@ -16,7 +16,7 @@ import { HydraOauthUc, OauthUc } from './uc';
 		AuthorizationModule,
 		ProvisioningModule,
 		SchoolModule,
-		MigrationModule,
+		UserLoginMigrationModule,
 		SystemModule,
 		UserModule,
 		LoggerModule,

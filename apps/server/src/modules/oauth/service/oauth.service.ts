@@ -11,7 +11,7 @@ import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '@src/modules/oauth/controller/dto';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { UserMigrationService } from '@src/modules/migration';
+import { UserMigrationService } from '@src/modules/user-login-migration';
 import { SystemService } from '@src/modules/system';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
