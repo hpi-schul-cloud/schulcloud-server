@@ -1,5 +1,7 @@
+import { createMock } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { TestingModule, Test } from '@nestjs/testing';
+import { Clients } from '@keycloak/keycloak-admin-client/lib/resources/clients';
 import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
@@ -8,6 +10,8 @@ describe('KeycloakAdministrationService', () => {
 	let kcAdminClient: KeycloakAdminClient;
 	let settings: IKeycloakSettings;
 	let service: KeycloakAdministrationService;
+
+	const kcApiClientMock = createMock<Clients>();
 
 	const getSettings = (): IKeycloakSettings => {
 		return {
@@ -41,6 +45,9 @@ describe('KeycloakAdministrationService', () => {
 						realms: {
 							update: jest.fn(),
 						},
+						clients: kcApiClientMock,
+						baseUrl: getSettings().baseUrl,
+						realmName: getSettings().realmName,
 					},
 				},
 				{
@@ -53,6 +60,8 @@ describe('KeycloakAdministrationService', () => {
 		kcAdminClient = module.get(KeycloakAdminClient);
 		settings = module.get(KeycloakSettings);
 		service = module.get(KeycloakAdministrationService);
+
+		kcApiClientMock.find.mockClear();
 	});
 
 	describe('callKcAdminClient', () => {
@@ -101,6 +110,35 @@ describe('KeycloakAdministrationService', () => {
 	describe('getAdminUser', () => {
 		it('should return the admin username', () => {
 			expect(service.getAdminUser()).toBe(settings.credentials.username);
+		});
+	});
+
+	describe('getWellKnownUrl', () => {
+		it('should return the well known URL', async () => {
+			const wellKnownUrl = await service.getWellKnownUrl();
+			expect(wellKnownUrl).toContain(settings.baseUrl);
+			expect(wellKnownUrl).toContain(settings.realmName);
+		});
+	});
+
+	describe('getClientId', () => {
+		it('should return the client id', () => {
+			expect(service.getClientId()).toBe(settings.clientId);
+		});
+	});
+
+	describe('getClientSecret', () => {
+		it('should return the clients secret', async () => {
+			kcApiClientMock.find.mockResolvedValueOnce([{ id: 'internal_client_id' }]);
+			kcApiClientMock.getClientSecret.mockResolvedValueOnce({ value: 'theSecret' });
+			const secret = await service.getClientSecret();
+			expect(secret).toBe('theSecret');
+		});
+		it('should return empty string if client could not be resolved', async () => {
+			kcApiClientMock.find.mockResolvedValueOnce([]);
+			kcApiClientMock.getClientSecret.mockResolvedValueOnce({ value: 'theSecret' });
+			const secret = await service.getClientSecret();
+			expect(secret).toBe('');
 		});
 	});
 

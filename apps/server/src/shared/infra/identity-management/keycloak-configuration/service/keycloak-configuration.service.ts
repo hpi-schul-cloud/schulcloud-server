@@ -20,7 +20,6 @@ enum ConfigureAction {
 }
 
 const flowAlias = 'Direct Broker Flow';
-const clientId = 'dbildungscloud-server';
 const defaultIdpMapperName = 'oidc-username-idp-mapper';
 
 @Injectable()
@@ -112,13 +111,13 @@ export class KeycloakConfigurationService {
 		const redirectUri =
 			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
 		const cr: ClientRepresentation = {
-			clientId,
+			clientId: this.kcAdmin.getClientId(),
 			enabled: true,
 			protocol: 'openid-connect',
 			publicClient: false,
 			redirectUris: [`${redirectUri}*`],
 		};
-		let defaultClientInternalId = (await kc.clients.find({ clientId }))[0]?.id;
+		let defaultClientInternalId = (await kc.clients.find({ clientId: this.kcAdmin.getClientId() }))[0]?.id;
 		if (!defaultClientInternalId) {
 			({ id: defaultClientInternalId } = await kc.clients.create(cr));
 			await kc.clients.addProtocolMapper(

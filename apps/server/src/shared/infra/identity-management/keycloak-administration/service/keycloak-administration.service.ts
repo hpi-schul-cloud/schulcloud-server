@@ -32,8 +32,27 @@ export class KeycloakAdministrationService {
 		return true;
 	}
 
-	public getAdminUser() {
+	public async getWellKnownUrl() {
+		const kc = await this.callKcAdminClient();
+		return `${kc.baseUrl}realms/${kc.realmName}/.well-known/openid-configuration`;
+	}
+
+	public getAdminUser(): string {
 		return this.kcSettings.credentials.username;
+	}
+
+	public getClientId(): string {
+		return this.kcSettings.clientId;
+	}
+
+	public async getClientSecret(): Promise<string> {
+		const kc = await this.callKcAdminClient();
+		const clientInternalId = (await kc.clients.find({ clientId: this.kcSettings.clientId }))[0]?.id;
+		if (clientInternalId) {
+			const clientSecret = await kc.clients.getClientSecret({ id: clientInternalId });
+			return clientSecret.value ?? '';
+		}
+		return '';
 	}
 
 	public async setPasswordPolicy() {
