@@ -8,11 +8,11 @@ const defaultAuthCode = '43534543jnj543342jn2';
 const defaultOauthConfig: OauthConfig = systemFactory.withOauthConfig().build().oauthConfig as OauthConfig;
 const expectedPayload: TokenRequestPayload = new TokenRequestPayload({
 	code: defaultAuthCode,
-	client_id: 'mock-client-id',
+	client_id: '12345',
 	client_secret: defaultdecryptedClientSecret,
-	grant_type: 'mock-grant-type',
-	redirect_uri: 'http://mock-app.tld/redirect',
-	tokenEndpoint: 'http://mock.tld/token',
+	grant_type: 'authorization_code',
+	redirect_uri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
+	tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 });
 
 describe('token-request.Mapper', () => {
