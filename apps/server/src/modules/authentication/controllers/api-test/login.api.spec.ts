@@ -261,7 +261,7 @@ describe('Login Controller (api)', () => {
 					aud: system.oauthConfig?.clientId,
 					iat: Date.now(),
 					exp: Date.now() + 100000,
-					preferred_username: username,
+					external_sub: username,
 				},
 				{ key: privateRsaKey, passphrase: '0000' },
 				{ algorithm: 'RS256' }

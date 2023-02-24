@@ -28,7 +28,6 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			return this._oauthConfigCache;
 		}
 		const wellKnownUrl = await this.kcAdminService.getWellKnownUrl();
-		console.log(wellKnownUrl);
 		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
 		const scDomain = this.configService.get<string>('SC_DOMAIN') || '';
 		const redirectUri =
@@ -47,8 +46,6 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			logoutEndpoint: response.end_session_endpoint as string,
 			jwksEndpoint: response.jwks_uri as string,
 		});
-		console.log(await this.kcAdminService.getClientSecret());
-		console.log(this._oauthConfigCache);
 		return this._oauthConfigCache;
 	}
 
