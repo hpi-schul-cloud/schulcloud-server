@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 
+/**
+ * @deprecated Jwts should be generated in authentication module. Legacy Feathers service should not be used
+ */
 @Injectable()
 export class FeathersJwtProvider {
 	constructor(private feathersServiceProvider: FeathersServiceProvider) {}

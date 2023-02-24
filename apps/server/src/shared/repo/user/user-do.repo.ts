@@ -3,6 +3,7 @@ import { BaseDORepo } from '@shared/repo';
 import { EntityId, IUserProperties, Role, School, System, User } from '@shared/domain';
 import { EntityName, FilterQuery, Reference } from '@mikro-orm/core';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { EntityNotFoundError } from '@shared/common';
 
 @Injectable()
 export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
@@ -23,6 +24,14 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		}
 
 		return this.mapEntityToDO(userEntity);
+	}
+
+	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDO> {
+		const userDo: UserDO | null = await this.findByExternalId(externalId, systemId);
+		if (userDo) {
+			return userDo;
+		}
+		throw new EntityNotFoundError('User');
 	}
 
 	async findByExternalId(externalId: string, systemId: string): Promise<UserDO | null> {

@@ -3,10 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { IAccount, IAccountUpdate } from '@shared/domain';
 import { NotImplementedException } from '@nestjs/common/exceptions/not-implemented.exception';
-import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
+import { IdentityManagementService } from '@shared/infra/identity-management';
 import { AccountServiceIdm } from './account-idm.service';
-import { AccountDto } from './dto/account.dto';
-import { AccountSaveDto } from './dto';
+import { AccountDto, AccountSaveDto } from './dto';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
