@@ -7,7 +7,7 @@ export class OAuthProcessDto {
 
 	logoutEndpoint?: string;
 
-	provider: string;
+	provider?: string;
 
 	redirect?: string;
 
