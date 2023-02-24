@@ -10,11 +10,11 @@ import { SchoolService } from '@src/modules/school';
 import { SchoolMigrationService } from '@src/modules/migration/service';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MigrationDto } from '@src/modules/migration/service/dto/migration.dto';
+import { ProvisioningService } from '@src/modules/provisioning';
+import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
-import { ProvisioningService } from '../../provisioning';
-import { OauthDataDto } from '../../provisioning/dto';
 
 /**
  * @deprecated remove after login via oauth moved to authentication module
@@ -96,29 +96,6 @@ export class OauthUc {
 		});
 
 		return response;
-	}
-
-	private async shouldUserMigrate(
-		externalUserId: string,
-		officialSchoolNumber: string,
-		systemId: EntityId
-	): Promise<boolean> {
-		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
-		const isSchoolInMigration: boolean = await this.userMigrationService.isSchoolInMigration(officialSchoolNumber);
-
-		const shouldMigrate = !existingUser && isSchoolInMigration;
-		return shouldMigrate;
-	}
-
-	private extractOauthConfigFromSystem(system: SystemDto): OauthConfig {
-		const { oauthConfig } = system;
-		if (oauthConfig == null) {
-			this.logger.warn(
-				`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id ?? 'undefined'}`
-			);
-			throw new OAuthSSOError('Requested system has no oauth configured', 'sso_internal_error');
-		}
-		return oauthConfig;
 	}
 
 	private async getOauthErrorResponse(error, systemId: string): Promise<OAuthProcessDto> {
