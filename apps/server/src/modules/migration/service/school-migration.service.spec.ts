@@ -139,7 +139,7 @@ describe('SchoolMigrationService', () => {
 			});
 		});
 
-		describe('when school was migrated', () => {
+		describe('when school has to be migrated', () => {
 			it('should return migrated school', async () => {
 				const { currentUserId, school, userDO } = setup();
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);

@@ -83,9 +83,9 @@ export class SchoolMigrationService {
 		await this.schoolService.save(schoolDO);
 	}
 
-	private async rollbackMigration(schoolDO: SchoolDO) {
-		if (schoolDO) {
-			await this.schoolService.save(schoolDO);
+	private async rollbackMigration(originalSchoolDO: SchoolDO) {
+		if (originalSchoolDO) {
+			await this.schoolService.save(originalSchoolDO);
 		}
 	}
 }
