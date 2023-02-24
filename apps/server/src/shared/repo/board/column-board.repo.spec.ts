@@ -5,7 +5,7 @@ import { cleanupCollections } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { legacyTaskReferenceCardSkeletonFactory } from '@shared/testing/factory/board-card-skeleton.factory';
+import { cardSkeletonFactory } from '@shared/testing/factory/board-card-skeleton.factory';
 import { columnFactory } from '@shared/testing/factory/board-column.factory';
 import { columnBoardFactory } from '@shared/testing/factory/column-board.factory';
 import { ColumnBoardRepo } from './column-board.repo';
@@ -40,9 +40,9 @@ describe('ColumnBoardRepo', () => {
 	describe('when there is a board with content', () => {
 		const setupBoard = () => {
 			const columns = [
-				columnFactory.build({ cardSkeletons: legacyTaskReferenceCardSkeletonFactory.buildList(3) }),
-				columnFactory.build({ cardSkeletons: legacyTaskReferenceCardSkeletonFactory.buildList(5) }),
-				columnFactory.build({ cardSkeletons: legacyTaskReferenceCardSkeletonFactory.buildList(2) }),
+				columnFactory.build({ cardSkeletons: cardSkeletonFactory.buildList(3) }),
+				columnFactory.build({ cardSkeletons: cardSkeletonFactory.buildList(5) }),
+				columnFactory.build({ cardSkeletons: cardSkeletonFactory.buildList(2) }),
 			];
 			const board = columnBoardFactory.build({ columns });
 			return { board };

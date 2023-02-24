@@ -3,7 +3,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ColumnBoard, ICurrentUser } from '@shared/domain';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
-import { legacyTaskReferenceCardSkeletonFactory } from '@shared/testing/factory/board-card-skeleton.factory';
+import { cardSkeletonFactory } from '@shared/testing/factory/board-card-skeleton.factory';
 import { columnFactory } from '@shared/testing/factory/board-column.factory';
 import { columnBoardFactory } from '@shared/testing/factory/column-board.factory';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -46,9 +46,9 @@ describe('Boards Controller (API)', () => {
 			const user = userFactory.build({ roles });
 
 			const columns = [
-				columnFactory.build({ cardSkeletons: legacyTaskReferenceCardSkeletonFactory.buildList(3) }),
-				columnFactory.build({ cardSkeletons: legacyTaskReferenceCardSkeletonFactory.buildList(5) }),
-				columnFactory.build({ cardSkeletons: legacyTaskReferenceCardSkeletonFactory.buildList(2) }),
+				columnFactory.build({ cardSkeletons: cardSkeletonFactory.buildList(3) }),
+				columnFactory.build({ cardSkeletons: cardSkeletonFactory.buildList(5) }),
+				columnFactory.build({ cardSkeletons: cardSkeletonFactory.buildList(2) }),
 			];
 			const board = columnBoardFactory.build({ columns });
 

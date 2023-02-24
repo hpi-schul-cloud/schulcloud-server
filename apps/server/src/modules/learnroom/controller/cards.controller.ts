@@ -1,9 +1,14 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@shared/domain';
+import { BoardCardType, ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { BoardCardType, CardIdsParams, CardListResponse, CardResponse, ContentElementResponse } from './dto';
-import { VisibilitySettingsResponse } from './dto/card/visibility-settings.response';
+import {
+	CardIdsParams,
+	CardListResponse,
+	CardResponse,
+	ContentElementResponse,
+	VisibilitySettingsResponse,
+} from './dto';
 
 @ApiTags('Cards')
 @Authenticate('jwt')

@@ -7,6 +7,7 @@ import { ALL_ENTITIES } from '@shared/domain';
 import { ConsoleWriterModule } from '@shared/infra/console/console-writer/console-writer.module';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { BoardModule } from '@src/modules/board/board.module';
 import { FilesModule } from '@src/modules/files';
 import { FileRecord } from '@src/modules/files-storage/entity';
 import { ManagementModule } from '@src/modules/management/management.module';
@@ -20,6 +21,7 @@ import { ServerConsole } from './server.console';
 		ConsoleModule,
 		ConsoleWriterModule,
 		FilesModule,
+		BoardModule,
 		ConfigModule.forRoot({
 			isGlobal: true,
 			validationOptions: { infer: true },
