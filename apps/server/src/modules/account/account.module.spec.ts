@@ -4,7 +4,6 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { AccountModule } from './account.module';
 import { AccountService } from './services/account.service';
 import { AccountValidationService } from './services/account.validation.service';
-import { AccountUc } from './uc/account.uc';
 
 describe('AccountModule', () => {
 	let module: TestingModule;
