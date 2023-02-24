@@ -8,16 +8,21 @@ import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemService } from '@src/modules/system/service/system.service';
-import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
+import { UserService } from '@src/modules/user';
+import { UserMigrationService } from '@src/modules/user-login-migration';
+import { OauthConfigDto, SystemDto } from '@src/modules/system/service';
+import { SchoolService } from '@src/modules/school';
+import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { FeathersJwtProvider } from '@src/modules/authorization';
+import { ProvisioningService } from '@src/modules/provisioning';
+import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
-import resetAllMocks = jest.resetAllMocks;
-import { OauthConfigDto, SystemDto } from '../../system/service';
-import { FeathersJwtProvider } from '../../authorization';
 import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../../provisioning/dto';
-import { ProvisioningService } from '../../provisioning';
-import { UserMigrationService } from '../../user-migration';
+import resetAllMocks = jest.resetAllMocks;
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
@@ -29,6 +34,7 @@ describe('OAuthUc', () => {
 	let jwtService: DeepMocked<FeathersJwtProvider>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userMigrationService: DeepMocked<UserMigrationService>;
+	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -53,8 +59,20 @@ describe('OAuthUc', () => {
 					useValue: createMock<ProvisioningService>(),
 				},
 				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+				{
 					provide: UserMigrationService,
 					useValue: createMock<UserMigrationService>(),
+				},
+				{
+					provide: SchoolMigrationService,
+					useValue: createMock<SchoolMigrationService>(),
 				},
 				{
 					provide: FeathersJwtProvider,
@@ -68,6 +86,7 @@ describe('OAuthUc', () => {
 		jwtService = module.get(FeathersJwtProvider);
 		provisioningService = module.get(ProvisioningService);
 		userMigrationService = module.get(UserMigrationService);
+		schoolMigrationService = module.get(SchoolMigrationService);
 	});
 
 	afterAll(async () => {
@@ -200,11 +219,12 @@ describe('OAuthUc', () => {
 					externalId: externalUserId,
 				}),
 			});
-			const userMigrationDto: UserMigrationDto = new UserMigrationDto({
+
+			const userMigrationDto: MigrationDto = new MigrationDto({
 				redirect: 'https://mock.de/migration/succeed',
 			});
 
-			const userMigrationFailedDto: UserMigrationDto = new UserMigrationDto({
+			const userMigrationFailedDto: MigrationDto = new MigrationDto({
 				redirect: 'https://mock.de/dashboard',
 			});
 			oauthService.checkAuthorizationCode.mockReturnValue(code);
@@ -219,10 +239,11 @@ describe('OAuthUc', () => {
 				userMigrationDto,
 				userMigrationFailedDto,
 				oauthTokenResponse,
+				oauthData,
 			};
 		};
 
-		describe('migrateUser', () => {
+		describe('migrate is called', () => {
 			describe('when authorize user and migration was successful', () => {
 				it('should return redirect to migration succeed page', async () => {
 					const { query, system, userMigrationDto, oauthTokenResponse } = setupMigration();
@@ -230,7 +251,7 @@ describe('OAuthUc', () => {
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 
-					const result: UserMigrationDto = await uc.migrateUser('currentUserId', query, system.id as string);
+					const result: MigrationDto = await uc.migrate('currentUserId', query, system.id as string);
 
 					expect(result.redirect).toStrictEqual('https://mock.de/migration/succeed');
 				});
@@ -243,9 +264,83 @@ describe('OAuthUc', () => {
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationFailedDto);
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 
-					const result: UserMigrationDto = await uc.migrateUser('currentUserId', query, 'systemdId');
+					const result: MigrationDto = await uc.migrate('currentUserId', query, 'systemdId');
 
 					expect(result.redirect).toStrictEqual('https://mock.de/dashboard');
+				});
+			});
+
+			describe('when external school and official school number is defined and school has to be migrated', () => {
+				it('should call migrateSchool', async () => {
+					const { oauthData, query, system, userMigrationDto, oauthTokenResponse } = setupMigration();
+					oauthData.externalSchool = {
+						externalId: 'mockId',
+						officialSchoolNumber: 'mockNumber',
+						name: 'mockName',
+					};
+					const schoolToMigrate: SchoolDO | void = new SchoolDO({ name: 'mockName' });
+					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+					schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolToMigrate);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+					await uc.migrate('currentUserId', query, system.id as string);
+
+					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
+						oauthData.externalSchool.externalId,
+						schoolToMigrate,
+						'systemId'
+					);
+				});
+			});
+
+			describe('when external school and official school number is defined and school is already migrated', () => {
+				it('should not call migrateSchool', async () => {
+					const { oauthData, query, system, userMigrationDto, oauthTokenResponse } = setupMigration();
+					oauthData.externalSchool = {
+						externalId: 'mockId',
+						officialSchoolNumber: 'mockNumber',
+						name: 'mockName',
+					};
+					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+					schoolMigrationService.schoolToMigrate.mockResolvedValue(null);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+					await uc.migrate('currentUserId', query, system.id as string);
+
+					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('when external school is not defined', () => {
+				it('should not call schoolToMigrate', async () => {
+					const { query, system, userMigrationDto, oauthTokenResponse } = setupMigration();
+					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+					await uc.migrate('currentUserId', query, system.id as string);
+
+					expect(schoolMigrationService.schoolToMigrate).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('when official school number is not defined', () => {
+				it('should throw OAuthMigrationError', async () => {
+					const { oauthData, query, system, userMigrationDto, oauthTokenResponse } = setupMigration();
+					oauthData.externalSchool = {
+						externalId: 'mockId',
+						name: 'mockName',
+					};
+					const error = new OAuthMigrationError(
+						'Official school number from target migration system is missing',
+						'ext_official_school_number_missing'
+					);
+					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+					schoolMigrationService.schoolToMigrate.mockImplementation(() => {
+						throw error;
+					});
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+					await expect(uc.migrate('currentUserId', query, system.id as string)).rejects.toThrow(error);
 				});
 			});
 		});

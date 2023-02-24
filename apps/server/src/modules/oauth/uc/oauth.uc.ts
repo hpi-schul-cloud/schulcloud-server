@@ -2,15 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { UserMigrationDto } from '@src/modules/user-migration/service/dto/userMigration.dto';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { FeathersJwtProvider } from '@src/modules/authorization';
+import { UserService } from '@src/modules/user';
+import { UserMigrationService } from '@src/modules/user-login-migration';
+import { SchoolService } from '@src/modules/school';
+import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { ProvisioningService } from '@src/modules/provisioning';
+import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
-import { ProvisioningService } from '../../provisioning';
-import { UserMigrationService } from '../../user-migration';
-import { OauthDataDto } from '../../provisioning/dto';
 
 /**
  * @deprecated remove after login via oauth moved to authentication module
@@ -21,8 +25,11 @@ export class OauthUc {
 		private readonly oauthService: OAuthService,
 		private readonly systemService: SystemService,
 		private readonly provisioningService: ProvisioningService,
+		private readonly schoolService: SchoolService,
+		private readonly userService: UserService,
 		private readonly userMigrationService: UserMigrationService,
 		private readonly jwtService: FeathersJwtProvider,
+		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(OauthUc.name);
@@ -37,18 +44,30 @@ export class OauthUc {
 		}
 	}
 
-	async migrateUser(
-		currentUserId: string,
-		query: AuthorizationParams,
-		targetSystemId: string
-	): Promise<UserMigrationDto> {
+	async migrate(currentUserId: string, query: AuthorizationParams, targetSystemId: string): Promise<MigrationDto> {
 		const queryToken: OauthTokenResponse = await this.oauthService.authorizeForMigration(query, targetSystemId);
 		const data: OauthDataDto = await this.provisioningService.getData(
 			queryToken.access_token,
 			queryToken.id_token,
 			targetSystemId
 		);
-		const migrationDto: UserMigrationDto = await this.userMigrationService.migrateUser(
+
+		if (data.externalSchool) {
+			const schoolToMigrate: SchoolDO | null = await this.schoolMigrationService.schoolToMigrate(
+				currentUserId,
+				data.externalSchool.externalId,
+				data.externalSchool.officialSchoolNumber
+			);
+			if (schoolToMigrate) {
+				await this.schoolMigrationService.migrateSchool(
+					data.externalSchool.externalId,
+					schoolToMigrate,
+					targetSystemId
+				);
+			}
+		}
+
+		const migrationDto: Promise<MigrationDto> = this.userMigrationService.migrateUser(
 			currentUserId,
 			data.externalUser.externalId,
 			targetSystemId
