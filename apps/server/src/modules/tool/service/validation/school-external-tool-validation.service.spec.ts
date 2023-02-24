@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
+import { Test, TestingModule } from '@nestjs/testing';
+import { CustomParameterScope, CustomParameterType } from '@shared/domain';
 import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import {
 	customParameterDOFactory,
 	externalToolDOFactory,
 } from '@shared/testing/factory/domainobject/external-tool.factory';
-import { CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
 import { ExternalToolService } from '../external-tool.service';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
@@ -294,13 +294,14 @@ describe('SchoolExternalToolValidationService', () => {
 					name: 'wrongType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.BOOLEAN,
+					isOptional: true,
 				});
 				const { schoolExternalToolDO } = setup(
 					{
 						parameters: [wrongTypeParam],
 					},
 					{
-						parameters: [{ name: wrongTypeParam.name, value: '17271hsadas' }],
+						parameters: [{ name: wrongTypeParam.name, value: '' }],
 					}
 				);
 
