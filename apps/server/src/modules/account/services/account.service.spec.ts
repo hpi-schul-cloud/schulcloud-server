@@ -119,7 +119,7 @@ describe('AccountService', () => {
 		});
 	});
 
-	describe('save', () => {
+	describe('saveWithValidation', () => {
 		it('should not sanitize username for external user', async () => {
 			const spy = jest.spyOn(accountService, 'save');
 			const params: AccountSaveDto = {
