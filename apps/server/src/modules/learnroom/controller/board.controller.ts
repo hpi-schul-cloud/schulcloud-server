@@ -2,6 +2,8 @@ import { Body, Controller, Get, NotImplementedException, Param, Put } from '@nes
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { BoardResponseMapper } from '../mapper';
+import { BoardUC } from '../uc/board.uc';
 import {
 	BoardColumnUrlParams,
 	BoardResponse,
@@ -9,48 +11,24 @@ import {
 	MoveCardBodyParams,
 	MoveColumnBodyParams,
 	RenameBodyParams,
-	TimestampsResponse,
 } from './dto';
-import { BoardColumnResponse } from './dto/board/board-column.response';
-import { BoardSkeletonCardReponse } from './dto/board/board-skeleton-card.response';
 
 @ApiTags('Boards')
 @Authenticate('jwt')
 @Controller('boards')
 export class BoardController {
+	constructor(private readonly boardUC: BoardUC) {}
+
 	@Get(':boardId')
-	getBoardSkeleton(
+	async getBoardSkeleton(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
-		const result = new BoardResponse({
-			id: 'abcdefg',
-			title: 'a mocked testboard, please do not use',
-			columns: [
-				new BoardColumnResponse({
-					id: '10',
-					title: 'first column',
-					cards: [
-						new BoardSkeletonCardReponse({ cardId: '1', height: 36 }),
-						new BoardSkeletonCardReponse({ cardId: '2', height: 42 }),
-					],
-				}),
-				new BoardColumnResponse({
-					id: '20',
-					title:
-						'second column, has a relatively long title that may or may not be a bit challenging to render... maybe do it partially?',
-					cards: [new BoardSkeletonCardReponse({ cardId: '3', height: 108 })],
-				}),
-				new BoardColumnResponse({
-					id: '30',
-					title: 'third column is empty for now',
-					cards: [],
-				}),
-			],
-			timestamps: new TimestampsResponse({ lastUpdatedAt: new Date().toString(), createdAt: new Date().toString() }),
-		});
+		const board = await this.boardUC.findBoard(currentUser.userId, urlParams.boardId);
 
-		return Promise.resolve(result);
+		const response = BoardResponseMapper.mapToResponse(board);
+
+		return response;
 	}
 
 	@Put('/:boardId/cards/:cardId/position')

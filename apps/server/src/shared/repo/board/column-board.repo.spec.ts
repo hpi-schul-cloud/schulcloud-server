@@ -10,7 +10,7 @@ import { columnFactory } from '@shared/testing/factory/board-column.factory';
 import { columnBoardFactory } from '@shared/testing/factory/column-board.factory';
 import { ColumnBoardRepo } from './column-board.repo';
 
-describe('SingleColumnBoardRepo', () => {
+describe('ColumnBoardRepo', () => {
 	let module: TestingModule;
 	let repo: ColumnBoardRepo;
 	let em: EntityManager;
@@ -58,7 +58,17 @@ describe('SingleColumnBoardRepo', () => {
 			expect(result.id).toEqual(board.id);
 		});
 
-		it('should load board with content', async () => {
+		it('should load columns of the board', async () => {
+			const { board } = setupBoard();
+			await em.persistAndFlush(board);
+			em.clear();
+
+			const result = await repo.findById(board.id);
+
+			expect(result.columns).toHaveLength(board.columns.length);
+		});
+
+		it('should load card skeletons of the board columns', async () => {
 			const { board } = setupBoard();
 			await em.persistAndFlush(board);
 			em.clear();
@@ -66,7 +76,7 @@ describe('SingleColumnBoardRepo', () => {
 			const result = await repo.findById(board.id);
 			expect(result.id).toEqual(board.id);
 
-			// check embeddables
+			expect(result.columns[0].cardSkeletons).toHaveLength(board.columns[0].cardSkeletons.length);
 		});
 	});
 

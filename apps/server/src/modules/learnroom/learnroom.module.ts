@@ -3,6 +3,7 @@ import { AuthorisationUtils } from '@shared/domain/rules/authorisation.utils';
 import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import {
+	ColumnBoardRepo,
 	CourseRepo,
 	DashboardModelMapper,
 	DashboardRepo,
@@ -28,6 +29,7 @@ import { CommonCartridgeExportService } from './service/common-cartridge-export.
 import { CourseCopyService } from './service/course-copy.service';
 import { CourseService } from './service/course.service';
 import { RoomsService } from './service/rooms.service';
+import { BoardUC } from './uc/board.uc';
 import { CourseCopyUC } from './uc/course-copy.uc';
 import { CourseExportUc } from './uc/course-export.uc';
 import { CourseUc } from './uc/course.uc';
@@ -69,6 +71,8 @@ import { RoomsUc } from './uc/rooms.uc';
 		CommonCartridgeExportService,
 		CourseExportUc,
 		AuthorisationUtils,
+		BoardUC,
+		ColumnBoardRepo,
 	],
 	exports: [CourseCopyService, CourseService],
 })

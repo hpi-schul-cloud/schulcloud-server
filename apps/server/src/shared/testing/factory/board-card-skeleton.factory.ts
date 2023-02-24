@@ -8,7 +8,7 @@ export const legacyTaskReferenceCardSkeletonFactory = BaseFactory.define<CardSke
 	() => {
 		return {
 			height: 208,
-			card: legacyTaskReferenceCardFactory.build(),
+			card: legacyTaskReferenceCardFactory.buildWithId(),
 		};
 	}
 );

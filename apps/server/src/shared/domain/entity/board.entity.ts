@@ -60,7 +60,7 @@ export class Column {
 	@Property()
 	title: string;
 
-	@Embedded(() => CardSkeleton)
+	@Embedded(() => CardSkeleton, { array: true })
 	cardSkeletons: CardSkeleton[] = [];
 }
 
@@ -91,7 +91,7 @@ export class ColumnBoard extends MetaBoard {
 	@Property()
 	title: string;
 
-	@Embedded(() => Column)
+	@Embedded(() => Column, { array: true })
 	columns: Column[] = [];
 }
 

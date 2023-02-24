@@ -1,8 +1,11 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@shared/domain';
+import { ColumnBoard, ICurrentUser } from '@shared/domain';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
+import { legacyTaskReferenceCardSkeletonFactory } from '@shared/testing/factory/board-card-skeleton.factory';
+import { columnFactory } from '@shared/testing/factory/board-column.factory';
+import { columnBoardFactory } from '@shared/testing/factory/column-board.factory';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
@@ -41,20 +44,36 @@ describe('Boards Controller (API)', () => {
 		const setup = async () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const user = userFactory.build({ roles });
-			await em.persistAndFlush([user]);
+
+			const columns = [
+				columnFactory.build({ cardSkeletons: legacyTaskReferenceCardSkeletonFactory.buildList(3) }),
+				columnFactory.build({ cardSkeletons: legacyTaskReferenceCardSkeletonFactory.buildList(5) }),
+				columnFactory.build({ cardSkeletons: legacyTaskReferenceCardSkeletonFactory.buildList(2) }),
+			];
+			const board = columnBoardFactory.build({ columns });
+
+			await em.persistAndFlush([user, board]);
+
 			em.clear();
 			currentUser = mapUserToCurrentUser(user);
-			const boardId = new ObjectId();
 
-			return { boardId };
+			return { board };
 		};
 
-		it('should return mock', async () => {
-			const { boardId } = await setup();
+		it('should succeed', async () => {
+			const { board } = await setup();
 
-			const response = await request(app.getHttpServer()).get(`/boards/${boardId.toString()}`);
+			const response = await request(app.getHttpServer()).get(`/boards/${board.id}`);
 
 			expect(response.status).toEqual(200);
+		});
+
+		it('should return the board', async () => {
+			const { board } = await setup();
+
+			const response = await request(app.getHttpServer()).get(`/boards/${board.id}`);
+
+			expect((response.body as ColumnBoard).id).toEqual(board.id);
 		});
 	});
 
