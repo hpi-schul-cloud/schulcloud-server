@@ -340,6 +340,7 @@ data:
 
         # Perform the final Bettermarks config data init if client secret and URL has been properly set.
         if [ -n "$BETTERMARKS_CLIENT_SECRET" ] && [ -n "$BETTERMARKS_URL" ]; then
+            # Add document to the 'ltitools' collection with Bettermarks tool configuration.
             mongo $DATABASE__URL --eval 'db.ltitools.replaceOne(
                 {
                   "name": "bettermarks",
@@ -367,6 +368,56 @@ data:
                   "__v": 0,
                   "isHidden": false,
                   "frontchannel_logout_uri": null
+                },
+                {
+                  "upsert": true
+                }
+            );'
+
+            # The two steps below (Hydra call and MongoDB insert) were added to automate the actions performed inside
+            # the server when Bettermarks' OAuth client configuration is added manually in SuperHero Dashboard.
+
+            # Add Bettermarks' OAuth client configuration in Hydra.
+            curl --retry 360 --retry-connrefused --retry-delay 10 \
+                  -H 'X-Forwarded-Proto: https' \
+                  -X POST $HYDRA_URI/clients \
+                  -d '{
+                        "client_name": "bettermarks",
+                        "client_id": "bettermarks",
+                        "client_secret": "'$BETTERMARKS_CLIENT_SECRET'",
+                        "scope":"openid offline",
+                        "token_endpoint_auth_method":"client_secret_post",
+                        "redirect_uris": [
+                          "https://acc.bettermarks.com/v1.0/schulcloud/oauth/callback",
+                          "https://school.bettermarks.loc/v1.0/schulcloud/oauth/callback",
+                          "https://acc.bettermarks.com/auth/callback",
+                          "https://school.bettermarks.loc/auth/callback",
+                          "https://acc.bettermarks.com/auth/oidc/callback"
+                        ],
+                        "subject_type":"pairwise"
+                      }'
+
+            # Add Bettermarks' tools configuration as an external tool
+            # (stored in the 'external_tools' collection) that uses OAuth.
+            mongo $DATABASE__URL --eval 'db.external_tools.replaceOne(
+                {
+                  "name": "bettermarks",
+                  "config_type": "oauth2"
+                },
+                {
+                  "name": "bettermarks",
+                  "url": "'$BETTERMARKS_URL'",
+                  "logoUrl": "'$BETTERMARKS_LOGO_URL'",
+                  "config_type": "oauth2",
+                  "config_baseUrl": "'$BETTERMARKS_URL'",
+                  "config_clientId": "'$BETTERMARKS_OAUTH_CLIENT_ID'",
+                  "config_skipConsent": false,
+                  "parameters": [],
+                  "isHidden": false,
+                  "openNewTab": true,
+                  "createdAt": new Date(),
+                  "updatedAt": new Date(),
+                  "version": 1
                 },
                 {
                   "upsert": true
