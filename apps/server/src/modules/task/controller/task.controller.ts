@@ -68,6 +68,18 @@ export class TaskController {
 		return response;
 	}
 
+	@Patch(':taskId/revertPublished')
+	async revertPublished(
+		@Param() urlParams: TaskUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<TaskResponse> {
+		const task = await this.taskUc.revertPublished(currentUser.userId, urlParams.taskId);
+
+		const response = TaskMapper.mapToResponse(task);
+
+		return response;
+	}
+
 	@Post(':taskId/copy')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyTask(

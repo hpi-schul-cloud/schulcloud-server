@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
+import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, PermissionService, Role, RoleName, School, User } from '@shared/domain';
@@ -11,8 +11,8 @@ import { RoleService } from '@src/modules/role/service/role.service';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { SchoolService } from '../../school';
-import { SchoolMapper } from '../../school/mapper/school.mapper';
+import { SchoolService } from '@src/modules/school';
+import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -32,6 +32,10 @@ describe('UserService', () => {
 			providers: [
 				UserService,
 				SchoolMapper,
+				{
+					provide: EntityManager,
+					useValue: createMock<EntityManager>(),
+				},
 				{
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
@@ -120,6 +124,27 @@ describe('UserService', () => {
 			expect(userDto).toBeDefined();
 			expect(userDto).toBeInstanceOf(UserDto);
 			expect(userRepo.findById).toHaveBeenCalled();
+		});
+	});
+
+	describe('findById', () => {
+		beforeEach(() => {
+			const userDO: UserDO = new UserDO({
+				firstName: 'firstName',
+				lastName: 'lastName',
+				email: 'email',
+				schoolId: 'schoolId',
+				roleIds: ['roleId'],
+				externalId: 'externalUserId',
+			});
+			userDORepo.findById.mockResolvedValue(userDO);
+		});
+
+		it('should provide the userDO', async () => {
+			const result: UserDO = await service.findById('id');
+
+			expect(result).toBeDefined();
+			expect(result).toBeInstanceOf(UserDO);
 		});
 	});
 

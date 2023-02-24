@@ -147,7 +147,7 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['schoolId must be a mongodb id'],
-						field: 'schoolId',
+						field: ['schoolId'],
 					},
 				]);
 				expect(response.status).toEqual(400);
@@ -158,7 +158,7 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['parentId must be a mongodb id'],
-						field: 'parentId',
+						field: ['parentId'],
 					},
 				]);
 				expect(response.status).toEqual(400);
@@ -169,7 +169,7 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['parentType must be a valid enum value'],
-						field: 'parentType',
+						field: ['parentType'],
 					},
 				]);
 				expect(response.status).toEqual(400);
@@ -265,7 +265,7 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['fileRecordId must be a mongodb id'],
-						field: 'fileRecordId',
+						field: ['fileRecordId'],
 					},
 				]);
 				expect(response.status).toEqual(400);

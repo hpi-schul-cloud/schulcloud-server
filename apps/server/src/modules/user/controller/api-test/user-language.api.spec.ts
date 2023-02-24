@@ -1,8 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request } from 'express';
-import request from 'supertest';
 
 import { ApiValidationError } from '@shared/common';
 import { LanguageType, User } from '@shared/domain';
@@ -10,6 +8,8 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
+import { Request } from 'express';
+import request from 'supertest';
 
 const baseRouteName = '/user/language';
 
@@ -130,7 +130,7 @@ describe(baseRouteName, () => {
 			expect(response.error.validationErrors).toEqual([
 				{
 					errors: ['language must be a valid enum value'],
-					field: 'language',
+					field: ['language'],
 				},
 			]);
 		});
