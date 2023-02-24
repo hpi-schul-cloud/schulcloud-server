@@ -23,11 +23,12 @@ describe('KeycloakConfigurationService Integration', () => {
 
 	const testRealm = 'test-realm';
 	const flowAlias = 'Direct Broker Flow';
-	const clientId = 'dbildungscloud-server';
 	const systemServiceMock = createMock<SystemService>();
 	const systems = SystemMapper.mapFromEntitiesToDtos(systemFactory.withOidcConfig().buildList(2));
 
 	beforeAll(async () => {
+		jest.setTimeout(10 * 60 * 1000);
+
 		module = await Test.createTestingModule({
 			imports: [
 				KeycloakConfigurationModule,
@@ -119,6 +120,7 @@ describe('KeycloakConfigurationService Integration', () => {
 
 				await keycloakConfigurationService.configureClient();
 				const kc = await keycloakAdministrationService.callKcAdminClient();
+				const clientId = keycloakAdministrationService.getClientId();
 				const clients = await kc.clients.find({ clientId });
 				expect(clients).toEqual(
 					expect.arrayContaining([
