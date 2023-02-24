@@ -17,19 +17,19 @@ export class CardsController {
 				new CardResponse({
 					id: '0123456789abcdef00000001',
 					elements: [new ContentElementResponse()],
-					cardType: BoardCardType.CONTENT,
+					cardType: BoardCardType.LEGACY_LESSON,
 					visibilitySettings: new VisibilitySettingsResponse({}),
 				}),
 				new CardResponse({
 					id: '0123456789abcdef00000002',
 					elements: [new ContentElementResponse(), new ContentElementResponse()],
-					cardType: BoardCardType.CONTENT,
+					cardType: BoardCardType.LEGACY_TASK,
 					visibilitySettings: new VisibilitySettingsResponse({}),
 				}),
 				new CardResponse({
 					id: '0123456789abcdef00000003',
 					elements: [new ContentElementResponse(), new ContentElementResponse(), new ContentElementResponse()],
-					cardType: BoardCardType.CONTENT,
+					cardType: BoardCardType.LEGACY_TASK,
 					visibilitySettings: new VisibilitySettingsResponse({}),
 				}),
 			],
