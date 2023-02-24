@@ -109,6 +109,22 @@ export class TaskUC {
 		return result;
 	}
 
+	async revertPublished(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
+
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
+
+		task.unpublish();
+		await this.taskRepo.save(task);
+
+		const status = task.createTeacherStatusForUser(user);
+
+		const result = new TaskWithStatusVo(task, status);
+
+		return result;
+	}
+
 	private async findAllForStudent(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const courses = await this.getPermittedCourses(user, Actions.read);
 		const openCourses = courses.filter((c) => !c.isFinished());

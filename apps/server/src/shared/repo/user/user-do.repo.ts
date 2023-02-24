@@ -3,6 +3,7 @@ import { BaseDORepo } from '@shared/repo';
 import { EntityId, IUserProperties, Role, School, System, User } from '@shared/domain';
 import { EntityName, FilterQuery, Reference } from '@mikro-orm/core';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { EntityNotFoundError } from '@shared/common';
 
 @Injectable()
 export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
@@ -23,6 +24,14 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		}
 
 		return this.mapEntityToDO(userEntity);
+	}
+
+	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDO> {
+		const userDo: UserDO | null = await this.findByExternalId(externalId, systemId);
+		if (userDo) {
+			return userDo;
+		}
+		throw new EntityNotFoundError('User');
 	}
 
 	async findByExternalId(externalId: string, systemId: string): Promise<UserDO | null> {
@@ -69,6 +78,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			preferences: entity.preferences,
 			lastLoginSystemChange: entity.lastLoginSystemChange,
 			outdatedSince: entity.outdatedSince,
+			previousExternalId: entity.previousExternalId,
 		});
 
 		if (entity.roles.isInitialized(true)) {
@@ -92,6 +102,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			preferences: entityDO.preferences,
 			lastLoginSystemChange: entityDO.lastLoginSystemChange,
 			outdatedSince: entityDO.outdatedSince,
+			previousExternalId: entityDO.previousExternalId,
 		};
 	}
 }

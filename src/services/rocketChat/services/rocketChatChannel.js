@@ -1,5 +1,4 @@
 const request = require('request-promise-native');
-
 const { BadRequest } = require('../../../errors');
 const { makeStringRCConform } = require('../helpers');
 const { TEAM_FEATURES } = require('../../teams/model');
@@ -178,11 +177,11 @@ class RocketChatChannel {
 	 * @param {ObjectId} teamId
 	 */
 	async removeUsersFromChannel(userIds, teamId) {
-		const rcUserNames = await this.app.service('/rocketChat/user').find({ userIds });
+		const rcUserIds = await this.app.service('/rocketChat/user').findUsersRocketChatId({ userIds });
 		const channel = await this.app.service('/rocketChat/channel').get(teamId);
 		const service = this.app.service('/nest-rocket-chat');
 
-		const kickPromises = rcUserNames.map((userName) =>
+		const kickPromises = rcUserIds.map((userName) =>
 			service.kickUserFromGroup(channel.channelName, userName).catch((err) => {
 				logger.warning(new BadRequest('removeUsersFromChannel', err));
 			})
