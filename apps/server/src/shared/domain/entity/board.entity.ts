@@ -11,6 +11,7 @@ import {
 	Property,
 	wrap,
 } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ILearnroomElement } from '../interface';
 import { EntityId } from '../types';
@@ -32,8 +33,10 @@ export type CardSkeletonProps = {
 };
 
 @Embeddable()
-export class CardSkeleton {
+export class CardSkeleton extends BaseEntityWithTimestamps {
 	constructor(props: CardSkeletonProps) {
+		super();
+		this._id = new ObjectId();
 		this.height = props.height;
 		this.card = wrap(props.card).toReference();
 	}
@@ -51,8 +54,10 @@ export type ColumnProps = {
 };
 
 @Embeddable()
-export class Column {
+export class Column extends BaseEntityWithTimestamps {
 	constructor(props: ColumnProps) {
+		super();
+		this._id = new ObjectId();
 		this.title = props.title;
 		this.cardSkeletons = props.cardSkeletons;
 	}

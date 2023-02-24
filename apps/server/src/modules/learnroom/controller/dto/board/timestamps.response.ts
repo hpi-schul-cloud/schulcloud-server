@@ -14,11 +14,11 @@ export class TimestampsResponse {
 	}
 
 	@ApiProperty()
-	lastUpdatedAt: string;
+	lastUpdatedAt: Date;
 
 	@ApiProperty()
-	createdAt: string;
+	createdAt: Date;
 
 	@ApiPropertyOptional()
-	deletedAt?: string;
+	deletedAt?: Date;
 }
