@@ -5,11 +5,11 @@ import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { UserModule } from '@src/modules/user';
+import { UserLoginMigrationModule } from '@src/modules/user-login-migration';
+import { ProvisioningModule } from '@src/modules/provisioning';
+import { SystemModule } from '@src/modules/system';
 import { HydraSsoService } from './service/hydra.service';
 import { OAuthService } from './service/oauth.service';
-import { ProvisioningModule } from '../provisioning';
-import { SystemModule } from '../system';
-import { UserMigrationModule } from '../user-migration';
 import { OauthAdapterService } from './service/oauth-adapter.service';
 
 @Module({
@@ -21,7 +21,7 @@ import { OauthAdapterService } from './service/oauth-adapter.service';
 		UserModule,
 		ProvisioningModule,
 		SystemModule,
-		UserMigrationModule,
+		UserLoginMigrationModule,
 	],
 	providers: [OAuthService, OauthAdapterService, HydraSsoService, LtiToolRepo],
 	exports: [OAuthService, HydraSsoService],

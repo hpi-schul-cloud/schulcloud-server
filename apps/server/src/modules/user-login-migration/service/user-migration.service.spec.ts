@@ -26,6 +26,7 @@ describe('UserMigrationService', () => {
 	let orm: MikroORM;
 	let service: UserMigrationService;
 	let configBefore: IConfig;
+	let logger: Logger;
 
 	let schoolService: DeepMocked<SchoolService>;
 	let systemService: DeepMocked<SystemService>;
@@ -73,6 +74,7 @@ describe('UserMigrationService', () => {
 		systemService = module.get(SystemService);
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
+		logger = module.get(Logger);
 
 		orm = await setupEntities();
 	});
@@ -438,6 +440,24 @@ describe('UserMigrationService', () => {
 
 				await expect(service.migrateUser('userId', 'externalUserTargetId', targetSystemId)).rejects.toThrow(
 					new NotFoundException('Could not find User')
+				);
+			});
+
+			it('should log error and message', async () => {
+				const { migratedUserDO, accountDto, targetSystemId } = setupMigrationData();
+				const error = new NotFoundException('Test Error');
+				userService.findById.mockResolvedValue(migratedUserDO);
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
+				accountService.save.mockRejectedValueOnce(error);
+
+				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
+
+				expect(logger.log).toHaveBeenCalledWith(
+					expect.objectContaining({
+						message: 'This error occurred during migration of User:',
+						affectedUserId: 'userId',
+						error,
+					})
 				);
 			});
 

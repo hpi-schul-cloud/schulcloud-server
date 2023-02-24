@@ -22,6 +22,7 @@ describe('SchoolMapper', () => {
 		const schoolEntity: School = schoolFactory.buildWithId();
 		const system: System = systemFactory.buildWithId();
 		schoolEntity.systems.add(system);
+		schoolEntity.previousExternalId = 'someId';
 
 		const schoolDO = mapper.mapEntityToDO(schoolEntity);
 
@@ -35,6 +36,7 @@ describe('SchoolMapper', () => {
 		expect(schoolDO.inUserMigration).toEqual(schoolEntity.inUserMigration);
 		expect(schoolDO.inMaintenanceSince).toEqual(schoolEntity.inMaintenanceSince);
 		expect(schoolDO.schoolYear).toEqual(schoolEntity.schoolYear);
+		expect(schoolDO.previousExternalId).toEqual(schoolEntity.previousExternalId);
 	});
 
 	it('mapToEntity', () => {
@@ -58,6 +60,7 @@ describe('SchoolMapper', () => {
 			officialSchoolNumber: 'School1',
 			schoolYear,
 			systems: [system.id],
+			previousExternalId: 'someId',
 		});
 
 		const entity: ISchoolProperties = mapper.mapDOToEntityProperties(schoolDO);
@@ -71,6 +74,7 @@ describe('SchoolMapper', () => {
 		expect(entity.inUserMigration).toEqual(schoolDO.inUserMigration);
 		expect(entity.inMaintenanceSince).toEqual(schoolDO.inMaintenanceSince);
 		expect(entity.schoolYear).toEqual(schoolDO.schoolYear);
+		expect(entity.previousExternalId).toEqual(schoolDO.previousExternalId);
 
 		jest.clearAllMocks();
 	});
