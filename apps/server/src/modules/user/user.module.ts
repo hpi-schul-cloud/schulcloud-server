@@ -13,7 +13,7 @@ import { UserService } from './service/user.service';
 import { UserUc } from './uc';
 
 @Module({
-	imports: [SchoolModule, RoleModule, LoggerModule, AccountModule],
+	imports: [SchoolModule, RoleModule, AccountModule, LoggerModule],
 	controllers: [UserController],
 	providers: [UserRepo, UserDORepo, PermissionService, UserUc, UserService, RoleRepo, RoleUc, SchoolRepo, RoleService],
 	exports: [UserUc, UserService],

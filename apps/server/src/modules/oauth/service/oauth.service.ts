@@ -1,6 +1,4 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { BadRequestException, Inject, UnauthorizedException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityId, ICurrentUser, OauthConfig, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
@@ -8,8 +6,16 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { Logger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { UserService } from '@src/modules/user';
-import { AxiosResponse } from 'axios';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
+import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '@src/modules/oauth/controller/dto';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { UserMigrationService } from '@src/modules/user-login-migration';
+import { SystemService } from '@src/modules/system';
+import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
@@ -17,6 +23,8 @@ import { OauthTokenResponse, TokenRequestPayload } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { SSOErrorCode } from '../error/sso-error-code.enum';
 import { IJwt } from '../interface/jwt.base.interface';
+import { OAuthProcessDto } from './dto/oauth-process.dto';
+import { OauthAdapterService } from './oauth-adapter.service';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 
 @Injectable()
@@ -25,30 +33,101 @@ export class OAuthService {
 		private readonly userService: UserService,
 		private readonly authenticationService: AuthenticationService,
 		private readonly httpService: HttpService,
+		private readonly oauthAdapterService: OauthAdapterService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly provisioningService: ProvisioningService,
+		private readonly systemService: SystemService,
+		private readonly userMigrationService: UserMigrationService
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
 
-	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
-		const payload = this.buildTokenRequestPayload(code, oauthConfig);
-		const responseTokenObservable = this.sendTokenRequest(payload);
-		const responseToken = this.resolveTokenRequest(responseTokenObservable);
+	async authenticateUser(
+		systemId: string,
+		authCode?: string,
+		errorCode?: string
+	): Promise<{ user?: UserDO; redirect: string }> {
+		let redirect: string;
+		if (errorCode) {
+			redirect = this.createErrorRedirect(errorCode);
+			return { user: undefined, redirect };
+		}
+		if (!authCode) {
+			throw new OAuthSSOError(
+				'Authorization Query Object has no authorization code or error',
+				errorCode || 'sso_auth_code_step'
+			);
+		}
+
+		const system = await this.systemService.findOAuthById(systemId);
+		if (!system.id) {
+			// unreachable. System loaded from DB always has an ID
+			throw new UnauthorizedException(`System with id "${systemId}" does not exist.`);
+		}
+
+		const oauthConfig: OauthConfig = this.extractOauthConfigFromSystem(system);
+
+		const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig);
+
+		await this.validateToken(queryToken.id_token, oauthConfig);
+
+		const data: OauthDataDto = await this.provisioningService.getData(
+			queryToken.access_token,
+			queryToken.id_token,
+			system.id
+		);
+
+		// TODO Move Migration Checks to other service
+		if (data.externalSchool?.officialSchoolNumber) {
+			const shouldMigrate: boolean = await this.shouldUserMigrate(
+				data.externalUser.externalId,
+				data.externalSchool.officialSchoolNumber,
+				system.id
+			);
+			if (shouldMigrate) {
+				redirect = await this.userMigrationService.getMigrationRedirect(
+					data.externalSchool.officialSchoolNumber,
+					system.id
+				);
+				return { user: undefined, redirect };
+			}
+		}
+
+		redirect = this.getRedirectUrl(oauthConfig.provider, queryToken.id_token, oauthConfig.logoutEndpoint);
+
+		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
+
+		const user: UserDO = await this.findUser(queryToken.id_token, provisioningDto.externalUserId, system.id);
+
+		return { user, redirect };
+	}
+
+	/**
+	 * @deprecated not needed after change of oauth login to authentication module
+	 *
+	 * @query query input that has either a code or an error
+	 * @return authorization code or throws an error
+	 */
+	checkAuthorizationCode(query: AuthorizationParams): string {
+		if (query.code) {
+			return query.code;
+		}
+
+		throw new OAuthSSOError(
+			'Authorization Query Object has no authorization code or error',
+			query.error || 'sso_auth_code_step'
+		);
+	}
+
+	async requestToken(code: string, oauthConfig: OauthConfig, migrationRedirect?: string): Promise<OauthTokenResponse> {
+		const payload: TokenRequestPayload = this.buildTokenRequestPayload(code, oauthConfig, migrationRedirect);
+		const responseToken = this.oauthAdapterService.sendTokenRequest(payload);
 		return responseToken;
 	}
 
-	async _getPublicKey(oauthConfig: OauthConfig): Promise<string> {
-		const client: JwksRsa.JwksClient = JwksRsa({
-			cache: true,
-			jwksUri: oauthConfig.jwksEndpoint,
-		});
-		const key: JwksRsa.SigningKey = await client.getSigningKey();
-		return key.getPublicKey();
-	}
-
 	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<IJwt> {
-		const publicKey = await this._getPublicKey(oauthConfig);
+		const publicKey = await this.oauthAdapterService.getPublicKey(oauthConfig);
 		const verifiedJWT: string | jwt.JwtPayload = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
 			issuer: oauthConfig.issuer,
@@ -62,7 +141,7 @@ export class OAuthService {
 		return verifiedJWT as IJwt;
 	}
 
-	async findUser(idToken: string, externalUserId: EntityId, systemId: EntityId): Promise<UserDO> {
+	async findUser(idToken: string, externalUserId: string, systemId: EntityId): Promise<UserDO> {
 		const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
 
 		if (!decodedToken?.sub) {
@@ -78,6 +157,7 @@ export class OAuthService {
 				SSOErrorCode.SSO_USER_NOT_FOUND
 			);
 		}
+
 		return user;
 	}
 
@@ -85,6 +165,32 @@ export class OAuthService {
 		const currentUser: ICurrentUser = await this.userService.getResolvedUser(userId);
 		const { accessToken } = await this.authenticationService.generateJwt(currentUser);
 		return accessToken;
+	}
+
+	async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
+		if (email) {
+			const usersWithEmail: User[] = await this.userService.findByEmail(email);
+			const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
+			return ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
+		}
+		return '';
+	}
+
+	async authorizeForMigration(query: AuthorizationParams, targetSystemId: string): Promise<OauthTokenResponse> {
+		const authCode: string = this.checkAuthorizationCode(query);
+
+		const system: SystemDto = await this.systemService.findOAuthById(targetSystemId);
+		if (!system.id) {
+			throw new NotFoundException(`System with id "${targetSystemId}" does not exist.`);
+		}
+		const oauthConfig: OauthConfig = this.extractOauthConfigFromSystem(system);
+
+		const migrationRedirect: string = this.userMigrationService.getMigrationRedirectUri(targetSystemId);
+		const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig, migrationRedirect);
+
+		await this.validateToken(queryToken.id_token, oauthConfig);
+
+		return queryToken;
 	}
 
 	getPostLoginRedirectUrl(provider: string, idToken = '', logoutEndpoint = '', postLoginRedirect?: string): string {
@@ -135,27 +241,6 @@ export class OAuthService {
 		return authenticationUrl.toString();
 	}
 
-	private buildTokenRequestPayload(code: string, oauthConfig: OauthConfig): TokenRequestPayload {
-		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
-		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
-			oauthConfig,
-			decryptedClientSecret,
-			code
-		);
-		return tokenRequestPayload;
-	}
-
-	private sendTokenRequest(payload: TokenRequestPayload): Observable<AxiosResponse<OauthTokenResponse, unknown>> {
-		const query = QueryString.stringify(payload);
-		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(`${payload.tokenEndpoint}`, query, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
-		});
-		return responseTokenObservable;
-	}
-
 	private async resolveTokenRequest(
 		observable: Observable<AxiosResponse<OauthTokenResponse, unknown>>
 	): Promise<OauthTokenResponse> {
@@ -176,5 +261,49 @@ export class OAuthService {
 			return ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
 		}
 		return '';
+
+	private async shouldUserMigrate(externalUserId: string, officialSchoolNumber: string, systemId: EntityId) {
+		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+		const isSchoolInMigration: boolean = await this.userMigrationService.isSchoolInMigration(officialSchoolNumber);
+
+		const shouldMigrate = !existingUser && isSchoolInMigration;
+		return shouldMigrate;
+	}
+
+	private extractOauthConfigFromSystem(system: SystemDto): OauthConfig {
+		const { oauthConfig } = system;
+		if (oauthConfig == null) {
+			this.logger.warn(
+				`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id ?? 'undefined'}`
+			);
+			throw new UnauthorizedException('Requested system has no oauth configured', 'sso_internal_error');
+		}
+		return oauthConfig;
+	}
+
+	private buildTokenRequestPayload(
+		code: string,
+		oauthConfig: OauthConfig,
+		migrationRedirect?: string
+	): TokenRequestPayload {
+		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
+
+		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
+			oauthConfig,
+			decryptedClientSecret,
+			code,
+			migrationRedirect
+		);
+
+		return tokenRequestPayload;
+	}
+
+	private createErrorRedirect(errorCode: string, provider?: string): string {
+		const redirect = new URL('/login', Configuration.get('HOST') as string);
+		redirect.searchParams.append('error', errorCode);
+		if (provider) {
+			redirect.searchParams.append('provider', provider);
+		}
+		return redirect.toString();
 	}
 }

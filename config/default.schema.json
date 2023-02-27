@@ -465,6 +465,12 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The server endpoint, for external calls like Antivirus service. When called from docker container, can be http://host.docker.internal:3030"
 		},
+		"PUBLIC_BACKEND_URL": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"description": "The server api url that is accessible from the web (should end without a slash)."
+		},
 		"ALERT_STATUS_URL": {
 			"type": "string",
 			"default": null,

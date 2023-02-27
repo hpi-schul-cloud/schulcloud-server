@@ -30,7 +30,7 @@ import { TaskCardModule } from '@src/modules/task-card';
 import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
-import { UserMigrationApiModule } from '@src/modules/user-migration';
+import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration';
 import { VideoConferenceModule } from '@src/modules/video-conference';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
@@ -80,7 +80,7 @@ const serverModules = [
 	OauthProviderModule,
 	SharingApiModule,
 	ToolApiModule,
-	UserMigrationApiModule,
+	UserLoginMigrationApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

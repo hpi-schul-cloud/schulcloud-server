@@ -119,6 +119,7 @@ describe('SanisStrategy', () => {
 							id: new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e'),
 							name: 'schoolName',
 							typ: 'SCHULE',
+							kennung: 'Kennung',
 						}),
 						personenstatus: 'dead',
 						email: 'test@te.st',

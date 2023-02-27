@@ -6,12 +6,26 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { UserModule } from '@src/modules/user';
+import { UserLoginMigrationModule } from '@src/modules/user-login-migration';
+import { ProvisioningModule } from '@src/modules/provisioning';
+import { SystemModule } from '@src/modules/system';
 import { HydraSsoService } from './service/hydra.service';
 import { OAuthService } from './service/oauth.service';
+import { OauthAdapterService } from './service/oauth-adapter.service';
 
 @Module({
-	imports: [LoggerModule, AuthenticationModule, AuthorizationModule, HttpModule, EncryptionModule, UserModule],
-	providers: [OAuthService, HydraSsoService, LtiToolRepo],
+	imports: [
+		LoggerModule,
+		AuthenticationModule,
+		AuthorizationModule,
+		HttpModule,
+		EncryptionModule,
+		UserModule,
+		ProvisioningModule,
+		SystemModule,
+		UserLoginMigrationModule,
+	],
+	providers: [OAuthService, OauthAdapterService, HydraSsoService, LtiToolRepo],
 	exports: [OAuthService, HydraSsoService],
 })
 export class OauthModule {}

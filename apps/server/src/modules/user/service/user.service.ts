@@ -51,6 +51,11 @@ export class UserService {
 		return resolvedUser;
 	}
 
+	async findById(id: string): Promise<UserDO> {
+		const userDO = await this.userDORepo.findById(id, true);
+		return userDO;
+	}
+
 	async save(user: UserDO): Promise<UserDO> {
 		const savedUser: Promise<UserDO> = this.userDORepo.save(user);
 		return savedUser;
@@ -75,12 +80,6 @@ export class UserService {
 			return userDto.lastName ? userDto.lastName : id;
 		}
 		return userDto.lastName ? `${userDto.firstName} ${userDto.lastName}` : id;
-	}
-
-	private checkAvailableLanguages(language: LanguageType): void | BadRequestException {
-		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {
-			throw new BadRequestException('Language is not activated.');
-		}
 	}
 
 	async patchLanguage(userId: EntityId, newLanguage: LanguageType): Promise<boolean> {
@@ -108,5 +107,11 @@ export class UserService {
 
 		const promise: Promise<void> = this.userRepo.save(saveEntity);
 		return promise;
+	}
+
+	private checkAvailableLanguages(language: LanguageType): void | BadRequestException {
+		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {
+			throw new BadRequestException('Language is not activated.');
+		}
 	}
 }
