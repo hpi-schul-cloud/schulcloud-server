@@ -5,7 +5,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { NotFoundException } from '@nestjs/common';
 import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
-import { AuthorizationService } from '../../authorization';
+import { AuthorizationService } from '@src/modules/authorization';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 

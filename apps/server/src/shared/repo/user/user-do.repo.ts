@@ -16,8 +16,8 @@ import { EntityName, FilterQuery, QueryOrderMap, Reference } from '@mikro-orm/co
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { EntityNotFoundError } from '@shared/common';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
+import { Page } from '@src/shared/domain/interface/page';
 import { UserScope } from './user.scope';
-import { Page } from '../../domain/interface/page';
 
 @Injectable()
 export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
