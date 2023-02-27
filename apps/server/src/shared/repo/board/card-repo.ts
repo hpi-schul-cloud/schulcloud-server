@@ -13,4 +13,9 @@ export class CardRepo extends BaseRepo<MetaCard> {
 		const card = await this._em.findOneOrFail(MetaCard, { id });
 		return card;
 	}
+
+	async findManyByIds(ids: EntityId[]): Promise<MetaCard[]> {
+		const cards = await this._em.find(MetaCard, { id: { $in: ids } });
+		return cards;
+	}
 }

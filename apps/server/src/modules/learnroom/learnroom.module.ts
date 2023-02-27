@@ -12,6 +12,7 @@ import {
 	TaskRepo,
 	UserRepo,
 } from '@shared/repo';
+import { CardRepo } from '@shared/repo/board/card-repo';
 import { Logger } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { CopyHelperModule } from '@src/modules/copy-helper';
@@ -29,7 +30,8 @@ import { CommonCartridgeExportService } from './service/common-cartridge-export.
 import { CourseCopyService } from './service/course-copy.service';
 import { CourseService } from './service/course.service';
 import { RoomsService } from './service/rooms.service';
-import { BoardUC } from './uc/board.uc';
+import { BoardUc } from './uc/board.uc';
+import { CardUc } from './uc/card.uc';
 import { CourseCopyUC } from './uc/course-copy.uc';
 import { CourseExportUc } from './uc/course-export.uc';
 import { CourseUc } from './uc/course.uc';
@@ -71,8 +73,10 @@ import { RoomsUc } from './uc/rooms.uc';
 		CommonCartridgeExportService,
 		CourseExportUc,
 		AuthorisationUtils,
-		BoardUC,
+		BoardUc,
 		ColumnBoardRepo,
+		CardUc,
+		CardRepo,
 	],
 	exports: [CourseCopyService, CourseService],
 })

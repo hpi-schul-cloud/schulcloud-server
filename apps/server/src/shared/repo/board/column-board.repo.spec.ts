@@ -60,6 +60,7 @@ describe('ColumnBoardRepo', () => {
 
 		it('should load columns of the board', async () => {
 			const { board } = setupBoard();
+
 			await em.persistAndFlush(board);
 			em.clear();
 

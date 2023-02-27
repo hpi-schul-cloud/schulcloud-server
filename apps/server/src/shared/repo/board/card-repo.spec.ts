@@ -57,4 +57,18 @@ describe('CardRepo', () => {
 			expect(result.id).toEqual(legacyLessonCard.id);
 		});
 	});
+
+	describe('findManyByIds', () => {
+		it('should find cards by their ids', async () => {
+			const cards = legacyTaskReferenceCardFactory.buildList(5);
+
+			await em.persistAndFlush(cards);
+			em.clear();
+
+			const cardIds = cards.map((c) => c.id);
+			const result = await repo.findManyByIds(cardIds);
+
+			expect(result.map((c) => c.id).sort()).toEqual(cardIds.sort());
+		});
+	});
 });

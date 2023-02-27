@@ -1,42 +1,28 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { BoardCardType, ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import {
-	CardIdsParams,
-	CardListResponse,
-	CardResponse,
-	ContentElementResponse,
-	VisibilitySettingsResponse,
-} from './dto';
+import { CardResponseMapper } from '../mapper/card-response.mapper';
+import { CardUc } from '../uc/card.uc';
+import { CardIdsParams, CardListResponse } from './dto';
 
 @ApiTags('Cards')
 @Authenticate('jwt')
 @Controller('cards')
 export class CardsController {
+	constructor(private readonly cardUc: CardUc) {}
+
 	@Get()
-	getCards(@CurrentUser() currentUser: ICurrentUser, @Query() cardIdParams: CardIdsParams): Promise<CardListResponse> {
+	async getCards(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() cardIdParams: CardIdsParams
+	): Promise<CardListResponse> {
+		const cardIds = Array.isArray(cardIdParams.ids) ? cardIdParams.ids : [cardIdParams.ids];
+		const cards = await this.cardUc.findCards(currentUser.userId, cardIds);
+		const cardResponses = cards.map((card) => CardResponseMapper.mapToResponse(card));
+
 		const result = new CardListResponse({
-			data: [
-				new CardResponse({
-					id: '1',
-					elements: [new ContentElementResponse()],
-					cardType: BoardCardType.LEGACY_TASK,
-					visibilitySettings: new VisibilitySettingsResponse({}),
-				}),
-				new CardResponse({
-					id: '2',
-					elements: [new ContentElementResponse(), new ContentElementResponse()],
-					cardType: BoardCardType.LEGACY_TASK,
-					visibilitySettings: new VisibilitySettingsResponse({}),
-				}),
-				new CardResponse({
-					id: '3',
-					elements: [new ContentElementResponse(), new ContentElementResponse(), new ContentElementResponse()],
-					cardType: BoardCardType.LEGACY_TASK,
-					visibilitySettings: new VisibilitySettingsResponse({}),
-				}),
-			],
+			data: cardResponses,
 		});
 		return Promise.resolve(result);
 	}

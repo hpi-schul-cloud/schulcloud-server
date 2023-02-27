@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { BoardResponseMapper } from '../mapper';
-import { BoardUC } from '../uc/board.uc';
+import { BoardUc } from '../uc/board.uc';
 import {
 	BoardColumnUrlParams,
 	BoardResponse,
@@ -17,7 +17,7 @@ import {
 @Authenticate('jwt')
 @Controller('boards')
 export class BoardController {
-	constructor(private readonly boardUC: BoardUC) {}
+	constructor(private readonly boardUC: BoardUc) {}
 
 	@Get(':boardId')
 	async getBoardSkeleton(

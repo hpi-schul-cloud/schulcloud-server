@@ -11,7 +11,7 @@ export class BoardResponseMapper {
 					id: column.id,
 					title: column.title,
 					cards: column.cardSkeletons.map((skeleton) => {
-						return { cardId: skeleton.card.id, height: skeleton.height };
+						return { cardId: skeleton.cardId, height: skeleton.height };
 					}),
 				};
 			}),

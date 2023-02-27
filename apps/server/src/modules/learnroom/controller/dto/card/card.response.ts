@@ -1,9 +1,20 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { BoardCardType } from '@shared/domain/entity/card.entity';
+import { BoardCardType, ContentElementType } from '@shared/domain/entity/card.entity';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 
-export class ContentElementResponse {}
+export class ContentElementResponse {
+	constructor({ id, type }: ContentElementResponse) {
+		this.id = id;
+		this.type = type;
+	}
+
+	@ApiProperty({ pattern: '[a-f0-9]{24}' })
+	id: string;
+
+	@ApiProperty({ enum: ContentElementType })
+	type: ContentElementType;
+}
 
 export class CardResponse {
 	constructor({ id, title, elements, cardType, visibilitySettings }: CardResponse) {

@@ -26,7 +26,9 @@ export class BoardManagementUc {
 
 		const board = columnBoardFactory.build({ columns });
 
-		await this.em.persistAndFlush([course, board]);
+		this.em.persist([course, board]);
+
+		await this.em.flush();
 	}
 
 	private generateCardSkeletons(creator: User, course: Course): CardSkeleton[] {
@@ -35,7 +37,7 @@ export class BoardManagementUc {
 		const skeletons = Array(count)
 			.fill(0)
 			.map(() =>
-				Math.random() < 0
+				Math.random() < 0.5
 					? this.generateTaskCardSkeleton(creator, course)
 					: this.generateLessonCardSkeleton(creator, course)
 			);
@@ -44,27 +46,31 @@ export class BoardManagementUc {
 	}
 
 	private generateTaskCardSkeleton(creator: User, course: Course): CardSkeleton {
+		const card = legacyTaskReferenceCardFactory.buildWithId({
+			elements: [
+				legacyTaskContentElementFactory.build({
+					task: taskFactory.build({ school: creator.school, creator, course }),
+				}),
+			],
+			creator,
+		});
+		this.em.persist(card);
 		const taskCardSkeleton = cardSkeletonFactory.build({
-			card: legacyTaskReferenceCardFactory.build({
-				elements: [
-					legacyTaskContentElementFactory.build({
-						task: taskFactory.build({ school: creator.school, creator, course }),
-					}),
-				],
-				creator,
-			}),
+			cardId: card.id,
 		});
 
 		return taskCardSkeleton;
 	}
 
 	private generateLessonCardSkeleton(creator: User, course: Course): CardSkeleton {
+		const card = legacyLessonReferenceCardFactory.buildWithId({
+			elements: [legacyLessonContentElementFactory.build({ lesson: lessonFactory.build({ course }) })],
+			creator,
+		});
+		this.em.persist(card);
 		const lessonCardSkeleton = cardSkeletonFactory.build({
 			height: this.generateRandomNumber(30, 300),
-			card: legacyLessonReferenceCardFactory.build({
-				elements: [legacyLessonContentElementFactory.build({ lesson: lessonFactory.build({ course }) })],
-				creator,
-			}),
+			cardId: card.id,
 		});
 
 		return lessonCardSkeleton;

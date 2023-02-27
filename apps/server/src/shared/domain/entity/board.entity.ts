@@ -16,7 +16,6 @@ import { ILearnroomElement } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { BoardElement, BoardElementType } from './boardelement.entity';
-import { MetaCard } from './card.entity';
 import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
 import type { Task } from './task.entity';
@@ -28,21 +27,25 @@ export enum BoardType {
 
 export type CardSkeletonProps = {
 	height: number;
-	card: MetaCard;
+	cardId: EntityId | ObjectId;
 };
 
 @Embeddable()
 export class CardSkeleton {
 	constructor(props: CardSkeletonProps) {
 		this.height = props.height;
-		this.card = wrap(props.card).toReference();
+		this._cardId = new ObjectId(props.cardId);
 	}
 
 	@Property()
 	height: number;
 
-	@OneToOne(() => 'MetaCard', undefined, { wrappedReference: true })
-	card: IdentifiedReference<MetaCard>;
+	@Property({ fieldName: 'card' })
+	_cardId: ObjectId;
+
+	get cardId(): EntityId {
+		return this._cardId.toHexString();
+	}
 }
 
 export type ColumnProps = {
@@ -51,12 +54,18 @@ export type ColumnProps = {
 };
 
 @Embeddable()
-export class Column extends BaseEntityWithTimestamps {
+export class Column {
 	constructor(props: ColumnProps) {
-		super();
 		this._id = new ObjectId();
 		this.title = props.title;
-		this.cardSkeletons = props.cardSkeletons;
+		this.cardSkeletons = props?.cardSkeletons;
+	}
+
+	@Property()
+	_id: ObjectId;
+
+	get id() {
+		return this._id.toHexString();
 	}
 
 	@Property()
@@ -64,6 +73,12 @@ export class Column extends BaseEntityWithTimestamps {
 
 	@Embedded(() => CardSkeleton, { array: true })
 	cardSkeletons: CardSkeleton[] = [];
+
+	@Property()
+	createdAt = new Date();
+
+	@Property({ onUpdate: () => new Date() })
+	updatedAt = new Date();
 }
 
 @Entity({

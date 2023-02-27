@@ -11,21 +11,32 @@ export enum ContentElementType {
 }
 
 @Embeddable({ abstract: true, discriminatorColumn: 'type' })
-export class ContentElement extends BaseEntityWithTimestamps {
+export class ContentElement {
 	constructor() {
-		super();
 		this._id = new ObjectId();
+	}
+
+	@Property()
+	_id: ObjectId;
+
+	get id() {
+		return this._id.toHexString();
 	}
 
 	@Enum(() => ContentElementType)
 	type!: ContentElementType;
+
+	@Property()
+	createdAt = new Date();
+
+	@Property({ onUpdate: () => new Date() })
+	updatedAt = new Date();
 }
 
 @Embeddable({ discriminatorValue: ContentElementType.LEGACY_LESSON })
 export class LegacyLessonContentElement extends ContentElement {
 	constructor(props: { lesson: Lesson }) {
 		super();
-		this._id = new ObjectId();
 		this.type = ContentElementType.LEGACY_LESSON;
 		this.lesson = props.lesson;
 	}
@@ -38,7 +49,6 @@ export class LegacyLessonContentElement extends ContentElement {
 export class LegacyTaskContentElement extends ContentElement {
 	constructor(props: { task: Task }) {
 		super();
-		this._id = new ObjectId();
 		this.type = ContentElementType.LEGACY_TASK;
 
 		this.task = props.task;
@@ -66,7 +76,7 @@ export enum BoardCardType {
 	abstract: true,
 	discriminatorColumn: 'cardType',
 })
-export class MetaCard extends BaseEntityWithTimestamps {
+export abstract class MetaCard extends BaseEntityWithTimestamps {
 	constructor(props: MetaCardProps) {
 		super();
 		this.publishedAt = props.publishedAt;

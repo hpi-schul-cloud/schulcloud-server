@@ -3,7 +3,7 @@ import { ColumnBoard, EntityId } from '@shared/domain';
 import { ColumnBoardRepo } from '@shared/repo';
 
 @Injectable()
-export class BoardUC {
+export class BoardUc {
 	constructor(private readonly columnBoardRepo: ColumnBoardRepo) {}
 
 	async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
