@@ -1,5 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { EncryptionModule } from '@shared/infra/encryption';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
@@ -16,7 +16,7 @@ import { OauthAdapterService } from './service/oauth-adapter.service';
 @Module({
 	imports: [
 		LoggerModule,
-		AuthenticationModule,
+		forwardRef(() => AuthenticationModule),
 		AuthorizationModule,
 		HttpModule,
 		EncryptionModule,

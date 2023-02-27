@@ -2,7 +2,6 @@ import { EntityName, FilterQuery, IdentifiedReference, Reference } from '@mikro-
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo } from '@shared/repo';
 import { EntityId, IUserProperties, Role, School, System, User } from '@shared/domain';
-import { EntityName, FilterQuery, Reference } from '@mikro-orm/core';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { EntityNotFoundError } from '@shared/common';
 

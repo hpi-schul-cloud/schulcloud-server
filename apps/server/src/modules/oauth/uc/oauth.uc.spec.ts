@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ISession } from '@shared/domain/types/session';
@@ -9,30 +8,23 @@ import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
-import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
+import { ProvisioningService } from '@src/modules/provisioning';
+import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
 import { SystemDto, SystemService } from '@src/modules/system/service';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-login-migration';
-import { OauthConfigDto, SystemDto } from '@src/modules/system/service';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { FeathersJwtProvider } from '@src/modules/authorization';
-import { ProvisioningService } from '@src/modules/provisioning';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
-import { UserMigrationService } from '@src/modules/user-migration';
-import { OauthTokenResponse } from '../controller/dto';
-import { SSOErrorCode } from '../error/sso-error-code.enum';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import { OauthLoginStateDto } from './dto/oauth-login-state.dto';
-import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../../provisioning/dto';
 import resetAllMocks = jest.resetAllMocks;
 
 jest.mock('nanoid', () => {
@@ -199,7 +191,6 @@ describe('OAuthUc', () => {
 
 	describe('processOAuth is called', () => {
 		const setup = () => {
-
 			const postLoginRedirect = 'postLoginRedirect';
 			const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
 				state: 'state',
@@ -210,13 +201,8 @@ describe('OAuthUc', () => {
 			const code = 'code';
 			const error = 'error';
 
-			const code = '43534543jnj543342jn2';
-			const query: AuthorizationParams = { code };
 			const jwt = 'schulcloudJwt';
 			const redirect = 'redirect';
-			const baseResponse: OAuthProcessDto = {
-				redirect,
-			};
 			const user: UserDO = new UserDO({
 				id: 'mockUserId',
 				firstName: 'firstName',
@@ -231,36 +217,34 @@ describe('OAuthUc', () => {
 				type: 'mock',
 				oauthConfig: { provider: 'testProvider' } as OauthConfigDto,
 			});
-			return { code, query, jwt, redirect, baseResponse, user, testSystem };
+			return { cachedState, code, error, jwt, redirect, user, testSystem };
 		};
 		describe('when a user is returned', () => {
 			it('should return a response with a valid jwt', async () => {
-				const { code, query, jwt, redirect, baseResponse, user, testSystem } = setup();
-				oauthService.checkAuthorizationCode.mockReturnValue(code);
+				const { cachedState, code, error, jwt, redirect, user } = setup();
 				oauthService.authenticateUser.mockResolvedValue({ user, redirect });
-				jwtService.generateJwt.mockResolvedValue(jwt);
+				oauthService.getJwtForUser.mockResolvedValue(jwt);
 
-				const response: OAuthProcessDto = await uc.processOAuth(query, testSystem.id!);
+				const response: OAuthProcessDto = await uc.processOAuthLogin(cachedState, code, error);
 				expect(response).toEqual(
 					expect.objectContaining({
 						jwt,
-						...baseResponse,
+						redirect,
 					})
 				);
-				expect(response.jwt).toStrictEqual(jwt);
 			});
 		});
 
 		describe('when no user is returned', () => {
 			it('should return a response without a jwt', async () => {
-				const { code, query, redirect, baseResponse, testSystem } = setup();
+				const { cachedState, code, error, redirect } = setup();
 				oauthService.checkAuthorizationCode.mockReturnValue(code);
 				oauthService.authenticateUser.mockResolvedValue({ redirect });
 
-				const response: OAuthProcessDto = await uc.processOAuth(query, testSystem.id!);
+				const response: OAuthProcessDto = await uc.processOAuthLogin(cachedState, code, error);
 				expect(response).toEqual(
 					expect.objectContaining({
-						...baseResponse,
+						redirect,
 					})
 				);
 			});
@@ -268,56 +252,29 @@ describe('OAuthUc', () => {
 
 		describe('when an error occurs', () => {
 			it('should return an OAuthProcessDto with error', async () => {
-				const errorResponse: OAuthProcessDto = {
-					provider: 'unknown-provider',
-					errorCode: 'sso_internal_error',
-					redirect: 'errorRedirect',
-				};
-				const { code, query, testSystem } = setup();
+				const { cachedState, code, error, testSystem } = setup();
 				oauthService.checkAuthorizationCode.mockReturnValue(code);
-				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 				oauthService.authenticateUser.mockRejectedValue(new OAuthSSOError('Testmessage'));
 				systemService.findOAuthById.mockResolvedValue(testSystem);
 
-				const response: OAuthProcessDto = await uc.processOAuth(query, testSystem.id!);
+				const response = uc.processOAuthLogin(cachedState, code, error);
 
-				expect(response).toEqual(errorResponse);
+				await expect(response).rejects.toThrow(OAuthSSOError);
 			});
 		});
 
 		describe('when the process runs successfully', () => {
 			it('should return a valid jwt', async () => {
-				const { cachedState, code, userJwt, postLoginRedirect } = setup();
+				const { cachedState, code, user, jwt, redirect } = setup();
+				oauthService.authenticateUser.mockResolvedValue({ user, redirect });
+				oauthService.getJwtForUser.mockResolvedValue(jwt);
 
 				const response: OAuthProcessDto = await uc.processOAuthLogin(cachedState, code);
 
 				expect(response).toEqual<OAuthProcessDto>({
-					redirect: postLoginRedirect,
-					jwt: userJwt,
+					jwt,
+					redirect,
 				});
-			});
-		});
-
-		describe('when oauth config is missing', () => {
-			it('should throw OAuthSSOError', async () => {
-				const { cachedState, code, system } = setup();
-				system.oauthConfig = undefined;
-
-				const func = async () => uc.processOAuthLogin(cachedState, code);
-
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError(`Requested system systemId has no oauth configured`, SSOErrorCode.SSO_INTERNAL_ERROR)
-				);
-			});
-		});
-
-		describe('when authentication in external system failed', () => {
-			it('should throw OAuthSSOError', async () => {
-				const { cachedState, error } = setup();
-
-				const func = async () => uc.processOAuthLogin(cachedState, undefined, error);
-
-				await expect(func).rejects.toThrow(new OAuthSSOError('Authorization in external system failed', error));
 			});
 		});
 	});
@@ -326,7 +283,7 @@ describe('OAuthUc', () => {
 		const setupMigration = () => {
 			const code = '43534543jnj543342jn2';
 
-			const query: AuthorizationParams = { code };
+			const query: AuthorizationParams = { code, state: 'state' };
 
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
@@ -373,30 +330,20 @@ describe('OAuthUc', () => {
 			const userMigrationFailedDto: MigrationDto = new MigrationDto({
 				redirect: 'https://mock.de/dashboard',
 			});
-			oauthService.checkAuthorizationCode.mockReturnValue(code);
 
+			oauthService.checkAuthorizationCode.mockReturnValue(code);
 			oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
 			provisioningService.getData.mockResolvedValue(oauthData);
-			provisioningService.provisionData.mockResolvedValue(provisioningDto);
-			oauthService.findUser.mockResolvedValue(user);
-			oauthService.getJwtForUser.mockResolvedValue(userJwt);
-			oauthService.getPostLoginRedirectUrl.mockReturnValue(postLoginRedirect);
 
 			return {
 				code,
 				query,
-				cachedState,
-				code,
-				error,
 				system,
 				userMigrationDto,
 				userMigrationFailedDto,
 				oauthTokenResponse,
 				oauthData,
-				provisioningDto,
-				userJwt,
 				oauthConfig,
-				postLoginRedirect,
 			};
 		};
 

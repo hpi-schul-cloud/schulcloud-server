@@ -198,7 +198,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect('Location', `${clientUrl}/login?error=access_denied&provider=mock_type`);
+					.expect('Location', `${clientUrl}/login?error=access_denied`);
 			});
 		});
 	});

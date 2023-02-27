@@ -1,5 +1,4 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ApiTags } from '@nestjs/swagger';
 import {
 	Controller,
 	Get,
@@ -19,15 +18,14 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { CookieOptions, Request, Response } from 'express';
-import { OAuthSSOError } from '../error/oauth-sso.error';
-import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { UserMigrationMapper } from '@src/modules/user-login-migration/mapper/user-migration.mapper';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { OAuthSSOError } from '../error/oauth-sso.error';
+import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
 import { OauthLoginStateDto } from '../uc/dto/oauth-login-state.dto';
 import { AuthorizationParams, SSOLoginQuery, SystemIdParams } from './dto';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
-import { AuthorizationParams, SystemUrlParams } from './dto';
 import { UserMigrationResponse } from './dto/user-migration.response';
 
 @ApiTags('SSO')
@@ -161,7 +159,7 @@ export class OauthSSOController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AuthorizationParams,
 		@Res() res: Response,
-		@Param() urlParams: SystemUrlParams
+		@Param() urlParams: SystemIdParams
 	): Promise<void> {
 		const migration: MigrationDto = await this.oauthUc.migrate(currentUser.userId, query, urlParams.systemId);
 		const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);

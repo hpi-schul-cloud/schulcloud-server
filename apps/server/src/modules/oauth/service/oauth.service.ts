@@ -10,20 +10,14 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '@src/modules/oauth/controller/dto';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { SystemService } from '@src/modules/system';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { TokenRequestMapper } from '../mapper/token-request.mapper';
-import JwksRsa from 'jwks-rsa';
-import QueryString from 'qs';
-import { lastValueFrom, Observable } from 'rxjs';
-import { OauthTokenResponse, TokenRequestPayload } from '../controller/dto';
+import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { SSOErrorCode } from '../error/sso-error-code.enum';
 import { IJwt } from '../interface/jwt.base.interface';
-import { OAuthProcessDto } from './dto/oauth-process.dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 
@@ -32,7 +26,6 @@ export class OAuthService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly authenticationService: AuthenticationService,
-		private readonly httpService: HttpService,
 		private readonly oauthAdapterService: OauthAdapterService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
 		private readonly logger: Logger,
@@ -46,7 +39,8 @@ export class OAuthService {
 	async authenticateUser(
 		systemId: string,
 		authCode?: string,
-		errorCode?: string
+		errorCode?: string,
+		postLoginRedirect?: string
 	): Promise<{ user?: UserDO; redirect: string }> {
 		let redirect: string;
 		if (errorCode) {
@@ -94,7 +88,12 @@ export class OAuthService {
 			}
 		}
 
-		redirect = this.getRedirectUrl(oauthConfig.provider, queryToken.id_token, oauthConfig.logoutEndpoint);
+		redirect = this.getPostLoginRedirectUrl(
+			oauthConfig.provider,
+			queryToken.id_token,
+			oauthConfig.logoutEndpoint,
+			postLoginRedirect
+		);
 
 		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
 
@@ -241,27 +240,6 @@ export class OAuthService {
 		return authenticationUrl.toString();
 	}
 
-	private async resolveTokenRequest(
-		observable: Observable<AxiosResponse<OauthTokenResponse, unknown>>
-	): Promise<OauthTokenResponse> {
-		let responseToken: AxiosResponse<OauthTokenResponse>;
-		try {
-			responseToken = await lastValueFrom(observable);
-		} catch (error) {
-			throw new OAuthSSOError('Requesting token failed.', SSOErrorCode.SSO_AUTH_CODE_STEP);
-		}
-
-		return responseToken.data;
-	}
-
-	private async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
-		if (email) {
-			const usersWithEmail: User[] = await this.userService.findByEmail(email);
-			const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
-			return ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
-		}
-		return '';
-
 	private async shouldUserMigrate(externalUserId: string, officialSchoolNumber: string, systemId: EntityId) {
 		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 		const isSchoolInMigration: boolean = await this.userMigrationService.isSchoolInMigration(officialSchoolNumber);
@@ -298,12 +276,9 @@ export class OAuthService {
 		return tokenRequestPayload;
 	}
 
-	private createErrorRedirect(errorCode: string, provider?: string): string {
+	private createErrorRedirect(errorCode: string): string {
 		const redirect = new URL('/login', Configuration.get('HOST') as string);
 		redirect.searchParams.append('error', errorCode);
-		if (provider) {
-			redirect.searchParams.append('provider', provider);
-		}
 		return redirect.toString();
 	}
 }

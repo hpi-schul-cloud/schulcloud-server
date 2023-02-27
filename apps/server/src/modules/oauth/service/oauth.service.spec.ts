@@ -3,28 +3,23 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfig, System } from '@shared/domain';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { ICurrentUser, OauthConfig, System } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { OauthConfigDto } from '@src/modules/system/service';
-import { of, throwError } from 'rxjs';
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -32,6 +27,8 @@ import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthService } from './oauth.service';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../../provisioning/dto';
 import { OauthAdapterService } from './oauth-adapter.service';
+import { SSOAuthenticationError } from '../interface/sso-authentication-error.enum';
+import { OAuthProcessDto } from './dto/oauth-process.dto';
 
 jest.mock('jwks-rsa', () => () => {
 	return {
@@ -59,7 +56,6 @@ describe('OAuthService', () => {
 	let userMigrationService: DeepMocked<UserMigrationService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let authenticationService: DeepMocked<AuthenticationService>;
-	let httpService: DeepMocked<HttpService>;
 
 	let testSystem: System;
 	let testOauthConfig: OauthConfig;
@@ -89,10 +85,6 @@ describe('OAuthService', () => {
 				{
 					provide: AuthenticationService,
 					useValue: createMock<AuthenticationService>(),
-				},
-				{
-					provide: HttpService,
-					useValue: createMock<HttpService>(),
 				},
 				{
 					provide: DefaultEncryptionService,
@@ -129,7 +121,6 @@ describe('OAuthService', () => {
 		userMigrationService = module.get(UserMigrationService);
 		oauthAdapterService = module.get(OauthAdapterService);
 		authenticationService = module.get(AuthenticationService);
-		httpService = module.get(HttpService);
 	});
 
 	afterAll(async () => {
@@ -147,7 +138,7 @@ describe('OAuthService', () => {
 		describe('when it gets passed a query with a code', () => {
 			it('should extract code from query', () => {
 				const code = '43534543jnj543342jn2';
-				const query: AuthorizationParams = { code };
+				const query: AuthorizationParams = { code, state: 'someState' };
 
 				const extract: string = service.checkAuthorizationCode(query);
 
@@ -156,7 +147,7 @@ describe('OAuthService', () => {
 		});
 		describe('when it gets passed a query with an error', () => {
 			it('should throw an error', () => {
-				const query: AuthorizationParams = { error: 'error' };
+				const query: AuthorizationParams = { error: SSOAuthenticationError.INVALID_REQUEST, state: 'someState' };
 
 				expect(() => service.checkAuthorizationCode(query)).toThrow(
 					new OAuthSSOError('Authorization Query Object has no authorization code or error', 'error')
@@ -166,7 +157,7 @@ describe('OAuthService', () => {
 
 		describe('when it gets passed a faulty query', () => {
 			it('should throw an error', () => {
-				const query: AuthorizationParams = {};
+				const query: AuthorizationParams = {} as AuthorizationParams;
 
 				expect(() => service.checkAuthorizationCode(query)).toThrow(
 					new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step')
@@ -362,47 +353,26 @@ describe('OAuthService', () => {
 	describe('getRedirectUrl', () => {
 		describe('when it is called with an iserv-provider', () => {
 			it('should return an iserv login url string', () => {
-				const url = service.getRedirectUrl('iserv', 'idToken', 'logoutEndpoint');
+				const url = service.getPostLoginRedirectUrl('iserv', 'idToken', 'https://mock.de');
 
-				expect(url).toStrictEqual(`logoutEndpoint?id_token_hint=idToken&post_logout_redirect_uri=${hostUri}/dashboard`);
+				expect(url).toStrictEqual(
+					`https://mock.de/?id_token_hint=idToken&post_logout_redirect_uri=https%3A%2F%2Fmock.de%2Fdashboard`
+				);
 			});
 		});
 
 		describe('when it is called with any other oauth provider', () => {
 			it('should return a login url string', () => {
-				const url: string = service.getRedirectUrl('provider');
+				const url: string = service.getPostLoginRedirectUrl('provider');
 
 				expect(url).toStrictEqual(`${hostUri}/dashboard`);
 			});
 		});
 	});
-	describe('getOAuthErrorResponse', () => {
-		describe('when an OAuthSSOError is given', () => {
-			it('should return a login url string within an error', () => {
-				const specialError: OAuthSSOError = new OAuthSSOError('foo', 'special_error_code');
 
-				const response = service.getOAuthErrorResponse(specialError, 'provider');
-
-				expect(response.provider).toStrictEqual('provider');
-				expect(response.errorCode).toStrictEqual('special_error_code');
-				expect(response.redirect).toStrictEqual(`${hostUri}/login?error=special_error_code&provider=provider`);
-			});
-		});
-		describe('when any other error is given', () => {
-			it('should return a login url string within an error', () => {
-				const generalError: Error = new Error('foo');
-
-				const response: OAuthProcessDto = service.getOAuthErrorResponse(generalError, 'provider');
-
-				expect(response.provider).toStrictEqual('provider');
-				expect(response.errorCode).toStrictEqual('oauth_login_failed');
-				expect(response.redirect).toStrictEqual(`${hostUri}/login?error=oauth_login_failed&provider=provider`);
-			});
-		});
-	});
 	describe('authorizeForMigration', () => {
 		const setupMigration = () => {
-			const query: AuthorizationParams = { code: '43534543jnj543342jn2' };
+			const query: AuthorizationParams = { code: '43534543jnj543342jn2', state: 'someState' };
 
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
@@ -476,7 +446,7 @@ describe('OAuthService', () => {
 	describe('authenticateUser', () => {
 		const setup = () => {
 			const code = '43534543jnj543342jn2';
-			const query: AuthorizationParams = { code };
+			const query: AuthorizationParams = { code, state: 'someState' };
 
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
@@ -528,9 +498,6 @@ describe('OAuthService', () => {
 
 			const postLoginRedirect = 'postLoginRedirect';
 			const successResponse: OAuthProcessDto = new OAuthProcessDto({
-				idToken: 'idToken',
-				logoutEndpoint: oauthConfig.logoutEndpoint,
-				provider: oauthConfig.provider,
 				redirect: postLoginRedirect,
 			});
 
@@ -611,7 +578,6 @@ describe('OAuthService', () => {
 				const setupData = setup();
 				const migrationRedirect = 'https://mock.de/dashboard';
 				const migrationResponse: OAuthProcessDto = new OAuthProcessDto({
-					provider: setupData.oauthConfig.provider,
 					redirect: migrationRedirect,
 				});
 
@@ -666,7 +632,7 @@ describe('OAuthService', () => {
 				const url = service.getPostLoginRedirectUrl('iserv', 'idToken', 'http://iserv.logout');
 
 				expect(url).toStrictEqual(
-					`http://iserv.logout/?id_token_hint=idToken&post_logout_redirect_uri=http%3A%2F%2Fmockhost.de%2Fdashboard`
+					`http://iserv.logout/?id_token_hint=idToken&post_logout_redirect_uri=https%3A%2F%2Fmock.de%2Fdashboard`
 				);
 			});
 		});
@@ -724,7 +690,7 @@ describe('OAuthService', () => {
 				const result: string = service.getAuthenticationUrl('oidc', oauthConfig, 'state', false, 'alias');
 
 				expect(result).toEqual(
-					'http://mock.de/auth?client_id=12345&redirect_uri=http%3A%2F%2Fmockhost.de%2Fapi%2Fv3%2Fsso%2Foauth&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=alias'
+					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=alias'
 				);
 			});
 		});
@@ -749,10 +715,9 @@ describe('OAuthService', () => {
 				const result: string = service.getAuthenticationUrl('oidc', oauthConfig, 'state', true, 'alias');
 
 				expect(result).toEqual(
-					'http://mock.de/auth?client_id=12345&redirect_uri=http%3A%2F%2Fmockhost.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=alias'
+					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=alias'
 				);
 			});
 		});
 	});
-
 });

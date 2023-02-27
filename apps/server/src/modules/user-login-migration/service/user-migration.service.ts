@@ -19,9 +19,7 @@ import { MigrationDto } from './dto/migration.dto';
 
 @Injectable()
 export class UserMigrationService {
-	private readonly clientUrl: string;
-
-	private readonly publicBackendUrl: string;
+	private readonly hostUrl: string;
 
 	private readonly publicBackendUrl: string;
 
@@ -64,7 +62,7 @@ export class UserMigrationService {
 			);
 		}
 
-		const url = new URL('/migration', this.clientUrl);
+		const url = new URL('/migration', this.hostUrl);
 		url.searchParams.append('sourceSystem', iservSystem.id);
 		url.searchParams.append('targetSystem', sanisSystem.id);
 		url.searchParams.append('origin', originSystemId);
