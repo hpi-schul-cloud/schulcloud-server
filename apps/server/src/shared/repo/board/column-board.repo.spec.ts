@@ -80,13 +80,4 @@ describe('ColumnBoardRepo', () => {
 			expect(result.columns[0].cardSkeletons).toHaveLength(board.columns[0].cardSkeletons.length);
 		});
 	});
-
-	/* it('should not load columnboards', async () => {
-		const columnboard = columnBoardFactory.build();
-		await em.persistAndFlush(columnboard);
-		em.clear();
-
-		const call = () => repo.findById(columnboard.id);
-		await expect(call).rejects.toThrow();
-	}); */
 });
