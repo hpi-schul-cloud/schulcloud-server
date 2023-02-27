@@ -30,7 +30,7 @@ export class BoardManagementUc {
 	}
 
 	private generateCardSkeletons(creator: User, course: Course): CardSkeleton[] {
-		const count = this.getRandomCount(10, 60);
+		const count = this.generateRandomNumber(10, 60);
 
 		const skeletons = Array(count)
 			.fill(0)
@@ -51,6 +51,7 @@ export class BoardManagementUc {
 						task: taskFactory.build({ school: creator.school, creator, course }),
 					}),
 				],
+				creator,
 			}),
 		});
 
@@ -59,15 +60,17 @@ export class BoardManagementUc {
 
 	private generateLessonCardSkeleton(creator: User, course: Course): CardSkeleton {
 		const lessonCardSkeleton = cardSkeletonFactory.build({
+			height: this.generateRandomNumber(30, 300),
 			card: legacyLessonReferenceCardFactory.build({
 				elements: [legacyLessonContentElementFactory.build({ lesson: lessonFactory.build({ course }) })],
+				creator,
 			}),
 		});
 
 		return lessonCardSkeleton;
 	}
 
-	private getRandomCount(min: number, max: number): number {
+	private generateRandomNumber(min: number, max: number): number {
 		return Math.floor(Math.random() * (max + min - 1) + min);
 	}
 }
