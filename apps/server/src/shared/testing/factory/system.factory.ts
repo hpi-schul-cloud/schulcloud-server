@@ -41,10 +41,10 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 				clientSecret: 'mock-client-secret',
 				alias: 'mock-alias',
 				defaultScopes: 'openid email userinfo',
-				authorizationUrl: 'http://mock.tld/auth',
-				tokenUrl: 'http://mock.tld/token',
-				userinfoUrl: 'http://mock.tld/userinfo',
-				logoutUrl: 'http://mock.tld/logout',
+				authorizationUrl: 'https://mock.tld/auth',
+				tokenUrl: 'https://mock.tld/token',
+				userinfoUrl: 'https://mock.tld/userinfo',
+				logoutUrl: 'https://mock.tld/logout',
 			}),
 		};
 		return this.params(params);
