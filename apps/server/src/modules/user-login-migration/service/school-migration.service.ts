@@ -4,6 +4,7 @@ import { SchoolService } from '@src/modules/school';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserService } from '@src/modules/user';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Page } from '@shared/domain/interface/page';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
 
 @Injectable()
@@ -61,6 +62,15 @@ export class SchoolMigrationService {
 			return null;
 		}
 		return existingSchool;
+	}
+
+	async completeMigration(schoolId: string): Promise<void> {
+		const notMigratedUsers: Page<UserDO> = await this.userService.findUsers({ schoolId, isOutdated: false });
+		notMigratedUsers.data.forEach((user: UserDO) => {
+			user.outdatedSince = new Date();
+		});
+		await this.userService.saveAll(notMigratedUsers.data);
+		return Promise.resolve();
 	}
 
 	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {

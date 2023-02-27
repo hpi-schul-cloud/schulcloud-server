@@ -2,7 +2,6 @@ import { SchoolRepo } from '@shared/repo';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
-import { isDefined } from 'class-validator';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 @Injectable()
@@ -31,13 +30,13 @@ export class SchoolService {
 		oauthMigrationFinished?: boolean
 	): Promise<OauthMigrationDto> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
-		if (isDefined(oauthMigrationPossible)) {
+		if (oauthMigrationPossible != null) {
 			schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
 		}
-		if (isDefined(oauthMigrationMandatory)) {
+		if (oauthMigrationMandatory != null) {
 			schoolDo.oauthMigrationMandatory = oauthMigrationMandatory ? new Date() : undefined;
 		}
-		if (isDefined(oauthMigrationFinished)) {
+		if (oauthMigrationFinished != null) {
 			schoolDo.oauthMigrationFinished = oauthMigrationFinished ? new Date() : undefined;
 		}
 
