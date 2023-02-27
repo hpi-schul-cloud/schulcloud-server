@@ -1,25 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UserMigrationService } from '@src/modules/user-migration/service/user-migration.service';
-import { UserMigrationUc } from './user-migration.uc';
+import { UserMigrationService } from '@src/modules/user-login-migration/service/user-migration.service';
+import { MigrationUc } from './migration.uc';
 import { PageContentDto } from '../service/dto/page-content.dto';
 import { PageTypes } from '../interface/page-types.enum';
 
 describe('MigrationUc', () => {
 	let module: TestingModule;
-	let uc: UserMigrationUc;
+	let uc: MigrationUc;
 	let service: DeepMocked<UserMigrationService>;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				UserMigrationUc,
+				MigrationUc,
 				{
 					provide: UserMigrationService,
 					useValue: createMock<UserMigrationService>(),
 				},
 			],
 		}).compile();
-		uc = module.get(UserMigrationUc);
+		uc = module.get(MigrationUc);
 		service = module.get(UserMigrationService);
 	});
 
