@@ -4,53 +4,71 @@ import { ApiValidationErrorResponse } from './api-validation-error.response';
 
 describe('ApiValidationErrorResponse', () => {
 	describe('when creating an api validation error response', () => {
-		it('should have error code and response', () => {
-			const error = new ApiValidationError();
-			const errorDto = new ApiValidationErrorResponse(error);
-			expect(errorDto.code).toEqual(HttpStatus.BAD_REQUEST);
-			expect(errorDto.code).toEqual(400);
-			expect(errorDto.title).toEqual('API Validation Error');
-			expect(errorDto.type).toEqual('API_VALIDATION_ERROR');
-			expect(errorDto.message).toEqual('API validation failed, see validationErrors for details');
-			const { validationErrors } = errorDto;
-			expect(validationErrors).toEqual([]);
-		});
+		it('should create a response with http status 400 and a list of validation errors', () => {
+			const validationErrors: ValidationError[] = [
+				{
+					property: 'parentFieldName1',
+					constraints: { errorConstraint1: 'errorText1', errorConstraint2: 'errorText2' },
+					children: [
+						{
+							property: 'childFieldName1',
+							constraints: { errorConstraint: 'errorText3' },
+							children: [],
+						},
+					],
+				},
+				{
+					property: 'parentFieldName2',
+					children: [
+						{
+							property: '0',
+							children: [
+								{
+									property: 'childArrayItem',
+									constraints: { errorConstraint: 'errorText4' },
+								},
+							],
+						},
+					],
+				},
+				{
+					property: 'parentFieldName3',
+					children: [
+						{
+							// property name can be undefined when using polymorphic types (discriminator)
+							property: undefined as unknown as string,
+							constraints: { errorConstraint: 'errorText5' },
+						},
+					],
+				},
+			];
+			const error = new ApiValidationError(validationErrors);
 
-		it('should have validation errors given', () => {
-			const constraints: ValidationError[] = [];
-			constraints.push(
-				{
-					property: 'propWithoutConstraint',
-				},
-				{
-					property: 'propWithOneConstraing',
-					constraints: {
-						rulename: 'ruleDescription',
-					},
-				},
-				{
-					property: 'propWithMultipleCOnstraints',
-					constraints: {
-						rulename: 'ruleDescription',
-						secondrulename: 'secondRuleDescription',
-					},
-				}
-			);
-			const error = new ApiValidationError(constraints);
 			const errorDto = new ApiValidationErrorResponse(error);
-			const { validationErrors } = errorDto;
-			expect(validationErrors.length).toEqual(3);
-			expect(validationErrors).toContainEqual({
-				field: 'propWithoutConstraint',
-				errors: ['validation failed'],
-			});
-			expect(validationErrors).toContainEqual({
-				field: 'propWithOneConstraing',
-				errors: ['ruleDescription'],
-			});
-			expect(validationErrors).toContainEqual({
-				field: 'propWithMultipleCOnstraints',
-				errors: ['ruleDescription', 'secondRuleDescription'],
+
+			expect(errorDto).toEqual({
+				type: 'API_VALIDATION_ERROR',
+				title: 'API Validation Error',
+				message: 'API validation failed, see validationErrors for details',
+				code: HttpStatus.BAD_REQUEST,
+				validationErrors: [
+					{
+						field: ['parentFieldName1'],
+						errors: ['errorText1', 'errorText2'],
+					},
+					{
+						field: ['parentFieldName1', 'childFieldName1'],
+						errors: ['errorText3'],
+					},
+					{
+						field: ['parentFieldName2', '0', 'childArrayItem'],
+						errors: ['errorText4'],
+					},
+					{
+						field: ['parentFieldName3'],
+						errors: ['errorText5'],
+					},
+				],
 			});
 		});
 	});

@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ValidationError } from '@shared/common';
 import {
 	Counted,
 	EntityId,
@@ -12,9 +13,8 @@ import {
 	TaskWithStatusVo,
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { AuthorizationService } from '@src/modules/authorization';
-import { ValidationError } from '@shared/common';
+import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 
 @Injectable()
