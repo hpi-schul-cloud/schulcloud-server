@@ -40,7 +40,7 @@ module.exports = {
 
 		const data = await Board.find({}).select({ _id: 1 }).lean().exec();
 		const boardIds = data.map((b) => b._id);
-		const chunks = splitToChunks(boardIds, 100);
+		const chunks = splitToChunks(boardIds, 5000);
 		const promises = chunks.map((chunkOfBoardIds) =>
 			Board.updateMany({ _id: { $in: chunkOfBoardIds } }, { boardType: 'singlecolumnboard' })
 		);
@@ -55,7 +55,7 @@ module.exports = {
 		// Implement the necessary steps to roll back the migration here.
 		const data = await Board.find({}).select({ _id: 1 }).lean().exec();
 		const boardIds = data.map((b) => b._id);
-		const chunks = splitToChunks(boardIds, 100);
+		const chunks = splitToChunks(boardIds, 5000);
 		const promises = chunks.map((chunkOfBoardIds) =>
 			Board.updateMany({ _id: { $in: chunkOfBoardIds } }, { $unset: { boardType: '' } })
 		);
