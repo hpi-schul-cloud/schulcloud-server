@@ -34,7 +34,7 @@ export class KeycloakAdministrationService {
 
 	public async getWellKnownUrl() {
 		const kc = await this.callKcAdminClient();
-		return `${kc.baseUrl}realms/${kc.realmName}/.well-known/openid-configuration`;
+		return `${kc.baseUrl}/realms/${kc.realmName}/.well-known/openid-configuration`;
 	}
 
 	public getAdminUser(): string {
