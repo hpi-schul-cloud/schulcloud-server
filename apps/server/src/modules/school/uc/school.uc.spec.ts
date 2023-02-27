@@ -73,15 +73,23 @@ describe('SchoolUc', () => {
 
 		describe('when oauthMigrationFinished is given', () => {
 			it('should call schoolMigrationService to complete the migration when oauthMigrationFinished is true', async () => {
-				await schoolUc.setMigration(mockId, true, true, true, mockId);
+				await schoolUc.setMigration(mockId, false, true, true, mockId);
 
 				expect(schoolMigrationService.completeMigration).toHaveBeenCalledWith(mockId);
 			});
 
-			it('should call not the schoolMigrationService when oauthMigrationFinished is false', async () => {
+			it('should not call the schoolMigrationService when oauthMigrationFinished is false', async () => {
 				await schoolUc.setMigration(mockId, true, true, false, mockId);
 
 				expect(schoolMigrationService.completeMigration).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('after school migration has finished', () => {
+			it('should call schoolMigrationService to restart the migration', async () => {
+				await schoolUc.setMigration(mockId, true, true, false, mockId);
+
+				expect(schoolMigrationService.restartMigration).toHaveBeenCalledWith(mockId);
 			});
 		});
 	});

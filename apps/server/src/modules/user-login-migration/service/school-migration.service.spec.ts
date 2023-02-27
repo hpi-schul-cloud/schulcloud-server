@@ -244,4 +244,43 @@ describe('SchoolMigrationService', () => {
 			);
 		});
 	});
+
+	describe('restartMigration is called', () => {
+		it('should call getSchoolById on schoolService', async () => {
+			const expectedSchoolId = 'expectedSchoolId';
+			const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+			userService.findUsers.mockResolvedValue(users);
+
+			await service.restartMigration(expectedSchoolId);
+
+			expect(schoolService.getSchoolById).toHaveBeenCalledWith(expectedSchoolId);
+		});
+
+		it('should call findUsers on userService', async () => {
+			const expectedSchoolId = 'expectedSchoolId';
+			const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+			userService.findUsers.mockResolvedValue(users);
+
+			await service.restartMigration(expectedSchoolId);
+
+			expect(userService.findUsers).toHaveBeenCalledWith({ schoolId: expectedSchoolId, isOutdated: true });
+		});
+
+		it('should save migrated user with removed outdatedSince entry', async () => {
+			const expectedSchoolId = 'expectedSchoolId';
+			const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+			userService.findUsers.mockResolvedValue(users);
+
+			await service.restartMigration(expectedSchoolId);
+
+			expect(userService.saveAll).toHaveBeenCalledWith(
+				expect.arrayContaining<UserDO>([
+					{
+						...users.data[0],
+						outdatedSince: undefined,
+					},
+				])
+			);
+		});
+	});
 });
