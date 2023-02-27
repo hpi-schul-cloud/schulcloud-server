@@ -130,5 +130,16 @@
 			"$date": "2023-02-14T08:58:00.462Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "63fc8a5a5eba0a5489efeecb"
+		},
+		"state": "up",
+		"name": "add-type-to-boards",
+		"createdAt": {
+			"$date": "2023-02-27T10:47:54.998Z"
+		},
+		"__v": 0
 	}
 ]
