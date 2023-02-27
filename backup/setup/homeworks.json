@@ -797,7 +797,6 @@
 		"_id": {
 			"$oid": "5fa3a99ea9c31a26f4d1d4e5"
 		},
-		"fileIds": [],
 		"courseId": null,
 		"lessonId": null,
 		"maxTeamMembers": null,
@@ -829,7 +828,6 @@
 		"_id": {
 			"$oid": "5fa3b0b7a9c31a26f4d1d749"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -863,7 +861,6 @@
 		"_id": {
 			"$oid": "5fa3b0dba9c31a26f4d1d764"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -899,7 +896,6 @@
 		"_id": {
 			"$oid": "5fa3b1a3a9c31a26f4d1d77f"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -933,7 +929,6 @@
 		"_id": {
 			"$oid": "5fa3b21ca9c31a26f4d1d840"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -967,7 +962,6 @@
 		"_id": {
 			"$oid": "5fa3b23da9c31a26f4d1d868"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1001,7 +995,6 @@
 		"_id": {
 			"$oid": "5fa3b256a9c31a26f4d1d890"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1035,7 +1028,6 @@
 		"_id": {
 			"$oid": "5fa3b273a9c31a26f4d1d8b8"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1069,7 +1061,6 @@
 		"_id": {
 			"$oid": "5fa3b69ba9c31a26f4d1d8e0"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1103,7 +1094,6 @@
 		"_id": {
 			"$oid": "5fa3b8caa9c31a26f4d1d8fb"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1137,7 +1127,6 @@
 		"_id": {
 			"$oid": "5fa3b8e8a9c31a26f4d1d923"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1171,7 +1160,6 @@
 		"_id": {
 			"$oid": "5fa3b8fea9c31a26f4d1d94b"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1204,7 +1192,6 @@
 		"_id": {
 			"$oid": "5fa3b912a9c31a26f4d1d974"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1237,7 +1224,6 @@
 		"_id": {
 			"$oid": "5fa3b92aa9c31a26f4d1d99d"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1270,7 +1256,6 @@
 		"_id": {
 			"$oid": "5fa3b93da9c31a26f4d1d9c6"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1303,7 +1288,6 @@
 		"_id": {
 			"$oid": "5fa3b956a9c31a26f4d1d9ef"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1336,7 +1320,6 @@
 		"_id": {
 			"$oid": "5fa3b96ca9c31a26f4d1da18"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1369,7 +1352,6 @@
 		"_id": {
 			"$oid": "5fa3b986a9c31a26f4d1da41"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1402,7 +1384,6 @@
 		"_id": {
 			"$oid": "5fa3b9a9a9c31a26f4d1da6a"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1435,7 +1416,6 @@
 		"_id": {
 			"$oid": "5fa3b9bea9c31a26f4d1da93"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
@@ -1468,7 +1448,6 @@
 		"_id": {
 			"$oid": "5fa3b9d1a9c31a26f4d1dabc"
 		},
-		"fileIds": [],
 		"courseId": {
 			"$oid": "5fa3abffa9c31a26f4d1d518"
 		},
