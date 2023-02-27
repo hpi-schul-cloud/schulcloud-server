@@ -4,7 +4,6 @@ import {
 	CardElementResponse,
 	CardRichTextElementResponse,
 	CardTitleElementResponse,
-	Permission,
 	RichText,
 	TaskCard,
 	TaskWithStatusVo,
@@ -21,8 +20,6 @@ export class TaskCardMapper {
 		const cardElements = card.getCardElements();
 		const cardElementsResponse = this.mapElements(cardElements);
 
-		const permissions = Object.values(Permission);
-
 		const dto = new TaskCardResponse({
 			id: card.id,
 			draggable: card.draggable || true,
@@ -30,7 +27,6 @@ export class TaskCardMapper {
 			task: taskResponse,
 			visibleAtDate: card.visibleAtDate,
 			dueDate: card.dueDate,
-			permissions,
 		});
 
 		if (card.course) {

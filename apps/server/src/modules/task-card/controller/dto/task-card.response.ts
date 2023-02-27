@@ -1,17 +1,16 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { CardElementResponse, Permission } from '@shared/domain';
+import { CardElementResponse } from '@shared/domain';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 
 export class TaskCardResponse {
-	constructor({ id, draggable, cardElements, task, visibleAtDate, dueDate, permissions }: TaskCardResponse) {
+	constructor({ id, draggable, cardElements, task, visibleAtDate, dueDate }: TaskCardResponse) {
 		this.id = id;
 		this.draggable = draggable;
 		this.cardElements = cardElements;
 		this.task = task;
 		this.visibleAtDate = visibleAtDate;
 		this.dueDate = dueDate;
-		this.permissions = permissions;
 	}
 
 	@ApiProperty({
@@ -52,11 +51,4 @@ export class TaskCardResponse {
 		description: 'Due date of the task card',
 	})
 	dueDate: Date;
-
-	@ApiProperty({
-		description: 'List of possible permissions as enum',
-		enum: Permission,
-		isArray: true,
-	})
-	permissions: Permission[];
 }

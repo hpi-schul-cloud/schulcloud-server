@@ -6,7 +6,6 @@ import {
 	CardElementType,
 	CardTitleElementResponse,
 	InputFormat,
-	Permission,
 	RichText,
 	RichTextCardElement,
 	TaskWithStatusVo,
@@ -89,25 +88,6 @@ describe('task-card mapper', () => {
 			const result = mapper.mapToResponse(taskCard, taskWithStatusVo);
 
 			expect(result.cardElements[0]).toEqual(expect.objectContaining({ ...titleCardElementResponse }));
-		});
-
-		it('should map permissions to response', () => {
-			const user = userFactory.buildWithId();
-			const richTextCardElement: RichTextCardElement = richTextCardElementFactory.buildWithId();
-			const titleCardElement: TitleCardElement = titleCardElementFactory.buildWithId();
-
-			const taskCard = taskCardFactory.buildWithId({
-				creator: user,
-				cardElements: [titleCardElement, richTextCardElement],
-			});
-
-			const status = taskCard.task.createTeacherStatusForUser(user);
-			const taskWithStatusVo = new TaskWithStatusVo(taskCard.task, status);
-
-			const mapper = new TaskCardMapper();
-			const result = mapper.mapToResponse(taskCard, taskWithStatusVo);
-
-			expect(result.permissions).toEqual(Object.values(Permission));
 		});
 	});
 
