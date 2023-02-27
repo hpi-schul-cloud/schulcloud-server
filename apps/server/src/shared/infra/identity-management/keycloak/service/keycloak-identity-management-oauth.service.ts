@@ -23,7 +23,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		if (this._oauthConfigCache) {
 			return this._oauthConfigCache;
 		}
-		const wellKnownUrl = await this.kcAdminService.getWellKnownUrl();
+		const wellKnownUrl = this.kcAdminService.getWellKnownUrl();
 		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
 		const scDomain = this.configService.get<string>('SC_DOMAIN') || '';
 		const redirectUri =

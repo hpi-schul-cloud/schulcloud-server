@@ -114,8 +114,8 @@ describe('KeycloakAdministrationService', () => {
 	});
 
 	describe('getWellKnownUrl', () => {
-		it('should return the well known URL', async () => {
-			const wellKnownUrl = await service.getWellKnownUrl();
+		it('should return the well known URL', () => {
+			const wellKnownUrl = service.getWellKnownUrl();
 			expect(wellKnownUrl).toContain(settings.baseUrl);
 			expect(wellKnownUrl).toContain(settings.realmName);
 		});

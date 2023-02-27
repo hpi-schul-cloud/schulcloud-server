@@ -276,7 +276,7 @@ describe('Login Controller (api)', () => {
 				access_token: 'accessToken',
 			});
 
-			const wellKnown = await kcAdminService.getWellKnownUrl();
+			const wellKnown = kcAdminService.getWellKnownUrl();
 			axiosMock.onGet(wellKnown).reply(200, {
 				issuer: 'issuer',
 				token_endpoint: 'tokenEndpoint',
