@@ -1,4 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { DecodeHtmlEntities } from '@shared/controller';
 import { CardElementResponse } from '@shared/domain';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 
@@ -23,6 +24,13 @@ export class TaskCardResponse {
 		type: [CardElementResponse],
 	})
 	cardElements: CardElementResponse[];
+
+	@ApiPropertyOptional()
+	@DecodeHtmlEntities()
+	courseName?: string;
+
+	@ApiPropertyOptional()
+	courseId?: string;
 
 	@ApiProperty({
 		description: 'Are the card elements draggable?',

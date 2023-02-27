@@ -1,15 +1,26 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { ProvisioningModule } from '@src/modules/provisioning';
 import { SystemModule } from '@src/modules/system';
 import { UserModule } from '@src/modules/user';
-import { UserMigrationModule } from '@src/modules/user-migration';
+import { UserLoginMigrationModule } from '@src/modules/user-login-migration';
+import { SchoolModule } from '@src/modules/school';
+import { ProvisioningModule } from '@src/modules/provisioning';
+import { AuthorizationModule } from '../authorization';
 import { OauthSSOController } from './controller/oauth-sso.controller';
 import { OauthModule } from './oauth.module';
 import { HydraOauthUc, OauthUc } from './uc';
 
 @Module({
-	imports: [OauthModule, SystemModule, UserModule, UserMigrationModule, ProvisioningModule, LoggerModule],
+	imports: [
+		OauthModule,
+		AuthorizationModule,
+		ProvisioningModule,
+		SchoolModule,
+		UserLoginMigrationModule,
+		SystemModule,
+		UserModule,
+		LoggerModule,
+	],
 	controllers: [OauthSSOController],
 	providers: [OauthUc, HydraOauthUc],
 })
