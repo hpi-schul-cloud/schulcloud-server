@@ -74,6 +74,18 @@ export class SchoolMigrationService {
 		return Promise.resolve();
 	}
 
+	async restartMigration(schoolId: string): Promise<void> {
+		const migratedUsers: Page<UserDO> = await this.userService.findUsers({ schoolId, isOutdated: true }); // TODO: check: only users with outdatedSince = school.oauthMigrationFinished
+		migratedUsers.data.forEach((user: UserDO) => {
+			user.outdatedSince = undefined;
+		});
+		await this.userService.saveAll(migratedUsers.data);
+
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		school.oauthMigrationMandatory = undefined;
+		return Promise.resolve();
+	}
+
 	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {
 		const currentUser: UserDO = await this.userService.findById(currentUserId);
 
