@@ -7,7 +7,7 @@ import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 @Injectable()
 export class SchoolService {
-	constructor(readonly schoolRepo: SchoolRepo) {}
+	constructor(private readonly schoolRepo: SchoolRepo) {}
 
 	async createOrUpdateSchool(school: SchoolDO): Promise<SchoolDO> {
 		let createdSchool: SchoolDO;
@@ -17,15 +17,6 @@ export class SchoolService {
 			createdSchool = await this.schoolRepo.save(school);
 		}
 		return createdSchool;
-	}
-
-	private async patchSchool(school: SchoolDO) {
-		const entity: SchoolDO = await this.schoolRepo.findById(school.id as string);
-		const patchedEntity: SchoolDO = { ...entity, ...school };
-
-		await this.schoolRepo.save(patchedEntity);
-
-		return patchedEntity;
 	}
 
 	async hasFeature(schoolId: EntityId, feature: SchoolFeatures): Promise<boolean> {
@@ -93,5 +84,14 @@ export class SchoolService {
 	async save(school: SchoolDO): Promise<SchoolDO> {
 		const ret: SchoolDO = await this.schoolRepo.save(school);
 		return ret;
+	}
+
+	private async patchSchool(school: SchoolDO) {
+		const entity: SchoolDO = await this.schoolRepo.findById(school.id as string);
+		const patchedEntity: SchoolDO = { ...entity, ...school };
+
+		await this.schoolRepo.save(patchedEntity);
+
+		return patchedEntity;
 	}
 }

@@ -42,11 +42,14 @@ export class SanisResponsePersonenkontext {
 export class SanisResponseOrganisation {
 	constructor(sanisResponseOrganisation: SanisResponseOrganisation) {
 		this.id = sanisResponseOrganisation.id;
+		this.kennung = sanisResponseOrganisation.kennung;
 		this.name = sanisResponseOrganisation.name;
 		this.typ = sanisResponseOrganisation.typ;
 	}
 
 	id: UUID;
+
+	kennung: string;
 
 	name: string;
 
