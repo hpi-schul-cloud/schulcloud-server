@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AuthorisationUtils } from '@shared/domain/rules/authorisation.utils';
-import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import {
 	BoardRepo,
@@ -62,7 +61,6 @@ import { RoomsUc } from './uc/rooms.uc';
 		CourseCopyService,
 		CourseCopyUC,
 		RoomsService,
-		FileLegacyService,
 		FeathersServiceProvider,
 		Logger,
 		CourseService,

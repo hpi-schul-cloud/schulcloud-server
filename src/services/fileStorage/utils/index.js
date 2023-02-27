@@ -7,8 +7,6 @@ const createCorrectStrategy = require('./createCorrectStrategy');
 
 const { createPermission, createDefaultPermissions } = require('./createDefaultPermissions');
 
-const { copyCourseFile } = require('./copyCourseFiles');
-
 module.exports = {
 	canWrite,
 	canRead,
@@ -20,5 +18,4 @@ module.exports = {
 	createCorrectStrategy,
 	createPermission,
 	createDefaultPermissions,
-	copyCourseFile,
 };
