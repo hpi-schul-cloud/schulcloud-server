@@ -132,7 +132,6 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 	private createQueryOrderMap(sort: SortOrderMap<User>): QueryOrderMap<User> {
 		const queryOrderMap: QueryOrderMap<User> = {
 			_id: sort.id,
-			email: sort.email,
 		};
 		Object.keys(queryOrderMap)
 			.filter((key) => queryOrderMap[key] === undefined)

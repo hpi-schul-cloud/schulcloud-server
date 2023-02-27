@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { setupEntities } from '@shared/testing';
+import { setupEntities, userDoFactory } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { Logger } from '@src/core/logger';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Page } from '@shared/domain/interface/page';
 import { SchoolMigrationService } from './school-migration.service';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
 
@@ -196,6 +197,38 @@ describe('SchoolMigrationService', () => {
 
 				expect(schoolService.save).toHaveBeenCalledWith(school);
 			});
+		});
+	});
+
+	describe('completeMigration is called', () => {
+		it('should call findUsers on userService', async () => {
+			const expectedSchoolId = 'expectedSchoolId';
+			const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+			userService.findUsers.mockResolvedValue(users);
+
+			await service.completeMigration(expectedSchoolId);
+
+			expect(userService.findUsers).toHaveBeenCalledWith({ schoolId: expectedSchoolId, isOutdated: false });
+		});
+
+		it('should call saveAll on userService', async () => {
+			const expectedSchoolId = 'expectedSchoolId';
+			const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+			userService.findUsers.mockResolvedValue(users);
+			jest.useFakeTimers();
+			const expectedDate: Date = new Date(2023, 2, 27);
+			jest.setSystemTime(expectedDate);
+
+			await service.completeMigration(expectedSchoolId);
+
+			expect(userService.saveAll).toHaveBeenCalledWith(
+				expect.arrayContaining<UserDO>([
+					{
+						...users.data[0],
+						outdatedSince: expectedDate,
+					},
+				])
+			);
 		});
 	});
 });

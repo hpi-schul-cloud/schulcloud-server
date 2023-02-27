@@ -1,14 +1,22 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
-import { NotFoundError } from '@mikro-orm/core';
+import {
+	cleanupCollections,
+	roleFactory,
+	schoolFactory,
+	systemFactory,
+	userDoFactory,
+	userFactory,
+} from '@shared/testing';
+import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { createMock } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { IUserProperties, LanguageType, Role, School, System, User } from '@shared/domain';
+import { IFindOptions, IUserProperties, LanguageType, Role, School, SortOrder, System, User } from '@shared/domain';
 import { EntityNotFoundError } from '@shared/common';
+import { Page } from '@shared/domain/interface/page';
 
 class UserRepoSpec extends UserDORepo {
 	mapEntityToDOSpec(entity: User): UserDO {
@@ -168,6 +176,7 @@ describe('UserRepo', () => {
 			expect(result).toBeNull();
 		});
 	});
+
 	describe('findByExternalIdOrFail', () => {
 		const externalId = 'externalId';
 		let system: System;
@@ -299,6 +308,101 @@ describe('UserRepo', () => {
 					previousExternalId: testDO.previousExternalId,
 				})
 			);
+		});
+	});
+
+	describe('find', () => {
+		const setupFind = async () => {
+			const userDO: UserDO = userDoFactory.buildWithId({ schoolId: undefined });
+
+			const options: IFindOptions<UserDO> = {};
+
+			await em.nativeDelete(User, {});
+			await em.nativeDelete(School, {});
+
+			const userA: User = userFactory.buildWithId({ firstName: 'A' });
+			const userB: User = userFactory.buildWithId({ firstName: 'B' });
+			const userC: User = userFactory.buildWithId({ firstName: 'C' });
+			const users: User[] = [userA, userB, userC];
+			await em.persistAndFlush(users);
+
+			const emFindAndCountSpy = jest.spyOn(em, 'findAndCount');
+
+			return { userDO, options, users, emFindAndCountSpy };
+		};
+
+		describe('sorting', () => {
+			it('should create queryOrderMap with options.order', async () => {
+				const { userDO, options, emFindAndCountSpy } = await setupFind();
+				options.order = {
+					id: SortOrder.asc,
+				};
+
+				await repo.find(userDO, options);
+
+				expect(emFindAndCountSpy).toHaveBeenCalledWith(
+					User,
+					{},
+					expect.objectContaining<FindOptions<User>>({
+						orderBy: expect.objectContaining<QueryOrderMap<User>>({ _id: options.order.id }) as QueryOrderMap<User>,
+					})
+				);
+			});
+
+			it('should create queryOrderMap with an empty object', async () => {
+				const { userDO, options, emFindAndCountSpy } = await setupFind();
+				options.order = undefined;
+
+				await repo.find(userDO, options);
+
+				expect(emFindAndCountSpy).toHaveBeenCalledWith(
+					User,
+					{},
+					expect.objectContaining<FindOptions<User>>({
+						orderBy: expect.objectContaining<QueryOrderMap<User>>({}) as QueryOrderMap<User>,
+					})
+				);
+			});
+		});
+
+		describe('pagination', () => {
+			it('should return all users when options with pagination is set to undefined', async () => {
+				const { userDO, users } = await setupFind();
+
+				const page: Page<UserDO> = await repo.find(userDO, undefined);
+
+				expect(page.data.length).toBe(users.length);
+			});
+
+			it('should return one ltiTool when pagination has a limit of 1', async () => {
+				const { userDO, options } = await setupFind();
+				options.pagination = { limit: 1 };
+
+				const page: Page<UserDO> = await repo.find(userDO, options);
+
+				expect(page.data.length).toBe(1);
+			});
+
+			it('should return no ltiTool when pagination has a limit of 1 and skip is set to 2', async () => {
+				const { userDO, options } = await setupFind();
+				options.pagination = { limit: 1, skip: 3 };
+
+				const page: Page<UserDO> = await repo.find(userDO, options);
+
+				expect(page.data.length).toBe(0);
+			});
+		});
+
+		describe('order', () => {
+			it('should return users ordered by default _id when no order is specified', async () => {
+				const { userDO, options, users } = await setupFind();
+
+				const page: Page<UserDO> = await repo.find(userDO, options);
+
+				expect(page.data[0].id).toEqual(users[0].id);
+				expect(page.data[1].id).toEqual(users[1].id);
+				expect(page.data[2].id).toEqual(users[2].id);
+			});
 		});
 	});
 });
