@@ -6,6 +6,7 @@ interface ITask {
 	descriptionInputFormat?: InputFormat;
 	availableDate?: Date;
 	dueDate?: Date;
+	taskCard?: string;
 }
 
 export interface ITaskUpdate extends ITask {

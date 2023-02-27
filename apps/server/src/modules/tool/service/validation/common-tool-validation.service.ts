@@ -13,6 +13,12 @@ export class CommonToolValidationService {
 			throw new ValidationError(`tool_name_duplicate: The tool name "${externalToolDO.name || ''}" is already used.`);
 		}
 		if (externalToolDO.parameters) {
+			if (this.isCustomParameterNameEmpty(externalToolDO.parameters)) {
+				throw new ValidationError(
+					`tool_param_name: The tool ${externalToolDO.name || ''} is missing at least one custom parameter name.`
+				);
+			}
+
 			if (this.hasDuplicateAttributes(externalToolDO.parameters)) {
 				throw new ValidationError(
 					`tool_param_duplicate: The tool ${externalToolDO.name || ''} contains multiple of the same custom parameters.`
@@ -45,6 +51,11 @@ export class CommonToolValidationService {
 				}
 			});
 		}
+	}
+
+	private isCustomParameterNameEmpty(customParameters: CustomParameterDO[]): boolean {
+		const isEmpty = customParameters.some((param: CustomParameterDO) => !param.name);
+		return isEmpty;
 	}
 
 	private async isNameUnique(externalToolDO: ExternalToolDO | Partial<ExternalToolDO>): Promise<boolean> {
