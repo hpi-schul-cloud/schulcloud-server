@@ -88,7 +88,6 @@ module.exports = {
 	homeworks: [
 		{
 			_id: '5e15e6c381623c596a3cbb44',
-			fileIds: ['5ca601745d629505e51252d8'],
 			courseId: '0000dcfbfb5c7a3f00bf21ac',
 			lessonId: null,
 			maxTeamMembers: null,
