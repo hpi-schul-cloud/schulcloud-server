@@ -19,10 +19,6 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		super();
 	}
 
-	resetOauthConfigCache(): void {
-		this._oauthConfigCache = undefined;
-	}
-
 	async getOauthConfig(): Promise<OauthConfigDto> {
 		if (this._oauthConfigCache) {
 			return this._oauthConfigCache;
@@ -33,8 +29,8 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		const redirectUri =
 			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
 		this._oauthConfigCache = new OauthConfigDto({
-			clientId: this.kcAdminService.getClientId() || '',
-			clientSecret: (await this.kcAdminService.getClientSecret()) || '',
+			clientId: this.kcAdminService.getClientId(),
+			clientSecret: await this.kcAdminService.getClientSecret(),
 			provider: 'oauth',
 			redirectUri,
 			responseType: 'code',
@@ -47,6 +43,10 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			jwksEndpoint: response.jwks_uri as string,
 		});
 		return this._oauthConfigCache;
+	}
+
+	resetOauthConfigCache(): void {
+		this._oauthConfigCache = undefined;
 	}
 
 	async isOauthConfigAvailable(): Promise<boolean> {
