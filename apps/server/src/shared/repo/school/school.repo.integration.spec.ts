@@ -47,7 +47,7 @@ describe('SchoolRepo', () => {
 
 	it('should create a school with embedded object', async () => {
 		const schoolYear = schoolYearFactory.build();
-		const school = new School({ name: 'test', schoolYear });
+		const school = new School({ name: 'test', schoolYear, previousExternalId: 'someId' });
 		school.permissions = new SchoolRoles();
 		school.permissions.teacher = new SchoolRolePermission();
 		school.permissions.teacher.STUDENT_LIST = true;
@@ -59,6 +59,7 @@ describe('SchoolRepo', () => {
 		expect(storedSchools).toHaveLength(1);
 		const storedSchool = storedSchools[0];
 		expect(storedSchool).toEqual(school);
+		expect(storedSchool.previousExternalId).toBeDefined();
 		expect(storedSchool.permissions).toBeDefined();
 		expect(storedSchool.permissions?.student).toBeUndefined();
 		expect(storedSchool.permissions?.teacher).toBeDefined();

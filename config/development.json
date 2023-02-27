@@ -1,6 +1,7 @@
 {
 	"$schema": "./default.schema.json",
 	"SC_DOMAIN": "localhost",
+	"PUBLIC_BACKEND_URL": "http://localhost:3030/api",
 	"FEATURE_API_VALIDATION_ENABLED": true,
 	"FEATURE_API_RESPONSE_VALIDATION_ENABLED": true,
 	"FILE_SECURITY_CHECK_SERVICE_URI": "http://localhost:8081/scan/file",

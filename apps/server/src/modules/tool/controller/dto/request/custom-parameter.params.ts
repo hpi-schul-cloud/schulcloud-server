@@ -1,5 +1,5 @@
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeParams,
@@ -8,6 +8,7 @@ import {
 
 export class CustomParameterPostParams {
 	@IsString()
+	@IsNotEmpty()
 	@ApiProperty()
 	name!: string;
 
