@@ -1,6 +1,6 @@
+import { School } from '@src/shared/domain';
+import { schoolFactory } from '@src/shared/testing';
 import { UserScope } from './user.scope';
-import { School } from '../../domain';
-import { schoolFactory } from '../../testing';
 
 describe('UserScope', () => {
 	let scope: UserScope;

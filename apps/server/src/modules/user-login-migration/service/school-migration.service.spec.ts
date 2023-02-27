@@ -8,6 +8,7 @@ import { Logger } from '@src/core/logger';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Page } from '@shared/domain/interface/page';
+import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { SchoolMigrationService } from './school-migration.service';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
 
@@ -201,6 +202,16 @@ describe('SchoolMigrationService', () => {
 	});
 
 	describe('completeMigration is called', () => {
+		it('should call getSchoolById on schoolService', async () => {
+			const expectedSchoolId = 'expectedSchoolId';
+			const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+			userService.findUsers.mockResolvedValue(users);
+
+			await service.completeMigration(expectedSchoolId);
+
+			expect(schoolService.getSchoolById).toHaveBeenCalledWith(expectedSchoolId);
+		});
+
 		it('should call findUsers on userService', async () => {
 			const expectedSchoolId = 'expectedSchoolId';
 			const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
@@ -211,13 +222,15 @@ describe('SchoolMigrationService', () => {
 			expect(userService.findUsers).toHaveBeenCalledWith({ schoolId: expectedSchoolId, isOutdated: false });
 		});
 
-		it('should call saveAll on userService', async () => {
+		it('should save non migrated user with updated outdatedSince date', async () => {
 			const expectedSchoolId = 'expectedSchoolId';
+			const schoolDO = schoolDOFactory.buildWithId({
+				id: expectedSchoolId,
+				oauthMigrationFinished: new Date(2023, 2, 27),
+			});
 			const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
 			userService.findUsers.mockResolvedValue(users);
-			jest.useFakeTimers();
-			const expectedDate: Date = new Date(2023, 2, 27);
-			jest.setSystemTime(expectedDate);
+			schoolService.getSchoolById.mockResolvedValue(schoolDO);
 
 			await service.completeMigration(expectedSchoolId);
 
@@ -225,7 +238,7 @@ describe('SchoolMigrationService', () => {
 				expect.arrayContaining<UserDO>([
 					{
 						...users.data[0],
-						outdatedSince: expectedDate,
+						outdatedSince: schoolDO.oauthMigrationFinished,
 					},
 				])
 			);
