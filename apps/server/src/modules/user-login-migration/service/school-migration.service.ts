@@ -65,13 +65,13 @@ export class SchoolMigrationService {
 	}
 
 	// TODO: maybe get name
-	async isSchoolInMigration(officialSchoolNumber: string): Promise<SchoolMigrationFlags> {
+	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {
 		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
-		const schoolMigrationFlags: SchoolMigrationFlags = {
-			isPossible: !!school?.oauthMigrationPossible,
-			isMandatory: !!school?.oauthMigrationMandatory,
-		};
-		return schoolMigrationFlags;
+		let isPossible = false;
+		if (school) {
+			isPossible = !!school.oauthMigrationPossible;
+		}
+		return isPossible;
 	}
 
 	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {
