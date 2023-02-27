@@ -1,5 +1,5 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { Injectable, Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class KeycloakAdministrationService {
 
 	public async getWellKnownUrl() {
 		const kc = await this.callKcAdminClient();
-		return `${kc.baseUrl}realms/${kc.realmName}/.well-known/openid-configuration`;
+		return `${kc.baseUrl}/realms/${kc.realmName}/.well-known/openid-configuration`;
 	}
 
 	public getAdminUser(): string {

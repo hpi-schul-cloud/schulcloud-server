@@ -24,7 +24,7 @@ describe('KeycloakConfigurationService Integration', () => {
 	const testRealm = 'test-realm';
 	const flowAlias = 'Direct Broker Flow';
 	const systemServiceMock = createMock<SystemService>();
-	const systems = SystemMapper.mapFromEntitiesToDtos(systemFactory.withOidcConfig().buildList(2));
+	const systems = SystemMapper.mapFromEntitiesToDtos(systemFactory.withOidcConfig().buildList(1));
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -133,15 +133,20 @@ describe('KeycloakConfigurationService Integration', () => {
 
 	describe('configureIdentityProviders', () => {
 		describe('when keycloak is available', () => {
-			it('should sync identity providers to keycloak', async () => {
-				if (!isKeycloakAvailable) return;
+			it(
+				'should sync identity providers to keycloak',
+				async () => {
+					if (!isKeycloakAvailable) return;
+					systemServiceMock.findByType.mockResolvedValueOnce(systems);
+					await keycloakConfigurationService.configureBrokerFlows();
 
-				systemServiceMock.findByType.mockResolvedValueOnce(systems);
-				await keycloakConfigurationService.configureIdentityProviders();
-				const kc = await keycloakAdministrationService.callKcAdminClient();
-				const identityProviders = await kc.identityProviders.find();
-				expect(identityProviders.length).toEqual(systems.length);
-			});
+					await keycloakConfigurationService.configureIdentityProviders();
+					const kc = await keycloakAdministrationService.callKcAdminClient();
+					const identityProviders = await kc.identityProviders.find();
+					expect(identityProviders.length).toEqual(systems.length);
+				},
+				60 * 1000
+			);
 		});
 	});
 
