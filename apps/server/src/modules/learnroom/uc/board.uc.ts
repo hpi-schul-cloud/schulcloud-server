@@ -7,6 +7,7 @@ export class BoardUC {
 	constructor(private readonly columnBoardRepo: ColumnBoardRepo) {}
 
 	async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
+		// TODO check permissions
 		const board = await this.columnBoardRepo.findById(boardId);
 		return board;
 	}
