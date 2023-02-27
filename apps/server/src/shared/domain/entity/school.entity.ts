@@ -22,6 +22,7 @@ export interface ISchoolProperties {
 	oauthMigrationPossible?: Date;
 	oauthMigrationMandatory?: Date;
 	oauthMigrationFinished?: Date;
+	previousExternalId?: string;
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: System[];
@@ -71,6 +72,9 @@ export class School extends BaseEntity {
 	@Property({ nullable: true, fieldName: 'ldapSchoolIdentifier' })
 	externalId?: string;
 
+	@Property({ nullable: true })
+	previousExternalId?: string;
+
 	@Property()
 	name: string;
 
@@ -90,6 +94,9 @@ export class School extends BaseEntity {
 		super();
 		if (props.externalId) {
 			this.externalId = props.externalId;
+		}
+		if (props.previousExternalId) {
+			this.previousExternalId = props.previousExternalId;
 		}
 		if (props.inMaintenanceSince) {
 			this.inMaintenanceSince = props.inMaintenanceSince;
