@@ -51,4 +51,29 @@ describe('UserScope', () => {
 			});
 		});
 	});
+
+	describe('hasPreviousExternalId is called', () => {
+		it('should return scope with added query where hasPreviousExternalId exists is true', () => {
+			scope.hasPreviousExternalId(true);
+			expect(scope.query).toEqual({
+				previousExternalId: {
+					$exists: true,
+				},
+			});
+		});
+
+		it('should return scope with added query where hasPreviousExternalId exists is false', () => {
+			scope.hasPreviousExternalId(false);
+			expect(scope.query).toEqual({
+				previousExternalId: {
+					$exists: false,
+				},
+			});
+		});
+
+		it('should return scope without added hasPreviousExternalId to query', () => {
+			scope.hasPreviousExternalId(undefined);
+			expect(scope.query).toEqual({});
+		});
+	});
 });

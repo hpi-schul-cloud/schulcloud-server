@@ -219,16 +219,21 @@ describe('SchoolMigrationService', () => {
 
 			await service.completeMigration(expectedSchoolId);
 
-			expect(userService.findUsers).toHaveBeenCalledWith({ schoolId: expectedSchoolId, isOutdated: false });
+			expect(userService.findUsers).toHaveBeenCalledWith({
+				schoolId: expectedSchoolId,
+				isOutdated: false,
+				hasPreviousExternalId: false,
+			});
 		});
 
-		it('should save non migrated user with updated outdatedSince date', async () => {
+		it('should save non migrated user with updated outdatedSince date and previousExternalId', async () => {
 			const expectedSchoolId = 'expectedSchoolId';
 			const schoolDO = schoolDOFactory.buildWithId({
 				id: expectedSchoolId,
 				oauthMigrationFinished: new Date(2023, 2, 27),
 			});
-			const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+			const userDO = userDoFactory.buildWithId({ previousExternalId: 'previousExternalId' });
+			const users: Page<UserDO> = new Page([userDO], 1);
 			userService.findUsers.mockResolvedValue(users);
 			schoolService.getSchoolById.mockResolvedValue(schoolDO);
 
@@ -239,6 +244,7 @@ describe('SchoolMigrationService', () => {
 					{
 						...users.data[0],
 						outdatedSince: schoolDO.oauthMigrationFinished,
+						previousExternalId: userDO.previousExternalId,
 					},
 				])
 			);

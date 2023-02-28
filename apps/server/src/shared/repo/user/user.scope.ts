@@ -9,6 +9,13 @@ export class UserScope extends Scope<User> {
 		return this;
 	}
 
+	hasPreviousExternalId(hasPreviousExternalId?: boolean): UserScope {
+		if (hasPreviousExternalId !== undefined) {
+			this.addQuery({ previousExternalId: { $exists: hasPreviousExternalId } });
+		}
+		return this;
+	}
+
 	bySchoolId(schoolId: EntityId | undefined): UserScope {
 		if (schoolId !== undefined) {
 			this.addQuery({ school: schoolId });
