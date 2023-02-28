@@ -162,11 +162,11 @@ This code shows a minimal flow.
     import { Module } from '@nestjs/common';
     import { ConfigModule } from '@nestjs/config';
     import serverConfig from './server.config';
-    import { validateConfig } from '@src/config';
+    import { createConfigModuleOptions } from '@src/config';
 
 
     const serverModules = [
-        ConfigModule.forRoot(validateConfig(serverConfig))
+        ConfigModule.forRoot(createConfigModuleOptions(serverConfig))
     ]
 
     @Module({
