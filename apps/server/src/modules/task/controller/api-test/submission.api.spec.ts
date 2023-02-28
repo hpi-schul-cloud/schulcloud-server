@@ -3,7 +3,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, Permission, Submission } from '@shared/domain';
+import { Permission, Submission } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	courseGroupFactory,

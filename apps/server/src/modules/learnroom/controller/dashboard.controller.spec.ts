@@ -4,10 +4,10 @@ import {
 	EntityId,
 	GridElement,
 	GridPosition,
-	ICurrentUser,
 	LearnroomMetadata,
 	LearnroomTypes,
 } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';

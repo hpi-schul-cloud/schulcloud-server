@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
-import { ICurrentUser, IFindOptions, RoleName } from '@shared/domain';
+import { IFindOptions, RoleName } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
 import {
 	ApiCreatedResponse,
@@ -16,6 +16,7 @@ import { Page } from '@shared/domain/interface/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Logger } from '@src/core/logger';
 import { ValidationError } from '@shared/common';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ExternalToolUc } from '../uc/external-tool.uc';

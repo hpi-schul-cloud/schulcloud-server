@@ -79,7 +79,9 @@ describe('AccountService Integration', () => {
 				AccountServiceIdm,
 				AccountServiceDb,
 				AccountRepo,
+				UserRepo,
 				KeycloakAdministrationService,
+				AccountValidationService,
 				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
 				{
 					provide: KeycloakAdminClient,
