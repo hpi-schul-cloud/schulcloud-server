@@ -1,4 +1,7 @@
-export const validateConfig = <T>(config: () => T) => {
+import { ConfigModuleOptions } from '@nestjs/config';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createConfigModuleOptions = (config: () => Record<string, any>): ConfigModuleOptions => {
 	const options = {
 		isGlobal: true,
 		validationOptions: { infer: true },

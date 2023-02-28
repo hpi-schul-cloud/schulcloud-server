@@ -7,7 +7,7 @@ import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
-import { DB_PASSWORD, DB_URL, DB_USERNAME, validateConfig } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
@@ -34,7 +34,7 @@ import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
 const serverModules = [
-	ConfigModule.forRoot(validateConfig(serverConfig)),
+	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
 	AuthenticationApiModule,
 	CollaborativeStorageModule,
