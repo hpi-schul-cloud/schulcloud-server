@@ -1,7 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { fileRecordFactory } from '@shared/testing';
 import { AxiosResponse } from 'axios';
-import { Request } from 'express';
 import { Readable } from 'stream';
 import { FileDto } from '../dto';
 import { FileDtoBuilder } from './file-dto.builder';
@@ -11,17 +10,11 @@ describe('File Builder', () => {
 		const setup = () => {
 			const fileRecord = fileRecordFactory.build();
 
-			const size = 10699;
-			const request = createMock<Request>({
-				get: () => `${size}`,
-			});
-
-			const buffer = Buffer.from('abc');
+			const readable = Readable.from('abc');
 
 			const expectedFile = new FileDto({
 				name: fileRecord.name,
-				buffer,
-				size,
+				data: readable,
 				mimeType: fileRecord.mimeType,
 			});
 
@@ -31,13 +24,13 @@ describe('File Builder', () => {
 				mimeType: fileRecord.mimeType,
 			};
 
-			return { fileRecord, request, buffer, expectedFile, fileInfo };
+			return { fileRecord, readable, expectedFile, fileInfo };
 		};
 
 		it('should return file from request', () => {
-			const { fileInfo, request, buffer, expectedFile } = setup();
+			const { fileInfo, readable, expectedFile } = setup();
 
-			const result = FileDtoBuilder.buildFromRequest(fileInfo, request, buffer);
+			const result = FileDtoBuilder.buildFromRequest(fileInfo, readable);
 
 			expect(result).toEqual(expectedFile);
 		});
@@ -48,16 +41,14 @@ describe('File Builder', () => {
 			const fileRecord = fileRecordFactory.build();
 			const readable = Readable.from('abc');
 
-			const size = 10699;
 			const response = createMock<AxiosResponse<Readable>>({
 				data: readable,
-				headers: { 'content-length': `${size}`, 'content-type': fileRecord.mimeType },
+				headers: { 'content-type': fileRecord.mimeType },
 			});
 
 			const expectedFile = new FileDto({
 				name: fileRecord.name,
-				buffer: readable,
-				size,
+				data: readable,
 				mimeType: fileRecord.mimeType,
 			});
 
