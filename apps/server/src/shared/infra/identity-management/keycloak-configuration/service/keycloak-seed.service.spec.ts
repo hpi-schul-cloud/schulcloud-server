@@ -96,7 +96,6 @@ describe('KeycloakSeedService', () => {
 	const inputFiles: IKeycloakConfigurationInputFiles = {
 		accountsFile: 'accounts.json',
 		usersFile: 'users.json',
-		systemsFile: 'systems.json',
 	};
 
 	beforeAll(async () => {

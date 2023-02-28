@@ -3,5 +3,4 @@ export const KeycloakConfigurationInputFiles = Symbol('KeycloakConfigurationInpu
 export interface IKeycloakConfigurationInputFiles {
 	accountsFile: string;
 	usersFile: string;
-	systemsFile: string;
 }

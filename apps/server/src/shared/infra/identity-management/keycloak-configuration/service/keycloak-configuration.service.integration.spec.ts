@@ -5,7 +5,6 @@ import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/li
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { SystemRepo } from '@shared/repo';
 import { systemFactory } from '@shared/testing/factory';
 import { LoggerModule } from '@src/core/logger';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
@@ -37,7 +36,7 @@ describe('KeycloakConfigurationService Integration', () => {
 					validationOptions: { infer: true },
 				}),
 			],
-			providers: [SystemRepo],
+			providers: [],
 		})
 			.overrideProvider(SystemService)
 			.useValue(systemServiceMock)
