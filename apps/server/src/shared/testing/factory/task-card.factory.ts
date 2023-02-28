@@ -1,4 +1,4 @@
-import { ITaskCardProps, TaskCard } from '@shared/domain';
+import { CardType, ITaskCardProps, TaskCard } from '@shared/domain';
 import { BaseFactory } from './base.factory';
 import { schoolFactory } from './school.factory';
 import { taskFactory } from './task.factory';
@@ -13,6 +13,7 @@ export const taskCardFactory = TaskCardFactory.define(TaskCard, () => {
 	const tomorrow = new Date(Date.now() + 86400000);
 	const inTwoDays = new Date(Date.now() + 172800000);
 	return {
+		cardType: CardType.Task,
 		draggable: true,
 		creator,
 		task,

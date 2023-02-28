@@ -6,14 +6,14 @@ import { InputFormat } from './input-format.types';
 
 export enum CardType {
 	'Task' = 'task',
-	'LegacyTaskReference' = 'legacytask',
 }
 
 export type ICardCProps = {
 	cardElements: CardElement[];
+	cardType: CardType;
 	creator: User;
 	draggable: boolean;
-	visibleAtDate?: Date;
+	visibleAtDate: Date;
 };
 
 export interface ICard {
@@ -21,7 +21,7 @@ export interface ICard {
 	cardType: CardType;
 	creator: User;
 	draggable: boolean;
-	visibleAtDate?: Date;
+	visibleAtDate: Date;
 }
 
 export class CardTitleElementResponse {

@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
-import { EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
+import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
 import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, TaskCardRepo } from '@shared/repo';
@@ -40,6 +40,7 @@ export class TaskCardUc {
 
 		const cardParams: ITaskCardProps = {
 			cardElements,
+			cardType: CardType.Task,
 			creator: user,
 			draggable: true,
 			task: taskWithStatusVo.task,
