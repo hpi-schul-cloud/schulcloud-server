@@ -5,7 +5,7 @@ import {
 	RejectRequestBody,
 } from '@shared/infra/oauth-provider/dto';
 import { AcceptQuery, ConsentRequestBody } from '@src/modules/oauth-provider/controller/dto';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
 import { OauthProviderService } from '@shared/infra/oauth-provider';

@@ -1,8 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ValidationError } from '@shared/common';
-import { Permission, Role, RoleName, EntityId } from '@shared/domain';
+import { Permission, Role, RoleName } from '@shared/domain';
 import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { UserDO } from '../domainobject/user.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from './current-user.mapper';
 

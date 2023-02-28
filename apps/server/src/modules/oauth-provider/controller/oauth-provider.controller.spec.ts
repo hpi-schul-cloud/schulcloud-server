@@ -22,7 +22,7 @@ import {
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { OauthProviderUc } from '@src/modules/oauth-provider/uc/oauth-provider.uc';
 import { OauthProviderController } from './oauth-provider.controller';
 import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
