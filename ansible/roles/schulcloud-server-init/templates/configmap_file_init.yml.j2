@@ -42,7 +42,7 @@ data:
     mongo $DATABASE__URL --eval 'db.systems.insert([
     {
       "type" : "ldap",
-      "alias" : "oidcmock",
+      "alias" : "schoolOne0",
       "provisioningStrategy": "oidc",
       "displayName": "SSO LDAP School One 0",
       "ldapConfig" : {
@@ -81,6 +81,7 @@ data:
         }
       },
       "oidcConfig": {
+        "alias": "oidcmock",
         "clientId": "'${OIDCMOCK__CLIENT_ID}'",
         "clientSecret": "'${OIDCMOCK__CLIENT_SECRET}'",
         "authorizationUrl": "'${OIDCMOCK__BASE_URL}'/connect/authorize",
