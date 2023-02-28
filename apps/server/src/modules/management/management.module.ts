@@ -6,6 +6,7 @@ import { DatabaseManagementModule, DatabaseManagementService } from '@shared/inf
 import { EncryptionModule } from '@shared/infra/encryption';
 import { FileSystemModule } from '@shared/infra/file-system';
 import { KeycloakConfigurationModule } from '@shared/infra/identity-management/keycloak-configuration/keycloak-configuration.module';
+import { createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { serverConfig } from '@src/modules/server';
 import { DatabaseManagementConsole } from './console/database-management.console';
@@ -17,11 +18,7 @@ const baseImports = [
 	FileSystemModule,
 	DatabaseManagementModule,
 	LoggerModule,
-	ConfigModule.forRoot({
-		isGlobal: true,
-		validationOptions: { infer: true },
-		load: [serverConfig],
-	}),
+	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	EncryptionModule,
 ];
 
