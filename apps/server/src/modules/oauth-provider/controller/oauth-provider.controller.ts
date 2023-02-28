@@ -12,7 +12,7 @@ import {
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
 import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { OauthProviderClientCrudUc } from '@src/modules/oauth-provider/uc/oauth-provider.client-crud.uc';
 import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';

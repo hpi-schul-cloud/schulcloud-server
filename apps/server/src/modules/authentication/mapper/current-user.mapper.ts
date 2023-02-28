@@ -1,6 +1,6 @@
 import { ValidationError } from '@shared/common';
-import { UserDO } from '../domainobject/user.do';
-import { Role, User } from '../entity';
+import { Role, User } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ICurrentUser } from '../interface';
 
 export class CurrentUserMapper {

@@ -1,12 +1,15 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
+import { ValidationError } from '@shared/common';
+import { isEmail, validateOrReject } from 'class-validator';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
 import { IServerConfig } from '../../server/server.config';
 import { Logger } from '../../../core/logger';
+import { AccountValidationService } from './account.validation.service';
 
 @Injectable()
 export class AccountService extends AbstractAccountService {
@@ -14,6 +17,7 @@ export class AccountService extends AbstractAccountService {
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<IServerConfig, true>,
+		private readonly accountValidationService: AccountValidationService,
 		private readonly logger: Logger
 	) {
 		super();
@@ -62,6 +66,40 @@ export class AccountService extends AbstractAccountService {
 		};
 		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.save(newAccount));
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+	}
+
+	async saveWithValidation(dto: AccountSaveDto): Promise<void> {
+		await validateOrReject(dto);
+		// sanatizeUsername ✔
+		if (!dto.systemId) {
+			dto.username = dto.username.trim().toLowerCase();
+		}
+		if (!dto.systemId && !dto.password) {
+			throw new ValidationError('No password provided');
+		}
+		// validateUserName ✔
+		// usernames must be an email address, if they are not from an external system
+		if (!dto.systemId && !isEmail(dto.username)) {
+			throw new ValidationError('Username is not an email');
+		}
+		// checkExistence ✔
+		if (dto.userId && (await this.findByUserId(dto.userId))) {
+			throw new ValidationError('Account already exists');
+		}
+		// validateCredentials hook will not be ported ✔
+		// trimPassword hook will be done by class-validator ✔
+		// local.hooks.hashPassword('password'), will be done by account service ✔
+		// checkUnique ✔
+		if (!(await this.accountValidationService.isUniqueEmail(dto.username, dto.userId, dto.id, dto.systemId))) {
+			throw new ValidationError('Username already exists');
+		}
+		// removePassword hook is not implemented
+		// const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
+		// if (dto.passwordStrategy && noPasswordStrategies.includes(dto.passwordStrategy)) {
+		// 	dto.password = undefined;
+		// }
+
+		await this.save(dto);
 	}
 
 	async updateUsername(accountId: string, username: string): Promise<AccountDto> {

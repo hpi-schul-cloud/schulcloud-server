@@ -1,16 +1,8 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
-import {
-	ExternalTool,
-	ICurrentUser,
-	Permission,
-	Role,
-	RoleName,
-	School,
-	SchoolExternalTool,
-	User,
-} from '@shared/domain';
+import { ExternalTool, Permission, Role, RoleName, School, SchoolExternalTool, User } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import request, { Response } from 'supertest';

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { VideoConferenceController } from '@src/modules/video-conference/controller/video-conference.controller';
 import { VideoConferenceUc } from '@src/modules/video-conference/uc/video-conference.uc';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import {
 	VideoConferenceDTO,

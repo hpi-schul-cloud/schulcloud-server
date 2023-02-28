@@ -3,7 +3,8 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Course, ICurrentUser, Permission, Task } from '@shared/domain';
+import { Board, Course, Permission, Task } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import {
 	boardFactory,
 	cleanupCollections,
