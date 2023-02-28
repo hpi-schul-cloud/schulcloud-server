@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId, IPermissionContext } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -48,40 +48,45 @@ export class FilesStorageUC {
 	}
 
 	// upload
-	private async addRequestStreamToRequestPipe(
-		userId: EntityId,
-		params: FileRecordParams,
-		req: Request
-	): Promise<FileRecord> {
-		const result = await new Promise((resolve, reject) => {
-			const requestStream = busboy({ headers: req.headers, defParamCharset: 'utf8' });
+	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
+		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
+
+		const fileRecord = await this.uploadFileWithBusboy(userId, params, req);
+
+		return fileRecord;
+	}
+
+	private async uploadFileWithBusboy(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
+		const promise = new Promise<FileRecord>((resolve, reject) => {
+			const bb = busboy({ headers: req.headers, defParamCharset: 'utf8' });
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
-			requestStream.on('file', async (_name, file, info): Promise<void> => {
-				const fileDto = FileDtoBuilder.buildFromRequest(info, req, file);
+			bb.on('file', async (_name, file, info) => {
+				const fileDto = FileDtoBuilder.buildFromRequest(info, file);
 
 				try {
 					const record = await this.filesStorageService.uploadFile(userId, params, fileDto);
 					resolve(record);
 				} catch (error) {
-					requestStream.emit('error', error);
+					req.unpipe(bb);
+					reject(error);
 				}
 			});
 
-			requestStream.on('error', (e) => {
-				reject(new BadRequestException(e, `${FilesStorageUC.name}:upload requestStream`));
-			});
-
-			req.pipe(requestStream);
+			req.pipe(bb);
 		});
 
-		return result as FileRecord;
+		return promise;
 	}
 
-	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
+	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 
-		const fileRecord = await this.addRequestStreamToRequestPipe(userId, params, req);
+		const response = await this.getResponse(params);
+
+		const fileDto = FileDtoBuilder.buildFromAxiosResponse(params.fileName, response);
+
+		const fileRecord = await this.filesStorageService.uploadFile(userId, params, fileDto);
 
 		return fileRecord;
 	}
@@ -94,29 +99,17 @@ export class FilesStorageUC {
 			responseType: 'stream',
 		};
 
-		const responseStream = this.httpService.get<internal.Readable>(encodeURI(params.url), config);
-
-		const response = await firstValueFrom(responseStream);
-
-		/* istanbul ignore next */
-		response.data.on('error', (error) => {
-			throw error;
-		});
-
-		return response;
-	}
-
-	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams): Promise<FileRecord> {
-		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
-
 		try {
-			const response = await this.getResponse(params);
+			const responseStream = this.httpService.get<internal.Readable>(encodeURI(params.url), config);
 
-			const fileDto = FileDtoBuilder.buildFromAxiosResponse(params.fileName, response);
+			const response = await firstValueFrom(responseStream);
 
-			const result = await this.filesStorageService.uploadFile(userId, params, fileDto);
+			/* istanbul ignore next */
+			response.data.on('error', (error) => {
+				throw error;
+			});
 
-			return result;
+			return response;
 		} catch (error) {
 			this.logger.warn({
 				message: 'could not find file by url',
