@@ -10,6 +10,7 @@ import { KeycloakSettings } from '@shared/infra/identity-management/keycloak-adm
 import KeycloakAdministration from '@shared/infra/identity-management/keycloak-administration/keycloak-config';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
+import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { Logger } from '../../../core/logger';
@@ -18,6 +19,7 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
 
 describe('AccountService Integration', () => {
