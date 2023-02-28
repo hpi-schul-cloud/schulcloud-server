@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
@@ -61,6 +62,10 @@ describe('FilesStorageService delete methods', () => {
 					provide: AntivirusService,
 					useValue: createMock<AntivirusService>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
 			],
 		}).compile();
 
@@ -106,13 +111,13 @@ describe('FilesStorageService delete methods', () => {
 				);
 			});
 
-			it('should call storageClient.delete', async () => {
+			it('should call storageClient.moveToTrash', async () => {
 				const { fileRecords } = setup();
 				const paths = getPaths(fileRecords);
 
 				await service.delete(fileRecords);
 
-				expect(storageClient.delete).toHaveBeenCalledWith(paths);
+				expect(storageClient.moveToTrash).toHaveBeenCalledWith(paths);
 			});
 		});
 
@@ -136,7 +141,7 @@ describe('FilesStorageService delete methods', () => {
 			const setup = () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 
-				storageClient.delete.mockRejectedValueOnce(new Error('bla'));
+				storageClient.moveToTrash.mockRejectedValueOnce(new Error('bla'));
 
 				return { fileRecords };
 			};
@@ -167,7 +172,7 @@ describe('FilesStorageService delete methods', () => {
 				return { params, fileRecords };
 			};
 
-			it('should call findBySchoolIdAndParentId onces with correctly params', async () => {
+			it('should call findBySchoolIdAndParentId once with correct params', async () => {
 				const { params } = setup();
 
 				await service.deleteFilesOfParent(params);
