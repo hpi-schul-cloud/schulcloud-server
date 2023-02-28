@@ -180,6 +180,7 @@ describe('UserMigrationService', () => {
 			const sourceOauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: 'sourceClientId',
 				clientSecret: 'sourceSecret',
+				alias: 'alias',
 				tokenEndpoint: 'http://source.de/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',
@@ -194,6 +195,7 @@ describe('UserMigrationService', () => {
 			const targetOauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: 'targetClientId',
 				clientSecret: 'targetSecret',
+				alias: 'alias',
 				tokenEndpoint: 'http://target.de/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',

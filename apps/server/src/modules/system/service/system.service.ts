@@ -71,8 +71,9 @@ export class SystemService {
 		const brokerConfig = await this.idmOauthService.getOauthConfig();
 		return systems.map((system) => {
 			if (system.oidcConfig && !system.oauthConfig) {
-				system.oauthConfig = brokerConfig;
+				system.oauthConfig = { ...brokerConfig };
 				system.oauthConfig.redirectUri += system.id;
+				system.oauthConfig.alias = system.oidcConfig.alias;
 			}
 			return system;
 		});

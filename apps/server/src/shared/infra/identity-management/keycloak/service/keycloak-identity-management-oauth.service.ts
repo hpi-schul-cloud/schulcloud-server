@@ -31,6 +31,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		this._oauthConfigCache = new OauthConfigDto({
 			clientId: this.kcAdminService.getClientId(),
 			clientSecret: await this.kcAdminService.getClientSecret(),
+			alias: 'keycloak',
 			provider: 'oauth',
 			redirectUri,
 			responseType: 'code',
@@ -78,6 +79,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			);
 			return response.data.access_token;
 		} catch (err) {
+			console.error(err);
 			return undefined;
 		}
 	}

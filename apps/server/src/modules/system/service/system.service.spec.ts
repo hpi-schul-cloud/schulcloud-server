@@ -66,10 +66,14 @@ describe('SystemService', () => {
 			it('should return found system with generated oauth config for oidc systems', async () => {
 				setup(oidcSystem);
 				const result = await systemService.findById(oidcSystem.id);
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				const theMappedOauthConfig: OauthConfig = keycloakSystem.oauthConfig!;
+				theMappedOauthConfig.alias = oidcSystem.oidcConfig?.alias ?? '';
+				theMappedOauthConfig.redirectUri += oidcSystem._id;
 				expect(result).toStrictEqual(
 					SystemMapper.mapFromEntityToDto({
 						...oidcSystem,
-						oauthConfig: keycloakSystem.oauthConfig,
+						oauthConfig: theMappedOauthConfig,
 					})
 				);
 			});
@@ -135,12 +139,16 @@ describe('SystemService', () => {
 			it('should return found systems with generated oauth config for oidc systems', async () => {
 				setup();
 				const result = await systemService.findByType(SystemTypeEnum.OAUTH);
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				const theMappedOauthConfig: OauthConfig = keycloakSystem.oauthConfig!;
+				theMappedOauthConfig.alias = oidcSystem.oidcConfig?.alias ?? '';
+				theMappedOauthConfig.redirectUri += oidcSystem._id;
 				expect(result).toStrictEqual(
 					SystemMapper.mapFromEntitiesToDtos([
 						oauthSystem,
 						{
 							...oidcSystem,
-							oauthConfig: keycloakSystem.oauthConfig,
+							oauthConfig: theMappedOauthConfig,
 						},
 					])
 				);

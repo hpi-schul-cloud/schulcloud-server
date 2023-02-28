@@ -9,9 +9,10 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 			oauthConfig: new OauthConfig({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
+				alias: 'mock-oauth-alias',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
-				redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
+				redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/',
 				scope: 'openid uuid',
 				responseType: 'code',
 				authEndpoint: 'http://mock.de/auth',
@@ -39,7 +40,7 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 			oidcConfig: new OidcConfig({
 				clientId: 'mock-client-id',
 				clientSecret: 'mock-client-secret',
-				alias: 'mock-alias',
+				alias: 'mock-oidc-alias',
 				defaultScopes: 'openid email userinfo',
 				authorizationUrl: 'https://mock.tld/auth',
 				tokenUrl: 'https://mock.tld/token',

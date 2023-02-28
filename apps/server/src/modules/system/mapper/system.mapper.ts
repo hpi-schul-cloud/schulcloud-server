@@ -37,6 +37,7 @@ export class SystemMapper {
 		return new OauthConfigDto({
 			clientId: oauthConfig.clientId,
 			clientSecret: oauthConfig.clientSecret,
+			alias: oauthConfig.alias,
 			redirectUri: oauthConfig.redirectUri,
 			grantType: oauthConfig.grantType,
 			tokenEndpoint: oauthConfig.tokenEndpoint,

@@ -372,6 +372,7 @@ describe('OAuthService', () => {
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
+				alias: 'alias',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',
@@ -446,6 +447,7 @@ describe('OAuthService', () => {
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
+				alias: 'alias',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',

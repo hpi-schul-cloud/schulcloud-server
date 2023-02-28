@@ -19,6 +19,7 @@ export class OauthConfig {
 	constructor(oauthConfig: OauthConfig) {
 		this.clientId = oauthConfig.clientId;
 		this.clientSecret = oauthConfig.clientSecret;
+		this.alias = oauthConfig.alias;
 		this.tokenEndpoint = oauthConfig.tokenEndpoint;
 		this.grantType = oauthConfig.grantType;
 		this.redirectUri = oauthConfig.redirectUri;
@@ -36,6 +37,9 @@ export class OauthConfig {
 
 	@Property()
 	clientSecret: string;
+
+	@Property()
+	alias: string;
 
 	@Property()
 	redirectUri: string;
