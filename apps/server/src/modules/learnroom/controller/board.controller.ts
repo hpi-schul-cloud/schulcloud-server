@@ -1,6 +1,6 @@
 import { Body, Controller, Get, NotImplementedException, Param, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import {
 	BoardColumnUrlParams,

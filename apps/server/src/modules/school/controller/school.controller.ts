@@ -6,7 +6,7 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Body, Controller, Get, Param, Put, Query } from '@nestjs/common';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { SchoolUc } from '../uc/school.uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
