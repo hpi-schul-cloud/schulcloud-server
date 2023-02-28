@@ -1,5 +1,3 @@
-import { School } from '@src/shared/domain';
-import { schoolFactory } from '@src/shared/testing';
 import { UserScope } from './user.scope';
 
 describe('UserScope', () => {
@@ -45,11 +43,11 @@ describe('UserScope', () => {
 
 		describe('when school parameter is defined', () => {
 			it('should return scope with added schoolId to query', () => {
-				const school: School = schoolFactory.buildWithId();
+				const schoolId = 'schoolId';
 
-				scope.bySchoolId(school.id);
+				scope.bySchoolId(schoolId);
 
-				expect(scope.query).toEqual({ school: school.id });
+				expect(scope.query).toEqual({ school: schoolId });
 			});
 		});
 	});
