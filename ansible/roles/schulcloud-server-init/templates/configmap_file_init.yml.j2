@@ -140,8 +140,6 @@ data:
                                        "createdAt" : ISODate("2021-07-16T09:03:18.536Z"),
                                        "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
                                      } );'
-    # env specific things
-    LDAP_OIDC_SYSTEM_ID=
 
     # IServ & Sanis configurations (stored in the 'systems' collection + some related documents in other collections).
     ISERV_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $ISERV_CLIENT_SECRET)
