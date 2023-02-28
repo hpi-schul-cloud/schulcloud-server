@@ -7,13 +7,15 @@ import { AccountService } from './account.service';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountSaveDto } from './dto';
+import { AccountDto, AccountSaveDto } from './dto';
+import { AccountValidationService } from './account.validation.service';
 
 describe('AccountService', () => {
 	let module: TestingModule;
 	let accountService: AccountService;
 	let accountServiceIdm: DeepMocked<AbstractAccountService>;
 	let accountServiceDb: DeepMocked<AbstractAccountService>;
+	let accountValidationService: DeepMocked<AccountValidationService>;
 	let configService: DeepMocked<ConfigService>;
 	let logger: DeepMocked<Logger>;
 
@@ -41,11 +43,18 @@ describe('AccountService', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService<IServerConfig, true>>(),
 				},
+				{
+					provide: AccountValidationService,
+					useValue: {
+						isUniqueEmail: jest.fn().mockResolvedValue(true),
+					},
+				},
 			],
 		}).compile();
 		accountServiceDb = module.get(AccountServiceDb);
 		accountServiceIdm = module.get(AccountServiceIdm);
 		accountService = module.get(AccountService);
+		accountValidationService = module.get(AccountValidationService);
 		configService = module.get(ConfigService);
 		logger = module.get(Logger);
 	});
@@ -107,6 +116,68 @@ describe('AccountService', () => {
 
 			await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
 			expect(accountServiceIdm.save).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('saveWithValidation', () => {
+		it('should not sanitize username for external user', async () => {
+			const spy = jest.spyOn(accountService, 'save');
+			const params: AccountSaveDto = {
+				username: ' John.Doe@domain.tld ',
+				systemId: 'ABC123',
+			};
+			await accountService.saveWithValidation(params);
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					username: ' John.Doe@domain.tld ',
+				})
+			);
+			spy.mockRestore();
+		});
+		it('should throw if username for a local user is not an email', async () => {
+			const params: AccountSaveDto = {
+				username: 'John Doe',
+				password: 'JohnsPassword',
+			};
+			await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username is not an email');
+		});
+		it('should not throw if username for an external user is not an email', async () => {
+			const params: AccountSaveDto = {
+				username: 'John Doe',
+				systemId: 'ABC123',
+			};
+			await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
+		});
+		it('should not throw if username for an external user is a ldap search string', async () => {
+			const params: AccountSaveDto = {
+				username: 'dc=schul-cloud,dc=org/fake.ldap',
+				systemId: 'ABC123',
+			};
+			await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
+		});
+		it('should throw if no password is provided for an internal user', async () => {
+			const params: AccountSaveDto = {
+				username: 'john.doe@mail.tld',
+			};
+			await expect(accountService.saveWithValidation(params)).rejects.toThrow('No password provided');
+		});
+		it('should throw if account already exists', async () => {
+			const params: AccountSaveDto = {
+				username: 'john.doe@mail.tld',
+				password: 'JohnsPassword',
+				userId: 'userId123',
+			};
+			accountServiceDb.findByUserId.mockResolvedValueOnce({ id: 'foundAccount123' } as AccountDto);
+			await expect(accountService.saveWithValidation(params)).rejects.toThrow('Account already exists');
+		});
+		it('should throw if username already exists', async () => {
+			const accountIsUniqueEmailSpy = jest.spyOn(accountValidationService, 'isUniqueEmail');
+			accountIsUniqueEmailSpy.mockResolvedValueOnce(false);
+			const params: AccountSaveDto = {
+				username: 'john.doe@mail.tld',
+				password: 'JohnsPassword',
+			};
+			await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username already exists');
 		});
 	});
 

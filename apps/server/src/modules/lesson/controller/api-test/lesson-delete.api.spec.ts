@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser, Permission, User } from '@shared/domain';
+import { Permission, User } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -12,6 +12,7 @@ import {
 	roleFactory,
 	userFactory,
 } from '@shared/testing';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { ServerTestModule } from '@src/modules/server';

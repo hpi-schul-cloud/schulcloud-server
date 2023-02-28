@@ -77,18 +77,18 @@ export class S3ClientAdapter implements IStorageClient {
 			this.logger.log({ action: 'create', params: { path, bucket: this.config.bucket } });
 
 			const req = {
-				Body: file.buffer,
+				Body: file.data,
 				Bucket: this.config.bucket,
 				Key: path,
 				ContentType: file.mimeType,
 			};
-			const res = new Upload({
+			const upload = new Upload({
 				client: this.client,
 				params: req,
 			});
 
-			const a = await res.done();
-			return a;
+			const commandOutput = await upload.done();
+			return commandOutput;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (err.Code && err.Code === 'NoSuchBucket') {
@@ -101,10 +101,8 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async delete(paths: string[]): Promise<CopyObjectCommandOutput[]> {
+	public async moveToTrash(paths: string[]): Promise<CopyObjectCommandOutput[]> {
 		try {
-			this.logger.log({ action: 'delete', params: { paths, bucket: this.config.bucket } });
-
 			const copyPaths = paths.map((path) => {
 				return { sourcePath: path, targetPath: `${this.deletedFolderName}/${path}` };
 			});
@@ -113,7 +111,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			// try catch with rollback is not needed,
 			// because the second copyRequest try override existing files in trash folder
-			await this.remove(paths);
+			await this.delete(paths);
 
 			return result;
 		} catch (err) {
@@ -139,7 +137,7 @@ export class S3ClientAdapter implements IStorageClient {
 			// try catch with rollback is not needed,
 			// because the second copyRequest try override existing files in trash folder
 			const deleteObjects = copyPaths.map((p) => p.sourcePath);
-			await this.remove(deleteObjects);
+			await this.delete(deleteObjects);
 
 			return result;
 		} catch (err) {
@@ -171,7 +169,9 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	private async remove(paths: string[]) {
+	public async delete(paths: string[]) {
+		this.logger.log({ action: 'delete', params: { paths, bucket: this.config.bucket } });
+
 		const pathObjects = paths.map((p) => {
 			return { Key: p };
 		});

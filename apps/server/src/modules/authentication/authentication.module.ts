@@ -5,6 +5,7 @@ import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
+import { OauthModule } from '@src/modules/oauth/oauth.module';
 import { AccountModule } from '../account';
 import { AuthenticationService } from './services/authentication.service';
 import { jwtConstants } from './constants';
@@ -14,7 +15,6 @@ import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { LdapService } from './services/ldap.service';
 import { SystemModule } from '../system';
-import { OauthModule } from '../oauth';
 import { OauthStrategy } from './strategy/oauth.strategy';
 import { SchoolMapper } from '../school/mapper/school.mapper';
 

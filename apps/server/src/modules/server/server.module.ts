@@ -30,6 +30,7 @@ import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration';
 import { VideoConferenceModule } from '@src/modules/video-conference';
+import { AccountApiModule } from '../account/account-api.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -37,6 +38,7 @@ const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
 	AuthenticationApiModule,
+	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,
 	TaskModule,

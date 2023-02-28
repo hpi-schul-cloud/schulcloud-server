@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { ICurrentUser } from '@shared/domain';
 import { ExtractJwt } from 'passport-jwt';
+import { ICurrentUser } from '../interface/user';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { JwtExtractor } from '../strategy/jwt-extractor';
 
@@ -18,7 +18,7 @@ type Strategies = typeof STRATEGIES;
 
 /**
  * Authentication Decorator taking care of require authentication header to be present, setting up the user context and extending openAPI spec.
- * @param strategy accepted strategies
+ * @param strategies accepted strategies
  * @returns
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
