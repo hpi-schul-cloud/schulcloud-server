@@ -1,5 +1,6 @@
 import { Entity, Enum, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export enum BoardNodeType {
@@ -46,4 +47,18 @@ export class BoardNode extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: false })
 	position: number;
+
+	get parentId(): EntityId | undefined {
+		const parentId = this.hasParent() ? this.ancestorIds[this.ancestorIds.length - 1] : undefined;
+		return parentId;
+	}
+
+	get ancestorIds(): EntityId[] {
+		const parentIds = this.path.split(BoardNode.PATH_SEPERATOR).filter((id) => id !== '');
+		return parentIds;
+	}
+
+	hasParent() {
+		return this.ancestorIds.length > 0;
+	}
 }
