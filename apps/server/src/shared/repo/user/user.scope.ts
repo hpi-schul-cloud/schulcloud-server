@@ -9,6 +9,13 @@ export class UserScope extends Scope<User> {
 		return this;
 	}
 
+	whereLastLoginSystemChangeGreaterThan(date?: Date): UserScope {
+		if (date) {
+			this.addQuery({ lastLoginSystemChange: { $gte: date } });
+		}
+		return this;
+	}
+
 	bySchoolId(schoolId: EntityId | undefined): UserScope {
 		if (schoolId !== undefined) {
 			this.addQuery({ school: schoolId });

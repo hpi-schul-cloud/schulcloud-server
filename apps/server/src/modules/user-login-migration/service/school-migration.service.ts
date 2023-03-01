@@ -65,8 +65,12 @@ export class SchoolMigrationService {
 	}
 
 	async completeMigration(schoolId: string): Promise<void> {
-		const notMigratedUsers: Page<UserDO> = await this.userService.findUsers({ schoolId, isOutdated: false });
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const notMigratedUsers: Page<UserDO> = await this.userService.findUsers({
+			schoolId,
+			isOutdated: false,
+			lastLoginSystemChangeGreaterThan: school.oauthMigrationPossible,
+		});
 
 		notMigratedUsers.data.forEach((user: UserDO) => {
 			user.outdatedSince = school.oauthMigrationFinished;

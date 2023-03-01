@@ -1,14 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import {
-	cleanupCollections,
-	roleFactory,
-	schoolFactory,
-	systemFactory,
-	userDoFactory,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
 import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { createMock } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
@@ -17,6 +10,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { IFindOptions, IUserProperties, LanguageType, Role, School, SortOrder, System, User } from '@shared/domain';
 import { EntityNotFoundError } from '@shared/common';
 import { Page } from '@shared/domain/interface/page';
+import { UserQuery } from '@src/modules/user/service/user-query.type';
 
 class UserRepoSpec extends UserDORepo {
 	mapEntityToDOSpec(entity: User): UserDO {
@@ -313,7 +307,11 @@ describe('UserRepo', () => {
 
 	describe('find', () => {
 		const setupFind = async () => {
-			const userDO: UserDO = userDoFactory.buildWithId({ schoolId: undefined });
+			const query: UserQuery = {
+				schoolId: undefined,
+				isOutdated: undefined,
+				lastLoginSystemChangeGreaterThan: undefined,
+			};
 
 			const options: IFindOptions<UserDO> = {};
 
@@ -328,17 +326,17 @@ describe('UserRepo', () => {
 
 			const emFindAndCountSpy = jest.spyOn(em, 'findAndCount');
 
-			return { userDO, options, users, emFindAndCountSpy };
+			return { query, options, users, emFindAndCountSpy };
 		};
 
 		describe('sorting', () => {
 			it('should create queryOrderMap with options.order', async () => {
-				const { userDO, options, emFindAndCountSpy } = await setupFind();
+				const { query, options, emFindAndCountSpy } = await setupFind();
 				options.order = {
 					id: SortOrder.asc,
 				};
 
-				await repo.find(userDO, options);
+				await repo.find(query, options);
 
 				expect(emFindAndCountSpy).toHaveBeenCalledWith(
 					User,
@@ -350,10 +348,10 @@ describe('UserRepo', () => {
 			});
 
 			it('should create queryOrderMap with an empty object', async () => {
-				const { userDO, options, emFindAndCountSpy } = await setupFind();
+				const { query, options, emFindAndCountSpy } = await setupFind();
 				options.order = undefined;
 
-				await repo.find(userDO, options);
+				await repo.find(query, options);
 
 				expect(emFindAndCountSpy).toHaveBeenCalledWith(
 					User,
@@ -367,27 +365,27 @@ describe('UserRepo', () => {
 
 		describe('pagination', () => {
 			it('should return all users when options with pagination is set to undefined', async () => {
-				const { userDO, users } = await setupFind();
+				const { query, users } = await setupFind();
 
-				const page: Page<UserDO> = await repo.find(userDO, undefined);
+				const page: Page<UserDO> = await repo.find(query, undefined);
 
 				expect(page.data.length).toBe(users.length);
 			});
 
 			it('should return one ltiTool when pagination has a limit of 1', async () => {
-				const { userDO, options } = await setupFind();
+				const { query, options } = await setupFind();
 				options.pagination = { limit: 1 };
 
-				const page: Page<UserDO> = await repo.find(userDO, options);
+				const page: Page<UserDO> = await repo.find(query, options);
 
 				expect(page.data.length).toBe(1);
 			});
 
 			it('should return no ltiTool when pagination has a limit of 1 and skip is set to 2', async () => {
-				const { userDO, options } = await setupFind();
+				const { query, options } = await setupFind();
 				options.pagination = { limit: 1, skip: 3 };
 
-				const page: Page<UserDO> = await repo.find(userDO, options);
+				const page: Page<UserDO> = await repo.find(query, options);
 
 				expect(page.data.length).toBe(0);
 			});
@@ -395,13 +393,51 @@ describe('UserRepo', () => {
 
 		describe('order', () => {
 			it('should return users ordered by default _id when no order is specified', async () => {
-				const { userDO, options, users } = await setupFind();
+				const { query, options, users } = await setupFind();
 
-				const page: Page<UserDO> = await repo.find(userDO, options);
+				const page: Page<UserDO> = await repo.find(query, options);
 
 				expect(page.data[0].id).toEqual(users[0].id);
 				expect(page.data[1].id).toEqual(users[1].id);
 				expect(page.data[2].id).toEqual(users[2].id);
+			});
+		});
+
+		describe('scope', () => {
+			it('should add query to scope', async () => {
+				const { options, emFindAndCountSpy } = await setupFind();
+				const lastLoginSystemChangeGreaterThan: Date = new Date();
+				const query: UserQuery = {
+					schoolId: 'schoolId',
+					isOutdated: true,
+					lastLoginSystemChangeGreaterThan,
+				};
+
+				await repo.find(query, options);
+
+				expect(emFindAndCountSpy).toHaveBeenCalledWith(
+					User,
+					{
+						$and: [
+							{
+								school: query.schoolId,
+							},
+							{
+								outdatedSince: {
+									$exists: query.isOutdated,
+								},
+							},
+							{
+								lastLoginSystemChange: {
+									$gte: query.lastLoginSystemChangeGreaterThan,
+								},
+							},
+						],
+					},
+					expect.objectContaining<FindOptions<User>>({
+						orderBy: expect.objectContaining<QueryOrderMap<User>>({}) as QueryOrderMap<User>,
+					})
+				);
 			});
 		});
 	});
