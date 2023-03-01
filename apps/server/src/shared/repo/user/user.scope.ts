@@ -9,9 +9,9 @@ export class UserScope extends Scope<User> {
 		return this;
 	}
 
-	hasPreviousExternalId(hasPreviousExternalId?: boolean): UserScope {
-		if (hasPreviousExternalId !== undefined) {
-			this.addQuery({ previousExternalId: { $exists: hasPreviousExternalId } });
+	whereLastLoginSystemChangeGreaterThan(date?: Date): UserScope {
+		if (date) {
+			this.addQuery({ lastLoginSystemChange: { $gte: date } });
 		}
 		return this;
 	}

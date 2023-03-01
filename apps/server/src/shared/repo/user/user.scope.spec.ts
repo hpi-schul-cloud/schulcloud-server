@@ -52,27 +52,20 @@ describe('UserScope', () => {
 		});
 	});
 
-	describe('hasPreviousExternalId is called', () => {
-		it('should return scope with added query where hasPreviousExternalId exists is true', () => {
-			scope.hasPreviousExternalId(true);
-			expect(scope.query).toEqual({
-				previousExternalId: {
-					$exists: true,
-				},
-			});
-		});
+	describe('whereLastLoginSystemChangeGreaterThan is called', () => {
+		it('should return scope with added query where loginSystemChangeGreaterThan is given', () => {
+			const date: Date = new Date();
+			scope.whereLastLoginSystemChangeGreaterThan(date);
 
-		it('should return scope with added query where hasPreviousExternalId exists is false', () => {
-			scope.hasPreviousExternalId(false);
 			expect(scope.query).toEqual({
-				previousExternalId: {
-					$exists: false,
+				lastLoginSystemChange: {
+					$gte: date,
 				},
 			});
 		});
 
 		it('should return scope without added hasPreviousExternalId to query', () => {
-			scope.hasPreviousExternalId(undefined);
+			scope.whereLastLoginSystemChangeGreaterThan(undefined);
 			expect(scope.query).toEqual({});
 		});
 	});

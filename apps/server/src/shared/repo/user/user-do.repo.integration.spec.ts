@@ -310,7 +310,7 @@ describe('UserRepo', () => {
 			const query: UserQuery = {
 				schoolId: undefined,
 				isOutdated: undefined,
-				hasPreviousExternalId: undefined,
+				lastLoginSystemChangeGreaterThan: undefined,
 			};
 
 			const options: IFindOptions<UserDO> = {};
@@ -406,10 +406,11 @@ describe('UserRepo', () => {
 		describe('scope', () => {
 			it('should add query to scope', async () => {
 				const { options, emFindAndCountSpy } = await setupFind();
+				const lastLoginSystemChangeGreaterThan: Date = new Date();
 				const query: UserQuery = {
 					schoolId: 'schoolId',
 					isOutdated: true,
-					hasPreviousExternalId: true,
+					lastLoginSystemChangeGreaterThan,
 				};
 
 				await repo.find(query, options);
@@ -427,8 +428,8 @@ describe('UserRepo', () => {
 								},
 							},
 							{
-								previousExternalId: {
-									$exists: query.hasPreviousExternalId,
+								lastLoginSystemChange: {
+									$gte: query.lastLoginSystemChangeGreaterThan,
 								},
 							},
 						],

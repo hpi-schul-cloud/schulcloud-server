@@ -35,7 +35,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)
 			.isOutdated(query.isOutdated)
-			.hasPreviousExternalId(query.hasPreviousExternalId)
+			.whereLastLoginSystemChangeGreaterThan(query.lastLoginSystemChangeGreaterThan)
 			.allowEmptyQuery(true);
 
 		order._id = order._id ?? SortOrder.asc;
