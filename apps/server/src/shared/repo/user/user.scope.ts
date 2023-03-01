@@ -16,6 +16,13 @@ export class UserScope extends Scope<User> {
 		return this;
 	}
 
+	whereOutdatedSinceEquals(date?: Date): UserScope {
+		if (date) {
+			this.addQuery({ outdatedSince: { $eq: date } });
+		}
+		return this;
+	}
+
 	bySchoolId(schoolId: EntityId | undefined): UserScope {
 		if (schoolId !== undefined) {
 			this.addQuery({ school: schoolId });

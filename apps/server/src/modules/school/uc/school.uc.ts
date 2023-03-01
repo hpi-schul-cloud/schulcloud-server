@@ -29,8 +29,14 @@ export class SchoolUc {
 		});
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
-		//TODO: evaluate: The only time this call is made while migration is finished, is to restart it. A check to oauthMigrationPossible or !oauthMigrationFinished seems unnecessary.
-		if (school.oauthMigrationFinished) {
+		const shouldRestartMigration = !!(
+			school.oauthMigrationFinished &&
+			oauthMigrationPossible &&
+			oauthMigrationMandatory == !!school.oauthMigrationMandatory &&
+			!oauthMigrationFinished
+		);
+
+		if (shouldRestartMigration) {
 			await this.schoolMigrationService.restartMigration(schoolId);
 		}
 

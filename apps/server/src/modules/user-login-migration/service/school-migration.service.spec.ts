@@ -263,13 +263,18 @@ describe('SchoolMigrationService', () => {
 		});
 
 		it('should call findUsers on userService', async () => {
+			const { schoolDO } = setup();
+			schoolService.getSchoolById.mockResolvedValue(schoolDO);
 			const expectedSchoolId = 'expectedSchoolId';
-			const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+			const users: Page<UserDO> = new Page([userDoFactory.buildWithId({ outdatedSince: new Date(2023, 2, 27) })], 1);
 			userService.findUsers.mockResolvedValue(users);
 
 			await service.restartMigration(expectedSchoolId);
 
-			expect(userService.findUsers).toHaveBeenCalledWith({ schoolId: expectedSchoolId, isOutdated: true });
+			expect(userService.findUsers).toHaveBeenCalledWith({
+				schoolId: expectedSchoolId,
+				outdatedSinceEquals: schoolDO.oauthMigrationFinished,
+			});
 		});
 
 		it('should save migrated user with removed outdatedSince entry', async () => {

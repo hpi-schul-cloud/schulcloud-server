@@ -311,6 +311,7 @@ describe('UserRepo', () => {
 				schoolId: undefined,
 				isOutdated: undefined,
 				lastLoginSystemChangeGreaterThan: undefined,
+				outdatedSinceEquals: undefined,
 			};
 
 			const options: IFindOptions<UserDO> = {};
@@ -407,10 +408,12 @@ describe('UserRepo', () => {
 			it('should add query to scope', async () => {
 				const { options, emFindAndCountSpy } = await setupFind();
 				const lastLoginSystemChangeGreaterThan: Date = new Date();
+				const outdatedSinceEquals: Date = new Date();
 				const query: UserQuery = {
 					schoolId: 'schoolId',
 					isOutdated: true,
 					lastLoginSystemChangeGreaterThan,
+					outdatedSinceEquals,
 				};
 
 				await repo.find(query, options);
@@ -430,6 +433,11 @@ describe('UserRepo', () => {
 							{
 								lastLoginSystemChange: {
 									$gte: query.lastLoginSystemChangeGreaterThan,
+								},
+							},
+							{
+								outdatedSince: {
+									$eq: query.outdatedSinceEquals,
 								},
 							},
 						],

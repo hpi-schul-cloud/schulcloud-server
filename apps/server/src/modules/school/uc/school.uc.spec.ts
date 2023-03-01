@@ -91,6 +91,15 @@ describe('SchoolUc', () => {
 
 				expect(schoolMigrationService.restartMigration).toHaveBeenCalledWith(mockId);
 			});
+
+			it('should not call schoolMigrationService when ', async () => {
+				schoolService.getSchoolById.mockResolvedValue(
+					new SchoolDO({ name: 'mockName', oauthMigrationFinished: undefined })
+				);
+				await schoolUc.setMigration(mockId, true, true, false, mockId);
+
+				expect(schoolMigrationService.restartMigration).not.toHaveBeenCalled();
+			});
 		});
 	});
 

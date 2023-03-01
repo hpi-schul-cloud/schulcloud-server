@@ -36,6 +36,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			.bySchoolId(query.schoolId)
 			.isOutdated(query.isOutdated)
 			.whereLastLoginSystemChangeGreaterThan(query.lastLoginSystemChangeGreaterThan)
+			.whereOutdatedSinceEquals(query.outdatedSinceEquals)
 			.allowEmptyQuery(true);
 
 		order._id = order._id ?? SortOrder.asc;
