@@ -7,6 +7,8 @@ import { IdentityManagementOauthService } from '@shared/infra/identity-managemen
 import { SystemRepo } from '@shared/repo';
 import { systemFactory } from '@shared/testing';
 import { SystemMapper } from '../mapper/system.mapper';
+import { SystemDto } from './dto';
+import { OauthConfigDto } from './dto/oauth-config.dto';
 import { SystemService } from './system.service';
 
 describe('SystemService', () => {
@@ -44,8 +46,8 @@ describe('SystemService', () => {
 
 	describe('findById', () => {
 		describe('when identity management is available', () => {
-			const standaloneSystem = systemFactory.buildWithId();
-			const oidcSystem = systemFactory.withOidcConfig().buildWithId();
+			const standaloneSystem = systemFactory.buildWithId({ alias: 'standaloneSystem' });
+			const oidcSystem = systemFactory.withOidcConfig().buildWithId({ alias: 'oidcSystem' });
 			const keycloakSystem = systemFactory.withOauthConfig().buildWithId({
 				type: SystemTypeEnum.KEYCLOAK,
 				alias: 'Keycloak',
@@ -65,15 +67,31 @@ describe('SystemService', () => {
 
 			it('should return found system with generated oauth config for oidc systems', async () => {
 				setup(oidcSystem);
+				if (keycloakSystem.oauthConfig === undefined) {
+					fail('Keycloak system has no oauth configuration');
+				}
 				const result = await systemService.findById(oidcSystem.id);
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				const theMappedOauthConfig: OauthConfig = keycloakSystem.oauthConfig!;
-				theMappedOauthConfig.alias = oidcSystem.oidcConfig?.alias ?? '';
-				theMappedOauthConfig.redirectUri += oidcSystem._id;
-				expect(result).toStrictEqual(
-					SystemMapper.mapFromEntityToDto({
-						...oidcSystem,
-						oauthConfig: theMappedOauthConfig,
+				expect(result).toEqual(
+					expect.objectContaining({
+						type: SystemTypeEnum.OAUTH,
+						alias: oidcSystem.alias,
+						displayName: oidcSystem.displayName,
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						oauthConfig: expect.objectContaining({
+							clientId: keycloakSystem.oauthConfig.clientId,
+							clientSecret: keycloakSystem.oauthConfig.clientSecret,
+							alias: oidcSystem.oidcConfig?.alias ?? '',
+							redirectUri: keycloakSystem.oauthConfig.redirectUri + oidcSystem.id,
+							grantType: keycloakSystem.oauthConfig.grantType,
+							tokenEndpoint: keycloakSystem.oauthConfig.tokenEndpoint,
+							authEndpoint: keycloakSystem.oauthConfig.authEndpoint,
+							responseType: keycloakSystem.oauthConfig.responseType,
+							scope: keycloakSystem.oauthConfig.scope,
+							provider: keycloakSystem.oauthConfig.provider,
+							logoutEndpoint: keycloakSystem.oauthConfig.logoutEndpoint,
+							issuer: keycloakSystem.oauthConfig.issuer,
+							jwksEndpoint: keycloakSystem.oauthConfig.jwksEndpoint,
+						}),
 					})
 				);
 			});
@@ -102,9 +120,9 @@ describe('SystemService', () => {
 
 	describe('findByType', () => {
 		describe('when identity management is available', () => {
-			const ldapSystem = systemFactory.withLdapConfig().buildWithId();
-			const oauthSystem = systemFactory.withOauthConfig().buildWithId();
-			const oidcSystem = systemFactory.withOidcConfig().buildWithId();
+			const ldapSystem = systemFactory.withLdapConfig().buildWithId({ alias: 'ldapSystem' });
+			const oauthSystem = systemFactory.withOauthConfig().buildWithId({ alias: 'oauthSystem' });
+			const oidcSystem = systemFactory.withOidcConfig().buildWithId({ alias: 'oidcSystem' });
 			const keycloakSystem = systemFactory.withOauthConfig().buildWithId({
 				type: SystemTypeEnum.KEYCLOAK,
 				alias: 'Keycloak',
@@ -126,7 +144,13 @@ describe('SystemService', () => {
 				setup();
 				const result = await systemService.findByType();
 				expect(result).toEqual(
-					expect.arrayContaining(SystemMapper.mapFromEntitiesToDtos([ldapSystem, oauthSystem, oidcSystem]))
+					expect.arrayContaining([
+						...SystemMapper.mapFromEntitiesToDtos([ldapSystem, oauthSystem]),
+						expect.objectContaining({
+							alias: oidcSystem.alias,
+							displayName: oidcSystem.displayName,
+						}),
+					])
 				);
 			});
 
@@ -138,18 +162,34 @@ describe('SystemService', () => {
 
 			it('should return found systems with generated oauth config for oidc systems', async () => {
 				setup();
-				const result = await systemService.findByType(SystemTypeEnum.OAUTH);
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				const theMappedOauthConfig: OauthConfig = keycloakSystem.oauthConfig!;
-				theMappedOauthConfig.alias = oidcSystem.oidcConfig?.alias ?? '';
-				theMappedOauthConfig.redirectUri += oidcSystem._id;
-				expect(result).toStrictEqual(
-					SystemMapper.mapFromEntitiesToDtos([
-						oauthSystem,
-						{
-							...oidcSystem,
-							oauthConfig: theMappedOauthConfig,
-						},
+				if (keycloakSystem.oauthConfig === undefined) {
+					fail('Keycloak system has no oauth configuration');
+				}
+				const resultingSystems = await systemService.findByType(SystemTypeEnum.OAUTH);
+
+				expect(resultingSystems).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({
+							type: SystemTypeEnum.OAUTH,
+							alias: oidcSystem.alias,
+							displayName: oidcSystem.displayName,
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+							oauthConfig: expect.objectContaining({
+								clientId: keycloakSystem.oauthConfig.clientId,
+								clientSecret: keycloakSystem.oauthConfig.clientSecret,
+								alias: oidcSystem.oidcConfig?.alias ?? '',
+								redirectUri: keycloakSystem.oauthConfig.redirectUri + oidcSystem.id,
+								grantType: keycloakSystem.oauthConfig.grantType,
+								tokenEndpoint: keycloakSystem.oauthConfig.tokenEndpoint,
+								authEndpoint: keycloakSystem.oauthConfig.authEndpoint,
+								responseType: keycloakSystem.oauthConfig.responseType,
+								scope: keycloakSystem.oauthConfig.scope,
+								provider: keycloakSystem.oauthConfig.provider,
+								logoutEndpoint: keycloakSystem.oauthConfig.logoutEndpoint,
+								issuer: keycloakSystem.oauthConfig.issuer,
+								jwksEndpoint: keycloakSystem.oauthConfig.jwksEndpoint,
+							}),
+						}),
 					])
 				);
 			});

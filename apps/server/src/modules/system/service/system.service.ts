@@ -69,11 +69,18 @@ export class SystemService {
 			return systems.filter((system) => !(system.oidcConfig && !system.oauthConfig));
 		}
 		const brokerConfig = await this.idmOauthService.getOauthConfig();
+		let generatedSystem: System;
 		return systems.map((system) => {
 			if (system.oidcConfig && !system.oauthConfig) {
-				system.oauthConfig = { ...brokerConfig };
-				system.oauthConfig.redirectUri += system.id;
-				system.oauthConfig.alias = system.oidcConfig.alias;
+				generatedSystem = new System({
+					type: SystemTypeEnum.OAUTH,
+					alias: system.alias,
+					displayName: system.displayName ? system.displayName : system.alias,
+				});
+				generatedSystem.oauthConfig = { ...brokerConfig };
+				generatedSystem.oauthConfig.alias = system.oidcConfig.alias;
+				generatedSystem.oauthConfig.redirectUri += system.id;
+				return generatedSystem;
 			}
 			return system;
 		});

@@ -1,0 +1,63 @@
+version: '3'
+
+volumes:
+  dbc_database:
+  dbc_storage:
+  dbc_idm:
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.8.9-management
+    container_name: 'RabbitMQ'
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+  mongodb:
+    image: mongo:5.0
+    container_name: 'MongoDB'
+    ports:
+      - '27017-27019:27017-27019'
+    volumes:
+      - dbc_database:/data/db
+  minio:
+    image: quay.io/minio/minio
+    container_name: 'MiniO'
+    ports:
+      - '9000-9001:9000-9001'
+    environment:
+      MINIO_ROOT_USER: 'miniouser'
+      MINIO_ROOT_PASSWORD: 'miniouser'
+    command: server /data --console-address ":9001"
+    volumes:
+      - dbc_storage:/data
+    profiles: ['preview', 'full', 'file-storage']
+  erwinidm:
+    image: ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest
+    container_name: 'ErWIn-IDM'
+    ports:
+      - '8080:8080'
+      - '8443:8443'
+    environment:
+      KC_LOG_LEVEL: 'debug'
+    command: "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
+    # Keycloak creates the H2 database only after the first start
+    # Volumes are created early (by docker), hence it is owned by root
+    # Switching to root is a workaround to have persistent volume  
+    user: root
+    volumes:
+      - dbc_idm:/opt/keycloak/data
+      - ./backup/idm/keycloak:/tmp/realms
+    profiles: ['preview', 'idm']
+  oidc_broker:
+    image: ghcr.io/soluto/oidc-server-mock:0.6.0
+    container_name: oidc-server-mock
+    ports:
+      - '4011:80'
+    environment:
+      ASPNETCORE_ENVIRONMENT: 'Development'
+      SERVER_OPTIONS_PATH: '/tmp/config/server-config.json'
+      USERS_CONFIGURATION_PATH: '/tmp/config/users-config.json'
+      CLIENTS_CONFIGURATION_PATH: '/tmp/config/clients-config.json'
+    volumes:
+      - ./backup/idm/oidcmock:/tmp/config:ro
+    profiles: ['preview', 'idm']
