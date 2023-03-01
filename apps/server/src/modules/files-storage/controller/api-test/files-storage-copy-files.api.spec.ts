@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { EntityId, ICurrentUser, Permission } from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import {
 	cleanupCollections,
@@ -15,6 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ICurrentUser } from '@src/modules/authentication';
 import { FilesStorageTestModule, s3Config } from '@src/modules/files-storage';
 import {
 	CopyFileParams,

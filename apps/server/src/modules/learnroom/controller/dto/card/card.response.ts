@@ -4,7 +4,12 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 
 export class ContentElementResponse {}
 
-type BoardCardType = 'task' | 'content' | 'legacy-task' | 'legacy-lesson';
+export enum BoardCardType {
+	TASK = 'task',
+	CONTENT = 'content',
+	LEGACY_TASK = 'legacy-task',
+	LEGACY_LESSON = 'legacy-lesson',
+}
 
 export class CardResponse {
 	constructor({ id, title, elements, cardType, visibilitySettings }: CardResponse) {
@@ -29,7 +34,7 @@ export class CardResponse {
 	})
 	elements: ContentElementResponse[];
 
-	@ApiProperty()
+	@ApiProperty({ enum: BoardCardType })
 	cardType: BoardCardType;
 
 	@ApiProperty()

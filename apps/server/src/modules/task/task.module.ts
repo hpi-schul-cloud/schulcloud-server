@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import { CourseRepo, LessonRepo, SubmissionRepo, TaskRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
@@ -22,7 +21,6 @@ import { SubmissionUc, TaskCopyUC, TaskUC } from './uc';
 		TaskCopyUC,
 		TaskCopyService,
 		FeathersServiceProvider,
-		FileLegacyService,
 		Logger,
 		SubmissionUc,
 		SubmissionService,

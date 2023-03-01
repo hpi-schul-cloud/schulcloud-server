@@ -12,6 +12,7 @@ import { accountFactory, cleanupCollections } from '@shared/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { createMock } from '@golevelup/ts-jest';
 import KeycloakConfiguration from '@shared/infra/identity-management/keycloak/keycloak-config';
+import { UserRepo } from '@shared/repo';
 import { Logger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountService } from './account.service';
@@ -19,6 +20,7 @@ import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountServiceDb } from './account-db.service';
+import { AccountValidationService } from './account.validation.service';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -79,7 +81,9 @@ describe('AccountService Integration', () => {
 				AccountServiceIdm,
 				AccountServiceDb,
 				AccountRepo,
+				UserRepo,
 				KeycloakAdministrationService,
+				AccountValidationService,
 				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
 				{
 					provide: KeycloakAdminClient,

@@ -3,7 +3,7 @@ import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,

@@ -10,7 +10,7 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Logger } from '@src/core/logger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
