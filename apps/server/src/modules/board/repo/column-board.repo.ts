@@ -21,14 +21,4 @@ export class ColumnBoardRepo {
 
 		return descendants;
 	}
-
-	// TODO debug this
-	// async findNodeAndDescendants(node: BoardNode, depth: number) {
-	// 	const nodeAndDescendants = this.em.find(BoardNode, {
-	// 		path: { $re: `^${node.path}` },
-	// 		level: { $gte: node.level, $lte: node.level + depth },
-	// 	});
-
-	// 	return nodeAndDescendants;
-	// }
 }

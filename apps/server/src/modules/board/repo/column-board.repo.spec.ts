@@ -67,31 +67,4 @@ describe('ColumnBoardRepo', () => {
 			});
 		});
 	});
-
-	// TODO debug this
-	// describe('findNodeAndDescendants', () => {
-	// 	describe('when starting at the root node', () => {
-	// 		it('should find descendents with a specific depth', async () => {
-	// 			const { root, level1, level2 } = await setup();
-
-	// 			const result = await repo.findNodeAndDescendants(root, 2);
-
-	// 			const resultIds = result.map((o) => o.id).sort();
-	// 			const expectedIds = [root, ...level1, ...level2].map((o) => o.id).sort();
-	// 			expect(resultIds).toEqual(expectedIds);
-	// 		});
-	// 	});
-
-	// 	describe('when starting at a nested node', () => {
-	// 		it('should find descendents with a specific depth', async () => {
-	// 			const { level1, level2, level3 } = await setup();
-
-	// 			const result = await repo.findNodeAndDescendants(level1[0], 2);
-
-	// 			const resultIds = result.map((o) => o.id).sort();
-	// 			const expectedIds = [level1[0], ...level2, ...level3].map((o) => o.id).sort();
-	// 			expect(resultIds).toEqual(expectedIds);
-	// 		});
-	// 	});
-	// });
 });
