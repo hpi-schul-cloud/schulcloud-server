@@ -32,8 +32,7 @@ const deleteUserDataFromClasses = async (userId) => {
 	return trashBinResult({ scope: 'classes', data, complete });
 };
 
-
 // public
-const deleteUserData = [ deleteUserDataFromClasses ];
+const deleteUserData = [deleteUserDataFromClasses];
 
 module.exports = { deleteUserData };
