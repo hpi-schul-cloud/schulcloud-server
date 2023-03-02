@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { Request } from 'express';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { OauthSSOController } from './oauth-sso.controller';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
 
