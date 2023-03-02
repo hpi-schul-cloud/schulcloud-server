@@ -5,7 +5,7 @@ const { ConfigModule } = require('@nestjs/config');
 
 // run 'npm run nest:build' for the following imports to work,
 // this is a workaround to make TypeScript modules available in JavaScript
-const { AccountModule } = require('../../dist/apps/server/modules/account/account.module');
+const { AccountApiModule } = require('../../dist/apps/server/modules/account/account-api.module');
 const { AccountUc } = require('../../dist/apps/server/modules/account/uc/account.uc');
 const { AccountService } = require('../../dist/apps/server/modules/account/services/account.service');
 const {
@@ -27,7 +27,7 @@ const setupNestServices = async (app) => {
 				// debug: true, // use it for locally debugging of querys
 			}),
 			ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
-			AccountModule,
+			AccountApiModule,
 		],
 	}).compile();
 	const nestApp = await module.createNestApplication().init();

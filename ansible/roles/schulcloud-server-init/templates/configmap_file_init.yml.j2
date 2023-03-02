@@ -33,10 +33,11 @@ data:
     else
       echo "Skip IDM initialization"
     fi
-    ###
-    every mongo statement now is due to special dev system initialization, most of this will only work on dev probably
-    ###
 
+    # Below is a series of a MongoDB-data initializations, meant for the development and testing
+    # purposes on various dev environments - most of them will only work there.
+
+    # Test LDAP server (deployed in the sc-common namespace) configuration (stored in the 'systems' collection).
     SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
     mongo $DATABASE__URL --eval 'db.systems.insert([
     {
@@ -114,6 +115,8 @@ data:
         }
       }
     }]);'
+
+    # AWS S3 storage configuration (stored in the 'storageproviders' collection).
     mongo $DATABASE__URL --eval 'db.storageproviders.insert( {
                                        "isShared" : true,
                                        "region" : "eu-central-1",
@@ -126,7 +129,8 @@ data:
                                        "createdAt" : ISODate("2021-07-16T09:03:18.536Z"),
                                        "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
                                      } );'
-    # env specific things
+
+    # IServ & Sanis configurations (stored in the 'systems' collection + some related documents in other collections).
     ISERV_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $ISERV_CLIENT_SECRET)
     ISERV_SYSTEM_ID=0000d186816abba584714c92
     SANIS_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $SANIS_CLIENT_SECRET)
@@ -298,5 +302,133 @@ data:
           }
       ]);'
     fi
-    # this is crucial, until we have all entities in nest!
+
+    # ========== Start of the Bettermarks tool configuration section.
+
+    # This is currently performed only for the following 4 namespaces:
+    #   - 'nbc-bettermarks-test',
+    #   - 'nbc-main',
+    #   - 'brb-bettermarks-test',
+    #   - 'brb-main';
+    # the first two being the testing environments for the nbc instances
+    # and the last two being the testing environments for the brb instances.
+
+    # The Bettermarks URL (entrypoint) and client secret can be shared among the different environments,
+    # but to not complicate the current configuration, they are configured separately for each environment.
+
+    # Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
+    NS=$K8S_NAMESPACE
+
+    if [ -n "$NS" ]; then
+        # Set the BETTERMARKS_CLIENT_SECRET and BETTERMARKS_URL variables values according to the k8s namespace.
+        if [ "$NS" = "nbc-bettermarks-test" ]; then
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_BETTERMARKS_TEST_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_NBC_BETTERMARKS_TEST_ENTRYPOINT
+        elif [ "$NS" = "nbc-main" ]; then
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_MAIN_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_NBC_MAIN_ENTRYPOINT
+        elif [ "$NS" = "brb-bettermarks-test" ]; then
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_BETTERMARKS_TEST_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_BRB_BETTERMARKS_TEST_ENTRYPOINT
+        elif [ "$NS" = "brb-main" ]; then
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_MAIN_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_BRB_MAIN_ENTRYPOINT
+        else
+            # Print some friendly message for any other namespace that's not supported.
+            echo "Sorry, Bettermarks cannot be configured on the '$NS' namespace, omitting the config data init."
+        fi
+
+        # Perform the final Bettermarks config data init if client secret and URL has been properly set.
+        if [ -n "$BETTERMARKS_CLIENT_SECRET" ] && [ -n "$BETTERMARKS_URL" ]; then
+            # Add document to the 'ltitools' collection with Bettermarks tool configuration.
+            mongo $DATABASE__URL --eval 'db.ltitools.replaceOne(
+                {
+                  "name": "bettermarks",
+                  "isTemplate": true
+                },
+                {
+                  "roles": [],
+                  "privacy_permission": "anonymous",
+                  "openNewTab": true,
+                  "name": "bettermarks",
+                  "url": "'$BETTERMARKS_URL'",
+                  "key": null,
+                  "secret": "'$BETTERMARKS_CLIENT_SECRET'",
+                  "logo_url": "'$BETTERMARKS_LOGO_URL'",
+                  "oAuthClientId": "'$BETTERMARKS_OAUTH_CLIENT_ID'",
+                  "isLocal": true,
+                  "resource_link_id": null,
+                  "lti_version": null,
+                  "lti_message_type": null,
+                  "isTemplate": true,
+                  "skipConsent": false,
+                  "customs": [],
+                  "createdAt": new Date(),
+                  "updatedAt": new Date(),
+                  "__v": 0,
+                  "isHidden": false,
+                  "frontchannel_logout_uri": null
+                },
+                {
+                  "upsert": true
+                }
+            );'
+
+            # The two steps below (Hydra call and MongoDB insert) were added to automate the actions performed inside
+            # the server when Bettermarks' OAuth client configuration is added manually in SuperHero Dashboard.
+
+            # Add Bettermarks' OAuth client configuration in Hydra.
+            curl --retry 360 --retry-connrefused --retry-delay 10 \
+                  -H 'X-Forwarded-Proto: https' \
+                  -X POST $HYDRA_URI/clients \
+                  -d '{
+                        "client_name": "bettermarks",
+                        "client_id": "bettermarks",
+                        "client_secret": "'$BETTERMARKS_CLIENT_SECRET'",
+                        "scope":"openid offline",
+                        "token_endpoint_auth_method":"client_secret_post",
+                        "redirect_uris": [
+                          "https://acc.bettermarks.com/v1.0/schulcloud/oauth/callback",
+                          "https://school.bettermarks.loc/v1.0/schulcloud/oauth/callback",
+                          "https://acc.bettermarks.com/auth/callback",
+                          "https://school.bettermarks.loc/auth/callback",
+                          "https://acc.bettermarks.com/auth/oidc/callback"
+                        ],
+                        "subject_type":"pairwise"
+                      }'
+
+            # Add Bettermarks' tools configuration as an external tool
+            # (stored in the 'external_tools' collection) that uses OAuth.
+            mongo $DATABASE__URL --eval 'db.external_tools.replaceOne(
+                {
+                  "name": "bettermarks",
+                  "config_type": "oauth2"
+                },
+                {
+                  "name": "bettermarks",
+                  "url": "'$BETTERMARKS_URL'",
+                  "logoUrl": "'$BETTERMARKS_LOGO_URL'",
+                  "config_type": "oauth2",
+                  "config_baseUrl": "'$BETTERMARKS_URL'",
+                  "config_clientId": "'$BETTERMARKS_OAUTH_CLIENT_ID'",
+                  "config_skipConsent": false,
+                  "parameters": [],
+                  "isHidden": false,
+                  "openNewTab": true,
+                  "createdAt": new Date(),
+                  "updatedAt": new Date(),
+                  "version": 1
+                },
+                {
+                  "upsert": true
+                }
+            );'
+
+            echo "Bettermarks config data init performed successfully."
+        fi
+    fi
+
+    # ========== End of the Bettermarks tool configuration section.
+
+    # Database indexes synchronization, it's crucial until we have all the entities in NestJS app.
     npm run syncIndexes
