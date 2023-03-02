@@ -14,12 +14,13 @@ export class FwuController {
 	async get(@Req() req: Request, @Res() res: Response) {
 		// TODO: make sure its a user from Brandenburg
 		const path = req.params[0];
-		console.log('fwu: ', path);
 		try {
+			// console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>fwu: ', path.toString());
 			var file = await this.fwuUc.get(path);
-		} catch (errorStatus) {
-			res.sendStatus(errorStatus);
-			return;
+		} catch (error) {
+			throw new Error('HttpStatusCode: ' + error.$metadata.httpStatusCode + ' at ' + path + ' ' + error);
+			// res.sendStatus(error);
+			// return;
 		}
 		const i = path.lastIndexOf('.');
 		const contentType = i !== -1 ? path.slice(i) : 'application/octet-stream';
