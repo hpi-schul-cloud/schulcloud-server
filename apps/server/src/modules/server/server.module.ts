@@ -9,6 +9,7 @@ import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { REDIS_CLIENT, RedisModule } from '@shared/infra/redis';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger, LoggerModule } from '@src/core/logger';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
@@ -32,6 +33,7 @@ import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration';
 import { VideoConferenceModule } from '@src/modules/video-conference';
+import { AccountApiModule } from '../account/account-api.module';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
@@ -39,18 +41,10 @@ import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
 const serverModules = [
-	ConfigModule.forRoot({
-		isGlobal: true,
-		validationOptions: { infer: true },
-		// hacky solution: the server config is loaded in the validate step.
-		// reasoning: nest's ConfigService has fixed priority of configs.
-		// 1. validated configs, 2. default passed in configService.get(key, default) 3. process.env 4. custom configs
-		// in process env everything is a string. So a feature flag will be the string 'false' and therefore truthy
-		// So we want custom configs to overwrite process.env. Thus we make them validated
-		validate: serverConfig,
-	}),
+	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
 	AuthenticationApiModule,
+	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,
 	TaskModule,

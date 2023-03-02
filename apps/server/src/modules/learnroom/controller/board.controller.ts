@@ -1,6 +1,6 @@
 import { Body, Controller, Get, NotImplementedException, Param, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import {
 	BoardColumnUrlParams,
@@ -31,15 +31,15 @@ export class BoardController {
 					id: '0123456789abcdef00000010',
 					title: 'first column',
 					cards: [
-						new BoardSkeletonCardReponse({ cardId: '0123456789abcdef00000001', height: 36 }),
-						new BoardSkeletonCardReponse({ cardId: '0123456789abcdef00000002', height: 108 }),
+						new BoardSkeletonCardReponse({ cardId: '0123456789abcdef00000001', height: 175 }),
+						new BoardSkeletonCardReponse({ cardId: '0123456789abcdef00000002', height: 175 }),
 					],
 				}),
 				new BoardColumnResponse({
 					id: '0123456789abcdef00000020',
 					title:
 						'second column, has a relatively long title that may or may not be a bit challenging to render... maybe do it partially?',
-					cards: [new BoardSkeletonCardReponse({ cardId: '0123456789abcdef00000003', height: 846 })],
+					cards: [new BoardSkeletonCardReponse({ cardId: '0123456789abcdef00000003', height: 175 })],
 				}),
 				new BoardColumnResponse({
 					id: '0123456789abcdef00000030',

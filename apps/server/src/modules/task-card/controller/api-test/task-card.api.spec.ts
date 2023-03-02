@@ -9,12 +9,12 @@ import {
 	CardElementType,
 	CardRichTextElementResponse,
 	CardTitleElementResponse,
-	ICurrentUser,
 	InputFormat,
 	Permission,
 	Task,
 	TaskCard,
 } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,

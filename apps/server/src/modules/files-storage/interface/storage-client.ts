@@ -19,6 +19,8 @@ export interface IStorageClient {
 
 	get(path: string, bytesRange?: string): unknown;
 
+	moveToTrash(paths: string[]): unknown;
+
 	delete(paths: string[]): unknown;
 
 	restore(paths: string[]): unknown;

@@ -4,8 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { AccountUc } from '@src/modules/account/uc/account.uc';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { SchoolService } from '@src/modules/school';
@@ -23,7 +23,7 @@ describe('OidcProvisioningService', () => {
 	let userService: DeepMocked<UserService>;
 	let schoolService: DeepMocked<SchoolService>;
 	let roleService: DeepMocked<RoleService>;
-	let accountUc: DeepMocked<AccountUc>;
+	let accountService: DeepMocked<AccountService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -42,8 +42,8 @@ describe('OidcProvisioningService', () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
-					provide: AccountUc,
-					useValue: createMock<AccountUc>(),
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
 				},
 			],
 		}).compile();
@@ -52,7 +52,7 @@ describe('OidcProvisioningService', () => {
 		userService = module.get(UserService);
 		schoolService = module.get(SchoolService);
 		roleService = module.get(RoleService);
-		accountUc = module.get(AccountUc);
+		accountService = module.get(AccountService);
 	});
 
 	afterAll(async () => {
@@ -238,7 +238,7 @@ describe('OidcProvisioningService', () => {
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
-				expect(accountUc.saveAccount).toHaveBeenCalledWith(account);
+				expect(accountService.saveWithValidation).toHaveBeenCalledWith(account);
 			});
 
 			describe('when no schoolId is provided', () => {
@@ -282,7 +282,7 @@ describe('OidcProvisioningService', () => {
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
-				expect(accountUc.saveAccount).not.toHaveBeenCalled();
+				expect(accountService.saveWithValidation).not.toHaveBeenCalled();
 			});
 		});
 	});

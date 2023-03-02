@@ -11,7 +11,6 @@ const { Schema } = mongoose;
 const homeworkSchema = new Schema({
 	schoolId: { type: Schema.Types.ObjectId, required: true },
 	createdAt: { type: Date, default: Date.now },
-	fileIds: [{ type: Schema.Types.ObjectId, ref: 'file' }],
 	updatedAt: { type: Date, default: Date.now },
 	name: { type: String, required: true },
 	description: { type: String },
@@ -42,8 +41,6 @@ schulcloud.homeworks           find         {"$or": [{"dueDate": 1}, {"dueDate":
 schulcloud.homeworks           find         {"$or": [{"teacherId": 1}, {"courseId": 1}]} -> 6
 */
 
-// school exist not in Task entity
-homeworkSchema.index({ fileIds: 1 }); // ?
 // homeworkSchema.index({ schoolId: 1 }); // ok or = 5
 homeworkSchema.index({ archived: 1, schoolId: 1 }); // ok = 3
 
@@ -64,8 +61,6 @@ const submissionSchema = new Schema({
 	studentId: { type: Schema.Types.ObjectId, required: true, ref: 'user' },
 	teamMembers: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
 	courseGroupId: { type: Schema.Types.ObjectId, ref: 'courseGroup' },
-	fileIds: [{ type: Schema.Types.ObjectId, ref: 'file' }],
-	gradeFileIds: [{ type: Schema.Types.ObjectId, ref: 'file' }],
 });
 
 /*
@@ -73,8 +68,6 @@ query list with bigges impact of database load
 schulcloud.submissions         find         {"$and": [{"teamMembers": 1}, {"studentId": {"$ne": 1}}] -> 1
 */
 submissionSchema.index({ schoolId: 1 });
-submissionSchema.index({ fileIds: 1 });
-submissionSchema.index({ gradeFileIds: 1 });
 
 enableAuditLog(homeworkSchema);
 enableAuditLog(submissionSchema);

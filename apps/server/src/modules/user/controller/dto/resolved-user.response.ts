@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IResolvedUser, IRole } from '@shared/domain';
+import { IResolvedUser, IRole } from '@src/modules/authentication/interface/user';
 
 export type Role = IRole;
 
