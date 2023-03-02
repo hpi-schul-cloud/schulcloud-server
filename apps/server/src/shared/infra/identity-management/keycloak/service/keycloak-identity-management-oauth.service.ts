@@ -31,7 +31,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		const redirectUri =
 			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
 		this._oauthConfigCache = new OauthConfigDto({
-			clientId: this.oAuthEncryptionService.encrypt(this.kcAdminService.getClientId()),
+			clientId: this.kcAdminService.getClientId(),
 			clientSecret: this.oAuthEncryptionService.encrypt(await this.kcAdminService.getClientSecret()),
 			alias: 'keycloak',
 			provider: 'oauth',
@@ -65,7 +65,7 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			username,
 			password,
 			grant_type: 'password',
-			client_id: this.oAuthEncryptionService.decrypt(clientId),
+			client_id: clientId,
 			client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
 		};
 		try {

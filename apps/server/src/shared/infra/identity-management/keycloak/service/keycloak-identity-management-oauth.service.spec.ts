@@ -87,7 +87,7 @@ describe('KeycloakIdentityManagementService', () => {
 			it('should return the keycloak OAuth clientId encrypted', async () => {
 				setupOauthConfigurationReturn();
 				const ret = await kcIdmOauthService.getOauthConfig();
-				expect(ret.clientId).toBe(`${clientId}_enc`);
+				expect(ret.clientId).toBe(clientId);
 			});
 			it('should return the keycloak OAuth clientSecret encrypted', async () => {
 				setupOauthConfigurationReturn();
