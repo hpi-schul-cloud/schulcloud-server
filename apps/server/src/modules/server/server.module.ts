@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
+import { CacheModule, DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -30,6 +30,7 @@ import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration';
 import { VideoConferenceModule } from '@src/modules/video-conference';
+import { RedisClient } from 'redis';
 import { AccountApiModule } from '../account/account-api.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
@@ -94,6 +95,10 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			entities: ALL_ENTITIES,
 
 			// debug: true, // use it for locally debugging of queries
+		}),
+		CacheModule.registerAsync({
+			useFactory: (redisClient?: RedisClient) => (redisClient ? {} : {}),
+			inject: [],
 		}),
 	],
 	controllers: [ServerController],

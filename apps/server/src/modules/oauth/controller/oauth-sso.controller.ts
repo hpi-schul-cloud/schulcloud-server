@@ -10,14 +10,15 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Logger } from '@src/core/logger';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
-import { CookieOptions, Request, Response } from 'express';
 import { UserMigrationMapper } from '@src/modules/user-login-migration/mapper/user-migration.mapper';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { CookieOptions, Request, Response } from 'express';
+import { JwtValidationAdapter } from '../../authentication/strategy/jwt-validation.adapter';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
 import { UserMigrationResponse } from './dto/user-migration.response';
@@ -25,7 +26,12 @@ import { UserMigrationResponse } from './dto/user-migration.response';
 @ApiTags('SSO')
 @Controller('sso')
 export class OauthSSOController {
-	constructor(private readonly oauthUc: OauthUc, private readonly hydraUc: HydraOauthUc, private logger: Logger) {
+	constructor(
+		private readonly oauthUc: OauthUc,
+		private readonly hydraUc: HydraOauthUc,
+		private readonly logger: Logger,
+		private readonly jwtAdapter: JwtValidationAdapter
+	) {
 		this.logger.setContext(OauthSSOController.name);
 	}
 
@@ -86,6 +92,7 @@ export class OauthSSOController {
 	@ApiOkResponse({ description: 'The User has been succesfully migrated.' })
 	@ApiResponse({ type: InternalServerErrorException, description: 'The migration of the User was not possible. ' })
 	async migrateUser(
+		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AuthorizationParams,
 		@Res() res: Response,
@@ -93,6 +100,9 @@ export class OauthSSOController {
 	): Promise<void> {
 		const migration: MigrationDto = await this.oauthUc.migrate(currentUser.userId, query, urlParams.systemId);
 		const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
+
+		await this.jwtAdapter.removeJwtFromWhitelist(currentUser.accountId, jwt);
+
 		if (response.redirect) {
 			res.redirect(response.redirect);
 		} else {

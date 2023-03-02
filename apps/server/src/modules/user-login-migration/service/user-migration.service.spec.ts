@@ -1,22 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { accountFactory, setupEntities } from '@shared/testing';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { setupEntities } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
 import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { Logger } from '@src/core/logger';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
 import { UserMigrationService } from './user-migration.service';
@@ -361,44 +361,48 @@ describe('UserMigrationService', () => {
 				lastLoginSystemChange: new Date(),
 			});
 
-			const id = new ObjectId().toHexString();
+			const accountId = new ObjectId().toHexString();
 			const userId = new ObjectId().toHexString();
-			const systemId = new ObjectId().toHexString();
+			const sourceSystemId = new ObjectId().toHexString();
 
-			const accountDto = accountFactory.buildWithId(
-				{
-					userId,
-					username: '',
-					systemId,
-				},
-				id
-			) as AccountDto;
+			const accountDto: AccountDto = new AccountDto({
+				id: accountId,
+				updatedAt: new Date(),
+				createdAt: new Date(),
+				userId,
+				username: '',
+				systemId: sourceSystemId,
+			});
 
-			const migratedAccount = accountFactory.buildWithId(
-				{
-					userId,
-					username: '',
-					systemId: targetSystemId,
-				},
-				id
-			);
+			const migratedAccount: AccountSaveDto = new AccountSaveDto({
+				id: accountId,
+				updatedAt: new Date(),
+				createdAt: new Date(),
+				userId,
+				username: '',
+				systemId: targetSystemId,
+			});
 
 			return {
 				accountDto,
 				migratedUserDO,
 				notMigratedUser,
 				migratedAccount,
+				sourceSystemId,
 				targetSystemId,
 			};
 		};
 
 		describe('when migrate user was successful', () => {
 			it('should return to migration succeed page', async () => {
-				const { targetSystemId } = setupMigrationData();
+				const { targetSystemId, sourceSystemId, accountDto } = setupMigrationData();
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
 
 				const result = await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
 
-				expect(result.redirect).toStrictEqual(`${hostUri}/migration/succeed`);
+				expect(result.redirect).toStrictEqual(
+					`${hostUri}/migration/success?sourceSystem=${sourceSystemId}&targetSystem=${targetSystemId}`
+				);
 			});
 
 			it('should call methods of migration ', async () => {
@@ -483,7 +487,7 @@ describe('UserMigrationService', () => {
 
 				const result = await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
 
-				expect(result.redirect).toStrictEqual(`${hostUri}/dashboard`);
+				expect(result.redirect).toStrictEqual(`${hostUri}/migration/error`);
 			});
 		});
 	});

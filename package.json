@@ -126,6 +126,7 @@
 		"body-parser": "^1.15.2",
 		"bson": "^4.6.0",
 		"busboy": "^1.6.0",
+		"cache-manager": "^5.1.7",
 		"chalk": "^5.0.0",
 		"class-transformer": "^0.4.0",
 		"class-validator": "^0.13.1",

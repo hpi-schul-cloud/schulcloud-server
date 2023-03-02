@@ -1,17 +1,18 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolService } from '@src/modules/school';
 import { EntityNotFoundError } from '@shared/common';
-import { SystemDto, SystemService } from '@src/modules/system/service';
-import { UserService } from '@src/modules/user';
+import { EntityId } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
-import { AccountDto } from '@src/modules/account/services/dto';
 import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountDto } from '@src/modules/account/services/dto';
+import { SchoolService } from '@src/modules/school';
+import { SystemDto, SystemService } from '@src/modules/system/service';
+import { UserService } from '@src/modules/user';
 import { PageTypes } from '../interface/page-types.enum';
-import { PageContentDto } from './dto/page-content.dto';
 import { MigrationDto } from './dto/migration.dto';
+import { PageContentDto } from './dto/page-content.dto';
 
 @Injectable()
 export class UserMigrationService {
@@ -113,20 +114,25 @@ export class UserMigrationService {
 	async migrateUser(currentUserId: string, externalUserId: string, targetSystemId: string): Promise<MigrationDto> {
 		const userDO: UserDO = await this.userService.findById(currentUserId);
 		const account: AccountDto = await this.accountService.findByUserIdOrFail(currentUserId);
-		const userDOCopy: UserDO = { ...userDO };
-		const accountCopy: AccountDto = { ...account };
+		const userDOCopy: UserDO = new UserDO({ ...userDO });
+		const accountCopy: AccountDto = new AccountDto({ ...account });
 
 		try {
 			userDO.previousExternalId = userDO.externalId;
 			userDO.externalId = externalUserId;
 			userDO.lastLoginSystemChange = new Date();
 			await this.userService.save(userDO);
+
+			const sourceSystemId: EntityId | undefined = account.systemId;
 			account.systemId = targetSystemId;
 			await this.accountService.save(account);
 
 			// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
+			const migrationSuccessUrl: URL = new URL('/migration/success', this.hostUrl);
+			migrationSuccessUrl.searchParams.append('sourceSystem', sourceSystemId ?? '');
+			migrationSuccessUrl.searchParams.append('targetSystem', targetSystemId);
 			const userMigrationDto: MigrationDto = new MigrationDto({
-				redirect: `${this.hostUrl}/migration/succeed`,
+				redirect: migrationSuccessUrl.toString(),
 			});
 			return userMigrationDto;
 		} catch (e: unknown) {
@@ -140,8 +146,9 @@ export class UserMigrationService {
 			});
 
 			// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
+			const errorUrl: URL = new URL('/migration/error', this.hostUrl);
 			const userMigrationDto: MigrationDto = new MigrationDto({
-				redirect: `${this.hostUrl}/dashboard`,
+				redirect: errorUrl.toString(),
 			});
 			return userMigrationDto;
 		}
