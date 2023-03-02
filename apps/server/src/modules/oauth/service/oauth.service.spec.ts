@@ -20,8 +20,6 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { OauthConfigDto } from '@src/modules/system/service';
-import { ICurrentUser } from '@src/modules/authentication';
-import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
@@ -56,7 +54,6 @@ describe('OAuthService', () => {
 	let systemService: DeepMocked<SystemService>;
 	let userMigrationService: DeepMocked<UserMigrationService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
-	let authenticationService: DeepMocked<AuthenticationService>;
 
 	let testSystem: System;
 	let testOauthConfig: OauthConfig;
@@ -82,10 +79,6 @@ describe('OAuthService', () => {
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
-				},
-				{
-					provide: AuthenticationService,
-					useValue: createMock<AuthenticationService>(),
 				},
 				{
 					provide: DefaultEncryptionService,
@@ -121,7 +114,6 @@ describe('OAuthService', () => {
 		systemService = module.get(SystemService);
 		userMigrationService = module.get(UserMigrationService);
 		oauthAdapterService = module.get(OauthAdapterService);
-		authenticationService = module.get(AuthenticationService);
 	});
 
 	afterAll(async () => {
@@ -330,23 +322,6 @@ describe('OAuthService', () => {
 
 					await expect(service.findUser('accessToken', 'idToken', testSystem.id)).rejects.toThrow(BadRequestException);
 				});
-			});
-		});
-	});
-
-	describe('getJwtForUser is called', () => {
-		describe('when a jwt is requested', () => {
-			it('should return a JWT for a user', async () => {
-				const jwtToken = 'schulcloudJwt';
-				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-
-				userService.getResolvedUser.mockResolvedValue(currentUser);
-				authenticationService.generateJwt.mockResolvedValue({ accessToken: jwtToken });
-
-				const jwtResult = await service.getJwtForUser('userId');
-
-				expect(authenticationService.generateJwt).toHaveBeenCalled();
-				expect(jwtResult).toStrictEqual(jwtToken);
 			});
 		});
 	});

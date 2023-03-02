@@ -4,7 +4,6 @@ import { EntityId, OauthConfig, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { Logger } from '@src/core/logger';
-import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { UserService } from '@src/modules/user';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Configuration } from '@hpi-schul-cloud/commons';
@@ -14,7 +13,6 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { SystemService } from '@src/modules/system';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { ICurrentUser } from '@src/modules/authentication';
 import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { SSOErrorCode } from '../error/sso-error-code.enum';
@@ -26,7 +24,6 @@ import { TokenRequestMapper } from '../mapper/token-request.mapper';
 export class OAuthService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly authenticationService: AuthenticationService,
 		private readonly oauthAdapterService: OauthAdapterService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
 		private readonly logger: Logger,
@@ -159,12 +156,6 @@ export class OAuthService {
 		}
 
 		return user;
-	}
-
-	async getJwtForUser(userId: EntityId): Promise<string> {
-		const currentUser: ICurrentUser = await this.userService.getResolvedUser(userId);
-		const { accessToken } = await this.authenticationService.generateJwt(currentUser);
-		return accessToken;
 	}
 
 	async getAdditionalErrorInfo(email: string | undefined): Promise<string> {

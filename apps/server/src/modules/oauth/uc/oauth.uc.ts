@@ -14,6 +14,8 @@ import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migr
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { nanoid } from 'nanoid';
+import { ICurrentUser } from '@src/modules/authentication';
+import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
@@ -26,6 +28,7 @@ import { OauthLoginStateDto } from './dto/oauth-login-state.dto';
 export class OauthUc {
 	constructor(
 		private readonly oauthService: OAuthService,
+		private readonly authenticationService: AuthenticationService,
 		private readonly systemService: SystemService,
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolService: SchoolService,
@@ -82,13 +85,13 @@ export class OauthUc {
 
 		this.logger.debug(`Generating jwt for user. [state: ${state}, system: ${systemId}]`);
 
-		let jwtResponse = '';
+		let jwt: string | undefined;
 		if (user && user.id) {
-			jwtResponse = await this.oauthService.getJwtForUser(user.id);
+			jwt = await this.getJwtForUser(user.id);
 		}
 
 		const response = new OAuthProcessDto({
-			jwt: jwtResponse !== '' ? jwtResponse : undefined,
+			jwt,
 			redirect,
 		});
 
@@ -130,5 +133,11 @@ export class OauthUc {
 			systemId
 		);
 		return migrationDto;
+	}
+
+	private async getJwtForUser(userId: EntityId): Promise<string> {
+		const currentUser: ICurrentUser = await this.userService.getResolvedUser(userId);
+		const { accessToken } = await this.authenticationService.generateJwt(currentUser);
+		return accessToken;
 	}
 }

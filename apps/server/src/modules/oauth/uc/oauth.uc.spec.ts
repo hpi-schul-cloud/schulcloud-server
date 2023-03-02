@@ -8,6 +8,8 @@ import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
+import { ICurrentUser } from '@src/modules/authentication';
+import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
 import { SystemDto, SystemService } from '@src/modules/system/service';
@@ -37,10 +39,12 @@ describe('OAuthUc', () => {
 	let orm: MikroORM;
 	let uc: OauthUc;
 
+	let authenticationService: DeepMocked<AuthenticationService>;
 	let oauthService: DeepMocked<OAuthService>;
 	let systemService: DeepMocked<SystemService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userMigrationService: DeepMocked<UserMigrationService>;
+	let userService: DeepMocked<UserService>;
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 
 	beforeAll(async () => {
@@ -60,6 +64,10 @@ describe('OAuthUc', () => {
 				{
 					provide: OAuthService,
 					useValue: createMock<OAuthService>(),
+				},
+				{
+					provide: AuthenticationService,
+					useValue: createMock<AuthenticationService>(),
 				},
 				{
 					provide: ProvisioningService,
@@ -86,8 +94,10 @@ describe('OAuthUc', () => {
 
 		uc = module.get(OauthUc);
 		systemService = module.get(SystemService);
+		authenticationService = module.get(AuthenticationService);
 		oauthService = module.get(OAuthService);
 		provisioningService = module.get(ProvisioningService);
+		userService = module.get(UserService);
 		userMigrationService = module.get(UserMigrationService);
 		schoolMigrationService = module.get(SchoolMigrationService);
 	});
@@ -205,18 +215,22 @@ describe('OAuthUc', () => {
 				schoolId: 'mockSchoolId',
 				externalId: 'mockExternalId',
 			});
+
+			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 			const testSystem: SystemDto = new SystemDto({
 				id: 'mockSystemId',
 				type: 'mock',
 				oauthConfig: { provider: 'testProvider' } as OauthConfigDto,
 			});
-			return { cachedState, code, error, jwt, redirect, user, testSystem };
+			return { cachedState, code, error, jwt, redirect, user, currentUser, testSystem };
 		};
 		describe('when a user is returned', () => {
 			it('should return a response with a valid jwt', async () => {
-				const { cachedState, code, error, jwt, redirect, user } = setup();
+				const { cachedState, code, error, jwt, redirect, user, currentUser } = setup();
+
+				userService.getResolvedUser.mockResolvedValue(currentUser);
+				authenticationService.generateJwt.mockResolvedValue({ accessToken: jwt });
 				oauthService.authenticateUser.mockResolvedValue({ user, redirect });
-				oauthService.getJwtForUser.mockResolvedValue(jwt);
 
 				const response: OAuthProcessDto = await uc.processOAuthLogin(cachedState, code, error);
 				expect(response).toEqual(
@@ -258,9 +272,11 @@ describe('OAuthUc', () => {
 
 		describe('when the process runs successfully', () => {
 			it('should return a valid jwt', async () => {
-				const { cachedState, code, user, jwt, redirect } = setup();
+				const { cachedState, code, user, currentUser, jwt, redirect } = setup();
+
+				userService.getResolvedUser.mockResolvedValue(currentUser);
+				authenticationService.generateJwt.mockResolvedValue({ accessToken: jwt });
 				oauthService.authenticateUser.mockResolvedValue({ user, redirect });
-				oauthService.getJwtForUser.mockResolvedValue(jwt);
 
 				const response: OAuthProcessDto = await uc.processOAuthLogin(cachedState, code);
 
