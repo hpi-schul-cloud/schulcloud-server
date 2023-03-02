@@ -1,11 +1,8 @@
-const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const deleteUserData = require('./deleteUserData.uc');
-const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 
 const { classesRepo } = require('../repo/index');
 const { AssertionError } = require('../../../errors');
@@ -15,7 +12,7 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const USER_ID = new ObjectId();
-const USER_ID_WITH_NO_CLASS_AND_TEAMS = new ObjectId();
+const USER_ID_WITH_NO_CLASS = new ObjectId();
 const CLASS_ID = new ObjectId();
 const createTestGetClassForUserResult = (classId, student, teacher) => {
 	if (!classId) {
@@ -31,7 +28,7 @@ const createTestGetClassForUserResult = (classId, student, teacher) => {
 	];
 };
 
-const initClassStubs = ({ classId, isStudent, isTeacher }) => {
+const initStubs = ({ classId, isStudent, isTeacher }) => {
 	const getClassesStub = sinon.stub(classesRepo, 'getClassesForUser');
 	getClassesStub.callsFake(() => []);
 	getClassesStub.withArgs(USER_ID).returns(createTestGetClassForUserResult(classId, isStudent, isTeacher));
@@ -43,27 +40,7 @@ const initClassStubs = ({ classId, isStudent, isTeacher }) => {
 };
 
 describe('delete class user data usecase', () => {
-	let app;
-	let server;
-	let nestServices;
-
-	before(async () => {
-		app = await appPromise();
-		server = await app.listen(0);
-		nestServices = await setupNestServices(app);
-	});
-
-	afterEach(async () => {
-		await testObjects.cleanup();
-	});
-
-	after(async () => {
-		await testObjects.cleanup();
-		await server.close();
-		await closeNestServices(nestServices);
-	});
-
-	describe('delete class user data usecase', () => {
+	describe('delete class user data uc', () => {
 		it('should return a function', async () => {
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData;
 			expect(deleteUserDataFromClasses).to.be.an('Array');
@@ -72,7 +49,7 @@ describe('delete class user data usecase', () => {
 		});
 
 		it('should return a valid result (trashbin) object', async () => {
-			const { getClassesStub, removeClassesStub } = initClassStubs({ classId: CLASS_ID, isStudent: true, isTeacher: true });
+			const { getClassesStub, removeClassesStub } = initStubs({ classId: CLASS_ID, isStudent: true, isTeacher: true });
 
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData[0];
 			const result = await deleteUserDataFromClasses(USER_ID);
@@ -93,10 +70,10 @@ describe('delete class user data usecase', () => {
 		});
 
 		it('should return an empty result (trashbin) object, for user with no class assigned', async () => {
-			const { getClassesStub, removeClassesStub } = initClassStubs({});
+			const { getClassesStub, removeClassesStub } = initStubs({});
 
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData[0];
-			const result = await deleteUserDataFromClasses(USER_ID_WITH_NO_CLASS_AND_TEAMS);
+			const result = await deleteUserDataFromClasses(USER_ID_WITH_NO_CLASS);
 			getClassesStub.restore();
 			removeClassesStub.restore();
 

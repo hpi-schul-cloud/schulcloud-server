@@ -6,7 +6,8 @@ import { Request } from 'express';
 import request from 'supertest';
 
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, LanguageType } from '@shared/domain';
+import { LanguageType } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';

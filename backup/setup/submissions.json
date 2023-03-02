@@ -665,7 +665,6 @@
 			"$oid": "59afdd5b1f513506904e1d33"
 		},
 		"comment": "",
-		"fileIds": [],
 		"submitted": true,
 		"graded": false,
 		"updatedAt": {
@@ -695,7 +694,6 @@
 			"$oid": "59d1f63ce0a06325e8b5288b"
 		},
 		"comment": "<p>Abgabe</p>\r\n",
-		"fileIds": [],
 		"gradeComment": "<p>Bewertung</p>\r\n",
 		"grade": 67,
 		"submitted": true,
@@ -727,7 +725,6 @@
 			"$oid": "59d1fae6395c8218f82cb914"
 		},
 		"comment": "<p>Abgabe</p>\r\n",
-		"fileIds": [],
 		"gradeComment": "<p>Bewertung</p>\r\n",
 		"grade": 67,
 		"submitted": true,

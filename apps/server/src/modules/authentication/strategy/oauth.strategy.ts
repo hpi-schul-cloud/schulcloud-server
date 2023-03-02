@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ICurrentUser } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { CurrentUserMapper } from '@shared/domain/mapper/current-user.mapper';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { Strategy } from 'passport-custom';
 import { OauthAuthorizationParams } from './dtos/oauth-authorization.params';
+import { ICurrentUser } from '../interface';
+import { CurrentUserMapper } from '../mapper';
 
 export type PathParams = { systemId?: string };
 

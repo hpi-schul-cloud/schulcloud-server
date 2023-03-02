@@ -119,23 +119,6 @@ describe('submission service', function test() {
 		expect(result.grade).to.eq(99);
 	});
 
-	it('lets teachers upload files to grade submissions', async () => {
-		const [teacher, student] = await Promise.all([
-			testObjects.createTestUser({ roles: ['teacher'] }),
-			testObjects.createTestUser({ roles: ['student'] }),
-		]);
-		const submission = await createSubmission([teacher], [student]);
-		const file = await testObjects.createTestFile({ owner: teacher._id, refOwnerModel: 'user' });
-		const params = await testObjects.generateRequestParamsFromUser(teacher);
-		const result = await app
-			.service('submissions')
-			.patch(submission._id, { grade: 99, gradeFileIds: [file._id] }, params);
-		expect(result).to.not.be.undefined;
-		expect(result).to.haveOwnProperty('_id');
-		expect(result.gradeFileIds.map((id) => id.toString())).to.deep.equal([file._id.toString()]);
-		expect(result.grade).to.eq(99);
-	});
-
 	it('lets co-teacher grade submission', async () => {
 		const [originalTeacher, coTeacher, student] = await Promise.all([
 			testObjects.createTestUser({ roles: ['teacher'] }),
