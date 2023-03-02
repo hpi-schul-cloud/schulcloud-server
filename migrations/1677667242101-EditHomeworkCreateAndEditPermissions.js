@@ -57,38 +57,6 @@ module.exports = {
 	},
 
 	down: async function down() {
-		await connect();
-
-		await Roles.updateMany(
-			{
-				name: {
-					$in: ['user', 'courseStudent'],
-				},
-			},
-			{
-				$addToSet: {
-					permissions: {
-						$each: ['HOMEWORK_CREATE', 'HOMEWORK_EDIT'],
-					},
-				},
-			}
-		).exec();
-		alert(`Permission HOMEWORK_CREATE and HOMEWORK_EDIT added to role user and courseStudent`);
-
-		await Roles.updateOne(
-			{
-				name: 'teacher',
-			},
-			{
-				$pull: {
-					permissions: {
-						$in: ['HOMEWORK_CREATE', 'HOMEWORK_EDIT'],
-					},
-				},
-			}
-		).exec();
-		alert(`Permission HOMEWORK_CREATE and HOMEWORK_EDIT removed from role teacher`);
-
-		await close();
+		alert(`Is nothing to rollback`);
 	},
 };
