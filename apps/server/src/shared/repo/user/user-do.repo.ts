@@ -1,4 +1,4 @@
-import { EntityName, FilterQuery, IdentifiedReference, Reference } from '@mikro-orm/core';
+import { EntityName, FilterQuery, IdentifiedReference, QueryOrderMap, Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo, Scope } from '@shared/repo';
 import {
