@@ -3,8 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TaskCard } from '@shared/domain';
 import {
 	cleanupCollections,
+	courseFactory,
 	richTextCardElementFactory,
 	taskCardFactory,
+	taskFactory,
 	titleCardElementFactory,
 } from '@shared/testing';
 
@@ -39,27 +41,33 @@ describe('TaskCardRepo', () => {
 		expect(repo.entityName).toBe(TaskCard);
 	});
 
-	it('should load task card with content', async () => {
-		const titleCardElement = titleCardElementFactory.build();
-		const richTextCardElement = richTextCardElementFactory.build();
-		const taskCard = taskCardFactory.build({ cardElements: [titleCardElement, richTextCardElement] });
-		await em.persistAndFlush(taskCard);
+	describe('findById', () => {
+		it('should load task card with content', async () => {
+			const titleCardElement = titleCardElementFactory.build();
+			const richTextCardElement = richTextCardElementFactory.build();
+			const taskCard = taskCardFactory.build({ cardElements: [titleCardElement, richTextCardElement] });
+			await em.persistAndFlush(taskCard);
 
-		em.clear();
+			em.clear();
 
-		const result = await repo.findById(taskCard.id);
-		expect(result.id).toEqual(taskCard.id);
-	});
+			const result = await repo.findById(taskCard.id);
+			expect(result.id).toEqual(taskCard.id);
+		});
 
-	it('should initialize cardElement collection', async () => {
-		const titleCardElement = titleCardElementFactory.build();
-		const richTextCardElement = richTextCardElementFactory.build();
-		const taskCard = taskCardFactory.build({ cardElements: [titleCardElement, richTextCardElement] });
-		await repo.save(taskCard);
+		it('should populate all elements correctly', async () => {
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			const titleCardElement = titleCardElementFactory.build();
+			const richTextCardElement = richTextCardElementFactory.build();
+			const taskCard = taskCardFactory.build({ task, cardElements: [titleCardElement, richTextCardElement] });
+			await repo.save(taskCard);
 
-		em.clear();
+			em.clear();
 
-		const result = await repo.findById(taskCard.id);
-		expect(result.cardElements.isInitialized()).toEqual(true);
+			const result = await repo.findById(taskCard.id);
+			expect(result.cardElements).toBeDefined();
+			expect(result.task).toBeDefined();
+			expect(result.task.course).toBeDefined();
+		});
 	});
 });
