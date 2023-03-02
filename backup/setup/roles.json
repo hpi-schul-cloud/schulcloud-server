@@ -270,6 +270,7 @@
 		"permissions": [
 			"TASK_DASHBOARD_VIEW_V3",
 			"JOIN_MEETING",
+			"TASK_CARD_VIEW",
 			"TEAM_CREATE",
 			"TEAM_EDIT",
 			"TOOL_CREATE_ETHERPAD"
