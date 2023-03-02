@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import { Actions, CardType, Course, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
@@ -130,7 +130,7 @@ describe('TaskCardUc', () => {
 			authorizationService.hasPermission.mockReturnValue(false);
 			await expect(async () => {
 				await uc.findOne(user.id, taskCard.id);
-			}).rejects.toThrow(UnauthorizedException);
+			}).rejects.toThrow(ForbiddenException);
 		});
 		it('should call taskService', async () => {
 			await uc.findOne(user.id, taskCard.id);
@@ -172,7 +172,7 @@ describe('TaskCardUc', () => {
 			authorizationService.hasPermission.mockReturnValue(false);
 			await expect(async () => {
 				await uc.delete(user.id, taskCard.id);
-			}).rejects.toThrow(UnauthorizedException);
+			}).rejects.toThrow(ForbiddenException);
 		});
 		it('should delete taskCard', async () => {
 			await uc.delete(user.id, taskCard.id);
@@ -226,7 +226,7 @@ describe('TaskCardUc', () => {
 			authorizationService.hasAllPermissions.mockReturnValue(false);
 			await expect(async () => {
 				await uc.create(user.id, taskCardCreateParams);
-			}).rejects.toThrow(UnauthorizedException);
+			}).rejects.toThrow(ForbiddenException);
 		});
 		it('should fetch course if courseId is given', async () => {
 			const expectedCourseParams = taskCardCreateParams.courseId;
@@ -394,7 +394,7 @@ describe('TaskCardUc', () => {
 			authorizationService.hasPermission.mockReturnValue(false);
 			await expect(async () => {
 				await uc.update(user.id, taskCard.id, taskCardUpdateParams);
-			}).rejects.toThrow(UnauthorizedException);
+			}).rejects.toThrow(ForbiddenException);
 		});
 		it('should call task update and with task name same like task-card title', async () => {
 			const taskParams = { name: taskCardUpdateParams.title };
