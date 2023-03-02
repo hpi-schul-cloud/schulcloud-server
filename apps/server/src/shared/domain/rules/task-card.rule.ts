@@ -37,7 +37,7 @@ export class TaskCardRule extends BasePermission<TaskCard> {
 			});
 		}
 
-		const result = hasPermission && isCreator && hasTaskPermission;
+		const result = hasPermission && (isCreator || hasTaskPermission);
 
 		return result;
 	}
