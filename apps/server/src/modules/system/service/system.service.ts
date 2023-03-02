@@ -76,6 +76,7 @@ export class SystemService {
 					alias: system.alias,
 					displayName: system.displayName ? system.displayName : system.alias,
 				});
+				generatedSystem.id = system.id;
 				generatedSystem.oauthConfig = { ...brokerConfig };
 				generatedSystem.oauthConfig.alias = system.oidcConfig.alias;
 				generatedSystem.oauthConfig.redirectUri += system.id;

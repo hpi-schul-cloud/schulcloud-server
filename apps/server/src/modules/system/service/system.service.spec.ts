@@ -66,6 +66,7 @@ describe('SystemService', () => {
 				const result = await systemService.findById(oidcSystem.id);
 				expect(result).toEqual(
 					expect.objectContaining({
+						id: oidcSystem.id,
 						type: SystemTypeEnum.OAUTH,
 						alias: oidcSystem.alias,
 						displayName: oidcSystem.displayName,
