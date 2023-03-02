@@ -70,6 +70,9 @@ describe('SystemService', () => {
 						type: SystemTypeEnum.OAUTH,
 						alias: oidcSystem.alias,
 						displayName: oidcSystem.displayName,
+						url: oidcSystem.url,
+						provisioningStrategy: oidcSystem.provisioningStrategy,
+						provisioningUrl: oidcSystem.provisioningUrl,
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						oauthConfig: expect.objectContaining({
 							clientId: oauthSystem.oauthConfig.clientId,

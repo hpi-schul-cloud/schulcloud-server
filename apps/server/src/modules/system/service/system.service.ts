@@ -75,6 +75,9 @@ export class SystemService {
 					type: SystemTypeEnum.OAUTH,
 					alias: system.alias,
 					displayName: system.displayName ? system.displayName : system.alias,
+					provisioningStrategy: system.provisioningStrategy,
+					provisioningUrl: system.provisioningUrl,
+					url: system.url,
 				});
 				generatedSystem.id = system.id;
 				generatedSystem.oauthConfig = { ...brokerConfig };
