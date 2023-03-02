@@ -2,14 +2,19 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { Actions, Permission } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { AuthorizationService, AllowedAuthorizationEntityType } from '../../authorization';
+import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
+import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
 import { SchoolUcMapper } from '../mapper/school.uc.mapper';
 
 @Injectable()
 export class SchoolUc {
-	constructor(readonly schoolService: SchoolService, readonly authService: AuthorizationService) {}
+	constructor(
+		private readonly schoolService: SchoolService,
+		private readonly authService: AuthorizationService,
+		private readonly schoolMigrationService: SchoolMigrationService
+	) {}
 
 	async setMigration(
 		schoolId: string,
@@ -28,6 +33,10 @@ export class SchoolUc {
 			oauthMigrationMandatory,
 			oauthMigrationFinished
 		);
+
+		if (oauthMigrationFinished) {
+			await this.schoolMigrationService.completeMigration(schoolId);
+		}
 
 		return migrationDto;
 	}
