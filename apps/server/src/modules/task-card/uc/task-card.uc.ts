@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
 import { CardType, Course, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
 import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
@@ -23,7 +23,7 @@ export class TaskCardUc {
 		let course: Course | undefined;
 
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_CARD_EDIT])) {
-			throw new UnauthorizedException();
+			throw new ForbiddenException();
 		}
 
 		if (params.courseId) {
@@ -107,7 +107,7 @@ export class TaskCardUc {
 		if (
 			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.read([Permission.TASK_CARD_VIEW]))
 		) {
-			throw new UnauthorizedException();
+			throw new ForbiddenException();
 		}
 
 		const taskWithStatusVo = await this.taskService.find(userId, card.task.id);
@@ -122,7 +122,7 @@ export class TaskCardUc {
 		if (
 			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.write([Permission.TASK_CARD_EDIT]))
 		) {
-			throw new UnauthorizedException();
+			throw new ForbiddenException();
 		}
 
 		await this.taskCardRepo.delete(card);
@@ -137,7 +137,7 @@ export class TaskCardUc {
 		if (
 			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.write([Permission.TASK_CARD_EDIT]))
 		) {
-			throw new UnauthorizedException();
+			throw new ForbiddenException();
 		}
 
 		const taskWithStatusVo = await this.updateTaskName(userId, card.task.id, params);
