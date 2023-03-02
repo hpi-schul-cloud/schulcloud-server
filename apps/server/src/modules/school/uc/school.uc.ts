@@ -29,12 +29,11 @@ export class SchoolUc {
 		});
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
-		const shouldRestartMigration = !!(
-			school.oauthMigrationFinished &&
+		const shouldRestartMigration =
+			!!school.oauthMigrationFinished &&
 			oauthMigrationPossible &&
-			oauthMigrationMandatory == !!school.oauthMigrationMandatory &&
-			!oauthMigrationFinished
-		);
+			oauthMigrationMandatory === !!school.oauthMigrationMandatory &&
+			!oauthMigrationFinished;
 
 		if (shouldRestartMigration) {
 			await this.schoolMigrationService.restartMigration(schoolId);

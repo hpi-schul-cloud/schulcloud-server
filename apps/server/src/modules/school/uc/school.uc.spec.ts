@@ -63,6 +63,16 @@ describe('SchoolUc', () => {
 			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
 		});
 
+		beforeEach(() => {
+			schoolService.getSchoolById.mockResolvedValue(
+				new SchoolDO({
+					name: 'mockName',
+					id: mockId,
+					oauthMigrationFinished: undefined,
+				})
+			);
+		});
+
 		describe('when migrationflags and schoolId and userId are given', () => {
 			it('should call the service', async () => {
 				await schoolUc.setMigration(mockId, true, true, true, mockId);
@@ -87,15 +97,20 @@ describe('SchoolUc', () => {
 
 		describe('after school migration has finished', () => {
 			it('should call schoolMigrationService to restart the migration', async () => {
+				schoolService.getSchoolById.mockResolvedValue(
+					new SchoolDO({
+						name: 'mockName',
+						id: mockId,
+						oauthMigrationFinished: new Date(),
+						oauthMigrationMandatory: new Date(),
+					})
+				);
 				await schoolUc.setMigration(mockId, true, true, false, mockId);
 
 				expect(schoolMigrationService.restartMigration).toHaveBeenCalledWith(mockId);
 			});
 
 			it('should not call schoolMigrationService when ', async () => {
-				schoolService.getSchoolById.mockResolvedValue(
-					new SchoolDO({ name: 'mockName', oauthMigrationFinished: undefined })
-				);
 				await schoolUc.setMigration(mockId, true, true, false, mockId);
 
 				expect(schoolMigrationService.restartMigration).not.toHaveBeenCalled();
