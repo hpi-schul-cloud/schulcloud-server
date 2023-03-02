@@ -8,10 +8,15 @@ export class TaskCardRepo extends BaseRepo<TaskCard> {
 		return TaskCard;
 	}
 
-	async findById(id: EntityId) {
+	private async populate(taskCards: TaskCard[]): Promise<void> {
+		await this._em.populate(taskCards, ['cardElements', 'task', 'task.course']);
+	}
+
+	async findById(id: EntityId): Promise<TaskCard> {
 		const card = await this._em.findOneOrFail(this.entityName, { id });
-		await card.cardElements.init();
-		await this._em.populate(card, true);
+
+		await this.populate([card]);
+
 		return card;
 	}
 }
