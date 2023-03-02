@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { FileLegacyService } from '@shared/domain/service/file-legacy.service';
+import { AuthorisationUtils } from '@shared/domain/rules/authorisation.utils';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import {
 	BoardRepo,
@@ -16,7 +16,8 @@ import { CopyHelperModule } from '@src/modules/copy-helper';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { LessonModule } from '@src/modules/lesson';
 import { TaskModule } from '@src/modules/task';
-import { AuthorisationUtils } from '@shared/domain/rules/authorisation.utils';
+import { BoardController } from './controller/board.controller';
+import { CardsController } from './controller/cards.controller';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
@@ -25,7 +26,6 @@ import { BoardCopyService } from './service/board-copy.service';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CourseCopyService } from './service/course-copy.service';
 import { CourseService } from './service/course.service';
-import { MetadataLoader } from './service/metadata-loader.service';
 import { RoomsService } from './service/rooms.service';
 import { CourseCopyUC } from './uc/course-copy.uc';
 import { CourseExportUc } from './uc/course-export.uc';
@@ -38,7 +38,7 @@ import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
 	imports: [AuthorizationModule, FilesStorageClientModule, LessonModule, TaskModule, TaskModule, CopyHelperModule],
-	controllers: [DashboardController, CourseController, RoomsController],
+	controllers: [DashboardController, CourseController, RoomsController, BoardController, CardsController],
 	providers: [
 		DashboardUc,
 		{
@@ -61,15 +61,13 @@ import { RoomsUc } from './uc/rooms.uc';
 		CourseCopyService,
 		CourseCopyUC,
 		RoomsService,
-		FileLegacyService,
 		FeathersServiceProvider,
 		Logger,
-		MetadataLoader,
 		CourseService,
 		CommonCartridgeExportService,
 		CourseExportUc,
 		AuthorisationUtils,
 	],
-	exports: [CourseCopyService, MetadataLoader],
+	exports: [CourseCopyService, CourseService],
 })
 export class LearnroomModule {}

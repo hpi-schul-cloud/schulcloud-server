@@ -6,6 +6,7 @@ interface ITask {
 	descriptionInputFormat?: InputFormat;
 	availableDate?: Date;
 	dueDate?: Date;
+	taskCard?: string;
 }
 
 export interface ITaskUpdate extends ITask {
@@ -27,6 +28,7 @@ export interface ITaskProperties extends ITask {
 	private?: boolean;
 	submissions?: Submission[];
 	publicSubmissions?: boolean;
+	teamSubmissions?: boolean;
 }
 
 export interface ITaskStatus {

@@ -1,16 +1,8 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
-import {
-	ExternalTool,
-	ICurrentUser,
-	Permission,
-	Role,
-	RoleName,
-	School,
-	SchoolExternalTool,
-	User,
-} from '@shared/domain';
+import { ExternalTool, Permission, Role, RoleName, School, SchoolExternalTool, User } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import request, { Response } from 'supertest';
@@ -225,6 +217,43 @@ describe('ToolSchoolController (API)', () => {
 											value: schoolExternalTool.schoolParameters[0].value,
 										},
 									],
+								},
+							],
+						})
+					);
+					return res;
+				});
+		});
+	});
+
+	describe('[GET] tools/school/:schoolExternalToolId', () => {
+		it('should return forbidden when user is not authorized', async () => {
+			const { userWithMissingPermission, schoolExternalTool } = await setup();
+			currentUser = mapUserToCurrentUser(userWithMissingPermission);
+
+			await request(app.getHttpServer()).get(`${basePath}/${schoolExternalTool.id}`).expect(403);
+		});
+
+		it('should return found schoolExternalTool for given school', async () => {
+			const { adminUser, schoolExternalTool, externalTool2, school } = await setup();
+			currentUser = mapUserToCurrentUser(adminUser);
+
+			await request(app.getHttpServer())
+				.get(`${basePath}/${schoolExternalTool.id}`)
+				.expect(200)
+				.then((res: Response) => {
+					expect(res.body).toEqual(
+						expect.objectContaining(<SchoolExternalToolResponse>{
+							id: schoolExternalTool.id,
+							name: '',
+							schoolId: school.id,
+							toolId: externalTool2.id,
+							status: SchoolExternalToolStatusResponse.UNKNOWN,
+							toolVersion: schoolExternalTool.toolVersion,
+							parameters: [
+								{
+									name: schoolExternalTool.schoolParameters[0].name,
+									value: schoolExternalTool.schoolParameters[0].value,
 								},
 							],
 						})

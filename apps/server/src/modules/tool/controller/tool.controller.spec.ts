@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Authorization } from 'oauth-1.0a';
-import { ICurrentUser, IFindOptions, RoleName, SortOrder } from '@shared/domain';
+import { IFindOptions, RoleName, SortOrder } from '@shared/domain';
 import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/interface/page';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { Logger } from '@src/core/logger';
+import { ICurrentUser } from '@src/modules/authentication';
 import { ToolController } from './tool.controller';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { ExternalToolUc } from '../uc/external-tool.uc';
@@ -98,7 +99,7 @@ describe('ToolController', () => {
 
 		const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
 			name: 'mockName',
-			default: 'mockDefault',
+			defaultValue: 'mockDefault',
 			location: CustomParameterLocationParams.PATH,
 			scope: CustomParameterScopeParams.SCHOOL,
 			type: CustomParameterTypeParams.STRING,
@@ -174,7 +175,7 @@ describe('ToolController', () => {
 		const setupCreate = () => {
 			const customParameterCreateParams = new CustomParameterPostParams();
 			customParameterCreateParams.name = 'mockName';
-			customParameterCreateParams.default = 'mockDefault';
+			customParameterCreateParams.defaultValue = 'mockDefault';
 			customParameterCreateParams.location = CustomParameterLocationParams.PATH;
 			customParameterCreateParams.scope = CustomParameterScopeParams.SCHOOL;
 			customParameterCreateParams.type = CustomParameterTypeParams.STRING;
@@ -460,7 +461,7 @@ describe('ToolController', () => {
 
 			const customParameterPostParams = new CustomParameterPostParams();
 			customParameterPostParams.name = 'mockName';
-			customParameterPostParams.default = 'mockDefault';
+			customParameterPostParams.defaultValue = 'mockDefault';
 			customParameterPostParams.location = CustomParameterLocationParams.PATH;
 			customParameterPostParams.scope = CustomParameterScopeParams.SCHOOL;
 			customParameterPostParams.type = CustomParameterTypeParams.STRING;

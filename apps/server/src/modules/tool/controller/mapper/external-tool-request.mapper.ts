@@ -99,7 +99,7 @@ export class ExternalToolRequestMapper {
 		return customParameterParams.map((customParameterParam: CustomParameterPostParams) => {
 			return {
 				name: customParameterParam.name,
-				default: customParameterParam.default,
+				default: customParameterParam.defaultValue,
 				regex: customParameterParam.regex,
 				regexComment: customParameterParam.regexComment,
 				scope: scopeMapping[customParameterParam.scope],

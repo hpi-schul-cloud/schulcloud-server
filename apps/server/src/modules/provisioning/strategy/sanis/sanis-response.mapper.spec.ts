@@ -39,6 +39,7 @@ describe('SanisResponseMapper', () => {
 						id: new UUID(externalSchoolId),
 						name: 'schoolName',
 						typ: 'SCHULE',
+						kennung: 'NI_123456_NI_ashd3838',
 					}),
 					personenstatus: '',
 					email: 'test@te.st',
@@ -63,6 +64,7 @@ describe('SanisResponseMapper', () => {
 				expect(result).toEqual<ExternalSchoolDto>({
 					externalId: externalSchoolId,
 					name: 'schoolName',
+					officialSchoolNumber: '123456_NI_ashd3838',
 				});
 			});
 		});

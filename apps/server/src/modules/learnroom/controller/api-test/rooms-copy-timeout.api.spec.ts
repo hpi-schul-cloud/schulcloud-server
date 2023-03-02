@@ -3,7 +3,8 @@ import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@shared/domain';
+import { Permission } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -56,7 +57,7 @@ describe('Rooms copy (API)', () => {
 	});
 
 	const setup = () => {
-		const roles = roleFactory.buildList(1, { permissions: [] });
+		const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_CREATE, Permission.TOPIC_CREATE] });
 		const user = userFactory.build({ roles });
 
 		return user;

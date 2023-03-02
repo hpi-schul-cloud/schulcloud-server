@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
-import { ICurrentUser, IFindOptions, RoleName } from '@shared/domain';
+import { IFindOptions, RoleName } from '@shared/domain';
 import { Authorization } from 'oauth-1.0a';
 import {
 	ApiCreatedResponse,
@@ -16,6 +16,7 @@ import { Page } from '@shared/domain/interface/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Logger } from '@src/core/logger';
 import { ValidationError } from '@shared/common';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Lti11Uc } from '../uc/lti11.uc';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ExternalToolUc } from '../uc/external-tool.uc';
@@ -74,7 +75,7 @@ export class ToolController {
 		const externalToolDO: CreateExternalTool = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
-		this.logger.debug(`ExternaTool with id ${mapped.id} was created by user with id ${currentUser.userId}`);
+		this.logger.debug(`ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}`);
 		return mapped;
 	}
 
@@ -133,14 +134,14 @@ export class ToolController {
 			externalTool
 		);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(updated);
-		this.logger.debug(`ExternaTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);
+		this.logger.debug(`ExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);
 		return mapped;
 	}
 
 	@Delete(':toolId')
 	async deleteExternalTool(@CurrentUser() currentUser: ICurrentUser, @Param() params: ToolIdParams): Promise<void> {
 		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.toolId);
-		this.logger.debug(`ExternaTool with id ${params.toolId} was deleted by user with id ${currentUser.userId}`);
+		this.logger.debug(`ExternalTool with id ${params.toolId} was deleted by user with id ${currentUser.userId}`);
 		return promise;
 	}
 }

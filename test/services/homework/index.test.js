@@ -13,7 +13,6 @@ const { setupNestServices, closeNestServices } = require('../../utils/setup.nest
 describe('homework service', () => {
 	let app;
 	let homeworkService;
-	let homeworkCopyService;
 	let server;
 	let nestServices;
 	// let lessonService;
@@ -68,7 +67,6 @@ describe('homework service', () => {
 	before(async () => {
 		app = await appPromise();
 		homeworkService = app.service('homework');
-		homeworkCopyService = app.service('homework/copy');
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 	});
@@ -81,7 +79,6 @@ describe('homework service', () => {
 
 	it('registered the homework service', () => {
 		assert.ok(homeworkService);
-		assert.ok(homeworkCopyService);
 	});
 
 	describe('CREATE', () => {

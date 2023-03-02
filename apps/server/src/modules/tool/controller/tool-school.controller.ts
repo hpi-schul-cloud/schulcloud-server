@@ -8,7 +8,7 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { Logger } from '@src/core/logger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -49,6 +49,22 @@ export class ToolSchoolController {
 		});
 		const response: SchoolExternalToolSearchListResponse = this.responseMapper.mapToSearchListResponse(found);
 		return response;
+	}
+
+	@Get(':schoolExternalToolId')
+	@ApiForbiddenResponse()
+	@ApiUnauthorizedResponse()
+	async getSchoolExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: SchoolExternalToolIdParams
+	): Promise<SchoolExternalToolResponse> {
+		const schoolExternalToolDO: SchoolExternalToolDO = await this.schoolExternalToolUc.getSchoolExternalTool(
+			currentUser.userId,
+			params.schoolExternalToolId
+		);
+		const mapped: SchoolExternalToolResponse =
+			this.responseMapper.mapToSchoolExternalToolResponse(schoolExternalToolDO);
+		return mapped;
 	}
 
 	@Delete(':schoolExternalToolId')

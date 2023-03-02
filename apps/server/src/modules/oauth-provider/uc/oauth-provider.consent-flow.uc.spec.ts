@@ -8,7 +8,7 @@ import {
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
 import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { ForbiddenException } from '@nestjs/common';
 import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
 import { IdToken } from '@src/modules/oauth-provider/interface/id-token';

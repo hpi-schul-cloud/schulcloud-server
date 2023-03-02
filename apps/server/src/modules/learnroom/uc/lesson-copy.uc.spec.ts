@@ -7,7 +7,7 @@ import { Actions, PermissionTypes, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { EtherpadService, LessonCopyService } from '@src/modules/lesson/service';
 import { LessonCopyUC } from './lesson-copy.uc';
@@ -158,10 +158,15 @@ describe('lesson copy uc', () => {
 		it('should check authorisation for destination course', async () => {
 			const { course, user, lesson, userId } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
-			expect(authorisation.hasPermission).toBeCalledWith(user, course, {
-				action: Actions.write,
-				requiredPermissions: [],
-			});
+			expect(authorisation.checkPermissionByReferences).toBeCalledWith(
+				user.id,
+				AllowedAuthorizationEntityType.Course,
+				course.id,
+				{
+					action: Actions.write,
+					requiredPermissions: [],
+				}
+			);
 		});
 
 		it('should pass authorisation check without destination course', async () => {
@@ -177,7 +182,7 @@ describe('lesson copy uc', () => {
 			const { course, user, lesson, lessonCopyName, userId } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(lessonCopyService.copyLesson).toBeCalledWith({
-				originalLesson: lesson,
+				originalLessonId: lesson.id,
 				destinationCourse: course,
 				user,
 				copyName: lessonCopyName,
@@ -235,7 +240,10 @@ describe('lesson copy uc', () => {
 				userRepo.findById.mockResolvedValue(user);
 				lessonRepo.findById.mockResolvedValue(lesson);
 				courseRepo.findById.mockResolvedValue(course);
-				authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== course);
+				authorisation.hasPermission.mockReturnValue(true);
+				authorisation.checkPermissionByReferences.mockImplementation(() => {
+					throw new ForbiddenException();
+				});
 
 				return { user, course, lesson };
 			};

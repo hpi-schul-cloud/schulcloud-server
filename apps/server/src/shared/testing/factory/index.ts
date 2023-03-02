@@ -21,3 +21,4 @@ export * from './system.factory';
 export * from './task-card.factory';
 export * from './task.factory';
 export * from './user.factory';
+export * from './user.do.factory';

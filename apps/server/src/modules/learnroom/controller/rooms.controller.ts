@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
 import { serverConfig } from '@src/modules/server/server.config';
@@ -10,13 +10,13 @@ import { CourseCopyUC } from '../uc/course-copy.uc';
 import { LessonCopyUC } from '../uc/lesson-copy.uc';
 import { RoomsUc } from '../uc/rooms.uc';
 import {
-	BoardResponse,
 	LessonCopyApiParams,
 	LessonUrlParams,
 	PatchOrderParams,
 	PatchVisibilityParams,
 	RoomElementUrlParams,
 	RoomUrlParams,
+	SingleColumnBoardResponse,
 } from './dto';
 
 @ApiTags('Rooms')
@@ -34,7 +34,7 @@ export class RoomsController {
 	async getRoomBoard(
 		@Param() urlParams: RoomUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<BoardResponse> {
+	): Promise<SingleColumnBoardResponse> {
 		const board = await this.roomsUc.getBoard(urlParams.roomId, currentUser.userId);
 		const mapped = this.mapper.mapToResponse(board);
 		return mapped;

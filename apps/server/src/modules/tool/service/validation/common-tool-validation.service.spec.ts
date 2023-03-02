@@ -62,7 +62,7 @@ describe('CommonToolValidationService', () => {
 				const result: Promise<void> = service.validateCommon(externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new ValidationError(`The tool name "${externalToolDO.name}" is already used.`)
+					new ValidationError(`tool_name_duplicate: The tool name "${externalToolDO.name}" is already used.`)
 				);
 			});
 
@@ -81,6 +81,23 @@ describe('CommonToolValidationService', () => {
 			});
 		});
 
+		describe('when there is an empty parameter name', () => {
+			it('should throw ValidationError', async () => {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+					parameters: [customParameterDOFactory.build({ name: '' })],
+				});
+				externalToolService.findExternalToolByName.mockResolvedValue(null);
+
+				const func = () => service.validateCommon(externalToolDO);
+
+				await expect(func()).rejects.toThrow(
+					new ValidationError(
+						`tool_param_name: The tool ${externalToolDO.name} is missing at least one custom parameter name.`
+					)
+				);
+			});
+		});
+
 		describe('when there are duplicate attributes', () => {
 			it('should fail for two equal parameters', async () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
@@ -94,7 +111,9 @@ describe('CommonToolValidationService', () => {
 				const func = () => service.validateCommon(externalToolDO);
 
 				await expect(func()).rejects.toThrow(
-					new ValidationError(`The tool ${externalToolDO.name} contains multiple of the same custom parameters.`)
+					new ValidationError(
+						`tool_param_duplicate: The tool ${externalToolDO.name} contains multiple of the same custom parameters.`
+					)
 				);
 			});
 
@@ -110,7 +129,9 @@ describe('CommonToolValidationService', () => {
 				const result: Promise<void> = service.validateCommon(externalToolDO);
 
 				await expect(result).rejects.toThrow(
-					new ValidationError(`The tool ${externalToolDO.name} contains multiple of the same custom parameters.`)
+					new ValidationError(
+						`tool_param_duplicate: The tool ${externalToolDO.name} contains multiple of the same custom parameters.`
+					)
 				);
 			});
 		});
@@ -123,7 +144,9 @@ describe('CommonToolValidationService', () => {
 				const func = () => service.validateCommon(externalToolDO);
 
 				await expect(func()).rejects.toThrow(
-					new ValidationError(`A custom Parameter of the tool ${externalToolDO.name} has wrong regex attribute.`)
+					new ValidationError(
+						`tool_param_regex_invalid: A custom Parameter of the tool ${externalToolDO.name} has wrong regex attribute.`
+					)
 				);
 			});
 		});
@@ -137,7 +160,7 @@ describe('CommonToolValidationService', () => {
 
 				const func = () => service.validateCommon(externalToolDO);
 
-				await expect(func()).rejects.toThrow('The default value');
+				await expect(func()).rejects.toThrow('tool_param_default_regex:');
 			});
 		});
 
@@ -150,7 +173,9 @@ describe('CommonToolValidationService', () => {
 
 				await expect(result).rejects.toThrow(
 					new ValidationError(
-						`The "${(externalToolDO.parameters as CustomParameterDO[])[0].name}" parameter is missing a regex comment.`
+						`tool_param_regexComment: The "${
+							(externalToolDO.parameters as CustomParameterDO[])[0].name
+						}" parameter is missing a regex comment.`
 					)
 				);
 			});
@@ -182,7 +207,7 @@ describe('CommonToolValidationService', () => {
 
 				await expect(result).rejects.toThrow(
 					new ValidationError(
-						`The "${
+						`tool_param_default_required: The "${
 							(externalToolDO.parameters as CustomParameterDO[])[0].name
 						}" is a global parameter and requires a default value.`
 					)
@@ -201,7 +226,7 @@ describe('CommonToolValidationService', () => {
 
 				await expect(result).rejects.toThrow(
 					new ValidationError(
-						`The "${
+						`tool_param_default_required: The "${
 							(externalToolDO.parameters as CustomParameterDO[])[0].name
 						}" is a global parameter and requires a default value.`
 					)
