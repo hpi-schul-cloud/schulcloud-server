@@ -22,6 +22,7 @@ export class SystemRepo extends BaseRepo<System> {
 				scope.withOidcConfig();
 				break;
 			default:
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				throw new Error(`system type ${type} unknown`);
 		}
 		return this._em.find(System, scope.query);

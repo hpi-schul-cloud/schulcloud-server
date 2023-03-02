@@ -3,6 +3,7 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SymetricKeyEncryptionService, DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
@@ -14,6 +15,10 @@ describe('KeycloakIdentityManagementService', () => {
 	let kcAdminServiceMock: DeepMocked<KeycloakAdministrationService>;
 	let httpServiceMock: DeepMocked<HttpService>;
 	let configServiceMock: DeepMocked<ConfigService>;
+	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
+
+	const clientId = 'TheClientId';
+	const clientSecret = 'TheClientSecret';
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -31,8 +36,13 @@ describe('KeycloakIdentityManagementService', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<IEncryptionService>(),
+				},
 			],
 		}).compile();
+		oAuthEncryptionService = module.get(DefaultEncryptionService);
 		kcIdmOauthService = module.get(KeycloakIdentityManagementOauthService);
 		kcAdminServiceMock = module.get(KeycloakAdministrationService);
 		httpServiceMock = module.get(HttpService);
@@ -44,8 +54,8 @@ describe('KeycloakIdentityManagementService', () => {
 	});
 
 	const setupOauthConfigurationReturn = () => {
-		const clientId = 'TheClientId';
-		const clientSecret = 'TheClientSecret';
+		oAuthEncryptionService.encrypt.mockImplementation((value: string) => `${value}_enc`);
+		oAuthEncryptionService.decrypt.mockImplementation((value: string) => value.substring(0, -4));
 		configServiceMock.get.mockReturnValue('testdomain');
 		kcAdminServiceMock.callKcAdminClient.mockResolvedValue({} as KeycloakAdminClient);
 		kcAdminServiceMock.getClientId.mockReturnValueOnce(clientId);
@@ -74,15 +84,15 @@ describe('KeycloakIdentityManagementService', () => {
 				expect(ret.grantType).toBe('authorization_code');
 				expect(ret.scope).toBe('openid profile email');
 			});
-			it('should return the keycloak OAuth clientId', async () => {
+			it('should return the keycloak OAuth clientId encrypted', async () => {
 				setupOauthConfigurationReturn();
 				const ret = await kcIdmOauthService.getOauthConfig();
-				expect(ret.clientId).toBe('TheClientId');
+				expect(ret.clientId).toBe(`${clientId}_enc`);
 			});
-			it('should return the keycloak OAuth clientSecret', async () => {
+			it('should return the keycloak OAuth clientSecret encrypted', async () => {
 				setupOauthConfigurationReturn();
 				const ret = await kcIdmOauthService.getOauthConfig();
-				expect(ret.clientSecret).toBe('TheClientSecret');
+				expect(ret.clientSecret).toBe(`${clientSecret}_enc`);
 			});
 			it('should return the keycloak OAuth redirect URI for the given domain', async () => {
 				setupOauthConfigurationReturn();
@@ -117,14 +127,16 @@ describe('KeycloakIdentityManagementService', () => {
 			};
 			it('should return the cached keycloak OAuth static configuration', async () => {
 				await setup();
-				const clientId = 'TheNewClientId';
-				const clientSecret = 'TheNewClientSecret';
-				kcAdminServiceMock.getClientId.mockReturnValueOnce(clientId);
-				kcAdminServiceMock.getClientSecret.mockResolvedValueOnce(clientSecret);
+				const clientIdNew = 'TheNewClientId';
+				const clientSecretNew = 'TheNewClientSecret';
+				kcAdminServiceMock.getClientId.mockReturnValueOnce(clientIdNew);
+				kcAdminServiceMock.getClientSecret.mockResolvedValueOnce(clientSecretNew);
 
 				const ret = await kcIdmOauthService.getOauthConfig();
-				expect(ret.clientId).toBe('TheClientId');
-				expect(ret.clientSecret).toBe('TheClientSecret');
+				expect(ret.clientId).toContain(clientId);
+				expect(ret.clientSecret).toContain(clientSecret);
+				expect(ret.clientId).not.toContain(clientIdNew);
+				expect(ret.clientSecret).not.toContain(clientSecretNew);
 			});
 		});
 	});

@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthConfigDto } from '@src/modules/system/service';
 import qs from 'qs';
 import { lastValueFrom } from 'rxjs';
@@ -14,7 +15,8 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 	constructor(
 		private readonly kcAdminService: KeycloakAdministrationService,
 		private readonly configService: ConfigService,
-		private readonly httpService: HttpService
+		private readonly httpService: HttpService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
 	) {
 		super();
 	}
@@ -29,8 +31,8 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 		const redirectUri =
 			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
 		this._oauthConfigCache = new OauthConfigDto({
-			clientId: this.kcAdminService.getClientId(),
-			clientSecret: await this.kcAdminService.getClientSecret(),
+			clientId: this.oAuthEncryptionService.encrypt(this.kcAdminService.getClientId()),
+			clientSecret: this.oAuthEncryptionService.encrypt(await this.kcAdminService.getClientSecret()),
 			alias: 'keycloak',
 			provider: 'oauth',
 			redirectUri,
@@ -63,8 +65,8 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			username,
 			password,
 			grant_type: 'password',
-			client_id: clientId,
-			client_secret: clientSecret,
+			client_id: this.oAuthEncryptionService.decrypt(clientId),
+			client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
 		};
 		try {
 			const response = await lastValueFrom(
@@ -79,7 +81,6 @@ export class KeycloakIdentityManagementOauthService extends IdentityManagementOa
 			);
 			return response.data.access_token;
 		} catch (err) {
-			console.error(err);
 			return undefined;
 		}
 	}
