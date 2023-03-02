@@ -15,7 +15,7 @@ import {
 import { EntityName, FilterQuery, QueryOrderMap, Reference } from '@mikro-orm/core';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { EntityNotFoundError } from '@shared/common';
-import { UserQuery } from '@src/modules/user/service/user-query.type';
+import { UserQuery } from '@src/modules/user';
 import { Page } from '@src/shared/domain/interface/page';
 import { UserScope } from './user.scope';
 
