@@ -164,13 +164,4 @@ export class UserMigrationService {
 
 		return loginUrl.toString();
 	}
-
-	private getRedirectUri(redirectUri: string, postLoginUri?: string): URL {
-		const combinedUri = new URL(redirectUri);
-		if (postLoginUri) {
-			combinedUri.searchParams.append('postLoginRedirect', postLoginUri);
-		}
-
-		return combinedUri;
-	}
 }

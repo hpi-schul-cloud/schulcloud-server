@@ -18,8 +18,8 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { CookieOptions, Request, Response } from 'express';
-import { UserMigrationMapper } from '@src/modules/user-login-migration/mapper/user-migration.mapper';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { UserMigrationMapper } from '../mapper/user-migration.mapper';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
@@ -27,6 +27,7 @@ import { OauthLoginStateDto } from '../uc/dto/oauth-login-state.dto';
 import { AuthorizationParams, SSOLoginQuery, SystemIdParams } from './dto';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
 import { UserMigrationResponse } from './dto/user-migration.response';
+import { OauthLoginStateMapper } from '../mapper/oauth-login-state.mapper';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -45,18 +46,27 @@ export class OauthSSOController {
 	private errorHandler(error: unknown, session: ISession, res: Response) {
 		this.logger.error(error);
 		const ssoError: OAuthSSOError = error instanceof OAuthSSOError ? error : new OAuthSSOError();
-		const provider: string | undefined = (session.oauthLoginState as OauthLoginStateDto | undefined)?.provider;
-
 		session.destroy((err) => {
 			this.logger.log(err);
 		});
 
 		const errorRedirect: URL = new URL('/login', this.clientUrl);
 		errorRedirect.searchParams.append('error', ssoError.errorcode);
-		if (provider) {
-			errorRedirect.searchParams.append('provider', provider);
-		}
 		res.redirect(errorRedirect.toString());
+	}
+
+	private sessionHandler(session: ISession, query: AuthorizationParams): OauthLoginStateDto {
+		if (!session.oauthLoginState) {
+			throw new UnauthorizedException('Oauth session not found');
+		}
+
+		const oauthLoginState: OauthLoginStateDto = OauthLoginStateMapper.mapSessionToDto(session);
+
+		if (oauthLoginState.state !== query.state) {
+			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${oauthLoginState.state}`);
+		}
+
+		return oauthLoginState;
 	}
 
 	@Get('login/:systemId')
@@ -86,17 +96,7 @@ export class OauthSSOController {
 		@Res() res: Response,
 		@Query() query: AuthorizationParams
 	): Promise<void> {
-		const oauthLoginState: OauthLoginStateDto | undefined = session.oauthLoginState
-			? new OauthLoginStateDto(session.oauthLoginState as OauthLoginStateDto)
-			: undefined;
-
-		if (!oauthLoginState) {
-			throw new UnauthorizedException('Oauth session not found');
-		}
-
-		if (oauthLoginState.state !== query.state) {
-			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${oauthLoginState.state}`);
-		}
+		const oauthLoginState: OauthLoginStateDto = this.sessionHandler(session, query);
 
 		try {
 			const oauthProcessDto: OAuthProcessDto = await this.oauthUc.processOAuthLogin(
@@ -151,24 +151,23 @@ export class OauthSSOController {
 		return this.hydraUc.requestAuthCode(currentUser.userId, jwt, oauthClientId);
 	}
 
-	@Get('oauth/:systemId/migration')
+	@Get('oauth/migration')
 	@Authenticate('jwt')
 	@ApiOkResponse({ description: 'The User has been succesfully migrated.' })
 	@ApiResponse({ type: InternalServerErrorException, description: 'The migration of the User was not possible. ' })
 	async migrateUser(
+		@Session() session: ISession,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AuthorizationParams,
-		@Res() res: Response,
-		@Param() urlParams: SystemIdParams
+		@Res() res: Response
 	): Promise<void> {
-		const migration: MigrationDto = await this.oauthUc.migrate(currentUser.userId, query, urlParams.systemId);
-		const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
-		if (response.redirect) {
+		const oauthLoginState: OauthLoginStateDto = this.sessionHandler(session, query);
+		try {
+			const migration: MigrationDto = await this.oauthUc.migrate(currentUser.userId, query, oauthLoginState);
+			const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
 			res.redirect(response.redirect);
-		} else {
-			throw new InternalServerErrorException(
-				`Migration of ${currentUser.userId} to system ${urlParams.systemId} failed.`
-			);
+		} catch (error) {
+			this.errorHandler(error, session, res);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ISession } from '@shared/domain/types/session';
@@ -95,12 +95,22 @@ export class OauthUc {
 		return response;
 	}
 
-	async migrate(currentUserId: string, query: AuthorizationParams, targetSystemId: string): Promise<MigrationDto> {
-		const queryToken: OauthTokenResponse = await this.oauthService.authorizeForMigration(query, targetSystemId);
+	async migrate(
+		currentUserId: string,
+		query: AuthorizationParams,
+		cachedState: OauthLoginStateDto
+	): Promise<MigrationDto> {
+		const { state, systemId } = cachedState;
+
+		if (state !== query.state) {
+			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${state}`);
+		}
+
+		const queryToken: OauthTokenResponse = await this.oauthService.authorizeForMigration(query, systemId);
 		const data: OauthDataDto = await this.provisioningService.getData(
 			queryToken.access_token,
 			queryToken.id_token,
-			targetSystemId
+			systemId
 		);
 
 		if (data.externalSchool) {
@@ -110,18 +120,14 @@ export class OauthUc {
 				data.externalSchool.officialSchoolNumber
 			);
 			if (schoolToMigrate) {
-				await this.schoolMigrationService.migrateSchool(
-					data.externalSchool.externalId,
-					schoolToMigrate,
-					targetSystemId
-				);
+				await this.schoolMigrationService.migrateSchool(data.externalSchool.externalId, schoolToMigrate, systemId);
 			}
 		}
 
-		const migrationDto: Promise<MigrationDto> = this.userMigrationService.migrateUser(
+		const migrationDto: MigrationDto = await this.userMigrationService.migrateUser(
 			currentUserId,
 			data.externalUser.externalId,
-			targetSystemId
+			systemId
 		);
 		return migrationDto;
 	}

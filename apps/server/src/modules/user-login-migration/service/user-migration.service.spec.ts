@@ -1,7 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
-import { BadRequestException, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+	BadRequestException,
+	InternalServerErrorException,
+	NotFoundException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { accountFactory, setupEntities } from '@shared/testing';
@@ -35,8 +40,6 @@ describe('UserMigrationService', () => {
 	const hostUri = 'http://this.de';
 	const apiUrl = 'http://mock.de';
 	const s3 = 'sKey123456789123456789';
-
-	const urlMock = 'http://this.de';
 
 	beforeAll(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
@@ -176,6 +179,18 @@ describe('UserMigrationService', () => {
 		});
 	});
 
+	describe('getMigrationRedirectUri is called', () => {
+		describe('when a Redirect-URL for a system is requested', () => {
+			it('should return a proper redirect', () => {
+				const systemId = 'someSystemId';
+
+				const response = service.getMigrationRedirectUri(systemId);
+
+				expect(response).toContain(systemId);
+			});
+		});
+	});
+
 	describe('getPageContent is called', () => {
 		const setupPageContent = () => {
 			const sourceOauthConfig: OauthConfigDto = new OauthConfigDto({
@@ -226,10 +241,7 @@ describe('UserMigrationService', () => {
 
 		describe('when coming from the target system', () => {
 			it('should return the url to the source system and a frontpage url', async () => {
-				const { sourceSystem, targetSystem, sourceOauthConfig, migrationRedirectUri } = setupPageContent();
-				const targetSystemLoginUrl = `http://target.de/auth?client_id=targetClientId&redirect_uri=${encodeURIComponent(
-					migrationRedirectUri
-				)}&response_type=code&scope=openid+uuid`;
+				const { sourceSystem, targetSystem } = setupPageContent();
 				const sourceSystemLoginUrl = `http://mock.de/api/v3/sso/login/sourceSystemId?postLoginRedirect=http%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Flogin%2FtargetSystemId%3Fmigration%3Dtrue`;
 
 				systemService.findById.mockResolvedValueOnce(sourceSystem);

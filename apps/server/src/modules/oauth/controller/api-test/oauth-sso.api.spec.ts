@@ -1,17 +1,26 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { INestApplication } from '@nestjs/common';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, EntityId, School, System, User } from '@shared/domain';
-import { accountFactory, cleanupCollections, schoolFactory, systemFactory, userFactory } from '@shared/testing';
+import { Account, EntityId, ICurrentUser, School, System, User } from '@shared/domain';
+import {
+	accountFactory,
+	cleanupCollections,
+	mapUserToCurrentUser,
+	schoolFactory,
+	systemFactory,
+	userFactory,
+} from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
+import { Request } from 'express';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { AuthorizationParams, OauthTokenResponse } from '../dto';
+import { JwtAuthGuard } from '../../../authentication/guard/jwt-auth.guard';
 
 const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
 const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
@@ -33,6 +42,7 @@ jest.mock('jwks-rsa', () => () => {
 describe('OAuth SSO Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
+	let currentUser: ICurrentUser;
 	let axiosMock: MockAdapter;
 
 	const sessionCookieName: string = Configuration.get('SESSION__NAME') as string;
@@ -42,7 +52,16 @@ describe('OAuth SSO Controller (API)', () => {
 
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		}).compile();
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue({
+				canActivate(context: ExecutionContext) {
+					const req: Request = context.switchToHttp().getRequest();
+					req.user = currentUser;
+					return true;
+				},
+			})
+			.compile();
 
 		axiosMock = new MockAdapter(axios);
 		app = moduleRef.createNestApplication();
@@ -69,6 +88,23 @@ describe('OAuth SSO Controller (API)', () => {
 			system,
 			user,
 			externalUserId,
+		};
+	};
+
+	const setupSessionState = async (systemId: EntityId) => {
+		const response: Response = await request(app.getHttpServer())
+			.get(`/sso/login/${systemId}`)
+			.expect(302)
+			.expect('set-cookie', new RegExp(`^${sessionCookieName}`));
+
+		const cookies: string[] = response.get('Set-Cookie');
+		const redirect: string = response.get('Location');
+		const matchState: RegExpMatchArray | null = redirect.match(/(?<=state=)([^&]+)/);
+		const state = matchState ? matchState[0] : '';
+
+		return {
+			cookies,
+			state,
 		};
 	};
 
@@ -102,23 +138,6 @@ describe('OAuth SSO Controller (API)', () => {
 	});
 
 	describe('[GET] sso/oauth', () => {
-		const setupSessionState = async (systemId: EntityId) => {
-			const response: Response = await request(app.getHttpServer())
-				.get(`/sso/login/${systemId}`)
-				.expect(302)
-				.expect('set-cookie', new RegExp(`^${sessionCookieName}`));
-
-			const cookies: string[] = response.get('Set-Cookie');
-			const redirect: string = response.get('Location');
-			const matchState: RegExpMatchArray | null = redirect.match(/(?<=state=)([^&]+)/);
-			const state = matchState ? matchState[0] : '';
-
-			return {
-				cookies,
-				state,
-			};
-		};
-
 		describe('when the session has no oauthLoginState', () => {
 			it('should return 401 Unauthorized', async () => {
 				await setup();
@@ -199,6 +218,93 @@ describe('OAuth SSO Controller (API)', () => {
 					.query(query)
 					.expect(302)
 					.expect('Location', `${clientUrl}/login?error=access_denied`);
+			});
+		});
+
+		describe('when a faulty query is passed', () => {
+			it('should redirect to the login page with an error', async () => {
+				const { system } = await setup();
+				const { state, cookies } = await setupSessionState(system.id);
+				const clientUrl: string = Configuration.get('HOST') as string;
+				const query: AuthorizationParams = new AuthorizationParams();
+				query.state = state;
+
+				await request(app.getHttpServer())
+					.get(`/sso/oauth`)
+					.set('Cookie', cookies)
+					.query(query)
+					.expect(302)
+					.expect('Location', `${clientUrl}/login?error=sso_auth_code_step`);
+			});
+		});
+	});
+
+	describe('[GET]  sso/oauth/migration', () => {
+		describe('when the session has no oauthLoginState', () => {
+			it('should return 401 Unauthorized', async () => {
+				await setup();
+				const query: AuthorizationParams = new AuthorizationParams();
+				query.code = 'code';
+				query.state = 'state';
+
+				await request(app.getHttpServer()).get(`/sso/oauth/migration`).query(query).expect(401);
+			});
+		});
+		describe('when the migration is successful', () => {
+			it('should redirect to the success page', async () => {
+				const { user, system, externalUserId } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+				const { state, cookies } = await setupSessionState(system.id);
+				const baseUrl: string = Configuration.get('HOST') as string;
+				const query: AuthorizationParams = new AuthorizationParams();
+				query.code = 'code';
+				query.state = state;
+
+				const idToken: string = jwt.sign(
+					{
+						sub: 'testUser',
+						iss: system.oauthConfig?.issuer,
+						aud: system.oauthConfig?.clientId,
+						iat: Date.now(),
+						exp: Date.now() + 100000,
+						preferred_username: externalUserId,
+					},
+					privateKey,
+					{
+						algorithm: 'RS256',
+					}
+				);
+
+				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
+					id_token: idToken,
+					refresh_token: 'refreshToken',
+					access_token: 'accessToken',
+				});
+
+				await request(app.getHttpServer())
+					.get(`/sso/oauth/migration`)
+					.set('Cookie', cookies)
+					.query(query)
+					.expect(302)
+					.expect('Location', `${baseUrl}/migration/succeed`);
+			});
+		});
+
+		describe('when a faulty query is passed', () => {
+			it('should redirect to the login page with an error', async () => {
+				const { user, system } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+				const { state, cookies } = await setupSessionState(system.id);
+				const clientUrl: string = Configuration.get('HOST') as string;
+				const query: AuthorizationParams = new AuthorizationParams();
+				query.state = state;
+
+				await request(app.getHttpServer())
+					.get(`/sso/oauth/migration`)
+					.set('Cookie', cookies)
+					.query(query)
+					.expect(302)
+					.expect('Location', `${clientUrl}/login?error=sso_auth_code_step`);
 			});
 		});
 	});
