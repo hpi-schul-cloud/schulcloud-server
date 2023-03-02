@@ -79,10 +79,7 @@ describe('OidcIdentityProviderMapper', () => {
 		});
 
 		it('should ignore missing optional', () => {
-			const ret = mapper.mapToKeycloakIdentityProvider(
-				{ ...internalRepresentation, oidcConfig: undefined },
-				brokerFlowAlias
-			);
+			const ret = mapper.mapToKeycloakIdentityProvider({ ...internalRepresentation }, brokerFlowAlias);
 
 			expect(ret.config?.clientId).toBeUndefined();
 			expect(ret.config?.clientSecret).toBeUndefined();

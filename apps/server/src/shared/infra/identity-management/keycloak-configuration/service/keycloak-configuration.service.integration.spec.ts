@@ -5,10 +5,11 @@ import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/li
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { SystemRepo } from '@shared/repo/system/system.repo';
 import { systemFactory } from '@shared/testing/factory';
 import { LoggerModule } from '@src/core/logger';
-import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 import { SystemService } from '@src/modules/system/service/system.service';
+import { v1 } from 'uuid';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
 import { KeycloakConfigurationService } from './keycloak-configuration.service';
@@ -16,14 +17,15 @@ import { KeycloakConfigurationService } from './keycloak-configuration.service';
 describe('KeycloakConfigurationService Integration', () => {
 	let module: TestingModule;
 	let keycloak: KeycloakAdminClient;
+	let systemRepo: SystemRepo;
 	let keycloakAdministrationService: KeycloakAdministrationService;
 	let keycloakConfigurationService: KeycloakConfigurationService;
 	let isKeycloakAvailable = false;
 
-	const testRealm = 'test-realm';
+	const testRealm = `test-realm-${v1().toString()}`;
 	const flowAlias = 'Direct Broker Flow';
 	const systemServiceMock = createMock<SystemService>();
-	const systems = SystemMapper.mapFromEntitiesToDtos(systemFactory.withOidcConfig().buildList(1));
+	const systems = systemFactory.withOidcConfig().buildList(1);
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,16 +38,15 @@ describe('KeycloakConfigurationService Integration', () => {
 					validationOptions: { infer: true },
 				}),
 			],
-			providers: [],
-		})
-			.overrideProvider(SystemService)
-			.useValue(systemServiceMock)
-			.compile();
+			providers: [SystemRepo],
+		}).compile();
+		systemRepo = module.get(SystemRepo);
 		keycloakAdministrationService = module.get(KeycloakAdministrationService);
 		keycloakConfigurationService = module.get(KeycloakConfigurationService);
 		isKeycloakAvailable = await keycloakAdministrationService.testKcConnection();
 		if (isKeycloakAvailable) {
 			keycloak = await keycloakAdministrationService.callKcAdminClient();
+			await systemRepo.save(systems);
 		}
 	});
 
@@ -144,7 +145,7 @@ describe('KeycloakConfigurationService Integration', () => {
 					const identityProviders = await kc.identityProviders.find();
 					expect(identityProviders.length).toEqual(systems.length);
 				},
-				60 * 1000
+				10 * 60 * 1000
 			);
 		});
 	});

@@ -29,7 +29,6 @@ describe('SystemMapper', () => {
 			expect(result.provisioningStrategy).toEqual(systemEntity.provisioningStrategy);
 			expect(result.provisioningUrl).toEqual(systemEntity.provisioningUrl);
 			expect(result.oauthConfig).toEqual(systemEntity.oauthConfig);
-			expect(result.oidcConfig).toEqual(systemEntity.oidcConfig);
 		});
 		it('should map take alias as default instead of displayName', () => {
 			// Arrange
@@ -78,35 +77,6 @@ describe('SystemMapper', () => {
 			expect(result[0].oauthConfig?.jwksEndpoint).toEqual(systemEntities[0].oauthConfig?.jwksEndpoint);
 			expect(result[0].oauthConfig?.redirectUri).toEqual(systemEntities[0].oauthConfig?.redirectUri);
 			expect(result[1].oauthConfig).toBe(undefined);
-		});
-
-		it('should map oidc config if exists', () => {
-			// Arrange
-			const system = systemFactory.withOidcConfig().build();
-
-			// Act
-			const result = SystemMapper.mapFromEntityToDto(system);
-
-			// Assert
-			expect(result.oidcConfig?.authorizationUrl).toEqual(system.oidcConfig?.authorizationUrl);
-			expect(result.oidcConfig?.clientId).toEqual(system.oidcConfig?.clientId);
-			expect(result.oidcConfig?.clientSecret).toEqual(system.oidcConfig?.clientSecret);
-			expect(result.oidcConfig?.alias).toEqual(system.oidcConfig?.alias);
-			expect(result.oidcConfig?.defaultScopes).toEqual(system.oidcConfig?.defaultScopes);
-			expect(result.oidcConfig?.logoutUrl).toEqual(system.oidcConfig?.logoutUrl);
-			expect(result.oidcConfig?.tokenUrl).toEqual(system.oidcConfig?.tokenUrl);
-			expect(result.oidcConfig?.userinfoUrl).toEqual(system.oidcConfig?.userinfoUrl);
-		});
-
-		it('should not map oidc config if mandatory field is missing', () => {
-			// Arrange
-			const system = systemFactory.build();
-
-			// Act
-			const result = SystemMapper.mapFromEntityToDto(system);
-
-			// Assert
-			expect(result.oidcConfig).toBeUndefined();
 		});
 	});
 });
