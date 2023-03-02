@@ -479,7 +479,7 @@ describe('UserMigrationService', () => {
 			});
 
 			it('should return to dashboard', async () => {
-				const { migratedUserDO, accountDto, targetSystemId } = setupMigrationData();
+				const { migratedUserDO, accountDto, targetSystemId, sourceSystemId } = setupMigrationData();
 				const error = new NotFoundException('Test Error');
 				userService.findById.mockResolvedValue(migratedUserDO);
 				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
@@ -487,7 +487,9 @@ describe('UserMigrationService', () => {
 
 				const result = await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
 
-				expect(result.redirect).toStrictEqual(`${hostUri}/migration/error`);
+				expect(result.redirect).toStrictEqual(
+					`${hostUri}/migration/error?sourceSystem=${sourceSystemId}&targetSystem=${targetSystemId}`
+				);
 			});
 		});
 	});

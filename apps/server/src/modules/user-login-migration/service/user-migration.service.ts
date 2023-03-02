@@ -1,7 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { EntityId } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
@@ -123,13 +122,12 @@ export class UserMigrationService {
 			userDO.lastLoginSystemChange = new Date();
 			await this.userService.save(userDO);
 
-			const sourceSystemId: EntityId | undefined = account.systemId;
 			account.systemId = targetSystemId;
 			await this.accountService.save(account);
 
 			// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 			const migrationSuccessUrl: URL = new URL('/migration/success', this.hostUrl);
-			migrationSuccessUrl.searchParams.append('sourceSystem', sourceSystemId ?? '');
+			migrationSuccessUrl.searchParams.append('sourceSystem', accountCopy.systemId ?? '');
 			migrationSuccessUrl.searchParams.append('targetSystem', targetSystemId);
 			const userMigrationDto: MigrationDto = new MigrationDto({
 				redirect: migrationSuccessUrl.toString(),
@@ -147,6 +145,8 @@ export class UserMigrationService {
 
 			// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 			const errorUrl: URL = new URL('/migration/error', this.hostUrl);
+			errorUrl.searchParams.append('sourceSystem', accountCopy.systemId ?? '');
+			errorUrl.searchParams.append('targetSystem', targetSystemId);
 			const userMigrationDto: MigrationDto = new MigrationDto({
 				redirect: errorUrl.toString(),
 			});
