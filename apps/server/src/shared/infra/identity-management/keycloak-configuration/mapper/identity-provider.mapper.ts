@@ -1,30 +1,28 @@
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Inject } from '@nestjs/common';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { SystemDto } from '@src/modules/system/service';
+import { OidcConfigDto } from '@src/modules/system/service';
 
 export class OidcIdentityProviderMapper {
 	constructor(@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService) {}
 
-	public mapToKeycloakIdentityProvider(system: SystemDto, flowAlias: string): IdentityProviderRepresentation {
+	public mapToKeycloakIdentityProvider(oidcConfig: OidcConfigDto, flowAlias: string): IdentityProviderRepresentation {
 		return {
 			providerId: 'oidc',
-			alias: system.oidcConfig?.alias,
-			displayName: system.displayName ? system.displayName : system.alias,
+			alias: oidcConfig.alias,
+			displayName: oidcConfig.alias,
 			enabled: true,
 			firstBrokerLoginFlowAlias: flowAlias,
 			config: {
-				clientId: system.oidcConfig?.clientId
-					? this.defaultEncryptionService.decrypt(system.oidcConfig.clientId)
+				clientId: oidcConfig.clientId ? this.defaultEncryptionService.decrypt(oidcConfig.clientId) : undefined,
+				clientSecret: oidcConfig.clientSecret
+					? this.defaultEncryptionService.decrypt(oidcConfig.clientSecret)
 					: undefined,
-				clientSecret: system.oidcConfig?.clientSecret
-					? this.defaultEncryptionService.decrypt(system.oidcConfig.clientSecret)
-					: undefined,
-				authorizationUrl: system.oidcConfig?.authorizationUrl,
-				tokenUrl: system.oidcConfig?.tokenUrl,
-				logoutUrl: system.oidcConfig?.logoutUrl,
-				userInfoUrl: system.oidcConfig?.userinfoUrl,
-				defaultScope: system.oidcConfig?.defaultScopes,
+				authorizationUrl: oidcConfig.authorizationUrl,
+				tokenUrl: oidcConfig.tokenUrl,
+				logoutUrl: oidcConfig.logoutUrl,
+				userInfoUrl: oidcConfig.userinfoUrl,
+				defaultScope: oidcConfig.defaultScopes,
 				syncMode: 'IMPORT',
 				sync_mode: 'import',
 				clientAuthMethod: 'client_secret_post',

@@ -1,5 +1,6 @@
 export class OidcConfigDto {
 	constructor(oidcConfigDto: OidcConfigDto) {
+		this.parentSystemId = oidcConfigDto.parentSystemId;
 		this.clientId = oidcConfigDto.clientId;
 		this.clientSecret = oidcConfigDto.clientSecret;
 		this.alias = oidcConfigDto.alias;
@@ -9,6 +10,8 @@ export class OidcConfigDto {
 		this.logoutUrl = oidcConfigDto.logoutUrl;
 		this.defaultScopes = oidcConfigDto.defaultScopes;
 	}
+
+	parentSystemId: string;
 
 	clientId: string;
 

@@ -10,6 +10,8 @@ import { SystemUc } from '@src/modules/system/uc/system.uc';
 describe('SystemUc', () => {
 	let module: TestingModule;
 	let systemUc: SystemUc;
+	let mockSystem1: SystemDto;
+	let mockSystem2: SystemDto;
 	let mockSystems: SystemDto[];
 	let system1: System;
 	let system2: System;
@@ -38,14 +40,16 @@ describe('SystemUc', () => {
 		system1 = systemFactory.buildWithId();
 		system2 = systemFactory.buildWithId();
 
-		mockSystems = [system1, system2].map((element) => SystemMapper.mapFromEntityToDto(element));
+		mockSystem1 = SystemMapper.mapFromEntityToDto(system1);
+		mockSystem2 = SystemMapper.mapFromEntityToDto(system2);
+		mockSystems = [mockSystem1, mockSystem2];
 
 		systemService.findByType.mockImplementation((type: string | undefined) => {
-			if (type === SystemTypeEnum.OAUTH) return Promise.resolve([system1]);
+			if (type === SystemTypeEnum.OAUTH) return Promise.resolve([mockSystem1]);
 			return Promise.resolve(mockSystems);
 		});
 		systemService.findById.mockImplementation(
-			(id: EntityId): Promise<SystemDto> => (id === system1.id ? Promise.resolve(system1) : Promise.reject())
+			(id: EntityId): Promise<SystemDto> => (id === system1.id ? Promise.resolve(mockSystem1) : Promise.reject())
 		);
 	});
 

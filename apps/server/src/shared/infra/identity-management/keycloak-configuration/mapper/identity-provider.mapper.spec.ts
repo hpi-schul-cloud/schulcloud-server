@@ -2,9 +2,8 @@ import { createMock } from '@golevelup/ts-jest';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemTypeEnum } from '@shared/domain';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { SystemDto } from '@src/modules/system/service';
+import { OidcConfigDto } from '@src/modules/system/service';
 import { OidcIdentityProviderMapper } from './identity-provider.mapper';
 
 describe('OidcIdentityProviderMapper', () => {
@@ -33,21 +32,16 @@ describe('OidcIdentityProviderMapper', () => {
 
 	describe('mapToKeycloakIdentityProvider', () => {
 		const brokerFlowAlias = 'flow';
-		const internalRepresentation: SystemDto = {
-			id: new ObjectId(0).toString(),
-			type: SystemTypeEnum.OIDC,
+		const internalRepresentation: OidcConfigDto = {
+			parentSystemId: new ObjectId(0).toString(),
+			clientId: 'clientId',
+			clientSecret: 'clientSecret',
 			alias: 'alias',
-			displayName: undefined,
-			oidcConfig: {
-				clientId: 'clientId',
-				clientSecret: 'clientSecret',
-				alias: 'alias',
-				authorizationUrl: 'authorizationUrl',
-				tokenUrl: 'tokenUrl',
-				logoutUrl: 'logoutUrl',
-				userinfoUrl: 'userinfoUrl',
-				defaultScopes: 'defaultScopes',
-			},
+			authorizationUrl: 'authorizationUrl',
+			tokenUrl: 'tokenUrl',
+			logoutUrl: 'logoutUrl',
+			userinfoUrl: 'userinfoUrl',
+			defaultScopes: 'defaultScopes',
 		};
 
 		const keycloakRepresentation: IdentityProviderRepresentation = {
@@ -76,38 +70,6 @@ describe('OidcIdentityProviderMapper', () => {
 			const ret = mapper.mapToKeycloakIdentityProvider(internalRepresentation, brokerFlowAlias);
 
 			expect(ret).toEqual(keycloakRepresentation);
-		});
-
-		it('should ignore missing optional', () => {
-			const ret = mapper.mapToKeycloakIdentityProvider({ ...internalRepresentation }, brokerFlowAlias);
-
-			expect(ret.config?.clientId).toBeUndefined();
-			expect(ret.config?.clientSecret).toBeUndefined();
-			expect(ret.config?.authorizationUrl).toBeUndefined();
-			expect(ret.config?.tokenUrl).toBeUndefined();
-			expect(ret.config?.logoutUrl).toBeUndefined();
-			expect(ret.config?.userInfoUrl).toBeUndefined();
-			expect(ret.config?.defaultScope).toBeUndefined();
-		});
-
-		it('should map system alias if no display name is given', () => {
-			const internalRepresentationWithoutDisplayName = { ...internalRepresentation };
-			const theAlias = 'alias';
-			internalRepresentationWithoutDisplayName.alias = theAlias;
-			internalRepresentationWithoutDisplayName.displayName = undefined;
-			const ret = mapper.mapToKeycloakIdentityProvider(internalRepresentationWithoutDisplayName, brokerFlowAlias);
-
-			expect(ret).toEqual(expect.objectContaining({ displayName: theAlias }));
-		});
-
-		it('should favor system display name if set', () => {
-			const internalRepresentationWithDisplayName = { ...internalRepresentation };
-			const theDisplayName = 'displayName';
-			internalRepresentationWithDisplayName.alias = 'alias';
-			internalRepresentationWithDisplayName.displayName = theDisplayName;
-			const ret = mapper.mapToKeycloakIdentityProvider(internalRepresentationWithDisplayName, brokerFlowAlias);
-
-			expect(ret).toEqual(expect.objectContaining({ displayName: theDisplayName }));
 		});
 
 		it('should decrypt secrets', () => {

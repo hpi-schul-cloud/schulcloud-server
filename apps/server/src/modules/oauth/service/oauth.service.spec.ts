@@ -20,6 +20,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { OauthConfigDto } from '@src/modules/system/service';
+import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
@@ -55,6 +56,7 @@ describe('OAuthService', () => {
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 
 	let testSystem: System;
+	let testSystemDto: SystemDto;
 	let testOauthConfig: OauthConfig;
 
 	const hostUri = 'https://mock.de';
@@ -122,6 +124,7 @@ describe('OAuthService', () => {
 
 	beforeEach(() => {
 		testSystem = systemFactory.withOauthConfig().buildWithId();
+		testSystemDto = SystemMapper.mapFromEntityToDto(testSystem);
 		testOauthConfig = testSystem.oauthConfig as OauthConfig;
 	});
 
@@ -534,10 +537,14 @@ describe('OAuthService', () => {
 
 		it('should authenticate a user', async () => {
 			const { query, system, mockUser } = setup();
-			systemService.findById.mockResolvedValueOnce(testSystem);
+			systemService.findById.mockResolvedValueOnce(testSystemDto);
 			userService.findByExternalId.mockResolvedValue(mockUser);
 
-			const { user, redirect } = await service.authenticateUser(system.id!, query.code);
+			const systemId = system.id;
+			if (!systemId) {
+				fail('System id is not defined');
+			}
+			const { user, redirect } = await service.authenticateUser(systemId, query.code);
 			expect(redirect).toStrictEqual(`${hostUri}/dashboard`);
 			expect(user).toStrictEqual(mockUser);
 		});
