@@ -76,8 +76,6 @@ export class SchoolMigrationService {
 			user.outdatedSince = school.oauthMigrationFinished;
 		});
 		await this.userService.saveAll(notMigratedUsers.data);
-
-		return Promise.resolve();
 	}
 
 	async restartMigration(schoolId: string): Promise<void> {
@@ -93,7 +91,6 @@ export class SchoolMigrationService {
 		await this.userService.saveAll(migratedUsers.data);
 
 		school.oauthMigrationMandatory = undefined;
-		return Promise.resolve();
 	}
 
 	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {
