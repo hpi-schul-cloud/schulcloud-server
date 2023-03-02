@@ -9,11 +9,11 @@ import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemTypeEnum } from '@shared/domain';
+import { System, SystemTypeEnum } from '@shared/domain';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { systemFactory } from '@shared/testing';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { SystemService } from '@src/modules/system/service/system.service';
+import { SystemOidcMapper } from '@src/modules/system/mapper/system-oidc.mapper';
+import { SystemOidcService } from '@src/modules/system/service/system-oidc.service';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';
@@ -30,7 +30,7 @@ describe('KeycloakConfigurationService Unit', () => {
 	let client: DeepMocked<KeycloakAdminClient>;
 	let service: KeycloakConfigurationService;
 	let configService: DeepMocked<ConfigService>;
-	let systemService: DeepMocked<SystemService>;
+	let systemOidcService: DeepMocked<SystemOidcService>;
 	let httpServiceMock: DeepMocked<HttpService>;
 	let settings: IKeycloakSettings;
 
@@ -63,11 +63,12 @@ describe('KeycloakConfigurationService Unit', () => {
 		};
 	};
 
-	const systems: SystemDto[] = systemFactory.withOidcConfig().buildListWithId(1, { type: SystemTypeEnum.OIDC });
+	const systems: System[] = systemFactory.withOidcConfig().buildListWithId(1, { type: SystemTypeEnum.OIDC });
+	const oidcSystems = SystemOidcMapper.mapFromEntitiesToDtos(systems);
 	const idps: IdentityProviderRepresentation[] = [
 		{
 			providerId: 'oidc',
-			alias: systems[0].alias,
+			alias: oidcSystems[0].alias,
 			enabled: true,
 			config: {
 				clientId: 'clientId',
@@ -110,8 +111,8 @@ describe('KeycloakConfigurationService Unit', () => {
 					}),
 				},
 				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
+					provide: SystemOidcService,
+					useValue: createMock<SystemOidcService>(),
 				},
 				{
 					provide: KeycloakSettings,
@@ -137,7 +138,7 @@ describe('KeycloakConfigurationService Unit', () => {
 		service = module.get(KeycloakConfigurationService);
 		configService = module.get(ConfigService);
 		settings = module.get(KeycloakSettings);
-		systemService = module.get(SystemService);
+		systemOidcService = module.get(SystemOidcService);
 		httpServiceMock = module.get(HttpService);
 
 		configService.get.mockImplementation((key: string) => `${key}-value`);
@@ -148,7 +149,7 @@ describe('KeycloakConfigurationService Unit', () => {
 	});
 
 	beforeEach(() => {
-		systemService.findByType.mockResolvedValue(systems);
+		systemOidcService.findAll.mockResolvedValue(oidcSystems);
 		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
 		kcApiClientIdentityProvidersMock.create.mockResolvedValue({ id: '' });
 		kcApiClientIdentityProvidersMock.update.mockResolvedValue();
@@ -173,7 +174,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			expect(kcApiClientIdentityProvidersMock.update).toBeCalledTimes(1);
 		});
 		it('should delete a new configuration in Keycloak', async () => {
-			systemService.findByType.mockResolvedValue([]);
+			systemOidcService.findAll.mockResolvedValue([]);
 
 			const result = await service.configureIdentityProviders();
 			expect(result).toBe(1);
@@ -205,7 +206,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.find.mockResolvedValue([]);
 			kcApiClientMock.create.mockResolvedValue({ id: 'new_client_id' });
 			kcApiClientMock.generateNewClientSecret.mockResolvedValue({ type: 'secret', value: 'generated_client_secret' });
-			systemService.findByType.mockResolvedValue([]);
+			systemOidcService.findAll.mockResolvedValue([]);
 			const response = {
 				data: {
 					token_endpoint: 'tokenEndpoint',

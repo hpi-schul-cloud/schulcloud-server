@@ -28,5 +28,4 @@ export class SystemOidcMapper {
 			.map((entity) => this.mapFromEntityToDto(entity))
 			.filter((entity): entity is OidcConfigDto => entity !== undefined);
 	}
-
 }

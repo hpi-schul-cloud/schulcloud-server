@@ -11,9 +11,6 @@ export class SystemOidcService {
 
 	async findById(id: EntityId): Promise<OidcConfigDto> {
 		const system = await this.systemRepo.findById(id);
-		if (!system) {
-			throw new EntityNotFoundError(System.name, { id });
-		}
 		const mappedEntity = SystemOidcMapper.mapFromEntityToDto(system);
 		if (!mappedEntity) {
 			throw new EntityNotFoundError(System.name, { id });
@@ -21,7 +18,7 @@ export class SystemOidcService {
 		return mappedEntity;
 	}
 
-	async findAll(): Promise<Promise<[] | OidcConfigDto[]>> {
+	async findAll(): Promise<[] | OidcConfigDto[]> {
 		const system = await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
 		return SystemOidcMapper.mapFromEntitiesToDtos(system);
 	}
