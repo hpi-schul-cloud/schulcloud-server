@@ -4,7 +4,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemService } from '@src/modules/system/service/system.service';
-import { ICurrentUser, OauthConfig, System } from '@shared/domain';
+import { OauthConfig, System } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { schoolFactory, setupEntities, userFactory } from '@shared/testing';
@@ -20,6 +20,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { OauthConfigDto } from '@src/modules/system/service';
+import { ICurrentUser } from '@src/modules/authentication';
 import { AuthenticationService } from '../../authentication/services/authentication.service';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';

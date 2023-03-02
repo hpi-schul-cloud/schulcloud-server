@@ -8,6 +8,7 @@ import { Request } from 'express';
 import { ICurrentUser } from '@src/modules/authentication';
 import { OauthSSOController } from './oauth-sso.controller';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
+import { OauthUc } from '../uc';
 
 describe('OAuthController', () => {
 	let module: TestingModule;
@@ -50,6 +51,10 @@ describe('OAuthController', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: OauthUc,
+					useValue: createMock<OauthUc>(),
 				},
 				{
 					provide: HydraOauthUc,

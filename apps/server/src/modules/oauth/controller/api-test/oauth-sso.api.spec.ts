@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, EntityId, ICurrentUser, School, System, User } from '@shared/domain';
+import { Account, EntityId, School, System, User } from '@shared/domain';
 import {
 	accountFactory,
 	cleanupCollections,
@@ -18,6 +18,7 @@ import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
 import { Request } from 'express';
+import { ICurrentUser } from '@src/modules/authentication';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { AuthorizationParams, OauthTokenResponse } from '../dto';
 import { JwtAuthGuard } from '../../../authentication/guard/jwt-auth.guard';
