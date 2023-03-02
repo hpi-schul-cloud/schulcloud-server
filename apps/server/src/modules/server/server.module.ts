@@ -99,6 +99,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		CacheModule.registerAsync({
 			useFactory: (redisClient?: RedisClient) => (redisClient ? {} : {}),
 			inject: [],
+			isGlobal: true,
 		}),
 	],
 	controllers: [ServerController],

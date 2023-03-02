@@ -2,12 +2,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtValidationAdapter } from '@src/modules/authentication/strategy/jwt-validation.adapter';
-import { randomUUID } from 'crypto';
 import type { IServerConfig } from '@src/modules/server';
-import { ICurrentUser } from '../interface';
+import { randomUUID } from 'crypto';
+import jwt from 'jsonwebtoken';
 import { AccountService } from '../../account/services/account.service';
 import { AccountDto } from '../../account/services/dto';
 import { BruteForceError } from '../errors/brute-force.error';
+import { ICurrentUser } from '../interface';
+import { JwtPayload } from '../interface/jwt-payload';
 
 @Injectable()
 export class AuthenticationService {
@@ -43,6 +45,13 @@ export class AuthenticationService {
 		};
 		await this.jwtValidationAdapter.addToWhitelist(user.accountId, jti);
 		return result;
+	}
+
+	async removeJwtFromWhitelist(jwtToken: string): Promise<void> {
+		const decodedJwt: JwtPayload | null = jwt.decode(jwtToken, { json: true }) as JwtPayload | null;
+		if (decodedJwt && decodedJwt.jti) {
+			await this.jwtValidationAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
+		}
 	}
 
 	checkBrutForce(account: AccountDto): void {
