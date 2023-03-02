@@ -3,7 +3,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { EncryptionModule } from '@shared/infra/encryption';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { AuthenticationModule } from '@src/modules/authentication';
+import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { UserModule } from '@src/modules/user';
 import { UserLoginMigrationModule } from '@src/modules/user-login-migration';

@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, UnauthorizedException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, ICurrentUser, OauthConfig, User } from '@shared/domain';
+import { EntityId, OauthConfig, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { Logger } from '@src/core/logger';
@@ -14,6 +14,7 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { SystemService } from '@src/modules/system';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { ICurrentUser } from '@src/modules/authentication';
 import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { SSOErrorCode } from '../error/sso-error-code.enum';
