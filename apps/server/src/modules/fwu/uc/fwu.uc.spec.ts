@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing"
 import { FwuUc } from './fwu.uc';
 
-//describe('FwuUc', () => {
+// describe('FwuUc', () => {
 //    let module: TestingModule;
 //    let service: FwuUc;
 //
@@ -14,9 +14,9 @@ import { FwuUc } from './fwu.uc';
 //            providers: [
 //                FwuUc,
 //                {
-//                    
+//
 //                }
 //            ]
 //        })
 //    })
-//})
+// })
