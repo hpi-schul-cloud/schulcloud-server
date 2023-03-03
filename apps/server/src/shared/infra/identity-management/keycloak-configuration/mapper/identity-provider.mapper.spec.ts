@@ -51,7 +51,7 @@ describe('OidcIdentityProviderMapper', () => {
 			enabled: true,
 			firstBrokerLoginFlowAlias: brokerFlowAlias,
 			config: {
-				clientId: 'clientId_dec',
+				clientId: 'clientId',
 				clientSecret: 'clientSecret_dec',
 				authorizationUrl: 'authorizationUrl',
 				tokenUrl: 'tokenUrl',
@@ -79,8 +79,6 @@ describe('OidcIdentityProviderMapper', () => {
 				expect.objectContaining({
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					config: expect.objectContaining({
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-						clientId: expect.stringMatching('.*dec'),
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						clientSecret: expect.stringMatching('.*dec'),
 					}),

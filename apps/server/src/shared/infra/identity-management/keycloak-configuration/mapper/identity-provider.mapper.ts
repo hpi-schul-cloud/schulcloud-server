@@ -14,10 +14,8 @@ export class OidcIdentityProviderMapper {
 			enabled: true,
 			firstBrokerLoginFlowAlias: flowAlias,
 			config: {
-				clientId: oidcConfig.clientId ? this.defaultEncryptionService.decrypt(oidcConfig.clientId) : undefined,
-				clientSecret: oidcConfig.clientSecret
-					? this.defaultEncryptionService.decrypt(oidcConfig.clientSecret)
-					: undefined,
+				clientId: oidcConfig.clientId,
+				clientSecret: this.defaultEncryptionService.decrypt(oidcConfig.clientSecret),
 				authorizationUrl: oidcConfig.authorizationUrl,
 				tokenUrl: oidcConfig.tokenUrl,
 				logoutUrl: oidcConfig.logoutUrl,
