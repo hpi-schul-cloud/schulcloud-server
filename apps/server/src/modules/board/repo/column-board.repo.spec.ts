@@ -29,7 +29,7 @@ describe('ColumnBoardRepo', () => {
 	});
 
 	const setup = async () => {
-		const root = boardNodeFactory.build();
+		const root = boardNodeFactory.buildWithId();
 		await em.persistAndFlush(root);
 		const level1 = boardNodeFactory.buildList(2, { parent: root });
 		await em.persistAndFlush(level1);
@@ -41,6 +41,18 @@ describe('ColumnBoardRepo', () => {
 
 		return { root, level1, level2, level3 };
 	};
+
+	// describe('findById', () => {
+	// 	it('should find the board node', async () => {
+	// 		const { root } = await setup();
+	// 		const id: string = root.id;
+	// 		if (repo) {
+	// 			const result = await repo.findById(id);
+	// 			console.log(result);
+	// 			expect(result?.id).toEqual(root.id);
+	// 		}
+	// 	});
+	// });
 
 	describe('findDescendants', () => {
 		describe('when starting at the root node', () => {

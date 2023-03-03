@@ -1,17 +1,22 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode } from '@shared/domain';
+import { BoardNode, EntityId } from '@shared/domain';
+import { AnyBoardDoBuilder } from '../mapper/any-board-do-builder';
+import { AnyBoardDo } from '../types/any-board-do';
 
 @Injectable()
 export class ColumnBoardRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	// TODO mapping BoardNodes => DOs
-	// async findById(boardId: EntityId): Promise<ColumnBoard> {
-	// 	const boardNode = await this.em.findOneOrFail(BoardNode, { id: boardId, type: BoardNodeType.BOARD });
-
-	// 	const boardDescendants = await this.findDescendants(boardNode, 2);
-	// }
+	async findById(boardNodeId: EntityId, levelsOfChildren = 0): Promise<AnyBoardDo | undefined> {
+		const boardNode = await this.em.findOneOrFail(BoardNode, { id: boardNodeId });
+		let descendants: BoardNode[] = [];
+		if (levelsOfChildren > 0) {
+			const depth = boardNode.level + levelsOfChildren;
+			descendants = await this.findDescendants(boardNode, depth);
+		}
+		return AnyBoardDoBuilder.buildTree(boardNode, descendants);
+	}
 
 	async findDescendants(node: BoardNode, depth: number) {
 		const descendants = this.em.find(BoardNode, {
@@ -21,4 +26,9 @@ export class ColumnBoardRepo {
 
 		return descendants;
 	}
+
+	// async findById(boardId: EntityId): Promise<ColumnBoard> {
+	// 	const boardNode = await this.em.findOneOrFail(BoardNode, { id: boardId });
+	// 	return boardNode;
+	// }
 }
