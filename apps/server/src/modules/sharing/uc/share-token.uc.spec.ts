@@ -91,7 +91,7 @@ describe('ShareTokenUC', () => {
 		jest.resetAllMocks();
 		jest.clearAllMocks();
 		Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
-		Configuration.set('FEATURE_LESSON_SHARE_NEW', true);
+		Configuration.set('FEATURE_LESSON_SHARE', true);
 	});
 
 	describe('create a sharetoken', () => {
@@ -167,7 +167,7 @@ describe('ShareTokenUC', () => {
 		describe('when parent is a lesson', () => {
 			it('should throw if the feature is not enabled', async () => {
 				const { user, lesson } = setup();
-				Configuration.set('FEATURE_LESSON_SHARE_NEW', false);
+				Configuration.set('FEATURE_LESSON_SHARE', false);
 
 				await expect(
 					uc.createShareToken(user.id, {
@@ -453,7 +453,7 @@ describe('ShareTokenUC', () => {
 
 			it('should throw if the feature is not enabled', async () => {
 				const { user, shareToken } = setup();
-				Configuration.set('FEATURE_LESSON_SHARE_NEW', false);
+				Configuration.set('FEATURE_LESSON_SHARE', false);
 
 				await expect(uc.lookupShareToken(user.id, shareToken.token)).rejects.toThrowError();
 			});
@@ -647,7 +647,7 @@ describe('ShareTokenUC', () => {
 
 			it('should throw if the feature is not enabled', async () => {
 				const { user, shareToken } = setup();
-				Configuration.set('FEATURE_LESSON_SHARE_NEW', false);
+				Configuration.set('FEATURE_LESSON_SHARE', false);
 
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
 					InternalServerErrorException
