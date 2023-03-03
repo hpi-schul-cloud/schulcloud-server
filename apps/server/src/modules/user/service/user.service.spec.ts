@@ -2,17 +2,18 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LanguageType, PermissionService, Role, RoleName, School, User } from '@shared/domain';
+import { IFindOptions, LanguageType, PermissionService, Role, RoleName, School, SortOrder, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { roleFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
+import { UserQuery } from './user-query.type';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -383,6 +384,30 @@ describe('UserService', () => {
 
 				expect(result).toEqual([user]);
 			});
+		});
+	});
+
+	describe('findUsers is called', () => {
+		it('should call the repo with given query and options', async () => {
+			const query: UserQuery = {
+				schoolId: 'schoolId',
+				isOutdated: true,
+			};
+			const options: IFindOptions<UserDO> = { order: { id: SortOrder.asc } };
+
+			await service.findUsers(query, options);
+
+			expect(userDORepo.find).toHaveBeenCalledWith(query, options);
+		});
+	});
+
+	describe('saveAll is called', () => {
+		it('should call the repo with given users', async () => {
+			const users: UserDO[] = [userDoFactory.buildWithId()];
+
+			await service.saveAll(users);
+
+			expect(userDORepo.saveAll).toHaveBeenCalledWith(users);
 		});
 	});
 });
