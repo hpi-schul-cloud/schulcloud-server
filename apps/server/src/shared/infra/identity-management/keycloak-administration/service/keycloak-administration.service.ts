@@ -32,7 +32,7 @@ export class KeycloakAdministrationService {
 		return true;
 	}
 
-	public getWellKnownUrl() {
+	public getWellKnownUrl(): string {
 		return `${this.kcSettings.baseUrl}/realms/${this.kcSettings.realmName}/.well-known/openid-configuration`;
 	}
 
