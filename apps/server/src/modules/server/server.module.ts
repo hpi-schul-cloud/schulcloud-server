@@ -119,6 +119,9 @@ export class ServerModule {}
 		...serverModules,
 		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
 		RabbitMQWrapperTestModule,
+		CacheModule.registerAsync({
+			isGlobal: true,
+		}),
 	],
 	controllers: [ServerController],
 })
