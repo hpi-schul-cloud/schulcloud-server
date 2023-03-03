@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotAcceptableException, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
@@ -61,6 +62,10 @@ describe('FilesStorageService download methods', () => {
 				{
 					provide: AntivirusService,
 					useValue: createMock<AntivirusService>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
 				},
 			],
 		}).compile();

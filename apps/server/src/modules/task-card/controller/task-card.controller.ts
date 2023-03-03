@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 
 import { Body, Controller, Delete, Get, InternalServerErrorException, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { TaskCardUc } from '../uc';
 import { TaskCardResponse, TaskCardUrlParams, TaskCardParams } from './dto';
