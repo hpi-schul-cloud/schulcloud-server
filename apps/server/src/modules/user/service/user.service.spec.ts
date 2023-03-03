@@ -2,7 +2,17 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Permission, LanguageType, PermissionService, Role, RoleName, School, SortOrder, User } from '@shared/domain';
+import {
+	IFindOptions,
+	Permission,
+	LanguageType,
+	PermissionService,
+	Role,
+	RoleName,
+	School,
+	SortOrder,
+	User,
+} from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -13,10 +23,10 @@ import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
-import { UserQuery } from './user-query.type';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { ICurrentUser } from '@src/modules/authentication';
+import { UserQuery } from './user-query.type';
 
 describe('UserService', () => {
 	let service: UserService;
