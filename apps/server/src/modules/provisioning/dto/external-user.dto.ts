@@ -11,11 +11,14 @@ export class ExternalUserDto {
 
 	roles?: RoleName[];
 
+	schoolId?: string;
+
 	constructor(props: ExternalUserDto) {
 		this.externalId = props.externalId;
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
 		this.email = props.email;
 		this.roles = props.roles;
+		this.schoolId = props.schoolId;
 	}
 }

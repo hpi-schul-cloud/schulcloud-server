@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import jwt from 'jsonwebtoken';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	ExternalUserDto,
 	OauthDataDto,
@@ -10,6 +11,9 @@ import {
 	ProvisioningSystemDto,
 } from '../../dto';
 import { IservProvisioningStrategy } from './iserv.strategy';
+import { UserService } from '../../../user';
+import { RoleService } from '../../../role';
+import { SchoolService } from '../../../school';
 
 jest.mock('jsonwebtoken');
 
@@ -17,12 +21,33 @@ describe('IservStrategy', () => {
 	let module: TestingModule;
 	let strategy: IservProvisioningStrategy;
 
+	let schoolService: DeepMocked<SchoolService>;
+	let userService: DeepMocked<UserService>;
+	let roleService: DeepMocked<RoleService>;
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [IservProvisioningStrategy],
+			providers: [
+				IservProvisioningStrategy,
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
+				{
+					provide: RoleService,
+					useValue: createMock<RoleService>(),
+				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+			],
 		}).compile();
 
 		strategy = module.get(IservProvisioningStrategy);
+		schoolService = module.get(SchoolService);
+		userService = module.get(UserService);
+		roleService = module.get(RoleService);
 	});
 
 	afterAll(async () => {

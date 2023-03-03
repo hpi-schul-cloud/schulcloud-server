@@ -19,6 +19,12 @@ export class RoleService {
 		return roleDto;
 	}
 
+	async findByIds(ids: EntityId[]): Promise<RoleDto[]> {
+		const roles: Role[] = await this.roleRepo.findByIds(ids);
+		const roleDtos: RoleDto[] = RoleMapper.mapFromEntitiesToDtos(roles);
+		return roleDtos;
+	}
+
 	async findByNames(names: RoleName[]): Promise<RoleDto[]> {
 		const entities: Role[] = await this.roleRepo.findByNames(names);
 		const roleDtos: RoleDto[] = RoleMapper.mapFromEntitiesToDtos(entities);
