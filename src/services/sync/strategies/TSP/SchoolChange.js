@@ -29,7 +29,7 @@ const deleteUser = (app, user) => {
 	return Promise.all([
 		userService.remove({ _id: user._id }),
 		accountService.deleteByUserId(user._id.toString()),
-		teamsService.updateMany({'userIds.userId': {$in: [user._id]}}, { $pull: { userIds: {userId: user._id } } } )
+		teamsService.updateMany({ 'userIds.userId': { $in: [user._id] } }, { $pull: { userIds: { userId: user._id } } })
 	]);
 };
 
