@@ -6,17 +6,17 @@ describe('ColumnBuilder', () => {
 		it('should build a Column-DO when a boardNode of type COLUMN is given', () => {
 			const boardNode = boardNodeFactory.asColumn().build();
 
-			const domainObject = ColumnBuilder.build(boardNode);
+			const domainObject = new ColumnBuilder().build(boardNode);
 
-			expect(domainObject?.constructor.name).toBe('Column');
+			expect(domainObject.constructor.name).toBe('Column');
 		});
 
-		it('should return undefined if the boardNode is not of type COLUMN', () => {
+		it('should throw error if the boardNode is not of type COLUMN', () => {
 			const boardNode = boardNodeFactory.asCard().build();
 
-			const domainObject = ColumnBuilder.build(boardNode);
-
-			expect(domainObject).toBe(undefined);
+			expect(() => {
+				new ColumnBuilder().build(boardNode);
+			}).toThrowError();
 		});
 	});
 });

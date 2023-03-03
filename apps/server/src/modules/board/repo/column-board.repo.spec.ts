@@ -1,8 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BoardNodeType } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
 import { boardNodeFactory } from '@shared/testing/factory/boardnode.factory';
+import { AnyBoardDoBuilder } from '../mapper';
+import { BoardNodeRepo } from './board-node.repo';
 import { ColumnBoardRepo } from './column-board.repo';
 
 describe('ColumnBoardRepo', () => {
@@ -13,7 +16,7 @@ describe('ColumnBoardRepo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [ColumnBoardRepo],
+			providers: [ColumnBoardRepo, BoardNodeRepo, AnyBoardDoBuilder],
 		}).compile();
 		repo = module.get(ColumnBoardRepo);
 		em = module.get(EntityManager);
@@ -29,54 +32,24 @@ describe('ColumnBoardRepo', () => {
 	});
 
 	const setup = async () => {
-		const root = boardNodeFactory.buildWithId();
-		await em.persistAndFlush(root);
-		const level1 = boardNodeFactory.buildList(2, { parent: root });
-		await em.persistAndFlush(level1);
-		const level2 = boardNodeFactory.buildList(2, { parent: level1[0] });
-		await em.persistAndFlush(level2);
-		const level3 = boardNodeFactory.buildList(2, { parent: level2[1] });
-		await em.persistAndFlush(level3);
+		const boardNode = boardNodeFactory.build({ type: BoardNodeType.BOARD });
+		await em.persistAndFlush(boardNode);
+		const columnNodes = boardNodeFactory.buildList(2, { parent: boardNode, type: BoardNodeType.COLUMN });
+		await em.persistAndFlush(columnNodes);
+		const cardNodes = boardNodeFactory.buildList(2, { parent: columnNodes[0], type: BoardNodeType.CARD });
+		await em.persistAndFlush(cardNodes);
+		const elementNodes = boardNodeFactory.buildList(2, { parent: cardNodes[1], type: BoardNodeType.ELEMENT });
+		await em.persistAndFlush(elementNodes);
 		em.clear();
 
-		return { root, level1, level2, level3 };
+		return { boardNode, columnNodes, cardNodes, elementNodes };
 	};
 
-	// describe('findById', () => {
-	// 	it('should find the board node', async () => {
-	// 		const { root } = await setup();
-	// 		const id: string = root.id;
-	// 		if (repo) {
-	// 			const result = await repo.findById(id);
-	// 			console.log(result);
-	// 			expect(result?.id).toEqual(root.id);
-	// 		}
-	// 	});
-	// });
-
-	describe('findDescendants', () => {
-		describe('when starting at the root node', () => {
-			it('should find descendents with a specific depth', async () => {
-				const { root, level1, level2 } = await setup();
-
-				const result = await repo.findDescendants(root, 2);
-
-				const resultIds = result.map((o) => o.id).sort();
-				const expectedIds = [...level1, ...level2].map((o) => o.id).sort();
-				expect(resultIds).toEqual(expectedIds);
-			});
-		});
-
-		describe('when starting at a nested node', () => {
-			it('should find descendents with a specific depth', async () => {
-				const { level1, level2, level3 } = await setup();
-
-				const result = await repo.findDescendants(level1[0], 2);
-
-				const resultIds = result.map((o) => o.id).sort();
-				const expectedIds = [...level2, ...level3].map((o) => o.id).sort();
-				expect(resultIds).toEqual(expectedIds);
-			});
+	describe('findById', () => {
+		it('should find the board node', async () => {
+			const { boardNode } = await setup();
+			const result = await repo.findById(boardNode.id);
+			expect(result?.id).toEqual(boardNode.id);
 		});
 	});
 });

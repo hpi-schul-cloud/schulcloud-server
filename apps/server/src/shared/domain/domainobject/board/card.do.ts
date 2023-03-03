@@ -1,6 +1,5 @@
 import { EntityId } from '@shared/domain/types';
 import { ContentElement } from './content-element.do';
-import { ReferenceElement } from './reference-element.do';
 
 export class Card implements CardProps {
 	id?: EntityId;
@@ -32,11 +31,9 @@ interface CardProps {
 
 	height: number;
 
-	elements: AnyElement[];
+	elements: ContentElement[];
 
 	createdAt: Date;
 
 	updatedAt: Date;
 }
-
-type AnyElement = ContentElement | ReferenceElement;

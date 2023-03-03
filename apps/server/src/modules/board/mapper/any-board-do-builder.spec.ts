@@ -13,17 +13,17 @@ describe('CardBuilder', () => {
 		it('should build a Card-DO when a boardNode of type CARD is given', () => {
 			const boardNode = boardNodeFactory.asCard().build();
 
-			const domainObject = CardBuilder.build(boardNode);
+			const domainObject = new CardBuilder().build(boardNode);
 
-			expect(domainObject?.constructor.name).toBe('Card');
+			expect(domainObject.constructor.name).toBe('Card');
 		});
 
-		it('should return undefined if the boardNode is not of type CARD', () => {
+		it('should throw error if the boardNode is not of type CARD', () => {
 			const boardNode = boardNodeFactory.asColumn().build();
 
-			const domainObject = CardBuilder.build(boardNode);
-
-			expect(domainObject).toBe(undefined);
+			expect(() => {
+				new CardBuilder().build(boardNode);
+			}).toThrowError();
 		});
 	});
 
@@ -33,9 +33,9 @@ describe('CardBuilder', () => {
 			const childElement1 = boardNodeFactory.asElement().build({ parent: card });
 			const childElement2 = boardNodeFactory.asElement().build({ parent: card });
 
-			const domainObject = AnyBoardDoBuilder.buildTree(card, [childElement1, childElement2]) as Card;
+			const domainObject = new AnyBoardDoBuilder().buildTree(card, [childElement1, childElement2]) as Card;
 
-			expect(domainObject.elements ?? []).toHaveLength(2);
+			expect(domainObject.elements).toHaveLength(2);
 		});
 
 		it('should not assign elements that are not part of the tree independent', () => {
@@ -44,9 +44,9 @@ describe('CardBuilder', () => {
 			const element1 = boardNodeFactory.asElement().build({ parent: card });
 			const element2 = boardNodeFactory.asElement().build({ parent: card });
 
-			const domainObject = AnyBoardDoBuilder.buildTree(card, [element1, independenElement, element2]) as Card;
+			const domainObject = new AnyBoardDoBuilder().buildTree(card, [element1, independenElement, element2]) as Card;
 
-			expect(domainObject.elements ?? []).toHaveLength(2);
+			expect(domainObject.elements).toHaveLength(2);
 		});
 
 		it('should sort children according to position attribute', () => {
@@ -55,9 +55,9 @@ describe('CardBuilder', () => {
 			const element2 = boardNodeFactory.buildWithId({ parent: card, position: 1, type: BoardNodeType.ELEMENT });
 			const element3 = boardNodeFactory.buildWithId({ parent: card, position: 2, type: BoardNodeType.ELEMENT });
 
-			const domainObject = AnyBoardDoBuilder.buildTree(card, [element1, element2, element3]) as Card;
+			const domainObject = new AnyBoardDoBuilder().buildTree(card, [element1, element2, element3]) as Card;
 
-			expect(domainObject.elements ?? []).toHaveLength(3);
+			expect(domainObject.elements).toHaveLength(3);
 			expect(domainObject.elements[0].id).toBe(element2.id);
 			expect(domainObject.elements[1].id).toBe(element3.id);
 			expect(domainObject.elements[2].id).toBe(element1.id);

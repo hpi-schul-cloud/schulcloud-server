@@ -22,7 +22,6 @@ describe('ColumnBoardBuilder', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		// await em.nativeDelete(BoardNode, {});
 	});
 
 	const setup = async () => {
@@ -43,9 +42,9 @@ describe('ColumnBoardBuilder', () => {
 		it('should build a ColumnBoard-DO when a boardNode of type BOARD is given', async () => {
 			const { root } = await setup();
 
-			const domainObject = ColumnBoardBuilder.build(root);
+			const domainObject = new ColumnBoardBuilder().build(root);
 
-			expect(domainObject?.constructor.name).toBe('ColumnBoard');
+			expect(domainObject.constructor.name).toBe('ColumnBoard');
 		});
 	});
 });

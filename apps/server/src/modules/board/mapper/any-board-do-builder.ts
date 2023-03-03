@@ -1,29 +1,45 @@
-import { BoardNode } from '@shared/domain';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { BoardNode, BoardNodeType } from '@shared/domain';
 import { AnyBoardDo } from '../types/any-board-do';
+import { BoardDoBuilder } from './board-do-builder';
 import { CardBuilder } from './card-builder';
 import { ColumnBoardBuilder } from './column-board-builder';
 import { ColumnBuilder } from './column-builder';
 import { ElementBuilder } from './element-builder';
 
-export class AnyBoardDoBuilder {
-	public static build(boardNode: BoardNode, children: AnyBoardDo[] = []): AnyBoardDo | undefined {
-		return (
-			ColumnBoardBuilder.build(boardNode, children) ??
-			ColumnBuilder.build(boardNode, children) ??
-			CardBuilder.build(boardNode, children) ??
-			ElementBuilder.build(boardNode)
-		);
+@Injectable()
+export class AnyBoardDoBuilder extends BoardDoBuilder {
+	private builders: Map<BoardNodeType, BoardDoBuilder> = new Map();
+
+	constructor() {
+		super();
+		this.builders.set(BoardNodeType.BOARD, new ColumnBoardBuilder());
+		this.builders.set(BoardNodeType.COLUMN, new ColumnBuilder());
+		this.builders.set(BoardNodeType.CARD, new CardBuilder());
+		this.builders.set(BoardNodeType.ELEMENT, new ElementBuilder());
 	}
 
-	public static buildTree(root: BoardNode, descendants: BoardNode[]) {
-		AnyBoardDoBuilder.sortBoardNodes(descendants);
+	public build(boardNode: BoardNode, children: AnyBoardDo[] = []): AnyBoardDo {
+		const builder = this.builders.get(boardNode.type);
+
+		if (builder == null) {
+			throw new NotImplementedException('Invalid node type `$boardNode.type}`');
+		}
+
+		const domainObject = builder.build(boardNode, children);
+
+		return domainObject;
+	}
+
+	public buildTree(root: BoardNode, descendants: BoardNode[]) {
+		this.sortBoardNodes(descendants);
 
 		const childrenMap: Record<string, AnyBoardDo[]> = {};
 		for (const boardNode of descendants) {
 			const { parentId } = boardNode;
 			if (parentId) {
 				const children: AnyBoardDo[] = childrenMap[boardNode.id] ?? [];
-				const domainObject = AnyBoardDoBuilder.build(boardNode, children);
+				const domainObject = this.build(boardNode, children);
 				if (domainObject) {
 					if (childrenMap[parentId] === undefined) {
 						childrenMap[parentId] = [];
@@ -33,11 +49,11 @@ export class AnyBoardDoBuilder {
 			}
 		}
 
-		const rootDO = AnyBoardDoBuilder.build(root, childrenMap[root.id]);
-		return rootDO;
+		const rootDomainObject = this.build(root, childrenMap[root.id]);
+		return rootDomainObject;
 	}
 
-	public static sortBoardNodes(boardNodes: BoardNode[]) {
+	public sortBoardNodes(boardNodes: BoardNode[]) {
 		boardNodes.sort((a, b) => {
 			if (a.path === b.path) {
 				return (a.position ?? 0) - (b.position ?? 0); // by position asc

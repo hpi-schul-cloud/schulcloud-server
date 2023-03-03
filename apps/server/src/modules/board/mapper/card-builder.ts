@@ -1,9 +1,10 @@
 import { BoardNode, BoardNodeType, Card, ContentElement } from '@shared/domain';
 import { AnyBoardDo } from '../types/any-board-do';
+import { BoardDoBuilder } from './board-do-builder';
 
-export class CardBuilder {
-	public static build(boardNode: BoardNode, children: AnyBoardDo[] = []): Card | undefined {
-		if (boardNode.type !== BoardNodeType.CARD) return undefined;
+export class CardBuilder extends BoardDoBuilder {
+	public build(boardNode: BoardNode, children: AnyBoardDo[] = []): Card {
+		this.ensureBoardNodeType(boardNode, BoardNodeType.CARD);
 
 		const elements = children.filter((c) => c.constructor.name === 'ContentElement') as ContentElement[];
 
