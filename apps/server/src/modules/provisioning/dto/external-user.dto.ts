@@ -1,4 +1,4 @@
-import { RoleName } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 
 export class ExternalUserDto {
 	externalId: string;
@@ -9,9 +9,7 @@ export class ExternalUserDto {
 
 	email?: string;
 
-	roles?: RoleName[];
-
-	schoolId?: string;
+	roles?: EntityId[];
 
 	constructor(props: ExternalUserDto) {
 		this.externalId = props.externalId;
@@ -19,6 +17,5 @@ export class ExternalUserDto {
 		this.lastName = props.lastName;
 		this.email = props.email;
 		this.roles = props.roles;
-		this.schoolId = props.schoolId;
 	}
 }

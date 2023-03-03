@@ -18,8 +18,7 @@ export class IservMapper {
 			lastName: userDO.lastName,
 			email: userDO.email,
 			roles: roleNames,
-			externalId: userDO.externalId!,
-			schoolId: userDO.schoolId,
+			externalId: userDO.externalId || '',
 		});
 	}
 }

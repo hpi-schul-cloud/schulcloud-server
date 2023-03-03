@@ -1,8 +1,11 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
+import { RoleService } from '@src/modules/role';
+import { SchoolService } from '@src/modules/school';
+import { UserService } from '@src/modules/user';
 import jwt from 'jsonwebtoken';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	ExternalUserDto,
 	OauthDataDto,
@@ -11,9 +14,6 @@ import {
 	ProvisioningSystemDto,
 } from '../../dto';
 import { IservProvisioningStrategy } from './iserv.strategy';
-import { UserService } from '../../../user';
-import { RoleService } from '../../../role';
-import { SchoolService } from '../../../school';
 
 jest.mock('jsonwebtoken');
 

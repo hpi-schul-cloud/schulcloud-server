@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { RoleName, User } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { RoleName, User } from '@shared/domain';
-import { UserService } from '@src/modules/user';
+import { RoleService } from '@src/modules/role';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { SchoolService } from '@src/modules/school';
+import { UserService } from '@src/modules/user';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
@@ -16,8 +18,6 @@ import {
 } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 import { IservMapper } from './iserv-do.mapper';
-import { RoleDto } from '../../../role/service/dto/role.dto';
-import { RoleService } from '../../../role';
 
 @Injectable()
 export class IservProvisioningStrategy extends ProvisioningStrategy {
@@ -36,41 +36,35 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
 		const idToken: JwtPayload | null = jwt.decode(input.idToken, { json: true });
 
-		let externalUser: ExternalUserDto;
-
-		if (idToken && idToken.uuid) {
-			const existingUser: UserDO | null = await this.userService.findByExternalId(
-				idToken.uuid as string,
-				input.system.systemId
-			);
-
-			if (!existingUser) {
-				const additionalInfo: string = await this.getAdditionalErrorInfo(idToken.email as string | undefined);
-				throw new OAuthSSOError(
-					`Failed to find user with Id ${idToken.uuid as string} ${additionalInfo}`,
-					'sso_user_notfound'
-				);
-			}
-
-			if (existingUser) {
-				const roleDtos: RoleDto[] = await this.roleService.findByIds(existingUser.roleIds);
-				const roleNames: RoleName[] = roleDtos.map((role) => role.name);
-
-				externalUser = IservMapper.mapToExternalUserDto(existingUser, roleNames);
-				if (externalUser.schoolId) {
-					const school: SchoolDO = await this.schoolService.getSchoolById(externalUser.schoolId);
-					const externalSchool: ExternalSchoolDto = IservMapper.mapToExternalSchoolDto(school);
-					const oauthData: OauthDataDto = new OauthDataDto({
-						system: input.system,
-						externalUser,
-						externalSchool,
-					});
-
-					return oauthData;
-				}
-			}
+		if (!idToken || !idToken.uuid) {
+			throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');
 		}
-		throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');
+
+		const ldapUser: UserDO | null = await this.userService.findByExternalId(
+			idToken.uuid as string,
+			input.system.systemId
+		);
+		if (!ldapUser) {
+			const additionalInfo: string = await this.getAdditionalErrorInfo(idToken.email as string | undefined);
+			throw new OAuthSSOError(
+				`Failed to find user with Id ${idToken.uuid as string} ${additionalInfo}`,
+				'sso_user_notfound'
+			);
+		}
+
+		const ldapSchool: SchoolDO = await this.schoolService.getSchoolById(ldapUser.schoolId);
+		const roleDtos: RoleDto[] = await this.roleService.findByIds(ldapUser.roleIds);
+		const roleNames: RoleName[] = roleDtos.map((role) => role.name);
+
+		const externalUser: ExternalUserDto = IservMapper.mapToExternalUserDto(ldapUser, roleNames);
+		const externalSchool: ExternalSchoolDto = IservMapper.mapToExternalSchoolDto(ldapSchool);
+
+		const oauthData: OauthDataDto = new OauthDataDto({
+			system: input.system,
+			externalUser,
+			externalSchool,
+		});
+		return oauthData;
 	}
 
 	override apply(data: OauthDataDto): Promise<ProvisioningDto> {
